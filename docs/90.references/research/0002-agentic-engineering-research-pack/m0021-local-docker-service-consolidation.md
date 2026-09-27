@@ -1,10 +1,10 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.7.3"
+version: "0.8.1"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002-m0021"
 parent_ids:
@@ -15,33 +15,139 @@ observed_at: "2026-09-20"
 
 # Reference: Local Docker Service Consolidation
 
+## Current External Research
+
+What evidence should govern optional-service selection, capability overlap and operating cost without inventing new local service decisions?
+
+Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
+
+### Selection model and operating principles
+
+This section proposes comparison criteria. A service's category, image name or
+apparent feature overlap is insufficient evidence for replacement. Identify the
+required capability and its actual consumer first. Compare protocol/API, data
+model, authentication, extension ecosystem, edition limits, migration path and
+failure behavior. Shared categories can conceal different capabilities. Separate
+essential workflow services, conditional capabilities and experiments; make the
+condition and owner explicit. A stopped optional service can still hold valuable
+state, credentials or recovery dependencies.
+
+Use [m0005](m0005-docker-compose-infrastructure.md#current-external-research) for
+Compose composition, profile activation, exposure, persistence, health, resources,
+restart, signals, image provenance, TLS/DNS and recovery semantics. An optional
+profile is an activation mechanism, not proof that removal is safe. Update plans
+should identify schema changes, compatible clients, rollback limits and the
+required recovery evidence. Static rendering, a running process, a healthcheck,
+a network probe, a user workflow and an isolated restoration prove different
+layers; the acceptance packet should identify which layer was checked.
+
+### Supply, license, overlap and cost evidence
+
+Docker Hub distinguishes Official Images, Verified Publishers, Hardened Images
+and Sponsored OSS. Such provenance categories do not prove every image is
+appropriate or vulnerability-free. ([Trusted content](https://docs.docker.com/docker-hub/image-library/trusted-content/))
+The Open Source Definition includes redistribution and derivative-work criteria;
+source visibility alone does not establish an OSI-compliant license.
+([OSI definition](https://opensource.org/osd))
+
+The remaining criteria are our research synthesis. Bind license conclusions to
+the exact product, version, edition, distribution and intended use; check the
+upstream license and commercial terms together. Distinguish open source,
+source-available, paid editions, hosted terms and plugins. A historical license
+entry is not a refreshed legal conclusion. Two services require a capability and
+data migration comparison before claiming duplication. License compliance and
+business suitability need their respective owners' review; no universal ranking
+or removal decision is proposed here.
+
+Cost comparison should include measured CPU/RAM/GPU, persistent and backup
+storage, network, electricity, licenses and update/recovery toil, with observation
+window and workload recorded. Idle resource savings do not measure migration
+cost or lost capabilities. Define an evaluation window and decision criteria
+before testing. Recovery must demonstrate consistent data and accepted workflow
+in an empty isolated target, with backup identity, keys, elapsed time, data-loss
+boundary and owner acceptance. Recovery objectives and general design are
+cross-linked in m0005; no restoration occurred in this run.
+
+### Historical decision and evidence boundary
+
+All earlier service inventories, dated observations, owner clarifications,
+reviews, approvals and implementation findings are preserved below. Their
+historical contradictions and superseding decisions remain visible. In particular,
+the recorded **2026-09-19 AI/workflow HOME clarification** and **2026-09-20**
+follow-up remain dated owner evidence; the earlier Homer, RabbitMQ and Portainer
+approval records remain historical. This refresh does not re-open those decisions,
+measure service counts, inspect retained data or infer a current operating state.
+The large inventory tables retain their existing entries and are explicitly
+marked as historical evidence, not a newly checked product or license catalogue.
+
+## Claims and Sources
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-docker-trusted-content | [Docker Hub trusted content categories](https://docs.docker.com/docker-hub/image-library/trusted-content/) | Mutable official documentation; no publication date stated | 2026-09-27 |
+| S-opensource-open-source-definition | [Open Source Definition](https://opensource.org/osd) | OSI definition version 1.9; authoritative criteria, not a service license audit | 2026-09-27 |
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0021-01 | Provenance category and exact image/version evidence should be distinguished from security assurance. | S-docker-trusted-content / trusted content categories; m0005 image provenance | Not stated; mutable | 2026-09-27 | Docker Hub current documentation | Fact plus recommendation | No current local image inventory or vulnerability scan; recheck image and publisher changes. |
+| C-m0021-02 | Source access alone does not establish an OSI-compliant license. | S-opensource-open-source-definition / criteria 1–10 | OSI definition v1.9 | 2026-09-27 | License-definition criteria | Fact | Not a legal opinion on any historical service; original AGPL page could not be opened in this check. |
+| C-m0021-03 | Replacement requires capability, client, state, migration and license evidence. | m0005 current operational semantics; research synthesis | 2026-09-27 synthesis | 2026-09-27 | Candidate selection framework | Recommendation | No service was selected, removed or declared redundant; assess exact edition/version and intended use later. |
+| C-m0021-04 | Operating cost and recovery acceptance require workload-bound measurement and isolated restoration. | m0005 / C-m0005-09 and C-m0005-10; research synthesis | 2026-09-27 synthesis | 2026-09-27 | Candidate operations framework | Recommendation | No resource, energy, billing, backup or restoration measurement; no savings claim. |
+| C-m0021-05 | The existing inventory and approvals are dated historical evidence, not current reassessment. | Historical workspace observations below / exact dated entries | 2026-09-18 through 2026-09-24 historical record | 2026-09-27 | Repository documentary history | Fact about preserved records | No runtime/service count/configuration inspection; retain original observation and approval scope. |
+
+## Future Internal Checks
+
+| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0021-03/05 | Document, Spec/task × governance/operations | Only for an explicitly proposed service change | Candidate owner decisions, capability consumers and migration packet; not inspected | Does the proposal respect dated AI/workflow HOME requirements and approval scope? | Dated owner decision, consumer map, overlap gaps and change scope | Future document review; no inventory scan by this refresh | Pass explicit required capability and owner disposition; fail category-only redundancy | Removal, data or deployment actions need separate scoped approval | iac-reviewer | Not assessed in this run |
+| C-m0021-01/02 | Document × security/license | Before product/version adoption or redistribution | Candidate exact upstream license, edition, image and provenance records; not inspected | Do intended use and distributed artifacts match the applicable terms? | Version/edition/license snapshots, commercial terms, provenance and owner review | Future official-source review of the chosen product only | Pass attributable version-bound conclusion; fail label-only assumption | Commercial account/private contract access needs approval; legal review when needed | security-auditor | Not assessed in this run |
+| C-m0021-03/04 | Environment × data/operations | Before a stateful replacement or removal | Candidate backup and empty isolated destination; not inspected | Can the required workflow be restored within agreed loss/time objectives? | Backup identity/checksum, isolation proof, keys, consistency invariants, workflow results and owner acceptance | Future separately approved isolated restoration and migration rehearsal | Pass integrity/workflow/RPO/RTO with rollback documented; fail missing recovery evidence | Protected data access and restoration writes need explicit scoped approval | infra-implementer | Not assessed in this run |
+| C-m0021-04 | Environment × performance/cost | When an optional-service cost decision is proposed | Candidate sanitized utilization/cost window; not inspected | What cost changes under representative demand and recovery needs? | Window/workload, CPU/RAM/GPU/storage/energy/toil/license measures and uncertainty | Future authorized measurement without secret/config disclosure | Pass reproducible workload-bound estimate including migration cost; fail unsupported savings claim | Runtime/account/cost inspection requires scoped authorization | infra-implementer | Not assessed in this run |
+
+### Limits and recheck conditions
+
+No service inventory, process, Compose configuration, network, secret, account,
+license installation or backup was inspected. The GNU AGPL original endpoint
+failed in this check, so no new obligation claim is made from it. Recheck selected
+products' original terms and releases at a future approved decision. Historical
+product links below keep their original check dates and uncertainty.
+
+## Historical workspace observations — not reassessed in this run
+
 ## Question
-
-Which services in `infra/` should remain available for local Docker use, which
-belong in optional profiles, and which are candidates for removal because their
-role is unused or duplicated?
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Which services in `infra/` should remain available for local Docker use, which
+> belong in optional profiles, and which are candidates for removal because their
+> role is unused or duplicated?
+>
 ## Evidence Boundary
-
-This is non-normative research. Tracked Compose definitions and the observed
-local container list do not prove business necessity, data ownership, backup
-success, or safe deletion. No service was stopped, removed, migrated, or
-reconfigured during this observation.
-
-At the 2026-09-19 baseline `d1e6ded52808b02392c52472d5416518a3b959d6`,
-YAML parsing measured 42 root-included infra Compose files, 140 service
-nodes and 64 profiles. These are dated observations, not policy constants.
-The owner requires AI and workflows to remain always-on HOME capabilities.
-Execution evidence and changes belong to SPEC-0180; this member owns the
-service-disposition rationale. A service's inherited `extends` resources must
-be resolved before judging whether CPU, memory or hardening controls exist.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> This is non-normative research. Tracked Compose definitions and the observed
+> local container list do not prove business necessity, data ownership, backup
+> success, or safe deletion. No service was stopped, removed, migrated, or
+> reconfigured during this observation.
+>
+> At the 2026-09-19 baseline `d1e6ded52808b02392c52472d5416518a3b959d6`,
+> YAML parsing measured 42 root-included infra Compose files, 140 service
+> nodes and 64 profiles. These are dated observations, not policy constants.
+> The owner requires AI and workflows to remain always-on HOME capabilities.
+> Execution evidence and changes belong to SPEC-0180; this member owns the
+> service-disposition rationale. A service's inherited `extends` resources must
+> be resolved before judging whether CPU, memory or hardening controls exist.
+>
 ## Consolidated Research Ownership
-
-This member is the single owner for the functional service map: overlap,
-open-source/license suitability, local Docker availability, baseline versus
-optional profile, and removal-candidate reasoning.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> This member is the single owner for the functional service map: overlap,
+> open-source/license suitability, local Docker availability, baseline versus
+> optional profile, and removal-candidate reasoning.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Existing research surface | Retained responsibility | Consolidation result |
 | --- | --- | --- |
 | [RES-0002-m0005](m0005-docker-compose-infrastructure.md) | Compose include/profile semantics, topology, static inventory, hardening, image provenance, and validation | Do not repeat service-role or removal recommendations there. |
@@ -49,45 +155,54 @@ optional profile, and removal-candidate reasoning.
 | [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md) | Dated 2026-09-05 assessment envelope and identity recovery | Historical carrier only; it is not a current service inventory. |
 | [RES-0096](../0096-archive-disposition-consistency/README.md) | Stage 98 archive consistency review | Out of scope for local service classification. |
 
-No duplicate service-classification member is created. Future service overlap,
-license, or local-removal findings should update this member or create a new
-member only when the question and evidence model are materially different.
-
+> Historical evidence (not current authority; source: Git history):
+>
+> No duplicate service-classification member is created. Future service overlap,
+> license, or local-removal findings should update this member or create a new
+> member only when the question and evidence model are materially different.
+>
 ## Selection Rules
-
-1. Keep a service when it has a distinct workload contract or is an active
-   dependency of another local service.
-2. Move a service to an optional profile when it is useful but not required for
-   the local baseline.
-3. Remove a service only after its repository consumers, persistent data,
-   secrets, ports, routes, and operational documents have been dispositioned.
-4. A retained service must have an official or project-maintained Docker image
-   or Compose deployment and a license acceptable to the repository owner.
-5. A compatible datastore is not automatically a replacement: migration,
-   backup, client compatibility, and recovery evidence are required.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> 1. Keep a service when it has a distinct workload contract or is an active
+>    dependency of another local service.
+> 2. Move a service to an optional profile when it is useful but not required for
+>    the local baseline.
+> 3. Remove a service only after its repository consumers, persistent data,
+>    secrets, ports, routes, and operational documents have been dispositioned.
+> 4. A retained service must have an official or project-maintained Docker image
+>    or Compose deployment and a license acceptable to the repository owner.
+> 5. A compatible datastore is not automatically a replacement: migration,
+>    backup, client compatibility, and recovery evidence are required.
+>
 ## Definitions / Facts
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
 ### 2026-09-18 Local Runtime Reconciliation
-
-Historical observation only. The later owner clarification makes AI and workflows
-HOME always-on capabilities; optional recommendations for ComfyUI/Qdrant below
-are superseded by the 2026-09-19 target decision. Runtime observations do not
-constitute a deployment or backup acceptance record.
-
-Docker Engine `29.8.1`, Docker Compose `v5.5.1`, and the root
-`docker compose config --quiet` check succeeded. The local container listing
-showed `influxdb`, `comfyui`, `neo4j`, and `qdrant` running and healthy. They
-are not removal candidates based on this observation. `schema-registry` also
-runs as part of the Kafka stack and must not be treated as an independent
-unused service.
-
-Homer, RabbitMQ, and Portainer were not present in the local container listing.
-After approval, their Compose leaves, root includes, active environment/secret
-registry entries, routes, tier references, hardening checks, and active Stage 05
-service documents were removed. Historical archive and migration records remain
-unchanged. No running data service was stopped or migrated.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Historical observation only. The later owner clarification makes AI and workflows
+> HOME always-on capabilities; optional recommendations for ComfyUI/Qdrant below
+> are superseded by the 2026-09-19 target decision. Runtime observations do not
+> constitute a deployment or backup acceptance record.
+>
+> Docker Engine `29.8.1`, Docker Compose `v5.5.1`, and the root
+> `docker compose config --quiet` check succeeded. The local container listing
+> showed `influxdb`, `comfyui`, `neo4j`, and `qdrant` running and healthy. They
+> are not removal candidates based on this observation. `schema-registry` also
+> runs as part of the Kafka stack and must not be treated as an independent
+> unused service.
+>
+> Homer, RabbitMQ, and Portainer were not present in the local container listing.
+> After approval, their Compose leaves, root includes, active environment/secret
+> registry entries, routes, tier references, hardening checks, and active Stage 05
+> service documents were removed. Historical archive and migration records remain
+> unchanged. No running data service was stopped or migrated.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Candidate | Runtime observation | Current disposition | Required next evidence |
 | --- | --- | --- | --- |
 | Homer | Not present | Removed after approval | Historical references remain only in archive evidence. |
@@ -99,11 +214,14 @@ unchanged. No running data service was stopped or migrated.
 | Qdrant | Running healthy | Keep optional | Confirm vector collections and RAG consumers before removal. |
 | Open Notebook, Supabase, PostgreSQL cluster, Terrakube, Syncthing, Registry, SonarQube, k6, Locust | Not observed in the current container listing | Keep as optional profiles | Check application consumers, persistent data, secrets, routes, and Stage 05 ownership individually. |
 
-No Compose service or Stage 05 document is deleted by this observation. A
-future approved cleanup must retire the service definition, root include,
-profile vocabulary, env/secret declarations, routes, infra README entry,
-service README, and Stage 05 guide/policy/runbook as one traceable change.
-
+> Historical evidence (not current authority; source: Git history):
+>
+> No Compose service or Stage 05 document is deleted by this observation. A
+> future approved cleanup must retire the service definition, root include,
+> profile vocabulary, env/secret declarations, routes, infra README entry,
+> service README, and Stage 05 guide/policy/runbook as one traceable change.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Service group | Role relationship | Official source evidence | Disposition |
 | --- | --- | --- | --- |
 | Kafka / RabbitMQ | Kafka is durable event streaming; RabbitMQ is AMQP/task messaging | [Kafka documentation](https://kafka.apache.org/documentation/), [RabbitMQ documentation](https://www.rabbitmq.com/docs), [RabbitMQ license](https://github.com/rabbitmq/rabbitmq-server/blob/main/LICENSE-MPL-RabbitMQ) | Kafka is OPTIONAL; RabbitMQ has already been removed from current implementation. |
@@ -116,28 +234,35 @@ service README, and Stage 05 guide/policy/runbook as one traceable change.
 | SonarQube / Terrakube / Syncthing / Registry / k6 / Locust | Distinct code quality, Terraform orchestration, file sync, image registry, and test workloads | [SonarQube image](https://hub.docker.com/_/sonarqube), [Terrakube repository](https://github.com/terrakube-io/terrakube), [Syncthing license](https://github.com/syncthing/syncthing/blob/main/LICENSE), [Distribution Registry](https://distribution.github.io/distribution/) | Keep optional. Remove only unused tooling after checking CI, Terraform state, synchronized paths, image cache, and test scripts. |
 | Open Notebook / Neo4j / Qdrant | Research notebook, graph database, and vector database | [Open Notebook repository](https://github.com/lfnovo/open-notebook), [Neo4j Docker](https://neo4j.com/docs/operations-manual/current/docker/introduction/), [Qdrant quickstart](https://qdrant.tech/documentation/quickstart/) | Qdrant supports HOME AI; Open Notebook and Neo4j remain OPTIONAL. They are not interchangeable. |
 
+> Historical evidence (not current authority; source: Git history):
+>
 ## Scope Implications
-
-HOME retains Traefik, Keycloak, OAuth2 Proxy, OpenBao, management PostgreSQL and
-Valkey, MinIO, Qdrant, Ollama, Open WebUI, ComfyUI, Airflow and n8n. Baseline
-metrics and availability monitoring remain on. Logs and traces retain MinIO
-as their current object-store dependency; profiling and batch-metric ingestion
-remain explicit capabilities until their consumers are established. Mailpit is
-DEV mail capture, not a public mailbox service or an automatic HOME dependency.
-
-Use existing capability selectors through POL-0078 rather than introduce a
-second `home` membership authority. The operational activation command belongs
-to Stage 05. Do not infer host availability from multiple containers sharing
-one physical host: PostgreSQL HA, multi-broker Kafka, distributed object stores
-and replica-set experiments remain LAB unless a named consumer needs them.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> HOME retains Traefik, Keycloak, OAuth2 Proxy, OpenBao, management PostgreSQL and
+> Valkey, MinIO, Qdrant, Ollama, Open WebUI, ComfyUI, Airflow and n8n. Baseline
+> metrics and availability monitoring remain on. Logs and traces retain MinIO
+> as their current object-store dependency; profiling and batch-metric ingestion
+> remain explicit capabilities until their consumers are established. Mailpit is
+> DEV mail capture, not a public mailbox service or an automatic HOME dependency.
+>
+> Use existing capability selectors through POL-0078 rather than introduce a
+> second `home` membership authority. The operational activation command belongs
+> to Stage 05. Do not infer host availability from multiple containers sharing
+> one physical host: PostgreSQL HA, multi-broker Kafka, distributed object stores
+> and replica-set experiments remain LAB unless a named consumer needs them.
+>
 ### Functional overlap decisions
-
-These are lifecycle decisions, not assertions that similarly shaped products are
-drop-in replacements. A revisit requires the named evidence; inactivity alone is
-never enough. Declared resource limits come from the current source inventory and
-are capacity ceilings, not measured utilization.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> These are lifecycle decisions, not assertions that similarly shaped products are
+> drop-in replacements. A revisit requires the named evidence; inactivity alone is
+> never enough. Declared resource limits come from the current source inventory and
+> are capacity ceilings, not measured utilization.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Comparison | Current contract and evidence | Final ruling | Revisit trigger and cost if wrong |
 | --- | --- | --- | --- |
 | Traefik / Nginx | [Traefik](../../../../infra/01-gateway/traefik/docker-compose.yml) owns HOME ingress on host ports 80/443 and the shared route/TLS contract. [Nginx](../../../../infra/01-gateway/nginx/docker-compose.yml) is an OPTIONAL alternative with a declared MinIO dependency; both cannot own the same host ports. | Retain Traefik HOME and Nginx on demand. Do not co-select or consolidate route/config/TLS state. | Revisit Nginx only for a named gateway experiment or cutover plan. Removing it prematurely loses that test surface; promoting it creates a port collision and two route authorities. |
@@ -151,19 +276,24 @@ are capacity ceilings, not measured utilization.
 | OpenTofu / Terrakube | [OpenTofu](../../../../infra/09-tooling/opentofu/docker-compose.yml) is an operator-run CLI/state tool. [Terrakube](../../../../infra/09-tooling/terrakube/docker-compose.yml) is a three-service orchestration plane using management PostgreSQL, Valkey, MinIO state/output and identity configuration. | Retain OpenTofu and all Terrakube services DEV, on demand; neither is a HOME daemon. Terrakube is not OPTIONAL in the final inventory. | Removal requires state/repository/job inventory and recoverable state encryption keys. Wrong removal loses IaC history/state access; wrong HOME promotion spends up to 4.5 CPU/3.25 GiB and expands Docker-socket exposure. |
 | Mailpit / Stalwart | [Mailpit](../../../../infra/10-communication/mailpit/docker-compose.yml) is DEV SMTP capture with local persisted messages and loopback UI/SMTP. [Stalwart](../../../../infra/10-communication/stalwart/docker-compose.yml) is an OPTIONAL real mail server with mailbox/config/certificate state and public mail ports. | Retain Mailpit DEV and Stalwart OPTIONAL. Neither replaces the other and neither is always on. | Removal needs absence of test mail or mailbox/domain consumers plus data disposition. Confusion between them can either leak test mail externally or discard real mailbox state. |
 
-Ollama and ComfyUI remain separate owner-required HOME capabilities rather than
-an overlap candidate: model serving/embedding and node-based image workflows own
-different models, caches, inputs, outputs and custom nodes. Their source does not
-declare a complete CPU/RAM ceiling for Ollama, and no measured concurrent GPU
-capacity or peak-inference acceptance is claimed.
-
-No further service removal is justified merely by absence from the running
-container list. Syncthing, MailHog, Homer, RabbitMQ and Portainer are already
-absent from the tracked runtime topology; current prose must not recommend
-activating their retired definitions.
-
+> Historical evidence (not current authority; source: Git history):
+>
+> Ollama and ComfyUI remain separate owner-required HOME capabilities rather than
+> an overlap candidate: model serving/embedding and node-based image workflows own
+> different models, caches, inputs, outputs and custom nodes. Their source does not
+> declare a complete CPU/RAM ceiling for Ollama, and no measured concurrent GPU
+> capacity or peak-inference acceptance is claimed.
+>
+> No further service removal is justified merely by absence from the running
+> container list. Syncthing, MailHog, Homer, RabbitMQ and Portainer are already
+> absent from the tracked runtime topology; current prose must not recommend
+> activating their retired definitions.
+>
 ### Official framework comparison (2026-09-19)
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Subject | Official reference | Implication for this repository |
 | --- | --- | --- |
 | Compose include | [Docker include](https://docs.docker.com/reference/compose-file/include/) | Include copies application resources; profiles select services. Duplicate resource names are not an override mechanism. |
@@ -179,18 +309,23 @@ activating their retired definitions.
 | Update execution | [Renovate self-hosted config](https://docs.renovatebot.com/self-hosted-configuration/) | Keep admin execution allowlists outside repository rules and restrict post-upgrade commands. |
 | Security cadence | [Dependabot PR optimization](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/optimizing-pr-creation-version-updates) | Version cooldown does not delay security updates; hosted security enablement still needs observed settings. |
 
-This framework review is not evidence that every retained product's license,
-backup, upgrade and migration contract has been fully revalidated. Product-level
-coverage remains an explicit SPEC-0180 acceptance item.
-
+> Historical evidence (not current authority; source: Git history):
+>
+> This framework review is not evidence that every retained product's license,
+> backup, upgrade and migration contract has been fully revalidated. Product-level
+> coverage remains an explicit SPEC-0180 acceptance item.
+>
 ### HOME product source coverage (2026-09-19)
-
-The following official pages were visited during this audit. Links to moving
-upstream documentation establish operating mechanisms and review inputs; they do
-not establish compatibility of every currently pinned patch, restore success, or
-license approval for a particular redistribution. License files are review inputs,
-not a substitute for an operator's assessment of the intended use.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> The following official pages were visited during this audit. Links to moving
+> upstream documentation establish operating mechanisms and review inputs; they do
+> not establish compatibility of every currently pinned patch, restore success, or
+> license approval for a particular redistribution. License files are review inputs,
+> not a substitute for an operator's assessment of the intended use.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Family | Deployment / security | Recovery / upgrade | License source | Repository implication |
 | --- | --- | --- | --- | --- |
 | Traefik | [Docker routing](https://doc.traefik.io/traefik/providers/docker/) | [Migration](https://doc.traefik.io/traefik/migrate/v2-to-v3/) | [License](https://github.com/traefik/traefik/blob/master/LICENSE.md) | Preserve routes, TLS material and Docker socket boundary; test ingress before promotion. |
@@ -207,13 +342,18 @@ not a substitute for an operator's assessment of the intended use.
 | Airflow | [Compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html), [security](https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/security/index.html) | [Upgrading](https://airflow.apache.org/docs/apache-airflow/stable/installation/upgrading.html) | [License](https://github.com/apache/airflow/blob/main/LICENSE) | Back up metadata DB and preserve DAGs/plugins/configuration and encryption keys; Compose examples do not prove production readiness. |
 | n8n | [Docker Compose](https://docs.n8n.io/deploy/host-n8n/install-options/install-using-docker-compose.md), [current docs map](https://docs.n8n.io/sitemap.md) | Preserve PostgreSQL state, encryption key and runner configuration; verify the selected release's migration instructions | [License](https://github.com/n8n-io/n8n/blob/master/LICENSE.md) | Current PostgreSQL/worker topology remains HOME; licensing and runner isolation are separate acceptance considerations. |
 
+> Historical evidence (not current authority; source: Git history):
+>
 ### Optional and supporting product source coverage (2026-09-19)
-
-These primary-source checks support retention boundaries, not deployment approval.
-Installed-version compatibility, license obligations for the deployed artifacts,
-upgrade rehearsal and restore drills remain separate acceptance work. A general
-upstream backup procedure is not evidence that this host has a usable backup.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> These primary-source checks support retention boundaries, not deployment approval.
+> Installed-version compatibility, license obligations for the deployed artifacts,
+> upgrade rehearsal and restore drills remain separate acceptance work. A general
+> upstream backup procedure is not evidence that this host has a usable backup.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Products | Verified upstream evidence | Consequence for this host |
 | --- | --- | --- |
 | Grafana | [Docker](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/), [backup](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/), [licensing](https://grafana.com/licensing/) | Preserve database, provisioning and plugins together; existing source already uses the maintained Grafana image family. |
@@ -232,21 +372,26 @@ upstream backup procedure is not evidence that this host has a usable backup.
 | RedisInsight, Open Notebook, Dozzle, Gatus | [RedisInsight Docker](https://redis.io/docs/latest/operate/redisinsight/install/install-on-docker/), [Open Notebook](https://github.com/lfnovo/open-notebook), [Dozzle authentication](https://dozzle.dev/guide/authentication), [Gatus](https://github.com/TwiN/gatus) | Keep privileged inspection behind authentication. Gatus remains HOME availability monitoring; other tools require their named consumer. |
 | Nginx, registry, Vault | [Nginx guide](https://nginx.org/en/docs/beginners_guide.html), [registry deployment](https://distribution.github.io/distribution/about/deploying/), [Vault hardening](https://developer.hashicorp.com/vault/docs/concepts/production-hardening) | Preserve explicit optional/legacy selectors. Vault is migration-only; OpenBao selection does not prove successful secret or storage migration. |
 
+> Historical evidence (not current authority; source: Git history):
+>
 ## Current official evidence refresh (2026-09-20)
-
-These are dated research inputs, not deployment or recovery acceptance. On
-2026-09-20 the owner confirmed no additional always-on services beyond the known
-HOME set: other services are used only for development or experimentation. This
-is direct operator-purpose evidence, not proof that every optional engine has a
-current dataset, running workload or usable backup. Retain on-demand sources and
-data; no deletion or HOME expansion follows from this clarification. The
-controller's 2026-09-20 official-page visits supplied the Docker networking,
-interpolation, Engine security, rootless, NIST, Diataxis, Backstage and SRE inputs.
-The inventory implementer separately visited the official Compose services,
-Renovate validation and GitHub version-update/options pages on 2026-09-20.
-The product references in the 2026-09-19 tables retain that original provenance;
-this refresh does not relabel those visits as new compatibility verification.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> These are dated research inputs, not deployment or recovery acceptance. On
+> 2026-09-20 the owner confirmed no additional always-on services beyond the known
+> HOME set: other services are used only for development or experimentation. This
+> is direct operator-purpose evidence, not proof that every optional engine has a
+> current dataset, running workload or usable backup. Retain on-demand sources and
+> data; no deletion or HOME expansion follows from this clarification. The
+> controller's 2026-09-20 official-page visits supplied the Docker networking,
+> interpolation, Engine security, rootless, NIST, Diataxis, Backstage and SRE inputs.
+> The inventory implementer separately visited the official Compose services,
+> Renovate validation and GitHub version-update/options pages on 2026-09-20.
+> The product references in the 2026-09-19 tables retain that original provenance;
+> this refresh does not relabel those visits as new compatibility verification.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Subject / official guidance | Current repository | Gap / trade-off | Decision | Implementation / acceptance evidence |
 | --- | --- | --- | --- | --- |
 | [Compose networking](https://docs.docker.com/compose/how-tos/networking/) distinguishes service discovery from published host ports | Shared `infra_net`, explicit side networks and host publications are declared by each Compose source | A shared network is not per-service isolation; loopback publication does not protect internal peers | Preserve named capability selection and review each exposed interface | Current inventory Network/Ports fields preserve source expressions; POL-0078 owns selection; runtime reachability remains unverified |
@@ -256,14 +401,19 @@ this refresh does not relabel those visits as new compatibility verification.
 | [Renovate configuration validation](https://docs.renovatebot.com/config-validation/) checks repository and self-hosted configuration | `renovate.json5`, local global config and POL-0086 assign infrastructure updates | Syntax success cannot prove extraction coverage, ownership or safe upgrade | Keep one infrastructure updater owner and review extraction separately | Existing strict-validator route and version-owner tests supply static evidence; no updater job is launched |
 | [GitHub version updates](https://docs.github.com/en/code-security/how-tos/secure-your-supply-chain/secure-your-dependencies/configure-version-updates) and [options reference](https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference) declare ecosystems/directories/schedules | `.github/dependabot.yml` owns its explicit remaining ecosystems | Overlapping Docker entries or stale directories create drift; security enablement is a hosted setting | Preserve Renovate infrastructure ownership and explicit Dependabot scope | Existing version-governance checks validate overlap/directory inputs; hosted security settings remain separately observed evidence |
 
+> Historical evidence (not current authority; source: Git history):
+>
 ### Retained family decisions and recovery evidence
-
-The source coverage tables above supply deployment/security/license and
-recovery/upgrade references for these decisions. "Required" identifies missing
-acceptance evidence; it never means a backup or restore was run. Every current
-service maps to a Guide/Policy/Runbook subject in the inventory below; members of
-a shared topology inherit that subject's recovery boundary, not proof of use.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> The source coverage tables above supply deployment/security/license and
+> recovery/upgrade references for these decisions. "Required" identifies missing
+> acceptance evidence; it never means a backup or restore was run. Every current
+> service maps to a Guide/Policy/Runbook subject in the inventory below; members of
+> a shared topology inherit that subject's recovery boundary, not proof of use.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Family / official guidance | Current repository | Gap / trade-off | Decision | Implementation / acceptance evidence |
 | --- | --- | --- | --- | --- |
 | Traefik / Nginx: official routing and migration guides above | HOME ingress plus alternative gateway | Host ports overlap if alternatives are selected together; TLS custody matters | Retain HOME Traefik; alternative remains explicit | Gateway Compose/Policies own routes and security; isolated route/TLS recovery and upgrade acceptance required |
@@ -280,218 +430,229 @@ a shared topology inherit that subject's recovery boundary, not proof of use.
 | OpenTofu / Terrakube / Renovate / Registry / SonarQube / k6 / Locust: official state/encryption, deployment, maintenance and testing references above | DEV explicit tooling, OPTIONAL automation/quality/cache workloads | State/key custody and updater execution authority differ; load tests consume HOME resources | Keep opt-in execution and bounded tests, not background HOME demand | Current tooling profiles and triplets own activation/recovery; infrastructure pins remain in Compose/Dockerfiles |
 | Mailpit / Stalwart / RedisInsight / Dozzle: official runtime, snapshot and authentication references above | DEV mail capture; OPTIONAL mail and inspection | Configuration-only mail backup omits messages; inspectors expose sensitive operational surfaces | Retain distinct explicit uses behind their declared auth/network boundaries | Current loopback/auth declarations and triplets own exposure; actual mailbox/inspection need and recovery remain unverified |
 
+> Historical evidence (not current authority; source: Git history):
+>
 ### Final service lifecycle judgment ledger (R, 2026-09-20)
-
-This ledger finalizes the authored Consumer, Backup and Disposition judgments in
-the current inventory without changing the source-derived columns. It names every
-one of the 140 current services. The only classification change from A's
-projection is `locust-worker` from OPTIONAL to DEV, because its declared
-`locust-master` dependency and shared test data make the pair one explicitly
-invoked load-test workload. Final counts are HOME 37, DEV 9, OPTIONAL 47, LAB 45,
-MIGRATE 2 and REMOVE 0.
-
-Resource figures below sum the declared per-container CPU/RAM limits for the
-named group. They are a simultaneous-selection ceiling, not measured demand or a
-claim that the host can sustain the total. The current inventory's exact
-Persistence cells own mount identities and its linked Runbooks own recovery
-procedure; neither proves a backup exists or an isolated restore succeeds.
-
-- **Airflow — 10 services:** `airflow-apiserver`, `airflow-dag-processor`,
-  `airflow-init`, `airflow-scheduler`, `airflow-statsd-exporter`,
-  `airflow-triggerer`, `airflow-worker` and `flower` remain HOME for the owner's
-  scheduled-orchestration capability; `airflow-valkey` and
-  `airflow-valkey-exporter` remain OPTIONAL because current source permits the
-  shared management Valkey instead. The owned recovery set is DAGs, plugins,
-  logs, config, metadata database and protected keys; the stack-local Valkey
-  data matters only when that broker is selected. Declared ceiling: 11 CPU and
-  9.5 GiB. Preserve all state; [Airflow recovery](../../../05.operations/runbooks/0050-airflow.md)
-  remains unverified on this instance.
-- **n8n — 6 services:** `n8n`, `n8n-task-runner`,
-  `n8n-task-runner-worker` and `n8n-worker` remain HOME for event/application
-  automation; `n8n-valkey` and `n8n-valkey-exporter` remain OPTIONAL alternate
-  broker components. Recovery must join workflow/application data, management
-  PostgreSQL, the n8n encryption key, runner configuration and the selected
-  broker state. Declared ceiling: 6 CPU and 5 GiB. Preserve state; follow the
-  [n8n runbook](../../../05.operations/runbooks/0053-n8n.md)
-  before any engine or broker change.
-- **Gateway, identity and secret custody — 10 services:** `traefik`, `keycloak`,
-  `oauth2-proxy`, `openbao` and `openbao-agent` remain HOME; `nginx`,
-  `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` remain OPTIONAL;
-  `vault` and `vault-agent` were removed in SPEC-0180 S08. The concrete
-  contracts are ingress routes/TLS, Keycloak realms and management-PostgreSQL
-  state, OAuth2 client and cookie/session material, and OpenBao
-  Raft/seal/recovery custody. Declared ceiling: 9.5 CPU and 5.75 GiB. Preserve
-  every state and token file, including the preserved Vault data path. No route
-  cutover, secret migration or duplicate HOME authority is authorized.
-- **AI and vector capability — 5 services:** `ollama`, `ollama-exporter`,
-  `open-webui`, `comfyui` and `qdrant` remain HOME for the owner's AI requirement.
-  Their distinct owned state is models, Ollama metrics, Open WebUI application
-  data/stable key, ComfyUI models/custom nodes/input/output/user/cache directories,
-  and Qdrant collections/snapshots. Known declared ceiling: 5.5 CPU and 6.75 GiB
-  plus the primary Ollama service's undeclared CPU/RAM and shared GPU demand.
-  Preserve the volumes and model/license inventory; concurrent peak capacity and
-  isolated restore remain unverified.
-- **Baseline observability — 8 services:** `alertmanager`, `alloy`, `cadvisor`,
-  `gatus`, `grafana`, `loki`, `node-exporter` and `prometheus` remain HOME for
-  alerting, telemetry collection, host/container metrics, availability checks,
-  dashboards, logs and infrastructure metrics. Persistent owners include
-  Alertmanager state, Alloy state, Gatus SQLite/config, Grafana data,
-  Loki local state plus `loki-bucket`, and Prometheus TSDB; exporters are
-  rebuildable from source/config. Known declared ceiling: 7.5 CPU and 5.75 GiB
-  plus cAdvisor's variable limit. Preserve retention/data and validate alert and
-  object-store recovery. The repository proposes Prometheus access through the
-  dedicated OpenBao `SEC002` policy and removal of its legacy root grant; F owns
-  the public secret mapping, while credential issue, grant revocation and restart
-  are not deployed or claimed here.
-- **Explicit observability capabilities — 3 services:** `pushgateway`,
-  `pyroscope` and `tempo` remain OPTIONAL. They own batch-metric handoff,
-  profiling blocks and trace WAL/blocks plus `tempo-bucket`; static Grafana/Alloy
-  configuration is integration evidence, not actual traffic. Declared ceiling:
-  3.5 CPU and 2.75 GiB. Preserve data and MinIO credentials; promote only with a
-  named producer, retention budget and restore result.
-- **MinIO — 6 services:** `minio` and `minio-create-buckets` remain HOME because
-  current configuration creates and consumes `loki-bucket` and `tempo-bucket`;
-  `minio1`, `minio2`, `minio3` and `minio4` remain LAB because four containers
-  on this host do not provide host availability. The single-node data directory,
-  all buckets/objects, credentials and bootstrap intent are one recovery set.
-  Known declared ceiling: 1.5 CPU and 768 MiB; the four LAB members have no
-  declared CPU/RAM limits. Preserve all data. The archived/unmaintained community
-  upstream requires a separate migration evaluation, never an automatic
-  SeaweedFS/AIStor replacement.
-- **Management database — 5 services:** `mng-pg`, `mng-pg-init`,
-  `mng-pg-exporter`, `mng-valkey` and `mng-valkey-exporter` remain HOME because
-  tracked initialization/configuration names current auth, workflow, quality and
-  IaC consumers. PostgreSQL roles/databases and Valkey persistence are the data
-  owners; init/exporters are rebuildable but their source and secrets must match
-  restored state. Declared ceiling: 3 CPU and 1.5 GiB. Require consistent DB and
-  Valkey recovery rather than copying a live directory.
-- **Supabase — 13 services:** `analytics`, `auth`, `db`, `functions`, `imgproxy`,
-  `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor` and
-  `vector` remain OPTIONAL as one on-demand application platform. Source wiring
-  proves internal dependencies, not an active application. Recovery must join
-  PostgreSQL data/migrations, object files, log configuration, auth/JWT/service
-  keys and application assets. Declared ceiling: 14.5 CPU and 10.25 GiB. Preserve
-  data; promotion or removal needs a named app, dataset inventory and isolated
-  platform restore.
-- **Optional data and research — 11 services:** `influxdb`, `neo4j`,
-  `surrealdb`, `open_notebook`, `opensearch`, `opensearch-dashboards`,
-  `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `starrocks-fe`
-  and `starrocks-be` remain OPTIONAL except the four multi-node OpenSearch
-  members, which remain LAB. These own different time-series, graph, document,
-  notebook, search/index and analytical datasets; `open_notebook` statically
-  depends on SurrealDB. Declared ceiling: 16.5 CPU and 14.25 GiB. Preserve each
-  engine's data and edition-specific export/snapshot requirements; no cross-engine
-  substitution or deletion without named clients and restore evidence.
-- **Single-host distributed database labs — 32 services:**
-  `cassandra-node1`, `cassandra-exporter`; `couchdb-1`, `couchdb-2`, `couchdb-3`,
-  `couchdb-cluster-init`; `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`,
-  `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`;
-  `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`,
-  `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-router`, `pg-cluster-init`;
-  `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`,
-  `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init` and
-  `valkey-cluster-exporter` all remain LAB. Their data/key/config volumes must be
-  recovered as topology-specific sets; initializers, routers, admin UIs and
-  exporters do not prove clients. Declared ceiling: 30 CPU and 21 GiB. Preserve
-  unknown data and never describe these same-host replicas as host HA.
-- **Kafka and ksqlDB — 12 services:** `kafka-1`, `kafka-2`, `kafka-3`,
-  `kafka-exporter` and `kafka-init` remain LAB; `schema-registry`, `kafka-connect`,
-  `kafka-rest-proxy`, `kafbat-ui`, `ksqldb-server`, `ksqldb-cli` and
-  `ksql-datagen` remain OPTIONAL. They form an on-demand streaming/schema/connect/
-  query toolchain; declared dependencies do not prove a producer, consumer or
-  retained topic. B conservatively categorizes the existing `ksql` selector as
-  automation for future broad-startup isolation because its purpose includes
-  experimental/synthetic-data tooling. The current `ksql-datagen` command only
-  performs readiness checks and tails `/dev/null`, so no present automatic load
-  or data generation is claimed; the category does not change these OPTIONAL
-  service judgments or explicit `ksql` use. Recovery must coordinate KRaft/broker
-  data, connector and schema/query definitions. Declared ceiling: 14 CPU and
-  11 GiB. Preserve state; promotion/removal needs topic/client compatibility and
-  restore evidence.
-- **SeaweedFS — 5 services:** `seaweedfs-master`, `seaweedfs-volume`,
-  `seaweedfs-filer`, `seaweedfs-s3` and `seaweedfs-mount` remain OPTIONAL for an
-  explicit distributed-file/S3/FUSE experiment. Volume data and filer metadata
-  are one recovery set; the mount has separate host capability and selection.
-  Declared ceiling: 6 CPU and 4 GiB. Preserve state and require an actual client,
-  coordinated restore and S3/FUSE compatibility before promotion; it is not the
-  automatic MinIO successor.
-- **Development execution tools — 8 services:** `k6`, `locust-master`,
-  `locust-worker`, `opentofu`, `terrakube-api`, `terrakube-executor`,
-  `terrakube-ui` and `renovate` remain DEV. Their roles are load generation,
-  operator-run IaC, IaC orchestration and dependency maintenance. Preserve k6/
-  Locust scripts and data, OpenTofu/Terrakube state and encryption/identity keys,
-  and Renovate configuration/cache as appropriate; the Docker-socket users are
-  never background HOME dependencies. Declared ceiling: 8.5 CPU and 5.75 GiB.
-  Invocation and targets remain explicit and no job was run by this decision.
-- **Optional operator/tooling surfaces — 4 services:** `dozzle`, `redisinsight`,
-  `registry` and `sonarqube` remain OPTIONAL for log inspection, datastore
-  administration, image storage and code quality. Dozzle is rebuildable but its
-  socket/config boundary matters; RedisInsight, registry blobs and SonarQube
-  data/logs/database require separate recovery. Declared ceiling: 5 CPU and
-  3.5 GiB. Preserve data; removal needs absence of operators, cached images,
-  projects and CI references.
-- **Mail — 2 services:** `mailpit` remains DEV for captured test mail and
-  `stalwart` remains OPTIONAL for real mail service. Preserve Mailpit message
-  storage when test evidence matters; preserve Stalwart mailbox/config/certificate
-  data together because a configuration snapshot alone omits mail. Declared
-  ceiling: 2 CPU and 1 GiB. Neither is HOME and no data is deleted.
-
-No repository lifecycle implementation beyond the `locust-worker` judgment is
-justified by current evidence. There are no add/move/remove/replace paths to hand
-to B–G. A future decision must identify the exact Compose/include/profile,
-public env/secret, version/update, README, Stage 05 and validator/test paths before
-mutation. Runtime deployment, migration, credential change, data deletion and
-backup execution remain outside this research decision.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> This ledger finalizes the authored Consumer, Backup and Disposition judgments in
+> the current inventory without changing the source-derived columns. It names every
+> one of the 140 current services. The only classification change from A's
+> projection is `locust-worker` from OPTIONAL to DEV, because its declared
+> `locust-master` dependency and shared test data make the pair one explicitly
+> invoked load-test workload. Final counts are HOME 37, DEV 9, OPTIONAL 47, LAB 45,
+> MIGRATE 2 and REMOVE 0.
+>
+> Resource figures below sum the declared per-container CPU/RAM limits for the
+> named group. They are a simultaneous-selection ceiling, not measured demand or a
+> claim that the host can sustain the total. The current inventory's exact
+> Persistence cells own mount identities and its linked Runbooks own recovery
+> procedure; neither proves a backup exists or an isolated restore succeeds.
+>
+> - **Airflow — 10 services:** `airflow-apiserver`, `airflow-dag-processor`,
+>   `airflow-init`, `airflow-scheduler`, `airflow-statsd-exporter`,
+>   `airflow-triggerer`, `airflow-worker` and `flower` remain HOME for the owner's
+>   scheduled-orchestration capability; `airflow-valkey` and
+>   `airflow-valkey-exporter` remain OPTIONAL because current source permits the
+>   shared management Valkey instead. The owned recovery set is DAGs, plugins,
+>   logs, config, metadata database and protected keys; the stack-local Valkey
+>   data matters only when that broker is selected. Declared ceiling: 11 CPU and
+>   9.5 GiB. Preserve all state; [Airflow recovery](../../../05.operations/runbooks/0050-airflow.md)
+>   remains unverified on this instance.
+> - **n8n — 6 services:** `n8n`, `n8n-task-runner`,
+>   `n8n-task-runner-worker` and `n8n-worker` remain HOME for event/application
+>   automation; `n8n-valkey` and `n8n-valkey-exporter` remain OPTIONAL alternate
+>   broker components. Recovery must join workflow/application data, management
+>   PostgreSQL, the n8n encryption key, runner configuration and the selected
+>   broker state. Declared ceiling: 6 CPU and 5 GiB. Preserve state; follow the
+>   [n8n runbook](../../../05.operations/runbooks/0053-n8n.md)
+>   before any engine or broker change.
+> - **Gateway, identity and secret custody — 10 services:** `traefik`, `keycloak`,
+>   `oauth2-proxy`, `openbao` and `openbao-agent` remain HOME; `nginx`,
+>   `oauth2-proxy-valkey` and `oauth2-proxy-valkey-exporter` remain OPTIONAL;
+>   `vault` and `vault-agent` were removed in SPEC-0180 S08. The concrete
+>   contracts are ingress routes/TLS, Keycloak realms and management-PostgreSQL
+>   state, OAuth2 client and cookie/session material, and OpenBao
+>   Raft/seal/recovery custody. Declared ceiling: 9.5 CPU and 5.75 GiB. Preserve
+>   every state and token file, including the preserved Vault data path. No route
+>   cutover, secret migration or duplicate HOME authority is authorized.
+> - **AI and vector capability — 5 services:** `ollama`, `ollama-exporter`,
+>   `open-webui`, `comfyui` and `qdrant` remain HOME for the owner's AI requirement.
+>   Their distinct owned state is models, Ollama metrics, Open WebUI application
+>   data/stable key, ComfyUI models/custom nodes/input/output/user/cache directories,
+>   and Qdrant collections/snapshots. Known declared ceiling: 5.5 CPU and 6.75 GiB
+>   plus the primary Ollama service's undeclared CPU/RAM and shared GPU demand.
+>   Preserve the volumes and model/license inventory; concurrent peak capacity and
+>   isolated restore remain unverified.
+> - **Baseline observability — 8 services:** `alertmanager`, `alloy`, `cadvisor`,
+>   `gatus`, `grafana`, `loki`, `node-exporter` and `prometheus` remain HOME for
+>   alerting, telemetry collection, host/container metrics, availability checks,
+>   dashboards, logs and infrastructure metrics. Persistent owners include
+>   Alertmanager state, Alloy state, Gatus SQLite/config, Grafana data,
+>   Loki local state plus `loki-bucket`, and Prometheus TSDB; exporters are
+>   rebuildable from source/config. Known declared ceiling: 7.5 CPU and 5.75 GiB
+>   plus cAdvisor's variable limit. Preserve retention/data and validate alert and
+>   object-store recovery. The repository proposes Prometheus access through the
+>   dedicated OpenBao `SEC002` policy and removal of its legacy root grant; F owns
+>   the public secret mapping, while credential issue, grant revocation and restart
+>   are not deployed or claimed here.
+> - **Explicit observability capabilities — 3 services:** `pushgateway`,
+>   `pyroscope` and `tempo` remain OPTIONAL. They own batch-metric handoff,
+>   profiling blocks and trace WAL/blocks plus `tempo-bucket`; static Grafana/Alloy
+>   configuration is integration evidence, not actual traffic. Declared ceiling:
+>   3.5 CPU and 2.75 GiB. Preserve data and MinIO credentials; promote only with a
+>   named producer, retention budget and restore result.
+> - **MinIO — 6 services:** `minio` and `minio-create-buckets` remain HOME because
+>   current configuration creates and consumes `loki-bucket` and `tempo-bucket`;
+>   `minio1`, `minio2`, `minio3` and `minio4` remain LAB because four containers
+>   on this host do not provide host availability. The single-node data directory,
+>   all buckets/objects, credentials and bootstrap intent are one recovery set.
+>   Known declared ceiling: 1.5 CPU and 768 MiB; the four LAB members have no
+>   declared CPU/RAM limits. Preserve all data. The archived/unmaintained community
+>   upstream requires a separate migration evaluation, never an automatic
+>   SeaweedFS/AIStor replacement.
+> - **Management database — 5 services:** `mng-pg`, `mng-pg-init`,
+>   `mng-pg-exporter`, `mng-valkey` and `mng-valkey-exporter` remain HOME because
+>   tracked initialization/configuration names current auth, workflow, quality and
+>   IaC consumers. PostgreSQL roles/databases and Valkey persistence are the data
+>   owners; init/exporters are rebuildable but their source and secrets must match
+>   restored state. Declared ceiling: 3 CPU and 1.5 GiB. Require consistent DB and
+>   Valkey recovery rather than copying a live directory.
+> - **Supabase — 13 services:** `analytics`, `auth`, `db`, `functions`, `imgproxy`,
+>   `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor` and
+>   `vector` remain OPTIONAL as one on-demand application platform. Source wiring
+>   proves internal dependencies, not an active application. Recovery must join
+>   PostgreSQL data/migrations, object files, log configuration, auth/JWT/service
+>   keys and application assets. Declared ceiling: 14.5 CPU and 10.25 GiB. Preserve
+>   data; promotion or removal needs a named app, dataset inventory and isolated
+>   platform restore.
+> - **Optional data and research — 11 services:** `influxdb`, `neo4j`,
+>   `surrealdb`, `open_notebook`, `opensearch`, `opensearch-dashboards`,
+>   `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `starrocks-fe`
+>   and `starrocks-be` remain OPTIONAL except the four multi-node OpenSearch
+>   members, which remain LAB. These own different time-series, graph, document,
+>   notebook, search/index and analytical datasets; `open_notebook` statically
+>   depends on SurrealDB. Declared ceiling: 16.5 CPU and 14.25 GiB. Preserve each
+>   engine's data and edition-specific export/snapshot requirements; no cross-engine
+>   substitution or deletion without named clients and restore evidence.
+> - **Single-host distributed database labs — 32 services:**
+>   `cassandra-node1`, `cassandra-exporter`; `couchdb-1`, `couchdb-2`, `couchdb-3`,
+>   `couchdb-cluster-init`; `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`,
+>   `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`;
+>   `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`,
+>   `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-router`, `pg-cluster-init`;
+>   `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`,
+>   `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init` and
+>   `valkey-cluster-exporter` all remain LAB. Their data/key/config volumes must be
+>   recovered as topology-specific sets; initializers, routers, admin UIs and
+>   exporters do not prove clients. Declared ceiling: 30 CPU and 21 GiB. Preserve
+>   unknown data and never describe these same-host replicas as host HA.
+> - **Kafka and ksqlDB — 12 services:** `kafka-1`, `kafka-2`, `kafka-3`,
+>   `kafka-exporter` and `kafka-init` remain LAB; `schema-registry`, `kafka-connect`,
+>   `kafka-rest-proxy`, `kafbat-ui`, `ksqldb-server`, `ksqldb-cli` and
+>   `ksql-datagen` remain OPTIONAL. They form an on-demand streaming/schema/connect/
+>   query toolchain; declared dependencies do not prove a producer, consumer or
+>   retained topic. B conservatively categorizes the existing `ksql` selector as
+>   automation for future broad-startup isolation because its purpose includes
+>   experimental/synthetic-data tooling. The current `ksql-datagen` command only
+>   performs readiness checks and tails `/dev/null`, so no present automatic load
+>   or data generation is claimed; the category does not change these OPTIONAL
+>   service judgments or explicit `ksql` use. Recovery must coordinate KRaft/broker
+>   data, connector and schema/query definitions. Declared ceiling: 14 CPU and
+>   11 GiB. Preserve state; promotion/removal needs topic/client compatibility and
+>   restore evidence.
+> - **SeaweedFS — 5 services:** `seaweedfs-master`, `seaweedfs-volume`,
+>   `seaweedfs-filer`, `seaweedfs-s3` and `seaweedfs-mount` remain OPTIONAL for an
+>   explicit distributed-file/S3/FUSE experiment. Volume data and filer metadata
+>   are one recovery set; the mount has separate host capability and selection.
+>   Declared ceiling: 6 CPU and 4 GiB. Preserve state and require an actual client,
+>   coordinated restore and S3/FUSE compatibility before promotion; it is not the
+>   automatic MinIO successor.
+> - **Development execution tools — 8 services:** `k6`, `locust-master`,
+>   `locust-worker`, `opentofu`, `terrakube-api`, `terrakube-executor`,
+>   `terrakube-ui` and `renovate` remain DEV. Their roles are load generation,
+>   operator-run IaC, IaC orchestration and dependency maintenance. Preserve k6/
+>   Locust scripts and data, OpenTofu/Terrakube state and encryption/identity keys,
+>   and Renovate configuration/cache as appropriate; the Docker-socket users are
+>   never background HOME dependencies. Declared ceiling: 8.5 CPU and 5.75 GiB.
+>   Invocation and targets remain explicit and no job was run by this decision.
+> - **Optional operator/tooling surfaces — 4 services:** `dozzle`, `redisinsight`,
+>   `registry` and `sonarqube` remain OPTIONAL for log inspection, datastore
+>   administration, image storage and code quality. Dozzle is rebuildable but its
+>   socket/config boundary matters; RedisInsight, registry blobs and SonarQube
+>   data/logs/database require separate recovery. Declared ceiling: 5 CPU and
+>   3.5 GiB. Preserve data; removal needs absence of operators, cached images,
+>   projects and CI references.
+> - **Mail — 2 services:** `mailpit` remains DEV for captured test mail and
+>   `stalwart` remains OPTIONAL for real mail service. Preserve Mailpit message
+>   storage when test evidence matters; preserve Stalwart mailbox/config/certificate
+>   data together because a configuration snapshot alone omits mail. Declared
+>   ceiling: 2 CPU and 1 GiB. Neither is HOME and no data is deleted.
+>
+> No repository lifecycle implementation beyond the `locust-worker` judgment is
+> justified by current evidence. There are no add/move/remove/replace paths to hand
+> to B–G. A future decision must identify the exact Compose/include/profile,
+> public env/secret, version/update, README, Stage 05 and validator/test paths before
+> mutation. Runtime deployment, migration, credential change, data deletion and
+> backup execution remain outside this research decision.
+>
 ## Required Follow-up Before Deletion
-
-- Confirm the service is absent from application configuration, scripts, and
-  Stage 05 operations documents.
-- Confirm no persistent volume, secret, route, external network, or backup is
-  owned by the candidate.
-- Export or retain data where required and record a recovery path.
-- Remove root `include` entries, profile vocabulary, secrets, README rows, and
-  operational links in one approved change.
-- Render the root Compose model and run the scoped infrastructure validator.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - Confirm the service is absent from application configuration, scripts, and
+>   Stage 05 operations documents.
+> - Confirm no persistent volume, secret, route, external network, or backup is
+>   owned by the candidate.
+> - Export or retain data where required and record a recovery path.
+> - Remove root `include` entries, profile vocabulary, secrets, README rows, and
+>   operational links in one approved change.
+> - Render the root Compose model and run the scoped infrastructure validator.
+>
 ## Sources
-
-External sources above were checked on 2026-09-18 against official project
-documentation, repositories, license files, or official image documentation.
-Repository evidence was read from `infra/`, the root `docker-compose.yml`,
-`infra/README.md`, Stage 05 operation documents, and the local Docker container
-listing observed on the same date.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> External sources above were checked on 2026-09-18 against official project
+> documentation, repositories, license files, or official image documentation.
+> Repository evidence was read from `infra/`, the root `docker-compose.yml`,
+> `infra/README.md`, Stage 05 operation documents, and the local Docker container
+> listing observed on the same date.
+>
 ## Current source service inventory (2026-09-20)
-
-Current source baseline: `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` plus
-reviewed SPEC-0180 Task 0005 working-tree changes. This current twenty-field
-projection is checked by the existing operations-catalog validator; the older
-2026-09-19 execution snapshot below is preserved as dated historical evidence.
-Guide `implementation_services` metadata owns each exact Compose-path/service
-binding; the inventory derives its Guide/Policy/Runbook links from that owner.
-
-Compose/Dockerfile source owns runtime pins. Fields retain public source
-expressions, not interpolated instance paths or environment values. Env contains
-container key names; Secret metadata contains granted identities. Network,
-ports, dependencies and mounts describe source declarations. Resources resolve
-scalar inherited defaults; Security distinguishes leaf controls from inherited
-defaults, routes authentication/exception judgment to the Policy, and makes no
-runtime security claim. Leaf declarations and inheritance are not a replacement
-for Compose's rendered-model checks. Persistence includes only this service's
-mounts and referenced named-volume source declarations.
-CPU and memory limits are per-container, while `deploy.replicas` appears only
-when explicitly authored; no default multiplicity is synthesized.
-
-Consumer separates the owner's HOME/on-demand purpose, static configuration
-wiring and reverse `depends_on` edges from observed traffic. The 2026-09-20 owner
-confirmed no additional always-on services; each optional dataset or experiment
-remains unverified. Backup names the recovery scope and missing restore evidence;
-it is never a successful-backup assertion. Runtime classification describes the
-retained capability; Disposition is a separate action/reason. Update ownership routes to existing
-Renovate/POL-0086 controls rather than duplicating their extraction rules.
-
-<!-- current-service-inventory:start -->
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Current source baseline: `dffc2ed8bc3bf4b2538b03884ad7ab5d7587375b` plus
+> reviewed SPEC-0180 Task 0005 working-tree changes. This current twenty-field
+> projection is checked by the existing operations-catalog validator; the older
+> 2026-09-19 execution snapshot below is preserved as dated historical evidence.
+> Guide `implementation_services` metadata owns each exact Compose-path/service
+> binding; the inventory derives its Guide/Policy/Runbook links from that owner.
+>
+> Compose/Dockerfile source owns runtime pins. Fields retain public source
+> expressions, not interpolated instance paths or environment values. Env contains
+> container key names; Secret metadata contains granted identities. Network,
+> ports, dependencies and mounts describe source declarations. Resources resolve
+> scalar inherited defaults; Security distinguishes leaf controls from inherited
+> defaults, routes authentication/exception judgment to the Policy, and makes no
+> runtime security claim. Leaf declarations and inheritance are not a replacement
+> for Compose's rendered-model checks. Persistence includes only this service's
+> mounts and referenced named-volume source declarations.
+> CPU and memory limits are per-container, while `deploy.replicas` appears only
+> when explicitly authored; no default multiplicity is synthesized.
+>
+> Consumer separates the owner's HOME/on-demand purpose, static configuration
+> wiring and reverse `depends_on` edges from observed traffic. The 2026-09-20 owner
+> confirmed no additional always-on services; each optional dataset or experiment
+> remains unverified. Backup names the recovery scope and missing restore evidence;
+> it is never a successful-backup assertion. Runtime classification describes the
+> retained capability; Disposition is a separate action/reason. Update ownership routes to existing
+> Renovate/POL-0086 controls rather than duplicating their extraction rules.
+>
+> <!-- current-service-inventory:start -->
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Domain | Component | Compose path | Service | Profiles | Runtime classification | Consumer | Dependencies | Network | Ports | Persistence | Env | Secret metadata | Resources | Security | Backup | Operations docs | Runtime version authority | Update owner | Disposition |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 07-workflow | airflow | infra/07-workflow/airflow/docker-compose.yml | airflow-apiserver | ["workflow","workflow-airflow"] | HOME | Owner-required HOME scheduled data-orchestration role `airflow-apiserver`; [HOME requirement](../../../01.requirements/0027-home-development-host.md); source wiring is purpose/dependency evidence, not current traffic, backup or capacity proof; runtime activity and steady/peak demand unverified; declared reverse edges=airflow-worker,flower | {"airflow-init":{"condition":"service_completed_successfully"},"airflow-valkey":{"condition":"service_healthy","required":false}} | {"airflow_net":{},"edge_net":{},"mng_data_net":{}} | {"exposed":[],"published":[]} | {"mounts":["airflow-dags:/opt/airflow/dags","airflow-plugins:/opt/airflow/plugins","airflow-logs:/opt/airflow/logs","airflow-config:/opt/airflow/config","${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro"],"volume_sources":{"airflow-config":{"driver":"local","driver_opts":{"device":"${DEFAULT_WORKFLOW_DIR}/airflow/config","o":"bind","type":"none"}},"airflow-dags":{"driver":"local","driver_opts":{"device":"${DEFAULT_WORKFLOW_DIR}/airflow/dags","o":"bind","type":"none"}},"airflow-logs":{"driver":"local","driver_opts":{"device":"${DEFAULT_WORKFLOW_DIR}/airflow/logs","o":"bind","type":"none"}},"airflow-plugins":{"driver":"local","driver_opts":{"device":"${DEFAULT_WORKFLOW_DIR}/airflow/plugins","o":"bind","type":"none"}}}} | ["AIRFLOW_CONFIG","AIRFLOW__API_AUTH__JWT_ISSUER","AIRFLOW__API_AUTH__JWT_SECRET_CMD","AIRFLOW__API__BASE_URL","AIRFLOW__CELERY__BROKER_URL_CMD","AIRFLOW__CELERY__RESULT_BACKEND_CMD","AIRFLOW__CORE__AUTH_MANAGER","AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION","AIRFLOW__CORE__EXECUTION_API_SERVER_URL","AIRFLOW__CORE__EXECUTOR","AIRFLOW__CORE__FERNET_KEY_CMD","AIRFLOW__CORE__LOAD_EXAMPLES","AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD","AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID","AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES","AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL","AIRFLOW__METRICS__STATSD_HOST","AIRFLOW__METRICS__STATSD_ON","AIRFLOW__METRICS__STATSD_PORT","AIRFLOW__METRICS__STATSD_PREFIX","AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK","FORWARDED_ALLOW_IPS","REQUESTS_CA_BUNDLE","SSL_CERT_FILE","_PIP_ADDITIONAL_REQUIREMENTS"] | ["airflow_api_jwt_secret","airflow_db_password","airflow_fernet_key","airflow_keycloak_client_secret","airflow_valkey_password","mng_valkey_password"] | {"cpus":"2.00","mem_limit":"2g"} | leaf={"authentication_env_keys":["AIRFLOW__API_AUTH__JWT_ISSUER","AIRFLOW__API_AUTH__JWT_SECRET_CMD","AIRFLOW__CORE__AUTH_MANAGER","AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID","AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE","AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES","AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL"],"read_only":false,"router_middlewares":{"traefik.http.routers.airflow.middlewares":"gateway-standard-chain@file"},"user":"${AIRFLOW_UID:-50000}:0"}; inherited-defaults={"cap_drop":["ALL"],"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-stateful-high"}; runtime unverified; [Policy](../../../05.operations/policies/0050-airflow.md) | Preserve `airflow-config`, `airflow-dags`, `airflow-logs`, `airflow-plugins` for `airflow-apiserver` plus dependent state and protected keys named in this row before any lifecycle change; [recovery scope](../../../05.operations/runbooks/0050-airflow.md); backup consistency and isolated restore unverified | [guide](../../../05.operations/guides/0050-airflow.md); [policy](../../../05.operations/policies/0050-airflow.md); [runbook](../../../05.operations/runbooks/0050-airflow.md) | [infra/07-workflow/airflow/docker-compose.yml](../../../../infra/07-workflow/airflow/docker-compose.yml); [infra/07-workflow/airflow/Dockerfile](../../../../infra/07-workflow/airflow/Dockerfile) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain HOME `airflow-apiserver` for scheduled data-orchestration; preserve row-declared state and linked recovery boundary; [final R ledger](#final-service-lifecycle-judgment-ledger-r-2026-09-20); no automatic migration or deletion |
@@ -645,24 +806,29 @@ Renovate/POL-0086 controls rather than duplicating their extraction rules.
 | 11-laboratory | mlflow | infra/11-laboratory/mlflow/docker-compose.yml | mlflow-db-provision | ["data-science","mlops"] | OPTIONAL | Provisioning job consumed by `mlflow`; declared reverse edges=mlflow | {"mng-pg":{"condition":"service_healthy"},"mng-pg-init":{"condition":"service_completed_successfully"}} | {"mng_data_net":{}} | {"exposed":[],"published":[]} | {"mounts":["../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro","./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro"],"volume_sources":{}} | ["MLFLOW_DB_NAME","MLFLOW_DB_USER","PGDATABASE","PGHOST","PGPORT","PGUSER","PROVISION_ADMIN_PASSWORD_FILE","PROVISION_IDENTIFIERS","PROVISION_SECRETS","PROVISION_SQL"] | ["mlflow_db_password","mng_postgres_password"] | {"cpus":"0.50","mem_limit":"256m"} | leaf={"authentication_env_keys":[],"router_middlewares":{}}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-job-low"}; runtime unverified; [Policy](../../../05.operations/policies/0088-mlflow.md) | Back up the `MLFLOW_DB_NAME` database and the `mlflow-artifacts` bucket together; [recovery scope](../../../05.operations/runbooks/0088-mlflow.md); restore unverified | [guide](../../../05.operations/guides/0088-mlflow.md); [policy](../../../05.operations/policies/0088-mlflow.md); [runbook](../../../05.operations/runbooks/0088-mlflow.md) | [infra/11-laboratory/mlflow/docker-compose.yml](../../../../infra/11-laboratory/mlflow/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in `mlops`/`data-science`; feature-owned DB and bucket provisioning; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
 | 11-laboratory | jupyterlab | infra/11-laboratory/jupyterlab/docker-compose.yml | jupyterlab | ["data-science"] | OPTIONAL | Single operator notebook workspace under `data-science`; declared reverse edges=none | {"mlflow":{"condition":"service_healthy","required":false}} | {"ai_net":{},"edge_net":{}} | {"exposed":["${JUPYTER_PORT:-8888}"],"published":[]} | {"mounts":[{"bind":{"create_host_path":false},"source":"${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work","target":"/home/jovyan/work","type":"bind"}],"volume_sources":{}} | ["JUPYTER_PORT","MLFLOW_TRACKING_URI"] | ["jupyter_token"] | {"cpus":"2.00","mem_limit":"2g"} | leaf={"authentication_env_keys":[],"router_middlewares":{"traefik.http.routers.jupyter.middlewares":"gateway-standard-chain@file,sso-errors@file,sso-auth@file"}}; inherited-defaults={"cap_drop":["ALL"],"read_only":false,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-stateful-high"}; runtime unverified; [Policy](../../../05.operations/policies/0089-jupyterlab.md) | Back up `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work` as user data; [recovery scope](../../../05.operations/runbooks/0089-jupyterlab.md); restore unverified | [guide](../../../05.operations/guides/0089-jupyterlab.md); [policy](../../../05.operations/policies/0089-jupyterlab.md); [runbook](../../../05.operations/runbooks/0089-jupyterlab.md) | [infra/11-laboratory/jupyterlab/docker-compose.yml](../../../../infra/11-laboratory/jupyterlab/docker-compose.yml); [infra/11-laboratory/jupyterlab/Dockerfile](../../../../infra/11-laboratory/jupyterlab/Dockerfile) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in single-user `data-science` workspace with mandatory token; JupyterHub not adopted; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
 | 05-messaging | kafka | infra/05-messaging/kafka/docker-compose.yml | debezium-db-provision | ["cdc"] | OPTIONAL | Provisioning job for the Debezium PostgreSQL connector under `cdc`; declared reverse edges=none | {"mng-pg":{"condition":"service_healthy"},"mng-pg-init":{"condition":"service_completed_successfully"}} | {"mng_data_net":{}} | {"exposed":[],"published":[]} | {"mounts":["../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro","./connect/debezium/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro"],"volume_sources":{}} | ["DEBEZIUM_DB_NAME","DEBEZIUM_DB_USER","DEBEZIUM_HEARTBEAT_SCHEMA","DEBEZIUM_PUBLICATION","DEBEZIUM_SCHEMA","DEBEZIUM_SOURCE_OWNER","PGDATABASE","PGHOST","PGPORT","PGUSER","PROVISION_ADMIN_PASSWORD_FILE","PROVISION_IDENTIFIERS","PROVISION_SECRETS","PROVISION_SQL"] | ["debezium_postgres_password","mng_postgres_password"] | {"cpus":"0.50","mem_limit":"256m"} | leaf={"authentication_env_keys":[],"router_middlewares":{}}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-job-low"}; runtime unverified; [Policy](../../../05.operations/policies/0036-kafka.md) | No data; publication and role are re-created idempotently; replication slot is connector recovery state | [guide](../../../05.operations/guides/0036-kafka.md); [policy](../../../05.operations/policies/0036-kafka.md); [runbook](../../../05.operations/runbooks/0036-kafka.md) | [infra/05-messaging/kafka/docker-compose.yml](../../../../infra/05-messaging/kafka/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | retain opt-in `cdc` source provisioning split from `mng-pg-init`; connector registration separately approved; [Task 0007](../../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0007-optional-capability-restructure.md) |
-<!-- current-service-inventory:end -->
 
+> Historical evidence (not current authority; source: Git history):
+> <!-- current-service-inventory:end -->
+>
 ## Dated Service Disposition Inventory
-
-This 2026-09-19 snapshot was derived from root Compose rendered with the public
-example environment and all profiles, after the initial configuration fixes.
-Exact image pins below are historical execution evidence, not narrative version
-authority. Current pins remain in Compose/Dockerfile declarations. Environment
-cells contain key names only; secret cells contain grant names only. Resource
-limits resolve service-level `cpus`/`mem_limit` and `deploy.resources.limits`,
-including inherited templates. A healthcheck declaration does not prove
-runtime readiness; optional/LAB entries do not establish safe deletion.
-Storage lists identify backup scope; a listed volume does not prove backup or
-restore success. Actual production values, live data and license acceptance are
-not inferred from this public render. Declared consumers are reverse `depends_on` edges only; application traffic and
-configuration-level consumers may not declare those edges. Product-specific
-consumer and recovery validation remains required before deployment.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> This 2026-09-19 snapshot was derived from root Compose rendered with the public
+> example environment and all profiles, after the initial configuration fixes.
+> Exact image pins below are historical execution evidence, not narrative version
+> authority. Current pins remain in Compose/Dockerfile declarations. Environment
+> cells contain key names only; secret cells contain grant names only. Resource
+> limits resolve service-level `cpus`/`mem_limit` and `deploy.resources.limits`,
+> including inherited templates. A healthcheck declaration does not prove
+> runtime readiness; optional/LAB entries do not establish safe deletion.
+> Storage lists identify backup scope; a listed volume does not prove backup or
+> restore success. Actual production values, live data and license acceptance are
+> not inferred from this public render. Declared consumers are reverse `depends_on` edges only; application traffic and
+> configuration-level consumers may not declare those edges. Product-specific
+> consumer and recovery validation remains required before deployment.
+>
+<!-- Historical evidence table (not current authority; source: Git history). -->
 | Service | Classification | Compose owner | Profiles | Observed image | Dependencies | Declared consumers | Networks | Exposure | Persistence | Env keys | Secret grants | Health contract | Resource limits | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | airflow-apiserver | HOME | infra/07-workflow/airflow/docker-compose.yml | workflow,workflow-airflow | hy-home/airflow:3.3.1-keycloak | airflow-init, airflow-valkey | airflow-worker, flower | infra_net | internal only | airflow-dags:/opt/airflow/dags, airflow-plugins:/opt/airflow/plugins, airflow-logs:/opt/airflow/logs, airflow-config:/opt/airflow/config, /home/hy/projects/hy-home.docker/secrets/certs/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem | AIRFLOW_CONFIG, AIRFLOW__API_AUTH__JWT_ISSUER, AIRFLOW__API_AUTH__JWT_SECRET_CMD, AIRFLOW__API__BASE_URL, AIRFLOW__CELERY__BROKER_URL_CMD, AIRFLOW__CELERY__RESULT_BACKEND_CMD, AIRFLOW__CORE__AUTH_MANAGER, AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION, AIRFLOW__CORE__EXECUTION_API_SERVER_URL, AIRFLOW__CORE__EXECUTOR, AIRFLOW__CORE__FERNET_KEY_CMD, AIRFLOW__CORE__LOAD_EXAMPLES, AIRFLOW__DATABASE__SQL_ALCHEMY_CONN_CMD, AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_ID, AIRFLOW__KEYCLOAK_AUTH_MANAGER__CLIENT_SECRET_CMD, AIRFLOW__KEYCLOAK_AUTH_MANAGER__REALM, AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_POOL_SIZE, AIRFLOW__KEYCLOAK_AUTH_MANAGER__REQUESTS_RETRIES, AIRFLOW__KEYCLOAK_AUTH_MANAGER__SERVER_URL, AIRFLOW__METRICS__STATSD_HOST, AIRFLOW__METRICS__STATSD_ON, AIRFLOW__METRICS__STATSD_PORT, AIRFLOW__METRICS__STATSD_PREFIX, AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK, FORWARDED_ALLOW_IPS, REQUESTS_CA_BUNDLE, SSL_CERT_FILE, _PIP_ADDITIONAL_REQUIREMENTS | airflow_db_password, airflow_fernet_key, mng_valkey_password, airflow_valkey_password, airflow_api_jwt_secret, airflow_keycloak_client_secret | declared | CPU 2; RAM 2147483648 bytes | Required AI/workflow consumer or platform dependency |
@@ -806,43 +972,47 @@ consumer and recovery validation remains required before deployment.
 | vault-agent | MIGRATE | infra/03-security/vault/docker-compose.yml | legacy-vault | hashicorp/vault:2.1.1 | vault | operator/application; no declared reverse dependency | infra_net | internal only | /home/hyunyoun/data/hy-home.docker/infra/03-security/vault/config/vault-agent.hcl:/vault/config/vault-agent.hcl, /home/hyunyoun/data/hy-home.docker/infra/03-security/vault/config/templates:/vault/config/templates, vault-agent-data:/vault/agent, vault-agent-out:/vault/out | SKIP_CHOWN, SKIP_SETCAP, VAULT_ADDR | none | declared | CPU 1; RAM 536870912 bytes | Legacy export/rollback only |
 | vector | OPTIONAL | infra/04-data/operational/supabase/docker-compose.yml | supabase | timberio/vector:0.58.0-alpine | none | db | infra_net | internal only | /home/hyunyoun/storage/volumes/data/supabase/logs/vector.yml:/etc/vector/vector.yml, /var/run/docker.sock:/var/run/docker.sock | none | none | declared | CPU 1; RAM 536870912 bytes | Needs a named workload before always-on activation |
 
+> Historical evidence (not current authority; source: Git history):
+>
+## 2026-09-19 Implementation Findings and Source Checks
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - OpenBao Agent configuration and persistent output paths were inconsistent;
+>   both are corrected in tracked source. The official [Agent contract](https://openbao.org/docs/agent-and-proxy/agent/)
+>   confirms environment address override. Sealed status and secret delivery remain
+>   distinct readiness questions; existing Docker Secrets are not automatically migrated.
+> - OpenBao 2.6 changes root-token recovery assumptions. The official
+>   [2.6 release notes](https://openbao.org/community/release-notes/2-6-0/) and
+>   [operator command documentation](https://openbao.org/docs/commands/operator/generate-root/)
+>   state that `operator generate-root` now uses authenticated
+>   `/sys/generate-root-token` endpoints. The deprecated
+>   [legacy unauthenticated `/sys/generate-root/*` API](https://openbao.org/docs/api/system/generate-root/)
+>   is disabled by default as of 2.5.3 through the
+>   [TCP listener parameter](https://openbao.org/docs/configuration/listener/tcp/)
+>   `disable_unauthed_generate_root_endpoints`. This audit does not prove human
+>   OpenBao OIDC login is live; it records that temporary loopback-only legacy
+>   recovery is a break-glass design input when the initial root token has been
+>   revoked before human admin has been established.
+> - Mailpit host/container ports were reversed and listener overrides were absent.
+>   The [runtime options](https://mailpit.axllent.org/docs/configuration/runtime-options/)
+>   specify separate UI and SMTP bind addresses. Direct publication is now loopback.
+> - SurrealDB uses a fixed internal listener and persistent RocksDB directory.
+>   The [start command reference](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/start)
+>   distinguishes storage paths, listener binding and authentication bootstrap.
+> - OpenTofu [plan](https://opentofu.org/docs/cli/commands/plan/) belongs to an explicit
+>   operator workflow: provider access and state are not a HOME daemon dependency.
+> - The version registry is deliberately a curated Compose image drift projection,
+>   expanded to HOME and operational tools. It does not represent every build-stage
+>   dependency or prove deployed image identity. Dockerfile and inline declarations
+>   remain additional source owners under Renovate's corresponding managers.
+> - Public secret mapping now covers all root Compose file references. The three
+>   registry-only bootstrap/derived paths remain classified and preserved; values
+>   and unknown private entries are not deleted to force inventory equality.
+
 ## Related Documents
 
 - [Research pack](README.md)
 - [Infrastructure surface](../../../../infra/README.md)
 - [Root Compose](../../../../docker-compose.yml)
 - [Infrastructure validation skill](../../../../.agents/skills/infra-validate/SKILL.md)
-
-## 2026-09-19 Implementation Findings and Source Checks
-
-- OpenBao Agent configuration and persistent output paths were inconsistent;
-  both are corrected in tracked source. The official [Agent contract](https://openbao.org/docs/agent-and-proxy/agent/)
-  confirms environment address override. Sealed status and secret delivery remain
-  distinct readiness questions; existing Docker Secrets are not automatically migrated.
-- OpenBao 2.6 changes root-token recovery assumptions. The official
-  [2.6 release notes](https://openbao.org/community/release-notes/2-6-0/) and
-  [operator command documentation](https://openbao.org/docs/commands/operator/generate-root/)
-  state that `operator generate-root` now uses authenticated
-  `/sys/generate-root-token` endpoints. The deprecated
-  [legacy unauthenticated `/sys/generate-root/*` API](https://openbao.org/docs/api/system/generate-root/)
-  is disabled by default as of 2.5.3 through the
-  [TCP listener parameter](https://openbao.org/docs/configuration/listener/tcp/)
-  `disable_unauthed_generate_root_endpoints`. This audit does not prove human
-  OpenBao OIDC login is live; it records that temporary loopback-only legacy
-  recovery is a break-glass design input when the initial root token has been
-  revoked before human admin has been established.
-- Mailpit host/container ports were reversed and listener overrides were absent.
-  The [runtime options](https://mailpit.axllent.org/docs/configuration/runtime-options/)
-  specify separate UI and SMTP bind addresses. Direct publication is now loopback.
-- SurrealDB uses a fixed internal listener and persistent RocksDB directory.
-  The [start command reference](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/start)
-  distinguishes storage paths, listener binding and authentication bootstrap.
-- OpenTofu [plan](https://opentofu.org/docs/cli/commands/plan/) belongs to an explicit
-  operator workflow: provider access and state are not a HOME daemon dependency.
-- The version registry is deliberately a curated Compose image drift projection,
-  expanded to HOME and operational tools. It does not represent every build-stage
-  dependency or prove deployed image identity. Dockerfile and inline declarations
-  remain additional source owners under Renovate's corresponding managers.
-- Public secret mapping now covers all root Compose file references. The three
-  registry-only bootstrap/derived paths remain classified and preserved; values
-  and unknown private entries are not deleted to force inventory equality.

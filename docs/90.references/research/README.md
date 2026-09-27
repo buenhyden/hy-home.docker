@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
-version: "1.4.0"
+version: "1.5.0"
 type: "reference/category-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-27"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -24,7 +24,7 @@ The Stage 90 authority boundary and package lifecycle rules are defined by the
 | Stable ID | Package | Status |
 | :--- | :--- | :--- |
 | RES-0001 | Agentic Engineering Research Pack | retired; its body is preserved under `docs/98.archive/retired/` and recorded by a tombstone |
-| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical topical/current research hub | active |
+| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical external research and historical evidence hub | active |
 | [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics; specialized evidence under RES-0002 routing | active |
 | [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment; preserved dated evidence for RES-0002 | review — dated evidence; any later transition requires separate approval |
 | [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment; separate archive-domain evidence linked from RES-0002 | draft — dated evidence for SPEC-0177 and SPEC-0178 |
@@ -38,7 +38,7 @@ models are materially different:
 | Package | Canonical role | Integration rule |
 | --- | --- | --- |
 | RES-0084 | GitHub Actions platform mechanics and dated Hosted/remote evidence | Link from RES-0002; do not copy its claim-by-claim workflow evidence. |
-| RES-0085 | Dated baseline scope and identity-recovery carrier | Preserve as historical evidence; current baseline conclusions route to RES-0002-m0020. |
+| RES-0085 | Dated baseline scope and identity-recovery carrier | Preserve as historical evidence; dated baseline interpretation routes to RES-0002-m0020; no new assessment in this refresh. |
 | RES-0096 | Archive disposition consistency assessment | Keep separate from infrastructure and provider research; link only where lifecycle evidence is relevant. |
 
 This is logical integration, not deletion or content flattening. Package
@@ -47,104 +47,124 @@ The former RES-0080/RES-0081 learning-roadmap line is no longer an active
 research package; RES-0081 is preserved as superseded history with RES-0002 as
 the current routing successor.
 
-### Workspace Engineering Request Route
+### External Research Refresh
 
-#### Re-review Baseline
+The 2026-09-27 external-only refresh belongs solely to
+[RES-0002](./0002-agentic-engineering-research-pack/README.md). Its member
+coverage matrix and future internal-check index separate primary-source facts,
+conditional recommendations and preserved historical observations. Internal
+implementation, runtime, account and security state: `Not assessed in this run`.
+The document baseline is `f30b168e2fbb0959e4a31749935568fd5b3942f1`;
+this is not a new workspace assessment. New Actions research belongs to
+RES-0002-m0004; RES-0084 keeps its distinct dated evidence.
 
-The dated workspace baseline revalidation is consolidated in
-[RES-0002-m0020](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
-against `main@71da6654e2fa3def174b238ad309c92fe46e9dae`, observed on
-2026-09-05. The consolidation baseline
-`main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b` and the assessed baseline
-`main@4c6d211129615eab372d720ebd209b6c27618c86` remain preserved as dated
-evidence; RES-0085 continues to own the latter together with its binding
-request and identity-recovery evidence while moving through publication review.
+### Historical workspace observations — not reassessed in this run
 
-A local gate verdict at that baseline is checkout-relative: the full profile
-passes in an isolated `main`-only clone and fails in a developer clone that can
-reach an unmerged branch. Quote a verdict with its commit and reachable-ref
-scope. [RES-0002-m0019](./0002-agentic-engineering-research-pack/m0019-verification-validation.md)
-owns that analysis.
+The following index route retains the earlier observations and recommendations.
+Its adoption labels and generated-navigation descriptions are historical, not
+current authorization or a fresh assessment. The 2026-09-10 LLM Wiki retirement
+record remains preserved; this refresh does not restore it.
 
-Topical research remains owned by RES-0002 and RES-0084. Repository-specific
-implementation truth remains in canonical agent governance policies, provider adapters, Stage 03
-contracts, Stage 05 operations, tracked runtime files, scripts, tests, and CI
-definitions.
-
-#### Design Decisions
-
-1. **Reuse canonical research.** Extend or correct the existing owner instead
-   of copying the same subject into a second research pack.
-2. **Separate evidence depth.** Distinguish external capability, tracked
-   configuration, local execution, repository enforcement, provider runtime
-   acceptance, and remote control-plane proof.
-3. **Keep one provider-neutral control plane.** canonical agent governance owns shared policy;
-   `.agents/` owns authored governance, roles, and skills; `AGENTS.md` and
-   `CLAUDE.md` are entrypoints, and `.claude/` and `.codex/` retain authored
-   provider adapters plus generated/native mechanics.
-4. **Route implementation through the SDLC.** A research gap becomes a
-   repository change only through an approved Requirement, Architecture/ADR,
-   Spec, Plan, Task, verification evidence, and independent review.
-5. **Do not infer runtime state.** Tracked Docker Compose, hook, model, or CI
-   configuration proves adoption depth only to the level actually observed.
-
-#### Category Routing and Current Assessment
-
-| Requested area | Research owner | Implementation evidence | Assessment |
-| --- | --- | --- | --- |
-| Harness engineering | [Harness engineering](./0002-agentic-engineering-research-pack/m0008-harness-engineering.md) | Harness audit | Partial |
-| Loop engineering | [Loop engineering](./0002-agentic-engineering-research-pack/m0010-loop-engineering.md) | Loop audit | Partial |
-| Workspace harness, loop, rules, and environment | [Workspace baseline](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Workspace rules audit | Partial |
-| Claude Code and Codex implementation | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | Provider audit | Partial |
-| Shared Claude/Codex governance | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | [canonical agent governance](../../../.agents/README.md) and [provider registry](../../../.agents/governance/providers/registry.yaml) | Repository-enforced projection; cross-provider acceptance remains point-in-time |
-| System prompts and context loading | [Agent instructions](./0002-agentic-engineering-research-pack/m0001-agent-instructions-vibe-coding.md) | [Bootstrap policy](../../../.agents/governance/bootstrap.md), [AGENTS.md](../../../AGENTS.md), and [CLAUDE.md](../../../CLAUDE.md) | Implemented |
-| Spec-driven development | [Spec-driven SDLC](./0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | [Stage 03](../../03.specs/README.md) and SDLC audit | Repository-enforced for registered forms; intended-use acceptance remains owner-bound |
-| PRD, SPEC, PLAN, TASK, and ADR | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Stage 99 templates](../../99.templates/README.md) | Implemented for registered repository forms |
-| SDLC purpose, governance, and lifecycle | [Spec-driven SDLC](./0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | [SDLC policy](../../../.agents/governance/sdlc.md) and [workflows](../../../.agents/governance/workflows.md) | Implemented |
-| Guide, Incident, Postmortem, Policy, Release, and Runbook | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Operations](../../05.operations/README.md) and SDLC audit | Guide/Policy/Runbook/Incident/Postmortem registered; Release is composed evidence, not a profile |
-| Diátaxis and documentation architecture | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Documentation protocol](../../../.agents/governance/documentation-protocol.md) | Partial |
-| C4 Model and arc42 | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Architecture stage](../../02.architecture/README.md) | Partial |
-| ADR | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Architecture decisions](../../02.architecture/decisions/README.md) | Implemented |
-| LLM Wiki | [LLM Wiki system](./0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md) | Retired on 2026-09-10 with its generator and generated indexes; navigation now runs through `llms.txt` and the per-surface READMEs | Retired |
-| Docker Compose and infrastructure | [Docker Compose and infrastructure](./0002-agentic-engineering-research-pack/m0005-docker-compose-infrastructure.md) | Compose readiness audit | Partial; static evidence exceeds runtime evidence |
-| CI/CD | [Automation pipeline](./0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Quality audit | Partial; CI is stronger than CD |
-| GitHub Actions | [GitHub Actions platform](./0084-github-actions-platform/README.md) | [CI workflow](../../../.github/workflows/ci-quality.yml) and [protection record](../../../.github/rulesets/main-protection.md) | Hosted aggregate jobs and 2026-09-05 remote check read-back verified |
-| QA, formatting, linting, testing, and syntax | [Quality, CI, and formatting](./0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md) | Quality audit | Implemented across registered surfaces |
-| Security | [Security governance](./0002-agentic-engineering-research-pack/m0017-security-governance.md) | Security audit | Partial |
-| Verification and Validation | [Verification and validation](./0002-agentic-engineering-research-pack/m0019-verification-validation.md) | Current Task evidence and registered gates | Partial; intended-use acceptance remains owner-bound |
-| AI agent catalog and agency-agents | [AI agent catalogs](./0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md) | Instruction/catalog/model audit | Partial |
-| Task-aware model selection | [Agent model selection](./0002-agentic-engineering-research-pack/m0002-agent-model-selection.md) | [Provider registry](../../../.agents/governance/providers/registry.yaml) | Implemented as tracked policy; entitlement unverified |
-| Agent memory hierarchy | [Memory hierarchy](./0002-agentic-engineering-research-pack/m0011-memory-hierarchy.md) | current Task evidence; no shared governance memory root is adopted | Partial |
-| Git pre-commit hooks | [Quality, CI, and formatting](./0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md) | [.pre-commit-config.yaml](../../../.pre-commit-config.yaml) | Implemented |
-| Editor shortcuts and code actions | [Workspace baseline](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | No registered repository-wide editor action contract | Missing |
-| Rate limits, cost, tokens, and context | [Provider model landscape](./0002-agentic-engineering-research-pack/m0013-provider-model-landscape.md) | Provider registry and bounded context-loading rules | Configured; entitlement observations are point-in-time and cost remains unmeasured |
-| Test and CI agent hooks | [Automation pipeline](./0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Claude/Codex hooks and CI definitions | Partial |
-| Claude/Codex context sharing | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | canonical agent governance canonical sources and generated provider projections | Implemented structurally; live handoff remains partial |
-| README purpose and role | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Repository README](../../../README.md) and registered README profiles | Implemented |
-
-#### Prioritized Design Gaps
-
-1. Add native provider acceptance tests without reading user-global settings or
-   assuming account entitlement.
-2. Define a tracked, provider-neutral cost and rate-limit evidence contract
-   before introducing hard budgets.
-3. Complete durable memory promotion, retention, expiry, privacy, and deletion
-   rules.
-4. Register editor tasks and code actions only after their command, permission,
-   and documentation-hook boundaries are specified.
-5. Separate deployment promotion, Release evidence, rollback automation, and
-   runtime acceptance from the existing CI quality plane.
-6. Apply C4 and arc42 selectively through the Architecture stage rather than
-   creating a competing documentation hierarchy.
-
-The clean `main` baseline passed
-`python3 scripts/validation/run-ci-gate.py --profile full` on 2026-09-05. This
-is local-execution and repository-enforcement evidence; it is not deployment or
-runtime acceptance.
-
-Each item requires a separately approved active Spec when implementation is
-requested. This index records routing and design only; it does not authorize
-runtime, remote, provider, secret, or infrastructure mutation.
+> Historical evidence (not current authority; source: Git history): Prior request route at baseline f30b168e2fbb0959e4a31749935568fd5b3942f1; dates and evidence boundaries unchanged.
+>
+> ### Workspace Engineering Request Route
+>
+> #### Re-review Baseline
+>
+> The dated workspace baseline revalidation is consolidated in
+> [RES-0002-m0020](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
+> against `main@71da6654e2fa3def174b238ad309c92fe46e9dae`, observed on
+> 2026-09-05. The consolidation baseline
+> `main@a89c600c05c0b61f5cbd592e196ac3673f9eeb4b` and the assessed baseline
+> `main@4c6d211129615eab372d720ebd209b6c27618c86` remain preserved as dated
+> evidence; RES-0085 continues to own the latter together with its binding
+> request and identity-recovery evidence while moving through publication review.
+>
+> A local gate verdict at that baseline is checkout-relative: the full profile
+> passes in an isolated `main`-only clone and fails in a developer clone that can
+> reach an unmerged branch. Quote a verdict with its commit and reachable-ref
+> scope. [RES-0002-m0019](./0002-agentic-engineering-research-pack/m0019-verification-validation.md)
+> owns that analysis.
+>
+> Topical research remains owned by RES-0002 and RES-0084. Repository-specific
+> implementation truth remains in canonical agent governance policies, provider adapters, Stage 03
+> contracts, Stage 05 operations, tracked runtime files, scripts, tests, and CI
+> definitions.
+>
+> #### Design Decisions
+>
+> 1. **Reuse canonical research.** Extend or correct the existing owner instead
+>    of copying the same subject into a second research pack.
+> 2. **Separate evidence depth.** Distinguish external capability, tracked
+>    configuration, local execution, repository enforcement, provider runtime
+>    acceptance, and remote control-plane proof.
+> 3. **Keep one provider-neutral control plane.** canonical agent governance owns shared policy;
+>    `.agents/` owns authored governance, roles, and skills; `AGENTS.md` and
+>    `CLAUDE.md` are entrypoints, and `.claude/` and `.codex/` retain authored
+>    provider adapters plus generated/native mechanics.
+> 4. **Route implementation through the SDLC.** A research gap becomes a
+>    repository change only through an approved Requirement, Architecture/ADR,
+>    Spec, Plan, Task, verification evidence, and independent review.
+> 5. **Do not infer runtime state.** Tracked Docker Compose, hook, model, or CI
+>    configuration proves adoption depth only to the level actually observed.
+>
+> #### Category Routing and Current Assessment
+>
+> | Requested area | Research owner | Implementation evidence | Assessment |
+> | --- | --- | --- | --- |
+> | Harness engineering | [Harness engineering](./0002-agentic-engineering-research-pack/m0008-harness-engineering.md) | Harness audit | Partial |
+> | Loop engineering | [Loop engineering](./0002-agentic-engineering-research-pack/m0010-loop-engineering.md) | Loop audit | Partial |
+> | Workspace harness, loop, rules, and environment | [Workspace baseline](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | Workspace rules audit | Partial |
+> | Claude Code and Codex implementation | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | Provider audit | Partial |
+> | Shared Claude/Codex governance | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | [canonical agent governance](../../../.agents/README.md) and [provider registry](../../../.agents/governance/providers/registry.yaml) | Repository-enforced projection; cross-provider acceptance remains point-in-time |
+> | System prompts and context loading | [Agent instructions](./0002-agentic-engineering-research-pack/m0001-agent-instructions-vibe-coding.md) | [Bootstrap policy](../../../.agents/governance/bootstrap.md), [AGENTS.md](../../../AGENTS.md), and [CLAUDE.md](../../../CLAUDE.md) | Implemented |
+> | Spec-driven development | [Spec-driven SDLC](./0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | [Stage 03](../../03.specs/README.md) and SDLC audit | Repository-enforced for registered forms; intended-use acceptance remains owner-bound |
+> | PRD, SPEC, PLAN, TASK, and ADR | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Stage 99 templates](../../99.templates/README.md) | Implemented for registered repository forms |
+> | SDLC purpose, governance, and lifecycle | [Spec-driven SDLC](./0002-agentic-engineering-research-pack/m0018-spec-driven-sdlc.md) | [SDLC policy](../../../.agents/governance/sdlc.md) and [workflows](../../../.agents/governance/workflows.md) | Implemented |
+> | Guide, Incident, Postmortem, Policy, Release, and Runbook | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Operations](../../05.operations/README.md) and SDLC audit | Guide/Policy/Runbook/Incident/Postmortem registered; Release is composed evidence, not a profile |
+> | Diátaxis and documentation architecture | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Documentation protocol](../../../.agents/governance/documentation-protocol.md) | Partial |
+> | C4 Model and arc42 | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Architecture stage](../../02.architecture/README.md) | Partial |
+> | ADR | [SDLC document roles](./0002-agentic-engineering-research-pack/m0016-sdlc-document-roles.md) | [Architecture decisions](../../02.architecture/decisions/README.md) | Implemented |
+> | LLM Wiki | [LLM Wiki system](./0002-agentic-engineering-research-pack/m0009-llm-wiki-system.md) | Retired on 2026-09-10 with its generator and generated indexes; navigation now runs through `llms.txt` and the per-surface READMEs | Retired |
+> | Docker Compose and infrastructure | [Docker Compose and infrastructure](./0002-agentic-engineering-research-pack/m0005-docker-compose-infrastructure.md) | Compose readiness audit | Partial; static evidence exceeds runtime evidence |
+> | CI/CD | [Automation pipeline](./0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Quality audit | Partial; CI is stronger than CD |
+> | GitHub Actions | [GitHub Actions platform](./0084-github-actions-platform/README.md) | [CI workflow](../../../.github/workflows/ci-quality.yml) and [protection record](../../../.github/rulesets/main-protection.md) | Hosted aggregate jobs and 2026-09-05 remote check read-back verified |
+> | QA, formatting, linting, testing, and syntax | [Quality, CI, and formatting](./0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md) | Quality audit | Implemented across registered surfaces |
+> | Security | [Security governance](./0002-agentic-engineering-research-pack/m0017-security-governance.md) | Security audit | Partial |
+> | Verification and Validation | [Verification and validation](./0002-agentic-engineering-research-pack/m0019-verification-validation.md) | Current Task evidence and registered gates | Partial; intended-use acceptance remains owner-bound |
+> | AI agent catalog and agency-agents | [AI agent catalogs](./0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md) | Instruction/catalog/model audit | Partial |
+> | Task-aware model selection | [Agent model selection](./0002-agentic-engineering-research-pack/m0002-agent-model-selection.md) | [Provider registry](../../../.agents/governance/providers/registry.yaml) | Implemented as tracked policy; entitlement unverified |
+> | Agent memory hierarchy | [Memory hierarchy](./0002-agentic-engineering-research-pack/m0011-memory-hierarchy.md) | current Task evidence; no shared governance memory root is adopted | Partial |
+> | Git pre-commit hooks | [Quality, CI, and formatting](./0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md) | [.pre-commit-config.yaml](../../../.pre-commit-config.yaml) | Implemented |
+> | Editor shortcuts and code actions | [Workspace baseline](./0002-agentic-engineering-research-pack/m0020-workspace-baseline.md) | No registered repository-wide editor action contract | Missing |
+> | Rate limits, cost, tokens, and context | [Provider model landscape](./0002-agentic-engineering-research-pack/m0013-provider-model-landscape.md) | Provider registry and bounded context-loading rules | Configured; entitlement observations are point-in-time and cost remains unmeasured |
+> | Test and CI agent hooks | [Automation pipeline](./0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md) | Claude/Codex hooks and CI definitions | Partial |
+> | Claude/Codex context sharing | [Provider comparison](./0002-agentic-engineering-research-pack/m0012-provider-implementation-comparison.md) | canonical agent governance canonical sources and generated provider projections | Implemented structurally; live handoff remains partial |
+> | README purpose and role | [Documentation architecture](./0002-agentic-engineering-research-pack/m0007-documentation-architecture.md) | [Repository README](../../../README.md) and registered README profiles | Implemented |
+>
+> #### Prioritized Design Gaps
+>
+> 1. Add native provider acceptance tests without reading user-global settings or
+>    assuming account entitlement.
+> 2. Define a tracked, provider-neutral cost and rate-limit evidence contract
+>    before introducing hard budgets.
+> 3. Complete durable memory promotion, retention, expiry, privacy, and deletion
+>    rules.
+> 4. Register editor tasks and code actions only after their command, permission,
+>    and documentation-hook boundaries are specified.
+> 5. Separate deployment promotion, Release evidence, rollback automation, and
+>    runtime acceptance from the existing CI quality plane.
+> 6. Apply C4 and arc42 selectively through the Architecture stage rather than
+>    creating a competing documentation hierarchy.
+>
+> The clean `main` baseline passed
+> `python3 scripts/validation/run-ci-gate.py --profile full` on 2026-09-05. This
+> is local-execution and repository-enforcement evidence; it is not deployment or
+> runtime acceptance.
+>
+> Each item requires a separately approved active Spec when implementation is
+> requested. This index records routing and design only; it does not authorize
+> runtime, remote, provider, secret, or infrastructure mutation.
 
 ## Authoring
 

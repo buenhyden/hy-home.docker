@@ -1,10 +1,10 @@
 ---
 title: "Reference: LLM Wiki Navigation, Safety, and Freshness System"
-version: "1.1.2"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002-m0009"
 parent_ids:
@@ -17,334 +17,461 @@ review_cycle: "on-source-change"
 
 # Reference: LLM Wiki Navigation, Safety, and Freshness System
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+## Current External Research
 
+How can an agent maintain useful, attributable knowledge without turning a generated wiki into repository authority?
+
+Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
+
+### Original proposal and distinct surfaces
+
+Karpathy's author-written gist proposes raw sources, a compiled Markdown wiki,
+and schema instructions. Its operations are ingest, query and lint: ingestion
+updates related pages and navigation; queries can produce reusable synthesis;
+lint examines contradictions, stale material and missing links. The index aids
+navigation and the log records changes. These are proposal mechanics, not tested
+reliability or cost guarantees. The gist's comments are not the author's design.
+([Original gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f))
+
+RAG couples retrieval with generation; a maintained wiki can also be retrieved.
+They are complementary architectural choices. `llms.txt` is a proposed reading
+entry point. A README explains a surface's purpose and ownership. Neither proves
+that a model loaded a document or grants permissions. ([RAG paper](https://arxiv.org/abs/2005.11401),
+[llms.txt proposal](https://llmstxt.org/))
+
+### Proposed lifecycle and safeguards
+
+The following is research synthesis and a candidate design, not an upstream
+requirement or a new local workflow. Store sources with origin, revision/date,
+permission class and checksum; keep raw evidence distinct from derived pages.
+Treat schema changes as versioned transformations. An ingest receipt should name
+inputs, pages changed, unresolved conflicts and the reviewer. A query should
+separate supported claims from interpretation and include source locations.
+Persist an answer only when its purpose and owner justify retention.
+
+Lint can check broken links and required metadata mechanically. Contradiction
+resolution needs authority, scope, effective date and human judgment; a newest
+page does not automatically supersede an approved decision. Mark conflicts
+explicitly until resolved. Regeneration should be deterministic where possible,
+reviewable as a diff, and should invalidate stale derived material rather than
+silently preserving conclusions. Changing a source must trigger review of its
+consumers. Deletion must reach derived pages, retrieval indexes and caches under
+the applicable retention policy. Access filtering belongs before retrieval and
+before synthesis. Retrieved content remains evidence, not executable instructions.
+The lifecycle and contamination model are developed in [m0011](m0011-memory-hierarchy.md#current-external-research).
+
+### Local retirement boundary
+
+The research navigation README and retired knowledge-map skill record retirement
+of the local LLM Wiki generator and three generated indexes on **2026-09-10**.
+Current navigation uses `llms.txt` and per-surface READMEs. This is a documentary
+boundary, not a fresh generator/runtime assessment. The older active-generator
+material below is historical evidence. The external proposal does not reactivate
+that implementation or justify new generated indexes. Adoption would need a
+separate approved package and canonical ownership decision.
+
+## Claims and Sources
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-gist-karpathy-llm-wiki | [Author gist: layers and operations](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Created 2026-04-04; one displayed revision; conceptual proposal, not a product release | 2026-09-27 |
+| S-llmstxt-proposal | [llms.txt proposal: format and usage](https://llmstxt.org/) | Published 2024-09-03; modified 2026-08-10; community proposal | 2026-09-27 |
+| S-arxiv-rag-2005-11401 | [Original RAG paper: abstract](https://arxiv.org/abs/2005.11401) | Submitted 2020-05-22; research paper, not a deployment contract | 2026-09-27 |
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0009-01 | The original proposes source/wiki/schema layers and ingest/query/lint operations. | S-gist-karpathy-llm-wiki / author body, layers and operations | 2026-04-04 | 2026-09-27 | Conceptual gist; no release version | Fact | One displayed revision; no performance or reliability guarantees; recheck gist revisions. |
+| C-m0009-02 | A wiki can provide maintained retrieval material; RAG and wiki compilation can coexist. | S-arxiv-rag-2005-11401 / abstract; S-gist-karpathy-llm-wiki / author body | 2020-05-22; 2026-04-04 | 2026-09-27 | Research model and proposal | Interpretation | Modern retrieval designs vary; original paper does not define every RAG system. |
+| C-m0009-03 | llms.txt supplies proposed navigation, not model loading or permission evidence. | S-llmstxt-proposal / format and usage | 2024-09-03; modified 2026-08-10 | 2026-09-27 | Community proposal | Fact plus interpretation | Consumer support is not universal; recheck consumer behavior before reliance. |
+| C-m0009-04 | Source provenance, conflict review and derivative invalidation should govern persisted synthesis. | S-gist-karpathy-llm-wiki / lint; m0011 current lifecycle | 2026-04-04 | 2026-09-27 | Candidate local design | Recommendation | Our synthesis; does not establish local implementation or authorize retained data. |
+| C-m0009-05 | The local generator/index retirement remains a documented historical boundary. | Research README and knowledge-map-agent skill / retirement notice | 2026-09-10 retirement recorded | 2026-09-27 | Repository documentary history | Fact about document record | No generator execution or artifact audit; historical observation dates remain unchanged. |
+
+## Future Internal Checks
+
+| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0009-01/04 | Document, design × governance/quality | Only if a maintained knowledge compiler is proposed | Candidate Spec/schema/source manifests; not inspected | Which surfaces are authoritative and which are derived? | Approved ownership map, schema version, source and output receipts | Future document review with source-to-consumer tracing | Pass explicit ownership, review and reversible regeneration; fail ambiguous authority | New generator/files or ingestion need scoped authorization | doc-writer | Not assessed in this run |
+| C-m0009-04 | Environment × security/data | Only if private or external sources are ingested | Candidate access/index/cache boundaries; not inspected | Can lower-trust input alter instructions or leak across audiences? | Trust labels, access decisions, adversarial examples and deletion coverage | Future isolated ingestion/retrieval evaluation | Pass authorized audience filtering and instruction/data separation; fail cross-boundary retrieval | Protected source access and test ingestion need approval | security-auditor | Not assessed in this run |
+| C-m0009-05 | Document × governance | Before any navigation or generator adoption | Candidate retirement and navigation records; not inspected beyond dated notices | Does a proposed change preserve the retirement decision or explicitly replace it? | Owner decision, baseline links, consumer list and migration plan | Future approved document review; no legacy generator run | Pass owner-approved replacement with links intact; fail accidental revival | Changing canonical navigation requires scope approval | doc-writer | Not assessed in this run |
+
+### Limits and recheck conditions
+
+No local generator, retrieval store or wiki build was executed. The gist's rendered
+original was accessible; its raw-file endpoint failed in this check. Its informal
+scale and cost anecdotes were not independently validated. Recheck on schema,
+source permissions, provider retrieval behavior or ownership changes.
+
+## Historical workspace observations — not reassessed in this run
+
+> Historical evidence (not current authority; source: Git history):
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
 ## Overview
-
-The workspace LLM Wiki is a repo-local, on-demand navigation system. A thin
-root `llms.txt`, human README discovery, a curated repository map, a generated
-path-only index, and a generated coverage summary route agents to canonical
-tracked sources. They do not copy full source content, publish a website,
-replace runtime truth, or auto-load into every agent session.
-
-Two shell generators independently render the index and coverage outputs from
-safe paths derived from `git ls-files`. Their `--check` modes compare complete
-rendered bytes with the committed outputs. On the Task 6 baseline commit
-`25acd86225d98151f9149072aff6b60511c62695`, both named checks exit 1 because
-their outputs were stale. Task 6 recorded those observations without
-regenerating them. Task 9a/10b subsequently regenerated both outputs through
-their canonical generators as part of the pack's route switch; the Stage 04
-Task ledger records a canonical write/check `PASS` at 1,339 index rows and
-1,338 coverage safe paths. This reference did not re-run either generator; the
-current byte-exact `--check` result must still be re-confirmed by a task
-authorized to execute them.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> The workspace LLM Wiki is a repo-local, on-demand navigation system. A thin
+> root `llms.txt`, human README discovery, a curated repository map, a generated
+> path-only index, and a generated coverage summary route agents to canonical
+> tracked sources. They do not copy full source content, publish a website,
+> replace runtime truth, or auto-load into every agent session.
+>
+> Two shell generators independently render the index and coverage outputs from
+> safe paths derived from `git ls-files`. Their `--check` modes compare complete
+> rendered bytes with the committed outputs. On the Task 6 baseline commit
+> `25acd86225d98151f9149072aff6b60511c62695`, both named checks exit 1 because
+> their outputs were stale. Task 6 recorded those observations without
+> regenerating them. Task 9a/10b subsequently regenerated both outputs through
+> their canonical generators as part of the pack's route switch; the Stage 04
+> Task ledger records a canonical write/check `PASS` at 1,339 index rows and
+> 1,338 coverage safe paths. This reference did not re-run either generator; the
+> current byte-exact `--check` result must still be re-confirmed by a task
+> authorized to execute them.
+>
 ## Purpose
-
-Satisfy REQ-23 by tracing LLM-facing discovery, local generation, safety
-exclusions, metadata behavior, current output state, freshness ownership, and
-all fourteen scope implications without exposing private data or conflating a
-repository contract result with byte-exact generator freshness.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Satisfy REQ-23 by tracing LLM-facing discovery, local generation, safety
+> exclusions, metadata behavior, current output state, freshness ownership, and
+> all fourteen scope implications without exposing private data or conflating a
+> repository contract result with byte-exact generator freshness.
+>
 ## Repository Role
-
-This Stage 90 reference describes the system but owns none of its operational
-behavior. Root entrypoints and README routes own discovery, the two generators
-own their exact outputs, Stage 05 policy owns maintenance controls, Stage 99
-profiles own metadata interpretation, and tracked source files own actual
-repository or runtime facts. Graphify remains advisory and excluded from both
-generated evidence sets.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> This Stage 90 reference describes the system but owns none of its operational
+> behavior. Root entrypoints and README routes own discovery, the two generators
+> own their exact outputs, Stage 05 policy owns maintenance controls, Stage 99
+> profiles own metadata interpretation, and tracked source files own actual
+> repository or runtime facts. Graphify remains advisory and excluded from both
+> generated evidence sets.
+>
 ## Scope
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
 ### In scope
-
-- Root `llms.txt`, root `AGENTS.md`, root and registered README discovery.
-- The curated map, current generated index, and current coverage snapshot.
-- Both generators, their path admission, exclusions, classification, rendering,
-  and exact `--check` behavior.
-- Metadata and LLM Wiki safety checks in the current repository validator.
-- Current external `llms.txt` and `AGENTS.md` convention comparisons.
-- Freshness evidence, gaps, limits, owners, and fourteen-scope implications.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - Root `llms.txt`, root `AGENTS.md`, root and registered README discovery.
+> - The curated map, current generated index, and current coverage snapshot.
+> - Both generators, their path admission, exclusions, classification, rendering,
+>   and exact `--check` behavior.
+> - Metadata and LLM Wiki safety checks in the current repository validator.
+> - Current external `llms.txt` and `AGENTS.md` convention comparisons.
+> - Freshness evidence, gaps, limits, owners, and fourteen-scope implications.
+>
 ### Out of scope
-
-- Regenerating or editing either generated output.
-- Editing generators, validators, `llms.txt`, `AGENTS.md`, READMEs, routes,
-  policies, templates, or metadata profiles.
-- A public wiki, full-content bundle, `llms-full.txt`, external model call,
-  runtime hook, deployment workflow, or Graphify publication path.
-- Secret contents, credentials, tokens, private keys, shell history, raw logs,
-  ignored volumes, dependency trees, runtime state, or remote enforcement.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - Regenerating or editing either generated output.
+> - Editing generators, validators, `llms.txt`, `AGENTS.md`, READMEs, routes,
+>   policies, templates, or metadata profiles.
+> - A public wiki, full-content bundle, `llms-full.txt`, external model call,
+>   runtime hook, deployment workflow, or Graphify publication path.
+> - Secret contents, credentials, tokens, private keys, shell history, raw logs,
+>   ignored volumes, dependency trees, runtime state, or remote enforcement.
+>
 ## Definitions / Facts
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
 ### LLM-facing convention boundary
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Convention             | Verified external intent                                                                                                                                                                             | Workspace implementation and boundary                                                                                                                                                                                      |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/llms.txt` proposal   | A root Markdown entrypoint for helping models use a website at inference time. The H1 is the only required section; summary, details, file lists, and an optional lower-priority section may follow. | Root `llms.txt` is a 30-line repo-local navigation file with relative links and stronger safety exclusions. It is not a claim of public-site or proposal-wide conformance.                                                 |
-| `AGENTS.md` convention | A predictable standard-Markdown instruction file for coding agents; a root file may be refined by nearer files, and direct user instructions prevail.                                                | Root `AGENTS.md` is a seven-line bootstrap shim into Stage 00 governance and Memory. It contains no direct `llms.txt` or LLM Wiki link. Instruction discovery and on-demand repository navigation remain distinct systems. |
-| Root README            | Human-facing project map and verification entrypoint.                                                                                                                                                | It registers `llms.txt`, the LLM Wiki directory, curated map, generated index, and index freshness command.                                                                                                                |
-
-Both external convention pages returned HTTP 200 on 2026-08-08. They are
-mutable convention sources, not evidence that a provider loaded these local
-files or that any model followed their contents. Re-fetched directly this
-revision (2026-08-14), both conventions moved in ways worth recording even
-though neither changes this workspace's implementation:
-
-- `llmstxt.org` now presents a **v2** of the proposal, explicitly revised
-  after "two years of adoption." The load-bearing structural claim this
-  reference already cites (H1-only-required, optional lower-priority
-  section) is unchanged, but v2 drops the `llms_txt2ctx` tool's special
-  mechanical meaning for the `Optional` heading — it "no longer carries
-  mechanical semantics for automated processing," remaining only a human
-  convention — and adds standard `rel="alternate"`/`rel="describedby"` link
-  relations and hierarchical (most-specific-file-wins) subdirectory
-  coverage, neither of which this repository's single root `llms.txt`
-  exercises. This is **External mutable**, re-verified fresh; it does not
-  change the workspace disposition row above.
-- `agents.md` now states the convention is governed by the **Agentic AI
-  Foundation under the Linux Foundation**, used by "over 60k open-source
-  projects," with the closest-file-wins precedence this reference already
-  cites unchanged. The governance-body detail is new since 2026-08-08 and is
-  recorded here as landscape context; it does not add a repository
-  obligation, and this workspace's root `AGENTS.md` remains a seven-line
-  shim regardless of upstream adoption scale.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Convention             | Verified external intent                                                                                                                                                                             | Workspace implementation and boundary                                                                                                                                                                                      |
+> | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `/llms.txt` proposal   | A root Markdown entrypoint for helping models use a website at inference time. The H1 is the only required section; summary, details, file lists, and an optional lower-priority section may follow. | Root `llms.txt` is a 30-line repo-local navigation file with relative links and stronger safety exclusions. It is not a claim of public-site or proposal-wide conformance.                                                 |
+> | `AGENTS.md` convention | A predictable standard-Markdown instruction file for coding agents; a root file may be refined by nearer files, and direct user instructions prevail.                                                | Root `AGENTS.md` is a seven-line bootstrap shim into Stage 00 governance and Memory. It contains no direct `llms.txt` or LLM Wiki link. Instruction discovery and on-demand repository navigation remain distinct systems. |
+> | Root README            | Human-facing project map and verification entrypoint.                                                                                                                                                | It registers `llms.txt`, the LLM Wiki directory, curated map, generated index, and index freshness command.                                                                                                                |
+>
+> Both external convention pages returned HTTP 200 on 2026-08-08. They are
+> mutable convention sources, not evidence that a provider loaded these local
+> files or that any model followed their contents. Re-fetched directly this
+> revision (2026-08-14), both conventions moved in ways worth recording even
+> though neither changes this workspace's implementation:
+>
+> - `llmstxt.org` now presents a **v2** of the proposal, explicitly revised
+>   after "two years of adoption." The load-bearing structural claim this
+>   reference already cites (H1-only-required, optional lower-priority
+>   section) is unchanged, but v2 drops the `llms_txt2ctx` tool's special
+>   mechanical meaning for the `Optional` heading — it "no longer carries
+>   mechanical semantics for automated processing," remaining only a human
+>   convention — and adds standard `rel="alternate"`/`rel="describedby"` link
+>   relations and hierarchical (most-specific-file-wins) subdirectory
+>   coverage, neither of which this repository's single root `llms.txt`
+>   exercises. This is **External mutable**, re-verified fresh; it does not
+>   change the workspace disposition row above.
+> - `agents.md` now states the convention is governed by the **Agentic AI
+>   Foundation under the Linux Foundation**, used by "over 60k open-source
+>   projects," with the closest-file-wins precedence this reference already
+>   cites unchanged. The governance-body detail is new since 2026-08-08 and is
+>   recorded here as landscape context; it does not add a repository
+>   obligation, and this workspace's root `AGENTS.md` remains a seven-line
+>   shim regardless of upstream adoption scale.
+>
 ### Recorded navigation architecture
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Layer                       | Current tracked owner                                                               | Function                                                                                                                                 | Evidence and limit                                                                                                                                                                                                                             |
-| --------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Human discovery             | `README.md` and seven README registration surfaces named by the repository contract | Routes contributors to the machine entrypoint, map, outputs, scripts, and maintenance docs.                                              | Literal registration is validator-checked; discoverability or usage is not observed.                                                                                                                                                           |
-| Agent instruction discovery | `AGENTS.md` -> Stage 00 bootstrap/provider/Memory owners                            | Loads repository execution rules for compatible agents.                                                                                  | No direct LLM Wiki link in the root shim; provider loading is not proven by the tracked file.                                                                                                                                                  |
-| Thin machine entrypoint     | `llms.txt`                                                                          | Links nine canonical entrypoints and states tracked-source, runtime, secret, volume, Graphify, public-site, and full-content boundaries. | Authored file; repository contract gates required literals, not consumer behavior.                                                                                                                                                             |
-| Curated navigation          | `docs/90.references/data/0082-llm-wiki-index/repository-map.md`                                     | Maps eleven reader needs to canonical sources and maintenance entrypoints.                                                               | Small authored map; navigation aid only.                                                                                                                                                                                                       |
-| Generated path index        | `generate-llm-wiki-index.sh` -> `llm-wiki-index.md`                                 | Emits categorized safe path links and suffix-derived role labels.                                                                        | Stored file is 1,473 lines / 202,188 bytes with 1,339 path rows. The Stage 04 Task ledger records a Task 9a canonical write/check `PASS` at this row count; this reference did not re-run the check itself.                                    |
-| Generated coverage          | `generate-llm-wiki-coverage.sh` -> coverage snapshot                                | Emits source-bucket, category, and role counts with representative links.                                                                | Stored file is 127 lines / 11,911 bytes and states 1,338 safe paths, 17 buckets, 12 categories, and 7 roles. The Stage 04 Task ledger records a matching Task 9a canonical write/check `PASS`; this reference did not re-run the check itself. |
-| Maintenance and recovery    | Stage 05 Guide, Policy, and Runbook                                                 | Defines when to check/refresh, safety controls, and recovery handoff.                                                                    | Tracked operations contract; no hook or execution event is inferred.                                                                                                                                                                           |
-
-The stored index and coverage counts were measured directly from the current
-committed files and cross-checked against the Stage 04 Task ledger's Task 9a
-canonical write/check result, which independently reports the same 1,339/1,338
-figures. This reference still did not execute either generator's `--check`
-mode itself, so the Task ledger entry — not a re-run in this unit — is the
-evidence for current byte-exact freshness.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Layer                       | Current tracked owner                                                               | Function                                                                                                                                 | Evidence and limit                                                                                                                                                                                                                             |
+> | --------------------------- | ----------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Human discovery             | `README.md` and seven README registration surfaces named by the repository contract | Routes contributors to the machine entrypoint, map, outputs, scripts, and maintenance docs.                                              | Literal registration is validator-checked; discoverability or usage is not observed.                                                                                                                                                           |
+> | Agent instruction discovery | `AGENTS.md` -> Stage 00 bootstrap/provider/Memory owners                            | Loads repository execution rules for compatible agents.                                                                                  | No direct LLM Wiki link in the root shim; provider loading is not proven by the tracked file.                                                                                                                                                  |
+> | Thin machine entrypoint     | `llms.txt`                                                                          | Links nine canonical entrypoints and states tracked-source, runtime, secret, volume, Graphify, public-site, and full-content boundaries. | Authored file; repository contract gates required literals, not consumer behavior.                                                                                                                                                             |
+> | Curated navigation          | `docs/90.references/data/0082-llm-wiki-index/repository-map.md`                                     | Maps eleven reader needs to canonical sources and maintenance entrypoints.                                                               | Small authored map; navigation aid only.                                                                                                                                                                                                       |
+> | Generated path index        | `generate-llm-wiki-index.sh` -> `llm-wiki-index.md`                                 | Emits categorized safe path links and suffix-derived role labels.                                                                        | Stored file is 1,473 lines / 202,188 bytes with 1,339 path rows. The Stage 04 Task ledger records a Task 9a canonical write/check `PASS` at this row count; this reference did not re-run the check itself.                                    |
+> | Generated coverage          | `generate-llm-wiki-coverage.sh` -> coverage snapshot                                | Emits source-bucket, category, and role counts with representative links.                                                                | Stored file is 127 lines / 11,911 bytes and states 1,338 safe paths, 17 buckets, 12 categories, and 7 roles. The Stage 04 Task ledger records a matching Task 9a canonical write/check `PASS`; this reference did not re-run the check itself. |
+> | Maintenance and recovery    | Stage 05 Guide, Policy, and Runbook                                                 | Defines when to check/refresh, safety controls, and recovery handoff.                                                                    | Tracked operations contract; no hook or execution event is inferred.                                                                                                                                                                           |
+>
+> The stored index and coverage counts were measured directly from the current
+> committed files and cross-checked against the Stage 04 Task ledger's Task 9a
+> canonical write/check result, which independently reports the same 1,339/1,338
+> figures. This reference still did not execute either generator's `--check`
+> mode itself, so the Task ledger entry — not a re-run in this unit — is the
+> evidence for current byte-exact freshness.
+>
 ### Generator comparison
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Dimension           | Index generator                                                                                                   | Coverage generator                                                               | Shared boundary                                                                                                                                            |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Source set          | `git ls-files`, plus required local contract paths only when they exist.                                          | Same.                                                                            | Git-visible paths plus named local contract files; ignored/private state is outside observation.                                                           |
-| Self-exclusion      | Excludes the index output itself.                                                                                 | Excludes both the coverage output and generated index.                           | Prevents derived output recursion.                                                                                                                         |
-| Admission           | Root entrypoints; `.github/`, `.claude/`, `.codex/`; `docs/`, `infra/`, `scripts/`; and only `secrets/README.md`. | Same.                                                                            | `.agents/` and `.gemini/` do not satisfy the final admission rule even though they are current provider/compatibility surfaces elsewhere in the workspace. |
-| Suffix rule         | Allows `.conf`, `.env`, `.graphql`, `.json`, `.md`, `.proto`, `.sh`, `.toml`, `.txt`, `.yaml`, `.yml`.            | Same.                                                                            | Unsupported suffixes are excluded before final root-membership acceptance.                                                                                 |
-| Explicit exclusions | `graphify-out/`, `volumes/`, `.git/`, dependency/build/cache parts, minified files, and package-manager locks.    | Same.                                                                            | Secret content is excluded except `secrets/README.md`; path selection does not inspect secret values.                                                      |
-| Rendered meaning    | Twelve navigation categories, relative links, and seven filename/suffix-derived roles.                            | Source-bucket/category/role counts and up to three examples per bucket/category. | Classification is navigational metadata, not semantic document quality or runtime truth.                                                                   |
-| Freshness           | Reads the committed output and compares it byte for byte with the full rendered string.                           | Same.                                                                            | `--check` is the named exact freshness proof.                                                                                                              |
-
-> Historical evidence (not current authority; source: Git history): Generator behavior at the recorded research baseline; this is not the current admission contract.
-> The coverage generator contains a `.agents/` source-bucket branch, but its
-> shared admission predicate never admits `.agents/` paths. Neither generator
-> admits `.gemini/`. This is a current coverage-design observation for the
-> generator owner, not authorization to widen the allowlist.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Dimension           | Index generator                                                                                                   | Coverage generator                                                               | Shared boundary                                                                                                                                            |
+> | ------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Source set          | `git ls-files`, plus required local contract paths only when they exist.                                          | Same.                                                                            | Git-visible paths plus named local contract files; ignored/private state is outside observation.                                                           |
+> | Self-exclusion      | Excludes the index output itself.                                                                                 | Excludes both the coverage output and generated index.                           | Prevents derived output recursion.                                                                                                                         |
+> | Admission           | Root entrypoints; `.github/`, `.claude/`, `.codex/`; `docs/`, `infra/`, `scripts/`; and only `secrets/README.md`. | Same.                                                                            | `.agents/` and `.gemini/` do not satisfy the final admission rule even though they are current provider/compatibility surfaces elsewhere in the workspace. |
+> | Suffix rule         | Allows `.conf`, `.env`, `.graphql`, `.json`, `.md`, `.proto`, `.sh`, `.toml`, `.txt`, `.yaml`, `.yml`.            | Same.                                                                            | Unsupported suffixes are excluded before final root-membership acceptance.                                                                                 |
+> | Explicit exclusions | `graphify-out/`, `volumes/`, `.git/`, dependency/build/cache parts, minified files, and package-manager locks.    | Same.                                                                            | Secret content is excluded except `secrets/README.md`; path selection does not inspect secret values.                                                      |
+> | Rendered meaning    | Twelve navigation categories, relative links, and seven filename/suffix-derived roles.                            | Source-bucket/category/role counts and up to three examples per bucket/category. | Classification is navigational metadata, not semantic document quality or runtime truth.                                                                   |
+> | Freshness           | Reads the committed output and compares it byte for byte with the full rendered string.                           | Same.                                                                            | `--check` is the named exact freshness proof.                                                                                                              |
+>
+> > Historical evidence (not current authority; source: Git history): Generator behavior at the recorded research baseline; this is not the current admission contract.
+> > The coverage generator contains a `.agents/` source-bucket branch, but its
+> > shared admission predicate never admits `.agents/` paths. Neither generator
+> > admits `.gemini/`. This is a current coverage-design observation for the
+> > generator owner, not authorization to widen the allowlist.
+>
 ### Safety and metadata layers
-
-1. **Path selection safety:** both generators use the same allowlist/exclusion
-   structure, exclude secret content paths, and admit only the secret-handling
-   README as policy context.
-2. **Rendered-output safety:** relative links are generated from admitted paths;
-   no file contents are bundled. The index explicitly rejects full-content and
-   public-site roles.
-3. **Repository literal/safety contract:** `check-repo-contracts.sh` checks the
-   required files and README registrations, required boundary literals,
-   disallowed `file://` links and unsafe phrases, public-site scoping, forbidden
-   path markers in generated tables, and secret-link restrictions.
-4. **Metadata interpretation:** generated outputs use `status` plus
-   `generated_by`. The Stage 99 `generated` profile requires `generated_by`,
-   allows `status`, and forbids authored identity/parent/freshness fields. The
-   two LLM outputs are not among the three exact paths in
-   `common.generated_outputs`; their present `generated_by` metadata still
-   selects the generated profile, while byte ownership remains explicit in
-   each file and generator.
-5. **Canonical-source boundary:** `llms.txt`, the map, both outputs, and policy
-   state that tracked owners—not generated navigation—remain authoritative.
-   Graphify is excluded and advisory even when present.
-
-These layers are complementary. The aggregate repository contract does **not**
-invoke either generator in byte-exact `--check` mode; it validates structure,
-registrations, literals, and safety rules. Therefore a repository-contract
-result never substitutes for:
-
-```bash
-# doc-paths: illustrative
-bash scripts/knowledge/generate-llm-wiki-index.sh --check
-bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
-```
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> 1. **Path selection safety:** both generators use the same allowlist/exclusion
+>    structure, exclude secret content paths, and admit only the secret-handling
+>    README as policy context.
+> 2. **Rendered-output safety:** relative links are generated from admitted paths;
+>    no file contents are bundled. The index explicitly rejects full-content and
+>    public-site roles.
+> 3. **Repository literal/safety contract:** `check-repo-contracts.sh` checks the
+>    required files and README registrations, required boundary literals,
+>    disallowed `file://` links and unsafe phrases, public-site scoping, forbidden
+>    path markers in generated tables, and secret-link restrictions.
+> 4. **Metadata interpretation:** generated outputs use `status` plus
+>    `generated_by`. The Stage 99 `generated` profile requires `generated_by`,
+>    allows `status`, and forbids authored identity/parent/freshness fields. The
+>    two LLM outputs are not among the three exact paths in
+>    `common.generated_outputs`; their present `generated_by` metadata still
+>    selects the generated profile, while byte ownership remains explicit in
+>    each file and generator.
+> 5. **Canonical-source boundary:** `llms.txt`, the map, both outputs, and policy
+>    state that tracked owners—not generated navigation—remain authoritative.
+>    Graphify is excluded and advisory even when present.
+>
+> These layers are complementary. The aggregate repository contract does **not**
+> invoke either generator in byte-exact `--check` mode; it validates structure,
+> registrations, literals, and safety rules. Therefore a repository-contract
+> result never substitutes for:
+>
+> ```bash
+> # doc-paths: illustrative
+> Historical evidence (not current authority; source: Git history):
+> bash scripts/knowledge/generate-llm-wiki-index.sh --check
+> bash scripts/knowledge/generate-llm-wiki-coverage.sh --check
+> ```
+>
 ### Named freshness baseline
-
-| Command                                                        | Historical Task 6 result                                    | Later Task-ledger result                                                                       | Interpretation and owner                                                                                                                                                          |
-| -------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bash scripts/knowledge/generate-llm-wiki-index.sh --check`    | Exit 1: `FAIL: stale generated LLM Wiki index`              | Task 9a canonical write/check recorded `PASS` at 1,339 rows in the Stage 04 Task ledger.       | Task 6 exit 1 is a preserved historical observation, superseded by the Task 9a/10b regeneration. This reference did not re-execute the command; the ledger entry is the evidence. |
-| `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Exit 1: `FAIL: stale generated LLM Wiki coverage snapshot`  | Task 9a canonical write/check recorded `PASS` at 1,338 safe paths in the Stage 04 Task ledger. | Task 6 exit 1 is a preserved historical observation, superseded by the Task 9a/10b regeneration. This reference did not re-execute the command; the ledger entry is the evidence. |
-| `bash scripts/validation/check-repo-contracts.sh`              | Aggregate validation is run separately for authored leaves. | Aggregate validation is run separately for authored leaves.                                    | May expose reference/profile or LLM literal/safety findings, but cannot change either freshness result because it does not execute the named checks.                              |
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Command                                                        | Historical Task 6 result                                    | Later Task-ledger result                                                                       | Interpretation and owner                                                                                                                                                          |
+> | -------------------------------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `bash scripts/knowledge/generate-llm-wiki-index.sh --check`    | Exit 1: `FAIL: stale generated LLM Wiki index`              | Task 9a canonical write/check recorded `PASS` at 1,339 rows in the Stage 04 Task ledger.       | Task 6 exit 1 is a preserved historical observation, superseded by the Task 9a/10b regeneration. This reference did not re-execute the command; the ledger entry is the evidence. |
+> | `bash scripts/knowledge/generate-llm-wiki-coverage.sh --check` | Exit 1: `FAIL: stale generated LLM Wiki coverage snapshot`  | Task 9a canonical write/check recorded `PASS` at 1,338 safe paths in the Stage 04 Task ledger. | Task 6 exit 1 is a preserved historical observation, superseded by the Task 9a/10b regeneration. This reference did not re-execute the command; the ledger entry is the evidence. |
+> | `bash scripts/validation/check-repo-contracts.sh`              | Aggregate validation is run separately for authored leaves. | Aggregate validation is run separately for authored leaves.                                    | May expose reference/profile or LLM literal/safety findings, but cannot change either freshness result because it does not execute the named checks.                              |
+>
 ### Implementation status, gaps, and risks
-
-- **Implemented:** thin authored entrypoint, human README registrations,
-  curated map, two deterministic generators, two committed outputs, safety
-  scans, maintenance ownership, and exact check modes.
-- **Regenerated:** both generated outputs were stale at the Task 6 baseline
-  and were subsequently regenerated by Task 9a/10b; the Stage 04 Task ledger
-  records a canonical write/check `PASS` at 1,339 index rows and 1,338
-  coverage safe paths, matching this reference's direct file measurement.
-  Re-confirmed again this revision: `git log` shows neither generator script
-  nor either generated output has changed since the commit that produced
-  this PASS state, and direct `wc`/`grep` re-measurement of both stored
-  files on 2026-08-14 still returns the same 1,339/1,338 figures. This is a
-  second independent no-drift observation, not a re-run of `--check` itself.
-  This reference did not itself run either generator, so the ledger entry —
-  not a fresh `--check` execution — is the evidence for the current PASS
-  state.
-- **Partial discovery:** root README exposes the LLM Wiki; root `AGENTS.md`
-  delegates to governance but does not link it directly. The system is
-  on-demand, and no tracked evidence proves which route agents actually read.
-- **Coverage question:** `.agents/` and `.gemini/` are omitted from generated
-  safe paths by the final allowlist despite being tracked compatibility/provider
-  surfaces. A future approved generator change must decide intent and preserve
-  safety; this reference does not prescribe the answer.
-- **Context risk:** the index is large, but it is not auto-loaded by the
-  local contract. Size alone does not prove context consumption or failure.
-- **Evidence risk:** passing only `check-repo-contracts.sh` can leave stale
-  bytes undetected regardless of the current PASS state, because it does not
-  execute either named `--check` command. CI/QA owners must retain both
-  explicit freshness commands wherever byte-exact currency is required.
-- **Privacy boundary:** no ignored file, secret value, volume, raw log, private
-  provider state, or external model interaction was read for this analysis.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - **Implemented:** thin authored entrypoint, human README registrations,
+>   curated map, two deterministic generators, two committed outputs, safety
+>   scans, maintenance ownership, and exact check modes.
+> - **Regenerated:** both generated outputs were stale at the Task 6 baseline
+>   and were subsequently regenerated by Task 9a/10b; the Stage 04 Task ledger
+>   records a canonical write/check `PASS` at 1,339 index rows and 1,338
+>   coverage safe paths, matching this reference's direct file measurement.
+>   Re-confirmed again this revision: `git log` shows neither generator script
+>   nor either generated output has changed since the commit that produced
+>   this PASS state, and direct `wc`/`grep` re-measurement of both stored
+>   files on 2026-08-14 still returns the same 1,339/1,338 figures. This is a
+>   second independent no-drift observation, not a re-run of `--check` itself.
+>   This reference did not itself run either generator, so the ledger entry —
+>   not a fresh `--check` execution — is the evidence for the current PASS
+>   state.
+> - **Partial discovery:** root README exposes the LLM Wiki; root `AGENTS.md`
+>   delegates to governance but does not link it directly. The system is
+>   on-demand, and no tracked evidence proves which route agents actually read.
+> - **Coverage question:** `.agents/` and `.gemini/` are omitted from generated
+>   safe paths by the final allowlist despite being tracked compatibility/provider
+>   surfaces. A future approved generator change must decide intent and preserve
+>   safety; this reference does not prescribe the answer.
+> - **Context risk:** the index is large, but it is not auto-loaded by the
+>   local contract. Size alone does not prove context consumption or failure.
+> - **Evidence risk:** passing only `check-repo-contracts.sh` can leave stale
+>   bytes undetected regardless of the current PASS state, because it does not
+>   execute either named `--check` command. CI/QA owners must retain both
+>   explicit freshness commands wherever byte-exact currency is required.
+> - **Privacy boundary:** no ignored file, secret value, volume, raw log, private
+>   provider state, or external model interaction was read for this analysis.
+>
 ### Carried source-evidence claims
-
-- **Registration literals are enforced across five index READMEs.** The
-  repository contract check requires named registration literals in the repository
-  root `README.md`, `docs/README.md`, `docs/90.references/README.md`,
-  `scripts/README.md` and `docs/90.references/data/README.md`, which is how a
-  generated index avoids being orphaned from the trees that should route to it.
-  Re-derived 2026-08-19 from the enforcement block itself, which holds exactly
-  five path entries. A count of README mentions in that block returns seven,
-  because two of the checked literals are themselves README paths; the
-  enforcement covers five files.
-
-Source-evidence claims carried forward from the superseded 2026-07-05
-research pack on 2026-08-19. Each states what the upstream evidence supports
-and, where it matters more, what it does not.
-
-- **The full-content companion file is not part of the external proposal.** The proposal does not define a companion file; the site cites a project-specific expansion — FastHTML's `llms-ctx-full.txt`, named here 2026-08-19 because the generic phrase leaves nothing recoverable after the retiring leaf is deleted — as an example. Reading the companion file as specified by the proposal overstates what the external convention requires.
-- **A cited vendor guide path redirects and serves no content.** The `developers.openai.com` guide path for `AGENTS.md` returns an HTTP 308 redirect and serves nothing directly, so its redirect target on `learn.chatgpt.com` must be cited instead. Both hosts are named here because the rule is unactionable without them. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - **Registration literals are enforced across five index READMEs.** The
+>   repository contract check requires named registration literals in the repository
+>   root `README.md`, `docs/README.md`, `docs/90.references/README.md`,
+>   `scripts/README.md` and `docs/90.references/data/README.md`, which is how a
+>   generated index avoids being orphaned from the trees that should route to it.
+>   Re-derived 2026-08-19 from the enforcement block itself, which holds exactly
+>   five path entries. A count of README mentions in that block returns seven,
+>   because two of the checked literals are themselves README paths; the
+>   enforcement covers five files.
+>
+> Source-evidence claims carried forward from the superseded 2026-07-05
+> research pack on 2026-08-19. Each states what the upstream evidence supports
+> and, where it matters more, what it does not.
+>
+> - **The full-content companion file is not part of the external proposal.** The proposal does not define a companion file; the site cites a project-specific expansion — FastHTML's `llms-ctx-full.txt`, named here 2026-08-19 because the generic phrase leaves nothing recoverable after the retiring leaf is deleted — as an example. Reading the companion file as specified by the proposal overstates what the external convention requires.
+> - **A cited vendor guide path redirects and serves no content.** The `developers.openai.com` guide path for `AGENTS.md` returns an HTTP 308 redirect and serves nothing directly, so its redirect target on `learn.chatgpt.com` must be cited instead. Both hosts are named here because the rule is unactionable without them. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
+>
 ## Scope Implications
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Scope          | LLM Wiki implication                                                                                                                                              |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agentic`      | `AGENTS.md` instruction loading and `llms.txt` navigation are distinct; provider execution or actual context ingestion remains unverified.                        |
-| `architecture` | The map can route to architecture owners, but generated navigation cannot replace ARDs, ADRs, Specs, or architectural review.                                     |
-| `backend`      | No current backend application surface was established; future APIs may add safe paths only after approved source and documentation owners exist.                 |
-| `common`       | Relative links, deterministic ordering, naming, review, and diff hygiene apply to both authored and generated surfaces.                                           |
-| `docs`         | Direct owner of authored navigation and generated-document workflow; exact freshness checks are required after applicable path changes.                           |
-| `entry`        | Gateway paths may be indexed as tracked infra/config context; live edge, certificate, and request behavior remain outside the wiki.                               |
-| `frontend`     | Storybook paths are not admitted by the current final allowlist unless they match an admitted top-level surface; no product frontend coverage is inferred.        |
-| `infra`        | Admitted `infra/` paths are navigation only. Compose definitions do not prove running services, health, backup, or deployment.                                    |
-| `meta`         | Generated-profile semantics, path classification, coverage categories, and exact owners are metadata concerns; changes route through approved Stage 00/99 owners. |
-| `mobile`       | No current mobile source surface was established; mobile navigation is not applicable until an approved surface exists.                                           |
-| `ops`          | Stage 05 Guide/Policy/Runbook own maintenance and recovery; no runtime hook or successful refresh event is inferred from their presence.                          |
-| `product`      | Product intent should determine which canonical sources deserve curated prominence; the index's exhaustive path list is not prioritization evidence.              |
-| `qa`           | Must distinguish literal/safety contract checks from the two named byte-exact freshness checks and preserve failing baselines until their owner acts.             |
-| `security`     | Secret contents, volumes, dependencies, minified outputs, raw logs, and Graphify evidence are excluded; only `secrets/README.md` is admitted as policy context.   |
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Scope          | LLM Wiki implication                                                                                                                                              |
+> | -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `agentic`      | `AGENTS.md` instruction loading and `llms.txt` navigation are distinct; provider execution or actual context ingestion remains unverified.                        |
+> | `architecture` | The map can route to architecture owners, but generated navigation cannot replace ARDs, ADRs, Specs, or architectural review.                                     |
+> | `backend`      | No current backend application surface was established; future APIs may add safe paths only after approved source and documentation owners exist.                 |
+> | `common`       | Relative links, deterministic ordering, naming, review, and diff hygiene apply to both authored and generated surfaces.                                           |
+> | `docs`         | Direct owner of authored navigation and generated-document workflow; exact freshness checks are required after applicable path changes.                           |
+> | `entry`        | Gateway paths may be indexed as tracked infra/config context; live edge, certificate, and request behavior remain outside the wiki.                               |
+> | `frontend`     | Storybook paths are not admitted by the current final allowlist unless they match an admitted top-level surface; no product frontend coverage is inferred.        |
+> | `infra`        | Admitted `infra/` paths are navigation only. Compose definitions do not prove running services, health, backup, or deployment.                                    |
+> | `meta`         | Generated-profile semantics, path classification, coverage categories, and exact owners are metadata concerns; changes route through approved Stage 00/99 owners. |
+> | `mobile`       | No current mobile source surface was established; mobile navigation is not applicable until an approved surface exists.                                           |
+> | `ops`          | Stage 05 Guide/Policy/Runbook own maintenance and recovery; no runtime hook or successful refresh event is inferred from their presence.                          |
+> | `product`      | Product intent should determine which canonical sources deserve curated prominence; the index's exhaustive path list is not prioritization evidence.              |
+> | `qa`           | Must distinguish literal/safety contract checks from the two named byte-exact freshness checks and preserve failing baselines until their owner acts.             |
+> | `security`     | Secret contents, volumes, dependencies, minified outputs, raw logs, and Graphify evidence are excluded; only `secrets/README.md` is admitted as policy context.   |
+>
 ## Sources
-
-| Source                                                                                                                        | Accessed   | Class                            | Verification state                                                                                                                                                    |
-| ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`llms.txt` proposal, re-fetched](https://llmstxt.org/)                                                                       | 2026-08-14 | External mutable                 | Direct page HTTP 200; now v2 — H1-only-required and optional-section structure unchanged, `llms_txt2ctx` mechanical semantics dropped, link-relation discovery added. |
-| [`llms.txt` v1-to-v2 changes](https://llmstxt.org/changes.html)                                                               | 2026-08-14 | External mutable                 | Direct page HTTP 200; itemizes the discoverability, URL-flexibility, hierarchy, and semantics changes cited above.                                                    |
-| [`AGENTS.md` convention, re-fetched](https://agents.md/)                                                                      | 2026-08-14 | External mutable                 | Direct page HTTP 200; root/nearest-file/standard-Markdown claims unchanged; now states Agentic AI Foundation / Linux Foundation governance and 60k+ project adoption. |
-| [Root LLM entrypoint](../../../../llms.txt)                                                                                   | 2026-08-11 | Workspace tracked                | Complete 30-line file re-read; unchanged from Task 6 baseline.                                                                                                        |
-| [Root agent shim](../../../../AGENTS.md)                                                                                      | 2026-08-11 | Workspace tracked                | Complete seven-line file re-read; no direct LLM Wiki registration; unchanged.                                                                                         |
-| [Root README](../../../../README.md)                                                                                          | 2026-08-08 | Workspace tracked                | LLM Wiki routes and index-check entrypoint verified directly.                                                                                                         |
-| LLM Wiki references                                                                               | 2026-08-08 | Workspace tracked                | Current category, safety, generation, and ownership description.                                                                                                      |
-| Curated repository map                                                                    | 2026-08-08 | Workspace tracked                | Eleven current need-to-owner rows; advisory navigation only.                                                                                                          |
-| Index generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-index.sh`)                                                   | 2026-08-11 | Workspace tracked executable     | Now a 553-line generator (grew from 336 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
-| Coverage generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-coverage.sh`)                                             | 2026-08-11 | Workspace tracked executable     | Now a 606-line generator (grew from 389 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
-| Generated index                                                                           | 2026-08-11 | Workspace generated              | Stored output inspected directly: 1,473 lines / 202,188 bytes / 1,339 path rows; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                   |
-| Generated coverage                                                | 2026-08-11 | Workspace generated              | Stored output inspected directly: 127 lines / 11,911 bytes / 1,338 safe paths; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                     |
-| Stage 04 Task ledger: generated-artifact inventory (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`) | 2026-08-11 | Workspace tracked                | Records Task 9a canonical write/check `PASS` at 1,339 index rows and 1,338 coverage safe paths, superseding the Task 6 FAIL baseline.                                 |
-| Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                            | 2026-08-08 | Workspace tracked                | Reference/generated roles and registered-output behavior verified.                                                                                                    |
-| Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                         | 2026-08-08 | Workspace tracked executable     | LLM Wiki literal/safety block read directly; does not invoke generators.                                                                                              |
-| Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
-| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Source                                                                                                                        | Accessed   | Class                            | Verification state                                                                                                                                                    |
+> | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | [`llms.txt` proposal, re-fetched](https://llmstxt.org/)                                                                       | 2026-08-14 | External mutable                 | Direct page HTTP 200; now v2 — H1-only-required and optional-section structure unchanged, `llms_txt2ctx` mechanical semantics dropped, link-relation discovery added. |
+> | [`llms.txt` v1-to-v2 changes](https://llmstxt.org/changes.html)                                                               | 2026-08-14 | External mutable                 | Direct page HTTP 200; itemizes the discoverability, URL-flexibility, hierarchy, and semantics changes cited above.                                                    |
+> | [`AGENTS.md` convention, re-fetched](https://agents.md/)                                                                      | 2026-08-14 | External mutable                 | Direct page HTTP 200; root/nearest-file/standard-Markdown claims unchanged; now states Agentic AI Foundation / Linux Foundation governance and 60k+ project adoption. |
+> | [Root LLM entrypoint](../../../../llms.txt)                                                                                   | 2026-08-11 | Workspace tracked                | Complete 30-line file re-read; unchanged from Task 6 baseline.                                                                                                        |
+> | [Root agent shim](../../../../AGENTS.md)                                                                                      | 2026-08-11 | Workspace tracked                | Complete seven-line file re-read; no direct LLM Wiki registration; unchanged.                                                                                         |
+> | [Root README](../../../../README.md)                                                                                          | 2026-08-08 | Workspace tracked                | LLM Wiki routes and index-check entrypoint verified directly.                                                                                                         |
+> | LLM Wiki references                                                                               | 2026-08-08 | Workspace tracked                | Current category, safety, generation, and ownership description.                                                                                                      |
+> | Curated repository map                                                                    | 2026-08-08 | Workspace tracked                | Eleven current need-to-owner rows; advisory navigation only.                                                                                                          |
+> | Index generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-index.sh`)                                                   | 2026-08-11 | Workspace tracked executable     | Now a 553-line generator (grew from 336 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
+> | Coverage generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-coverage.sh`)                                             | 2026-08-11 | Workspace tracked executable     | Now a 606-line generator (grew from 389 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
+> | Generated index                                                                           | 2026-08-11 | Workspace generated              | Stored output inspected directly: 1,473 lines / 202,188 bytes / 1,339 path rows; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                   |
+> | Generated coverage                                                | 2026-08-11 | Workspace generated              | Stored output inspected directly: 127 lines / 11,911 bytes / 1,338 safe paths; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                     |
+> | Stage 04 Task ledger: generated-artifact inventory (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`) | 2026-08-11 | Workspace tracked                | Records Task 9a canonical write/check `PASS` at 1,339 index rows and 1,338 coverage safe paths, superseding the Task 6 FAIL baseline.                                 |
+> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                            | 2026-08-08 | Workspace tracked                | Reference/generated roles and registered-output behavior verified.                                                                                                    |
+> | Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                         | 2026-08-08 | Workspace tracked executable     | LLM Wiki literal/safety block read directly; does not invoke generators.                                                                                              |
+> | Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
+>
 ## Scope Application
-
-| Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-| --- | --- | --- | --- | --- |
-| agentic | applies | Offer a narrow entry point for agent navigation. | Inspect declared entry paths. | No provider-loading claim. |
-| architecture | applies | Link to canonical architecture owners. | Resolve the target path. | Map is not authority. |
-| common | applies | Exclude unsafe or untracked material. | Inspect generator rules. | Rules are not execution proof. |
-| docs | applies | Regenerate only through the declared owner. | Confirm manifest outputs. | Generator was not run. |
-| infra | applies | Resolve infrastructure references through their canonical owner. | Check the target path before publishing a map. | No runtime evidence. |
-| ops | applies | Treat old operation links as pointers requiring validation. | Resolve current catalog target. | No operation is inferred. |
-| qa | applies | Pair byte checks with semantic/link review. | Record separate checks. | `--check` is narrow. |
-| security | applies | Retain safe-path exclusions. | Inspect tracked exclusions. | No security testing. |
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Offer a narrow entry point for agent navigation. | Inspect declared entry paths. | No provider-loading claim. |
+> | architecture | applies | Link to canonical architecture owners. | Resolve the target path. | Map is not authority. |
+> | common | applies | Exclude unsafe or untracked material. | Inspect generator rules. | Rules are not execution proof. |
+> | docs | applies | Regenerate only through the declared owner. | Confirm manifest outputs. | Generator was not run. |
+> | infra | applies | Resolve infrastructure references through their canonical owner. | Check the target path before publishing a map. | No runtime evidence. |
+> | ops | applies | Treat old operation links as pointers requiring validation. | Resolve current catalog target. | No operation is inferred. |
+> | qa | applies | Pair byte checks with semantic/link review. | Record separate checks. | `--check` is narrow. |
+> | security | applies | Retain safe-path exclusions. | Inspect tracked exclusions. | No security testing. |
+>
 ## 2026-09-05 Revalidation
-
-Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-The LLM Wiki remains a generated navigation projection owned by
-`scripts/knowledge/generate-llm-wiki.py`; it is not policy or semantic
-authority. The new RES-0084 member changes the tracked path set, so the owner
-generator must refresh its declared outputs before `--check` can pass. The older
-Graphify report is stale and noisy and therefore advisory only.
-
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Generated route | DATA-0082 and repository map are manifest-owned outputs | Repository-enforced | Semantic quality is not guaranteed by path freshness | generator `--check` plus link checks |
-| Authored/generated boundary | Registry rejects unowned generated changes | Repository-enforced | None for current ownership model | generated-ownership contract tests |
-| Knowledge graph | Graphify snapshot exists | Unverified currentness | Snapshot predates baseline and has high isolation noise | refresh only through graph owner command |
-
-Recommendation: run `--write` only when the check reports path-set staleness;
-never hand-edit generated outputs or treat graph ranking as canonical truth.
-
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> The LLM Wiki remains a generated navigation projection owned by
+> `scripts/knowledge/generate-llm-wiki.py`; it is not policy or semantic
+> authority. The new RES-0084 member changes the tracked path set, so the owner
+> generator must refresh its declared outputs before `--check` can pass. The older
+> Graphify report is stale and noisy and therefore advisory only.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Generated route | DATA-0082 and repository map are manifest-owned outputs | Repository-enforced | Semantic quality is not guaranteed by path freshness | generator `--check` plus link checks |
+> | Authored/generated boundary | Registry rejects unowned generated changes | Repository-enforced | None for current ownership model | generated-ownership contract tests |
+> | Knowledge graph | Graphify snapshot exists | Unverified currentness | Snapshot predates baseline and has high isolation noise | refresh only through graph owner command |
+>
+> Recommendation: run `--write` only when the check reports path-set staleness;
+> never hand-edit generated outputs or treat graph ranking as canonical truth.
+>
 ## Maintenance
-
-Run both named `--check` commands after applicable tracked path or route changes
-and regenerate only through their canonical scripts in the approved unit.
-Re-read the scripts, metadata profiles, safety block, discovery surfaces, and
-actual generated outputs when their owners change. Reopen external convention
-pages before relying on mutable guidance. Never conceal a stale result behind
-an aggregate contract result. This reference's 2026-08-11 re-verification read
-the current committed outputs and the Stage 04 Task ledger's Task 9a PASS
-entry, but did not itself execute either `--check` command; a task authorized
-to run the generators still owes the next live confirmation.
-
-One cited path has a known expiry. The maintenance policy is cited at
-`docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`, which is
-correct on this branch. The unmerged `codex/sdlc-taxonomy-convergence` branch
-consolidates that subject's guide, policy, and runbook into a single
-`docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/`
-directory with the role carried by the file name. Re-resolve this link, and any
-generated route that indexes it, when that convergence merges. See the
-operations path convergence entry in
-[SDLC document roles](./m0016-sdlc-document-roles.md) for the full mapping.
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Run both named `--check` commands after applicable tracked path or route changes
+> and regenerate only through their canonical scripts in the approved unit.
+> Re-read the scripts, metadata profiles, safety block, discovery surfaces, and
+> actual generated outputs when their owners change. Reopen external convention
+> pages before relying on mutable guidance. Never conceal a stale result behind
+> an aggregate contract result. This reference's 2026-08-11 re-verification read
+> the current committed outputs and the Stage 04 Task ledger's Task 9a PASS
+> entry, but did not itself execute either `--check` command; a task authorized
+> to run the generators still owes the next live confirmation.
+>
+> One cited path has a known expiry. The maintenance policy is cited at
+> `docs/05.operations/policies/00-workspace/llm-wiki-maintenance.md`, which is
+> correct on this branch. The unmerged `codex/sdlc-taxonomy-convergence` branch
+> consolidates that subject's guide, policy, and runbook into a single
+> `docs/05.operations/catalog/00-workspace/ops-0007-llm-wiki-maintenance/`
+> directory with the role carried by the file name. Re-resolve this link, and any
+> generated route that indexes it, when that convergence merges. See the
+> operations path convergence entry in
+> [SDLC document roles](./m0016-sdlc-document-roles.md) for the full mapping.
+>
 
 ## Related Documents
 
@@ -356,3 +483,5 @@ operations path convergence entry in
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - LLM Wiki category
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Research pack navigation](README.md)

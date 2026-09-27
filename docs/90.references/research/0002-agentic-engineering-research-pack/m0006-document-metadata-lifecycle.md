@@ -1,10 +1,10 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.1.2"
+version: "1.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002-m0006"
 parent_ids:
@@ -17,369 +17,491 @@ review_cycle: "on-source-change"
 
 # Reference: Document Metadata and Lifecycle
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked: 2026-09-27. Document updated: 2026-09-27. Historical workspace observations retain their original dates/commits below. Current local adoption and implementation: **Not assessed in this run**. This non-normative research changes no policy, profile, service or integration.
+
+## Current External Research
+
+### Question and evidence boundary
+
+How can metadata make a document identifiable, reviewable and recoverable without implying content or runtime validation? DCMI distinguishes identity, type, creation/modification/issue dates, provenance, relations and versions/replacements. These vocabulary distinctions inform an application profile; they do not prescribe Markdown fields. PROV-O separates entities, activities and agents, distinguishing an artifact from the work that produced it. No ontology implementation is recommended just to retain those distinctions (C-m0006-01–02).
+
+| Concern | Meaning/boundary | Error to avoid |
+| --- | --- | --- |
+| Identity | Stable logical artifact through approved changes | Reissue on rename or reuse a retired ID |
+| Content version | Meaningful content revision under its contract | Equate with approval or deployed software |
+| Document lifecycle | State under the governing profile | Treat published Incident as resolved event |
+| Event state | Actual incident/execution/release/review fact | Treat template, issue status, tag or date as execution proof |
+| Provenance | Source, actor/activity, baseline and scope | Replace source context with formatting date |
+| Relationship | Distinguish parent, citation, part/version and replacement | Put all references in parents or reverse supersession |
+
+### Dates, freshness and retirement
+
+Recommendation: distinguish `repository_baseline`, `external_sources_checked_at`, `document_updated_at` and `historical_workspace_observation` in body tables where frontmatter admits no new keys. Preserve publisher dates or Not stated. Editing does not renew a historical observation; retrieval is not approval or review. This revision changes document version/update only; external checks are dated 2026-09-27 while prior observed/reviewed dates remain intact (C-m0006-03).
+
+Review freshness by volatility and consequence: reopen price, SaaS permissions, APIs and invocation syntax before purchase/integration. Preserve fixed-publication identity and check supersession. Relevant environment/dependency changes prompt runbook review before execution. Age prompts review, not invalidity, permission to delete or approval to execute.
+
+Recommendation: before retiring a document identify still-current meaning/consumers, cut over to authorized owners, preserve evidence under the existing disposition contract, update navigation and retain provenance. Preserve decision alternatives/history that explain design. Sensitive/private material remains subject to its access/retention policy; possible future usefulness does not justify retaining secrets or raw logs (C-m0006-04).
+
+One owner-defined profile with focused validation avoids independent field conventions, but syntax cannot prove content correctness, stakeholder acceptance or runtime state. This reference does not copy Registry arrays or change contracts. Local adoption is **Not assessed in this run**. [Document roles](m0016-sdlc-document-roles.md), [reader/navigation design](m0007-documentation-architecture.md) and [SDD traceability](m0018-spec-driven-sdlc.md) own their detailed explanations.
+
+## Claims and Sources
+
+Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
+
+| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0006-01 | DCMI distinguishes metadata identity/type/dates/relations/versions/provenance | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation | Fact | Application-profile vocabulary, not local schema |
+| C-m0006-02 | PROV-O separates entities, activities, agents and derivation/revisions | S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation | Fact | No ontology adoption/conformance |
+| C-m0006-03 | Separate checks/edits/reviews/baselines/historical observation and review freshness by risk | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2020-01-20; 2013-04-30 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation; PROV-O; W3C Recommendation | Recommendation | Local profile admits fields; no universal expiry |
+| C-m0006-04 | Retire after approved owner/consumer cutover and preservation; age/count insufficient | S-cognitect-architecture-decisions — ADR format; status; consequences; supersession; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2011-11-15; 2013-04-30 | 2026-09-27 | Original author article; PROV-O; W3C Recommendation | Recommendation | No disposition performed; current local authority separate |
+
+| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
+| --- | --- | --- | --- | --- |
+| S-dublincore-dcmi-terms | [Introduction; identifier/created/modified/issued/provenance/version/replacement](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation |
+| S-w3c-prov-o | [Starting Point Terms; Expanded Terms](https://www.w3.org/TR/prov-o/) | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation |
+| S-cognitect-architecture-decisions | [ADR format; status; consequences; supersession](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2011-11-15 | 2026-09-27 | Original author article |
+
+## Future Internal Checks
+
+Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
+
+| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Dates / C-m0006-01,03 | Repository; docs/evidence | Document/source refresh | Confirmed research metadata; hypothetical lifecycle artifact | Are publication/check/edit/review/observation distinct without ID reissue? | Scoped metadata diff and source-read receipt | Authorized provenance review | Pass: history/identity/date semantics retained; fail: redated observation/invented approval | Document-only scope; no private records | Documentation owner | Not assessed in this run |
+| Retention / C-m0006-04 | Repository; docs/governance | Replacement/retirement proposed | Confirmed documentation protocol route; hypothetical disposition packet | Where did meaning and every consumer move, and how is original evidence preserved? | Approved disposition/source boundary/body/consumer map | Bounded preservation/link comparison | Pass: owners/consumers/provenance preserved; fail: Git-only removal/unresolved owner | Archive/retirement authorization required | Documentation/governance owner | Not assessed in this run |
+
+## Historical Workspace Observations
+
+Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
 
 ## Overview
 
-Document lifecycle in this workspace is a typed application-profile system,
-not a universal frontmatter convention. The Stage 99 registry binds a path and
-role to required/optional/forbidden keys, direct-parent types, headings,
-template, lifecycle values, transition rules, and explicit exceptions.
-Human-readable contracts explain intent; the metadata checker interprets the
-machine contract.
-
-The historical analysis was re-derived at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
-(2026-08-14), superseding the Task 5 baseline
-`0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee` previously cited. It separates
-dated path counts, frontmatter states, typed migration depth, template
-sources, generated outputs, README exceptions, and archive tombstones so none
-is mistaken for another.
+> Historical evidence (not current authority; source: Git history):
+>
+> Document lifecycle in this workspace is a typed application-profile system,
+> not a universal frontmatter convention. The Stage 99 registry binds a path and
+> role to required/optional/forbidden keys, direct-parent types, headings,
+> template, lifecycle values, transition rules, and explicit exceptions.
+> Human-readable contracts explain intent; the metadata checker interprets the
+> machine contract.
+>
+> The historical analysis was re-derived at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
+> (2026-08-14), superseding the Task 5 baseline
+> `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee` previously cited. It separates
+> dated path counts, frontmatter states, typed migration depth, template
+> sources, generated outputs, README exceptions, and archive tombstones so none
+> is mistaken for another.
+>
 
 ## Purpose
 
-Explain how identity, type, parents, supersession, freshness, status, templates,
-validation, migration exceptions, archive provenance, and retention signals
-work together. Identify which parts are executable today and which remain
-unexercised or legacy-partial without proposing changes to the contracts.
+> Historical evidence (not current authority; source: Git history):
+>
+> Explain how identity, type, parents, supersession, freshness, status, templates,
+> validation, migration exceptions, archive provenance, and retention signals
+> work together. Identify which parts are executable today and which remain
+> unexercised or legacy-partial without proposing changes to the contracts.
+>
 
 ## Repository Role
 
-This Stage 90 reference is advisory. The current machine owner is the
-[Stage 99 Registry](../../../99.templates/registry.json), consumed by
-`scripts/validation/check-document-metadata.py`. canonical agent governance owns authoring and
-approval; the current Stage 03 Task owns execution evidence. Stage 98 preserves
-frozen bodies and separate disposition records. Dated measurements below do not
-authorize a metadata change, lifecycle transition, migration, or runtime action.
+> Historical evidence (not current authority; source: Git history):
+>
+> This Stage 90 reference is advisory. The current machine owner is the
+> [Stage 99 Registry](../../../99.templates/registry.json), consumed by
+> `scripts/validation/check-document-metadata.py`. canonical agent governance owns authoring and
+> approval; the current Stage 03 Task owns execution evidence. Stage 98 preserves
+> frozen bodies and separate disposition records. Dated measurements below do not
+> authorize a metadata change, lifecycle transition, migration, or runtime action.
+>
 
 ## Scope
 
 ### In scope
 
-- Typed frontmatter roles and direct relation semantics.
-- Current lifecycle vocabulary and transition boundary.
-- Current active/archive/template measurements and legacy migration limits.
-- README, governance, generated, template-source, and archive exceptions.
-- Retention review signals and archive provenance boundaries.
+> Historical evidence (not current authority; source: Git history):
+>
+> - Typed frontmatter roles and direct relation semantics.
+> - Current lifecycle vocabulary and transition boundary.
+> - Current active/archive/template measurements and legacy migration limits.
+> - README, governance, generated, template-source, and archive exceptions.
+> - Retention review signals and archive provenance boundaries.
+>
 
 ### Out of scope
 
-- Editing the registry, templates, validators, corpus, archive, or generators.
-- Inferring metadata from naming resemblance or copying arrays from this leaf.
-- Bulk normalization, reverse transitions, deletion, or archive promotion.
-- Treating a freshness date, status, graph edge, or generated index as proof of
-  current runtime behavior.
+> Historical evidence (not current authority; source: Git history):
+>
+> - Editing the registry, templates, validators, corpus, archive, or generators.
+> - Inferring metadata from naming resemblance or copying arrays from this leaf.
+> - Bulk normalization, reverse transitions, deletion, or archive promotion.
+> - Treating a freshness date, status, graph edge, or generated index as proof of
+>   current runtime behavior.
+>
 
 ## Definitions / Facts
 
 ### Application-profile model
 
-| Concern               | Canonical representation                                                      | Meaning and boundary                                                                                                                            |
-| --------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| Identity              | `artifact_id`                                                                 | Stable typed identity across links and approved moves; a filename/number alone is not a cross-stage key.                                        |
-| Role                  | `type`                                                               | The unique `family/kind` classifier maps to one Registry profile; older classifier examples are historical only.      |
-| Direct parents        | `parent_ids`                                                                  | Evidence-backed direct upstream artifacts admitted by the child profile. Ordering is deterministic presentation, not priority or approval rank. |
-| Replacement direction | `supersedes`                                                                  | Optional typed relation from current artifact to replaced identity where the profile admits it. It does not erase history.                      |
-| Freshness             | `reviewed_at`, `review_cycle`                                                 | Profile-specific review evidence, not universal fields and not automatic truth.                                                                 |
-| Lifecycle             | `status`                                                                      | Document-state vocabulary; body/event state remains separate for Incident and other operational records.                                        |
-| Generation            | `generated_by`                                                                | Identifies a canonical generator where admitted; does not replace required lifecycle state or permit hand editing.                              |
-| Archive provenance    | Registry-declared disposition record and Git source proof | Frozen body and disposition evidence are separate; neither is current guidance.                                          |
-
-Every governed target resolves to exactly one profile; a template is required
-only where that profile registers a copy source.
-Zero matches, overlapping matches, an unsupported path, or an unclear role is
-blocking ambiguity. The author must not choose the nearest-looking profile or
-manufacture a parent to satisfy a field.
+> Historical evidence (not current authority; source: Git history):
+>
+> | Concern               | Canonical representation                                                      | Meaning and boundary                                                                                                                            |
+> | --------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Identity              | `artifact_id`                                                                 | Stable typed identity across links and approved moves; a filename/number alone is not a cross-stage key.                                        |
+> | Role                  | `type`                                                               | The unique `family/kind` classifier maps to one Registry profile; older classifier examples are historical only.      |
+> | Direct parents        | `parent_ids`                                                                  | Evidence-backed direct upstream artifacts admitted by the child profile. Ordering is deterministic presentation, not priority or approval rank. |
+> | Replacement direction | `supersedes`                                                                  | Optional typed relation from current artifact to replaced identity where the profile admits it. It does not erase history.                      |
+> | Freshness             | `reviewed_at`, `review_cycle`                                                 | Profile-specific review evidence, not universal fields and not automatic truth.                                                                 |
+> | Lifecycle             | `status`                                                                      | Document-state vocabulary; body/event state remains separate for Incident and other operational records.                                        |
+> | Generation            | `generated_by`                                                                | Identifies a canonical generator where admitted; does not replace required lifecycle state or permit hand editing.                              |
+> | Archive provenance    | Registry-declared disposition record and Git source proof | Frozen body and disposition evidence are separate; neither is current guidance.                                          |
+>
+> Every governed target resolves to exactly one profile; a template is required
+> only where that profile registers a copy source.
+> Zero matches, overlapping matches, an unsupported path, or an unclear role is
+> blocking ambiguity. The author must not choose the nearest-looking profile or
+> manufacture a parent to satisfy a field.
+>
 
 ### Historical measured state
 
 > Historical evidence (not current authority; source: Git history):
-> Observation boundary: 2026-08-14, with a 2026-08-19 correction.
-> **Superseded 2026-08-19; read the table as a dated snapshot, not as current
-> state.** An independent seat measured the table against the working tree and this
-> leaf re-derived the measurement: the taxonomy convergence moved Stage 04 evidence
-> into `docs/03.specs/spec-*/task.md` and grew `docs/98.archive`, so the Stage 04
-> and Stage 98 rows are now wrong by more than an order of magnitude. Measured at
-> the review tree: `find docs/04.execution -name '*.md' | wc -l` returns **7**
-> against a stated 103 Plans and 133 Tasks; `find docs/98.archive -name '*.md' |
-> wc -l` returns **275**, of which 274 carry `status: archived`, against a stated
-> 52; and `ls docs/03.specs/*/spec.md | wc -l` returns **32** parent Specs. The
-> table is retained as the 2026-08-14 reading it always was, and any current figure
-> must be re-derived with the commands above rather than read from it.
 >
-> The following counts exclude `README.md` unless stated otherwise and were
-> derived from current canonical paths after the 2026-08-08 archive migration.
-> Re-verified directly with `find`/`grep` at the 2026-08-14 boundary: the Stage
-> 01-05 and Stage 04 totals are now two leaves higher than the Task 5 baseline,
-> and the `draft` bucket that previously held 2 leaves is empty. Both movements
-> trace to the same cause: this deepening effort's own governing Task,
-> `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
-> (`status: active`), is itself a Stage 04 leaf and entered the corpus already
-> `active`. The draft/completed split moves whenever any Task's own status
-> moves, including this pack's.
-
-Historical table: 2026-08-14 corpus; current fields and paths are owned by the
-[Registry](../../../99.templates/registry.json).
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Population                              | Count and state                                       | Typed-depth interpretation                                                                                                                                                                                                                                                                                                                |
-| --------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stage 01-05 non-README leaves           | 533: 298 `active`, 235 `completed`, 0 `draft`         | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration. The `draft` bucket is transiently empty.                                                                                                                                                                                                       |
-| PRD / ARD / ADR role paths              | 25 / 25 / 25                                          | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.                                                                                                                                                                                                                        |
-| Parent Specs                            | 28 current, 32 archived                               | Current and archived Spec populations coexist; archive zero is obsolete.                                                                                                                                                                                                                                                                  |
-| Stage 04 role paths                     | 103 Plans, 133 Tasks                                  | 16 Plans and 20 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints.                                                                                                                                                                                                          |
-| Stage 05 role paths                     | 66 Guides, 64 Policies, 62 Runbooks                   | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves.                                                                                                                                                                                                               |
-| Incident / Postmortem / Release targets | 0 / 0 / 0                                             | Profiles/templates exist but no real target has exercised them. Unchanged since 2026-08-08; re-confirmed twice now.                                                                                                                                                                                                                       |
-| Stage 98 non-README leaves              | 52, all `archived`                                    | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation.                                                                                                                                                                                                                         |
-| Stage 99 non-README Markdown            | 35                                                    | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets.                                                                                                                                                                                                               |
-| Registered profile catalog              | 21 `profiles:` entries, 17 `readme_profiles:` entries | Directly re-counted from the registry's top-level keys: `prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit, readme, repo-support, generated, template-source, governance, archive, unsupported` — 12 human SDLC roles plus 9 non-lifecycle governance/navigation/archive profiles. |
-
-These counts and legacy exception descriptions are dated observations. Current
-migration eligibility and target validation come from the Registry and checker;
-this reference grants no legacy exception.
+> > Historical evidence (not current authority; source: Git history):
+> > Observation boundary: 2026-08-14, with a 2026-08-19 correction.
+> > **Superseded 2026-08-19; read the table as a dated snapshot, not as current
+> > state.** An independent seat measured the table against the working tree and this
+> > leaf re-derived the measurement: the taxonomy convergence moved Stage 04 evidence
+> > into `docs/03.specs/spec-*/task.md` and grew `docs/98.archive`, so the Stage 04
+> > and Stage 98 rows are now wrong by more than an order of magnitude. Measured at
+> > the review tree: `find docs/04.execution -name '*.md' | wc -l` returns **7**
+> > against a stated 103 Plans and 133 Tasks; `find docs/98.archive -name '*.md' |
+> > wc -l` returns **275**, of which 274 carry `status: archived`, against a stated
+> > 52; and `ls docs/03.specs/*/spec.md | wc -l` returns **32** parent Specs. The
+> > table is retained as the 2026-08-14 reading it always was, and any current figure
+> > must be re-derived with the commands above rather than read from it.
+> >
+> > The following counts exclude `README.md` unless stated otherwise and were
+> > derived from current canonical paths after the 2026-08-08 archive migration.
+> > Re-verified directly with `find`/`grep` at the 2026-08-14 boundary: the Stage
+> > 01-05 and Stage 04 totals are now two leaves higher than the Task 5 baseline,
+> > and the `draft` bucket that previously held 2 leaves is empty. Both movements
+> > trace to the same cause: this deepening effort's own governing Task,
+> > `docs/04.execution/tasks/2026-08-14-agentic-research-pack-deepening.md`
+> > (`status: active`), is itself a Stage 04 leaf and entered the corpus already
+> > `active`. The draft/completed split moves whenever any Task's own status
+> > moves, including this pack's.
+>
+> Historical table: 2026-08-14 corpus; current fields and paths are owned by the
+> [Registry](../../../99.templates/registry.json).
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Population                              | Count and state                                       | Typed-depth interpretation                                                                                                                                                                                                                                                                                                                |
+> | --------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Stage 01-05 non-README leaves           | 533: 298 `active`, 235 `completed`, 0 `draft`         | All have lifecycle status, but many predate typed `artifact_id`/`artifact_type` migration. The `draft` bucket is transiently empty.                                                                                                                                                                                                       |
+> | PRD / ARD / ADR role paths              | 25 / 25 / 25                                          | Only one leaf in each family currently exposes its typed role; path counts and typed counts must not be conflated.                                                                                                                                                                                                                        |
+> | Parent Specs                            | 28 current, 32 archived                               | Current and archived Spec populations coexist; archive zero is obsolete.                                                                                                                                                                                                                                                                  |
+> | Stage 04 role paths                     | 103 Plans, 133 Tasks                                  | 16 Plans and 20 Tasks currently expose typed `artifact_type`; remaining legacy leaves retain changed-file exception constraints.                                                                                                                                                                                                          |
+> | Stage 05 role paths                     | 66 Guides, 64 Policies, 62 Runbooks                   | Current typed role coverage is 1 Guide, 1 Policy, and 2 Runbooks; current path remains the role evidence for legacy leaves.                                                                                                                                                                                                               |
+> | Incident / Postmortem / Release targets | 0 / 0 / 0                                             | Profiles/templates exist but no real target has exercised them. Unchanged since 2026-08-08; re-confirmed twice now.                                                                                                                                                                                                                       |
+> | Stage 98 non-README leaves              | 52, all `archived`                                    | 32 expose `artifact_type: archive`; 20 are legacy tombstones. Stage 98 total Markdown is 69 including navigation.                                                                                                                                                                                                                         |
+> | Stage 99 non-README Markdown            | 35                                                    | 24 declare template-source `status: draft`; support contracts are governance inputs rather than copyable lifecycle targets.                                                                                                                                                                                                               |
+> | Registered profile catalog              | 21 `profiles:` entries, 17 `readme_profiles:` entries | Directly re-counted from the registry's top-level keys: `prd, ard, adr, spec, plan, task, guide, policy, runbook, incident, postmortem, release, reference, audit, readme, repo-support, generated, template-source, governance, archive, unsupported` — 12 human SDLC roles plus 9 non-lifecycle governance/navigation/archive profiles. |
+>
+> These counts and legacy exception descriptions are dated observations. Current
+> migration eligibility and target validation come from the Registry and checker;
+> this reference grants no legacy exception.
+>
 
 ### SDLC profile differences
 
-The following survey preserves the 2026-08 profile differences. It is not a
-current field, relation, or authoring contract.
-
-Historical table: 2026-08-14 profile survey, with its recorded 2026-08-19 correction; current fields and paths are owned by the
-[Registry](../../../99.templates/registry.json).
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Profile    | Required freshness                               | Direct-parent boundary                                                   | Notable lifecycle/relation rule                                         |
-| ---------- | ------------------------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| PRD        | None                                             | Root; empty allowed                                                      | Product root may be draft/active/completed/superseded.                  |
-| ARD        | None                                             | PRD                                                                      | Non-empty parent required.                                              |
-| ADR        | None                                             | PRD or ARD                                                               | Preserve decision history; supersession is directional.                 |
-| Spec       | None required; freshness optional                | PRD, ARD, ADR, Spec, or Archive                                          | Parent required; focused child contracts remain Spec family.            |
-| Plan       | None                                             | PRD, ARD, ADR, Spec, or Archive                                          | Prospective artifact; parent required.                                  |
-| Task       | None                                             | Spec, Plan, Task, or Archive                                             | Evidence artifact; parent required and historical results preserved.    |
-| Guide      | Optional                                         | Spec, Plan, Task, or Policy                                              | Parent required; usage context links controls/procedures.               |
-| Policy     | `reviewed_at` and `review_cycle` required        | PRD, ARD, ADR, Spec, Plan, or Task                                       | Periodically reviewed operational control.                              |
-| Runbook    | `reviewed_at` and `review_cycle` required        | Spec, Plan, Task, Guide, Policy, or Archive                              | Periodically reviewed executable procedure.                             |
-| Incident   | None                                             | Runbook; empty allowed                                                   | May be root if no verified Runbook parent; event state belongs in body. |
-| Postmortem | `reviewed_at` required; `next_review_at` forbidden — corrected 2026-08-19; `review_cycle` occurs in no `forbidden` list, and the registry's postmortem profile forbids `next_review_at` | Incident only                                                            | Strict child of paired Incident; reviewed learning is dated once.       |
-| Release    | `reviewed_at` optional; `review_cycle` forbidden | Spec, Plan, or Task                                                      | Must be backed by a real release event; not deployment/runtime proof.   |
-| Reference  | Both optional                                    | PRD/ARD/ADR/Spec/Plan/Task/Guide/Policy/Runbook/Reference; empty allowed | Advisory support role; cannot become policy or execution evidence.      |
-
-The three research leaves in this pack set both reference freshness keys as a
-pack convention. The reference profile permits but does not require them.
+> Historical evidence (not current authority; source: Git history):
+>
+> The following survey preserves the 2026-08 profile differences. It is not a
+> current field, relation, or authoring contract.
+>
+> Historical table: 2026-08-14 profile survey, with its recorded 2026-08-19 correction; current fields and paths are owned by the
+> [Registry](../../../99.templates/registry.json).
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Profile    | Required freshness                               | Direct-parent boundary                                                   | Notable lifecycle/relation rule                                         |
+> | ---------- | ------------------------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+> | PRD        | None                                             | Root; empty allowed                                                      | Product root may be draft/active/completed/superseded.                  |
+> | ARD        | None                                             | PRD                                                                      | Non-empty parent required.                                              |
+> | ADR        | None                                             | PRD or ARD                                                               | Preserve decision history; supersession is directional.                 |
+> | Spec       | None required; freshness optional                | PRD, ARD, ADR, Spec, or Archive                                          | Parent required; focused child contracts remain Spec family.            |
+> | Plan       | None                                             | PRD, ARD, ADR, Spec, or Archive                                          | Prospective artifact; parent required.                                  |
+> | Task       | None                                             | Spec, Plan, Task, or Archive                                             | Evidence artifact; parent required and historical results preserved.    |
+> | Guide      | Optional                                         | Spec, Plan, Task, or Policy                                              | Parent required; usage context links controls/procedures.               |
+> | Policy     | `reviewed_at` and `review_cycle` required        | PRD, ARD, ADR, Spec, Plan, or Task                                       | Periodically reviewed operational control.                              |
+> | Runbook    | `reviewed_at` and `review_cycle` required        | Spec, Plan, Task, Guide, Policy, or Archive                              | Periodically reviewed executable procedure.                             |
+> | Incident   | None                                             | Runbook; empty allowed                                                   | May be root if no verified Runbook parent; event state belongs in body. |
+> | Postmortem | `reviewed_at` required; `next_review_at` forbidden — corrected 2026-08-19; `review_cycle` occurs in no `forbidden` list, and the registry's postmortem profile forbids `next_review_at` | Incident only                                                            | Strict child of paired Incident; reviewed learning is dated once.       |
+> | Release    | `reviewed_at` optional; `review_cycle` forbidden | Spec, Plan, or Task                                                      | Must be backed by a real release event; not deployment/runtime proof.   |
+> | Reference  | Both optional                                    | PRD/ARD/ADR/Spec/Plan/Task/Guide/Policy/Runbook/Reference; empty allowed | Advisory support role; cannot become policy or execution evidence.      |
+>
+> The three research leaves in this pack set both reference freshness keys as a
+> pack convention. The reference profile permits but does not require them.
+>
 
 ### Lifecycle states and transitions
 
-Historical table: 2026-08-14 lifecycle survey; current fields and paths are owned by the
-[Registry](../../../99.templates/registry.json).
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Status       | Human meaning                                                                       | Machine boundary                                                                |
-| ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `draft`      | In-progress target or template source; not accepted current truth.                  | Ordinary forward transition is to `active`.                                     |
-| `active`     | Current contract, guidance, reference, or working evidence.                         | May transition to `completed` or `superseded`.                                  |
-| `completed`  | Finished execution/historical-but-valid evidence retained in its owning stage.      | May transition to `superseded`; age alone does not archive it.                  |
-| `superseded` | Replaced artifact retained in the active chain with replacement direction/evidence. | Terminal in the common graph.                                                   |
-| `archived`   | Stage 98/root archive tombstone after removal from the current chain.               | Archive-profile terminal state, not a status to assign to an active-stage leaf. |
-
 > Historical evidence (not current authority; source: Git history):
-> Observation boundary: 2026-08-14 lifecycle and override description.
 >
-> ```text
-> draft -> active -> completed -> superseded
->                   \----------> superseded
+> Historical table: 2026-08-14 lifecycle survey; current fields and paths are owned by the
+> [Registry](../../../99.templates/registry.json).
 >
-> archive requires a separately approved manifest/provenance path;
-> it is not an ordinary age-based status hop from the active chain
-> ```
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Status       | Human meaning                                                                       | Machine boundary                                                                |
+> | ------------ | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+> | `draft`      | In-progress target or template source; not accepted current truth.                  | Ordinary forward transition is to `active`.                                     |
+> | `active`     | Current contract, guidance, reference, or working evidence.                         | May transition to `completed` or `superseded`.                                  |
+> | `completed`  | Finished execution/historical-but-valid evidence retained in its owning stage.      | May transition to `superseded`; age alone does not archive it.                  |
+> | `superseded` | Replaced artifact retained in the active chain with replacement direction/evidence. | Terminal in the common graph.                                                   |
+> | `archived`   | Stage 98/root archive tombstone after removal from the current chain.               | Archive-profile terminal state, not a status to assign to an active-stage leaf. |
 >
-> Reverse transitions require explicit scoped Stage 04 override evidence and
-> checker acceptance. Prose, an old timestamp, formatting cleanup, a copied
-> template, or an advisory review signal cannot authorize an exception.
-
-Current lifecycle and override authority belong to the Registry and current Task.
+> > Historical evidence (not current authority; source: Git history):
+> > Observation boundary: 2026-08-14 lifecycle and override description.
+> >
+> > ```text
+> > draft -> active -> completed -> superseded
+> >                   \----------> superseded
+> >
+> > archive requires a separately approved manifest/provenance path;
+> > it is not an ordinary age-based status hop from the active chain
+> > ```
+> >
+> > Reverse transitions require explicit scoped Stage 04 override evidence and
+> > checker acceptance. Prose, an old timestamp, formatting cleanup, a copied
+> > template, or an advisory review signal cannot authorize an exception.
+>
+> Current lifecycle and override authority belong to the Registry and current Task.
+>
 
 ### Template and heading lifecycle
 
-- The registry maps each role to one copyable source, target glob, required and
-  conditional headings, forbidden headings, and artifact profile.
-- Template status is the target profile's registered initial status. A template
-  is a copy source, not approval evidence; replace its registered placeholders.
-- Plan forbids execution-evidence headings; Task requires observed evidence and
-  review/commit/deferral sections. This is a semantic separation, not style.
-- Incident forbids root-cause/postmortem content; Postmortem forbids current
-  response state. Guide, Policy, and Runbook likewise have disjoint procedure
-  and control boundaries.
-- Research, Audit, and Data use their registered Stage 90 roles. Their evidence
-  cannot become an authoring or lifecycle policy.
+> Historical evidence (not current authority; source: Git history):
+>
+> - The registry maps each role to one copyable source, target glob, required and
+>   conditional headings, forbidden headings, and artifact profile.
+> - Template status is the target profile's registered initial status. A template
+>   is a copy source, not approval evidence; replace its registered placeholders.
+> - Plan forbids execution-evidence headings; Task requires observed evidence and
+>   review/commit/deferral sections. This is a semantic separation, not style.
+> - Incident forbids root-cause/postmortem content; Postmortem forbids current
+>   response state. Guide, Policy, and Runbook likewise have disjoint procedure
+>   and control boundaries.
+> - Research, Audit, and Data use their registered Stage 90 roles. Their evidence
+>   cannot become an authoring or lifecycle policy.
+>
 
 ### README, governance, generated, and native exceptions
 
-README profiles are selected by path. Governed authored Markdown, including
-registered READMEs, uses its required common envelope. Provider-native controls
-and frozen archive payloads retain their explicitly registered exceptions.
-
-Generated output is refreshed only through its canonical generator and checked
-for deterministic freshness. A generated graph/index can describe relationships
-but cannot create them, authorize archive, or override tracked owners. Graphify
-is particularly limited here because its report predates the current baseline.
+> Historical evidence (not current authority; source: Git history):
+>
+> README profiles are selected by path. Governed authored Markdown, including
+> registered READMEs, uses its required common envelope. Provider-native controls
+> and frozen archive payloads retain their explicitly registered exceptions.
+>
+> Generated output is refreshed only through its canonical generator and checked
+> for deterministic freshness. A generated graph/index can describe relationships
+> but cannot create them, authorize archive, or override tracked owners. Graphify
+> is particularly limited here because its report predates the current baseline.
+>
 
 ### Archive and retention boundary
 
-Current preservation and disposition follow the
-[Canonical governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
-and [Stage 98 index](../../../98.archive/README.md). Registered frozen payloads
-remain unchanged; Tombstone and Migration records do not embed their bodies.
-Age or counts may prompt review but cannot authorize disposition.
-
 > Historical evidence (not current authority; source: Git history):
-> Observation boundary: 2026-08-14 archive comparison.
-> Two exact archive profiles share semantic `artifact_type: archive`:
 >
-> - `sdlc-archive` owns `docs/98.archive/**`, requires direct-parent/provenance
->   metadata, and conditionally admits replacement or immutable-snapshot fields.
-> - `content-archive` owns root `archive/**`, forbids SDLC parents, replacement,
->   and snapshot fields, and uses its own template.
+> Current preservation and disposition follow the
+> [Canonical governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+> and [Stage 98 index](../../../98.archive/README.md). Registered frozen payloads
+> remain unchanged; Tombstone and Migration records do not embed their bodies.
+> Age or counts may prompt review but cannot authorize disposition.
 >
-> Git history is the default preservation route. An immutable snapshot requires
-> the exact evidence-preserve conditions and confidentiality checks. Secret,
-> credential, token, key, auth, shell-history, or raw-log payloads are not
-> committed as archive evidence.
+> > Historical evidence (not current authority; source: Git history):
+> > Observation boundary: 2026-08-14 archive comparison.
+> > Two exact archive profiles share semantic `artifact_type: archive`:
+> >
+> > - `sdlc-archive` owns `docs/98.archive/**`, requires direct-parent/provenance
+> >   metadata, and conditionally admits replacement or immutable-snapshot fields.
+> > - `content-archive` owns root `archive/**`, forbids SDLC parents, replacement,
+> >   and snapshot fields, and uses its own template.
+> >
+> > Git history is the default preservation route. An immutable snapshot requires
+> > the exact evidence-preserve conditions and confidentiality checks. Secret,
+> > credential, token, key, auth, shell-history, or raw-log payloads are not
+> > committed as archive evidence.
+> >
+> > Review-age signals (`draft_days: 30`, `active_days: 90`, and
+> > `completed_execution_days: 180`) request human review only. Directory budgets
+> > (`warning_at: 100`, `block_new_leaf_at: 150`) drive navigation/partition review,
+> > not automatic moves. Archive/deletion still requires an approved manifest,
+> > consumer/replacement proof, provenance, preservation, rollback, and independent
+> > specification and quality reviews.
 >
-> Review-age signals (`draft_days: 30`, `active_days: 90`, and
-> `completed_execution_days: 180`) request human review only. Directory budgets
-> (`warning_at: 100`, `block_new_leaf_at: 150`) drive navigation/partition review,
-> not automatic moves. Archive/deletion still requires an approved manifest,
-> consumer/replacement proof, provenance, preservation, rollback, and independent
-> specification and quality reviews.
 
 ### Enforcement boundary
 
-1. Resolve target path and role against the registry.
-2. Instantiate the mapped template and deterministic frontmatter order.
-3. Record only evidence-backed direct parents and lifecycle state.
-4. Run `check-document-metadata.py --mode check-changed` against an explicit
-   safe base and the exact changed targets.
-5. Run applicable traceability and repository-contract checks.
-6. Record results, deviations, transition overrides, and review in the current Stage 03
-   Task; a passing local checker proves only that local contract at that revision.
-
-Remote CI required-check configuration, provider enforcement, runtime state,
-and archive/deployment outcomes remain separate observations.
+> Historical evidence (not current authority; source: Git history):
+>
+> 1. Resolve target path and role against the registry.
+> 2. Instantiate the mapped template and deterministic frontmatter order.
+> 3. Record only evidence-backed direct parents and lifecycle state.
+> 4. Run `check-document-metadata.py --mode check-changed` against an explicit
+>    safe base and the exact changed targets.
+> 5. Run applicable traceability and repository-contract checks.
+> 6. Record results, deviations, transition overrides, and review in the current Stage 03
+>    Task; a passing local checker proves only that local contract at that revision.
+>
+> Remote CI required-check configuration, provider enforcement, runtime state,
+> and archive/deployment outcomes remain separate observations.
+>
 
 ### Checker modes and the transition-override mechanism
 
-The checker modes below were observed on 2026-08-14. The original monolithic
-implementation measured 5,630 lines; that size is historical evidence, not the
-current module architecture. Use the current CLI help for executable options:
-
-| Mode              | What it validates                                                                                                                                  |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `report`          | Full-corpus profile/field/relation audit without failing the run; a survey mode.                                                                   |
-| `check-changed`   | The exact changed-path set against an explicit `--base-ref`; the enforcement-gate mode named above and in the companion role/lifecycle references. |
-| `check-active`    | Currently-active-family documents only, independent of what changed in a given diff.                                                               |
-| `check-contracts` | Registry/contract self-consistency, independent of any target document set.                                                                        |
-
-At the same historical boundary, the reverse-transition claim was observed
-through this mechanism: `--transition-override-file` accepts a YAML file whose only
-top-level key is `transition_overrides` (a non-empty list); the checker
-raises `ProfileError` if either constraint is violated. This flag is
-rejected outright — `"configuration-error: --transition-override-file
-requires --mode check-changed"` — under any other mode. An override is
-therefore always both an explicit file (not an inline flag or prose
-assertion) and always scoped to the one mode that already requires an exact
-base ref and changed-path set; there is no path to an override under
-`report`, `check-active`, or `check-contracts`.
+> Historical evidence (not current authority; source: Git history):
+>
+> The checker modes below were observed on 2026-08-14. The original monolithic
+> implementation measured 5,630 lines; that size is historical evidence, not the
+> current module architecture. Use the current CLI help for executable options:
+>
+> | Mode              | What it validates                                                                                                                                  |
+> | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `report`          | Full-corpus profile/field/relation audit without failing the run; a survey mode.                                                                   |
+> | `check-changed`   | The exact changed-path set against an explicit `--base-ref`; the enforcement-gate mode named above and in the companion role/lifecycle references. |
+> | `check-active`    | Currently-active-family documents only, independent of what changed in a given diff.                                                               |
+> | `check-contracts` | Registry/contract self-consistency, independent of any target document set.                                                                        |
+>
+> At the same historical boundary, the reverse-transition claim was observed
+> through this mechanism: `--transition-override-file` accepts a YAML file whose only
+> top-level key is `transition_overrides` (a non-empty list); the checker
+> raises `ProfileError` if either constraint is violated. This flag is
+> rejected outright — `"configuration-error: --transition-override-file
+> requires --mode check-changed"` — under any other mode. An override is
+> therefore always both an explicit file (not an inline flag or prose
+> assertion) and always scoped to the one mode that already requires an exact
+> base ref and changed-path set; there is no path to an override under
+> `report`, `check-active`, or `check-contracts`.
+>
 
 ### Carried source-evidence claims
 
-Source-evidence claims carried forward from the superseded 2026-07-05
-research pack on 2026-08-19. Each states what the upstream evidence supports
-and, where it matters more, what it does not.
-
-- **A status probe alone is not evidence that a source is unavailable.** A command-line client receives HTTP 403 from the W3C host while a browser-shaped fetch succeeds. Marking a source `UNVERIFIED` on a bare status probe is therefore unsound, which matters here because another host in this corpus genuinely does refuse automated retrieval.
+> Historical evidence (not current authority; source: Git history):
+>
+> Source-evidence claims carried forward from the superseded 2026-07-05
+> research pack on 2026-08-19. Each states what the upstream evidence supports
+> and, where it matters more, what it does not.
+>
+> - **A status probe alone is not evidence that a source is unavailable.** A command-line client receives HTTP 403 from the W3C host while a browser-shaped fetch succeeds. Marking a source `UNVERIFIED` on a bare status probe is therefore unsound, which matters here because another host in this corpus genuinely does refuse automated retrieval.
+>
 
 ## Scope Implications
 
-| Scope          | Application and disposition                                                                                                                         |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agentic`      | Agents must resolve one profile/template, preserve deterministic metadata and evidence, and stop rather than invent relations or transitions.       |
-| `architecture` | ARD/ADR identity and supersession preserve constraints/decision history consumed by Specs; metadata never replaces architectural review.            |
-| `backend`      | Parent/child Spec relations can type API, data, service, and test contracts; runtime behavior still needs implementation and validation evidence.   |
-| `common`       | Shared Markdown/style rules coexist with consumer-specific profiles; uniform appearance is not authority to normalize metadata.                     |
-| `docs`         | Owns profile/template selection, link/heading validation, language boundaries, archive routing, and changed/new enforcement.                        |
-| `entry`        | Gateway documents follow the same typed chain; path/parent validity does not prove deployed routing.                                                |
-| `frontend`     | UI Specs/Tasks/Guides use their actual profiles; screenshots and generated assets cannot supply missing identity, parent, or verification evidence. |
-| `infra`        | Compose/config paths are implementation evidence, not lifecycle profiles; typed docs must link but cannot claim runtime acceptance.                 |
-| `meta`         | Registry/checker are the machine owners; changes require explicit approval, tests, migration impact analysis, and no copied schema in Stage 90.     |
-| `mobile`       | No current mobile chain exists; future documents must use admitted profiles and device/runtime evidence without adding ad hoc types.                |
-| `ops`          | Policy/Runbook freshness, Incident/Postmortem parent rules, and Release event boundaries are role-specific and currently partly unexercised.        |
-| `product`      | PRD is a root profile and human approval owner; metadata completeness cannot infer stakeholder acceptance.                                          |
-| `qa`           | Checker results, traceability, exact-range reviews, and skipped-check reasons belong in Task evidence; historical exception counts remain explicit. |
-| `security`     | Archive and evidence metadata must remain redacted and provenance-safe; no profile authorizes secret/private payloads or protected mutation.        |
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope          | Application and disposition                                                                                                                         |
+> | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `agentic`      | Agents must resolve one profile/template, preserve deterministic metadata and evidence, and stop rather than invent relations or transitions.       |
+> | `architecture` | ARD/ADR identity and supersession preserve constraints/decision history consumed by Specs; metadata never replaces architectural review.            |
+> | `backend`      | Parent/child Spec relations can type API, data, service, and test contracts; runtime behavior still needs implementation and validation evidence.   |
+> | `common`       | Shared Markdown/style rules coexist with consumer-specific profiles; uniform appearance is not authority to normalize metadata.                     |
+> | `docs`         | Owns profile/template selection, link/heading validation, language boundaries, archive routing, and changed/new enforcement.                        |
+> | `entry`        | Gateway documents follow the same typed chain; path/parent validity does not prove deployed routing.                                                |
+> | `frontend`     | UI Specs/Tasks/Guides use their actual profiles; screenshots and generated assets cannot supply missing identity, parent, or verification evidence. |
+> | `infra`        | Compose/config paths are implementation evidence, not lifecycle profiles; typed docs must link but cannot claim runtime acceptance.                 |
+> | `meta`         | Registry/checker are the machine owners; changes require explicit approval, tests, migration impact analysis, and no copied schema in Stage 90.     |
+> | `mobile`       | No current mobile chain exists; future documents must use admitted profiles and device/runtime evidence without adding ad hoc types.                |
+> | `ops`          | Policy/Runbook freshness, Incident/Postmortem parent rules, and Release event boundaries are role-specific and currently partly unexercised.        |
+> | `product`      | PRD is a root profile and human approval owner; metadata completeness cannot infer stakeholder acceptance.                                          |
+> | `qa`           | Checker results, traceability, exact-range reviews, and skipped-check reasons belong in Task evidence; historical exception counts remain explicit. |
+> | `security`     | Archive and evidence metadata must remain redacted and provenance-safe; no profile authorizes secret/private payloads or protected mutation.        |
+>
 
 ## Sources
 
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                                |
-| ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary    | Identifier/type/relation comparison only; no schema adoption.                                                             |
-| [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard      | Provenance/revision comparison only; workspace registry remains canonical.                                                |
-| [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
-| [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
-| [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
-| [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
-| Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
-| Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
-| SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
-| Common document contract (retired path: `../../../99.templates/support/common-document-contract.md`)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
-| Archive and retention contract (retired path: `../../../99.templates/support/archive-retention-contract.md`)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
-| [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
-| Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                                |
+> | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+> | [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary    | Identifier/type/relation comparison only; no schema adoption.                                                             |
+> | [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard      | Provenance/revision comparison only; workspace registry remains canonical.                                                |
+> | [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
+> | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
+> | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
+> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
+> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
+> | Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
+> | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
+> | Common document contract (retired path: `../../../99.templates/support/common-document-contract.md`)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
+> | Archive and retention contract (retired path: `../../../99.templates/support/archive-retention-contract.md`)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
+> | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
+>
 
 ## Scope Application
 
-| Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-| --- | --- | --- | --- | --- |
-| agentic | applies | Give agent-authored records typed metadata. | Check the declared profile. | No execution proof. |
-| architecture | applies | Use AD and ADR profiles for their distinct roles. | Inspect registry paths. | This leaf does not settle ADR gaps. |
-| common | applies | Preserve identity and status fields. | Run scoped metadata validation. | Validation is syntactic. |
-| docs | applies | Maintain one registry authority. | Confirm registry references. | `support/` is legacy. |
-| infra | applies | Use typed metadata for infrastructure-owned documents. | Check the registered profile and owner path. | No deployment inference. |
-| ops | applies | Use incident and runbook lifecycle profiles. | Inspect registry entries. | No live operation claim. |
-| qa | applies | Check metadata before publication. | Record check result in Task. | Check does not establish content correctness. |
-| security | applies | Avoid secret values in metadata. | Inspect scoped diff. | No security-control test. |
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Give agent-authored records typed metadata. | Check the declared profile. | No execution proof. |
+> | architecture | applies | Use AD and ADR profiles for their distinct roles. | Inspect registry paths. | This leaf does not settle ADR gaps. |
+> | common | applies | Preserve identity and status fields. | Run scoped metadata validation. | Validation is syntactic. |
+> | docs | applies | Maintain one registry authority. | Confirm registry references. | `support/` is legacy. |
+> | infra | applies | Use typed metadata for infrastructure-owned documents. | Check the registered profile and owner path. | No deployment inference. |
+> | ops | applies | Use incident and runbook lifecycle profiles. | Inspect registry entries. | No live operation claim. |
+> | qa | applies | Check metadata before publication. | Record check result in Task. | Check does not establish content correctness. |
+> | security | applies | Avoid secret values in metadata. | Inspect scoped diff. | No security-control test. |
+>
 
 ## 2026-09-05 Revalidation
 
-Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-The active corpus now uses the Registry's common-six metadata order and
-profile-specific lifecycle graphs. Plan and Task are co-located with their Spec
-under Stage 03; terminal evidence is preserved under Stage 98 rather than
-returning to a retired Stage 04 authority.
-
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Metadata grammar | Registry plus closed frontmatter schema | Repository-enforced | None for active registered corpus | metadata repository contracts |
-| Lifecycle | Initial, transition, and terminal states are profile-owned | Repository-enforced | Human approval evidence remains artifact-specific | lifecycle check plus reciprocal Task evidence |
-| Retention/retirement | Stage 98 records and exact identity recovery | Repository-enforced | Historical prose can retain dated routes | archive and identity-history tests |
-
-Recommendation: preserve `created`, update `updated` for edits, update
-`observed_at` only after re-observation, and never treat status prose as a
-substitute for the Registry transition graph.
+> Historical evidence (not current authority; source: Git history):
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> The active corpus now uses the Registry's common-six metadata order and
+> profile-specific lifecycle graphs. Plan and Task are co-located with their Spec
+> under Stage 03; terminal evidence is preserved under Stage 98 rather than
+> returning to a retired Stage 04 authority.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Metadata grammar | Registry plus closed frontmatter schema | Repository-enforced | None for active registered corpus | metadata repository contracts |
+> | Lifecycle | Initial, transition, and terminal states are profile-owned | Repository-enforced | Human approval evidence remains artifact-specific | lifecycle check plus reciprocal Task evidence |
+> | Retention/retirement | Stage 98 records and exact identity recovery | Repository-enforced | Historical prose can retain dated routes | archive and identity-history tests |
+>
+> Recommendation: preserve `created`, update `updated` for edits, update
+> `observed_at` only after re-observation, and never treat status prose as a
+> substitute for the Registry transition graph.
+>
 
 ## Maintenance
 
-Re-measure after profile, template, checker, lifecycle, corpus-migration,
-archive, README, generator, or stage-topology changes. Keep current-path,
-frontmatter-status, typed-migration, and archive counts separate. The first real
-Incident or Postmortem must trigger a focused review of its event contract.
-Release evidence follows the current external-release-evidence policy; no
-Release profile is implied by the old survey.
+> Historical evidence (not current authority; source: Git history):
+>
+> Re-measure after profile, template, checker, lifecycle, corpus-migration,
+> archive, README, generator, or stage-topology changes. Keep current-path,
+> frontmatter-status, typed-migration, and archive counts separate. The first real
+> Incident or Postmortem must trigger a focused review of its event contract.
+> Release evidence follows the current external-release-evidence policy; no
+> Release profile is implied by the old survey.
+>
 
 ## Related Documents
+
+- [Research pack](README.md)
 
 - [Verification and validation](./m0019-verification-validation.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
