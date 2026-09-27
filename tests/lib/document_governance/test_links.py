@@ -1445,6 +1445,84 @@ class LinkSelectionScopeTests(unittest.TestCase):
                 self.assertIn(relative, selected)
 
 
+class NavigationModeTests(unittest.TestCase):
+    """SPEC-0184 rules 1-3: a folder router links only its direct children."""
+
+    ROUTER_TREE = {
+        "docs/x/a/README.md": "# A\n",
+        "docs/x/a/spec.md": "# Spec\n",
+        "docs/x/a/plan.md": "# Plan\n",
+        "docs/x/a/tasks/tsk-0001-x.md": "# Task\n",
+        "docs/x/a/b/README.md": "# B\n",
+        "docs/x/c/.gitkeep": "",
+        "docs/other/y.md": "# Y\n",
+    }
+
+    def _findings(self, readme: str, extra: dict[str, str] | None = None):
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_navigation,
+        )
+
+        files = dict(self.ROUTER_TREE, **(extra or {}))
+        files["docs/x/README.md"] = readme
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            track_repository(root)
+            documents = [root / name for name in files if name.endswith(".md")]
+            return check_navigation(build_document_graph(documents, repo_root=root))
+
+    def _codes(self, readme: str, extra: dict[str, str] | None = None) -> set[str]:
+        return {
+            finding.code
+            for finding in self._findings(readme, extra)
+            if finding.path.startswith("docs/x/README.md")
+        }
+
+    def test_router_descendant_links_fail(self) -> None:
+        cases = {
+            "spec": "[a](a/spec.md)\n",
+            "task": "[t](a/tasks/tsk-0001-x.md)\n",
+            "grandchild directory": "[b](a/b/)\n",
+            "grandchild readme": "[b](a/b/README.md)\n",
+            "reference definition": "[plan][p]\n\n[p]: a/plan.md\n",
+            "html href": '<a href="a/plan.md">plan</a>\n',
+        }
+        for name, body in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(
+                    {"navigation-descendant-link"}, self._codes("# X\n\n" + body)
+                )
+
+    def test_router_tree_naming_a_grandchild_file_fails(self) -> None:
+        body = "```text\nx/\n├── README.md\n└── a/\n    └── spec.md\n```\n"
+        self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))
+
+    def test_folder_label_on_a_leaf_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[a/](a/spec.md)\n")
+        )
+
+    def test_direct_children_citations_and_trees_pass(self) -> None:
+        body = (
+            "# X\n\n[a](a/)\n[a readme](a/README.md)\n[c/](c/)\n"
+            "[other](../other/y.md)\n\n"
+            "```text\nx/\n├── README.md\n├── a/\n│   └── README.md\n└── c/\n```\n"
+        )
+        self.assertEqual(set(), self._codes(body))
+
+    def test_collection_readme_may_list_its_own_files(self) -> None:
+        body = "# X\n\n[own](own.md)\n[a](a/spec.md)\n"
+        self.assertEqual(set(), self._codes(body, {"docs/x/own.md": "# Own\n"}))
+
+    def test_placeholder_only_directory_is_a_router_child(self) -> None:
+        self.assertEqual(set(), self._codes("# X\n\n[c](c/)\n"))
+
+
 if __name__ == "__main__":
     unittest.main()
 

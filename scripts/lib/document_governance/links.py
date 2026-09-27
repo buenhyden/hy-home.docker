@@ -6,6 +6,7 @@ import dataclasses
 import pathlib
 import posixpath
 import re
+import subprocess
 import urllib.parse
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
@@ -767,6 +768,162 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
         if not _STAGE_DIRECTORY.match(link.target.as_posix()):
             continue
         findings.append(_finding(link, "stage-link-outside-docs", link.raw_target))
+    return sorted(set(findings))
+
+
+_REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*<?([^\s>]+)")
+_HTML_HREF = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_TREE_BRANCH = re.compile(r"(?:├──|└──|\|--|`--) ")
+_NAVIGATION_IGNORED_CHILDREN = frozenset({"README.md", ".gitkeep"})
+
+
+def _tracked_files(root: pathlib.Path) -> frozenset[str]:
+    """Return the repository's tracked paths, or an empty set outside Git."""
+
+    result = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "-z"],
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode:
+        return frozenset()
+    return frozenset(item for item in result.stdout.decode("utf-8").split("\0") if item)
+
+
+def _direct_children(
+    tracked: frozenset[str], directory: str
+) -> tuple[set[str], set[str]]:
+    """Split a directory's tracked children into (directories, files)."""
+
+    prefix = f"{directory}/" if directory else ""
+    directories: set[str] = set()
+    files: set[str] = set()
+    for path in tracked:
+        if not path.startswith(prefix):
+            continue
+        rest = path[len(prefix) :]
+        head, separator, _ = rest.partition("/")
+        if separator:
+            directories.add(head)
+        elif head not in _NAVIGATION_IGNORED_CHILDREN:
+            files.add(head)
+    return directories, files
+
+
+def _fenced_lines(text: str) -> Iterable[tuple[int, str]]:
+    """Yield the lines inside fenced code blocks."""
+
+    fence: str | None = None
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        marker = next((m for m in ("```", "~~~") if stripped.startswith(m)), None)
+        if marker is not None and (fence is None or fence == marker):
+            fence = None if fence else marker
+            continue
+        if fence is not None:
+            yield line_no, line
+
+
+def _navigation_destinations(node: DocumentNode) -> Iterable[tuple[int, str, str]]:
+    """Yield (line, label, raw target) for reference and HTML links.
+
+    Inline links already live in the graph; these two forms do not, and a
+    router must not hide descendant enumeration behind them.
+    """
+
+    for line_no, line in _unfenced_lines(node.text):
+        match = _REFERENCE_DEFINITION.match(line)
+        if match:
+            yield line_no, "", match.group(1)
+        for href in _HTML_HREF.finditer(line):
+            yield line_no, "", href.group(1)
+
+
+def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
+    """Keep a folder router's links to its direct children.
+
+    A README whose directory holds only subdirectories (besides itself and a
+    `.gitkeep`) routes readers one level down. Listing documents inside those
+    children duplicates membership the children own and drifts as soon as a
+    child changes, which is how the Stage 03 index came to carry Plan and Task
+    rows. Links outside the router's own subtree are citations, not listings.
+    """
+
+    tracked = _tracked_files(graph.repo_root)
+    tracked_directories = {
+        str(pathlib.PurePosixPath(path).parent) for path in tracked
+    }
+    tracked_directories |= {
+        parent.as_posix()
+        for path in tracked
+        for parent in pathlib.PurePosixPath(path).parents
+    }
+    findings: list[LinkFinding] = list(graph.input_findings)
+    for node in graph.nodes:
+        if node.path.name != "README.md":
+            continue
+        directory = node.path.parent
+        directory_text = "" if directory.as_posix() == "." else directory.as_posix()
+        children, files = _direct_children(tracked, directory_text)
+        router = bool(children) and not files
+        destinations = [
+            (link.line, link.label, link.target)
+            for link in graph.links
+            if link.source == node.path
+        ]
+        for line_no, label, raw in _navigation_destinations(node):
+            resolved = _normalized_target(node.path, raw)
+            if resolved is not None:
+                destinations.append((line_no, label, resolved[0]))
+        where = f"{node.path.as_posix()}"
+        for line_no, label, target in destinations:
+            target_text = target.as_posix()
+            if label.strip().endswith("/") and not (
+                target_text in tracked_directories or target.name == "README.md"
+            ):
+                findings.append(
+                    LinkFinding(
+                        f"{where}:{line_no}",
+                        "navigation-label-mismatch",
+                        f"folder label {label.strip()} resolves to {target_text}",
+                    )
+                )
+            if not router or target == directory:
+                continue
+            try:
+                parts = target.relative_to(directory).parts
+            except ValueError:
+                continue
+            if len(parts) >= 2 and parts[1:] != ("README.md",):
+                findings.append(
+                    LinkFinding(
+                        f"{where}:{line_no}",
+                        "navigation-descendant-link",
+                        f"folder router links inside a child: {target_text}",
+                    )
+                )
+        if not router:
+            continue
+        for line_no, line in _fenced_lines(node.text):
+            branch = _TREE_BRANCH.search(line)
+            if branch is None:
+                continue
+            depth = len(line[: branch.start()]) // 4 + 1
+            name = line[branch.end() :].split("#", 1)[0].strip().split(" ")[0]
+            if (
+                depth >= 2
+                and name
+                and not name.endswith("/")
+                and name != "README.md"
+                and "<" not in name
+            ):
+                findings.append(
+                    LinkFinding(
+                        f"{where}:{line_no}",
+                        "navigation-descendant-tree",
+                        f"folder router tree names a file inside a child: {name}",
+                    )
+                )
     return sorted(set(findings))
 
 
