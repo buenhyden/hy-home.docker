@@ -156,7 +156,7 @@ services:
       file: ../../../common-optimizations.yml
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
-    image: supabase/realtime:v2.137.2
+    image: supabase/realtime:v2.138.1
     restart: unless-stopped
     depends_on:
       db:
