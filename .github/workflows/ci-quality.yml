@@ -37,7 +37,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
@@ -70,7 +70,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
-          python-version: '3.12'
+          python-version: '3.14'
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
@@ -84,7 +84,7 @@ jobs:
       - name: Run all public validation suites
         run: python3 scripts/validation/run-ci-gate.py --profile full
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
         with:
           sarif_file: results.sarif
           category: zizmor
