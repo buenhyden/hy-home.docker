@@ -212,6 +212,16 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_identity_history.py
+- path: scripts/lib/document_governance/language.py
+  kind: library
+  authority: .agents/governance/documentation-protocol.md
+  lifecycle: active
+  mutation: none
+  consumers: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_language.py
 - path: scripts/lib/document_governance/lifecycle/contract.py
   kind: library
   authority: docs/99.templates/registry.json

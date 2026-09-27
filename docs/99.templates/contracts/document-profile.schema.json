@@ -231,6 +231,12 @@
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"
         },
+        "language": {
+          "enum": [
+            "ko",
+            "en"
+          ]
+        },
         "artifact_id_pattern": {
           "type": [
             "string",

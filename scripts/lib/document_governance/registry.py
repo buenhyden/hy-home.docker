@@ -1964,12 +1964,15 @@ _NON_DOCS_FILES = frozenset(
         ".github/repository-surface.md",
         "README.md",
         "_workspace/README.md",
+        "_workspace/repo-support/README.md",
         "evals/README.md",
         "infra/README.md",
         "projects/README.md",
         "scripts/README.md",
         "secrets/README.md",
         "tests/README.md",
+        "tests/lib/README.md",
+        "tests/validation/README.md",
     }
 )
 
