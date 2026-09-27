@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.4.4"
+version: "2.4.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 layer: "archive"
 ---
 
@@ -102,6 +102,7 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0185-agentic-research-refresh/` | completed | RES-0002 | `e9e65f1087a4adc797c112b4b8f19eb9ac1bbb2e:docs/03.specs/0185-agentic-research-refresh` |
 | `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
 | `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
 | `superseded/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` | superseded | ADR-0036 | `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0:docs/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` |

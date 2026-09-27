@@ -1,8 +1,8 @@
 ---
 title: "Agentic Research Refresh Specification"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "specs"

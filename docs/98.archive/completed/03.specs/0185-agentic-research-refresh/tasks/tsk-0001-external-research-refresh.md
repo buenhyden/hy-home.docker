@@ -1,8 +1,8 @@
 ---
 title: "External Research Refresh"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "specs"

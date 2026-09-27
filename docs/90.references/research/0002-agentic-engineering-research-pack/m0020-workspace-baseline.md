@@ -1,6 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Workspace Baseline"
-version: "2.2.0"
+version: "2.2.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -879,7 +879,7 @@ instructions are preserved history and are not executed by this refresh.
 - [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
 - [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
 - [Verification and validation](m0019-verification-validation.md)
-- [Refresh Spec](../../../03.specs/0185-agentic-research-refresh/spec.md)
+- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >

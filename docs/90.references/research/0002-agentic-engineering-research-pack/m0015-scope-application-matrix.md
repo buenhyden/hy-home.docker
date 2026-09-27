@@ -1,6 +1,6 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.3.1"
+version: "1.3.2"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -98,7 +98,7 @@ Expected roles remain subject to the future Task's approved assignment.
 
 | Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: [SPEC-0185](../../../03.specs/0185-agentic-research-refresh/spec.md); hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
+| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: [SPEC-0185](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md); hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
 | SCOPE-B: precedence | Organization/user + repository + directory + task + provider / governance, security | Intentional conflict test is approved | Verified docs: [bootstrap](../../../../.agents/governance/bootstrap.md), [provider adapter](../../../../.codex/provider.md); hypothetical: synthetic instruction hierarchy/load trace | Which instruction wins at each trust boundary, including discovery/load differences? | Fixture hashes, hierarchy, trust/approval state, loaded text and outcome | Approved synthetic conflicts per product/channel | Pass if agreed precedence/trust matches observed behavior; fail on silent omission or unauthorized override | No user-global/private inspection; live trials separately approved | rules-engineer + eval-engineer | Not assessed in this run |
 | SCOPE-C: model/cost | Task + provider / quality, governance | Owner considers a model/budget change | Verified doc: Spec acceptance; hypothetical: synthetic dataset, redacted usage export | Does selection meet quality, cost/latency and fallback/budget bounds? | Product/billing units/date, authorized aggregate usage, sample outcomes/fallback | Fixed reproducible task sample with failure case | Pass if agreed quality/cost/latency/fallback hold; fail on regression or budget breach | Paid calls/account export require separate approval; no entitlement inference | eval-engineer + repository owner | Not assessed in this run |
 | SCOPE-D: memory/handoff | Repository + task + session + provider / knowledge, security | Durable memory or cross-provider handoff is proposed | Verified doc: current Task; hypothetical: bounded packet and synthetic lifecycle records | Can recipient recover goal/baseline/approval/decisions/checks/next action while poison and expiry stay excluded? | Provenance/access/retention rules, synthetic promotion/expiry/deletion/injection cases | Review packet and approved non-sensitive lifecycle trial | Pass if scope/provenance/lifecycle observable; fail on leakage, stale promotion or approval expansion | No raw/private conversations; storage/live tools separately approved | doc-writer + security-auditor | Not assessed in this run |
@@ -147,9 +147,9 @@ belong to the linked topic members. No new external fact, price, model
 availability or standard version is asserted here. Future criteria are
 conditional research proposals, not current normative requirements.
 
-The [Spec](../../../03.specs/0185-agentic-research-refresh/spec.md),
-[Plan](../../../03.specs/0185-agentic-research-refresh/plan.md) and
-[Task](../../../03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)
+The [Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md),
+[Plan](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/plan.md) and
+[Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)
 own this refresh and its evidence. Adoption routes to the applicable governance,
 requirement, architecture, Spec/Task or operations owner. Revisit this routing
 when coverage or ownership changes; fresh catalog/scope counts require a
@@ -856,7 +856,7 @@ access dates do not mean those sources were reopened in this refresh.
 - [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
 - [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
 - [Verification and validation](m0019-verification-validation.md)
-- [Refresh Spec](../../../03.specs/0185-agentic-research-refresh/spec.md)
+- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >

@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.4.0"
+version: "2.4.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -614,7 +614,7 @@ draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
 연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
 [SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
 소유자가 결정한다. 이번 문서 갱신 증거는
-[SPEC-0185 Task](../../../03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)에만 기록한다.
+[SPEC-0185 Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)에만 기록한다.
 기존 `parent_ids`는 구조적 관계를 유지하며 새 인용을 부모로 추가하지 않았다.
 
 보존 자료: [RES-0084](../0084-github-actions-platform/README.md),

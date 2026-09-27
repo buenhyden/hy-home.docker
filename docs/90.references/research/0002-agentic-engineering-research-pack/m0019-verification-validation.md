@@ -1,6 +1,6 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.3.0"
+version: "1.3.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
@@ -135,7 +135,7 @@ observations are candidates, not newly inspected implementations.
 
 This member’s source-research worker did not execute validators or tests, inspect
 live refs, approve release, or establish current compliance. Integrated document
-QA evidence belongs to [the execution Task](../../../03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md). Historical command outcomes, reachable-ref
+QA evidence belongs to [the execution Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md). Historical command outcomes, reachable-ref
 denominators, review timing, IEEE/ISO references and baseline/candidate distinctions
 are retained verbatim with their original dates. Recheck current requirements
 and relevant primary-standard status before adopting a normative policy.
