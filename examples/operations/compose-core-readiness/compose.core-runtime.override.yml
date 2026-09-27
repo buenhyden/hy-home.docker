@@ -137,7 +137,7 @@ services:
 
   traefik:
     profiles: !override [core]
-    image: traefik@sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2
+    image: traefik@sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0
     container_name: !reset null
     hostname: !reset null
     restart: "no"
