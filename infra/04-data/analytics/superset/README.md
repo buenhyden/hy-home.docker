@@ -1,17 +1,17 @@
 ---
 title: "Superset"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-09-23"
 ---
 
 <!-- [ID:04-data:analytics-superset] -->
 # Superset
 
-> On-demand OPTIONAL BI web application with Keycloak native OIDC, querying the lakehouse through Trino.
+> on-demand OPTIONAL BI 웹 애플리케이션으로, Keycloak native OIDC를 사용하고 Trino를 통해 lakehouse를 조회합니다.
 
 ## Overview
 
@@ -33,36 +33,36 @@ PKCE)로만 합니다. 처음 로그인한 사용자는 데이터 접근이 없�
 
 ### In Scope
 
-- Web server, metadata database provisioning and the init job.
-- Keycloak OIDC login and the `lakehouse` Trino connection.
+- 웹 서버, metadata database 프로비저닝, init job.
+- Keycloak OIDC 로그인과 `lakehouse` Trino 연결.
 
 ### Out of Scope
 
-- Celery workers, alerts and reports, thumbnails and a shared cache.
-- Group-based role mapping. Superset logs in through native OIDC, so the
-  OAuth2 Proxy `/admins` allowlist does not apply; the owner kept Gamma sign-up
-  with roles granted by an Admin (2026-09-24).
+- Celery worker, alert/report, 썸네일, 공유 캐시.
+- Group 기반 role 매핑. Superset은 native OIDC로 로그인하므로 OAuth2 Proxy
+  `/admins` allowlist는 적용되지 않으며 owner는 Admin이 role을 부여하는
+  Gamma 가입 방식을 유지했습니다(2026-09-24).
 
 ## Structure
 
 ```text
 superset/
-├── README.md               # This file
-├── Dockerfile              # apache/superset plus requirements.txt
-├── requirements.txt        # PostgreSQL driver, Authlib, Trino dialect (Renovate)
-├── superset_config.py      # Secrets from files, OIDC, proxy settings
+├── README.md               # 이 파일
+├── Dockerfile              # apache/superset와 requirements.txt
+├── requirements.txt        # PostgreSQL driver, Authlib, Trino dialect(Renovate)
+├── superset_config.py      # 파일 기반 secret, OIDC, proxy 설정
 ├── docker-compose.yml      # superset-db-provision, superset-init, superset
 └── provisioning/
-    └── mng-pg.sql          # Feature-owned role and database
+    └── mng-pg.sql          # feature 소유 role과 database
 ```
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Application** | Apache Superset (base image in `Dockerfile`) | One gunicorn process, 1 CPU, 1 GiB, read-only root |
-| **Metadata** | PostgreSQL on `mng-pg` | Database and role `superset` |
-| **Login** | Keycloak OIDC through Flask-AppBuilder | PKCE S256; registration role `Gamma` |
+| **Application** | Apache Superset(`Dockerfile`의 base image) | gunicorn 프로세스 1개, 1 CPU, 1 GiB, read-only root |
+| **Metadata** | `mng-pg` 위의 PostgreSQL | database와 role `superset` |
+| **Login** | Flask-AppBuilder를 통한 Keycloak OIDC | PKCE S256; 등록 role `Gamma` |
 | **Data** | Trino SQLAlchemy dialect | `lakehouse` catalog |
 
 ## Configuration
@@ -71,22 +71,22 @@ superset/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `SUPERSET_DB_USER` | No | Metadata role (default: superset). |
-| `SUPERSET_DB_NAME` | No | Metadata database (default: superset). |
-| `SUPERSET_OIDC_CLIENT_ID` | No | Keycloak client ID (default: home-superset). |
-| `DEFAULT_URL` | Yes | Base domain of the route and the Keycloak issuer. |
+| `SUPERSET_DB_USER` | No | Metadata role(기본값: superset). |
+| `SUPERSET_DB_NAME` | No | Metadata database(기본값: superset). |
+| `SUPERSET_OIDC_CLIENT_ID` | No | Keycloak client ID(기본값: home-superset). |
+| `DEFAULT_URL` | Yes | 라우트와 Keycloak issuer의 base 도메인. |
 
 Secrets: `superset_secret_key` (AUTO-020), `superset_db_password` (PG-028),
-`superset_oidc_client_secret` (IAM-013), read by `superset_config.py`.
+`superset_oidc_client_secret` (IAM-013), `superset_config.py`가 읽음.
 
 ## Available Scripts
 
-Starting the service requires runtime approval; first setup is in RUN-0097.
+서비스 시작에는 runtime 승인이 필요합니다. 최초 설정은 RUN-0097을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile bi up -d superset` | Provision, migrate, then start. |
-| `docker compose --profile bi run --rm superset-init` | Re-run migration after an upgrade. |
+| `docker compose --profile bi up -d superset` | Provisioning, migration 후 시작. |
+| `docker compose --profile bi run --rm superset-init` | 업그레이드 후 migration 재실행. |
 
 ## Validation
 
@@ -95,16 +95,16 @@ Starting the service requires runtime approval; first setup is in RUN-0097.
 
 ## Troubleshooting
 
-- `superset: secret … must be one non-empty line`: the named secret file is empty or has several lines.
-- Login error after Keycloak: redirect URI or client secret mismatch; follow RUN-0097.
-- No data after login: the user is `Gamma` until an Admin grants a role.
+- `superset: secret … must be one non-empty line`: named secret 파일이 비어 있거나 여러 줄입니다.
+- Keycloak 이후 로그인 오류: redirect URI 또는 client secret 불일치; RUN-0097을 따르십시오.
+- 로그인 후 데이터가 없음: Admin이 role을 부여하기 전까지 사용자는 `Gamma`입니다.
 
 ## Related Documents
 
 - **Guide**: Superset Usage Guide (`docs/05.operations/guides/0097-superset.md`)
 - **Policy**: Superset Operations Policy (`docs/05.operations/policies/0097-superset.md`)
 - **Runbook**: Superset Runbook (`docs/05.operations/runbooks/0097-superset.md`)
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
 ---
 
@@ -112,25 +112,25 @@ Starting the service requires runtime approval; first setup is in RUN-0097.
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Superset leaf in `04-data/analytics`; services: `superset-db-provision`, `superset-init`, `superset`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/superset/docker-compose.yml` |
+| Purpose | `04-data/analytics`의 Superset leaf; services: `superset-db-provision`, `superset-init`, `superset`; [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/analytics/superset/docker-compose.yml` |
 | Config files | `Dockerfile`, `requirements.txt`, `superset_config.py`, `docker-compose.yml`, `provisioning/mng-pg.sql` |
 | Config values | profiles: `bi` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/superset/docker-compose.yml` |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/analytics/superset/docker-compose.yml` |
 | Networks | `edge_net`, `mng_data_net`, `object_net` |
 | Volumes | `./superset_config.py:/app/pythonpath/superset_config.py:ro`, `${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro` |
-| Ports | none; Traefik route `superset.${DEFAULT_URL}` |
+| Ports | 없음; Traefik route `superset.${DEFAULT_URL}` |
 | Labels | `hy-home.tier`, Traefik router `superset` |
-| Secret refs | `superset_secret_key`, `superset_db_password`, `superset_oidc_client_secret`, `mng_postgres_password` (provisioning only) |
+| Secret refs | `superset_secret_key`, `superset_db_password`, `superset_oidc_client_secret`, `mng_postgres_password`(provisioning 전용) |
 | Healthcheck | `curl -fsS http://localhost:8088/health` |
 | Operations | Guide (`docs/05.operations/guides/0097-superset.md`), Policy (`docs/05.operations/policies/0097-superset.md`), Runbook (`docs/05.operations/runbooks/0097-superset.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Check `/health` and the init job log, then follow the runbook. |
+| Troubleshooting | `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |
 
 ## How to Work in This Area
 
-1. Renovate updates `requirements.txt` and the `FROM` image; a Superset bump also changes the `image:` tag and the version projection, then needs `superset-init`.
-2. Keep every credential in a secret file read by `superset_config.py`.
-3. Grant roles to named users only; registration stays `Gamma`.
+1. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. Superset 버전이 오르면 `image:` tag와 버전 투영도 바뀌며 `superset-init`이 필요합니다.
+2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.
+3. named user에게만 role을 부여하십시오. 등록은 계속 `Gamma`입니다.
 
-Runtime image authority is [docker-compose.yml](docker-compose.yml);
-the [derived Compose image projection](../../../tech-stack.versions.json) is drift evidence.
+런타임 이미지 권한은 [docker-compose.yml](docker-compose.yml)이 소유하며
+[derived Compose 이미지 투영](../../../tech-stack.versions.json)은 drift 증거입니다.

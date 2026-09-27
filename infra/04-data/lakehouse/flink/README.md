@@ -1,26 +1,26 @@
 ---
 title: "Flink (Iceberg)"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-09-23"
 ---
 
 <!-- [ID:04-data:lakehouse-flink] -->
 # Flink (Iceberg)
 
-> On-demand OPTIONAL Flink session cluster for streaming and batch SQL into Iceberg tables in the SeaweedFS REST catalog.
+> SeaweedFS REST catalog의 Iceberg table에 스트리밍/배치 SQL을 쓰는 on-demand OPTIONAL Flink session cluster입니다.
 
 ## Overview
 
-Flink은 `lakehouse` profile로 선택되는 **OPTIONAL** stream processing engine입니다.
-JobManager 하나와 TaskManager 하나(slot 2개)로 된 session cluster이며, catalog
+Flink는 `lakehouse` profile로 선택되는 **OPTIONAL** stream processing engine입니다.
+JobManager 하나와 TaskManager 하나(slot 2개)로 된 session cluster입니다. catalog
 `lakehouse`는 Spark·Trino와 같은 SeaweedFS Iceberg REST catalog와 `lakehouse`
 S3 identity를 사용합니다. Kafka source와 sink는 `kafka_net`의 `kafka-1:19092`를
-씁니다. REST API와 UI에 인증이 없으므로 `127.0.0.1`에만 게시하고 route는 없으며,
-REST API로 JAR를 올릴 수 없습니다.
+씁니다. REST API와 UI에 인증이 없으므로 `127.0.0.1`에만 게시하고 route는 없습니다.
+REST API로 JAR를 올릴 수도 없습니다.
 
 ## Audience
 
@@ -34,33 +34,33 @@ REST API로 JAR를 올릴 수 없습니다.
 
 ### In Scope
 
-- Session cluster (JobManager, TaskManager) with the Iceberg, AWS, Kafka and Hadoop client jars.
-- The `lakehouse` catalog statement, the scoped S3 identity and file checkpoints.
+- Iceberg, AWS, Kafka, Hadoop client jar를 포함한 session cluster(JobManager, TaskManager).
+- `lakehouse` catalog statement, 범위 S3 identity, file checkpoint.
 
 ### Out of Scope
 
-- High availability, TLS, authentication and a Traefik route.
-- Application mode and JAR submission through the REST API.
-- Batch maintenance ([Spark](../spark/README.md)) and interactive SQL ([Trino](../trino/README.md)).
+- 고가용성, TLS, 인증, Traefik route.
+- Application mode와 REST API를 통한 JAR 제출.
+- 배치 유지보수([Spark](../spark/README.md))와 대화형 SQL([Trino](../trino/README.md)).
 
 ## Structure
 
 ```text
 flink/
-├── README.md           # This file
-├── Dockerfile          # flink base plus checksum-pinned jars
+├── README.md           # 이 파일
+├── Dockerfile          # flink base와 checksum-pinned jar
 ├── docker-compose.yml  # flink-jobmanager, flink-taskmanager
-└── hyhome-flink.sh     # Exports the secret, writes /tmp/lakehouse.sql, then runs the command
+└── hyhome-flink.sh     # secret을 export하고 /tmp/lakehouse.sql을 작성한 뒤 명령을 실행함
 ```
 
 ## Tech Stack
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Engine** | Apache Flink (base image in `Dockerfile`) | JobManager 1 CPU / 1.25 GiB, TaskManager 2 CPUs / 2 GiB, 2 slots |
-| **Table format** | Iceberg Flink runtime | Same Iceberg version as Spark; SigV4 REST catalog, S3FileIO |
-| **Streaming source** | Kafka SQL connector | `kafka-1:19092` on `kafka_net` |
-| **State** | File checkpoints | `${DEFAULT_DATA_DIR}/flink/checkpoints`, shared by both containers |
+| **Engine** | Apache Flink(`Dockerfile`의 base image) | JobManager 1 CPU / 1.25 GiB, TaskManager 2 CPU / 2 GiB, slot 2개 |
+| **Table format** | Iceberg Flink runtime | Spark와 동일한 Iceberg 버전; SigV4 REST catalog, S3FileIO |
+| **Streaming source** | Kafka SQL connector | `kafka_net`의 `kafka-1:19092` |
+| **State** | File checkpoint | `${DEFAULT_DATA_DIR}/flink/checkpoints`, 두 컨테이너가 공유 |
 
 ## Configuration
 
@@ -68,25 +68,25 @@ flink/
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
-| `FLINK_HOST_PORT` | No | Loopback host port for the REST API and UI (default: 18091). |
-| `SEAWEEDFS_ICEBERG_PORT` | No | REST catalog port on `seaweedfs-s3` (default: 8181). |
-| `DEFAULT_DATA_DIR` | Yes | Parent of the checkpoint directory. |
+| `FLINK_HOST_PORT` | No | REST API/UI용 loopback 호스트 포트(기본값: 18091). |
+| `SEAWEEDFS_ICEBERG_PORT` | No | `seaweedfs-s3`의 REST catalog 포트(기본값: 8181). |
+| `DEFAULT_DATA_DIR` | Yes | checkpoint 디렉터리의 상위 경로. |
 
-The secret is `seaweedfs_s3_lakehouse_secret_key` (STRG-015); the access key ID
-is `lakehouse`. Flink settings are `-D` arguments in `docker-compose.yml`; the
-image configuration file is not edited.
+Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
+`lakehouse`입니다. Flink 설정은 `docker-compose.yml`의 `-D` 인자로 지정하며
+이미지 설정 파일은 수정하지 않습니다.
 
 ## Available Scripts
 
-Starting the service requires runtime approval. Create the checkpoint directory
-first: `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/checkpoints"`.
+서비스 시작에는 runtime 승인이 필요합니다. 먼저 checkpoint 디렉터리를
+생성하십시오: `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/checkpoints"`.
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile lakehouse up -d flink-jobmanager flink-taskmanager` | Start the session cluster (writes nothing). |
-| `docker compose exec flink-jobmanager bash /opt/hyhome/hyhome-flink.sh /opt/flink/bin/sql-client.sh -i /tmp/lakehouse.sql` | SQL client on the `lakehouse` catalog. |
-| `docker compose exec flink-jobmanager /opt/flink/bin/flink list -a` | List jobs. |
-| `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | Stop a job. |
+| `docker compose --profile lakehouse up -d flink-jobmanager flink-taskmanager` | session cluster 시작(아무것도 쓰지 않음). |
+| `docker compose exec flink-jobmanager bash /opt/hyhome/hyhome-flink.sh /opt/flink/bin/sql-client.sh -i /tmp/lakehouse.sql` | `lakehouse` catalog에 대한 SQL client. |
+| `docker compose exec flink-jobmanager /opt/flink/bin/flink list -a` | job 목록. |
+| `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지. |
 
 ## Validation
 
@@ -95,18 +95,18 @@ first: `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/ch
 
 ## Troubleshooting
 
-- Exit `64`: the `lakehouse` secret is missing or empty.
-- `ClassNotFoundException: org.apache.hadoop.conf.Configuration`: a Hadoop client jar is missing from the image.
-- No `lakehouse` catalog or an S3 `403` in the SQL client: it was started without the wrapper; run it through `hyhome-flink.sh` as above.
-- A streaming `INSERT` that never commits: checkpointing is off; the wrapper sets a 60 s interval, and a session `SET` must not turn it off.
-- Checkpoint `AccessDeniedException`: the host checkpoint directory is not group-writable; follow the lakehouse runbook.
+- Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
+- `ClassNotFoundException: org.apache.hadoop.conf.Configuration`: 이미지에 Hadoop client jar가 없습니다.
+- SQL client에서 `lakehouse` catalog가 없거나 S3 `403`이 발생: wrapper 없이 시작되었습니다. 위와 같이 `hyhome-flink.sh`로 실행하십시오.
+- 스트리밍 `INSERT`가 커밋되지 않음: checkpointing이 꺼져 있습니다. wrapper는 60초 간격을 설정하며 세션 `SET`으로 이를 끄면 안 됩니다.
+- Checkpoint `AccessDeniedException`: 호스트 checkpoint 디렉터리가 group-writable이 아닙니다. lakehouse runbook을 따르십시오.
 
 ## Related Documents
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/0094-lakehouse.md`)
 - **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`)
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
 ---
 
@@ -114,25 +114,25 @@ first: `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/ch
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Flink leaf in `04-data/lakehouse`; services: `flink-jobmanager`, `flink-taskmanager`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lakehouse/flink/docker-compose.yml` |
+| Purpose | `04-data/lakehouse`의 Flink leaf; services: `flink-jobmanager`, `flink-taskmanager`; [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/lakehouse/flink/docker-compose.yml` |
 | Config files | `Dockerfile`, `docker-compose.yml`, `hyhome-flink.sh` |
 | Config values | profiles: `lakehouse` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/lakehouse/flink/docker-compose.yml` |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/lakehouse/flink/docker-compose.yml` |
 | Networks | `object_net`, `kafka_net` |
 | Volumes | `./hyhome-flink.sh:/opt/hyhome/hyhome-flink.sh:ro`, `flink-checkpoints:/opt/flink/checkpoints` |
-| Ports | `127.0.0.1:${FLINK_HOST_PORT:-18091}:8081` (JobManager) |
+| Ports | `127.0.0.1:${FLINK_HOST_PORT:-18091}:8081`(JobManager) |
 | Labels | `hy-home.tier` |
 | Secret refs | `seaweedfs_s3_lakehouse_secret_key` |
-| Healthcheck | JobManager `curl -fsS http://localhost:8081/overview`; TaskManager none (it waits for a healthy JobManager) |
+| Healthcheck | JobManager `curl -fsS http://localhost:8081/overview`; TaskManager는 없음(정상 JobManager를 기다림) |
 | Operations | Guide (`docs/05.operations/guides/0094-lakehouse.md`), Policy (`docs/05.operations/policies/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/0094-lakehouse.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Run `flink list -a`, then follow the runbook. |
+| Troubleshooting | `flink list -a`를 실행한 뒤 runbook을 따름 |
 
 ## How to Work in This Area
 
-1. Move the Iceberg version in the Flink and Spark Dockerfiles together; the Flink runtime jar name carries the Flink minor version.
-2. Renovate updates only the `FROM` image; the jars are updated by hand with a new checksum. A Flink minor bump also needs the matching `iceberg-flink-runtime-<minor>` and Kafka connector jars.
-3. A streaming `INSERT` runs until cancelled and commits on each checkpoint (60 s by default, from the wrapper); record the job ID and target table.
+1. Flink와 Spark Dockerfile의 Iceberg 버전을 함께 올리십시오. Flink runtime jar 이름에는 Flink minor 버전이 들어갑니다.
+2. Renovate는 `FROM` 이미지만 갱신하며 jar는 새 checksum으로 수동 갱신합니다. Flink minor 버전이 오르면 대응하는 `iceberg-flink-runtime-<minor>`와 Kafka connector jar도 필요합니다.
+3. 스트리밍 `INSERT`는 취소될 때까지 실행되며 각 checkpoint(wrapper 기본값 60초)마다 커밋됩니다. job ID와 대상 table을 기록하십시오.
 
-Runtime image authority is [docker-compose.yml](docker-compose.yml);
-the [derived Compose image projection](../../../tech-stack.versions.json) is drift evidence.
+런타임 이미지 권한은 [docker-compose.yml](docker-compose.yml)이 소유하며
+[derived Compose 이미지 투영](../../../tech-stack.versions.json)은 drift 증거입니다.

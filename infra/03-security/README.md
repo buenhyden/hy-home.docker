@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security)"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-HOME의 canonical 비밀 관리 서비스는 OpenBao와 `openbao-agent`다. Vault와 `vault-agent`는 SPEC-0180 S08에서 제거했고, 보존된 데이터 경로만 비가동 상태로 남는다. 이 구성은 기존 비밀 데이터의 이전 또는 실제 unseal 완료를 주장하지 않는다.
+HOME의 canonical 비밀 관리 서비스는 OpenBao와 `openbao-agent`다. Vault와 `vault-agent`는 SPEC-0180 S08에서 제거했고 보존된 데이터 경로만 비가동 상태로 남는다. 이 구성은 기존 비밀 데이터의 이전 또는 실제 unseal 완료를 주장하지 않는다.
 
 ## Audience
 
@@ -36,7 +36,7 @@ OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결�
 
 ## Tech Stack
 
-실행 이미지·profile·마운트의 원본은 [OpenBao Compose](openbao/docker-compose.yml)다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
+실행 이미지·profile·마운트의 원본은 [openbao/](openbao/)의 compose 선언이다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
 
 ## Configuration
 
@@ -59,4 +59,4 @@ bash scripts/hardening/check-all-hardening.sh 03-security
 
 - [OpenBao 정책 — 문서 인덱스](../../docs/README.md) (`POL-0085`), [OpenBao 런북 — 문서 인덱스](../../docs/README.md) (`RUN-0085`).
 - [OpenBao migration 제약](https://openbao.org/docs/next/guides/migration/).
-- [Infrastructure index](../README.md).
+- [인프라 인덱스](../README.md).

@@ -1,21 +1,21 @@
 ---
 title: "MongoDB Replica Set"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 <!-- [ID:04-data:nosql:mongodb] -->
 # MongoDB Replica Set
 
-> Document-oriented NoSQL database with high availability and replica set support.
+> 고가용성과 replica set을 지원하는 문서 지향 NoSQL 데이터베이스입니다.
 
 ## Overview
 
-MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 데이터베이스이다. `hy-home.docker`에서는 가용성과 데이터 중복성을 보장하기 위해 Primary-Secondary-Arbiter 구조의 Replica Set을 구성하여 운영한다.
+MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 데이터베이스이다. `hy-home.docker`에서는 가용성과 데이터 중복성을 보장하도록 Primary-Secondary-Arbiter 구조의 Replica Set을 구성하여 운영한다.
 
 ## Audience
 
@@ -29,7 +29,7 @@ MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 
 
 ### In Scope
 
-- MongoDB 8.2 Replica Set 구성 (`mongodb-rep1, 2` + `arbiter`)
+- MongoDB Replica Set 구성(`mongodb-rep1, 2` + `arbiter`, 정확한 버전은 `docker-compose.yml` 참조)
 - 관리 도구: Mongo Express (Web UI)
 - 성능 모니터링: MongoDB Exporter for Prometheus
 - 보안 구성: KeyFile 기반 내부 인증 및 SCRAM-SHA-256
@@ -44,36 +44,36 @@ MongoDB는 유연한 스키마와 고성능을 제공하는 문서 지향 NoSQL 
 
 | Category   | Technology                 | Notes                      |
 | :--------- | :------------------------- | :------------------------- |
-| Engine     | Compose-declared MongoDB image | Core Database Engine     |
-| Management | `mongo-express:1-18-alpine3.19` | Web-based GUI Admin |
-| Monitoring | `percona/mongodb_exporter:2.37` | Prometheus Metrics |
-| Security   | Internal KeyFile Auth      | Replica Set Synchronization|
+| Engine     | Compose에 선언된 MongoDB 이미지 | 핵심 데이터베이스 엔진     |
+| Management | Compose에 선언된 mongo-express 이미지 | 웹 기반 GUI 관리 |
+| Monitoring | Compose에 선언된 mongodb_exporter 이미지 | Prometheus 메트릭 |
+| Security   | 내부 KeyFile 인증      | Replica Set 동기화|
 
 ## Structure
 
 ```text
 mongodb/
-├── README.md             # This file
-└── docker-compose.yml    # Replica set deployment file
+├── README.md             # 이 파일
+└── docker-compose.yml    # replica set 배포 파일
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | MongoDB Replica Set service leaf in `04-data`; unconditional root include, profile-selected; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
+| Purpose | `04-data`의 MongoDB Replica Set 서비스 leaf; 무조건 root include, profile로 선택됨; services: `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys are Compose-owned; exact profile for all seven services: `mongodb` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
+| Config values | 환경 키는 Compose가 소유함; 7개 서비스 모두의 exact profile: `mongodb` |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/nosql/mongodb/docker-compose.yml` |
 | Networks | `edge_net`, `lab_net`, `obs_net` |
 | Volumes | `mongo-key:/data/configdb:rw`, `mongodb1-data:/data/db:rw`, `mongo-key:/data/configdb:ro`, `mongodb2-data:/data/db:rw`, `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` |
 | Ports | `${MONGO_EXPRESS_PORT:-8081}`, `${MONGO_EXPORTER_PORT:-9216}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.mongo-express.rule`, `traefik.http.routers.mongo-express.entrypoints`, `traefik.http.routers.mongo-express.tls`, `traefik.http.services.mongo-express.loadbalancer.server.port`, `traefik.http.routers.mongo-express.middlewares` |
 | Secret refs | names: `mongodb_root_password`, `mongo_express_basicauth_password`; mounts: `/run/secrets/mongodb_root_password`, `/run/secrets/mongo_express_basicauth_password` |
-| Healthcheck | Compose healthcheck declared for `mongodb-rep1`, `mongodb-rep2`; not declared for `mongo-key-generator`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` |
+| Healthcheck | `mongodb-rep1`, `mongodb-rep2`에 Compose healthcheck 선언됨; `mongo-key-generator`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`에는 선언되지 않음 |
 | Operations | Guide (`docs/05.operations/guides/0027-mongodb.md`), Policy (`docs/05.operations/policies/0027-mongodb.md`), Runbook (`docs/05.operations/runbooks/0027-mongodb.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
 ## How to Work in This Area
 
@@ -103,24 +103,25 @@ mongodb/
 
 ## Validation
 
-Classification is `LAB`; `MyReplicaSet` has two data-bearing members and an arbiter on one host. Recovery uses authenticated `mongodump --oplog` from a data-bearing member and `mongorestore --oplogReplay` into a fresh compatible replica set; the arbiter is not a data backup. Owning artifacts are `GDE-0027`, `POL-0027`, and `RUN-0027`.
+Classification은 `LAB`입니다. `MyReplicaSet`은 한 호스트에 데이터 보유
+member 2개와 arbiter 1개를 둡니다. 복구는 데이터 보유 member에서 인증된
+`mongodump --oplog`를 사용하고 새로운 호환 replica set에 `mongorestore
+--oplogReplay`로 복원합니다. arbiter는 데이터 백업이 아닙니다. 소유
+artifact는 `GDE-0027`, `POL-0027`, `RUN-0027`입니다.
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect MongoDB.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking MongoDB documentation ready.
+- MongoDB에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- MongoDB 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
 ## Troubleshooting
 
-- Start with `docker compose config --quiet` from this service directory to verify replica set, Mongo Express, exporter, network, and secret references render.
-- If replica initialization fails, inspect `docker compose logs mongo-init` and confirm `docker exec -it mongodb-rep1 mongosh --eval "rs.status()"` reports the expected member state before changing keyfile or replica set settings.
+- 이 서비스 디렉터리에서 `docker compose config --quiet`로 replica set, Mongo Express, exporter, 네트워크, secret 참조가 정상 렌더링되는지 먼저 확인합니다.
+- replica 초기화가 실패하면 `docker compose logs mongo-init`을 확인하고 keyfile이나 replica set 설정을 변경하기 전에 `docker exec -it mongodb-rep1 mongosh --eval "rs.status()"`가 예상된 member 상태를 보고하는지 확인합니다.
 
 ## Related Documents
 
 - **Guide**: MongoDB Guide (`docs/05.operations/guides/0027-mongodb.md`)
 - **Policy**: MongoDB Operation (`docs/05.operations/policies/0027-mongodb.md`)
 - **Runbook**: MongoDB Runbook (`docs/05.operations/runbooks/0027-mongodb.md`)
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.

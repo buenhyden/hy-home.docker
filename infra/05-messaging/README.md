@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging)"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
@@ -12,33 +12,33 @@ created: "2025-11-12"
 
 ## Overview
 
-The current tier contains one [`kafka`](kafka/README.md) package. It is an
-OPTIONAL Kafka-family event-streaming surface; no second broker family is present.
+이 tier는 현재 [`kafka`](kafka/README.md) 패키지 하나를 포함합니다. OPTIONAL
+Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 없습니다.
 
 ## Audience
 
-This package map is for operators and maintainers of the messaging tier.
+이 패키지 맵은 messaging tier의 operator와 maintainer를 위한 것입니다.
 
 ## Scope
 
-It covers the current Kafka package and its root Compose selectors.
+현재 Kafka 패키지와 그 루트 Compose selector를 다룹니다.
 
 ## Structure
 
-The tier has one leaf package: [`kafka`](kafka/README.md).
+이 tier의 leaf 패키지는 [`kafka`](kafka/README.md) 하나입니다.
 
 ## How to Work in This Area
 
-The exact root selectors are `messaging`, `messaging-broker`,
-`messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`,
-and `messaging-admin`; use the package map to see which services each
-selects. A named producer and
-consumer, retention/capacity plan, plaintext-listener risk acceptance and complete
-recovery plan are required before activation. Three brokers on one host are not
-host availability.
+정확한 루트 selector는 `messaging`, `messaging-broker`, `messaging-cluster`,
+`messaging-schema`, `messaging-connect`, `messaging-rest`,
+`messaging-admin`입니다. 각 selector가 선택하는 서비스는 패키지 맵을
+참고하십시오. 활성화 전에는 named producer/consumer, retention/capacity
+계획, plaintext-listener 위험 수용, 완전한 복구 계획이 필요합니다. 한
+호스트의 broker 3개는 host availability가 아닙니다.
 
 ## Related Documents
 
-Use the [documentation entry point](../../docs/README.md) to locate Stage 05
-Messaging subjects `05-messaging/0036-kafka` and
-`05-messaging/0037-optimization-hardening`.
+[문서 진입점](../../docs/README.md)을 사용해 Stage 05 Messaging subject
+`docs/05.operations/guides/0036-kafka.md`와
+`docs/05.operations/guides/0037-messaging-optimization-hardening.md`을
+찾으십시오.
