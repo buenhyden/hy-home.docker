@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-27"
 layer: "agent-governance"
 ---
 
@@ -12,77 +12,72 @@ layer: "agent-governance"
 
 ## Overview
 
-`.agents/` is the repository-owned canonical home for shared agent governance,
-roles, and reusable procedures. Claude and Codex consume these sources through
-native adapters. The canonical home is authored content, never renderer output.
+`.agents/`는 공유 agent governance, role, 재사용 가능한 절차를 위한 저장소 소유의
+canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source를
+소비합니다. canonical home은 authored content이며 renderer output이 아닙니다.
 
 ## Scope
 
-- `governance/` owns approval, security, quality, Git, documentation, workflow,
-  bootstrap, and SDLC behavior.
-- `roles/` owns stable identities, responsibilities, permissions, and handoff.
-- `skills/<skill_id>/SKILL.md` owns callable procedures; skill-local
-  `agents/openai.yaml` requires explicit invocation. A skill may also own
-  `scripts/` for the executable code only it runs, `references/` for detail its
-  body would otherwise inline, and `assets/` for templates its output uses.
-  Those three names are the whole allowance: their contents are the skill's own
-  and need no registry row, and nothing else may appear at a skill's top level.
-- `knowledge/` owns verified routing from a repository surface to its
-  canonical owner, plus repository vocabulary and verification coverage.
-- `prompts/` owns reusable input and output contracts for recurring work.
-- `governance/providers/registry.yaml` owns provider identities, model and
-  permission translations, projection routes, and hook facts.
-- [Claude](../.claude/provider.md) and [Codex](../.codex/provider.md) own their
-  native loading and syntax differences. Their generated READMEs are outputs.
+- `governance/`는 approval, security, quality, Git, documentation, workflow,
+  bootstrap, SDLC 동작을 소유합니다.
+- `roles/`는 안정적인 identity, 책임, permission, handoff를 소유합니다.
+- `skills/<skill_id>/SKILL.md`는 호출 가능한 절차를 소유합니다. skill-local
+  `agents/openai.yaml`은 명시적 invocation을 요구합니다. skill은 자신만 실행하는
+  executable code를 위한 `scripts/`, 본문에 inline하기엔 긴 detail을 위한
+  `references/`, output이 사용하는 template을 위한 `assets/`도 소유할 수
+  있습니다. 이 세 이름이 허용의 전부입니다. 그 내용은 해당 skill 고유의 것이라
+  registry row가 필요 없고 skill 최상위에는 그 외 어떤 것도 존재할 수 없습니다.
+- `knowledge/`는 저장소 surface에서 canonical owner로의 검증된 routing과 저장소
+  vocabulary, verification coverage를 소유합니다.
+- `prompts/`는 반복 작업을 위한 재사용 가능한 input/output contract를
+  소유합니다.
+- `governance/providers/registry.yaml`은 provider identity, model/permission
+  translation, projection route, hook fact를 소유합니다.
+- [Claude](../.claude/provider.md)와 [Codex](../.codex/provider.md)는 각자의
+  native loading과 syntax 차이를 소유합니다. 이들의 생성된 README는 output입니다.
 
-Stage 99 (`docs/99.templates/README.md`) owns document profiles, paths,
-identifiers, lifecycle values, and templates. Registered scripts own executable
-checks. The current Spec Package Task owns execution evidence; its preserved
-Stage 98 record and Git history retain completed evidence.
+Stage 99(`docs/99.templates/README.md`)는 document profile, path, identifier,
+lifecycle 값, template을 소유합니다. 등록된 script는 executable check를
+소유합니다. 현재 Spec Package Task는 실행 evidence를 소유하며 보존된 Stage 98
+record와 Git history가 완료된 evidence를 보관합니다.
 
 ## Structure
 
 ```text
 .agents/
 ├── README.md
-├── governance/
-│   ├── <policy>.md
-│   ├── sdlc.md
-│   ├── hooks/
-│   └── providers/
-├── knowledge/
-├── prompts/
-├── roles/
-└── skills/<skill_id>/
-    ├── SKILL.md
-    └── agents/openai.yaml
+├── governance/  # policy, SDLC, hooks, provider registry
+├── knowledge/   # 검증된 routing과 vocabulary
+├── prompts/     # 재사용 가능한 input/output contract
+├── roles/       # 안정적인 identity와 permission
+└── skills/      # skill id별 호출 가능한 절차
 ```
 
-Only registered canonical entries are permitted, apart from the three
-skill-owned directories named above. Unknown entries are preserved and reported
-for review. `knowledge/` and `prompts/` route to canonical owners
-and declare contracts; neither states an obligation, holds a procedure body, or
-owns execution state. No common runtime, progress ledger, installer, or
-generated role surface is introduced here.
+위에서 이름 붙인 세 개의 skill 소유 디렉터리를 제외하면 등록된 canonical
+entry만 허용됩니다. 알 수 없는 entry는 보존되며 검토용으로 보고됩니다.
+`knowledge/`와 `prompts/`는 canonical owner로 route하며 contract를 선언합니다.
+둘 다 obligation을 명시하거나 절차 본문을 담거나 실행 상태를 소유하지
+않습니다. 여기에는 공통 runtime, progress ledger, installer, 생성된 role
+surface가 도입되지 않습니다.
 
 ## How to Work in This Area
 
-1. Enter through root `AGENTS.md` or `CLAUDE.md` and follow
-   [bootstrap](governance/bootstrap.md).
-2. Read the needed policy, role, explicitly selected skill, native adapter, and
-   governing Spec Package Task. Discovery never broadens permission.
-3. Change approved canonical sources and record focused evidence in the Task.
-4. After an approved projection-input change, use the registered provider
-   renderer's `--write` and `--check` routes. Follow the
-   [exact quarantine procedure](governance/providers/README.md) when reported.
-   Verify canonical source bytes were preserved and native drift is zero.
-5. Select completion checks through the shared
-   [quality matrix](governance/quality-standards.md#5-change-type-verification-matrix).
+1. 루트 `AGENTS.md` 또는 `CLAUDE.md`로 진입하여 `governance/bootstrap.md`
+   (Bootstrap)를 따릅니다.
+2. 필요한 policy, role, 명시적으로 선택한 skill, native adapter, 해당 Spec
+   Package Task를 읽습니다. Discovery는 permission을 넓히지 않습니다.
+3. 승인된 canonical source를 변경하고 Task에 집중된 evidence를 기록합니다.
+4. 승인된 projection-input 변경 후에는 등록된 provider renderer의 `--write`와
+   `--check` route를 사용합니다. 보고되면 `governance/providers/README.md`의
+   정확한 quarantine 절차를 따릅니다. canonical source byte가 보존되고 native
+   drift가 0인지 확인합니다.
+5. 공유 quality matrix(`governance/quality-standards.md#5-change-type-verification-matrix`)를
+   통해 완료 점검을 선택합니다.
 
 ## Related Documents
 
-- [SDLC](governance/sdlc.md)
-- [Bootstrap](governance/bootstrap.md)
-- [Provider registry](governance/providers/registry.yaml)
+- `governance/sdlc.md` (SDLC)
+- `governance/bootstrap.md` (Bootstrap)
+- `governance/providers/registry.yaml` (Provider registry)
 - Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
 - [Documentation index](../docs/README.md)

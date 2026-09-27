@@ -1,10 +1,10 @@
 ---
 title: "Agent Prompts"
-version: "0.1.0"
+version: "0.2.0"
 type: "governance/prompt-index"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 created: "2026-09-06"
 ---
 
@@ -12,24 +12,24 @@ created: "2026-09-06"
 
 ## Overview
 
-`.agents/prompts/` holds reusable prompt contracts for recurring agent work.
-A prompt declares what it needs, what it must produce, what it must not do, and
-what to do when it cannot proceed. It is the envelope around work, not the work
-itself.
+`.agents/prompts/`는 반복되는 agent 작업을 위한 재사용 가능한 prompt
+contract를 보관합니다. prompt는 무엇이 필요한지, 무엇을 산출해야 하는지,
+무엇을 해서는 안 되는지, 진행할 수 없을 때 무엇을 해야 하는지를 선언합니다.
+작업 자체가 아니라 작업을 감싸는 envelope입니다.
 
-Both providers read these files from the same canonical path, so a prompt
-survives a session boundary and a provider change.
+두 provider 모두 같은 canonical path에서 이 파일을 읽으므로, prompt는
+session 경계와 provider 전환을 넘어 유지됩니다.
 
 ## Scope
 
-- Included: purpose, required inputs, output contract, prohibitions, failure
-  handling, and applicable roles, skills, and evaluation criteria.
-- Excluded: ordered procedure steps, which belong to `skills/`; obligations,
-  which belong to `governance/`; execution state and results, which belong to
-  the current Spec Package Task.
+- 포함: 목적, 필수 input, output contract, prohibition, failure handling,
+  적용 가능한 role, skill, 평가 기준.
+- 제외: `skills/`에 속하는 순서화된 절차 단계, `governance/`에 속하는
+  obligation, 현재 Spec Package Task에 속하는 실행 상태와 결과.
 
-Reading a prompt selects no role and grants no permission. The already selected
-role's permission profile and the approved Task scope continue to govern.
+prompt를 읽는 것은 어떤 role도 선택하지 않으며 어떤 permission도 부여하지
+않습니다. 이미 선택된 role의 permission profile과 승인된 Task scope가 계속
+적용됩니다.
 
 ## Structure
 
@@ -44,32 +44,33 @@ role's permission profile and the approved Task scope continue to govern.
 
 | Prompt | Answers |
 | --- | --- |
-| [handoff](handoff.md) | How does the next session resume from files and Git state alone? |
-| [diff-review](diff-review.md) | How is an exact diff reviewed independently of its author? |
-| [commit-message](commit-message.md) | How is a commit message drafted from the staged diff? |
-| [test-design](test-design.md) | How are tests derived from a requirement and its failure conditions? |
+| [handoff](handoff.md) | 다음 session은 파일과 Git 상태만으로 어떻게 재개하는가? |
+| [diff-review](diff-review.md) | 정확한 diff는 작성자와 무관하게 어떻게 검토되는가? |
+| [commit-message](commit-message.md) | commit message는 staged diff로부터 어떻게 작성되는가? |
+| [test-design](test-design.md) | test는 requirement와 그 failure condition으로부터 어떻게 도출되는가? |
 
-Prompt slugs are kept distinct from skill ids so a name never resolves to two
-different things.
+Prompt slug는 skill id와 구분되게 유지되어 하나의 이름이 두 가지 다른
+것으로 resolve되지 않습니다.
 
 ## How to Work in This Area
 
-1. Confirm the need is an input and output contract, not a procedure. A
-   procedure belongs in a skill.
-2. Copy `docs/99.templates/templates/governance/prompt.template.md` and keep its
-   registered sections in order.
-3. Name the owning skill and role rather than restating either one.
-4. Write prohibitions as concrete refusals, so a reader can tell whether a given
-   output violates one.
-5. Register the file in `canonical_sources` in the Provider Registry, then run
-   the document metadata and agent governance contract checks.
+1. 필요한 것이 절차가 아니라 input/output contract인지 확인합니다. 절차는
+   skill에 속합니다.
+2. `docs/99.templates/templates/governance/prompt.template.md`를 복사하고
+   등록된 섹션을 순서대로 유지합니다.
+3. 소유 skill과 role의 이름을 명시하고 둘 중 하나를 다시 서술하지
+   않습니다.
+4. prohibition을 구체적인 거부로 작성하여 독자가 특정 output이 그것을
+   위반하는지 판단할 수 있게 합니다.
+5. Provider Registry의 `canonical_sources`에 파일을 등록한 뒤 document
+   metadata와 agent governance contract 점검을 실행합니다.
 
 ### Applying a Prompt
 
-Load the prompt, supply every required input, and produce exactly the declared
-output. If an input is unavailable, follow the prompt's failure handling rather
-than substituting an approximation. Record where a prompt was applied in the
-current Task; the prompt itself records nothing.
+prompt를 불러오고 모든 필수 input을 제공하며 선언된 output을 정확히
+산출합니다. input을 사용할 수 없다면 근사치로 대체하지 말고 prompt의
+failure handling을 따릅니다. prompt가 어디에 적용되었는지는 현재 Task에
+기록합니다. prompt 자체는 아무것도 기록하지 않습니다.
 
 ## Related Documents
 
