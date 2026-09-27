@@ -1,4 +1,4 @@
-FROM golang:1.26.3-alpine3.22 AS builder
+FROM golang:1.26.4-alpine3.22 AS builder
 
 WORKDIR /src
 
@@ -25,7 +25,7 @@ RUN patch --batch --forward --fuzz=0 -p1 < /tmp/oidc-hardening.patch \
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /gatus .
 
-FROM alpine:3.22
+FROM alpine:3.24
 
 RUN apk add --no-cache \
     ca-certificates \
