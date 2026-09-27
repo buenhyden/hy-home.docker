@@ -1,10 +1,10 @@
 ---
 title: "Secret Handling Surface"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-27"
 created: "2026-02-23"
 ---
 
@@ -16,7 +16,7 @@ created: "2026-02-23"
 
 `secrets/`는 `hy-home.docker` 인프라에서 사용하는 비밀번호, 키, 토큰, 인증서 관련 파일 경로를 Docker Secrets 포맷으로 배치하는 공간입니다. 이 README는 secret 값 자체가 아니라 디렉터리 구조, registry, 생성/검증 절차, 안전한 운영 원칙을 설명합니다.
 
-이 작업 범위에서는 `secrets/**/*.txt` 값 파일을 열람하지 않습니다. 분석과 문서화는 파일명, 디렉터리 구조, `SENSITIVE_ENV_VARS.md.example`, 관련 README와 스크립트 설명만 기준으로 수행합니다.
+이 작업 범위에서는 `secrets/**/*.txt` 값 파일을 열람하지 않습니다. 파일명, 디렉터리 구조, `SENSITIVE_ENV_VARS.md.example`, 관련 README와 스크립트 설명만 기준으로 분석하고 문서화합니다.
 
 ## Audience
 
@@ -49,10 +49,12 @@ created: "2026-02-23"
 secrets/
 ├── auth/                 # Traefik, Keycloak, proxy 관련 인증 secret
 ├── automation/           # Airflow, n8n 등 자동화 서비스 secret
+├── backup/               # pgBackRest, restic 등 백업 도구 secret
 ├── certs/                # 로컬 TLS 인증서 파일 경로
 ├── common/               # SMTP, webhook 등 공통 secret
 ├── data/                 # OpenSearch, Supabase, AI 도구 관련 secret
 ├── db/                   # PostgreSQL, Valkey, NoSQL 등 DB secret
+├── messaging/            # 현재 Compose secret 소비자가 없는 예약 경로
 ├── observability/        # Grafana와 monitoring stack secret
 ├── security/             # OpenBao 서비스 자격 증명
 ├── storage/              # SeaweedFS object storage secret
@@ -76,10 +78,12 @@ secrets/
 | Registry example | `SENSITIVE_ENV_VARS.md.example` | secret mapping과 metadata 예시 |
 | Auth | `auth/` | Traefik, Keycloak, proxy credentials |
 | Automation | `automation/` | Airflow, n8n 등 workflow secret |
+| Backup | `backup/` | pgBackRest, restic 등 백업 도구 secret |
 | Certs | `certs/` | local TLS certificate file paths |
 | Common | `common/` | SMTP, Slack webhook 등 공통 secret |
 | Data | `data/` | OpenSearch, Supabase, AI service secret |
 | DB | `db/` | PostgreSQL, Valkey, Cassandra, CouchDB, MongoDB 등 DB secret |
+| Messaging | `messaging/` | 현재 Compose secret 소비자가 없는 예약 경로 |
 | Observability | `observability/` | Grafana and monitoring credentials |
 | Security | `security/` | OpenBao service credentials |
 | Storage | `storage/` | SeaweedFS keys and S3 identities |
@@ -158,34 +162,34 @@ bash scripts/operations/gen-secrets.sh --sync-metadata-prune
 ```
 
 기본 메타데이터 정렬은 기존 Value/date cell, 알 수 없는 개인 행, 기존 `.env` assignment와
-주석을 보존한다. 빠진 공개 키와 placeholder 행만 추가하며 secret 파일 생성·읽기·
-변경, htpasswd 생성, 회전은 수행하지 않는다. 경로 이탈·symlink·중복 ID/키·해석할 수
-없는 행을 거부하고 원자적 파일 교체를 사용한다. 기존 대상도 regular
-non-symlink 파일과 정확한 `0600` mode를 요구하며, mode drift는 check에서
-변경 필요로 보고하고 write에서 내용과 함께 원자적으로 `0600`으로 교체한다.
-동시 수동 편집은 중단하고 다시 검사한다. 개인 값을 shell `source`로
-실행하거나 전체 내용을 출력하지 않는다.
+주석을 보존합니다. 빠진 공개 키와 placeholder 행만 추가하며 secret 파일 생성·읽기·
+변경, htpasswd 생성, 회전은 수행하지 않습니다. 경로 이탈·symlink·중복 ID/키·해석할 수
+없는 행은 거부하고 원자적 파일 교체를 사용합니다. 기존 대상도 regular
+non-symlink 파일이어야 하고 정확한 `0600` mode여야 합니다. mode drift는 check에서
+변경 필요로 보고하고 write에서 내용과 함께 원자적으로 `0600`으로 교체합니다.
+동시 수동 편집은 중단하고 다시 검사합니다. 개인 값을 shell `source`로
+실행하거나 전체 내용을 출력하지 않습니다.
 
 엄격한 prune 모드는 공개 스키마에 없는 개인 registry 행과 `.env` 키를 제거해
-두 쌍의 키 집합을 일치시킨다. 공개 스키마의 실제 소비자는 실행 전에 검토해야
-하며 이 모드 자체가 사용 여부를 추측하지 않는다. 먼저 0700 디렉터리에 0600
-백업을 만들고, 유지 대상 값/생성일 보존과 집합 일치를 검증한다. 비밀 파일은
-삭제하지 않는다. 모호한 multiline 환경변수는 안전하게 거부한다.
+두 쌍의 키 집합을 일치시킵니다. 공개 스키마의 실제 소비자는 실행 전에 검토해야
+하며 이 모드 자체는 사용 여부를 추측하지 않습니다. 먼저 0700 디렉터리에 0600
+백업을 만든 뒤 유지 대상 값/생성일이 보존됐는지와 집합이 일치하는지 검증합니다. 비밀 파일은
+삭제하지 않습니다. 모호한 multiline 환경변수는 안전하게 거부합니다.
 
-옵션 없는 실행은 별도 생성/갱신 기능이며 비밀 파일과 htpasswd를 쓸 수 있다.
-메타데이터 감사 용도로 실행하지 않는다. `--check`는 이 생성 기능의 도구까지 검사하므로
-`htpasswd`가 없는 호스트에서는 실패할 수 있다. 메타데이터 모드는 이를 요구하지 않는다.
+옵션 없는 실행은 별도 생성/갱신 기능이며 비밀 파일과 htpasswd를 쓸 수 있습니다.
+메타데이터 감사 용도로는 실행하지 않습니다. `--check`는 이 생성 기능의 도구까지 검사하므로
+`htpasswd`가 없는 호스트에서는 실패할 수 있습니다. 메타데이터 모드는 이를 요구하지 않습니다.
 
 특정 secret을 교체해야 할 때는 값을 문서에 쓰지 말고, 승인된 운영 절차에 따라 secure input 또는 스크립트 기반 생성 방식으로 처리합니다. 교체 후에는 해당 서비스의 runbook에 따라 재시작과 검증을 수행합니다.
 
 현재 스크립트는 한 checkout 안의 공개 스키마와 private projection을 함께
-처리한다. Feature worktree의 공개 스키마를 다른 checkout의 private 파일에
-교차 적용하거나 private 파일을 worktree로 복사하지 않는다. `SEC-002`가
-포함된 소스가 원래 private checkout에 반영된 뒤, 그 checkout에서 기본
+처리합니다. Feature worktree의 공개 스키마를 다른 checkout의 private 파일에
+교차 적용하거나 private 파일을 worktree로 복사하지 않습니다. `SEC-002`가
+포함된 소스가 원래 private checkout에 반영되면 그 checkout에서 기본
 `--sync-metadata-check`와 `--sync-metadata`를 실행해 placeholder 행만
-추가한다. 이 작업은 secret 파일을 생성하지 않는다. `SEC-001`(공개 스키마에서 제거됨) 및 unknown
-private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승인 없이는
-실행하지 않는다.
+추가합니다. 이 작업은 secret 파일을 생성하지 않습니다. `SEC-001`(공개 스키마에서 제거됨) 및 unknown
+private rows는 기본 모드에서 보존하며 prune은 별도의 정확한 승인 없이는
+실행하지 않습니다.
 
 ## Security Policy
 
@@ -202,8 +206,10 @@ private rows는 기본 모드로 보존하며, prune은 별도의 정확한 승�
   활성화할 때 컨테이너 내부 read test와 `/proc` supplementary group 확인 후 `0640`으로
   낮춥니다. Compose 소비자가 없는 파일은 `0600`입니다. `certs/`는 별도의
   `hyhome-certs` group(`CERT_GROUP_GID`) 모델을 유지합니다.
-- `secrets/security/`의 `vault_token.txt`(SEC-001)와 `vault_unseal_keys.legacy.txt`는
-  legacy Vault 전용이며 OpenBao를 unseal할 수 없습니다.
+- legacy Vault 전용이었던 `vault_token.txt`(SEC-001)와 `vault_unseal_keys.legacy.txt`는
+  2026-09-25 SPEC-0182 W5 폐기 조치로 `secrets/.retired/2026-09-23/`로 이동했으며
+  더 이상 `secrets/security/`에 있지 않습니다. 두 파일 모두 OpenBao를 unseal할 수
+  없습니다.
 - OpenBao 관련 값은 `secrets/security/`에서 관리합니다(owner 결정, 2026-09-22).
   `openbao_unseal_keys.txt`(SEC-003, `0600`, host 전용)는 Shamir unseal share 3개를
   줄당 하나씩 담고, 그중 2개로 unseal합니다. `openbao_token.txt`(SEC-002)는 Prometheus
