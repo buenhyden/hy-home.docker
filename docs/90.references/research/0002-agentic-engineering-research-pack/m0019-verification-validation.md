@@ -1,10 +1,10 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.2.1"
+version: "1.3.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
@@ -17,515 +17,670 @@ review_cycle: "on-source-change"
 
 # Reference: Verification and Validation System
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
-
-## Overview
-
-Verification and validation are related but non-interchangeable decision
-disciplines. Verification asks whether an identified artifact conforms to its
-requirements, design, contract, or required activity outputs. Validation asks
-whether the resulting system, product, service, or evidence is adequate for
-its intended use, stakeholder needs, and operational context.
-
-This Stage 90 reference connects current official primary-source guidance to
-tracked workspace owners at Task 9a baseline
-`ac51a53211887a12bb18e2209aa3af1af6eb4b7f`. It is advisory analysis: it
-creates neither a release gate nor authority to accept defects or residual
-risk. A local green check is not, by itself, product validation or acceptance.
-
-## Purpose
-
-Satisfy REQ-36 by defining a source-backed V&V system that covers planning,
-entry and readiness, success and completion, static and dynamic methods,
-evidence and traceability, independence and risk-based depth, environments,
-data and oracles, defect disposition, acceptance and decision authority,
-residual risk, release acceptance, monitoring, and revalidation across all
-fourteen workspace scopes.
-
-The reference maps those concepts to exact tracked paths, commands, evidence
-states, gaps, and runtime or authority limits. It prevents the invalid
-substitution "tests or CI passed, therefore the product was validated and
-accepted."
-
-## Repository Role
-
-This leaf owns the cross-system V&V model, evidence trace, and evidence-state
-vocabulary. The supporting research leaves retain their detailed SDLC, QA,
-workflow, metadata, generated-output, Compose, security, baseline, and scope
-matrices.
-
-Stages 01-03 own stakeholder intent, acceptance criteria, architecture, and
-technical contracts. Stage 04 records observed implementation, checks,
-reviews, defects, decisions, and commits. Stage 05 owns operations and real
-release-event evidence. Runtime or remote claims require separately authorized
-observation of the named target and time. This leaf does not adopt policy,
-certify security, accept a provider, mutate remote state, or observe runtime.
-
-## Scope
-
-### In scope
-
-- Systems, software, documentation, configuration, testware, generated
-  artifacts, and release-candidate evidence.
-- V&V plans, readiness criteria, declared oracles, success criteria, and
-  completion evidence.
-- Static and dynamic verification plus intended-use and stakeholder validation.
-- Risk-based depth, graded independence, evidence traceability, defect and
-  residual-risk decisions, monitoring, and revalidation.
-- All fourteen normative workspace scopes, including explicit current
-  not-applicable and `UNVERIFIED` boundaries.
-
-### Out of scope
-
-- Clause-level IEEE or ISO requirements not exposed by the public official
-  routes. Licensed normative text was not accessed.
-- Secret values, private provider state, Docker or Compose runtime execution,
-  hosted GitHub observation, deployment, backup or restore, rollback, incident
-  exercise, and Graphify refresh.
-- Implementing a gap, approving a release, accepting residual risk, or changing
-  policy, workflow, runtime, provider, lifecycle, or remote configuration.
-
-## Definitions / Facts
-
-### Terminology and non-substitution rules
-
-- **Verification**: evidence that a named artifact or activity output conforms
-  to a declared requirement, design, schema, rule, or oracle.
-- **Validation**: evidence that the result is adequate for intended use,
-  stakeholder needs, and the relevant operational context.
-- **V&V**: coordinated verification and validation work with separate questions,
-  evidence, and authorities where the risk requires them.
-- **Static verification**: evaluation without executing the target, including
-  requirements, design, review, lint, type, schema, provenance, and trace checks.
-- **Dynamic verification**: execution against a declared oracle, including
-  tests, fuzzing, smoke checks, and controlled deployment checks.
-- **Acceptance**: an authorized decision that the identified candidate and its
-  known evidence and risk are suitable for the declared handoff or use.
-- **Oracle**: the explicit rule or expected result used to decide whether an
-  observation succeeds.
-- **Environment**: the versioned configuration, dependencies, data, resources,
-  and execution context in which evidence was produced.
-- **Independence**: separation between authoring, execution, review, and
-  acceptance roles, graded according to consequence and risk.
-- **Residual risk**: uncertainty or exposure remaining after V&V and defect
-  treatment, accepted only by a named authority.
-- **Revalidation**: repeating or extending validation after a change invalidates
-  the scope, assumptions, environment, or evidence of an earlier decision.
-
-This leaf reserves "validation" for intended-use or stakeholder adequacy.
-Ordinary CI contract checks are verification gates unless an approved scenario,
-representative context, oracle, and acceptance authority establish more.
-
-### V&V planning and decision model
-
-A V&V plan identifies the item and immutable candidate, the requirement or
-expectation being evaluated, the method and risk-based depth, the required
-independence, the environment/data/oracle, entry and exit criteria, the defect
-route, durable evidence owner, acceptance authority, and revalidation triggers.
-
-Planning must also state exclusions and uncertainty. If required authority,
-representative data, environment fidelity, or an oracle is missing, the
-relevant result is `UNVERIFIED`; a convenient substitute is not acceptable.
-
-### Evidence trace
-
-The minimum evidence chain is:
-
-```text
-requirement or stakeholder expectation
-  -> identified artifact/candidate
-  -> method and risk depth
-  -> environment, data, and oracle
-  -> observation/result
-  -> defect disposition and repeated evidence where needed
-  -> acceptance decision and residual risk
-  -> monitoring and revalidation trigger
-```
-
-Every link names its owner. Metadata and human links support navigation, but
-requirement IDs, candidate identity, exact commands, results, defect decisions,
-review ranges, and runtime observations provide the decision trace.
-
-### Methods and coverage
-
-Static verification includes requirements/design/traceability inspection,
-code and document review, lint/type/schema checks, static security and secret
-pattern checks, dependency/SBOM/provenance review, and generated-output
-comparison. Dynamic verification includes unit, integration, component, E2E,
-black-box, structural, regression, fuzz, smoke, recovery, and deployment checks
-when their environments and oracles are declared.
-
-Validation methods include representative user or operator scenarios,
-demonstrations, accessibility and usability acceptance, recovery exercises,
-stakeholder decisions, and post-release observation. Coverage is adequate only
-relative to the approved requirements, risks, environments, and exclusions; a
-test count or percentage alone does not establish sufficiency.
-
-### Risk-based depth and independence
-
-Independence is graded rather than binary. Higher-consequence changes require
-stronger requirement traceability, negative and adversarial cases, realistic
-environments, independent review or execution, explicit residual-risk decisions,
-and stronger release evidence. Self-review can find mistakes but cannot replace
-a required independent reviewer or acceptance authority.
-
-IEEE 1012-2024 publicly describes different integrity levels, but this
-workspace does not claim a level: the licensed criteria were not accessed and
-no local contract adopts one.
-
-### Environments, data, and oracles
-
-Evidence records the candidate revision, tool/dependency versions, relevant
-configuration, and environment limits. Data should represent ordinary,
-boundary, negative, and adversarial conditions without exposing secrets or
-private data. Oracles must be deterministic enough to distinguish a product
-failure from a test/procedure, environment, data, or oracle defect.
-
-Reproducibility records uncertainty and flakes rather than retrying until green.
-An environment mismatch narrows the claim; local results do not automatically
-transfer to hosted CI, a provider runtime, a Compose deployment, or production.
-
-### Entry, success, and completion criteria
-
-Entry/readiness requires a baselined target, identifiable candidate, prepared
-method, environment, data, oracle, known-risk statement, and required reviewer
-or decision authority. Success means the observation meets the declared oracle
-for that candidate and environment, not that every stakeholder need is met.
-
-Completion requires every failure to be routed, defects to be corrected,
-accepted, or deferred by the correct authority, invalidated checks to be
-repeated, evidence to be durable, residual risk and skipped checks to be
-explicit, and monitoring/revalidation triggers to be assigned. A partial pass
-cannot silently satisfy the completion criteria.
-
-### Defect disposition and residual risk
-
-Classify whether a finding belongs to the product/artifact, test or procedure,
-environment, data/oracle, or documentation/traceability. Route it to the
-earliest canonical owner. A correction that changes the candidate, method,
-environment, data, or oracle requires affected evidence to be repeated.
-
-Deferral is not resolution. It records owner, impact, evidence, expiry or
-trigger, and the named authority accepting the residual risk. The author of
-this Stage 90 leaf cannot grant that acceptance.
-
-### Workspace owner and evidence table
-
-Counts below were remeasured from the Task 9a base and candidate on 2026-08-09;
-historical leaf counts remain tied to their original commits.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| V&V area                                                                 | Canonical owner path(s)                                                                                    | Exact command or gate                                                                                                             | Re-measured result                                                                                                                                                  | Class                           | Current state or gap                                                                    | Runtime or authority limit                                                                                   |
-| ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Corpus and pack identity                                                 | Git index; both research-pack prefixes                                                                     | `git ls-files \| wc -l`; exact-prefix `git ls-files` counts                                                                       | Base 1,669; candidate 1,670; new 21; retiring 20                                                                                                                    | Verification                    | One safe tracked leaf added; retiring pack unchanged                                    | Path inventory only; no runtime implication                                                                  |
-| Scope and catalog                                                        | `docs/00.agent-governance/scopes/*.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml`            | sorted `git ls-files` plus complete YAML parse                                                                                    | 14 scopes; 8 catalog scopes; 14 agents; 24 functions; 11 fixtures; 16 regressions                                                                                   | Verification                    | Six normative scopes remain outside the typed enum and `architecture` remains enum-only | Catalog reachability is not provider execution                                                               |
-| Stage/repository contracts                                               | `docs/00.agent-governance/`; Stage 99 profiles; `scripts/validation/check-repo-contracts.sh`               | `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh`                        | PASS; `failures=0`                                                                                                                                                  | Verification                    | Aggregate repository contract passed in the isolated environment                        | Does not replace a named runtime or freshness gate                                                           |
-| Stage/repository contracts, default interpreter (re-verified 2026-08-14) | same owner path                                                                                            | `bash scripts/validation/check-repo-contracts.sh` run directly in this session's default (non-isolated) interpreter at `ece3eda9` | FAIL; `failures=1`: `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime` under Governance memory contract; every other subsection produced no failure | Verification                    | Environment-dependent result: identical gate, different interpreter, different outcome  | Confirms the pre-existing html5lib gap is environmental, not logical; does not itself install the dependency |
-| Changed metadata                                                         | Stage 99 profiles; `scripts/validation/check-document-metadata.py`                                         | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref ac51a53211887a12bb18e2209aa3af1af6eb4b7f`  | PASS; selected 16, violations 0, legacy exceptions 0, transition overrides 0                                                                                        | Verification                    | Applies only to the changed/new registered documents                                    | Metadata validity is not content or product acceptance                                                       |
-| Traceability and alignment                                               | `scripts/validation/check-document-links.py`                                                         | `python3 scripts/validation/check-document-links.py --mode all`                                                                   | PASS on the current graph; the predecessor findings remain historical evidence rather than current validator inputs                                                   | Verification                    | Rendered links and current implementation paths share one semantic owner                 | Link alignment does not prove implementation/runtime behavior                                                |
-| Workflow contract                                                        | `.github/workflow-contract.yml`; `scripts/validation/check-github-workflow-contract.py`                    | `python3 scripts/validation/check-github-workflow-contract.py` plus full YAML parse                                               | PASS: 7 workflows, 23 jobs, 8 actions; 80 nodes = 26 aggregate/48 leaf/6 setup; 16 job roots; 3 profiles                                                            | Verification                    | Tracked topology and strict static projection are implemented                           | No hosted run, required check, branch rule, or environment observed                                          |
-| Typed gate runner                                                        | `.github/workflow-contract.yml`; `scripts/validation/ci_gate_{runner,contract,adapters}.py`                | `python3 scripts/validation/ci_gate_runner.py --profile <profile> --all --dry-run` or selected execution                          | Configured; not selected or executed by this docs unit                                                                                                              | Both/gap                        | Dry-run can verify topology; execution is environment-specific                          | Hosted selection/conclusion and release authority remain `UNVERIFIED`                                        |
-| Pre-commit                                                               | `.pre-commit-config.yaml`; approved wrappers                                                               | scoped wrapper; controlled all-files wrapper only with separate approval                                                          | 10 configured repositories; not executed here                                                                                                                       | Both/gap                        | Configuration is reachable; no hook result claimed                                      | Hooks can modify files; controlled all-files evidence is separately approval-bound                           |
-| LLM Wiki freshness                                                       | both `scripts/knowledge/generate-llm-wiki-*.sh` owners and outputs                                         | canonical write then both `--check` modes                                                                                         | Base 1,338/1,337; candidate 1,339 index rows/1,338 coverage paths                                                                                                   | Verification                    | Fresh only for the staged 1,670-path candidate                                          | Generated freshness does not prove content correctness or runtime discovery                                  |
-| Security readiness                                                       | generator and `docs/90.references/data/security/security-automation-readiness.md`                          | `bash scripts/validation/generate-security-automation-readiness.sh --check`                                                       | PASS; 13 controls = 11 implemented/1 partial/1 gap                                                                                                                  | Verification                    | Broad dependency SCA remains the one gap                                                | Static tracked readiness is not a vulnerability assessment or security certification                         |
-| Lifecycle contracts                                                      | target-surface and corpus-lifecycle owners                                                                 | named advisory and `check-*` modes                                                                                                | Reviewed pinned predecessor 9/26/9; Task 9a changes none of its selectors                                                                                           | Verification                    | Gate 9, deletion, and lifecycle reconciliation remain closed                            | Historical selectors cannot authorize deletion or a lifecycle transition                                     |
-| Compose structure                                                        | `scripts/validation/validate-docker-compose.sh`                                                            | default structural check; `--preflight` only when authorized                                                                      | Not executed in this docs unit                                                                                                                                      | Both/gap                        | Static definitions have separate coverage/provenance checks                             | Live Docker, health, networks, ports, secrets, backup, and rollback stay `UNVERIFIED`                        |
-| Compose coverage                                                         | coverage generator and snapshot                                                                            | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`                                                    | PASS; 48 total files/47 infra variants/168 entries/25 profiles                                                                                                      | Verification                    | Tracked variant declarations are fresh                                                  | Counts are not unique or running services                                                                    |
-| Tech-stack provenance                                                    | `infra/tech-stack.versions.json`; provenance generator/snapshot                                            | `bash scripts/operations/generate-tech-stack-version-provenance.sh --check`                                                       | PASS; 18 components/21 images; 20 pinned/1 approved floating                                                                                                        | Verification                    | Declared provenance is fresh                                                            | No registry resolution, SBOM, signature, deployed-image, or runtime proof                                    |
-| Hardening                                                                | `scripts/hardening/check-all-hardening.sh`; infra registries                                               | `bash scripts/hardening/check-all-hardening.sh`                                                                                   | PASS; 11 tier checks                                                                                                                                                | Verification                    | Selected repository assertions only                                                     | Not a live host/container posture certification                                                              |
-| Template security                                                        | `scripts/validation/check-template-security-baseline.sh`; Stage 99                                         | `bash scripts/validation/check-template-security-baseline.sh`                                                                     | PASS; 46 Compose YAML files, 1 explicit exclusion, 0 missing adoption or required-control findings                                                                  | Verification                    | Path, placeholder, and secret-handling contract only                                    | No secret value was inspected                                                                                |
-| Supply-chain fixture                                                     | supply-chain policy, generator, and focused tests                                                          | typed gates and focused sample-service tests                                                                                      | Configured sample scope; not executed by this leaf                                                                                                                  | Both/gap                        | Fixture rehearsal exists; release integration remains a gap                             | No signing, public Scorecard, provenance publication, or SLSA-level claim                                    |
-| Frontend fixture                                                         | `projects/storybook/nextjs/`; typed CI adapters                                                            | lint/type/build/Storybook/coverage adapter gates                                                                                  | 51 tracked files, 3 stories, 6 TSX/JSX; not executed here                                                                                                           | Both/gap                        | Component fixture exists; product journey validation is absent                          | No product E2E, accessibility, or usability acceptance claimed                                               |
-| Python validation tests                                                  | `tests/validation`; typed adapters                                                                         | exact selected `unittest` modules                                                                                                 | 26 test files; focused 1/1 and full module 4/4 passed after the intended RED                                                                                        | Both/gap                        | Selected tests only; shared Python lint/type/coverage remains incomplete                | Not full test discovery or product validation                                                                |
-| Independent review                                                       | active Task and immutable committed ranges                                                                 | exact-range specification and quality reviews                                                                                     | Prerequisite `ac51a532` reviews Approved C0/I0/M0; implementation reviews pending                                                                                   | Validation of evidence adequacy | Review independence is enforced per logical commit                                      | Does not validate an unobserved product or runtime outcome                                                   |
-
-### Who performs verification vs. validation in this workspace
-
-The abstract distinction only earns its keep if it is bound to named
-performers instead of left as a slogan. Re-surveyed directly at
-`ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` on 2026-08-14:
-
-- **Verification performers.** Every tracked automated gate this workspace
-  runs — `scripts/validation/*.py`/`*.sh`, the 24 `.pre-commit-config.yaml`
-  hooks, the typed `ci_gate_runner.py`/`ci_gate_contract.py` expansion, and
-  the 24 `tests/validation/test_*.py` `unittest` modules — answers a
-  verification question: does this artifact conform to its declared schema,
-  contract, lint rule, type rule, or test oracle? None of them asks whether
-  the result is adequate for a reader's or operator's intended use. This is
-  not a gap in those tools; conformance checking is what they are for.
-- **Validation performers.** No tracked script or CI job performs validation
-  in this leaf's sense. The performers that do exist are human and
-  procedural: the two independent quality reviewers named in the workspace
-  owner/evidence table below (who judge whether re-derived evidence is
-  adequate to support this leaf's claims, not merely whether a script
-  exited zero); the Stage 01 requirement authors and Stage 04 Task
-  reviewers, who judge whether an implementation serves its stated
-  requirement; and, for research-pack leaves specifically, the reader who
-  uses a leaf as a router — its adequacy for that reader's task is decided
-  by the reader, not asserted by the document.
-- **Where validation has no owner at all.** Three areas in this cluster
-  currently have verification coverage and no validation owner: (1) whether
-  the automation-pipeline leaf's promotion-path narrative actually helps an
-  agent avoid a false "required check passed" claim in practice — no
-  usability or task-success evidence exists, only conformance-to-source
-  evidence; (2) whether the quality-ci-formatting leaf's five-state
-  vocabulary changes agent behavior at the point of PR completion claims —
-  same gap; (3) whether this leaf's own cross-cutting routing actually
-  prevents the "tests/CI passed, therefore validated" substitution it names
-  as invalid, for a real agent under real task pressure. Closing any of
-  these requires observing agent behavior against a stated success
-  criterion — a validation activity this Stage 90 leaf cannot itself
-  perform, since it has no access to future agent runs.
-- **This leaf's own evidence class.** Every count and command result in the
-  table below that carries a 2026-08-14 date was independently re-derived by
-  this Task, not copied from the Task 9a leaf text. That re-derivation is
-  verification of this document against tracked sources. It is not
-  validation of the leaf's usefulness to a downstream reader; that
-  determination belongs to the reader, consistent with the non-substitution
-  rule stated above.
-
-### Evidence-state vocabulary
-
-Use these states without collapsing them into one automatic ladder:
-
-- `configured`: a tracked definition exists.
-- `reachable`: the catalog, registry, or graph can route to it.
-- `selected`: an execution plan chose the exact gate or target.
-- `executed`: the named command ran in the recorded environment.
-- `passed`: the execution met its declared oracle.
-- `reviewed`: an independent reviewer evaluated the identified evidence range.
-- `hosted`: a remote control-plane object or run exists.
-- `enforced`: the named authority prevents nonconforming transitions.
-- `runtime-observed`: the live target was directly observed at a recorded time.
-- `UNVERIFIED`: required evidence is missing, inaccessible, unapproved, or
-  outside the observed boundary.
-
-A hosted job can exist without remote enforcement; a local pass can occur
-without hosted execution; reviewed evidence can remain runtime-unobserved.
-
-### Release acceptance and decision authority
-
-Green CI is necessary only where an approved contract makes it necessary and
-is never sufficient by itself. A release decision names the immutable artifact,
-required checks and reviews, known-issue disposition, rollout/rollback/recovery
-evidence, monitoring, residual risk, and human or downstream authority.
-
-If the authority or required evidence is absent, release acceptance is
-`UNVERIFIED`. A Stage 90 statement, successful generator, tracked Release
-template, tag, or local check cannot supply the missing authority.
-
-### Monitoring and revalidation
-
-Revalidate when requirements, design, dependencies, runtime, environment,
-threat model, reused-component context, acceptance authority, or source version
-changes; after an incident, failed canary, telemetry anomaly, material defect,
-or corrected test/data/oracle; and whenever monitoring shows the assumptions
-behind an earlier decision no longer hold.
-
-Monitoring evidence names target, metric or signal, interval, threshold,
-owner, response, and retention. Tracked observability configuration is not a
-runtime observation.
-
-### Do not infer
-
-- No provider behavior, entitlement, model availability, hook interception, or
-  agent outcome is established.
-- No branch protection, ruleset, required check, hosted workflow run,
-  environment, or deployment enforcement was observed.
-- No live Compose/container/network/port/volume/secret/backup/restore/SLO state
-  was observed.
-- No security certification, absence of vulnerabilities, or operational
-  security acceptance is claimed.
-- No release acceptance, deployment, rollback, recovery, or incident outcome
-  is established.
-- No generated artifact is fresh unless its named canonical `--check` ran
-  against the recorded candidate path set.
-
-### Lifecycle evidence and independence
-
-The minimum chain is expectation or requirement → identified candidate → method
-and risk depth → environment/data/oracle → observation → defect disposition or
-repeat evidence → acceptance decision and residual-risk authority → monitoring
-and revalidation trigger. A missing link is `UNVERIFIED`, not a reason to
-substitute a convenient check.
-
-Apply independence in proportion to consequence: an author may run a focused
-verification, but an independent reviewer evaluates the evidence range and a
-named authority decides acceptance. Validation needs a representative intended
-use, success criteria, and stakeholder or operational authority; none are
-created by this Stage 90 research leaf. Revalidate after a change to the
-candidate, requirement, design, oracle, data, environment, dependency, threat
-model, defect disposition, or acceptance assumptions.
-
-No observed validator proves a provider entitlement, runtime behavior, hosted
-check, branch rule, deployment, rollback, security certification, or release
-acceptance. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`; this
-leaf does not alter either ADR evidence state.
-
-## Scope Implications
-
-| Scope          | Status                      | Required V&V emphasis                                                                                                                                                            |
-| -------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agentic`      | Direct                      | Verify catalogs, prompts, tools, permissions, stop criteria, and evidence schemas; validate intended human handoff and task outcome; provider runtime remains `UNVERIFIED`.      |
-| `architecture` | Direct                      | Verify requirement, ADR, ARD, Spec, interface, and quality-attribute traceability; validate against stakeholder constraints and operational concept.                             |
-| `backend`      | Not applicable now          | No current backend product surface; define API, authorization, data, migration, error, load, and runtime acceptance only after an approved surface exists.                       |
-| `common`       | Direct                      | Verify shared scripts, contracts, and conventions; validate that common rules reduce drift without erasing legitimate scope variation.                                           |
-| `docs`         | Direct                      | Verify metadata, headings, links, templates, generated freshness, and traceability; validate intended reader tasks and maintenance decisions.                                    |
-| `entry`        | Partial                     | Verify gateway, TLS, authentication, and routing configuration; edge reachability, certificates, log forwarding, and user ingress remain `UNVERIFIED`.                           |
-| `frontend`     | Partial                     | Verify Storybook lint, type, build, component, and coverage evidence; product journey, accessibility, and usability validation are not established.                              |
-| `infra`        | Direct, mostly verification | Verify Compose, configuration, network, volume, secret metadata, provenance, and hardening; live health, recovery, latency, backup, and rollback remain `UNVERIFIED`.            |
-| `meta`         | Direct                      | Verify profiles, transitions, taxonomy, lifecycle, and generated inventories; validate usefulness for discovery and governance decisions.                                        |
-| `mobile`       | Not applicable now          | No mobile source; require platform build, signing, device, accessibility, and user-context evidence after approved creation.                                                     |
-| `ops`          | Partial                     | Verify Runbook, Incident, Release, monitoring, and rollback definitions; drills, service outcomes, MTTR, backup/restore, and release runtime remain `UNVERIFIED`.                |
-| `product`      | Partial                     | Verify PRD acceptance criteria and traceability; stakeholder validation and acceptance remain with the human product authority.                                                  |
-| `qa`           | Direct                      | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision.                                    |
-| `security`     | Direct                      | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation. |
-
-## Sources
-
-All required official routes were reopened at `2026-08-09T12:37:24Z`. Public
-IEEE/ISO pages support only the displayed status and abstract-level material;
-licensed normative clauses were not accessed.
-
-| Source                                                                                                                                                                       | Class                                  | Supported fact                                                                                                                                                                                                                                 | Limitation                                                                                                                                                                                                                                                                                                                              |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [IEEE 1012-2024](https://standards.ieee.org/ieee/1012/7324/)                                                                                                                 | External mutable official route        | Active V&V standard; public scope distinguishes conformance from intended use/user needs and lists analysis, review, inspection, assessment, and testing                                                                                       | Purchase/subscription route; no clause, integrity-level, or local-conformance claim                                                                                                                                                                                                                                                     |
-| [ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)                                                                                                           | External mutable official route        | Edition 2, published 2026-04; full software lifecycle and concurrent/iterative/recursive application                                                                                                                                           | Public preview/abstract only; no purchased-clause or local-conformance claim                                                                                                                                                                                                                                                            |
-| [IEEE/ISO/IEC 12207-2026](https://standards.ieee.org/ieee/12207/11416/)                                                                                                      | External mutable official route        | Active publication, published 2026-04-15, superseding 12207-2017                                                                                                                                                                               | Route and abstract only                                                                                                                                                                                                                                                                                                                 |
-| [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)                                                                            | External mutable official guidance     | Current official handbook route and systems-engineering context                                                                                                                                                                                | NASA guidance, not universal compliance authority                                                                                                                                                                                                                                                                                       |
-| [NASA Product Realization](https://www.nasa.gov/reference/5-0-product-realization/)                                                                                          | External mutable official guidance     | Verification against design specifications, validation against stakeholder expectations, planning, evidence, and repeat logic                                                                                                                  | NASA-specific engineering framing                                                                                                                                                                                                                                                                                                       |
-| [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                                                                                                     | External fixed official publication    | Secure-development practices integrated into SDLCs                                                                                                                                                                                             | Security/SDLC scope, not complete systems V&V or release acceptance                                                                                                                                                                                                                                                                     |
-| [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)                                                                                           | External fixed official publication    | Trustworthy secure-systems engineering across the lifecycle                                                                                                                                                                                    | Security/trustworthiness context, not a replacement for IEEE 1012/12207                                                                                                                                                                                                                                                                 |
-| [NISTIR 8397](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software)                                                                | External fixed official publication    | Minimum developer-verification techniques including static, black-box, structural, regression, fuzzing, and component review                                                                                                                   | Explicitly not the totality of software verification and not complete V&V                                                                                                                                                                                                                                                               |
-| [GitHub status checks](https://docs.github.com/en/pull-requests/reference/status-checks)                                                                                     | External mutable official product docs | Check status/conclusion and skip/request semantics                                                                                                                                                                                             | Product capability only; this repository's hosted runs and required checks remain `UNVERIFIED`                                                                                                                                                                                                                                          |
-| [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) | External mutable official product docs | Review, check, merge, and deployment protection capabilities                                                                                                                                                                                   | Repository enforcement remains `UNVERIFIED` without authorized observation                                                                                                                                                                                                                                                              |
-| [GitHub Actions workflow syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions)                                                         | External mutable official product docs | Workflow and job configuration semantics; route redirected to the current workflow-syntax reference                                                                                                                                            | Tracked workflow intent is not hosted execution                                                                                                                                                                                                                                                                                         |
-| [NASA-STD-8739.8 Rev. B](https://standards.nasa.gov/sites/default/files/standards/NASA/B/0/NASA-STD-87398-Revision-B_0.pdf)                                                  | External fixed official publication    | Software Assurance and Software Safety Standard, Revision B approved 2022-09-08, superseding Revision A; introduces Independent Verification and Validation (IV&V) as a distinct, separately resourced discipline from developer-performed V&V | Retrieved 2026-08-14: the PDF fetches (200, 680.7KB) but automated text extraction of clause-level content failed; the revision/date/IV&V-scope facts above are corroborated by a secondary technical summary, not read from the raw clause text, and require the same clause-level revalidation caveat as the licensed IEEE/ISO routes |
-
-IEEE 1012-2016 and ISO/IEC/IEEE 12207:2017 are historical/superseded; they are
-not cited as current authority. NASA-STD-8739.8 Revision A (2020) is
-superseded by Revision B and is not cited as current NASA policy.
-
-## Scope Application
-
-| Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-| --- | --- | --- | --- | --- |
-| agentic | applies | Define agent task success, tools, evidence, and handoff before validation. | Inspect Task and evidence contract. | Provider runtime is unobserved. |
-| architecture | applies | Trace architecture decisions and quality attributes to an owner. | Inspect design/requirement evidence. | Conformance does not establish fitness. |
-| common | applies | Maintain reusable contracts and independent review boundaries. | Inspect owner and reviewer records. | Shared checks need scope-specific oracles. |
-| docs | applies | Verify metadata, links, and source support; validate reader utility separately. | Record validator and review evidence. | A link pass is not reader validation. |
-| infra | applies | Define target, environment, health, rollback, and acceptance authority. | Inspect target-specific evidence. | No runtime target is observed. |
-| ops | applies | Bind release and incident evidence to named operational authority. | Inspect runbook and event records. | No release or incident result is claimed. |
-| qa | applies | Use risk-based methods and preserve oracle/defect evidence. | Inspect test/review results and disposition. | Tests alone do not accept residual risk. |
-| security | applies | Include threat, control, scan, exception, and acceptance evidence. | Inspect security owner decision. | Scanner output is not certification. |
-
-## 2026-09-05 Revalidation
-
-Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-ISO's public 29148 terminology continues to distinguish verification against
-required characteristics from validation for intended use. The clean baseline
-full gate provides current verification evidence; it does not validate live
-deployment, provider quality, cost, or operator outcomes.
-
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Verification | Focused, changed, full, link, lifecycle, metadata, and generated checks | Local-executed, Repository-enforced | Evidence expires after change | rerun exact owner command |
-| Validation | Acceptance clauses and Task evidence | Defined | Intended-use evidence varies by target | stakeholder/operator acceptance |
-| Residual risk | Task and audit findings preserve gaps/deferments | Defined | No universal acceptor | named owner ruling |
-| Monitoring/revalidation | Source cadence and generated freshness checks | Configured | Provider/runtime/remote observations are mutable | dated observation and comparison |
-
-Recommendation: every acceptance claim needs a named intended use, target,
-observer, command or evidence, date, and residual risk owner. Official basis:
-[ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en).
-
-## 2026-09-05 Reproduction-Environment Revalidation
-
-Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. Three commits
-separate this baseline from `main@4c6d211129615eab372d720ebd209b6c27618c86`:
-`6201fa04`, the merge `a89c600c`, and `71da6654`. They changed Stage 90
-research, the two generated LLM Wiki data packages, the SPEC-0172 Task, and
-`.github/rulesets/main-protection.md`, which advanced from a proposal to a
-tracked record of the approved 2026-09-05 read-back. No policy, script,
-workflow, or infrastructure owner changed, so the topical conclusions recorded
-above still hold at this revision.
-
-This pass adds one finding the earlier revalidation could not see: a local gate
-verdict is reproducible only together with the checkout that produced it.
-`scripts/lib/document_governance/identity_history.py` resolves issued
-identities through `git rev-list --objects --all`, so the observed high water
-depends on which refs the clone can reach rather than on the commit under test.
-Three observations of the same commit on 2026-09-05:
-
-| Observation environment | Refs reachable | `run-ci-gate.py --profile full` | Distinguishing evidence |
-| --- | --- | --- | --- |
-| Isolated clone, `main` only | `refs/heads/main`, origin mirrors, tags | Pass, exit `0` | Registry `identity_spaces.spec` high water `172` equals observed `172` |
-| Developer clone holding unmerged work | Adds `codex/0173-governance-qa-surface-convergence` | Fail, 1 failure of 329 | `identity-history-regression`: `registry high_water=172 observed=173` |
-| Developer working tree | Same refs plus 48 uncommitted SPEC-0172 files | Fail, 7 failures of 86, aborting before the identity step | Registry schema suites are written test-first and not yet satisfied |
-
-The number the check calls "observed" is `173`, contributed by commit
-`575d866b` on the unmerged local branch
-`codex/0173-governance-qa-surface-convergence`. No `docs/03.specs/0173*`
-package exists at this baseline and no tracked document references `SPEC-0173`,
-so a clone without that branch observes `172` and the same check passes.
-Whether `173` must stay reserved is an identity and Spec ownership question,
-not a Stage 90 ruling.
-
-The isolated result verifies the commit. The other two report workstation
-state: an unmerged local branch in one case, in-flight test-first work in the
-other. None of the three validates deployment, provider quality, cost, or
-operator outcome, and the `4c6d2111` revalidation above remains valid as
-recorded rather than being corrected by this observation.
-
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Verification determinism | Registered profiles run identical steps for every caller | Local-executed | Identity history reads `--all` refs, so one commit yields two verdicts | rerun the failure in an isolated single-branch clone before accepting it |
-| Regression signal quality | The finding names the exact space, registry value, and observed value | Local-executed, Repository-enforced | A local-only branch is reported exactly like a committed regression | compare an isolated clone before routing a defect to an owner |
-| In-flight work isolation | Uncommitted work is checked by the same profile as the baseline | Local-executed | A red gate does not separate test-first work from real drift | run the committed baseline and the working tree as separate observations |
-| Hosted comparability | Hosted checkout fetches a narrower ref set than a developer clone | Hosted-executed at cutoff | Local and Hosted verdicts can legitimately disagree | compare only same-scope checkouts |
-
-Recommendation: record the checkout identity, meaning the commit together with
-the reachable-ref scope, next to every local gate verdict, and reproduce a
-failure in an isolated clone before treating it as a repository defect. Acting
-on this finding requires a separate Requirement-to-Task chain; Stage 90 states
-the observation and does not own the identity or gate contract.
-
-## Maintenance
-
-Reopen mutable official routes and remeasure tracked owners whenever sources,
-requirements, workflow contracts, scripts, tests, metadata, Compose, security
-readiness, lifecycle contracts, generated path sets, or acceptance authority
-change. Revalidate after every trigger listed above.
-
-The documentation maintainer owns reference freshness, with independent QA,
-security, architecture, infra/ops, and stakeholder review appropriate to the
-claim. Preserve each baseline commit and historical count; add dated evidence
-rather than rewriting an earlier observation into current state.
-
-Needs revalidation: re-verification attempted on 2026-08-11 could not reach
-[ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)
-(`iso.org` returned HTTP 403 on three separate fetch attempts). The claim is
-retained, not deleted, because the sibling official route
-[IEEE/ISO/IEC 12207-2026](https://standards.ieee.org/ieee/12207/11416/)
-independently corroborates the same edition, 2026-04-15 publication date, and
-supersession of 12207-2017. Re-open the `iso.org` route directly (outside an
-automated fetch tool) at the next scheduled review to confirm it still
-resolves.
-
-A second re-verification attempt on 2026-08-14 also could not reach
-[ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)
-(`iso.org` again returned HTTP 403, single automated attempt this session).
-This is now two independently dated observations (2026-08-11 and 2026-08-14)
-of the same automated-retrieval refusal; the claim remains retained under the
-same IEEE-corroboration basis stated above, and the same manual, out-of-band
-re-open recommendation still applies. The NASA-STD-8739.8 source added in
-this pass (above) carries its own, separate revalidation caveat for the same
-reason — a PDF fetch succeeding is not the same evidence class as reading its
-normative clauses.
+## Current External Research
+
+Question: what evidence distinguishes conformance to a specification from
+suitability for intended use, and when should that evidence be repeated?
+Primary sources checked on **2026-09-27**, document baseline
+`f30b168e2fbb0959e4a31749935568fd5b3942f1`. Every current internal assessment
+is **Not assessed in this run**. [Quality controls](m0014-quality-ci-formatting.md)
+owns test layers and metrics; [automation](m0004-automation-pipeline-workflow.md)
+owns events, runners and promotion; [security](m0017-security-governance.md)
+owns threat-specific checks and residual-risk decisions.
+
+### Verification and validation
+
+NASA's product-realization guidance distinguishes verification against specified
+requirements from validation against stakeholder expectations and intended
+operating conditions. Both can use test, analysis, inspection or demonstration;
+the method does not determine the question (C-m0019-01–02). This is a primary
+systems-engineering reference, not a universal claim that every repository is
+subject to NASA's process.
+
+**Interpretation:** “the command passed” describes an observation. Verification
+adds the requirement, candidate and oracle that the observation supports.
+Validation asks whether the resulting behavior serves the intended user's
+purpose in the declared context. A unit test, schema check or document gate can
+provide valuable verification without establishing intended-use acceptance.
+A stakeholder walkthrough can validate usability while leaving an implementation
+requirement unverified. Keep both gaps explicit.
+
+NASA identifies candidate/configuration, tools, environment, results and
+discrepancies as verification-report evidence, and discusses repeating affected
+verification after correction (C-m0019-03). NISTIR 8397 offers minimum developer
+verification techniques; its abstract explicitly does not claim complete
+software verification (C-m0019-04). **Interpretation:** an evidence set is bounded
+by what was tested, where, and against which expectation.
+
+### Acceptance evidence model
+
+The following is this pack's **recommendation**, tailored later by the artifact
+and risk owner; it is not a newly enforced repository policy.
+
+| Decision element | Proposed evidence and boundary |
+| --- | --- |
+| Purpose and requirement | State the intended user/task, acceptance condition and source of the expected outcome. Separate implementation requirement from intended-use scenario. |
+| Candidate | Identify revision/diff, artifact digest where applicable, dependency/tool versions and configuration. A moving branch label is insufficient to reconstruct evidence. |
+| Entry condition | Specify what must be stable before checking: requirements, fixtures, isolated environment, necessary permissions and meaningful oracle. |
+| Method and testware | Identify check, case, input/fixture origin, environment, setup/teardown and expected result. Include boundary, negative and known-regression cases when relevant. |
+| Observation | Record exact command/range, exit status, first failure/retries, result artifacts and limitations. A timeout, unavailable dependency or omitted check is a separate outcome. |
+| Review and exit decision | Assign reviewer/decision owner, compare evidence with acceptance criteria, retain discrepancies, and explicitly accept or reject remaining risk. Approval is tied to the evaluated candidate. |
+| Revalidation trigger | Repeat affected evidence after a changed candidate, requirement/oracle, dependency, environment, permissions, threat model or material defect. Scope unaffected evidence by an explicit rationale. |
+
+Mechanical document validity, code coverage, a scanner's zero findings and a
+green CI check are different evidence types. None alone establishes all
+acceptance questions. AI-generated tests and AI review remain authored evidence:
+the reviewer must examine the oracle and limitations. Review independence means
+a named party or deliberately separate analysis can challenge assumptions; it
+is not proved simply by using a second model.
+
+For ref-sensitive repository checks, record the reachable-ref set and checkout
+topology as part of the observation when the check depends on them.
+**Interpretation of preserved historical evidence:** the earlier same-commit
+pass/fail observations demonstrate why candidate SHA alone can be insufficient.
+They do not establish the behavior of current validators or current refs
+(C-m0019-05). Future reproducibility checks should use declared fixtures and
+compare the intended canonical environment rather than altering live refs.
+
+### Promotion, failure and residual risk
+
+This paragraph is a **recommendation** shared with the actor model in m0004.
+Keep evidence tied to the artifact that is promoted; if a release rebuild
+changes inputs, establish new evidence or prove the equivalence expected by
+policy. Failures should route to an owner with the relevant candidate, oracle
+and diagnostic. Correct the implementation or the faulty oracle based on
+evidence, then rerun affected checks. An exception needs scope, rationale,
+owner, expiry and compensating evidence; “rerun until green” is not acceptance.
+
+Validation context must state what was simulated, mocked, unavailable or
+outside authorization. A research refresh can validate source/claim quality
+and reader navigation while leaving runtime, account, security and deployment
+questions unassessed. Those limitations are part of the result.
+
+## Claims and Sources
+
+All source URLs were opened on **2026-09-27**. No claim of current IEEE/ISO
+edition status is made from the preserved historical references.
+
+| Claim ID | Claim | Source ID / detailed location | Publication / update | Actual check | Product / version / channel / stability | Kind | Limits / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0019-01 | Verification checks specified requirements; validation checks stakeholder expectations/intended conditions. | S-nasa-product-realization; §§5.3 and 5.4, introductory discussion | Page date not supplied | 2026-09-27 | NASA Systems Engineering Handbook web guidance | Fact | NASA context; not a universal mandatory process or ISO definition. |
+| C-m0019-02 | Test, analysis, inspection and demonstration can support both questions. | S-nasa-product-realization; verification methods and validation methods | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Method labels alone do not prove intended-use acceptance. |
+| C-m0019-03 | Verification records identify configuration/environment/results/discrepancies; affected checks repeat after corrections. | S-nasa-product-realization; §5.3 verification preparation/results/corrective action | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Actual report scope and local correction policy remain unassessed. |
+| C-m0019-04 | NIST developer verification recommendations are minimum techniques, not complete software verification. | S-nist-developer-verification; abstract and publication details | Published 2021-10-06; landing page updated 2022-11-29 | 2026-09-27 | NISTIR 8397 publication guidance | Fact | No tool inventory, compliance or completeness inferred. |
+| C-m0019-05 | A ref-sensitive observation needs the relevant ref/checkout context as well as SHA. | Preserved 2026-09 historical observations below; C-m0019-03 | Historical dates retained; analysis 2026-09-27 | 2026-09-27 | Pack evidence interpretation | Interpretation | Historical behavior does not establish present validator behavior. |
+| C-m0019-06 | Use explicit entry/exit criteria, independent oracle, evidence limitations and decision owner. | C-m0019-01–04; m0014 quality model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Artifact/risk-specific adoption required; no new policy applied. |
+| C-m0019-07 | Tie acceptance to candidate/artifact and repeat affected evidence after material change. | C-m0019-03,05; m0004 promotion model; m0017 risk model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Equivalence and residual risk require named owner. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) |
+| S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
+
+## Future Internal Checks
+
+These are proposed evidence designs. Existing routes mentioned by historical
+observations are candidates, not newly inspected implementations.
+
+| Topic / claims | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Requirement versus intended use C-m0019-01–02,06 | spec/task/artifact; product/QA/governance | Acceptance decision is requested | Active package/acceptance candidates; hypothetical user scenario | Which specified requirement and stakeholder purpose does each check address? | Requirement IDs, scenario, oracle, owner and untested expectations | Approved traceability review and representative demonstration | Pass: evidence answers named question; fail: command success called complete validation | Stakeholder acceptance and external/runtime access separately scoped | Product/spec owner, QA | Not assessed in this run |
+| Entry/exit/testware C-m0019-03,06 | task/environment; QA | Executable verification is needed | Historical test commands; hypothetical controlled fixtures | Are candidate, setup, inputs, expected results and exit criteria reproducible? | Tool/environment versions, fixture origin, collected suite, exits | Approved isolated positive/negative/regression runs | Pass: defects fail and setup failures distinct; fail: absent oracle or masked failure | Sensitive data, installation and target execution require authority | QA/implementation owner | Not assessed in this run |
+| Ref-sensitive evidence C-m0019-05 | repository/checkout; governance/QA | Validator outcome depends on reachable history | Historical catalog/high-water checks; hypothetical ref fixture | What canonical ref set is intended, and does identical context reproduce the result? | Candidate SHA, ref inventory fixture, topology, expected denominator | Authorized disposable ref fixtures; compare canonical contexts | Pass: documented scope and consistent result; fail: unexplained same-context disagreement | No live branch/index/ref mutations authorized here | Governance/QA | Not assessed in this run |
+| Review/AI evidence C-m0019-06 | diff/task; QA/review | Authored tests or review support acceptance | Historical review documents; hypothetical independent cases | Can an independent reviewer challenge assumptions and generated oracles? | Reviewed range/candidate, requirement-derived cases, reviewer limitations | Named independent review with known-defect fixture | Pass: oracle justified and gaps explicit; fail: generated assertion accepted on fluency | Remote agent/review dispatch needs scoped approval | Reviewer/QA | Not assessed in this run |
+| Promotion/revalidation C-m0019-03,07 | artifact/CI/release; delivery | Candidate or context changes after checks | Historical build/publish candidates; hypothetical digest policy | Is promoted output the evaluated artifact and are affected checks repeated? | Digests, inputs, environment, changed evidence, equivalence rationale | Authorized fixture provenance comparison and change-impact review | Pass: identity/equivalence and affected evidence established; fail: stale green status authorizes changed output | No deploy/publish/credential use here | Release/QA | Not assessed in this run |
+| Limitations/residual risk C-m0019-04,06–07 | task/project; governance/security/product | Evidence incomplete or exception needed | Historical exceptions; hypothetical acceptance record | Who accepts which remaining risk, until when and on what evidence? | Omitted checks, discrepancy, rationale, compensations, expiry/owner | Scoped document review and risk-owner decision | Pass: bounded explicit decision; fail: silence or scanner pass equated with safety | Risk acceptance authority cannot be inferred from reviewer role | Product/security decision owner | Not assessed in this run |
+
+### Limitations and preservation decision
+
+This member’s source-research worker did not execute validators or tests, inspect
+live refs, approve release, or establish current compliance. Integrated document
+QA evidence belongs to [the execution Task](../../../03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md). Historical command outcomes, reachable-ref
+denominators, review timing, IEEE/ISO references and baseline/candidate distinctions
+are retained verbatim with their original dates. Recheck current requirements
+and relevant primary-standard status before adopting a normative policy.
+
+## Historical workspace observations — not reassessed in this run
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+> <a id="overview"></a>
+> ## Overview
+>
+> Verification and validation are related but non-interchangeable decision
+> disciplines. Verification asks whether an identified artifact conforms to its
+> requirements, design, contract, or required activity outputs. Validation asks
+> whether the resulting system, product, service, or evidence is adequate for
+> its intended use, stakeholder needs, and operational context.
+>
+> This Stage 90 reference connects current official primary-source guidance to
+> tracked workspace owners at Task 9a baseline
+> `ac51a53211887a12bb18e2209aa3af1af6eb4b7f`. It is advisory analysis: it
+> creates neither a release gate nor authority to accept defects or residual
+> risk. A local green check is not, by itself, product validation or acceptance.
+>
+> <a id="purpose"></a>
+> ## Purpose
+>
+> Satisfy REQ-36 by defining a source-backed V&V system that covers planning,
+> entry and readiness, success and completion, static and dynamic methods,
+> evidence and traceability, independence and risk-based depth, environments,
+> data and oracles, defect disposition, acceptance and decision authority,
+> residual risk, release acceptance, monitoring, and revalidation across all
+> fourteen workspace scopes.
+>
+> The reference maps those concepts to exact tracked paths, commands, evidence
+> states, gaps, and runtime or authority limits. It prevents the invalid
+> substitution "tests or CI passed, therefore the product was validated and
+> accepted."
+>
+> <a id="repository-role"></a>
+> ## Repository Role
+>
+> This leaf owns the cross-system V&V model, evidence trace, and evidence-state
+> vocabulary. The supporting research leaves retain their detailed SDLC, QA,
+> workflow, metadata, generated-output, Compose, security, baseline, and scope
+> matrices.
+>
+> Stages 01-03 own stakeholder intent, acceptance criteria, architecture, and
+> technical contracts. Stage 04 records observed implementation, checks,
+> reviews, defects, decisions, and commits. Stage 05 owns operations and real
+> release-event evidence. Runtime or remote claims require separately authorized
+> observation of the named target and time. This leaf does not adopt policy,
+> certify security, accept a provider, mutate remote state, or observe runtime.
+>
+> <a id="scope"></a>
+> ## Scope
+>
+> <a id="in-scope"></a>
+> ### In scope
+>
+> - Systems, software, documentation, configuration, testware, generated
+>   artifacts, and release-candidate evidence.
+> - V&V plans, readiness criteria, declared oracles, success criteria, and
+>   completion evidence.
+> - Static and dynamic verification plus intended-use and stakeholder validation.
+> - Risk-based depth, graded independence, evidence traceability, defect and
+>   residual-risk decisions, monitoring, and revalidation.
+> - All fourteen normative workspace scopes, including explicit current
+>   not-applicable and `UNVERIFIED` boundaries.
+>
+> <a id="out-of-scope"></a>
+> ### Out of scope
+>
+> - Clause-level IEEE or ISO requirements not exposed by the public official
+>   routes. Licensed normative text was not accessed.
+> - Secret values, private provider state, Docker or Compose runtime execution,
+>   hosted GitHub observation, deployment, backup or restore, rollback, incident
+>   exercise, and Graphify refresh.
+> - Implementing a gap, approving a release, accepting residual risk, or changing
+>   policy, workflow, runtime, provider, lifecycle, or remote configuration.
+>
+> <a id="definitions--facts"></a>
+> ## Definitions / Facts
+>
+> <a id="terminology-and-non-substitution-rules"></a>
+> ### Terminology and non-substitution rules
+>
+> - **Verification**: evidence that a named artifact or activity output conforms
+>   to a declared requirement, design, schema, rule, or oracle.
+> - **Validation**: evidence that the result is adequate for intended use,
+>   stakeholder needs, and the relevant operational context.
+> - **V&V**: coordinated verification and validation work with separate questions,
+>   evidence, and authorities where the risk requires them.
+> - **Static verification**: evaluation without executing the target, including
+>   requirements, design, review, lint, type, schema, provenance, and trace checks.
+> - **Dynamic verification**: execution against a declared oracle, including
+>   tests, fuzzing, smoke checks, and controlled deployment checks.
+> - **Acceptance**: an authorized decision that the identified candidate and its
+>   known evidence and risk are suitable for the declared handoff or use.
+> - **Oracle**: the explicit rule or expected result used to decide whether an
+>   observation succeeds.
+> - **Environment**: the versioned configuration, dependencies, data, resources,
+>   and execution context in which evidence was produced.
+> - **Independence**: separation between authoring, execution, review, and
+>   acceptance roles, graded according to consequence and risk.
+> - **Residual risk**: uncertainty or exposure remaining after V&V and defect
+>   treatment, accepted only by a named authority.
+> - **Revalidation**: repeating or extending validation after a change invalidates
+>   the scope, assumptions, environment, or evidence of an earlier decision.
+>
+> This leaf reserves "validation" for intended-use or stakeholder adequacy.
+> Ordinary CI contract checks are verification gates unless an approved scenario,
+> representative context, oracle, and acceptance authority establish more.
+>
+> <a id="vv-planning-and-decision-model"></a>
+> ### V&V planning and decision model
+>
+> A V&V plan identifies the item and immutable candidate, the requirement or
+> expectation being evaluated, the method and risk-based depth, the required
+> independence, the environment/data/oracle, entry and exit criteria, the defect
+> route, durable evidence owner, acceptance authority, and revalidation triggers.
+>
+> Planning must also state exclusions and uncertainty. If required authority,
+> representative data, environment fidelity, or an oracle is missing, the
+> relevant result is `UNVERIFIED`; a convenient substitute is not acceptable.
+>
+> <a id="evidence-trace"></a>
+> ### Evidence trace
+>
+> The minimum evidence chain is:
+>
+> ```text
+> requirement or stakeholder expectation
+>   -> identified artifact/candidate
+>   -> method and risk depth
+>   -> environment, data, and oracle
+>   -> observation/result
+>   -> defect disposition and repeated evidence where needed
+>   -> acceptance decision and residual risk
+>   -> monitoring and revalidation trigger
+> ```
+>
+> Every link names its owner. Metadata and human links support navigation, but
+> requirement IDs, candidate identity, exact commands, results, defect decisions,
+> review ranges, and runtime observations provide the decision trace.
+>
+> <a id="methods-and-coverage"></a>
+> ### Methods and coverage
+>
+> Static verification includes requirements/design/traceability inspection,
+> code and document review, lint/type/schema checks, static security and secret
+> pattern checks, dependency/SBOM/provenance review, and generated-output
+> comparison. Dynamic verification includes unit, integration, component, E2E,
+> black-box, structural, regression, fuzz, smoke, recovery, and deployment checks
+> when their environments and oracles are declared.
+>
+> Validation methods include representative user or operator scenarios,
+> demonstrations, accessibility and usability acceptance, recovery exercises,
+> stakeholder decisions, and post-release observation. Coverage is adequate only
+> relative to the approved requirements, risks, environments, and exclusions; a
+> test count or percentage alone does not establish sufficiency.
+>
+> <a id="risk-based-depth-and-independence"></a>
+> ### Risk-based depth and independence
+>
+> Independence is graded rather than binary. Higher-consequence changes require
+> stronger requirement traceability, negative and adversarial cases, realistic
+> environments, independent review or execution, explicit residual-risk decisions,
+> and stronger release evidence. Self-review can find mistakes but cannot replace
+> a required independent reviewer or acceptance authority.
+>
+> IEEE 1012-2024 publicly describes different integrity levels, but this
+> workspace does not claim a level: the licensed criteria were not accessed and
+> no local contract adopts one.
+>
+> <a id="environments-data-and-oracles"></a>
+> ### Environments, data, and oracles
+>
+> Evidence records the candidate revision, tool/dependency versions, relevant
+> configuration, and environment limits. Data should represent ordinary,
+> boundary, negative, and adversarial conditions without exposing secrets or
+> private data. Oracles must be deterministic enough to distinguish a product
+> failure from a test/procedure, environment, data, or oracle defect.
+>
+> Reproducibility records uncertainty and flakes rather than retrying until green.
+> An environment mismatch narrows the claim; local results do not automatically
+> transfer to hosted CI, a provider runtime, a Compose deployment, or production.
+>
+> <a id="entry-success-and-completion-criteria"></a>
+> ### Entry, success, and completion criteria
+>
+> Entry/readiness requires a baselined target, identifiable candidate, prepared
+> method, environment, data, oracle, known-risk statement, and required reviewer
+> or decision authority. Success means the observation meets the declared oracle
+> for that candidate and environment, not that every stakeholder need is met.
+>
+> Completion requires every failure to be routed, defects to be corrected,
+> accepted, or deferred by the correct authority, invalidated checks to be
+> repeated, evidence to be durable, residual risk and skipped checks to be
+> explicit, and monitoring/revalidation triggers to be assigned. A partial pass
+> cannot silently satisfy the completion criteria.
+>
+> <a id="defect-disposition-and-residual-risk"></a>
+> ### Defect disposition and residual risk
+>
+> Classify whether a finding belongs to the product/artifact, test or procedure,
+> environment, data/oracle, or documentation/traceability. Route it to the
+> earliest canonical owner. A correction that changes the candidate, method,
+> environment, data, or oracle requires affected evidence to be repeated.
+>
+> Deferral is not resolution. It records owner, impact, evidence, expiry or
+> trigger, and the named authority accepting the residual risk. The author of
+> this Stage 90 leaf cannot grant that acceptance.
+>
+> <a id="workspace-owner-and-evidence-table"></a>
+> ### Workspace owner and evidence table
+>
+> Counts below were remeasured from the Task 9a base and candidate on 2026-08-09;
+> historical leaf counts remain tied to their original commits.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | V&V area                                                                 | Canonical owner path(s)                                                                                    | Exact command or gate                                                                                                             | Re-measured result                                                                                                                                                  | Class                           | Current state or gap                                                                    | Runtime or authority limit                                                                                   |
+> | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+> | Corpus and pack identity                                                 | Git index; both research-pack prefixes                                                                     | `git ls-files \| wc -l`; exact-prefix `git ls-files` counts                                                                       | Base 1,669; candidate 1,670; new 21; retiring 20                                                                                                                    | Verification                    | One safe tracked leaf added; retiring pack unchanged                                    | Path inventory only; no runtime implication                                                                  |
+> | Scope and catalog                                                        | `docs/00.agent-governance/scopes/*.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml`            | sorted `git ls-files` plus complete YAML parse                                                                                    | 14 scopes; 8 catalog scopes; 14 agents; 24 functions; 11 fixtures; 16 regressions                                                                                   | Verification                    | Six normative scopes remain outside the typed enum and `architecture` remains enum-only | Catalog reachability is not provider execution                                                               |
+> | Stage/repository contracts                                               | `docs/00.agent-governance/`; Stage 99 profiles; `scripts/validation/check-repo-contracts.sh`               | `env PATH=/tmp/agentic-research-validation-venv/bin:$PATH bash scripts/validation/check-repo-contracts.sh`                        | PASS; `failures=0`                                                                                                                                                  | Verification                    | Aggregate repository contract passed in the isolated environment                        | Does not replace a named runtime or freshness gate                                                           |
+> | Stage/repository contracts, default interpreter (re-verified 2026-08-14) | same owner path                                                                                            | `bash scripts/validation/check-repo-contracts.sh` run directly in this session's default (non-isolated) interpreter at `ece3eda9` | FAIL; `failures=1`: `AGC-DEPENDENCY-MISSING path=html5lib location=validation-runtime` under Governance memory contract; every other subsection produced no failure | Verification                    | Environment-dependent result: identical gate, different interpreter, different outcome  | Confirms the pre-existing html5lib gap is environmental, not logical; does not itself install the dependency |
+> | Changed metadata                                                         | Stage 99 profiles; `scripts/validation/check-document-metadata.py`                                         | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref ac51a53211887a12bb18e2209aa3af1af6eb4b7f`  | PASS; selected 16, violations 0, legacy exceptions 0, transition overrides 0                                                                                        | Verification                    | Applies only to the changed/new registered documents                                    | Metadata validity is not content or product acceptance                                                       |
+> | Traceability and alignment                                               | `scripts/validation/check-document-links.py`                                                         | `python3 scripts/validation/check-document-links.py --mode all`                                                                   | PASS on the current graph; the predecessor findings remain historical evidence rather than current validator inputs                                                   | Verification                    | Rendered links and current implementation paths share one semantic owner                 | Link alignment does not prove implementation/runtime behavior                                                |
+> | Workflow contract                                                        | `.github/workflow-contract.yml`; `scripts/validation/check-github-workflow-contract.py`                    | `python3 scripts/validation/check-github-workflow-contract.py` plus full YAML parse                                               | PASS: 7 workflows, 23 jobs, 8 actions; 80 nodes = 26 aggregate/48 leaf/6 setup; 16 job roots; 3 profiles                                                            | Verification                    | Tracked topology and strict static projection are implemented                           | No hosted run, required check, branch rule, or environment observed                                          |
+> | Typed gate runner                                                        | `.github/workflow-contract.yml`; `scripts/validation/ci_gate_{runner,contract,adapters}.py`                | `python3 scripts/validation/ci_gate_runner.py --profile <profile> --all --dry-run` or selected execution                          | Configured; not selected or executed by this docs unit                                                                                                              | Both/gap                        | Dry-run can verify topology; execution is environment-specific                          | Hosted selection/conclusion and release authority remain `UNVERIFIED`                                        |
+> | Pre-commit                                                               | `.pre-commit-config.yaml`; approved wrappers                                                               | scoped wrapper; controlled all-files wrapper only with separate approval                                                          | 10 configured repositories; not executed here                                                                                                                       | Both/gap                        | Configuration is reachable; no hook result claimed                                      | Hooks can modify files; controlled all-files evidence is separately approval-bound                           |
+> | LLM Wiki freshness                                                       | both `scripts/knowledge/generate-llm-wiki-*.sh` owners and outputs                                         | canonical write then both `--check` modes                                                                                         | Base 1,338/1,337; candidate 1,339 index rows/1,338 coverage paths                                                                                                   | Verification                    | Fresh only for the staged 1,670-path candidate                                          | Generated freshness does not prove content correctness or runtime discovery                                  |
+> | Security readiness                                                       | generator and `docs/90.references/data/security/security-automation-readiness.md`                          | `bash scripts/validation/generate-security-automation-readiness.sh --check`                                                       | PASS; 13 controls = 11 implemented/1 partial/1 gap                                                                                                                  | Verification                    | Broad dependency SCA remains the one gap                                                | Static tracked readiness is not a vulnerability assessment or security certification                         |
+> | Lifecycle contracts                                                      | target-surface and corpus-lifecycle owners                                                                 | named advisory and `check-*` modes                                                                                                | Reviewed pinned predecessor 9/26/9; Task 9a changes none of its selectors                                                                                           | Verification                    | Gate 9, deletion, and lifecycle reconciliation remain closed                            | Historical selectors cannot authorize deletion or a lifecycle transition                                     |
+> | Compose structure                                                        | `scripts/validation/validate-docker-compose.sh`                                                            | default structural check; `--preflight` only when authorized                                                                      | Not executed in this docs unit                                                                                                                                      | Both/gap                        | Static definitions have separate coverage/provenance checks                             | Live Docker, health, networks, ports, secrets, backup, and rollback stay `UNVERIFIED`                        |
+> | Compose coverage                                                         | coverage generator and snapshot                                                                            | `bash scripts/operations/generate-compose-profile-service-coverage.sh --check`                                                    | PASS; 48 total files/47 infra variants/168 entries/25 profiles                                                                                                      | Verification                    | Tracked variant declarations are fresh                                                  | Counts are not unique or running services                                                                    |
+> | Tech-stack provenance                                                    | `infra/tech-stack.versions.json`; provenance generator/snapshot                                            | `bash scripts/operations/generate-tech-stack-version-provenance.sh --check`                                                       | PASS; 18 components/21 images; 20 pinned/1 approved floating                                                                                                        | Verification                    | Declared provenance is fresh                                                            | No registry resolution, SBOM, signature, deployed-image, or runtime proof                                    |
+> | Hardening                                                                | `scripts/hardening/check-all-hardening.sh`; infra registries                                               | `bash scripts/hardening/check-all-hardening.sh`                                                                                   | PASS; 11 tier checks                                                                                                                                                | Verification                    | Selected repository assertions only                                                     | Not a live host/container posture certification                                                              |
+> | Template security                                                        | `scripts/validation/check-template-security-baseline.sh`; Stage 99                                         | `bash scripts/validation/check-template-security-baseline.sh`                                                                     | PASS; 46 Compose YAML files, 1 explicit exclusion, 0 missing adoption or required-control findings                                                                  | Verification                    | Path, placeholder, and secret-handling contract only                                    | No secret value was inspected                                                                                |
+> | Supply-chain fixture                                                     | supply-chain policy, generator, and focused tests                                                          | typed gates and focused sample-service tests                                                                                      | Configured sample scope; not executed by this leaf                                                                                                                  | Both/gap                        | Fixture rehearsal exists; release integration remains a gap                             | No signing, public Scorecard, provenance publication, or SLSA-level claim                                    |
+> | Frontend fixture                                                         | `projects/storybook/nextjs/`; typed CI adapters                                                            | lint/type/build/Storybook/coverage adapter gates                                                                                  | 51 tracked files, 3 stories, 6 TSX/JSX; not executed here                                                                                                           | Both/gap                        | Component fixture exists; product journey validation is absent                          | No product E2E, accessibility, or usability acceptance claimed                                               |
+> | Python validation tests                                                  | `tests/validation`; typed adapters                                                                         | exact selected `unittest` modules                                                                                                 | 26 test files; focused 1/1 and full module 4/4 passed after the intended RED                                                                                        | Both/gap                        | Selected tests only; shared Python lint/type/coverage remains incomplete                | Not full test discovery or product validation                                                                |
+> | Independent review                                                       | active Task and immutable committed ranges                                                                 | exact-range specification and quality reviews                                                                                     | Prerequisite `ac51a532` reviews Approved C0/I0/M0; implementation reviews pending                                                                                   | Validation of evidence adequacy | Review independence is enforced per logical commit                                      | Does not validate an unobserved product or runtime outcome                                                   |
+>
+> <a id="who-performs-verification-vs-validation-in-this-workspace"></a>
+> ### Who performs verification vs. validation in this workspace
+>
+> The abstract distinction only earns its keep if it is bound to named
+> performers instead of left as a slogan. Re-surveyed directly at
+> `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` on 2026-08-14:
+>
+> - **Verification performers.** Every tracked automated gate this workspace
+>   runs — `scripts/validation/*.py`/`*.sh`, the 24 `.pre-commit-config.yaml`
+>   hooks, the typed `ci_gate_runner.py`/`ci_gate_contract.py` expansion, and
+>   the 24 `tests/validation/test_*.py` `unittest` modules — answers a
+>   verification question: does this artifact conform to its declared schema,
+>   contract, lint rule, type rule, or test oracle? None of them asks whether
+>   the result is adequate for a reader's or operator's intended use. This is
+>   not a gap in those tools; conformance checking is what they are for.
+> - **Validation performers.** No tracked script or CI job performs validation
+>   in this leaf's sense. The performers that do exist are human and
+>   procedural: the two independent quality reviewers named in the workspace
+>   owner/evidence table below (who judge whether re-derived evidence is
+>   adequate to support this leaf's claims, not merely whether a script
+>   exited zero); the Stage 01 requirement authors and Stage 04 Task
+>   reviewers, who judge whether an implementation serves its stated
+>   requirement; and, for research-pack leaves specifically, the reader who
+>   uses a leaf as a router — its adequacy for that reader's task is decided
+>   by the reader, not asserted by the document.
+> - **Where validation has no owner at all.** Three areas in this cluster
+>   currently have verification coverage and no validation owner: (1) whether
+>   the automation-pipeline leaf's promotion-path narrative actually helps an
+>   agent avoid a false "required check passed" claim in practice — no
+>   usability or task-success evidence exists, only conformance-to-source
+>   evidence; (2) whether the quality-ci-formatting leaf's five-state
+>   vocabulary changes agent behavior at the point of PR completion claims —
+>   same gap; (3) whether this leaf's own cross-cutting routing actually
+>   prevents the "tests/CI passed, therefore validated" substitution it names
+>   as invalid, for a real agent under real task pressure. Closing any of
+>   these requires observing agent behavior against a stated success
+>   criterion — a validation activity this Stage 90 leaf cannot itself
+>   perform, since it has no access to future agent runs.
+> - **This leaf's own evidence class.** Every count and command result in the
+>   table below that carries a 2026-08-14 date was independently re-derived by
+>   this Task, not copied from the Task 9a leaf text. That re-derivation is
+>   verification of this document against tracked sources. It is not
+>   validation of the leaf's usefulness to a downstream reader; that
+>   determination belongs to the reader, consistent with the non-substitution
+>   rule stated above.
+>
+> <a id="evidence-state-vocabulary"></a>
+> ### Evidence-state vocabulary
+>
+> Use these states without collapsing them into one automatic ladder:
+>
+> - `configured`: a tracked definition exists.
+> - `reachable`: the catalog, registry, or graph can route to it.
+> - `selected`: an execution plan chose the exact gate or target.
+> - `executed`: the named command ran in the recorded environment.
+> - `passed`: the execution met its declared oracle.
+> - `reviewed`: an independent reviewer evaluated the identified evidence range.
+> - `hosted`: a remote control-plane object or run exists.
+> - `enforced`: the named authority prevents nonconforming transitions.
+> - `runtime-observed`: the live target was directly observed at a recorded time.
+> - `UNVERIFIED`: required evidence is missing, inaccessible, unapproved, or
+>   outside the observed boundary.
+>
+> A hosted job can exist without remote enforcement; a local pass can occur
+> without hosted execution; reviewed evidence can remain runtime-unobserved.
+>
+> <a id="release-acceptance-and-decision-authority"></a>
+> ### Release acceptance and decision authority
+>
+> Green CI is necessary only where an approved contract makes it necessary and
+> is never sufficient by itself. A release decision names the immutable artifact,
+> required checks and reviews, known-issue disposition, rollout/rollback/recovery
+> evidence, monitoring, residual risk, and human or downstream authority.
+>
+> If the authority or required evidence is absent, release acceptance is
+> `UNVERIFIED`. A Stage 90 statement, successful generator, tracked Release
+> template, tag, or local check cannot supply the missing authority.
+>
+> <a id="monitoring-and-revalidation"></a>
+> ### Monitoring and revalidation
+>
+> Revalidate when requirements, design, dependencies, runtime, environment,
+> threat model, reused-component context, acceptance authority, or source version
+> changes; after an incident, failed canary, telemetry anomaly, material defect,
+> or corrected test/data/oracle; and whenever monitoring shows the assumptions
+> behind an earlier decision no longer hold.
+>
+> Monitoring evidence names target, metric or signal, interval, threshold,
+> owner, response, and retention. Tracked observability configuration is not a
+> runtime observation.
+>
+> <a id="do-not-infer"></a>
+> ### Do not infer
+>
+> - No provider behavior, entitlement, model availability, hook interception, or
+>   agent outcome is established.
+> - No branch protection, ruleset, required check, hosted workflow run,
+>   environment, or deployment enforcement was observed.
+> - No live Compose/container/network/port/volume/secret/backup/restore/SLO state
+>   was observed.
+> - No security certification, absence of vulnerabilities, or operational
+>   security acceptance is claimed.
+> - No release acceptance, deployment, rollback, recovery, or incident outcome
+>   is established.
+> - No generated artifact is fresh unless its named canonical `--check` ran
+>   against the recorded candidate path set.
+>
+> <a id="lifecycle-evidence-and-independence"></a>
+> ### Lifecycle evidence and independence
+>
+> The minimum chain is expectation or requirement → identified candidate → method
+> and risk depth → environment/data/oracle → observation → defect disposition or
+> repeat evidence → acceptance decision and residual-risk authority → monitoring
+> and revalidation trigger. A missing link is `UNVERIFIED`, not a reason to
+> substitute a convenient check.
+>
+> Apply independence in proportion to consequence: an author may run a focused
+> verification, but an independent reviewer evaluates the evidence range and a
+> named authority decides acceptance. Validation needs a representative intended
+> use, success criteria, and stakeholder or operational authority; none are
+> created by this Stage 90 research leaf. Revalidate after a change to the
+> candidate, requirement, design, oracle, data, environment, dependency, threat
+> model, defect disposition, or acceptance assumptions.
+>
+> No observed validator proves a provider entitlement, runtime behavior, hosted
+> check, branch rule, deployment, rollback, security certification, or release
+> acceptance. `SDLCDOC-ADR-002` and `SDLCDOC-ADR-003` remain `UNVERIFIED`; this
+> leaf does not alter either ADR evidence state.
+>
+> <a id="scope-implications"></a>
+> ## Scope Implications
+>
+> | Scope          | Status                      | Required V&V emphasis                                                                                                                                                            |
+> | -------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `agentic`      | Direct                      | Verify catalogs, prompts, tools, permissions, stop criteria, and evidence schemas; validate intended human handoff and task outcome; provider runtime remains `UNVERIFIED`.      |
+> | `architecture` | Direct                      | Verify requirement, ADR, ARD, Spec, interface, and quality-attribute traceability; validate against stakeholder constraints and operational concept.                             |
+> | `backend`      | Not applicable now          | No current backend product surface; define API, authorization, data, migration, error, load, and runtime acceptance only after an approved surface exists.                       |
+> | `common`       | Direct                      | Verify shared scripts, contracts, and conventions; validate that common rules reduce drift without erasing legitimate scope variation.                                           |
+> | `docs`         | Direct                      | Verify metadata, headings, links, templates, generated freshness, and traceability; validate intended reader tasks and maintenance decisions.                                    |
+> | `entry`        | Partial                     | Verify gateway, TLS, authentication, and routing configuration; edge reachability, certificates, log forwarding, and user ingress remain `UNVERIFIED`.                           |
+> | `frontend`     | Partial                     | Verify Storybook lint, type, build, component, and coverage evidence; product journey, accessibility, and usability validation are not established.                              |
+> | `infra`        | Direct, mostly verification | Verify Compose, configuration, network, volume, secret metadata, provenance, and hardening; live health, recovery, latency, backup, and rollback remain `UNVERIFIED`.            |
+> | `meta`         | Direct                      | Verify profiles, transitions, taxonomy, lifecycle, and generated inventories; validate usefulness for discovery and governance decisions.                                        |
+> | `mobile`       | Not applicable now          | No mobile source; require platform build, signing, device, accessibility, and user-context evidence after approved creation.                                                     |
+> | `ops`          | Partial                     | Verify Runbook, Incident, Release, monitoring, and rollback definitions; drills, service outcomes, MTTR, backup/restore, and release runtime remain `UNVERIFIED`.                |
+> | `product`      | Partial                     | Verify PRD acceptance criteria and traceability; stakeholder validation and acceptance remain with the human product authority.                                                  |
+> | `qa`           | Direct                      | Verify plan, environment, data, oracle, coverage, flakes, and results; validate suite sufficiency against approved risk and release decision.                                    |
+> | `security`     | Direct                      | Verify threat models, secure checks, approvals, supply-chain evidence, and redaction; residual-risk and operational-security acceptance require named authority and observation. |
+>
+> <a id="sources"></a>
+> ## Sources
+>
+> All required official routes were reopened at `2026-08-09T12:37:24Z`. Public
+> IEEE/ISO pages support only the displayed status and abstract-level material;
+> licensed normative clauses were not accessed.
+>
+> | Source                                                                                                                                                                       | Class                                  | Supported fact                                                                                                                                                                                                                                 | Limitation                                                                                                                                                                                                                                                                                                                              |
+> | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | [IEEE 1012-2024](https://standards.ieee.org/ieee/1012/7324/)                                                                                                                 | External mutable official route        | Active V&V standard; public scope distinguishes conformance from intended use/user needs and lists analysis, review, inspection, assessment, and testing                                                                                       | Purchase/subscription route; no clause, integrity-level, or local-conformance claim                                                                                                                                                                                                                                                     |
+> | [ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)                                                                                                           | External mutable official route        | Edition 2, published 2026-04; full software lifecycle and concurrent/iterative/recursive application                                                                                                                                           | Public preview/abstract only; no purchased-clause or local-conformance claim                                                                                                                                                                                                                                                            |
+> | [IEEE/ISO/IEC 12207-2026](https://standards.ieee.org/ieee/12207/11416/)                                                                                                      | External mutable official route        | Active publication, published 2026-04-15, superseding 12207-2017                                                                                                                                                                               | Route and abstract only                                                                                                                                                                                                                                                                                                                 |
+> | [NASA Systems Engineering Handbook](https://www.nasa.gov/reference/systems-engineering-handbook/)                                                                            | External mutable official guidance     | Current official handbook route and systems-engineering context                                                                                                                                                                                | NASA guidance, not universal compliance authority                                                                                                                                                                                                                                                                                       |
+> | [NASA Product Realization](https://www.nasa.gov/reference/5-0-product-realization/)                                                                                          | External mutable official guidance     | Verification against design specifications, validation against stakeholder expectations, planning, evidence, and repeat logic                                                                                                                  | NASA-specific engineering framing                                                                                                                                                                                                                                                                                                       |
+> | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                                                                                                     | External fixed official publication    | Secure-development practices integrated into SDLCs                                                                                                                                                                                             | Security/SDLC scope, not complete systems V&V or release acceptance                                                                                                                                                                                                                                                                     |
+> | [NIST SP 800-160 Vol. 1 Rev. 1](https://csrc.nist.gov/pubs/sp/800/160/v1/r1/final)                                                                                           | External fixed official publication    | Trustworthy secure-systems engineering across the lifecycle                                                                                                                                                                                    | Security/trustworthiness context, not a replacement for IEEE 1012/12207                                                                                                                                                                                                                                                                 |
+> | [NISTIR 8397](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software)                                                                | External fixed official publication    | Minimum developer-verification techniques including static, black-box, structural, regression, fuzzing, and component review                                                                                                                   | Explicitly not the totality of software verification and not complete V&V                                                                                                                                                                                                                                                               |
+> | [GitHub status checks](https://docs.github.com/en/pull-requests/reference/status-checks)                                                                                     | External mutable official product docs | Check status/conclusion and skip/request semantics                                                                                                                                                                                             | Product capability only; this repository's hosted runs and required checks remain `UNVERIFIED`                                                                                                                                                                                                                                          |
+> | [GitHub protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches) | External mutable official product docs | Review, check, merge, and deployment protection capabilities                                                                                                                                                                                   | Repository enforcement remains `UNVERIFIED` without authorized observation                                                                                                                                                                                                                                                              |
+> | [GitHub Actions workflow syntax](https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions)                                                         | External mutable official product docs | Workflow and job configuration semantics; route redirected to the current workflow-syntax reference                                                                                                                                            | Tracked workflow intent is not hosted execution                                                                                                                                                                                                                                                                                         |
+> | [NASA-STD-8739.8 Rev. B](https://standards.nasa.gov/sites/default/files/standards/NASA/B/0/NASA-STD-87398-Revision-B_0.pdf)                                                  | External fixed official publication    | Software Assurance and Software Safety Standard, Revision B approved 2022-09-08, superseding Revision A; introduces Independent Verification and Validation (IV&V) as a distinct, separately resourced discipline from developer-performed V&V | Retrieved 2026-08-14: the PDF fetches (200, 680.7KB) but automated text extraction of clause-level content failed; the revision/date/IV&V-scope facts above are corroborated by a secondary technical summary, not read from the raw clause text, and require the same clause-level revalidation caveat as the licensed IEEE/ISO routes |
+>
+> IEEE 1012-2016 and ISO/IEC/IEEE 12207:2017 are historical/superseded; they are
+> not cited as current authority. NASA-STD-8739.8 Revision A (2020) is
+> superseded by Revision B and is not cited as current NASA policy.
+>
+> <a id="scope-application"></a>
+> ## Scope Application
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Define agent task success, tools, evidence, and handoff before validation. | Inspect Task and evidence contract. | Provider runtime is unobserved. |
+> | architecture | applies | Trace architecture decisions and quality attributes to an owner. | Inspect design/requirement evidence. | Conformance does not establish fitness. |
+> | common | applies | Maintain reusable contracts and independent review boundaries. | Inspect owner and reviewer records. | Shared checks need scope-specific oracles. |
+> | docs | applies | Verify metadata, links, and source support; validate reader utility separately. | Record validator and review evidence. | A link pass is not reader validation. |
+> | infra | applies | Define target, environment, health, rollback, and acceptance authority. | Inspect target-specific evidence. | No runtime target is observed. |
+> | ops | applies | Bind release and incident evidence to named operational authority. | Inspect runbook and event records. | No release or incident result is claimed. |
+> | qa | applies | Use risk-based methods and preserve oracle/defect evidence. | Inspect test/review results and disposition. | Tests alone do not accept residual risk. |
+> | security | applies | Include threat, control, scan, exception, and acceptance evidence. | Inspect security owner decision. | Scanner output is not certification. |
+>
+> <a id="2026-09-05-revalidation"></a>
+> ## 2026-09-05 Revalidation
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> ISO's public 29148 terminology continues to distinguish verification against
+> required characteristics from validation for intended use. The clean baseline
+> full gate provides current verification evidence; it does not validate live
+> deployment, provider quality, cost, or operator outcomes.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Verification | Focused, changed, full, link, lifecycle, metadata, and generated checks | Local-executed, Repository-enforced | Evidence expires after change | rerun exact owner command |
+> | Validation | Acceptance clauses and Task evidence | Defined | Intended-use evidence varies by target | stakeholder/operator acceptance |
+> | Residual risk | Task and audit findings preserve gaps/deferments | Defined | No universal acceptor | named owner ruling |
+> | Monitoring/revalidation | Source cadence and generated freshness checks | Configured | Provider/runtime/remote observations are mutable | dated observation and comparison |
+>
+> Recommendation: every acceptance claim needs a named intended use, target,
+> observer, command or evidence, date, and residual risk owner. Official basis:
+> [ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en).
+>
+> <a id="2026-09-05-reproduction-environment-revalidation"></a>
+> ## 2026-09-05 Reproduction-Environment Revalidation
+>
+> Baseline: `main@71da6654e2fa3def174b238ad309c92fe46e9dae`. Three commits
+> separate this baseline from `main@4c6d211129615eab372d720ebd209b6c27618c86`:
+> `6201fa04`, the merge `a89c600c`, and `71da6654`. They changed Stage 90
+> research, the two generated LLM Wiki data packages, the SPEC-0172 Task, and
+> `.github/rulesets/main-protection.md`, which advanced from a proposal to a
+> tracked record of the approved 2026-09-05 read-back. No policy, script,
+> workflow, or infrastructure owner changed, so the topical conclusions recorded
+> above still hold at this revision.
+>
+> This pass adds one finding the earlier revalidation could not see: a local gate
+> verdict is reproducible only together with the checkout that produced it.
+> `scripts/lib/document_governance/identity_history.py` resolves issued
+> identities through `git rev-list --objects --all`, so the observed high water
+> depends on which refs the clone can reach rather than on the commit under test.
+> Three observations of the same commit on 2026-09-05:
+>
+> | Observation environment | Refs reachable | `run-ci-gate.py --profile full` | Distinguishing evidence |
+> | --- | --- | --- | --- |
+> | Isolated clone, `main` only | `refs/heads/main`, origin mirrors, tags | Pass, exit `0` | Registry `identity_spaces.spec` high water `172` equals observed `172` |
+> | Developer clone holding unmerged work | Adds `codex/0173-governance-qa-surface-convergence` | Fail, 1 failure of 329 | `identity-history-regression`: `registry high_water=172 observed=173` |
+> | Developer working tree | Same refs plus 48 uncommitted SPEC-0172 files | Fail, 7 failures of 86, aborting before the identity step | Registry schema suites are written test-first and not yet satisfied |
+>
+> The number the check calls "observed" is `173`, contributed by commit
+> `575d866b` on the unmerged local branch
+> `codex/0173-governance-qa-surface-convergence`. No `docs/03.specs/0173*`
+> package exists at this baseline and no tracked document references `SPEC-0173`,
+> so a clone without that branch observes `172` and the same check passes.
+> Whether `173` must stay reserved is an identity and Spec ownership question,
+> not a Stage 90 ruling.
+>
+> The isolated result verifies the commit. The other two report workstation
+> state: an unmerged local branch in one case, in-flight test-first work in the
+> other. None of the three validates deployment, provider quality, cost, or
+> operator outcome, and the `4c6d2111` revalidation above remains valid as
+> recorded rather than being corrected by this observation.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Verification determinism | Registered profiles run identical steps for every caller | Local-executed | Identity history reads `--all` refs, so one commit yields two verdicts | rerun the failure in an isolated single-branch clone before accepting it |
+> | Regression signal quality | The finding names the exact space, registry value, and observed value | Local-executed, Repository-enforced | A local-only branch is reported exactly like a committed regression | compare an isolated clone before routing a defect to an owner |
+> | In-flight work isolation | Uncommitted work is checked by the same profile as the baseline | Local-executed | A red gate does not separate test-first work from real drift | run the committed baseline and the working tree as separate observations |
+> | Hosted comparability | Hosted checkout fetches a narrower ref set than a developer clone | Hosted-executed at cutoff | Local and Hosted verdicts can legitimately disagree | compare only same-scope checkouts |
+>
+> Recommendation: record the checkout identity, meaning the commit together with
+> the reachable-ref scope, next to every local gate verdict, and reproduce a
+> failure in an isolated clone before treating it as a repository defect. Acting
+> on this finding requires a separate Requirement-to-Task chain; Stage 90 states
+> the observation and does not own the identity or gate contract.
+>
+> <a id="maintenance"></a>
+> ## Maintenance
+>
+> Reopen mutable official routes and remeasure tracked owners whenever sources,
+> requirements, workflow contracts, scripts, tests, metadata, Compose, security
+> readiness, lifecycle contracts, generated path sets, or acceptance authority
+> change. Revalidate after every trigger listed above.
+>
+> The documentation maintainer owns reference freshness, with independent QA,
+> security, architecture, infra/ops, and stakeholder review appropriate to the
+> claim. Preserve each baseline commit and historical count; add dated evidence
+> rather than rewriting an earlier observation into current state.
+>
+> Needs revalidation: re-verification attempted on 2026-08-11 could not reach
+> [ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)
+> (`iso.org` returned HTTP 403 on three separate fetch attempts). The claim is
+> retained, not deleted, because the sibling official route
+> [IEEE/ISO/IEC 12207-2026](https://standards.ieee.org/ieee/12207/11416/)
+> independently corroborates the same edition, 2026-04-15 publication date, and
+> supersession of 12207-2017. Re-open the `iso.org` route directly (outside an
+> automated fetch tool) at the next scheduled review to confirm it still
+> resolves.
+>
+> A second re-verification attempt on 2026-08-14 also could not reach
+> [ISO/IEC/IEEE 12207:2026](https://www.iso.org/standard/90219.html)
+> (`iso.org` again returned HTTP 403, single automated attempt this session).
+> This is now two independently dated observations (2026-08-11 and 2026-08-14)
+> of the same automated-retrieval refusal; the claim remains retained under the
+> same IEEE-corroboration basis stated above, and the same manual, out-of-band
+> re-open recommendation still applies. The NASA-STD-8739.8 source added in
+> this pass (above) carries its own, separate revalidation caveat for the same
+> reason — a PDF fetch succeeding is not the same evidence class as reading its
+> normative clauses.
 
 ## Related Documents
 
