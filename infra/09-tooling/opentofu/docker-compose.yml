@@ -12,7 +12,7 @@ services:
       context: .
       dockerfile_inline: |
         FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu
-        FROM alpine:3.22
+        FROM alpine:3.24
         RUN apk add --no-cache \
             bash \
             ca-certificates \
