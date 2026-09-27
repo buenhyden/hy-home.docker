@@ -1,8 +1,8 @@
 ---
 title: "External Research Refresh"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "specs"
@@ -116,6 +116,12 @@ receipt contract. The table above now uses single W values, `PASS: ` and direct
 owner links. The actual prior outcomes have not been upgraded or invented.
 The owner approval and independent reviews support the registered lifecycle
 edges; status changes do not grant remote or runtime authority.
+
+First lifecycle edge (Spec review / Plan approved / Task ready): metadata
+selected 4, violations 0; corpus lifecycle and archive recovery violations 0;
+independent package review APPROVE including in-memory terminal receipt check.
+Second edge (Spec approved): metadata selected 2, violations 0; corpus lifecycle
+and archive recovery violations 0. All commands exited 0; no transition override.
 
 ### Final-snapshot verification
 

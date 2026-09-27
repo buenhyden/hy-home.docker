@@ -1,8 +1,8 @@
 ---
 title: "Agentic Research Refresh Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "specs"
