@@ -1,10 +1,10 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.1.2"
+version: "1.2.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0002-m0012"
 parent_ids:
@@ -17,361 +17,463 @@ review_cycle: "on-source-change"
 
 # Reference: Claude and Codex Implementation Comparison
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+## Current External Research
 
-## Overview
+This member owns the dated product comparison. Originals were opened on **2026-09-27**. Documentation does not prove an installed client, enabled feature, account entitlement or local adoption. Shared goals remain separate from native trust, response and session semantics. All internal adoption: **Not assessed in this run**.
 
-Claude Code and Codex can implement the same semantic governance while using
-different instruction discovery, agent schemas, model controls, hook payloads,
-permissions, and settings layers. Common construction therefore means one
-provider-neutral contract plus generated or translated native adapters. It does
-not mean copying one provider's field names into the other.
+### Native Capability Matrix
 
-This reference satisfies REQ-04 and REQ-05 at tracked baseline
-`9a6e09ca06d99ae8234199443974c978640f3ae6`. Provider observations were
-reopened from official pages on 2026-08-08; local facts were re-derived from
-tracked contracts, adapters, hooks, scripts, and tests.
+Native means documented product mechanism; extension means plugin/skill/integration; custom means an unevaluated project procedure/controller. Support remains version, configuration, trust, platform, model and channel conditional. SDK behavior is not inferred from CLI/Desktop documentation.
 
-## Purpose
+| Feature / claim | Claude product / version / environment / original | Codex product / version / environment / original | Native / extension / custom | Support and limits | Common semantics | Native differences retained | Future acceptance evidence | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Instructions — C-m0012-01 | Claude Code bundled AGENTS plugin v2.1.277+, exceptions before v2.1.281; [memory](https://code.claude.com/docs/en/memory) | Current Codex CLI; [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Native loading; shared policy custom | Discovery/default details in C-m0001-01–02 | Relevant owner explicitly read | CLAUDE variants/rules/imports versus override hierarchy/startup/byte limit | Versioned nested-directory loading trace | Not assessed in this run |
+| Trust/config — C-m0012-02 | Claude Code settings/managed controls; [settings](https://code.claude.com/docs/en/settings), [security](https://code.claude.com/docs/en/security) | Local Codex [config basics](https://learn.chatgpt.com/docs/config-file/config-basic) | Native | Untrusted Codex skips project config/hooks/rules; requirements separate from defaults | Untrusted text cannot expand authority | Native settings hierarchy and trust checks retained | Trusted/untrusted fixture and effective nonsecret precedence | Not assessed in this run |
+| Permissions/sandbox — C-m0012-03 | Local Claude modes/Bash sandbox; [security](https://code.claude.com/docs/en/security), [sandboxing](https://code.claude.com/docs/en/sandboxing) | Codex OS sandbox/approval reviewer; [sandboxing](https://learn.chatgpt.com/docs/sandboxing) | Native; extra guards custom | OS and execution surface conditional; auto-review does not widen sandbox | Authorized action separate from reachable action | Claude permission classifier/modes versus Codex sandbox/reviewer; local remote-control versus cloud VM | Allowed/denied FS/network fixtures on target OS | Not assessed in this run |
+| Tools/MCP — C-m0012-04 | Claude scoped server setup/trust; [MCP](https://code.claude.com/docs/en/mcp) | Local CLI/Desktop/IDE [MCP](https://learn.chatgpt.com/docs/extend/mcp) | Native integration; servers extensions | Codex STDIO/Streamable HTTP bearer/OAuth; third-party trust remains separate | Task-needed data/tool reach only | Transport/auth/config scopes native; Anthropic does not audit servers | Tool inventory, auth and denial trace without secrets | Not assessed in this run |
+| Skills — C-m0012-05 | Claude SKILL.md invocation/fork controls; [skills](https://code.claude.com/docs/en/skills) | Codex SKILL.md and optional openai.yaml; [build skills](https://learn.chatgpt.com/docs/build-skills) | Native discovery; content extension/custom | Codex metadata budget may omit/shorten; equal names not merged | Reusable bounded procedure with provenance | Claude invocation/fork flags versus Codex .agents/skills discovery; tools list is not authority | Invocation/duplicate-name/unavailable-tool fixture | Not assessed in this run |
+| Subagents — C-m0012-06 | Claude Markdown/YAML name/description; [sub-agents](https://code.claude.com/docs/en/sub-agents) | Current Codex enabled default; TOML name/description/developer_instructions; [subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | Native; personas extensions | Claude plugin ignores hooks/mcpServers/permissionMode; resumable maxTurns. Codex live parent overrides; interactive CLI can surface child approval, noninteractive/unable-to-surface flows fail to parent | Bounded delegated task, ownership and result | Format, model/effort, persistent memory and permission inheritance retained | Child denial/failure/disjoint-write/total-budget tests | Not assessed in this run |
+| Hooks — C-m0012-07 | Claude command/http/prompt/agent/mcp_tool; [hooks](https://code.claude.com/docs/en/hooks) | Codex scripts/MCP tools, nonmanaged hash trust; [hooks](https://learn.chatgpt.com/docs/hooks) | Native mechanisms; handlers custom/extensions | Concurrent Codex command handlers; continue:false wins Stop continuation | Observable bounded lifecycle feedback | Event payload/result, sync/async, trust and failure are native; both expose Stop continuation state | Allowed/blocked/failed/repeated event and timeout traces | Not assessed in this run |
+| Memory — C-m0012-08 | Claude auto memory default on, worktree-shared repo; first200 lines or25KB MEMORY.md; [memory](https://code.claude.com/docs/en/memory#auto-memory) | Local Codex opt-in, separate web store; [memories](https://learn.chatgpt.com/docs/customization/memories) | Native generated context; durable knowledge custom | Claude subagent user/project/local memory; Codex eligible idle-chat generation/quota, per-chat not global switches | Context recovery without promoting guesses to policy | Storage, defaults, worktree and agent scopes differ | Stale-note/restart/disable/isolation tests | Not assessed in this run |
+| Compaction — C-m0012-09 | Claude per-model auto/manual budget; [model config](https://code.claude.com/docs/en/model-config) | Codex threshold/scope; [config reference](https://learn.chatgpt.com/docs/config-file/config-reference), [/compact](https://learn.chatgpt.com/docs/reference/slash-commands) | Native summary; continuity custom | Unset Codex threshold uses model default; total_default/body_after_prefix scope | Goal/scope/evidence/next step survive | Native triggers/prefix retention; no losslessness claim | Before/after compact and resumed behavior | Not assessed in this run |
+| Planning — C-m0012-10 | Claude plan permission mode; [workflows](https://code.claude.com/docs/en/common-workflows) | Codex app /plan; [commands](https://learn.chatgpt.com/docs/reference/slash-commands) | Native mode; Spec/Plan/Task custom | Command availability client/version conditional | Intent/constraints/acceptance precede action | Native UI/mode semantics; plan does not approve mutation | Plan/permission/actual execution trace | Not assessed in this run |
+| Verification/handoff — C-m0012-11 | Claude workflow recipes/child results; [workflows](https://code.claude.com/docs/en/common-workflows) | Codex app /review, /fork; [commands](https://learn.chatgpt.com/docs/reference/slash-commands) | Native review/session actions; acceptance/handoff custom | Review or child success is not a behavior check | Paths/results/unresolved work/next owner linked | Fork copies context, not authority; formats differ | Independent check and recipient/resume review | Not assessed in this run |
+| Editor/terminal — C-m0012-12 | Claude VS Code >=1.94, bundled CLI, diffs/plans; [VS Code](https://code.claude.com/docs/en/vs-code) | Codex VS Code-compatible extension; distinct IDE integrations; [IDE](https://learn.chatgpt.com/docs/codex/ide) | Native integration; editor extensions optional | Context and shortcuts host/client/OS-specific | Explicit context and reviewable nearby edits | Selection, terminal integration, diff/approval flow differ | Target version/OS/context/terminal/diff test | Not assessed in this run |
+| Automation — C-m0012-13 | Claude cloud/Desktop/session scheduling; [scheduled tasks](https://code.claude.com/docs/en/scheduled-tasks) | Codex desktop local versus web; [automations](https://learn.chatgpt.com/docs/automations) | Native scheduler; workflow custom | Claude fresh-clone cloud min1h; local/on min1m; open-session loop/7d recurring expiry. Codex local host/app availability; web no local folders | Approved trigger/data/budget/notification intent | Execution location, clone/worktree, lifecycle and expiry differ | Host-off/duplicate/expiry/notification fixture | Not assessed in this run |
+| Models/cost — C-m0012-14 | Claude model/effort and API catalogue; [model config](https://code.claude.com/docs/en/model-config) | Codex product model/effort versus API; [models](https://learn.chatgpt.com/docs/models) | Native controls; routing custom | Exact snapshot/limits in m0013; evaluation in m0002 | Measured quality/latency/total cost within scope | Aliases/defaults/fallbacks and API/subscription metering differ | Frozen accepted-outcome comparison | Not assessed in this run |
 
-Compare current upstream Claude/Codex harness and loop mechanisms with the
-workspace's tracked adoption, build the required common construction matrix,
-and distinguish translation gaps, irreducibly native behavior, local
-configuration, repository enforcement, and unverified runtime/remote state.
+### Shared meaning and preserved exceptions
 
-## Repository Role
+**C-m0012-02 — additional source fact.** Codex precedence is CLI/config override, trusted project layers, profile, user, cloud-managed defaults, system, built-ins. Enforced requirements remain separate constraints. Claude settings use managed/user/project/local scopes with native precedence; instructions are a separate discovery mechanism. Sources below describe settings; no effective local configuration was read.
 
-This Stage 90 comparison is advisory. It does not change provider policy,
-declare live compatibility, or authorize adapter/hook/configuration changes.
-canonical agent governance remains the canonical contract; provider-native files remain adapters.
+**C-m0012-07 — additional source fact.** Codex Stop decision:block requests continuation rather than rejecting the turn; any continue:false wins across matching Stop results. PostToolUse cannot undo side effects; invalid unsupported fields can fail the hook while the tool continues. Both products require event-specific response handling. No event-count parity is claimed.
 
-## Scope
+**C-m0012-15 — interpretation.** A small common contract can cover discoverable owners, scoped action/tool reach, bounded delegation, evidence-backed progress and completion. Native support does not prove enablement, honored plugin fields or equivalent semantics. An AGENTS.md/config file is not the complete product system prompt. Instructions describe policies, roles, procedures, stack/coding constraints and output style; only a separately evidenced enforcement layer can guarantee an execution boundary.
 
-### In scope
+**C-m0012-16 — recommendation.** Evaluate a concrete target: client/version, OS, local/cloud/editor, authentication channel and approved task. Test loading, allow/deny, child failure, repeated hook and compact/resume. Retain an explicit provider exception when the common rule cannot be expressed. Alternatives are a smaller supported native subset or an evaluated wrapper; custom code adds maintenance and failure modes. Copy/symlink/import/synchronization choices need drift and platform checks, not filename parity alone. Handoff should carry goal, baseline, approved scope, relevant owners, decisions, verification results, unresolved work and next action without wholesale raw chats/secrets or assumed memory compatibility.
 
-- Claude hooks, subagents, settings, memory/instructions, and model controls.
-- Codex hooks, subagents, AGENTS.md, configuration, and model controls.
-- Local role/function projections, instruction shims, hooks, dispatcher,
-  skills, effort/reasoning overlays, validators, and gaps.
-- The exact Spec 137 common construction matrix and all fourteen scope
-  implications.
+Current originals correct historical blanket absence claims for Claude AGENTS, Codex default multi-agent, command-only hooks and universal effort enum. Failed guessed URLs or Markdown endpoints were not treated as missing capability. [m0001](m0001-agent-instructions-vibe-coding.md#claims-and-sources) owns instruction source metadata; [m0013](m0013-provider-model-landscape.md#claims-and-sources) owns model/config-reference metadata; [m0011](m0011-memory-hierarchy.md#current-external-research) owns knowledge lifecycle.
 
-### Out of scope
+## Claims and Sources
 
-- User-global config, hook trust state, account entitlement, billing, private
-  memory, transcripts, telemetry, installed MCP state, or credentials.
-- Live provider invocation, performance/cost evaluation, remote CI, or branch
-  protection proof.
-- Fixing stale provider contracts or generated surfaces in this Task.
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0012-01 | Native instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | See exact product/version/environment in C-m0012-01 matrix row | Fact | Version/plugin/launch path conditional | Not assessed in this run |
+| C-m0012-02 | Trust/config precedence | [S-code-claude-com-settings](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-learn-chatgpt-com-config-basic](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-02 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-03 | Permissions and sandbox | [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-code-claude-com-sandboxing](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-03 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-04 | MCP tool reach | [S-code-claude-com-mcp](https://code.claude.com/docs/en/mcp); connection/scope/trust; [S-learn-chatgpt-com-mcp](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-04 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-05 | Native skills | [S-code-claude-com-skills](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork; [S-learn-chatgpt-com-build-skills](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed; v2.1.196 restriction stated / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-05 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-06 | Native subagents | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-06 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-07 | Native hooks | [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-07 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-08 | Generated memory | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-memories](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed; explicit version boundaries in text / Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-08 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
+| C-m0012-09 | Compaction | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed; version conditions in text / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-09 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
+| C-m0012-10 | Planning | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-10 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-11 | Verification and handoff | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-11 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-12 | Editor integration | [S-code-claude-com-vs-code](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs; [S-learn-chatgpt-com-codex-ide](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed; VS Code >=1.94 / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-12 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-13 | Automation environments | [S-code-claude-com-scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry; [S-learn-chatgpt-com-automations](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-13 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-14 | Models and costs | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; version conditions in text / Not displayed; dated retirement notices / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-14 matrix row | Routed facts | No account/billing inspection | Not assessed in this run |
+| C-m0012-15 | Common semantic contract | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
+| C-m0012-16 | Adapter acceptance | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
 
-## Definitions / Facts
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-code-claude-com-settings | [Original](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls | Not displayed | 2026-09-27 | Claude Code mutable native settings docs | Instruction loading is separate |
+| S-code-claude-com-security | [Original](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | Claude local/cloud/remote surfaces; current docs | Noninteractive trust differs; server security not attested |
+| S-code-claude-com-sandboxing | [Original](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms | Not displayed | 2026-09-27 | Claude Bash sandbox; platform conditional | Not proof every integration is sandboxed |
+| S-code-claude-com-mcp | [Original](https://code.claude.com/docs/en/mcp); connection/scope/trust | Not displayed | 2026-09-27 | Claude MCP integration; server-specific | No authentication or server tested |
+| S-learn-chatgpt-com-config-basic | [Original](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | Codex mutable local config; cloud-managed defaults | Requirements separate; global/private config untouched |
+| S-learn-chatgpt-com-sandboxing | [Original](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | Codex Linux/WSL, macOS, Windows native sandbox | Auto-review does not widen sandbox |
+| S-learn-chatgpt-com-mcp | [Original](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup | Not displayed | 2026-09-27 | Codex CLI/Desktop/IDE integration | No live server or authorization assessed |
+| S-code-claude-com-skills | [Original](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork | Not displayed; v2.1.196 restriction stated | 2026-09-27 | Claude native skill discovery; extensions | disable-model-invocation affects preload/scheduling; not authority |
+| S-learn-chatgpt-com-build-skills | [Original](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed | 2026-09-27 | Codex native loader; mutable docs | Metadata budget; equal names not merged |
+| S-code-claude-com-sub-agents | [Original](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | Claude native/custom/plugin agents; type/version conditional | Ignored plugin controls and resumable limit retained |
+| S-learn-chatgpt-com-subagents | [Original](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex current release enabled by default; TOML | Extra tokens/write conflicts; live overrides; client/flow-specific approval as matrix states |
+| S-code-claude-com-hooks | [Original](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state | Not displayed | 2026-09-27 | Claude native hooks; custom handlers | Event response/async semantics native; no handler executed |
+| S-learn-chatgpt-com-hooks | [Original](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | Codex native scripts/MCP hooks; hash trust | Post-action effects irreversible; native response precedence |
+| S-learn-chatgpt-com-memories | [Original](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed | 2026-09-27 | Local Codex opt-in; separate web memory | Eligible idle chats/quota; private state untouched |
+| S-learn-chatgpt-com-slash-commands | [Original](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | Current app composer; conditional availability | Not universal CLI/IDE command contract |
+| S-code-claude-com-common-workflows | [Original](https://code.claude.com/docs/en/common-workflows); planning/review recipes | Not displayed | 2026-09-27 | Claude current workflow guidance | Recipe not policy or acceptance proof |
+| S-code-claude-com-vs-code | [Original](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs | Not displayed; VS Code >=1.94 | 2026-09-27 | Claude editor integration; client/OS conditional | No installed editor or shortcut test |
+| S-learn-chatgpt-com-codex-ide | [Original](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed | 2026-09-27 | Codex VS Code-compatible; other IDEs distinct | No universal shortcut/terminal behavior |
+| S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed | 2026-09-27 | Claude scheduler environments; current docs | Availability/data reach/expiry distinct; no schedule created |
+| S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Codex local app versus web automation | Host/project conditions; no web local continuity |
 
-### Comparison method
+## Future Internal Checks
 
-- **Upstream capability** means an official vendor page documents the feature
-  at retrieval time.
-- **Provider-neutral contract** means the semantic owner is tracked outside a
-  provider adapter.
-- **Tracked state** means the repository contains a definition or
-  configuration at the named baseline.
-- **Execution/enforcement evidence** means a local command, validator, or
-  decision path was inspected or run; a generated file alone is not execution.
-- **Runtime/remote proof** requires a separately authorized observation and is
-  unverified here.
+Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
-### Current upstream construction
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0012-01–03 / authority | Repository/directory/session governance and environment | If native parity is proposed | Bootstrap, adapters, native settings candidates | Are owners and actual permitted reach preserved? | Version/OS/launch path, nonsecret config, loading/trust/denial traces | Approved disposable instruction/FS/network fixtures | Expected discovery/denial; field-name parity insufficient | Global/private config excluded; runtime separately approved | rules-engineer / security-reviewer | Not assessed in this run |
+| C-m0012-04–05 / tool procedure | Provider/tool and task skill scope | If named tools/skills adopted | Project tool config and canonical skill owner | Are exposure/invocation/unavailable-tool behavior bounded? | Transport/tool list, metadata record, invocation/denial trace | Approved synthetic server/skill fixtures | Only approved data/tools; duplicates handled | Installation/connection/disclosure separately scoped | harness-optimizer / security-reviewer | Not assessed in this run |
+| C-m0012-06–07 / orchestration | Session/agent and hook execution | If agents/hooks changed | Role projections and hook/controller candidates | Are ignored fields/inheritance/repeated Stop effective? | Parent/child trace, trust hash, payload/results/failure/cancel | Authorized isolated negative fixtures | No permission expansion; ignored controls diagnosed; bounded continuation | No trust activation/user-agent write here; spend separately approved | hook-developer / loop-operator | Not assessed in this run |
+| C-m0012-08–09 / continuity | Knowledge, task and session | If memory/compaction assessed | Memory lifecycle, Task and handoff owners | Does resume preserve evidence and reject stale notes? | Synthetic source note and pre/post resume state | Approved compact/restart/disable/isolation fixtures | No lost scope or promoted unverified claim | No private memory/log export or inspection | eval-engineer / doc-writer | Not assessed in this run |
+| C-m0012-10–11 / acceptance | Task/Spec lifecycle and quality | If workflow integration proposed | Existing Spec/Plan/Task and review/handoff prompts | Do plan/check/recipient context preserve authority? | Representative plan, commands/results and recipient review | Document review then approved disposable trial | Acceptance based on evidence; fork/child is not approval | Implementation/runtime separately authorized | planner / reviewer | Not assessed in this run |
+| C-m0012-12–13 / hosts | Editor/provider and execution environment | If editor/schedule requested | Target editor/terminal/scheduler | Do context/diff/trigger/host-off match surface? | OS/client version and context/host/expiry/duplicate results | Authorized target-host/synthetic scheduling fixtures | Expected reach/availability; no duplicate mutation | Extensions/schedules/notifications explicitly scoped | ci-cd-engineer / qa-engineer | Not assessed in this run |
+| C-m0012-14–16 / adapters | Provider/model, governance and quality | If routing/parity adopted | Native adapters/roles and evaluation owners | Does adapter meet measured common contract with exceptions? | Exact IDs/channel/effort, cases, cost/failure/acceptance | Approved bounded trials and independent review | Quality/budget/authority met; exceptions explicit | Provider spend/input disclosure/config adoption separate | harness-optimizer / eval-engineer | Not assessed in this run |
 
-| Concern              | Claude official observation                                                                                                                                 | Codex official observation                                                                                                        | Evidence boundary                                                                                  |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| Instructions         | `CLAUDE.md`/`CLAUDE.local.md`, hierarchical discovery, `.claude/rules/`, imports, and auto memory                                                           | `AGENTS.override.md`/`AGENTS.md`, global then project root-to-CWD discovery, one file per directory, 32 KiB default combined cap  | Instructions shape context; neither page proves this repository's session loaded or followed them. |
-| Settings             | Managed, CLI, local, project, user precedence; project `.claude/settings.json` is shareable                                                                 | CLI, project, profile, user, system, built-in precedence; project `.codex/` layers require trust                                  | Tracked project files do not reveal user, managed, trust, or live override state.                  |
-| Custom agents        | Markdown body plus YAML frontmatter; required name/description and optional tools, model, permissions, turns, skills, MCP, hooks, memory, effort, isolation | Standalone TOML; required `name`, `description`, `developer_instructions`; agent file acts as a spawned-session config layer      | Schema presence does not prove native acceptance in the installed/runtime version.                 |
-| Delegation           | Separate subagent context with agent-specific controls                                                                                                      | ChatGPT/Codex orchestrates child threads; current local releases respond to direct or applicable instruction-triggered delegation | No provider run was executed for this research unit.                                               |
-| Model control        | Per-agent `model`; `effort` can override session effort with model-dependent `low` through `max` choices                                                    | Per-agent `model` and `model_reasoning_effort`; current subagent page lists `low`, `medium`, `high`, `xhigh`, `max`, `ultra`      | Product/model controls are mutable and do not prove entitlement or task quality.                   |
-| Hooks                | Command, HTTP, prompt, agent, and MCP-tool handlers across 31 named lifecycle events                                                                        | Command hooks across 11 named events; project hooks are trust-gated                                                               | Event count is not local coverage, parity, or blocking depth.                                      |
-| Session end          | Native `SessionEnd` event                                                                                                                                   | Native main-thread `SessionEnd`; no subagent firing; output is advisory                                                           | Local Codex contract is stale and does not wire it.                                                |
-| Permission/isolation | Settings permissions, permission mode, sandbox/worktree isolation                                                                                           | Parent sandbox/approval context plus per-agent overrides; live parent overrides can be reapplied to children                      | Repository authority remains separate and may be narrower.                                         |
+## Historical Workspace Observations
 
-### Measured local adoption
+The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Surface             | Claude                                                                               | Codex                                                                                                                                                                                         | Shared/canonical state                                               | Proof limit                                                                                                              |
-| ------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Root instructions   | `CLAUDE.md` uses four `@` imports                                                    | `AGENTS.md` tells the agent to load four owners in three steps                                                                                                                                | Stage 00 files are common                                            | Claude transcludes; Codex prose requests tool loading. No live context inspection.                                       |
-| Role adapters       | 14 Markdown/YAML agents                                                              | 14 TOML agents                                                                                                                                                                                | 14 Stage 00 roles, one supervisor + 13 workers                       | Renderer/validator parity, not runtime acceptance.                                                                       |
-| Function bodies     | 24 `.claude/skills/*/SKILL.md`; all 14 roles declare skills                          | 24 shared `.agents/skills/*/SKILL.md`; official Codex guidance documents name/description/path discovery and loads full `SKILL.md` when selected; zero role TOMLs contain `[[skills.config]]` | 24 canonical function records                                        | Official capability plus filesystem projection does not prove this runtime listed, selected, or invoked any local skill. |
-| Model overlays      | 14 model fields; effort distribution: 11 `high`, one `low`, one `xhigh`, one omitted | 14 model and 14 `model_reasoning_effort` fields                                                                                                                                               | Five work profiles select provider-native values                     | Entitlement and actual spawned model are unverified.                                                                     |
-| Permission overlays | `permissionMode` per role plus project allow/deny settings                           | `sandbox_mode` per role; no tracked project `.codex/config.toml`                                                                                                                              | Two permission profiles and approval boundaries                      | Active provider/user overrides are unverified.                                                                           |
-| Hook configuration  | 7 events in `.claude/settings.json`                                                  | 6 events in `.codex/hooks.json`                                                                                                                                                               | Seven semantic events and one shared dispatcher                      | Native firing not observed; 20 cells configured-not-executed, one unsupported.                                           |
-| Stop gate           | `blocking` response                                                                  | first `block`, then `continue: false` on active retry                                                                                                                                         | Shared target-doc and uncommitted-work logic                         | Local decision code and tests; no native session executed.                                                               |
-| Eval/review         | Same repository fixtures and review rules                                            | Same repository fixtures and review rules                                                                                                                                                     | 11 synthetic fixtures, 16 regressions, independent reviewer contract | No live cross-model evaluation.                                                                                          |
-
-### Corrected local drift
-
-1. **Codex `SessionEnd`:** current official documentation supports the event,
-   but `provider-models.yaml` records `native_event: null`, `unsupported`, and
-   `not_applicable`; `.codex/hooks.json` omits it; `providers/codex.md` and
-   parity reporting repeat the stale limitation. This is an upstream-supported
-   local contract/adoption gap, not an irreducible provider limitation.
-2. **Semantic-binding depth:** seven events × three providers creates 21
-   cells. Twenty are `configured-not-executed`; the stale Codex `session-end`
-   cell is `unsupported`. The predecessor statement that all 21 are configured
-   is false.
-3. **Claude effort overlays:** the Claude provider prose says generated Sonnet
-   and Opus adapters emit selected `high` effort. The actual profile-backed
-   distribution is 11 high, `doc-writer` low, `workflow-supervisor` xhigh, and
-   `drift-detector` with no effort field. The generated adapters match the
-   typed work profiles; the prose is stale.
-4. **Loop counts:** the only canonical machine-readable retry controls are
-   four typed loops. The predecessor's ten prose patterns are an analytical
-   taxonomy, not ten additional enforced loop objects, and the phrase
-   “remaining six” incorrectly enumerated seven patterns.
-5. **Configured versus executed:** provider/model acceptance remains
-   `needs_revalidation`; every supported semantic binding remains
-   `configured-not-executed`. Renderer and contract tests prove consistency,
-   not provider loading, hook firing, model selection, or remote behavior.
-
-### Common construction
-
-1. Define roles, skills, permissions, and provider facts in the canonical
-   contract. Do not encode shared policy directly in a provider projection.
-2. Translate that contract into the native adapter: Claude uses its tracked
-   `.claude/` surfaces; Codex uses `.codex/agents/*.toml`, shared skill
-   projections, and `.codex/hooks.json` as declared by its adapter.
-3. Run the registered parity checks after an authorized canonical change. A
-   check can detect drift in tracked surfaces; it cannot prove provider loading.
-4. Preserve irreducible differences. Event mapping, native schema, sandbox or
-   permission vocabulary, and configuration precedence need adapter-specific
-   treatment. `SessionEnd` is the concrete local difference above.
-5. Obtain runtime proof only under separate authorization with a concrete
-   target, redaction boundary, expected result, rollback, and post-check.
-
-The comparison is therefore capability-to-contract analysis, not a benchmark,
-cost comparison, or claim that either provider is presently available.
-
-### Retained historical capability comparison
-
-| Concern | Claude retained observation | Codex retained observation | Provider-neutral handling |
-| --- | --- | --- | --- |
-| Native role surface | 2026-08-08 source: Markdown body with YAML frontmatter; name/description required, and tools, model, permissions, skills, hooks, memory, effort, and isolation optional. | 2026-08-14 retained detail: standalone TOML requires name, description, and developer instructions; it configures a spawned session. | Define role intent and permission profile once; adapters preserve schema. |
-| Hooks and feedback | `PIC-006`: 2026-08-14 retained detail: five handler types across 31 events, with documented blocking/advisory behavior. | `PIC-006`: 2026-08-14 retained detail: command hooks across 11 events; `SessionEnd` is main-thread advisory and project hooks are trust-gated. | Map supported meaning, then inspect local event fields; event count is not parity. |
-| Instruction loading | `PIC-007`: 2026-08-14 retained detail: CLAUDE.md hierarchy and imports; settings precedence is managed, CLI, local, project, user, with merged permissions and deny precedence. | `PIC-007`: 2026-08-14 retained detail: `AGENTS.override.md`/`AGENTS.md` discovery proceeds global then project root to CWD, one file per directory; configuration precedence includes CLI, project, profile, user, system, built-in and trust. | Bootstrap owns repository authority; native discovery and trust remain adapter-specific. |
-| Configuration boundary | A native settings value is a historical capability/configuration observation. | A native trusted-project setting is a historical capability/configuration observation. | Inspect tracked adapters and registry; require separate runtime proof. |
-
-This table is historical synthesis from retained direct observations, not a
-current vendor comparison. The local Codex six-event set is the applicable
-tracked configuration even though the historical upstream observation included
-`SessionEnd`.
-
-## Common Construction Matrix
-
-The columns below reproduce Spec 137's required semantic construction view.
-“Translation required” names the adapter work. “Irreducibly provider-native”
-identifies behavior that should remain native instead of being normalized into
-false parity.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Semantic capability              | Provider-neutral contract                                    | Claude native                                                   | Codex native                                                                                                                           | Shared implementation                        | Translation required                                                                                                                             | Irreducibly provider-native                                           | Tracked state                                                                                                            | Execution/enforcement evidence                                   | Gap                                                                                                                                                                                                                                    |
-| -------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Instruction entry and precedence | Bootstrap, provider overlay, scope, JIT stage evidence       | `CLAUDE.md`, imports, hierarchy, `.claude/rules/`               | `AGENTS.md`/override hierarchy, root-to-CWD concatenation                                                                              | Stage 00 documents and concise root shims    | Render/import for Claude; explicit load sequence for Codex                                                                                       | Claude `@` transclusion; Codex fallback/size/trust rules              | Both shims tracked; no nested local rule files used                                                                      | Metadata/repo checks validate files and links                    | Codex does not automatically transclude the four Stage 00 bodies named in prose.                                                                                                                                                       |
-| Settings and trust               | Provider config may narrow behavior but not own policy       | JSON scopes and managed/local/project precedence                | TOML/hooks layers and project trust                                                                                                    | Approval and environment rules               | Map semantic permission/event choices into each schema                                                                                           | Managed settings and hook trust stores                                | Claude settings and Codex hooks tracked; no project Codex config                                                         | JSON syntax and provider-surface tests                           | User/managed layers and Codex trust state unverified.                                                                                                                                                                                  |
-| Role catalog                     | 14 canonical agent records                                   | `.claude/agents/*.md`                                           | `.codex/agents/*.toml`                                                                                                                 | Renderer consumes Stage 00 agent bodies      | YAML frontmatter/Markdown versus escaped TOML developer instructions                                                                             | Native file schemas and spawn lifecycle                               | 14 + 14 adapters, name-set parity                                                                                        | Renderer and contract tests                                      | Runtime acceptance remains `needs_revalidation`.                                                                                                                                                                                       |
-| Function/skill catalog           | 24 canonical function records                                | 24 native skill projections; role `skills` list                 | Skill directories with required `SKILL.md`; initial discovery uses name, description, and path, then loads the full file when selected | Canonical function Markdown and renderer     | Claude attaches named skills to roles; Codex exposes skill directories for explicit `/skills` or `$` selection and implicit description matching | Provider discovery, context-budget omission, and invocation lifecycle | 24 + 24 files; 14 Claude attachments; 24 shared `.agents` projections; zero Codex role-level `[[skills.config]]` entries | Deterministic renderer tests; official Codex capability verified | Role-level attachment is not required for general Codex skill discovery. This Task did not run Codex to prove all 24 local projections were listed, selected, or invoked; the documented initial-list context budget may omit entries. |
-| Model selection                  | Five work profiles and status axes                           | `model`                                                         | `model`                                                                                                                                | One profile selection per role/provider      | Exact provider IDs, never aliases copied across vendors                                                                                          | Entitlement, model availability, provider fallback behavior           | 14 fields each; 11-model registry                                                                                        | Contract/renderer tests                                          | Live selected model and quality unverified.                                                                                                                                                                                            |
-| Reasoning control                | Profile-specific native control                              | `effort`; omitted for null profile                              | `model_reasoning_effort`                                                                                                               | Work-profile intent                          | Translate semantic depth to allowed native values                                                                                                | Model-dependent Claude effort; Codex product/runtime levels           | Claude 11 high/1 low/1 xhigh/1 omitted; Codex 14 fields                                                                  | Tests reject schema/policy drift                                 | Claude prose stale; runtime overrides and entitlement unverified.                                                                                                                                                                      |
-| Delegation/orchestration         | One supervisor, 13 workers, scope and handoff contract       | Native subagents and optional worktree isolation                | Native child threads and orchestration controls                                                                                        | Stage 00 roles and subagent protocol         | Provider-native spawn/task envelopes and result transport                                                                                        | Thread UI, background behavior, nested-agent controls                 | Catalog/projections tracked                                                                                              | Name/schema tests only                                           | No live delegation or depth/concurrency evidence in this Task.                                                                                                                                                                         |
-| Tool and filesystem boundary     | Permission profile, approval boundary, path ownership        | `tools`, `disallowedTools`, `permissionMode`, sandbox/isolation | spawned-session config, `sandbox_mode`, parent approvals                                                                               | Shared governance and task ownership         | Tool names and decision payloads differ                                                                                                          | Provider sandbox engines and live overrides                           | Role adapters and Claude settings tracked                                                                                | Static validation and scoped shell sandbox for this Task         | Provider metadata does not prove path enforcement.                                                                                                                                                                                     |
-| Semantic hooks                   | Seven event meanings and honest capability/adoption/depth    | Seven configured native events                                  | Six configured native events                                                                                                           | Shared dispatcher and post-tool validator    | Map event name, matcher, payload, timeout, decision schema                                                                                       | Event vocabularies, handler types, trust, timeouts                    | 20 configured-not-executed cells; one unsupported Codex cell                                                             | Contract and native-surface tests                                | Codex `SessionEnd` contract/adoption is stale; native firing unverified.                                                                                                                                                               |
-| Pre/post action feedback         | `pre-tool` advisory context and `post-tool` validation       | `PreToolUse` / `PostToolUse`                                    | `PreToolUse` / `PostToolUse`                                                                                                           | Same dispatcher/validator behavior           | Parse provider payload and emit native response keys                                                                                             | Hosted-tool coverage and provider matcher semantics                   | Configured on both                                                                                                       | Script tests and local changed-path routing                      | Not every provider tool is intercepted; no native run proof.                                                                                                                                                                           |
-| Stop/completion gate             | Target-doc contract plus logical-commit boundary             | blocking Stop response                                          | block then bounded hard stop using `stop_hook_active`                                                                                  | Same underlying checks                       | Translate decision/retry payload                                                                                                                 | Provider continuation semantics                                       | Configured on both; semantic modes differ                                                                                | Dispatcher code, contract tests, scoped repo checks              | Retry bound depends on provider payload semantics.                                                                                                                                                                                     |
-| Session closure                  | Optional sanitized end reminder                              | `SessionEnd`                                                    | Official `SessionEnd`, main thread only, advisory                                                                                      | Shared dispatcher has a session-end handler  | Add a Codex contract binding/config entry with provider timeout/schema through canonical change                                                  | Trigger timing and advisory result semantics                          | Claude configured; Codex absent/stale                                                                                    | No native execution evidence                                     | Requires separate Stage 00/provider fix and revalidation; not changed here.                                                                                                                                                            |
-| Evaluation and evidence          | Four typed loops, four evidence fields, independent reviewer | Can invoke shared checks through tools/hooks                    | Can invoke shared checks through tools/hooks                                                                                           | 11 fixtures, 16 regressions, Stage 04 ledger | Only invocation/result transport differs                                                                                                         | Provider outputs, latency, cost, telemetry                            | Synthetic catalog and tests tracked                                                                                      | Deterministic scorer/fixture tests and Task checks               | No live comparative provider baseline or remote enforcement.                                                                                                                                                                           |
-| Memory/context continuity        | Canonical lifecycle evidence plus bounded advisory memory    | CLAUDE.md and auto memory                                       | AGENTS.md plus product memory features outside this unit                                                                               | Stage 04/Stage 00 evidence owners            | Provider memory must link to, not copy/override, canonical state                                                                                 | Native auto-memory/storage/retention behavior                         | Repository memory contract tracked; private state excluded                                                               | Repository contract checks bounded files                         | Provider-private memory and cross-session behavior unverified.                                                                                                                                                                         |
-
-### The construction recipe: Stage 00's Canonical Adapter Model
-
-> Historical evidence (not current authority; source: Git history): Adapter construction recorded on 2026-08-14; current owners are linked above.
-> `providers/agents-md.md` §5 (re-read directly 2026-08-14) states the exact
-> mechanism this workspace already uses to answer "what does it take to build
-> one common environment, ruleset, and system across providers." It is a
-> two-tier model, not a two-provider one — Claude, Codex, and Gemini all sit in
-> Tier 2:
+> Historical evidence (not current authority; source: Git history):
 >
-> - **Tier 1 — Stage 00 canonical catalog**: `agents/agents/` (roles),
->   `agents/functions/` (skills), and `contracts/provider-models.yaml`
->   (provider/model/event facts) are the only place a capability is defined.
->   The agent and function **name sets** defined there are authoritative, and
->   every provider adapter must expose exactly those name sets.
-> - **Tier 2 — provider runtime adapters**: Claude exposes native Markdown
->   agents/skills, Codex exposes native TOML agents plus hook compatibility,
->   Gemini exposes native Markdown agents, settings, and one thin event-name
->   adapter. None of the three is canonical; each is a translation.
-
-Five adapter rules make the recipe concrete and falsifiable rather than
-aspirational:
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Rule              | What it requires                                                                                                                 | Enforcement in this workspace                                                                                                                                                       |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Name-set parity   | Agent/function name sets identical across Stage 00 and every active projection                                                   | `scripts/lib/agent_governance/agent_governance_contract.py` and `python3 scripts/operations/provider_surface_renderer.py --check`                                                   |
-| Role parity       | Each adapter points back to its Stage 00 entry and preserves scope/role intent                                                   | Renderer/contract tests (name-set only; not a semantic-intent check)                                                                                                                |
-| Policy parity     | Adapters may change syntax/frontmatter/hook mechanics but not create separate governance, QA, template, model, or workflow rules | The current workspace enforces generated markers and Stage 00/Registry ownership through renderer and contract tests; the external comparison's broader semantic-intent limitation remains |
-| Model parity      | Only the model identifiers and controls `provider-models.yaml` allows                                                            | Renderer/contract tests plus the per-provider "never carry [other vendor] model names" rule in each `providers/*.md`                                                                |
-| Validation parity | The typed agent-governance contract and direct renderer detect drift                                                             | Both current owners are tracked; live provider acceptance remains outside repository validation                                                                                     |
-
-The practical answer to "what does it take": one canonical name/role/function
-registry that every adapter must name-match; one typed model/event/permission
-contract that every adapter must translate rather than reinterpret; and a
-renderer plus a drift validator that make the first two machine-checkable
-instead of aspirational. What it does **not** take, per this same section, is
-uniform native syntax — Claude's YAML-frontmatter Markdown, Codex's TOML, and
-Gemini's Markdown-with-different-fields are accepted as permanently
-irreducible, and the matrix explicitly warns against "normalizing[ing]" them
-into false parity (see the Common Construction Matrix above).
-
-### Exact per-event capability and adoption matrix
-
-Re-derived directly from `contracts/provider-models.yaml` `semantic_events`
-(all 7 events × 3 providers = 21 cells; no field estimated or rounded):
-
-| Event                | Claude native / mode                     | Codex native / mode                      | Gemini native / mode                   |
-| -------------------- | ---------------------------------------- | ---------------------------------------- | -------------------------------------- |
-| `session-start`      | `SessionStart`, advisory                 | `SessionStart`, advisory                 | `SessionStart`, advisory               |
-| `pre-tool`           | `PreToolUse`, advisory (can block)       | `PreToolUse`, advisory (can block)       | `BeforeTool`, advisory (can block)     |
-| `post-tool`          | `PostToolUse`, advisory                  | `PostToolUse`, advisory                  | `AfterTool`, advisory                  |
-| `pre-compaction`     | `PreCompact`, advisory (can block)       | `PreCompact`, advisory (can block)       | `PreCompress`, advisory (cannot block) |
-| `user-prompt-intake` | `UserPromptSubmit`, advisory (can block) | `UserPromptSubmit`, advisory (can block) | `BeforeAgent`, advisory (can block)    |
-| `stop`               | `Stop`, **blocking**                     | `Stop`, **retry**                        | `AfterAgent`, **deny-retry**           |
-| `session-end`        | `SessionEnd`, advisory                   | `null`, **unsupported**                  | `SessionEnd`, advisory                 |
-
-Every "advisory" cell has `runtime_depth: configured-not-executed` and every
-"blocking"/"retry"/"deny-retry" cell in the `stop` row is the sole exception
-where `repository_hook_mode` differs from `advisory`. Timeout units also
-differ by provider construction, not by choice: Claude and Codex declare
-seconds (Claude 10–30s per event, Codex a uniform 600s), Gemini declares
-milliseconds (a uniform 60000ms) — a native-schema difference the shared
-dispatcher does not need to reconcile because timeouts are provider-enforced,
-not repository-enforced.
-
-### Construction rule
-
-The common environment is achievable at the semantic layer: canonical roles,
-functions, work profiles, permissions, event meanings, loop bounds, validation,
-and evidence can share owners. Native instruction loading, file schemas,
-settings precedence, trust, sandboxes, payloads, timeouts, and memory remain
-provider-specific. The renderer should translate those differences and the
-validator should detect drift; neither should claim live provider acceptance.
-
-### Carried source-evidence claims
-
-Source-evidence claims carried forward from the superseded 2026-07-05
-research pack on 2026-08-19. Each states what the upstream evidence supports
-and, where it matters more, what it does not.
-
-- **The Codex skills pattern has no confirming official source.** Both candidate official pages, `https://learn.chatgpt.com/docs/skills` and `https://learn.chatgpt.com/docs/agent-configuration/skills`, returned HTTP 404 at the recorded revalidation, so the `native_skill_pattern: .agents/skills/**/SKILL.md` value recorded for Codex has no confirming official source and is not treated as established. The per-agent `[[skills.config]]` field remains verified, because it appears on the Codex subagents page. The 404 observation is dated and was not re-fetched here; it is `UNVERIFIED` as a current network fact and carried as the recorded observation.
-
-## Scope Implications
-
-This table applies the [scope application matrix](./m0015-scope-application-matrix.md)
-to provider construction explicitly.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Scope          | Provider-comparison implication                                                                      | Disposition / route                                                                            |
-| -------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `agentic`      | Owns semantic contracts and native adapter translations.                                             | Implemented definitions; close drift through Stage 00 plus renderer/tests, not this reference. |
-| `architecture` | Records why a capability is common, translated, or irreducibly native.                               | Partial; ADR/Spec route, no typed agent.                                                       |
-| `backend`      | Provider tool/runtime comparison applies after a backend exists.                                     | Not Applicable now; future approved surface required.                                          |
-| `common`       | Independent review checks parity, correctness, and false equivalence.                                | Partial; route through `code-reviewer`.                                                        |
-| `docs`         | Owns sourced comparison, mutable-page dates, direct links, and migration evidence.                   | Implemented locally; independent Task 3 review pending.                                        |
-| `entry`        | Provider networking or gateway actions require infra ownership and runtime evidence.                 | Partial; no edge/runtime proof.                                                                |
-| `frontend`     | Browser/UI provider claims bind only to a real frontend test surface.                                | Partial; Storybook fixture is not product-wide proof.                                          |
-| `infra`        | Sandbox, filesystem, network, Compose, and MCP reach must be measured per runtime.                   | Definitions exist; active runtime unverified.                                                  |
-| `meta`         | Typed registries and deterministic rendering prevent adapter drift.                                  | Partial; route through docs/Stage 00 because typed meta agent is absent.                       |
-| `mobile`       | Native device/provider comparisons need an approved mobile surface.                                  | Not Applicable; none tracked.                                                                  |
-| `ops`          | Runtime availability, telemetry, incident, rollback, and provider outages need operational evidence. | Partial; no live observation.                                                                  |
-| `product`      | Chooses acceptable provider capability, cost, latency, and lock-in trade-offs.                       | Partial; human/Stage 01 decision required.                                                     |
-| `qa`           | Validates schema parity, hooks, fixtures, regressions, and provider-specific behavior.               | Extensive static/local evidence; live comparative eval unverified.                             |
-| `security`     | Trust, approvals, sandboxing, hook code, MCP, data handling, and secrets require least privilege.    | Partial; private/secret/runtime/remote state excluded.                                         |
-
-## Sources
-
-All nine minimum official pages were reopened 2026-08-08
-(`2026-08-08T15:48:51+09:00`); a second pass reopened the highest-value pages
-2026-08-14 (LLM-mediated fetch, noted per-row) to extract schema/precedence
-detail not previously recorded. All returned HTTP 200 with no redirect and no
-stable revision identifier; every vendor row is external mutable.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| ID | Source | Verification |
-| --- | --- | --- |
-| C-HOOK | [Claude hooks](https://code.claude.com/docs/en/hooks) | Re-verified 2026-08-14: 31 events, 5 handler types, exact blocking/advisory split, 6 config scopes. |
-| C-AGENT | [Claude subagents](https://code.claude.com/docs/en/sub-agents) | Verified 2026-08-08: frontmatter schema, model, effort, permissions, skills, hooks, memory, isolation. |
-| C-SET | [Claude settings](https://code.claude.com/docs/en/settings) | Re-verified 2026-08-14: exact 5-level precedence, permission-merge-across-scopes rule, `autoMode` schema. |
-| C-MEM | [Claude memory](https://code.claude.com/docs/en/memory) | Re-verified 2026-08-14: full load order, `@import` 4-hop limit, "delivered as user message, not system prompt." |
-| O-HOOK | [Codex hooks](https://learn.chatgpt.com/docs/hooks) | Re-verified 2026-08-14: 11-event blocking/advisory split, `stop_hook_active`, main-thread `SessionEnd`. |
-| O-AGENT | [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | Re-verified 2026-08-14: TOML fields incl. `skills.config`, reasoning-effort set (`low`–`ultra`), sandbox inheritance. |
-| O-INSTR | [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Re-verified 2026-08-14: discovery order, `AGENTS.override.md`, 32 KiB cap, "prepended not transcluded." |
-| O-CONFIG | [Codex config basics](https://learn.chatgpt.com/docs/config-file/config-basic) | Verified 2026-08-08: CLI/project/profile/user/system/default precedence, trusted-project gate. |
-| O-MODEL | [Codex models](https://learn.chatgpt.com/docs/models) | Verified 2026-08-08: model/reasoning controls; entitlement not inferred. |
-| O-SKILL | [Codex build skills](https://learn.chatgpt.com/docs/build-skills) | Verified 2026-08-08: `SKILL.md` discovery, `/skills`/`$` selection, implicit matching. |
-| G-HOOK | [Gemini CLI hooks reference](https://geminicli.com/docs/hooks/reference/) | New 2026-08-14: event list; header/table count mismatch (11 rows vs "12 Total") marked `UNVERIFIED`. |
-| G-AGENT | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
-| WS-CATALOG | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
-| WS-PROVIDER | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
-| WS-MATRIX | [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
-| WS-ADAPTER | `providers/agents-md.md` (retired path: `../../../00.agent-governance/providers/agents-md.md`) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
-| WS-CLAUDE | [Claude provider notes](../../../../.claude/provider.md) | Tracked mutable; stale uniform-high effort sentence identified. |
-| WS-CODEX | [Codex provider notes](../../../../.codex/provider.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
-| WS-GEMINI | Gemini provider notes (retired path: `../../../00.agent-governance/providers/gemini.md`) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
-| WS-GRAPH | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
-
-## Scope Application
-
-| Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-| --- | --- | --- | --- | --- |
-| agentic | applies | Translate only canonical contracts. | Inspect registry provider/event fields, then the matching adapter's native surface. | Runtime acceptance unverified. |
-| architecture | applies | Record provider decisions in owner artifacts. | Review decision authority. | No choice recommended. |
-| common | applies | Preserve native differences in adapters. | Use the adapters' documented parity check after a canonical source change. | No identical-schema assumption. |
-| docs | applies | Cite capability with historical date. | Check source rows and caveats. | No current-vendor claim. |
-| infra | applies | Authorize environment proof separately. | Require concrete target. | No runtime inspection. |
-| ops | applies | Route outage/telemetry proof to ops. | Use approved operational evidence. | No availability claim. |
-| qa | applies | Compare tracked contracts first. | Run registered check when authorized. | Static parity is limited. |
-| security | applies | Respect native permission boundaries. | Review redacted plan. | No control effectiveness claim. |
-
-## 2026-09-05 Revalidation
-
-Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-Stage 00 remains the single shared control plane. Claude has seven configured
-semantic hook events including `SessionEnd`; Codex has six and routes them
-through one shared hook adapter. Current provider documentation exposes
-additional native capabilities, but only tracked mappings count as adopted.
-
-<!-- Historical evidence table (not current authority; source: Git history). -->
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Shared policy | Root adapters route into Stage 00 | Repository-enforced | None for ownership split | provider-surface contract |
-| Native events | Claude and Codex mappings are explicit and unequal | Configured, Repository-enforced | Native breadth and semantics differ | generated hook parity report |
-| Context/handoff | Task evidence is provider-neutral; sessions are native | Defined, Configured | Outcome equivalence unverified | bounded dual-provider scenario |
-| Entitlement | SPEC-0172 records direct bounded access on 2026-09-04 | Runtime-verified at cutoff | Future access and model parity unknown | new approved no-secret probe |
-
-Recommendation: preserve semantic intent across adapters without pretending
-that event names, memory, system prompts, or permission engines are identical.
-
-## Maintenance
-
-Reopen all cited official pages and re-derive catalogs, adapters, skills, model
-controls, hook/event cells, dispatcher behavior, tests, and runtime status when
-any owner changes. Record redirects/unavailability as observations, never
-silently reuse an earlier retrieval, and keep local adoption gaps separate from
-provider limitations.
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+> ## Overview
+>
+> Claude Code and Codex can implement the same semantic governance while using
+> different instruction discovery, agent schemas, model controls, hook payloads,
+> permissions, and settings layers. Common construction therefore means one
+> provider-neutral contract plus generated or translated native adapters. It does
+> not mean copying one provider's field names into the other.
+>
+> This reference satisfies REQ-04 and REQ-05 at tracked baseline
+> `9a6e09ca06d99ae8234199443974c978640f3ae6`. Provider observations were
+> reopened from official pages on 2026-08-08; local facts were re-derived from
+> tracked contracts, adapters, hooks, scripts, and tests.
+>
+> ## Purpose
+>
+> Compare current upstream Claude/Codex harness and loop mechanisms with the
+> workspace's tracked adoption, build the required common construction matrix,
+> and distinguish translation gaps, irreducibly native behavior, local
+> configuration, repository enforcement, and unverified runtime/remote state.
+>
+> ## Repository Role
+>
+> This Stage 90 comparison is advisory. It does not change provider policy,
+> declare live compatibility, or authorize adapter/hook/configuration changes.
+> canonical agent governance remains the canonical contract; provider-native files remain adapters.
+>
+> ## Scope
+>
+> ### In scope
+>
+> - Claude hooks, subagents, settings, memory/instructions, and model controls.
+> - Codex hooks, subagents, AGENTS.md, configuration, and model controls.
+> - Local role/function projections, instruction shims, hooks, dispatcher,
+>   skills, effort/reasoning overlays, validators, and gaps.
+> - The exact Spec 137 common construction matrix and all fourteen scope
+>   implications.
+>
+> ### Out of scope
+>
+> - User-global config, hook trust state, account entitlement, billing, private
+>   memory, transcripts, telemetry, installed MCP state, or credentials.
+> - Live provider invocation, performance/cost evaluation, remote CI, or branch
+>   protection proof.
+> - Fixing stale provider contracts or generated surfaces in this Task.
+>
+> ## Definitions / Facts
+>
+> ### Comparison method
+>
+> - **Upstream capability** means an official vendor page documents the feature
+>   at retrieval time.
+> - **Provider-neutral contract** means the semantic owner is tracked outside a
+>   provider adapter.
+> - **Tracked state** means the repository contains a definition or
+>   configuration at the named baseline.
+> - **Execution/enforcement evidence** means a local command, validator, or
+>   decision path was inspected or run; a generated file alone is not execution.
+> - **Runtime/remote proof** requires a separately authorized observation and is
+>   unverified here.
+>
+> ### Current upstream construction
+>
+> | Concern              | Claude official observation                                                                                                                                 | Codex official observation                                                                                                        | Evidence boundary                                                                                  |
+> | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+> | Instructions         | `CLAUDE.md`/`CLAUDE.local.md`, hierarchical discovery, `.claude/rules/`, imports, and auto memory                                                           | `AGENTS.override.md`/`AGENTS.md`, global then project root-to-CWD discovery, one file per directory, 32 KiB default combined cap  | Instructions shape context; neither page proves this repository's session loaded or followed them. |
+> | Settings             | Managed, CLI, local, project, user precedence; project `.claude/settings.json` is shareable                                                                 | CLI, project, profile, user, system, built-in precedence; project `.codex/` layers require trust                                  | Tracked project files do not reveal user, managed, trust, or live override state.                  |
+> | Custom agents        | Markdown body plus YAML frontmatter; required name/description and optional tools, model, permissions, turns, skills, MCP, hooks, memory, effort, isolation | Standalone TOML; required `name`, `description`, `developer_instructions`; agent file acts as a spawned-session config layer      | Schema presence does not prove native acceptance in the installed/runtime version.                 |
+> | Delegation           | Separate subagent context with agent-specific controls                                                                                                      | ChatGPT/Codex orchestrates child threads; current local releases respond to direct or applicable instruction-triggered delegation | No provider run was executed for this research unit.                                               |
+> | Model control        | Per-agent `model`; `effort` can override session effort with model-dependent `low` through `max` choices                                                    | Per-agent `model` and `model_reasoning_effort`; current subagent page lists `low`, `medium`, `high`, `xhigh`, `max`, `ultra`      | Product/model controls are mutable and do not prove entitlement or task quality.                   |
+> | Hooks                | Command, HTTP, prompt, agent, and MCP-tool handlers across 31 named lifecycle events                                                                        | Command hooks across 11 named events; project hooks are trust-gated                                                               | Event count is not local coverage, parity, or blocking depth.                                      |
+> | Session end          | Native `SessionEnd` event                                                                                                                                   | Native main-thread `SessionEnd`; no subagent firing; output is advisory                                                           | Local Codex contract is stale and does not wire it.                                                |
+> | Permission/isolation | Settings permissions, permission mode, sandbox/worktree isolation                                                                                           | Parent sandbox/approval context plus per-agent overrides; live parent overrides can be reapplied to children                      | Repository authority remains separate and may be narrower.                                         |
+>
+> ### Measured local adoption
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Surface             | Claude                                                                               | Codex                                                                                                                                                                                         | Shared/canonical state                                               | Proof limit                                                                                                              |
+> | ------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+> | Root instructions   | `CLAUDE.md` uses four `@` imports                                                    | `AGENTS.md` tells the agent to load four owners in three steps                                                                                                                                | Stage 00 files are common                                            | Claude transcludes; Codex prose requests tool loading. No live context inspection.                                       |
+> | Role adapters       | 14 Markdown/YAML agents                                                              | 14 TOML agents                                                                                                                                                                                | 14 Stage 00 roles, one supervisor + 13 workers                       | Renderer/validator parity, not runtime acceptance.                                                                       |
+> | Function bodies     | 24 `.claude/skills/*/SKILL.md`; all 14 roles declare skills                          | 24 shared `.agents/skills/*/SKILL.md`; official Codex guidance documents name/description/path discovery and loads full `SKILL.md` when selected; zero role TOMLs contain `[[skills.config]]` | 24 canonical function records                                        | Official capability plus filesystem projection does not prove this runtime listed, selected, or invoked any local skill. |
+> | Model overlays      | 14 model fields; effort distribution: 11 `high`, one `low`, one `xhigh`, one omitted | 14 model and 14 `model_reasoning_effort` fields                                                                                                                                               | Five work profiles select provider-native values                     | Entitlement and actual spawned model are unverified.                                                                     |
+> | Permission overlays | `permissionMode` per role plus project allow/deny settings                           | `sandbox_mode` per role; no tracked project `.codex/config.toml`                                                                                                                              | Two permission profiles and approval boundaries                      | Active provider/user overrides are unverified.                                                                           |
+> | Hook configuration  | 7 events in `.claude/settings.json`                                                  | 6 events in `.codex/hooks.json`                                                                                                                                                               | Seven semantic events and one shared dispatcher                      | Native firing not observed; 20 cells configured-not-executed, one unsupported.                                           |
+> | Stop gate           | `blocking` response                                                                  | first `block`, then `continue: false` on active retry                                                                                                                                         | Shared target-doc and uncommitted-work logic                         | Local decision code and tests; no native session executed.                                                               |
+> | Eval/review         | Same repository fixtures and review rules                                            | Same repository fixtures and review rules                                                                                                                                                     | 11 synthetic fixtures, 16 regressions, independent reviewer contract | No live cross-model evaluation.                                                                                          |
+>
+> ### Corrected local drift
+>
+> 1. **Codex `SessionEnd`:** current official documentation supports the event,
+>    but `provider-models.yaml` records `native_event: null`, `unsupported`, and
+>    `not_applicable`; `.codex/hooks.json` omits it; `providers/codex.md` and
+>    parity reporting repeat the stale limitation. This is an upstream-supported
+>    local contract/adoption gap, not an irreducible provider limitation.
+> 2. **Semantic-binding depth:** seven events × three providers creates 21
+>    cells. Twenty are `configured-not-executed`; the stale Codex `session-end`
+>    cell is `unsupported`. The predecessor statement that all 21 are configured
+>    is false.
+> 3. **Claude effort overlays:** the Claude provider prose says generated Sonnet
+>    and Opus adapters emit selected `high` effort. The actual profile-backed
+>    distribution is 11 high, `doc-writer` low, `workflow-supervisor` xhigh, and
+>    `drift-detector` with no effort field. The generated adapters match the
+>    typed work profiles; the prose is stale.
+> 4. **Loop counts:** the only canonical machine-readable retry controls are
+>    four typed loops. The predecessor's ten prose patterns are an analytical
+>    taxonomy, not ten additional enforced loop objects, and the phrase
+>    “remaining six” incorrectly enumerated seven patterns.
+> 5. **Configured versus executed:** provider/model acceptance remains
+>    `needs_revalidation`; every supported semantic binding remains
+>    `configured-not-executed`. Renderer and contract tests prove consistency,
+>    not provider loading, hook firing, model selection, or remote behavior.
+>
+> ### Common construction
+>
+> 1. Define roles, skills, permissions, and provider facts in the canonical
+>    contract. Do not encode shared policy directly in a provider projection.
+> 2. Translate that contract into the native adapter: Claude uses its tracked
+>    `.claude/` surfaces; Codex uses `.codex/agents/*.toml`, shared skill
+>    projections, and `.codex/hooks.json` as declared by its adapter.
+> 3. Run the registered parity checks after an authorized canonical change. A
+>    check can detect drift in tracked surfaces; it cannot prove provider loading.
+> 4. Preserve irreducible differences. Event mapping, native schema, sandbox or
+>    permission vocabulary, and configuration precedence need adapter-specific
+>    treatment. `SessionEnd` is the concrete local difference above.
+> 5. Obtain runtime proof only under separate authorization with a concrete
+>    target, redaction boundary, expected result, rollback, and post-check.
+>
+> The comparison is therefore capability-to-contract analysis, not a benchmark,
+> cost comparison, or claim that either provider is presently available.
+>
+> ### Retained historical capability comparison
+>
+> | Concern | Claude retained observation | Codex retained observation | Provider-neutral handling |
+> | --- | --- | --- | --- |
+> | Native role surface | 2026-08-08 source: Markdown body with YAML frontmatter; name/description required, and tools, model, permissions, skills, hooks, memory, effort, and isolation optional. | 2026-08-14 retained detail: standalone TOML requires name, description, and developer instructions; it configures a spawned session. | Define role intent and permission profile once; adapters preserve schema. |
+> | Hooks and feedback | `PIC-006`: 2026-08-14 retained detail: five handler types across 31 events, with documented blocking/advisory behavior. | `PIC-006`: 2026-08-14 retained detail: command hooks across 11 events; `SessionEnd` is main-thread advisory and project hooks are trust-gated. | Map supported meaning, then inspect local event fields; event count is not parity. |
+> | Instruction loading | `PIC-007`: 2026-08-14 retained detail: CLAUDE.md hierarchy and imports; settings precedence is managed, CLI, local, project, user, with merged permissions and deny precedence. | `PIC-007`: 2026-08-14 retained detail: `AGENTS.override.md`/`AGENTS.md` discovery proceeds global then project root to CWD, one file per directory; configuration precedence includes CLI, project, profile, user, system, built-in and trust. | Bootstrap owns repository authority; native discovery and trust remain adapter-specific. |
+> | Configuration boundary | A native settings value is a historical capability/configuration observation. | A native trusted-project setting is a historical capability/configuration observation. | Inspect tracked adapters and registry; require separate runtime proof. |
+>
+> This table is historical synthesis from retained direct observations, not a
+> current vendor comparison. The local Codex six-event set is the applicable
+> tracked configuration even though the historical upstream observation included
+> `SessionEnd`.
+>
+> ## Common Construction Matrix
+>
+> The columns below reproduce Spec 137's required semantic construction view.
+> “Translation required” names the adapter work. “Irreducibly provider-native”
+> identifies behavior that should remain native instead of being normalized into
+> false parity.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Semantic capability              | Provider-neutral contract                                    | Claude native                                                   | Codex native                                                                                                                           | Shared implementation                        | Translation required                                                                                                                             | Irreducibly provider-native                                           | Tracked state                                                                                                            | Execution/enforcement evidence                                   | Gap                                                                                                                                                                                                                                    |
+> | -------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Instruction entry and precedence | Bootstrap, provider overlay, scope, JIT stage evidence       | `CLAUDE.md`, imports, hierarchy, `.claude/rules/`               | `AGENTS.md`/override hierarchy, root-to-CWD concatenation                                                                              | Stage 00 documents and concise root shims    | Render/import for Claude; explicit load sequence for Codex                                                                                       | Claude `@` transclusion; Codex fallback/size/trust rules              | Both shims tracked; no nested local rule files used                                                                      | Metadata/repo checks validate files and links                    | Codex does not automatically transclude the four Stage 00 bodies named in prose.                                                                                                                                                       |
+> | Settings and trust               | Provider config may narrow behavior but not own policy       | JSON scopes and managed/local/project precedence                | TOML/hooks layers and project trust                                                                                                    | Approval and environment rules               | Map semantic permission/event choices into each schema                                                                                           | Managed settings and hook trust stores                                | Claude settings and Codex hooks tracked; no project Codex config                                                         | JSON syntax and provider-surface tests                           | User/managed layers and Codex trust state unverified.                                                                                                                                                                                  |
+> | Role catalog                     | 14 canonical agent records                                   | `.claude/agents/*.md`                                           | `.codex/agents/*.toml`                                                                                                                 | Renderer consumes Stage 00 agent bodies      | YAML frontmatter/Markdown versus escaped TOML developer instructions                                                                             | Native file schemas and spawn lifecycle                               | 14 + 14 adapters, name-set parity                                                                                        | Renderer and contract tests                                      | Runtime acceptance remains `needs_revalidation`.                                                                                                                                                                                       |
+> | Function/skill catalog           | 24 canonical function records                                | 24 native skill projections; role `skills` list                 | Skill directories with required `SKILL.md`; initial discovery uses name, description, and path, then loads the full file when selected | Canonical function Markdown and renderer     | Claude attaches named skills to roles; Codex exposes skill directories for explicit `/skills` or `$` selection and implicit description matching | Provider discovery, context-budget omission, and invocation lifecycle | 24 + 24 files; 14 Claude attachments; 24 shared `.agents` projections; zero Codex role-level `[[skills.config]]` entries | Deterministic renderer tests; official Codex capability verified | Role-level attachment is not required for general Codex skill discovery. This Task did not run Codex to prove all 24 local projections were listed, selected, or invoked; the documented initial-list context budget may omit entries. |
+> | Model selection                  | Five work profiles and status axes                           | `model`                                                         | `model`                                                                                                                                | One profile selection per role/provider      | Exact provider IDs, never aliases copied across vendors                                                                                          | Entitlement, model availability, provider fallback behavior           | 14 fields each; 11-model registry                                                                                        | Contract/renderer tests                                          | Live selected model and quality unverified.                                                                                                                                                                                            |
+> | Reasoning control                | Profile-specific native control                              | `effort`; omitted for null profile                              | `model_reasoning_effort`                                                                                                               | Work-profile intent                          | Translate semantic depth to allowed native values                                                                                                | Model-dependent Claude effort; Codex product/runtime levels           | Claude 11 high/1 low/1 xhigh/1 omitted; Codex 14 fields                                                                  | Tests reject schema/policy drift                                 | Claude prose stale; runtime overrides and entitlement unverified.                                                                                                                                                                      |
+> | Delegation/orchestration         | One supervisor, 13 workers, scope and handoff contract       | Native subagents and optional worktree isolation                | Native child threads and orchestration controls                                                                                        | Stage 00 roles and subagent protocol         | Provider-native spawn/task envelopes and result transport                                                                                        | Thread UI, background behavior, nested-agent controls                 | Catalog/projections tracked                                                                                              | Name/schema tests only                                           | No live delegation or depth/concurrency evidence in this Task.                                                                                                                                                                         |
+> | Tool and filesystem boundary     | Permission profile, approval boundary, path ownership        | `tools`, `disallowedTools`, `permissionMode`, sandbox/isolation | spawned-session config, `sandbox_mode`, parent approvals                                                                               | Shared governance and task ownership         | Tool names and decision payloads differ                                                                                                          | Provider sandbox engines and live overrides                           | Role adapters and Claude settings tracked                                                                                | Static validation and scoped shell sandbox for this Task         | Provider metadata does not prove path enforcement.                                                                                                                                                                                     |
+> | Semantic hooks                   | Seven event meanings and honest capability/adoption/depth    | Seven configured native events                                  | Six configured native events                                                                                                           | Shared dispatcher and post-tool validator    | Map event name, matcher, payload, timeout, decision schema                                                                                       | Event vocabularies, handler types, trust, timeouts                    | 20 configured-not-executed cells; one unsupported Codex cell                                                             | Contract and native-surface tests                                | Codex `SessionEnd` contract/adoption is stale; native firing unverified.                                                                                                                                                               |
+> | Pre/post action feedback         | `pre-tool` advisory context and `post-tool` validation       | `PreToolUse` / `PostToolUse`                                    | `PreToolUse` / `PostToolUse`                                                                                                           | Same dispatcher/validator behavior           | Parse provider payload and emit native response keys                                                                                             | Hosted-tool coverage and provider matcher semantics                   | Configured on both                                                                                                       | Script tests and local changed-path routing                      | Not every provider tool is intercepted; no native run proof.                                                                                                                                                                           |
+> | Stop/completion gate             | Target-doc contract plus logical-commit boundary             | blocking Stop response                                          | block then bounded hard stop using `stop_hook_active`                                                                                  | Same underlying checks                       | Translate decision/retry payload                                                                                                                 | Provider continuation semantics                                       | Configured on both; semantic modes differ                                                                                | Dispatcher code, contract tests, scoped repo checks              | Retry bound depends on provider payload semantics.                                                                                                                                                                                     |
+> | Session closure                  | Optional sanitized end reminder                              | `SessionEnd`                                                    | Official `SessionEnd`, main thread only, advisory                                                                                      | Shared dispatcher has a session-end handler  | Add a Codex contract binding/config entry with provider timeout/schema through canonical change                                                  | Trigger timing and advisory result semantics                          | Claude configured; Codex absent/stale                                                                                    | No native execution evidence                                     | Requires separate Stage 00/provider fix and revalidation; not changed here.                                                                                                                                                            |
+> | Evaluation and evidence          | Four typed loops, four evidence fields, independent reviewer | Can invoke shared checks through tools/hooks                    | Can invoke shared checks through tools/hooks                                                                                           | 11 fixtures, 16 regressions, Stage 04 ledger | Only invocation/result transport differs                                                                                                         | Provider outputs, latency, cost, telemetry                            | Synthetic catalog and tests tracked                                                                                      | Deterministic scorer/fixture tests and Task checks               | No live comparative provider baseline or remote enforcement.                                                                                                                                                                           |
+> | Memory/context continuity        | Canonical lifecycle evidence plus bounded advisory memory    | CLAUDE.md and auto memory                                       | AGENTS.md plus product memory features outside this unit                                                                               | Stage 04/Stage 00 evidence owners            | Provider memory must link to, not copy/override, canonical state                                                                                 | Native auto-memory/storage/retention behavior                         | Repository memory contract tracked; private state excluded                                                               | Repository contract checks bounded files                         | Provider-private memory and cross-session behavior unverified.                                                                                                                                                                         |
+>
+> ### The construction recipe: Stage 00's Canonical Adapter Model
+>
+> > Historical evidence (not current authority; source: Git history): Adapter construction recorded on 2026-08-14; current owners are linked above.
+> > `providers/agents-md.md` §5 (re-read directly 2026-08-14) states the exact
+> > mechanism this workspace already uses to answer "what does it take to build
+> > one common environment, ruleset, and system across providers." It is a
+> > two-tier model, not a two-provider one — Claude, Codex, and Gemini all sit in
+> > Tier 2:
+> >
+> > - **Tier 1 — Stage 00 canonical catalog**: `agents/agents/` (roles),
+> >   `agents/functions/` (skills), and `contracts/provider-models.yaml`
+> >   (provider/model/event facts) are the only place a capability is defined.
+> >   The agent and function **name sets** defined there are authoritative, and
+> >   every provider adapter must expose exactly those name sets.
+> > - **Tier 2 — provider runtime adapters**: Claude exposes native Markdown
+> >   agents/skills, Codex exposes native TOML agents plus hook compatibility,
+> >   Gemini exposes native Markdown agents, settings, and one thin event-name
+> >   adapter. None of the three is canonical; each is a translation.
+>
+> Five adapter rules make the recipe concrete and falsifiable rather than
+> aspirational:
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Rule              | What it requires                                                                                                                 | Enforcement in this workspace                                                                                                                                                       |
+> | ----------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | Name-set parity   | Agent/function name sets identical across Stage 00 and every active projection                                                   | `scripts/lib/agent_governance/agent_governance_contract.py` and `python3 scripts/operations/provider_surface_renderer.py --check`                                                   |
+> | Role parity       | Each adapter points back to its Stage 00 entry and preserves scope/role intent                                                   | Renderer/contract tests (name-set only; not a semantic-intent check)                                                                                                                |
+> | Policy parity     | Adapters may change syntax/frontmatter/hook mechanics but not create separate governance, QA, template, model, or workflow rules | The current workspace enforces generated markers and Stage 00/Registry ownership through renderer and contract tests; the external comparison's broader semantic-intent limitation remains |
+> | Model parity      | Only the model identifiers and controls `provider-models.yaml` allows                                                            | Renderer/contract tests plus the per-provider "never carry [other vendor] model names" rule in each `providers/*.md`                                                                |
+> | Validation parity | The typed agent-governance contract and direct renderer detect drift                                                             | Both current owners are tracked; live provider acceptance remains outside repository validation                                                                                     |
+>
+> The practical answer to "what does it take": one canonical name/role/function
+> registry that every adapter must name-match; one typed model/event/permission
+> contract that every adapter must translate rather than reinterpret; and a
+> renderer plus a drift validator that make the first two machine-checkable
+> instead of aspirational. What it does **not** take, per this same section, is
+> uniform native syntax — Claude's YAML-frontmatter Markdown, Codex's TOML, and
+> Gemini's Markdown-with-different-fields are accepted as permanently
+> irreducible, and the matrix explicitly warns against "normalizing[ing]" them
+> into false parity (see the Common Construction Matrix above).
+>
+> ### Exact per-event capability and adoption matrix
+>
+> Re-derived directly from `contracts/provider-models.yaml` `semantic_events`
+> (all 7 events × 3 providers = 21 cells; no field estimated or rounded):
+>
+> | Event                | Claude native / mode                     | Codex native / mode                      | Gemini native / mode                   |
+> | -------------------- | ---------------------------------------- | ---------------------------------------- | -------------------------------------- |
+> | `session-start`      | `SessionStart`, advisory                 | `SessionStart`, advisory                 | `SessionStart`, advisory               |
+> | `pre-tool`           | `PreToolUse`, advisory (can block)       | `PreToolUse`, advisory (can block)       | `BeforeTool`, advisory (can block)     |
+> | `post-tool`          | `PostToolUse`, advisory                  | `PostToolUse`, advisory                  | `AfterTool`, advisory                  |
+> | `pre-compaction`     | `PreCompact`, advisory (can block)       | `PreCompact`, advisory (can block)       | `PreCompress`, advisory (cannot block) |
+> | `user-prompt-intake` | `UserPromptSubmit`, advisory (can block) | `UserPromptSubmit`, advisory (can block) | `BeforeAgent`, advisory (can block)    |
+> | `stop`               | `Stop`, **blocking**                     | `Stop`, **retry**                        | `AfterAgent`, **deny-retry**           |
+> | `session-end`        | `SessionEnd`, advisory                   | `null`, **unsupported**                  | `SessionEnd`, advisory                 |
+>
+> Every "advisory" cell has `runtime_depth: configured-not-executed` and every
+> "blocking"/"retry"/"deny-retry" cell in the `stop` row is the sole exception
+> where `repository_hook_mode` differs from `advisory`. Timeout units also
+> differ by provider construction, not by choice: Claude and Codex declare
+> seconds (Claude 10–30s per event, Codex a uniform 600s), Gemini declares
+> milliseconds (a uniform 60000ms) — a native-schema difference the shared
+> dispatcher does not need to reconcile because timeouts are provider-enforced,
+> not repository-enforced.
+>
+> ### Construction rule
+>
+> The common environment is achievable at the semantic layer: canonical roles,
+> functions, work profiles, permissions, event meanings, loop bounds, validation,
+> and evidence can share owners. Native instruction loading, file schemas,
+> settings precedence, trust, sandboxes, payloads, timeouts, and memory remain
+> provider-specific. The renderer should translate those differences and the
+> validator should detect drift; neither should claim live provider acceptance.
+>
+> ### Carried source-evidence claims
+>
+> Source-evidence claims carried forward from the superseded 2026-07-05
+> research pack on 2026-08-19. Each states what the upstream evidence supports
+> and, where it matters more, what it does not.
+>
+> - **The Codex skills pattern has no confirming official source.** Both candidate official pages, `https://learn.chatgpt.com/docs/skills` and `https://learn.chatgpt.com/docs/agent-configuration/skills`, returned HTTP 404 at the recorded revalidation, so the `native_skill_pattern: .agents/skills/**/SKILL.md` value recorded for Codex has no confirming official source and is not treated as established. The per-agent `[[skills.config]]` field remains verified, because it appears on the Codex subagents page. The 404 observation is dated and was not re-fetched here; it is `UNVERIFIED` as a current network fact and carried as the recorded observation.
+>
+> ## Scope Implications
+>
+> This table applies the [scope application matrix](./m0015-scope-application-matrix.md)
+> to provider construction explicitly.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Scope          | Provider-comparison implication                                                                      | Disposition / route                                                                            |
+> | -------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+> | `agentic`      | Owns semantic contracts and native adapter translations.                                             | Implemented definitions; close drift through Stage 00 plus renderer/tests, not this reference. |
+> | `architecture` | Records why a capability is common, translated, or irreducibly native.                               | Partial; ADR/Spec route, no typed agent.                                                       |
+> | `backend`      | Provider tool/runtime comparison applies after a backend exists.                                     | Not Applicable now; future approved surface required.                                          |
+> | `common`       | Independent review checks parity, correctness, and false equivalence.                                | Partial; route through `code-reviewer`.                                                        |
+> | `docs`         | Owns sourced comparison, mutable-page dates, direct links, and migration evidence.                   | Implemented locally; independent Task 3 review pending.                                        |
+> | `entry`        | Provider networking or gateway actions require infra ownership and runtime evidence.                 | Partial; no edge/runtime proof.                                                                |
+> | `frontend`     | Browser/UI provider claims bind only to a real frontend test surface.                                | Partial; Storybook fixture is not product-wide proof.                                          |
+> | `infra`        | Sandbox, filesystem, network, Compose, and MCP reach must be measured per runtime.                   | Definitions exist; active runtime unverified.                                                  |
+> | `meta`         | Typed registries and deterministic rendering prevent adapter drift.                                  | Partial; route through docs/Stage 00 because typed meta agent is absent.                       |
+> | `mobile`       | Native device/provider comparisons need an approved mobile surface.                                  | Not Applicable; none tracked.                                                                  |
+> | `ops`          | Runtime availability, telemetry, incident, rollback, and provider outages need operational evidence. | Partial; no live observation.                                                                  |
+> | `product`      | Chooses acceptable provider capability, cost, latency, and lock-in trade-offs.                       | Partial; human/Stage 01 decision required.                                                     |
+> | `qa`           | Validates schema parity, hooks, fixtures, regressions, and provider-specific behavior.               | Extensive static/local evidence; live comparative eval unverified.                             |
+> | `security`     | Trust, approvals, sandboxing, hook code, MCP, data handling, and secrets require least privilege.    | Partial; private/secret/runtime/remote state excluded.                                         |
+>
+> ## Sources
+>
+> All nine minimum official pages were reopened 2026-08-08
+> (`2026-08-08T15:48:51+09:00`); a second pass reopened the highest-value pages
+> 2026-08-14 (LLM-mediated fetch, noted per-row) to extract schema/precedence
+> detail not previously recorded. All returned HTTP 200 with no redirect and no
+> stable revision identifier; every vendor row is external mutable.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | ID | Source | Verification |
+> | --- | --- | --- |
+> | C-HOOK | [Claude hooks](https://code.claude.com/docs/en/hooks) | Re-verified 2026-08-14: 31 events, 5 handler types, exact blocking/advisory split, 6 config scopes. |
+> | C-AGENT | [Claude subagents](https://code.claude.com/docs/en/sub-agents) | Verified 2026-08-08: frontmatter schema, model, effort, permissions, skills, hooks, memory, isolation. |
+> | C-SET | [Claude settings](https://code.claude.com/docs/en/settings) | Re-verified 2026-08-14: exact 5-level precedence, permission-merge-across-scopes rule, `autoMode` schema. |
+> | C-MEM | [Claude memory](https://code.claude.com/docs/en/memory) | Re-verified 2026-08-14: full load order, `@import` 4-hop limit, "delivered as user message, not system prompt." |
+> | O-HOOK | [Codex hooks](https://learn.chatgpt.com/docs/hooks) | Re-verified 2026-08-14: 11-event blocking/advisory split, `stop_hook_active`, main-thread `SessionEnd`. |
+> | O-AGENT | [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) | Re-verified 2026-08-14: TOML fields incl. `skills.config`, reasoning-effort set (`low`–`ultra`), sandbox inheritance. |
+> | O-INSTR | [Codex AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) | Re-verified 2026-08-14: discovery order, `AGENTS.override.md`, 32 KiB cap, "prepended not transcluded." |
+> | O-CONFIG | [Codex config basics](https://learn.chatgpt.com/docs/config-file/config-basic) | Verified 2026-08-08: CLI/project/profile/user/system/default precedence, trusted-project gate. |
+> | O-MODEL | [Codex models](https://learn.chatgpt.com/docs/models) | Verified 2026-08-08: model/reasoning controls; entitlement not inferred. |
+> | O-SKILL | [Codex build skills](https://learn.chatgpt.com/docs/build-skills) | Verified 2026-08-08: `SKILL.md` discovery, `/skills`/`$` selection, implicit matching. |
+> | G-HOOK | [Gemini CLI hooks reference](https://geminicli.com/docs/hooks/reference/) | New 2026-08-14: event list; header/table count mismatch (11 rows vs "12 Total") marked `UNVERIFIED`. |
+> | G-AGENT | [Gemini CLI subagents](https://geminicli.com/docs/core/subagents/) | New 2026-08-14: frontmatter schema, tool allowlist, no-recursive-subagent rule. |
+> | WS-CATALOG | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Re-read 2026-08-14: 14 agents, 24 functions, typed eval fields, per-agent work profiles. |
+> | WS-PROVIDER | Provider/model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Re-read 2026-08-14: 3-provider list, all 21 `semantic_events` cells, `local_cli_observation` per provider. |
+> | WS-MATRIX | [Provider capability matrix](../../../../.agents/governance/provider-capability-matrix.md) | Re-read 2026-08-14: 3-column Claude/Codex/Gemini matrix; source for the Supported/Unsupported/Deferred table. |
+> | WS-ADAPTER | `providers/agents-md.md` (retired path: `../../../00.agent-governance/providers/agents-md.md`) §5 | Re-read 2026-08-14: Tier 1/Tier 2 Canonical Adapter Model and the five adapter rules. |
+> | WS-CLAUDE | [Claude provider notes](../../../../.claude/provider.md) | Tracked mutable; stale uniform-high effort sentence identified. |
+> | WS-CODEX | [Codex provider notes](../../../../.codex/provider.md) | Tracked mutable; stale `SessionEnd` limitation identified. |
+> | WS-GEMINI | Gemini provider notes (retired path: `../../../00.agent-governance/providers/gemini.md`) | Read 2026-08-14: `AfterAgent` deny-retry mechanism, `.gemini/` runtime surface description. |
+> | WS-GRAPH | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | Stale/advisory at `f8a72211`; every lead corroborated against tracked owners. |
+>
+> ## Scope Application
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Translate only canonical contracts. | Inspect registry provider/event fields, then the matching adapter's native surface. | Runtime acceptance unverified. |
+> | architecture | applies | Record provider decisions in owner artifacts. | Review decision authority. | No choice recommended. |
+> | common | applies | Preserve native differences in adapters. | Use the adapters' documented parity check after a canonical source change. | No identical-schema assumption. |
+> | docs | applies | Cite capability with historical date. | Check source rows and caveats. | No current-vendor claim. |
+> | infra | applies | Authorize environment proof separately. | Require concrete target. | No runtime inspection. |
+> | ops | applies | Route outage/telemetry proof to ops. | Use approved operational evidence. | No availability claim. |
+> | qa | applies | Compare tracked contracts first. | Run registered check when authorized. | Static parity is limited. |
+> | security | applies | Respect native permission boundaries. | Review redacted plan. | No control effectiveness claim. |
+>
+> ## 2026-09-05 Revalidation
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> Stage 00 remains the single shared control plane. Claude has seven configured
+> semantic hook events including `SessionEnd`; Codex has six and routes them
+> through one shared hook adapter. Current provider documentation exposes
+> additional native capabilities, but only tracked mappings count as adopted.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Shared policy | Root adapters route into Stage 00 | Repository-enforced | None for ownership split | provider-surface contract |
+> | Native events | Claude and Codex mappings are explicit and unequal | Configured, Repository-enforced | Native breadth and semantics differ | generated hook parity report |
+> | Context/handoff | Task evidence is provider-neutral; sessions are native | Defined, Configured | Outcome equivalence unverified | bounded dual-provider scenario |
+> | Entitlement | SPEC-0172 records direct bounded access on 2026-09-04 | Runtime-verified at cutoff | Future access and model parity unknown | new approved no-secret probe |
+>
+> Recommendation: preserve semantic intent across adapters without pretending
+> that event names, memory, system prompts, or permission engines are identical.
+>
+> ## Maintenance
+>
+> Reopen all cited official pages and re-derive catalogs, adapters, skills, model
+> controls, hook/event cells, dispatcher behavior, tests, and runtime status when
+> any owner changes. Record redirects/unavailability as observations, never
+> silently reuse an earlier retrieval, and keep local adoption gaps separate from
+> provider limitations.
 
 ## Related Documents
 
+- [Research pack](README.md)
 - [Harness engineering](./m0008-harness-engineering.md)
 - [Loop engineering](./m0010-loop-engineering.md)
 - [Workspace baseline](./m0020-workspace-baseline.md)
