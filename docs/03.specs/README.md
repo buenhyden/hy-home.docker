@@ -40,7 +40,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 
 | ID | Package | Status | 목적 |
 | --- | --- | --- | --- |
-| SPEC-0179 | [Package Disposition Wait and Task Cancellation](./0179-package-disposition-wait-and-task-cancellation/spec.md) | approved | 모든 구성원이 끝난 package의 처분 대기와 취소된 Task의 기록 방식 |
+| SPEC-0179 | [Package Disposition Wait and Task Cancellation](./0179-package-disposition-wait-and-task-cancellation/spec.md) | active | 모든 구성원이 끝난 package의 처분 대기와 취소된 Task의 기록 방식 |
 | SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/spec.md) | active | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0183 | [Operations Role Layout](./0183-operations-role-layout/spec.md) | draft | Stage 05를 domain 우선 catalog에서 역할별 디렉터리로 전환 |
 

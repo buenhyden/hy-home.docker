@@ -1,8 +1,8 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Execution"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -677,6 +677,20 @@ No required human or CODEOWNERS approval was enforced or claimed.
 This result tree advances Spec review -> approved, Plan draft -> approved, and
 Task draft -> ready under the owner's recorded delivery approval. Its own hosted
 check and merge are recorded after observation in the next integration.
+
+### Lifecycle integration 2 receipt before integration 3 — 2026-09-28
+
+[PR #314](https://github.com/buenhyden/hy-home.docker/pull/314) merged at
+2026-09-28T05:10:42Z with head `3b49f03abbec6a6faf6ee21dce96303b317543d9`
+and merge `aa7a808d329d1f3aa78af8d8f56095cc2f57c670`.
+The [required hosted check](https://github.com/buenhyden/hy-home.docker/actions/runs/36379642671/job/108792547045)
+succeeded in 14m40s; review threads were empty. Local approval-edge metadata
+checked four documents against `origin/main` with zero violations; corpus/recovery
+and links also passed. Markdown and diff checks passed.
+
+This result tree advances Spec approved -> active, Plan approved -> active, and
+Task ready -> in-progress. Its own hosted check and merge are recorded after
+observation in the completion integration.
 
 ## Review Evidence
 
