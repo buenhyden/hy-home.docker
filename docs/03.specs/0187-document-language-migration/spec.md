@@ -1,10 +1,10 @@
 ---
 title: "Document Language Migration Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0187"
 parent_ids:
