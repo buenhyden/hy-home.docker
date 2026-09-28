@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 created: "2026-02-21"
 ---
 
@@ -76,9 +76,45 @@ wrapper를 다시 만들지 않습니다.
 통합했습니다. tier별 wrapper entrypoint는 2026-05-17 정리에서
 제거했으므로 대신 tier 인자를 사용합니다.
 
-각 purpose 폴더의 정확한 스크립트 목록과 경로, 소유권, 테스트 evidence는
-[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. 이 README는 폴더 단위
-역할만 설명하며 개별 스크립트 행을 중복 기록하지 않습니다.
+각 스크립트의 정확한 경로, 소유권, 테스트 evidence는
+[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. 아래 Navigation /
+Inventory 표는 각 entrypoint의 용도를 설명합니다.
+
+## Navigation / Inventory
+
+| Component | Path | Purpose |
+| :--- | :--- | :--- |
+| Docker Validation | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) | 루트 compose 설정을 검증한다 |
+| Compose Core Readiness Operation | [check-compose-core-readiness.sh](./operations/check-compose-core-readiness.sh) | 승인된 5개 서비스 격리 기동, 복구, 타임아웃, 타입 지정 evidence, 소유된 cleanup 계약을 preflight로 점검하고 실행한다 |
+| Config Mount Hash Check | [check-config-mount-hashes.py](./operations/check-config-mount-hashes.py) | apply 뒤에 실행 중인 단일 파일 config bind mount의 SHA-256이 호스트 파일과 일치하는지 읽기 전용으로 확인한다(읽기는 `docker exec`로만 하고 `docker cp`는 쓰지 않는다); DIFF가 하나라도 있으면 exit 1 |
+| Compose Core Readiness Library | [compose-core-readiness.sh](./lib/ops/compose-core-readiness.sh) | fail-closed 방식의 identity, path, render, readiness, recovery, evidence, redaction, cleanup 공유 함수; operation 또는 전용 테스트를 통해서만 source한다 |
+| PostgreSQL Logical Recovery Rehearsal | [rehearse-postgres-logical-upgrade.sh](./operations/rehearse-postgres-logical-upgrade.sh) | `--check-config-only`로 설정을 점검하거나, 승인된 고정 synthetic PostgreSQL 17.6-to-18.4 logical backup, 격리된 restore, semantic integrity, negative-path, atomic verdict, 소유된 cleanup 계약을 실행한다 |
+| Agent Governance Contract Check | [check-agent-governance-contract.py](./validation/check-agent-governance-contract.py) | 중복 키에 안전한 typed canonical agent governance artifact, catalog, provider/model, path-authority, adoption 계약을 검증한다; 저장소 section은 소유 convergence task 이후에만 활성화된다 |
+| Document Metadata Inventory / Changed Gate | [check-document-metadata.py](./validation/check-document-metadata.py) | typed metadata profile을 파싱하고 advisory inventory를 생성/검사하며 문서를 재작성하지 않고 안전하게 선택된 변경/신규 Markdown을 강제한다 |
+| Document Corpus Lifecycle Gate | [check-document-corpus-lifecycle.py](./validation/check-document-corpus-lifecycle.py) | migration 계약, 승격된 manifest, 영향받은 record, 안전한 Git provenance, 중복 보고서, review signal, 디렉터리 예산, 결정론적 lifecycle evidence를 corpus 문서를 변경하지 않고 강제한다 |
+| Document Link Contract Gate | [check-document-links.py](./validation/check-document-links.py) | `--mode all`로 traceability, implementation-alignment, stage entry-point 검사를 하나의 canonical leaf에서 함께 실행한다 |
+| Typed Gate Contract Library | [ci_gate_contract.py](./lib/gate/ci_gate_contract.py) | 의존성 없는 strict-JSON schema-v2 gate DAG, suite ownership, required root, local profile root를 파싱하고 검증한다 |
+| Typed Gate Runner | [run-ci-gate.py](./validation/run-ci-gate.py) | closed `changed`/`full` public profile을 tracked descriptor-bound entrypoint에서 최소 환경과 bounded timeout으로 설명하거나 실행한다 |
+| Typed Gate Adapters | [ci_gate_adapters.py](./lib/gate/ci_gate_adapters.py) | shell interpolation이나 ambient secret forwarding 없이 typed gate leaf가 사용하는 closed 인자 문법을 구현한다 |
+| GitHub Workflow Contract Gate | [check-github-workflow-contract.py](./validation/check-github-workflow-contract.py) | tracked workflow trigger, permission, concurrency, job identity, canonical typed gate registry, 로컬로 evidence화된 full-SHA Action 의존성을 정확히 검증한다 |
+| CI-only Pre-commit Entry Point | [run-ci-precommit.sh](./validation/run-ci-precommit.sh) | GitHub Actions 안에서만 고정된 all-files hook 명령을 실행하며 gate가 소유한 `public-validation-*` hook 두 개는 건너뛰어 두 orchestrator가 서로 재진입하지 않게 한다; 이 스크립트는 Agent 인가 경로가 아니다 |
+| Storybook Contract Check | [check-storybook-contract.sh](./validation/check-storybook-contract.sh) | Storybook CI 스크립트, workflow 연결, 90% coverage 임계값 메타데이터를 강제한다 |
+| QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | PLN-QW-001~005 baseline control을 강제한다 |
+| Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | template 채택과 필수 보안 통제를 강제한다 |
+| Controlled Agent Pre-commit Wrapper | [run-agent-precommit-all-files.sh](./validation/run-agent-precommit-all-files.sh) | 승인된 최종 QA gate에서만 구성된 all-files hook suite를 깨끗한 linked worktree 안에서 실행하며 tracked task evidence, 명시적으로 허용된 path prefix, 값 없는 first-failure diagnostic을 함께 쓴다 |
+| Supply-chain Fixture Policy | [check-supply-chain-policy.py](./validation/check-supply-chain-policy.py) | 네트워크 접근 없이 로컬 pin, subject, exception, SBOM, provenance, signature, advisory Scorecard fixture를 결정론적으로 검증한다 |
+| Grype DB Cache Seed Harness | [seed-grype-db-cache.sh](./security/seed-grype-db-cache.sh) | Task7이 소유하는 승인된 네트워크 seed 전용 entrypoint; supply-chain advisory가 오프라인 상태로 유지되는 동안 검증된 private cache 세대를 게시한다 |
+| Supply-chain Local Rehearsal | [verify-sample-service-supply-chain.sh](./security/verify-sample-service-supply-chain.sh) | preflight·fixture 전용 검증과 선택적 로컬 advisory baseline/candidate 검증을 ephemeral `/tmp` signing key로 수행한다 |
+| Graphify Health Report | [report-graphify-health.sh](./knowledge/report-graphify-health.sh) | 검증을 막지 않고 생성된 Graphify corpus의 advisory 상태를 보고한다 |
+| Agent Event Hook | [agent-event-hook.sh](./hooks/agent-event-hook.sh) | template-first target-stage 문서 안내, current-task 라우팅, post-edit style 검증/포맷팅, 논리적 commit 완료 리마인더, Stop gating을 포함한 Claude/Codex hook 이벤트를 처리한다 |
+| Post Tool Validation | [post-tool-validate.sh](./hooks/post-tool-validate.sh) | 안전하게 변경된 경로를 사용 가능한 formatting/lint 도구, diff hygiene, syntax 검사로 확인한다; 완료 시점의 종합 검증은 Stop이 담당한다 |
+| Unified Hardening Check | [check-all-hardening.sh](./hardening/check-all-hardening.sh) | 모든 tier hardening 검사 또는 선택한 하나의 tier를 실행한다 |
+| QA/CI Tooling Environment | [use-qa-ci-tools.sh](./operations/use-qa-ci-tools.sh) | 기존 PATH 우선순위를 바꾸지 않고 사용 가능한 QA/CI 도구 디렉터리를 명시적으로 추가한다 |
+| Docker Preflight Mode | [validate-docker-compose.sh](./validation/validate-docker-compose.sh) `--preflight` | 더미 파일 생성 없이 실제 로컬 사전 조건을 검증한다 |
+| Secret Generation | [gen-secrets.sh](./operations/gen-secrets.sh) | 로컬 Docker secret 파일을 생성한다; 기본 생성 전에 `--check` 또는 `--dry-run`을 사용한다 |
+| Sample Service Delivery Rehearsal | [rehearse-sample-service-delivery.sh](./operations/rehearse-sample-service-delivery.sh) | fixture 계약을 검증하거나, canonical-gate된 로컬 baseline/canary 승격, rollback, atomic evidence, 소유된 cleanup state machine을 실행한다 |
+| Provider Surface Renderer | [provider_surface_renderer.py](./operations/provider_surface_renderer.py) | canonical `.agents` 소스로부터 native Claude/Codex role과 thin Claude skill adapter를 제한되고 경계 지정된 쓰기로 렌더링한다; Codex는 canonical native skill package를 읽는다. `--check`는 읽기 전용이고 `--write`는 적용한다 |
+| Tech-Stack Version Sync | [sync-tech-stack-versions.sh](./operations/sync-tech-stack-versions.sh) | 선언된 compose tag에 맞춰 curated `infra/tech-stack.versions.json` 이미지를 재조정한다; 기본은 쓰기이고, `--check`는 검증, `--dry-run`은 미리보기 |
 
 ## How to Work in This Area
 

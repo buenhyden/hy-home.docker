@@ -25,7 +25,13 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 
 ## Structure
 
-- `config/`: [Agent 설정](config/agent.hcl)과 template 소스를 담은 디렉터리입니다. ACL 정책과 template 원본 파일 목록은 `config/`의 내용을 확인하십시오.
+- `config/`: [Agent 설정](config/agent.hcl)과 template 소스를 담은 디렉터리입니다.
+- `config/policies/`: 추적되는 ACL 정책입니다. 운영자가 적용하며 컨테이너에 mount하지 않습니다.
+  - [renderer](config/policies/renderer.hcl): Agent AppRole이며 렌더링되는 KV 경로 두 곳을 읽습니다.
+  - [operator](config/policies/operator.hcl): `hy-home-operator`, OIDC 사용자용 정책입니다. Prometheus API credential 교체와 Kiali Grafana token 재발급을 포함합니다.
+  - [prometheus](config/policies/prometheus.hcl): SEC-002 scrape token이며 `sys/metrics`만 읽습니다.
+  - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets용이며 `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`를 읽습니다.
+  - [k8s-bootstrap](config/policies/k8s-bootstrap.hcl): 수명이 짧은 클러스터 bootstrap token입니다.
 - [docker-compose.yml](docker-compose.yml)
 
 ## Tech Stack
