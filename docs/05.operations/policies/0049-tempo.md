@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -36,13 +36,13 @@ storage, block retention, metrics generator, secret boundary, protected route를
     [hy/tempo image declaration](../../../infra/06-observability/docker-compose.yml), user `10001:10001`, read-only config mount,
     persistent `tempo-data` volume을 유지한다.
   - Custom Tempo image는 upstream [grafana/tempo image declaration](../../../infra/06-observability/tempo/Dockerfile), non-root user
-    `10001:10001`, and `/docker-entrypoint.sh` secret guard를 유지한다.
-  - OTLP receiver는 internal gRPC `4317`과 HTTP `4318` endpoints를 유지한다.
+    `10001:10001`, `/docker-entrypoint.sh` secret guard를 유지한다.
+  - OTLP receiver는 internal gRPC `4317`과 HTTP `4318` endpoint를 유지한다.
   - HTTP/query/health surface는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck를
     기준으로 한다.
   - Trace storage는 SeaweedFS S3 backend, bucket `tempo-bucket`, endpoint
     `seaweedfs-s3:8333`, `insecure: true`를 사용한다.
-  - `S3_ACCESS_KEY`은 environment reference로, `S3_SECRET_KEY`는
+  - `S3_ACCESS_KEY`는 environment reference로, `S3_SECRET_KEY`는
     Docker Secret `seaweedfs_s3_tempo_secret_key`로만 주입한다.
   - Block retention 값은 [POL-0048](0048-telemetry-retention.md)을 기준으로 한다.
   - Metrics generator는 `span_metrics`, `service_graphs`, `local_blocks`를
@@ -57,16 +57,16 @@ storage, block retention, metrics generator, secret boundary, protected route를
     함께 갱신한다.
 - **Disallowed**:
   - PII, password, token, credential 값을 trace attributes에 기록하는 행위
-  - Secret guard 없이 SeaweedFS-backed Tempo image 또는 entrypoint를 변경하는 행위
+  - Secret guard 없이 SeaweedFS-backed Tempo image나 entrypoint를 변경하는 행위
   - 승인 없이 bucket, retention, metrics generator processors, remote_write
     endpoint, route middleware, image version을 runtime에서 변경하는 행위
 
 ### Lifecycle and data controls
 
-- Keep Tempo `OPTIONAL`; runtime presence does not reclassify it. A future HOME-only transition must explicitly stop preexisting Tempo.
-- Treat `tempo-bucket`, local WAL/temp state, config, and matching SeaweedFS credentials as a coordinated recovery set; the object-store owner performs bucket backup/restore.
-- Quiesce OTLP ingestion before consistency capture. Rehearse with isolated bucket/path and verify WAL replay, historical/new trace queries, metrics-generator behavior, and Alloy/Grafana integration.
-- Removal requires producer/exporter migration, retention decision, credentials/route cleanup, and explicit approval before deleting object or local data.
+- Tempo는 `OPTIONAL`로 유지한다; runtime presence가 있다고 해서 재분류하지 않는다. 앞으로 HOME-only로 전환할 때는 기존 Tempo를 명시적으로 중지해야 한다.
+- `tempo-bucket`, local WAL/temp state, config, 대응하는 SeaweedFS credential을 하나의 조율된 recovery set으로 취급한다; object-store owner가 bucket backup/restore를 수행한다.
+- consistency 캡처 전에 OTLP ingestion을 멈춘다. isolated bucket/path로 rehearse하고 WAL replay, historical/new trace query, metrics-generator 동작, Alloy/Grafana integration을 검증한다.
+- Removal은 producer/exporter migration, retention 결정, credential/route 정리, object나 local data를 삭제하기 전 명시적 승인이 필요하다.
 
 ## Exceptions
 

@@ -1,10 +1,10 @@
 ---
 title: "DAG Deployment Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-03-25"
 
 ## Policy Scope
 
-Governs the lifecycle of all Apache Airflow DAGs within the `hy-home.docker` ecosystem.
+`hy-home.docker` ecosystem 내 모든 Apache Airflow DAG의 lifecycle을 관장한다.
 
 - **Systems**: Apache Airflow (07-workflow)
 - **Environments**: Staging, Production
@@ -28,18 +28,18 @@ Governs the lifecycle of all Apache Airflow DAGs within the `hy-home.docker` eco
 ## Controls
 
 - **Required**:
-  - All DAGs must pass `ruff` or `flake8` linting.
-  - `catchup=False` must be explicitly set unless specifically required.
+  - 모든 DAG는 `ruff` 또는 `flake8` linting을 통과해야 한다.
+  - 특별히 필요한 경우가 아니면 `catchup=False`를 명시적으로 설정해야 한다.
 - **Allowed**:
-  - Use of the TaskFlow API (`@dag`, `@task`).
-  - Mounting secrets via `AIRFLOW__CORE__FERNET_KEY`.
+  - TaskFlow API(`@dag`, `@task`) 사용.
+  - `AIRFLOW__CORE__FERNET_KEY`를 통한 secret mounting.
 - **Disallowed**:
-  - Hardcoded credentials (use Airflow Connections).
-  - Top-level database connections outside of tasks.
+  - Hardcoded credential(대신 Airflow Connection을 사용한다).
+  - task 밖의 top-level database connection.
 
 ## Verification
 
-Compliance is checked via the Airflow static/runtime checks documented in [Airflow Procedure](../runbooks/0050-airflow.md), and monthly audits of the Airflow metadata DB.
+Compliance는 [Airflow Procedure](../runbooks/0050-airflow.md)에 문서화된 Airflow static/runtime check와 Airflow metadata DB의 monthly audit으로 확인한다.
 
 ## Review Cadence
 

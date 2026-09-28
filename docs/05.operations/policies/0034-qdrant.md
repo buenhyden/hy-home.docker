@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -21,41 +21,41 @@ created: "2026-05-17"
 ## Policy Scope
 
 - `infra/04-data/specialized/qdrant/docker-compose.yml`
-- `qdrant` service and `qdrant-data` volume
-- REST route `qdrant.${DEFAULT_URL}` behind SSO (`sso-auth@file`) and the API key; no gRPC route
-- API key from `qdrant_api_key` (AI-008); only the health endpoints answer without it
-- Read-only API key from `qdrant_read_only_api_key` (AI-009), the only key Prometheus holds; it must differ from the full key
+- `qdrant` service와 `qdrant-data` volume
+- SSO(`sso-auth@file`)와 API key 뒤에 있는 REST route `qdrant.${DEFAULT_URL}`; gRPC route는 없음
+- `qdrant_api_key`(AI-008)에서 나온 API key; health endpoint만 이 키 없이 응답한다
+- `qdrant_read_only_api_key`(AI-009)에서 나온 read-only API key로, Prometheus가 보유하는 유일한 키다; full key와 달라야 한다
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
-- Linked guide and runbook under `docs/05.operations`
+- `docs/05.operations` 아래에 연결된 guide와 runbook
 
 ## Controls
 
-- **Required**: Documentation must describe Qdrant as a single unprivileged service, not as a cluster.
-- **Required**: Every Qdrant client reads the key from a secret file; the key never appears in Compose environment values, logs or evidence.
-- **Required**: External access guidance must stay behind the declared SSO REST route and must not imply host port publishing or a gRPC route.
-- **Required**: Persistence and snapshot-path wording must match `qdrant-data:/qdrant/storage:rw` and `/qdrant/storage/snapshots`.
-- **Required**: Backup inventory records collection or full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention and restore evidence. Snapshot files stay protected on disk; the API key guards only API access to them.
-- **Required**: Restore rehearsal uses a fresh isolated target with same minor or next minor compatibility, absent target collection unless an explicitly reviewed force action applies, and approximately twice the snapshot size in free disk.
-- **Required**: Verify aliases, collection config/status, point counts and representative searches before promotion. Upgrade/removal requires a restore-tested snapshot and capacity review.
-- **Allowed**: Read-only `/readyz`, `/collections` (with the key from the secret file), compose config rendering, service logs, and `docker compose ps` for evidence capture.
-- **Allowed**: Documentation-only corrections that keep image tag, profile, route, healthcheck, and volume descriptions aligned with compose.
-- **Disallowed**: Collection delete, snapshot restore, volume replacement, cluster repair, or data mutation steps presented as approved policy without separate owner approval and verified runbook evidence.
-- **Disallowed**: Removing the API key or adding a client that calls Qdrant without it.
+- **Required**: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명해야 한다.
+- **Required**: 모든 Qdrant client는 secret file에서 key를 읽어야 하며 key가 Compose environment 값, logs, evidence에 절대 나타나서는 안 된다.
+- **Required**: 외부 접근 가이드는 선언된 SSO REST route 안에 머물러야 하며, host port publishing이나 gRPC route를 암시해서는 안 된다.
+- **Required**: persistence와 snapshot-path 표현은 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`와 일치해야 한다.
+- **Required**: 백업 inventory는 collection이나 full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention, restore evidence를 기록한다. snapshot file은 디스크에서 보호되며, API key는 그 파일에 대한 API 접근만 보호한다.
+- **Required**: Restore rehearsal은 동일 minor 또는 다음 minor compatibility를 가진 새로운 isolated target을 사용하고, 명시적으로 검토된 force action이 아니면 target collection이 없어야 하며, snapshot 크기의 약 2배에 해당하는 여유 디스크가 필요하다.
+- **Required**: promotion 전에 aliases, collection config/status, point counts, representative searches를 검증한다. Upgrade/removal에는 restore-tested snapshot과 capacity review가 필요하다.
+- **Allowed**: read-only `/readyz`, `/collections`(secret file의 key 사용), compose config rendering, service logs, evidence 수집을 위한 `docker compose ps`.
+- **Allowed**: image tag, profile, route, healthcheck, volume 설명을 compose와 일치시키는 문서 전용 수정.
+- **Disallowed**: 별도의 owner 승인과 검증된 runbook evidence 없이 승인된 정책으로 제시되는 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계.
+- **Disallowed**: API key를 제거하거나 key 없이 Qdrant를 호출하는 client를 추가하는 행위.
 
 ## Exceptions
 
-N/A - no currently approved exceptions.
+N/A - 현재 승인된 예외 없음.
 
 ## Verification
 
-- Compare this policy with [Qdrant guide](../guides/0034-qdrant.md), [Qdrant runbook](../runbooks/0034-qdrant.md), and [infra README](../../../infra/04-data/specialized/qdrant/README.md) after compose changes.
-- Run `docker compose --profile qdrant config --quiet` before approving service-name, image, route, secret, healthcheck, or volume documentation updates.
-- Run `python3 scripts/validation/check-document-links.py --mode all` after policy or linked operations document updates.
+- compose 변경 후 이 정책을 [Qdrant guide](../guides/0034-qdrant.md), [Qdrant runbook](../runbooks/0034-qdrant.md), [infra README](../../../infra/04-data/specialized/qdrant/README.md)와 비교한다.
+- service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
+- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Review Cadence
 
-- Review on Qdrant compose image/profile/secret/route/snapshot-path changes.
-- Review during the Stage 05 operations documentation audit cadence.
+- Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
 
 ## Traceability
 

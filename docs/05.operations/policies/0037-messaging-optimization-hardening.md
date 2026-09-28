@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -16,68 +16,74 @@ created: "2026-05-10"
 
 ## Overview
 
-This policy binds current source configuration to data protection, security,
-resource, lifecycle and independently verifiable operator controls.
+이 정책은 현재 소스 구성을 data protection, security, resource, lifecycle,
+독립적으로 검증 가능한 operator control에 결합한다.
 
 ## Policy Scope
 
-This policy applies to the current optional Kafka-family source and its static
-hardening contract. It does not authorize activation or security migration.
+이 정책은 현재 optional Kafka-family 소스와 그 static hardening contract에
+적용된다. 활성화나 security migration을 승인하지 않는다.
 
 ## Controls
 
-Every messaging change must preserve root Compose validity, explicit profiles,
-health checks, resource limits, persistence ownership, `kafka_net`, secret files
-and an actionable recovery owner. The only current broker family is Kafka.
+모든 messaging 변경은 root Compose validity, explicit profile, health
+check, resource limit, persistence ownership, `kafka_net`, secret file,
+실행 가능한 recovery owner를 보존해야 한다. 현재 유일한 broker family는
+Kafka다.
 
 ### Security policy
 
-- PLAINTEXT Kafka listeners are a documented gap and must not carry sensitive or
-  untrusted traffic. TLS/SASL requires an architectural change and client rollout.
-- Kafbat authenticates natively with OIDC and group RBAC. Its secret remains a
-  Docker secret, its local CA remains mounted read-only, and its route uses the
-  standard gateway chain. Forward-auth header trust is prohibited for this route.
-- Administrative endpoints and host-published listeners remain within the named
-  trusted boundary. Evidence must omit tokens, client secrets and record payloads.
-- Topic/bootstrap changes require three-broker compatibility where replication
-  factor 3 is declared.
+- PLAINTEXT Kafka listener는 문서화된 gap이며, sensitive하거나 untrusted된
+  traffic을 실어서는 안 된다. TLS/SASL에는 architectural change와 client
+  rollout이 필요하다.
+- Kafbat은 OIDC와 group RBAC로 native하게 인증한다. secret은 Docker
+  secret으로 유지되고, local CA는 read-only로 마운트되며, route는 표준
+  gateway chain을 사용한다. 이 route에서는 forward-auth header trust를
+  금지한다.
+- Administrative endpoint와 host-published listener는 명시된 trusted
+  boundary 안에 유지한다. evidence는 token, client secret, record payload를
+  생략해야 한다.
+- replication factor 3이 선언된 곳에서는 topic/bootstrap 변경에
+  three-broker compatibility가 필요하다.
 
 ### Reliability and recovery policy
 
-Same-host replication is not host availability. New workloads must define
-retention, partitions, replication, capacity, producer/consumer ownership,
-RPO/RTO and replay source. Recovery must cover data, topic configs, offsets,
-schemas, Connect state and KRaft identity and must be rehearsed on an isolated
-cluster before promotion.
+same-host replication은 host availability가 아니다. 새 workload는
+retention, partition, replication, capacity, producer/consumer ownership,
+RPO/RTO, replay source를 정의해야 한다. Recovery는 data, topic config,
+offset, schema, Connect state, KRaft identity를 포함해야 하며, promotion
+전에 isolated cluster에서 rehearsed되어야 한다.
 
 ### Validation contract
 
-Use the exact root-profile `config --quiet` commands in [GDE-0037](../guides/0037-messaging-optimization-hardening.md) for
-`messaging` and `messaging-cluster`, then the scoped `05-messaging` hardening
-script. Static passes
-are configuration evidence only. Runtime startup, OIDC login, load or failover
-requires explicit approval and a captured rollback.
+`messaging`과 `messaging-cluster`에 대해 [GDE-0037](../guides/0037-messaging-optimization-hardening.md)에
+있는 exact root-profile `config --quiet` command를 사용한 다음, scoped
+`05-messaging` hardening script를 사용한다. Static pass는 configuration
+evidence일 뿐이다. Runtime startup, OIDC login, load 또는 failover에는
+명시적 승인과 기록된 rollback이 필요하다.
 
 ## Exceptions
 
-Documented one-shot job exceptions do not waive data/security controls. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
-storage copies or same-host availability claims.
+문서화된 one-shot job exception은 data/security control을 면제하지
+않는다. exception은 runtime mutation, plaintext secret, raw active storage
+copy, same-host availability 주장을 승인하지 않는다.
 
 ## Verification
 
-Verify root configuration and scoped static policy checks, then require an
-isolated compatible restore with application-level acceptance before promotion or
-cutover. Record unverified runtime properties explicitly.
+root 구성과 scoped static policy check를 검증한 다음, promotion이나
+cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 
 ## Review Cadence
 
-Review after profile, image, volume, credential, consumer, retention or upstream
-lifecycle change and at least annually while retained.
+profile, image, volume, credential, consumer, retention, upstream
+lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
 
 ## Traceability
 
 - Artifact: `POL-0037`; parent: `AD-0005`.
-- Runtime authority remains the linked Compose/source files; exact pins stay there.
+- Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
+  그곳에 유지된다.
 
 ### References
 

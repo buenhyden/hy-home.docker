@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -16,32 +16,32 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.8.0을 사용하며, three-node cluster topology는 같은 Compose 파일에서 `opensearch-cluster` profile이 선택한다.
+이 문서는 `infra/04-data/analytics/opensearch`의 OpenSearch 운영 정책을 정의한다. current implementation은 OpenSearch 3.x custom build primary stack과 OpenSearch Dashboards 3.8.0을 사용하며 three-node cluster topology는 같은 Compose 파일의 `opensearch-cluster` profile로 선택한다.
 
 ## Policy Scope
 
-- **Systems**: `opensearch`, `opensearch-dashboards`, and `opensearch-node1..3` under the `opensearch-cluster` profile
+- **Systems**: `opensearch-cluster` profile 하의 `opensearch`, `opensearch-dashboards`, `opensearch-node1..3`
 - **Secrets**: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`
-- **Persistence**: `opensearch-data`, `opensearch-dashboards-data`, `opensearch-cluster` profile node volumes
-- **Environments**: repo-local, development, homelab, and production-like rehearsals
+- **Persistence**: `opensearch-data`, `opensearch-dashboards-data`, `opensearch-cluster` profile node volume
+- **Environments**: repo-local, development, homelab, production-like rehearsal
 
 ## Controls
 
-- **Activation**: use `docker compose --profile opensearch config --quiet` for the primary or `docker compose --profile opensearch-cluster config --quiet` for the LAB topology. Record which topology is selected.
-- **Security**: preserve TLS, certificates, the security plugin, secret-backed users, and gateway middleware. Never snapshot `.opendistro_security` as the only security backup; preserve reviewed security configuration separately and restrict its credentials.
-- **Retention and backup**: define index/ISM retention before ingest. Register a repository outside the live data volumes, require completed snapshot state, encrypt and restrict the repository according to its storage class, and rehearse isolated restore.
-- **Resources**: do not co-select the LAB cluster without accounting for the per-node 2 CPU/2 GiB limit, Dashboards, disk, and JVM overhead. Promotion requires measured shard and restore capacity.
-- **Upgrade**: validate the supported version path, plugin/build compatibility, Dashboards compatibility, certificates, and snapshot restore before changing the source pin. Do not downgrade indices written by a newer incompatible version.
-- **Removal**: confirm consumers and index retention, retain a verified snapshot plus security configuration, then obtain approval before deleting any primary or cluster data volume.
-- **Required**: OpenSearch API checks must use HTTPS and secret-backed admin authentication.
-- **Required**: primary stack operations must target `opensearch`; cluster-variant operations must explicitly target `opensearch-node1..3`.
-- **Required**: secret values and generated internal user material must not be copied into docs or command history.
-- **Allowed**: cluster topology validation when the command selects the `opensearch-cluster` profile.
-- **Disallowed**: unauthenticated bulk load, HTTP-only health checks, or claims that a replica policy exists without index/ISM evidence.
+- **Activation**: primary는 `docker compose --profile opensearch config --quiet`, LAB topology는 `docker compose --profile opensearch-cluster config --quiet`를 사용한다. 어떤 topology를 선택했는지 기록한다.
+- **Security**: TLS, 인증서, security plugin, secret-backed user, gateway middleware를 보존한다. `.opendistro_security`를 유일한 security backup으로 snapshot하지 않는다; 검토된 security configuration을 별도로 보존하고 그 credential을 제한한다.
+- **Retention and backup**: ingest 전에 index/ISM retention을 정의한다. live data volume 밖에 repository를 등록하고, 완료된 snapshot state를 요구하며, storage class에 맞게 repository를 암호화·제한하고, 격리된 restore를 rehearse한다.
+- **Resources**: per-node 2 CPU/2 GiB 한도, Dashboards, disk, JVM overhead를 고려하지 않고 LAB cluster를 함께 선택하지 않는다. Promotion에는 측정된 shard와 restore capacity가 필요하다.
+- **Upgrade**: source pin을 변경하기 전에 지원되는 version path, plugin/build 호환성, Dashboards 호환성, 인증서, snapshot restore를 검증한다. 더 새롭고 호환되지 않는 version이 기록한 index를 downgrade하지 않는다.
+- **Removal**: consumer와 index retention을 확인하고, 검증된 snapshot과 security configuration을 보존한 다음, primary 또는 cluster data volume을 삭제하기 전에 승인을 받는다.
+- **Required**: OpenSearch API check는 HTTPS와 secret-backed admin authentication을 사용해야 한다.
+- **Required**: primary stack 작업은 `opensearch`를 대상으로 해야 하고, cluster-variant 작업은 `opensearch-node1..3`을 명시적으로 대상으로 해야 한다.
+- **Required**: secret 값과 생성된 internal user material은 문서나 command history에 복사하지 않는다.
+- **Allowed**: command가 `opensearch-cluster` profile을 선택할 때의 cluster topology validation.
+- **Disallowed**: unauthenticated bulk load, HTTP-only health check, 또는 index/ISM evidence 없이 replica policy가 존재한다는 주장.
 
 ## Exceptions
 
-Temporary index settings, cluster variant experiments, or security config changes require owner approval and before/after health evidence.
+임시 index setting, cluster variant 실험, security config 변경은 owner 승인과 before/after health evidence가 필요하다.
 
 ## Verification
 
@@ -50,8 +50,8 @@ Temporary index settings, cluster variant experiments, or security config change
 
 ## Review Cadence
 
-- On image/build, certificate, secret, security config, or cluster topology change
-- Quarterly for documented recovery evidence
+- image/build, 인증서, secret, security config, cluster topology 변경 시
+- 분기별 문서화된 recovery evidence 검토
 
 ## Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -16,110 +16,114 @@ created: "2026-06-04"
 
 ## Overview
 
-This policy binds current source configuration to data protection, security,
-resource, lifecycle and independently verifiable operator controls.
+이 policy는 현재 source configuration을 data protection, security, resource,
+lifecycle, 독립적으로 검증 가능한 operator control에 묶는다.
 
 ### Purpose
 
-This policy assigns a recoverability method to every retained HOME state owner. A
-Compose volume is not a backup, replication on this single host is not host
-availability, and a successful export is not restore evidence. All restores are
-planned procedures until a dated rehearsal report says otherwise.
+이 policy는 보존되는 모든 HOME state owner에 recoverability method를 배정한다.
+Compose volume은 backup이 아니고, 단일 host 상의 replication은 host availability가
+아니며, 성공적인 export가 restore evidence는 아니다. 날짜가 기록된 rehearsal
+report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 남는다.
 
-Paths beginning with `${DEFAULT_*}` are bind-backed named volumes whose resolved
-host value remains private operator state.
+`${DEFAULT_*}`로 시작하는 경로는 resolved host 값이 private operator state로
+남는 bind-backed named volume이다.
 
 ## Policy Scope
 
-This policy applies to the current source-backed package and its retained state.
+이 policy는 현재 source-backed package와 그 보존 state에 적용된다.
 
 ### HOME state-owner matrix
 
 | Owner and data class | Current state surface | Required backup method and destination | Encryption and retention | Planning target | Rehearsal and recovery owner |
 | --- | --- | --- | --- | --- | --- |
-| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, and `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; roles and grants are cluster-wide | pgBackRest in the server image: full backup on Sunday, differential daily, continuous WAL archive (`archive_timeout`) to `${BACKUP_STATE_REPO_DIR}/pgbackrest` on the system SSD (budget, control 2); a globals-only export goes to Restic; never copy a live `PGDATA` tree | Repository `aes-256-cbc` with BKP-001; two full backups and their WAL retained; Restic 30 daily / 13 weekly / 12 monthly | RPO 5 min by WAL archive, RTO 4 h; planning target, unverified on HOME data | Synthetic full/diff/PITR rehearsal passes (`BackupRestoreRehearsalTests`, 2026-09-22); no HOME-data restore yet. Procedure: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
-| Management Valkey: OAuth2 Proxy sessions and Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF enabled | Point-in-time RDB stream (`valkey-cli --rdb -`) into export staging, then a Restic snapshot; the live AOF directory is excluded; record whether queued work must be replayed or discarded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; queued-job semantics require incident approval | Synthetic RDB export and reload rehearsed 2026-09-22; no HOME-data restore. Recovery: [RUN-0028](../runbooks/0028-management-database.md) |
-| OpenBao secrets and Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | Authenticated Raft snapshot to separate offline custody; seal/recovery material follows its security runbook | Barrier encryption does not replace encrypted backup custody; daily 30 days, monthly 1 year | RPO 24 h, RTO 4 h; planning target, unverified | No rehearsal. OpenBao security operations own recovery. `openbao-agent-data` and `openbao-agent-out` contain generated secret material and stay outside general archives. |
-| OpenBao Agent generated auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | Do not generically back up rendered secret output. Recover by re-authenticating the agent and re-rendering from restored OpenBao; separately preserve non-secret template source | Output is secret-bearing and source-at-rest encryption is unverified; no general retention | Data RPO not applicable to derived output; recovery target 4 h, unverified | No rehearsal. Security operations own re-authentication, template verification and secure disposal of stale output. |
-| Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export` copies `webui.db` through the SQLite Online Backup API with an integrity check; uploads and other files go to Restic directly; the live database files and cache are excluded | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 8 h; planning target, unverified | Synthetic WAL-database export rehearsed 2026-09-22; no HOME-data restore. The AI operations subject owns isolated validation. |
-| SeaweedFS objects and filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator pauses vacuum, exports filer metadata with `fs.meta.save`, Restic reads the volume and master trees, vacuum resumes on exit; the live leveldb2 filer store is not file-copied | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly; counts toward the 5 GiB state budget | RPO 24 h, RTO 8 h; planning target | Isolated rehearsal 2026-09-22: restore into empty stores returned identical objects; no HOME data yet. GDE/RUN-0024 own validation. |
-| Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; SQLite at `/data/gatus.db` in WAL mode | `backup-sqlite-export` Online Backup API copy including uncheckpointed WAL pages, then Restic | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; planning target, unverified | Synthetic WAL export rehearsed 2026-09-22; no HOME-data restore. The Gatus operations subject owns validation. |
-| Grafana database, plugins and mutable state | `grafana-data` → `${DEFAULT_OBSERVABILITY_DIR}/grafana`; current Compose does not configure external PostgreSQL | `backup-sqlite-export` Online Backup API copy of `grafana.db`, then Restic; plugins are rebuildable from provisioning and the plugin list; provisioning files remain tracked source | Restic encryption with BKP-002; 30 daily / 13 weekly / 12 monthly | RPO 24 h, RTO 4 h; planning target, unverified | Synthetic export rehearsed 2026-09-22; no HOME-data restore. The Grafana operations subject owns validation. |
-| Keycloak themes, providers and runtime configuration | `keycloak-themes` → `${DEFAULT_AUTH_DIR}/keycloak/themes`; `keycloak-providers` → `${DEFAULT_AUTH_DIR}/keycloak/providers`; `keycloak-config` → `${DEFAULT_AUTH_DIR}/keycloak/conf`; mounted read-only by the service | Versioned source/build artifact where available plus quiesced file snapshot and hash manifest; pair with the `keycloak` PostgreSQL database and separately custodied secrets | No at-rest encryption is declared; encrypt any backup; weekly 90 days and before upgrades | RPO 7 days, RTO 8 h; planning target, unverified | No rehearsal. Auth operations must validate provider/theme compatibility and realm login against restored database state. |
-| Airflow schedules and metadata | `airflow-config`, `airflow-dags`, `airflow-logs`, `airflow-plugins`, PostgreSQL database `airflow`, and management Valkey | Coordinated PostgreSQL logical dump plus file snapshot after pausing schedulers/workers; retain DAGs/plugins/config; logs follow operational retention | Encrypted destination required; metadata/files daily 30 days, logs 14 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. Airflow operations own application validation and Fernet/key custody. |
-| n8n workflows, credentials and runners | `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `infra/07-workflow/n8n/custom`, PostgreSQL database `n8n`, and management Valkey | Pause producers/workers; coordinated PostgreSQL dump plus file snapshot; preserve encryption key separately; decide queue replay before Valkey restore | Encrypted destination required; daily 30 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. n8n operations own workflow, credential and runner validation. |
-| ComfyUI user assets and workflows | `comfyui-custom-nodes`, `comfyui-input`, `comfyui-output`, `comfyui-user` | Quiesced file snapshot with custom-node source/revision inventory | Source-at-rest encryption is unverified; encrypted destination required; daily inputs/user, weekly outputs/custom nodes, 30/90 day retention | RPO 24 h, RTO 24 h; planning target, unverified | No rehearsal. `comfyui-models`, Hugging Face and Torch caches may be rebuilt only when model identifiers, licenses and hashes are recorded. |
-| Ollama local model store | `ollama-data` → `${DEFAULT_AI_MODEL_DIR}/ollama` | Preserve custom Modelfiles and irreplaceable inputs; catalog downloaded models for verified re-pull | Source-at-rest encryption is unverified; custom inputs weekly 90 days | Rebuild target 24 h; downloaded blobs have no data-loss RPO when reproducibly sourced | No rehearsal. Rebuild exception requires source, version, license and hash evidence. |
-| Qdrant vector collections | `qdrant-data` → `${DEFAULT_DATA_DIR}/qdrant/data` | Qdrant collection/full-storage snapshots copied to a separate target; never treat a live directory copy as a snapshot | Source-at-rest encryption is unverified; encrypted destination required; daily 30 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. Qdrant operations own isolated snapshot restore. |
-| Prometheus metrics | `prometheus-data` → `${DEFAULT_OBSERVABILITY_DIR}/prometheus` | Engine snapshot where supported, otherwise stopped filesystem snapshot; tracked scrape/rule configuration restores from source | Source-at-rest encryption is unverified; encrypted destination required; daily 7 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. Prometheus operations own TSDB validation. |
-| Loki logs | `loki-data` → `${DEFAULT_OBSERVABILITY_DIR}/loki` for WAL/cache/rules, plus SeaweedFS `loki-bucket` | Coordinate Loki quiescence, local WAL/rule snapshot and the SeaweedFS set (RUN-0024); restore both sides to one recovery point | Source-at-rest encryption is unverified; encrypted destination required; daily 14 days | RPO 24 h, RTO 8 h; planning target, unverified | No rehearsal. Loki operations and [RUN-0024](../runbooks/0024-seaweedfs.md) share validation. |
-| Tempo traces (OPTIONAL service, retained HOME bucket state) | `tempo-data` → `${DEFAULT_OBSERVABILITY_DIR}/tempo` for WAL/cache, plus SeaweedFS `tempo-bucket` | When traces are retained, coordinate Tempo quiescence, local WAL snapshot and SeaweedFS object backup | Source-at-rest encryption is unverified; encrypted destination required; daily 7 days | RPO 24 h, RTO 8 h when selected; planning target, unverified | No rehearsal. Tempo operations and [RUN-0024](../runbooks/0024-seaweedfs.md) share validation. |
-| Alertmanager silences/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped or application-consistent snapshot; tracked routing configuration restores from source | Source-at-rest encryption is unverified; encrypted destination required; daily 7 days | RPO 24 h, RTO 4 h; planning target, unverified | No rehearsal. Alertmanager operations own silence and route validation. |
-| Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | Stopped snapshot when duplicate or missing ingestion is unacceptable; otherwise rebuild from tracked config with the loss window recorded | Source-at-rest encryption is unverified; encrypted destination required when retained; 7 days | RPO 24 h, RTO 4 h; planning target, unverified | No rehearsal. Rebuild is allowed only with an accepted telemetry gap. |
+| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; role과 grant는 cluster-wide | server image 내 pgBackRest: 일요일 full backup, 매일 differential, 지속적인 WAL archive(`archive_timeout`)를 system SSD의 `${BACKUP_STATE_REPO_DIR}/pgbackrest`로(예산은 control 2); globals-only export는 Restic으로; live `PGDATA` tree는 절대 복사하지 않는다 | BKP-001로 `aes-256-cbc` repository; full backup 두 개와 그 WAL 보존; Restic daily 30 / weekly 13 / monthly 12 | WAL archive 기준 RPO 5분, RTO 4시간; planning target, HOME data에서 미검증 | Synthetic full/diff/PITR rehearsal 통과(`BackupRestoreRehearsalTests`, 2026-09-22); 아직 HOME-data restore 없음. 절차: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
+| Management Valkey: OAuth2 Proxy session과 Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF 활성화 | Point-in-time RDB stream(`valkey-cli --rdb -`)을 export staging으로, 이후 Restic snapshot; live AOF 디렉터리는 제외; queued work를 replay할지 discard할지 기록 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; queued-job semantics는 incident 승인 필요 | Synthetic RDB export/reload rehearsal 2026-09-22; HOME-data restore 없음. Recovery: [RUN-0028](../runbooks/0028-management-database.md) |
+| OpenBao secrets와 Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | 별도 offline custody로 authenticated Raft snapshot; seal/recovery material은 해당 security runbook을 따른다 | Barrier encryption은 encrypted backup custody를 대체하지 않는다; daily 30일, monthly 1년 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. OpenBao security operations가 recovery를 소유한다. `openbao-agent-data`와 `openbao-agent-out`은 생성된 secret material을 담으며 일반 archive 밖에 있다. |
+| OpenBao Agent 생성 auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | rendered secret output은 일반적으로 backup하지 않는다. agent를 재인증하고 restore된 OpenBao에서 다시 render해 recovery한다; non-secret template source는 별도로 보존한다 | Output은 secret을 담고 source-at-rest encryption은 미검증; 일반 retention 없음 | derived output에는 data RPO가 적용되지 않는다; recovery target 4시간, 미검증 | No rehearsal. Security operations가 재인증, template 검증, stale output의 안전한 폐기를 소유한다. |
+| Open WebUI application state | `open-webui` → `${DEFAULT_AI_MODEL_DIR}/open-webui` | `backup-sqlite-export`가 SQLite Online Backup API로 integrity check와 함께 `webui.db`를 복사; upload와 기타 파일은 Restic으로 직접; live database 파일과 cache는 제외 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 8시간; planning target, 미검증 | Synthetic WAL-database export rehearsal 2026-09-22; HOME-data restore 없음. AI operations subject가 isolated validation을 소유한다. |
+| SeaweedFS object와 filer metadata | `seaweedfs-{master,volume,filer}` → `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` | Orchestrator가 vacuum을 일시 중지하고, `fs.meta.save`로 filer metadata를 export하며, Restic이 volume과 master tree를 읽고, 종료 시 vacuum을 재개한다; live leveldb2 filer store는 file-copy하지 않는다 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12; 5 GiB state budget에 포함 | RPO 24시간, RTO 8시간; planning target | Isolated rehearsal 2026-09-22: 빈 store로의 restore가 동일한 object를 반환; 아직 HOME data 없음. GDE/RUN-0024가 validation을 소유한다. |
+| Gatus availability history | `gatus-data` → `${DEFAULT_OBSERVABILITY_DIR}/gatus`; WAL mode의 `/data/gatus.db`에 SQLite | uncheckpointed WAL page를 포함한 `backup-sqlite-export` Online Backup API 복사, 이후 Restic | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | Synthetic WAL export rehearsal 2026-09-22; HOME-data restore 없음. Gatus operations subject가 validation을 소유한다. |
+| Grafana database, plugin, mutable state | `grafana-data` → `${DEFAULT_OBSERVABILITY_DIR}/grafana`; 현재 Compose는 external PostgreSQL을 구성하지 않는다 | `grafana.db`의 `backup-sqlite-export` Online Backup API 복사, 이후 Restic; plugin은 provisioning과 plugin list로부터 rebuild 가능; provisioning 파일은 tracked source로 남는다 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; planning target, 미검증 | Synthetic export rehearsal 2026-09-22; HOME-data restore 없음. Grafana operations subject가 validation을 소유한다. |
+| Keycloak theme, provider, runtime configuration | `keycloak-themes` → `${DEFAULT_AUTH_DIR}/keycloak/themes`; `keycloak-providers` → `${DEFAULT_AUTH_DIR}/keycloak/providers`; `keycloak-config` → `${DEFAULT_AUTH_DIR}/keycloak/conf`; 서비스가 read-only로 mount | 가능하면 versioned source/build artifact에 quiesced file snapshot과 hash manifest를 더함; `keycloak` PostgreSQL database, 별도 custody된 secret과 pair | at-rest encryption 미선언; 어떤 backup이든 암호화; weekly 90일, upgrade 전 | RPO 7일, RTO 8시간; planning target, 미검증 | No rehearsal. Auth operations는 provider/theme 호환성과 restore된 database state 대비 realm login을 검증해야 한다. |
+| Airflow schedule과 metadata | `airflow-config`, `airflow-dags`, `airflow-logs`, `airflow-plugins`, PostgreSQL database `airflow`, management Valkey | scheduler/worker 일시 중지 이후 조정된 PostgreSQL logical dump와 file snapshot; DAG/plugin/config 보존; log는 operational retention을 따른다 | Encrypted destination 필수; metadata/파일 daily 30일, log 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Airflow operations가 application validation과 Fernet/key custody를 소유한다. |
+| n8n workflow, credential, runner | `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `infra/07-workflow/n8n/custom`, PostgreSQL database `n8n`, management Valkey | producer/worker 일시 중지; 조정된 PostgreSQL dump와 file snapshot; encryption key는 별도 보존; Valkey restore 전에 queue replay 여부 결정 | Encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. n8n operations가 workflow, credential, runner validation을 소유한다. |
+| ComfyUI user asset과 workflow | `comfyui-custom-nodes`, `comfyui-input`, `comfyui-output`, `comfyui-user` | custom-node source/revision inventory를 포함한 quiesced file snapshot | source-at-rest encryption 미검증; encrypted destination 필수; input/user는 daily, output/custom node는 weekly, 30/90일 retention | RPO 24시간, RTO 24시간; planning target, 미검증 | No rehearsal. `comfyui-models`, Hugging Face, Torch cache는 model identifier, license, hash가 기록될 때만 rebuild 가능. |
+| Ollama local model store | `ollama-data` → `${DEFAULT_AI_MODEL_DIR}/ollama` | custom Modelfile과 대체 불가능한 input 보존; 검증된 re-pull을 위해 다운로드한 model을 catalog화 | source-at-rest encryption 미검증; custom input weekly 90일 | Rebuild target 24시간; reproducibly sourced된 다운로드 blob은 data-loss RPO가 없다 | No rehearsal. Rebuild 예외는 source, version, license, hash evidence가 필요하다. |
+| Qdrant vector collection | `qdrant-data` → `${DEFAULT_DATA_DIR}/qdrant/data` | Qdrant collection/full-storage snapshot을 별도 target으로 복사; live directory 복사를 snapshot으로 취급하지 않는다 | source-at-rest encryption 미검증; encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Qdrant operations가 isolated snapshot restore를 소유한다. |
+| Prometheus metrics | `prometheus-data` → `${DEFAULT_OBSERVABILITY_DIR}/prometheus` | 지원되면 engine snapshot, 아니면 stopped filesystem snapshot; tracked scrape/rule configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Prometheus operations가 TSDB validation을 소유한다. |
+| Loki logs | WAL/cache/rule용 `loki-data` → `${DEFAULT_OBSERVABILITY_DIR}/loki`, 그리고 SeaweedFS `loki-bucket` | Loki quiescence, local WAL/rule snapshot, SeaweedFS set(RUN-0024)을 조정; 양쪽을 동일한 recovery point로 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Loki operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |
+| Tempo trace(OPTIONAL 서비스, 보존되는 HOME bucket state) | WAL/cache용 `tempo-data` → `${DEFAULT_OBSERVABILITY_DIR}/tempo`, 그리고 SeaweedFS `tempo-bucket` | trace가 보존될 때 Tempo quiescence, local WAL snapshot, SeaweedFS object backup을 조정 | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | 선택 시 RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Tempo operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |
+| Alertmanager silence/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped 또는 application-consistent snapshot; tracked routing configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Alertmanager operations가 silence와 route validation을 소유한다. |
+| Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | 중복 또는 누락된 ingestion이 허용되지 않을 때 stopped snapshot; 그렇지 않으면 loss window를 기록하고 tracked config로부터 rebuild | source-at-rest encryption 미검증; 보존 시 encrypted destination 필수; 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Rebuild는 telemetry gap을 수용할 때만 허용된다. |
 
 ## Controls
 
-1. The destination must be outside the source volume and on a different
-   physical disk. `BACKUP_STATE_REPO_DIR` (system SSD) holds copies of
-   data-disk state and `BACKUP_HOST_REPO_DIR` (data disk) holds copies of
-   `secrets/` and `.env`; the orchestrator refuses a repository on the same
-   filesystem as, or inside, its source. All copies are on one host, so
-   **offsite recovery is not provided**.
-2. The SSD repository has a size budget of `BACKUP_STATE_MAX_GIB` (5 GiB,
-   owner 2026-09-22). Above it the run fails and Restic writes nothing;
-   snapshots are never deleted automatically to meet the budget.
-3. Backup keys BKP-001 and BKP-002 have an offline copy outside this host.
-   Restic's host repository contains the keys but needs BKP-002 to open.
-4. One scheduler owns backups: `hyhome-backup.timer` on the host. Airflow and
-   other schedulers do not run backups. Snapshot deletion (`forget-prune`) is a
-   separately approved manual procedure.
-5. Use engine-supported export or snapshot methods. Raw copies of active
-   PostgreSQL, SQLite, Valkey, SeaweedFS, Qdrant, Loki or Tempo storage are not
-   accepted backup artifacts. SeaweedFS volume trees are read live only
-   because needles are append-only, vacuum is paused and filer metadata is
-   exported first, and the restore of that set is rehearsed (GDE-0024);
-   objects changed during the Restic read may be missing from it (POL-0024).
-6. Capture a manifest containing service, engine/source version, timestamp,
-   scope, object/file count where meaningful, byte size and cryptographic hash.
-7. Do not place passwords, unseal material, database dumps, workflow credentials
-   or secret-rendered agent output in Git or in the generic evidence tree.
-8. Destructive recovery, cutover, cleanup, credential rotation or live service
-   change requires a separately approved task. This policy does not authorize it.
+1. destination은 source volume 밖에, 다른 physical disk에 있어야 한다.
+   `BACKUP_STATE_REPO_DIR`(system SSD)는 data-disk state의 복사본을,
+   `BACKUP_HOST_REPO_DIR`(data disk)는 `secrets/`와 `.env`의 복사본을 담는다;
+   orchestrator는 자신의 source와 같은 filesystem에 있거나 그 안에 있는
+   repository를 거부한다. 모든 복사본이 한 host에 있으므로
+   **offsite recovery는 제공되지 않는다**.
+2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(5 GiB, owner 2026-09-22)
+   이다. 초과하면 run이 실패하고 Restic은 아무것도 쓰지 않는다;
+   예산을 맞추려고 snapshot을 자동으로 삭제하지도 않는다.
+3. Backup key BKP-001과 BKP-002는 이 host 밖에 offline 사본을 둔다.
+   Restic의 host repository는 key를 담지만 열려면 BKP-002가 필요하다.
+4. backup을 소유하는 scheduler는 하나뿐이다: host의 `hyhome-backup.timer`.
+   Airflow와 다른 scheduler는 backup을 실행하지 않는다. Snapshot 삭제
+   (`forget-prune`)는 별도 승인을 받는 manual procedure다.
+5. engine이 지원하는 export 또는 snapshot method를 사용한다. active
+   PostgreSQL, SQLite, Valkey, SeaweedFS, Qdrant, Loki, Tempo storage의
+   raw 복사본은 승인된 backup artifact가 아니다. SeaweedFS volume tree는
+   needle이 append-only이고 vacuum이 일시 중지되며 filer metadata가 먼저
+   export되기 때문에만 live로 읽는다. 그 set의 restore는 rehearsal을 거쳤다
+   (GDE-0024); Restic이 읽는 동안 변경된 object는 그 set에서 누락될 수 있다
+   (POL-0024).
+6. service, engine/source version, timestamp, scope, 의미 있는 경우
+   object/file count, byte size, cryptographic hash를 담은 manifest를
+   기록한다.
+7. password, unseal material, database dump, workflow credential, 또는
+   secret-rendered agent output을 Git이나 generic evidence tree에 두지
+   않는다.
+8. Destructive recovery, cutover, cleanup, credential rotation, live service
+   변경은 별도로 승인된 task가 필요하다. 이 policy는 이를 승인하지 않는다.
 
 ### Restore acceptance
 
-A rehearsal uses an isolated target, compatible engine version and disposable
-credentials. It proves application-level reads and writes, records elapsed time
-against the planning RTO, states the observed recovery point, and destroys or
-secures the test copy afterward. Production replacement is a separate approved
-cutover with rollback.
+Rehearsal은 isolated target, 호환되는 engine version, disposable credential을
+사용한다. application-level read/write를 증명하고, planning RTO 대비
+경과 시간을 기록하며, 관찰된 recovery point를 명시하고, 이후 test copy를
+폐기하거나 안전하게 보관한다. Production 교체는 rollback을 갖추고 별도로
+승인된 cutover다.
 
 ## Exceptions
 
-HOME state owners; rebuildable exceptions require recorded source evidence. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
-storage copies or same-host availability claims.
+HOME state owner; rebuildable exception은 기록된 source evidence가 필요하다.
+Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
+또는 same-host availability 주장을 승인하지 않는다.
 
 ## Verification
 
-Verify root configuration and scoped static policy checks, then require an
-isolated compatible restore with application-level acceptance before promotion or
-cutover. Record unverified runtime properties explicitly.
+root configuration과 scoped static policy check를 검증한 다음, promotion
+또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
 
 ## Review Cadence
 
-Review after profile, image, volume, credential, consumer, retention or upstream
-lifecycle change and at least annually while retained.
+profile, image, volume, credential, consumer, retention, 또는 upstream
+lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한다.
 
-The retained MinIO data and the preserved Vault tree
-(`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`) were disposed of on 2026-09-25
-under SPEC-0182 W5, which ended the SPEC-0180 S07 rollback path. Restic no
-longer includes `security/vault`; existing snapshots that hold it age out
-under the Restic retention above.
+보존되던 MinIO data와 보존되던 Vault tree
+(`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`)는 SPEC-0182 W5에 따라
+2026-09-25에 폐기되었고 이로써 SPEC-0180 S07 rollback path가 종료되었다.
+Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
+snapshot은 위의 Restic retention에 따라 age out된다.
 
 ## Traceability
 
 - Artifact: `POL-0021`; parent: `AD-0004`.
-- Runtime authority remains the linked Compose/source files; exact pins stay there.
+- Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
 
 ### Official references
 

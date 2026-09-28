@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -16,109 +16,105 @@ created: "2026-05-17"
 
 ## Overview
 
-This policy binds current source configuration to data protection, security,
-resource, lifecycle and independently verifiable operator controls.
+이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
+운영 통제에 묶는다.
 
 ## Policy Scope
 
-SeaweedFS is the S3 object store; it replaced MinIO in SPEC-0180 S07. It is HOME: every profile that selects an S3 consumer (`storage`,
-`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`) also
-selects the four services and `seaweedfs-buckets`, as do `seaweedfs` and
-`storage-seaweedfs`; `lakehouse` also selects `seaweedfs-table-bucket`.
-Terrakube (`iac`, an automation profile HOME excludes) runs with `storage`.
+SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HOME 대상이다.
+S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`, `nginx`,
+`mlops`, `data-science`, `lakehouse`)은 4개 서비스와 `seaweedfs-buckets`도 함께
+선택하며, `seaweedfs`와 `storage-seaweedfs` profile도 마찬가지다. `lakehouse`는
+`seaweedfs-table-bucket`도 함께 선택한다. Terrakube(`iac`, HOME이 제외하는 자동화
+profile)는 `storage`와 함께 동작한다.
 
 ## Controls
 
-- **Persistent set.** Master (`-mdir=/data`), volume (`-dir=/data`) and the
-  filer's embedded leveldb2 store (`/data/filerldb2`) each have a bind volume
-  under `${DEFAULT_DATA_DIR}/seaweedfs`. The embedded store is chosen over an
-  external database: it adds no start or recovery dependency, and the filer
-  metadata export is its portable form. A `/data` mount alone never proves the
-  path; the rehearsal checks the files land there.
-- **S3 identities.** `seaweedfs-s3` starts only with explicit identities built
-  from secrets (admin: `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` and STRG-010). With
-  identities present, anonymous requests are refused. Every consumer added in
-  S07 has its own identity in `config/s3-identities.conf`, scoped to its
-  bucket (loki, tempo, mlflow, terrakube, lakehouse); no consumer uses admin, and
-  `anonymous` may only read objects in `cdn-bucket`. Buckets are created by
-  `seaweedfs-buckets`, never by a consumer.
-- **No IAM bypass.** Volume and filer HTTP require JWTs signed with STRG-008 and
-  STRG-009 for reads and writes. Only the S3 route exists; master and filer have
-  no Traefik route, and a CDN is a public-read bucket through S3, never the
-  filer.
-- **Internal transport.** Every gRPC port uses mutual TLS from a SeaweedFS-only
-  CA (`bin/gen-grpc-certs.sh`; the CA key is discarded after issuance). S3 is
-  plain HTTP on `object_net` with SigV4 signatures, and HTTPS through Traefik
-  for host clients. Master, volume and filer are only on `seaweed_internal`
-  (internal); the master's unauthenticated `/dir/assign` is reachable only
-  there.
-- **Minimal surface.** The Lance listener and the embedded IAM API are off.
-  The Iceberg REST catalog listens on `${SEAWEEDFS_ICEBERG_PORT:-8181}` on
-  `object_net` only, with no route; it signs with the same identities (SigV4).
-  Only the `lakehouse` table bucket exists, owned by admin. Its policy grants
-  the `lakehouse` identity catalog and table actions only (no policy change,
-  no bucket deletion); `seaweedfs-table-bucket` rewrites it on every run, so a
-  hand-edited policy does not survive.
-- **Metrics.** Only `seaweedfs-s3` serves metrics, on `9327`, scraped by
-  Prometheus as job `seaweedfs-s3`. The listener is not published and has no
-  Traefik route, but any `edge_net` service can reach it; that is accepted
-  because it carries request counters and latencies only (low sensitivity).
-  Master, volume and filer are not exposed for scraping.
-  `SeaweedFSS3Down` and `SeaweedFSDataDiskLow` live in
-  `alert_rules.local.datastores.yml`; the disk rule pins the node-exporter
-  mountpoint of the data-disk filesystem and must follow it if
-  `DEFAULT_MOUNT_VOLUME_PATH` moves.
-- **Capacity.** The volume server stops accepting writes below 20 GiB free on
-  the data disk (`-minFreeSpace`, POL-0035). Same-host replicas are not host
-  availability, so replication is `000`.
+- **영속 세트.** Master(`-mdir=/data`), volume(`-dir=/data`)과 filer의 내장
+  leveldb2 store(`/data/filerldb2`)는 각각 `${DEFAULT_DATA_DIR}/seaweedfs` 아래
+  bind volume을 갖는다. 내장 store를 외부 database 대신 선택한 이유는 시작이나
+  복구 의존성을 추가하지 않고 filer metadata export가 이식 가능한 형태이기
+  때문이다. `/data` mount만으로는 경로를 증명하지 못하며, rehearsal이 파일이
+  실제로 그 위치에 있는지 확인한다.
+- **S3 identity.** `seaweedfs-s3`는 secret으로 구성된 명시적 identity(admin:
+  `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity가 있으면
+  anonymous request를 거부한다. S07에서 추가된 모든 consumer는
+  `config/s3-identities.conf`에 자신의 bucket(loki, tempo, mlflow, terrakube,
+  lakehouse)으로 범위가 한정된 identity를 갖는다. 어떤 consumer도 admin을 쓰지
+  않으며, `anonymous`는 `cdn-bucket`의 객체만 읽을 수 있다. Bucket은 consumer가
+  아니라 `seaweedfs-buckets`가 생성한다.
+- **IAM 우회 금지.** Volume과 filer HTTP는 읽기/쓰기 모두 STRG-008과 STRG-009로
+  서명된 JWT를 요구한다. S3 route만 있고 master와 filer에는 Traefik route가
+  없다. CDN은 S3를 통한 public-read bucket이며 filer를 거치지 않는다.
+- **내부 전송.** 모든 gRPC port는 SeaweedFS 전용 CA(`bin/gen-grpc-certs.sh`; CA
+  key는 발급 후 폐기)로 mutual TLS를 사용한다. S3는 `object_net`에서 SigV4
+  서명을 사용한 plain HTTP이며, host client에는 Traefik을 통한 HTTPS를
+  제공한다. Master, volume, filer는 `seaweed_internal`(internal)에만 있으며
+  master의 인증되지 않은 `/dir/assign`은 그곳에서만 접근할 수 있다.
+- **최소 노출면.** Lance listener와 내장 IAM API는 꺼져 있다. Iceberg REST
+  catalog는 `object_net`에서만 `${SEAWEEDFS_ICEBERG_PORT:-8181}`로 listen하며
+  route가 없다. 동일한 identity(SigV4)로 서명한다. Table bucket은 `lakehouse`
+  하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
+  table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
+  `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
+  않는다.
+- **Metrics.** `seaweedfs-s3`만 `9327`에서 metrics를 제공하며 Prometheus가
+  job `seaweedfs-s3`로 수집한다. Listener는 게시되지 않고 Traefik route도
+  없지만, 어떤 `edge_net` 서비스든 접근할 수 있다. Request counter와
+  latency만 담고 있어 민감도가 낮으므로 이를 허용한다. Master, volume, filer는
+  scraping에 노출되지 않는다. `SeaweedFSS3Down`과 `SeaweedFSDataDiskLow`는
+  `alert_rules.local.datastores.yml`에 있다. Disk rule은 data-disk 파일시스템의
+  node-exporter mountpoint를 고정하며, `DEFAULT_MOUNT_VOLUME_PATH`가 이동하면
+  함께 갱신해야 한다.
+- **용량.** Volume server는 data disk의 여유 공간이 20 GiB 아래로 내려가면
+  쓰기를 중단한다(`-minFreeSpace`, POL-0035). 동일 host replica는 host
+  가용성이 아니므로 replication은 `000`이다.
 
 ### Backup and restore
 
-The daily orchestrator (RUN-0021) pauses vacuum, saves filer metadata with
-`fs.meta.save`, lets Restic read the volume and master trees, and re-enables
-vacuum on exit. Needles are append-only, so objects written before the
-metadata export restore intact. An object overwritten or deleted while Restic
-reads the volume files may restore as missing, and a volume index copied after
-its data file may list needles past its end (checked with `volume.fsck` on
-restore). The recovery point is therefore the export time, minus objects
-changed inside the Restic window. The set lives in the encrypted Restic state
-repository on the other physical disk, inside the 5 GiB budget (POL-0021).
-Keep daily sets for 30 days and weekly sets for 90 days. The target is RPO
-24 hours and RTO 8 hours; the isolated rehearsal proves the method, not the
-HOME timing.
+일일 orchestrator(RUN-0021)는 vacuum을 멈추고 `fs.meta.save`로 filer metadata를
+저장한 뒤, Restic이 volume과 master tree를 읽게 하고 종료 시 vacuum을 다시
+활성화한다. Needle은 append-only이므로 metadata export 이전에 작성된 객체는
+온전히 복원된다. Restic이 volume 파일을 읽는 동안 덮어쓰거나 삭제된 객체는
+누락으로 복원될 수 있고, data 파일 이후 복사된 volume index는 그 끝을 넘어선
+needle을 나열할 수 있다(복원 시 `volume.fsck`로 확인). 따라서 recovery point는
+export 시각에서 Restic 창 안에서 변경된 객체를 뺀 시점이다. 세트는 다른
+물리 디스크의 암호화된 Restic state repository에 5 GiB 예산(POL-0021) 안에서
+보관된다. 일일 세트는 30일, 주간 세트는 90일 보관한다. 목표는 RPO 24시간,
+RTO 8시간이며, isolated rehearsal은 HOME 타이밍이 아니라 방법을 증명한다.
 
-Restore on an empty target at the same version: volume and master trees in
-place, an empty filer store, then `fs.meta.load`, then S3 reads. Cutover,
-deletion or state reuse on HOME needs separate approval.
+동일 버전의 빈 대상으로 복원한다. Volume과 master tree를 제자리에 두고, filer
+store를 비운 뒤 `fs.meta.load`를 실행하고 S3 읽기를 확인한다. HOME에서의
+cutover, 삭제, state 재사용은 별도 승인이 필요하다.
 
 ### Change policy
 
-Image updates need an official release and license review plus a passing
-`SeaweedfsRehearsalTests` run. Identity, key or certificate rotation restarts
-every component and needs approval. A new consumer identity is added in the
-same change as that consumer's cutover.
+Image 갱신에는 공식 release와 license 검토, 통과한 `SeaweedfsRehearsalTests`
+실행이 필요하다. Identity, key, certificate 교체는 모든 구성 요소를 재시작하며
+승인이 필요하다. 새 consumer identity는 해당 consumer의 cutover와 같은
+change에서 추가한다.
 
 ## Exceptions
 
-A FUSE mount needs separate approval. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
-storage copies or same-host availability claims.
+FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
+raw active storage 복사, 동일 host 가용성 주장을 허용하지 않는다.
 
 ## Verification
 
-Verify root configuration and scoped static policy checks, then require an
-isolated compatible restore with application-level acceptance before promotion or
-cutover. Record unverified runtime properties explicitly.
+Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
+전에 application 수준 acceptance를 갖춘 isolated compatible restore를
+요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
 ## Review Cadence
 
-Review after profile, image, volume, credential, consumer, retention or upstream
-lifecycle change and at least annually while retained.
+Profile, image, volume, credential, consumer, retention 또는 upstream
+lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
 ## Traceability
 
 - Runtime source: [SeaweedFS Compose](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
 - Artifact: `POL-0024`; parent: `AD-0004`.
-- Runtime authority remains the linked Compose/source files; exact pins stay there.
+- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
 
 ### References
 

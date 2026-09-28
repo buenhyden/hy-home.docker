@@ -1,10 +1,10 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -14,7 +14,7 @@ created: "2026-05-17"
 
 # Supabase Operations Policy
 
-> This policy governs the current self-hosted Supabase stack in `hy-home.docker`.
+> 이 정책은 `hy-home.docker`의 현재 self-hosted Supabase stack을 규율한다.
 
 ---
 
@@ -32,38 +32,59 @@ created: "2026-05-17"
 ## Controls
 
 - **Required**:
-  - Supabase secrets are injected through Docker Secrets under `/run/secrets/`.
-  - Public API and dashboard access must follow the compose-declared Kong route and linked stack config.
-  - Documentation must state that Studio has no direct host port in the current compose file.
-  - Runtime mounts under `${DEFAULT_DATA_DIR}/supabase/...` must be treated as implementation state and kept in sync with infra README and operations docs.
-  - JWT, anon, service-role, dashboard, SMTP, database, vault, and crypto key values must never be written into documentation or evidence.
-  - A backup set must include PostgreSQL globals/roles, schema and data; Storage metadata plus object files; mounted Kong/functions/pooler configuration; and protected Auth/JWT/SMTP/provider settings with versions, checksums, retention and restore evidence.
-  - Restore rehearsal must use a fresh isolated stack. Restore roles/schema/data in dependency order, reconcile Storage objects with metadata, apply configuration/secrets separately, and verify Auth, REST, Realtime, Storage, Functions and pooler paths.
-  - The update guide's configuration backup is not a database or Storage backup. Upgrade/removal requires a coherent restore-tested set, compatibility review, capacity check and explicit approval.
+  - Supabase secret은 `/run/secrets/` 아래 Docker Secrets를 통해 주입된다.
+  - Public API와 dashboard 접근은 compose에 선언된 Kong route와 연결된 stack
+    config를 따라야 한다.
+  - 문서는 현재 compose 파일에서 Studio가 direct host port를 갖지 않는다고
+    명시해야 한다.
+  - `${DEFAULT_DATA_DIR}/supabase/...` 아래 runtime mount는 구현 state로
+    다루고 infra README 및 운영 문서와 동기화해야 한다.
+  - JWT, anon, service-role, dashboard, SMTP, database, vault, crypto key 값은
+    문서나 evidence에 절대 기록해서는 안 된다.
+  - Backup 세트는 PostgreSQL globals/role, schema, data; Storage metadata와
+    객체 파일; mount된 Kong/functions/pooler 구성; 보호된 Auth/JWT/SMTP/provider
+    설정을 version, checksum, retention, restore evidence와 함께 포함해야
+    한다.
+  - Restore rehearsal은 새 isolated stack을 사용해야 한다. 의존성 순서대로
+    role/schema/data를 복원하고, Storage 객체를 metadata와 조정하며,
+    구성/secret을 별도로 적용하고, Auth, REST, Realtime, Storage, Functions,
+    pooler 경로를 검증한다.
+  - Update guide의 구성 backup은 database나 Storage backup이 아니다.
+    Upgrade/removal은 일관된 restore-tested 세트, 호환성 검토, 용량 확인,
+    명시적 승인을 요구한다.
 - **Allowed**:
-  - Metadata-only compose validation with `docker compose ... config --quiet`.
-  - Read-only service health/log checks that do not expose secret values.
-  - Approved JWT or dashboard credential rotation when backed by task/incident evidence and corresponding runbook steps.
-  - Kong host-port access using the declared `SUPABASE_KONG_HTTP_HOST_PORT` and `SUPABASE_KONG_HTTPS_HOST_PORT` variables.
+  - `docker compose ... config --quiet`를 사용한 metadata-only compose 검증.
+  - Secret 값을 노출하지 않는 read-only 서비스 health/log 확인.
+  - Task/incident evidence와 해당 runbook 단계로 뒷받침되는 승인된 JWT나
+    dashboard credential rotation.
+  - 선언된 `SUPABASE_KONG_HTTP_HOST_PORT`와 `SUPABASE_KONG_HTTPS_HOST_PORT`
+    변수를 사용한 Kong host-port 접근.
 - **Disallowed**:
-  - Assuming direct Studio access through an unpublished local host port.
-  - Bypassing Kong for public Supabase API exposure without approved implementation and documentation updates.
-  - Committing generated Kong config with embedded secret values.
-  - Performing destructive database restore, storage deletion, or credential rotation as a documentation-only action.
+  - 게시되지 않은 local host port를 통한 direct Studio 접근을 가정하는 것.
+  - 승인된 구현과 문서 갱신 없이 public Supabase API 노출을 위해 Kong을
+    우회하는 것.
+  - Secret 값이 포함된 생성된 Kong config를 commit하는 것.
+  - 문서 전용 조치로 파괴적 database restore, storage 삭제, credential
+    rotation을 수행하는 것.
 
 ## Exceptions
 
-Exceptions require explicit owner or user approval and must record scope, commands, affected services, secret-safety considerations, validation output, and rollback/escalation state in related task or incident evidence.
+예외는 명시적인 owner나 user 승인을 요구하며, scope, command, 영향받는
+서비스, secret-safety 고려사항, 검증 output, rollback/escalation state를
+관련 task나 incident evidence에 기록해야 한다.
 
 ## Verification
 
-- Run `docker compose --profile supabase config --quiet` after changing compose-facing documentation.
-- Run `python3 scripts/validation/check-document-links.py --mode all` after policy, guide, runbook, README, or link updates.
-- Search updated docs for direct Studio host-port assumptions, old Compose CLI spelling, template copyright remnants, and secret material before committing.
+- Compose 관련 문서를 변경한 뒤 `docker compose --profile supabase config --quiet`를 실행한다.
+- 정책, guide, runbook, README, 링크 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
+- Commit 전에 갱신된 문서에서 direct Studio host-port 가정, 오래된 Compose CLI
+  표기, template copyright 잔여물, secret 자료를 검색한다.
 
 ## Review Cadence
 
-Review on any change to Supabase compose services, ports, profiles, networks, secret refs, runtime mounts, Kong routing, or linked operations documents. Otherwise review during the regular Stage 05 operations audit.
+Supabase compose 서비스, port, profile, network, secret 참조, runtime mount,
+Kong routing, 연결된 운영 문서에 대한 모든 변경 시 검토한다. 그 외에는 정기
+Stage 05 운영 audit 동안 검토한다.
 
 ---
 
