@@ -1,45 +1,49 @@
 ---
 title: "Mailpit Implementation"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 ---
 
 # Mailpit
 
 ## Overview
 
-Captures development SMTP traffic. UI and SMTP host ports bind to loopback and the UI is routed through authenticated Traefik. MAILPIT_UI_PORT and MAILPIT_SMTP_PORT own container listeners; HOST_PORT variants own publication. mailpit-data persists /data/mailpit.db. Test SMTP accepts arbitrary authentication and must not be exposed externally.
+개발용 SMTP 트래픽을 캡처합니다. UI와 SMTP 호스트 포트는 loopback에
+바인딩되며 UI는 인증된 Traefik을 통해 라우팅됩니다. `MAILPIT_UI_PORT`와
+`MAILPIT_SMTP_PORT`는 컨테이너 리스너를 소유하고 `HOST_PORT` 변형은 게시를
+소유합니다. `mailpit-data`는 `/data/mailpit.db`를 영속화합니다. 테스트 SMTP는
+임의의 인증을 허용하므로 외부에 노출해서는 안 됩니다.
 
 ## Audience
 
-Operators and developers reviewing service configuration.
+서비스 설정을 검토하는 운영자와 개발자.
 
 ## Scope
 
-Lifecycle: **DEV**. Operational controls and recovery belong to `OPS-0084` through the [documentation index](../../../docs/README.md).
+Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/0084-mailpit.md`, `docs/05.operations/policies/0084-mailpit.md`, `docs/05.operations/runbooks/0084-mailpit.md`(ID: `GDE-0084`, `POL-0084`, `RUN-0084`)가 담당합니다.
 
 ## Structure
 
-[Compose](docker-compose.yml) owns the service, mounts, network grants and entrypoint.
+[Compose](docker-compose.yml)가 서비스, 마운트, 네트워크 권한, 엔트리포인트를 소유합니다.
 
 ## Tech Stack
 
-Runtime pins belong to [Compose](docker-compose.yml); [version registry](../../../infra/tech-stack.versions.json) is a derived Compose image projection, not a deployment manifest.
+런타임 고정 값은 [Compose](docker-compose.yml)에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션이며 배포 매니페스트가 아닙니다.
 
 ## Configuration
 
-Profiles: `mail-dev / local / dev`. Root Compose includes this definition; inclusion alone does not start a service. Network is `edge_net`. Review [public environment keys](../../../.env.example) and [secret references](../../../secrets/README.md) without printing private values.
+프로필: `mail-dev / local / dev`. 루트 Compose가 이 정의를 include하지만, include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 `edge_net`입니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.
 
 ## Validation
 
-From the repository root, select the documented profile and run `scripts/validation/validate-docker-compose.sh`. Use the owning Runbook for runtime checks; config validation does not prove a successful maintenance run or SMTP capture.
+저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 실행합니다. 런타임 확인은 소유 Runbook을 사용합니다. 설정 검증만으로는 유지보수 작업의 성공이나 SMTP 캡처를 증명하지 못합니다.
 
 ## How to Work in This Area
 
-Preserve data and credentials during changes. Review exact runtime targets before deployment. Keep operational procedures in the existing operations subject.
+변경 작업 중에는 데이터와 자격 증명을 보존합니다. 배포 전에 정확한 런타임 대상을 검토합니다. 운영 절차는 기존 운영 주제(operations subject) 안에 유지합니다.
 
 ## Related Documents
 

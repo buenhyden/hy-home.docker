@@ -135,9 +135,17 @@ class TrackedRuleTests(unittest.TestCase):
         )
         self.assertNotIn("warn-korean-in-governance", {rule.name for rule in warnings})
 
-        # Korean body outside Stage 00: the first condition must hold it back.
+        # A governance README is Korean by rule (SPEC-0184): no warning,
+        # at the top of `.agents/` and below it.
+        for readme in (".agents/README.md", ".agents/governance/providers/README.md"):
+            warnings, _ = hook_rules.evaluate(self.rules, edits=((readme, "한글 본문"),))
+            self.assertNotIn(
+                "warn-korean-in-governance", {rule.name for rule in warnings}
+            )
+
+        # Korean body outside `.agents/`: the path condition must hold it back.
         warnings, _ = hook_rules.evaluate(
-            self.rules, edits=(("docs/05.operations/README.md", "한글 본문"),)
+            self.rules, edits=(("docs/05.operations/guides/0031-x.md", "한글 본문"),)
         )
         self.assertNotIn("warn-korean-in-governance", {rule.name for rule in warnings})
 

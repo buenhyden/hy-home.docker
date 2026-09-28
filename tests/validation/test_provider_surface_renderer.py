@@ -564,6 +564,36 @@ class ProviderSurfaceRendererTests(unittest.TestCase):
             self.assertIn(pathlib.Path(".codex/ROUTE.md"), projection)
             self.assertNotIn(pathlib.Path(".codex/README.md"), projection)
 
+    def test_generated_readme_route_sentence_is_korean(self) -> None:
+        renderer = load_renderer()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_fixture(root)
+
+            projection = renderer.expected_native_projection(root)
+
+            for readme_path in (
+                pathlib.Path(".claude/README.md"),
+                pathlib.Path(".codex/README.md"),
+            ):
+                with self.subTest(path=readme_path):
+                    body = projection[readme_path].decode("utf-8")
+                    self.assertIn(
+                        "이 생성 어댑터는 `.claude/provider.md`로 안내합니다."
+                        if readme_path == pathlib.Path(".claude/README.md")
+                        else "이 생성 어댑터는 `.codex/provider.md`로 안내합니다.",
+                        body,
+                    )
+                    self.assertNotIn("This generated adapter routes to", body)
+
+            non_readme_body = projection[pathlib.Path(".claude/CLAUDE.md")].decode(
+                "utf-8"
+            )
+            self.assertIn(
+                "This generated adapter routes to `.claude/provider.md`.",
+                non_readme_body,
+            )
+
     def test_dynamic_yaml_scalars_are_quoted_in_role_and_skill_projections(
         self,
     ) -> None:

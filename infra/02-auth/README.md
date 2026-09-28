@@ -1,24 +1,23 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 # Auth Tier (02-auth)
 
-> Identity and Access Management, Gateway ForwardAuth, and application-native OIDC integration.
+> ID/접근 관리, Gateway ForwardAuth, 애플리케이션 native OIDC 통합.
 
 ## Overview
 
-The `02-auth` tier provides the security foundation for the `hy-home.docker`
-ecosystem. Keycloak is the central Identity Provider. OAuth2 Proxy provides
-Gateway ForwardAuth for services without suitable built-in OIDC, while approved
-applications such as Airflow, Kafbat UI, Open WebUI, Gatus, and OpenBao
-authenticate directly against Keycloak using application-native OIDC.
+`02-auth` tier는 `hy-home.docker` 생태계의 보안 기반을 맡습니다. Keycloak은 중앙
+Identity Provider입니다. OAuth2 Proxy는 적절한 내장 OIDC가 없는 서비스에 Gateway
+ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같은 승인된
+애플리케이션은 애플리케이션 native OIDC로 Keycloak에 직접 인증합니다.
 
 ## Audience
 
@@ -30,19 +29,19 @@ authenticate directly against Keycloak using application-native OIDC.
 
 ### In Scope
 
-- Keycloak: IAM Provider
-- OAuth2 Proxy: ForwardAuth Gateway
-- ForwardAuth vs Native OIDC selection
-- OIDC client integration
-- PostgreSQL identity persistence
-- Valkey session storage for OAuth2 Proxy
+- Keycloak: IAM 제공자
+- OAuth2 Proxy: ForwardAuth 게이트웨이
+- ForwardAuth vs Native OIDC 선택
+- OIDC client 통합
+- PostgreSQL identity 영속성
+- OAuth2 Proxy용 Valkey 세션 저장
 
 ### Out of Scope
 
-- TLS termination (`01-gateway`)
-- network firewall
-- application business logic
-- application-internal RBAC implementation details
+- TLS 종료(`01-gateway`)
+- 네트워크 방화벽
+- 애플리케이션 비즈니스 로직
+- 애플리케이션 내부 RBAC 구현 세부 사항
 
 ## Structure
 
@@ -96,20 +95,20 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 
 | Category | Technology | Notes |
 | --- | --- | --- |
-| IAM | Keycloak | Central OIDC/SAML IdP |
-| ForwardAuth | OAuth2 Proxy | Gateway authentication |
-| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Direct Keycloak clients |
-| Database | PostgreSQL | Identity persistence |
-| Session | Valkey | OAuth2 Proxy session |
-| Gateway | Traefik | TLS/routing/middleware |
+| IAM | Keycloak | 중앙 OIDC/SAML IdP |
+| ForwardAuth | OAuth2 Proxy | Gateway 인증 |
+| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Keycloak 직접 client |
+| Database | PostgreSQL | Identity 영속성 |
+| Session | Valkey | OAuth2 Proxy 세션 |
+| Gateway | Traefik | TLS/라우팅/미들웨어 |
 
 ## Configuration
 
 | Variable | Required | Description |
 | --- | ---: | --- |
-| `DEFAULT_URL` | Yes | root domain |
+| `DEFAULT_URL` | Yes | 루트 도메인 |
 | `KEYCLOAK_REALM` | Yes | `hy-home.realm` |
-| `KEYCLOAK_URL` | Yes | public Keycloak URL |
+| `KEYCLOAK_URL` | Yes | 공개 Keycloak URL |
 | `OAUTH2_PROXY_CLIENT_ID` | Yes | ForwardAuth client |
 | `KAFBAT_OAUTH_CLIENT_ID` | Yes | Kafbat Native OIDC client |
 | `AIRFLOW_KEYCLOAK_CLIENT_ID` | Yes | Airflow Native OIDC client |
@@ -121,7 +120,7 @@ HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
 bash scripts/hardening/check-all-hardening.sh 02-auth
 ```
 
-Runtime:
+런타임:
 
 ```bash
 docker compose --profile auth exec keycloak sh -c   'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'
@@ -139,8 +138,9 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 - [Gateway](../01-gateway/README.md)
 - [Data](../04-data/README.md)
-- [Auth Operations](../../docs/README.md)
-- [Application Authentication Integration Guide](../../docs/README.md)
-- [Documentation index](../../docs/README.md)
+- Keycloak 운영 문서: `docs/05.operations/guides/0014-keycloak.md`, `docs/05.operations/policies/0014-keycloak.md`, `docs/05.operations/runbooks/0014-keycloak.md`
+- OAuth2 Proxy 운영 문서: `docs/05.operations/guides/0015-oauth2-proxy.md`, `docs/05.operations/policies/0015-oauth2-proxy.md`, `docs/05.operations/runbooks/0015-oauth2-proxy.md`
+- 애플리케이션 인증 통합 가이드: `docs/05.operations/guides/0079-application-auth-integration.md`
+- [문서 인덱스](../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../tech-stack.versions.json)은 drift 검증을 제공합니다.

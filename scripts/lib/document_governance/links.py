@@ -8,6 +8,7 @@ import json
 import pathlib
 import posixpath
 import re
+import subprocess
 import urllib.parse
 from collections.abc import Iterable, Mapping
 from types import MappingProxyType
@@ -16,6 +17,7 @@ from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
 )
+from scripts.lib.document_governance.language import language_mismatch
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
@@ -24,6 +26,7 @@ from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
     admitted_preserved_dispositions,
     archive_disposition_model,
+    classify_path,
     load_registry,
 )
 
@@ -604,6 +607,15 @@ def _regular_target(
                 and index_status.st_size <= _MAX_ANCHOR_BYTES
             ):
                 return index, None
+        # A folder with no Markdown index is still a route when it holds
+        # content: a router links such a child as the folder itself
+        # (SPEC-0184 rule 1). It has no headings, so a fragment cannot match.
+        try:
+            has_content = any(path.iterdir())
+        except OSError:
+            has_content = False
+        if has_content:
+            return path, None
         return None, "link-target-not-regular"
     if not path.is_file():
         return None, "link-target-not-regular"
@@ -623,6 +635,8 @@ def _target_headings(
     path, code = _regular_target(graph, target)
     if path is None:
         return None, code
+    if path.is_dir():
+        return (), None
     try:
         return _headings(path.read_text(encoding="utf-8")), None
     except UnicodeError:
@@ -1069,6 +1083,235 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
     return sorted(set(findings))
 
 
+_TREE_BRANCH = re.compile(r"(?:├──|└──|\|--|`--) ")
+_NAVIGATION_IGNORED_CHILDREN = frozenset({"README.md", ".gitkeep"})
+_FROZEN_README_PREFIX = "docs/98.archive/"
+
+
+def _tracked_files(root: pathlib.Path) -> frozenset[str] | None:
+    """Return the repository's tracked paths, or None when Git cannot list them."""
+
+    result = subprocess.run(
+        ["git", "-C", str(root), "ls-files", "-z"],
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode:
+        return None
+    return frozenset(item for item in result.stdout.decode("utf-8").split("\0") if item)
+
+
+def _direct_children(
+    tracked: frozenset[str], directory: str
+) -> tuple[set[str], set[str]]:
+    """Split a directory's tracked children into (directories, files)."""
+
+    prefix = f"{directory}/" if directory else ""
+    directories: set[str] = set()
+    files: set[str] = set()
+    for path in tracked:
+        if not path.startswith(prefix):
+            continue
+        rest = path[len(prefix) :]
+        head, separator, _ = rest.partition("/")
+        if separator:
+            directories.add(head)
+        elif head not in _NAVIGATION_IGNORED_CHILDREN:
+            files.add(head)
+    return directories, files
+
+
+def _fenced_lines(text: str) -> Iterable[tuple[int, str]]:
+    """Yield the lines inside fenced code blocks."""
+
+    fence: str | None = None
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        stripped = line.lstrip()
+        marker = next((m for m in ("```", "~~~") if stripped.startswith(m)), None)
+        if marker is not None and (fence is None or fence == marker):
+            fence = None if fence else marker
+            continue
+        if fence is not None:
+            yield line_no, line
+
+
+def _navigation_destinations(node: DocumentNode) -> Iterable[tuple[int, str, str]]:
+    """Include unused reference definitions in the router's destinations.
+
+    The graph includes reference uses and HTML links; a router must also not
+    hide descendant enumeration in an unused reference definition.
+    """
+
+    for line_no, line in _unfenced_lines(node.text):
+        match = _REFERENCE_DEFINITION.match(line)
+        if match:
+            yield line_no, "", match.group(2)
+        for href in _HTML_HREF.finditer(line):
+            yield line_no, "", href.group(1)
+
+
+def _raw_label(lines: list[str], link: DocumentLink) -> str:
+    """Recover a label whose inline code the link parser blanked."""
+
+    if link.label.strip() or not 0 < link.line <= len(lines):
+        return link.label
+    match = re.search(
+        r"\[([^\]]*)\]\(<?" + re.escape(link.raw_target), lines[link.line - 1]
+    )
+    return match.group(1) if match else link.label
+
+
+def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
+    """Keep a folder router's links to its direct children.
+
+    A README whose directory holds only subdirectories (besides itself and a
+    `.gitkeep`) routes readers one level down. Listing documents inside those
+    children duplicates membership the children own and drifts as soon as a
+    child changes, which is how the Stage 03 index came to carry Plan and Task
+    rows. Links outside the router's own subtree are citations, not listings.
+    """
+
+    tracked = _tracked_files(graph.repo_root)
+    if tracked is None:
+        # Without the tracked tree no README can be classified; passing
+        # silently would hide every router finding.
+        return sorted(
+            {
+                *graph.input_findings,
+                LinkFinding(
+                    ".",
+                    "navigation-tree-unavailable",
+                    "git ls-files failed; folder routers cannot be classified",
+                ),
+            }
+        )
+    tracked_directories = {str(pathlib.PurePosixPath(path).parent) for path in tracked}
+    tracked_directories |= {
+        parent.as_posix()
+        for path in tracked
+        for parent in pathlib.PurePosixPath(path).parents
+    }
+    findings: list[LinkFinding] = list(graph.input_findings)
+    for node in graph.nodes:
+        if node.path.name != "README.md":
+            continue
+        # Frozen Stage 98 bodies keep the contract they were preserved under.
+        if node.path.as_posix().startswith(_FROZEN_README_PREFIX):
+            continue
+        directory = node.path.parent
+        directory_text = "" if directory.as_posix() == "." else directory.as_posix()
+        children, files = _direct_children(tracked, directory_text)
+        router = bool(children) and not files
+        source_lines = node.text.splitlines()
+        destinations = [
+            (link.line, _raw_label(source_lines, link), link.target)
+            for link in graph.links
+            if link.source == node.path
+        ]
+        for line_no, label, raw in _navigation_destinations(node):
+            resolved = _normalized_target(node.path, raw)
+            if resolved is not None:
+                destinations.append((line_no, label, resolved[0]))
+        where = f"{node.path.as_posix()}"
+        for line_no, label, target in destinations:
+            target_text = target.as_posix()
+            folder_label = label.strip().strip("`*_ ")
+            if folder_label.endswith("/"):
+                folder = (
+                    target.parent
+                    if target.name == "README.md"
+                    else target
+                    if target_text in tracked_directories
+                    else None
+                )
+                wanted = folder_label.rstrip("/")
+                if folder is None or not (
+                    wanted in {".", ".."}
+                    or f"/{folder.as_posix()}".endswith(f"/{wanted}")
+                ):
+                    findings.append(
+                        LinkFinding(
+                            f"{where}:{line_no}",
+                            "navigation-label-mismatch",
+                            f"folder label {label.strip()} resolves to {target_text}",
+                        )
+                    )
+            if not router or target == directory:
+                continue
+            try:
+                parts = target.relative_to(directory).parts
+            except ValueError:
+                continue
+            if len(parts) >= 2 and parts[1:] != ("README.md",):
+                findings.append(
+                    LinkFinding(
+                        f"{where}:{line_no}",
+                        "navigation-descendant-link",
+                        f"folder router links inside a child: {target_text}",
+                    )
+                )
+        if not router:
+            continue
+        branches = [
+            (line_no, branch.start(), line[branch.end() :])
+            for line_no, line in _fenced_lines(node.text)
+            if (branch := _TREE_BRANCH.search(line)) is not None
+        ]
+        # Trees indent each level by a fixed width that varies between
+        # diagrams (3 or 4 columns); the smallest nonzero indent is one level.
+        unit = min((start for _, start, _ in branches if start), default=4)
+        subtree_directories = {
+            pathlib.PurePosixPath(path).name
+            for path in tracked_directories
+            if directory_text and path.startswith(f"{directory_text}/")
+        }
+        for line_no, start, rest in branches:
+            depth = start // unit + 1
+            name = rest.split("#", 1)[0].strip().split(" ")[0]
+            if (
+                depth >= 2
+                and name
+                and not name.endswith("/")
+                and name != "README.md"
+                and name not in subtree_directories
+                and "<" not in name
+            ):
+                findings.append(
+                    LinkFinding(
+                        f"{where}:{line_no}",
+                        "navigation-descendant-tree",
+                        f"folder router tree names a file inside a child: {name}",
+                    )
+                )
+    return sorted(set(findings))
+
+
+def check_language(graph: DocumentGraph) -> list[LinkFinding]:
+    """Hold every README to the language its Registry profile declares.
+
+    READMEs are judged across the whole corpus. Other documents are judged by
+    the metadata body contract when they change, until the corpus migration
+    (SPEC-0184 P2) lets this mode take them all. A profile with no declared
+    language, such as a Stage 98 record or a generated adapter, is not judged.
+    """
+
+    registry = load_registry()
+    findings: list[LinkFinding] = list(graph.input_findings)
+    for node in graph.nodes:
+        if node.path.name != "README.md":
+            continue
+        profile_id = classify_path(node.path.as_posix(), registry)
+        declared = registry.profiles.get(profile_id or "", {}).get("language")
+        if not isinstance(declared, str):
+            continue
+        reason = language_mismatch(node.text, declared)
+        if reason is not None:
+            findings.append(
+                LinkFinding(node.path.as_posix(), "document-language-mismatch", reason)
+            )
+    return sorted(set(findings))
+
+
 _COMMAND_FENCE_LANGUAGES = frozenset({"", "bash", "sh", "shell", "console", "zsh"})
 _ILLUSTRATIVE_COMMAND_MARKER = "# doc-paths: illustrative"
 _COMMAND_PATHS_UNTRACKED_BY_DESIGN = ("secrets/",)
@@ -1170,6 +1413,8 @@ MODE_HANDLERS = {
     "alignment": check_alignment,
     "entrypoint": check_entrypoint,
     "commands": check_commands,
+    "navigation": check_navigation,
+    "language": check_language,
 }
 
 

@@ -266,7 +266,11 @@ class RegisteredSectionContractTests(unittest.TestCase):
         required = tuple(
             self.registry.profiles[profile_id].get("required_sections", ())
         )
-        return body_with_headings(*(f"## {name}" for name in required)), required
+        body = body_with_headings(*(f"## {name}" for name in required))
+        if self.registry.profiles[profile_id].get("language") == "ko":
+            # A conforming body also reads in its declared language (SPEC-0184).
+            body = body.replace("Fixture content.", "이 절은 예시 본문입니다.")
+        return body, required
 
     def test_every_declaring_profile_accepts_its_own_contract(self) -> None:
         self.assertTrue(self.representatives, "no enforced profile has a document")
@@ -1613,3 +1617,91 @@ assert {f.code for f in findings} == {'runtime-version-literal'}, findings
                 self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             finally:
                 os.close(descriptor)
+
+
+class DeclaredLanguageBodyTests(unittest.TestCase):
+    """SPEC-0184 rule 4: a changed body may not introduce a language mismatch."""
+
+    KOREAN = (
+        "\n이 요구사항은 운영자가 서비스 상태를 한 곳에서 확인해야 한다는 요구를 "
+        "설명합니다. 설명 문장은 모두 한국어로 작성되어 있습니다.\n"
+    )
+    ENGLISH = (
+        "\nThis requirement describes why an operator needs one place to read "
+        "service state. Every sentence here is written in English.\n"
+    )
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = current_profiles()
+
+    def introduced(self, current: str, base: str | None) -> set[str]:
+        record = metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
+            {
+                "profile_id": "requirements-package",
+                "status": "active",
+                "artifact_id": "REQ-0001",
+                "artifact_type": "requirements-package",
+                "parent_ids": [],
+                "created": "2026-08-01",
+                "updated": "2026-08-01",
+            },
+            "requirements-package",
+            frontmatter_present=True,
+        )
+        return {
+            item.code
+            for item in metadata._introduced_body_findings(
+                record,
+                REQUIREMENT_TARGET_BODY + current,
+                record if base is not None else None,
+                None if base is None else REQUIREMENT_TARGET_BODY + base,
+                self.profiles,
+            )
+        }
+
+    def test_new_body_in_the_undeclared_language_is_introduced(self) -> None:
+        self.assertIn("document-language-mismatch", self.introduced(self.KOREAN, None))
+
+    def test_new_body_in_the_declared_language_passes(self) -> None:
+        self.assertNotIn(
+            "document-language-mismatch", self.introduced(self.ENGLISH, None)
+        )
+
+    def test_existing_mismatch_is_not_newly_introduced(self) -> None:
+        self.assertNotIn(
+            "document-language-mismatch",
+            self.introduced(self.KOREAN + "\n추가 문장입니다.\n", self.KOREAN),
+        )
+
+    def test_lifecycle_body_check_does_not_judge_existing_language(self) -> None:
+        from scripts.lib.document_governance.lifecycle import contract
+
+        record = metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
+            {
+                "profile_id": "requirements-package",
+                "status": "active",
+                "artifact_id": "REQ-0001",
+                "artifact_type": "requirements-package",
+                "parent_ids": [],
+                "created": "2026-08-01",
+                "updated": "2026-08-01",
+            },
+            "requirements-package",
+            frontmatter_present=True,
+        )
+        text = REQUIREMENT_TARGET_BODY + self.KOREAN
+        codes = {
+            item.code
+            for item in metadata.validate_body_contract(record, text, self.profiles, True)
+        }
+        self.assertIn("document-language-mismatch", codes)
+        self.assertNotIn(
+            "document-language-mismatch",
+            {
+                item.code
+                for item in contract._body_contract_errors(record, text, self.profiles)
+            },
+        )

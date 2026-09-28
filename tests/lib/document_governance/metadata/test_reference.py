@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import io
+import json
 import pathlib
 import shutil
 import subprocess
@@ -464,6 +465,17 @@ class IndexMembershipTests(unittest.TestCase):
         )
         self.assertEqual([], findings)
 
+    def test_package_directory_link_is_membership(self) -> None:
+        """SPEC-0184 rule 6: an index links a package, not its member file."""
+
+        for target in (
+            "./0002-agentic-engineering-research-pack/",
+            "0002-agentic-engineering-research-pack",
+        ):
+            with self.subTest(target=target):
+                findings = self._findings(f"# Research Packages\n\n[RES-0002]({target})\n")
+                self.assertEqual([], findings)
+
     def test_every_registered_index_governs_at_least_one_package(self) -> None:
         """A rule that enumerates nothing passes without checking anything."""
 
@@ -623,44 +635,30 @@ class ArchiveContractDiagnosticTests(unittest.TestCase):
         self.assertTrue(inventory.migrations)
 
 
-class TemplateCatalogTests(unittest.TestCase):
-    """The catalog is the documented way to find a template, so it must be whole."""
+class TemplateRoutingTests(unittest.TestCase):
+    """SPEC-0184 rule 7: `template_roles` alone maps a type to its template."""
 
-    def test_catalog_lists_every_registered_role(self) -> None:
-        registry = metadata.load_registry()
-        findings = reference_module._template_catalog_findings(ROOT, registry)
-        self.assertEqual([], findings)
-
-    def test_the_rule_governs_every_role(self) -> None:
-        """A catalog check that inspects nothing passes vacuously."""
-
-        registry = metadata.load_registry()
-        self.assertTrue(registry.template_catalog)
-        self.assertGreater(len(registry.template_roles), 30)
-
-    def test_a_missing_row_is_reported(self) -> None:
-        registry = metadata.load_registry()
-        catalog = ROOT / registry.template_catalog
-        victim = sorted(registry.template_roles)[0]
-        source = registry.template_roles[victim]["source"]
-        kept = [
-            line
-            for line in catalog.read_text(encoding="utf-8").splitlines()
-            if source.split("templates/")[-1] not in line
-        ]
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            target = root / registry.template_catalog
-            target.parent.mkdir(parents=True)
-            target.write_text("\n".join(kept), encoding="utf-8")
-            # The rule only governs roles whose source is present, so the
-            # omitted template has to exist for the omission to matter.
-            copied = root / source
-            copied.parent.mkdir(parents=True, exist_ok=True)
-            copied.write_text(
-                (ROOT / source).read_text(encoding="utf-8"), encoding="utf-8"
-            )
-            findings = reference_module._template_catalog_findings(root, registry)
-        self.assertIn(
-            "template-catalog-unlisted", [finding.code for finding in findings]
+    def test_registry_carries_no_template_catalog(self) -> None:
+        raw = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )
+        self.assertNotIn("template_catalog", raw)
+        self.assertFalse(hasattr(metadata.load_registry(), "template_catalog"))
+        self.assertFalse(hasattr(reference_module, "_template_catalog_findings"))
+
+    def test_every_role_still_names_an_existing_source(self) -> None:
+        registry = metadata.load_registry()
+        self.assertGreater(len(registry.template_roles), 30)
+        for role_id, role in registry.template_roles.items():
+            with self.subTest(role=role_id):
+                self.assertTrue((ROOT / str(role["source"])).is_file())
+
+    def test_templates_readme_routes_only_to_category_directories(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_navigation,
+        )
+
+        readme = ROOT / "docs/99.templates/templates/README.md"
+        findings = check_navigation(build_document_graph([readme], repo_root=ROOT))
+        self.assertEqual([], findings)

@@ -12,8 +12,7 @@
     "identity_spaces",
     "transitions",
     "common",
-    "indexes",
-    "template_catalog"
+    "indexes"
   ],
   "properties": {
     "schema_version": {
@@ -248,11 +247,6 @@
         "type": "string",
         "minLength": 1
       }
-    },
-    "template_catalog": {
-      "description": "Document that must link every registered template_roles source.",
-      "type": "string",
-      "minLength": 1
     }
   },
   "$defs": {
@@ -348,6 +342,12 @@
         "type": {
           "type": "string",
           "pattern": "^[a-z][a-z0-9-]*/[a-z][a-z0-9-]*$"
+        },
+        "language": {
+          "enum": [
+            "ko",
+            "en"
+          ]
         },
         "artifact_id_pattern": {
           "type": [

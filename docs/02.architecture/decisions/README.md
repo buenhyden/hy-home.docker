@@ -47,6 +47,7 @@ docs/02.architecture/decisions/
 ├── 0041-offsite-backup-target.md
 ├── 0042-openbao-unseal-method.md
 ├── 0043-operations-role-layout.md
+├── 0044-readme-navigation-and-document-language.md
 └── README.md
 ```
 
@@ -105,6 +106,9 @@ docs/02.architecture/decisions/
 - [`ADR-0043`](./0043-operations-role-layout.md):
   Stage 05를 domain catalog에서 역할 우선(`guides/`, `policies/`, `runbooks/`,
   `incidents/`) 구조로 바꾸는 proposed decision(SPEC-0183).
+- [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
+  README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
+  통합하는 proposed decision(SPEC-0184).
 
 ## How to Work in This Area
 

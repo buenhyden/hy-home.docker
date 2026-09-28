@@ -1,23 +1,24 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 # Workflow Tier (07-workflow)
 
-> Airflow code-first orchestration and n8n low-code automation.
+> Airflow의 code-first 오케스트레이션과 n8n의 low-code 자동화입니다.
 
 ## Overview
 
-`07-workflow`는 Airflow와 n8n을 운영한다. broker는 shared `mng-valkey` 또는
-`dedicated-valkey` profile로 전용 instances를 기동할 수 있다. 실제 broker 전환은 각 서비스의 host/secret environment pair를 함께 바꿔야 한다.
+`07-workflow`는 Airflow와 n8n을 운영합니다. 브로커는 공유 `mng-valkey`를 쓰거나
+`dedicated-valkey` 프로필로 전용 인스턴스를 기동할 수 있습니다. 실제 브로커
+전환 시에는 각 서비스의 host/secret 환경 변수 쌍을 함께 바꿔야 합니다.
 
-Authentication은 서비스별로 다르다.
+인증은 서비스별로 다릅니다.
 
 - Airflow: Native Keycloak Auth Manager
 - Flower: OAuth2 Proxy ForwardAuth
@@ -34,9 +35,9 @@ Authentication은 서비스별로 다르다.
 
 - Airflow
 - n8n
-- workflow broker
-- workflow DB
-- public UI auth boundary
+- 워크플로우 브로커
+- 워크플로우 DB
+- 공개 UI 인증 경계
 
 ## Structure
 
@@ -49,11 +50,11 @@ Authentication은 서비스별로 다르다.
 
 ## How to Work in This Area
 
-1. Airflow/N8n operations docs 확인.
-2. Airflow auth 변경은 Native OIDC contract 확인.
-3. Flower/n8n auth 변경은 ForwardAuth contract 확인.
-4. broker profile과 host/secret pair를 함께 검토.
-5. hardening/compose validation 실행.
+1. Airflow/n8n 운영 문서를 확인합니다.
+2. Airflow 인증 변경 시에는 Native OIDC 계약을 확인합니다.
+3. Flower/n8n 인증 변경 시에는 ForwardAuth 계약을 확인합니다.
+4. 브로커 프로필과 host/secret 쌍을 함께 검토합니다.
+5. hardening/compose 검증을 실행합니다.
 
 ## Tech Stack
 
@@ -79,10 +80,10 @@ Authentication은 서비스별로 다르다.
 ## Configuration
 
 - Airflow/n8n DB: `mng-pg`
-- default broker: `mng-valkey`
-- `dedicated-valkey`: dedicated Airflow/n8n Valkey
-- Airflow UI auth: Keycloak direct
-- Flower/n8n UI auth: ForwardAuth
+- 기본 브로커: `mng-valkey`
+- `dedicated-valkey`: Airflow/n8n 전용 Valkey
+- Airflow UI 인증: Keycloak 직접 연동
+- Flower/n8n UI 인증: ForwardAuth
 
 ## Testing
 
@@ -93,13 +94,13 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 ## Change Impact
 
-- Airflow version/provider -> DB/Auth migration 가능
-- broker -> workers 영향
-- auth middleware -> login/access 영향
+- Airflow 버전/provider 변경 -> DB/인증 마이그레이션이 필요할 수 있음
+- 브로커 변경 -> worker에 영향
+- 인증 미들웨어 변경 -> 로그인/접근에 영향
 
 ### Convergence service and command map
 
-Run from the repository root: `docker compose --profile workflow config --quiet` for static preflight and `docker compose --profile workflow up -d` for the core target.
+저장소 루트에서 실행합니다. 정적 사전 점검은 `docker compose --profile workflow config --quiet`, 핵심 대상 시작은 `docker compose --profile workflow up -d`입니다.
 
 | Package/services | Class | Exact profiles |
 | --- | --- | --- |
@@ -108,14 +109,14 @@ Run from the repository root: `docker compose --profile workflow config --quiet`
 | Airflow Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 | n8n Valkey + exporter | OPTIONAL | `dedicated-valkey` |
 
-The profile starts optional brokers but does not select them. Set each application's matching host and secret selector together. The stable documentation entry point is [docs/README.md](../../docs/README.md); exact Stage 05 subjects are `GDE/POL/RUN-0050` at `docs/05.operations/guides/0050-airflow.md` and `GDE/POL/RUN-0053` at `docs/05.operations/guides/0053-n8n.md`.
+이 프로필은 선택적 브로커를 시작만 할 뿐 선택하지는 않습니다. 각 애플리케이션에 맞는 host와 secret 선택자를 함께 설정해야 합니다. 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
 ## Related Documents
 
 - [Data](../04-data/README.md)
 - [Observability](../06-observability/README.md)
 - [Gateway](../01-gateway/README.md)
-- [Auth Integration](../../docs/README.md)
+- **Auth Integration**: `docs/05.operations/guides/0079-application-auth-integration.md` (진입점: [docs/README.md](../../docs/README.md))
 - [Documentation index](../../docs/README.md)
 
-Workflow services are owner-confirmed always-on HOME capabilities; runtime pins are owned by the Compose/Dockerfile declarations and the [derived Compose image projection](../tech-stack.versions.json) provides drift verification.
+워크플로우 서비스는 소유자가 확인한 상시 HOME 역량입니다. 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)으로 드리프트를 검증합니다.

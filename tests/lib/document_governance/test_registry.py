@@ -2574,6 +2574,75 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
 
+class ProfileLanguageTests(unittest.TestCase):
+    """SPEC-0184 rule 4: every prose profile declares its language."""
+
+    README_KO = frozenset(
+        {
+            "readme",
+            "documentation-readme",
+            "repository-readme",
+            "package-readme",
+            "reference-category-readme",
+            "incident-year-readme",
+            "research",
+            "audit",
+            "data",
+            "governance-provider-index",
+            "governance-knowledge-index",
+            "governance-prompt-index",
+        }
+    )
+    OPERATIONS_KO = frozenset({"guide", "policy", "runbook", "incident", "postmortem"})
+    UNJUDGED = frozenset(
+        {
+            "runtime-governance-readme",
+            "template-source",
+            "generated",
+            "unsupported",
+            "runtime-projection-claude",
+            "runtime-projection-codex",
+            "openapi-contract",
+            "graphql-contract",
+            "proto-contract",
+            "migration",
+            "tombstone",
+        }
+    )
+
+    def test_schema_rejects_an_undeclared_language(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        raw["profiles"][0]["language"] = "fr"
+        self.assertIn(
+            "schema-invalid", {finding.code for finding in validate_registry(raw)}
+        )
+
+    def test_profiles_declare_the_language_their_role_requires(self) -> None:
+        registry = load_registry()
+        for profile_id, profile in registry.profiles.items():
+            declared = profile.get("language")
+            if profile_id in self.README_KO | self.OPERATIONS_KO:
+                expected = "ko"
+            elif profile_id in self.UNJUDGED or profile_id.startswith(
+                "archive-record-"
+            ):
+                expected = None
+            else:
+                expected = "en"
+            with self.subTest(profile=profile_id):
+                self.assertEqual(expected, declared)
+
+    def test_support_readmes_classify_to_one_profile(self) -> None:
+        registry = load_registry()
+        for path in (
+            "tests/lib/README.md",
+            "tests/validation/README.md",
+            "_workspace/repo-support/README.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual("repository-readme", classify_path(path, registry))
+
+
 if __name__ == "__main__":
     unittest.main()
 

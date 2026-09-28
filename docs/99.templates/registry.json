@@ -489,6 +489,12 @@
           "cancelled",
           "superseded",
           "retired"
+        ],
+        "incident-year-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
         ]
       }
     },
@@ -502,6 +508,7 @@
     {
       "id": "requirements-package",
       "type": "sdlc/requirement",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/01.requirements/{number:4}-{slug}.md",
       "artifact_id_pattern": "REQ-{number:4}",
@@ -555,6 +562,7 @@
     {
       "id": "architecture-description",
       "type": "sdlc/architecture-description",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/02.architecture/descriptions/{number:4}-{slug}.md",
       "artifact_id_pattern": "AD-{number:4}",
@@ -604,6 +612,7 @@
     {
       "id": "adr",
       "type": "sdlc/architecture-decision",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/02.architecture/decisions/{number:4}-{slug}.md",
       "artifact_id_pattern": "ADR-{number:4}",
@@ -653,6 +662,7 @@
     {
       "id": "spec",
       "type": "sdlc/spec",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{number:4}-{slug}/spec.md",
       "artifact_id_pattern": "SPEC-{number:4}",
@@ -708,6 +718,7 @@
     {
       "id": "data-model-contract",
       "type": "sdlc/data-model",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/contracts/data-model.md",
       "artifact_id_pattern": null,
@@ -814,6 +825,7 @@
     {
       "id": "plan",
       "type": "sdlc/plan",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/plan.md",
       "artifact_id_pattern": "SPEC-{package_number:4}-PLAN-{member_number:4}",
@@ -859,6 +871,7 @@
     {
       "id": "task",
       "type": "sdlc/task",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md",
       "artifact_id_pattern": "SPEC-{package_number:4}-TSK-{task_number:4}",
@@ -918,6 +931,7 @@
     {
       "id": "guide",
       "type": "operation/guide",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/guides/{number:4}-{slug}.md",
       "artifact_id_pattern": "GDE-{number:4}",
@@ -969,6 +983,7 @@
     {
       "id": "policy",
       "type": "operation/policy",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/policies/{number:4}-{slug}.md",
       "artifact_id_pattern": "POL-{number:4}",
@@ -1022,6 +1037,7 @@
     {
       "id": "runbook",
       "type": "operation/runbook",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/runbooks/{number:4}-{slug}.md",
       "artifact_id_pattern": "RUN-{number:4}",
@@ -1076,6 +1092,7 @@
     {
       "id": "incident",
       "type": "operation/incident",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md",
       "artifact_id_pattern": "inc-{year:4}-{number:4}",
@@ -1134,6 +1151,7 @@
     {
       "id": "postmortem",
       "type": "operation/postmortem",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md",
       "artifact_id_pattern": "inc-{year:4}-{number:4}-PM",
@@ -1194,6 +1212,7 @@
     {
       "id": "reference-category-readme",
       "type": "reference/category-readme",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/{category}/README.md",
       "artifact_id_pattern": null,
@@ -1233,6 +1252,7 @@
     {
       "id": "research",
       "type": "reference/research-pack",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/research/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "RES-{number:4}",
@@ -1288,6 +1308,7 @@
     {
       "id": "audit",
       "type": "reference/audit-pack",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/audits/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "AUD-{number:4}",
@@ -1343,6 +1364,7 @@
     {
       "id": "data",
       "type": "reference/data-pack",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/data/{number:4}-{slug}/README.md",
       "artifact_id_pattern": "DATA-{number:4}",
@@ -1398,6 +1420,7 @@
     {
       "id": "research-member",
       "type": "reference/research",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/research/{number:4}-{slug}/m{member_number:4}-{slug}.md",
       "artifact_id_pattern": "RES-{number:4}-m{member_number:4}",
@@ -1443,6 +1466,7 @@
     {
       "id": "audit-member",
       "type": "reference/audit",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/audits/{number:4}-{slug}/m{member_number:4}-{slug}.md",
       "artifact_id_pattern": "AUD-{number:4}-m{member_number:4}",
@@ -1617,6 +1641,7 @@
     {
       "id": "archive-retention-catalog",
       "type": "archive/retention-catalog",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": "docs/98.archive/retention-catalog.md",
       "artifact_id_pattern": null,
@@ -1645,6 +1670,7 @@
     {
       "id": "documentation-readme",
       "type": "common/documentation-readme",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/README.md",
       "artifact_id_pattern": null,
@@ -1690,6 +1716,7 @@
     {
       "id": "repository-readme",
       "type": "common/repository-readme",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "README.md",
       "additional_paths": [
@@ -1701,7 +1728,10 @@
         "projects/README.md",
         "scripts/README.md",
         "secrets/README.md",
-        "tests/README.md"
+        "tests/README.md",
+        "tests/lib/README.md",
+        "tests/validation/README.md",
+        "_workspace/repo-support/README.md"
       ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
@@ -1741,6 +1771,7 @@
     {
       "id": "package-readme",
       "type": "common/package-readme",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "infra/{subpath}/README.md",
       "additional_paths": [
@@ -1841,6 +1872,7 @@
     {
       "id": "readme",
       "type": "common/readme",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/01.requirements/README.md",
       "additional_paths": [
@@ -1943,8 +1975,44 @@
       }
     },
     {
+      "id": "incident-year-readme",
+      "type": "operation/incident-year-readme",
+      "language": "ko",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/05.operations/incidents/{year:4}/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by"
+      ],
+      "required_sections": [
+        "Overview",
+        "Structure",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
+      }
+    },
+    {
       "id": "governance-policy",
       "type": "governance/policy",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/bootstrap.md",
       "artifact_id_pattern": null,
@@ -1996,6 +2064,7 @@
     {
       "id": "governance-hook-policy",
       "type": "governance/hook-policy",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/hooks/{hook_slug}.md",
       "artifact_id_pattern": null,
@@ -2033,6 +2102,7 @@
     {
       "id": "governance-role",
       "type": "governance/role",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/roles/{slug}.md",
       "artifact_id_pattern": null,
@@ -2074,6 +2144,7 @@
     {
       "id": "governance-skill",
       "type": "governance/skill",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/skills/{slug}/SKILL.md",
       "artifact_id_pattern": null,
@@ -2115,6 +2186,7 @@
     {
       "id": "governance-provider",
       "type": "governance/provider",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".claude/provider.md",
       "artifact_id_pattern": null,
@@ -2150,6 +2222,7 @@
     {
       "id": "governance-provider-index",
       "type": "governance/provider-index",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/providers/README.md",
       "artifact_id_pattern": null,
@@ -2179,6 +2252,7 @@
     {
       "id": "governance-sdlc",
       "type": "governance/sdlc",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/sdlc.md",
       "artifact_id_pattern": null,
@@ -2209,6 +2283,7 @@
     {
       "id": "governance-knowledge",
       "type": "governance/knowledge",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/{slug}.md",
       "artifact_id_pattern": null,
@@ -2244,6 +2319,7 @@
     {
       "id": "governance-knowledge-index",
       "type": "governance/knowledge-index",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/README.md",
       "artifact_id_pattern": null,
@@ -2275,6 +2351,7 @@
     {
       "id": "governance-prompt",
       "type": "governance/prompt",
+      "language": "en",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/prompts/{slug}.md",
       "artifact_id_pattern": null,
@@ -2308,6 +2385,7 @@
     {
       "id": "governance-prompt-index",
       "type": "governance/prompt-index",
+      "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/prompts/README.md",
       "artifact_id_pattern": null,
@@ -4371,6 +4449,7 @@
     "governance-skill": "living",
     "guide": "living",
     "incident": "incident",
+    "incident-year-readme": "living",
     "migration": "sealed-record",
     "package-readme": "living",
     "plan": "plan",
@@ -4394,6 +4473,5 @@
     "docs/90.references/audits/README.md": "audit",
     "docs/90.references/data/README.md": "data",
     "docs/90.references/research/README.md": "research"
-  },
-  "template_catalog": "docs/99.templates/templates/README.md"
+  }
 }

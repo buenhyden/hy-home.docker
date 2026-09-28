@@ -1,10 +1,10 @@
 ---
 title: "Agent Evaluation Harness"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 created: "2026-09-03"
 ---
 
@@ -15,10 +15,10 @@ created: "2026-09-03"
 ## Overview
 
 `evals/`는 에이전트 출력 품질을 결정론적으로 채점하는 하니스를 소유합니다.
-고정된 픽스처 카탈로그와 합성 회귀 집합을 가지고, 모델 호출 없이 로컬과 CI에서
+하니스에는 고정된 픽스처 카탈로그와 합성 회귀 집합이 들어 있으며 모델 호출 없이 로컬과 CI에서
 동일한 점수를 냅니다.
 
-하니스가 검증하는 것은 **저장소 의미론**입니다. 살아 있는 모델이나 제공자 간
+하니스는 **저장소 의미론**을 검증합니다. 살아 있는 모델이나 제공자 간
 품질 비교는 여기서 주장하지 않으며, 그런 평가는 별도 승인 대상입니다.
 
 `scripts/`는 저장소를 검사하는 자동화를, `evals/`는 에이전트 출력을 채점하는
@@ -40,7 +40,7 @@ created: "2026-09-03"
 ### Out of Scope
 
 - 살아 있는 모델 호출과 제공자 간 비교 점수
-- 픽스처의 서술적 근거 문서 — Stage 90 픽스처 참조 (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)가 소유합니다
+- 픽스처의 서술적 근거 문서 — [`fixture-catalog.md`](fixture-catalog.md)가 소유합니다
 - 회귀 테스트 자체 — `tests/validation/test_agent_output_eval_fixtures.py`가 소유합니다
 
 ## Structure
@@ -70,7 +70,7 @@ bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regression
 
 ## How to Work in This Area
 
-1. 픽스처를 추가하거나 임계값을 바꾸기 전에 Stage 90 픽스처 참조 (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)를 먼저 갱신합니다 → 하니스가 그 문서를 카탈로그 근거로 읽습니다.
+1. 픽스처를 추가하거나 임계값을 바꾸기 전에 [`fixture-catalog.md`](fixture-catalog.md)를 먼저 갱신합니다 → 하니스가 그 문서를 카탈로그 근거로 읽습니다.
 2. `agent_output_eval.py`의 `FIXTURES` 항목을 참조 문서와 일치시킵니다 → `--check-fixtures`가 `pass`.
 3. 회귀 집합을 함께 갱신합니다 → `--check-regressions`가 `pass`.
 4. `scripts/manifest.yaml`의 해당 행을 갱신합니다 → `python3 scripts/validation/check-script-manifest.py`가 종료 코드 `0`.
@@ -82,7 +82,7 @@ bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regression
 
 ## Related Documents
 
-- Fixture reference (`docs/90.references/data/0064-agent-output-eval-fixtures/README.md`)
+- Fixture reference ([`fixture-catalog.md`](fixture-catalog.md))
 - [Provider model evaluation skill](../.agents/skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../scripts/manifest.yaml)
 - [Scripts surface](../scripts/README.md)

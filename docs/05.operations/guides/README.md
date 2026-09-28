@@ -1,10 +1,10 @@
 ---
 title: "Operations Guides"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 ---
 
@@ -14,7 +14,7 @@ layer: "operations"
 
 ## Overview
 
-Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하는 데 필요한 맥락을 소유한다. 실행 절차가 필요하면 같은 slug의 Runbook으로 넘긴다.
+Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하는 데 필요한 맥락을 소유한다. 실행 절차가 필요하면 같은 slug의 Runbook으로 넘긴다. 아래 표는 도메인별로 등록된 모든 Guide를 한 번씩 나열하며 각 행의 관련 문서 열에서 같은 subject의 Policy와 Runbook을 찾을 수 있다.
 
 ## Audience
 
@@ -180,7 +180,7 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 ## How to Work in This Area
 
 1. 새 Guide는 [Guide template](../../99.templates/templates/operations/guide.template.md)으로 시작한다.
-2. 새 subject 번호는 subject마다 하나를 발급하고, 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.
+2. 새 subject 번호는 subject마다 하나를 발급하고 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.
 3. 문서를 추가, 이동, 삭제하면 이 인덱스에 한 줄로 반영한다. 검증기는 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
 4. 해당 역할이 필요 없는 subject에는 빈 문서를 만들지 않는다.
 

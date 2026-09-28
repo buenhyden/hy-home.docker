@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-12-06"
 ---
 
@@ -12,36 +12,37 @@ created: "2025-12-06"
 
 ## Overview
 
-This package defines SeaweedFS, the HOME S3 object store. It replaced MinIO
-in SPEC-0180 S07.
+이 패키지는 HOME S3 오브젝트 스토어인 SeaweedFS를 정의합니다. SPEC-0180 S07에서
+MinIO를 대체했습니다.
 
 ## Audience
 
-It is intended for operators and maintainers of object storage.
+오브젝트 저장소의 operator와 maintainer를 대상으로 합니다.
 
 ## Scope
 
-[`docker-compose.yml`](docker-compose.yml) defines `seaweedfs-master`,
-`seaweedfs-volume`, `seaweedfs-filer`, and `seaweedfs-s3`. Profiles
-`seaweedfs`, `storage-seaweedfs` and every S3 consumer profile (`storage`,
-`obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`) select
-them with `seaweedfs-buckets`; `lakehouse` also selects `seaweedfs-table-bucket`. S3 is the only interface:
-the FUSE mount was removed in S04, and master and filer have no route.
+[`docker-compose.yml`](docker-compose.yml)이 `seaweedfs-master`,
+`seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를 정의합니다. `seaweedfs`,
+`storage-seaweedfs` profile과 모든 S3 소비자 profile(`storage`, `obs`, `logs`,
+`tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`)이 `seaweedfs-buckets`와
+함께 이들을 선택합니다. `lakehouse`는 `seaweedfs-table-bucket`도 선택합니다.
+S3가 유일한 인터페이스입니다. FUSE mount는 S04에서 제거되었고 master와
+filer에는 route가 없습니다.
 
 ## Structure
 
 | Path | Role |
 | --- | --- |
-| `docker-compose.yml` | four services, data-disk bind volumes, secrets |
-| `config/hyhome-seaweedfs.sh` | start script: builds JWT, gRPC mTLS and S3 identity configuration from secrets |
-| `config/s3-identities.conf` | bucket-scoped consumer identities (loki, tempo, mlflow, terrakube, lakehouse) and anonymous CDN reads |
-| `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: idempotent bucket creation with the admin identity |
-| `config/seaweedfs-table-bucket.sh` | `seaweedfs-table-bucket` job (`lakehouse`): Iceberg table bucket, its scoped policy and the `dev`/`test` namespaces |
-| `bin/gen-grpc-certs.sh` | host script: issues the SeaweedFS-only gRPC CA and certificates |
+| `docker-compose.yml` | 4개 서비스, 데이터 디스크 bind volume, secret |
+| `config/hyhome-seaweedfs.sh` | 시작 스크립트: secret으로 JWT, gRPC mTLS, S3 identity 설정을 구성함 |
+| `config/s3-identities.conf` | bucket 범위의 소비자 identity(loki, tempo, mlflow, terrakube, lakehouse)와 익명 CDN 읽기 |
+| `config/seaweedfs-buckets.sh` | `seaweedfs-buckets` job: admin identity로 수행하는 idempotent bucket 생성 |
+| `config/seaweedfs-table-bucket.sh` | `seaweedfs-table-bucket` job(`lakehouse`): Iceberg table bucket, 범위 정책, `dev`/`test` namespace |
+| `bin/gen-grpc-certs.sh` | 호스트 스크립트: SeaweedFS 전용 gRPC CA와 인증서를 발급함 |
 
-State lives under `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`, owned
-by UID 1000. Master, volume and filer are only on `seaweed_internal`. S3 also
-joins `object_net` for clients and `edge_net` for its route.
+상태는 `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` 아래에 있으며 UID
+1000이 소유합니다. Master, volume, filer는 `seaweed_internal`에만 있습니다.
+S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다.
 
 ## How to Work in This Area
 
@@ -51,13 +52,13 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-First activation, backup and restore follow RUN-0024. The daily backup takes
-filer metadata and the volume and master trees in one ordered set (RUN-0021).
+최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
+volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).
 
 ## Related Documents
 
-Use the [documentation entry point](../../../../docs/README.md) to locate Stage 05
-subject `04-data/0024-seaweedfs` and POL-0021. Official sources:
+[문서 진입점](../../../../docs/README.md)에서 Stage 05 subject
+`docs/05.operations/guides/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
 [data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup),
-[security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration), and
+[security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration),
 [license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).

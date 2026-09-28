@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-27"
 created: "2026-03-19"
 ---
 
@@ -12,90 +12,89 @@ created: "2026-03-19"
 
 ## Overview
 
-Pyroscope provides continuous profiling of applications to identify performance bottlenecks, CPU hot paths, and memory leaks. It collects profiling data (CPU, memory, etc.) and allows developers to visualize it over time using flamegraphs.
+Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 병목, CPU 핫 패스, 메모리 누수를 식별합니다. 프로파일링 데이터(CPU, 메모리 등)를 수집합니다. 개발자는 플레임그래프로 시간 경과에 따른 변화를 시각화할 수 있습니다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- Backend Developers (Performance optimization)
-- SRE / DevOps Engineers (Resource management)
+- Backend Developers (성능 최적화)
+- SRE / DevOps Engineers (리소스 관리)
 - AI Agents
 
 ## Scope
 
 ### In Scope
 
-- Pyroscope service configuration and deployment.
-- Continuous profiling data ingestion and storage.
-- Integration with Grafana for visualization.
+- Pyroscope 서비스 설정 및 배포.
+- 연속 프로파일링 데이터 수집 및 저장.
+- 시각화를 위한 Grafana 연동.
 
 ### Out of Scope
 
-- Application-level profiling agents (handled by [Grafana Alloy](../alloy/README.md)).
-- Long-term archival of profiling data (governed by Retention Policy (`docs/05.operations/policies/0047-pyroscope.md`)).
+- 애플리케이션 수준 프로파일링 에이전트 ([Grafana Alloy](../alloy/README.md)에서 처리).
+- 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/0047-pyroscope.md`)에서 관리).
 
 ## Structure
 
 ```text
 pyroscope/
-├── README.md           # This file
-└── config/
-    └── pyroscope.yaml  # Main configuration file
+├── README.md  # This file
+└── config/    # Main configuration file
 ```
 
 ## Tech Stack
 
-Runtime image pins are declared in [Compose](../docker-compose.yml). The [version registry](../../tech-stack.versions.json) is a curated projection.
+런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
 | Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
-| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | Declared in Compose | Continuous Profiling Engine |
-| Collector | [Grafana Alloy](../alloy/README.md) | Declared in Compose | Profile Scraping & Remapping |
-| Visualization | [Grafana](../grafana/README.md) | Declared in Compose | Unified Dashboards |
+| Profiling | [Grafana Pyroscope](https://github.com/grafana/pyroscope) | Compose에 선언됨 | 연속 프로파일링 엔진 |
+| Collector | [Grafana Alloy](../alloy/README.md) | Compose에 선언됨 | 프로파일 스크레이핑 및 재매핑 |
+| Visualization | [Grafana](../grafana/README.md) | Compose에 선언됨 | 통합 대시보드 |
 
 ## Available Scripts
 
 | Command | Description |
 | :--- | :--- |
-| `docker compose --profile obs up -d pyroscope` | Start Pyroscope service from the repository root |
-| `docker compose --profile obs restart pyroscope` | Apply configuration changes from the repository root |
+| `docker compose --profile obs up -d pyroscope` | 저장소 루트에서 Pyroscope 서비스 시작 |
+| `docker compose --profile obs restart pyroscope` | 저장소 루트에서 설정 변경 사항 적용 |
 
 ## Configuration
 
-- **Ingestion**: Receives profiling data via Protobuf over HTTP (Port 4040).
-- **Storage**: Local filesystem backend (`/var/lib/pyroscope`).
-- **Retention**: No fixed retention period is declared in `pyroscope.yaml`; capacity and retention changes require policy review.
+- **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).
+- **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`).
+- **Retention**: `pyroscope.yaml`에 고정 보존 기간이 선언되어 있지 않습니다. 용량 및 보존 변경은 정책 검토가 필요합니다.
 
 ## Operational Status
 
 > [!IMPORTANT]
-> Pyroscope currently uses a local filesystem backend mounted at `/var/lib/pyroscope`. A fixed retention period is not declared in `pyroscope.yaml`; capacity and retention changes require an approved config update.
+> Pyroscope는 현재 `/var/lib/pyroscope`에 마운트된 로컬 파일시스템 백엔드를 사용합니다. `pyroscope.yaml`에는 고정 보존 기간이 선언되어 있지 않습니다. 용량 및 보존 변경에는 승인된 설정 업데이트가 필요합니다.
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after any Compose or config reference changes.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking documentation ready.
-- Verify profiling ingestion by checking `docker logs --tail=200 infra-pyroscope` after config changes.
-- Confirm profiles appear in Grafana Pyroscope datasource after Alloy sends profiling data.
-- Confirm Pyroscope readiness with `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`.
+- Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
+- 설정 변경 후 `docker logs --tail=200 infra-pyroscope`로 프로파일링 수집을 확인합니다.
+- Alloy가 프로파일링 데이터를 전송한 후 Grafana Pyroscope 데이터소스에 프로파일이 나타나는지 확인합니다.
+- `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`로 Pyroscope 준비 상태를 확인합니다.
 
 ## Troubleshooting
 
-- Start with `docker compose --profile obs config --quiet` to confirm network, volume, secret, and label references render correctly.
-- Check container logs and the linked runbook before changing configuration or secret references.
-- For ingestion errors: confirm Alloy's Pyroscope exporter endpoint matches the Pyroscope container's push API.
-- For missing profiles: verify service name labels in Alloy's profiling configuration match expected Pyroscope app names.
-- For storage issues: confirm the Pyroscope data volume is mounted and has sufficient disk space.
-- For retention, storage backend, ingestion limit, or profile data deletion: stop and use the linked runbook escalation path before taking data-loss-risk action.
+- 네트워크, 볼륨, 시크릿, 레이블 참조가 올바르게 렌더링되는지 `docker compose --profile obs config --quiet`로 먼저 확인합니다.
+- 설정이나 시크릿 참조를 변경하기 전에 컨테이너 로그와 연결된 런북을 확인합니다.
+- 수집 오류: Alloy의 Pyroscope exporter 엔드포인트가 Pyroscope 컨테이너의 push API와 일치하는지 확인합니다.
+- 프로파일 누락: Alloy의 프로파일링 설정에 있는 서비스명 레이블이 예상되는 Pyroscope 앱 이름과 일치하는지 확인합니다.
+- 저장소 문제: Pyroscope 데이터 볼륨이 마운트되어 있고 디스크 여유 공간이 충분한지 확인합니다.
+- 보존, 저장소 백엔드, 수집 한도, 프로파일 데이터 삭제: 데이터 손실 위험이 있는 작업을 하기 전에 중지하고 연결된 런북의 에스컬레이션 경로를 사용합니다.
 
 ### Convergence contract
 
 - Classification: **OPTIONAL**. Exact profiles: `obs`, `profiling`.
-- Source authority: `infra/06-observability/docker-compose.yml` plus this package's tracked config/build inputs; image declarations are authoritative and `infra/tech-stack.versions.json` is derived.
+- Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
-- The stable entry point is [docs/README.md](../../../docs/README.md). Exact Stage 05 path: `docs/05.operations/guides/0047-pyroscope.md`; IDs `GDE-0047`, `POL-0047`, `RUN-0047`.
-- Follow that runbook's planned isolated recovery. It is unexecuted unless dated evidence says otherwise; do not mutate live state from this README.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.
+- 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주합니다. 이 README에서는 운영 중인 상태를 변경하지 않습니다.
 
 ## Related Documents
 
@@ -108,6 +107,6 @@ Runtime image pins are declared in [Compose](../docker-compose.yml). The [versio
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
-1. **Flamegraph Analysis**: Use the `traceqlEditor` feature toggle in Grafana to correlate profiles with traces.
-2. **Resource Monitoring**: Profiling ingestion can be CPU-intensive; monitor `infra-pyroscope` container stats during peak loads.
-3. **Traceability**: Refer to the dedicated system guide for remapping logic and custom labels.
+1. **Flamegraph Analysis**: Grafana의 `traceqlEditor` 기능 토글로 프로파일을 트레이스와 연관 짓습니다.
+2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `infra-pyroscope` 컨테이너 통계를 모니터링합니다.
+3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.

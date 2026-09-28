@@ -1714,6 +1714,9 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                 continue
             for packet_entry in year_entries:
                 packet_relative = year_relative / packet_entry.name
+                # The year's own README routes its packets (SPEC-0184 rule 1).
+                if packet_entry.name == "README.md" and packet_entry.is_regular:
+                    continue
                 packet_match = _INCIDENT.fullmatch(packet_entry.name)
                 if packet_match is None or not packet_entry.is_directory:
                     findings.append(

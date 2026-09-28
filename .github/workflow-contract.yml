@@ -346,6 +346,7 @@
         "tests.lib.document_governance.test_archive_catalog_contract",
         "tests.lib.document_governance.test_archive_snapshots",
         "tests.lib.document_governance.test_identity_history",
+        "tests.lib.document_governance.test_language",
         "tests.lib.document_governance.test_links",
         "tests.lib.document_governance.test_metadata_validator",
         "tests.lib.document_governance.test_operations_catalog",

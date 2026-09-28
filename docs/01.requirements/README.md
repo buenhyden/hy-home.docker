@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "requirements"
 ---
 
@@ -27,7 +27,9 @@ Stage 03, 실행 증거는 현재 변경 패킷, 운영 절차는 Stage 05가 �
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, non-functional, solution-independent interface 요구사항을 같은
-경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다.
+경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다. 이 README는
+개별 패키지를 하나씩 나열하지 않으며 전체 목록은 실제 디렉터리의 파일
+목록이 소유한다.
 
 Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
 위험과 추적성을 소유한다. 아키텍처 구조, 선택의 근거, 구현 계약과 운영
@@ -98,8 +100,3 @@ Agent는 기존 Requirement Package를 제자리에서 수정하고 병렬·호�
 - [Architecture Decisions](../02.architecture/decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
-- [Agent Governance Standardization Requirements](./0024-agent-governance-standardization.md)
-- [Operational Readiness Closure Requirements](./0025-operational-readiness-closure.md)
-- [문서 보존 및 은퇴 요구사항](./0026-document-retention-and-retirement.md)
-
-- [Home and Development Host Requirements](./0027-home-development-host.md)

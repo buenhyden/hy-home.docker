@@ -283,7 +283,8 @@ def _pointer(
     # form, so it carries that form's frontmatter. Provider instruction files
     # such as CLAUDE.md stay provider-owned and frontmatter-free.
     envelope = ""
-    if path is not None and path.name == "README.md":
+    is_readme = path is not None and path.name == "README.md"
+    if is_readme:
         envelope = (
             "---\n"
             f'title: "{title}"\n'
@@ -295,7 +296,12 @@ def _pointer(
             'generated_by: "scripts/operations/provider_surface_renderer.py"\n'
             "---\n\n"
         )
-    return f"{envelope}{_marker(source)}\n\n# {title}\n\nThis generated adapter routes to `{source}`.\n".encode()
+    route_sentence = (
+        f"이 생성 어댑터는 `{source}`로 안내합니다."
+        if is_readme
+        else f"This generated adapter routes to `{source}`."
+    )
+    return f"{envelope}{_marker(source)}\n\n# {title}\n\n{route_sentence}\n".encode()
 
 
 def render_all(

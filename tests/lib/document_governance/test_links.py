@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from typing import ClassVar
 from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -1448,6 +1449,31 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("link-target-not-regular", codes)
         self.assertIn("link-target-symlink", codes)
 
+    def test_alignment_accepts_a_folder_route_without_an_index(self) -> None:
+        """SPEC-0184 rule 1: a child folder with no README is linked as a folder."""
+
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/README.md"
+            nested = root / "docs/lakehouse/spark/docker-compose.yml"
+            nested.parent.mkdir(parents=True)
+            nested.write_text("services: {}\n", encoding="utf-8")
+            source.write_text(
+                "[lakehouse](./lakehouse/)\n[anchor](./lakehouse/#x)\n",
+                encoding="utf-8",
+            )
+            graph = build_document_graph([source], repo_root=root)
+            findings = check_alignment(graph)
+        self.assertEqual(
+            {("docs/README.md:2", "missing-link-anchor")},
+            {(finding.path, finding.code) for finding in findings},
+        )
+
     def test_alignment_rejects_target_symlink_ancestors(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
@@ -1889,6 +1915,203 @@ class LinkSelectionScopeTests(unittest.TestCase):
                 "docs/90.references/research/0084-github-actions-platform/README.md",
             ):
                 self.assertIn(relative, selected)
+
+
+class NavigationModeTests(unittest.TestCase):
+    """SPEC-0184 rules 1-3: a folder router links only its direct children."""
+
+    ROUTER_TREE: ClassVar[dict[str, str]] = {
+        "docs/x/a/README.md": "# A\n",
+        "docs/x/a/spec.md": "# Spec\n",
+        "docs/x/a/plan.md": "# Plan\n",
+        "docs/x/a/tasks/tsk-0001-x.md": "# Task\n",
+        "docs/x/a/b/README.md": "# B\n",
+        "docs/x/c/.gitkeep": "",
+        "docs/other/y.md": "# Y\n",
+    }
+
+    def _findings(self, readme: str, extra: dict[str, str] | None = None):
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        files = dict(self.ROUTER_TREE, **(extra or {}))
+        files["docs/x/README.md"] = readme
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            track_repository(root)
+            documents = [root / name for name in files if name.endswith(".md")]
+            return run_mode("navigation", build_document_graph(documents, repo_root=root))
+
+    def _codes(self, readme: str, extra: dict[str, str] | None = None) -> set[str]:
+        return {
+            finding.code
+            for finding in self._findings(readme, extra)
+            if finding.path.startswith("docs/x/README.md")
+        }
+
+    def test_router_descendant_links_fail(self) -> None:
+        cases = {
+            "spec": "[a](a/spec.md)\n",
+            "task": "[t](a/tasks/tsk-0001-x.md)\n",
+            "grandchild directory": "[b](a/b/)\n",
+            "grandchild readme": "[b](a/b/README.md)\n",
+            "reference definition": "[plan][p]\n\n[p]: a/plan.md\n",
+            "html href": '<a href="a/plan.md">plan</a>\n',
+        }
+        for name, body in cases.items():
+            with self.subTest(case=name):
+                self.assertEqual(
+                    {"navigation-descendant-link"}, self._codes("# X\n\n" + body)
+                )
+
+    def test_router_tree_naming_a_grandchild_file_fails(self) -> None:
+        body = "```text\nx/\n├── README.md\n└── a/\n    └── spec.md\n```\n"
+        self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))
+
+    def test_three_space_tree_naming_a_grandchild_file_fails(self) -> None:
+        body = "```text\nx/\n├── README.md\n└── a/\n   └── spec.md\n```\n"
+        self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))
+
+    def test_tree_directory_without_trailing_slash_passes(self) -> None:
+        body = "```text\nx/\n└── a\n    └── b\n```\n"
+        self.assertEqual(set(), self._codes("# X\n\n" + body))
+
+    def test_folder_label_on_a_leaf_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[a/](a/spec.md)\n")
+        )
+
+    def test_direct_children_citations_and_trees_pass(self) -> None:
+        body = (
+            "# X\n\n[a](a/)\n[a readme](a/README.md)\n[c/](c/)\n"
+            "[other](../other/y.md)\n\n"
+            "```text\nx/\n├── README.md\n├── a/\n│   └── README.md\n└── c/\n```\n"
+        )
+        self.assertEqual(set(), self._codes(body))
+
+    def test_collection_readme_deeper_links_are_citations(self) -> None:
+        body = "# X\n\n[own](own.md)\n[a](a/spec.md)\n"
+        self.assertEqual(set(), self._codes(body, {"docs/x/own.md": "# Own\n"}))
+
+    def test_backticked_folder_label_on_a_leaf_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[`a/`](a/spec.md)\n")
+        )
+
+    def test_folder_label_naming_another_folder_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[`c/`](a/README.md)\n")
+        )
+
+    def test_frozen_archive_readme_is_not_judged(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        files = {
+            "docs/98.archive/completed/p/README.md": "# P\n\n[s](a/spec.md)\n",
+            "docs/98.archive/completed/p/a/spec.md": "# S\n",
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            track_repository(root)
+            findings = run_mode(
+                "navigation",
+                build_document_graph([root / name for name in files], repo_root=root),
+            )
+        self.assertEqual([], [f for f in findings if f.code.startswith("navigation")])
+
+    def test_untracked_tree_is_reported_not_passed(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            (root / "docs/x/a").mkdir(parents=True)
+            (root / "docs/x/README.md").write_text("# X\n", encoding="utf-8")
+            codes = {
+                f.code
+                for f in run_mode(
+                    "navigation",
+                    build_document_graph([root / "docs/x/README.md"], repo_root=root),
+                )
+            }
+        self.assertEqual({"navigation-tree-unavailable"}, codes)
+
+    def test_placeholder_only_directory_is_a_router_child(self) -> None:
+        self.assertEqual(set(), self._codes("# X\n\n[c](c/)\n"))
+
+
+class LanguageModeTests(unittest.TestCase):
+    """SPEC-0184 rule 4: every README reads in its declared language."""
+
+    KOREAN = (
+        "# X\n\n## Overview\n\n이 디렉터리는 요구사항 문서를 모아 두는 공간이며, "
+        "각 문서의 목적과 작성 방법을 한국어로 안내합니다.\n"
+    )
+    ENGLISH = (
+        "# X\n\n## Overview\n\nThis directory collects requirement documents "
+        "and explains the purpose and authoring flow of each one.\n"
+    )
+
+    def _codes(self, files: dict[str, str]) -> dict[str, set[str]]:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            findings = run_mode(
+                "language",
+                build_document_graph([root / name for name in files], repo_root=root)
+            )
+        result: dict[str, set[str]] = {}
+        for finding in findings:
+            result.setdefault(finding.path, set()).add(finding.code)
+        return result
+
+    def test_english_readme_fails_and_korean_readme_passes(self) -> None:
+        self.assertEqual(
+            {"docs/01.requirements/README.md": {"document-language-mismatch"}},
+            self._codes({"docs/01.requirements/README.md": self.ENGLISH}),
+        )
+        self.assertEqual(
+            {}, self._codes({"docs/01.requirements/README.md": self.KOREAN})
+        )
+
+    def test_frozen_and_generated_readmes_are_not_judged(self) -> None:
+        self.assertEqual(
+            {},
+            self._codes(
+                {
+                    "docs/98.archive/retired/05.operations/x/README.md": self.ENGLISH,
+                    ".claude/README.md": self.ENGLISH,
+                }
+            ),
+        )
+
+    def test_non_readme_documents_are_left_to_the_changed_body_check(self) -> None:
+        self.assertEqual(
+            {}, self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH})
+        )
 
 
 if __name__ == "__main__":

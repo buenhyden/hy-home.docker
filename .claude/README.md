@@ -12,4 +12,4 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 # Claude Runtime Route
 
-This generated adapter routes to `.claude/provider.md`.
+이 생성 어댑터는 `.claude/provider.md`로 안내합니다.

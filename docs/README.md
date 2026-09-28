@@ -1,15 +1,15 @@
 ---
 title: "Documentation Space"
-version: "1.2.3"
+version: "1.2.6"
 type: "common/documentation-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-27"
 ---
 
 # docs
 
-> Shared harness-engineering and agent-first engineering documentation space for staged repository knowledge.
+> 단계별 저장소 지식을 위한 공유 harness-engineering 및 agent-first engineering 문서 공간.
 
 ## Overview
 
@@ -48,42 +48,33 @@ updated: "2026-09-16"
 docs/
 ├── 01.requirements/            # 제품/시스템 요구사항
 ├── 02.architecture/            # 아키텍처 설명과 결정 기록
-│   ├── descriptions/
-│   └── decisions/
 ├── 03.specs/                   # Spec Package: spec, plan, tasks, contracts 동거
-│   └── ####-<slug>/
-│       ├── spec.md
-│       ├── plan.md
-│       ├── tasks/
-│       └── contracts/
 ├── 05.operations/              # 운영 가이드, 정책, 런북, 사고 기록
-│   ├── guides/####-<slug>.md
-│   ├── policies/####-<slug>.md
-│   ├── runbooks/####-<slug>.md
-│   └── incidents/<year>/inc-####-<slug>/
 ├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
-├── 98.archive/                 # retention classes for frozen bodies plus route dispositions
+├── 98.archive/                 # frozen 본문을 위한 retention class와 route disposition
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
-└── README.md                   # This file
+└── README.md                   # 이 파일
 ```
+
+각 stage 하위의 실제 구조는 그 stage의 README가 소유합니다.
 
 ## Routing
 
-| I need to... | Go to |
+| 하려는 작업 | 이동할 곳 |
 | --- | --- |
-| define user value or requirements | `01.requirements/` |
-| describe architecture | `02.architecture/descriptions/` |
-| record an architecture decision | `02.architecture/decisions/` |
-| write a technical specification | `03.specs/####-<slug>/spec.md` |
-| declare an executable interface contract | `03.specs/####-<slug>/contracts/` |
-| plan implementation work | `03.specs/####-<slug>/plan.md` |
-| record task evidence | `03.specs/####-<slug>/tasks/` |
-| operate or configure a service | `05.operations/guides/` |
-| define operational controls | `05.operations/policies/` |
-| execute recovery or repeatable procedures | `05.operations/runbooks/` |
-| record incidents or postmortems | `05.operations/incidents/<year>/inc-####-<slug>/` |
-| provide LLM-facing repository navigation | root `llms.txt` and the per-surface READMEs |
-| inspect a preserved body or its disposition record | `98.archive/` |
+| 사용자 가치나 요구사항을 정의 | `01.requirements/` |
+| 아키텍처를 설명 | `02.architecture/descriptions/` |
+| 아키텍처 결정을 기록 | `02.architecture/decisions/` |
+| 기술 명세를 작성 | `03.specs/####-<slug>/spec.md` |
+| 실행 가능한 interface 계약을 선언 | `03.specs/####-<slug>/contracts/` |
+| 구현 작업을 계획 | `03.specs/####-<slug>/plan.md` |
+| Task 증거를 기록 | `03.specs/####-<slug>/tasks/` |
+| 서비스를 운영하거나 설정 | `05.operations/guides/` |
+| 운영 통제를 정의 | `05.operations/policies/` |
+| 복구나 반복 절차를 실행 | `05.operations/runbooks/` |
+| 사고나 사후 분석을 기록 | `05.operations/incidents/<year>/inc-####-<slug>/` |
+| LLM 대상 저장소 탐색을 제공 | root `llms.txt`와 각 surface README |
+| 보존된 본문이나 그 처분 기록을 확인 | `98.archive/` |
 
 ## Migration Map
 
@@ -95,7 +86,7 @@ docs/
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
 2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
-3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 [99.templates/templates/common/readme-documentation.template.md](99.templates/templates/common/readme-documentation.template.md)를 따릅니다.
+3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 그 template catalog의 `templates/common/readme-documentation.template.md`를 따릅니다.
 4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
 5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
@@ -103,39 +94,24 @@ docs/
 
 - 가능한 경우 승인된 템플릿에서 시작합니다.
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
-- 제목과 구조는 사람과 AI Agent 모두가 해석 가능하도록 명시적으로 작성합니다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석할 수 있도록 명시적으로 작성합니다.
 - 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- Agent 전용 문서(`.agents/`, `AGENTS.md` 등)는 영어를 원칙으로 하고, 사람 대상 README/operations/reference 문서는 한국어를 기본으로 합니다.
-- `docs/03.specs/**`의 leaf 문서는 영어로 작성합니다. 여기에는 같은 패키지 안의 `plan.md`와 `tasks/**`가 포함됩니다.
-- `docs/05.operations/{guides,policies,runbooks}/**`와 `docs/05.operations/incidents/**`는 한국어 본문을 기본으로 하되 command, path, service name, Docker profile, environment variable, secret ID, evidence label은 원문을 보존합니다.
+- 문서 언어는 [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language)이
+  정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
-
-| Surface | Language Rule |
-| --- | --- |
-| `../.agents/` 및 native `provider.md` | English-only governance, role, skill, and provider contracts |
-| `01.requirements/` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
-| `02.architecture/` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
-| `03.specs/` | English-only technical specifications and contracts |
-| `03.specs/####-<slug>/plan.md` | English-only implementation plans |
-| `03.specs/####-<slug>/tasks/` | English-only task evidence |
-| `05.operations/{guides,policies,runbooks}/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
-| `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
-| `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | 보존 원문과 route disposition 기록; 현재 평가·이용 가능성·인용은 Registry와 보존 정책을 따름 |
-| `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract
 
-[Stage 99](99.templates/README.md) owns all document profiles, paths, lifecycle,
-identifiers, and registered templates. [canonical agent governance](../.agents/README.md)
-owns authoring behavior and approval boundaries. This index is navigation only.
+[Stage 99](99.templates/README.md)가 모든 문서 profile, 경로, lifecycle,
+identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](../.agents/README.md)는
+작성 행동과 승인 경계를 소유합니다. 이 index는 탐색 전용입니다.
 
 ## Cross-link Rules
 
 - 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
 - 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
-- README는 폴더 index이므로 파일 추가, 이동, 삭제가 있으면 parent README를 함께 갱신합니다.
+- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](../.agents/governance/documentation-protocol.md#readme-navigation)을 따릅니다.
 - Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
 - Stage 98에서 직접 링크할 수 있는 것은 index와 `completed/`, `resolved/`
   보존본입니다. `superseded/` 대신 후속을, `retired/`, Tombstone, Migration 대신
@@ -144,11 +120,12 @@ owns authoring behavior and approval boundaries. This index is navigation only.
 
 ## Template Usage
 
-Select the role in the [Registry](99.templates/registry.json) and copy its source
-from the [template catalog](99.templates/templates/README.md). Spec, Plan, Task,
-and machine contracts are co-located in Stage 03. Requirement child identities
-are owned by their package; Stage 98 contains retention classes that hold frozen
-bodies and route dispositions that hold none.
+역할은 [99.templates](99.templates/README.md)의 Registry(`registry.json`)에서
+고르고, 그 source는 같은 곳의 template catalog(`templates/README.md`)에서
+복사합니다. Spec, Plan, Task, machine contract는 Stage 03에 함께 있습니다.
+Requirement 자식 identity는 그 package가 소유하며, Stage 98은 frozen
+본문을 담는 retention class와 아무것도 담지 않는 route disposition을
+포함합니다.
 
 ## Document Contract Validation
 
@@ -159,7 +136,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed
 python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
-`run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-document-links.py --mode alignment`은 현재 소유자 문서와 operations 문서 간 추적성 동기화를 확인합니다.
+`run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-document-links.py --mode alignment`는 현재 소유자 문서와 operations 문서 간 추적성 동기화를 확인합니다.
 
 ## Historical Refresh Evidence
 
@@ -175,28 +152,28 @@ package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본
 
 | Evidence | Current State |
 | --- | --- |
-| Spec | [03.specs/0095-infra-secrets-docs-refresh/spec.md](98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md) |
-| Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
-| Runtime scope | Docker Compose runtime, secret values, cert contents, agent runtime unchanged |
+| Spec | [98.archive](98.archive/README.md) (`completed/03.specs/0095-infra-secrets-docs-refresh/spec.md`) |
+| Plan and Task evidence | 보존되지 않음; 이 package는 ADR-0033이 대체한 Spec-only 모델 아래서 처분되었고 그 Plan과 Task는 Git history만으로 복구할 수 있습니다 |
+| Runtime scope | Docker Compose runtime, secret 값, 인증서 내용, agent runtime은 변경되지 않음 |
 
 ## LLM Wiki Ownership and Historical Evidence
 
-The repo-local LLM Wiki was retired on 2026-09-10: its generator, its three
-generated indexes, and the operations package that maintained them were removed
-together, because Stage 90 evidence stays current only while a current consumer
-exists and every consumer of those indexes was removed in the same change.
+repo-local LLM Wiki는 2026-09-10에 은퇴했습니다. 그 generator, 세 개의
+생성된 index, 이를 유지하던 operations package가 함께 제거되었습니다.
+Stage 90 증거는 현재 consumer가 존재하는 동안에만 현재성을 유지하는데 그
+index의 모든 consumer가 같은 변경에서 제거되었기 때문입니다.
 
-No generated path index exists now. Navigation runs through the curated entry
-points in `llms.txt` and the per-surface READMEs, and the advisory graph under
-`graphify-out/` stays advisory: `.agents/governance/environment-constraints.md`
-owns what may be concluded from it.
+이제 생성된 경로 index는 존재하지 않습니다. 탐색은 `llms.txt`의 정리된
+entry point와 각 surface의 README를 통해 이루어지며 `graphify-out/` 아래의
+advisory graph는 advisory로 남고 `.agents/governance/environment-constraints.md`가
+그로부터 결론지을 수 있는 것을 소유합니다.
 
 | Evidence | Current State |
 | --- | --- |
-| Historical implementation | [SPEC-0096](98.archive/completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md) |
-| Plan and Task evidence | not preserved; this package was disposed under the Spec-only model ADR-0033 replaced, and its Plan and Task are recoverable from Git history alone |
-| Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, each recorded by a tombstone |
-| Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, each recorded by a tombstone |
+| Historical implementation | [98.archive](98.archive/README.md) (`completed/03.specs/0096-llm-wiki-agent-first-completion/spec.md`) |
+| Plan and Task evidence | 보존되지 않음; 이 package는 ADR-0033이 대체한 Spec-only 모델 아래서 처분되었고 그 Plan과 Task는 Git history만으로 복구할 수 있습니다 |
+| Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, 각각 tombstone으로 기록됨 |
+| Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, 각각 tombstone으로 기록됨 |
 
 ## Related Documents
 

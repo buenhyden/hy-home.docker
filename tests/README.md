@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-28"
 created: "2026-02-21"
 ---
 
@@ -91,6 +91,12 @@ suite는 사유와 함께 skip하므로, daemon이 없는 환경에서도 전체
 등록된 suite에서도 skip으로 보고되고 게이트를 막지 않습니다. `requirements-integration.txt`는
 Renovate 범위 밖이고 `scripts/requirements.txt`와 같은 수동 갱신 대상입니다.
 
+필수 gate는 전체 테스트 모듈을 계속 선택합니다. 기존 opt-in TestCase는
+`.github/workflow-contract.yml`의 `--optional-runtime-skips` 뒤에 정확한 클래스
+범위로 등록합니다. adapter는 실제 생략된 테스트 ID와 요약의 개수를 대조하고,
+등록되지 않은 생략은 실패 처리합니다. 이 선언은 실서비스 실행이나 환경변수
+전달을 허용하지 않으며, 테스트 0개와 필수 검사 생략을 통과시키지 않습니다.
+
 운영 rehearsal의 재사용 입력은 `examples/operations/`가 소유합니다.
 단일 필드 오류 입력은 테스트 builder로 만들며, production은 `tests/`를
 읽지 않습니다. 전체 Python discovery는
@@ -118,8 +124,3 @@ lifecycle/ID 할당의 기준으로 사용하고, 수동 실행에는 이벤트 
 - [Scripts README](../scripts/README.md)
 - [Documentation protocol](../.agents/governance/documentation-protocol.md)
 - [Task checklists](../.agents/governance/task-checklists.md)
-
-The `run-unittest` gate adapter permits skips only for explicitly registered
-opt-in runtime TestCase scopes following `--optional-runtime-skips`. Every
-observed skip must match one of those classes; required or unregistered skips
-fail the gate. Full module selection and nonzero test execution remain mandatory.

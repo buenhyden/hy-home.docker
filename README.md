@@ -1,22 +1,22 @@
 ---
 title: "hy-home.docker"
-version: "1.2.1"
+version: "1.3.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 # hy-home.docker
 
-> Shared harness-engineering and agent-first engineering workspace for modular Docker Compose home infrastructure.
+> 모듈형 Docker Compose 홈 인프라를 위한 shared harness-engineering and agent-first engineering workspace.
 
 ## Overview
 
-`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace로, 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결하는 저장소입니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 수행합니다.
+`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace 저장소입니다. 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결합니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 합니다.
 
-이 저장소의 핵심 목적은 다음 세 가지입니다. 첫째, 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 만드는 것. 둘째, 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보하는 것. 셋째, AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지하는 것입니다.
+이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다.
 
 ## Audience
 
@@ -63,7 +63,7 @@ hy-home.docker/
 
 ## Repository Map
 
-- [`docs/`](./docs) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
+- [`docs/`](./docs/README.md) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
 - `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
@@ -88,17 +88,15 @@ hy-home.docker/
 
 ## Current Infrastructure Snapshot
 
-현재 문서 갱신 기준의 운영 인벤토리는 다음과 같습니다.
+인프라 규모는 문서 상수로 고정하지 않고, 항상 아래 명령과 소유 문서에서 재현합니다.
 
-| Area | Current Evidence | Notes |
-| --- | --- | --- |
-| `infra/` Compose files / root includes | 42 / 42 | 2026-09-20 current-source inventory. include는 파일 도달성을, service profile은 활성화를 소유함 |
-| Compose service identities | 140 | Compose path와 service 이름의 쌍. HOME/DEV/OPTIONAL/LAB/MIGRATE 분류와 근거는 current inventory가 보유함 |
-| Root Compose secret declarations | 69 | 루트 `docker-compose.yml`의 최상위 `secrets:` 키 개수. 등록된 70개 secret file path와 구분하며, 선언된 파일 누락은 0개 |
-| Parent-repo tracked README files | 185 | `git ls-files '*README.md'` 기준의 tracked README inventory |
-| README refresh contract | path-appropriate template coverage | `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet을 기준으로 갱신 |
+- Compose 파일 수와 root `include` 수: `git ls-files 'infra/**/*compose*.yml' 'infra/**/*compose*.yaml'`
+- 활성화되는 서비스 목록과 HOME/DEV/OPTIONAL/LAB/MIGRATE 분류 근거: [`infra/README.md`](./infra/README.md)의 Compose Inventory Snapshot
+- 루트 `docker-compose.yml`의 secret 선언과 등록된 secret file path: [`secrets/README.md`](./secrets/README.md)
+- tracked README 파일 수: `git ls-files '*README.md' | wc -l`
+- README 최신화 기준: `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet
 
-표의 모든 수치는 추적 트리에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
+위 항목의 모든 수치는 추적 트리와 명령 실행에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
 
 ## Prerequisites
 
@@ -157,8 +155,9 @@ docker compose --profile core up -d
 
 `core`는 bootstrap selection일 뿐 HOME 전체가 아닙니다. 현재 HOME 후보는
 `core mng ai workflow storage obs-core obs-host availability logs alerting
-tracing profiling obs-gpu registry`의 명시적 결합이며, 41개 HOME service identity를 선택합니다. 이 명령은 배포 승인이나
-용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
+tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정확한 서비스 수는
+`COMPOSE_PROFILES=core,mng,ai,workflow,storage,obs-core,obs-host,availability,logs,alerting,tracing,profiling,obs-gpu,registry docker compose --env-file .env.example config --services`로
+재현합니다. 이 명령은 배포 승인이나 용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
 `docs/05.operations/policies/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
@@ -178,23 +177,10 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 41개 HOME servic
 
 이 저장소의 문서는 다음 기준을 따릅니다.
 
-- Agent 전용 규칙 문서는 영어를 사용합니다.
-- 루트 `README.md`, 사람이 읽는 폴더 README, 가이드, 운영 문서는 한국어를 기본으로 사용합니다.
 - 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
-| Surface | Language Rule |
-| --- | --- |
-| `.agents/**` | English-only agent governance and policy contracts |
-| `docs/01.requirements/**` | 한국어 기본, technical identifier와 acceptance criteria 구조 보존 |
-| `docs/02.architecture/**` | 한국어 설명과 English decision ID/title/quality attribute를 함께 보존 |
-| `docs/03.specs/**` | English-only technical contracts |
-| `docs/03.specs/####-*/plan.md` | English-only implementation plans |
-| `docs/03.specs/####-*/tasks/tsk-####-*.md` | English-only task evidence |
-| `docs/05.operations/{guides,policies,runbooks}/**`, `docs/05.operations/incidents/**` | 한국어 기본, command/path/service/env/evidence label 원문 보존 |
-| `docs/90.references/**` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `docs/98.archive/**` | 간결한 tombstone 기록, original path/date/title/replacement 원문 보존 |
-| `docs/99.templates/**` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
+문서 언어는 [문서 언어 규칙](.agents/governance/documentation-protocol.md#document-language)이 정합니다.
 
 ## Documentation Lifecycle
 
@@ -258,7 +244,7 @@ release visibility gate이며, remote required-check enforcement 증거로
 간주하지 않습니다.
 
 `validation-full` job은 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
-`pr-labeler` workflow는 필수 품질 게이트가 아니라 triage/community 자동화입니다.
+`pr-labeler` workflow는 triage/community 자동화이며 필수 품질 게이트에는 들지 않습니다.
 로컬에서는 `python3 scripts/validation/run-ci-gate.py --profile changed --explain`으로
 선택된 suite와 validator 매핑을 실행 없이 확인합니다.
 
@@ -277,7 +263,6 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 - [`docs/README.md`](./docs/README.md)
 - [`.agents/README.md`](.agents/README.md)
-- [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)
 - [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)
 - [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)
 - [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)

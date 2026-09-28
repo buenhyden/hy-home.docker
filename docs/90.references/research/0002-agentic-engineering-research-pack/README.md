@@ -125,467 +125,463 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 서로 대체할 수 없는 증거다. 이는 연결된 멤버들의 출처를 종합한 연구자의
 해석이며 새 정책이나 내부 평가 결과가 아니다.
 
-### Historical workspace observations — not reassessed in this run
 
-이 갱신 직전 README 본문을 보존한다. 당시의 `current`, `Implemented`,
-`Partial`, `Missing`, 생성기와 수용 판정은 당시 표현이며 오늘의 상태가 아니다.
-현재 외부 분석은 위의 멤버 탐색을 사용한다.
+### Historical workspace observations — not reassessed in this refresh
 
-> Historical evidence (not current authority; source: Git history): README body at baseline f30b168e2fbb0959e4a31749935568fd5b3942f1; original observation dates and scope retained.
+아래 기록은 이전 관찰의 한국어 보존본입니다. 현재 주장이나 새 승인으로 읽지 않으며, 현재 외부 연구는 위의 갱신된 member 탐색을 따릅니다.
+
+현재 routing(2026-09-06): [공통 Agent 거버넌스](../../../../.agents/README.md)와
+[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md)가
+활성 source 위치를 소유합니다. 아래의 이전 Stage 00 경로, inventory,
+provider 투영, check 결과는 날짜가 있는 관찰로 남으며 현재 지시나 새
+runtime 수용 증거가 아닙니다. Source 링크는 이제 현재 owner로
+연결되며 원래의 `observed_at`, `reviewed_at`, status, 측정된 사실은
+그대로 보존됩니다.
+
+#### Historical question
+
+모든 claim에 canonical owner 하나와 명시적인 증거 깊이가 있도록,
+이 저장소는 agentic workspace, spec-driven SDLC, operations corpus,
+documentation architecture, Compose platform, quality 체계, 보안 통제를
+어떻게 구조화해야 하는가?
+
+세부 질문은 다음과 같습니다:
+
+1. 어떤 provider-neutral 행동이 공통 Agent 거버넌스에 속하고, 어떤 Claude
+   또는 Codex 행동이 native adapter의 관심사로 남아야 하는가?
+2. instruction, model routing, catalog, loop, memory, handoff, hook,
+   context, cost, editor 통합은 어떻게 관리되고 검증되어야 하는가?
+3. Requirement, Architecture/ADR, Spec, Plan, Task, Operations, Stage 90
+   증거는 소유권, lifecycle, 대체 규칙에서 어떻게 다른가?
+4. 어떤 Diátaxis, C4, arc42, ADR, README, 생성된 navigation 관행이
+   병렬 권위를 만들지 않으면서 발견 가능성을 높이는가?
+5. 추적되는 Compose, CI/CD, QA, 검증, 보안 surface는 무엇을 증명하며
+   무엇이 여전히 runtime, provider, remote 관찰을 필요로 하는가?
+
+이 package는 gap을 찾고 권고를 route할 수 있습니다. 현재 owner를
+대신해 정책, 구현, provider entitlement, deployment, release, 잔여
+위험을 승인할 수 없습니다.
+
+이 package는 현재 주제 연구와 cross-package routing의 canonical hub입니다.
+관련된 Stage 90 package는 의도적으로 별도 증거 owner로 유지됩니다:
+
+- [RES-0084](../0084-github-actions-platform/README.md)는 세부 GitHub
+   Actions platform mechanics와 날짜가 있는 Hosted/remote 증거를
+   소유합니다.
+- [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)는
+   날짜가 있는 baseline 범위와 identity-recovery carrier를 보존합니다;
+   현재 baseline 해석은 [m0020](m0020-workspace-baseline.md)이
+   소유합니다.
+- [RES-0096](../0096-archive-disposition-consistency/README.md)은
+   archive-domain consistency 평가와 그 SPEC-0177/SPEC-0178 증거를
+   소유합니다.
+
+통합은 소유권과 routing으로 이루어지며 날짜가 있는 증거를 복사하거나
+평탄화하거나 삭제하지 않습니다. 새 현재 finding은 이 package 아래 소유
+구성원을 갱신해야 하며 전문적이고 역사적이며 archive-domain인 finding은
+기존 package에 남습니다.
+
+#### Historical scope
+
+> Historical evidence (not current authority; source: Git history): 문서 관찰 baseline 시점에 기록된 source 경로.
 >
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-> \## Question
->
-> How should this repository structure an agentic workspace, spec-driven SDLC,
-> operations corpus, documentation architecture, Compose platform, quality
-> system, and security controls so that every claim has one canonical owner and
-> an explicit evidence depth?
->
-> The detailed questions are:
->
-> 1. Which provider-neutral behavior belongs to canonical agent governance, and which Claude or
->    Codex behavior must remain a native adapter concern?
-> 2. How should instructions, model routing, catalogs, loops, memory, handoff,
->    hooks, context, cost, and editor integration be governed and verified?
-> 3. How do Requirement, Architecture/ADR, Spec, Plan, Task, Operations, and
->    Stage 90 evidence differ in ownership, lifecycle, and substitution rules?
-> 4. Which Diátaxis, C4, arc42, ADR, README, and generated-navigation practices
->    improve discovery without creating parallel authority?
-> 5. What do the tracked Compose, CI/CD, QA, verification, and security surfaces
->    prove, and what still requires runtime, provider, or remote observation?
->
-> This package can identify gaps and route recommendations. It cannot approve
-> policy, implementation, provider entitlement, deployment, release, or residual
-> risk on behalf of their current owners.
->
-> This package is the canonical hub for current topical research and cross-package
-> routing. The related Stage 90 packages are intentionally retained as separate
-> evidence owners:
->
-> - [RES-0084](../0084-github-actions-platform/README.md) owns detailed GitHub
->    Actions platform mechanics and dated Hosted/remote evidence.
-> - [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
->    preserves the dated baseline scope and identity-recovery carrier; current
->    baseline interpretation belongs to [m0020](m0020-workspace-baseline.md).
-> - [RES-0096](../0096-archive-disposition-consistency/README.md) owns the
->    archive-domain consistency assessment and its SPEC-0177/SPEC-0178 evidence.
->
-> The integration is by ownership and routing, not by copying, flattening, or
-> deleting dated evidence. New current findings should update the owning member
-> under this package; specialized, historical, and archive-domain findings stay
-> with their existing packages.
->
-> \## Scope
->
-> > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
-> >
-> > - Repository: `buenhyden/hy-home.docker`.
-> > - Comparison branch and commit: `main` at
-> >   `71da6654e2fa3def174b238ad309c92fe46e9dae`. The earlier assessed baseline
-> >   `4c6d211129615eab372d720ebd209b6c27618c86` stays preserved in the dated
-> >   member revalidations and in RES-0085; it is not rewritten into current state.
-> > - Repository observation date and external-source confirmation date:
-> >   2026-09-05.
-> > - Observation checkout scope: an isolated `main`-only clone and a developer
-> >   clone holding unmerged local branches. The two disagree on one registered
-> >   check at the same commit, so both readings are recorded rather than one being
-> >   presented as the repository verdict.
-> > - Included: `docs/00.agent-governance/`, Stages 01, 02, 03, 05, 90, 98, and
-> >   99; root entrypoints; `.agents/`, `.claude/`, `.codex/`, workflows, Compose
-> >   declarations, scripts, tests, and generated navigation ownership.
-> > - Included external families: official Claude Code, OpenAI Codex, GitHub,
-> >   Docker, MCP, Diátaxis, C4, arc42, GitHub Spec Kit, ISO public definitions,
-> >   NIST SSDF, SLSA, and upstream agency-agents material.
-> > - Excluded: secret or credential values, user-global provider configuration,
-> >   shell history, raw logs, unapproved provider/runtime mutation, new live
-> >   deployment, tag, and release.
-> > - Evidence boundary: configuration is not execution; local execution is not
-> >   Hosted CI; Hosted CI is not deployment; point-in-time entitlement is not a
-> >   future guarantee; tracked protection intent is not remote enforcement.
-> > - [m0020](m0020-workspace-baseline.md) owns the current repository-local
-> >   baseline. [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)
-> >   preserves the dated 2026-09-05 assessment scope and identity-recovery
-> >   evidence. [RES-0084](../0084-github-actions-platform/README.md) owns detailed
-> >   GitHub Actions platform mechanics. This package owns topical research and
-> >   their cross-category navigation.
->
-> \## Method
->
-> 1. Enumerate every active research package and member by path, title,
->    `artifact_id`, `parent_ids`, lifecycle metadata, headings, links, and
->    observation date before allocating or restructuring anything.
-> 2. Search filenames and bodies for the requested terms, synonyms, acronyms,
->    old Stage 04 routes, outdated counts, duplicated claims, conflicting
->    evidence, and `UNVERIFIED` boundaries.
-> 3. Read the current canonical Requirement, Architecture/ADR, Spec/Task,
->    Operations, audit, data, Registry, template, validator, workflow, and
->    generated-output owners instead of inheriting repository truth from Stage
->    90 prose.
-> 4. Re-open mutable external claims from official primary sources on
->    2026-09-05. Retain older fixed-commit or dated observations as historical
->    evidence and label any unrefreshed claim accordingly.
-> 5. Classify adoption as Defined, Configured, Local-executed,
->    Repository-enforced, Runtime-verified, Remote-verified, or Unverified.
-> 6. Treat a duplicate as the same question, evidence model, lifecycle, and
->    decision route. Update that owner in place; create a package only when all
->    four differ materially.
-> 7. Run focused document/reference checks, generated-index freshness, link and
->    lifecycle checks, then the canonical full gate. Keep local, Hosted,
->    provider, runtime, and remote results in separate evidence rows.
->
-> <div id="existing-artifact-decision-record"></div>
->
-> \### Existing Artifact Decision Record
->
-> | Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
-> | --- | --- | --- | --- | --- |
-> | RES-0002 README | A–G navigation and cross-category summary | Detailed claims, sources, and historical routing duplicated member content | Rewrite as question/scope/method/router/traceability owner | RES-0002 README, same identity |
-> | RES-0002-m0001–m0020 | All topical categories | Strong historical analysis but observation metadata and several current routes were stale | Preserve IDs and content; add current revalidation evidence | Same 20 members |
-> | RES-0084 | GitHub Actions, CI, remote enforcement | Platform analysis predated the aggregate-check rollout | Update adoption and evidence boundary in place | RES-0084 |
-> | RES-0085 | Current `main` baseline | Its question duplicated the current-baseline purpose already owned by m0020 | Consolidate current ownership into m0020; preserve RES-0085 as dated recovery evidence in `review` | RES-0002-m0020 and RES-0085 evidence |
-> | New RES-0096 candidate | Same question set | Would duplicate existing owners and observation cycle | Do not create | None |
->
-> <div id="2026-09-05-baseline-71da6654-decision-record"></div>
->
-> \### 2026-09-05 Baseline 71da6654 Decision Record
->
-> This pass re-observed the same question set at
-> `main@71da6654e2fa3def174b238ad309c92fe46e9dae` and made no structural change.
-> Every requested category already resolved to exactly one owning member, so the
-> package identity, member identities, `created` values, and the member
-> allocation below are unchanged.
->
-> | Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
-> | --- | --- | --- | --- | --- |
-> | RES-0002 README | A–G navigation | Scope cited a baseline three commits behind `main` | Advance the current-baseline pointer; preserve the dated one | RES-0002 README, same identity |
-> | RES-0002-m0006 | B12, D10, D11 | Identity-space evidence for `SPEC-0173` was unrecorded | Leave the member untouched while SPEC-0172 work is in flight; record the observation with the verification owner instead | RES-0002-m0019 |
-> | RES-0002-m0014 | F1–F13 | A quoted gate verdict carried no checkout identity | Add a dated reproduction qualifier; route analysis to m0019 | RES-0002-m0014 |
-> | RES-0002-m0019 | F14–F18 | Verification determinism across checkouts was unanalyzed | Add the three-environment comparison as the canonical analysis | RES-0002-m0019 |
-> | RES-0002-m0020 | A3, A20 | Current-baseline pointer lagged the delta | Advance the pointer and record the delta effect | RES-0002-m0020 |
-> | RES-0002-m0001–m0005, m0007–m0013, m0015–m0018 | Remaining categories | No owner changed in the delta | Preserve unchanged; no re-dating without re-observation | Same members |
-> | RES-0084 | E7, E9 | Its dated observations are outside this delta | Leave unchanged | RES-0084 |
-> | RES-0085 | Dated request scope | Its `4c6d2111` citations are its purpose | Do not update; preserving the dated baseline is the reason it exists | RES-0085 |
-> | New research package candidate | Same question set | Would duplicate owners that already exist | Do not create | None |
->
-> The one substantive addition is that a local gate verdict is checkout-relative:
-> at this single commit the full profile passes in an isolated `main`-only clone
-> and fails in a developer clone that can reach an unmerged branch. Both readings
-> are recorded. The repository contract that this observation touches belongs to
-> Stage 00 and Stage 99, so the follow-up runs through the normal
-> Requirement-to-Task chain rather than through this package.
->
-> \## Findings
->
-> <div id="member-navigation"></div>
->
-> \### Member Navigation
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Category | Member | Core question | Repository state | Evidence depth | Priority |
-> | --- | --- | --- | --- | --- | --- |
-> | Instructions and prompt hierarchy | [m0001](m0001-agent-instructions-vibe-coding.md) | How are durable instructions separated from ad-hoc prompts? | Root adapters load Stage 00; hooks enforce selected boundaries | Defined, Configured, Repository-enforced | High |
-> | Model routing | [m0002](m0002-agent-model-selection.md) | How should task class select provider/model/effort? | Work profiles are registered; quality/cost effectiveness is unmeasured | Configured, Repository-enforced, Unverified effectiveness | High |
-> | Agent catalogs | [m0003](m0003-ai-agent-catalogs.md) | How are external roles admitted without copying authority? | 14 roles and 23 skills are canonical; external catalogs are research inputs | Repository-enforced | Medium |
-> | Automation and delivery | [m0004](m0004-automation-pipeline-workflow.md) | Where do hooks, CI, CD, promotion, and rollback differ? | CI aggregate gates exist; live deployment remains unverified | Configured, Repository-enforced, Hosted-executed | High |
-> | Compose infrastructure | [m0005](m0005-docker-compose-infrastructure.md) | What do profiles and service controls prove? | 28 selections render; four domain defects remain owner-routed | Configured, Local-executed, Repository-enforced | High |
-> | Metadata and lifecycle | [m0006](m0006-document-metadata-lifecycle.md) | How are identity, status, retention, and retirement enforced? | Common-six and profile lifecycle contracts are active | Repository-enforced | High |
-> | Documentation architecture | [m0007](m0007-documentation-architecture.md) | How should Diátaxis, C4, arc42, ADR, and README compose? | Selective composition exists; no parallel taxonomy is required | Defined, Configured | Medium |
-> | Harness engineering | [m0008](m0008-harness-engineering.md) | Which controls make agents effective and bounded? | Canonical roles/skills/adapters/hooks are enforced; outcomes are partly observed | Repository-enforced, Runtime-verified in bounded probes | High |
-> | LLM Wiki | [m0009](m0009-llm-wiki-system.md) | How can generated navigation remain non-authoritative and fresh? | Generator ownership and freshness checks are active | Repository-enforced | Medium |
-> | Loop engineering | [m0010](m0010-loop-engineering.md) | How are discovery, retry, stop, review, and handoff bounded? | Stage 00 defines the loop; live provider equivalence is unverified | Defined, Repository-enforced | High |
-> | Memory | [m0011](m0011-memory-hierarchy.md) | What is durable, what expires, and who may delete it? | Task evidence exists; durable semantic memory lifecycle remains partial | Defined, Configured, Unverified | High |
-> | Provider comparison | [m0012](m0012-provider-implementation-comparison.md) | What is shared and what must stay Claude/Codex-native? | Shared control plane projects into native surfaces | Repository-enforced, point-in-time Runtime-verified | High |
-> | Provider/model landscape | [m0013](m0013-provider-model-landscape.md) | Which model, effort, fallback, entitlement, and cost claims are supportable? | Registry is configured; entitlement is dated and cost is unmeasured | Configured, point-in-time Runtime-verified | High |
-> | Quality and CI | [m0014](m0014-quality-ci-formatting.md) | Which quality layers block drift? | Registered local/full and Hosted aggregate gates exist | Local-executed, Repository-enforced, Hosted-executed | High |
-> | Scope application | [m0015](m0015-scope-application-matrix.md) | Where does every requested concern apply and who owns it? | All requested categories route to existing owners | Defined | Medium |
-> | SDLC document roles | [m0016](m0016-sdlc-document-roles.md) | What does each artifact own and never replace? | Registered roles and operations composition are enforced | Repository-enforced | High |
-> | Security | [m0017](m0017-security-governance.md) | Which controls are local, remote, runtime, or missing? | Static and supply-chain controls are strong; production posture is unverified | Repository-enforced, point-in-time Remote-verified | High |
-> | Spec-driven SDLC | [m0018](m0018-spec-driven-sdlc.md) | How does intent flow into verified work? | Current package form is enforced; intended-use acceptance remains owner-bound | Repository-enforced | High |
-> | Verification and validation | [m0019](m0019-verification-validation.md) | Does evidence prove conformance and intended use? | Conformance gates exist; deployment acceptance is absent | Local-executed, Repository-enforced | High |
-> | Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
-> | Local Docker service consolidation | [m0021](m0021-local-docker-service-consolidation.md) | Which local services are open source, overlapping, or safe removal candidates? | Current Compose/runtime inventory and official project sources compared; removal decisions remain user- and data-dependent | Local-executed, External-source-reviewed | High |
->
-> <div id="complete-requested-category-routing"></div>
->
-> \### Complete Requested Category Routing
->
-> | Requested category | Owning member | Current status | Evidence depth | Principal gap |
-> | --- | --- | --- | --- | --- |
-> | A1 Harness engineering | [m0008](m0008-harness-engineering.md) | Partial | Repository-enforced | Outcome metrics absent |
-> | A2 Loop engineering | [m0010](m0010-loop-engineering.md) | Partial | Repository-enforced | Cross-provider outcome parity unverified |
-> | A3 Workspace harness, loop, rules, environment | [m0020](m0020-workspace-baseline.md) | Partial | Configured, Local-executed | Editor/runtime acceptance incomplete |
-> | A4 Claude Code implementation | [m0012](m0012-provider-implementation-comparison.md) | Adopted | Configured, point-in-time Runtime-verified | Full native event coverage partial |
-> | A5 Codex implementation | [m0012](m0012-provider-implementation-comparison.md) | Adopted | Configured, point-in-time Runtime-verified | Native hook surface is smaller |
-> | A6 Shared Claude/Codex governance | [m0012](m0012-provider-implementation-comparison.md) | Implemented | Repository-enforced | Behavioral equivalence unverified |
-> | A7 Provider-native differences | [m0012](m0012-provider-implementation-comparison.md) | Documented | Defined, Configured | Mutable upstream capabilities |
-> | A8 System prompt and command hierarchy | [m0001](m0001-agent-instructions-vibe-coding.md) | Implemented | Repository-enforced | Provider system prompts remain external |
-> | A9 Context loading and priority | [m0001](m0001-agent-instructions-vibe-coding.md) | Implemented | Defined, Configured | Runtime adherence is probabilistic |
-> | A10 Task-aware model selection | [m0002](m0002-agent-model-selection.md) | Implemented as policy | Repository-enforced | Outcome validation absent |
-> | A11 Model, effort, fallback, entitlement | [m0013](m0013-provider-model-landscape.md) | Partial | Configured, point-in-time Runtime-verified | Current entitlement/fallback not guaranteed |
-> | A12 Agent catalog and agency-agents | [m0003](m0003-ai-agent-catalogs.md) | Partial | Repository-enforced | No automatic external intake |
-> | A13 Roles, capabilities, tools, permissions | [m0003](m0003-ai-agent-catalogs.md) | Implemented structurally | Repository-enforced | Runtime least-privilege proof partial |
-> | A14 Agent memory hierarchy | [m0011](m0011-memory-hierarchy.md) | Partial | Defined, Configured | No single durable semantic-memory authority |
-> | A15 Short-, long-, domain-memory | [m0011](m0011-memory-hierarchy.md) | Partial | Defined | Long/domain lifecycle incomplete |
-> | A16 Memory promotion, retention, expiry, privacy, deletion | [m0011](m0011-memory-hierarchy.md) | Gap | Defined | Enforced lifecycle absent |
-> | A17 Claude/Codex context sharing | [m0012](m0012-provider-implementation-comparison.md) | Structural only | Configured | Semantic transfer acceptance unverified |
-> | A18 Session handoff and evidence sharing | [m0012](m0012-provider-implementation-comparison.md) | Partial | Defined, Repository-enforced | Live handoff quality unmeasured |
-> | A19 Test and CI agent hooks | [m0004](m0004-automation-pipeline-workflow.md) | Partial | Configured, Repository-enforced | Native parity differs |
-> | A20 Editor shortcuts, tasks, code actions | [m0020](m0020-workspace-baseline.md) | Gap | Unverified | No repository-wide contract |
-> | A21 Rate limit, cost, token, context management | [m0013](m0013-provider-model-landscape.md) | Partial | Configured | Direct cost/rate evidence absent |
-> | B1 Spec-driven development | [m0018](m0018-spec-driven-sdlc.md) | Implemented | Repository-enforced | Intended-use acceptance owner-bound |
-> | B2 SDLC purpose and necessity | [m0018](m0018-spec-driven-sdlc.md) | Defined | Defined | Effectiveness metric absent |
-> | B3 SDLC governance | [m0018](m0018-spec-driven-sdlc.md) | Implemented | Repository-enforced | None for registered scope |
-> | B4 Full SDLC lifecycle | [m0018](m0018-spec-driven-sdlc.md) | Implemented structurally | Repository-enforced | Deployment/release completion conditional |
-> | B5 Requirement-to-operations traceability | [m0016](m0016-sdlc-document-roles.md) | Implemented structurally | Repository-enforced | Runtime evidence remains separate |
-> | B6 PRD | [m0016](m0016-sdlc-document-roles.md) | Registered perspective | Repository-enforced | Not an independent package type |
-> | B7 SPEC | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | None for current form |
-> | B8 PLAN | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Must remain prospective |
-> | B9 TASK | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Must remain evidence-focused |
-> | B10 ADR | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Decision quality is reviewer-bound |
-> | B11 Ownership and non-substitution | [m0016](m0016-sdlc-document-roles.md) | Implemented | Repository-enforced | None for registered roles |
-> | B12 State transition, completion, supersession, retention, retirement | [m0006](m0006-document-metadata-lifecycle.md) | Implemented | Repository-enforced | Historical records remain separate |
-> | B13 Approval, review, independent-review boundary | [m0018](m0018-spec-driven-sdlc.md) | Implemented | Defined, Repository-enforced | Human acceptance remains owner-bound |
-> | C1 Guide | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Subject coverage varies |
-> | C2 Incident | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Event-created only |
-> | C3 Postmortem | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Requires resolved incident evidence |
-> | C4 Policy | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Subject coverage varies |
-> | C5 Release | [m0016](m0016-sdlc-document-roles.md) | Composed evidence | Defined | No independent profile |
-> | C6 Runbook | [m0016](m0016-sdlc-document-roles.md) | Registered | Repository-enforced | Runtime rehearsal varies |
-> | C7 Operations-document relationships | [m0016](m0016-sdlc-document-roles.md) | Implemented | Repository-enforced | None for registered topology |
-> | C8 Release evidence vs deployment evidence | [m0016](m0016-sdlc-document-roles.md) | Defined | Defined | No current release target |
-> | C9 Incident, recovery, postmortem, improvement traceability | [m0016](m0016-sdlc-document-roles.md) | Implemented structurally | Repository-enforced | Live incidents are event-dependent |
-> | D1 Diátaxis | [m0007](m0007-documentation-architecture.md) | Selectively applied | Defined, Configured | No full corpus classification needed |
-> | D2 C4 Model | [m0007](m0007-documentation-architecture.md) | Partial | Defined | View coverage is demand-driven |
-> | D3 arc42 | [m0007](m0007-documentation-architecture.md) | Partial | Defined | Not a parallel folder taxonomy |
-> | D4 ADR operating model | [m0016](m0016-sdlc-document-roles.md) | Implemented | Repository-enforced | Review quality remains human-bound |
-> | D5 LLM Wiki | [m0009](m0009-llm-wiki-system.md) | Implemented | Repository-enforced | Graphify snapshot remains advisory/stale |
-> | D6 Generated index vs authored-document boundary | [m0009](m0009-llm-wiki-system.md) | Implemented | Repository-enforced | Generated files require owner command |
-> | D7 README purpose and role | [m0007](m0007-documentation-architecture.md) | Implemented | Repository-enforced | Legacy prose can still age |
-> | D8 Repository/stage/package/service README differences | [m0007](m0007-documentation-architecture.md) | Implemented | Repository-enforced | Service coverage varies |
-> | D9 Documentation navigation | [m0007](m0007-documentation-architecture.md) | Implemented | Configured, Repository-enforced | Graph noise remains advisory |
-> | D10 Duplication prevention and canonical ownership | [m0006](m0006-document-metadata-lifecycle.md) | Implemented structurally | Repository-enforced | Semantic duplication still needs review |
-> | D11 Metadata and document lifecycle | [m0006](m0006-document-metadata-lifecycle.md) | Implemented | Repository-enforced | None for active registered corpus |
-> | E1 Docker Compose | [m0005](m0005-docker-compose-infrastructure.md) | Implemented statically | Configured, Local-executed | Live service acceptance absent |
-> | E2 Service boundaries and profiles | [m0005](m0005-docker-compose-infrastructure.md) | Implemented with known defects | Repository-enforced | AUD-0097 remains open |
-> | E3 Network, volume, secret, healthcheck | [m0005](m0005-docker-compose-infrastructure.md) | Partial | Configured, Repository-enforced | Runtime behavior unverified |
-> | E4 Configuration vs runtime state | [m0005](m0005-docker-compose-infrastructure.md) | Explicitly separated | Defined | No new runtime observation |
-> | E5 Continuous Integration | [m0004](m0004-automation-pipeline-workflow.md) | Implemented | Repository-enforced, Hosted-executed | Point-in-time Hosted evidence |
-> | E6 Continuous Delivery/Deployment | [m0004](m0004-automation-pipeline-workflow.md) | Partial / gap | Defined | No live target or promotion acceptance |
-> | E7 GitHub Actions | [m0004](m0004-automation-pipeline-workflow.md) | Implemented for CI | Configured, Hosted-executed | See RES-0084 for platform detail |
-> | E8 Promotion, release, deployment, rollback | [m0004](m0004-automation-pipeline-workflow.md) | Partial | Defined, Configured rehearsal | No current production target/version |
-> | E9 Remote control plane and branch protection | [m0004](m0004-automation-pipeline-workflow.md) | Verified at cutoff | Remote-verified | Later drift requires new read-back |
-> | E10 Operational readiness and recoverability | [m0005](m0005-docker-compose-infrastructure.md) | Partial | Repository-enforced | Four owner-routed defects, no live rehearsal |
-> | F1 Quality Assurance | [m0014](m0014-quality-ci-formatting.md) | Implemented structurally | Repository-enforced | Intended-use acceptance separate |
-> | F2 Formatting | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced | Tool-version drift monitored |
-> | F3 Linting | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced | Surface-specific coverage |
-> | F4 Syntax validation | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced | Runtime semantics separate |
-> | F5 Static analysis | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced, Hosted-executed | Remote configuration can drift |
-> | F6 Unit test | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced | Coverage varies by domain |
-> | F7 Integration test | [m0014](m0014-quality-ci-formatting.md) | Partial | Repository-enforced | Live external integration limited |
-> | F8 Contract test | [m0014](m0014-quality-ci-formatting.md) | Implemented strongly | Repository-enforced | Runtime contracts remain separate |
-> | F9 Regression test | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced | Historical gap-specific coverage |
-> | F10 Coverage | [m0014](m0014-quality-ci-formatting.md) | Partial | Hosted-executed for Storybook | Repository-wide threshold absent |
-> | F11 Pre-commit hook | [m0014](m0014-quality-ci-formatting.md) | Implemented | Configured, Repository-enforced in CI | Local installation is user-dependent |
-> | F12 Local validation | [m0014](m0014-quality-ci-formatting.md) | Implemented | Local-executed | Point-in-time result |
-> | F13 CI quality gate | [m0014](m0014-quality-ci-formatting.md) | Implemented | Repository-enforced, Hosted-executed | Hosted future runs can vary |
-> | F14 Verification | [m0019](m0019-verification-validation.md) | Implemented | Repository-enforced | Evidence remains artifact-specific |
-> | F15 Validation | [m0019](m0019-verification-validation.md) | Partial | Defined | Intended-use owner evidence varies |
-> | F16 Intended-use acceptance | [m0019](m0019-verification-validation.md) | Partial | Unverified for deployment | Exact target absent |
-> | F17 Residual risk | [m0019](m0019-verification-validation.md) | Owner-bound | Defined | No universal acceptance authority |
-> | F18 Revalidation and monitoring | [m0019](m0019-verification-validation.md) | Partial | Configured | Mutable external/runtime state |
-> | G1 Security governance | [m0017](m0017-security-governance.md) | Implemented structurally | Repository-enforced | Production acceptance absent |
-> | G2 Secret and credential handling | [m0017](m0017-security-governance.md) | Implemented as boundary | Defined, Repository-enforced | Secret stores not inspected |
-> | G3 Least privilege | [m0017](m0017-security-governance.md) | Partial | Configured, Repository-enforced | Runtime identity proof varies |
-> | G4 Supply-chain security | [m0017](m0017-security-governance.md) | Implemented for registered sample | Repository-enforced | Full service fleet provenance absent |
-> | G5 Dependency analysis | [m0017](m0017-security-governance.md) | Partial | Repository-enforced | Ecosystem breadth varies |
-> | G6 Code/infrastructure static analysis | [m0017](m0017-security-governance.md) | Implemented | Repository-enforced, Hosted-executed | Runtime findings separate |
-> | G7 Approval boundaries | [m0017](m0017-security-governance.md) | Implemented | Defined, Repository-enforced | Provider enforcement differs |
-> | G8 Audit evidence | [m0017](m0017-security-governance.md) | Implemented structurally | Repository-enforced | Live platform audit log not inspected |
-> | G9 Local security validation vs remote enforcement | [m0017](m0017-security-governance.md) | Explicitly separated | Local-executed, Remote-verified at cutoff | Later drift possible |
-> | G10 Runtime security state | [m0017](m0017-security-governance.md) | Unverified | Unverified | No live deployment observation |
-> | G11 Security readiness and gaps | [m0017](m0017-security-governance.md) | Partial | Defined, Repository-enforced | AUD-0097 and production posture remain |
->
-> No requested category is missing. The principal conclusion changes since the
-> prior research are the merged document-contract lifecycle/common-six corpus,
-> the consolidation of current baseline ownership into m0020 while RES-0085
-> preserves dated recovery evidence, Hosted acceptance of both aggregate CI
-> routes, and the 2026-09-05 remote protection read-back. Those changes
-> strengthen repository evidence but do not close live deployment,
-> persistent-memory, editor-integration, cost, or provider-outcome gaps.
->
-> \## Sources
->
-> Common official sources re-opened on 2026-09-05:
->
-> - [Claude Code feature model](https://code.claude.com/docs/en/features-overview),
->   [hooks](https://code.claude.com/docs/en/hooks),
->   [subagents](https://code.claude.com/docs/en/sub-agents), and
->   [memory](https://code.claude.com/docs/en/memory).
-> - [OpenAI Codex app architecture](https://openai.com/index/introducing-the-codex-app/),
->   [Codex safety controls](https://openai.com/index/running-codex-safely/), and
->   [harness engineering](https://openai.com/index/harness-engineering/).
-> - [Model Context Protocol architecture](https://modelcontextprotocol.io/specification/2025-06-18/architecture).
-> - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use),
->   [OIDC](https://docs.github.com/en/actions/reference/security/oidc), and
->   [ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
-> - [Docker Compose specification](https://docs.docker.com/compose/compose-file/),
->   [services and healthchecks](https://docs.docker.com/reference/compose-file/services/),
->   [profiles](https://docs.docker.com/compose/how-tos/profiles/), and
->   [secrets](https://docs.docker.com/reference/compose-file/secrets/).
-> - [Diátaxis](https://diataxis.fr/), [C4 Model](https://c4model.com/), and
->   [arc42 documentation](https://arc42.org/documentation/).
-> - [GitHub Spec Kit](https://github.github.com/spec-kit/),
->   [ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en),
->   [NIST SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final), and
->   [SLSA 1.2](https://slsa.dev/spec/v1.2/).
-> - [agency-agents division authority](https://github.com/msitarzewski/agency-agents/blob/main/divisions.json).
->
-> Repository sources:
->
-> - Baseline commit `71da6654e2fa3def174b238ad309c92fe46e9dae`, with the earlier
->   assessed baseline `4c6d211129615eab372d720ebd209b6c27618c86` preserved as
->   dated evidence.
-> - [Canonical governance](../../../../.agents/README.md),
->   [Stage 99 Registry](../../../99.templates/registry.json),
->   [Stage 03](../../../03.specs/README.md), and
->   [Stage 05](../../../05.operations/README.md).
-> - [Workflow contract](../../../../.github/workflow-contract.yml),
->   [CI workflow](../../../../.github/workflows/ci-quality.yml), and
->   [main protection record](../../../../.github/rulesets/main-protection.md).
-> - [Implementation audits](../../audits/README.md),
->   Compose profile data,
->   LLM Wiki index, and
->   repository map.
->
-> Each member owns its detailed claim and source inventory. This package-level
-> list contains only sources shared across categories.
->
-> \## Implications
->
-> 1. Preserve canonical agent governance as provider-neutral policy and Stage 99 as document
->    contract authority; do not promote Stage 90 findings into either owner.
-> 2. Keep the 20-member topical split. It maps the full request without adding a
->    competing package or making the README repeat detailed analysis.
-> 3. Preserve the two aggregate CI checks and their app binding while current
->    read-back matches. Use the recorded 12-check rollback on mismatch.
-> 4. Route durable memory lifecycle, editor tasks/actions, cost/rate evidence,
->    broad supply-chain provenance, Compose defect closure, and production
->    deployment/release acceptance through separate approved SDLC work.
-> 5. Apply Diátaxis, C4, and arc42 as reader/viewpoint tools inside current
->    owners; do not introduce a second documentation tree.
-> 6. Keep every recommendation on this route:
->    Research → Requirement → Architecture/ADR → Spec → Plan → Task →
->    Verification → Independent Review.
->
-> \## Traceability
->
-> - Members: [m0001](m0001-agent-instructions-vibe-coding.md),
->   [m0002](m0002-agent-model-selection.md),
->   [m0003](m0003-ai-agent-catalogs.md),
->   [m0004](m0004-automation-pipeline-workflow.md),
->   [m0005](m0005-docker-compose-infrastructure.md),
->   [m0006](m0006-document-metadata-lifecycle.md),
->   [m0007](m0007-documentation-architecture.md),
->   [m0008](m0008-harness-engineering.md),
->   [m0009](m0009-llm-wiki-system.md),
->   [m0010](m0010-loop-engineering.md),
->   [m0011](m0011-memory-hierarchy.md),
->   [m0012](m0012-provider-implementation-comparison.md),
->   [m0013](m0013-provider-model-landscape.md),
->   [m0014](m0014-quality-ci-formatting.md),
->   [m0015](m0015-scope-application-matrix.md),
->   [m0016](m0016-sdlc-document-roles.md),
->   [m0017](m0017-security-governance.md),
->   [m0018](m0018-spec-driven-sdlc.md),
->   [m0019](m0019-verification-validation.md), and
->   [m0020](m0020-workspace-baseline.md).
-> - Related research: [RES-0084](../0084-github-actions-platform/README.md) and
->   dated baseline/recovery evidence in
->   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
-> - Policy: [canonical agent governance](../../../../.agents/README.md) and
->   [documentation protocol](../../../../.agents/governance/documentation-protocol.md).
-> - Requirements: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
->   [REQ-0025](../../../01.requirements/0025-operational-readiness-closure.md), and
->   [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md).
-> - Architecture/ADR: [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md),
->   [AD-0028](../../../02.architecture/descriptions/0028-operational-readiness-closure.md),
->   [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
->   [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
->   [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md), and
->   ADR-0031.
-> - Implementation evidence: [completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
->   and [current lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
-> - Operations: [Stage 05](../../../05.operations/README.md).
-> - Audit/data: AUD-0026,
->   [k6 guide](../../../05.operations/guides/0061-k6.md),
->   DATA-0082, and
->   DATA-0083.
-> - Package/index/template authority: [research index](../README.md),
->   [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
->   [research-member template](../../../99.templates/templates/references/research.template.md),
->   and [Registry](../../../99.templates/registry.json).
->
-> \## Preservation Declaration
->
-> SPEC-0158 protects every file listed below even when it has no consumer. The
-> declaration is the durable path oracle; it contains no pinned count, hash, or
-> commit. Files may be corrected and expanded, but they are not deleted,
-> archived, tombstoned, or substantively reduced. A member-set change must update
-> this declaration atomically.
->
-> - `README.md`
-> - `m0001-agent-instructions-vibe-coding.md`
-> - `m0002-agent-model-selection.md`
-> - `m0003-ai-agent-catalogs.md`
-> - `m0004-automation-pipeline-workflow.md`
-> - `m0005-docker-compose-infrastructure.md`
-> - `m0006-document-metadata-lifecycle.md`
-> - `m0007-documentation-architecture.md`
-> - `m0008-harness-engineering.md`
-> - `m0009-llm-wiki-system.md`
-> - `m0010-loop-engineering.md`
-> - `m0011-memory-hierarchy.md`
-> - `m0012-provider-implementation-comparison.md`
-> - `m0013-provider-model-landscape.md`
-> - `m0014-quality-ci-formatting.md`
-> - `m0015-scope-application-matrix.md`
-> - `m0016-sdlc-document-roles.md`
-> - `m0017-security-governance.md`
-> - `m0018-spec-driven-sdlc.md`
-> - `m0019-verification-validation.md`
-> - `m0020-workspace-baseline.md`
-> - `m0021-local-docker-service-consolidation.md`
->
-> Historical continuity is retained: the canonical pack was rebuilt under
-> SPEC-0158 in August 2026, all members received source refresh and deepening,
-> the loop coverage gap was repaired on 2026-08-17, and the 2026-09-05 renewal
-> preserves all identities and the exact member set. The subsequent baseline
-> consolidation changes no protected path and makes m0020 the single current
-> workspace-baseline owner.
->
-> \## Limitations
->
-> - No user-global Claude/Codex configuration, secret, credential, private key,
->   environment value, shell history, or raw log was read.
-> - No new provider call, Compose service start, deployment, rollback, tag, or
->   release action was performed for this renewal.
-> - Provider entitlement and remote protection are point-in-time observations
->   recorded by SPEC-0172; future state is not inferred.
-> - The clean full gate proves local conformance at the baseline commit, not
->   production fitness, service health, durability, performance, or recovery.
-> - Four Compose domain defects remain in AUD-0097 even though all profiles can
->   render statically.
-> - External sources are mutable after 2026-09-05. Purchased ISO text was not
->   accessed; only public catalog and terminology material was used.
-> - The Graphify report predates the baseline and is noisy, so it is advisory;
->   current generated LLM Wiki freshness is decided only by its registered
->   generator and checks.
+> - Repository: `buenhyden/hy-home.docker`.
+> - 비교 branch와 commit: `main`의
+>   `71da6654e2fa3def174b238ad309c92fe46e9dae`. 이전에 평가한 baseline인
+>   `4c6d211129615eab372d720ebd209b6c27618c86`는 날짜가 있는 구성원
+>   재검증과 RES-0085에 그대로 보존되며 현재 상태로 다시 쓰지 않습니다.
+> - Repository 관찰 날짜와 외부 source 확인 날짜:
+>   2026-09-05.
+> - 관찰 checkout 범위: `main`만 있는 격리된 clone과, merge되지 않은
+>   local branch를 담은 개발자 clone. 둘은 같은 commit의 등록된 check
+>   하나에서 결과가 다르므로, 둘 중 하나를 저장소의 최종 판정으로
+>   내세우지 않고 두 결과를 모두 기록합니다.
+> - 포함: `docs/00.agent-governance/`, Stage 01, 02, 03, 05, 90, 98, 99;
+>   root entrypoint; `.agents/`, `.claude/`, `.codex/`, workflow, Compose
+>   선언, script, test, 생성된 navigation 소유권.
+> - 포함된 외부 계열: 공식 Claude Code, OpenAI Codex, GitHub,
+>   Docker, MCP, Diátaxis, C4, arc42, GitHub Spec Kit, ISO 공개 정의,
+>   NIST SSDF, SLSA, upstream agency-agents 자료.
+> - 제외: secret이나 credential 값, user-global provider 설정,
+>   shell history, raw log, 승인되지 않은 provider/runtime 변경, 새 실서비스
+>   배포, tag, release.
+> - 증거 경계: 설정은 실행이 아님; local 실행은 Hosted CI가 아님; Hosted
+>   CI는 배포가 아님; 특정 시점의 entitlement는 미래를 보장하지 않음;
+>   추적되는 protection 의도는 remote 강제가 아님.
+> - [m0020](m0020-workspace-baseline.md)이 현재 저장소-local baseline을
+>   소유합니다. [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)는
+>   날짜가 있는 2026-09-05 평가 범위와 identity 복구 증거를 보존합니다.
+>   [RES-0084](../0084-github-actions-platform/README.md)는 GitHub Actions
+>   platform 메커니즘의 세부 사항을 소유합니다. 이 package는 주제별 연구와
+>   그 cross-category navigation을 소유합니다.
+
+#### Historical method
+
+1. 무언가를 발급하거나 재구성하기 전에, 모든 활성 research package와
+   구성원을 경로, 제목, `artifact_id`, `parent_ids`, lifecycle metadata,
+   heading, 링크, 관찰 날짜로 열거합니다.
+2. 요청된 용어, 동의어, 약어, 오래된 Stage 04 route, 구식 개수, 중복된
+   claim, 상충하는 증거, `UNVERIFIED` 경계를 파일명과 본문에서 검색합니다.
+3. Stage 90 산문에서 저장소 사실을 상속받는 대신, 현재 canonical
+   Requirement, Architecture/ADR, Spec/Task, Operations, audit, data,
+   Registry, template, validator, workflow, 생성된 산출물 owner를
+   읽습니다.
+4. 가변적인 외부 claim은 2026-09-05에 공식 primary source에서 다시
+   엽니다. 이전의 고정 commit이나 날짜가 있는 관찰은 역사적 증거로
+   유지하고 새로고침되지 않은 claim은 그렇게 표시합니다.
+5. 채택을 Defined, Configured, Local-executed, Repository-enforced,
+   Runtime-verified, Remote-verified, Unverified로 분류합니다.
+6. 중복을 같은 question, 증거 모델, lifecycle, decision route로
+   취급합니다. 그 owner를 제자리에서 갱신하고 넷 모두 실질적으로 다를
+   때만 package를 만듭니다.
+7. 집중된 document/reference check, 생성된 index 신선도, 링크와 lifecycle
+   check를 실행한 뒤 canonical full gate를 실행합니다. local, Hosted,
+   provider, runtime, remote 결과는 별도 증거 행으로 남깁니다.
+
+##### Historical existing artifact decision record
+
+| Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
+| --- | --- | --- | --- | --- |
+| RES-0002 README | A–G navigation과 cross-category 요약 | 세부 claim, source, 역사적 routing이 구성원 내용과 중복됨 | question/scope/method/router/traceability owner로 다시 씀 | RES-0002 README, 같은 identity |
+| RES-0002-m0001–m0020 | 모든 주제 범주 | 역사적 분석은 강하지만 관찰 metadata와 여러 현재 route가 오래됨 | ID와 내용은 보존하고 현재 재검증 증거를 추가 | 같은 구성원 20개 |
+| RES-0084 | GitHub Actions, CI, remote enforcement | platform 분석이 aggregate-check 도입 이전 것 | 채택과 증거 경계를 제자리에서 갱신 | RES-0084 |
+| RES-0085 | 현재 `main` baseline | 그 question이 m0020이 이미 소유한 current-baseline 목적과 중복됨 | 현재 소유권을 m0020으로 통합하고 RES-0085는 `review` 상태의 날짜가 있는 복구 증거로 보존 | RES-0002-m0020과 RES-0085 증거 |
+| New RES-0096 candidate | 같은 question 집합 | 기존 owner와 관찰 주기를 중복함 | 만들지 않음 | 없음 |
+
+##### Historical 2026-09-05 baseline decision record
+
+이 pass는 `main@71da6654e2fa3def174b238ad309c92fe46e9dae`에서 같은 question
+집합을 다시 관찰했고 구조적 변화는 없었습니다. 요청된 모든 범주가 이미
+정확히 하나의 소유 구성원으로 해결되었으므로, package identity, 구성원
+identity, `created` 값, 아래 구성원 배정은 바뀌지 않습니다.
+
+| Existing artifact | Related requested categories | Current problem | Decision | Target artifact |
+| --- | --- | --- | --- | --- |
+| RES-0002 README | A–G navigation | Scope가 `main`보다 세 commit 뒤처진 baseline을 인용 | 현재 baseline pointer를 진전시키고 날짜가 있는 것은 보존 | RES-0002 README, 같은 identity |
+| RES-0002-m0006 | B12, D10, D11 | `SPEC-0173`의 identity-space 증거가 기록되지 않음 | SPEC-0172 작업이 진행 중인 동안 구성원은 건드리지 않고 검증 owner와 함께 관찰을 기록 | RES-0002-m0019 |
+| RES-0002-m0014 | F1–F13 | 인용된 gate 판정이 checkout identity를 담지 않음 | 날짜가 있는 재현 조건을 추가하고 분석을 m0019로 route | RES-0002-m0014 |
+| RES-0002-m0019 | F14–F18 | checkout 간 검증 결정성이 분석되지 않음 | 세 환경 비교를 canonical 분석으로 추가 | RES-0002-m0019 |
+| RES-0002-m0020 | A3, A20 | 현재 baseline pointer가 delta보다 뒤처짐 | pointer를 진전시키고 delta 효과를 기록 | RES-0002-m0020 |
+| RES-0002-m0001–m0005, m0007–m0013, m0015–m0018 | 나머지 범주 | delta에서 owner가 바뀌지 않음 | 그대로 보존; 재관찰 없이 날짜를 다시 매기지 않음 | 같은 구성원 |
+| RES-0084 | E7, E9 | 그 날짜가 있는 관찰은 이 delta 밖에 있음 | 바꾸지 않음 | RES-0084 |
+| RES-0085 | 날짜가 있는 request 범위 | `4c6d2111` 인용이 그 존재 목적 | 갱신하지 않음; 날짜가 있는 baseline을 보존하는 것이 존재 이유 | RES-0085 |
+| New research package candidate | 같은 question 집합 | 이미 존재하는 owner를 중복함 | 만들지 않음 | 없음 |
+
+실질적인 추가 사항은 한 가지입니다. local gate 판정이 checkout에 따라
+달라집니다: 이 단일 commit에서 격리된 `main` 전용 clone은 전체
+profile을 통과하고 merge되지 않은 branch에 닿을 수 있는 개발자
+clone은 실패합니다. 두 결과 모두 기록됩니다. 이 관찰이 건드리는 저장소
+계약은 Stage 00과 Stage 99에 속하므로, 후속 작업은 이 package가 아니라
+일반적인 Requirement-to-Task chain으로 진행됩니다.
+
+#### Historical findings
+
+##### Historical member navigation
+
+<!-- Historical evidence table (not current authority; source: Git history). -->
+| Category | Member | Core question | Repository state | Evidence depth | Priority |
+| --- | --- | --- | --- | --- | --- |
+| Instructions and prompt hierarchy | [m0001](m0001-agent-instructions-vibe-coding.md) | How are durable instructions separated from ad-hoc prompts? | Root adapters load Stage 00; hooks enforce selected boundaries | Defined, Configured, Repository-enforced | High |
+| Model routing | [m0002](m0002-agent-model-selection.md) | How should task class select provider/model/effort? | Work profiles are registered; quality/cost effectiveness is unmeasured | Configured, Repository-enforced, Unverified effectiveness | High |
+| Agent catalogs | [m0003](m0003-ai-agent-catalogs.md) | How are external roles admitted without copying authority? | 14 roles and 23 skills are canonical; external catalogs are research inputs | Repository-enforced | Medium |
+| Automation and delivery | [m0004](m0004-automation-pipeline-workflow.md) | Where do hooks, CI, CD, promotion, and rollback differ? | CI aggregate gates exist; live deployment remains unverified | Configured, Repository-enforced, Hosted-executed | High |
+| Compose infrastructure | [m0005](m0005-docker-compose-infrastructure.md) | What do profiles and service controls prove? | 28 selections render; four domain defects remain owner-routed | Configured, Local-executed, Repository-enforced | High |
+| Metadata and lifecycle | [m0006](m0006-document-metadata-lifecycle.md) | How are identity, status, retention, and retirement enforced? | Common-six and profile lifecycle contracts are active | Repository-enforced | High |
+| Documentation architecture | [m0007](m0007-documentation-architecture.md) | How should Diátaxis, C4, arc42, ADR, and README compose? | Selective composition exists; no parallel taxonomy is required | Defined, Configured | Medium |
+| Harness engineering | [m0008](m0008-harness-engineering.md) | Which controls make agents effective and bounded? | Canonical roles/skills/adapters/hooks are enforced; outcomes are partly observed | Repository-enforced, Runtime-verified in bounded probes | High |
+| LLM Wiki | [m0009](m0009-llm-wiki-system.md) | How can generated navigation remain non-authoritative and fresh? | Generator ownership and freshness checks are active | Repository-enforced | Medium |
+| Loop engineering | [m0010](m0010-loop-engineering.md) | How are discovery, retry, stop, review, and handoff bounded? | Stage 00 defines the loop; live provider equivalence is unverified | Defined, Repository-enforced | High |
+| Memory | [m0011](m0011-memory-hierarchy.md) | What is durable, what expires, and who may delete it? | Task evidence exists; durable semantic memory lifecycle remains partial | Defined, Configured, Unverified | High |
+| Provider comparison | [m0012](m0012-provider-implementation-comparison.md) | What is shared and what must stay Claude/Codex-native? | Shared control plane projects into native surfaces | Repository-enforced, point-in-time Runtime-verified | High |
+| Provider/model landscape | [m0013](m0013-provider-model-landscape.md) | Which model, effort, fallback, entitlement, and cost claims are supportable? | Registry is configured; entitlement is dated and cost is unmeasured | Configured, point-in-time Runtime-verified | High |
+| Quality and CI | [m0014](m0014-quality-ci-formatting.md) | Which quality layers block drift? | Registered local/full and Hosted aggregate gates exist | Local-executed, Repository-enforced, Hosted-executed | High |
+| Scope application | [m0015](m0015-scope-application-matrix.md) | Where does every requested concern apply and who owns it? | All requested categories route to existing owners | Defined | Medium |
+| SDLC document roles | [m0016](m0016-sdlc-document-roles.md) | What does each artifact own and never replace? | Registered roles and operations composition are enforced | Repository-enforced | High |
+| Security | [m0017](m0017-security-governance.md) | Which controls are local, remote, runtime, or missing? | Static and supply-chain controls are strong; production posture is unverified | Repository-enforced, point-in-time Remote-verified | High |
+| Spec-driven SDLC | [m0018](m0018-spec-driven-sdlc.md) | How does intent flow into verified work? | Current package form is enforced; intended-use acceptance remains owner-bound | Repository-enforced | High |
+| Verification and validation | [m0019](m0019-verification-validation.md) | Does evidence prove conformance and intended use? | Conformance gates exist; deployment acceptance is absent | Local-executed, Repository-enforced | High |
+| Workspace baseline | [m0020](m0020-workspace-baseline.md) | What is actually present at the repository boundary? | Current baseline and dated measurements are consolidated here; RES-0085 preserves recovery evidence | Configured, Local-executed | High |
+| Local Docker service consolidation | [m0021](m0021-local-docker-service-consolidation.md) | Which local services are open source, overlapping, or safe removal candidates? | Current Compose/runtime inventory and official project sources compared; removal decisions remain user- and data-dependent | Local-executed, External-source-reviewed | High |
+
+##### Historical requested category routing
+
+`Current status`와 `Principal gap`은 이 관찰 시점의 평가입니다. `Evidence
+depth`는 Method에서 정의한 통제 어휘(Defined, Configured, Local-executed,
+Repository-enforced, Runtime-verified, Remote-verified, Unverified)를
+그대로 사용합니다.
+
+| Requested category | Owning member | Current status | Evidence depth | Principal gap |
+| --- | --- | --- | --- | --- |
+| A1 Harness engineering | [m0008](m0008-harness-engineering.md) | 부분적 | Repository-enforced | 결과 지표 없음 |
+| A2 Loop engineering | [m0010](m0010-loop-engineering.md) | 부분적 | Repository-enforced | provider 간 결과 동등성 미검증 |
+| A3 Workspace harness, loop, rules, environment | [m0020](m0020-workspace-baseline.md) | 부분적 | Configured, Local-executed | editor/runtime 수용 불완전 |
+| A4 Claude Code implementation | [m0012](m0012-provider-implementation-comparison.md) | 채택됨 | Configured, point-in-time Runtime-verified | 전체 native event coverage 부분적 |
+| A5 Codex implementation | [m0012](m0012-provider-implementation-comparison.md) | 채택됨 | Configured, point-in-time Runtime-verified | native hook surface가 더 작음 |
+| A6 Shared Claude/Codex governance | [m0012](m0012-provider-implementation-comparison.md) | 구현됨 | Repository-enforced | 행동 동등성 미검증 |
+| A7 Provider-native differences | [m0012](m0012-provider-implementation-comparison.md) | 문서화됨 | Defined, Configured | upstream capability가 가변적 |
+| A8 System prompt and command hierarchy | [m0001](m0001-agent-instructions-vibe-coding.md) | 구현됨 | Repository-enforced | provider system prompt는 여전히 외부에 있음 |
+| A9 Context loading and priority | [m0001](m0001-agent-instructions-vibe-coding.md) | 구현됨 | Defined, Configured | runtime 준수는 확률적임 |
+| A10 Task-aware model selection | [m0002](m0002-agent-model-selection.md) | 정책으로 구현됨 | Repository-enforced | 결과 검증 없음 |
+| A11 Model, effort, fallback, entitlement | [m0013](m0013-provider-model-landscape.md) | 부분적 | Configured, point-in-time Runtime-verified | 현재 entitlement/fallback 보장되지 않음 |
+| A12 Agent catalog and agency-agents | [m0003](m0003-ai-agent-catalogs.md) | 부분적 | Repository-enforced | 자동 외부 intake 없음 |
+| A13 Roles, capabilities, tools, permissions | [m0003](m0003-ai-agent-catalogs.md) | 구조적으로 구현됨 | Repository-enforced | runtime least-privilege 증명 부분적 |
+| A14 Agent memory hierarchy | [m0011](m0011-memory-hierarchy.md) | 부분적 | Defined, Configured | 단일 내구성 semantic-memory 권위 없음 |
+| A15 Short-, long-, domain-memory | [m0011](m0011-memory-hierarchy.md) | 부분적 | Defined | long/domain lifecycle 불완전 |
+| A16 Memory promotion, retention, expiry, privacy, deletion | [m0011](m0011-memory-hierarchy.md) | 격차 | Defined | 강제되는 lifecycle 없음 |
+| A17 Claude/Codex context sharing | [m0012](m0012-provider-implementation-comparison.md) | 구조적으로만 | Configured | 의미적 전달 수용 미검증 |
+| A18 Session handoff and evidence sharing | [m0012](m0012-provider-implementation-comparison.md) | 부분적 | Defined, Repository-enforced | live handoff 품질 미측정 |
+| A19 Test and CI agent hooks | [m0004](m0004-automation-pipeline-workflow.md) | 부분적 | Configured, Repository-enforced | native parity가 다름 |
+| A20 Editor shortcuts, tasks, code actions | [m0020](m0020-workspace-baseline.md) | 격차 | Unverified | 저장소 전체 계약 없음 |
+| A21 Rate limit, cost, token, context management | [m0013](m0013-provider-model-landscape.md) | 부분적 | Configured | 직접적인 cost/rate 증거 없음 |
+| B1 Spec-driven development | [m0018](m0018-spec-driven-sdlc.md) | 구현됨 | Repository-enforced | intended-use 수용은 owner-bound |
+| B2 SDLC purpose and necessity | [m0018](m0018-spec-driven-sdlc.md) | 정의됨 | Defined | 효과성 지표 없음 |
+| B3 SDLC governance | [m0018](m0018-spec-driven-sdlc.md) | 구현됨 | Repository-enforced | 등록된 범위에는 없음 |
+| B4 Full SDLC lifecycle | [m0018](m0018-spec-driven-sdlc.md) | 구조적으로 구현됨 | Repository-enforced | deployment/release 완료는 조건부 |
+| B5 Requirement-to-operations traceability | [m0016](m0016-sdlc-document-roles.md) | 구조적으로 구현됨 | Repository-enforced | runtime 증거는 별도로 남음 |
+| B6 PRD | [m0016](m0016-sdlc-document-roles.md) | 등록된 관점 | Repository-enforced | 독립 package type 아님 |
+| B7 SPEC | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | 현재 형태에는 없음 |
+| B8 PLAN | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | 반드시 prospective로 남아야 함 |
+| B9 TASK | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | 반드시 증거 중심으로 남아야 함 |
+| B10 ADR | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | decision 품질은 reviewer-bound |
+| B11 Ownership and non-substitution | [m0016](m0016-sdlc-document-roles.md) | 구현됨 | Repository-enforced | 등록된 role에는 없음 |
+| B12 State transition, completion, supersession, retention, retirement | [m0006](m0006-document-metadata-lifecycle.md) | 구현됨 | Repository-enforced | 역사적 기록은 별도로 남음 |
+| B13 Approval, review, independent-review boundary | [m0018](m0018-spec-driven-sdlc.md) | 구현됨 | Defined, Repository-enforced | 사람의 수용은 owner-bound로 남음 |
+| C1 Guide | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | subject coverage가 다름 |
+| C2 Incident | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | 사건 발생 시에만 생성 |
+| C3 Postmortem | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | 해결된 incident 증거 필요 |
+| C4 Policy | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | subject coverage가 다름 |
+| C5 Release | [m0016](m0016-sdlc-document-roles.md) | 구성된 증거 | Defined | 독립 profile 없음 |
+| C6 Runbook | [m0016](m0016-sdlc-document-roles.md) | 등록됨 | Repository-enforced | runtime 리허설이 다름 |
+| C7 Operations-document relationships | [m0016](m0016-sdlc-document-roles.md) | 구현됨 | Repository-enforced | 등록된 topology에는 없음 |
+| C8 Release evidence vs deployment evidence | [m0016](m0016-sdlc-document-roles.md) | 정의됨 | Defined | 현재 release target 없음 |
+| C9 Incident, recovery, postmortem, improvement traceability | [m0016](m0016-sdlc-document-roles.md) | 구조적으로 구현됨 | Repository-enforced | live incident는 사건 의존적 |
+| D1 Diátaxis | [m0007](m0007-documentation-architecture.md) | 선택적으로 적용됨 | Defined, Configured | 전체 corpus 분류 불필요 |
+| D2 C4 Model | [m0007](m0007-documentation-architecture.md) | 부분적 | Defined | view coverage는 수요 기반 |
+| D3 arc42 | [m0007](m0007-documentation-architecture.md) | 부분적 | Defined | 병렬 폴더 분류 아님 |
+| D4 ADR operating model | [m0016](m0016-sdlc-document-roles.md) | 구현됨 | Repository-enforced | 검토 품질은 여전히 사람에게 있음 |
+| D5 LLM Wiki | [m0009](m0009-llm-wiki-system.md) | 구현됨 | Repository-enforced | Graphify snapshot은 advisory/오래됨으로 남음 |
+| D6 Generated index vs authored-document boundary | [m0009](m0009-llm-wiki-system.md) | 구현됨 | Repository-enforced | 생성 파일은 owner command 필요 |
+| D7 README purpose and role | [m0007](m0007-documentation-architecture.md) | 구현됨 | Repository-enforced | legacy 산문은 여전히 낡을 수 있음 |
+| D8 Repository/stage/package/service README differences | [m0007](m0007-documentation-architecture.md) | 구현됨 | Repository-enforced | service coverage가 다름 |
+| D9 Documentation navigation | [m0007](m0007-documentation-architecture.md) | 구현됨 | Configured, Repository-enforced | graph noise는 advisory로 남음 |
+| D10 Duplication prevention and canonical ownership | [m0006](m0006-document-metadata-lifecycle.md) | 구조적으로 구현됨 | Repository-enforced | 의미적 중복은 여전히 검토 필요 |
+| D11 Metadata and document lifecycle | [m0006](m0006-document-metadata-lifecycle.md) | 구현됨 | Repository-enforced | 활성 등록 corpus에는 없음 |
+| E1 Docker Compose | [m0005](m0005-docker-compose-infrastructure.md) | statically 구현됨 | Configured, Local-executed | live service 수용 없음 |
+| E2 Service boundaries and profiles | [m0005](m0005-docker-compose-infrastructure.md) | 알려진 결함과 함께 구현됨 | Repository-enforced | AUD-0097이 아직 열려 있음 |
+| E3 Network, volume, secret, healthcheck | [m0005](m0005-docker-compose-infrastructure.md) | 부분적 | Configured, Repository-enforced | runtime 행동 미검증 |
+| E4 Configuration vs runtime state | [m0005](m0005-docker-compose-infrastructure.md) | 명시적으로 분리됨 | Defined | 새 runtime 관찰 없음 |
+| E5 Continuous Integration | [m0004](m0004-automation-pipeline-workflow.md) | 구현됨 | Repository-enforced, Hosted-executed | point-in-time Hosted 증거 |
+| E6 Continuous Delivery/Deployment | [m0004](m0004-automation-pipeline-workflow.md) | 부분적/격차 | Defined | live target이나 promotion 수용 없음 |
+| E7 GitHub Actions | [m0004](m0004-automation-pipeline-workflow.md) | CI에는 구현됨 | Configured, Hosted-executed | 세부는 RES-0084 참고 |
+| E8 Promotion, release, deployment, rollback | [m0004](m0004-automation-pipeline-workflow.md) | 부분적 | Defined, Configured rehearsal | 현재 production target/version 없음 |
+| E9 Remote control plane and branch protection | [m0004](m0004-automation-pipeline-workflow.md) | cutoff 시점 검증됨 | Remote-verified | 이후 drift는 새 read-back 필요 |
+| E10 Operational readiness and recoverability | [m0005](m0005-docker-compose-infrastructure.md) | 부분적 | Repository-enforced | owner-routed 결함 넷, live 리허설 없음 |
+| F1 Quality Assurance | [m0014](m0014-quality-ci-formatting.md) | 구조적으로 구현됨 | Repository-enforced | intended-use 수용은 별도 |
+| F2 Formatting | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced | 도구 버전 drift는 모니터링됨 |
+| F3 Linting | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced | surface별 coverage |
+| F4 Syntax validation | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced | runtime semantics는 별도 |
+| F5 Static analysis | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced, Hosted-executed | remote configuration은 drift 가능 |
+| F6 Unit test | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced | domain별 coverage가 다름 |
+| F7 Integration test | [m0014](m0014-quality-ci-formatting.md) | 부분적 | Repository-enforced | live 외부 통합 제한적 |
+| F8 Contract test | [m0014](m0014-quality-ci-formatting.md) | 강하게 구현됨 | Repository-enforced | runtime 계약은 별도로 남음 |
+| F9 Regression test | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced | 역사적 gap별 coverage |
+| F10 Coverage | [m0014](m0014-quality-ci-formatting.md) | 부분적 | Storybook에는 Hosted-executed | 저장소 전체 threshold 없음 |
+| F11 Pre-commit hook | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Configured, CI에는 Repository-enforced | local 설치는 사용자 의존적 |
+| F12 Local validation | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Local-executed | point-in-time 결과 |
+| F13 CI quality gate | [m0014](m0014-quality-ci-formatting.md) | 구현됨 | Repository-enforced, Hosted-executed | Hosted 미래 실행은 달라질 수 있음 |
+| F14 Verification | [m0019](m0019-verification-validation.md) | 구현됨 | Repository-enforced | 증거는 artifact별로 남음 |
+| F15 Validation | [m0019](m0019-verification-validation.md) | 부분적 | Defined | intended-use owner 증거가 다름 |
+| F16 Intended-use acceptance | [m0019](m0019-verification-validation.md) | 부분적 | deployment에는 Unverified | 정확한 target 없음 |
+| F17 Residual risk | [m0019](m0019-verification-validation.md) | owner-bound | Defined | 보편적 수용 권위 없음 |
+| F18 Revalidation and monitoring | [m0019](m0019-verification-validation.md) | 부분적 | Configured | 가변적 외부/runtime 상태 |
+| G1 Security governance | [m0017](m0017-security-governance.md) | 구조적으로 구현됨 | Repository-enforced | production 수용 없음 |
+| G2 Secret and credential handling | [m0017](m0017-security-governance.md) | 경계로 구현됨 | Defined, Repository-enforced | secret store는 조사되지 않음 |
+| G3 Least privilege | [m0017](m0017-security-governance.md) | 부분적 | Configured, Repository-enforced | runtime identity 증명이 다름 |
+| G4 Supply-chain security | [m0017](m0017-security-governance.md) | 등록된 sample에는 구현됨 | Repository-enforced | 전체 service fleet provenance 없음 |
+| G5 Dependency analysis | [m0017](m0017-security-governance.md) | 부분적 | Repository-enforced | ecosystem 범위가 다름 |
+| G6 Code/infrastructure static analysis | [m0017](m0017-security-governance.md) | 구현됨 | Repository-enforced, Hosted-executed | runtime finding은 별도 |
+| G7 Approval boundaries | [m0017](m0017-security-governance.md) | 구현됨 | Defined, Repository-enforced | provider enforcement가 다름 |
+| G8 Audit evidence | [m0017](m0017-security-governance.md) | 구조적으로 구현됨 | Repository-enforced | live platform audit log는 조사되지 않음 |
+| G9 Local security validation vs remote enforcement | [m0017](m0017-security-governance.md) | 명시적으로 분리됨 | Local-executed, cutoff 시점 Remote-verified | 이후 drift 가능 |
+| G10 Runtime security state | [m0017](m0017-security-governance.md) | Unverified | Unverified | live deployment 관찰 없음 |
+| G11 Security readiness and gaps | [m0017](m0017-security-governance.md) | 부분적 | Defined, Repository-enforced | AUD-0097과 production posture가 남음 |
+
+빠진 요청 범주는 없습니다. 이전 연구 대비 바뀐 주요 결론은 통합된
+문서 계약 lifecycle/common-six corpus, m0020으로의 현재 baseline
+소유권 통합(RES-0085는 날짜가 있는 복구 증거를 보존), 두 aggregate CI
+route 모두의 Hosted 수용, 2026-09-05 remote protection read-back입니다.
+이 변화로 저장소 증거는 강화되지만 live deployment, 영구 memory,
+editor 통합, 비용, provider 결과 gap은 닫히지 않습니다.
+
+#### Historical sources
+
+2026-09-05에 다시 연 공통 공식 source:
+
+- [Claude Code feature model](https://code.claude.com/docs/en/features-overview),
+  [hooks](https://code.claude.com/docs/en/hooks),
+  [subagents](https://code.claude.com/docs/en/sub-agents),
+  [memory](https://code.claude.com/docs/en/memory).
+- [OpenAI Codex app architecture](https://openai.com/index/introducing-the-codex-app/),
+  [Codex safety controls](https://openai.com/index/running-codex-safely/),
+  [harness engineering](https://openai.com/index/harness-engineering/).
+- [Model Context Protocol architecture](https://modelcontextprotocol.io/specification/2025-06-18/architecture).
+- [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use),
+  [OIDC](https://docs.github.com/en/actions/reference/security/oidc),
+  [ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
+- [Docker Compose specification](https://docs.docker.com/compose/compose-file/),
+  [services and healthchecks](https://docs.docker.com/reference/compose-file/services/),
+  [profiles](https://docs.docker.com/compose/how-tos/profiles/),
+  [secrets](https://docs.docker.com/reference/compose-file/secrets/).
+- [Diátaxis](https://diataxis.fr/), [C4 Model](https://c4model.com/),
+  [arc42 documentation](https://arc42.org/documentation/).
+- [GitHub Spec Kit](https://github.github.com/spec-kit/),
+  [ISO 29148 public terminology](https://www.iso.org/obp/ui/#iso:std:iso-iec-ieee:29148:ed-2:v1:en),
+  [NIST SSDF 1.1](https://csrc.nist.gov/pubs/sp/800/218/final),
+  [SLSA 1.2](https://slsa.dev/spec/v1.2/).
+- [agency-agents division authority](https://github.com/msitarzewski/agency-agents/blob/main/divisions.json).
+
+저장소 source:
+
+- Baseline commit `71da6654e2fa3def174b238ad309c92fe46e9dae`, 이전에
+  평가된 baseline `4c6d211129615eab372d720ebd209b6c27618c86`는 날짜가
+  있는 증거로 보존됨.
+- [공통 거버넌스](../../../../.agents/README.md),
+  [Stage 99 Registry](../../../99.templates/registry.json),
+  [Stage 03](../../../03.specs/README.md),
+  [Stage 05](../../../05.operations/README.md).
+- [Workflow contract](../../../../.github/workflow-contract.yml),
+  [CI workflow](../../../../.github/workflows/ci-quality.yml),
+  [main protection record](../../../../.github/rulesets/main-protection.md).
+- [Implementation audits](../../audits/README.md), Compose profile data,
+  LLM Wiki index, repository map.
+
+각 구성원이 세부 claim과 source inventory를 소유합니다. 이
+package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
+
+#### Historical implications
+
+1. 공통 Agent 거버넌스를 provider-neutral 정책으로, Stage 99를 문서 계약
+   권위로 보존합니다; Stage 90 finding을 어느 쪽으로도 승격하지
+   않습니다.
+2. 20개 구성원의 주제별 분할을 유지합니다. 경쟁 package를 추가하거나
+   README가 세부 분석을 반복하게 만들지 않으면서 전체 요청을
+   매핑합니다.
+3. 현재 read-back이 일치하는 동안 두 aggregate CI check와 그 app
+   binding을 보존합니다. 불일치 시 기록된 12-check rollback을
+   사용합니다.
+4. 내구성 있는 memory lifecycle, editor task/action, cost/rate 증거,
+   넓은 supply-chain provenance, Compose 결함 종료, production
+   deployment/release 수용은 별도의 승인된 SDLC 작업을 통해 route
+   합니다.
+5. Diátaxis, C4, arc42를 기존 owner 안의 독자/viewpoint 도구로
+   적용합니다; 두 번째 문서 tree를 도입하지 않습니다.
+6. 모든 권고를 다음 route에 유지합니다:
+   Research → Requirement → Architecture/ADR → Spec → Plan → Task →
+   Verification → Independent Review.
+
+#### Historical traceability
+
+- 구성원: [m0001](m0001-agent-instructions-vibe-coding.md),
+  [m0002](m0002-agent-model-selection.md),
+  [m0003](m0003-ai-agent-catalogs.md),
+  [m0004](m0004-automation-pipeline-workflow.md),
+  [m0005](m0005-docker-compose-infrastructure.md),
+  [m0006](m0006-document-metadata-lifecycle.md),
+  [m0007](m0007-documentation-architecture.md),
+  [m0008](m0008-harness-engineering.md),
+  [m0009](m0009-llm-wiki-system.md),
+  [m0010](m0010-loop-engineering.md),
+  [m0011](m0011-memory-hierarchy.md),
+  [m0012](m0012-provider-implementation-comparison.md),
+  [m0013](m0013-provider-model-landscape.md),
+  [m0014](m0014-quality-ci-formatting.md),
+  [m0015](m0015-scope-application-matrix.md),
+  [m0016](m0016-sdlc-document-roles.md),
+  [m0017](m0017-security-governance.md),
+  [m0018](m0018-spec-driven-sdlc.md),
+  [m0019](m0019-verification-validation.md),
+  [m0020](m0020-workspace-baseline.md).
+- 관련 연구: [RES-0084](../0084-github-actions-platform/README.md)와
+  [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)의
+  날짜가 있는 baseline/recovery 증거.
+- 정책: [공통 Agent 거버넌스](../../../../.agents/README.md)와
+  [documentation protocol](../../../../.agents/governance/documentation-protocol.md).
+- Requirements: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
+  [REQ-0025](../../../01.requirements/0025-operational-readiness-closure.md),
+  [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md).
+- Architecture/ADR: [AD-0027](../../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md),
+  [AD-0028](../../../02.architecture/descriptions/0028-operational-readiness-closure.md),
+  [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md),
+  [ADR-0028](../../../02.architecture/decisions/0028-local-isolated-readiness-evidence.md),
+  [ADR-0032 Canonical Agent Governance Home](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md),
+  ADR-0031.
+- Implementation 증거: [완료된 SPEC-0172 결과](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)와
+  [현재 lifecycle reconciliation](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md).
+- Operations: [Stage 05](../../../05.operations/README.md).
+- Audit/data: AUD-0026,
+  [k6 guide](../../../05.operations/guides/0061-k6.md), DATA-0082, DATA-0083.
+- Package/index/template authority: [research index](../README.md),
+  [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
+  [research-member template](../../../99.templates/templates/references/research.template.md),
+  [Registry](../../../99.templates/registry.json).
+
+#### Historical preservation declaration
+
+SPEC-0158은 아래 나열된 모든 파일을 consumer가 없더라도 보호합니다. 이
+선언은 내구성 있는 경로 oracle이며 고정된 개수, hash, commit을 담지
+않습니다. 파일은 고쳐지고 확장될 수 있지만 삭제, archive, tombstone,
+실질적 축소는 되지 않습니다. 구성원 집합 변경은 이 선언을 원자적으로
+갱신해야 합니다.
+
+- `README.md`
+- `m0001-agent-instructions-vibe-coding.md`
+- `m0002-agent-model-selection.md`
+- `m0003-ai-agent-catalogs.md`
+- `m0004-automation-pipeline-workflow.md`
+- `m0005-docker-compose-infrastructure.md`
+- `m0006-document-metadata-lifecycle.md`
+- `m0007-documentation-architecture.md`
+- `m0008-harness-engineering.md`
+- `m0009-llm-wiki-system.md`
+- `m0010-loop-engineering.md`
+- `m0011-memory-hierarchy.md`
+- `m0012-provider-implementation-comparison.md`
+- `m0013-provider-model-landscape.md`
+- `m0014-quality-ci-formatting.md`
+- `m0015-scope-application-matrix.md`
+- `m0016-sdlc-document-roles.md`
+- `m0017-security-governance.md`
+- `m0018-spec-driven-sdlc.md`
+- `m0019-verification-validation.md`
+- `m0020-workspace-baseline.md`
+- `m0021-local-docker-service-consolidation.md`
+
+역사적 연속성은 유지됩니다: canonical pack은 2026년 8월 SPEC-0158
+아래에서 재구성되었고 모든 구성원이 source 새로고침과 심화를 거쳤으며
+loop coverage gap은 2026-08-17에 수리되었고 2026-09-05 갱신은 모든
+identity와 정확한 구성원 집합을 보존합니다. 이후의 baseline 통합은
+보호된 어떤 경로도 바꾸지 않으며 m0020을 단일 현재 workspace-baseline
+owner로 만듭니다.
+
+#### Historical limitations
+
+- 사용자 전역 Claude/Codex 설정, secret, credential, 개인 key,
+  environment 값, shell history, raw log는 이 갱신에서 읽지
+  않았습니다.
+- 이 갱신에서는 새 provider call, Compose service 시작, deployment,
+  rollback, tag, release 동작은 수행하지 않았습니다.
+- Provider entitlement와 remote protection은 SPEC-0172가 기록한
+  point-in-time 관찰이며 미래 상태를 추론하지 않습니다.
+- 깨끗한 full gate는 baseline commit에서의 local conformance만
+  증명하며 production 적합성, service 건강성, 내구성, 성능, 복구를
+  증명하지 않습니다.
+- 모든 profile이 정적으로 render되더라도 네 가지 Compose domain 결함이
+  AUD-0097에 남아 있습니다.
+- 외부 source는 2026-09-05 이후 가변적입니다. 유료 ISO 텍스트는
+  조회하지 않았고 public catalog와 용어 자료만 사용했습니다.
+- Graphify report는 baseline보다 이전이며 noise가 있어 advisory로
+  취급합니다; 현재 생성된 LLM Wiki 신선도는 오직 등록된 generator와
+  check만이 결정합니다.
 
 ## Sources
 

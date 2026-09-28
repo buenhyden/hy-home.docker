@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.2.1"
+version: "1.2.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
@@ -12,59 +12,56 @@ created: "2025-11-12"
 
 ## Overview
 
-This tier contains persistent engines and stateful platform dependencies. The root
-Compose project includes the leaf files and owns shared networks, secrets and
-`extends`; operate from the repository root rather than treating a leaf as a
-standalone project.
+이 tier는 영속 엔진과 상태 저장이 필요한 플랫폼 의존성을 담습니다. 루트
+Compose 프로젝트가 leaf 파일을 include하고 공유 네트워크, secret, `extends`를
+소유합니다. leaf를 독립 프로젝트로 다루지 말고 저장소 루트에서 운영하십시오.
 
 ## Audience
 
-This package map is for operators and maintainers of the repository data tier.
+이 패키지 맵의 독자는 저장소 데이터 tier의 operator와 maintainer입니다.
 
 ## Scope
 
-It covers the data packages selected by the root Compose project and their
-documented operating boundaries.
+루트 Compose 프로젝트가 선택하는 데이터 패키지 카테고리와 카테고리별로 문서화된 운영
+경계를 다룹니다.
 
 ## Structure
 
-### Package map and disposition
+### 카테고리 맵
 
-| Component | Root profile(s) | Classification | Relationship and service operations |
-| --- | --- | --- | --- |
-| [`operational/mng-db`](operational/mng-db/README.md) | `mng`, `core`, `dev`, `local` | HOME | Shared PostgreSQL/Valkey for auth, workflow and tooling; never share its directories with alternatives |
-| [`cache-and-kv/valkey-cluster`](cache-and-kv/valkey-cluster/README.md) | `valkey-cluster` | LAB | Six nodes on one host; distinct from management Valkey and not host HA |
-| [`lake-and-object/seaweedfs`](lake-and-object/seaweedfs/README.md) | `storage`, `obs`, `logs`, `tracing`, `nginx`, `mlops`, `data-science`, `lakehouse`, `seaweedfs`, `storage-seaweedfs` | HOME | S3 store that replaced MinIO (S07) and serves the Iceberg REST catalog (S12); persistent set, identities, JWT and gRPC mTLS; only S3 is routed |
-| [`analytics/superset`](analytics/superset/README.md) | `bi` | OPTIONAL | Superset BI web with Keycloak native OIDC; metadata in `mng-pg`; queries the lakehouse through Trino |
-| [`lakehouse/flink`](lakehouse/flink/README.md) | `lakehouse` | OPTIONAL | Flink session cluster for streaming and batch SQL into the SeaweedFS Iceberg catalog; Kafka on `kafka_net`; loopback REST only |
-| [`lakehouse/great-expectations`](lakehouse/great-expectations/README.md) | `lakehouse` | OPTIONAL | One-shot GX Core job checking Iceberg tables through Trino against tracked suites |
-| [`lakehouse/trino`](lakehouse/trino/README.md) | `lakehouse` | OPTIONAL | Single-node Trino SQL engine on the SeaweedFS Iceberg catalog; loopback HTTP only |
-| [`lakehouse/spark`](lakehouse/spark/README.md) | `lakehouse` | OPTIONAL | One-shot Spark batch and Iceberg maintenance job on the SeaweedFS catalog; tables in the `lakehouse` table bucket |
-| [`operational/supabase`](operational/supabase/README.md) | `supabase` | OPTIONAL | Separate application platform; no management-database merge |
-| [`relational/postgresql-cluster`](relational/postgresql-cluster/README.md) | `postgres-ha` | LAB | Same-host Patroni/etcd/router topology; no `mng-pg` volume reuse |
-| [`analytics/influxdb`](analytics/influxdb/README.md) | `influxdb` | OPTIONAL | Separate time-series engine; no inferred Prometheus replacement |
-| [`analytics/opensearch`](analytics/opensearch/README.md) | `opensearch`, `opensearch-cluster` | OPTIONAL/LAB | Single-node search versus same-host cluster exercise |
-| [`nosql/cassandra`](nosql/cassandra/README.md), [`couchdb`](nosql/couchdb/README.md), [`mongodb`](nosql/mongodb/README.md) | `cassandra`, `couchdb`, `mongodb` | LAB | Separate same-host datastore laboratories; no cross-engine volume or migration assumption |
-| [`specialized/qdrant`](specialized/qdrant/README.md) | `ai`, `ai-llm`, `qdrant` | HOME | Vector store for HOME AI; snapshot/isolated restore required |
-| [`specialized/neo4j`](specialized/neo4j/README.md) | `graph` | OPTIONAL | Graph workload only; distinct from Qdrant |
-| SurrealDB (moved) | `surrealdb`, `notebook` | OPTIONAL | Co-located with its only consumer in [`11-laboratory/open-notebook`](../11-laboratory/open-notebook/surrealdb/README.md) since owner commit `3870f08ff`; data path unchanged |
+| Category | Directory | Summary |
+| --- | --- | --- |
+| [operational/](operational/README.md) | 운영 데이터 | `mng-db`(HOME 공유 PostgreSQL/Valkey), `supabase`(OPTIONAL 별도 애플리케이션 플랫폼) |
+| [cache-and-kv/](cache-and-kv/README.md) | 캐시/키-값 저장소 | `valkey-cluster`(LAB) |
+| [lake-and-object/](lake-and-object/README.md) | Lake/오브젝트 저장소 | `seaweedfs`(HOME S3 스토어, Iceberg REST catalog 제공) |
+| [analytics/](analytics/README.md) | 분석 | `influxdb`(OPTIONAL), `opensearch`(OPTIONAL/LAB), `superset`(OPTIONAL BI) |
+| [lakehouse/](lakehouse/) | Lakehouse(README 없음, 폴더 자체를 확인) | `flink`, `great-expectations`, `spark`, `trino`(모두 OPTIONAL) |
+| [nosql/](nosql/README.md) | NoSQL | `cassandra`, `couchdb`, `mongodb`(모두 LAB) |
+| [relational/](relational/README.md) | 관계형 데이터베이스 | `postgresql-cluster`(LAB) |
+| [specialized/](specialized/README.md) | 특화 데이터 서비스 | `qdrant`(HOME 벡터 스토어), `neo4j`(OPTIONAL 그래프) |
+
+각 서비스의 정확한 profile, classification, 관계는 해당 카테고리 README와
+서비스별 README가 소유합니다.
+
+SurrealDB는 유일한 소비자인 [`11-laboratory/open-notebook`](../11-laboratory/open-notebook/surrealdb/README.md)로
+이전되어 이 tier에는 없습니다.
 
 ## How to Work in This Area
 
 ### Operating contract
 
-- Use the exact profile from the matrix through the root project; for example,
+- 루트 프로젝트를 통해 맵에 있는 정확한 profile을 사용합니다. 예:
   `docker compose --env-file .env.example --profile mng config --quiet`.
-- Do not print rendered secrets or private resolved host paths into evidence.
-- A named volume backed by a host directory is persistent state, not a backup.
-  Same-host replicas do not protect against host loss.
-- Every selected engine needs a named consumer, capacity/retention boundary,
-  engine-supported backup, separate encrypted destination and isolated restore.
-- Image, topology, credential, volume, migration and cleanup changes require the
-  owning Stage 05 guide/policy/runbook and an approved task.
+- 렌더링된 secret이나 비공개 resolved host 경로를 증거에 출력하지 않습니다.
+- 호스트 디렉터리로 백업되는 named volume은 영속 상태일 뿐 백업이 아닙니다.
+  동일 호스트 replica는 호스트 손실을 막지 못합니다.
+- 선택된 모든 엔진에는 named consumer, 용량/보존 경계, 엔진 지원 백업, 별도
+  암호화된 목적지, 격리된 복구 절차가 필요합니다.
+- 이미지, 토폴로지, credential, volume, migration, 정리 변경에는 소유
+  Stage 05 guide/policy/runbook과 승인된 task가 필요합니다.
 
 ## Related Documents
 
-Use the [documentation entry point](../../docs/README.md) to locate the Stage 05
-Data catalog (`docs/05.operations/README.md`), especially POL-0021 for the
-HOME state-owner matrix and RUN-0035 for storage exhaustion.
+[문서 진입점](../../docs/README.md)을 사용해 Stage 05 운영 인덱스
+(`docs/05.operations/README.md`)를 찾으십시오. 특히 HOME state-owner
+matrix를 다루는 POL-0021과 storage exhaustion을 다루는 RUN-0035를 참고하십시오.

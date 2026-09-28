@@ -1,10 +1,10 @@
 ---
 title: "Examples Surface"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-27"
 created: "2026-09-03"
 ---
 
@@ -14,13 +14,15 @@ created: "2026-09-03"
 
 ## Overview
 
-`examples/`는 이 저장소의 컨테이너 관례를 그대로 담은 복사 가능한 시드를 둡니다.
-현재 시드는 [`sample-web-service/`](sample-web-service/README.md) 하나이며, 정적 웹
-서비스 형태로 Compose 정의, Dockerfile, nginx 설정, `.env.example`, 서비스 문서를
-한 벌로 제공합니다.
+`examples/`는 두 개의 직접 하위 디렉터리를 둡니다. [`sample-web-service/`](sample-web-service/README.md)는
+이 저장소의 컨테이너 관례를 그대로 담은 복사 가능한 시드이며, 정적 웹 서비스
+형태로 Compose 정의, Dockerfile, nginx 설정, `.env.example`, 서비스 문서를 한
+벌로 제공합니다. `operations/`는 운영 rehearsal과 검증
+스크립트가 재사용하는 입력 fixture 모음이며 복사용 시드가 아닙니다.
 
 이 경로는 실행 중인 인프라가 아닙니다. `infra/`가 실제 서비스 정의를 소유하고,
-`examples/`는 그 관례를 배우고 복사하기 위한 출발점만 소유합니다.
+`examples/`는 그 관례를 배우고 복사하기 위한 출발점과 검증용 입력만
+소유합니다.
 
 ## Audience
 
@@ -45,8 +47,9 @@ created: "2026-09-03"
 
 ```text
 examples/
-├── sample-web-service/  # 정적 웹 서비스 시드 (Compose, Dockerfile, nginx, 서비스 문서)
-└── README.md            # This file
+├── operations/           # 운영 rehearsal/검증 입력 fixture (README 없음)
+├── sample-web-service/   # 정적 웹 서비스 시드 (Compose, Dockerfile, nginx, 서비스 문서)
+└── README.md             # This file
 ```
 
 ## How to Work in This Area
@@ -57,7 +60,7 @@ examples/
 4. 새 서비스 문서를 `docs/05.operations/README.md`의 해당 도메인에 추가합니다 → 운영 절차 소유자가 생깁니다.
 5. `bash scripts/validation/validate-docker-compose.sh`를 실행합니다 → 종료 코드 `0`.
 
-시드 자체를 고칠 때는 복사본이 아니라 `examples/` 원본을 고치고, 그 변경이 기존
+시드 자체를 고칠 때는 복사본 대신 `examples/` 원본을 고치고 그 변경이 기존
 서비스에 적용되어야 하는지 함께 판단합니다.
 
 ## Related Documents

@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.1.2"
+version: "1.1.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 ---
 
 # Agent Quality and Security Standards
@@ -202,8 +202,10 @@ execution. A smaller suite must not mean missing behavioral coverage.
 
 - Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `.agents/governance/workflows.md`.
-- Apply the document-role language table in
-  `.agents/governance/documentation-protocol.md#authoring-rules`.
+- Apply the document language priority in
+  `.agents/governance/documentation-protocol.md#document-language` and the
+  README navigation rule in
+  `.agents/governance/documentation-protocol.md#readme-navigation`.
 - Resolve write permission through `.agents/governance/approval-boundaries.md`.
 
 ## 9. Completion Routing

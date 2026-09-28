@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 layer: "operations"
 ---
 
@@ -73,7 +73,7 @@ docs/05.operations/
 
 ### Artifact Boundaries
 
-- Guide는 정상 운영 맥락과 이해를 소유하고, 실행 절차는 같은 slug의
+- Guide는 정상 운영 맥락과 이해를 소유하고 실행 절차는 같은 slug의
   Runbook으로 넘긴다.
 - Policy는 의무·금지·승인·예외·검토 주기를 소유하고 명령 순서를 소유하지 않는다.
 - Runbook은 순서 있는 실행, 관찰 증거, rollback/recovery, escalation을 소유한다.
@@ -87,7 +87,7 @@ docs/05.operations/
 ### External Release Evidence
 
 이 저장소는 [공통 Agent 거버넌스의 external-release-evidence 정책](../../.agents/governance/documentation-protocol.md#release-evidence-boundary)을
-사용한다. [Release Runbook](runbooks/0009-release-management.md)은
+사용한다. [Release Runbook](runbooks/README.md)(`0009-release-management.md`)은
 반복 절차를, 현재 Task는 특정 실행의 검증과 결과를 소유한다. CHANGELOG, tag,
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
@@ -105,7 +105,7 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
    때만 작성한다. Runbook의 `## Automation Handoff`도 실제 자동화 artifact와
    검증 가능한 link가 있을 때만 작성한다.
 6. 모든 subject가 세 역할을 모두 가질 필요는 없다. 현재 운영 책임에 필요한
-   역할만 등록된 Stage 99 프로필로 추가하고, 빈 문서를 만들지 않는다.
+   역할만 등록된 Stage 99 프로필로 추가하고 빈 문서를 만들지 않는다.
 7. 사고는 `incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 해당 역할 인덱스와 관련 inbound link를 함께
    갱신한다.

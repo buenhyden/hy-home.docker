@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-27"
 layer: "architecture"
 ---
 
@@ -27,7 +27,7 @@ Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안,
 ## Scope
 
 이 stage는 Architecture Description과 ADR을 보유한다. 개수는 유지 기준이
-아니므로 각 하위 디렉터리의 README와 실제 파일 목록이 권위이며, 이 index는
+아니므로 각 하위 디렉터리의 README와 실제 파일 목록이 권위이며 이 index는
 그 경로로 안내한다. 구현 세부와 검증 계약은 Stage 03, 실행 상태는 현재 변경
 패킷, 운영 절차는 Stage 05가 소유한다.
 
@@ -35,14 +35,8 @@ Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안,
 
 ```text
 docs/02.architecture/
-├── descriptions/
-│   ├── 0001-gateway-architecture.md
-│   ├── ...
-│   └── 0030-document-lifecycle-governance.md
 ├── decisions/
-│   ├── 0001-traefik-nginx-hybrid.md
-│   ├── ...
-│   └── 0037-package-disposition-wait-and-task-cancellation.md
+├── descriptions/
 └── README.md
 ```
 
@@ -61,7 +55,7 @@ docs/02.architecture/
 3. 새 결정은 [`decision.template.md`](../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. Description은 실제 상위 요구사항, ADR은 실제 Description을
    `parent_ids`로 연결한다.
-5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고, 확인되지
+5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고 확인되지
    않은 아키텍처 사실을 만들지 않는다.
 
 ### Documentation Standards
@@ -72,7 +66,7 @@ docs/02.architecture/
   `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
-- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 적용하고, 실제 이해에 필요한 수준만 사용한다.
+- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
 
 ## Related Documents
 

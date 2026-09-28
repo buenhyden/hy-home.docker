@@ -1,31 +1,31 @@
 ---
 title: "Laboratory RedisInsight"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-03-26"
 ---
 
 # Laboratory RedisInsight
 
-> Redis visualization, analysis, and management tool.
+> Redis 시각화, 분석, 관리 도구입니다.
 
 ## Overview
 
-RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, and manage your Redis data. It provides features like key browsing, memory profiling, and real-time monitoring.
+RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강력한 GUI입니다. 키 탐색, 메모리 프로파일링, 실시간 모니터링 같은 기능을 제공합니다.
 
 ## Audience
 
-- **Operators**: Monitoring Redis health and memory usage.
-- **Developers**: Analyzing data structures and debugging application state.
-- **Data Engineers**: Profiling Redis performance and identifying bottlenecks.
+- **Operators**: Redis 상태 및 메모리 사용량 모니터링.
+- **Developers**: 데이터 구조 분석 및 애플리케이션 상태 디버깅.
+- **Data Engineers**: Redis 성능 프로파일링 및 병목 식별.
 
 ## Scope
 
-- **Included**: Redis key browsing, stream analysis, memory profiling, and CLI access via web UI.
-- **Excluded**: Direct Redis server OS management, hardware-level performance tuning.
+- **Included**: 웹 UI를 통한 Redis 키 탐색, 스트림 분석, 메모리 프로파일링, CLI 접근.
+- **Excluded**: Redis 서버 OS의 직접 관리, 하드웨어 수준 성능 튜닝.
 
 ## Structure
 
@@ -39,33 +39,33 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Laboratory RedisInsight service leaf in `11-laboratory`; services: `redisinsight`; root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
+| Purpose | `11-laboratory`의 Laboratory RedisInsight 서비스 leaf; 서비스: `redisinsight`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` 경로로 루트 include가 활성화됨 |
 | Config files | `docker-compose.yml` |
-| Config values | profiles: `admin`, `admin-data` |
-| Compose linkage | root include active via [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` |
+| Config values | 프로필: `admin`, `admin-data` |
+| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-laboratory/redisinsight/docker-compose.yml` 경로로 루트 include가 활성화됨 |
 | Networks | `edge_net`, `mng_data_net` |
 | Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
-| Ports | Not declared |
-| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, plus 7 more |
-| Secret refs | Not declared |
-| Healthcheck | Compose healthcheck declared for `redisinsight` |
+| Ports | 선언되지 않음 |
+| Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, 외 7개 |
+| Secret refs | 선언되지 않음 |
+| Healthcheck | `redisinsight`에 Compose 헬스체크가 선언되어 있음 |
 | Operations | Guide (`docs/05.operations/guides/0076-redisinsight.md`), Policy (`docs/05.operations/policies/0076-redisinsight.md`), Runbook (`docs/05.operations/runbooks/0076-redisinsight.md`) |
-| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) tier `11-laboratory`; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) root `admin` profile; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence. |
+| Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `11-laboratory` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
+| Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## How to Work in This Area
 
 ### 1. Initial Setup
 
-1. Validate the root-active admin profile with `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`.
-2. Access `https://redisinsight.${DEFAULT_URL}` only in an approved running environment.
-3. Accept the EULA and set up your initial connection to a Redis/Valkey instance.
+1. `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 admin 프로필을 검증합니다.
+2. 승인된 실행 환경에서만 `https://redisinsight.${DEFAULT_URL}`에 접속합니다.
+3. EULA에 동의하고 Redis/Valkey 인스턴스에 대한 초기 연결을 설정합니다.
 
 ### 2. Basic Usage
 
-- Add a new database by providing the hostname (e.g., `redis` for local containers) and port (6379).
-- Use the 'Browser' tab to explore keys and values.
-- Use 'Memory Analysis' to find memory-intensive keys.
+- 호스트명(예: 로컬 컨테이너의 경우 `redis`)과 포트(6379)를 입력해 새 데이터베이스를 추가합니다.
+- 'Browser' 탭을 사용해 키와 값을 탐색합니다.
+- 'Memory Analysis'를 사용해 메모리를 많이 사용하는 키를 찾습니다.
 
 ## Implementation Details
 
@@ -73,9 +73,9 @@ RedisInsight is a powerful GUI for Redis that allows you to visualize, analyze, 
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Image | [declared runtime image](../../tech-stack.versions.json) | Current compose tag |
-| Port | `5540` (Internal) | Managed by Traefik |
-| Storage | `redisinsight-data` | Persistent volume for connections |
+| Image | [declared runtime image](../../tech-stack.versions.json) | 현재 compose 태그 |
+| Port | `5540` (Internal) | Traefik이 관리 |
+| Storage | `redisinsight-data` | 연결 정보용 영속 볼륨 |
 
 ### Traefik Integration
 
@@ -88,18 +88,18 @@ labels:
 
 ## Available Scripts
 
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: validate RedisInsight route, image, network membership, and healthcheck.
-- `docker logs --tail 100 redisinsight`: inspect logs when the service is running.
+- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`: RedisInsight 라우트, 이미지, 네트워크 소속, 헬스체크를 검증합니다.
+- `docker logs --tail 100 redisinsight`: 서비스 실행 중 로그를 확인합니다.
 
 ## Validation
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect RedisInsight.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
+- RedisInsight에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
 ## Troubleshooting
 
-- Start with the hardening check to confirm RedisInsight network, volume, and label references.
-- Check RedisInsight logs and the linked runbook before changing admin routing or connection settings.
+- RedisInsight 네트워크, 볼륨, 레이블 참조를 확인하려면 하드닝 점검부터 시작합니다.
+- admin 라우팅이나 연결 설정을 변경하기 전에 RedisInsight 로그와 연결된 런북을 확인합니다.
 
 ## Related Documents
 
@@ -108,4 +108,4 @@ labels:
 - **Runbook**: RedisInsight recovery runbook (`docs/05.operations/runbooks/0076-redisinsight.md`)
 - [Documentation index](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.

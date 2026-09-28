@@ -27,7 +27,7 @@ def _current_spec_rows(index_text: str) -> dict[str, str]:
     for line in index_text.splitlines():
         if line.startswith("| SPEC-"):
             cells = [cell.strip() for cell in line.strip("|").split("|")]
-            rows[cells[0]] = cells[2]
+            rows[cells[0]] = " | ".join(cells[1:])
     return rows
 
 
@@ -1738,20 +1738,22 @@ class SpecPackageTests(unittest.TestCase):
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
 
-    def test_current_index_status_matches_each_current_spec(self) -> None:
+    def test_current_index_routes_each_current_package_by_directory(self) -> None:
+        """SPEC-0184 rule 6: one directory-link row per package, no status copy."""
+
         rows = _current_spec_rows(
             (ROOT / "docs/03.specs/README.md").read_text(encoding="utf-8")
         )
-        for spec_path in sorted((ROOT / "docs/03.specs").glob("*/spec.md")):
+        statuses = re.compile(
+            r"\b(?:draft|review|approved|active|completed|cancelled|superseded)\b"
+        )
+        packages = sorted((ROOT / "docs/03.specs").glob("*/spec.md"))
+        self.assertEqual(len(packages), len(rows))
+        for spec_path in packages:
             metadata = parse_frontmatter_text(spec_path.read_text(encoding="utf-8"))
-            artifact_id = metadata["artifact_id"]
-            row = rows[artifact_id]
-            self.assertIn(metadata["status"], row, artifact_id)
-            self.assertEqual(
-                metadata["status"] == "active",
-                re.search(r"\bactive\b", row) is not None,
-                artifact_id,
-            )
+            row = rows[metadata["artifact_id"]]
+            self.assertIn(f"](./{spec_path.parent.name}/)", row)
+            self.assertIsNone(statuses.search(row), row)
 
     def test_active_route_authority_uses_only_canonical_spec_execution_paths(
         self,

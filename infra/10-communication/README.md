@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
@@ -34,7 +34,7 @@ created: "2025-11-12"
 1. 개발 SMTP는 Mailpit을 사용하고 외부 배달 경로와 분리한다.
 2. Stalwart는 `mail_net`의 내부 제출 전용이다. 외부 송수신은 DNS·평판을 포함한 새 요구사항이 필요하다.
 3. 루트 Compose의 network·secret·공통 template 맥락을 유지해 검증한다.
-4. 이미지와 포트 기본값은 [Stalwart Compose](stalwart/docker-compose.yml), [Mailpit Compose](mailpit/docker-compose.yml)를 참조한다. [Derived Compose image projection](../tech-stack.versions.json)은 drift 검증 자료다.
+4. 이미지와 포트 기본값은 각 leaf의 Compose 파일([Stalwart](stalwart/README.md), [Mailpit](mailpit/README.md))을 참조한다. [Derived Compose image projection](../tech-stack.versions.json)은 drift 검증 자료다.
 
 ## Configuration
 

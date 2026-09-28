@@ -13,7 +13,7 @@ Code response is rendered, and it defines no policy of its own.
 
 - Reporting substance and language: `.agents/governance/output-style.md`.
 - Artifact language, template selection, and stage routing:
-  `.agents/governance/documentation-protocol.md#authoring-rules`.
+  `.agents/governance/documentation-protocol.md#document-language`.
 - Completion and honesty obligations: `.agents/governance/task-checklists.md`.
 - Approval boundaries: `.agents/governance/approval-boundaries.md`.
 

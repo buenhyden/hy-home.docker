@@ -1,16 +1,16 @@
 ---
 title: "Relational Databases (04-data/relational)"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-27"
 created: "2026-03-27"
 ---
 
 # Relational Databases (04-data/relational)
 
-> High-Availability Relational Database Clusters for Persistent Data
+> 영속 데이터를 위한 고가용성 관계형 데이터베이스 클러스터입니다.
 
 ## Overview
 
@@ -43,8 +43,8 @@ created: "2026-03-27"
 
 ```text
 relational/
-├── postgresql-cluster/   # PostgreSQL HA Cluster (Patroni/etcd)
-└── README.md             # This file
+├── postgresql-cluster/   # PostgreSQL HA Cluster(Patroni/etcd)
+└── README.md             # 이 파일
 ```
 
 ## How to Work in This Area
@@ -68,13 +68,16 @@ relational/
 
 ## Tech Stack
 
+실행 이미지와 init job 선언의 원본은 [postgresql-cluster/](postgresql-cluster/)의
+compose 파일입니다.
+
 | Category   | Technology                                | Notes                     |
 | ---------- | ----------------------------------------- | ------------------------- |
-| DB Engine  | [Spilo declaration](postgresql-cluster/docker-compose.yml)         | Patroni/PostgreSQL nodes  |
-| HA Logic   | Patroni                                   | Cluster Lifecycle         |
-| DCS        | etcd (Compose source)                                | Distributed Locks         |
-| Router     | HAProxy (Compose source)                          | Traffic Distribution      |
-| Init Job   | [PostgreSQL init declaration](postgresql-cluster/docker-compose.yml)                    | Role/database sync        |
+| DB Engine  | Spilo                                     | Patroni/PostgreSQL 노드  |
+| HA Logic   | Patroni                                   | 클러스터 생명주기         |
+| DCS        | etcd(Compose 소스)                        | 분산 lock                |
+| Router     | HAProxy(Compose 소스)                     | 트래픽 분산               |
+| Init Job   | postgresql-cluster 자신의 compose         | Role/database 동기화      |
 
 ## Getting Started
 
@@ -86,12 +89,8 @@ docker compose --env-file .env.example --profile postgres-ha config --quiet
 
 - **Guides**: `docs/05.operations/guides/README.md`
 - **Policies**: `docs/05.operations/policies/README.md`
-- Stage 05 subject: `docs/05.operations/guides/0031-postgresql-cluster.md`
-- **Service Guide**: postgresql-cluster guide (`docs/05.operations/guides/0031-postgresql-cluster.md`)
+- **Service Guide**: postgresql-cluster Guide/Policy/Runbook (`docs/05.operations/guides/0031-postgresql-cluster.md`)
 - **ARD**: `docs/02.architecture/descriptions/0004-data-architecture.md`
-- [Documentation index](../../../docs/README.md)
+- [문서 인덱스](../../../docs/README.md)
 
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift를 검증합니다.

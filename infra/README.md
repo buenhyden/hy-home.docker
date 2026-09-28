@@ -1,59 +1,59 @@
 ---
 title: "Infrastructure Surface"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-24"
 ---
 
 # Hy-Home Infrastructure (infra/)
 
-> Unified service definition and orchestration layer for the hy-home.docker ecosystem.
+> hy-home.docker 생태계를 위한 통합 서비스 정의 및 오케스트레이션 계층입니다.
 
 ## Overview
 
-The `infra/` directory manages the **Service Definitions** for the entire home server and AI development environment. Tier and component directories own Compose declarations, build sources and mounted configuration. Root `docker-compose.yml` aggregates the registered fragments with `include`; some fragments own multiple services. Directory organization and profiles do not establish runtime isolation.
+`infra/` 디렉터리는 전체 홈 서버와 AI 개발 환경의 **서비스 정의**를 관리합니다. 티어와 컴포넌트 디렉터리는 Compose 선언, 빌드 소스, 마운트된 설정을 소유합니다. 루트 `docker-compose.yml`은 `include`로 등록된 fragment들을 집계하며 일부 fragment는 여러 서비스를 소유합니다. 디렉터리 구성과 프로필은 런타임 격리를 보장하지 않습니다.
 
 ## Audience
 
 이 README의 주요 독자:
 
-- **Operators**: Infrastructure deployment and service lifecycle management.
-- **AI Agents**: System discovery, automated configuration, and scaling.
-- **Developers**: Consuming infrastructure services for application development.
+- **Operators**: 인프라 배포 및 서비스 라이프사이클 관리.
+- **AI Agents**: 시스템 탐색, 자동화된 설정, 스케일링.
+- **Developers**: 애플리케이션 개발을 위한 인프라 서비스 소비.
 
 ## Scope
 
 ### In Scope
 
-- Service definitions across 11 functional tiers.
-- Global orchestration via root `docker-compose.yml`.
-- Compose file inventory, and the profile that selects each service.
-- Standardized execution models using **Docker Profiles** (`core`, `mng`, `obs`, etc.).
-- Resource optimization and security hardening templates.
+- 11개 기능 티어에 걸친 서비스 정의.
+- 루트 `docker-compose.yml`을 통한 전역 오케스트레이션.
+- Compose 파일 목록과 각 서비스를 선택하는 프로필.
+- **Docker Profiles**(`core`, `mng`, `obs` 등)를 사용한 표준화된 실행 모델.
+- 리소스 최적화 및 보안 하드닝 템플릿.
 
 ### Out of Scope
 
-- Detailed internal service configuration (see `docs/05.operations/` or sub-module READMEs).
-- Application business logic and frontend source code.
-- Credentials and sensitive variables (managed in `secrets/`).
+- 세부 내부 서비스 설정 (`docs/05.operations/` 또는 하위 모듈 README 참고).
+- 애플리케이션 비즈니스 로직과 프론트엔드 소스 코드.
+- 자격 증명 및 민감 변수 (`secrets/`에서 관리).
 
 ## Infrastructure Tiers (01-11)
 
 | Tier | Category | Key Services | Status |
 | :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / optional; see disposition |
-| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / optional; see disposition |
-| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME bootstrap |
-| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [SeaweedFS](./04-data/lake-and-object/seaweedfs), [Qdrant](./04-data/specialized/qdrant) | HOME / optional; see disposition |
-| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | Optional; cluster is LAB |
-| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / optional; see disposition |
-| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / optional; see disposition |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / 선택적; disposition 참고 |
+| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
+| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
+| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [SeaweedFS](./04-data/lake-and-object/seaweedfs), [Qdrant](./04-data/specialized/qdrant) | HOME / 선택적; disposition 참고 |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 클러스터는 LAB |
+| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / 선택적; disposition 참고 |
+| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
 | **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui) | HOME |
 | **09** | **Tooling** | [SonarQube](./09-tooling/sonarqube), [Terrakube](./09-tooling/terrakube) | Dev/Ops |
-| **10** | **Communication** | [Mailpit](./10-communication/mailpit), [Stalwart](./10-communication/stalwart) | DEV / optional |
+| **10** | **Communication** | [Mailpit](./10-communication/mailpit), [Stalwart](./10-communication/stalwart) | DEV / 선택적 |
 | **11** | **Laboratory** | [Dozzle](./11-laboratory/dozzle), [RedisInsight](./11-laboratory/redisinsight), [Open Notebook](./11-laboratory/open-notebook) | Admin |
 
 ## Compose Inventory Snapshot
@@ -78,37 +78,37 @@ Compose Profile Vocabulary Policy로 이동한다. Canonical path는
 
 실행 version pin의 원본은 각 Compose/Dockerfile 선언이다.
 [version projection](tech-stack.versions.json)은 tracked Compose image 선언에서
-파생한 기계 판독 projection이며, drift 검사와 업데이트 소유권 탐색에 사용한다.
+파생한 기계 판독 projection이며 drift 검사와 업데이트 소유권 탐색에 사용한다.
 Dockerfile `FROM`/`ARG`와 inline build의 pin은 별도 build authority이므로 이
 projection이 그것들의 완전한 목록이라고 주장하지 않는다. README에는 source link
 없이 exact patch literal을 복제하지 않는다.
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| Orchestration | Docker Compose | `include` and explicit `profiles` |
-| Edge Router | Traefik v3.x | Dynamic service discovery |
-| Identity | Keycloak / OIDC | Centralized IAM |
-| Observability | LGTM Stack | Loki, Grafana, Tempo, Prometheus |
+| 오케스트레이션 | Docker Compose | `include`와 명시적 `profiles` |
+| 엣지 라우터 | Traefik v3.x | 동적 서비스 디스커버리 |
+| 인증 | Keycloak / OIDC | 중앙 집중식 IAM |
+| 옵저버빌리티 | LGTM Stack | Loki, Grafana, Tempo, Prometheus |
 
 ## Execution Model
 
 HOME은 접근·인증·비밀 기반, 관리 PostgreSQL/Valkey, 단일 노드 오브젝트 저장소,
 AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와 워크플로우의 상시
 필요성을 확인했다. 모델 추론과 이미지 생성의 동시 GPU 사용은 별도 자원 검증
-대상이며, 컨테이너 상시 실행이 모든 작업의 동시 실행 보장은 아니다.
+대상이며 컨테이너를 상시 실행한다고 모든 작업의 동시 실행이 보장되지는 않는다.
 
 | Selection | Purpose |
 | --- | --- |
-| `core` | Gateway, identity, and OpenBao bootstrap selection; it is not the complete HOME selection |
-| `mng` | Shared management database/broker and exporters needed by the selected HOME services |
-| `ai workflow storage` | Confirmed always-on AI/workflow capability and its object/vector/state dependencies |
-| `obs-core obs-host availability logs alerting` | HOME metrics, host visibility, availability, logs and alerts |
-| `tracing profiling obs-gpu` | HOME traces (Tempo), profiles (Pyroscope) and GPU metrics (DCGM exporter) that HOME Alloy, Traefik, Grafana and Prometheus already send to or scrape |
-| `registry` | HOME development container registry |
-| `tooling` | Registry and SonarQube; excluded from HOME (the registry alone joins HOME through `registry`) |
-| `testing` | k6 and the Locust master/worker pair; excluded from HOME |
-| `iac` | OpenTofu and Terrakube API/UI/executor; excluded from HOME |
-| `dependency-update` | Renovate update job only; excluded from `tooling` and HOME |
+| `core` | 게이트웨이, 인증, OpenBao 부트스트랩 선택; 전체 HOME 선택은 아님 |
+| `mng` | 선택된 HOME 서비스에 필요한 공유 관리 데이터베이스/브로커 및 exporter |
+| `ai workflow storage` | 상시 확인된 AI/워크플로우 기능과 그 오브젝트/벡터/상태 의존성 |
+| `obs-core obs-host availability logs alerting` | HOME 메트릭, 호스트 가시성, 가용성, 로그, 알림 |
+| `tracing profiling obs-gpu` | HOME Alloy, Traefik, Grafana, Prometheus가 이미 전송하거나 스크레이프하는 HOME 트레이스(Tempo), 프로파일(Pyroscope), GPU 메트릭(DCGM exporter) |
+| `registry` | HOME 개발용 컨테이너 레지스트리 |
+| `tooling` | Registry와 SonarQube; HOME에서 제외됨(registry만 `registry`를 통해 HOME에 합류) |
+| `testing` | k6와 Locust master/worker 쌍; HOME에서 제외됨 |
+| `iac` | OpenTofu와 Terrakube API/UI/executor; HOME에서 제외됨 |
+| `dependency-update` | Renovate 업데이트 작업만; `tooling`과 HOME에서 제외됨 |
 
 HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
 41-service selection이다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
@@ -153,32 +153,32 @@ infra/
 
 ## Service Documentation Rubric
 
-Each service README must stay aligned with the Compose/config files in the same
-service directory and cover the following agent-verifiable fields:
+각 서비스 README는 같은 서비스 디렉터리의 Compose/설정 파일과 정합성을 유지해야 하며
+다음의 agent 검증 가능 필드를 다뤄야 합니다.
 
 | Field | Required evidence |
 | :--- | :--- |
-| Purpose | Service role, tier, and the profiles that select its services |
-| Config files | Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}`, Dockerfile, scripts, and mounted config paths |
-| Config values | Non-secret environment keys and defaults that affect operation |
-| Compose linkage | Root include/profile status and any variant compose files |
-| Networks | Declared networks and intended trust boundary |
-| Volumes | Persistent data, bind mounts, and backup-relevant paths |
-| Ports | Internal and exposed ports with protocol notes |
-| Labels | Traefik, routing, observability, or policy labels |
-| Secret refs | Secret names and mounted paths only; never secret values |
-| Healthcheck | Health endpoint or explicit reason when not applicable |
-| Operations | Canonical guide, policy, runbook, or service README reference |
-| Validation | Relevant compose, hardening, and repo-contract checks |
-| Troubleshooting | Known failure modes and first diagnostic command |
+| Purpose | 서비스 역할, 티어, 해당 서비스를 선택하는 프로필 |
+| Config files | Git 추적 `infra/**/{compose,docker-compose}*.{yml,yaml}`, Dockerfile, 스크립트, 마운트된 설정 경로 |
+| Config values | 동작에 영향을 주는 비밀이 아닌 환경 변수 키와 기본값 |
+| Compose linkage | 루트 include/프로필 상태 및 변형 compose 파일 |
+| Networks | 선언된 네트워크와 의도된 신뢰 경계 |
+| Volumes | 영속 데이터, 바인드 마운트, 백업 관련 경로 |
+| Ports | 내부 및 노출 포트와 프로토콜 참고 사항 |
+| Labels | Traefik, 라우팅, 옵저버빌리티, 정책 레이블 |
+| Secret refs | 시크릿 이름과 마운트 경로만; 시크릿 값은 절대 포함하지 않음 |
+| Healthcheck | 헬스 엔드포인트 또는 해당 없을 때의 명시적 사유 |
+| Operations | 정식 가이드, 정책, 런북, 서비스 README 참조 |
+| Validation | 관련 compose, hardening, repo-contract 점검 |
+| Troubleshooting | 알려진 실패 모드와 첫 진단 명령 |
 
 ## How to Work in This Area
 
-1. **Service Addition**: `infra/<tier>/<service>/` 디렉터리와 Compose/Dockerfile implementation source를 만듭니다.
-2. **Global Integration**: 새 Compose fragment는 루트 `docker-compose.yml` `include`에 추가하고, 각 service의 `profiles:`와 POL-0078 membership을 함께 갱신합니다. HOME 여부는 새 vocabulary가 아니라 current consumer evidence로 결정합니다.
-3. **Configuration and ownership**: public environment/secret schema와 secret-file reference를 함께 추가하고, 값은 절대 문서화하지 않습니다. Compose image pin은 projection/updater owner와 동기화하고 Dockerfile build pin은 해당 Dockerfile authority에 연결합니다.
-4. **Operations and documentation**: service Guide의 `implementation_services` mapping에 exact Compose path/service binding을 추가하고, Policy/Runbook, service README, current Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 global joins를 검증하므로 별도 registry/checker를 만들지 않습니다.
-5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link checks를 변경 범위에 맞게 실행합니다.
+1. **Service Addition**: `infra/<tier>/<service>/` 디렉터리와 Compose/Dockerfile 구현 소스를 만듭니다.
+2. **Global Integration**: 새 Compose fragment는 루트 `docker-compose.yml`의 `include`에 추가하고 각 서비스의 `profiles:`와 POL-0078 소속을 함께 갱신합니다. HOME 여부는 새 어휘가 아니라 현재의 consumer 근거로 결정합니다.
+3. **Configuration and ownership**: 공개 환경 변수/시크릿 스키마와 secret-file 참조를 함께 추가하고 값은 절대 문서화하지 않습니다. Compose 이미지 고정 값은 projection/updater owner와 동기화하고 Dockerfile 빌드 고정 값은 해당 Dockerfile authority에 연결합니다.
+4. **Operations and documentation**: 서비스 Guide의 `implementation_services` 매핑에 정확한 Compose 경로/서비스 바인딩을 추가하고 Policy/Runbook, 서비스 README, 현재 Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 전역 조인을 검증하므로 별도 registry/checker를 만들지 않습니다.
+5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link 점검을 변경 범위에 맞게 실행합니다.
 
 공유 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../.agents/governance/agentic.md)와 [documentation protocol](../.agents/governance/documentation-protocol.md)로 라우팅한다.
 
