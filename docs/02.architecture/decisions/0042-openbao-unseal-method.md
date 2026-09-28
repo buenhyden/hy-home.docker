@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -16,147 +16,191 @@ created: "2026-09-25"
 
 ## Context
 
-OpenBao는 [Compose](../../../infra/03-security/openbao/docker-compose.yml)가 고정한 2.6 계열 이미지로, 단일 노드 Raft로 돈다. Compose의 `BAO_LOCAL_CONFIG`에는
-`seal` stanza가 없으므로 기본 Shamir seal이다. RUN-0085에 따라 share는 3개, threshold는 2다.
-owner 결정(2026-09-22)으로 세 share는 한 파일 `secrets/security/openbao_unseal_keys.txt`
-(SEC-003, `0600`, Git 제외, 컨테이너에 마운트하지 않음)에 함께 있다. 이 파일을 읽을 수 있는
-사람은 OpenBao를 unseal할 수 있다. 그리고 이 파일은 host Restic 저장소에도 BKP-002로
-암호화되어 들어간다.
+OpenBao runs as a single-node Raft on the 2.6-series image pinned by
+[Compose](../../../infra/03-security/openbao/docker-compose.yml). Compose's
+`BAO_LOCAL_CONFIG` has no `seal` stanza, so it is the default Shamir seal. Per
+RUN-0085, there are 3 shares with a threshold of 2. By owner decision
+(2026-09-22), the three shares live together in one file,
+`secrets/security/openbao_unseal_keys.txt` (SEC-003, `0600`, excluded from
+Git, not mounted into the container). Anyone who can read this file can
+unseal OpenBao. This file is also encrypted with BKP-002 inside the host
+Restic repository.
 
-auto-unseal은 Vault 시절 ADR-0018에서 "이번 단계에서 KMS/HSM auto-unseal 실구현"을
-non-goal로 두고 미뤘을 뿐, 결정한 적이 없다.
+Auto-unseal was only deferred as a non-goal in ADR-0018 from the Vault era
+("actual KMS/HSM auto-unseal implementation at this stage"); it was never
+decided.
 
-재부팅이나 OpenBao 재시작 뒤 현재 순서는 다음과 같다.
+The current sequence after a reboot or OpenBao restart is as follows.
 
-1. OpenBao가 sealed로 뜬다. healthcheck는 sealed(`bao status` rc 2)도 통과로 보므로
-   `openbao-agent`는 곧바로 시작한다.
-2. owner가 대화형 터미널에서 `bao operator unseal`로 share 두 개를 넣는다.
-3. Agent는 SecretID 파일을 읽은 뒤 지우므로(`remove_secret_id_file_after_reading = true`)
-   재시작하면 다시 인증할 수 없다. owner가 OIDC로 로그인해 새 SecretID(10분, 1회용)를
-   발급하고 Agent volume에 넣어야 한다(RUN-0085 delivery 절차).
-4. hy-home.k8s의 External Secrets는 Kubernetes auth로 OpenBao를 읽으므로 unseal 전까지
-   동기화하지 못한다.
+1. OpenBao comes up sealed. The healthcheck treats sealed (`bao status` rc 2)
+   as passing, so `openbao-agent` starts immediately.
+2. The owner enters two shares via `bao operator unseal` in an interactive
+   terminal.
+3. The Agent reads the SecretID file and then deletes it
+   (`remove_secret_id_file_after_reading = true`), so it cannot
+   re-authenticate after a restart. The owner must log in via OIDC, issue a
+   new SecretID (10 minutes, single use), and place it in the Agent volume
+   (the RUN-0085 delivery procedure).
+4. hy-home.k8s's External Secrets reads OpenBao via Kubernetes auth, so it
+   cannot synchronize until unseal.
 
-**버전 확인** (OpenBao 공식 문서 2.6.x, 2026-09-25 조회):
+**Version check** (OpenBao official documentation 2.6.x, checked 2026-09-25):
 
-- 2.6.x 바이너리에 내장된 seal: AliCloud KMS, AWS KMS, Azure Key Vault, GCP Cloud KMS,
-  KMIP, OCI KMS, OVHcloud KMS, PKCS#11, Static Key, T Cloud Public KMS, OpenBao Transit.
-- v2.6.0부터 내장되지 않은 방식은 외부 KMS plugin으로 설치할 수 있다. v2.7.0부터는 많은
-  내장 방식이 standalone 바이너리에서 빠지고 plugin으로만 제공된다. 따라서 2.7로 올리면
-  cloud KMS나 PKCS#11 seal은 plugin 등록이 필요할 수 있다.
-- PKCS#11은 2.6.x에서도 cgo로 컴파일한 HSM 빌드 또는 openbao-plugins의 plugin이 필요하다.
-  공식 이미지가 HSM 빌드인지는 문서에 없다.
-- Static Key seal은 32바이트 AES-256-GCM 키를 설정, `env://`, `file://`로 받는다. 문서는
-  "이미 신뢰의 근원(예: 다른 서드파티 secrets manager)이 있을 때만" 권한다.
-- Transit seal은 transit 서버가 시작과 unseal 시점에 닿아야 하며, 주기적(periodic) orphan
-  token을 권한다.
+- Seals built into the 2.6.x binary: AliCloud KMS, AWS KMS, Azure Key Vault,
+  GCP Cloud KMS, KMIP, OCI KMS, OVHcloud KMS, PKCS#11, Static Key, T Cloud
+  Public KMS, OpenBao Transit.
+- From v2.6.0, methods not built in can be installed as external KMS plugins.
+  From v2.7.0, many built-in methods are removed from the standalone binary
+  and offered only as plugins. So upgrading to 2.7 may require plugin
+  registration for a cloud KMS or PKCS#11 seal.
+- PKCS#11 needs an HSM build compiled with cgo, or a plugin from
+  openbao-plugins, even on 2.6.x. The documentation does not state whether the
+  official image is an HSM build.
+- The Static Key seal takes a 32-byte AES-256-GCM key via config, `env://`, or
+  `file://`. The documentation recommends it "only when a source of trust
+  already exists (for example, another third-party secrets manager)."
+- The Transit seal requires the transit server to be reachable at start and
+  unseal time, and recommends a periodic orphan token.
 
 ## Decision Drivers
 
-- 재부팅 뒤 owner 없이 서비스가 돌아와야 하는가(현재는 unseal과 SecretID 모두 owner 필요).
-- unseal 재료가 host와 같은 곳에 있으면 auto-unseal은 보안 경계가 아니라 편의일 뿐이다.
-- 새 외부 의존성(클라우드 계정, 다른 기기)이 복구 경로를 막지 않아야 한다.
-- seal 전환은 되돌리기 어렵다. Shamir에서 auto-unseal로 옮기면 share는 unseal key가 아니라
-  recovery key가 되어 unseal에는 쓸 수 없다.
-- W11 cold start 런북과 Agent SecretID 전달 방식에 주는 영향.
+- Whether the service must come back without the owner after a reboot
+  (currently both unseal and SecretID need the owner).
+- If unseal material is in the same place as the host, auto-unseal is only a
+  convenience, not a security boundary.
+- New external dependencies (cloud account, another device) must not block
+  the recovery path.
+- Seal transition is hard to reverse. Moving from Shamir to auto-unseal turns
+  shares into recovery keys instead of unseal keys, unusable for unsealing.
+- The effect on the W11 cold start runbook and the Agent SecretID delivery
+  method.
 
 ## Options Considered
 
-| 옵션 | 무인 재부팅 | 키 위치 | 새 의존성 | W11 영향 |
+| Option | Unattended reboot | Key location | New dependency | W11 impact |
 | --- | --- | --- | --- | --- |
-| (a) 수동 Shamir 유지 | 아니오 | host 파일 SEC-003 (현행) | 없음 | unseal 단계를 owner가 수행 |
-| (b) 다른 OpenBao/Vault의 transit | 예 (transit 서버가 살아 있으면) | 다른 기기의 transit key | 둘째 서버와 네트워크 | transit 서버를 먼저 띄우는 순서 |
-| (c) cloud KMS (AWS/GCP/Azure 등) | 예 (인터넷과 KMS가 되면) | 클라우드 KMS | 클라우드 계정, egress | 인터넷 없이는 시작 불가 |
-| (d) Static Key 또는 PKCS#11 (같은 host) | 예 | host 파일 또는 SoftHSM | 없음(Static) 또는 HSM 빌드/plugin | unseal 단계가 사라짐 |
-| (e) 연기 (owner와 trigger 기록) | 아니오 | 현행 | 없음 | (a)와 같음 |
+| (a) Keep manual Shamir | No | Host file SEC-003 (current) | None | Owner performs the unseal step |
+| (b) Transit from another OpenBao/Vault | Yes (if the transit server is alive) | Transit key on another device | Second server and network | Order requires booting the transit server first |
+| (c) Cloud KMS (AWS/GCP/Azure, etc.) | Yes (if internet and KMS are available) | Cloud KMS | Cloud account, egress | Cannot start without internet |
+| (d) Static Key or PKCS#11 (same host) | Yes | Host file or SoftHSM | None (Static) or HSM build/plugin | Unseal step disappears |
+| (e) Defer (record owner and trigger) | No | Current | None | Same as (a) |
 
-### (a) 수동 Shamir unseal 유지 (현행)
+### (a) Keep manual Shamir unseal (current)
 
-- **Good**: 변경이 없다. seal key가 컨테이너 설정이나 환경에 없다. 외부 의존성이 없다.
-- **Bad**: 재부팅과 OpenBao 재시작마다 owner가 필요하다. 세 share가 한 파일에 있으므로
-  분리 보관의 이점은 이미 없다.
-- **Agent SecretID**: 변화 없음. 재부팅마다 owner가 SecretID도 전달한다.
+- **Good**: No change. The seal key is not in container config or
+  environment. No external dependency.
+- **Bad**: The owner is needed at every reboot and OpenBao restart. Since all
+  three shares are in one file, the benefit of split custody is already lost.
+- **Agent SecretID**: No change. The owner also delivers the SecretID at every
+  reboot.
 
-### (b) 둘째 OpenBao/Vault의 transit auto-unseal
+### (b) Transit auto-unseal from a second OpenBao/Vault
 
-- **방법**: 다른 인스턴스에 transit engine과 key를 두고, 이 서버의 `seal "transit"`에 주소,
-  key 이름, periodic orphan token을 준다.
-- **어디서 돌리나**: 같은 host에서 돌리면 목적이 없다. transit 서버 자체가 unseal돼야 하고,
-  host를 가진 공격자는 둘 다 가진다. 다른 기기(NAS, 다른 PC, 소형 VPS)에 두어야 한다.
-  hy-home.k8s는 같은 host의 컨테이너이므로 해당하지 않는다.
-- **Good**: 클라우드 계정 없이 무인 재부팅. 키가 이 host 밖에 있다.
-- **Bad**: 둘째 서버도 자기 unseal 문제를 가진다(보통 수동 Shamir). 그 서버가 꺼져 있으면
-  이 서버는 시작하지 못한다. token 관리, TLS, 네트워크 경로가 새로 생긴다.
-- **Agent SecretID**: 변화 없음.
+- **Method**: Keep a transit engine and key on another instance, and give
+  this server's `seal "transit"` the address, key name, and a periodic orphan
+  token.
+- **Where to run it**: Running it on the same host defeats the purpose; the
+  transit server itself needs unsealing, and an attacker with the host has
+  both. It must be on another device (NAS, another PC, a small VPS).
+  hy-home.k8s does not qualify because it is a container on the same host.
+- **Good**: Unattended reboot without a cloud account. The key is outside this
+  host.
+- **Bad**: The second server has its own unseal problem too (usually manual
+  Shamir). If that server is down, this server cannot start. Token
+  management, TLS, and a network path are newly needed.
+- **Agent SecretID**: No change.
 
-### (c) cloud KMS auto-unseal
+### (c) Cloud KMS auto-unseal
 
-- **방법**: 현재 2.6 계열에 내장된 `awskms`, `gcpckms`, `azurekeyvault` 등. 자격 증명은 환경 변수나
-  파일로 준다(문서는 설정 파일보다 환경 변수를 강하게 권함).
-- **Good**: 키가 host 밖(KMS)에 있고 KMS 감사 로그가 남는다. 비용은 key 하나와 적은 호출이라
-  월 약 $1 수준(정가 기준 추정). host 도난 시 KMS 접근을 끊으면 데이터를 열 수 없다.
-- **Bad**: 인터넷이나 KMS가 안 되면 OpenBao가 시작하지 못한다(home lab 회선 장애 = 비밀 저장소
-  장애). KMS 접근 키가 host에 있으므로 host가 살아 있는 동안에는 host 탈취자도 unseal할 수
-  있다. v2.7.0 이후 plugin 등록으로 바뀔 수 있다. 새 클라우드 자격 증명(새 SEC 행)과
-  OpenBao 컨테이너의 egress가 필요하다.
-- **Agent SecretID**: 변화 없음.
+- **Method**: `awskms`, `gcpckms`, `azurekeyvault`, etc., built into the
+  current 2.6 series. Credentials are supplied via environment variables or a
+  file (the documentation strongly recommends environment variables over
+  configuration files).
+- **Good**: The key is outside the host (in the KMS) and KMS audit logs
+  remain. Cost is around $1/month (list-price estimate) for one key and few
+  calls. Cutting off KMS access on host theft prevents data from being
+  opened.
+- **Bad**: OpenBao cannot start if the internet or KMS is unavailable (a home
+  lab line outage becomes a secret-store outage). Since the KMS access key is
+  on the host, anyone who took over the host can also unseal while the host
+  is alive. This may change with plugin registration after v2.7.0. Needs new
+  cloud credentials (a new SEC row) and egress on the OpenBao container.
+- **Agent SecretID**: No change.
 
-### (d) Static Key 또는 PKCS#11 seal (같은 host)
+### (d) Static Key or PKCS#11 seal (same host)
 
-- **방법**: `seal "static"`에 32바이트 키를 `file://`로 주고, 그 파일을 Docker Secret으로
-  마운트한다. PKCS#11은 SoftHSM 같은 소프트웨어 토큰에 key를 두지만 HSM 빌드나 plugin이 필요하다.
-- **보안 trade-off**: 키가 같은 host에 있으므로 host나 OpenBao 컨테이너를 가진 사람은 unseal할 수
-  있다. 현재도 SEC-003 한 파일로 같은 일이 가능하므로 **host 탈취에 대한 보호는 크게 달라지지
-  않는다**. 달라지는 점은 두 가지다. 키가 컨테이너에 마운트되어 컨테이너 탈출 없이도 노출될 수
-  있고, Raft snapshot과 키가 같은 백업에 함께 있으면 snapshot만 가져간 사람도 열 수 있다.
-  SoftHSM은 key 파일이 디스크에 있으므로 Static Key보다 나을 것이 없다. 공식 문서는
-  Static Key를 기존 신뢰 근원이 있을 때만 권한다.
-- **Good**: 외부 의존성 없이 무인 재부팅.
-- **Bad**: seal 보호가 사실상 파일 권한으로 줄어든다. seal 전환(`-migrate`)과 recovery key
-  체계 전환이 필요하다.
-- **Agent SecretID**: 변화 없음.
+- **Method**: Give `seal "static"` a 32-byte key via `file://` and mount that
+  file as a Docker Secret. PKCS#11 keeps the key in a software token like
+  SoftHSM but needs an HSM build or a plugin.
+- **Security trade-off**: Since the key is on the same host, anyone who has
+  the host or the OpenBao container can unseal. The same is already possible
+  today with the single SEC-003 file, so **protection against host takeover
+  does not meaningfully change**. Two things do change: the key is mounted
+  into the container and could be exposed without a container escape, and if
+  the Raft snapshot and key end up in the same backup, whoever takes only the
+  snapshot can also open it. SoftHSM is no better than Static Key since its
+  key file is also on disk. The official documentation recommends Static Key
+  only when an existing source of trust is present.
+- **Good**: Unattended reboot with no external dependency.
+- **Bad**: Seal protection effectively reduces to file permissions. Requires
+  a seal transition (`-migrate`) and a recovery key scheme change.
+- **Agent SecretID**: No change.
 
-### (e) 연기 (owner와 trigger 기록)
+### (e) Defer (record owner and trigger)
 
-(a)를 유지하면서 criterion 10에 맞게 owner와 재검토 trigger를 적는다. 후보 trigger:
+Keep (a) while recording an owner and review trigger per criterion 10.
+Candidate triggers:
 
-- 계획하지 않은 재부팅이나 정전으로 OpenBao가 owner 부재 중 sealed 상태로 24시간 넘게 머묾.
-- hy-home.k8s나 다른 서비스가 OpenBao를 부팅 직후 필수로 요구하게 됨.
-- ADR-0041에서 클라우드 제공자를 고름(같은 계정의 KMS를 검토할 근거가 생김).
-- OpenBao 2.7 업그레이드(seal 방식이 plugin으로 바뀌는 시점).
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (creating grounds to review KMS on the
+  same account).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
 
 ## Decision
 
-**(e) 연기, (a) 수동 Shamir unseal 유지**(owner 결정, 2026-09-25). owner는 @buenhyden이다.
-아래 trigger 가운데 먼저 오는 것이 생기면 이 결정을 대체하는 새 ADR을 연다.
+**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
+owner is @buenhyden. Whichever of the following triggers comes first opens a
+new ADR that supersedes this decision.
 
-- 계획하지 않은 재부팅이나 정전으로 OpenBao가 owner 부재 중 sealed 상태로 24시간 넘게 머묾.
-- hy-home.k8s나 다른 서비스가 OpenBao를 부팅 직후 필수로 요구하게 됨.
-- ADR-0041에서 클라우드 제공자를 고름(Cloudflare R2가 골라졌으나 R2에는 KMS가 없으므로
-  이 trigger는 KMS를 제공하는 제공자를 고를 때 발동한다).
-- OpenBao 2.7 업그레이드(seal 방식이 plugin으로 바뀌는 시점).
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
+  KMS, so this trigger fires when a provider that offers a KMS is chosen).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
 
-근거:
+Rationale:
 
-- auto-unseal만으로는 무인 재부팅이 되지 않는다. Agent는 재시작마다 owner가 발급한 1회용
-  SecretID가 필요하므로 owner는 어차피 재부팅 절차에 들어간다.
-- 같은 host 키(d)는 보안 이득 없이 키 노출 면만 넓힌다. 다른 기기(b)나 클라우드(c)는 새
-  가용성 의존을 만든다. 지금 규모에서 이 비용이 이득보다 크다.
+- Auto-unseal alone does not give an unattended reboot. The Agent needs a
+  single-use SecretID issued by the owner at every restart, so the owner is
+  already part of the reboot procedure regardless.
+- A same-host key (d) widens the key-exposure surface with no security gain.
+  Another device (b) or cloud (c) creates a new availability dependency. At
+  the current scale, this cost outweighs the benefit.
 
 ## Consequences
 
-- **W11 cold start 런북**:
-  - (a)/(e): 순서는 OpenBao 시작 → owner unseal(share 2개, 숨김 입력) → OIDC 로그인 →
-    SecretID 발급과 Agent 전달 → Agent 인증 확인 → hy-home.k8s External Secrets 동기화 확인.
-    unseal과 SecretID 단계에 owner 시간이 기록된다.
-  - (b)/(c)/(d): unseal 단계가 자동이 되지만 SecretID 전달 단계는 남는다. (b)는 transit 서버
-    선기동, (c)는 인터넷과 KMS 확인이 런북 선행 조건이 된다.
-- **Agent SecretID**: 모든 옵션에서 1회용 SecretID 전달은 그대로다. 이를 없애려면 SecretID
-  수명·횟수를 늘리거나 다른 auth method를 쓰는 별도 결정이 필요하고, 그것은 이 ADR의 범위가
-  아니다.
-- **seal 전환 시**: share가 recovery key로 바뀐다. RUN-0085의 generate-root와 break-glass
-  절차, SEC-003 설명, POL-0021 OpenBao 행, 새 SEC 행(키 또는 KMS 자격 증명)을 함께 고친다.
-  전환 전 보호된 Raft snapshot과 격리 복구 리허설이 필요하다.
+- **W11 cold start runbook**:
+  - (a)/(e): The order is OpenBao start -> owner unseal (2 shares, hidden
+    input) -> OIDC login -> SecretID issuance and delivery to the Agent ->
+    Agent authentication check -> hy-home.k8s External Secrets sync check.
+    Owner time is recorded at the unseal and SecretID steps.
+  - (b)/(c)/(d): The unseal step becomes automatic, but the SecretID delivery
+    step remains. (b) requires booting the transit server first; (c) requires
+    checking internet and KMS availability as a runbook precondition.
+- **Agent SecretID**: Single-use SecretID delivery remains under every
+  option. Removing it needs a separate decision to extend SecretID lifetime
+  or count, or to use a different auth method, and that is out of this ADR's
+  scope.
+- **On seal transition**: Shares become recovery keys. RUN-0085's
+  generate-root and break-glass procedures, the SEC-003 description, the
+  POL-0021 OpenBao row, and a new SEC row (key or KMS credential) all need to
+  be updated together. A protected Raft snapshot and an isolated recovery
+  rehearsal are needed before the transition.
 
 ## Traceability
 
@@ -171,8 +215,8 @@ non-goal로 두고 미뤘을 뿐, 결정한 적이 없다.
 
 ## Follow-up
 
-- W11 런북은 결정 시점에 실제로 쓰는 unseal 방식을 적는다.
-- 연기라면 owner와 trigger를 Task 0003의 Deferred Items에 적는다.
+- The W11 runbook records the unseal method actually in use at decision time.
+- If deferred, record the owner and trigger in Task 0003's Deferred Items.
 
 ### Official references
 

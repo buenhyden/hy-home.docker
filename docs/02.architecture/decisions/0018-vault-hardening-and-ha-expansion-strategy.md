@@ -1,10 +1,10 @@
 ---
 title: "Vault Hardening and HA Expansion Strategy"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0018"
 parent_ids:
@@ -15,64 +15,64 @@ created: "2026-03-28"
 
 ## Context
 
-이 문서는 `03-security` Vault 계층에 대해 즉시 하드닝 항목을 우선 적용하고, auto-unseal/원격 audit는 단계적 전환으로 관리하는 의사결정을 기록한다.
+This document records the decision to prioritize immediate hardening items for the `03-security` Vault layer, while managing auto-unseal/remote audit through a phased transition.
 
-기존 Vault Agent 템플릿은 placeholder 경로를 사용하고 있었고, `vault-agent` 헬스체크/출력 지속성/전용 CI 게이트가 부재했다. 반면 auto-unseal 및 원격 audit는 운영 정책/승인/외부 의존성(KMS/HSM, 원격 저장소) 조율이 필요하여 즉시 구현 리스크가 높다.
+The existing Vault Agent template used placeholder paths, and lacked a `vault-agent` healthcheck, output persistence, and a dedicated CI gate. Auto-unseal and remote audit, on the other hand, require coordinating operational policy, approval, and external dependencies (KMS/HSM, remote storage), so immediate implementation carries high risk.
 
 ## Decision
 
-- 즉시 적용 항목을 우선 구현한다.
-  - template placeholder 제거 및 `secret/data/hy-home/...` 경로 계약 고정
-  - `vault-agent` 프로세스 기반 healthcheck 추가
-  - `/vault/out` 지속 볼륨 추가
-  - `scripts/hardening/check-all-hardening.sh 03-security` + CI `infrastructure-hardening` 게이트 도입
-- auto-unseal/원격 audit 적재는 이번 단계에서 정책/아키텍처/런북 전환 절차로만 명시한다.
-- 내부 통신 모델은 현행 유지한다.
-  - 외부 TLS 종료: Traefik
-  - 내부 `infra_net`: HTTP
-- 기존 회귀(`scripts/hardening/check-all-hardening.sh 02-auth`)는 같은 변경 세트에서 복구한다.
+- Implement the immediate-application items first.
+  - Remove template placeholders and fix the `secret/data/hy-home/...` path contract
+  - Add a process-based healthcheck for `vault-agent`
+  - Add a persistent `/vault/out` volume
+  - Introduce `scripts/hardening/check-all-hardening.sh 03-security` plus the CI `infrastructure-hardening` gate
+- At this stage, specify auto-unseal/remote audit ingestion only as a policy/architecture/runbook transition procedure.
+- Keep the internal communication model as-is.
+  - External TLS termination: Traefik
+  - Internal `infra_net`: HTTP
+- Restore the existing regression (`scripts/hardening/check-all-hardening.sh 02-auth`) in the same change set.
 
 ## Consequences
 
 - **Positive**:
-  - 운영 계약(경로/헬스/검증)이 즉시 명확해진다.
-  - CI에서 03-security 회귀를 선제 차단할 수 있다.
-  - HA 확장에 필요한 전환 문맥이 문서화된다.
+  - Operating contracts (paths/health/verification) become clear immediately.
+  - CI can preemptively block 03-security regressions.
+  - The transition context needed for HA expansion is documented.
 - **Trade-offs**:
-  - auto-unseal/원격 audit 가치 실현은 다음 단계로 이연된다.
-  - 단일 노드 raft 운영 리스크는 당분간 유지된다.
+  - Realizing the value of auto-unseal/remote audit is deferred to the next stage.
+  - The single-node raft operating risk remains for the time being.
 
 ### Explicit Non-goals
 
-- 이번 변경에서 KMS/HSM auto-unseal 실구현
-- 이번 변경에서 원격 audit sink 실구현
-- Vault API/프로토콜 변경
+- Implementing KMS/HSM auto-unseal in this change
+- Implementing a remote audit sink in this change
+- Changing the Vault API/protocol
 
 ### Agent-related Example Decisions
 
-- Tool gating: `check-all-hardening.sh 03-security`를 CI merge gate로 강제
-- Guardrail strategy: placeholder 경로 금지, 평문 시크릿 금지
+- Tool gating: Enforce `check-all-hardening.sh 03-security` as a CI merge gate
+- Guardrail strategy: Prohibit placeholder paths, prohibit plaintext secrets
 
 ## Options Considered
 
-### 즉시 auto-unseal/원격 audit까지 동시 구현
+### Implement auto-unseal/remote audit at the same time, immediately
 
 - Good:
-  - 보안 성숙도를 빠르게 끌어올릴 수 있다.
+  - Can quickly raise security maturity.
 - Bad:
-  - 운영 승인/외부 의존성 미정 상태에서 변경 리스크가 높다.
-  - 장애 시 원인 분리가 어려워진다.
+  - Change risk is high while operational approval/external dependencies are undecided.
+  - Harder to isolate root cause during a failure.
 
-### 문서만 갱신하고 인프라 변경 보류
+### Update documentation only and hold off on infrastructure changes
 
 - Good:
-  - 단기 변경 리스크가 낮다.
+  - Short-term change risk is low.
 - Bad:
-  - placeholder/헬스체크/CI 회귀가 계속 남는다.
+  - Placeholder/healthcheck/CI regressions remain.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

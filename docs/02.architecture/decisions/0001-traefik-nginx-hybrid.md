@@ -1,10 +1,10 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
@@ -15,61 +15,64 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 `hy-home.docker`의 진입점(Ingress)으로 Traefik과 Nginx를 혼합하여 사용하는 결정에 대한 아키텍처 결정 기록이다.
+This document is the architecture decision record for the decision to use a hybrid of Traefik and Nginx as the ingress for `hy-home.docker`.
 
-- 시스템에는 Docker 컨테이너 기반으로 동적으로 수량이 변하는 다수의 마이크로서비스가 존재함.
-- 동시에 Keycloak, MinIO와 같이 특정 경로(Path) 재작성 및 복잡한 헤더 조작이 필요한 인프라 서비스들이 존재함.
-- Traefik은 Docker Label 기반의 자동 서비스 발견(Dynamic Discovery)에 매우 강력하지만, 복잡한 Nginx 수준의 세밀한 경로 제어는 설정이 다소 번거로울 수 있음.
-- 반면 Nginx는 정교한 설정이 가능하지만, 동적으로 변하는 Docker 가상 IP 환경에서 업스트림 관리가 수동적이거나 별도의 솔루션이 필요함.
+- The system has many microservices whose count changes dynamically on a Docker container basis.
+- At the same time, infrastructure services such as Keycloak and MinIO exist that need specific path rewrites and complex header manipulation.
+- Traefik is very strong at Docker Label based automatic service discovery (Dynamic Discovery), but configuring fine-grained, Nginx-level path control can be somewhat cumbersome.
+- Nginx, on the other hand, supports elaborate configuration, but upstream management in a dynamically changing Docker virtual IP environment is manual or needs a separate solution.
 
 ## Decision
 
-- **Primary Edge Router**: Traefik v3를 사용함.
-  - 모든 외부 트래픽(80, 443)의 최초 수신 및 TLS 종료 담당.
-  - Docker Provider를 통한 대다수 서비스의 자동 라우팅 처리.
-- **Secondary Path Proxy**: Nginx Alpine leaf를 유지함.
-  - 현재 root compose에는 기본 include되지 않으며, 명시적 profile/runtime context에서만 Traefik의 백엔드 서비스로 등록한다.
+- **Primary Edge Router**: use Traefik v3.
+  - Handles the initial receipt of all external traffic (80, 443) and TLS termination.
+  - Handles automatic routing for most services through the Docker Provider.
+- **Secondary Path Proxy**: keep the Nginx Alpine leaf.
+  - It is not included by default in the current root compose; it is registered as a Traefik backend service only under an explicit profile/runtime context.
 
-    이 문장이 적힌 시점에는 Nginx leaf가 루트 include 밖에 있었다. SPEC-0156과
-    SPEC-0171 이후 루트 `docker-compose.yml`은 41개 compose 파일을 모두 무조건
-    include하고 profile이 기동을 결정한다. Nginx는 include되며 전용 `nginx`
-    profile이 서비스를 선택한다. Traefik도 profile 없이는 기동하지 않는다는 점에서
-    같다(`core`, `dev`). 결정이 세운 경계 — Nginx는 특수 경로에만, 명시적 선택으로 —
-    는 그대로 유효하고 그 경계를 긋는 수단만 include 여부에서 profile로 바뀌었다.
-    결정 문장은 시점의 기록으로 보존한다. SPEC-0176이 기록함.
-  - Nginx 내부에서 상세한 Proxy Pass, Header 조작, Buffering 설정을 수행한다.
+    At the time this sentence was written, the Nginx leaf was outside the root
+    include. After SPEC-0156 and SPEC-0171, the root `docker-compose.yml`
+    unconditionally includes all 41 compose files and a profile decides
+    startup. Nginx is included, and a dedicated `nginx` profile selects the
+    service. Traefik is the same in that it also does not start without a
+    profile (`core`, `dev`). The boundary the decision set — Nginx only for
+    specialized paths, by explicit selection — remains valid, and only the
+    mechanism for drawing that boundary changed from include status to
+    profile. The decision sentence is preserved as a record of its time.
+    Recorded by SPEC-0176.
+  - Nginx handles detailed proxy pass, header manipulation, and buffering configuration internally.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
 ## Consequences
 
 - **Positive**:
-  - 신규 서비스 추가 시 별도 설정 없이 Docker Label만으로 라우팅 가능 (Traefik의 장점).
-  - Keycloak 등 까다로운 프록시 설정이 필요한 서비스에 대해 안정적인 Nginx 설정 적용 가능.
-  - 통합 대시보드를 통한 가시성 확보.
+  - Adding a new service can be routed with only Docker Labels, no extra configuration (Traefik's strength).
+  - A stable Nginx configuration can be applied to services with tricky proxy needs, such as Keycloak.
+  - Visibility is secured through an integrated dashboard.
 - **Trade-offs**:
-  - 특정 서비스에 대해 네트워크 홉(Hop)이 하나 추가됨 (Traefik -> Nginx).
-  - 두 종류의 프록시 설정 문법을 모두 관리해야 하는 운영 부담.
+  - One extra network hop is added for certain services (Traefik -> Nginx).
+  - Operational burden of managing two different proxy configuration syntaxes.
 
 ### Explicit Non-goals
 
-- 모든 내부 서비스 앞에 Nginx를 두는 방식 (불필요한 홉 증가 방지).
-- Nginx를 외부 Edge로 직접 노출하는 방식.
+- Placing Nginx in front of every internal service (avoids unnecessary hop growth).
+- Exposing Nginx directly as the external edge.
 
 ## Options Considered
 
 ### [Alternative 1: Traefik Only]
 
-- Good: 아키텍처가 단순해지고 관리 포인트가 줄어듬.
-- Bad: Keycloak의 redirect loop 문제나 MinIO의 특수한 헤더 처리를 Traefik 미들웨어만으로 구현하기가 상대적으로 복잡하고 검증 사례가 적음.
+- Good: The architecture becomes simpler and there are fewer management points.
+- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
 
-### [Alternative 2: Nginx Only (with Nginx Proxy Manager 등)]
+### [Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)]
 
-- Good: 설정이 매우 강력하고 친숙함.
-- Bad: 순수 Nginx 사용 시 Docker 컨테이너의 동적 변화를 감지하기 위해 `jwilder/nginx-proxy` 같은 추가 도구가 필요하거나 수동 관리가 필요함.
+- Good: Configuration is very powerful and familiar.
+- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision Drivers
 

@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI as Primary AI/RAG Interface"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0016"
 parent_ids:
@@ -17,7 +17,7 @@ created: "2026-03-27"
 
 ## Context
 
-이 문서는 Open WebUI를 `hy-home.docker` 에코시스템의 기본 AI 인터페이스 및 RAG(Retrieval-Augmented Generation) 오케스트레이터로 선정함에 따른 아키텍처 결정 기록이다.
+This document records the architecture decision for selecting Open WebUI as the default AI interface and RAG (Retrieval-Augmented Generation) orchestrator of the `hy-home.docker` ecosystem.
 
 Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
 
@@ -62,7 +62,7 @@ performance.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Services Selection and Configuration"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0011"
 parent_ids:
@@ -15,27 +15,27 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 `11-laboratory` 티어의 주요 관리 도구 선정에 대한 아키텍처 결정 기록이다.
+This document records the architecture decision for selecting the core management tools of the `11-laboratory` tier.
 
-시스템 운영 효율성을 높이기 위해 컨테이너 관리, 데이터베이스 조회, 서비스 내비게이션 환경을 구축해야 한다. 이를 위해 가볍고 신뢰할 수 있으며, Traefik 및 Keycloak과 원활하게 통합되는 도구들을 선정해야 한다.
+To raise system operating efficiency, we need to build a container management, database inspection, and service navigation environment. This requires selecting tools that are lightweight, reliable, and integrate smoothly with Traefik and Keycloak.
 
 ## Decision
 
-다음과 같은 서비스 스택을 `11-laboratory`의 표준 도구로 선정한다.
+We select the following service stack as the standard tooling for `11-laboratory`.
 
-1. **Dashboard (Homer)**: 정적 설정 기반의 초경량 대시보드.
-2. **Container Management (Portainer)**: 직관적인 컨테이너 리소스 제어 및 상태 모니터링.
-3. **Data Inspection (RedisInsight)**: Redis/Valkey 데이터 구조 시각화 및 분석.
-4. **Log Viewer (Dozzle)**: 다중 컨테이너 실시간 로그 스트리밍.
-5. **Local Notebook Lab (Open Notebook + SurrealDB)**: 로컬 지식 작업과 실험성 노트북 상태를 관리.
+1. **Dashboard (Homer)**: An ultra-lightweight dashboard based on static configuration.
+2. **Container Management (Portainer)**: Intuitive container resource control and status monitoring.
+3. **Data Inspection (RedisInsight)**: Redis/Valkey data structure visualization and analysis.
+4. **Log Viewer (Dozzle)**: Real-time log streaming across multiple containers.
+5. **Local Notebook Lab (Open Notebook + SurrealDB)**: Manages local knowledge work and experimental notebook state.
 
 ## Consequences
 
 - **Positive**:
-  - 운영자의 인프라 가시성 및 디버깅 속도 대폭 향상.
-  - 별도 계정 관리 없이 SSO 통합 로그인 사용.
+  - Substantially improves the operator's infrastructure visibility and debugging speed.
+  - Uses SSO unified login without separate account management.
 - **Trade-offs**:
-  - `docker.sock` 노출이 필요하므로, SSO를 통한 강력한 접근 제어가 필수적임.
+  - Exposing `docker.sock` is required, so strong access control through SSO is essential.
 
 ### Explicit Non-goals
 
@@ -49,7 +49,7 @@ Existing alternatives, rationale, or rejected options in this ADR remain the alt
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

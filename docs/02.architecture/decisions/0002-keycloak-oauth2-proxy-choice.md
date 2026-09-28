@@ -1,10 +1,10 @@
 ---
 title: "Choice of Keycloak and OAuth2 Proxy for IAM and SSO"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0002"
 parent_ids:
@@ -19,7 +19,7 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 `hy-home.docker`의 인증 체계로 Keycloak과 OAuth2 Proxy를 선정한 기술적 결정 배경을 다룬다. 표준 OIDC 프로토콜 준수, 다양한 인증 수단 지원, 그리고 클라이언트 사이드 코드 수정 없이 기존 서비스를 보호할 수 있는 ForwardAuth 아키텍처 구현을 위한 선택이다.
+This document covers the technical background for choosing Keycloak and OAuth2 Proxy as the authentication scheme for `hy-home.docker`. It is a choice made for standard OIDC protocol compliance, support for various authentication methods, and implementation of a ForwardAuth architecture that protects existing services without client-side code changes.
 
 We need an authentication system that is:
 
@@ -68,7 +68,7 @@ Existing rationale, positive/negative notes, and trade-off text in this ADR rema
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision Drivers
 
