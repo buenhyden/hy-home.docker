@@ -379,9 +379,9 @@ class ScriptManifestTests(unittest.TestCase):
     def test_scripts_readme_preserves_invocation_warnings(self) -> None:
         text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
         compact = re.sub(r"\s+", " ", text)
-        self.assertIn("Do not invoke a `mutation: runtime` row", compact)
-        self.assertIn("Do not invoke a default-write generator without", compact)
-        self.assertIn("semantic invocation/import evidence", compact)
+        self.assertIn("`mutation: runtime` 행을 호출하지 않습니다", compact)
+        self.assertIn("non-mutating check 옵션 없이 default-write generator를 호출하지 않습니다", compact)
+        self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
 
     def test_evals_readme_states_its_manifest_registration_rule(self) -> None:
         text = (ROOT / "evals/README.md").read_text(encoding="utf-8")
