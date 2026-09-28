@@ -1675,7 +1675,7 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             self.introduced(self.KOREAN + "\n추가 문장입니다.\n", self.KOREAN),
         )
 
-    def test_lifecycle_body_check_does_not_judge_existing_language(self) -> None:
+    def test_lifecycle_body_check_judges_existing_language(self) -> None:
         from scripts.lib.document_governance.lifecycle import contract
 
         record = metadata.Record(
@@ -1698,10 +1698,13 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             for item in metadata.validate_body_contract(record, text, self.profiles, True)
         }
         self.assertIn("document-language-mismatch", codes)
-        self.assertNotIn(
+        self.assertIn(
             "document-language-mismatch",
             {
                 item.code
-                for item in contract._body_contract_errors(record, text, self.profiles)
+                for item in contract.metadata.validate_body_contract(
+                    record, text, self.profiles, True
+                )
             },
         )
+        self.assertFalse(hasattr(contract, "_CHANGED_ONLY_BODY_CODES"))

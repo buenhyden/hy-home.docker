@@ -2056,7 +2056,7 @@ class NavigationModeTests(unittest.TestCase):
 
 
 class LanguageModeTests(unittest.TestCase):
-    """SPEC-0184 rule 4: every README reads in its declared language."""
+    """SPEC-0184 rule 4 and SPEC-0187: every document reads in its declared language."""
 
     KOREAN = (
         "# X\n\n## Overview\n\n이 디렉터리는 요구사항 문서를 모아 두는 공간이며, "
@@ -2108,9 +2108,33 @@ class LanguageModeTests(unittest.TestCase):
             ),
         )
 
-    def test_non_readme_documents_are_left_to_the_changed_body_check(self) -> None:
+    def test_non_readme_documents_are_judged_by_their_profile(self) -> None:
+        """SPEC-0187: the whole corpus, not only READMEs, reads in its language."""
+
         self.assertEqual(
-            {}, self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH})
+            {"docs/05.operations/guides/0001-x.md": {"document-language-mismatch"}},
+            self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH}),
+        )
+        self.assertEqual(
+            {"docs/02.architecture/decisions/0001-x.md": {"document-language-mismatch"}},
+            self._codes({"docs/02.architecture/decisions/0001-x.md": self.KOREAN}),
+        )
+        self.assertEqual(
+            {},
+            self._codes(
+                {
+                    "docs/05.operations/guides/0001-x.md": self.KOREAN,
+                    "docs/02.architecture/decisions/0001-x.md": self.ENGLISH,
+                }
+            ),
+        )
+
+    def test_frozen_non_readme_records_are_not_judged(self) -> None:
+        self.assertEqual(
+            {},
+            self._codes(
+                {"docs/98.archive/retired/05.operations/guides/0001-x.md": self.ENGLISH}
+            ),
         )
 
 

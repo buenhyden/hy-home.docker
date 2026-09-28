@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
@@ -106,10 +106,9 @@ retired.
 - Positive: routers stop drifting from the members their children own. The
   language rule is testable. One validator run proves both rules.
 - Negative: the bootstrap English-only constraint gains a README exception. The
-  Stage 01/02 corpus (Korean today) and much of Stage 05 (English today) do not
-  yet match their declared language. Until the corpus follow-up lands, the
-  validator enforces declared language fully for README profiles and only on
-  changed documents for the rest.
+  Stage 01/02 corpus (then Korean) and much of Stage 05 (then English) did not
+  match their declared language. SPEC-0187 migrated them, and the validator
+  now enforces declared language across the whole corpus.
 - Language judgment is a heuristic over prose characters. Its limits are
   stated in the validator and in the documentation protocol.
 
@@ -128,5 +127,6 @@ Catalog profile. The Registry schema rejects an undeclared `language` value.
 
 ## Follow-up
 
-- Corpus language migration for non-README documents, and full enforcement.
+- Corpus language migration for non-README documents, and full enforcement:
+  done by [SPEC-0187](../../03.specs/0187-document-language-migration/).
 - Script and legacy-code cleanup found by the same audit.
