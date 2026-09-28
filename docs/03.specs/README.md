@@ -45,6 +45,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0183 | [Operations Role Layout](./0183-operations-role-layout/) | Stage 05를 domain 우선 catalog에서 역할별 디렉터리로 전환 |
 | SPEC-0184 | [README Navigation and Language Contract](./0184-readme-navigation-and-language-contract/) | README 탐색 깊이와 문서 언어를 검증되는 계약으로 전환 · 보관 승인 대기 |
 | SPEC-0186 | [Document Governance Dead Code Removal](./0186-document-governance-dead-code-removal/) | 도달하지 않는 문서 거버넌스 검증 코드를 증명 후 제거 · 보관 승인 대기 |
+| SPEC-0187 | [Document Language Migration](./0187-document-language-migration/) | README 외 문서 200개를 프로필 언어로 옮기고 언어 검사를 전체 문서로 확대 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
