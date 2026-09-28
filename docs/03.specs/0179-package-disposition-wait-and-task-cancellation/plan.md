@@ -1,8 +1,8 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Implementation Plan"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -195,11 +195,11 @@ an implementation. No actual removal is included in either local phase.
 The approved local A–C implementation and D's isolated/static verification are
 complete; detailed intermediate receipts and the final delivery-gate result are
 recorded in the Task. Integration 1 records the implementation, accepted
-ADR-0037, and Spec review edge while the Plan and Task remain draft. Three
-authorized protected-main PR integrations remain for approval, activation, and
-W8 completion. Required hosted checks are recorded per PR. No production
-deployment or service mutation, opt-in runtime rehearsal, or actual history-only
-removal is claimed.
+ADR-0037, and Spec review edge. This result tree advances the Spec and Plan to
+approved and the Task to ready. Two authorized protected-main PR integrations
+remain for activation and W8 completion. Required hosted checks are recorded per
+PR. No production deployment or service mutation, opt-in runtime rehearsal, or
+actual history-only removal is claimed.
 
 ## Rulings
 

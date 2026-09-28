@@ -1,8 +1,8 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Execution"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -664,6 +664,19 @@ and Plan criteria 11–14 now map to W8. Only these three Spec-package documents
 and this evidence changed after the whole gate; focused metadata/link/diff checks
 cover that documentation-only update. No hosted pass or lifecycle completion is
 inferred from this local receipt. PR results are recorded in subsequent integrations.
+
+### Lifecycle integration 1 receipt before integration 2 — 2026-09-28
+
+[PR #313](https://github.com/buenhyden/hy-home.docker/pull/313) merged at
+2026-09-28T04:50:47Z with head `ce331b4d560ef3eb053c1753605990c51dfa3e8e`
+and merge `ff01ea89f2059c8783ee321b49a6b7a6240ee086`.
+The [required hosted check](https://github.com/buenhyden/hy-home.docker/actions/runs/36377947641/job/108787527416)
+succeeded in 19m39s. CodeQL and GitGuardian also passed; review threads were empty.
+No required human or CODEOWNERS approval was enforced or claimed.
+
+This result tree advances Spec review -> approved, Plan draft -> approved, and
+Task draft -> ready under the owner's recorded delivery approval. Its own hosted
+check and merge are recorded after observation in the next integration.
 
 ## Review Evidence
 
