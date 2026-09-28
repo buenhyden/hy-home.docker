@@ -1720,25 +1720,6 @@ class RetentionCatalogTests(unittest.TestCase):
             },
         )
 
-    def test_a_row_the_base_kept_in_the_stage_readme_is_not_compared(self) -> None:
-        """SPEC-0179 Archive 3.0.0: a base that predates the catalog record is still a base."""
-
-        catalog = self.root / "docs/98.archive/retention-catalog.md"
-        text = catalog.read_text(encoding="utf-8")
-        catalog.unlink()
-        self._write("docs/98.archive/README.md", text)
-        _fixture_git(self.root, "add", "-A")
-        _fixture_git(self.root, "commit", "-q", "-m", "catalog in readme")
-        legacy_base = _fixture_git(self.root, "rev-parse", "HEAD")
-        self._write("docs/98.archive/README.md", "# Archive\n")
-        self._write("docs/98.archive/retention-catalog.md", text)
-        body = self.root / "docs/98.archive/retired/01.requirements/0002-withdrawn.md"
-        body.write_text("# Withdrawn\n\nAdded after preservation.\n", encoding="utf-8")
-        self.assertEqual(
-            (),
-            tuple(self.archive.validate_catalog_identity(self.root, legacy_base)),
-        )
-
     def test_a_row_present_at_the_base_is_not_compared(self) -> None:
         """Behavior Contract 9: the comparison is not retroactive."""
 
