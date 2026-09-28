@@ -124,7 +124,7 @@ section and the existing infrastructure/deployment descriptions.
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
-  - `.github/workflows/ci-quality.yml`의 `infrastructure-hardening` job
+  - The `infrastructure-hardening` job in `.github/workflows/ci-quality.yml`
 
 ## Traceability
 

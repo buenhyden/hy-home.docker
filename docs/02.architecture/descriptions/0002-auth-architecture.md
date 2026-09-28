@@ -109,7 +109,7 @@ Currently approved:
 - Gatus
 - OpenBao (owner-approved native OIDC; operator login verified)
 
-흐름:
+Flow:
 
 ```text
 Browser -> Traefik -> Application -> Keycloak

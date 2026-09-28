@@ -90,7 +90,7 @@ configuration. Unrecorded runtime state is not claimed.
 
 ## Related Documents
 
-- **Superseded ADR**: `ADR-0015` (`docs/98.archive/superseded/`에 보존)
+- **Superseded ADR**: `ADR-0015` (preserved under `docs/98.archive/superseded/`)
 - **Architecture Description**: [0012-data-analytics-architecture.md](../descriptions/0012-data-analytics-architecture.md)
 - **Requirements**: [0005-data-analytics.md](../../01.requirements/0005-data-analytics.md)
 - **Lakehouse policy**: [POL-0094](../../05.operations/policies/0094-lakehouse.md)
