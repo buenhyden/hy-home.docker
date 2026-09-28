@@ -1,8 +1,8 @@
 ---
 title: "README Navigation and Language Contract"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -92,6 +92,14 @@ every acceptance criterion of [SPEC-0184](../spec.md).
   carry a Korean README that routes to its incident folders (`c781ef79f`).
   The owner chose local `main` integration for lifecycle promotion, and
   separate packages for P3 and then P2, with approval gates.
+
+- 2026-09-28: the branch was merged into the local `main` at `72928676e`
+  (not pushed). `82da63633` lets the operations catalog accept the incident
+  year README beside its packets. Lifecycle promotion follows on the local
+  `main`: the Spec moves through review; the Spec and Plan approvals are the
+  owner's two "승인" answers of 2026-09-27; ADR-0044 is accepted, and the
+  Spec, Plan, and Task are completed on the owner's instruction of
+  2026-09-28 to process the drafts and ADR-0044.
 
 ## Verification Evidence
 

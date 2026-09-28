@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Language Contract Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 layer: "specs"
 artifact_id: "SPEC-0184-PLAN-0001"
 parent_ids:

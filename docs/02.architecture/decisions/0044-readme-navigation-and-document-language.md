@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
