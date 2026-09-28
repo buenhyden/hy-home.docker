@@ -558,6 +558,22 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                         }
                     )
 
+    def test_incident_year_readme_must_be_a_regular_file(self) -> None:
+        relative = "docs/05.operations/incidents/2026/README.md"
+        for mutation in ("regular", "directory"):
+            with self.subTest(mutation=mutation):
+                context, root = self._fixture()
+                with context:
+                    path = root / relative
+                    if path.exists():
+                        path.unlink()
+                    if mutation == "regular":
+                        path.write_text("# 2026\n", encoding="utf-8")
+                        self.assertNotIn("incident-packet-invalid", finding_codes(root))
+                    else:
+                        path.mkdir()
+                        self.assertIn("incident-packet-invalid", finding_codes(root))
+
     def test_role_symlink_and_nonregular_inputs_are_rejected(self) -> None:
         target = self.role_paths[0]
         for mutation in ("symlink", "directory"):
