@@ -96,9 +96,10 @@ document.
    by this rule.
 2. **Label honesty.** In any README, a link whose label ends in `/` resolves to
    a directory or to that directory's `README.md`.
-3. **Collection README.** A README whose directory holds direct files may
-   index its own direct members. Any listing of files below a child directory
-   follows rule 1 for that child.
+3. **Collection README.** A README whose directory holds direct files
+   indexes its own direct members. A deeper link from it is a citation: the
+   `navigation` mode does not limit it, and a child's own README still owns
+   that child's membership.
 4. **Declared language.** Every Registry profile that governs prose declares
    `language`:
    - `ko` for README profiles and Stage 05 profiles.
@@ -108,8 +109,9 @@ document.
      runtime adapters.
 
    The body validator judges the prose left after it removes frontmatter,
-   headings, code, link targets, HTML comments, and tables whose header is a
-   registered machine shape. README profiles are judged on every document.
+   headings, fenced and inline code, link targets, URLs, HTML comments, and
+   path- and identifier-shaped tokens; a table is judged by its prose cells.
+   README profiles are judged on every document.
    Other profiles are judged only on added or changed documents until P2.
 5. **Retention Catalog.** `docs/98.archive/retention-catalog.md` holds the
    `## Retention Catalog` section with the unchanged

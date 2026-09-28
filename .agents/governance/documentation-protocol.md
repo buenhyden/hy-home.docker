@@ -165,7 +165,8 @@ apart from itself and placeholders such as `.gitkeep`, is a folder router. Withi
 a folder router links only a direct child directory or that child's
 `README.md`. It does not list documents inside a child, in a table, list, HTML,
 collapsed block, generated block, or a fenced tree that names files. A README
-whose directory holds direct files may index those files and nothing deeper.
+whose directory holds direct files is a collection README: it indexes those
+files, and a deeper link it carries is a citation that this rule does not limit.
 In any README, a link whose label ends in `/` resolves to that folder or to its
 `README.md`. A link outside the README's own directory is a citation, and the
 citation rules in this protocol apply to it. The `navigation` mode of

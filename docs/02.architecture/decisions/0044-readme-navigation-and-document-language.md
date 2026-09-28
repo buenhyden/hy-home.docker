@@ -74,7 +74,8 @@ or that child's `README.md`. This applies to Markdown inline, reference-style,
 and HTML links, and to file names in fenced tree diagrams. Links outside its
 subtree remain ordinary citations. In any README, a link whose label names a
 folder must resolve to that folder or to its README. Collection READMEs, which
-hold direct files, may index only their own direct members.
+hold direct files, index their own direct members; a deeper link from one is a
+citation that this decision does not limit.
 
 **Language.** Every Registry profile that governs human prose declares
 `language` as `ko` or `en`:
