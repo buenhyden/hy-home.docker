@@ -16,7 +16,7 @@ created: "2026-09-19"
 
 ## When to Use
 
-정적 readiness 점검, 구체적으로 승인된 live job, 또는 잘못된 Renovate 변경으로부터의 복구에
+정적 readiness 점검, 구체적으로 승인된 live job, 또는 잘못된 Renovate 변경의 복구에
 사용한다. 저장소 루트에서 작업한다.
 
 ## Procedure
@@ -30,7 +30,7 @@ created: "2026-09-19"
    ```
 
 2. dry-run/discovery 출력, 저장소 scope, token owner, branch protection, 승인 여부를
-   검토한다. 1단계로부터 remote readiness를 추론하지 않는다.
+   검토한다. 1단계 결과만으로 remote readiness를 추론하지 않는다.
 3. remote write가 승인된 경우에만 job을 실행한다.
 
    ```bash
@@ -54,13 +54,13 @@ created: "2026-09-19"
 4. token이 노출됐을 가능성이 있으면 job을 비활성화하고 secret owner에게 rotate/revoke를
    요청한다. 현재 token을 복사하거나 표시하지 않는다.
 5. 캐시 손상은 job이 실행 중이지 않을 때 폐기 가능한 캐시를 재생성하여 복구한다. remote
-   저장소 상태는 그 캐시로부터 절대 복원되지 않는다.
+   저장소 상태는 절대 그 캐시에서 복원하지 않는다.
 
 ### Verification and Status
 
 Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 사항이 파악되고, token
-처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 중 문서화만
-되었고 실행되지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
+처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 때 문서로만
+남겼고 실행하지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
 
 ## Escalation
 

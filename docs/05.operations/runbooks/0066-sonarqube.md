@@ -69,7 +69,7 @@ source code, personal data, token은 절대 기록하지 않는다.
 ## Rollback or Recovery
 
 database restore/reindex와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
-검증된 database recovery point 없이 search index를 삭제하는 것은 금지된다.
+검증된 database recovery point 없이 search index를 삭제해서는 안 된다.
 
 ## Escalation
 

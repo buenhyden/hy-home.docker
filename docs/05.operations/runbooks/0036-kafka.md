@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 대한 격리된 복구에 사용한다.
+승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리된 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ## Procedure
@@ -31,7 +31,7 @@ docker compose --env-file .env.example --profile messaging-cluster config --quie
 
 10개 예상 서비스, 별도의 broker/Connect volume, `kafka_net`, health check,
 Kafbat native OIDC secret/config, 표준 gateway chain, PLAINTEXT listener를
-확인한다. 어떤 runtime 사용 전에도 `kafka-init`의 replication factor 3이
+확인한다. runtime을 사용하기 전에는 항상 `kafka-init`의 replication factor 3이
 three-broker selector와 짝을 이루는지 확인한다.
 
 ### CDC connector lifecycle
@@ -49,7 +49,7 @@ three-broker selector와 짝을 이루는지 확인한다.
 4. Lag: `hyhome_app_slot`에 대해 `pg_replication_slots`를 조회한다
    (`active`, `wal_status`,
    `pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn)`).
-   `wal_status = lost`는 slot이 무효화되었음을 의미한다.
+   `wal_status = lost`는 slot이 무효화되었다는 뜻이다.
 5. 유지보수를 위해 `PUT .../pause`로 일시 중지한다. 일시 중지 중에도 slot이
    WAL을 유지하므로 여유 디스크와 `max_slot_wal_keep_size`로 일시 중지 기간을
    제한한다.
@@ -100,12 +100,12 @@ three-broker selector와 짝을 이루는지 확인한다.
 
 Rehearsal 2026-09-22 (1~3단계, owner 승인됨): `--internal` 네트워크의 live
 버전에서 disposable single-node KRaft Kafka와 Schema Registry. 4개 subject
-모두 동일한 ID로 `IMPORT` 모드로 import되었다. 하나의 CDC topic(3개
-partition, 563개 record)이 동일한 partition과 timestamp로 복사되었으며 모든
+모두 `IMPORT` 모드에서 동일한 ID로 import되었다. CDC topic 하나(3개
+partition, 563개 record)가 동일한 partition과 timestamp로 복사되었고 모든
 key, value, header에 대한 SHA-256 digest가 일치했다. connector config
-(비밀번호는 provider 참조로 대체)와 offset이 4단계용으로 캡처되었다.
-4~6단계는 실행되지 않았다: live database에 대한 Connect worker는 production
-replication slot을 소비하게 된다. rehearsal stack은 제거되었다.
+(비밀번호는 provider 참조로 대체)와 offset은 4단계용으로 캡처했다.
+4~6단계는 실행하지 않았다. live database를 대상으로 한 Connect worker가 production
+replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거했다.
 
 ## Evidence
 
@@ -123,8 +123,8 @@ rollback window 이후에만 실행한다.
 ## Escalation
 
 schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
-부작용, 호환되지 않는 storage/protocol format, 또는 raw broker 디렉터리를
-수리하라는 압박에서 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
+부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
+수리하라는 압박이 있으면 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
 않았다.
 
 ## Traceability
@@ -132,7 +132,7 @@ schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 - Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
   및 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
-- 절차는 날짜가 기록된 verification record가 실행되었음을 명시하지 않는 한 계획 상태다.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
 ### References
 

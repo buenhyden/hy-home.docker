@@ -41,7 +41,7 @@ compromise, 또는 승인된 upgrade에 사용한다.
 
 Dozzle을 중지하고, bind-backed `/data` 전체를 protected storage로 복사하고, 먼저
 production socket이 없는 isolated instance로 복원한다. upgrade 시에는 advisory/
-release를 검토하고 해당 copy에 대해 OIDC, roles/filters, streaming,
+release를 검토하고 해당 copy에서 OIDC, roles/filters, streaming,
 actions/shell 기본값을 테스트한다. 비호환 시 image와 settings copy를 함께 롤백한다.
 
 ## Evidence

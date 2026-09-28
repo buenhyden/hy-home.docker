@@ -40,8 +40,8 @@ docker compose --profile availability exec -T gatus sh -ec 'wget -q -O /dev/null
 
 실행 중인 서비스는 소유자 로그인 승인 이후 네이티브 OIDC와 함께
 `config.oidc.yaml`을 사용한다. 라우터는 표준 게이트웨이 체인만 유지하며
-metrics 접두사는 제외한다. 원본 `config.yaml`은 설정 롤백을 위해 보존된다.
-실행 중인 바인드 마운트 파일을 변경하면 실행 중인 서비스에 즉시 영향을 줄 수
+metrics 접두사는 제외한다. 설정 롤백에 대비해 원본 `config.yaml`을 보존한다.
+실행 중인 바인드 마운트 파일을 고치면 서비스에 즉시 영향을 줄 수
 있다. 승인되지 않은 전환을 준비하기 위해 실행 중인 파일을 편집하지 않는다.
 현재 롤아웃 상태는
 [Task 0004](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0004-native-oidc-service-migration.md)에
@@ -56,9 +56,9 @@ UID 1000으로 실행되고 UID-1000이 소유한 mode 0600 파일을 요구한�
 공개 루트와 결합될 뿐 이를 대체하지 않으며, TLS 검증은 계속 활성화되어 있다.
 
 고정된 소스 빌드에는 Secure/HttpOnly 쿠키, S256 PKCE, 임시 상태 정리, 대소문자
-구분 subject 매칭에 대한 검토된 패치가 포함되어 있다. 재빌드 시 소스 아카이브
+구분 subject 매칭에 대한 검토를 거친 패치가 들어 있다. 재빌드 시 소스 아카이브
 체크섬을 검증하고, 패치를 fuzz 없이 적용하고, Go 보안 테스트를 통과해야 한다.
-업스트림 핀이 변경되면 패치 검토를 다시 수행해야 한다.
+업스트림 핀이 바뀌면 패치를 다시 검토해야 한다.
 
 이후 승인된 롤아웃에서는 기존 이미지를 롤백용으로 보존하고, SQLite를 일관되게
 백업하며, 동일한 데이터 볼륨으로 Gatus만 교체한다. 향후 마이그레이션이나
@@ -71,7 +71,7 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 
 ### Planned isolated restore rehearsal
 
-상태: **계획됨, 미실행**. 성공적인 Gatus SQLite 복원은 주장되지 않는다.
+상태: **계획됨, 미실행**. Gatus SQLite 복원에 성공했다고 주장하지 않는다.
 
 1. 이미지/패치/설정 digest, 데이터베이스 스키마/이력 개수, 엔드포인트
    인벤토리, 체크섬을 기록한다. 검사를 일시 중단하고 Gatus를 정지한 뒤,

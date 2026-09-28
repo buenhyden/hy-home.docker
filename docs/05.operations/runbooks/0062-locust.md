@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-test 중 target health가 저하되거나, worker가 연결이 끊기거나, master UI가 실패하거나,
+test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
 사용한다. 모든 command는 저장소 루트에서 실행한다.
 

@@ -30,7 +30,7 @@ created: "2026-09-23"
    curl -s http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/health
    ```
 
-2. 파싱에 실패한 매핑은 시작 시 로그에 명시된다.
+2. 파싱에 실패한 매핑은 시작할 때 로그에 나타난다.
    `infra/09-tooling/wiremock/mappings/`의 JSON을 수정하고
    `curl -s -X POST http://127.0.0.1:${WIREMOCK_HOST_PORT:-18088}/__admin/mappings/reset`으로
    다시 로드한다.
@@ -51,8 +51,8 @@ health 응답, `__admin/mappings`의 매핑 개수, 종료 코드, 소스 커밋
 
 ## Rollback or Recovery
 
-서비스는 영속 상태를 갖지 않는다. 추적되는 이미지와 매핑으로부터 재생성하는
-것이 완전한 복구이며, 인메모리 스텁과 journal은 설계상 소실된다.
+서비스는 영속 상태를 갖지 않는다. 추적되는 이미지와 매핑에서 다시 만드는
+것이 완전한 복구이며 인메모리 스텁과 journal은 설계상 사라진다.
 
 ## Escalation
 

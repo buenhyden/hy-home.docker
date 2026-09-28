@@ -30,7 +30,7 @@ Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패�
    docker compose --profile lakehouse run --rm spark
    ```
 
-   마지막 명령은 네임스페이스를 나열하며 카탈로그 접근을 전 구간에 걸쳐
+   마지막 명령은 네임스페이스를 나열해 카탈로그 접근을 처음부터 끝까지
    증명한다. Trino의 경우:
    `docker compose --profile lakehouse logs --tail=100 trino`를 실행한 뒤
    `docker compose exec trino trino --execute "SHOW SCHEMAS FROM lakehouse"`를
@@ -39,34 +39,34 @@ Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패�
    실행한 뒤 `docker compose exec flink-jobmanager /opt/flink/bin/flink list -a`를
    실행한다. 스위트의 경우:
    `docker compose --profile lakehouse run --rm great-expectations validate <suite>`를
-   실행한다. `"success": false` 이전 줄이 실패한 expectation을 명시한다(종료
-   `1`). 종료 `2`는 아무것도 검사되지 않았음을 의미하며 stderr에 원인이
-   명시된다.
-2. 어느 wrapper에서든 `64` 종료는 `lakehouse` 시크릿이 없거나 비어 있음을
-   의미한다.
-3. `table bucket … not found`는 table bucket이 없거나 다른 계정에 속함을
-   의미한다. `seaweedfs-table-bucket`을 재실행하면 버킷, 정책, 네임스페이스를
-   멱등적으로 재생성한다(`seaweedfs-table-bucket`이 그 작업이며, 수작업으로
-   편집된 정책도 재설정한다).
+   실행한다. `"success": false` 앞 줄에 실패한 expectation이 나온다(종료
+   `1`). 종료 `2`는 아무것도 검사하지 못했다는 뜻이며 원인은 stderr에
+   나온다.
+2. 어느 wrapper에서든 `64` 종료는 `lakehouse` 시크릿이 없거나 비어 있다는
+   뜻이다.
+3. `table bucket … not found`는 table bucket이 없거나 다른 계정 소유라는
+   뜻이다. `seaweedfs-table-bucket`을 재실행하면 버킷, 정책, 네임스페이스를
+   멱등적으로 재생성한다(`seaweedfs-table-bucket`이 그 작업이며 수작업으로
+   편집한 정책도 재설정한다).
 4. `ForbiddenException`이나 `AccessDenied`는 `s3-identities.conf`의 identity
-   줄이나 table bucket 정책이 누락되었음을 의미한다. 둘 다 `seaweedfs-s3`를
+   줄이나 table bucket 정책이 누락되었다는 뜻이다. 둘 다 `seaweedfs-s3`를
    재생성하고 `seaweedfs-table-bucket`을 재실행하면 복원된다.
-5. 잘못된 쓰기의 경우, 스냅샷을 나열하고 롤백한다.
+5. 잘못된 쓰기라면 스냅샷을 나열하고 롤백한다.
 
    ```sql
    SELECT snapshot_id, committed_at, operation FROM dev.t.snapshots;
    CALL lakehouse.system.rollback_to_snapshot('dev.t', <snapshot_id>);
    ```
 
-   롤백은 스냅샷이 만료되지 않은 동안에만 동작한다. Trino에서는
+   롤백은 스냅샷이 만료되기 전에만 동작한다. Trino에서는
    `SELECT snapshot_id, committed_at FROM lakehouse.dev."t$snapshots"`와
    `ALTER TABLE lakehouse.dev.t EXECUTE rollback_to_snapshot(<snapshot_id>)`를
    사용한다.
 6. Trino의 `Failed to list views`는 카탈로그 파일에
-   `iceberg.rest-catalog.view-endpoints-enabled=false`가 누락되었음을
-   의미한다.
-7. `/opt/flink/checkpoints`에서 `AccessDeniedException`으로 실패하는 Flink
-   체크포인트는 호스트 디렉터리를 컨테이너가 쓸 수 없음을 의미한다. 운영자
+   `iceberg.rest-catalog.view-endpoints-enabled=false`가 누락되었다는
+   뜻이다.
+7. Flink 체크포인트가 `/opt/flink/checkpoints`에서 `AccessDeniedException`으로
+   실패하면 컨테이너가 호스트 디렉터리에 쓸 수 없다는 뜻이다. 운영자
    권한으로
    `install -d -m 2770 -g "${SECRETS_GID:-1000}" "$DEFAULT_DATA_DIR/flink/checkpoints"`를
    실행해 생성한다. 컨테이너는 `SECRETS_GID` 그룹을 통해 쓴다. `RESTARTING`
@@ -80,9 +80,9 @@ Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패�
 
 ## Rollback or Recovery
 
-테이블 메타데이터와 데이터는 SeaweedFS 객체이며 SeaweedFS 복구 세트로
-다루어진다(RUN-0024). filer 메타데이터를 잃으면 카탈로그를 잃는다. `dev`와
-`test`의 테이블은 재생 가능하며 별도로 백업되지 않는다.
+테이블 메타데이터와 데이터는 SeaweedFS 객체로, SeaweedFS 복구 세트에서
+다룬다(RUN-0024). filer 메타데이터를 잃으면 카탈로그를 잃는다. `dev`와
+`test`의 테이블은 재생 가능하며 따로 백업하지 않는다.
 
 ## Escalation
 

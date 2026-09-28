@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 대한 격리된 복구에 사용한다.
+승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ## Procedure
@@ -44,8 +44,8 @@ created: "2026-05-17"
 
 parse 실패는 이를 소유한 root include, leaf source 또는 shared template에서
 수정한다. 누락된 secret은 secret-management 절차를 통해 복원하며 inline
-plaintext로 대체하지 않는다. state-path 충돌은 ownership이 입증될 때까지
-변경을 중단시킨다.
+plaintext로 대체하지 않는다. state-path 충돌이 있으면 ownership이 입증될
+때까지 변경을 중단한다.
 
 실제 데이터 손실이나 손상이 발생하면 쓰기를 중단하고 엔진별 runbook을 사용한다.
 management PostgreSQL/Valkey [RUN-0028](0028-management-database.md),
@@ -77,12 +77,12 @@ rollback은 client를 이전에 유효했던 source configuration과 엔진별 r
 정적 acceptance는 root configuration parse 성공, scoped hardening 성공,
 정확한 classification/profile 문서화, 명시적인 recovery owner를 요구한다.
 날짜가 기록된 scoped evidence package가 달리 명시하지 않는 한 runtime 상태,
-암호화, 용량, restore는 입증되지 않은 상태로 유지된다.
+암호화, 용량, restore는 입증되지 않은 상태로 남는다.
 
 ## Traceability
 
 - Artifact: `RUN-0030`; parent guide: `GDE-0030`.
-- 절차는 날짜가 기록된 verification record가 실행되었음을 명시하지 않는 한 계획 상태다.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
 ## Related Documents
 

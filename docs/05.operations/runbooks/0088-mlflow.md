@@ -41,15 +41,15 @@ created: "2026-09-21"
    docker compose --profile core --profile mlops up --no-deps seaweedfs-buckets
    ```
 
-4. 두 작업이 모두 `0`으로 종료된 이후에만 서버를 시작하거나 재시작한다.
+4. 두 작업이 모두 `0`으로 끝난 뒤에만 서버를 시작하거나 재시작한다.
 
 ### Credential rotation
 
 1. 시크릿, 서비스, 재시작을 명시한 승인을 받는다.
 2. 등록된 시크릿 워크플로로 시크릿 파일을 교체한다.
-3. 데이터베이스 비밀번호의 경우 `mlflow-db-provision`을 재실행한다. 이는
+3. 데이터베이스 비밀번호의 경우 `mlflow-db-provision`을 재실행한다. 이 작업은
    MLflow 역할 비밀번호만 재설정한다. `seaweedfs_s3_mlflow_secret_key`의
-   경우 `seaweedfs-s3`를 재생성한다. 이는 시작 시 자신의 identity를 다시
+   경우 `seaweedfs-s3`를 재생성한다. 이 서비스는 시작할 때 자신의 identity를 다시
    구성한다(RUN-0024).
 4. `mlflow`를 재생성하고 헬스와 아티팩트 읽기 한 건을 확인한다.
 

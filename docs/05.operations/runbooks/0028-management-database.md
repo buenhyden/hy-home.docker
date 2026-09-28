@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 대한 격리된 복구에 사용한다.
+승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ## Procedure
@@ -40,15 +40,15 @@ docker compose --env-file .env.example --profile mng config --services
 2. 호환되는 PostgreSQL client를 사용해 cluster globals와 각 database를 복원
    가능한 logical format으로 dump한다. 실행 중인 `PGDATA`를 raw로 복사하지 않는다.
 3. source/server 및 client 버전, database 이름, 크기, dump 크기, 종료 상태,
-   해시를 기록한다. 산출물은 별도의 암호화된 destination에 저장하며 비밀번호는
+   해시를 기록한다. 산출물은 별도의 암호화된 destination에 저장하고 비밀번호는
    인자나 evidence에 남기지 않는다.
 
 ### Planned PostgreSQL isolated restore
 
 1. 애플리케이션 경로가 없는 지원되는 호환 버전의 빈 격리 target을 준비한다.
    최소 권한 restore operator를 사용한다.
-2. `pg_restore`가 source superuser가 선택한 문장을 실행할 수 있으므로 신뢰할
-   수 있는 dump source인지 검사한다. globals/role을 먼저 복원한 뒤 의존성
+2. `pg_restore`는 source superuser가 선택한 문장을 실행할 수 있으므로 dump
+   source를 신뢰할 수 있는지 검사한다. globals/role을 먼저 복원한 뒤 의존성
    순서에 맞춰 각 database를 생성하고 복원한다.
 3. role과 grant, schema object, extension 가용성, table/row 개수, 선택한
    애플리케이션 읽기를 검증한다. Keycloak, Airflow, n8n, Terrakube, SonarQube의
@@ -76,8 +76,8 @@ secret, raw payload, private resolved path는 제외한다.
 
 ## Rollback or Recovery
 
-cutover가 실패하면 consumer를 검증된 이전 HOME 엔진과 volume으로 되돌리며,
-격리된 restore는 client로부터 계속 차단된 상태로 유지한다. cutover는 owner
+cutover가 실패하면 consumer를 검증된 이전 HOME 엔진과 volume으로 되돌리고
+격리된 restore는 client로부터 계속 차단해 둔다. cutover는 owner
 승인, 최종 consistency capture, 애플리케이션 검증, 보존된 rollback window
 이후에만 실행한다.
 
@@ -85,12 +85,12 @@ cutover가 실패하면 consumer를 검증된 이전 HOME 엔진과 volume으로
 
 database 누락, dump 오류, 지원되지 않는 extension, ownership drift, AOF
 truncation/repair prompt, checksum mismatch, 또는 모호한 queue semantics에서
-중단한다. 이 문서에 설명된 recovery는 이번 문서 수정 task에서 실행되지 않았다.
+중단한다. 이 문서에 설명한 recovery는 이번 문서 수정 task에서 실행하지 않았다.
 
 ## Traceability
 
 - Artifact: `RUN-0028`; parent guide: `GDE-0028`.
-- 절차는 날짜가 기록된 verification record가 실행되었음을 명시하지 않는 한 계획 상태다.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
 ### References
 

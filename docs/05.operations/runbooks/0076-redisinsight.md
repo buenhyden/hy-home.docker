@@ -39,7 +39,7 @@ exposure, settings restore, 또는 upgrade에 사용한다.
 ### Settings restore and upgrade
 
 1. RedisInsight를 중지하고 `/data` 전체를 protected storage로 복사한다. checksum과
-   source commit을 기록하며, credential-bearing material로 보호한다.
+   source commit을 기록하고 credential-bearing material로 보호한다.
 2. production target network가 차단된 isolated instance로 복원한다. source
    deployment에 `RI_ENCRYPTION_KEY`가 있었다면 동일한 key를 사용한다. 현재 tracked
    configuration은 이를 선언하지 않는다.
@@ -60,7 +60,7 @@ Redis/Valkey data의 restore는 target engine runbook 소관이다.
 
 ## Escalation
 
-credential exposure, encrypted data에 대한 encryption key 누락, 알 수 없는 target
+credential exposure, encrypted data의 encryption key 누락, 알 수 없는 target
 authority, settings corruption, license 모호성, restore rehearsal 중 production
 target reachability가 있으면 중단한다.
 

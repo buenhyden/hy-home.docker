@@ -51,7 +51,7 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 
 Owner 결정(2026-09-22): 세 share는 `secrets/security/openbao_unseal_keys.txt`
 (SEC-003, share 한 줄당 하나, `0600`, Git-ignored, 컨테이너에 절대 mount하지 않음)에
-함께 보관한다. 이는 분리 custody의 명시적 예외다. 그 파일을 읽을 수 있는 사람은 누구나
+함께 보관한다. 이 결정은 분리 custody의 명시적 예외다. 그 파일을 읽을 수 있는 사람은 누구나
 OpenBao를 unseal할 수 있다. 대화형 터미널에서 unseal하고
 (`docker compose exec openbao bao operator unseal`) 숨겨진 프롬프트에 share 하나를
 붙여넣는다. share를 절대 인자로 전달하지 않는다. 비공개 registry는 SEC-003의 placeholder만
@@ -64,8 +64,8 @@ OpenBao를 unseal할 수 있다. 대화형 터미널에서 unseal하고
 `hy-home-renderer` AppRole은
 [renderer policy](../../../infra/03-security/openbao/config/policies/renderer.hcl)를
 사용한다. 구성된 두 KV v2 데이터 경로만 read하며, write/list/admin 권한은 부여하지 않는다.
-표준 default policy가 token 자체 갱신을 제공한다. Agent token은 24시간 갱신 가능 기간을
-가지며, SecretID는 10분 후 만료되고 1회만 사용할 수 있다. Agent는 SecretID 파일을 읽은 뒤
+표준 default policy가 token 자체 갱신을 제공한다. Agent token의 갱신 가능 기간은 24시간이며
+SecretID는 10분 후 만료되고 1회만 사용할 수 있다. Agent는 SecretID 파일을 읽은 뒤
 삭제한다. 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
 
@@ -90,8 +90,8 @@ OpenBao를 unseal할 수 있다. 대화형 터미널에서 unseal하고
 4. 승인된 재생성 전에 Compose와 Prometheus 구성을 검증한다. Prometheus만 재생성하고
    구성 로드/reload가 성공했음을 확인한 뒤, 원본 target 응답이나 로그를 기록하지 않고
    `openbao` target이 `UP`을 보고할 것을 요구한다.
-5. 먼저 교체본을 생성하고 검증한 뒤, `0600` 파일을 원자적으로 교체하고, Prometheus만
-   재생성하고, 새 target을 확인하고, accessor로 이전 token을 폐기하여 회전시킨다.
+5. 먼저 교체본을 생성하고 검증한 뒤, `0600` 파일을 원자적으로 교체하고 Prometheus만
+   재생성하고 새 target을 확인하고 accessor로 이전 token을 폐기해 회전시킨다.
    레거시 Vault root token 권한이나 scrape job을 절대 복원하지 않는다.
 
 policy 적용, token validation, 구성 로드, 또는 target health가 실패하면 이전
@@ -115,8 +115,8 @@ BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao policy list >/dev/null 2>&1 && echo 
 ```
 
 예상 결과: `2`(custody 줄 수, 개수만 세고 절대 표시하지 않음), `metrics: allowed`,
-`policy list: denied`. token 자신은 자기 자신을 lookup할 수 없다. 유일한 policy가
-`sys/metrics`이기 때문에 root로 lookup한다. root 세션은 열어 둔다. host에서 같은
+`policy list: denied`. token은 자기 자신을 lookup할 수 없다. 유일한 policy가
+`sys/metrics`이므로 root로 lookup한다. root 세션은 열어 둔다. host에서 같은
 mode와 group으로 파일을 교체하고, Prometheus만 재생성하고 target을 기다린다.
 
 ```bash
@@ -130,7 +130,7 @@ docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query
 
 예상 결과: 값 `"1"`. Prometheus는 host port를 게시하지 않으므로 점검은 컨테이너 내부에서
 실행한다. custody 파일은 `accessor=`, `expires=`, `issued=`, `policy=` 줄을 담는다.
-기존 파일을 컨테이너용으로 준비하고, root 세션에서 그것으로 폐기한 뒤, 같은 형식으로 새
+기존 파일을 컨테이너용으로 준비하고 root 세션에서 그 파일로 폐기한 뒤, 같은 형식으로 새
 파일을 작성한다.
 
 ```bash
@@ -157,8 +157,8 @@ runbook의 root 폐기 단계(`root revoked`, `Started false`)로 root 세션을
 
 Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다.
 RoleID/SecretID 파일(0600, 컨테이너 UID 100/GID 1000)을 배치하는 동안 Agent만 중단한
-뒤 시작한다. Agent가 소비하기 전에 그 동일한 일회용 SecretID로 test-login하지 않는다.
-server 재시작은 unseal ceremony가 필요하며, Agent token의 손실이나 만료 역시 새 AppRole
+뒤 시작한다. Agent가 소비하기 전에 같은 일회용 SecretID로 test-login하지 않는다.
+server를 재시작하면 unseal ceremony가 필요하고 Agent token을 잃거나 만료되어도 새 AppRole
 credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하다. 아직 수립되지 않았다면
 아래의 별도로 승인된 loopback recovery 절차를 사용한다. 일반 generate-root도 현재 API에서
 인증된 권한이 필요하다. quorum key만으로는 그 endpoint를 승인할 수 없다. 자동화 지름길로
@@ -191,7 +191,7 @@ docker logs --since "$T" openbao-agent 2>&1 | grep -ciE 'no known secret ID|perm
 unsealed 상태, Agent health, 주기적 token 갱신 능력, 정확한 read/deny 능력, 두 출력
 파일(0600) 모두를 검증한다. 출력 바이트를 승인된 source와 비공개로 비교하고 boolean
 결과만 기록한다. 원본 Docker Secret 값을 보존한다. backup 생성만으로는 restore
-readiness가 증명되지 않는다.
+readiness를 증명할 수 없다.
 
 ### OIDC Configuration Contract
 
@@ -239,10 +239,10 @@ provider 설정 맥락을 제공한다. 이 contract는 인증된 모든 사용�
 ### hy-home.k8s Kubernetes Auth
 
 Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
-`secret/platform/*`, rebuild마다의 구성과 bootstrap token은 hy-home.k8s 통합의 한
+`secret/platform/*`, rebuild별 구성과 bootstrap token은 hy-home.k8s 통합의 한
 단계다. 저장소 준비부터 cluster에서의 검증까지 이어지는 end-to-end 절차는
 [hy-home.k8s integration runbook](0096-k8s-integration.md)(OpenBao는 phase 5)에
-있다. 위의 규칙은 그대로 적용된다. 임시 root는 승인된 세션에서만 사용하고 폐기로 끝낸다.
+있다. 위 규칙은 그대로 적용된다. 임시 root는 승인된 세션에서만 사용하고 폐기로 끝낸다.
 
 ### No Administrative Identity: Explicit Break-glass Recovery
 
@@ -253,7 +253,7 @@ Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
 
 1. 이미지 ID, cluster ID, 기존의 모든 mount 식별자를 기록한다. 가능하면 보호된 스냅샷을
    보존한다. 동일한 이미지, 스토리지, seal 구성을 유지한다.
-2. 임시 Compose override에서 `disable_unauthed_generate_root_endpoints=false`를 가진
+2. 임시 Compose override에서 `disable_unauthed_generate_root_endpoints=false`로 설정한
    container-loopback listener를 `127.0.0.1:18200`에만 추가한다. 일반 listener에서는 그
    플래그를 명시적으로 true로 유지한다. 추가 port는 게시하지 않는다.
 3. `--no-deps --pull never --no-build`로 OpenBao만 재생성한 뒤 같은 cluster를 unseal한다.
@@ -274,42 +274,44 @@ Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
    실패하면 rescue custody를 보호된 상태로 유지하며 접근을 복구하고, 대기 중 loopback
    listener를 활성 상태로 두지 않는다.
 
-이는 [deprecated API](https://openbao.org/docs/api/system/generate-root/)를 명시적으로
+이 절차는 [deprecated API](https://openbao.org/docs/api/system/generate-root/)를 명시적으로
 승인된 복구 창에서만 사용한다. 일반 운영에서는
 [listener contract](https://openbao.org/docs/configuration/listener/tcp/)가 요구하는 대로
 계속 비활성 상태로 유지해야 한다.
 
 ## Evidence
 
-Record date, configuration commit, service names, exit statuses and sanitized health/resource results in the current Task. Do not capture secret values, raw environment, state, token files or message/database contents. Dated runtime results and recovery-custody handoff belong to the current Task.
+날짜, configuration commit, 서비스 이름, exit status, 정제된 health/resource 결과를 현재
+Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
+않는다. 날짜가 기록된 런타임 결과와 recovery-custody 전달은 현재 Task에 속한다.
 
 ## Rollback or Recovery
 
-Capture a protected Raft snapshot with the non-root operator identity, record its
-checksum, cluster ID, image declaration, seal configuration and custody receipt,
-then rehearse restoration on a new data volume with network egress and consumers
-disabled. Start the supported image against only the restored volume, complete the
-threshold unseal ceremony, and verify cluster ID, mounts, policies, auth methods,
-Agent authentication/rendering and denial tests without disclosing secret values.
-Destroy the isolated copy after evidence acceptance; never restore over live Raft
-data. This isolated restore remains planned and was not executed during the
-2026-09-20 correction.
+non-root operator 신원으로 보호된 Raft 스냅샷을 캡처하고, checksum, cluster ID, 이미지
+선언, seal 구성, custody 영수증을 기록한 뒤, network egress와 consumer가 비활성화된 새
+데이터 volume에서 복원을 리허설한다. 지원되는 이미지를 복원된 volume에 대해서만 시작하고,
+threshold unseal ceremony를 완료하고, secret 값을 공개하지 않고 cluster ID, mount, policy,
+auth 방식, Agent 인증/렌더링, denial 테스트를 검증한다. 증거가 승인된 후 격리 사본을
+파기한다. 실제 Raft 데이터 위에는 절대 복원하지 않는다. 이 격리 restore는 계획된 채로
+남아 있으며 2026-09-20 수정 중에는 실행되지 않았다.
 
-A snapshot contains token state at capture time: restoring a snapshot taken before
-root revocation can restore that credential state. Recheck and revoke restored
-bootstrap/recovery tokens during isolated recovery validation; take routine
-backups using the operator identity after temporary roots have been revoked. Do not initialize over existing Raft data or downgrade storage in place.
+스냅샷은 캡처 시점의 token 상태를 담는다. root 폐기 이전에 캡처한 스냅샷을 복원하면
+그 credential 상태가 복원될 수 있다. 격리 recovery validation 중 복원된 bootstrap/recovery
+token을 재확인하고 폐기한다. 임시 root가 폐기된 후 operator 신원으로 일상적인 backup을
+수행한다. 기존 Raft 데이터 위에 initialize하거나 스토리지를 제자리에서 다운그레이드하지
+않는다.
 
 ## Escalation
 
-Stop and contact @buenhyden when credentials, destructive storage changes, remote mutations or unavailable backups prevent safe progress.
+credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
+중단하고 @buenhyden에게 연락한다.
 
 ## Traceability
 
-- Governing architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
+- 관장 architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](../guides/0085-openbao.md), [Policy](../policies/0085-openbao.md), [Runbook](0085-openbao.md)
 
 ## Related Documents
 
-- [Operations index](../README.md)
+- [운영 인덱스](../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)

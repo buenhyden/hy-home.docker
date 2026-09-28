@@ -15,7 +15,7 @@ created: "2026-06-04"
 
 ## When to Use
 
-승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 대한 격리된 복구에 사용한다.
+승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ### Scope and safety
@@ -32,7 +32,7 @@ log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다
    값은 공개하지 않는다. 일반적인 Docker volume root를 스캔하거나 수정하는
    방식으로 대체하지 않는다.
 2. 식별한 mount에 대해 읽기 전용 filesystem 용량/inode evidence를 기록한다.
-   증가 원인을 owner에게 귀속시킨다: database, object store, queue,
+   증가 원인이 어느 owner에 속하는지 가린다: database, object store, queue,
    model/cache, observability retention, 또는 container runtime.
 3. 승인된 runtime observation을 통해 서비스 health와 쓰기 오류를 확인한다.
    서비스 owner가 손상 위험을 선언하면 추가 writer를 중단한다.
@@ -78,7 +78,7 @@ rollback 상태, 수정된 alert 임계값을 기록한다. 데이터 무결성�
 ## Traceability
 
 - Artifact: `RUN-0035`; parent guide: `GDE-0035`.
-- 절차는 날짜가 기록된 verification record가 실행되었음을 명시하지 않는 한 계획 상태다.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
 ## Related Documents
 

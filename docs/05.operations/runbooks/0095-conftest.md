@@ -27,15 +27,15 @@ created: "2026-09-23"
    ```
 
 2. `verify` 요약의 실패는 `infra/09-tooling/conftest/policy/`의 깨진 규칙이나
-   테스트다. 다른 무엇보다 Rego를 먼저 수정한다.
+   테스트다. 무엇보다 Rego부터 수정한다.
 3. `FAIL - <file> - compose - service <name>: …` 또는 `… - dockerfile - …`는
    선언과 규칙을 명시한다. 선언을 수정한다. 프로파일을 추가하거나, 이미지를
    고정하거나, 리터럴을 Docker secret으로 옮기거나, `--checksum`을
    추가한다.
-4. 선언이 의도된 것이면(예: 새로운 권한 필요), 정책 파일의 allowlist를
-   사유와 함께 검토된 변경으로 바꾼다.
-5. 종료 `2` 또는 `exceptions` 개수가 0보다 크면 파일이 파싱되지 않았음을
-   의미한다. 명시된 파일이 잘못된 YAML이나 Dockerfile 문법이다.
+4. 선언이 의도한 것이면(예: 새 권한 필요), 정책 파일의 allowlist를
+   사유와 함께 검토받은 변경으로 바꾼다.
+5. 종료 `2` 또는 `exceptions` 개수가 0보다 크면 파일을 파싱하지 못했다는
+   뜻이다. 명시된 파일이 잘못된 YAML이나 Dockerfile 문법이다.
 
 ## Evidence
 
@@ -43,7 +43,7 @@ created: "2026-09-23"
 
 ## Rollback or Recovery
 
-이 작업은 아무것도 변경하지 않으며 상태를 갖지 않는다.
+이 작업은 아무것도 바꾸지 않으며 상태도 갖지 않는다.
 
 ## Escalation
 

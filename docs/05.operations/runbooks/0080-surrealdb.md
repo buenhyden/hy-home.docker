@@ -16,7 +16,7 @@ created: "2026-09-19"
 
 ## Overview
 
-이 런북은 헬스 트리아지와 계획된 격리 export/import 리허설을 제공한다. 이 문서 변경을 위해 런타임, export, import, 스토리지 변경은 전혀 실행하지 않았다.
+이 런북은 헬스 트리아지와 계획된 격리 export/import 리허설을 제공한다. 이 문서를 고치면서 런타임, export, import, 스토리지 변경은 전혀 실행하지 않았다.
 
 ### Purpose
 
@@ -52,7 +52,7 @@ created: "2026-09-19"
 3. 프로덕션 port, network, volume, secret을 전혀 공유하지 않는, SurrealDB v2로 동작하는(v3는 Open Notebook과 호환되지 않음) 새 호환 target을 준비한다. import에 필요한 auth scope로 별도 테스트 credential을 생성한다.
 4. `OPTION IMPORT` 동작을 확인하고, 비어 있는 target과 명시적 namespace/database에 대해 업스트림 `surreal import` 워크플로를 실행한다.
 5. readiness, 인증된 namespace/database 접근, table, 스키마 정의, permission, record-count invariant, 대표 read-only 쿼리를 검증한다. 증거를 정제한다.
-6. import가 오류나 invariant 불일치를 보고하면 target을 부분 변경된 것으로 간주하고 volume을 폐기한 뒤 빈 상태로 재생성한다. 해당 target에서 절대 재시도하지 않는다.
+6. import가 오류나 invariant 불일치를 보고하면 target을 부분 변경된 것으로 간주하고 volume을 폐기한 뒤 빈 상태로 재생성한다. 같은 target에서는 절대 재시도하지 않는다.
 
 ### Verification Steps
 
@@ -63,7 +63,7 @@ created: "2026-09-19"
 
 ### Safe Rollback or Recovery Procedure
 
-문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 격리된 target과 전용 volume만 폐기하여 롤백한다. source와 보호된 export는 그대로 유지된다.
+문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 격리된 target과 전용 volume만 폐기해 롤백한다. source와 보호된 export는 그대로 둔다.
 
 ## Evidence
 
@@ -71,7 +71,7 @@ created: "2026-09-19"
 
 ## Rollback or Recovery
 
-위의 계획된 격리 리허설만이 restore 증거를 수립한다. 프로덕션 cutover, route 변경, secret rotation, upgrade, 스토리지 교체는 별도 승인이 필요하며 여기서는 실행하지 않았다.
+restore 증거는 위의 계획된 격리 리허설로만 확보한다. 프로덕션 cutover, route 변경, secret rotation, upgrade, 스토리지 교체는 별도 승인이 필요하며 여기서는 실행하지 않았다.
 
 ## Escalation
 

@@ -29,10 +29,10 @@ created: "2026-09-23"
 모든 단계에 적용되는 규칙:
 
 - HOME 호스트의 저장소 루트에서 작업한다.
-- 각 명령은 한 줄로 입력한다. 붙여넣기한 줄 연속(line continuation)은
-  인자를 조용히 누락시킬 수 있다.
-- secret 값은 파일이나 숨겨진 프롬프트로만 전달하며, 인자, 채팅, 로그로는
-  절대 전달하지 않는다.
+- 각 명령은 한 줄로 입력한다. 붙여넣은 줄 연속(line continuation)은
+  인자를 조용히 빠뜨릴 수 있다.
+- secret 값은 파일이나 숨겨진 프롬프트로만 전달한다. 인자, 채팅, 로그로는
+  절대 넘기지 않는다.
 - 이름, 불리언, 비-secret 필드만 기록한다.
 - 각 단계는 예상 결과로 끝난다. 결과가 일치할 때까지 다음 단계를 시작하지
   않는다.
@@ -48,7 +48,7 @@ git status --short
 git switch main && git pull --ff-only
 ```
 
-`git status`에 만들지 않은 변경 사항이 나오면, 폐기하기 전에 중단하고 그
+`git status`에 만들지 않은 변경 사항이 나오면 폐기하기 전에 멈추고 그
 소유자에게 확인한다.
 
 1.2 추적 소스를 검증한다:
@@ -77,7 +77,7 @@ bash scripts/operations/gen-secrets.sh --sync-metadata
 
 `METADATA rejected: unsafe, ambiguous, changed or unreadable input`은 private
 행이 잘못되었거나(예: 값이 여러 줄에 걸쳐 있음) registry 모드가 `0600`이
-아니라는 뜻이다; Troubleshooting을 참고한다. `--sync-metadata` 이후에는 이
+아니라는 뜻이다. Troubleshooting을 참고한다. `--sync-metadata` 이후에는 이
 점검이 반드시 0으로 종료되어야 한다.
 
 2.3 사용자 이름을 확인하고 누락된 파일을 생성한다:
@@ -92,7 +92,7 @@ stat -c '%n %s %a' secrets/observability/prometheus_api_password.txt secrets/aut
 
 ### Phase 3. Gateway and Prometheus
 
-3.1 두 consumer를 재생성한다. 단일 파일 secret은 기존 inode를 유지하므로,
+3.1 두 consumer를 재생성한다. 단일 파일 secret은 기존 inode를 유지하므로
 `INFRA-007` 변경 이후에는 Traefik을 반드시 재생성해야 한다.
 
 ```bash
@@ -101,7 +101,7 @@ docker ps --format '{{.Names}} {{.Status}}' | grep -E '^(traefik|infra-prometheu
 ```
 
 예상 결과: 둘 다 1분 이내에 `Up … (healthy)` 상태가 된다. 컨테이너가
-`Created` 상태에 머물거나 기존 컨테이너가 `Exited` 상태이면, `docker compose
+`Created` 상태에 머물거나 기존 컨테이너가 `Exited` 상태이면 `docker compose
 up -d --no-deps traefik prometheus`를 다시 실행하고 출력을 확인한다.
 
 3.2 호스트에서 Prometheus API를 검증한다. `prom_auth`는 credential을 curl의
@@ -128,7 +128,7 @@ for p in 443 3100 3200 26379; do timeout 2 bash -c "</dev/tcp/192.168.0.13/$p" &
 
 예상 결과: 해당 네트워크에 Compose 컨테이너가 없고(`k3d-hyhome-*` 노드만
 있거나, 클러스터와 네트워크가 사라진 경우 오류가 발생), 네 포트 모두 열려
-있다. 여기에 여전히 남아 있는 Compose 컨테이너는 k3d 제거 이전의 것이므로,
+있다. 여기에 아직 남아 있는 Compose 컨테이너는 k3d 제거 이전의 것이므로
 `docker network disconnect k3d-hyhome <name>`으로 분리한다(재시작은 하지
 않는다).
 
@@ -143,7 +143,7 @@ KUBECONFIG=$(k3d kubeconfig write hyhome) kubectl config view --raw --minify -o 
 
 5.1a Kiali Grafana 토큰을 같은 디렉터리에 발급한다(최초 설정, Session 3, 또는
 [재발급](#reissuing-the-kiali-grafana-token)). Grafana는 익명 접근을 허용하지
-않으므로, Kiali는 Viewer service account `k8s-kiali`의 토큰을 전송한다.
+않으므로 Kiali는 Viewer service account `k8s-kiali`의 토큰을 전송한다.
 `graf_auth`는 3.2의 `prom_auth`와 마찬가지로 admin credential을 curl의
 stdin으로 전달한다:
 
@@ -156,7 +156,7 @@ printf 'header = "Authorization: Bearer %s"\n' "$(cat /tmp/bao-k8s/grafana-kiali
 curl -s -o /dev/null -w '%{http_code}\n' --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://grafana.hy.home.arpa/api/search
 ```
 
-예상 결과: 토큰이 있으면 `200`, 없으면 `401`이다. 토큰의 수명은 90일이며,
+예상 결과: 토큰이 있으면 `200`, 없으면 `401`이다. 토큰 수명은 90일이다.
 값이 아니라 만료일만 기록한다. 이 service account는 Viewer 역할만 유지한다.
 
 5.2 호스트 네트워크에서 호스트 사용자로 임시(throwaway) client를 기동한다.
@@ -182,8 +182,8 @@ bao operator raft snapshot save /s/k8s/pre-change.snap   # or a name for the cha
 ```
 
 예상 결과: 브라우저 로그인이 성공하고 스냅샷 파일이 존재한다. 이 파일 없이는
-진행하지 않는다. `/s/k8s`는 호스트의 `/tmp/bao-k8s`이므로, 스냅샷은 Phase 8이
-이동시키기 전까지는 그곳에만 존재한다; 해당 디렉터리 전체를 절대 삭제하지
+진행하지 않는다. `/s/k8s`는 호스트의 `/tmp/bao-k8s`이므로 스냅샷은 Phase 8이
+옮기기 전까지 그곳에만 있다. 해당 디렉터리 전체는 절대 삭제하지
 않는다.
 
 5.4 **임시 root**(최초 설정, 또는 추가 애플리케이션). 승인된 root 세션과
@@ -203,10 +203,10 @@ R token lookup -format=json | grep -c '"root"'
 
 예상 결과: `1` 이상이다. 다음 `R` 명령에서 `0`이나 `403`이 나오면
 `/tmp/c/root`가 없거나 비어 있고 `bao`가 operator 로그인 토큰으로 대체된
-것이다; `generate-root -status`로 확인하고, `bao operator generate-root -cancel`로 오래된 시도를 취소한 다음 절차를 다시 실행한다.
+것이다. `generate-root -status`로 확인하고 `bao operator generate-root -cancel`로 오래된 시도를 취소한 다음 절차를 다시 실행한다.
 
-client 컨테이너는 시작된 체크아웃의 policy를 마운트한다. 적용할 policy
-변경이 병합되고 pull된 이후에만 세션을 시작한다; 그렇지 않으면 `R policy write`가 이전 파일을 적용한다.
+client 컨테이너는 자신을 시작한 체크아웃의 policy를 마운트한다. 적용할 policy
+변경이 병합되고 pull된 이후에만 세션을 시작한다. 그렇지 않으면 `R policy write`가 이전 파일을 적용한다.
 
 그다음 5.4.1(최초 설정) 또는 5.4.2(추가 애플리케이션)를 실행하고, 항상
 5.4.3을 실행한다.
@@ -261,7 +261,7 @@ bao operator generate-root -status | grep -i started
 ```
 
 예상 결과: `7200`, `root revoked`, `Started false`이다. 추가 애플리케이션
-이후에는 클러스터 구성이 변경되지 않았으므로 Phase 7로 진행한다.
+이후에는 클러스터 구성이 바뀌지 않았으므로 Phase 7로 진행한다.
 
 5.5 method를 클러스터로 지정한다:
 
@@ -297,8 +297,8 @@ exit
 
 ### Phase 6. Hand off to hy-home.k8s
 
-다음을 클러스터 소유자에게 전달한다. 두 secret 파일은 보호된 채널을
-사용한다.
+다음을 클러스터 소유자에게 전달한다. 두 secret 파일은 보호된 채널로
+보낸다.
 
 | Item | Source |
 | --- | --- |
@@ -308,7 +308,7 @@ exit
 | Gateway CA(public) | `secrets/certs/rootCA.pem` |
 | Endpoints | [가이드](../guides/0096-k8s-integration.md)의 contract 표 |
 
-이후 클러스터 소유자는 자신의 측면을 적용한다:
+이후 클러스터 소유자가 자기 쪽 변경을 적용한다:
 
 - ESO service account에 대한 `system:auth-delegator` 바인딩
 - `openbao.hy.home.arpa`, `prometheus.hy.home.arpa`, `grafana.hy.home.arpa`의 DNS → `192.168.0.13`
@@ -320,7 +320,7 @@ exit
 ### Phase 7. Verify from both sides
 
 7.1 클러스터 측에서 소유자는 ESO `SecretStore`가 유효하고 Argo CD
-`ExternalSecret`이 동기화되었음을 확인한다. ready 상태만 기록한다.
+`ExternalSecret`이 동기화되었는지 확인한다. ready 상태만 기록한다.
 
 7.2 호스트 측에서 클러스터의 샘플이 도착하는지 확인한다(3.2의 `prom_auth`
 사용):
@@ -331,7 +331,7 @@ prom_auth | curl -K - -s --resolve prometheus.hy.home.arpa:443:192.168.0.13 --ca
 
 예상 결과: 클러스터 job마다 결과가 하나씩(예: `kubernetes-pods`,
 `kubelet`) 나온다. 이는 hy-home.k8s가 metrics NodePort를 폐지하기 전에
-필요한 증거이다.
+필요한 증거다.
 
 ### Phase 8. Clean up and record
 
@@ -343,7 +343,7 @@ rmdir /tmp/bao-k8s 2>/dev/null || ls -l /tmp/bao-k8s
 ```
 
 `secrets/backup/`는 소유자 전용이며, `.gitignore`가 그 안의 `*.txt`와
-`*.snap` 파일을 제외한다. 이는 같은 호스트의 임시 사본이다: 스냅샷을
+`*.snap` 파일을 제외한다. 여기 둔 파일은 같은 호스트의 임시 사본이다. 스냅샷을
 [backup and restore policy](../policies/0021-backup-and-restore.md)가
 요구하는 별도의 오프라인 custody로 복사한 다음, 그 policy의 retention에 따라
 호스트 사본을 보관하거나 삭제한다.
@@ -354,13 +354,13 @@ share, 비밀번호, KV 값은 절대 기록하지 않는다.
 
 ### Rotating the Prometheus API credential
 
-이 비밀번호는 함께 변경되어야 하는 세 곳에 존재한다:
+이 비밀번호는 세 곳에 있고 세 곳 모두 함께 바꿔야 한다:
 
 - `OBS-013`, 파일 자체
 - `INFRA-007`, 여기서 파생된 Traefik htpasswd
 - 클러스터가 읽는 OpenBao 항목
 
-OpenBao가 갱신되지 않으면 클러스터의 remote write가 `401`을 받는다. OIDC
+OpenBao를 갱신하지 않으면 클러스터의 remote write가 `401`을 받는다. OIDC
 operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
 
 1. 기존 파일을 옮기고 새 파일을 생성한다. 기존 해시가 더 이상 검증되지
@@ -377,7 +377,7 @@ operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
    docker compose up -d --no-deps --force-recreate traefik
    ```
 
-3. operator로서 OpenBao를 갱신한 다음(5.2 client 컨테이너, 5.3 로그인)
+3. operator로 OpenBao를 갱신한 다음(5.2 client 컨테이너, 5.3 로그인)
    컨테이너를 나간다:
 
    ```sh
@@ -396,7 +396,7 @@ operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
 항목을 교체할 수 있다.
 
 1. 새 토큰 이름으로 5.1a를 실행한다(날짜 접미사로 충분하다).
-2. operator로서 OpenBao를 갱신한 다음(5.2 client 컨테이너, 5.3 로그인)
+2. operator로 OpenBao를 갱신한 다음(5.2 client 컨테이너, 5.3 로그인)
    컨테이너를 나간다:
 
    ```sh
@@ -405,8 +405,8 @@ operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
    ```
 
    예상 결과: `current_version`이 이전보다 1 높다.
-3. ESO refresh를 강제한 다음 Kiali pod를 재생성한다: Kiali는 시작할 때
-   토큰을 읽으므로, Secret만 갱신해서는 기존 토큰이 그대로 남는다.
+3. ESO refresh를 강제한 다음 Kiali pod를 재생성한다. Kiali는 시작할 때
+   토큰을 읽으므로 Secret만 갱신해서는 기존 토큰이 그대로 남는다.
 
    ```bash
    kubectl -n istio-system annotate externalsecret kiali-grafana-auth force-sync="$(date +%s)" --overwrite
@@ -416,7 +416,7 @@ operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
 
    pod를 삭제해도 Deployment spec은 변경되지 않으므로 Argo CD에는 drift가
    나타나지 않는다. Kiali를 한 번 열거나(또는 `/kiali/api/grafana`를
-   호출) 토큰 목록을 조회하여 새 토큰의 `lastUsedAt`이 가장 최근인지
+   호출) 토큰 목록을 조회해 새 토큰의 `lastUsedAt`이 가장 최근인지
    확인한다:
 
    ```bash
@@ -424,20 +424,20 @@ operator는 root 세션 없이 해당 항목을 갱신할 수 있다.
    graf_auth | curl -K - -s -o /dev/null -w '%{http_code}\n' -X DELETE --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem "https://grafana.hy.home.arpa/api/serviceaccounts/$SA/tokens/<old id>"
    ```
 
-   예상 결과: 새 토큰이 가장 최근에 사용되었고, 이전 토큰은 `200`이다.
+   예상 결과: 새 토큰이 가장 최근에 사용되었고 이전 토큰은 `200`이다.
 
 ### Setting or replacing the Slack notifications token
 
 `secret/platform/notifications`(`slack_token`)는 hy-home.k8s의
-`argocd-notifications-secret`에 값을 공급한다. 이는 COMM-004의
+`argocd-notifications-secret`에 값을 공급한다. 이 항목은 COMM-004의
 incoming-webhook URL이 아니라 Slack bot 토큰(`xoxb-`)을 사용한다. operator
-policy는 SPEC-0181부터 이 경로를 허용한다; `hy-home-operator` policy가 그
+policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy가 그
 이전인 환경에서는 먼저 root 세션 하나(5.4)로 `R policy write hy-home-operator
 /policies/operator.hcl`을 실행해야 한다.
 
-1. 호스트에서 `umask 077`으로 편집기에서 `/tmp/bao-k8s/slack.token`을
+1. 호스트에서 `umask 077` 상태로 편집기를 열어 `/tmp/bao-k8s/slack.token`을
    생성한다. 토큰을 `echo`하지 않는다.
-2. operator로서 OpenBao를 갱신한다(5.2 client 컨테이너, 5.3 로그인):
+2. operator로 OpenBao를 갱신한다(5.2 client 컨테이너, 5.3 로그인):
 
    ```sh
    bao kv put secret/platform/notifications slack_token=@/s/k8s/slack.token
@@ -460,7 +460,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다; `hy-home-operator` policy�
 
 | Symptom | Cause | Fix |
 | --- | --- | --- |
-| 2.2에서 `METADATA rejected` | private 행이 잘못됨(값이 여러 줄에 걸침) 또는 registry 모드가 `0600`이 아님 | 백업하고, 값이 해당 파일과 일치하는지 확인하고, 행을 예시 행으로 교체하고, `chmod 600` 후 2.2를 다시 실행 |
+| 2.2에서 `METADATA rejected` | private 행이 잘못됨(값이 여러 줄에 걸침) 또는 registry 모드가 `0600`이 아님 | 백업하고 값이 해당 파일과 일치하는지 확인하고 행을 예시 행으로 교체하고 `chmod 600` 후 2.2를 다시 실행 |
 | 2.3 이후 secret 파일이 0바이트 | 해당 ID가 private registry에 없음 | 먼저 2.2를 완료한 다음 2.3을 다시 실행 |
 | `curl`이 `000`을 출력 | 이름이 해석되지 않거나 gateway가 다운됨 | `--resolve` 사용; 3.1 확인 |
 | credential과 함께 `401` | Traefik이 여전히 기존 `usersFile` inode를 사용 중 | Traefik 재생성(3.1) |
@@ -469,8 +469,8 @@ policy는 SPEC-0181부터 이 경로를 허용한다; `hy-home-operator` policy�
 | `bound_service_account_namespaces can not be empty` | 줄 연속으로 인자가 누락됨 | role write를 한 줄로 다시 실행 |
 | `Must supply data or use -force` | 파라미터 없이 token create 실행 | `ttl=2h explicit_max_ttl=2h`를 포함(5.6) |
 | `bao token lookup <token>`에서 `403` | operator는 다른 토큰을 조회할 수 없음 | 토큰 자신으로 조회(5.7) |
-| bootstrap 토큰 TTL이 약 32일 | token role이 `token_ttl`/`token_max_ttl`을 무시하여 role에 상한이 없었음 | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`를 실행하고, 5.6으로 재발급한 다음, 다음 root 세션에서 role에 `token_explicit_max_ttl=2h`를 설정 |
-| `ROOT STILL VALID` | 폐기 실패 | 중단하고 에스컬레이션; 세션을 열어둠 |
+| bootstrap 토큰 TTL이 약 32일 | token role이 `token_ttl`/`token_max_ttl`을 무시하여 role에 상한이 없었음 | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`를 실행하고 5.6으로 재발급한 다음, 다음 root 세션에서 role에 `token_explicit_max_ttl=2h`를 설정 |
+| `ROOT STILL VALID` | 폐기 실패 | 중단하고 에스컬레이션, 세션은 열어 둠 |
 | 교체 이후 클러스터 remote write가 `401` | OpenBao `secret/platform/prometheus-api`가 여전히 이전 비밀번호를 보유 | 교체 3단계, 그다음 ESO refresh |
 | Kiali가 Grafana에 연결할 수 없거나 `401`을 표시 | `secret/platform/grafana-api`가 없거나, 만료되었거나, 토큰이 삭제됨 | 토큰 재발급, 그다음 ESO refresh |
 | 7.2에서 `cluster="k3d-hyhome"` 시리즈가 없음 | 클러스터 sender가 구성되지 않았거나 443에 도달할 수 없음 | 클러스터 소유자가 Alloy 로그, DNS, CA, egress를 확인 |
@@ -485,7 +485,7 @@ Phase 8에 나열된 단계 출력, 소스 커밋, "When to Use"에서 적용된
 - **Prometheus API:** `prometheus-api` router label을 제거하고 Prometheus를
   재생성한다. UI 경로는 영향을 받지 않는다.
 - **OpenBao:** 5.3의 스냅샷(`secrets/backup/openbao/` 또는 그 오프라인
-  사본)이 복구 지점이다; OpenBao 런북의 격리된 절차를 통해서만 복원한다.
+  사본)이 복구 지점이다. 복원은 OpenBao 런북의 격리된 절차로만 한다.
 - **Bootstrap 토큰:** 단독으로 폐기한다(Troubleshooting 참고).
 - **Private registry와 `.env`:** Phase 2 백업에서 복원한다.
 

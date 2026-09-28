@@ -22,7 +22,7 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 ## Procedure
 
 1. 새 Terrakube run을 동결한다. workspace/run ID, VCS ref, state key, component
-   status, apply 진행 여부를 기록한다. remote effect와 recovery owner가 파악되기
+   status, apply 진행 여부를 기록한다. remote effect와 recovery owner를 파악하기
    전에는 active apply를 중지하지 않는다.
 2. bounded state를 validate하고 점검한다.
 
@@ -60,8 +60,8 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 
 ### Upgrade
 
-coordinated backup을 완료하고, 모든 migration/release note를 검토하고, 복원된
-store에 대해 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
+coordinated backup을 완료하고 모든 migration/release note를 검토하고 복원된
+store에서 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
 시에는 새 set을 중지하고 DB와 object를 이전 image로 함께 복원한다.
 
 ## Evidence
@@ -72,7 +72,7 @@ count, release/source commit, non-applying plan 결과, 최종 상태를 기록�
 ## Rollback or Recovery
 
 이 coordinated backup/restore와 upgrade 단계는 **계획되었으나 미실행** 상태이다.
-component restart나 단일 store snapshot으로부터 recovery를 주장하지 않는다.
+component restart나 단일 store snapshot으로 recovery했다고 주장하지 않는다.
 
 ## Escalation
 

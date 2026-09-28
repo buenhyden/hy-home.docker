@@ -36,16 +36,16 @@ created: "2026-09-19"
    ```
 
    응답이 오면 서비스 endpoint가 응답한 것이다. GPU 가시성과 승인된 대표 workflow는 별도로
-   확인한다. 둘 다 이 문서에서 실행된 증거로 주장하지 않는다.
+   확인한다. 둘 다 이 문서에서 실행한 증거로 주장하지 않는다.
 
 3. 이미지나 custom-node 업데이트가 실패를 유발했다면 새 workflow 작업을 중단하고, 이전 이미지
    식별자와 custom-node revision 인벤토리를 보존한 뒤, 추적된 구성을 검토된 버전으로 되돌린다.
    첫 대응으로 model 디렉터리나 캐시를 삭제하지 않는다.
 
 4. 복구를 위해 queue 유입과 실행 중인 작업을 중단한 뒤 `models`, `custom_nodes`, `user`,
-   `input`, `output`을 하나의 일관된 집합으로 보호한다. 먼저 격리된 mount로 복원하여 예상
+   `input`, `output`을 하나의 일관된 집합으로 보호한다. 먼저 격리된 mount로 복원해 예상
    노드와 대표 workflow가 로드되는지 검증한 다음, 실제 데이터를 교체하기 전에 승인을 받는다.
-   model과 캐시 다운로드는 source, digest, license, 호환성이 기록된 경우에만 재구축 가능하다.
+   model과 캐시 다운로드는 source, digest, license, 호환성이 기록된 경우에만 다시 구축할 수 있다.
 
 ### Planned isolated restore rehearsal
 

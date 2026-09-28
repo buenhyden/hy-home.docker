@@ -36,7 +36,7 @@ created: "2026-09-19"
    저장할 plan을 생성하기 전에 validation을 실행한다. plan은 제한된 권한으로 Git 외부에
    저장한다. digest와 resource action 개수만 기록한다.
 4. `apply` 전에 중단한다. 검토자는 저장된 plan digest, account, 예상 변경 사항을 명시적
-   apply 승인에 결부해야 한다. 이 경계를 `-auto-approve`로 대체하지 않는다.
+   apply 승인과 묶어야 한다. 이 경계를 `-auto-approve`로 대체하지 않는다.
 
 ### State backup and recovery
 
@@ -44,11 +44,11 @@ created: "2026-09-19"
 2. local state의 경우 state와 backup 파일을 mode `0600`으로 보호된 디렉터리에 복사한다.
    remote state의 경우 backend의 atomic/버전 스냅샷을 우선한다. `tofu state pull`을 사용할
    경우 보호된 파일로 직접 redirect하고 화면에 표시하지 않는다.
-3. checksum, backend/workspace 식별자, 보호된 보존 상태를 검증한다. 파일 존재만으로는
-   restore 증명이 되지 않는다.
+3. checksum, backend/workspace 식별자, 보호된 보존 상태를 검증한다. 파일이 있다고 해서
+   restore가 증명되지는 않는다.
 4. 먼저 외부 provider/network 접근이 비활성화된 격리 backend에서 복원한다. lineage, serial,
    `state list`를 비공개로 비교한다.
-5. `tofu state push`는 최후 수단으로, 별도 승인된 쓰기다. 먼저 현재 remote 스냅샷을 보존하고,
+5. `tofu state push`는 최후 수단이며 별도로 승인받은 쓰기다. 먼저 현재 remote 스냅샷을 보존하고,
    승인이 정확히 그 손실 수용 사례를 명시하지 않는 한 lineage나 serial 보호를 우회하기 위해
    `-force`를 사용하지 않는다.
 

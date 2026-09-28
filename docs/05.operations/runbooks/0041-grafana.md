@@ -39,7 +39,7 @@ created: "2026-05-17"
 - [ ] `grafana` service, `infra-grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
 - [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
-- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version을 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
+- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version 변경이 필요해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
@@ -104,7 +104,7 @@ created: "2026-05-17"
    docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
    ```
 
-   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
+   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 

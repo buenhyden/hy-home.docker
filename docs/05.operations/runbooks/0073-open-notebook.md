@@ -48,13 +48,13 @@ API exposure concern, backup/restore, 또는 승인된 upgrade에 사용한다.
 3. isolated SurrealDB로 import한다. 복사된 app-data 디렉터리를 mount하고, 동일한
    encryption key를 private하게 제공한다. 외부 provider/network 호출을
    비활성화한다.
-4. notebook/source/settings count, credential decryptability를 boolean으로,
-   synthetic notebook 하나를 확인한다. 검토 후에만 promote한다.
+4. notebook/source/settings count와 synthetic notebook 하나를 확인하고 credential
+   decryptability는 boolean으로 확인한다. 검토 후에만 promote한다.
 
 ### Upgrade
 
-backup을 반복하고, release/migration/security note를 점검하고, 복원된 copy에
-대해 target image를 테스트하고, content와 credential decryption을 확인한다.
+backup을 반복하고 release/migration/security note를 점검하고 복원된 copy에서
+target image를 테스트하고 content와 credential decryption을 확인한다.
 실패 시에는 target을 중지하고 이전 image와 두 data scope를 모두 복원한다.
 
 ## Evidence
@@ -69,9 +69,8 @@ encryption key 손실은 database restore만으로는 복구되지 않는다.
 
 ## Escalation
 
-encryption key가 누락되었거나 불일치하거나, DB export가 실패하거나, 예기치 않은
-API exposure가 있거나, 민감한 content가 유출되거나, migration error가 있거나,
-알 수 없는 provider 활동이 있으면 중단한다.
+encryption key 누락·불일치, DB export 실패, 예기치 않은 API exposure, 민감한
+content 유출, migration error, 알 수 없는 provider 활동이 있으면 중단한다.
 
 ## Traceability
 

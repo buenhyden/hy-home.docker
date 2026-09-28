@@ -41,20 +41,20 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-정적 실패의 경우 이를 소유한 leaf source나 shared template을 식별하고 승인된
+정적 실패라면 이를 소유한 leaf source나 shared template을 식별하고 승인된
 범위만 수정한다. 동일한 selector를 다시 렌더링한다. 실패한 secret, health,
 resource, network, persistence 제어를 삭제해서 우회하지 않는다.
 
-runtime incident의 경우 record나 credential 없이 broker/UI 로그를 보존하고
+runtime incident라면 record나 credential 없이 broker/UI 로그를 보존하고
 mutation을 중단한 뒤 [RUN-0036](0036-kafka.md)을 사용한다. raw log-directory
 수리, offset 이동, schema 삭제, connector 재개, cluster identity 변경은
 승인된 recovery task가 필요하다.
 
 ## Evidence
 
-통과란 root configuration이 parse되고, 현재 profile이 resolve되고, scoped
-hardening script가 통과하고, native OIDC와 standard gateway routing이
-일치하고, recovery ownership이 명시됨을 의미한다. runtime, 성능, OIDC 로그인,
+통과란 root configuration이 parse되고 현재 profile이 resolve되고 scoped
+hardening script가 통과하고 native OIDC와 standard gateway routing이
+일치하고 recovery ownership이 명시되었다는 뜻이다. runtime, 성능, OIDC 로그인,
 failover, restore는 입증하지 않는다.
 
 ## Escalation
