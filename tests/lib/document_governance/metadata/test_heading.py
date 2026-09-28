@@ -1674,3 +1674,34 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             "document-language-mismatch",
             self.introduced(self.KOREAN + "\n추가 문장입니다.\n", self.KOREAN),
         )
+
+    def test_lifecycle_body_check_does_not_judge_existing_language(self) -> None:
+        from scripts.lib.document_governance.lifecycle import contract
+
+        record = metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
+            {
+                "profile_id": "requirements-package",
+                "status": "active",
+                "artifact_id": "REQ-0001",
+                "artifact_type": "requirements-package",
+                "parent_ids": [],
+                "created": "2026-08-01",
+                "updated": "2026-08-01",
+            },
+            "requirements-package",
+            frontmatter_present=True,
+        )
+        text = REQUIREMENT_TARGET_BODY + self.KOREAN
+        codes = {
+            item.code
+            for item in metadata.validate_body_contract(record, text, self.profiles, True)
+        }
+        self.assertIn("document-language-mismatch", codes)
+        self.assertNotIn(
+            "document-language-mismatch",
+            {
+                item.code
+                for item in contract._body_contract_errors(record, text, self.profiles)
+            },
+        )

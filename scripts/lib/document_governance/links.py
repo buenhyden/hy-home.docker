@@ -610,7 +610,11 @@ def _regular_target(
         # A folder with no Markdown index is still a route when it holds
         # content: a router links such a child as the folder itself
         # (SPEC-0184 rule 1). It has no headings, so a fragment cannot match.
-        if any(path.iterdir()):
+        try:
+            has_content = any(path.iterdir())
+        except OSError:
+            has_content = False
+        if has_content:
             return path, None
         return None, "link-target-not-regular"
     if not path.is_file():
@@ -1081,10 +1085,11 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
 
 _TREE_BRANCH = re.compile(r"(?:├──|└──|\|--|`--) ")
 _NAVIGATION_IGNORED_CHILDREN = frozenset({"README.md", ".gitkeep"})
+_FROZEN_README_PREFIX = "docs/98.archive/"
 
 
-def _tracked_files(root: pathlib.Path) -> frozenset[str]:
-    """Return the repository's tracked paths, or an empty set outside Git."""
+def _tracked_files(root: pathlib.Path) -> frozenset[str] | None:
+    """Return the repository's tracked paths, or None when Git cannot list them."""
 
     result = subprocess.run(
         ["git", "-C", str(root), "ls-files", "-z"],
@@ -1092,7 +1097,7 @@ def _tracked_files(root: pathlib.Path) -> frozenset[str]:
         capture_output=True,
     )
     if result.returncode:
-        return frozenset()
+        return None
     return frozenset(item for item in result.stdout.decode("utf-8").split("\0") if item)
 
 
@@ -1145,6 +1150,17 @@ def _navigation_destinations(node: DocumentNode) -> Iterable[tuple[int, str, str
             yield line_no, "", href.group(1)
 
 
+def _raw_label(lines: list[str], link: DocumentLink) -> str:
+    """Recover a label whose inline code the link parser blanked."""
+
+    if link.label.strip() or not 0 < link.line <= len(lines):
+        return link.label
+    match = re.search(
+        r"\[([^\]]*)\]\(<?" + re.escape(link.raw_target), lines[link.line - 1]
+    )
+    return match.group(1) if match else link.label
+
+
 def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
     """Keep a folder router's links to its direct children.
 
@@ -1156,6 +1172,19 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
     """
 
     tracked = _tracked_files(graph.repo_root)
+    if tracked is None:
+        # Without the tracked tree no README can be classified; passing
+        # silently would hide every router finding.
+        return sorted(
+            {
+                *graph.input_findings,
+                LinkFinding(
+                    ".",
+                    "navigation-tree-unavailable",
+                    "git ls-files failed; folder routers cannot be classified",
+                ),
+            }
+        )
     tracked_directories = {str(pathlib.PurePosixPath(path).parent) for path in tracked}
     tracked_directories |= {
         parent.as_posix()
@@ -1166,12 +1195,16 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
     for node in graph.nodes:
         if node.path.name != "README.md":
             continue
+        # Frozen Stage 98 bodies keep the contract they were preserved under.
+        if node.path.as_posix().startswith(_FROZEN_README_PREFIX):
+            continue
         directory = node.path.parent
         directory_text = "" if directory.as_posix() == "." else directory.as_posix()
         children, files = _direct_children(tracked, directory_text)
         router = bool(children) and not files
+        source_lines = node.text.splitlines()
         destinations = [
-            (link.line, link.label, link.target)
+            (link.line, _raw_label(source_lines, link), link.target)
             for link in graph.links
             if link.source == node.path
         ]
@@ -1182,16 +1215,27 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
         where = f"{node.path.as_posix()}"
         for line_no, label, target in destinations:
             target_text = target.as_posix()
-            if label.strip().endswith("/") and not (
-                target_text in tracked_directories or target.name == "README.md"
-            ):
-                findings.append(
-                    LinkFinding(
-                        f"{where}:{line_no}",
-                        "navigation-label-mismatch",
-                        f"folder label {label.strip()} resolves to {target_text}",
-                    )
+            folder_label = label.strip().strip("`*_ ")
+            if folder_label.endswith("/"):
+                folder = (
+                    target.parent
+                    if target.name == "README.md"
+                    else target
+                    if target_text in tracked_directories
+                    else None
                 )
+                wanted = folder_label.rstrip("/")
+                if folder is None or not (
+                    wanted in {".", ".."}
+                    or f"/{folder.as_posix()}".endswith(f"/{wanted}")
+                ):
+                    findings.append(
+                        LinkFinding(
+                            f"{where}:{line_no}",
+                            "navigation-label-mismatch",
+                            f"folder label {label.strip()} resolves to {target_text}",
+                        )
+                    )
             if not router or target == directory:
                 continue
             try:

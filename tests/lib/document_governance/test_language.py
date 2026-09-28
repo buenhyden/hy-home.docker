@@ -52,8 +52,8 @@ class LanguageJudgeTests(unittest.TestCase):
         self.assertIsNone(language_mismatch("# Title\n\nShort.\n", "ko"))
 
     def test_identifier_only_table_is_ignored(self) -> None:
-        table = "| ID | Path |\n| --- | --- |\n" + "".join(
-            f"| GDE-{n:04d} | `guides/{n:04d}-x.md` |\n" for n in range(40)
+        table = "| ID | Owner |\n| --- | --- |\n" + "".join(
+            f"| REQ-{n:04d}-NFR-{n:04d} | RUN-{n:04d} |\n" for n in range(120)
         )
         self.assertIsNone(language_mismatch(KOREAN + table, "ko"))
 

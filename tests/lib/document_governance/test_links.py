@@ -1987,9 +1987,61 @@ class NavigationModeTests(unittest.TestCase):
         )
         self.assertEqual(set(), self._codes(body))
 
-    def test_collection_readme_may_list_its_own_files(self) -> None:
+    def test_collection_readme_deeper_links_are_citations(self) -> None:
         body = "# X\n\n[own](own.md)\n[a](a/spec.md)\n"
         self.assertEqual(set(), self._codes(body, {"docs/x/own.md": "# Own\n"}))
+
+    def test_backticked_folder_label_on_a_leaf_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[`a/`](a/spec.md)\n")
+        )
+
+    def test_folder_label_naming_another_folder_fails(self) -> None:
+        self.assertIn(
+            "navigation-label-mismatch", self._codes("# X\n\n[`c/`](a/README.md)\n")
+        )
+
+    def test_frozen_archive_readme_is_not_judged(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        files = {
+            "docs/98.archive/completed/p/README.md": "# P\n\n[s](a/spec.md)\n",
+            "docs/98.archive/completed/p/a/spec.md": "# S\n",
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            track_repository(root)
+            findings = run_mode(
+                "navigation",
+                build_document_graph([root / name for name in files], repo_root=root),
+            )
+        self.assertEqual([], [f for f in findings if f.code.startswith("navigation")])
+
+    def test_untracked_tree_is_reported_not_passed(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            run_mode,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            (root / "docs/x/a").mkdir(parents=True)
+            (root / "docs/x/README.md").write_text("# X\n", encoding="utf-8")
+            codes = {
+                f.code
+                for f in run_mode(
+                    "navigation",
+                    build_document_graph([root / "docs/x/README.md"], repo_root=root),
+                )
+            }
+        self.assertEqual({"navigation-tree-unavailable"}, codes)
 
     def test_placeholder_only_directory_is_a_router_child(self) -> None:
         self.assertEqual(set(), self._codes("# X\n\n[c](c/)\n"))

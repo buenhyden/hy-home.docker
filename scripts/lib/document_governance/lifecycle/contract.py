@@ -391,6 +391,20 @@ KNOWN_FINDING_CODES = frozenset(
 )
 
 
+# SPEC-0184 rule 4: the declared-language judgment applies to added or changed
+# documents until P2 migrates the corpus, so a lifecycle check that validates an
+# existing body (a replacement, a partition Plan) must not inherit it.
+_CHANGED_ONLY_BODY_CODES = frozenset({"document-language-mismatch"})
+
+
+def _body_contract_errors(record: Any, text: str, profiles: Any) -> list[Any]:
+    return [
+        finding
+        for finding in metadata.validate_body_contract(record, text, profiles, True)
+        if finding.code not in _CHANGED_ONLY_BODY_CODES
+    ]
+
+
 def _finding(
     path: str | pathlib.PurePath,
     code: str,
@@ -1483,7 +1497,7 @@ def _resolve_canonical_replacement(
         finding
         for finding in (
             *metadata.validate_record(candidate, profiles, manifest),
-            *metadata.validate_body_contract(candidate, text, profiles, True),
+            *_body_contract_errors(candidate, text, profiles),
         )
         if finding.severity == "error"
     ]
@@ -1995,7 +2009,7 @@ def _surface_partition_plan_findings(
                 profiles,
                 metadata.build_manifest(current_records),
             ),
-            *metadata.validate_body_contract(plan_record, text, profiles, True),
+            *_body_contract_errors(plan_record, text, profiles),
         )
         if finding.severity == "error"
     ]
@@ -2486,7 +2500,7 @@ def _partition_plan_findings(
                 profiles,
                 metadata.build_manifest(current_records),
             ),
-            *metadata.validate_body_contract(plan_record, text, profiles, True),
+            *_body_contract_errors(plan_record, text, profiles),
         )
         if finding.severity == "error"
     ]
