@@ -74,14 +74,24 @@ every acceptance criterion of [SPEC-0184](../spec.md).
   part of `main`. The W9 working tree matched the stash. Two humanize inputs
   had gone stale after the merge and were packed again before the last
   batches ran.
-- The merge commit has the branch as its first parent. The Registry's merged
+- The merge commit had the branch as its first parent. The Registry's merged
   allocation lineage accepts identities only through a merge whose first
   parent descends from the base. `main` reserved ADR-0044 and SPEC-0184 for
   this branch (SPEC-0185 Task, Inputs), yet `check-changed` against `main`
-  reports `identity-reuse-forbidden` for `adr` and `spec`. A probe commit with
-  the same tree and `main` as first parent passed with 0 violations. That
-  commit was not applied to the branch. Re-parenting the local merge is left
-  to the owner.
+  reported `identity-reuse-forbidden` for `adr` and `spec`.
+- 2026-09-28: on the owner's instruction, the merge was rebuilt with `main` as
+  first parent (`841b47a99`, same tree as `fc11ae3f9`). The eight later commits
+  were replayed onto it with identical trees. `check-changed` against `main`
+  then reported 0 violations. `backup/readme-contract-pre-reparent` keeps the
+  old history. The owner's stash was dropped after its commit was kept as
+  `backup/stash-pre-main-integration`, because 35 of its 59 files differ from
+  both HEAD and `main`.
+- 2026-09-28: the owner resolved W14 M6 and M7 on this branch. The tree parser
+  now reads each diagram's own indent width (`2fccbb236`). A new
+  `incident-year-readme` profile lets `docs/05.operations/incidents/2026/`
+  carry a Korean README that routes to its incident folders (`c781ef79f`).
+  The owner chose local `main` integration for lifecycle promotion, and
+  separate packages for P3 and then P2, with approval gates.
 
 ## Verification Evidence
 
@@ -91,14 +101,14 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W1 | PASS: `ProfileLanguageTests` and `test_language` red, then green (`e18c2d8fc`) | `docs/99.templates/registry.json` |
-| 2 | W2, W13 | PASS: `NavigationModeTests` through `run_mode`; `--mode navigation` 964 documents, failures 0 (`19d1a32b0`) | `.agents/governance/documentation-protocol.md` |
-| 3 | W1, W3, W13 | PASS: `LanguageModeTests` and `DeclaredLanguageBodyTests`; `--mode language` 964 documents, failures 0 (`19d1a32b0`) | `.agents/governance/documentation-protocol.md` |
+| 2 | W2, W13 | PASS: `NavigationModeTests` through `run_mode`; `--mode navigation` 964 documents, failures 0 (`8e661bc00`) | `.agents/governance/documentation-protocol.md` |
+| 3 | W1, W3, W13 | PASS: `LanguageModeTests` and `DeclaredLanguageBodyTests`; `--mode language` 964 documents, failures 0 (`8e661bc00`) | `.agents/governance/documentation-protocol.md` |
 | 4 | W6 | PASS: 26 of 26 catalog lines identical after the move; archive tests 169 OK; lifecycle violations 0 (`fe050df6d`) | `docs/98.archive/retention-catalog.md` |
 | 5 | W4 | PASS: the directory-route test fails on the old README (4 != 37) and passes on the new one (`cbbce9254`) | `docs/03.specs/README.md` |
 | 6 | W5 | PASS: `TemplateRoutingTests` red, then green (`cbbce9254`) | `docs/99.templates/registry.json` |
 | 7 | W7 | PASS: hook-rule, heading, and Registry tests OK; renderer parity `drift=0` (`3774bb73d`) | `.agents/governance/documentation-protocol.md` |
-| 8 | W8, W9, W10, W11, W12 | PASS: every README passes `--mode language` and `--mode navigation`; humanize gates OK or known false-positive WARN (`2c358eb51`, `7cefdaed8`, `acac7bd9e`, `7e3e08185`, `be949f338`) | each README |
-| 9 | W13 | PARTIAL: `tests/lib` 936 OK at W13 and `tests/lib/document_governance` 736 OK after the W14 fixes; `tests/validation` 675 OK (23 skipped) before and after; links `--mode all` failures 0; 11 of 12 changed-profile members return 0. Metadata `check-changed` fails only on the merge-order identity finding in the Work Log. `check-conftest-policy.sh` was not run (blocked) | N/A: gate evidence only |
+| 8 | W8, W9, W10, W11, W12 | PASS: every README passes `--mode language` and `--mode navigation`; humanize gates OK or known false-positive WARN (`2c358eb51`, `37b48b702`, `acac7bd9e`, `7e3e08185`, `be949f338`) | each README |
+| 9 | W13 | PARTIAL: `tests/lib` 936 OK at W13 and `tests/lib/document_governance` 736 OK after the W14 fixes; `tests/validation` 675 OK (23 skipped) before and after; links `--mode all` failures 0; every changed-profile member except `check-conftest-policy.sh` returns 0, including metadata `check-changed` after the merge was rebuilt. `check-conftest-policy.sh` was not run (blocked) | N/A: gate evidence only |
 
 ## Review Evidence
 
@@ -131,7 +141,7 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
     the identifier-table test fails when identifier stripping is removed.
   - M8 kept: SPEC-0179 defines the `보관 승인 대기` marker as a derived
     navigation label, not a lifecycle status.
-  - M4, M6, and M7 are deferred (see Deferred Items).
+  - M4 goes to P2. M6 and M7 were fixed afterwards at the owner's request.
 
 ## Commit Ledger
 
@@ -151,14 +161,16 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 - `2c358eb51` W8: repository-surface READMEs in Korean.
 - `7e3e08185` W11: gateway through messaging READMEs in Korean.
 - `be949f338` W12: observability through laboratory READMEs in Korean.
-- `fc11ae3f9` owner merge of `main`.
-- `7cefdaed8` W9: `docs/` READMEs in Korean.
-- `eaba19325` W12 follow-up: drop the duplicate `pushgateway` token.
-- `b99e086a3` register `test_language`; pin the Korean scripts README.
-- `19d1a32b0` W13: activate the navigation and language link modes.
-- `5c9ff4731` W14 fix: tighten the navigation and language checks.
-- `de5e04728` W14 fix: collection README deeper links are citations.
-- `ec864c360` W14 fix: restore the script purposes and OpenBao policy scopes.
+- `841b47a99` owner merge of `main`, rebuilt with `main` as first parent.
+- `37b48b702` W9: `docs/` READMEs in Korean.
+- `f977b1bff` W12 follow-up: drop the duplicate `pushgateway` token.
+- `ab8e279d0` register `test_language`; pin the Korean scripts README.
+- `8e661bc00` W13: activate the navigation and language link modes.
+- `5aeaf6432` W14 fix: tighten the navigation and language checks.
+- `5b3b489e4` W14 fix: collection README deeper links are citations.
+- `9ce4304a6` W14 fix: restore the script purposes and OpenBao policy scopes.
+- `2fccbb236` read navigation tree depth from each diagram's own indent.
+- `c781ef79f` route the 2026 incident records through a year README.
 
 ## Rulings
 
@@ -184,11 +196,5 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 - P2: non-README language migration and full language enforcement,
   including `.github/repository-surface.md`, which the `repository-readme`
   profile declares `ko` but which reads in English (W14 M4).
-- The `navigation` tree parser reads depth in 4-column steps. A 3-space tree
-  can pass falsely (W14 M6).
-- `docs/05.operations/incidents/README.md` routes to `2026/`, which has no
-  README, so readers land on a bare directory listing (W14 M7).
-- The owner decides whether to re-parent the local merge `fc11ae3f9` with
-  `main` as its first parent (Work Log), or to renumber ADR-0044 and SPEC-0184.
 - P3: dead `load_artifact_contract`, the foundation-wave branch in
   `lifecycle/contract.py`, and any transitional base read added in W6.
