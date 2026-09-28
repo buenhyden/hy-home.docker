@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 layer: "specs"
 artifact_id: "SPEC-0184-TSK-0001"
 parent_ids:
@@ -64,23 +64,41 @@ every acceptance criterion of [SPEC-0184](../spec.md).
   `check-conftest-policy.sh`. That member runs `docker compose run` and `down`,
   which this request forbids, and `run-ci-gate.py` offers no member exclusion.
   Every other member returned 0 after W3, W4 and W5, W6, and W7.
+- W8 through W12: area implementers rewrote each README in Korean and applied
+  the navigation rule. The controller reviewed each area, ran a conservative
+  `humanize-korean` pass on every batch of at most about 25K characters, and
+  committed the area.
+- 2026-09-28: the owner merged `main` (`7d46c4e56`) into the branch at
+  `fc11ae3f9` and put the W9 working state in a stash. `main` had adopted the
+  Standard 3.0 Retention Catalog record independently, so the W6 move is now
+  part of `main`. The W9 working tree matched the stash. Two humanize inputs
+  had gone stale after the merge and were packed again before the last
+  batches ran.
+- The merge commit has the branch as its first parent. The Registry's merged
+  allocation lineage accepts identities only through a merge whose first
+  parent descends from the base. `main` reserved ADR-0044 and SPEC-0184 for
+  this branch (SPEC-0185 Task, Inputs), yet `check-changed` against `main`
+  reports `identity-reuse-forbidden` for `adr` and `spec`. A probe commit with
+  the same tree and `main` as first parent passed with 0 violations. That
+  commit was not applied to the branch. Re-parenting the local merge is left
+  to the owner.
 
 ## Verification Evidence
 
 W1 through W7 carry red-then-green evidence recorded in the commits below.
-Final gate evidence is recorded at W13.
+Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W1 | PASS: `ProfileLanguageTests` and `test_language` red, then green (`e18c2d8fc`) | `docs/99.templates/registry.json` |
-| 2 | W2, W13 | NOT_RUN | `.agents/governance/documentation-protocol.md` |
-| 3 | W1, W3, W13 | NOT_RUN | `.agents/governance/documentation-protocol.md` |
+| 2 | W2, W13 | PASS: `NavigationModeTests` through `run_mode`; `--mode navigation` 964 documents, failures 0 (`19d1a32b0`) | `.agents/governance/documentation-protocol.md` |
+| 3 | W1, W3, W13 | PASS: `LanguageModeTests` and `DeclaredLanguageBodyTests`; `--mode language` 964 documents, failures 0 (`19d1a32b0`) | `.agents/governance/documentation-protocol.md` |
 | 4 | W6 | PASS: 26 of 26 catalog lines identical after the move; archive tests 169 OK; lifecycle violations 0 (`fe050df6d`) | `docs/98.archive/retention-catalog.md` |
 | 5 | W4 | PASS: the directory-route test fails on the old README (4 != 37) and passes on the new one (`cbbce9254`) | `docs/03.specs/README.md` |
 | 6 | W5 | PASS: `TemplateRoutingTests` red, then green (`cbbce9254`) | `docs/99.templates/registry.json` |
-| 7 | W7 | NOT_RUN | `.agents/governance/documentation-protocol.md` |
-| 8 | W8, W9, W10, W11, W12 | NOT_RUN | each README |
-| 9 | W13 | NOT_RUN | N/A: gate evidence only |
+| 7 | W7 | PASS: hook-rule, heading, and Registry tests OK; renderer parity `drift=0` (`3774bb73d`) | `.agents/governance/documentation-protocol.md` |
+| 8 | W8, W9, W10, W11, W12 | PASS: every README passes `--mode language` and `--mode navigation`; humanize gates OK or known false-positive WARN (`2c358eb51`, `7cefdaed8`, `acac7bd9e`, `7e3e08185`, `be949f338`) | each README |
+| 9 | W13 | PARTIAL: `tests/lib` 936 OK at W13 and `tests/lib/document_governance` 736 OK after the W14 fixes; `tests/validation` 675 OK (23 skipped) before and after; links `--mode all` failures 0; 11 of 12 changed-profile members return 0. Metadata `check-changed` fails only on the merge-order identity finding in the Work Log. `check-conftest-policy.sh` was not run (blocked) | N/A: gate evidence only |
 
 ## Review Evidence
 
@@ -95,6 +113,26 @@ Final gate evidence is recorded at W13.
   record. `.claude/output-styles/hy-home.md` is an authored native file, and
   renderer parity passed (`drift=0`).
 
+- W14, fresh whole-branch reviewer, read-only: 0 critical, 4 important,
+  8 minor. One fix pass:
+  - I1 fixed: lifecycle checks that validate an existing body (canonical
+    replacement, partition Plan) no longer inherit `document-language-mismatch`.
+  - I2 fixed: protocol, ADR-0044, and spec rule 3 now say that a deeper link
+    from a collection README is a citation. The test name states that intent.
+  - I3 fixed: the per-script purpose table in `scripts/README.md` and the
+    OpenBao policy scopes are restored in Korean. Both directories hold direct
+    files, so they are collection READMEs.
+  - I4 fixed: a failed `git ls-files` now yields `navigation-tree-unavailable`
+    instead of a silent pass.
+  - M1 fixed: backticked folder labels are judged, and a label must name the
+    folder it resolves to. M2 fixed: a directory that cannot be read is not a
+    route. M3 fixed: frozen Stage 98 READMEs are not judged by `navigation`.
+    M5 fixed: spec rule 4 matches the token stripping `language.py` does, and
+    the identifier-table test fails when identifier stripping is removed.
+  - M8 kept: SPEC-0179 defines the `보관 승인 대기` marker as a derived
+    navigation label, not a lifecycle status.
+  - M4, M6, and M7 are deferred (see Deferred Items).
+
 ## Commit Ledger
 
 - `4b2f2ca9e` docs(specs): Add SPEC-0184 and ADR-0044 for README navigation
@@ -106,6 +144,21 @@ Final gate evidence is recorded at W13.
 - `cbbce9254` W4 and W5: route the Stage 03 and template indexes by
   directory.
 - `fe050df6d` W6: move the Retention Catalog into its own record.
+- `3774bb73d` W7: state the document language priority and README
+  navigation once.
+- `b64ec0afa` W2 fix: accept a folder route to a child with no Markdown index.
+- `acac7bd9e` W10: governance and provider READMEs in Korean.
+- `2c358eb51` W8: repository-surface READMEs in Korean.
+- `7e3e08185` W11: gateway through messaging READMEs in Korean.
+- `be949f338` W12: observability through laboratory READMEs in Korean.
+- `fc11ae3f9` owner merge of `main`.
+- `7cefdaed8` W9: `docs/` READMEs in Korean.
+- `eaba19325` W12 follow-up: drop the duplicate `pushgateway` token.
+- `b99e086a3` register `test_language`; pin the Korean scripts README.
+- `19d1a32b0` W13: activate the navigation and language link modes.
+- `5c9ff4731` W14 fix: tighten the navigation and language checks.
+- `de5e04728` W14 fix: collection README deeper links are citations.
+- `ec864c360` W14 fix: restore the script purposes and OpenBao policy scopes.
 
 ## Rulings
 
@@ -121,9 +174,21 @@ Final gate evidence is recorded at W13.
 - The area implementers run in parallel on disjoint file lists and never
   touch the Git index. The controller runs the `humanize-korean` pass and
   commits each area.
+- Humanize batches are at most about 25K characters, one conservative
+  monolith call each, without chunking. The shim split W8 into 121 chunks.
+- The Copyright and MIT footers removed from 10 `infra/04-data` READMEs stay
+  removed. The dispatch asked for it, and no LICENSE file backs the claim.
 
 ## Deferred Items
 
-- P2: non-README language migration and full language enforcement.
+- P2: non-README language migration and full language enforcement,
+  including `.github/repository-surface.md`, which the `repository-readme`
+  profile declares `ko` but which reads in English (W14 M4).
+- The `navigation` tree parser reads depth in 4-column steps. A 3-space tree
+  can pass falsely (W14 M6).
+- `docs/05.operations/incidents/README.md` routes to `2026/`, which has no
+  README, so readers land on a bare directory listing (W14 M7).
+- The owner decides whether to re-parent the local merge `fc11ae3f9` with
+  `main` as its first parent (Work Log), or to renumber ADR-0044 and SPEC-0184.
 - P3: dead `load_artifact_contract`, the foundation-wave branch in
   `lifecycle/contract.py`, and any transitional base read added in W6.
