@@ -61,7 +61,7 @@ created: "2025-11-12"
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Observability Tier (06-observability) 폴더 색인. 서비스: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`, `gatus`, `pushgateway`; 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨 |
+| Purpose | Observability Tier (06-observability) 폴더 색인. 서비스: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`, `gatus`; 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨 |
 | Config files | `docker-compose.yml` |
 | Config values | 비밀이 아닌 S3 액세스 키 ID(`loki`, `tempo`), Grafana 서버/OAuth 설정, 서비스 포트를 사용함. 프로필: `obs`, `dev` |
 | Compose linkage | 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, `CADVISOR_MEM_LIMIT`가 과거에는 별도 파일이었던 토폴로지를 선택함. |
