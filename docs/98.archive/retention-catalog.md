@@ -1,10 +1,10 @@
 ---
 title: "Retention Catalog"
-version: "1.1.0"
+version: "1.1.1"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 ---
 
 # Retention Catalog
@@ -28,6 +28,9 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0187-document-language-migration/` | completed | ADR-0044 | `9143ad8a3f93b63b3b07991901d803a18a36060b:docs/03.specs/0187-document-language-migration` |
+| `completed/03.specs/0186-document-governance-dead-code-removal/` | completed | no durable contract | `a406430b2da388b13c863698d438cfd44c3151c9:docs/03.specs/0186-document-governance-dead-code-removal` |
+| `completed/03.specs/0184-readme-navigation-and-language-contract/` | completed | ADR-0044 | `ac15a6f84f61c666b90926418bc697da6e0687af:docs/03.specs/0184-readme-navigation-and-language-contract` |
 | `completed/03.specs/0185-agentic-research-refresh/` | completed | RES-0002 | `e9e65f1087a4adc797c112b4b8f19eb9ac1bbb2e:docs/03.specs/0185-agentic-research-refresh` |
 | `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
 | `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
