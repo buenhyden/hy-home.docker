@@ -489,6 +489,12 @@
           "cancelled",
           "superseded",
           "retired"
+        ],
+        "incident-year-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
         ]
       }
     },
@@ -1966,6 +1972,41 @@
         ".agents/README.md": {
           "layer": "agent-governance"
         }
+      }
+    },
+    {
+      "id": "incident-year-readme",
+      "type": "operation/incident-year-readme",
+      "language": "ko",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/05.operations/incidents/{year:4}/README.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated",
+        "layer"
+      ],
+      "optional_frontmatter": [
+        "created",
+        "generated_by"
+      ],
+      "required_sections": [
+        "Overview",
+        "Structure",
+        "Related Documents"
+      ],
+      "optional_sections": [],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "frontmatter_values": {
+        "layer": "operations"
       }
     },
     {
@@ -4408,6 +4449,7 @@
     "governance-skill": "living",
     "guide": "living",
     "incident": "incident",
+    "incident-year-readme": "living",
     "migration": "sealed-record",
     "package-readme": "living",
     "plan": "plan",

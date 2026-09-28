@@ -379,7 +379,16 @@ def validate_stable_identity(
                 "<year>/inc-####-<slug>/<role>.md",
             )
         )
-    dated_parts = () if valid_incident_route else find_dated_identity_parts(path)
+    # The incident year folder's own README routes that year's records.
+    valid_year_readme = artifact_type == "operation/incident-year-readme" and (
+        re.fullmatch(r"docs/05\.operations/incidents/\d{4}/README\.md", str(path))
+        is not None
+    )
+    dated_parts = (
+        ()
+        if valid_incident_route or valid_year_readme
+        else find_dated_identity_parts(path)
+    )
     for part in dated_parts:
         findings.append(TaxonomyFinding("dated-path-identity", str(path), part))
     return findings

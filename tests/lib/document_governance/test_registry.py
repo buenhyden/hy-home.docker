@@ -2584,6 +2584,7 @@ class ProfileLanguageTests(unittest.TestCase):
             "repository-readme",
             "package-readme",
             "reference-category-readme",
+            "incident-year-readme",
             "research",
             "audit",
             "data",
