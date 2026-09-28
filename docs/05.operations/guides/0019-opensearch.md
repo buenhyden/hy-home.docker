@@ -95,7 +95,6 @@ created: "2026-05-10"
 - `test -f infra/04-data/analytics/opensearch/docker-compose.yml`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-
 ## Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0019-opensearch.md)을 따른다.

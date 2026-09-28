@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import stat
 import re
+import stat
 from pathlib import Path, PurePosixPath
 
 EDIT_TOOLS = frozenset({"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"})

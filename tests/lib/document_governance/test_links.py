@@ -1946,7 +1946,9 @@ class NavigationModeTests(unittest.TestCase):
                 path.write_text(text, encoding="utf-8")
             track_repository(root)
             documents = [root / name for name in files if name.endswith(".md")]
-            return run_mode("navigation", build_document_graph(documents, repo_root=root))
+            return run_mode(
+                "navigation", build_document_graph(documents, repo_root=root)
+            )
 
     def _codes(self, readme: str, extra: dict[str, str] | None = None) -> set[str]:
         return {
@@ -2081,7 +2083,7 @@ class LanguageModeTests(unittest.TestCase):
                 path.write_text(text, encoding="utf-8")
             findings = run_mode(
                 "language",
-                build_document_graph([root / name for name in files], repo_root=root)
+                build_document_graph([root / name for name in files], repo_root=root),
             )
         result: dict[str, set[str]] = {}
         for finding in findings:
@@ -2116,7 +2118,11 @@ class LanguageModeTests(unittest.TestCase):
             self._codes({"docs/05.operations/guides/0001-x.md": self.ENGLISH}),
         )
         self.assertEqual(
-            {"docs/02.architecture/decisions/0001-x.md": {"document-language-mismatch"}},
+            {
+                "docs/02.architecture/decisions/0001-x.md": {
+                    "document-language-mismatch"
+                }
+            },
             self._codes({"docs/02.architecture/decisions/0001-x.md": self.KOREAN}),
         )
         self.assertEqual(

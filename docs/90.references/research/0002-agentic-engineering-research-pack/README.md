@@ -125,7 +125,6 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 서로 대체할 수 없는 증거다. 이는 연결된 멤버들의 출처를 종합한 연구자의
 해석이며 새 정책이나 내부 평가 결과가 아니다.
 
-
 ### Historical workspace observations — not reassessed in this refresh
 
 아래 기록은 이전 관찰의 한국어 보존본입니다. 현재 주장이나 새 승인으로 읽지 않으며, 현재 외부 연구는 위의 갱신된 member 탐색을 따릅니다.

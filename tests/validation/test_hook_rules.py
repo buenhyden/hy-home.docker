@@ -138,7 +138,9 @@ class TrackedRuleTests(unittest.TestCase):
         # A governance README is Korean by rule (SPEC-0184): no warning,
         # at the top of `.agents/` and below it.
         for readme in (".agents/README.md", ".agents/governance/providers/README.md"):
-            warnings, _ = hook_rules.evaluate(self.rules, edits=((readme, "한글 본문"),))
+            warnings, _ = hook_rules.evaluate(
+                self.rules, edits=((readme, "한글 본문"),)
+            )
             self.assertNotIn(
                 "warn-korean-in-governance", {rule.name for rule in warnings}
             )

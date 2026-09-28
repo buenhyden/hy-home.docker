@@ -380,7 +380,10 @@ class ScriptManifestTests(unittest.TestCase):
         text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
         compact = re.sub(r"\s+", " ", text)
         self.assertIn("`mutation: runtime` 행을 호출하지 않습니다", compact)
-        self.assertIn("non-mutating check 옵션 없이 default-write generator를 호출하지 않습니다", compact)
+        self.assertIn(
+            "non-mutating check 옵션 없이 default-write generator를 호출하지 않습니다",
+            compact,
+        )
         self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
 
     def test_evals_readme_states_its_manifest_registration_rule(self) -> None:

@@ -473,7 +473,9 @@ class IndexMembershipTests(unittest.TestCase):
             "0002-agentic-engineering-research-pack",
         ):
             with self.subTest(target=target):
-                findings = self._findings(f"# Research Packages\n\n[RES-0002]({target})\n")
+                findings = self._findings(
+                    f"# Research Packages\n\n[RES-0002]({target})\n"
+                )
                 self.assertEqual([], findings)
 
     def test_every_registered_index_governs_at_least_one_package(self) -> None:

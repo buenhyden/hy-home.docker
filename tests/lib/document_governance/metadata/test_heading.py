@@ -1695,7 +1695,9 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
         text = REQUIREMENT_TARGET_BODY + self.KOREAN
         codes = {
             item.code
-            for item in metadata.validate_body_contract(record, text, self.profiles, True)
+            for item in metadata.validate_body_contract(
+                record, text, self.profiles, True
+            )
         }
         self.assertIn("document-language-mismatch", codes)
         self.assertIn(
