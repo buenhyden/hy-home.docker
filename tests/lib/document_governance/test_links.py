@@ -1933,7 +1933,7 @@ class NavigationModeTests(unittest.TestCase):
     def _findings(self, readme: str, extra: dict[str, str] | None = None):
         from scripts.lib.document_governance.links import (
             build_document_graph,
-            check_navigation,
+            run_mode,
         )
 
         files = dict(self.ROUTER_TREE, **(extra or {}))
@@ -1946,7 +1946,7 @@ class NavigationModeTests(unittest.TestCase):
                 path.write_text(text, encoding="utf-8")
             track_repository(root)
             documents = [root / name for name in files if name.endswith(".md")]
-            return check_navigation(build_document_graph(documents, repo_root=root))
+            return run_mode("navigation", build_document_graph(documents, repo_root=root))
 
     def _codes(self, readme: str, extra: dict[str, str] | None = None) -> set[str]:
         return {
@@ -2010,7 +2010,7 @@ class LanguageModeTests(unittest.TestCase):
     def _codes(self, files: dict[str, str]) -> dict[str, set[str]]:
         from scripts.lib.document_governance.links import (
             build_document_graph,
-            check_language,
+            run_mode,
         )
 
         with tempfile.TemporaryDirectory() as temp:
@@ -2019,7 +2019,8 @@ class LanguageModeTests(unittest.TestCase):
                 path = root / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(text, encoding="utf-8")
-            findings = check_language(
+            findings = run_mode(
+                "language",
                 build_document_graph([root / name for name in files], repo_root=root)
             )
         result: dict[str, set[str]] = {}

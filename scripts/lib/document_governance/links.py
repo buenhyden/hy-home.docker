@@ -1358,6 +1358,8 @@ MODE_HANDLERS = {
     "alignment": check_alignment,
     "entrypoint": check_entrypoint,
     "commands": check_commands,
+    "navigation": check_navigation,
+    "language": check_language,
 }
 
 
