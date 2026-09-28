@@ -47,7 +47,8 @@ class ChildRecorder:
         self.calls.append((argv, kwargs))
         if self.results:
             return self.results.pop(0)
-        return subprocess.CompletedProcess(argv, 0, b"", b"")
+        stderr = b"Ran 1 test in 0.001s\n\nOK\n" if "unittest" in argv else b""
+        return subprocess.CompletedProcess(argv, 0, b"", stderr)
 
 
 class CiGateAdapterTests(unittest.TestCase):
@@ -76,11 +77,15 @@ class CiGateAdapterTests(unittest.TestCase):
         results: list[subprocess.CompletedProcess[bytes]] | None = None,
     ) -> tuple[int, ChildRecorder]:
         recorder = ChildRecorder(results)
-        with mock.patch.object(
-            adapters,
-            "_run_child",
-            side_effect=recorder,
-            create=True,
+        with (
+            mock.patch.object(
+                adapters,
+                "_run_child",
+                side_effect=recorder,
+                create=True,
+            ),
+            mock.patch.object(sys, "stdout", io.StringIO()),
+            mock.patch.object(sys, "stderr", io.StringIO()),
         ):
             result = adapters.run_adapter(
                 self.root,
@@ -163,6 +168,152 @@ class CiGateAdapterTests(unittest.TestCase):
             ("bash", "-n", "evals/a.sh", "scripts/b.sh", ".claude/hooks/c.sh"),
             recorder.calls[1][0],
         )
+
+    def test_run_unittest_rejects_zero_tests_and_missing_execution_summary(self):
+        for output in (b"Ran 0 tests in 0.000s\n\nOK\n", b"", b"OK\n"):
+            with self.subTest(output=output):
+                with self.assertRaises(adapters.AdapterError) as caught:
+                    self.run_with_recorder(
+                        ("run-unittest", "tests.validation.test_one", "-v"),
+                        results=[subprocess.CompletedProcess((), 0, b"", output)],
+                    )
+                self.assertEqual("ci-gate-adapter-test-count", caught.exception.code)
+        code, _ = self.run_with_recorder(
+            ("run-unittest", "tests.validation.test_one", "-v"),
+            results=[subprocess.CompletedProcess((), 2, b"", b"load failure")],
+        )
+        self.assertEqual(2, code)
+
+    def test_required_unittest_gate_rejects_skipped_tests(self):
+        with self.assertRaises(adapters.AdapterError) as caught:
+            self.run_with_recorder(
+                ("run-unittest", "tests.validation.test_one", "-v"),
+                results=[
+                    subprocess.CompletedProcess(
+                        (), 0, b"", b"Ran 2 tests in 0.001s\n\nOK (skipped=1)\n"
+                    )
+                ],
+            )
+        self.assertEqual("ci-gate-adapter-tests-skipped", caught.exception.code)
+
+    def test_run_unittest_reads_real_child_summary_and_emits_it_once(self) -> None:
+        package = self.root / "tests/lib"
+        package.mkdir(parents=True)
+        (self.root / "tests/__init__.py").write_text("")
+        (package / "__init__.py").write_text("")
+        (package / "test_gate_fixture.py").write_text(
+            "import unittest\nclass Fixture(unittest.TestCase):\n"
+            "    def test_pass(self): self.assertTrue(True)\n"
+        )
+        output, errors = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(sys, "stdout", output),
+            mock.patch.object(sys, "stderr", errors),
+        ):
+            result = adapters.run_adapter(
+                self.root,
+                ("run-unittest", "tests.lib.test_gate_fixture", "-v"),
+                {"PATH": "/usr/bin"},
+            )
+        self.assertEqual(0, result)
+        self.assertEqual(1, errors.getvalue().count("Ran 1 test in"))
+        self.assertIn("\nOK\n", errors.getvalue())
+
+    def test_optional_runtime_skip_grammar_is_closed(self) -> None:
+        module = "tests.lib.test_fixture"
+        scope = module + ".Runtime"
+        valid = ("run-unittest", module, "--optional-runtime-skips", scope, "-v")
+        adapters.validate_adapter_argv(valid)
+        for tail in (
+            ("--optional-runtime-skips",),
+            ("--optional-runtime-skips", module),
+            ("--optional-runtime-skips", scope + ".test_one"),
+            ("--optional-runtime-skips", "tests.lib.test_other.Runtime"),
+            ("--optional-runtime-skips", scope, scope),
+            ("--optional-runtime-skips", scope, "--optional-runtime-skips", scope),
+        ):
+            with self.subTest(tail=tail), self.assertRaises(adapters.AdapterError):
+                adapters.validate_adapter_argv(("run-unittest", module, *tail, "-v"))
+
+    def test_optional_runtime_skip_real_child_and_required_skip_failure(self) -> None:
+        package = self.root / "tests/lib"
+        package.mkdir(parents=True)
+        (self.root / "tests/__init__.py").write_text("")
+        (package / "__init__.py").write_text("")
+        fixture = package / "test_fixture.py"
+        source = (
+            "import unittest\nclass Required(unittest.TestCase):\n"
+            "    def test_pass(self): self.assertTrue(True)\n"
+            "@unittest.skip('explicit opt-in required')\n"
+            "class Runtime(unittest.TestCase):\n"
+            "    def test_optional(self): pass\n"
+        )
+        argv = (
+            "run-unittest",
+            "tests.lib.test_fixture",
+            "--optional-runtime-skips",
+            "tests.lib.test_fixture.Runtime",
+            "-v",
+        )
+        fixture.write_text(source)
+        output, errors = io.StringIO(), io.StringIO()
+        with (
+            mock.patch.object(sys, "stdout", output),
+            mock.patch.object(sys, "stderr", errors),
+        ):
+            self.assertEqual(
+                0, adapters.run_adapter(self.root, argv, {"PATH": "/usr/bin"})
+            )
+        self.assertEqual(1, errors.getvalue().count("Ran 2 tests in"))
+        fixture.write_text(
+            source.replace(
+                "    def test_pass",
+                "    @unittest.skip('required missing')\n    def test_pass",
+            )
+        )
+        with (
+            mock.patch.object(sys, "stdout", io.StringIO()),
+            mock.patch.object(sys, "stderr", io.StringIO()),
+        ):
+            with self.assertRaises(adapters.AdapterError) as caught:
+                adapters.run_adapter(self.root, argv, {"PATH": "/usr/bin"})
+        self.assertEqual("ci-gate-adapter-tests-skipped", caught.exception.code)
+
+    def test_optional_runtime_skip_receipts_must_match_exact_scopes(self) -> None:
+        module = "tests.lib.test_fixture"
+        scope = module + ".Runtime"
+        argv = ("run-unittest", module, "--optional-runtime-skips", scope, "-v")
+        receipt = (
+            b"test_one (tests.lib.test_fixture.Runtime.test_one) ... skipped 'opt-in'\n"
+        )
+        summary = b"Ran 2 tests in 0.001s\n\nOK (skipped=1)\n"
+        code, recorder = self.run_with_recorder(
+            argv, results=[subprocess.CompletedProcess((), 0, b"", receipt + summary)]
+        )
+        self.assertEqual(0, code)
+        self.assertEqual(
+            ("python3", "-m", "unittest", module, "-v"), recorder.calls[0][0]
+        )
+        passed = b"test_one (tests.lib.test_fixture.Runtime.test_one) ... ok\nRan 1 test in 0.001s\n\nOK\n"
+        code, _ = self.run_with_recorder(
+            argv, results=[subprocess.CompletedProcess((), 0, b"", passed)]
+        )
+        self.assertEqual(0, code)  # Allowing a skip never requires one.
+        for output in (
+            summary,
+            receipt + receipt + summary,
+            receipt + summary.replace(b"skipped=1", b"skipped=2"),
+            receipt.replace(b".Runtime.", b".RuntimeExtra.") + summary,
+            b"Ran 1 test in 0.001s\n\nOK\n",
+        ):
+            with self.subTest(output=output), self.assertRaises(adapters.AdapterError):
+                self.run_with_recorder(
+                    argv, results=[subprocess.CompletedProcess((), 0, b"", output)]
+                )
+        code, _ = self.run_with_recorder(
+            argv, results=[subprocess.CompletedProcess((), 3, b"", summary)]
+        )
+        self.assertEqual(3, code)
 
     def test_run_unittest_requires_modules_then_literal_verbose_flag(
         self,

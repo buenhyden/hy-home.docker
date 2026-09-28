@@ -356,6 +356,181 @@ class SpecPackageTests(unittest.TestCase):
                     )
                 self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
 
+    def test_disposition_members_follow_profile_registry_not_terminal_union(self):
+        module = _spec_packages_module()
+        registry = load_registry()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            _write_package(stage, plan=True, task=True, task_status="completed")
+            previous = module.load_spec_packages(stage, registry=registry)
+            current = (dataclasses.replace(previous[0], tasks=()),)
+            contract = dict(registry.common["archive_retention"])
+            states = {**contract.get("disposition_entry_statuses", {}), "task": ()}
+            narrowed = dataclasses.replace(
+                registry,
+                common={
+                    **registry.common,
+                    "archive_retention": {
+                        **contract,
+                        "disposition_entry_statuses": states,
+                    },
+                },
+            )
+            self.assertEqual(
+                (),
+                module.validate_spec_package_lifecycle(
+                    previous, current, registry=registry
+                ),
+            )
+            self.assertEqual(
+                "execution-evidence-deletion-forbidden",
+                module.validate_spec_package_lifecycle(
+                    previous, current, registry=narrowed
+                )[0].code,
+            )
+
+    def test_task_cancellation_contract(self) -> None:
+        module = _spec_packages_module()
+        task_id = "SPEC-0001-TSK-0001"
+        target = "SPEC-0001-TSK-0002"
+        statuses = {task_id: "cancelled", target: "completed"}
+        valid = {
+            "reason": "Scope merged",
+            "approved_by": "@owner",
+            "approved_at": "2026-09-28",
+            "criteria": [],
+        }
+        invalid = [
+            None,
+            "",
+            " ",
+            {},
+            *[
+                {**valid, key: value}
+                for key, values in {
+                    "reason": (None, "", " "),
+                    "approved_by": (None, "", " "),
+                    "approved_at": (None, "2026-02-30", "20260928", "2026-9-28"),
+                    "criteria": (
+                        None,
+                        "1",
+                        {},
+                        [{"criterion": True, "withdrawn": "x"}],
+                        [{"criterion": 2, "withdrawn": "x"}],
+                        [{"criterion": 1}],
+                        [{"criterion": 1, "withdrawn": "x", "reassigned_to": target}],
+                        [{"criterion": 1, "withdrawn": " "}],
+                        [{"criterion": 1, "reassigned_to": "SPEC-0002-TSK-0001"}],
+                        [{"criterion": 1, "reassigned_to": task_id}],
+                        [{"criterion": 1, "reassigned_to": []}],
+                        [
+                            {"criterion": 1, "withdrawn": "x"},
+                            {"criterion": 1, "reassigned_to": target},
+                        ],
+                    ),
+                }.items()
+                for value in values
+            ],
+        ]
+        for cancellation in invalid:
+            with self.subTest(cancellation=cancellation):
+                self.assertTrue(
+                    module.task_cancellation_findings(
+                        task_id, cancellation, frozenset({1}), statuses
+                    )
+                )
+        for criteria in (
+            [],
+            [{"criterion": 1, "withdrawn": "Approved withdrawal"}],
+            [{"criterion": 1, "reassigned_to": target}],
+        ):
+            self.assertEqual(
+                (),
+                module.task_cancellation_findings(
+                    task_id, {**valid, "criteria": criteria}, frozenset({1}), statuses
+                ),
+            )
+        self.assertTrue(
+            module.task_cancellation_findings(
+                task_id,
+                {**valid, "criteria": [{"criterion": 1, "reassigned_to": target}]},
+                frozenset({1}),
+                {**statuses, target: "cancelled"},
+            )
+        )
+
+    def test_cancelled_task_requires_cancellation_during_package_load(self) -> None:
+        module = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage, plan=True, task=True, task_status="cancelled"
+            )
+            with self.assertRaisesRegex(module.SpecPackageError, "cancellation"):
+                module.load_spec_packages(stage)
+            _set_frontmatter_value(
+                package / "tasks/tsk-0001-implement.md",
+                "cancellation",
+                {
+                    "reason": "Withdrawn",
+                    "approved_by": "@owner",
+                    "approved_at": "2026-09-28",
+                    "criteria": [],
+                },
+            )
+            self.assertEqual(1, len(module.load_spec_packages(stage)))
+
+    def test_acceptance_criterion_numbers_ignores_examples(self) -> None:
+        module = _spec_packages_module()
+        self.assertEqual(
+            (1, 3),
+            module.acceptance_criterion_numbers(
+                "## Acceptance Contract\n1. First.\n```\n2. Example.\n```\n"
+                "<!-- 2. Hidden. -->\n3. Third.\n## Other\n4. Outside.\n",
+                "Acceptance Contract",
+            ),
+        )
+
+    def test_withdrawn_criterion_does_not_exempt_completion(self) -> None:
+        module = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            spec = package / "spec.md"
+            spec.write_text(spec.read_text() + "2. Still requires PASS.\n")
+            task = package / "tasks/tsk-0002-cancelled.md"
+            task.write_text(
+                re.sub(
+                    r"(?m)^\|.*\n?",
+                    "",
+                    _document_text(
+                        "task",
+                        "SPEC-0001-TSK-0002",
+                        ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                        status="cancelled",
+                    ),
+                )
+            )
+            _set_frontmatter_value(
+                task,
+                "cancellation",
+                {
+                    "reason": "Withdrawn",
+                    "approved_by": "@owner",
+                    "approved_at": "2026-09-28",
+                    "criteria": [{"criterion": 2, "withdrawn": "No longer requested"}],
+                },
+            )
+            with self.assertRaisesRegex(module.SpecPackageError, "cover every"):
+                module.load_spec_packages(stage)
+
     def test_completed_package_allows_cancelled_task_without_receipt(self) -> None:
         spec_packages = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
@@ -376,6 +551,16 @@ class SpecPackageTests(unittest.TestCase):
             )
             (package / "tasks/tsk-0002-cancelled.md").write_text(
                 re.sub(r"(?m)^\|.*\n?", "", cancelled)
+            )
+            _set_frontmatter_value(
+                package / "tasks/tsk-0002-cancelled.md",
+                "cancellation",
+                {
+                    "reason": "No assigned criteria",
+                    "approved_by": "@owner",
+                    "approved_at": "2026-09-28",
+                    "criteria": [],
+                },
             )
             self.assertEqual(2, len(spec_packages.load_spec_packages(stage)[0].tasks))
 
@@ -970,7 +1155,8 @@ class SpecPackageTests(unittest.TestCase):
             (archive / "retired/03.specs/0001-example/spec.md").write_text(
                 "# Example\n", encoding="utf-8"
             )
-            (archive / "README.md").write_text(
+            (archive / "README.md").write_text("# Archive\n", encoding="utf-8")
+            (archive / "retention-catalog.md").write_text(
                 "# Archive\n\n## Retention Catalog\n\n"
                 "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n"
                 "| `retired/03.specs/0001-example/` | retired | Withdrawn. | "
@@ -989,6 +1175,25 @@ class SpecPackageTests(unittest.TestCase):
                     self.assertEqual(
                         recorded, expected in spec_packages._recorded_retirements(root)
                     )
+
+    def test_unsafe_catalog_retirement_grants_no_exemption(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            archive = root / "docs/98.archive"
+            for name in ("migrations", "tombstones"):
+                (archive / name).mkdir(parents=True)
+            (archive / "README.md").write_text("# Archive\n", encoding="utf-8")
+            target = root / "relocated"
+            target.mkdir()
+            (archive / "retired").symlink_to(target, target_is_directory=True)
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(
+                json.dumps({"common": {"archive_disposition_model": "adopted"}}),
+                encoding="utf-8",
+            )
+            self.assertEqual(frozenset(), spec_packages._recorded_retirements(root))
 
     def test_preserved_package_is_not_a_retirement(self) -> None:
         """Completion and withdrawal are different events with different records.
@@ -1053,7 +1258,7 @@ class SpecPackageTests(unittest.TestCase):
         # Both path sets are facts the caller injects. The validator still
         # reads no archive of its own, which is what this test guards.
         self.assertEqual(
-            ["previous", "current", "retired_paths", "preserved_paths"],
+            ["previous", "current", "retired_paths", "preserved_paths", "registry"],
             list(signature.parameters),
         )
 

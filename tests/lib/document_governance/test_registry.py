@@ -597,6 +597,197 @@ class DocumentRegistryTests(unittest.TestCase):
                 {item.code for item in validate_registry(raw)},
             )
 
+    def test_archive_authorization_schema_requires_scoped_explicit_approval(
+        self,
+    ) -> None:
+        approved = {
+            "unit": "completed/03.specs/0001-example/",
+            "action": "assess",
+            "approved_by": "@fixture",
+            "approved_at": "2026-09-28",
+            "evidence": "#owner-approval",
+            "status": "approved",
+        }
+        for action in ("assess", "rehabilitate", "remove"):
+            with self.subTest(action=action):
+                self.assertEqual(
+                    (),
+                    validate_frontmatter(
+                        {"archive_authorizations": [{**approved, "action": action}]}
+                    ),
+                )
+        invalid = [
+            None,
+            [],
+            approved,
+            *(
+                [{key: value for key, value in approved.items() if key != missing}]
+                for missing in approved
+            ),
+            *(
+                [{**approved, key: value}]
+                for key, value in (
+                    ("unit", "   "),
+                    ("action", "delete"),
+                    ("status", "proposed"),
+                    ("approved_by", ""),
+                    ("approved_by", "   "),
+                    ("approved_at", "2026-02-30"),
+                    ("approved_at", "2026-9-28"),
+                    ("evidence", ""),
+                    ("evidence", "#"),
+                    ("evidence", "other-task.md#approval"),
+                    ("unexpected", True),
+                )
+            ),
+        ]
+        for value in invalid:
+            with self.subTest(invalid=value):
+                self.assertIn(
+                    "frontmatter-schema-invalid",
+                    {
+                        item.code
+                        for item in validate_frontmatter(
+                            {"archive_authorizations": value}
+                        )
+                    },
+                )
+
+    def test_cancelled_task_requires_nonempty_cancellation(self) -> None:
+        profile = load_registry().profiles["task"]
+        for values in (
+            {"status": "cancelled"},
+            *(
+                {"status": "cancelled", "cancellation": value}
+                for value in (None, "", "   ", {})
+            ),
+        ):
+            with self.subTest(values=values):
+                self.assertIn(
+                    "status-frontmatter-required",
+                    {
+                        item.code
+                        for item in registry_module.validate_profile_values(
+                            values, profile
+                        )
+                    },
+                )
+        self.assertEqual(
+            (),
+            registry_module.validate_profile_values({"status": "in-progress"}, profile),
+        )
+
+    def test_task_cancellation_schema_requires_approval_and_one_destination(
+        self,
+    ) -> None:
+        valid = {
+            "reason": "Scope consolidated",
+            "approved_by": "@fixture",
+            "approved_at": "2026-09-28",
+            "criteria": [],
+        }
+        for criteria in (
+            [],
+            [{"criterion": 1, "withdrawn": "Scope removed"}],
+            [{"criterion": 1, "reassigned_to": "SPEC-0001-TSK-0002"}],
+        ):
+            with self.subTest(valid_criteria=criteria):
+                self.assertEqual(
+                    (),
+                    validate_frontmatter(
+                        {"cancellation": {**valid, "criteria": criteria}}
+                    ),
+                )
+        invalid = [
+            None,
+            "cancelled",
+            {},
+            *(
+                {key: value for key, value in valid.items() if key != missing}
+                for missing in valid
+            ),
+            *(
+                {**valid, key: value}
+                for key in ("reason", "approved_by")
+                for value in (None, "", "   ")
+            ),
+            *(
+                {**valid, "approved_at": value}
+                for value in ("2026-02-30", "2026-9-28", "yesterday", None)
+            ),
+            {**valid, "criteria": {}},
+            *(
+                {**valid, "criteria": [entry]}
+                for entry in (
+                    {"criterion": 1},
+                    {
+                        "criterion": 1,
+                        "withdrawn": "Removed",
+                        "reassigned_to": "SPEC-0001-TSK-0002",
+                    },
+                    {"criterion": True, "withdrawn": "Removed"},
+                    {"criterion": "1", "withdrawn": "Removed"},
+                    {"criterion": 1, "withdrawn": "   "},
+                    {"criterion": 1, "reassigned_to": "   "},
+                )
+            ),
+        ]
+        for value in invalid:
+            with self.subTest(invalid=value):
+                self.assertIn(
+                    "frontmatter-schema-invalid",
+                    {
+                        item.code
+                        for item in validate_frontmatter({"cancellation": value})
+                    },
+                )
+
+    def test_cancelled_task_template_needs_authored_cancellation(self) -> None:
+        source = (
+            ROOT / "docs/99.templates/templates/specs/task.template.md"
+        ).read_text()
+        self.assertNotIn("cancellation", _parse_frontmatter_text(source))
+        values = {
+            "TITLE": "Cancelled fixture",
+            "OWNER": "@fixture",
+            "UPDATED": "2026-09-28",
+            "CREATED": "2026-09-28",
+            "ARTIFACT_ID": "SPEC-0001-TSK-0001",
+            "PARENT_ID": "SPEC-0001",
+        }
+        rendered = re.sub(
+            r"\{\{([A-Z_]+)\}\}",
+            lambda match: values.get(match[1], "Fixture evidence"),
+            source,
+        )
+        rendered = rendered.replace('status: "draft"', 'status: "cancelled"')
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md")
+        manifest = {"SPEC-0001": path.parent.parent / "spec.md"}
+        with tempfile.TemporaryDirectory() as temp:
+            target = pathlib.Path(temp) / path
+            target.parent.mkdir(parents=True)
+            target.write_text(rendered)
+            record = metadata_validator._record_from_text(
+                path, target.read_text(), profiles=profiles
+            )
+            self.assertIn(
+                "status-frontmatter-required",
+                {item.code for item in validate_record(record, profiles, manifest)},
+            )
+            supplied = rendered.replace(
+                'created: "2026-09-28"',
+                'created: "2026-09-28"\ncancellation:\n'
+                '  reason: "Scope consolidated"\n  approved_by: "@fixture"\n'
+                '  approved_at: "2026-09-28"\n  criteria: []',
+            )
+            target.write_text(supplied)
+            record = metadata_validator._record_from_text(
+                path, target.read_text(), profiles=profiles
+            )
+            codes = {item.code for item in validate_record(record, profiles, manifest)}
+            self.assertEqual(set(), codes)
+
     def test_published_postmortem_requires_review_evidence(self) -> None:
         profile = load_registry().profiles["postmortem"]
         self.assertEqual(

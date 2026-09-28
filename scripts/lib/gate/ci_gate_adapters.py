@@ -162,14 +162,7 @@ def validate_adapter_argv(argv: tuple[str, ...]) -> None:
         )
     command, arguments = argv[0], argv[1:]
     if command == "run-unittest":
-        if len(arguments) < 2 or arguments[-1] != "-v":
-            _argument_error()
-        modules = arguments[:-1]
-        if len(modules) != len(set(modules)):
-            _argument_error()
-        for module in modules:
-            if not _UNITTEST_MODULE.match(module):
-                _argument_error()
+        _unittest_arguments(arguments)
         return
     if command == "run-npm":
         if arguments[-len(_NPM_PREFIX) :] != _NPM_PREFIX:
@@ -179,6 +172,58 @@ def validate_adapter_argv(argv: tuple[str, ...]) -> None:
         return
     if arguments:
         _argument_error()
+
+
+def _unittest_arguments(
+    arguments: tuple[str, ...],
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    if len(arguments) < 2 or arguments[-1] != "-v":
+        _argument_error()
+    values = arguments[:-1]
+    delimiter = "--optional-runtime-skips"
+    if values.count(delimiter) > 1:
+        _argument_error()
+    boundary = values.index(delimiter) if delimiter in values else len(values)
+    modules, scopes = values[:boundary], values[boundary + 1 :]
+    if not modules or len(modules) != len(set(modules)):
+        _argument_error()
+    if any(_UNITTEST_MODULE.fullmatch(module) is None for module in modules):
+        _argument_error()
+    if delimiter in values and (not scopes or len(scopes) != len(set(scopes))):
+        _argument_error()
+    for scope in scopes:
+        module, _, class_name = scope.rpartition(".")
+        # An opt-in scope is one exact class in a selected full module, never a
+        # package, narrowed method selector, or prefix shared by other classes.
+        if (
+            module not in modules
+            or not module.rsplit(".", 1)[-1].startswith("test_")
+            or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", class_name) is None
+        ):
+            _argument_error()
+    return modules, scopes
+
+
+def _validate_unittest_skips(output: bytes, scopes: tuple[str, ...]) -> None:
+    receipts = re.findall(rb"(?m)^\w+ \(([A-Za-z0-9_.]+)\) \.\.\. (.+)$", output)
+    skipped = [
+        test_id for test_id, status in receipts if status.startswith(b"skipped ")
+    ]
+    counts = re.findall(rb"(?m)^OK \(.*skipped=([0-9]+).*\)$", output)
+    count = int(counts[0]) if len(counts) == 1 else 0
+    allowed = {scope.encode("ascii") for scope in scopes}
+    observed = {test_id.rsplit(b".", 1)[0] for test_id, _ in receipts}
+    if (
+        len(counts) > 1
+        or count != len(skipped)
+        or len(set(skipped)) != len(skipped)
+        or any(test_id.rsplit(b".", 1)[0] not in allowed for test_id in skipped)
+        or not allowed.issubset(observed)
+    ):
+        raise AdapterError(
+            "ci-gate-adapter-tests-skipped",
+            "unittest skips must match the declared optional runtime classes",
+        )
 
 
 def admits_adapter_invocation(argv: tuple[str, ...], context: str) -> bool:
@@ -219,21 +264,26 @@ def _dispatch_adapter(
         _no_arguments(arguments)
         return _check_shell_syntax(canonical_root, environ)
     if command == "run-unittest":
-        if (
-            len(arguments) < 2
-            or arguments[-1] != "-v"
-            or any(
-                _UNITTEST_MODULE.fullmatch(module) is None for module in arguments[:-1]
-            )
-        ):
-            _argument_error()
-        return _returncode(
-            _run_child(
-                ("python3", "-m", "unittest", *arguments),
-                root=canonical_root,
-                environ=environ,
-            )
+        modules, optional_scopes = _unittest_arguments(arguments)
+        result = _run_child(
+            ("python3", "-m", "unittest", *modules, "-v"),
+            root=canonical_root,
+            environ=environ,
+            capture_output=True,
         )
+        sys.stdout.write((result.stdout or b"").decode("utf-8", errors="replace"))
+        sys.stderr.write((result.stderr or b"").decode("utf-8", errors="replace"))
+        if result.returncode == 0:
+            summaries = re.findall(
+                rb"(?m)^Ran ([0-9]+) tests? in [0-9.]+s$", result.stderr
+            )
+            if len(summaries) != 1 or int(summaries[0]) == 0:
+                raise AdapterError(
+                    "ci-gate-adapter-test-count",
+                    "the required unittest gate must execute at least one test",
+                )
+            _validate_unittest_skips(result.stderr, optional_scopes)
+        return _returncode(result)
     if command == "run-agent-output-eval":
         _no_arguments(arguments)
         return _run_agent_output_eval(canonical_root, environ)

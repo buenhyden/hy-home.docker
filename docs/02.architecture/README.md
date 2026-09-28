@@ -42,7 +42,7 @@ docs/02.architecture/
 ├── decisions/
 │   ├── 0001-traefik-nginx-hybrid.md
 │   ├── ...
-│   └── 0036-archive-occupancy-citation-and-frozen-identity.md
+│   └── 0037-package-disposition-wait-and-task-cancellation.md
 └── README.md
 ```
 

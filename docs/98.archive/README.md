@@ -1,10 +1,10 @@
 ---
 title: "98.archive"
-version: "2.4.5"
+version: "2.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 layer: "archive"
 ---
 
@@ -21,7 +21,7 @@ Stage 98은 활성 스테이지가 더 이상 담지 않는 것을 여섯 처분
 이 README는 archive 탐색과 작업 안내만 소유합니다. 보존 정책은
 [.agents](../../.agents/governance/documentation-protocol.md#stage-98-dispositions)가,
 경로와 profile 계약은 [Stage 99 Registry](../99.templates/registry.json)가,
-선택의 근거는 [ADR-0036](../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)이
+선택의 근거는 [ADR-0037](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)이
 소유합니다. 여기 보존된 어떤 기록도 `.agents/`와 Stage 01·02·03·05의 현재
 규칙을 덮어쓰지 않습니다.
 
@@ -48,20 +48,28 @@ Stage 98은 활성 스테이지가 더 이상 담지 않는 것을 여섯 처분
 | `tombstones/` | 없음 | 은퇴한 route, 그 후속 또는 부재, 사유 | 불가 |
 | `migrations/` | 없음 | 이동한 범위와 현재 owner, `MIG-####` | 불가 |
 
-인용 가능성은 이름에서 도출되며 따로 규정되지 않습니다. retention class는 자기
-본문이 여전히 독자를 현재 권위로 이끌 때만 인용할 수 있습니다. `completed`는
+인용 가능성은 이 저장소의 보존·인용 정책과 등록된 검증 판정을 따릅니다.
+retention class는 자기 본문이 여전히 독자를 현재 권위로 이끌 때만 인용할 수
+있다는 정책상의 구분입니다. `completed`는
 Promotion 선언을 통해, `resolved`는 교정 작업 owner를 통해 그렇게 합니다.
 `superseded` 본문은 자신을 대체한 문서를 이름으로 가지므로 인용은 그 후속에
 둡니다. 대체된 규칙을 인용하는 것이 그 규칙이 되살아나는 방식이기 때문입니다.
 `retired`는 가리키는 대상이 없으므로 인용하면 독자가 철회된 규칙에 머뭅니다.
 
+기존 Task 본문에 이미 있던 Commit Ledger와 검증 revision은 원래 실행 증거이므로
+그대로 보존합니다. 아래의 두 번째 복구 원장 금지는 그 증거를 삭제하라는 뜻이
+아닙니다.
+
 어느 family의 Stage 98 기록도 두 번째 복구 원장을 담지 않습니다. redirect, path
 ledger, 자체 설계한 본문 digest, branch SHA, recovery commit이 그것입니다.
-catalog의 Retention Envelope가 source Git object를 한 번 이름으로 가지며, frozen
-내용의 복구는 일반 Git history가 담당합니다.
+[Retention Catalog](retention-catalog.md)의 Retention Envelope가 source Git
+object를 한 번 이름으로 가지며, frozen 내용의 복구는 일반 Git history가
+담당합니다.
 
-`README.md`는 이 스테이지에서 유일하게 현재 유효한 문서이며 보존 기록이
-아닙니다.
+이 스테이지에서 현재 유효한 문서는 이 `README.md`와
+[`retention-catalog.md`](retention-catalog.md) 둘뿐이며, 둘 다 보존 기록이
+아닙니다. README는 탐색만 맡고, 보존 단위의 행은 Retention Catalog 기록이
+소유합니다.
 
 ### 외부 참조 경계
 
@@ -79,63 +87,35 @@ frozen 기록은 식별자로 부르고 이 index를 통해 찾습니다.
 없으므로, `tombstones/`와 `migrations/`는 출발 profile과 무관하게 인용할 수
 없습니다.
 
-현재 강제는 `check-document-links.py`의 `active-archive-link`가 담당합니다.
-Stage 98 문서끼리의 상호 참조는 이 규칙의 대상이 아닙니다.
+현재 강제는 `check-document-links.py --mode alignment`의
+`active-archive-link` 판정이 담당하며 `--mode all`에도 포함됩니다.
+허용된 보존본 링크는 당시의 실행·사건 증거를 찾는 경로이며 현재 규칙이나 실행
+승인을 대신하지 않습니다. 현재 평가의 withdrawn·invalidated와 이력 전용 이용 가능성은 Incident 예외보다
+먼저 차단합니다. 보존 원문의 링크는 원래 commit/path에서 검사합니다. 기존 세대의
+역사 링크 오류·출처 부재는 명시적인 관찰이며, 새 정확 포착의 오류는 실패입니다.
 
 ### Git-history-only 처분
 
-Git-history-only로 등록된 profile은 없습니다. 그런 profile이 등록되기 전까지 모든
-처분은 frozen 본문을 유지하며, 보존해야 할 본문을 Git-only 상태로 남기는 것은
-보존의 대안이 되지 않습니다.
+`common.archive_retention`은 보존 단위의 이용 가능성 `retained`와
+`git-history-only`를 등록합니다. 실제 재평가는 기존 카탈로그의 선택 영역
+`Current Assessments`에만 기록하며, 행이 없으면 `unreviewed`/`retained`입니다.
+현재 평가는 포착 당시의 status와 별개이며 옛 원문을 다시 쓰지 않습니다.
+
+이력 전용 전환에는 단위·행위·시점을 특정한 별도 승인, hold 부재, 원본 객체의
+복구 가능성, 현재 소비자 정리와 전체 단위 부재가 모두 필요합니다. 결정은 당시
+Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착 행과 평가 행은
+제거 후에도 남으며, 본문 대신 카탈로그를 안내합니다. `purged`는 지원하지 않습니다.
+이 README와 일반 표준 채택은 어떤 실제 제거도 승인하지 않습니다.
 
 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과 Migration은
 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지 않습니다.
-
-## Retention Catalog
-
-보존 단위 하나가 한 행입니다. 단위는 Spec package 디렉터리, Incident bundle
-디렉터리, 또는 단독 문서입니다. `Record`는 `docs/98.archive/` 아래 단위 경로이며
-package와 bundle은 `/`로 끝납니다. `Class`는 처분 디렉터리이고, `Names`는 그
-class가 이름으로 가져야 하는 값이며, `Source`는 이 모델이 허용하는 유일한 source
-Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질 수 없으므로 source가
-존재하던 base commit을 적습니다.
-
-| Record | Class | Names | Source |
-| --- | --- | --- | --- |
-| `completed/03.specs/0185-agentic-research-refresh/` | completed | RES-0002 | `e9e65f1087a4adc797c112b4b8f19eb9ac1bbb2e:docs/03.specs/0185-agentic-research-refresh` |
-| `superseded/02.architecture/decisions/0033-full-spec-package-preservation.md` | superseded | ADR-0035 | `677a6e5135de8af1faa9110f912f2452972abf22:docs/02.architecture/decisions/0033-full-spec-package-preservation.md` |
-| `completed/03.specs/0177-archive-disposition-enforcement/` | completed | ADR-0035 | `9e120c6fc22d6ddb0ff33e878341b8fdcfa73bd0:docs/03.specs/0177-archive-disposition-enforcement` |
-| `superseded/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` | superseded | ADR-0036 | `ea8623eaf04efa5b4f32d538cb3dc0e5235831e0:docs/02.architecture/decisions/0035-stage-98-retention-classes-and-route-dispositions.md` |
-| `superseded/02.architecture/decisions/0015-analytics-engine-selection.md` | superseded | ADR-0039 | `6179418507afedbcb631dbef07d7ed7cb854f2ab:docs/02.architecture/decisions/0015-analytics-engine-selection.md` |
-| `superseded/02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md` | superseded | ADR-0040 | `6179418507afedbcb631dbef07d7ed7cb854f2ab:docs/02.architecture/decisions/0019-data-hardening-and-ha-expansion-strategy.md` |
-| `completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/` | completed | ADR-0036 | `3c5db48cbae8edfccfa1b0a56ad9421e6b1ccafd:docs/03.specs/0178-archive-occupancy-citation-and-frozen-identity` |
-| `completed/03.specs/0180-home-dev-convergence/` | completed | AD-0031 | `2a90260a6f9083993b2e61dee20a49e7b8bd858b:docs/03.specs/0180-home-dev-convergence` |
-| `completed/03.specs/0181-home-residual-operations/` | completed | AD-0031 | `98efce81b9481fd7f6a01c92b643b3f336679574:docs/03.specs/0181-home-residual-operations` |
-| `superseded/90.references/research/0081-roadmap/README.md` | superseded | RES-0002 | `bb43abb5e0894f45d1179a60770d489a0da41e7c:docs/90.references/research/0081-roadmap/README.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/guide.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/policy.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md` |
-| `retired/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/guide.md` | superseded | GDE-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/guide.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/policy.md` | superseded | POL-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/policy.md` |
-| `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | RUN-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/runbook.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/guide.md` | superseded | GDE-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/guide.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0018-ksqldb/guide.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/policy.md` |
-| `superseded/05.operations/catalog/04-data/0018-ksqldb/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0018-ksqldb/runbook.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/guide.md` | superseded | GDE-0094 | `8e8082c53ed06e328931427f05b0754e82034e2a:docs/05.operations/catalog/04-data/0020-starrocks/guide.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/policy.md` | superseded | POL-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/policy.md` |
-| `superseded/05.operations/catalog/04-data/0020-starrocks/runbook.md` | superseded | RUN-0094 | `8919696e8a65f47ccd830e577d80c781b810cbd3:docs/05.operations/catalog/04-data/0020-starrocks/runbook.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/policy.md` | superseded | POL-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/policy.md` |
-| `superseded/05.operations/catalog/03-security/0016-vault/runbook.md` | superseded | RUN-0085 | `a797331dce2f4da089f50e8a73eea525b1445955:docs/05.operations/catalog/03-security/0016-vault/runbook.md` |
-
-이 catalog가 생기기 전에 보존된 기록은 당시 계약이 요구한 철회 기록을 그대로
-유지합니다. 소급 적재는 하지 않습니다.
 
 ## Structure
 
 ```text
 98.archive/
 ├── README.md
+├── retention-catalog.md
 ├── completed/
 │   └── <original-stage>/<원래 경로 그대로>
 ├── superseded/
@@ -165,9 +145,10 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
    처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는
    사실이 결정하며, frontmatter가 결정하지 않습니다.
 2. **보존 기록은 수정하지 않습니다.** catalog 행이 있는 단위는 그 행의 `Source`
-   객체와 구성원 경로, Git 파일 mode, frontmatter 이후 본문 바이트가 같아야 하며,
-   frontmatter는 Registry의 `common.frozen_transition_fields`가 나열한 필드만 값이
-   달라지고 `superseded_by`만 추가될 수 있습니다.
+   객체와 구성원 경로, Git 파일 mode, 전체 blob 바이트가 같아야 합니다.
+   Registry에 고정된 기존 포착 세대와 ADR-0036 최초 전환에만 종전의 제한된
+   lifecycle 필드 비교를 유지합니다. Git 객체·index와 checkout 개행 표현을
+   구분하며 외부 filter나 renormalize로 원문을 맞추지 않습니다.
    현재 계약에 맞추기 위한 편집은 보존하려던 대상을 훼손합니다. 그래서 이
    기록들은 frontmatter가 관리되지 않는 보존 프로파일로 등록됩니다. 자동
    포맷터도 예외가 아닙니다. `.markdownlint-cli2.yaml`은 `fix: true`로 동작하므로
@@ -201,5 +182,5 @@ Git object입니다. 이동하는 변경은 자기 commit을 이름으로 가질
 - [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
+- [ADR-0037 Package Waiting, Cancellation and Archive Reassessment](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - ADR-0035 Stage 98 보존 class와 route 처분 (superseded)

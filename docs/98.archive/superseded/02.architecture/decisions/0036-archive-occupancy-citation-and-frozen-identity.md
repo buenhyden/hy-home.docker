@@ -1,16 +1,17 @@
 ---
 title: "보존 대기 package, route 기록 인용, frozen 동일성"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
-status: "accepted"
+status: "superseded"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-28"
 layer: "architecture"
 artifact_id: "ADR-0036"
 parent_ids:
 - "AD-0030"
 supersedes:
 - "ADR-0035"
+superseded_by: "ADR-0037"
 created: "2026-09-15"
 ---
 

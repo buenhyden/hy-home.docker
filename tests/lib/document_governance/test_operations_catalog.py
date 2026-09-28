@@ -475,6 +475,66 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     self._write_incident_packet(root, **kwargs)
                     self.assertIn(expected, finding_codes(root))
 
+    def test_closure_dates_use_conditional_presence_and_real_timestamp_schema(self):
+        from scripts.lib.document_governance.registry import (
+            load_registry,
+            validate_frontmatter,
+            validate_profile_values,
+        )
+
+        profile = load_registry().profiles["incident"]
+        for value in (
+            None,
+            "",
+            " ",
+            "2026-02-30T01:00:00Z",
+            "2026-09-28T01:00:00",
+            "2026-09-28T01:00:00+01:99",
+            "not-a-date",
+        ):
+            with self.subTest(value=value):
+                values = {"status": "resolved", "resolved_at": value}
+                findings = (
+                    *validate_profile_values(values, profile),
+                    *validate_frontmatter(values),
+                )
+                self.assertTrue(any(item.path == "resolved_at" for item in findings))
+        self.assertEqual(
+            operations_catalog._date_time("2026-09-28T10:00:00+09:00"),
+            operations_catalog._date_time("2026-09-28T01:00:00Z"),
+        )
+
+    def test_resolved_bundle_requires_published_postmortem_and_current_owner(self):
+        for state, owner, expected in (
+            (None, "", "incident-postmortem-required"),
+            ("draft", "GDE-0011", "incident-postmortem-required"),
+            ("published", "GDE-9999", "incident-corrective-owner-required"),
+            ("published", "inc-2026-0001", "incident-corrective-owner-required"),
+            ("published", "GDE-0011", None),
+            ("published", "no corrective action: transient fixture", None),
+        ):
+            with self.subTest(state=state, owner=owner):
+                context, root = self._fixture()
+                with context:
+                    incident = self._write_incident_packet(
+                        root, status="resolved", artifact_id="inc-2026-0001"
+                    )
+                    if state is not None:
+                        (incident.parent / "postmortem.md").write_text(
+                            "---\ntype: operation/postmortem\n"
+                            f"status: {state}\nartifact_id: inc-2026-0001-PM\n"
+                            "parent_ids: [inc-2026-0001]\ncreated: 2026-08-23\n"
+                            "updated: 2026-08-23\nreviewed_at: 2026-08-23\n---\n"
+                            f"## Corrective Actions\n{owner}\n"
+                        )
+                    self._track(root, incident.parent)
+                    codes = finding_codes(root)
+                    if expected:
+                        self.assertIn(expected, codes)
+                    else:
+                        self.assertNotIn("incident-postmortem-required", codes)
+                        self.assertNotIn("incident-corrective-owner-required", codes)
+
     def test_incident_year_packet_and_roles_are_exact(self) -> None:
         mutations = (
             "docs/05.operations/incidents/current/inc-0001-bad/incident.md",

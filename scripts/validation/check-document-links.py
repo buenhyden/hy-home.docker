@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import pathlib
 import sys
 
@@ -33,6 +34,7 @@ from scripts.lib.document_governance.registry import (  # noqa: E402
     classify_path,
     declares_frozen_legacy_status,
     load_registry,
+    preserved_origin_path,
 )
 
 DOC_ROOT = pathlib.Path("docs")
@@ -79,7 +81,9 @@ def _routing_status(
     return not isinstance(status, str) or status not in NON_ROUTING_STATUSES
 
 
-def _paths(root: pathlib.Path) -> list[pathlib.Path]:
+def _paths(
+    root: pathlib.Path, *, include_historical: bool = False
+) -> list[pathlib.Path]:
     registry_path = root / "docs/99.templates/registry.json"
     registry = load_registry(registry_path) if registry_path.exists() else None
     candidates = {
@@ -92,7 +96,13 @@ def _paths(root: pathlib.Path) -> list[pathlib.Path]:
         path
         for path in candidates
         if (path.is_file() or path.is_symlink())
-        and _routing_status(root, path, registry)
+        and (
+            _routing_status(root, path, registry)
+            or (
+                include_historical
+                and preserved_origin_path(path.relative_to(root).as_posix()) is not None
+            )
+        )
     )
 
 
@@ -106,12 +116,34 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     root = args.root.resolve()
-    graph = build_document_graph(_paths(root), repo_root=root)
-    modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
-    findings = tuple(finding for mode in modes for finding in run_mode(mode, graph))
+    try:
+        graph = build_document_graph(_paths(root), repo_root=root)
+        modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
+        alignment_graph = (
+            build_document_graph(_paths(root, include_historical=True), repo_root=root)
+            if "alignment" in modes
+            else graph
+        )
+        findings = tuple(
+            finding
+            for mode in modes
+            for finding in run_mode(
+                mode, alignment_graph if mode == "alignment" else graph
+            )
+        )
+    except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
+        print(
+            "document-link-input-invalid: bounded document or Registry input is invalid",
+            file=sys.stderr,
+        )
+        return 1
+    failures = sum(finding.severity != "warning" for finding in findings)
+    warnings = len(findings) - failures
     for finding in findings:
         print(
-            f"{finding.code}: {finding.path}: {finding.message}",
+            json.dumps(
+                f"{finding.code}: {finding.path}: {finding.message}", ensure_ascii=True
+            )[1:-1][:2048],
             file=sys.stderr,
         )
     print(
@@ -120,9 +152,9 @@ def main(argv: list[str] | None = None) -> int:
         f"catalog_pairs_total={traceability_pair_total(graph)} "
         f"archive_direct_links_total={archive_direct_link_total(graph)} "
         f"removed_template_mentions_total={removed_template_mention_total(graph)} "
-        f"failures={len(findings)}"
+        f"failures={failures} warnings={warnings} historical_documents={len(alignment_graph.nodes) - len(graph.nodes)}"
     )
-    if findings:
+    if failures:
         return 1
     print(f"PASS: document link mode {args.mode}")
     return 0

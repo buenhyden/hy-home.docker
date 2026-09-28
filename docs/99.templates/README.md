@@ -164,6 +164,23 @@ for every entry state, edge, and terminal state.
 Full Git-history allocation validation belongs to the full document-contract
 profile. Changed validation uses the persisted Registry allocation state.
 
+#### Cancellation and Archive Assessments
+
+`cancelled` Task에는 `cancellation`이 필요합니다. 사유·승인자·유효한 승인 날짜와
+수용 기준별 재배정 또는 철회 사유를 작성합니다. 재배정 대상은 같은 package의
+자신이 아닌 유효한 Task여야 합니다. 취소는 완료 영수증의 PASS 의무를 면제하지
+않으며 template은 승인값을 미리 채우지 않습니다.
+
+보존 단위의 실제 재평가만 기존 카탈로그의 `Current Assessments`에 기록합니다.
+필드와 판정 순서는 `common.archive_retention`이 소유합니다. 평가·제거 결정은
+당시 Task revision의 `archive_authorizations`와 해당 본문의 실제 승인 인용을
+연결합니다. 빈 승인값, proposed ADR, 이 일반 계약 채택 승인은 개별 제거 증거가
+아닙니다. 포착 행과 기존 원문은 재평가 때 수정하지 않습니다.
+승인 항목의 `evidence`는 같은 Task의 `#heading-anchor`이며 해당 절의 실제
+승인 인용은 `> @owner approved action for unit on YYYY-MM-DD.` 형식으로
+단위·행위·일자·권한자를 명시합니다. 코드 fence의 예제나 부정문은 증거가
+아닙니다. 실제 승인 없이 이 문장을 채우지 않습니다.
+
 #### Pinned Requirement Allocation Recovery
 
 The ordinary trusted-baseline loader remains strict. The current metadata gate

@@ -41,6 +41,7 @@ occurred_at: "{{OCCURRED_AT}}"
 
 ## Current Status
 
+<!-- Author prompt: Derive any current lifecycle label from frontmatter status. Describe observations with their actual timestamp and timezone; do not maintain a second independent current-state value or invent precision. -->
 {{CURRENT_STATUS}}
 
 ## Corrective Actions

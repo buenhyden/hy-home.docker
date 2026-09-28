@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-28"
 ---
 
 # Task Checklists
@@ -35,9 +35,16 @@ updated: "2026-09-16"
 - [ ] Regenerate registered projections and prove byte-for-byte freshness.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
 - [ ] Record pass, fail, baseline debt, skipped checks, recovery, and review separately.
-- [ ] Write a completing change's final evidence in the commit before the move,
-      so the completing commit changes only lifecycle fields, the move, the two
-      index rows, and consumers.
+- [ ] Record final completion receipts before disposition. A completed Stage 03
+      package may wait with its completed Plan and completed or validly cancelled
+      Tasks; cancelled criteria do not waive remaining Spec acceptance evidence.
+- [ ] Bind any later preservation to its prepared source object and separate
+      disposition approval. Preserve Task Commit Ledgers and frozen bodies.
+- [ ] For reassessment or history-only availability, verify the current assessment,
+      original-revision unit/action/date approval, hold, consumer cutover, and
+      recoverability. Test removal in fixtures unless actual removal is authorized.
+- [ ] Distinguish worktree, index, commit, and historical-link checks, and report
+      missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits only after review approval.
 
 ## Related Documents

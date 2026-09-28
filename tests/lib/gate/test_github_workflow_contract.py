@@ -54,6 +54,49 @@ def load_contract_module():
 
 
 class GithubWorkflowContractTests(unittest.TestCase):
+    def test_archive_adoption_regressions_are_required_by_public_gate(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        gate = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.document-governance-library-regressions"
+        )
+        for module in (
+            "archive_assessments",
+            "archive_snapshots",
+            "archive_catalog_contract",
+        ):
+            self.assertIn(f"tests.lib.document_governance.test_{module}", gate["argv"])
+
+    def test_optional_runtime_skips_keep_all_required_module_selectors(self) -> None:
+        document = gate_contract.load_contract_document(ROOT)
+        gate = next(
+            node
+            for node in document["gate_nodes"]
+            if node["gate_id"] == "leaf.compose-baseline-regressions"
+        )
+        arguments = gate["argv"]
+        boundary = arguments.index("--optional-runtime-skips")
+        self.assertEqual(
+            [
+                "tests.validation.test_compose_baseline_gates",
+                "tests.validation.test_openwebui_oidc_entrypoint",
+                "tests.validation.test_gatus_oidc",
+                "tests.validation.test_mng_pg_init_sql",
+                "tests.validation.test_config_mount_hashes",
+                "tests.validation.test_service_wiring_contracts",
+            ],
+            arguments[1:boundary],
+        )
+        self.assertEqual(5, len(arguments[boundary + 1 : -1]))
+        self.assertTrue(
+            all(
+                scope.rsplit(".", 1)[0] in arguments[1:boundary]
+                for scope in arguments[boundary + 1 : -1]
+            )
+        )
+        self.assertEqual([], gate["allowed_env_keys"])
+
     def test_precommit_selector_admits_every_contract_changed_prefix(self) -> None:
         """A prefix the workflow contract routes must be able to reach the gate.
 

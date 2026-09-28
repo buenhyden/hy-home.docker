@@ -121,7 +121,7 @@ docs/
 | `05.operations/{guides,policies,runbooks}/` | 한국어 guide/policy/runbook, commands/paths/service names 원문 보존 |
 | `05.operations/incidents/` | 한국어 incident narrative, timestamps/IDs/commands/evidence labels 원문 보존 |
 | `90.references/` | 대상 독자 기준: LLM/generated index는 English 가능, 사람 대상 reference는 한국어 기본 |
-| `98.archive/` | retention class의 frozen 원문과 route disposition 기록; 인용 가능성은 처분이 이름으로 가지는 대상에서 도출 |
+| `98.archive/` | 보존 원문과 route disposition 기록; 현재 평가·이용 가능성·인용은 Registry와 보존 정책을 따름 |
 | `99.templates/` | target stage 언어 규칙을 따르며 template README는 한국어 기본 |
 
 ## Documentation Contract

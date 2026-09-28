@@ -1,10 +1,10 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Specification"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-09-17"
+updated: "2026-09-28"
 layer: "specs"
 artifact_id: "SPEC-0179"
 parent_ids:
@@ -25,17 +25,20 @@ always a finding, so completion and disposition are bound into one commit, the
 completion receipt check first runs in that moving commit, and the unit's
 `Source` cannot be the finished original.
 
-`ADR-0037` proposes the resolution: a completed package whose every member is
+`ADR-0037` adopts the resolution: a completed package whose every member is
 terminal may wait for its disposition where it stands, and a cancelled Task is
 admitted when a structured `cancellation` records its reason, its approval, and
 where each of its acceptance criteria went. This package moves the checks, the
 Registry profile, and the governing text onto that decision, and accepts
 `ADR-0037`, superseding `ADR-0036`, in one result tree.
 
-This is the first of several changes toward the documentation standard the
-operator set on 2026-09-17. The exact identity comparison for a separately
-prepared original, post-archive reassessment, citation order, index separation,
-and status vocabulary migration are later packages and are not decided here.
+On 2026-09-28 the operator explicitly approved the expanded Standard 3.0.0
+adoption in this existing package. It also covers registered current assessments,
+controlled history-only availability, exact new capture identity, separate Git
+snapshots, and ordered current/historical citation checks. Existing captures and
+execution evidence remain frozen. The subsequent delivery approval authorizes commits, push, PR merge and task
+branch/worktree cleanup in `buenhyden/hy-home.docker`. Real payload removal and
+production service changes remain outside this task.
 
 ## Boundaries and Inputs
 
@@ -68,27 +71,20 @@ and status vocabulary migration are later packages and are not decided here.
     active document that links `ADR-0036` by path or states its status as
     current authority. A dated observation in a Stage 90 record is not
     repointed.
-- Out of scope: any edit to a frozen body or sealed record; changing the
-  `Source` comparison or `common.frozen_transition_fields`; a disposition wait
-  for a package whose Spec is `cancelled` or `superseded`; splitting the
-  Stage 03 index into current work and history; renaming any lifecycle status;
-  moving any existing package; and the per-document terminal set that
-  `TERMINAL_DOCUMENT_STATUSES` in `archive.py` and `_TERMINAL_STATUSES` in
-  `spec_packages.py` hold. Those sets mean "a status that leads to a Stage 98
-  disposition", which no Registry field states today: the union of the
-  Registry lifecycle terminal statuses also holds `rejected`, `resolved`,
-  `published`, `sealed`, and the template lifecycle's `draft`, and
-  `_TERMINAL_STATUSES` holds `retired`, which no Stage 03 lifecycle lists.
-  Replacing either set changes judgments outside this package, so it belongs
-  to the later status vocabulary change.
+- Out of scope: editing an existing frozen body or sealed record; disposition
+  waiting for cancelled/superseded Spec packages; renaming existing lifecycle values;
+  moving existing Spec packages; actual payload removal and production runtime operations. The current-only Stage 03 index is retained.
+- Disposition-entry statuses are now registered per profile separately from lifecycle
+  terminal statuses. Existing standalone judgments are preserved; the combined
+  lifecycle terminal union would incorrectly include rejected ADRs, published
+  references and sealed records.
 
 ## Behavior Contract
 
 1. Stage 03 occupancy stays a package judgment, and the terminal statuses it
    uses for a Spec, a Plan, and a Task are read from the Registry `spec`,
    `plan`, and `task` lifecycles.
-2. A package whose Spec is `completed` passes occupancy when its Plan, if
-   present, is `completed` and every Task is `completed` or is a `cancelled`
+2. A package whose Spec is `completed` passes occupancy when its Plan is `completed` and every Task is `completed` or is a `cancelled`
    Task with a valid `cancellation`. In such a package a Plan that is not
    `completed`, a Task that is not terminal, and a `cancelled` Task without a
    valid `cancellation` are each a finding.
@@ -116,6 +112,23 @@ and status vocabulary migration are later packages and are not decided here.
    Stage 03, so its findings surface before any move.
 10. No template seeds `cancellation`, and a document generated from the Task
     template in `cancelled` status fails until an author supplies it.
+
+11. Current assessment is independent of captured state. The existing catalog
+    optionally records one assessment per capture; absent rows mean unreviewed
+    and retained. Registered enums, owner resolution and immutable capture rows
+    are checked. Changed or rehabilitated assessments require fresh scoped evidence.
+12. History-only availability requires explicit unit/action/date authorization
+    verified at its pinned Task revision, no hold, complete absence and recoverable
+    original objects. Partial removal, resurrection and disappearing catalog or
+    assessment rows fail. Tests use isolated Git repositories only.
+13. New captures preserve complete Git member sets, modes and bytes. The declared
+    legacy revision and one explicit ADR-0036 bootstrap unit retain only their
+    former comparison contract. HEAD/target, index and worktree are distinct views;
+    checkout conversions and unsupported filters have explicit diagnostics.
+14. Citation checks resolve units, block assessment/availability, block route
+    records, apply source-profile permissions, resolve context, then check physical
+    integrity. Historical links resolve at their original commit/path. New exact
+    captures fail broken historical links; legacy observations do not rewrite originals.
 
 ## Technical Approach
 
@@ -146,9 +159,9 @@ The presence rule in Behavior Contract 6 uses the Registry's existing
 object in the frontmatter schema so that the metadata check rejects a scalar
 before the package check reads it.
 
-The per-document branch for Stages 01, 02, 05, and 90 keeps
-`TERMINAL_DOCUMENT_STATUSES` unchanged, for the reason Boundaries and Inputs
-gives.
+The per-document branch for Stages 01, 02, 05, and 90 reads the separately
+registered disposition-entry mapping. Its existing behavior is preserved without
+a code-owned status table.
 
 Every behavior lands in the result tree that accepts `ADR-0037`. No Registry
 switch is added.
@@ -230,12 +243,25 @@ nonterminal member of a completed package.
     metadata, and link checks pass on the result tree, recorded in the Task
     with command, snapshot, place, and exit code.
 
+11. Isolated regressions prove assessment independence, pinned authorization,
+    hold, rehabilitation, complete removal, retained envelopes and historical
+    missing-unit discovery; unavailable history is never reported as success.
+12. Exact-capture regressions distinguish raw Git identity from checkout
+    representation and detect index-only deletions/mode changes, unsafe paths,
+    unsupported objects and resource-limit failures without executing filters.
+13. Link regressions cover inline/reference/footnote/HTML/wiki links, encoding,
+    anchors, assessment priority over Incident exceptions, and source-revision
+    historical context without changing frozen bodies.
+14. The Task maps S01–S16 and V01–V40 to actual tests, scope and results, including
+    explicit unsupported or unexecuted boundaries. Current documentation agrees
+    with implemented rules; no historical record or original Commit Ledger is rewritten.
+
 ## Traceability
 
 - [REQ-0026 문서 보존 및 은퇴](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0037 완료 package의 처분 대기와 Task 취소](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
+- [ADR-0037 Package Waiting, Cancellation and Archive Reassessment](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0036 보존 대기 package, route 기록 인용, frozen 동일성](../../98.archive/README.md)
 
 ## Open Questions
 
@@ -246,6 +272,9 @@ Stage 03 packages only and a standalone decision keeps the per-document rule.
 
 ## Operational Impact
 
-None at runtime. No Compose service, container, volume, network, secret, or
-remote system is read or changed. The change affects document authors and the
-local and hosted document governance checks only.
+No production runtime state is changed. Authorized validation may read Compose
+environment configuration and run ephemeral Conftest containers with cleanup;
+it does not deploy or mutate production services. Delivery performs authorized
+Git and GitHub reads plus repository commit, push, PR, merge, and cleanup
+operations. The implementation changes no production Compose service, volume,
+network, or actual Archive payload.

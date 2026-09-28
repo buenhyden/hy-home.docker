@@ -25,6 +25,124 @@
       "properties": {
         "allowed_statuses": { "$ref": "#/$defs/stringList" },
         "archive_disposition_model": { "enum": ["transition", "adopted"] },
+        "archive_retention": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "standard_version",
+            "catalog_path",
+            "capture_section",
+            "capture_columns",
+            "assessment_section",
+            "assessment_columns",
+            "assessment_values",
+            "availability_values",
+            "default_assessment",
+            "default_availability",
+            "absence_token",
+            "legacy_capture_revision",
+            "citation_order",
+            "blocked_assessments",
+            "history_only_availability",
+            "legacy_transition_units",
+            "disposition_entry_statuses"
+          ],
+          "properties": {
+            "standard_version": {
+              "const": "3.0.0"
+            },
+            "catalog_path": {
+              "const": "docs/98.archive/retention-catalog.md"
+            },
+            "capture_section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "capture_columns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true
+            },
+            "assessment_section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "assessment_columns": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 8,
+              "maxItems": 8,
+              "uniqueItems": true
+            },
+            "assessment_values": {
+              "const": [
+                "unreviewed",
+                "usable",
+                "superseded",
+                "withdrawn",
+                "invalidated"
+              ]
+            },
+            "availability_values": {
+              "const": [
+                "retained",
+                "git-history-only"
+              ]
+            },
+            "default_assessment": {
+              "const": "unreviewed"
+            },
+            "default_availability": {
+              "const": "retained"
+            },
+            "absence_token": {
+              "const": "none"
+            },
+            "legacy_capture_revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$"
+            },
+            "citation_order": {
+              "const": [
+                "resolve",
+                "assessment",
+                "route-record",
+                "profile",
+                "context",
+                "integrity"
+              ]
+            },
+            "blocked_assessments": {
+              "const": [
+                "withdrawn",
+                "invalidated"
+              ]
+            },
+            "legacy_transition_units": {
+              "const": [
+                "superseded/02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md"
+              ]
+            },
+            "disposition_entry_statuses": {
+              "type": "object",
+              "additionalProperties": {
+                "$ref": "#/$defs/stringList"
+              }
+            },
+            "history_only_availability": {
+              "const": "git-history-only"
+            }
+          }
+        },
+        "incident_closure": {"type":"object","additionalProperties":false,"required":["incident_status","postmortem_status","corrective_section"],"properties":{"incident_status":{"type":"string","minLength":1},"postmortem_status":{"type":"string","minLength":1},"corrective_section":{"type":"string","minLength":1}}},
         "archive_source_prefixes": { "$ref": "#/$defs/stringList" },
         "frontmatter_order": { "$ref": "#/$defs/stringList" },
         "frozen_transition_fields": { "$ref": "#/$defs/stringList" },

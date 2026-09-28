@@ -13,6 +13,7 @@ created: "{{CREATED}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
+<!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason and approved_by, a valid approved_at date, and criteria entries containing an integer criterion plus exactly one reassigned_to Task identity or nonempty withdrawn reason. An empty criteria list states that this Task held no criterion; it does not waive Spec completion evidence. Never seed or infer cancellation approval. -->
 
 # {{TITLE}}
 
