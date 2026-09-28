@@ -1,8 +1,8 @@
 ---
 title: "Document Language Migration"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
