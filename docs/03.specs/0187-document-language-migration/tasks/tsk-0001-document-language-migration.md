@@ -1,10 +1,10 @@
 ---
 title: "Document Language Migration"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0187-TSK-0001"
 parent_ids:
