@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.0.4"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-28"
 layer: "templates"
 ---
 
@@ -12,35 +12,35 @@ layer: "templates"
 
 ## Overview
 
-Stage 99 is the sole authority for document paths, profiles, identifiers,
-sections, lifecycle states and transitions, traceability shapes, and copyable
-templates. The machine authority is [`registry.json`](./registry.json); the two
-schemas under `contracts/` validate the registry and document
-frontmatter. Human and AI-agent policy remains in canonical agent governance, and executable gate
-behavior remains in registered `scripts/` modules.
+Stage 99는 문서 경로, profile, identifier, section, lifecycle 상태와 전이,
+traceability 형태, 복사용 template의 유일한 권위입니다. machine authority는
+[`registry.json`](./registry.json)이며, `contracts/` 아래 두 schema가
+registry와 문서 frontmatter를 검증합니다. 사람과 AI agent를 위한 정책은
+공통 Agent 거버넌스에 남고, 실행 가능한 gate 동작은 등록된 `scripts/`
+모듈에 남습니다.
 
-Predecessor contracts are recoverable through Git history; they are not current
-authoring or validation inputs.
+이전 계약은 Git history로 복구할 수 있으나, 현재 작성이나 검증 입력이
+아닙니다.
 
 ## Scope
 
-Stage 99 owns:
+Stage 99가 소유하는 것:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
 - the Research, Audit, Data, and Tombstone profiles plus the transition-only
   Migration profile;
-- canonical path and stable-ID patterns;
-- profile-specific frontmatter and section contracts;
-- lifecycle states and allowed forward transitions;
-- monotonic identity allocation state, including Requirement child spaces;
-- template role-to-profile registration;
-- reusable Markdown and executable interface-contract templates;
-- exact Stage 03 package-index and contract-payload filenames and media types;
-- the four-digit Operations subject route shape.
+- canonical path와 안정 ID 패턴;
+- profile별 frontmatter와 section 계약;
+- lifecycle 상태와 허용된 forward transition;
+- Requirement child space를 포함한 단조 증가 identity 발급 상태;
+- template 역할-profile 등록;
+- 재사용 가능한 Markdown과 실행 가능한 interface-contract template;
+- 정확한 Stage 03 package-index와 contract-payload 파일명 및 media type;
+- 네 자리 Operations subject route 형태.
 
-Stage 99 does not own agent behavior, product truth, architecture decisions,
-implementation evidence, operating policy, or reference findings.
+Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운영 정책,
+reference finding을 소유하지 않습니다.
 
 ## Structure
 
@@ -66,13 +66,13 @@ docs/99.templates/
 
 ## How to Work in This Area
 
-1. Select a registered profile and template role.
-2. Copy the registered source without changing its declared `type` contract.
-3. Allocate an ID above the persisted high-water mark.
-4. Replace placeholders and add full traceability IDs.
-5. Run the document-contract validator and the owning stage gate.
-6. Change Registry, schemas, templates, consumers, and tests in one reviewed
-   logical unit when the contract itself changes.
+1. 등록된 profile과 template 역할을 선택합니다.
+2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
+3. 저장된 high-water mark보다 높은 ID를 발급합니다.
+4. placeholder를 바꾸고 전체 traceability ID를 추가합니다.
+5. 문서 계약 validator와 owning stage gate를 실행합니다.
+6. 계약 자체가 바뀔 때는 Registry, schema, template, consumer, test를 하나의
+   검토된 논리적 단위에서 함께 바꿉니다.
 
 ### Authority Model
 
@@ -83,86 +83,90 @@ docs/99.templates/
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
-Consumers must load the Registry through
-`scripts.lib.document_governance.registry`. They must not reinterpret README
-prose or template bodies as machine policy.
+Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
+로드해야 합니다. README 본문이나 template 본문을 machine policy로
+재해석해서는 안 됩니다.
 
-Every profile declares one `frontmatter_policy`. `required` means the canonical
-Markdown artifact must carry a `type` equal to its Registry-classified profile
-type; this also applies to package, domain, subject, stage, governance,
-generated, and repository-support Markdown without a dedicated copy template.
-`absent` is reserved for executable machine contracts that do not use Markdown
-frontmatter. `unmanaged` covers the unsupported fallback and registered frozen
-archive payloads; neither is a current authoring target.
+모든 profile은 하나의 `frontmatter_policy`를 선언합니다. `required`는
+canonical Markdown artifact의 `type`이 해당 Registry-classified profile type과
+같아야 함을 뜻하며 전용 복사 template이 없는 package,
+domain, subject, stage, governance, generated, repository-support
+Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않는
+실행 가능한 machine contract 전용입니다. `unmanaged`는 지원되지 않는
+fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작성
+대상이 아닙니다.
 
 ### Identity and Lifecycle Rules
 
 #### Registered Identity Shapes
 
-`registry.json` states the identity shape per profile in `artifact_id_pattern`,
-and the owning container in `identity_relation`. This section states the rules
-those fields express, not the fields themselves.
+`registry.json`은 profile별 identity 형태를 `artifact_id_pattern`에,
+소유 container를 `identity_relation`에 명시합니다. 이 절은 그 필드들이
+표현하는 규칙을 설명할 뿐, 필드 자체를 다시 정의하지 않습니다.
 
 #### Required Frontmatter Envelope
 
-A profile's `required_frontmatter` and `optional_frontmatter` state which keys a
-document declares; `common.frontmatter_order` states the order;
-`frontmatter_values` declares profile-specific literal constraints;
-[`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)
-states each value's shape. Authoring behavior, content versioning, and the
-meaning of the envelope are owned by the canonical agent governance
-[documentation protocol](../../.agents/governance/documentation-protocol.md#authoring-rules).
+profile의 `required_frontmatter`와 `optional_frontmatter`는 문서가
+선언해야 하는 key를, `common.frontmatter_order`는 순서를,
+`frontmatter_values`는 profile별 literal 제약을,
+[`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)은
+각 값의 형태를 명시합니다. 작성 행동, 콘텐츠 버전, envelope의 의미는
+공통 Agent 거버넌스
+[문서화 정책](../../.agents/governance/documentation-protocol.md#authoring-rules)이
+소유합니다.
 
-Canonical skills use `.agents/skills/{slug}/SKILL.md` with exactly `name`,
-`description`, and `metadata` at the top level. The registered
-`native-skill-envelope` exception projects nested metadata through the ordinary
-governance skill profile and common value schema. Name, folder and `function_id`
-must agree. This serialization contract grants no runtime permission. Other
-authored documents retain the common frontmatter envelope.
+Canonical skill은 최상위에 정확히 `name`, `description`, `metadata`만 갖는
+`.agents/skills/{slug}/SKILL.md`를 사용합니다. 등록된
+`native-skill-envelope` 예외는 중첩된 metadata를 일반 governance skill
+profile과 공통 값 schema를 통해 투영합니다. 이름, 폴더, `function_id`는
+서로 일치해야 합니다. 이 직렬화 계약은 runtime 권한을 부여하지 않습니다.
+다른 작성 문서는 공통 frontmatter envelope를 유지합니다.
 
-`parent_ids` carries the Registry-declared structural relation; broader evidence
-and consumer relationships belong in `Traceability` or `Related Documents`.
-Ownership comes from `.github/CODEOWNERS` or the applicable canonical role.
-The short Registry profile `id` maps explicitly to one unique `type`; it is not
-an additional authored classifier.
+`parent_ids`는 Registry가 선언한 구조적 관계를 담습니다. 더 넓은 증거와
+consumer 관계는 `Traceability`나 `Related Documents`에 둡니다. 소유권은
+`.github/CODEOWNERS` 또는 해당 canonical role에서 옵니다. 짧은 Registry
+profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추가 작성용
+분류자가 아닙니다.
 
-- Standalone package paths use four numeric digits and omit semantic prefixes.
-- A member identity is its container's identity plus that container's own
-  internal sequence, so the same member number may recur under two containers.
-- Stage 90 package members are named `m####-<slug>.md`; the Registry profile
-  path owns that rule and `scripts/lib/document_governance/references.py`
-  executes the resulting classification.
-- Tombstones use `identity_relation: inherited`: `artifact_id` is
-  `tomb-{retired_artifact_id}`, derived by
-  `scripts/lib/document_governance/archive.py`. The four-digit filename uses a
-  separate monotonic allocation in the Registry's `tombstone` space; inherited
-  artifact identity does not remove its `high_water` or `next_number` checks.
-- Incident numbers restart inside each year partition, so the year belongs to
-  the identity and not only to the path.
-- Stable package IDs retain their registered prefix and case.
-- Requirement children use full owner-qualified IDs:
-  `REQ-####-FR-####`, `REQ-####-NFR-####`, and `REQ-####-IF-####`.
-- FR, NFR, and IF counters are package-owned. Registry allocation keys include
-  the full owner (for example `REQ-0001.FR`), so the same child number may be
-  issued independently in two Requirement Packages.
-- Issued numbers are never reused. `high_water` never decreases and
-  `next_number` is always greater than `high_water`.
-- Operations subjects and role artifacts have independent stable IDs. The
-  Registry validates the four-digit subject route and each role ID shape but
-  never equates their numbers. The current catalog directory containment owns
-  role-to-subject membership.
-- Incident year directories are the only date-path exception.
-- A lifecycle transition is valid only when registered for the profile's
-  lifecycle. Terminal states have no outgoing transition.
+- 독립 package 경로는 네 자리 숫자를 쓰고 의미 접두사를 생략합니다.
+- 구성원 identity는 자신을 담는 container의 identity에 그 container 자체의
+  내부 순번을 더한 것이므로, 같은 구성원 번호가 서로 다른 두 container
+  아래에서 반복될 수 있습니다.
+- Stage 90 package 구성원은 `m####-<slug>.md`로 이름 붙이며, Registry
+  profile 경로가 그 규칙을 소유하고
+  `scripts/lib/document_governance/references.py`가 그 분류를 실행합니다.
+- Tombstone은 `identity_relation: inherited`를 사용합니다: `artifact_id`는
+  `tomb-{retired_artifact_id}`이며,
+  `scripts/lib/document_governance/archive.py`가 이를 도출합니다. 네 자리
+  파일명은 Registry의 `tombstone` space에서 별도의 단조 증가 발급을
+  사용하며 상속된 artifact identity가 있어도 그 `high_water`나 `next_number`
+  검사는 그대로 적용됩니다.
+- Incident 번호는 연도 partition마다 다시 시작하므로, 연도는 경로뿐
+  아니라 identity에도 속합니다.
+- 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.
+- Requirement 자식은 owner를 완전히 포함한 ID를 사용합니다:
+  `REQ-####-FR-####`, `REQ-####-NFR-####`, `REQ-####-IF-####`.
+- FR, NFR, IF 카운터는 package가 소유합니다. Registry 발급 key는 전체
+  owner를 포함하므로(예: `REQ-0001.FR`), 같은 자식 번호가 서로 다른 두
+  Requirement Package에서 독립적으로 발급될 수 있습니다.
+- 발급된 번호는 다시 사용하지 않습니다. `high_water`는 절대 감소하지
+  않고 `next_number`는 항상 `high_water`보다 큽니다.
+- Operations subject와 role artifact는 독립적인 안정 ID를 가집니다.
+  Registry는 네 자리 subject route와 각 role ID 형태를 검증하지만 그
+  번호를 서로 동일시하지 않습니다. 현재 catalog 디렉터리 포함 관계가
+  role-subject 소속을 소유합니다.
+- Incident 연도 디렉터리만 날짜-경로 예외입니다.
+- lifecycle 전이는 그 profile의 lifecycle에 등록된 경우에만 유효합니다.
+  terminal 상태에는 나가는 전이가 없습니다.
 
-The semantic flows are profile-specific: Requirements approve, ADRs accept or
-reject, Specs review and approve before activation, Plans approve before
-activation, Tasks become ready and then in progress, Incidents progress from
-detection through resolution, Postmortems and references publish, and Migration
-and Tombstone records are sealed. `registry.json` remains the exact authority
-for every entry state, edge, and terminal state.
-Full Git-history allocation validation belongs to the full document-contract
-profile. Changed validation uses the persisted Registry allocation state.
+의미적 흐름은 profile마다 다릅니다: Requirement는 승인하고, ADR은
+수락하거나 거부하고, Spec은 활성화 전에 검토·승인하고, Plan은 활성화
+전에 승인하고, Task는 준비 상태를 거쳐 진행 중이 되고, Incident는 감지에서
+해결로 진행하고, Postmortem과 reference는 게시되고, Migration과 Tombstone
+기록은 봉인됩니다. `registry.json`이 모든 진입 상태, edge, terminal 상태의
+정확한 권위로 남습니다.
+전체 Git history 발급 검증은 전체 문서 계약 profile이 소유합니다. 변경
+검증은 저장된 Registry 발급 상태를 사용합니다.
 
 #### Cancellation and Archive Assessments
 
@@ -183,40 +187,42 @@ profile. Changed validation uses the persisted Registry allocation state.
 
 #### Pinned Requirement Allocation Recovery
 
-The ordinary trusted-baseline loader remains strict. The current metadata gate
-may recover only the recorded REQ-0012.FR stable-identity restoration through a
-tracked current Task's `requirement_allocation_recovery_decisions` field, whose
-exact value grammar is in the frontmatter schema. The decision pins the requested
-comparison base, defect commit, its valid parent, old/corrupt/repaired allocation
-sets, and the repaired Requirement content hash. Recovery verifies their Git
-ancestry, regular bounded sources, unchanged defect-to-base Requirement content,
-and an exact current declaration-only repair. All unaffected allocations still
-pass the ordinary strict loader. Historical issuance stays `[1, 2, 3, 4]`; the
-current transition reserves withdrawn number 3 and retains stable number 4.
+일반적인 신뢰 baseline loader는 여전히 엄격합니다. 현재 metadata gate는
+추적되는 현재 Task의 `requirement_allocation_recovery_decisions` 필드를
+통해서만 기록된 REQ-0012.FR 안정 identity 복원을 복구할 수 있으며, 그
+정확한 값 문법은 frontmatter schema에 있습니다. 이 decision은 요청된 비교
+base, 결함 commit, 그 유효한 parent, 이전/손상/복구된 발급 집합, 복구된
+Requirement 콘텐츠 hash를 고정합니다. 복구는 이들의 Git ancestry, 정규
+bounded source, 변하지 않은 defect-to-base Requirement 콘텐츠, 정확히
+선언에만 그치는 복구를 검증합니다. 영향받지 않은 모든 발급은 여전히
+일반적인 엄격한 loader를 통과합니다. 과거 발급은 `[1, 2, 3, 4]`로
+유지되며, 현재 전이는 철회된 번호 3을 예약하고 안정 번호 4를 유지합니다.
 
-Missing, duplicate, untracked, malformed, stale or mismatched evidence fails
-closed. There is no alternate-base search, history rewrite, generic waiver, or
-implicit permission to reuse an identity. Once the repaired commit is the
-comparison base, strict loading succeeds without consulting recovery evidence.
+누락, 중복, 추적되지 않음, 형식 오류, 오래되거나 불일치하는 증거는
+fail-closed로 처리됩니다. 대체 base 검색, history 재작성, 일반 waiver,
+identity 재사용은 암묵적으로 허용하지 않습니다. 복구된 commit이 비교
+base가 되면, 엄격한 loading은 복구 증거를 참조하지 않고도 성공합니다.
 
 ### Template Rules
 
-- Copy the source registered by `template_id`/template role.
-- Markdown template frontmatter declares the profile's `type` and contains no
-  concrete target path.
-- Markdown placeholders use `{{UPPER_SNAKE_CASE}}`. Template-only authoring
-  prompts may appear in HTML comments but must not survive promotion. Native
-  machine contract templates use `__UPPER_SNAKE__` tokens instead.
-- The shared stage README form is a deliberate destination-bound exception:
-  its `layer` placeholder resolves from the exact Registry `frontmatter_routes`
-  entry. A source shared across stages cannot use one stage literal; target
-  documents must use the registered literal and cannot invent a stage.
-- Replace every placeholder before promotion to a target document.
-- Executable OpenAPI, GraphQL, and Proto contracts belong to the owning Stage 03
-  Spec package. Their deterministic filenames and media types are Registry
-  profiles; Stage 01 retains implementation-independent interface needs.
-- `DESIGN.md` remains the root UI/design-system authority and is not a Stage 03
-  design artifact.
+- `template_id`/template 역할이 등록한 source를 복사합니다.
+- Markdown template frontmatter는 profile의 `type`을 선언하며 구체적인
+  대상 경로를 담지 않습니다.
+- Markdown placeholder는 `{{UPPER_SNAKE_CASE}}`를 사용합니다. template
+  전용 작성 안내는 HTML comment로 나타날 수 있으나 승격 후까지 남아서는
+  안 됩니다. native machine contract template은 대신 `__UPPER_SNAKE__`
+  token을 사용합니다.
+- 공유되는 stage README 형태는 의도적인 destination-bound 예외입니다:
+  그 `layer` placeholder는 정확한 Registry `frontmatter_routes` 항목에서
+  해석됩니다. 여러 stage가 공유하는 source는 하나의 stage 리터럴을 쓸 수
+  없으며, 대상 문서는 등록된 리터럴을 사용해야 하고 stage를 임의로 만들
+  수 없습니다.
+- 대상 문서로 승격하기 전에 모든 placeholder를 바꿉니다.
+- 실행 가능한 OpenAPI, GraphQL, Proto 계약은 이를 소유하는 Stage 03 Spec
+  package에 속합니다. 그 결정적 파일명과 media type은 Registry profile이며,
+  Stage 01은 구현과 무관한 interface 필요를 유지합니다.
+- `DESIGN.md`는 root UI/design-system 권위로 남으며 Stage 03 design
+  artifact가 아닙니다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.1.3"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-27"
 layer: "architecture"
 ---
 
@@ -27,7 +27,7 @@ ADR을 기록한다.
 ## Scope
 
 이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
-계획이나 운영 절차를 소유하지 않고, 실제로 연결된 Requirement Package, ADR, Spec과
+계획이나 운영 절차를 소유하지 않고 실제로 연결된 Requirement Package, ADR, Spec과
 Operations 문서의 역할을 대체하지 않는다. 개수는 유지 기준이 아니므로 아래
 Current Inventory와 실제 파일 목록이 권위이다.
 
@@ -50,6 +50,7 @@ docs/02.architecture/descriptions/
 ├── 0027-agent-governance-canonical-adapter.md
 ├── 0028-operational-readiness-closure.md
 ├── 0030-document-lifecycle-governance.md
+├── 0031-home-development-host.md
 └── README.md
 ```
 
@@ -58,11 +59,13 @@ docs/02.architecture/descriptions/
 - `AD-0001`부터 `AD-0013`: 기본 tier와 서비스 아키텍처.
 - `AD-0018`부터 `AD-0026`: hardening, HA와 network 후속 아키텍처.
 - [`AD-0027`](./0027-agent-governance-canonical-adapter.md):
-  canonical agent governance adapter architecture.
+  canonical agent governance adapter 아키텍처.
 - [`AD-0028`](./0028-operational-readiness-closure.md):
-  local-isolated readiness evidence architecture.
+  local-isolated readiness evidence 아키텍처.
 - [`AD-0030`](./0030-document-lifecycle-governance.md):
   문서 lifecycle 거버넌스 아키텍처.
+- [`AD-0031`](./0031-home-development-host.md):
+  home and development host 아키텍처.
 
 ## How to Work in This Area
 
@@ -96,5 +99,3 @@ secret 값, 관찰하지 않은 runtime 상태 또는 존재하지 않는 interf
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
 - [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
-
-- [AD-0031 Home and Development Host](0031-home-development-host.md)
