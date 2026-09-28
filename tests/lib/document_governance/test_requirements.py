@@ -211,8 +211,9 @@ class RequirementPackageTests(unittest.TestCase):
         source = ROOT / "docs/01.requirements/0001-gateway.md"
         incomplete = source.read_text(encoding="utf-8").replace(
             (
-                "- **REQ-0001-FR-0004**: OAuth2 Proxy와 연동하여 특정 경로에 "
-                "대한 인증(SSO) 미들웨어를 제공해야 함.\n"
+                "- **REQ-0001-FR-0004**: The system must integrate with OAuth2 "
+                "Proxy to provide authentication (SSO) middleware for specific "
+                "paths.\n"
             ),
             "",
             1,

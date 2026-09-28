@@ -245,23 +245,100 @@ non-README document whose profile declares a language: 200 documents.
   local `main` merge.
 - 2026-09-29: W1 recorded the measured set below Inputs and the pre-change
   gate summaries.
+- 2026-09-29: W2-W7 ran as 27 translation batches (B01-B27) with doc-writer
+  subagents, then 36 humanize-korean monolith runs (2026-09-29-001..036) over
+  the Korean-target batches.
+- 2026-09-29: The PreToolUse hook denied every Write to the session
+  scratchpad, which blocked humanize output. The owner fixed the hook and added
+  scratchpad allow rules (`54741b2d5`).
+- 2026-09-29: A scan for English sentences in the Korean-target set and for
+  Hangul in the English-target set found remnants; a cleanup pass translated
+  them.
+- 2026-09-29: W8 widened `--mode language` to the corpus and removed the
+  lifecycle body filter. W9 reran the gate members and both unit suites.
 
 ## Verification Evidence
 
-Not started.
+Structure tokens were compared per document against `main` with a scratch
+script outside the repository: frontmatter other than `version` and `updated`,
+a patch `version` bump, fenced blocks, inline code (multi-line spans
+normalized), link targets, bare URLs, identifiers (ASCII-bounded, so a Korean
+particle glued to an ID still counts), heading levels, registered headings, and
+table shapes. Every one of the 200 documents passed, except GDE-0087, whose one
+link target was corrected on purpose. W1 and W9 ran the twelve changed-profile
+members except `check-conftest-policy.sh`, which runs `docker compose` and is
+outside this request.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: 200 documents recorded under Inputs before any translation (`31f6921ef`) | N/A: the measured set is a one-time scope record |
+| 5 | W1 | PASS: twelve members returned 0 at baseline | N/A: baseline run evidence |
+| 2 | W2 | PASS: 17 Requirements packages read in English; token comparison and language check ok (`1ee018334`, `bf26f7a56`) | [Stage 01](../../../../docs/01.requirements/README.md) |
+| 5 | W2 | PASS: metadata `check-changed` 0 violations after the batch | [Stage 01](../../../../docs/01.requirements/README.md) |
+| 2 | W3 | PASS: 29 ADRs read in English; ADR-0038 takes a same-line history exception for evaluated versions (`d98f31ff2`, `bf26f7a56`) | [Stage 02](../../../../docs/02.architecture/README.md) |
+| 5 | W3 | PASS: metadata `check-changed` 0 violations after the batch | [Stage 02](../../../../docs/02.architecture/README.md) |
+| 2 | W4 | PASS: 20 architecture descriptions read in English (`ec78e49cd`, `bf26f7a56`) | [Stage 02](../../../../docs/02.architecture/README.md) |
+| 5 | W4 | PASS: links `--mode all` PASS after the batch | [Stage 02](../../../../docs/02.architecture/README.md) |
+| 2 | W5 | PASS: 45 guides read in Korean (`fcc256bd3`, `464dbb2f2`, `90b07dc9f`, `35a9b2232`, `c0b6f80c0`) | [Stage 05](../../../../docs/05.operations/README.md) |
+| 3 | W5 | PASS: humanize runs 002-013, gates OK or WARN; every WARN was a numbered-item `heading_lost` or a split-sentence modality false positive | [Stage 05](../../../../docs/05.operations/README.md) |
+| 5 | W5 | PASS: token comparison and language check ok for every guide | [Stage 05](../../../../docs/05.operations/README.md) |
+| 2 | W6 | PASS: 47 policies read in Korean (`8904193b5`, `679d1292a`, `c0b6f80c0`) | [Stage 05](../../../../docs/05.operations/README.md) |
+| 3 | W6 | PASS: humanize runs 014-024, gates OK | [Stage 05](../../../../docs/05.operations/README.md) |
+| 5 | W6 | PASS: token comparison and language check ok for every policy | [Stage 05](../../../../docs/05.operations/README.md) |
+| 2 | W7 | PASS: 41 runbooks and `.github/repository-surface.md` read in Korean (`fcc256bd3`, `1e3faef73`, `90b07dc9f`, `c0b6f80c0`) | [Stage 05](../../../../docs/05.operations/README.md) |
+| 3 | W7 | PASS: humanize runs 001 and 025-036, gates OK or numbered-item WARN | [Stage 05](../../../../docs/05.operations/README.md) |
+| 5 | W7 | PASS: token comparison and language check ok for every runbook | [Stage 05](../../../../docs/05.operations/README.md) |
+| 4 | W8 | PASS: `LanguageModeTests` judged-profile case failed before the change and passes after; `--mode language` 971 documents, failures 0; lifecycle filter removed (`9dc9d01d0`) | [links.py](../../../../scripts/lib/document_governance/links.py) |
+| 5 | W8 | PASS: lifecycle `violations=0`, metadata `check-changed` 0 violations | [documentation protocol](../../../../.agents/governance/documentation-protocol.md) |
+| 6 | W8 | PASS: `test_links` and `test_heading` 156 tests OK | [links.py](../../../../scripts/lib/document_governance/links.py) |
+| 5 | W9 | PASS: twelve members returned 0 (`gate fail=0`) | N/A: run evidence for this change |
+| 6 | W9 | PASS: `tests/validation` 675 tests OK, 23 skipped; `tests/lib` 945 tests, one failure: `test_requirements` pinned the Korean REQ-0001-FR-0004 line; the fixture now pins the English line and the module reruns OK | N/A: run evidence for this change |
 
 ## Review Evidence
 
-None yet.
+- Meaning review: each batch report listed passages the humanize pass
+  reworded; the controller checked the flagged ones. The Valkey "may be absent"
+  line keeps its permissive-possibility reading.
+- Heading house style: Korean-target documents keep their English template
+  headings, as GDE-0008 already did, so no anchor changed.
 
 ## Commit Ledger
 
-None yet.
+| Commit | Unit | Change |
+| --- | --- | --- |
+| `0b77e6097` | Package | Spec, Plan, and Task drafted |
+| `31f6921ef` | W1 | Measured set and baseline |
+| `1ee018334` | W2 | 17 Requirements packages |
+| `d98f31ff2` | W3 | 29 ADRs |
+| `ec78e49cd` | W4 | 20 architecture descriptions |
+| `54741b2d5` | Hook | Owner-applied scratchpad fix for the edit-target hook |
+| `fcc256bd3` | W5, W7 | Seven guides and the repository surface |
+| `464dbb2f2` | W5 | 38 guides; GDE-0087 link corrected |
+| `8904193b5` | W6 | 22 policies |
+| `90b07dc9f` | W5, W7 | GDE-0089 code span; also swept in the six B22 runbook translations before their humanize runs |
+| `679d1292a` | W6 | 25 policies; stray closing tags removed |
+| `1e3faef73` | W7 | 35 runbooks |
+| `35a9b2232` | W5 | GDE-0070 remnant |
+| `bf26f7a56` | W2-W4 | Korean remnants in five English documents |
+| `9dc9d01d0` | W8 | Corpus-wide language enforcement |
+| `c0b6f80c0` | W7 | B22 humanize output and English remnant cleanup |
+| (this commit) | W9 | Requirement fixture follows the translated text; evidence recorded |
 
 ## Rulings
 
 - 2026-09-29: Owner approved the Spec and Plan ("승인").
+- 2026-09-29: Korean-target documents keep all headings unchanged, not only
+  registered ones — house style (GDE-0008) keeps English template headings,
+  and it avoids anchor churn. This narrows Spec behavior rule 3 to the
+  English-target set.
+- 2026-09-29: One humanize run per batch of at most 25,000 characters, without
+  a diagnosis call — cost control, as in SPEC-0184.
+- 2026-09-29: The owner fixed the scratchpad Write hook and added allow rules,
+  and approved the metadata, link, and language checks on translated files.
+- 2026-09-29: `check-conftest-policy.sh` was not run; the request forbids
+  `docker compose` run/down.
 
 ## Deferred Items
 
-None yet.
+- Short English labels (`> Scope:`, `**Systems**:`-style lead-ins) and comma
+  lists of technical nouns remain in Korean-target documents as house style.
