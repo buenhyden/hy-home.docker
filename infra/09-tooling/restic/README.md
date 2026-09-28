@@ -1,33 +1,36 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-27"
 ---
 
 # Restic Backup Jobs
 
 ## Overview
 
-One-shot jobs that snapshot HOME state into two encrypted Restic repositories on
-different physical disks, plus the host orchestrator and timer that also drive
-pgBackRest in `mng-pg`.
+HOME 상태를 서로 다른 물리 디스크에 있는 두 개의 암호화된 Restic 저장소로
+스냅샷하는 1회성 작업이며 `mng-pg`의 pgBackRest도 함께 구동하는 호스트
+오케스트레이터와 타이머를 포함합니다.
 
 ## Audience
 
-Operators who run, verify or restore backups, and reviewers of the backup
-boundary.
+백업을 실행·검증·복구하는 운영자와 백업 경계를 검토하는 담당자.
 
 ## Scope
 
-In scope: the file-safe data-disk trees allowlisted in
-[`sets/state-include.txt`](sets/state-include.txt), consistent exports
-(PostgreSQL globals, Valkey RDB, three SQLite databases), `secrets/` and `.env`.
-Out of scope: everything not allowlisted, in particular live engine
-directories, which have their own method in POL-0021, and offsite copies (not
-provided).
+범위 내: [`sets/state-include.txt`](sets/state-include.txt)에 allowlist로
+등록된 파일 안전 data-disk 트리, 일관된 내보내기 결과(PostgreSQL globals,
+Valkey RDB, SQLite 데이터베이스 세 개), `secrets/`와 `.env`.
+범위 외: allowlist에 없는 모든 것, 특히 POL-0021에 별도 방식이 정의된 live
+엔진 디렉터리. 오프사이트(offsite) 복사본은 이 Compose/스크립트에는 아직
+구현되어 있지 않습니다. ADR-0041(`docs/02.architecture/decisions/0041-offsite-backup-target.md`)이
+Cloudflare R2를 오프사이트 대상으로 승인했지만(2026-09-25), 이 패키지의
+`docker-compose.yml`, `backup.sh`, `bin/hyhome-backup.sh`에는 아직 R2/S3
+연동이 반영되어 있지 않습니다. 구현 전까지는 이 README의 "오프사이트
+없음" 설명이 현재 소스와 일치하는 상태입니다.
 
 ## Structure
 
@@ -43,34 +46,35 @@ restic/
 
 ## Tech Stack
 
-The Restic and Python images are pinned in [`docker-compose.yml`](docker-compose.yml);
-pgBackRest is pinned in the
-[`mng-pg` image](../../04-data/operational/mng-db/pg/backup/Dockerfile).
+Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고정되어
+있으며 pgBackRest는
+[`mng-pg` 이미지](../../04-data/operational/mng-db/pg/backup/Dockerfile)에
+고정되어 있습니다.
 
 ## Configuration
 
-- Profile `backup` (category automation, never HOME). `restic` defaults to
-  `snapshots`, so `up` changes nothing.
-- `restic` runs as root with only `DAC_OVERRIDE`, `network_mode: none` and
-  every source mounted read-only; only `/repo/state` and `/repo/host` are
-  writable. Repositories and staging use `create_host_path: false`.
-- `backup-sqlite-export` mounts the Grafana, Gatus and Open WebUI data
-  directories writable only because WAL readers need the `-shm` file; it writes
-  0600 copies owned by UID 1000 into staging.
-- `restic` has `mem_limit: 1g` for the repository index and tmpfs cache;
-  `cmd` refuses `forget`/`prune`, which run only through `forget-prune`.
-- Environment keys: `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
+- 프로필 `backup` (분류는 automation이며 HOME이 아님). `restic`은 기본값이
+  `snapshots`이므로 `up`을 실행해도 아무것도 바뀌지 않습니다.
+- `restic`은 `DAC_OVERRIDE`만 가진 root로 실행되며 `network_mode: none`이고
+  모든 소스는 읽기 전용으로 마운트됩니다. `/repo/state`와 `/repo/host`만
+  쓰기 가능합니다. 저장소와 staging은 `create_host_path: false`를 사용합니다.
+- `backup-sqlite-export`는 WAL 리더가 `-shm` 파일을 필요로 하기 때문에만
+  Grafana, Gatus, Open WebUI 데이터 디렉터리를 쓰기 가능하게 마운트하며
+  UID 1000이 소유하는 0600 복사본을 staging에 씁니다.
+- `restic`은 저장소 인덱스와 tmpfs 캐시에 `mem_limit: 1g`를 가지며 `cmd`는
+  `forget`/`prune`을 거부하고 이는 `forget-prune`을 통해서만 실행됩니다.
+- 환경 변수 키: `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
   `BACKUP_STATE_MAX_GIB`,
   `DEFAULT_MOUNT_VOLUME_PATH`, `DEFAULT_OBSERVABILITY_DIR`, `DEFAULT_AI_MODEL_DIR`,
   `SECRETS_GID`. Secret: `restic_password` (BKP-002).
-- The orchestrator reads paths from `docker compose config`, never sources
-  `.env`, takes a `flock` lock (exit 75 when busy), exits 64 when less than
-  20 GiB is free or a repository shares a filesystem with (or sits inside) its
-  source, skips the Restic step and fails when `BACKUP_STATE_REPO_DIR` is at or
-  over `BACKUP_STATE_MAX_GIB` (5) after pgBackRest expiry, and always empties
-  staging on exit.
-- `mng-pg` has a local build and no registry: use
-  `docker compose pull --ignore-buildable` for pulls.
+- 오케스트레이터는 경로를 `docker compose config`에서 읽고 `.env`를 직접
+  소싱하지 않으며 `flock` 잠금을 사용합니다(사용 중이면 종료 코드 75).
+  여유 공간이 20 GiB 미만이거나 저장소가 소스와 같은 파일시스템을
+  공유(또는 그 안에 위치)하면 종료 코드 64를 반환하고 pgBackRest 만료 이후
+  `BACKUP_STATE_REPO_DIR`가 `BACKUP_STATE_MAX_GIB`(5) 이상이면 Restic 단계를
+  건너뛰고 실패 처리하며 종료 시 항상 staging을 비웁니다.
+- `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
+  `docker compose pull --ignore-buildable`을 사용합니다.
 
 ## Validation
 
@@ -82,12 +86,14 @@ systemd-analyze verify infra/09-tooling/restic/systemd/hyhome-backup.service inf
 
 ## How to Work in This Area
 
-Add a new source by deciding its consistent method first: a file-safe tree gets
-an allowlist line; a live engine gets an export step in `bin/hyhome-backup.sh`
-and no line only once it is safe to copy. Keep deletes in `forget-prune` behind its confirmation variable.
-Setup, runs and restores follow the backup Runbook.
+새 소스를 추가할 때는 먼저 일관된 방식을 결정합니다. 파일 안전 트리는
+allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내보내기
+단계를 추가하며 안전하게 복사할 수 있게 되기 전까지는 줄을 추가하지
+않습니다. 삭제는 `forget-prune`의 확인 변수 뒤에 유지합니다. 설정, 실행,
+복구는 백업 Runbook을 따릅니다.
 
 ## Related Documents
 
-Use the [documentation entry point](../../../docs/README.md) to reach Stage 05
-subject `04-data/0021-backup-and-restore` (GDE/POL/RUN-0021).
+[documentation entry point](../../../docs/README.md)를 통해 Stage 05 대상
+`04-data/0021-backup-and-restore`(GDE/POL/RUN-0021)로 이동합니다. 오프사이트
+대상 결정은 `docs/02.architecture/decisions/0041-offsite-backup-target.md`(ADR-0041)를 참고합니다.

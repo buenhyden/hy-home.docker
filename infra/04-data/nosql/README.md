@@ -1,16 +1,16 @@
 ---
 title: "NoSQL Infrastructure (04-data/nosql)"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-03-27"
 ---
 
 # NoSQL Infrastructure (04-data/nosql)
 
-> Distributed, Document-oriented, and Wide-column NoSQL databases.
+> 분산형, 문서 지향, wide-column NoSQL 데이터베이스입니다.
 
 ## Overview
 
@@ -44,10 +44,10 @@ created: "2026-03-27"
 
 ```text
 nosql/
-├── cassandra/            # Apache Cassandra configuration
-├── couchdb/              # CouchDB Cluster configuration
-├── mongodb/              # MongoDB Replica Set configuration
-└── README.md             # This file
+├── cassandra/            # Apache Cassandra 설정
+├── couchdb/              # CouchDB Cluster 설정
+├── mongodb/              # MongoDB Replica Set 설정
+└── README.md             # 이 파일
 ```
 
 ## How to Work in This Area
@@ -70,7 +70,4 @@ nosql/
 - **Policies**: NoSQL Policies (`docs/05.operations/policies/README.md`)
 - Stage 05 documents: `docs/05.operations/{guides,policies,runbooks}/####-<slug>.md`
 - **Source**: [Data Tier Root](../README.md)
-- [Documentation index](../../../docs/README.md)
-
----
-Copyright (c) 2026. Licensed under the MIT License.
+- [문서 인덱스](../../../docs/README.md)

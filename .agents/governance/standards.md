@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Standards"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 ---
 
 # AI Agent Standards
@@ -20,7 +20,7 @@ Shared standards for instruction design, token efficiency, and execution quality
 ## 2. Language Standard
 
 - Route artifact language by document role through
-  `.agents/governance/documentation-protocol.md#authoring-rules`.
+  `.agents/governance/documentation-protocol.md#document-language`.
 - Conversational responses follow the user's active language preference under
   `.agents/governance/output-style.md`.
 

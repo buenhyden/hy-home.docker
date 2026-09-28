@@ -1,16 +1,16 @@
 ---
 title: "OpenSearch"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 # OpenSearch
 
-> Distributed search and analytics engine with Dashboards.
+> Dashboards를 갖춘 분산 검색 및 분석 엔진입니다.
 
 ## Overview
 
@@ -28,7 +28,7 @@ created: "2025-11-12"
 
 ### In Scope
 
-- OpenSearch 3.x custom build와 OpenSearch Dashboards 3.8.0을 위한 Docker 인프라
+- OpenSearch 3.x custom build와 OpenSearch Dashboards를 위한 Docker 인프라(정확한 버전은 `Dockerfile`/`docker-compose.yml` 참조)
 - 자원 할당(JVM Heap) 및 볼륨 영속성 관리
 - 보안 설정 (Docker Secrets, HTTPS 적용)
 - 커스텀 빌드 이미지를 통한 플러그인 관리
@@ -43,30 +43,30 @@ created: "2025-11-12"
 
 ```text
 opensearch/
-├── opensearch/             # Engine configuration
-├── opensearch-dashboards/  # Visualization configuration
-├── Dockerfile              # Custom build for security
-├── docker-compose.yml      # Standard stack
-└── README.md               # This file
+├── opensearch/             # 엔진 설정
+├── opensearch-dashboards/  # 시각화 설정
+├── Dockerfile              # 보안을 위한 custom build
+├── docker-compose.yml      # 표준 스택
+└── README.md               # 이 파일
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | OpenSearch service leaf in `04-data`; primary services: `opensearch`, `opensearch-dashboards`; `opensearch-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
+| Purpose | `04-data`의 OpenSearch 서비스 leaf; primary services: `opensearch`, `opensearch-dashboards`; `opensearch-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled`, plus 8 more; profiles: `opensearch`, `opensearch-cluster` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/opensearch/docker-compose.yml`; the single-node topology is the `opensearch` profile and the three-node topology is `opensearch-cluster`, both in that one file |
+| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled` 등 8개 더; profiles: `opensearch`, `opensearch-cluster` |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/analytics/opensearch/docker-compose.yml`; single-node 토폴로지는 `opensearch` profile이고 3노드 토폴로지는 `opensearch-cluster`이며 둘 다 이 한 파일에 있음 |
 | Networks | `edge_net`, `lab_net`, `obs_net` |
-| Volumes | `opensearch-data1:/usr/share/opensearch/data`, `${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2`, plus 15 more |
+| Volumes | `opensearch-data1:/usr/share/opensearch/data`, `${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2` 등 15개 더 |
 | Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
-| Labels | `traefik.enable`, `traefik.http.routers.opensearch.rule`, `traefik.http.routers.opensearch.entrypoints`, `traefik.http.routers.opensearch.tls`, `traefik.http.services.opensearch.loadbalancer.serversTransport`, `traefik.http.services.opensearch.loadbalancer.server.port`, `traefik.http.services.opensearch.loadbalancer.server.scheme`, `traefik.http.routers.opensearch-dashboards.rule`, plus 8 more |
+| Labels | `traefik.enable`, `traefik.http.routers.opensearch.rule`, `traefik.http.routers.opensearch.entrypoints`, `traefik.http.routers.opensearch.tls`, `traefik.http.services.opensearch.loadbalancer.serversTransport`, `traefik.http.services.opensearch.loadbalancer.server.port`, `traefik.http.services.opensearch.loadbalancer.server.scheme`, `traefik.http.routers.opensearch-dashboards.rule` 등 8개 더 |
 | Secret refs | names: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`; mounts: `/run/secrets/opensearch_admin_password`, `/run/secrets/opensearch_dashboard_password`, `/run/secrets/opensearch_exporter_password`, `/run/secrets/opensearch_security_cookie`, `/run/secrets/oauth2_proxy_client_secret` |
-| Healthcheck | Compose healthcheck declared for `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards` |
+| Healthcheck | `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards`에 Compose healthcheck 선언됨 |
 | Operations | Guide (`docs/05.operations/guides/0019-opensearch.md`), Policy (`docs/05.operations/policies/0019-opensearch.md`), Runbook (`docs/05.operations/runbooks/0019-opensearch.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
+| Troubleshooting | 연결된 저장소 validator와 서비스 로그부터 시작함; service-local compose parsing에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요함 |
 
 ## How to Work in This Area
 
@@ -82,16 +82,16 @@ opensearch/
 
 ## Validation
 
-The `opensearch` single-node topology is `OPTIONAL`; the same-host `opensearch-cluster` topology is `LAB`. Snapshot restore uses a configured repository and a fresh compatible topology; exclude the security index and preserve/reapply protected security configuration separately. Owning artifacts are `GDE-0019`, `POL-0019`, and `RUN-0019`.
+`opensearch` single-node 토폴로지는 `OPTIONAL`이며 동일 호스트의 `opensearch-cluster` 토폴로지는 `LAB`입니다. Snapshot 복구는 구성된 repository와 새로운 호환 토폴로지를 사용하며 security index는 제외하고 보호된 보안 설정은 별도로 보존/재적용합니다. 소유 artifact는 `GDE-0019`, `POL-0019`, `RUN-0019`입니다.
 
-- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect OpenSearch.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking OpenSearch documentation ready.
-- The `opensearch-cluster` profile includes node and dashboard healthchecks; from the repository root use `docker compose --profile opensearch-cluster config --quiet`, then compare the declared services with this Compose source.
+- OpenSearch에 영향을 주는 README나 Compose 참조 변경 후에는 `python3 scripts/validation/check-document-links.py --mode all`을 실행합니다.
+- OpenSearch 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
+- `opensearch-cluster` profile은 node와 dashboard healthcheck를 포함합니다. 저장소 루트에서 `docker compose --profile opensearch-cluster config --quiet`를 사용한 뒤 선언된 서비스를 이 Compose 소스와 비교하십시오.
 
 ## Troubleshooting
 
-- Start with repository validators and Docker logs for runtime evidence. Service-local compose config requires root network/secret context or a local validation overlay.
-- If the primary stack does not form or Dashboards cannot connect, inspect `docker compose logs opensearch` and `docker compose logs opensearch-dashboards` before changing JVM, OIDC, or certificate settings. For the cluster variant, inspect `opensearch-node1`, `opensearch-node2`, and `opensearch-node3` logs.
+- runtime 증거를 위해 저장소 validator와 Docker 로그부터 시작합니다. service-local compose config에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요합니다.
+- 기본 스택이 형성되지 않거나 Dashboards가 연결되지 않으면, JVM/OIDC/인증서 설정을 변경하기 전에 `docker compose logs opensearch`와 `docker compose logs opensearch-dashboards`를 확인하십시오. cluster variant는 `opensearch-node1`, `opensearch-node2`, `opensearch-node3` 로그를 확인하십시오.
 
 ## Related Documents
 
@@ -99,11 +99,8 @@ The `opensearch` single-node topology is `OPTIONAL`; the same-host `opensearch-c
 - **Policy**: `docs/05.operations/policies/0019-opensearch.md`
 - **Runbook**: `docs/05.operations/runbooks/0019-opensearch.md`
 - **Monitoring**: `opensearch-exporter:9114/metrics`
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
----
-Copyright (c) 2026. Analytics Tier Infrastructure.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../../tech-stack.versions.json)은 drift 검증에 쓰입니다.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.
-
-Build source authority: [Dockerfile](Dockerfile).
+빌드 소스 권한: [Dockerfile](Dockerfile).

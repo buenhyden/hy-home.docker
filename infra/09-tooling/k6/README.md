@@ -1,17 +1,17 @@
 ---
-title: "\U0001F9EA k6 Performance Testing Infrastructure"
-version: "1.3.2"
+title: "k6 Performance Testing Infrastructure"
+version: "1.3.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2026-03-26"
 ---
 
 <!-- [ID:09-tooling:k6] -->
-# 🧪 k6 Performance Testing Infrastructure
+# k6 Performance Testing Infrastructure
 
-> One-shot k6 performance benchmarking for `hy-home.docker`.
+> `hy-home.docker`를 위한 1회성 k6 성능 벤치마킹입니다.
 
 ## Overview
 
@@ -47,18 +47,18 @@ k6/
 ├── Dockerfile          # 고정된 grafana/k6 이미지
 ├── docker-compose.yml  # 부하 시험 작업 정의
 └── README.md           # This file
+```
 
 시나리오 스크립트는 저장소가 아니라 `DEFAULT_TOOLING_DIR`의 host bind mount에
 둔다. `locust` leaf와 같은 규약이다.
-```
 
 ## Available Scripts
 
 | Command                                                    | Description                      |
 | ---------------------------------------------------------- | -------------------------------- |
-| `bash scripts/hardening/check-all-hardening.sh 09-tooling` | Static hardening contract check |
-| `python3 scripts/validation/run-ci-gate.py --profile changed` | Documentation and stale-literal guard |
-| `docker compose ... logs -f k6` | Approved runtime context에서 실행 로그 확인 |
+| `bash scripts/hardening/check-all-hardening.sh 09-tooling` | 정적 hardening 계약 검사 |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | 문서 및 오래된 리터럴 가드 |
+| `docker compose ... logs -f k6` | 승인된 runtime context에서 실행 로그 확인 |
 
 ## Configuration
 
@@ -75,14 +75,14 @@ k6/
 
 ## Validation
 
-- Run `bash scripts/hardening/check-all-hardening.sh 09-tooling` after README or Compose reference changes that affect k6.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
-- Runtime rendering must provide the root network context because the root file includes this leaf unconditionally and the `testing` profile decides whether its service resolves.
+- k6에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 09-tooling`을 실행합니다.
+- 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
+- 루트 파일이 이 leaf를 무조건 include하고 `testing` 프로필이 해당 서비스의 해석 여부를 결정하므로, 런타임 렌더링에는 루트 네트워크 컨텍스트가 필요합니다.
 
 ## Troubleshooting
 
-- Start with the hardening check to confirm k6 network, volume, and metric sink references stay declared.
-- Check k6 run output and the linked runbook before changing test scripts or metric destinations.
+- k6 네트워크, 볼륨, 지표 싱크 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
+- 테스트 스크립트나 지표 대상을 변경하기 전에 k6 실행 출력과 연결된 런북을 확인합니다.
 
 ## Related Documents
 
@@ -95,19 +95,19 @@ k6/
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | 🧪 k6 Performance Testing Infrastructure service leaf in `09-tooling`; services: `k6`; the root [docker-compose.yml](../../../docker-compose.yml) includes this leaf's `docker-compose.yml` unconditionally |
+| Purpose | `09-tooling`의 k6 Performance Testing Infrastructure 서비스 leaf; 서비스: `k6`; 루트 [docker-compose.yml](../../../docker-compose.yml)이 이 leaf의 `docker-compose.yml`을 무조건 include함 |
 | Config files | `Dockerfile`, `docker-compose.yml` |
-| Config values | profiles: `testing`; scenario and export keys: `K6_SCRIPT`, `K6_TESTID`, `K6_TREND_STATS`, `K6_PROMETHEUS_HOST`, `K6_PROMETHEUS_PORT` |
-| Compose linkage | root include active; the `testing` profile selects `k6` |
+| Config values | 프로필: `testing`; 시나리오/내보내기 키: `K6_SCRIPT`, `K6_TESTID`, `K6_TREND_STATS`, `K6_PROMETHEUS_HOST`, `K6_PROMETHEUS_PORT` |
+| Compose linkage | 루트 include 활성; `testing` 프로필이 `k6`를 선택함 |
 | Networks | `obs_net` |
 | Volumes | `k6-data:/scripts:ro`, `k6-data` |
-| Ports | None declared; k6 is CLI-driven and publishes no host port |
+| Ports | 선언되지 않음; k6는 CLI로 구동되며 호스트 포트를 게시하지 않음 |
 | Labels | `hy-home.tier` |
-| Secret refs | None declared |
-| Healthcheck | None declared; `k6` runs one scenario and exits, so `restart` is `no` |
+| Secret refs | 선언되지 않음 |
+| Healthcheck | 선언되지 않음; `k6`는 시나리오 하나를 실행하고 종료하므로 `restart`는 `no` |
 | Operations | Guide (`docs/05.operations/guides/0061-k6.md`), Policy (`docs/05.operations/policies/0061-k6.md`), Runbook (`docs/05.operations/runbooks/0061-k6.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with the hardening check, then inspect service logs and linked operations/runbook evidence in an approved runtime context. |
+| Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
 ## How to Work in This Area
 
@@ -116,6 +116,6 @@ k6/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
 
 Build source authority: [Dockerfile](Dockerfile).

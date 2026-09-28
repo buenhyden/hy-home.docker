@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 layer: "requirements"
 artifact_id: "REQ-0024"
 parent_ids: []
@@ -72,8 +72,10 @@ SDLC를 따라야 한다. 목표는 정책, provider 변환, 문서 형식, 실�
 
 - **REQ-0024-NFR-0009**: 규칙 해석과 provider projection 검증은 결정적이고
   상충하는 fallback 없이 fail closed해야 한다.
-- **REQ-0024-NFR-0010**: `.agents/`는 English-only를 유지하고 provider adapter는
-  의미를 손실하지 않아야 한다.
+- **REQ-0024-NFR-0010**: `.agents/`는 `README.md`를 제외하고 English-only를
+  유지하며, README의 언어는
+  [문서 언어 규칙](../../.agents/governance/documentation-protocol.md#document-language)을
+  따른다. provider adapter는 의미를 손실하지 않아야 한다.
 - **REQ-0024-NFR-0011**: Agent 권한은 최소 범위여야 하며 secret, credential,
   private key, token 또는 승인되지 않은 외부 상태를 노출하거나 변경해서는
   안 된다.

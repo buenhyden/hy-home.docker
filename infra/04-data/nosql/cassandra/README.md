@@ -1,21 +1,21 @@
 ---
 title: "Apache Cassandra"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-11-12"
 ---
 
 <!-- [ID:04-data:nosql:cassandra] -->
 # Apache Cassandra
 
-> Distributed wide-column NoSQL database for high-throughput workloads.
+> 높은 처리량 워크로드를 위한 분산 wide-column NoSQL 데이터베이스입니다.
 
 ## Overview
 
-Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데이터베이스로, 대규모 데이터 세트와 빠른 쓰기 성능이 필요한 환경에 최적화되어 있다. `hy-home.docker`에서는 제로 다운타임이 요구되는 시계열 데이터 및 실시간 처리 요구사항을 위한 저장 계층으로 사용된다.
+Apache Cassandra는 고가용성과 선형 확장성을 갖춘 NoSQL 데이터베이스로 대규모 데이터 세트와 빠른 쓰기 성능이 필요한 환경에 최적화되어 있다. `hy-home.docker`에서는 제로 다운타임이 요구되는 시계열 데이터와 실시간 처리 요구사항의 저장 계층으로 쓴다.
 
 ## Audience
 
@@ -29,7 +29,7 @@ Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데�
 
 ### In Scope
 
-- Cassandra 5.0 단일 노드 컨테이너 구성
+- Cassandra 단일 노드 컨테이너 구성(정확한 버전은 `docker-compose.yml` 참조)
 - JMX 기반 Prometheus 메트릭 엑스포터 (`cassandra-exporter`)
 - 영속성 데이터 볼륨 관리 (`${DEFAULT_DATA_DIR}/cassandra/node1`)
 - Docker Secrets 기반 보안 설정 (`cassandra_password`)
@@ -44,36 +44,36 @@ Apache Cassandra는 고가용성과 선형 확장성을 제공하는 NoSQL 데�
 
 | Category   | Technology                           | Notes                      |
 | :--------- | :----------------------------------- | :------------------------- |
-| Engine     | Compose-declared Cassandra image       | Main Data Node             |
-| Monitoring | Compose-declared Cassandra exporter image | Metrics Collection    |
-| Network    | `lab_net`, `obs_net` | Internal Traffic Isolation |
-| Resource   | `template-stateful-high`             | High Performance Profile   |
+| Engine     | Compose에 선언된 Cassandra 이미지       | 메인 데이터 노드             |
+| Monitoring | Compose에 선언된 Cassandra exporter 이미지 | 메트릭 수집    |
+| Network    | `lab_net`, `obs_net` | 내부 트래픽 격리 |
+| Resource   | `template-stateful-high`             | 고성능 profile   |
 
 ## Structure
 
 ```text
 cassandra/
-├── README.md             # This file
-└── docker-compose.yml    # Main deployment file
+├── README.md             # 이 파일
+└── docker-compose.yml    # 주 배포 파일
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Apache Cassandra service leaf in `04-data`; unconditional root include, profile-selected; services: `cassandra-node1`, `cassandra-exporter` |
+| Purpose | `04-data`의 Apache Cassandra 서비스 leaf; 무조건 root include, profile로 선택됨; services: `cassandra-node1`, `cassandra-exporter` |
 | Config files | `docker-compose.yml` |
-| Config values | env keys are Compose-owned; exact profile for node and exporter: `cassandra` |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
+| Config values | 환경 키는 Compose가 소유함; node/exporter의 exact profile: `cassandra` |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/nosql/cassandra/docker-compose.yml` |
 | Networks | `lab_net`, `obs_net` |
 | Volumes | `cassandra-exporter-volume:/opt/bitnami/cassandra-exporter/conf:rw`, `cassandra-node1-volume:/bitnami/cassandra:rw`, `cassandra-node1-volume`, `cassandra-exporter-volume` |
 | Ports | `${CASSANDRA_EXPORTER_PORT:-8080}`, `${CASSANDRA_EXPORTER_LISTEN_PORT:-8081}`, `${CASSANDRA_INTER_NODE_PORT:-7000}`, `${CASSANDRA_CLIENT_PORT:-9042}` |
 | Labels | `hy-home.tier` |
 | Secret refs | names: `cassandra_password`; mounts: `/run/secrets/cassandra_password` |
-| Healthcheck | Compose healthcheck declared for `cassandra-node1`; not declared for `cassandra-exporter` |
+| Healthcheck | `cassandra-node1`에 Compose healthcheck 선언됨; `cassandra-exporter`에는 선언되지 않음 |
 | Operations | Guide (`docs/05.operations/guides/0025-cassandra.md`), Policy (`docs/05.operations/policies/0025-cassandra.md`), Runbook (`docs/05.operations/runbooks/0025-cassandra.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with `docker compose config --quiet`, then inspect service logs and linked operations/runbook evidence. |
+| Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
 ## How to Work in This Area
 
@@ -104,24 +104,25 @@ cassandra/
 
 ## Validation
 
-Classification is `LAB`; this is a single data node, not a quorum or HA cluster. Recovery binds a tagged snapshot to schema, keyspace/replication, topology/token, version, SSTables and checksums, then restores into an empty compatible node with `sstableloader` or `nodetool refresh`. Owning artifacts are `GDE-0025`, `POL-0025`, and `RUN-0025`.
+Classification은 `LAB`입니다. 단일 데이터 노드이며 quorum이나 HA cluster가
+아닙니다. 복구는 tagged snapshot을 schema, keyspace/replication,
+topology/token, 버전, SSTable, checksum과 묶은 뒤 `sstableloader`나
+`nodetool refresh`로 비어 있는 호환 노드에 복원합니다. 소유 artifact는
+`GDE-0025`, `POL-0025`, `RUN-0025`입니다.
 
-- Run `bash scripts/validation/validate-docker-compose.sh` after README or Compose reference changes that affect Cassandra.
-- Run `bash scripts/hardening/check-all-hardening.sh` before marking Cassandra documentation ready.
+- Cassandra에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- Cassandra 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
 ## Troubleshooting
 
-- Start with `docker compose config --quiet` to confirm Cassandra network, volume, and secret references render.
-- Check Cassandra logs and `nodetool` status before changing cluster or persistence settings.
+- `docker compose config --quiet`로 Cassandra 네트워크, volume, secret 참조가 정상 렌더링되는지 먼저 확인합니다.
+- cluster나 persistence 설정을 변경하기 전에 Cassandra 로그와 `nodetool` 상태를 확인합니다.
 
 ## Related Documents
 
 - **Guide**: Cassandra Guide (`docs/05.operations/guides/0025-cassandra.md`)
 - **Policy**: Cassandra Operation (`docs/05.operations/policies/0025-cassandra.md`)
 - **Runbook**: Cassandra Runbook (`docs/05.operations/runbooks/0025-cassandra.md`)
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
----
-Copyright (c) 2026. Licensed under the MIT License.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.

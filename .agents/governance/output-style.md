@@ -1,10 +1,10 @@
 ---
 title: "Output Style"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 ---
 
 # Output Style
@@ -18,7 +18,7 @@ risks, and blockers without copying sensitive output.
 
 Conversational responses follow the user's active language. Artifact language is
 not a presentation choice: it is routed by document role through
-[documentation protocol](documentation-protocol.md#authoring-rules). A provider
+[documentation protocol](documentation-protocol.md#document-language). A provider
 surface may not set either rule.
 
 ## Findings

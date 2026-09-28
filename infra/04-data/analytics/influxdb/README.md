@@ -1,16 +1,16 @@
 ---
 title: "InfluxDB (TSDB)"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-27"
 created: "2025-11-21"
 ---
 
 # InfluxDB (TSDB)
 
-> High-performance time series database for metrics and analytics.
+> 메트릭과 분석을 위한 고성능 시계열 데이터베이스입니다.
 
 ## Overview
 
@@ -43,28 +43,28 @@ created: "2025-11-21"
 
 ```text
 influxdb/
-├── docker-compose.yml       # InfluxDB 3 Core deployment
-└── README.md                # This file
+├── docker-compose.yml       # InfluxDB 3 Core 배포
+└── README.md                # 이 파일
 ```
 
 ## Service Readiness
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | InfluxDB (TSDB) service leaf in `04-data`; primary service: `influxdb`; unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
+| Purpose | `04-data`의 InfluxDB (TSDB) 서비스 leaf; primary service: `influxdb`; [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/analytics/influxdb/docker-compose.yml` |
 | Config files | `docker-compose.yml` |
-| Config values | exact profile: `influxdb`; database name is an explicit write-request input, not a root environment key |
-| Compose linkage | unconditional root include, profile-selected, in [root docker-compose.yml](../../../../docker-compose.yml) |
+| Config values | exact profile: `influxdb`; database 이름은 명시적 write-request 입력이며 root 환경 키가 아님 |
+| Compose linkage | [root docker-compose.yml](../../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 |
 | Networks | `edge_net` |
 | Volumes | `influxdb-data:/var/lib/influxdb3/data:rw`, `influxdb-plugins:/var/lib/influxdb3/plugins:rw` |
-| Ports | No host port declared; Traefik service port `${INFLUXDB_PORT:-8181}` |
+| Ports | 선언된 호스트 포트 없음; Traefik 서비스 포트 `${INFLUXDB_PORT:-8181}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.influxdb.rule`, `traefik.http.routers.influxdb.entrypoints`, `traefik.http.routers.influxdb.tls`, `traefik.http.routers.influxdb.middlewares`, `traefik.http.services.influxdb.loadbalancer.server.port` |
-| Secret refs | Root Compose declares `influxdb_api_token` and `influxdb_password` as repository metadata, but root declarations and metadata are not leaf server wiring; this leaf mounts neither secret and does not provision a server token |
-| Write API | `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>` requires an authorized operator/named token; token creation/provisioning and authenticated write acceptance require separate runtime approval and remain unverified |
-| Healthcheck | Probes `http://127.0.0.1:8181/` and accepts `200`, `204`, or `401` |
+| Secret refs | 루트 Compose가 `influxdb_api_token`과 `influxdb_password`를 저장소 메타데이터로 선언하지만 루트 선언과 메타데이터는 leaf 서버 배선이 아님; 이 leaf는 두 secret 모두 마운트하지 않으며 서버 token을 provisioning하지 않음 |
+| Write API | `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>`는 승인된 operator/named token이 필요함; token 생성/provisioning과 인증된 write acceptance는 별도 runtime 승인이 필요하며 아직 미확인 상태임 |
+| Healthcheck | `http://127.0.0.1:8181/`을 probe하며 `200`, `204`, `401`을 정상으로 인정함 |
 | Operations | Guide (`docs/05.operations/guides/0017-influxdb.md`), Policy (`docs/05.operations/policies/0017-influxdb.md`), Runbook (`docs/05.operations/runbooks/0017-influxdb.md`) |
 | Validation | [validate-docker-compose.sh](../../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | Start with linked repository validators and service logs; service-local compose parsing requires root network/secret context or a local validation overlay. |
+| Troubleshooting | 연결된 저장소 validator와 서비스 로그부터 시작함; service-local compose parsing에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요함 |
 
 ## How to Work in This Area
 
@@ -73,7 +73,7 @@ influxdb/
 1. 아키텍처 세부 사항은 InfluxDB 시스템 가이드 (`docs/05.operations/guides/0017-influxdb.md`)를 참조한다.
 2. 데이터 보존 및 보안 규약은 운영 정책 (`docs/05.operations/policies/0017-influxdb.md`)을 따른다.
 3. 수집 장애 발생 시 복구 런북 (`docs/05.operations/runbooks/0017-influxdb.md`)을 참조한다.
-4. Root secret declarations are metadata only. Source-only validation cannot prove authorization; token creation/provisioning and authenticated write acceptance require separate runtime approval.
+4. 루트 secret 선언은 메타데이터일 뿐입니다. 소스만으로는 인가를 증명할 수 없으며 token 생성/provisioning과 인증된 write acceptance에는 별도 runtime 승인이 필요합니다.
 
 5. 이 README를 읽고 InfluxDB 3 Core의 database/endpoint source contract와 token-provisioning 승인 경계를 파악한다.
 6. Token provisioning은 별도 runtime 승인과 인증 쓰기 acceptance evidence 없이는 완료로 간주하지 않는다.
@@ -81,26 +81,23 @@ influxdb/
 
 ## Validation
 
-Classification is `OPTIONAL`. Recovery uses the InfluxDB 3 Core ordered local-object-store set (snapshots, databases, WAL, catalog, checkpoint) and a fresh compatible target; no built-in backup command or live data copy is claimed. Owning artifacts are `GDE-0017`, `POL-0017`, and `RUN-0017` under `docs/05.operations/guides/0017-influxdb.md`.
+Classification은 `OPTIONAL`입니다. 복구는 InfluxDB 3 Core의 순서 있는 local-object-store 세트(snapshot, database, WAL, catalog, checkpoint)와 새로운 호환 target을 사용하며 내장 백업 명령이나 live 데이터 복사는 주장하지 않습니다. 소유 artifact는 `docs/05.operations/guides/0017-influxdb.md` 아래의 `GDE-0017`, `POL-0017`, `RUN-0017`입니다.
 
-- Run `python3 scripts/validation/check-document-links.py --mode all` after README or Compose reference changes that affect InfluxDB.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` to keep service documentation and operation links synchronized.
+- InfluxDB에 영향을 주는 README나 Compose 참조 변경 후에는 `python3 scripts/validation/check-document-links.py --mode all`을 실행합니다.
+- 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
 ## Troubleshooting
 
-- Start with repository validators and `docker compose --profile influxdb logs --tail=120 influxdb` for runtime evidence.
-- Do not diagnose writes from a presumed secret path. Escalate for approved token provisioning and authenticated write acceptance before changing retention, database, or version settings.
+- runtime 증거를 위해 저장소 validator와 `docker compose --profile influxdb logs --tail=120 influxdb`부터 시작합니다.
+- 추정된 secret 경로로 write를 진단하지 않습니다. retention, database, 버전 설정을 변경하기 전에 승인된 token provisioning과 인증된 write acceptance를 에스컬레이션합니다.
 
 ## Related Documents
 
 - **System Guide**: `docs/05.operations/guides/0017-influxdb.md`
 - **Policy**: `docs/05.operations/policies/0017-influxdb.md`
 - **Runbook**: `docs/05.operations/runbooks/0017-influxdb.md`
-- **Official token administration**: [InfluxDB 3 Core token management](https://docs.influxdata.com/influxdb3/core/admin/tokens/)
+- **공식 token 관리**: [InfluxDB 3 Core token management](https://docs.influxdata.com/influxdb3/core/admin/tokens/)
 - **Monitoring**: `https://grafana.${DEFAULT_URL}`
-- [Documentation index](../../../../docs/README.md)
+- [문서 인덱스](../../../../docs/README.md)
 
----
-Copyright (c) 2026. Analytics Tier Infrastructure.
-
-Runtime pins are owned by the Compose/Dockerfile declarations; the [derived Compose image projection](../../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../../tech-stack.versions.json)은 drift 검증에 쓰입니다.

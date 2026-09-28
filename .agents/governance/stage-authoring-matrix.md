@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-27"
 ---
 
 # Stage Authoring Matrix
@@ -24,6 +24,9 @@ A `layer` value is the stage directory name without its numeric prefix.
 The Stage 99 profile determines whether `layer` is required or omitted.
 Canonical governance paths state their authority outside the numbered stages;
 shared README profiles and native envelopes follow their registered exceptions.
+Document language and README navigation follow
+[documentation protocol](documentation-protocol.md#document-language) and its
+[README navigation](documentation-protocol.md#readme-navigation) rule.
 A template source declares the layer of its destination where the profile requires it.
 
 ## Document Type Families

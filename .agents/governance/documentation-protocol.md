@@ -118,19 +118,58 @@ tracked Markdown document plus `llms.txt`. Links between documents inside
     outside the check: the first are untracked by design and the second are
     supposed to name what the tree has since dropped.
 
-Language follows a document's audience, not its stage number. These surfaces are
-English-only because their readers are contracts, generators, and validators:
-`.agents/**`, the authored native provider documents, and the Stage 99 registry,
-schema, and template sources. Every other document may follow the audience
-language its profile permits. Identifiers, paths, command text, metadata keys,
-and code samples keep their original form in every language.
+### Document language
 
-In this repository the typed human-facing content of Stage 01, Stage 02, and
-Stage 05 is authored in Korean, while Stage 03 change contracts and Stage 90
-evidence are authored in English. Those are observations of current practice,
-not additional obligations; a document's profile and audience decide its
-language, and no provider surface may set that rule. Conversational responses
-are not artifacts and follow [output style](output-style.md).
+The Registry `language` field of a document's profile decides the language of
+its prose. The profiles follow one priority order:
+
+1. Every tracked `README.md` is Korean, whatever its path or profile. This
+   includes the READMEs under `.agents/`, the provider directories, Stage 90
+   packages, Stage 99, and the Stage 98 index. The generated provider READMEs
+   are written in Korean through their renderer template, although they
+   declare no `language` and are not judged. A frozen Stage 98 body keeps the
+   language it was written in.
+2. Every other document under `docs/05.operations/` is Korean.
+3. Every other document under `docs/` that declares a language is English.
+
+Canonical governance sources under `.agents/`, the authored native provider
+documents, and the Stage 99 registry, schema, and template sources stay
+English, except for their `README.md` files. A template source is English, but
+its author prompt names the language of the document it produces, which is the
+language of the target profile. Stage 98 records, template sources, and
+generated runtime adapters declare no language and are not judged.
+
+Structure tokens keep their original form in every language: required headings,
+identifiers, paths, command text, metadata keys, environment variables, profile
+and status values, tool names, and code samples. Korean first does not mean
+Hangul only. Byte-preserved historical text, quotations, and external originals
+are not translated.
+
+The check judges the ratio of Hangul to Latin letters after it removes
+frontmatter, fenced blocks, HTML comments, headings, inline code, link targets,
+URLs, and path or `ID-####` tokens. A structure token it cannot recognize, such
+as an unquoted metadata key, still counts as Latin letters; that is one of the
+heuristic's limits. The thresholds live in
+`scripts/lib/document_governance/language.py`. This is a script heuristic: it
+cannot judge meaning, and a text too short to measure is not judged. Correct a
+false result by recalibrating the thresholds with evidence, never with a
+per-path exception. The `language` mode of `check-document-links.py` judges
+every README. The metadata body contract judges any other document when a
+change introduces a mismatch. Conversational responses are not artifacts and
+follow [output style](output-style.md).
+
+### README navigation
+
+A README whose directory holds at least one subdirectory and no direct files,
+apart from itself and placeholders such as `.gitkeep`, is a folder router. Within its own directory,
+a folder router links only a direct child directory or that child's
+`README.md`. It does not list documents inside a child, in a table, list, HTML,
+collapsed block, generated block, or a fenced tree that names files. A README
+whose directory holds direct files may index those files and nothing deeper.
+In any README, a link whose label ends in `/` resolves to that folder or to its
+`README.md`. A link outside the README's own directory is a citation, and the
+citation rules in this protocol apply to it. The `navigation` mode of
+`check-document-links.py` enforces this rule.
 
 Historical quotations retained in current Markdown must be a contiguous explicit
 blockquote beginning `> Historical evidence (not current authority; source: Git history):`.

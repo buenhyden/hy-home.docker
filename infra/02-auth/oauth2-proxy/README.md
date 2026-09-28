@@ -1,25 +1,25 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-27"
 created: "2025-11-29"
 ---
 
 # OAuth2 Proxy
 
-> OIDC ForwardAuth gateway for services that do not use approved application-native OIDC.
+> 승인된 애플리케이션 native OIDC를 사용하지 않는 서비스를 위한 OIDC ForwardAuth 게이트웨이입니다.
 
 ## Overview
 
-OAuth2 Proxy provides gateway authentication for services without suitable
-built-in OIDC support. It uses Keycloak for OIDC and Valkey for session state.
+OAuth2 Proxy는 적절한 내장 OIDC 지원이 없는 서비스에 게이트웨이 인증을 제공합니다.
+OIDC에는 Keycloak을, 세션 상태에는 Valkey를 사용합니다.
 
-OAuth2 Proxy is **not** a mandatory hop for every protected subdomain.
-Airflow and Kafbat UI use application-native OIDC and are not protected by
-OAuth2 Proxy ForwardAuth.
+OAuth2 Proxy는 모든 보호 대상 서브도메인의 필수 hop이 **아닙니다**.
+Airflow와 Kafbat UI는 애플리케이션 native OIDC를 사용하며 OAuth2 Proxy
+ForwardAuth로 보호되지 않습니다.
 
 ## Audience
 
@@ -31,17 +31,17 @@ OAuth2 Proxy ForwardAuth.
 
 ### In Scope
 
-- OAuth2 Proxy config
+- OAuth2 Proxy 설정
 - Traefik ForwardAuth
-- Valkey session
-- secret injection
-- cookie/issuer/redirect contract
+- Valkey 세션
+- secret 주입
+- cookie/issuer/redirect 계약
 
 ### Out of Scope
 
-- Keycloak identity management
-- Native OIDC application RBAC
-- TLS certificate issuance
+- Keycloak identity 관리
+- Native OIDC 애플리케이션 RBAC
+- TLS 인증서 발급
 
 ## Structure
 
@@ -76,8 +76,8 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 | Field | Evidence |
 | --- | --- |
 | Service | `oauth2-proxy` |
-| Session | shared `mng-valkey` by default |
-| Dedicated session | `oauth2-proxy-valkey` under `dedicated-valkey` |
+| Session | 기본값은 공유 `mng-valkey` |
+| Dedicated session | `dedicated-valkey` 아래의 `oauth2-proxy-valkey` |
 | Health | `/ping` |
 | OIDC client | `home-proxy-client` |
 | Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
@@ -96,9 +96,9 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 | Category | Technology | Notes |
 | --- | --- | --- |
 | Proxy | OAuth2 Proxy | ForwardAuth |
-| Session | Valkey | Redis-compatible |
+| Session | Valkey | Redis 호환 |
 | Protocol | OIDC | Keycloak |
-| Gateway | Traefik | ForwardAuth caller |
+| Gateway | Traefik | ForwardAuth 호출자 |
 
 ## Secrets
 
@@ -126,10 +126,10 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 - [Keycloak](../keycloak/README.md)
 - [Gateway](../../01-gateway/README.md)
-- [OAuth2 Proxy Guide](../../../docs/README.md)
-- [Application Authentication Integration Guide](../../../docs/README.md)
-- [Documentation index](../../../docs/README.md)
+- OAuth2 Proxy 운영 문서: `docs/05.operations/guides/0015-oauth2-proxy.md`, `docs/05.operations/policies/0015-oauth2-proxy.md`, `docs/05.operations/runbooks/0015-oauth2-proxy.md`
+- 애플리케이션 인증 통합 가이드: `docs/05.operations/guides/0079-application-auth-integration.md`
+- [문서 인덱스](../../../docs/README.md)
 
-Runtime pins are owned by the Compose/Dockerfile declarations; the [curated version projection](../../tech-stack.versions.json) provides drift verification.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.
 
-Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
+빌드 소스 권한: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).

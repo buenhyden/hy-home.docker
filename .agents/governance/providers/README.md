@@ -1,47 +1,48 @@
 ---
 title: "Provider Adapters"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/provider-index"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-27"
 ---
 
 # Provider Adapters
 
 ## Overview
 
-Provider adapters translate agent governance policy, roles, and skills into runtime
-syntax. They do not own shared behavior.
+Provider adapter는 agent governance policy, role, skill을 runtime syntax로
+번역합니다. 공유 동작을 소유하지 않습니다.
 
 ## Scope
 
-Only Claude and Codex are supported. `registry.yaml` is the machine authority
-for provider identities, work-profile model selections, permission
-translations, projection paths, semantic events, and hook commands. It does
-not own workflow, approval, retry, evidence, stop, or document-profile rules.
+Claude와 Codex만 지원됩니다. `registry.yaml`은 provider identity, work-profile
+model 선택, permission translation, projection path, semantic event, hook
+command에 대한 machine authority입니다. workflow, approval, retry, evidence,
+stop, document-profile 규칙은 소유하지 않습니다.
 
 ## Structure
 
-- [Claude provider](../../../.claude/provider.md) — authored Claude loading and runtime mechanics.
-- [Codex provider](../../../.codex/provider.md) — authored Codex loading and runtime mechanics.
-- `registry.yaml` — typed provider and projection facts.
+- [Claude provider](../../../.claude/provider.md) — Claude의 authored loading 방식과 runtime 동작.
+- [Codex provider](../../../.codex/provider.md) — Codex의 authored loading 방식과 runtime 동작.
+- `registry.yaml` — 형식화된 provider와 projection fact.
 
 ## How to Work in This Area
 
-Change provider-neutral behavior in agent governance policy, role, or skill sources.
-Change provider facts in `.agents/governance/providers/registry.yaml` and update the matching
-authored native `provider.md`. Generated native READMEs are outputs only; canonical
-`.agents/` sources are never renderer outputs. After an approved canonical
-change, run the provider renderer once with `--write` and immediately with
-`--check`. Ordinary validation and CI use `--check` only.
-If `--write` reports quarantined stale projections, stop: the command has
-removed them from active provider paths but has intentionally retained the
-revalidated blobs under `.provider-surface-quarantine/`. Verify the reported
-paths against the approved retirement and Git recovery boundary, remove only
-those exact quarantine files in the explicit cleanup step, and rerun `--write`
-then `--check`. Pending cleanup is a failing `--check` state and must not be
-reported as convergence.
+provider-neutral 동작은 agent governance policy, role, skill source에서
+변경합니다. provider fact는 `.agents/governance/providers/registry.yaml`에서
+변경하고 대응하는 authored native `provider.md`를 갱신합니다. 생성된 native
+README는 output일 뿐이며 canonical `.agents/` source는 결코 renderer
+output이 아닙니다. 승인된 canonical 변경 후에는 provider renderer를
+`--write`로 한 번 실행하고 즉시 `--check`로 실행합니다. 일반 validation과
+CI는 `--check`만 사용합니다.
+`--write`가 quarantine된 stale projection을 보고하면 멈춥니다: 이 명령은
+active provider path에서 제거했지만 재검증된 blob을
+`.provider-surface-quarantine/` 아래에 의도적으로 보존했습니다. 보고된
+path를 승인된 retirement와 Git recovery boundary에 대해 검증하고 명시적
+cleanup 단계에서 그 정확한 quarantine 파일만 제거한 뒤 `--write`와
+`--check`를 다시 실행합니다. 대기 중인 cleanup은 실패한 `--check` 상태이며
+convergence로 보고해서는 안 됩니다.
 
 ## Related Documents
 

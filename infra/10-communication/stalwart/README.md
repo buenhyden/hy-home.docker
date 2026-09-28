@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Server"
-version: "2.0.0"
+version: "2.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-27"
 created: "2025-12-03"
 ---
 
@@ -71,7 +71,7 @@ HYHOME_MAIL_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseli
 
 ## Troubleshooting
 
-기동된 운영 인스턴스의 상태는 `docker compose --profile mail-server ps stalwart`로 확인한다. 관리 UI 경로와 메일 프로토콜 오류를 분리하고, 개인 메일·비밀을 제거한 증거만 런북에 기록한다. 데이터 삭제나 검증되지 않은 downgrade를 일반 복구로 실행하지 않는다.
+기동된 운영 인스턴스의 상태는 `docker compose --profile mail-server ps stalwart`로 확인한다. 관리 UI 경로와 메일 프로토콜 오류를 분리하고 개인 메일·비밀을 제거한 증거만 런북에 기록한다. 데이터 삭제나 검증되지 않은 downgrade를 일반 복구로 실행하지 않는다.
 
 ## Related Documents
 

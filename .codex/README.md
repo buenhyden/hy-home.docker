@@ -12,4 +12,4 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 # Codex Runtime Route
 
-This generated adapter routes to `.codex/provider.md`.
+이 생성 어댑터는 `.codex/provider.md`로 안내합니다.
