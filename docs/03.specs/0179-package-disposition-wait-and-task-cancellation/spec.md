@@ -2,7 +2,7 @@
 title: "Package Disposition Wait and Task Cancellation Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"

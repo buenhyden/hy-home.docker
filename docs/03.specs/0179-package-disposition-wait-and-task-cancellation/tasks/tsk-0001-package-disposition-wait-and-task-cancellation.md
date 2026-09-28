@@ -1,8 +1,8 @@
 ---
 title: "Package Disposition Wait and Task Cancellation Execution"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -691,6 +691,50 @@ and links also passed. Markdown and diff checks passed.
 This result tree advances Spec approved -> active, Plan approved -> active, and
 Task ready -> in-progress. Its own hosted check and merge are recorded after
 observation in the completion integration.
+
+### Lifecycle integration 3 receipt and W8 completion — 2026-09-28
+
+[PR #315](https://github.com/buenhyden/hy-home.docker/pull/315) merged at
+2026-09-28T05:27:22Z with head `be12346b575dc28eca602de804ce098c6f5acd42`
+and merge `50b7b283c0a3e34b93867b8be33c74bcae3fb69e`.
+The [required hosted check](https://github.com/buenhyden/hy-home.docker/actions/runs/36381034998/job/108796663491)
+succeeded in 11m25s; review threads were empty. Local activation-edge metadata
+checked four documents against `origin/main` with zero violations; corpus/recovery,
+links, Markdown and diff checks passed.
+
+This result tree advances Spec active -> completed, Plan active -> completed,
+and Task in-progress -> completed. The 1,611-selection whole delivery gate and
+its 1,588 successful executions plus 23 declared optional-runtime skips, final
+independent reviews, and the observed hosted checks above support this receipt.
+Only lifecycle/evidence documents changed after the verified implementation.
+The completed package waits in Stage 03 for separate disposition approval.
+This completion PR's own hosted check and merge are verified after publication;
+no future result is represented as already observed here.
+
+Completion-edge checks against `origin/main@50b7b283c`: metadata selected four
+documents with zero violations; corpus and recovery reported zero violations;
+links checked 960 documents and 9,855 links with zero failures and the unchanged
+legacy-source warning. Markdown/diff checks and independent final four-document
+policy review passed. These are local result-tree checks, separate from hosted CI.
+
+#### W8 completion receipt
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W3 | PASS: occupancy regression covers terminal waiting, invalid members and standalone boundaries | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 2 | W5 | PASS: Registry regressions reject missing/null/empty cancellation and admit non-cancelled Tasks | [Registry](../../../99.templates/registry.json) |
+| 3 | W4 | PASS: shared cancellation regressions cover every invalid shape and empty criteria | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 4 | W4 | PASS: withdrawn criteria do not replace PASS completion evidence | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 5 | W4 | PASS: waiting packages still reject malformed completion receipts | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 6 | W3 | PASS: fixture Registry terminal changes alter package occupancy without changing standalone judgments | [Registry](../../../99.templates/registry.json) |
+| 7 | W6 | PASS: rendered cancelled Task requires authored cancellation evidence | [Task template](../../../99.templates/templates/specs/task.template.md) |
+| 8 | W7 | PASS: current Requirement, architecture and governance describe waiting and cancellation | [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md) |
+| 9 | W7 | PASS: accepted ADR-0037 supersedes preserved ADR-0036 with unchanged frozen body | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 10 | W8 | PASS: current indexes, corpus, metadata and links verified on delivery snapshot | [Stage 98](../../../98.archive/README.md) |
+| 11 | W8 | PASS: isolated assessment authorization, hold, removal, resurrection and recoverability regressions | [Registry](../../../99.templates/registry.json) |
+| 12 | W8 | PASS: exact-capture regressions cover Git views, checkout representation, unsafe objects and limits | [Registry](../../../99.templates/registry.json) |
+| 13 | W8 | PASS: link regressions cover supported forms, source revision and assessment precedence | [ADR-0037](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md) |
+| 14 | W8 | PASS: S01–S16/V01–V40 evidence and explicit limits recorded; frozen history and prior Commit Ledger preserved | [AD-0030](../../../02.architecture/descriptions/0030-document-lifecycle-governance.md) |
 
 ## Review Evidence
 
