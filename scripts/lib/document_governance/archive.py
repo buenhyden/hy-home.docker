@@ -1778,11 +1778,6 @@ def validate_catalog_identity(
         return ()
     rows, _ = _catalog_rows(text)
     at_base = _run_git(root, ["show", f"{base}:{_CATALOG_RECORD}"])
-    if at_base.returncode:
-        # ponytail: a base older than the catalog record kept its rows in the
-        # Stage 98 README. Remove this read once no supported base predates
-        # SPEC-0179 Archive 3.0.0.
-        at_base = _run_git(root, ["show", f"{base}:docs/98.archive/README.md"])
     base_records: frozenset[str] = frozenset()
     if not at_base.returncode:
         base_rows, _ = _catalog_rows(at_base.stdout.decode("utf-8", "replace"))
