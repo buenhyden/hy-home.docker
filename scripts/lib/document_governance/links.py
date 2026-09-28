@@ -1287,19 +1287,16 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
 
 
 def check_language(graph: DocumentGraph) -> list[LinkFinding]:
-    """Hold every README to the language its Registry profile declares.
+    """Hold every document to the language its Registry profile declares.
 
-    READMEs are judged across the whole corpus. Other documents are judged by
-    the metadata body contract when they change, until the corpus migration
-    (SPEC-0184 P2) lets this mode take them all. A profile with no declared
-    language, such as a Stage 98 record or a generated adapter, is not judged.
+    SPEC-0187 migrated the corpus, so every document is judged, not only the
+    ones a change touches. A profile with no declared language, such as a
+    Stage 98 record or a generated adapter, is not judged.
     """
 
     registry = load_registry()
     findings: list[LinkFinding] = list(graph.input_findings)
     for node in graph.nodes:
-        if node.path.name != "README.md":
-            continue
         profile_id = classify_path(node.path.as_posix(), registry)
         declared = registry.profiles.get(profile_id or "", {}).get("language")
         if not isinstance(declared, str):

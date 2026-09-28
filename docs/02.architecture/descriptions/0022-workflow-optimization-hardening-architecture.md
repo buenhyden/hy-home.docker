@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -15,57 +15,72 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `07-workflow` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, health 기반 의존성, n8n 이미지 하드닝, 카탈로그 기반 확장 로드맵을 아키텍처 관점에서 정리한다.
+This document defines the optimization/hardening reference architecture of
+the `07-workflow` layer. It organizes the gateway boundary security,
+health-based dependency, n8n image hardening, and catalog-based expansion
+roadmap from an architecture perspective.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded
+in this section and the following views. Only concerns confirmed in the
+existing document are covered here.
 
-Workflow tier는 두 가지 실행 평면으로 운영된다.
+The workflow tier operates with two execution planes.
 
 - Airflow (code-first orchestration)
 - n8n (low-code automation)
 
-양 시스템의 관리 평면은 Traefik TLS 경계 뒤에서 표준 middleware+SSO를 공유한다.
+The management plane of both systems shares standard middleware+SSO behind
+the Traefik TLS boundary.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships,
+non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - Workflow 관리 경로 보안 계약
-  - Airflow/n8n startup dependency/health 계약
-  - n8n runtime image hardening 기준
-  - workflow 하드닝 CI 게이트
+  - Workflow management path security contract
+  - Airflow/n8n startup dependency/health contract
+  - n8n runtime image hardening standard
+  - workflow hardening CI gate
 - **Consumes**:
   - `01-gateway` Traefik middleware chain
   - `02-auth` SSO middleware
   - `04-data` management PostgreSQL
 - **Does Not Own**:
-  - DAG/workflow 내부 도메인 로직
-  - 신규 workflow service production artifact 구현
+  - DAG/workflow internal domain logic
+  - new workflow service production artifact implementation
 - **Non-goals**:
-  - 즉시 다중 region/cluster workflow 운영
-  - 신규 workflow service full deployment 즉시 활성화
+  - immediate multi-region/cluster workflow operation
+  - immediate full activation of a new workflow service deployment
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
 
-- **Performance**: health 기반 기동 순서로 초기 장애/재시작 폭주를 줄인다.
-- **Security**: gateway-standard-chain + SSO 체인, n8n non-root + secret guard를 강제한다.
-- **Reliability**: worker/task-runner healthcheck와 dependency gating으로 안정성을 강화한다.
-- **Scalability**: Airflow worker autoscale 기준과 queue metrics 기반 확장 정책을 준비한다.
-- **Observability**: workflow stack health를 compose/CI 수준에서 검증한다.
-- **Operability**: `check-all-hardening.sh 07-workflow`를 운영 기준선으로 사용한다.
+- **Performance**: reduces initial failure/restart bursts through
+  health-based boot order.
+- **Security**: enforces the gateway-standard-chain + SSO chain, and n8n
+  non-root + secret guard.
+- **Reliability**: strengthens stability with worker/task-runner healthcheck
+  and dependency gating.
+- **Scalability**: prepares Airflow worker autoscale criteria and a queue
+  metrics-based expansion policy.
+- **Observability**: verifies workflow stack health at the compose/CI level.
+- **Operability**: uses `check-all-hardening.sh 07-workflow` as the
+  operational baseline.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves
+as the view for that concern.
 
 - **Ingress path**:
   - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
@@ -79,14 +94,16 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
 
 - **Key Entities / Flows**:
   - DAG metadata, workflow executions, queue tasks
 - **Storage Strategy**:
   - Airflow/n8n state via bind volumes + PostgreSQL metadata
 - **Data Boundaries**:
-  - workflow tier는 orchestration metadata를 소유하고 business payload schema는 각 도메인이 소유한다.
+  - the workflow tier owns orchestration metadata, and each domain owns its
+    business payload schema.
 
 ## Deployment View
 
@@ -103,15 +120,16 @@ Workflow tier는 두 가지 실행 평면으로 운영된다.
 
 - **Airflow**:
   - DAG quality gate (parse/schedule/delay) CI
-  - worker autoscale 기준 정의 및 운영 표준화
+  - defining worker autoscale criteria and standardizing operation
 - **n8n**:
-  - workflow versioning/Git backup 표준화
-  - credential store OpenBao 연계 강화
-Tracked infra artifact가 없는 신규 workflow service는 active workflow architecture scope에서 제외한다.
+  - standardizing workflow versioning/Git backup
+  - strengthening credential store OpenBao integration
+A new workflow service without a tracked infra artifact is excluded from the
+active workflow architecture scope.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

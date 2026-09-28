@@ -1,10 +1,10 @@
 ---
 title: "Choice of Spilo/Patroni for PostgreSQL HA"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0004"
 parent_ids:
@@ -15,45 +15,45 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 `hy-home.docker`의 데이터 무결성과 가동률을 보장하기 위해, 단일 PostgreSQL 인스턴스 대신 Patroni 및 Etcd 기반의 고가용성(HA) 클러스터 솔루션을 채택하는 아키텍처 결정 기록이다.
+This document is the architecture decision record for adopting a Patroni and Etcd based high-availability (HA) cluster solution, instead of a single PostgreSQL instance, to guarantee data integrity and uptime for `hy-home.docker`.
 
-- 데이터 티어의 싱글 포인트 장애(SPOF) 방지 필요.
-- 자동 장애 조치(Failover) 및 복제 모니터링 자동화 요구.
-- 컨테이너 환경에서의 유연한 클러스터 구성 및 운영 편의성.
+- Need to prevent a single point of failure (SPOF) in the data tier.
+- Need automated failover and replication-lag monitoring.
+- Need flexible cluster configuration and operational convenience in a container environment.
 
 ## Decision
 
-**Spilo (Zalando's PostgreSQL + Patroni)**를 핵심 데이터베이스 엔진으로 선정한다.
+**Spilo (Zalando's PostgreSQL + Patroni)** is selected as the core database engine.
 
-- **Patroni**: Etcd와 연동하여 안정적인 리더 선출 및 자동 장애 복구를 제공.
-- **Spilo Image**: Zalando에서 유지보수하는 검증된 PostgreSQL HA 이미지 사용.
-- **Etcd**: 강력한 일관성 저장소로서 클러스터 상태 관리.
+- **Patroni**: works with Etcd to provide stable leader election and automatic failover.
+- **Spilo Image**: uses the proven PostgreSQL HA image maintained by Zalando.
+- **Etcd**: manages cluster state as a strongly consistent store.
 
 ## Consequences
 
-- **Positive**: 장애 발생 시 데이터 손실 최소화 및 가동 시간 증대, 자동화된 장애 복구.
-- **Trade-offs**: 3개의 노드 구성으로 인한 리소스 소모 증가, HAProxy(pg-router)를 통한 복잡한 라우팅 설정 필요.
+- **Positive**: minimizes data loss and increases uptime on failure, with automated failover.
+- **Trade-offs**: increased resource consumption from the 3-node configuration, and a need for complex routing configuration through HAProxy (pg-router).
 
 ### Explicit Non-goals
 
-- 데이터베이스 샤딩 (본 ADR 범위 밖).
-- 애플리케이션 레벨의 데이터 마이그레이션 전략.
+- Database sharding (out of scope for this ADR).
+- Application-level data migration strategy.
 
 ## Options Considered
 
 ### Vanilla PostgreSQL with Replication
 
-- Good: 구성이 단순하고 리소스 소모가 적음.
-- Bad: 수동 Failover가 필요하며 복제 지연 모니터링이 어려움.
+- Good: simple configuration and low resource consumption.
+- Bad: needs manual failover and replication-lag monitoring is difficult.
 
 ### Postgres Operator (K8s)
 
-- Good: 쿠버네티스 환경에서 고도로 자동화됨.
-- Bad: 현재 환경이 Docker Compose 기반이므로 도입 오버헤드가 큼.
+- Good: highly automated in a Kubernetes environment.
+- Bad: introduces significant overhead since the current environment is Docker Compose based.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision Drivers
 

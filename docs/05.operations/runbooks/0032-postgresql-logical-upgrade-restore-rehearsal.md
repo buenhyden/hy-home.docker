@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Logical Upgrade and Restore Rehearsal Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0032"
 parent_ids: []
@@ -29,7 +29,7 @@ created: "2026-07-22"
 
 | Trigger | Prerequisites | Safety conditions |
 | --- | --- | --- |
-| PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | Synthetic SQL only; source/target image pins are owned by the linked harness source; no host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, password, or dump evidence |
+| PostgreSQL pin 또는 logical recovery wrapper 변경 후 representative rehearsal | Docker Compose와 exact Plan/Task approval | synthetic SQL만 사용; source/target image pin은 연결된 harness source가 소유함; host port, bind mount, external network, named/shared volume, `${DEFAULT_DATA_DIR}`, raw log, row, 비밀번호, dump evidence 없음 |
 
 Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다. 이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
 
@@ -37,19 +37,19 @@ Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652
 
 | Step order | Procedure step | Expected result |
 | --- | --- | --- |
-| 1 | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | Fixture, shell contract, negative cases, cleanup, redaction, and verdict tests pass. |
-| 2 | `bash scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only` | Full machine-readable Compose render, exact pins, anonymous approved targets, fixture SHA-256, exclusive UID/mode/device/inode evidence ownership, 360-second operation budget, and 60-second cleanup reserve pass inside one 420-second deadline without starting a database. |
-| 3 | `bash scripts/operations/rehearse-postgres-logical-upgrade.sh` | Source and target each prove the same authenticated postmaster identity over TCP `127.0.0.1:5432` twice, two seconds apart, while the container remains running and healthy; separate exact-project renders then pass backup, restore, oracle comparison, cleanup, and atomic canonical publication. |
-| 4 | Run `--negative-case checksum-mismatch`, `partial-state`, `bad-target-major`, and `timeout` separately. | Stable nonzero class `50`, `50`, `10`, and `20`; cleanup passes; canonical handoff is absent after each negative. |
-| 5 | Run the normal command twice consecutively after negative cases when readiness behavior changes. | Both runs pass stable authenticated readiness; the second fresh exact 12-key canonical handoff is published only after verified cleanup. |
+| 1 | `python3 -m unittest tests.validation.test_postgres_logical_upgrade_rehearsal -v` | fixture, shell contract, negative case, cleanup, redaction, verdict 테스트가 통과한다. |
+| 2 | `bash scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only` | 완전히 기계 판독 가능한 Compose render, 정확한 pin, anonymous approved target, fixture SHA-256, 배타적 UID/mode/device/inode evidence ownership, 360초 operation budget, 60초 cleanup reserve가 database를 시작하지 않고 하나의 420초 deadline 안에서 통과한다. |
+| 3 | `bash scripts/operations/rehearse-postgres-logical-upgrade.sh` | source와 target 각각이 TCP `127.0.0.1:5432`에서 동일한 인증된 postmaster identity를 2초 간격으로 두 번 증명하는 동안 컨테이너가 계속 실행되고 healthy 상태를 유지하며, 별도의 정확한 project render가 이어서 backup, restore, oracle 비교, cleanup, atomic canonical publication을 통과한다. |
+| 4 | `--negative-case checksum-mismatch`, `partial-state`, `bad-target-major`, `timeout`을 각각 실행한다. | 안정적인 nonzero class `50`, `50`, `10`, `20`; cleanup 통과; 각 negative 이후 canonical handoff가 존재하지 않는다. |
+| 5 | readiness 동작이 바뀌면 negative case 이후 정상 명령을 연속으로 두 번 실행한다. | 두 실행 모두 안정적인 인증된 readiness를 통과하며, 검증된 cleanup 이후에만 두 번째의 새로운 정확한 12-key canonical handoff가 게시된다. |
 
 ## Verification Record
 
 | Verification environment | Command or procedure | Result | Evidence location |
 | --- | --- | --- | --- |
-| Local isolated Docker, 2026-07-22 | Exact focused suite and `--check` | Historical RED 7/31 and 1/1; second-review RED 13 assertions across 7 methods; terminal-review RED 8 direct-control subcases; final 41/41 passed; fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460` | Infrastructure Task |
-| Local isolated Docker, 2026-07-22 | Single approved final-state normal rehearsal after reviewer invalidation | Project `hyhome-ior-20260719-229164-source/target` passed authenticated TCP readiness, integrity, cleanup, and redaction; fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`; retained dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes; backup 1s; restore 0s; zero owned resources | Ignored exact 12-key, mode-0600 canonical `recovery-verdict.json`, SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`; schema 1; scope `synthetic-local`; integrity, cleanup, and redaction passed; no later canonical-mutating command |
-| Local isolated Docker, 2026-07-22 | Four negative commands | Expected classes `50/50/10/20`; cleanup passed; no canonical remained | Infrastructure Task |
+| Local isolated Docker, 2026-07-22 | 정확한 focused suite와 `--check` | historical RED 7/31 및 1/1; second-review RED 7개 method에 걸친 13개 assertion; terminal-review RED 8개 direct-control subcase; 최종 41/41 통과; fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460` | Infrastructure Task |
+| Local isolated Docker, 2026-07-22 | reviewer invalidation 이후 단일 승인된 final-state 정상 rehearsal | project `hyhome-ior-20260719-229164-source/target`가 인증된 TCP readiness, integrity, cleanup, redaction을 통과함; fixture SHA-256 `b8d5421bba8fb32a1be3d485660f7d0cc018405e1cf7f2564f653bf0dd725460`; 보존된 dump SHA-256 `090b92324621b40e87355d705483e2ac66c027ac3fed2940b588a525cdaae6f3`, 4,484 bytes; backup 1s; restore 0s; owned resource 없음 | 무시된 정확한 12-key, mode-0600 canonical `recovery-verdict.json`, SHA-256 `c5f9e3a135d032e480c4484a5c545486f461562fc327923c9e4a3887f2883899`; schema 1; scope `synthetic-local`; integrity, cleanup, redaction 통과; 이후 canonical-mutating 명령 없음 |
+| Local isolated Docker, 2026-07-22 | 네 개의 negative 명령 | 기대 class `50/50/10/20`; cleanup 통과; canonical 잔존 없음 | Infrastructure Task |
 
 ## Evidence
 
@@ -67,16 +67,16 @@ Image pin drift, project collision, unexpected target, integrity mismatch, parti
 
 | Automation candidate or invocation | Human or operator judgment boundary |
 | --- | --- |
-| `scripts/operations/rehearse-postgres-logical-upgrade.sh` normal/check-config-only/negative envelope | Canonical verdict는 local synthetic rollback boundary일 뿐 deployment gate가 아니다. Pin, data class, storage, cleanup, remote, or live target 변경은 새 승인 없이 자동화하지 않는다. |
+| `scripts/operations/rehearse-postgres-logical-upgrade.sh` normal/check-config-only/negative envelope | canonical verdict는 local synthetic rollback boundary일 뿐 deployment gate가 아니다. pin, data class, storage, cleanup, remote, live target 변경은 새 승인 없이 자동화하지 않는다. |
 
 ## Traceability
 
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: none — no Guide or Policy shares number `0032`.
+- Subject peer: 없음 — 번호 `0032`를 공유하는 Guide나 Policy가 없다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pin: Compose/Dockerfile 선언이 authoritative이며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - Spec 125
 - Infrastructure Plan

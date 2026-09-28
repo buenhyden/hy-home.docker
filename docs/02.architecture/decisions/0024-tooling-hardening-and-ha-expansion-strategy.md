@@ -1,10 +1,10 @@
 ---
 title: "Tooling Hardening and HA Expansion Strategy"
-version: "2.0.0"
+version: "2.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0024"
 parent_ids:
@@ -15,65 +15,65 @@ created: "2026-03-28"
 
 ## Context
 
-이 문서는 `09-tooling` 계층에 대해 즉시 적용 가능한 하드닝(공개 경로 SSO 체인 정렬, 네트워크 경계 명시, locust/k6 runtime 계약 보강, CI 게이트 도입)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
+This document records the decision to first carry out immediately applicable hardening (public path SSO chain alignment, explicit network boundaries, locust/k6 runtime contract reinforcement, CI gate introduction) for the `09-tooling` layer, while pursuing catalog expansion items in phases.
 
-Tooling tier는 플랫폼 운영 제어면(control plane)에 해당하며, 보안/품질/테스트 도구의 경계가 약하면 조직 전체 배포 안정성에 직접 영향을 준다. 동시에 카탈로그는 도구별 확장/정책 강화를 요구하고 있어, 단기 안정화와 중기 확장 분리가 필요하다.
+The tooling tier corresponds to the platform's operational control plane, and if the boundaries around security/quality/test tools are weak, this directly affects organization-wide deployment stability. At the same time, the catalog requires expansion/strengthened policy per tool, so separating short-term stabilization from mid-term expansion is needed.
 
 ## Decision
 
-- 즉시 하드닝을 시행한다.
-  - SonarQube/Terrakube 라우터를 `gateway-standard-chain + sso-errors + sso-auth`로 정렬한다.
-  - tooling compose에 `infra_net` external 경계 선언을 명시한다.
-  - locust-worker healthcheck를 추가하고, k6 volume 참조 drift를 정렬한다.
-  - `scripts/hardening/check-all-hardening.sh 09-tooling`와 CI `infrastructure-hardening` job을 도입한다.
-- 카탈로그 확장은 단계적으로 시행한다.
-  - OpenTofu 승인/백업/drift 자동 탐지
-  - terrakube 권한/감사로그 강화
-  - registry 서명/스캔 차단 정책
-  - sonarqube 품질게이트 재정의
-  - k6/locust 테스트 표준화
+- Carry out immediate hardening.
+  - Align the SonarQube/Terrakube routers to `gateway-standard-chain + sso-errors + sso-auth`.
+  - Make the `infra_net` external boundary declaration explicit in the tooling compose.
+  - Add a locust-worker healthcheck and align k6 volume reference drift.
+  - Introduce `scripts/hardening/check-all-hardening.sh 09-tooling` and the CI `infrastructure-hardening` job.
+- Carry out catalog expansion in phases.
+  - OpenTofu approval/backup/drift automatic detection
+  - Strengthen terrakube permissions/audit log
+  - Registry signing/scan blocking policy
+  - Redefine sonarqube quality gate
+  - Standardize k6/locust tests
 
 ## Consequences
 
 - **Positive**:
-  - tooling 공개 경로 접근 통제가 일관화된다.
-  - 운영 네트워크 경계와 테스트 runtime 안정성이 향상된다.
-  - tooling tier 회귀를 PR 단계에서 자동 차단할 수 있다.
-  - 카탈로그 확장 항목이 문서/태스크 단위로 실행 가능해진다.
+  - Access control on the tooling public path becomes consistent.
+  - Operational network boundaries and test runtime stability improve.
+  - Tooling tier regressions can be automatically blocked at the PR stage.
+  - Catalog expansion items become executable at the document/task level.
 - **Trade-offs**:
-  - SSO 강화로 일부 기존 테스트 접근 경로 조정이 필요하다.
-  - 정책 게이트 추가로 단기 PR 처리 시간이 증가할 수 있다.
+  - Strengthened SSO requires adjusting some existing test access paths.
+  - Adding policy gates may increase short-term PR processing time.
 
 ### Explicit Non-goals
 
-- 즉시 전체 tooling stack 재플랫폼
-- 즉시 카탈로그 확장 항목의 런타임 전면 구현
-- 신규 도구 체인 도입
+- Immediately replatforming the entire tooling stack
+- Immediately implementing the full runtime of catalog expansion items
+- Introducing a new tool chain
 
 ### Agent-related Example Decisions
 
-- Guardrail strategy: tooling 공개 라우터는 gateway+SSO 체인 필수
-- Tool gating: `check-all-hardening.sh 09-tooling`를 머지 전 필수 정책 게이트로 강제
+- Guardrail strategy: The tooling public router requires the gateway+SSO chain
+- Tool gating: Enforce `check-all-hardening.sh 09-tooling` as a required policy gate before merging
 
 ## Options Considered
 
-### 카탈로그 확장을 즉시 전면 구현
+### Implement all catalog expansion immediately
 
 - Good:
-  - 확장 항목의 빠른 기능 체감
+  - Fast functional sense of the expansion items
 - Bad:
-  - 변경 반경 증가로 안정화/검증 복잡도 상승
+  - Increased change scope raises stabilization/verification complexity
 
-### 문서만 갱신하고 runtime/CI 하드닝 보류
+### Update documentation only, hold off on runtime/CI hardening
 
 - Good:
-  - 단기 구현 비용 절감
+  - Reduces short-term implementation cost
 - Bad:
-  - 회귀 차단 능력 부족
+  - Lacks the ability to block regressions
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

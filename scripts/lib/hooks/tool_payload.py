@@ -4,15 +4,27 @@ from __future__ import annotations
 
 import json
 import stat
+import re
 from pathlib import Path, PurePosixPath
 
 EDIT_TOOLS = frozenset({"Write", "Edit", "MultiEdit", "apply_patch", "ApplyPatch"})
 MAX_PAYLOAD_BYTES = 1024 * 1024
 MAX_TARGETS = 256
+_SESSION_SCRATCHPAD = re.compile(r"/tmp/claude-\d+/[^/]+/[^/]+/scratchpad/[^/].*")
 
 
 class PayloadError(ValueError):
     """An edit cannot safely be mapped to repository targets."""
+
+
+def _repository_edit(path: str) -> bool:
+    """A Claude Code session scratchpad is outside repository edit policy."""
+    pure = PurePosixPath(path)
+    return not (
+        _SESSION_SCRATCHPAD.fullmatch(path)
+        and pure.as_posix() == path
+        and ".." not in pure.parts
+    )
 
 
 def decode_payload(raw: str) -> dict[str, object]:
@@ -206,5 +218,9 @@ def edit_targets(root: Path, data: dict[str, object]) -> tuple[tuple[str, str], 
     if tool in EDIT_TOOLS and not edits:
         raise PayloadError("matched edit tool has no valid targets")
     return tuple(
-        dict.fromkeys((_relative_target(root, path), text) for path, text in edits)
+        dict.fromkeys(
+            (_relative_target(root, path), text)
+            for path, text in edits
+            if _repository_edit(path)
+        )
     )

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -29,34 +29,52 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Documentation must use current service names `couchdb-1`, `couchdb-2`, `couchdb-3`, and `couchdb-cluster-init`.
-- **Required**: Cluster cookie guidance must reference `/run/secrets/couchdb_cookie`; legacy shared-secret environment variables are not the current compose control.
-- **Required**: Health and membership checks must use the CouchDB HTTP API and container-local secret reads, not copied password values.
-- **Required**: External access guidance must stay behind Traefik `websecure` routing; direct host port exposure is not declared in compose.
-- **Required**: All services use the exact `couchdb` profile, and the three same-host nodes must not be represented as host-level HA.
-- **Required**: A recoverable set includes database/shard files or replication targets, system databases, `_dbs` metadata, security objects, configuration, cluster membership, Erlang cookie custody, checksums, retention, and a tested restore record.
-- **Required**: Restore rehearsal uses a fresh isolated cluster with compatible version/topology. Database replication is preferred; file restore follows upstream ordering with indexes before database files and never copies live files.
-- **Required**: Capacity and compaction headroom are reviewed before retention changes; upgrades follow upstream sequencing and require a restore-tested backup.
-- **Required**: Removal requires confirmed consumer shutdown, retained replication/file backup evidence with expiry/owner, and separate approval before node or volume deletion.
-- **Allowed**: Read-only `_up`, `_membership`, `_scheduler/docs`, and logs checks for evidence capture.
-- **Allowed**: Documentation-only corrections that preserve the 3-node cluster-init model and sticky routing.
-- **Disallowed**: Manual node rejoin, compaction, or cluster surgery guidance without current evidence and runbook escalation.
-- **Disallowed**: Secret values, credential dumps, or Erlang cookie material in policy text or evidence.
+- **Required**: 문서는 현재 서비스 이름인 `couchdb-1`, `couchdb-2`, `couchdb-3`,
+  `couchdb-cluster-init`을 사용해야 한다.
+- **Required**: Cluster cookie 가이드는 `/run/secrets/couchdb_cookie`를 참조해야
+  한다. 레거시 shared-secret 환경 변수는 현재 compose 통제가 아니다.
+- **Required**: Health와 membership 확인은 복사된 password 값이 아니라 CouchDB
+  HTTP API와 container-local secret 읽기를 사용해야 한다.
+- **Required**: 외부 접근 가이드는 Traefik `websecure` routing 뒤에 머물러야
+  한다. Compose에는 direct host port 노출이 선언되어 있지 않다.
+- **Required**: 모든 서비스는 정확한 `couchdb` profile을 사용하며, 동일 host의
+  세 node를 host-level HA로 표현해서는 안 된다.
+- **Required**: 복구 가능한 세트는 database/shard 파일 또는 replication target,
+  system database, `_dbs` metadata, security 객체, 구성, cluster membership,
+  Erlang cookie 보관, checksum, retention, 검증된 restore 기록을 포함한다.
+- **Required**: Restore rehearsal은 호환되는 version/topology를 가진 새 isolated
+  cluster를 사용한다. Database replication을 우선하며, 파일 restore는 upstream
+  순서를 따라 database 파일 전에 index를 두고 live 파일은 절대 복사하지 않는다.
+- **Required**: 용량과 compaction 여유는 retention 변경 전에 검토한다. Upgrade는
+  upstream 순서를 따르며 restore-tested backup을 요구한다.
+- **Required**: Removal은 consumer shutdown 확인, expiry/owner가 있는 보관된
+  replication/file backup evidence, node나 volume 삭제 전 별도 승인을 요구한다.
+- **Allowed**: Evidence 수집을 위한 read-only `_up`, `_membership`,
+  `_scheduler/docs`, 로그 확인.
+- **Allowed**: 3-node cluster-init model과 sticky routing을 보존하는 문서 전용
+  수정.
+- **Disallowed**: 현재 evidence와 runbook escalation 없이 제시되는 수동 node
+  rejoin, compaction, cluster surgery 가이드.
+- **Disallowed**: 정책 텍스트나 evidence 안의 secret 값, credential dump,
+  Erlang cookie 자료.
 
 ## Exceptions
 
-N/A - no currently approved exceptions.
+N/A - 현재 승인된 예외 없음.
 
 ## Verification
 
-- Compare this policy with [CouchDB guide](../guides/0026-couchdb.md), [CouchDB runbook](../runbooks/0026-couchdb.md), and [infra README](../../../infra/04-data/nosql/couchdb/README.md) after compose changes.
-- Run `docker compose --profile couchdb config --quiet` before approving service-name, port, Traefik, secret, or cluster-init documentation updates.
-- Run `python3 scripts/validation/check-document-links.py --mode all` after policy or linked operations document updates.
+- Compose 변경 후 이 정책을 [CouchDB guide](../guides/0026-couchdb.md),
+  [CouchDB runbook](../runbooks/0026-couchdb.md),
+  [infra README](../../../infra/04-data/nosql/couchdb/README.md)와 비교한다.
+- 서비스 이름, port, Traefik, secret, cluster-init 문서 갱신을 승인하기 전에
+  `docker compose --profile couchdb config --quiet`를 실행한다.
+- 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Review Cadence
 
-- Review on CouchDB compose image/profile/secret/Traefik/cluster-init changes.
-- Review during the Stage 05 operations documentation audit cadence.
+- CouchDB compose image/profile/secret/Traefik/cluster-init 변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
 
 ## Traceability
 

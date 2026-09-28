@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -21,46 +21,47 @@ created: "2026-09-23"
 
 ### Purpose and classification
 
-Conftest is an OPTIONAL one-shot policy test selected by `policy-check`. It
-evaluates Open Policy Agent (Rego) rules against the infrastructure source, not
-against running containers, so it catches a bad declaration before any start.
+Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트다. 실행
+중인 컨테이너가 아니라 인프라 소스에 대해 Open Policy Agent(Rego) 규칙을
+평가하므로, 시작 전에 잘못된 선언을 잡아낸다.
 
 ### Current implementation
 
-- [Conftest Compose](../../../infra/09-tooling/conftest/docker-compose.yml)
-  runs the pinned `openpolicyagent/conftest` image as UID 1000 with a read-only
-  root, no network, and only `infra/` mounted read-only. It never sees
-  `secrets/` or `.env`.
-- `run.sh` first runs `conftest verify` on the policies' own tests, then tests
-  every `docker-compose*.yml` and every `Dockerfile*` under `infra/`. A `deny`
-  fails the job; a `warn` is printed only.
+- [Conftest Compose](../../../infra/09-tooling/conftest/docker-compose.yml)는
+  고정된 `openpolicyagent/conftest` 이미지를 UID 1000, 읽기 전용 루트,
+  네트워크 없음, `infra/`만 읽기 전용으로 마운트해 실행한다. `secrets/`나
+  `.env`는 전혀 보지 않는다.
+- `run.sh`는 먼저 정책 자체 테스트에 대해 `conftest verify`를 실행한 다음
+  `infra/` 아래의 모든 `docker-compose*.yml`과 `Dockerfile*`을 테스트한다.
+  `deny`는 job을 실패시키고 `warn`은 출력만 한다.
 
 ### Rules
 
 | Namespace | Deny | Warn |
 | --- | --- | --- |
-| `compose` | privileged service outside the allowlist (`cadvisor`); service without a profile; image `:latest` or untagged; a password, secret, token or key variable with a literal value | host port published on all interfaces |
-| `dockerfile` | `FROM` untagged or `:latest` (build stages and `scratch` excepted); `ADD` from a URL without `--checksum` | — |
+| `compose` | 허용목록(`cadvisor`) 밖의 privileged 서비스; 프로파일 없는 서비스; `:latest` 또는 태그 없는 이미지; 리터럴 값을 가진 password, secret, token, key 변수 | 모든 인터페이스에 게시된 호스트 포트 |
+| `dockerfile` | 태그 없거나 `:latest`인 `FROM`(빌드 스테이지와 `scratch`는 예외); `--checksum` 없이 URL에서 받는 `ADD` | — |
 
-A literal means anything except empty, `${…}` interpolation, a
-`/run/secrets/` path, a boolean or a URL; `*_FILE` and `*_CMD` keys name a
-secret's source and are exempt.
+리터럴이란 빈 값, `${…}` 보간, `/run/secrets/` 경로, 불리언, URL을
+제외한 모든 값을 뜻한다. `*_FILE`과 `*_CMD` 키는 시크릿 출처를 나타내므로
+예외다.
 
 ### Commands
 
 | Command | Effect |
 | --- | --- |
-| `docker compose --profile policy-check run --rm conftest` | Verify the policies, then test all Compose files and Dockerfiles |
-| `docker run --rm -v "$PWD/infra:/project/infra:ro" -w /project openpolicyagent/conftest:<tag> test --policy infra/09-tooling/conftest/policy --namespace compose <file>` | Test one file |
+| `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 모든 Compose 파일과 Dockerfile을 테스트 |
+| `docker run --rm -v "$PWD/infra:/project/infra:ro" -w /project openpolicyagent/conftest:<tag> test --policy infra/09-tooling/conftest/policy --namespace compose <file>` | 파일 하나를 테스트 |
 
 ## Common Checks
 
-- CI runs the job as `leaf.conftest-policy` (`scripts/validation/check-conftest-policy.sh`) in the `repository-integrity` suite.
+- CI는 `repository-integrity` suite에서 `leaf.conftest-policy`
+  (`scripts/validation/check-conftest-policy.sh`)로 이 job을 실행한다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0095-conftest.md) when the job fails.
+job이 실패하면 [runbook](../runbooks/0095-conftest.md)을 사용한다.
 
 ## Traceability
 

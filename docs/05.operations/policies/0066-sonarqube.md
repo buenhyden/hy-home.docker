@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -16,57 +16,59 @@ created: "2026-05-17"
 
 ## Overview
 
-This policy governs the tracked SonarQube Community Build deployment without
-assuming paid-edition features, native Keycloak integration, or a universal CI gate.
+이 정책은 추적 중인 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
+네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
 ## Policy Scope
 
-Activation, gateway/application auth, tokens, database/index/log data, resource
-limits, backup/restore, upgrades, and removal.
+활성화, gateway/애플리케이션 인증, 토큰, 데이터베이스/인덱스/로그 데이터, 리소스
+제한, 백업/복구, 업그레이드, 제거.
 
 ## Controls
 
-- **Activation:** use `sast` or general `tooling`; keep it outside HOME.
-- **Authentication:** gateway ForwardAuth protects entry, while SonarQube owns
-  application users, groups, permissions, and tokens. Native delegated auth is
-  absent until configured and tested. IdP deactivation does not by itself revoke
-  existing SonarQube tokens; revoke them in SonarQube.
-- **Tokens:** issue minimum-scope expiring tokens, store them in approved CI secret
-  owners, and rotate/revoke without logging values.
-- **Data:** PostgreSQL is authoritative. Local search indexes are rebuildable;
-  logs follow incident/evidence retention. Do not treat the data volume alone as backup.
-- **Backup/restore:** use database-native backup, verify it, and rehearse isolated
-  restore plus reindex. Capture tracked config and external plugin inventory.
-- **Resources:** respect the tracked heap and stateful-high limits. Change them
-  only from measured queue/heap/index evidence and host capacity.
-- **Upgrade:** review edition/version compatibility, DB/host requirements, and
-  plugin compatibility; test on restored data. Rollback image and DB together.
-- **Removal:** preserve or explicitly dispose of projects, settings, issues,
-  users, tokens, and backup evidence before deleting the database/schema or volumes.
+- **Activation:** `sast` 또는 일반 `tooling`을 사용한다. HOME 밖에 유지한다.
+- **Authentication:** gateway ForwardAuth가 진입을 보호하고, SonarQube가
+  애플리케이션 사용자, 그룹, 권한, 토큰을 소유한다. 네이티브 위임 인증은
+  구성 및 테스트되기 전까지는 존재하지 않는다. IdP 비활성화만으로는 기존
+  SonarQube 토큰이 자동으로 폐기되지 않으며, SonarQube에서 직접 폐기해야 한다.
+- **Tokens:** 최소 범위의 만료 토큰을 발급하고, 승인된 CI 시크릿 소유자에게
+  저장하며, 값을 로깅하지 않고 회전/폐기한다.
+- **Data:** PostgreSQL이 권위 있는 데이터다. 로컬 검색 인덱스는 재구축 가능하며,
+  로그는 사고/증거 보존 정책을 따른다. 데이터 볼륨만으로 백업으로 간주하지
+  않는다.
+- **Backup/restore:** 데이터베이스 네이티브 백업을 사용하고 이를 검증하며,
+  격리된 복구와 재인덱싱을 리허설한다. 추적 중인 설정과 외부 플러그인
+  인벤토리를 함께 캡처한다.
+- **Resources:** 추적 중인 heap 및 stateful-high 제한을 준수한다. 측정된
+  queue/heap/index 증거와 호스트 용량에 근거해서만 변경한다.
+- **Upgrade:** 에디션/버전 호환성, DB/호스트 요구사항, 플러그인 호환성을
+  검토한다. 복원된 데이터에서 테스트한다. 이미지와 DB를 함께 롤백한다.
+- **Removal:** 데이터베이스/스키마 또는 볼륨을 삭제하기 전에 프로젝트, 설정,
+  이슈, 사용자, 토큰, 백업 증거를 보존하거나 명시적으로 폐기한다.
 
 ## Exceptions
 
-Paid features, native SAML/OIDC provisioning, or broader quality-gate mandates
-require their owning requirement/policy and cannot be inferred here.
+유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
+각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
 
 ## Verification
 
-Health is partial. Runtime acceptance includes DB access, gateway plus app
-authorization, background task completion, representative analysis, and backup/
-restore evidence where claimed.
+헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
+백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
+증거도 포함된다.
 
 ## Review Cadence
 
-Review on release, DB/plugin/auth/token, resource, or retention changes.
+릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
 
 ## Traceability
 
-- [Guide](../guides/0066-sonarqube.md) (`GDE-0066`)
-- [Runbook](../runbooks/0066-sonarqube.md) (`RUN-0066`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [가이드](../guides/0066-sonarqube.md) (`GDE-0066`)
+- [런북](../runbooks/0066-sonarqube.md) (`RUN-0066`)
+- [Tooling 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [SonarQube Compose source](../../../infra/09-tooling/sonarqube/docker-compose.yml)
-- [Community Build authentication](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
-- [Managing SonarQube tokens](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)
+- [SonarQube Compose 소스](../../../infra/09-tooling/sonarqube/docker-compose.yml)
+- [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
+- [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

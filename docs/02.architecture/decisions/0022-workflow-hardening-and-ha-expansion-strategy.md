@@ -1,10 +1,10 @@
 ---
 title: "Workflow Hardening and HA Expansion Strategy"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0022"
 parent_ids:
@@ -15,68 +15,69 @@ created: "2026-03-28"
 
 ## Context
 
-이 문서는 `07-workflow` 계층에 대해 즉시 적용 가능한 하드닝(경계 보안, health 기반 의존성, n8n 이미지 하드닝, CI 게이트)을 우선 시행하고, 카탈로그 확장 항목은 단계적으로 추진하는 결정을 기록한다.
+This document records the decision to first carry out immediately applicable hardening (boundary security, health-based dependencies, n8n image hardening, CI gate) for the `07-workflow` layer, while pursuing catalog expansion items in phases.
 
-Workflow tier는 운영 영향 범위가 넓고, 관리 경로 노출/기동 race condition/image drift가 누적되면 장애 전파 가능성이 높다. 동시에 카탈로그는 Airflow/n8n 확장 항목을 요구하고 있어, 단기 안정화와 중기 확장을 분리한 의사결정이 필요하다.
+The workflow tier has a broad operational impact scope, and failure propagation risk grows high if management path exposure/startup race conditions/image drift accumulate. At the same time, the catalog requires Airflow/n8n expansion items, so a decision that separates short-term stabilization from mid-term expansion is needed.
 
 ## Decision
 
-- 즉시 하드닝을 시행한다.
-  - Airflow/n8n 관리 경로 middleware를 `gateway-standard-chain + sso-errors + sso-auth`로 정렬한다.
-  - service-local Airflow compose에는 Valkey health 기반 의존성을 부여하고 root-included dev compose의 shared `mng-valkey` 경계를 문서화한다.
+- Carry out immediate hardening.
+  - Align the Airflow/n8n management path middleware to `gateway-standard-chain + sso-errors + sso-auth`.
+  - Give the service-local Airflow compose a Valkey health-based dependency, and document the shared `mng-valkey` boundary of the root-included dev compose.
 
-    이 지시가 가리킨 두 compose 파일은 SPEC-0156과 SPEC-0171 이후 하나로 합쳐졌다.
-    Valkey health 의존성과 shared `mng-valkey` 경계는 그대로 유지되지만, 이제
-    `infra/07-workflow/airflow/docker-compose.yml`와 `infra/07-workflow/n8n/docker-compose.yml`
-    각 한 파일 안에서 `dedicated-valkey` profile이 그 둘을 가른다. 아래 n8n 지시도
-    같다. 지시 원문은 시점의 기록으로 보존한다. SPEC-0176이 기록함.
-  - n8n worker/task-runner healthcheck와 dependency gating을 추가하고 root-included dev compose의 shared `mng-valkey` 경계를 문서화한다.
-  - n8n custom image를 compose 기본 이미지로 승격하고 non-root + secret guard를 강제한다.
-  - `scripts/hardening/check-all-hardening.sh 07-workflow`와 CI `infrastructure-hardening` job을 도입한다.
-- 카탈로그 확장은 단계적으로 시행한다.
-  - Airflow DAG quality gate/worker autoscale 기준 문서화 및 점진 도입
-  - n8n workflow Git backup/Vault credential 연계 표준화
+    The two compose files this instruction pointed to were merged into one after SPEC-0156 and SPEC-0171.
+    The Valkey health dependency and the shared `mng-valkey` boundary remain as before, but now
+    a `dedicated-valkey` profile splits the two within each single file,
+    `infra/07-workflow/airflow/docker-compose.yml` and `infra/07-workflow/n8n/docker-compose.yml`.
+    The n8n instruction below is the same. The original instruction text is preserved as a
+    point-in-time record. SPEC-0176 recorded this.
+  - Add n8n worker/task-runner healthcheck and dependency gating, and document the shared `mng-valkey` boundary of the root-included dev compose.
+  - Promote the n8n custom image to the compose default image and enforce non-root + secret guard.
+  - Introduce `scripts/hardening/check-all-hardening.sh 07-workflow` and the CI `infrastructure-hardening` job.
+- Carry out catalog expansion in phases.
+  - Document and gradually introduce Airflow DAG quality gate/worker autoscale criteria
+  - Standardize n8n workflow Git backup/Vault credential integration
 
 ## Consequences
 
 - **Positive**:
-  - workflow 관리 경계 보안과 startup 안정성이 향상된다.
-  - workflow tier 변경 회귀를 PR 단계에서 자동 차단할 수 있다.
-  - 카탈로그 확장 항목이 문서/태스크 단위로 실행 가능해진다.
+  - Workflow management boundary security and startup stability improve.
+  - Workflow tier change regressions can be automatically blocked at the PR stage.
+  - Catalog expansion items become executable at the document/task level.
 - **Trade-offs**:
-  - SSO 강화로 기존 자동화 접근 방식 일부 조정이 필요하다.
-  - custom image build가 CI/개발 환경에서 추가 빌드 시간을 유발할 수 있다.
+  - Strengthened SSO requires adjusting some existing automated access methods.
+  - Custom image builds can add build time in CI/dev environments.
 
 ### Explicit Non-goals
 
-- 즉시 multi-cluster workflow 아키텍처 전환
-- 신규 workflow service full production rollout 동시 추진
-- 개별 DAG/workflow 비즈니스 로직 리팩터링
+- Immediately switching to a multi-cluster workflow architecture
+- Simultaneously pursuing a new workflow service's full production rollout
+- Refactoring individual DAG/workflow business logic
 
 ### Agent-related Example Decisions
 
-- Guardrail strategy: workflow 관리 경로는 gateway+SSO 체인 필수
-- Tool gating: workflow 하드닝 검증 스크립트를 정책 게이트로 강제
+- Guardrail strategy: The workflow management path requires the gateway+SSO chain
+- Tool gating: Enforce the workflow hardening verification script as a policy gate
 
 ## Options Considered
 
-### 카탈로그 확장을 즉시 전면 구현
+### Implement all catalog expansion immediately
 
 - Good:
-  - 단기간 기능 확장 체감
+  - Short-term functional expansion is felt
 - Bad:
-  - 변경 반경이 커져 안정화/롤백 난이도 상승
+  - Increased change scope raises stabilization/rollback difficulty
 
-### 문서만 갱신하고 runtime/CI 하드닝은 보류
+### Update documentation only, hold off on runtime/CI hardening
 
 - Good:
-  - 구현 비용 단기 절감
+  - Reduces short-term implementation cost
 - Bad:
-  - 실제 회귀 차단 능력 부족
+  - Lacks the ability to actually block regressions
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

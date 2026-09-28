@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -15,60 +15,63 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 워크플로 엔진으로 Apache Airflow와 n8n을 동시에 채택한 배경과 하이브리드 운영 전략에 대한 아키텍처 결정 기록이다.
+This document is the architecture decision record for the background and hybrid operating strategy behind adopting both Apache Airflow and n8n as workflow engines.
 
-프로젝트는 두 가지 상이한 워크플로 요구사항에 직면해 있다.
+The project faces two different workflow needs.
 
-1. **복잡한 데이터 엔지니어링**: 엄격한 스케줄링, 재시도, 실패 처리, 그리고 Python 생태계와의 깊은 통합이 필요한 ETL 작업.
-2. **신속한 API 통합**: 다양한 외부 서비스(Slack, Google Sheets 등)와 간단한 비즈니스 로직을 코드 작성 없이 빠르게 연결해야 하는 요구사항.
+1. **Complex data engineering**: ETL work that needs strict scheduling, retries, failure handling, and deep integration with the Python ecosystem.
+2. **Fast API integration**: the need to quickly connect various external services (Slack, Google Sheets, etc.) with simple business logic, without writing code.
 
-단일 솔루션으로 이를 모두 해결하기에는 Airflow는 간단한 연동에 너무 무겁고, n8n은 복잡한 데이터 파이프라인 관리에 한계가 있다.
+Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
 ## Decision
 
-- **Apache Airflow**를 "Core Orchestrator"로 채택하여 복잡한 데이터 파이프라인과 시스템 배치 작업을 담당한다.
-- **n8n**을 "Integration Automator"로 채택하여 외부 서비스 연합 및 이벤트 기반의 가벼운 자동화를 담당한다.
-- root-included dev compose는 shared `mng-valkey`와 management PostgreSQL을 사용하고, service-local compose는 Airflow/n8n dedicated Valkey 서비스를 선언하여 운영 경계를 분리한다.
+- Adopt **Apache Airflow** as the "Core Orchestrator", handling complex data pipelines and system batch jobs.
+- Adopt **n8n** as the "Integration Automator", handling external service federation and lightweight event-driven automation.
+- The root-included dev compose uses the shared `mng-valkey` and the management PostgreSQL, while service-local compose declares dedicated Airflow/n8n Valkey services, separating the operational boundary.
 
-  이 문장이 적힌 시점에는 compose 파일 두 개가 그 경계를 나눴다. 이후 SPEC-0156과
-  SPEC-0171이 compose 모델을 "루트가 모든 파일을 무조건 include하고 profile이
-  선택한다"로 바꾸면서 `infra/07-workflow/airflow/`와 `infra/07-workflow/n8n/`은
-  각각 compose 파일을 하나만 갖는다. 경계 자체는 남았고 가르는 수단만 바뀌었다.
-  `dedicated-valkey` profile이 `airflow-valkey`와 `n8n-valkey`를 기동하며, 선택하지
-  않으면 `${AIRFLOW_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_HOST:-mng-valkey}`
-  기본값이 shared `mng-valkey`로 해석된다. 결정은 유효하고 실현 형태만 바뀌었으므로
-  위 문장은 결정 시점의 기록으로 보존한다. SPEC-0176이 기록함.
+  At the time this sentence was written, two compose files drew that
+  boundary. Afterward, SPEC-0156 and SPEC-0171 changed the compose model to
+  "the root unconditionally includes all files and a profile selects", so
+  `infra/07-workflow/airflow/` and `infra/07-workflow/n8n/` each have only one
+  compose file. The boundary itself remains, and only the mechanism for
+  drawing it changed. The `dedicated-valkey` profile starts `airflow-valkey`
+  and `n8n-valkey`; if not selected, the `${AIRFLOW_VALKEY_HOST:-mng-valkey}`
+  and `${N8N_VALKEY_HOST:-mng-valkey}` defaults resolve to the shared
+  `mng-valkey`. The decision remains valid and only its realized form
+  changed, so the sentence above is preserved as a record of its time.
+  Recorded by SPEC-0176.
 
 ## Consequences
 
 - **Positive**:
-  - 목적에 맞는 최적의 도구 활용으로 개발 및 운영 생산성 향상.
-  - 비개발자(또는 AI 에이전트)의 자동화 참여 문턱 낮춤 (n8n).
-  - 강력한 데이터 거버넌스 및 추적성 확보 (Airflow).
+  - Improves development and operational productivity by using the optimal tool for each purpose.
+  - Lowers the barrier for non-developers (or AI agents) to participate in automation (n8n).
+  - Secures strong data governance and traceability (Airflow).
 - **Trade-offs**:
-  - 두 종류의 엔진을 관리해야 하므로 운영 오버헤드 발생.
-  - 리소스(메모리, CPU) 소비 증가.
+  - Operational overhead from managing two kinds of engines.
+  - Increased resource (memory, CPU) consumption.
 
 ### Explicit Non-goals
 
-- 두 엔진 간의 직접적인 상호 호출 표준화 (필요 시 API를 통해서만 수행).
-- n8n을 대용량 데이터 처리용으로 사용하지 않음.
+- Does not standardize direct mutual calls between the two engines (done only through an API when needed).
+- Does not use n8n for large-volume data processing.
 
 ## Options Considered
 
 ### [Alternative 1: Airflow Only]
 
-- Good: 단일 엔진 운영으로 단순함, 강력한 제어권.
-- Bad: 단순한 API 연동에도 많은 코드 작성이 필요하며, UI 기반의 빠른 수정이 불가능함.
+- Good: simple with single-engine operation, strong control.
+- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
 
 ### [Alternative 2: n8n Only]
 
-- Good: 매우 빠른 개발 속도, 직관적인 시각화.
-- Bad: 복잡한 의존성 관리 및 커스텀 Python 로직 적용이 어렵고, 대규모 배치 작업 가시성이 낮음.
+- Good: very fast development speed, intuitive visualization.
+- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision Drivers
 

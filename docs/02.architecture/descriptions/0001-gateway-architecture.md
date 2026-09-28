@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier Architecture Description"
-version: "1.2.2"
+version: "1.2.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0001"
 parent_ids:
@@ -15,53 +15,53 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-이 문서는 `hy-home.docker` 시스템의 통합 진입점인 Gateway 티어의 아키텍처를 정의한다. Traefik과 Nginx의 하이브리드 구성을 통해 동적 서비스 발견과 정교한 경로 라우팅을 동시에 달성하는 구조를 설명한다.
+This document defines the architecture of the Gateway tier, the unified entry point for the `hy-home.docker` system. It describes a structure that achieves dynamic service discovery and fine-grained path routing at the same time through a hybrid Traefik and Nginx configuration.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-Gateway 티어는 외부 네트워크와 내부 서비스 네트워크 사이의 기본 통로 역할을 수행한다. 루트 compose는 두 leaf를 모두 무조건 include하고 profile이 기동을 결정한다. `traefik`은 `core`와 `dev`에, `nginx`는 전용 `nginx` profile에 속하므로 어느 쪽도 profile 없이는 기동하지 않는다. Nginx는 특정 레거시 호환 및 특수 경로 처리를 위한 보조 프록시 leaf로 유지한다.
+The Gateway tier acts as the primary passage between the external network and the internal service network. The root compose includes both leaves unconditionally, and a profile decides which starts. `traefik` belongs to `core` and `dev`, and `nginx` belongs only to the dedicated `nginx` profile, so neither starts without a profile. Nginx remains as an auxiliary proxy leaf for specific legacy compatibility and special-path handling.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
 - **Owns**:
-  - 외부 Ingress 트래픽 수신 (`web` 80, `websecure` 443)과 metrics/ping entrypoint(`metrics` 8082).
-  - TLS/SSL 인증서 적용 및 종료.
-  - 내부 서비스로의 트래픽 라우팅 및 부하 분산.
-  - 보안 미들웨어 (Rate Limit, IP Allow List, Auth Integration).
+  - Receiving external ingress traffic (`web` 80, `websecure` 443) and the metrics/ping entrypoint (`metrics` 8082).
+  - Applying and terminating TLS/SSL certificates.
+  - Routing and load-balancing traffic to internal services.
+  - Security middleware (rate limit, IP allow list, auth integration).
 - **Consumes**:
   - Docker Socket (Service Discovery).
   - Local Certificates (SSL/TLS).
   - OAuth2 Proxy (Authentication request).
 - **Does Not Own**:
-  - 개별 마이크로서비스의 내부 비즈니스 로직.
-  - 데이터베이스 직접 연결 및 관리.
-  - Identity Provide (Keycloak 내부 관리).
+  - Internal business logic of individual microservices.
+  - Direct database connections and management.
+  - Identity Provide (internal Keycloak management).
 - **Non-goals**:
-  - 모든 트래픽의 상세 페이로드 로깅 (관찰성 티어에서 샘플링 처리).
-  - 서비스 메시(Service Mesh) 수준의 복잡한 동적 제어 (현재는 단순 Ingress 위주).
+  - Detailed payload logging for all traffic (handled as sampling in the observability tier).
+  - Service Mesh-level complex dynamic control (currently focused on simple Ingress).
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Performance**: Traefik의 Go 기반 비동기 처리를 통해 낮은 지연 시간 보장. Nginx의 캐싱 기능을 활용한 정적 자원 최적화.
-- **Security**: TLS 1.3 우선 적용, HSTS 강제화, 리퀘스트 크기 제한, 인증(SSO) 통합.
-- **Reliability**: Health Check를 통한 비정상 타겟 자동 제외. Docker Provider 기반의 Self-healing 라우팅.
-- **Scalability**: Docker 레이블만으로 신규 서비스 수평 확장 및 라우팅 추가 가능.
-- **Observability**: Prometheus 메트릭 노출, OpenTelemetry(Tempo)를 통한 분산 트레이싱 연동.
-- **Operability**: Traefik Dashboard를 통한 실시간 라우팅 가시성 확보. 파일 기반 동적 설정 지원.
+- **Performance**: Guarantees low latency through Traefik's Go-based asynchronous processing. Optimizes static assets using Nginx's caching capability.
+- **Security**: Prioritizes TLS 1.3, enforces HSTS, limits request size, integrates authentication (SSO).
+- **Reliability**: Automatically excludes unhealthy targets through Health Check. Self-healing routing based on the Docker Provider.
+- **Scalability**: Adds new service horizontal scaling and routing using only Docker labels.
+- **Observability**: Exposes Prometheus metrics, integrates distributed tracing through OpenTelemetry (Tempo).
+- **Operability**: Secures real-time routing visibility through the Traefik Dashboard. Supports file-based dynamic configuration.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+This section uses the context, component, or deployment representation as the view for the relevant concern.
 
 Gateway leaves join `edge_net`, but they are alternative host listeners. Normal
 HOME traffic enters Traefik. The `nginx` profile instead selects Nginx for its
@@ -71,18 +71,18 @@ special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
 - **Key Entities / Flows**:
   - `Internet -> Traefik (TLS Term) -> Service Container`
   - `Internet -> Nginx (TLS Term + Path Rewrite) -> Keycloak/SeaweedFS CDN` when the
     alternative `nginx` profile is selected
-- **Storage Strategy**: 무상태(Stateless) 아키텍처를 지향하며, 설정 파일과 인증서는 볼륨 마운트를 통해 공급받는다.
-- **Data Boundaries**: 게이트웨이는 요청의 메타데이터(Header, Path)를 수정하거나 전달할 뿐, 요청 바디를 영구 저장하지 않는다.
+- **Storage Strategy**: Targets a stateless architecture; configuration files and certificates are supplied through volume mounts.
+- **Data Boundaries**: The gateway only modifies or forwards request metadata (header, path); it does not persist the request body.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose / Linux Alpine 기반 컨테이너.
+- **Runtime / Platform**: Docker Compose / Linux Alpine-based container.
 - **Deployment Model**: the root compose includes both leaves. `traefik` is selected
   by `core`, `dev`, or `local`; `nginx` is selected only by `nginx`. Both publish
   host ports 80/443, so they must not be selected together. Nginx also requires
@@ -91,7 +91,7 @@ special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

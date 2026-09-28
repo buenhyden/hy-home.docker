@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -16,42 +16,53 @@ created: "2026-09-19"
 
 ## Overview
 
-Gatus is the HOME availability monitor with native OIDC and persistent probe history.
+Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability monitor다.
 
 ## Policy Scope
 
-Keep the local Gatus image, native OIDC configuration, read-only config mount,
-`gatus-data` SQLite state, status UI, metrics boundary and probes within the HOME
-availability capability.
+로컬 Gatus 이미지, native OIDC 설정, read-only config mount, `gatus-data` SQLite
+상태, status UI, metrics 경계, probe를 HOME availability 역량 안에서 유지한다.
 
 ## Controls
 
-- Keep direct host ports unpublished, the configured non-root identity, read-only root filesystem and the writable data mount exactly as the Compose source declares.
-- Use native `home-gatus` OIDC and `gateway-standard-chain@file` for the UI. Do not add `sso-auth@file`, local-password fallback or a broad subject allowlist. Keep `/metrics` outside the browser route and do not expose it externally without an approved monitoring design.
-- Do not record probe URLs, response bodies, credential material or raw SQLite data in Task evidence. A probe success is endpoint evidence, not application acceptance.
-- Treat SQLite as stateful: create a coordinated consistent backup and isolated restore proof before replacement. Never delete the volume to resolve a probe or login symptom.
-- Upgrade only after reviewing the Dockerfile source, upstream release/security notes, license and the local hardening patch. Keep the previous image/configuration until approved login, health and probe checks complete.
+- 직접 host 포트는 게시하지 않고, 설정된 non-root identity, read-only root filesystem,
+  쓰기 가능한 data mount를 Compose 소스가 선언한 그대로 유지한다.
+- UI에는 native `home-gatus` OIDC와 `gateway-standard-chain@file`을 사용한다.
+  `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않는다.
+  `/metrics`는 브라우저 route 밖에 두고 승인된 모니터링 설계 없이는 외부에 노출하지
+  않는다.
+- probe URL, response body, credential 자료, 원시 SQLite 데이터를 Task 증거에 기록하지
+  않는다. probe 성공은 endpoint 증거이지 애플리케이션 수용이 아니다.
+- SQLite를 stateful로 취급한다. 교체 전에 조율된 일관된 backup과 격리된 restore 증명을
+  만든다. probe나 로그인 증상을 해결하기 위해 volume을 삭제하지 않는다.
+- Dockerfile 소스, upstream 릴리스/보안 노트, 라이선스, 로컬 hardening patch를 검토한
+  후에만 업그레이드한다. 승인된 로그인, health, probe 검사가 완료될 때까지 이전
+  이미지/설정을 유지한다.
 
 ### Lifecycle and data controls
 
-- Keep Gatus `HOME`; native Keycloak OIDC, root-CA validation, session controls, and least-privilege endpoint credentials are required.
-- SQLite/data, endpoint configuration, local patch/image identity, and matching OIDC secret form the recovery set. Stop writes or use SQLite-native backup; never live-copy `gatus.db`.
-- Rehearse in an isolated project with test routes/credentials and verify schema, history, endpoints, OIDC, session behavior, and metrics without exposing private response data.
-- Upgrade/removal requires patch compatibility, endpoint-owner coordination, retained history decision, client/route revocation, and explicit data-deletion approval.
+- Gatus는 `HOME`으로 유지한다. native Keycloak OIDC, root-CA 검증, 세션 제어, 최소
+  권한 endpoint credential이 필요하다.
+- SQLite/data, endpoint 설정, 로컬 patch/이미지 identity, 대응하는 OIDC secret이 recovery
+  set을 구성한다. 쓰기를 멈추거나 SQLite-native backup을 사용한다. `gatus.db`를 절대
+  live-copy하지 않는다.
+- 테스트 route/credential을 사용하는 격리된 프로젝트에서 리허설하고, private response
+  데이터를 노출하지 않고 schema, history, endpoint, OIDC, 세션 동작, metrics를 검증한다.
+- 업그레이드/제거는 patch 호환성, endpoint-owner 조율, 보존된 history 결정, client/route
+  폐기, 명시적 데이터 삭제 승인이 필요하다.
 
 ## Exceptions
 
-Exceptions require owner, scope, risk, expiry and recovery condition.
+예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
 ## Verification
 
-Static source and catalog checks verify declarations only. Container health,
-native login, session expiry, probe coverage, backup and restore remain runtime
-evidence requiring a separately approved target.
+정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
+probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
 
 ## Review Cadence
 
-Review monthly and when authentication, probe inventory, source or storage changes.
+매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
 
 ## Traceability
 
@@ -61,5 +72,5 @@ Review monthly and when authentication, probe inventory, source or storage chang
 ## Related Documents
 
 - [Guide](../guides/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md)
-- Runtime pins are owned by [observability Compose](../../../infra/06-observability/docker-compose.yml) and the selected [Gatus Dockerfile](../../../infra/06-observability/gatus/Dockerfile); the [derived Compose image projection](../../../infra/tech-stack.versions.json) verifies drift.
+- 런타임 고정값은 [observability Compose](../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)

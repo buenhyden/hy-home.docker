@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0008"
 parent_ids: []
@@ -14,35 +14,35 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `07-workflow` 계층(Airflow, n8n)의 제품 요구사항을 정의한다. 이 계층은 데이터 파이프라인의 자동화, 태스크 오케스트레이션, 그리고 강력한 로우코드(Low-code) 통합 기능을 제공하여 복잡한 비즈니스 로직과 데이터 흐름을 효율적으로 관리하는 것을 목표로 한다.
+This document defines the product requirements for the `07-workflow` tier (Airflow, n8n). The tier's goal is to efficiently manage complex business logic and data flow by providing data pipeline automation, task orchestration, and powerful low-code integration features.
 
 ### Problem Statement
 
-현재 산재된 스크립트 기반의 작업들은 모니터링이 어렵고, 시스템 간의 복잡한 연동 작업을 중앙에서 제어할 수 있는 표준화된 플랫폼이 부재한다.
+Currently scattered script-based tasks are hard to monitor, and there is no standardized platform for centrally controlling complex integration work between systems.
 
 ## Stakeholders and User Needs
 
-복잡한 데이터 엔지니어링 작업부터 단순한 API 통합까지 포괄하는 통합 워크플로 엔진을 구축하여, 운영 효율성을 극대화하고 에이전트가 자율적으로 태스크를 오케스트레이션할 수 있는 환경을 제공한다.
+Build an integrated workflow engine that spans complex data engineering tasks to simple API integrations, maximizing operational efficiency and providing an environment where agents can autonomously orchestrate tasks.
 
 ### Personas
 
-- **Data Engineer**: 복잡한 ETL 파이프라인을 Python 코드로 정의하고 스케줄링해야 한다.
-- **Backend Developer**: 간단한 시스템 자동화나 써드파티 연동을 빠르게 처리하고 싶어 한다.
-- **AI Agent**: 정해진 워크플로를 실행하거나, 새로운 자동화 시나리오를 설계하고 트리거한다.
+- **Data Engineer**: Needs to define and schedule complex ETL pipelines in Python code.
+- **Backend Developer**: Wants to quickly handle simple system automation or third-party integration.
+- **AI Agent**: Executes predefined workflows or designs and triggers new automation scenarios.
 
 ### Key Use Cases
 
-- **STORY-01**: 데이터 엔지니어는 Airflow DAG를 통해 매일 새벽에 원천 데이터를 가공하여 데이터 웨어하우스로 적재한다.
-- **STORY-02**: 개발자는 n8n을 사용하여 Slack 메시지 유입 시 특정 API를 호출하는 연동 시나리오를 5분 만에 구축한다.
-- **STORY-03**: 시스템 모니터링 에이전트는 특정 장애 감지 시 대응 워크플로를 n8n에서 실행하여 자동 복구를 시도한다.
+- **STORY-01**: A data engineer processes source data every night and loads it into the data warehouse via an Airflow DAG.
+- **STORY-02**: A developer uses n8n to build, in 5 minutes, an integration scenario that calls a specific API when a Slack message arrives.
+- **STORY-03**: A system monitoring agent runs a response workflow in n8n to attempt automatic recovery when a specific failure is detected.
 
 ## Functional Requirements
 
-- **REQ-0008-FR-0001**: Python 기반의 복잡한 DAG 정의 지원 (Airflow).
-- **REQ-0008-FR-0002**: 분산 처리를 위한 워커 스케일링 지원 (CeleryExecutor).
-- **REQ-0008-FR-0003**: GUI 기반의 로우코드 자동화 및 400개 이상의 외부 노드 연동 지원 (n8n).
-- **REQ-0008-FR-0004**: 워크플로 실행 상태 및 로그의 실시간 모니터링 제공.
-- **REQ-0008-FR-0005**: 에이전트가 API를 통해 워크플로를 제어할 수 있는 인터페이스 제공.
+- **REQ-0008-FR-0001**: Support complex Python-based DAG definitions (Airflow).
+- **REQ-0008-FR-0002**: Support worker scaling for distributed processing (CeleryExecutor).
+- **REQ-0008-FR-0003**: Support GUI-based low-code automation and integration with 400+ external nodes (n8n).
+- **REQ-0008-FR-0004**: Provide real-time monitoring of workflow execution status and logs.
+- **REQ-0008-FR-0005**: Provide an interface for agents to control workflows via API.
 
 ## Non-functional Requirements
 
@@ -54,32 +54,32 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0008-FR-0001**: 모든 핵심 데이터 파이프라인의 Airflow 마이그레이션 완료 (100%).
-- **REQ-0008-FR-0002**: n8n을 통한 새로운 연동 구축 시간 50% 단축.
-- **REQ-0008-FR-0003**: 태스크 실패 시 알림 처리율 100%.
+- **REQ-0008-FR-0001**: Complete Airflow migration for all core data pipelines (100%).
+- **REQ-0008-FR-0002**: Reduce new integration build time via n8n by 50%.
+- **REQ-0008-FR-0003**: 100% notification handling rate on task failure.
 
 ## Constraints
 
 - **In Scope**:
-  - 비즈니스 로직 중심의 복잡한 Batch 및 ETL 프로세스 전담.
-  - Python 코드 기반의 확장성과 동적 파이프라인 생성 능력 활용.
-  - CeleryExecutor를 통한 분산 작업 처리로 대용량 데이터 처리 보장.
+  - Dedicated to complex batch and ETL processes centered on business logic.
+  - Leverage Python code-based extensibility and dynamic pipeline generation.
+  - Guarantee large-scale data processing through distributed task handling via CeleryExecutor.
 - **Out of Scope**:
-  - 개별 비즈니스 로직 개발 (각 서비스 영역에서 담당).
-  - CI/CD 파이프라인 자체 (GitHub Actions 담당).
+  - Development of individual business logic (owned by each service area).
+  - The CI/CD pipeline itself (owned by GitHub Actions).
 - **Non-goals**:
-  - 리얼타임 스트리밍 처리 (Messaging Tier 영역).
+  - Real-time streaming processing (Messaging Tier territory).
 
 ### AI Agent Requirements
 
-- **Allowed Actions**: 워크플로 실행 상태 조회, 특정 워크플로 수동 트리거, n8n JSON 내보내기.
-- **Disallowed Actions**: Airflow 관리자 설정 변경, DB 직접 조작.
-- **Human-in-the-loop Requirement**: 신규 DAG 배포 및 n8n 워크플로 활성화는 사람의 최종 승인이 필요함.
+- **Allowed Actions**: Query workflow execution status, manually trigger a specific workflow, export n8n JSON.
+- **Disallowed Actions**: Change Airflow administrator settings, direct DB manipulation.
+- **Human-in-the-loop Requirement**: Deploying a new DAG and activating an n8n workflow require final human approval.
 
 ## Risks
 
-- **Risks**: Airflow 업그레이드 시 DB 스키마 마이그레이션 중단 가능성.
-- **Dependencies**: `04-data` (PostgreSQL) 및 `06-observability` (Metrics/Logging).
+- **Risks**: Possible DB schema migration interruption during an Airflow upgrade.
+- **Dependencies**: `04-data` (PostgreSQL) and `06-observability` (metrics/logging).
 
 ### Verification
 
@@ -97,7 +97,7 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 #### Runtime Health Check
 
-Runtime이 실행 중이면 Airflow와 n8n의 internal health를 각각 `airflow-apiserver`, `n8n` 컨테이너에서 확인한다.
+When the runtime is running, check the internal health of Airflow and n8n in the `airflow-apiserver` and `n8n` containers, respectively.
 
 ## Traceability
 

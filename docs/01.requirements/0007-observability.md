@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0007"
 parent_ids: []
@@ -16,34 +16,34 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `hy-home.docker` 플랫폼의 관측성(Observability) 계층인 `06-observability`의 제품 요구사항을 정의한다. 현재 구현된 LGTM 스택(Loki, Grafana, Tempo, Prometheus), Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 통합하여 시스템 전반의 상태를 실시간으로 모니터링하고 가시화하는 것을 목표로 한다.
+This document defines the product requirements for `06-observability`, the observability tier of the `hy-home.docker` platform. The goal is to monitor and visualize the state of the whole system in real time by integrating the currently implemented LGTM stack (Loki, Grafana, Tempo, Prometheus), Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope.
 
 ### Problem Statement
 
-마이크로서비스 아키텍처에서 서비스 간 연동이 복잡해짐에 따라, 로그만으로는 장애의 근본 원인을 파악하기 어렵다. 메트릭, 로그, 트레이싱이 파편화되어 있으면 문제 해결 시간이 길어지며 시스템 가용성이 저하된다.
+As inter-service integration grows more complex in a microservice architecture, logs alone make it hard to pinpoint the root cause of a failure. When metrics, logs, and tracing are fragmented, troubleshooting takes longer and system availability degrades.
 
 ## Stakeholders and User Needs
 
-제공되는 모든 인프라 및 애플리케이션 서비스의 상태를 단일 지점(Single Source of Truth)에서 파악하고, 장애 발생 시 원인을 즉각적으로 규명할 수 있는 고도화된 관측 환경을 구축한다.
+Build an advanced observability environment that lets teams understand the state of every provided infrastructure and application service from a single source of truth, and quickly pinpoint the cause when a failure occurs.
 
 ### Personas
 
-- **Persona 1: DevOps/SRE**: 전체 인프라의 가용성과 성능을 상시 모니터링하고 임계값 초과 시 알람을 수신한다.
-- **Persona 2: Application Developer**: 신규 기능 배포 후 오류 로그를 확인하고 분산 트레이싱을 통해 지연 구간을 최적화한다.
+- **Persona 1: DevOps/SRE**: Continuously monitors the availability and performance of the entire infrastructure and receives alerts when thresholds are exceeded.
+- **Persona 2: Application Developer**: Checks error logs after deploying a new feature and optimizes latency segments through distributed tracing.
 
 ### Key Use Cases
 
-- **STORY-01**: 운영자는 Grafana 대시보드에서 모든 컨테이너의 CPU/Memory 사용량을 한눈에 확인한다.
-- **STORY-02**: 개발자는 요청 ID를 통해 특정 트랜잭션의 트레이스(Trace)와 관련 로그(Log)를 상관 분석한다.
-- **STORY-03**: 시스템 장애 시 Alertmanager가 Slack/Email로 알람을 전송하여 즉각 대응하게 한다.
+- **STORY-01**: An operator checks CPU/memory usage for all containers at a glance on a Grafana dashboard.
+- **STORY-02**: A developer correlates a specific transaction's trace with its related logs using a request ID.
+- **STORY-03**: On a system failure, Alertmanager sends an alert via Slack/email so the team can respond immediately.
 
 ## Functional Requirements
 
-- **REQ-0007-FR-0001**: Prometheus를 통해 실시간 시계열 메트릭을 수집하고 저장해야 한다.
-- **REQ-0007-FR-0002**: Loki를 통해 분산 노드의 로그를 중앙으로 집계하고 S3(SeaweedFS)에 영구 보관해야 한다.
-- **REQ-0007-FR-0003**: Tempo를 통해 서비스 간 분산 트레이싱 정보를 수집해야 한다.
-- **REQ-0007-FR-0004**: Grafana Alloy를 단일 수집기(Unified Collector)로 사용하여 OTLP 데이터를 처리해야 한다.
-- **REQ-0007-FR-0005**: Keycloak OIDC 연동을 통해 Grafana 대시보드 접근 권한을 관리해야 한다.
+- **REQ-0007-FR-0001**: The system must collect and store real-time time-series metrics via Prometheus.
+- **REQ-0007-FR-0002**: The system must centrally aggregate logs from distributed nodes via Loki and persist them to S3 (SeaweedFS).
+- **REQ-0007-FR-0003**: The system must collect distributed tracing information between services via Tempo.
+- **REQ-0007-FR-0004**: The system must use Grafana Alloy as a unified collector to process OTLP data.
+- **REQ-0007-FR-0005**: The system must manage Grafana dashboard access permissions through Keycloak OIDC integration.
 
 ## Non-functional Requirements
 
@@ -55,28 +55,28 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0007-FR-0001**: 현재 compose와 Prometheus scrape 설정에 선언된 관측 대상이 누락 없이 렌더링되고, runtime 검증 시 `/targets`에서 기대 대상이 확인되어야 한다.
-- **REQ-0007-FR-0002**: Alertmanager Slack/SMTP 통지는 설정과 secret mount가 렌더링되어야 하며, 실제 60초 이내 도달 시간은 별도 runtime rehearsal evidence로만 완료 처리한다.
+- **REQ-0007-FR-0001**: All observation targets declared in the current compose and Prometheus scrape configuration must render without omission, and runtime verification must confirm the expected targets at `/targets`.
+- **REQ-0007-FR-0002**: Alertmanager Slack/SMTP notification configuration and secret mounts must render; actual delivery within 60 seconds is completed only through separate runtime rehearsal evidence.
 
 ## Constraints
 
 - **In Scope**:
-  - LGTM Stack (Loki, Grafana, Tempo, Prometheus) 구성
-  - Grafana Alloy 및 Pyroscope 통합
-  - Alertmanager 연동 및 대시보드 자동 프로비저닝
+  - LGTM Stack (Loki, Grafana, Tempo, Prometheus) configuration
+  - Grafana Alloy and Pyroscope integration
+  - Alertmanager integration and automated dashboard provisioning
 - **Out of Scope**:
-  - 비즈니스 로그의 상시 분석 및 통계 (ELK Stack 영역)
-  - 외부 클라우드 모니터링 서비스와의 연동
+  - Ongoing analysis and statistics of business logs (ELK Stack territory)
+  - Integration with external cloud monitoring services
 
 ### AI Agent Requirements
 
-- **Allowed Actions**: Prometheus 쿼리(PromQL) 실행, 대시보드 상태 조회, 알람 상태 확인.
-- **Disallowed Actions**: 운영 데이터 임의 삭제, 알람 정책 임의 해제.
+- **Allowed Actions**: Run Prometheus queries (PromQL), check dashboard status, check alert status.
+- **Disallowed Actions**: Arbitrarily delete operational data, arbitrarily disable alert policy.
 
 ## Risks
 
-- **Persistence Layer**: Loki와 Tempo가 SeaweedFS(`04-data`)에 의존하므로 데이터 계층 장애 시 관측 데이터 저장이 중단될 수 있다.
-- **Auth Layer**: Grafana 로그인 및 권한 관리가 Keycloak(`02-auth`)에 의존한다.
+- **Persistence Layer**: Since Loki and Tempo depend on SeaweedFS (`04-data`), observability data storage may be interrupted if the data tier fails.
+- **Auth Layer**: Grafana login and permission management depend on Keycloak (`02-auth`).
 
 ## Traceability
 

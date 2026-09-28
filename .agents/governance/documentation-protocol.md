@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.0.0"
+version: "3.0.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 ---
 
 # Documentation Protocol
@@ -154,8 +154,8 @@ heuristic's limits. The thresholds live in
 cannot judge meaning, and a text too short to measure is not judged. Correct a
 false result by recalibrating the thresholds with evidence, never with a
 per-path exception. The `language` mode of `check-document-links.py` judges
-every README. The metadata body contract judges any other document when a
-change introduces a mismatch. Conversational responses are not artifacts and
+every document whose profile declares a language, and the metadata body
+contract applies the same judgment to each changed document. Conversational responses are not artifacts and
 follow [output style](output-style.md).
 
 ### README navigation

@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -16,49 +16,50 @@ created: "2026-05-17"
 
 ## Overview
 
-Dozzle is an OPTIONAL privileged admin viewer. Native OIDC and CIDR restriction
-are mandatory compensating controls for its direct Docker API access.
+Dozzle는 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한은 직접적인
+Docker API 접근을 보완하는 필수 통제다.
 
 ## Policy Scope
 
-Activation, OIDC/CIDR, Docker socket authority, log privacy, settings data,
-upgrade, backup, and removal.
+활성화, OIDC/CIDR, Docker 소켓 권한, 로그 프라이버시, 설정 데이터, 업그레이드,
+백업, 제거.
 
 ## Controls
 
-- Use only `admin`/`admin-logs`; keep Dozzle outside HOME.
-- Preserve native OIDC, secret-file delivery, TLS issuer trust, and the admin
-  CIDR allowlist. Verify roles/filters; login alone is not least privilege.
-- Treat the socket as root-equivalent despite `:ro`. Shell/actions remain off
-  unless an approved requirement and socket restriction design say otherwise.
-- Do not use Dozzle as retention. Apply redaction and least access to logs that
-  may contain credentials, personal data, or private requests.
-- Stop Dozzle before backing up/restoring `/data`; use an isolated/non-production
-  Docker endpoint for restore testing.
-- Review upstream advisories and OIDC behavior before upgrade. Remove socket and
-  revoke the OIDC client/secret before deleting settings at retirement.
+- `admin`/`admin-logs`만 사용한다. Dozzle을 HOME 밖에 유지한다.
+- 네이티브 OIDC, 시크릿 파일 전달, TLS issuer 신뢰, 관리자 CIDR allowlist를
+  보존한다. 역할/필터를 검증한다. 로그인만으로 최소 권한이 되지는 않는다.
+- `:ro`여도 소켓을 root와 동등한 것으로 취급한다. 승인된
+  요구사항과 소켓 제한 설계가 달리 정하지 않는 한 shell/actions는 꺼진
+  상태를 유지한다.
+- Dozzle을 보존(retention) 용도로 사용하지 않는다. 자격 증명, 개인 데이터,
+  비공개 요청을 포함할 수 있는 로그에는 마스킹과 최소 접근을 적용한다.
+- `/data` 백업/복구 전에 Dozzle을 중지한다. 복구 테스트에는 격리된/비프로덕션
+  Docker 엔드포인트를 사용한다.
+- 업그레이드 전에 upstream 권고와 OIDC 동작을 검토한다. 폐기 시 설정을
+  삭제하기 전에 소켓을 제거하고 OIDC 클라이언트/시크릿을 폐기한다.
 
 ## Exceptions
 
-No exception may expose Dozzle without auth/CIDR controls or treat a read-only
-socket mount as Docker API authorization.
+인증/CIDR 통제 없이 Dozzle을 노출하거나 읽기 전용 소켓 마운트를 Docker API
+권한 부여로 취급하는 예외는 없다.
 
 ## Verification
 
-Verify health, OIDC claims/roles, CIDR denial, expected container visibility,
-and absence of unapproved shell/actions. Runtime evidence remains separate.
+헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
+shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
 
 ## Review Cadence
 
-Review on image/security advisory, OIDC/CIDR, socket, or settings changes.
+이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
 
 ## Traceability
 
-- [Guide](../guides/0072-dozzle.md) (`GDE-0072`)
-- [Runbook](../runbooks/0072-dozzle.md) (`RUN-0072`)
-- [Laboratory architecture](../../02.architecture/descriptions/0011-laboratory-architecture.md)
+- [가이드](../guides/0072-dozzle.md) (`GDE-0072`)
+- [런북](../runbooks/0072-dozzle.md) (`RUN-0072`)
+- [Laboratory 아키텍처](../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 ## Related Documents
 
-- [Dozzle Compose source](../../../infra/11-laboratory/dozzle/docker-compose.yml)
-- [Dozzle security considerations](https://dozzle.dev/guide/authentication#security-considerations)
+- [Dozzle Compose 소스](../../../infra/11-laboratory/dozzle/docker-compose.yml)
+- [Dozzle 보안 고려사항](https://dozzle.dev/guide/authentication#security-considerations)

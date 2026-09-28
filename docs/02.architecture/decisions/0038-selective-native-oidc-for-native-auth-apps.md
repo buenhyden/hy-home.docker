@@ -1,10 +1,10 @@
 ---
 title: "Selective Native OIDC for Applications with Built-in Authentication"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
-updated: "2026-09-18"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0038"
 parent_ids:
@@ -16,19 +16,20 @@ created: "2026-09-18"
 
 ## Context
 
-`ADR-0002`는 Keycloak을 중앙 Identity Provider로, OAuth2 Proxy를 Traefik
-ForwardAuth provider로 선택했다. 이 패턴은 자체 인증이 없는 서비스에는 적합하지만,
-자체 OIDC와 application-level RBAC를 가진 서비스에서는 double-auth,
-`Authorization` header 충돌, 책임 중복을 만들 수 있다.
+`ADR-0002` selected Keycloak as the central Identity Provider and OAuth2 Proxy
+as the Traefik ForwardAuth provider. This pattern suits services without their
+own authentication, but for services with their own OIDC and application-level
+RBAC it can cause double-auth, `Authorization` header conflicts, and
+responsibility duplication.
 
-Airflow 3.3.1의 Keycloak Auth Manager와 Kafbat UI v1.5.0은 애플리케이션 자체
-OIDC와 authorization 기능을 제공한다.
+Airflow 3.3.1's Keycloak Auth Manager and Kafbat UI v1.5.0 provide the <!-- runtime-version-exception: history — the decision records the versions it evaluated -->
+application's own OIDC and authorization features.
 
 ## Decision
 
-Keycloak은 중앙 IdP로 유지한다.
+Keycloak stays the central IdP.
 
-서비스 인증 경로는 두 패턴으로 분리한다.
+Service authentication paths are split into two patterns.
 
 ### Gateway ForwardAuth
 
@@ -36,7 +37,8 @@ Keycloak은 중앙 IdP로 유지한다.
 Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 ```
 
-자체 OIDC가 없거나 gateway SSO가 적절한 서비스에 사용한다.
+Used for services that have no OIDC of their own, or for which gateway SSO is
+suitable.
 
 ### Application-native OIDC
 
@@ -44,69 +46,73 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 Browser -> Traefik -> Application -> Keycloak
 ```
 
-자체 OIDC/RBAC를 제공하는 승인된 서비스에 사용한다.
+Used for approved services that provide their own OIDC/RBAC.
 
-현재 승인:
+Currently approved:
 
 - Apache Airflow
 - Kafbat UI
 
-Airflow와 Kafbat UI router에는 `gateway-standard-chain@file`만 적용하고
-OAuth2 Proxy `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
+Only `gateway-standard-chain@file` applies to the Airflow and Kafbat UI
+routers; OAuth2 Proxy's `sso-auth@file`/`sso-errors@file` is not applied
+redundantly.
 
 ## Rationale
 
-- Keycloak 중앙 IAM을 유지한다.
-- Airflow의 Keycloak Authorization Services를 그대로 사용한다.
-- Kafbat의 native OAuth2/RBAC를 그대로 사용한다.
-- Proxy가 주입한 `Authorization`과 application 자체 token 충돌을 방지한다.
-- 자체 인증이 없는 서비스에는 ForwardAuth의 단순성을 유지한다.
+- Keeps Keycloak as the central IAM.
+- Uses Airflow's Keycloak Authorization Services as-is.
+- Uses Kafbat's native OAuth2/RBAC as-is.
+- Prevents conflicts between the `Authorization` the proxy injects and the
+  application's own token.
+- Keeps ForwardAuth's simplicity for services without their own
+  authentication.
 
 ## Options Considered
 
 ### ForwardAuth-only
 
-장점:
+Pros:
 
-- gateway 정책이 단순하다.
+- Gateway policy is simple.
 
-단점:
+Cons:
 
-- Native OIDC 앱에서 double-auth 발생
-- application-level RBAC와 gateway auth 책임 중복
-- Airflow에서 실제 Bearer/JWT 충돌이 관찰됨
+- Causes double-auth in native OIDC apps.
+- Duplicates responsibility between application-level RBAC and gateway auth.
+- Actual Bearer/JWT conflicts observed in Airflow.
 
 ### Native OIDC-only
 
-장점:
+Pros:
 
-- 각 application authorization model을 직접 사용할 수 있다.
+- Each application's authorization model can be used directly.
 
-단점:
+Cons:
 
-- OIDC가 없는 서비스에는 적용할 수 없다.
-- 서비스별 Keycloak client 관리 비용이 증가한다.
+- Cannot be applied to services without OIDC.
+- Increases per-service Keycloak client management cost.
 
 ## Consequences
 
 ### Positive
 
-- authentication/authorization ownership이 명확해진다.
-- Airflow/Kafbat application RBAC를 유지한다.
-- OAuth2 Proxy header injection과 application JWT 충돌을 피한다.
+- Authentication/authorization ownership becomes clear.
+- Keeps Airflow/Kafbat application RBAC.
+- Avoids conflicts between OAuth2 Proxy header injection and application JWT.
 
 ### Negative
 
-- 서비스 onboarding 시 auth pattern을 명시적으로 선택해야 한다.
-- Keycloak client 수가 증가한다.
+- Auth pattern must be explicitly chosen during service onboarding.
+- The number of Keycloak clients increases.
 
 ## Guardrails
 
-- Native OIDC 서비스에 ForwardAuth를 기본적으로 중복 적용하지 않는다.
-- OIDC client secret은 Docker Secret으로 주입한다.
-- local mkcert CA는 system/JDK public root trust를 보존한 상태로 추가한다.
-- gateway `Authorization` forwarding은 upstream token scheme과 충돌하지 않음을 검증한다.
-- 신규 Native OIDC 서비스는 architecture/operations 문서에 명시한다.
+- Do not apply ForwardAuth redundantly to native OIDC services by default.
+- Inject OIDC client secrets as Docker Secrets.
+- Add the local mkcert CA while preserving system/JDK public root trust.
+- Verify that gateway `Authorization` forwarding does not conflict with the
+  upstream token scheme.
+- Document new Native OIDC services in the architecture/operations documents.
 
 ## Traceability
 

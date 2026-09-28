@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -19,11 +19,11 @@ created: "2026-09-19"
 
 ## Usage
 
-Renovate is a **DEV** one-shot repository maintenance job selected only by
-`dependency-update`. It is excluded from HOME and ordinary `tooling` startup.
-The root Compose project supplies `renovate.json5`, the self-host configuration,
-the `renovate_token` Docker Secret, and a cache volume. A live run reads remote
-repositories and may create or update branches and pull requests.
+Renovate는 `dependency-update`에서만 선택하는 **DEV** one-shot repository
+유지보수 작업이다. HOME과 일반 `tooling` 시작에서는 제외된다. root Compose
+project는 `renovate.json5`, self-host 설정, `renovate_token` Docker Secret,
+cache volume을 제공한다. live run은 원격 repository를 읽고 branch와 pull
+request를 생성하거나 갱신할 수 있다.
 
 ### Implementation Sources
 
@@ -32,14 +32,14 @@ repositories and may create or update branches and pull requests.
 - [Repository configuration](../../../renovate.json5)
 - [Dependency-version policy](../policies/0086-dependency-version-management.md) (`POL-0086`)
 
-`POL-0086` owns managers, release age, security updates, automerge, and updater
-overlap. This package owns the job boundary. `allowScripts: false` and the narrow
-global command allowlist limit execution. The cache is rebuildable; Git policy,
-remote repository state, and the token owner are authoritative.
+`POL-0086`은 manager, release age, security update, automerge, updater
+overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScripts: false`와
+좁은 global command allowlist가 실행을 제한한다. cache는 다시 만들 수 있으며 Git
+policy, 원격 repository 상태, token owner가 authoritative하다.
 
 ### Normal Use
 
-1. Check repository and global configuration without a token or remote mutation:
+1. token이나 원격 변경 없이 repository와 global 설정을 확인한다.
 
    ```bash
    renovate-config-validator --strict --no-global renovate.json5
@@ -47,45 +47,46 @@ remote repository state, and the token owner are authoritative.
    bash scripts/operations/sync-tech-stack-versions.sh --check
    ```
 
-2. Review token repository scope, branch protection, dry-run output, and the
-   intended repositories. Validation does not prove token permission.
-3. A live run is an external write action; run it only through the authorized
-   procedure in the [Renovate runbook](../runbooks/0083-renovate.md#procedure).
+2. token repository scope, branch protection, dry-run 출력, 대상 repository를
+   검토한다. validation은 token 권한을 증명하지 않는다.
+3. live run은 외부 write 행위이므로
+   [Renovate runbook](../runbooks/0083-renovate.md#procedure)에 있는 승인된
+   절차로만 실행한다.
 
 ### Recovery and Upgrade
 
-Delete/recreate only the cache after confirming no live job uses it. Restore
-policy from Git, review or close erroneous remote branches/PRs individually, and
-rotate the token only through its secret owner when exposure is suspected.
-Before an image upgrade, review Renovate release notes and migrations, validate
-both configs, run dry-run/discovery against a bounded repository set, then run a
-single authorized canary repository.
+live job이 사용하지 않는지 확인한 후에만 cache를 삭제/재생성한다. policy를
+Git에서 복원하고, 잘못된 원격 branch/PR을 개별적으로 검토하거나 닫으며,
+노출이 의심될 때만 secret owner를 통해 token을 회전한다. 이미지 upgrade
+전에는 Renovate release note와 migration을 검토하고 두 설정 모두를
+validation한 뒤, 제한된 repository 집합에 대해 dry-run/discovery를 실행하고
+단일 승인된 canary repository를 실행한다.
 
 ### Scheduled Operation via systemd
 
-The repository ships two systemd unit files under
-`infra/09-tooling/renovate/`:
+repository는 `infra/09-tooling/renovate/`에 systemd unit 파일 두 개를
+제공한다.
 
 | File | Purpose |
 |---|---|
-| [`hyhome-renovate.service`](../../../infra/09-tooling/renovate/systemd/hyhome-renovate.service) | oneshot service — runs the Renovate Compose job |
-| [`hyhome-renovate.timer`](../../../infra/09-tooling/renovate/systemd/hyhome-renovate.timer) | weekly timer — triggers the service unit |
+| [`hyhome-renovate.service`](../../../infra/09-tooling/renovate/systemd/hyhome-renovate.service) | oneshot service — Renovate Compose job을 실행 |
+| [`hyhome-renovate.timer`](../../../infra/09-tooling/renovate/systemd/hyhome-renovate.timer) | weekly timer — service unit을 트리거 |
 
 #### How the timer works
 
-- **Schedule**: Monday 00:00 KST with up to 60 minutes of random jitter
-  (`RandomizedDelaySec=3600`). This matches the `renovate.json5` schedule
-  window (`"* 0-5 * * 1"` in `Asia/Seoul` timezone) so the host trigger
-  and the in-app schedule guard use the same maintenance window.
-- **Missed fires**: `Persistent=true` causes the timer to fire on the next
-  boot if the host was offline when the Monday trigger was due. That catch-up
-  run can fall outside the `renovate.json5` window; Renovate then updates the
-  Dependency Dashboard but does not open new branches until the window.
-- **Start dependency**: the timer declares no `Requires=` on the service and the
-  service has no `[Install]` section, so enabling or starting the timer, or a
-  reboot, never starts an immediate run by itself.
-- **Timezone**: `OnCalendar` uses the `Asia/Seoul` suffix (systemd ≥ 242,
-  this host runs 255).
+- **Schedule**: 월요일 00:00 KST에 최대 60분의 random jitter
+  (`RandomizedDelaySec=3600`)를 둔다. 이 값은 `renovate.json5`의 schedule window
+  (`Asia/Seoul` timezone의 `"* 0-5 * * 1"`)와 일치해서 host trigger와 in-app
+  schedule guard가 같은 maintenance window를 쓰게 된다.
+- **Missed fires**: `Persistent=true` 덕분에 월요일 trigger 시각에 host가
+  오프라인이었다면 다음 boot 때 timer가 실행된다. 그 catch-up run은
+  `renovate.json5` window를 벗어날 수 있다. 그 경우 Renovate는 Dependency
+  Dashboard는 갱신하지만 window가 될 때까지 새 branch를 열지 않는다.
+- **Start dependency**: timer는 service에 `Requires=`를 선언하지 않고
+  service에는 `[Install]` section이 없으므로, timer를 enable하거나
+  start하거나 reboot해도 그 자체로 즉시 run이 시작되지는 않는다.
+- **Timezone**: `OnCalendar`는 `Asia/Seoul` suffix를 사용한다(systemd ≥ 242,
+  이 host는 255를 실행 중).
 
 #### Service flow
 
@@ -96,19 +97,19 @@ Timer fires
   └─ ExecStart:        docker compose --profile dependency-update run --rm --no-deps renovate
 ```
 
-No post-run prune runs: `docker image prune` is host-wide. Remove superseded
-Renovate image tags manually by exact reference.
+run 이후에는 prune을 실행하지 않는다. `docker image prune`은 host 전역이다.
+대체된 Renovate image tag는 정확한 reference로 수동 제거한다.
 
-If any pre-flight check fails the run aborts before the container is
-created. The service does **not** auto-restart (`Restart=no`); a failed
-run requires human log review before the next attempt.
+pre-flight check가 하나라도 실패하면 container를 만들기 전에 run이
+중단된다. service는 자동 재시작하지 않으며(`Restart=no`), 실패한 run은 다음
+시도 전에 사람이 log를 검토해야 한다.
 
 #### Installation
 
-Installing or replacing host units is a host change that needs its own
-approval. Copy reviewed files instead of symlinking them, so a checkout,
-branch switch or pull cannot silently change what systemd runs. The installed
-copies checked on 2026-09-21 were an older revision than this repository.
+host unit을 설치하거나 교체하는 것은 별도 승인이 필요한 host 변경이다.
+symlink 대신 검토된 파일을 복사해 checkout이나 branch 전환, pull이 systemd가
+실행하는 내용을 조용히 바꾸지 못하게 한다. 2026-09-21에 확인한 설치된
+복사본은 이 repository보다 오래된 revision이었다.
 
 ```bash
 # 1. Compare, then copy the reviewed revision (approved host change only)
@@ -141,15 +142,15 @@ sudo systemctl disable --now hyhome-renovate.timer
 sudo systemctl stop hyhome-renovate.service
 ```
 
-> All live-run authorization and evidence rules in the policy and runbook
-> apply equally to timer-triggered and manually triggered runs.
+> policy와 runbook의 모든 live-run 승인과 evidence 규칙은 timer가 트리거한
+> run과 수동으로 트리거한 run에 똑같이 적용된다.
 
 ## Common Checks
 
-- Strict repository and self-host configuration validation.
+- repository와 self-host 설정에 대한 strict validation.
 - `bash scripts/operations/sync-tech-stack-versions.sh --check`.
-- For an authorized live job, reconcile sanitized results with every generated
-  branch/PR and confirm that no merge was performed by this job authorization.
+- 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
+  이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
 
 ## Traceability
 

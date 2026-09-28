@@ -1,10 +1,10 @@
 ---
 title: "11-Laboratory Optimization Hardening Architecture Description"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
@@ -15,13 +15,21 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `11-laboratory` 계층 최적화/하드닝 참조 아키텍처를 정의한다. 관리 UI를 gateway 보안 체인, SSO 인증, IP allowlist 경계 뒤에 배치하고 실험성 서비스 운영 드리프트를 CI 게이트로 통제하는 아키텍처 계약을 명시한다.
+This document defines the optimization/hardening reference architecture of
+the `11-laboratory` layer. It specifies the architecture contract that places
+the management UI behind the gateway security chain, SSO authentication, and
+the IP allowlist boundary, and controls experimental service operational
+drift with a CI gate.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded
+in this section and the following views. Only concerns confirmed in the
+existing document are covered here.
 
-Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 권한이 큰 UI를 다루므로 "보안 경계 우선" 설계가 필요하다.
+The laboratory tier is a management tool layer for operator productivity,
+but a "security boundary first" design is needed because it handles
+high-privilege UIs.
 
 - Container/Log Admin UI: dozzle
 - Data Admin UI: redisinsight
@@ -29,42 +37,51 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships,
+non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - Laboratory UI ingress 경계 계약(gateway chain + SSO + allowlist)
-  - 네트워크 경계 계약
-  - 관리 UI direct host exposure 금지 계약
-  - dozzle 최소권한(socket read-only) 계약
-  - open-notebook UI route SSO/allowlist/large-body 경계와 Docker Secret 주입 계약
-  - laboratory hardening CI 정책 게이트
+  - Laboratory UI ingress boundary contract (gateway chain + SSO + allowlist)
+  - network boundary contract
+  - management UI direct host exposure prohibition contract
+  - dozzle least-privilege (socket read-only) contract
+  - open-notebook UI route SSO/allowlist/large-body boundary and Docker
+    Secret injection contract
+  - laboratory hardening CI policy gate
 - **Consumes**:
   - `01-gateway` Traefik middleware
   - `02-auth` SSO middleware
   - Docker Engine / Valkey-Redis endpoints
 - **Does Not Own**:
-  - Keycloak realm 상세 정책
+  - Keycloak realm detailed policy
   - Traefik global entrypoints
 - **Non-goals**:
-  - 실험성 서비스를 프로덕션 워크로드 계층으로 승격
-  - 관리 도구 전체 재플랫폼
+  - promoting an experimental service to the production workload tier
+  - a full replatform of the management tools
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
 
-- **Security**: direct host 노출 제거, allowlist+SSO 이중 경계 적용
-- **Reliability**: compose 계약 및 healthcheck 기반 최소 런타임 안정성 확보
-- **Operability**: CI hardening gate와 runbook 기반 회귀 복구 표준화
-- **Scalability**: 카탈로그 기반 정책(만료/승인/감사)을 단계적으로 확장
+- **Security**: removes direct host exposure, applies the dual
+  allowlist+SSO boundary
+- **Reliability**: secures minimum runtime stability based on the compose
+  contract and healthcheck
+- **Operability**: standardizes regression recovery based on the CI
+  hardening gate and runbook
+- **Scalability**: expands the catalog-based policy (expiration/approval/
+  audit) in stages
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves
+as the view for that concern.
 
 - **Ingress path**:
   - Operator -> Traefik(websecure) -> dozzle/redisinsight/open-notebook
@@ -77,7 +94,8 @@ Laboratory tier는 운영자 생산성을 위한 관리 도구 계층이지만, 
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
 
 This hardening Architecture Description does not introduce production data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, Valkey/Redis endpoint inspection, and Open Notebook local laboratory state described in the control path.
 
@@ -85,7 +103,7 @@ This hardening Architecture Description does not introduce production data owner
 
 - **Runtime / Platform**: Docker Compose (`infra/11-laboratory/*`)
 - **Deployment Model**:
-  - Service별 compose + 공통 template(`infra/common-optimizations.yml`)
+  - per-service compose + a common template (`infra/common-optimizations.yml`)
 - **Operational Evidence**:
   - compose static checks
   - `scripts/hardening/check-all-hardening.sh 11-laboratory`
@@ -93,14 +111,19 @@ This hardening Architecture Description does not introduce production data owner
 
 ## Evolution
 
-- **관리 UI**: SSO+allowlist 유지, 실험성 서비스 자동 만료 정책 적용
-- **dozzle**: 로그 열람 범위 제한(운영 로그 접근 차단 규칙), 권한 최소화 지속 점검
-- **redisinsight**: 접근권한 최소화, 운영 캐시 직접 변경 금지와 감사로그 정책 강화
-- **open-notebook**: secret-file credential 주입 유지, notebook data retention/expiration policy, direct API/DB host-port exposure review before production promotion
+- **Management UI**: keeping SSO+allowlist, applying an automatic
+  expiration policy for experimental services
+- **dozzle**: restricting the log viewing scope (rule blocking access to
+  production logs), ongoing review of least-privilege
+- **redisinsight**: minimizing access permission, prohibiting direct
+  production cache changes and strengthening the audit log policy
+- **open-notebook**: keeping secret-file credential injection, notebook data
+  retention/expiration policy, direct API/DB host-port exposure review
+  before production promotion
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

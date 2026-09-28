@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0072"
 parent_ids:
@@ -16,12 +16,12 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use for OIDC/CIDR denial, missing log streams, socket errors, settings loss, a
-suspected compromise, or an approved upgrade.
+OIDC/CIDR denial, missing log stream, socket error, settings loss, suspected
+compromise, 또는 승인된 upgrade에 사용한다.
 
 ## Procedure
 
-1. Validate and inspect from the root:
+1. 루트에서 validate하고 점검한다.
 
    ```bash
    docker compose --profile admin-logs config --quiet
@@ -29,35 +29,35 @@ suspected compromise, or an approved upgrade.
    docker compose --profile admin-logs logs --tail=200 dozzle
    ```
 
-2. Separate OIDC issuer/client/secret/CA, CIDR, Docker socket, target container,
-   and Docker log-driver symptoms. Do not capture raw application logs by default.
-3. On suspected auth bypass or socket compromise, stop Dozzle, revoke/rotate the
-   OIDC client secret, and preserve sanitized audit evidence. The `:ro` socket
-   flag is not proof that Docker API mutation was impossible.
-4. Restart only after OIDC/CIDR/socket controls are reviewed. Verify allowed and
-   denied identities/CIDRs and expected filtered visibility.
+2. OIDC issuer/client/secret/CA, CIDR, Docker socket, target container, Docker
+   log-driver 증상을 구분한다. 기본적으로 raw application log는 캡처하지 않는다.
+3. auth bypass나 socket compromise가 의심되면 Dozzle을 중지하고, OIDC client
+   secret을 revoke/rotate하고, sanitized audit evidence를 보존한다. `:ro` socket
+   flag가 Docker API mutation이 불가능했다는 증거는 아니다.
+4. OIDC/CIDR/socket 통제가 검토된 후에만 재시작한다. 허용/거부된 identity/CIDR과
+   예상 filtered visibility를 확인한다.
 
 ### Settings recovery and upgrade
 
-Stop Dozzle, copy the complete bind-backed `/data` to protected storage, and
-restore it first to an isolated instance without the production socket. For an
-upgrade, review advisories/releases and test OIDC, roles/filters, streaming, and
-actions/shell defaults against that copy. Roll back image plus settings copy if incompatible.
+Dozzle을 중지하고, bind-backed `/data` 전체를 protected storage로 복사하고, 먼저
+production socket이 없는 isolated instance로 복원한다. upgrade 시에는 advisory/
+release를 검토하고 해당 copy에서 OIDC, roles/filters, streaming,
+actions/shell 기본값을 테스트한다. 비호환 시 image와 settings copy를 함께 롤백한다.
 
 ## Evidence
 
-Record exits, source commit, OIDC/CIDR allow/deny booleans, visible container
-count, settings checksum, and final socket/service disposition. Redact log content.
+exit, source commit, OIDC/CIDR allow/deny boolean, visible container count,
+settings checksum, 최종 socket/service 상태를 기록한다. log 내용은 redact한다.
 
 ## Rollback or Recovery
 
-Settings restore and upgrade rehearsal are **planned but unexecuted**. Docker
-logs require their own logging backend recovery; Dozzle cannot restore them.
+settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다. Docker
+로그는 별도의 logging backend recovery가 필요하며 Dozzle은 이를 복원할 수 없다.
 
 ## Escalation
 
-Stop on suspected socket compromise, auth/CIDR bypass, secret exposure, missing
-log authority, or settings incompatibility.
+socket compromise 의심, auth/CIDR bypass, secret exposure, log authority 누락,
+settings 비호환이 있으면 중단한다.
 
 ## Traceability
 

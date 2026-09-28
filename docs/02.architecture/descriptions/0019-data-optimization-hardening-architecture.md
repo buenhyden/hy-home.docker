@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -15,19 +15,21 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `infra/04-data/`의 관계형, NoSQL, cache, object storage, analytics,
-graph/vector 서비스 구조를 설명한다. Maintainer와 operator는 공통 Compose
-계약과 engine별 lifecycle·recovery 절차를 분리해 관리한다.
+This document describes the relational, NoSQL, cache, object storage,
+analytics, and graph/vector service structure of `infra/04-data/`. The
+maintainer and operator manage the common Compose contract and the per-engine
+lifecycle/recovery procedure separately.
 
 ## System Boundaries
 
-- `infra/04-data/**`는 data service Compose topology와 engine별 configuration을
-  소유한다.
-- Stage 03 capability Spec은 구현 경계를, Stage 05 subject는 운영 절차를
-  소유한다.
-- Gateway routing, Stage 03 security secret 공급, Stage 06 telemetry 수집은
-  각각의 계층에서 제공된다.
-- 제품 business schema·query와 cloud migration은 이 아키텍처 밖이다.
+- `infra/04-data/**` owns the data service Compose topology and per-engine
+  configuration.
+- The Stage 03 capability Spec owns the implementation boundary, and the
+  Stage 05 subject owns the operational procedure.
+- Gateway routing, Stage 03 security secret supply, and Stage 06 telemetry
+  collection are each provided by their own layer.
+- Product business schema/query and cloud migration are outside this
+  architecture.
 
 ## Components
 
@@ -39,32 +41,34 @@ graph/vector 서비스 구조를 설명한다. Maintainer와 operator는 공통 
 - Relational: PostgreSQL cluster
 - Specialized: Neo4j, Qdrant
 
-각 component는 독립 configuration과 volume을 유지하며 common optimization,
-secret, healthcheck, network contract를 Compose에서 조합한다.
+Each component keeps its own configuration and volume, and combines the
+common optimization, secret, healthcheck, and network contract in Compose.
 
 ## Data Flow
 
-서비스는 SQL, Redis/Valkey, S3-compatible, search, vector, graph protocol을
-통해 명시적으로 연결된다. Persistent state는 `${DEFAULT_DATA_DIR}` 아래의
-서비스별 volume 경계를 유지하고 credential은 Compose secret 계약으로
-주입된다.
+Services connect explicitly through SQL, Redis/Valkey, S3-compatible, search,
+vector, and graph protocols. Persistent state keeps a per-service volume
+boundary under `${DEFAULT_DATA_DIR}`, and credentials are injected through
+the Compose secret contract.
 
 ## Deployment View
 
-현재 구현은 `infra/common-optimizations.yml`과 각 engine Compose 파일을
-조합한다. Hardening 및 Compose validators가 secret, label, expose,
-healthcheck 정합성을 검사한다. 추가 HA, lifecycle automation, failover drill은
-현재 모든 engine에 구현된 것으로 간주하지 않으며 별도 승인된 current
-Requirement와 ADR을 통해 도입한다.
+The current implementation combines `infra/common-optimizations.yml` with
+each engine Compose file. The hardening and Compose validators check secret,
+label, expose, and healthcheck consistency. Additional HA, lifecycle
+automation, and failover drills are not treated as implemented for every
+engine today, and are introduced only through a separately approved current
+Requirement and ADR.
 
 ## Quality Attributes
 
-- **Security**: credential 주입을 일관되게 유지하고 불필요한 노출을 줄인다.
-- **Reliability**: healthcheck와 engine별 recovery procedure를 사용한다.
-- **Scalability**: 승인된 engine별 확장을 공통 Compose 경계를 깨지 않고
-  도입할 수 있어야 한다.
-- **Operability**: static Gate, capability Spec, Operations subject가 같은
-  topology와 failure boundary를 설명해야 한다.
+- **Security**: keeps credential injection consistent and reduces unnecessary
+  exposure.
+- **Reliability**: uses healthchecks and a per-engine recovery procedure.
+- **Scalability**: an approved per-engine expansion must be introducible
+  without breaking the common Compose boundary.
+- **Operability**: the static gate, capability Spec, and Operations subject
+  must describe the same topology and failure boundary.
 
 ## Traceability
 

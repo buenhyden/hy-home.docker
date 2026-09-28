@@ -13,7 +13,10 @@
       "Bash(docker image ls:*)",
       "Bash(python3 scripts/validation/run-ci-gate.py --profile changed:*)",
       "Bash(python3 scripts/validation/run-ci-gate.py --profile full:*)",
-      "Bash(bash scripts/knowledge/report-graphify-health.sh:*)"
+      "Bash(bash scripts/knowledge/report-graphify-health.sh:*)",
+      "Write(//tmp/claude-*/**)",
+      "Edit(//tmp/claude-*/**)"
+
     ],
     "deny": [
       "Bash(docker system prune:*)",

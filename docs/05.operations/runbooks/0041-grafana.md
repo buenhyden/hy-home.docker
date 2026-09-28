@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -28,7 +28,7 @@ created: "2026-05-17"
 
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
 - OAuth login loop, `OAuth Login Failed`, or unexpected Viewer/Editor/Admin role이 발생할 때.
-- Dashboard panels show `Datasource not found`, `Query error`, or empty trace/log/profile links.
+- Dashboard 패널에 `Datasource not found`, `Query error`가 표시되거나 trace/log/profile link가 비어 있을 때.
 - Provisioned dashboard JSON or datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
 - `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider, or route 변경 후 rollback 가능성을 확인해야 할 때.
 
@@ -39,7 +39,7 @@ created: "2026-05-17"
 - [ ] `grafana` service, `infra-grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
 - [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
-- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version을 변경해야 해 보이면 중단하고 owning operator approval을 받는다.
+- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version 변경이 필요해 보이면 중단하고 owning operator approval을 받는다.
 
 ### Steps
 
@@ -104,15 +104,15 @@ created: "2026-05-17"
    docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
    ```
 
-   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
+   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
 
 ### Verification Steps
 
 - [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
 - [ ] `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
-- [ ] Provisioned datasource identities remain unchanged: UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`, and Pyroscope datasource type `grafana-pyroscope-datasource`.
-- [ ] Dashboard providers remain `editable: false`, and tracked dashboard JSON count is expected.
-- [ ] OAuth role mapping still maps `/admins` to `Admin`, `/editors` to `Editor`, and others to `Viewer`.
+- [ ] Provisioned datasource identity가 변경되지 않았다: UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`.
+- [ ] Dashboard provider가 여전히 `editable: false`이고, tracked dashboard JSON 개수가 예상값과 일치한다.
+- [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, 나머지를 `Viewer`로 매핑한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
@@ -131,12 +131,12 @@ created: "2026-05-17"
 
 ### Planned isolated restore rehearsal
 
-Status: **planned and not executed**. No successful Grafana SQLite restore is claimed.
+Status: **planned and not executed**. Grafana SQLite restore 성공 사례를 주장하지 않는다.
 
-1. Record image/plugin/schema identities and object counts, quiesce users/alerts, stop Grafana, then snapshot all of `grafana-data` consistently with provisioning and secret references.
-2. Restore into a separate project/network with a test route and test Keycloak client; keep production datasources read-only or replace them with test endpoints.
-3. Start Grafana and verify SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth, and that anonymous requests are refused.
-4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production state/client/route replacement is separately approved.
+1. image/plugin/schema identity와 object count를 기록하고, user/alert를 quiesce한 뒤 Grafana를 중지하고, provisioning과 secret reference에 맞춰 `grafana-data` 전체를 snapshot한다.
+2. test route와 test Keycloak client를 사용하는 별도 project/network로 복원한다. production datasource는 read-only로 유지하거나 test endpoint로 대체한다.
+3. Grafana를 시작하고 SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth를 검증하며 anonymous request가 거부되는지 확인한다.
+4. 불일치가 발견되면 isolated project를 중지하고 log/checksum을 보존한다. untouched backup으로 돌아가며, production state/client/route 교체는 별도로 승인받는다.
 
 ## Evidence
 
@@ -161,7 +161,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, role mapp
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative이며, [derived Compose image projection](../../../infra/tech-stack.versions.json)은 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0041-grafana.md)

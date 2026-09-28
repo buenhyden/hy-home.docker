@@ -1,10 +1,10 @@
 ---
 title: "Communication Services Selection and Configuration"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0010"
 parent_ids:
@@ -15,24 +15,24 @@ created: "2026-03-26"
 
 ## Context
 
-이 문서는 해당 아키텍처 결정의 배경, 선택, 결과를 추적하기 위한 ADR이다. 이 정렬 섹션은 기존 결정 내용을 바꾸지 않는다.
+This document is the ADR that tracks the background, choices, and outcomes of this architecture decision. This alignment section does not change the existing decision content.
 
-`10-communication` 계층은 시스템의 전자우편 기반 알림 및 메시지 수발신을 담당한다. 개발 단계에서는 실제 사용자에게 메일이 발송되는 사고를 방지해야 하며, 운영 단계에서는 높은 도달율(Deliverability)과 보안성을 갖춘 메일 서버가 필요하다. 이를 위해 경량화된 샌드박스와 현대적인 고성능 메일 서버 솔루션을 선정해야 한다.
+The `10-communication` layer handles the system's email-based notifications and message sending/receiving. During development, incidents where mail is sent to real users must be prevented, and in operation, a mail server with high deliverability and security is needed. For this, a lightweight sandbox and a modern, high-performance mail server solution must be selected.
 
 ## Decision
 
-다음과 같은 서비스 스택을 `10-communication`의 표준 도구로 선정한다.
+The following service stack is selected as the standard tooling for `10-communication`.
 
 1. **SMTP Trap (Dev)**: **MailHog**
-   - 이유: 설정이 간편하고, 웹 UI를 통해 캡처된 메일을 즉시 확인할 수 있으며, 외부 릴레이 없이 메모리상에서만 동작하여 안전하다.
+   - Reason: simple to configure, captured mail can be checked immediately through the web UI, and it is safe because it operates only in memory with no external relay.
 2. **Mail Server (Prod)**: **Stalwart**
-   - 이유: Rust로 작성되어 메모리 효율과 성능이 뛰어나며, JMAP, IMAP, SMTP 등 현대적인 프로토콜을 모두 지원한다. 또한 단일 바이너리로 운영이 가능하여 유지보수가 용이하다.
+   - Reason: written in Rust with excellent memory efficiency and performance, and supports modern protocols such as JMAP, IMAP, and SMTP. It is also easy to maintain since it can be operated as a single binary.
 
 ### Rationale
 
-- **격리 정책**: 개발용 `mailhog`는 내부 SMTP 1025 포트를, 운영용 `stalwart`는 표준 25/465/587/993 포트를 사용하여 논리적으로 명확히 분리한다.
-- **보안 프로토콜**: Stalwart와 MailHog의 웹 UI는 Traefik SSO 미들웨어 체인으로 보호한다. TLS/DNS deliverability evidence는 운영 승격 전 별도 검증한다.
-- **데이터 신뢰성**: Stalwart의 메일 저장소는 영구 볼륨으로 관리되어 시스템 재시작 후에도 데이터를 유지한다.
+- **Isolation policy**: the dev `mailhog` uses internal SMTP port 1025 and the prod `stalwart` uses the standard 25/465/587/993 ports, keeping them logically and clearly separated.
+- **Security protocol**: the Stalwart and MailHog web UIs are protected by the Traefik SSO middleware chain. TLS/DNS deliverability evidence is verified separately before promotion to production.
+- **Data reliability**: Stalwart's mail store is managed as a persistent volume, retaining data across system restarts.
 
 ### Decision Record
 
@@ -41,11 +41,11 @@ Accepted (2026-03-26)
 ## Consequences
 
 - **Positive**:
-  - 개발 단계에서의 메일 오발송 리스크가 완전히 제거된다.
-  - 표준화된 메일 서버 구성을 통해 SPF/DKIM 등 스팸 방지 정책의 운영 승격 기준을 일관되게 적용할 수 있다.
+  - Completely removes the risk of misdirected mail during development.
+  - A standardized mail server configuration lets anti-spam policy promotion criteria such as SPF/DKIM be applied consistently.
 - **Negative**:
-  - Stalwart의 초기 설정(도메인 인증 등)이 다소 복잡할 수 있다.
-  - 메일 서버 운영에 필요한 고정 IP 및 DNS 레코드 관리가 수반된다.
+  - Stalwart's initial setup (domain verification, etc.) can be somewhat complex.
+  - Operating a mail server involves managing a fixed IP and DNS records.
 
 ### Explicit Non-goals
 
@@ -59,7 +59,7 @@ Existing alternatives, rationale, or rejected options in this ADR remain the alt
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision Drivers
 

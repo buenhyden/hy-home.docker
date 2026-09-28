@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -15,51 +15,67 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `06-observability` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, 카탈로그 기반 확장 전략을 아키텍처 관점에서 정리한다.
+This document defines the optimization/hardening reference architecture of
+the `06-observability` layer. It organizes the gateway boundary security,
+health-based dependency, custom image runtime hardening, and catalog-based
+expansion strategy from an architecture perspective.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded
+in this section and the following views. Only concerns confirmed in the
+existing document are covered here.
 
-관측성 계층은 데이터 평면(수집/저장)과 관리 평면(UI/API)을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어+SSO 체인을 적용하고, 데이터 평면은 `obs_net` 내부 통신으로 유지한다.
+The observability layer operates the data plane (collection/storage) and the
+management plane (UI/API) separately. The management plane applies the
+standard middleware+SSO chain at the Traefik TLS termination point, and the
+data plane is kept over `obs_net` internal communication.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships,
+non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - 관측성 서비스 라우팅/인증 경계 계약
-  - health 기반 부팅 순서 및 런타임 하드닝 계약
-  - observability 하드닝 검증 자동화 계약
+  - Observability service routing/authentication boundary contract
+  - health-based boot order and runtime hardening contract
+  - observability hardening verification automation contract
 - **Consumes**:
   - `01-gateway` Traefik middleware chain
-  - `02-auth` Keycloak 기반 SSO
+  - `02-auth` Keycloak-based SSO
   - `04-data` SeaweedFS object storage
 - **Does Not Own**:
-  - 애플리케이션 계측 코드(OTel SDK)
-  - 비관측성 티어 라우팅 정책
+  - Application instrumentation code (OTel SDK)
+  - Non-observability tier routing policy
 - **Non-goals**:
-  - 즉시 multi-cluster/multi-region observability 도입
-  - 샘플링 정책 전면 재설계
+  - Immediate multi-cluster/multi-region observability adoption
+  - Full redesign of the sampling policy
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
 
-- **Performance**: 게이트웨이 표준 체인으로 burst 제어/과부하 완화
-- **Security**: TLS 종료 + SSO + 비루트 컨테이너 실행
-- **Reliability**: `service_healthy` 의존성으로 부팅 안정성 향상
-- **Scalability**: catalog 기반 확장(샘플링/retention/long-term storage) 준비
+- **Performance**: burst control/overload mitigation through the gateway
+  standard chain
+- **Security**: TLS termination + SSO + non-root container execution
+- **Reliability**: improved boot stability through `service_healthy`
+  dependency
+- **Scalability**: readiness for catalog-based expansion (sampling/retention/
+  long-term storage)
 - **Observability**: cAdvisor health, pyroscope availability, and stack health validation
-- **Operability**: 스크립트 기반 회귀 차단 + runbook 표준 절차
+- **Operability**: script-based regression blocking + standard runbook
+  procedure
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves
+as the view for that concern.
 
 - Storage/Query Plane:
   - Prometheus, Loki, Tempo, Pyroscope
@@ -74,7 +90,8 @@ created: "2026-03-28"
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
 
 - **Key Entities / Flows**:
   - Metrics, logs, traces, profiles
@@ -83,7 +100,7 @@ created: "2026-03-28"
   - Loki/Tempo object storage via SeaweedFS
   - Pyroscope local storage
 - **Data Boundaries**:
-  - 장기 보존/리텐션 정책은 operations 계층에서 관리
+  - the long-term retention policy is managed at the operations layer
 
 ## Deployment View
 
@@ -97,14 +114,14 @@ created: "2026-03-28"
 
 ## Evolution
 
-- Prometheus: scrape budget + remote_write 계층화
-- Loki: label cardinality budget + retention/compactor 분리 운영
-- Tempo: service/endpoint별 샘플링 정책 + span 폭주 보호
-- Alloy: 온보딩 템플릿화 + 수집 파이프라인 모듈화
+- Prometheus: scrape budget + remote_write tiering
+- Loki: label cardinality budget + separate retention/compactor operation
+- Tempo: per-service/endpoint sampling policy + span-burst protection
+- Alloy: onboarding templating + modularized collection pipeline
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

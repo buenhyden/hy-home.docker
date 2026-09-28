@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Runtime Hardening and Fail-closed Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0017"
 parent_ids:
@@ -15,59 +15,59 @@ created: "2026-03-28"
 
 ## Context
 
-이 문서는 `02-auth` 계층의 런타임 하드닝 방식과 인증 장애 시 fail-closed 정책을 결정한 기록이다.
+This document records the decision on the `02-auth` layer's runtime hardening approach and the fail-closed policy for authentication failures.
 
-`infra/02-auth`의 OAuth2 Proxy는 시크릿 주입을 Compose 인라인 셸로 처리하고 있었다. 이 방식은 변경 추적/재사용성이 낮고, 운영 표준(최소 권한 런타임, 명확한 엔트리포인트 계약)과 맞지 않았다. 또한 인증 장애 시 우회 허용 여부가 문서적으로 명확히 고정되지 않았다.
+The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline Compose shell. This approach had low change traceability and reusability, and did not align with operating standards (minimal-privilege runtime, a clear entrypoint contract). Also, whether bypass is allowed during an authentication failure was not clearly fixed in documentation.
 
 ## Decision
 
-- OAuth2 Proxy 시크릿 주입은 `docker-entrypoint.sh`로 일원화한다.
-- OAuth2 Proxy 컨테이너는 non-root 사용자(`oauth2proxy`)로 실행한다.
-- 인증 장애 기본 동작은 fail-closed를 유지한다.
-- degraded-mode는 정책/런북 절차에 의해 제한적으로만 수행하고, 사후 원복을 필수화한다.
-- Keycloak은 상태 저장 특성과 현재 리소스 기준을 고려해 `template-infra-high`를 유지한다(readonly 강제 전환하지 않음).
+- Unify OAuth2 Proxy secret injection into `docker-entrypoint.sh`.
+- Run the OAuth2 Proxy container as a non-root user (`oauth2proxy`).
+- Keep fail-closed as the default behavior for authentication failures.
+- Perform degraded-mode only in a limited way, per policy/runbook procedure, and require restoring the prior state afterward.
+- Keep Keycloak on `template-infra-high`, given its stateful characteristics and current resource baseline (do not force a switch to readonly).
 
 ## Consequences
 
 - **Positive**:
-  - 시크릿 주입 경로가 단일화되어 감사/검증이 쉬워진다.
-  - 최소 권한 실행으로 컨테이너 런타임 공격면이 축소된다.
-  - 운영자가 장애 시 정책/절차에 따라 일관되게 대응할 수 있다.
+  - The secret injection path becomes unified, making audit and verification easier.
+  - Minimal-privilege execution reduces the container runtime attack surface.
+  - Operators can respond consistently to failures according to policy/procedure.
 - **Trade-offs**:
-  - 엔트리포인트 스크립트 유지보수 책임이 생긴다.
-  - fail-closed로 인해 IdP 장애 시 사용자 영향이 즉시 드러날 수 있다.
+  - Creates a maintenance responsibility for the entrypoint script.
+  - Fail-closed means user impact can surface immediately during an IdP failure.
 
 ### Explicit Non-goals
 
-- Keycloak/OAuth2 Proxy 외 인증 스택 추가 또는 교체
-- fail-open 기본 정책 도입
-- 신규 시크릿 백엔드 도입(Vault 강제 마이그레이션)
+- Adding or replacing an authentication stack beyond Keycloak/OAuth2 Proxy
+- Introducing fail-open as the default policy
+- Introducing a new secret backend (forced migration to Vault)
 
 ### Agent-related Example Decisions
 
-- Tool gating: `scripts/hardening/check-all-hardening.sh 02-auth`를 CI 필수 게이트로 사용
-- Guardrail strategy: 시크릿 평문/우회 정책 금지
+- Tool gating: Use `scripts/hardening/check-all-hardening.sh 02-auth` as a required CI gate
+- Guardrail strategy: Prohibit plaintext secrets and bypass policies
 
 ## Options Considered
 
-### Compose 인라인 셸 유지
+### Keep the Compose inline shell
 
 - Good:
-  - 즉시 적용이 쉽다.
+  - Easy to apply immediately.
 - Bad:
-  - 시크릿 처리 로직이 선언형 파일에 혼재되어 추적성이 낮다.
-  - 재사용/테스트 포인트 분리가 어렵다.
+  - Secret handling logic is mixed into a declarative file, giving low traceability.
+  - Hard to separate reuse/test points.
 
-### fail-open 예외를 기본값으로 채택
+### Adopt a fail-open exception as the default
 
 - Good:
-  - IdP 장애 시 단기 가용성은 높아질 수 있다.
+  - Short-term availability may rise during an IdP failure.
 - Bad:
-  - 인증 우회 리스크가 커지고 보안 경계가 무너진다.
+  - Authentication bypass risk grows and the security boundary collapses.
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

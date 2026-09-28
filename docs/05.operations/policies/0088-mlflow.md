@@ -1,10 +1,10 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -16,50 +16,48 @@ created: "2026-09-21"
 
 ## Overview
 
-MLflow is an OPTIONAL tracking service. Its database and artifact store are
-feature-owned resources on shared infrastructure and must never widen the
-privileges of that infrastructure.
+MLflow는 OPTIONAL tracking 서비스다. MLflow의 데이터베이스와 artifact store는 공유
+인프라 위의 feature-owned 자원이며 공유 인프라의 권한을 절대 넓혀서는 안 된다.
 
 ## Policy Scope
 
-Activation, database and artifact provisioning, authentication, credential
-handling, backup/restore, upgrade and removal of the MLflow tracking server.
+MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저닝, 인증, credential
+처리, backup/restore, 업그레이드, 제거.
 
 ## Controls
 
-- Select only through `mlops` or `data-science`; never add it to HOME or the
-  current operating command without an explicit decision.
-- MLflow SQL lives in the feature provisioning file. The shared `mng-pg-init`
-  job must not read MLflow secrets or run MLflow DDL.
-- The MLflow database role is `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
-  NOREPLICATION`. Provisioning refuses an administrator role and a database
-  owned by another role instead of taking it over.
-- The server uses the bucket-scoped SeaweedFS identity only. Do not give MLflow or
-  any SDK the SeaweedFS admin credential or another consumer's identity.
-- Credentials reach the process through the environment, never argv or the
-  backend URI.
-- Keep gateway SSO on the route. Adopting the community OIDC plugin or
-  `basic-auth` is a separate reviewed change with UI, API and SDK acceptance.
-- Back up database and bucket together and verify restore in isolation before
-  an upgrade.
+- `mlops` 또는 `data-science`를 통해서만 선택한다. 명시적 결정 없이는 HOME이나 현재
+  운영 명령에 절대 추가하지 않는다.
+- MLflow SQL은 feature provisioning 파일에 있다. 공유 `mng-pg-init` job은 MLflow
+  secret을 읽거나 MLflow DDL을 실행해서는 안 된다.
+- MLflow 데이터베이스 role은 `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
+  NOREPLICATION`이다. Provisioning은 administrator role과 다른 role이 소유한
+  데이터베이스를 인수하는 대신 거부한다.
+- 서버는 bucket-scoped SeaweedFS identity만 사용한다. MLflow나 어떤 SDK에도
+  SeaweedFS admin credential이나 다른 consumer의 identity를 주지 않는다.
+- Credential은 argv나 backend URI를 거치지 않고 환경 변수로만
+  프로세스에 전달한다.
+- route에서 gateway SSO를 유지한다. 커뮤니티 OIDC plugin이나 `basic-auth`를 채택하는
+  것은 UI, API, SDK 수용이 필요한 별도의 검토된 변경이다.
+- 업그레이드 전에 데이터베이스와 bucket을 함께 백업하고 격리 환경에서 restore를
+  검증한다.
 
 ## Exceptions
 
-Internal SDK access on `ai_net`, `object_net` is unauthenticated. This is an accepted,
-recorded gap until an MLflow-level authentication path is approved; it is not
-an assurance. No exception may disable gateway SSO.
+`ai_net`, `object_net`에서의 내부 SDK 접근은 인증되지 않는다. MLflow 레벨 인증
+경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
+SSO를 비활성화할 수 없다.
 
 ## Verification
 
-Static profile rendering, provisioning contract tests and the disposable
-PostgreSQL rehearsal. Live verification requires: route returns 401 without a
-session, a run with an artifact round-trips through the proxy, the MLflow SeaweedFS
-user is denied on another bucket, and a restore rehearsal.
+정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
+다음을 요구한다: 세션 없이 route가 401을 반환한다, artifact가 있는 run이 proxy를 통해
+round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
+수행된다.
 
 ## Review Cadence
 
-Review on MLflow upgrade, authentication change, bucket or database rename,
-and credential rotation.
+MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, credential 회전 시 검토한다.
 
 ## Traceability
 

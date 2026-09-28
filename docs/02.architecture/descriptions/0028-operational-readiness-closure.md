@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -15,22 +15,24 @@ created: "2026-07-19"
 
 ## Context and Stakeholders
 
-이 아키텍처는 Compose readiness, PostgreSQL logical recovery, sample-service
-supply chain, local delivery를 하나의 격리 원칙으로 정렬한다. Maintainer,
-operator, security reviewer, release reviewer는 각 lane의 subject identity,
-failure boundary, cleanup, evidence를 독립적으로 검증해야 한다.
+This architecture aligns Compose readiness, PostgreSQL logical recovery,
+sample-service supply chain, and local delivery under one isolation
+principle. The maintainer, operator, security reviewer, and release reviewer
+must each independently verify the subject identity, failure boundary,
+cleanup, and evidence of every lane.
 
 ## System Boundaries
 
-- 실행은 repository-local, task-scoped Docker resource와 synthetic input으로
-  제한한다.
-- `examples/sample-web-service/`가 supply-chain과 delivery의 공통 artifact다.
-- PostgreSQL lane은 synthetic schema/data와 task-owned temporary volume만
-  사용한다.
-- Registry publication, production/shared runtime, live data, credential,
-  remote deployment와 GitHub setting mutation은 경계 밖이다.
-- Raw artifact와 log는 transient이며 current Task에는 redacted summary만
-  남는다.
+- Execution is limited to repository-local, task-scoped Docker resources and
+  synthetic input.
+- `examples/sample-web-service/` is the shared artifact for supply-chain and
+  delivery.
+- The PostgreSQL lane uses only synthetic schema/data and a task-owned
+  temporary volume.
+- Registry publication, production/shared runtime, live data, credentials,
+  remote deployment, and GitHub setting mutation are out of bounds.
+- Raw artifacts and logs are transient, and only a redacted summary remains
+  in the current Task.
 
 ## Components
 
@@ -47,30 +49,32 @@ recovery guidance without owning the architectural decision.
 
 ## Data Flow
 
-각 wrapper는 `preflight → allocate → execute → verify → summarize → cleanup`
-순서를 따른다. Compose lane의 readiness와 supply-chain lane의 verified digest가
-delivery input이 된다. Recovery lane은 별도 synthetic state와 integrity oracle을
-사용한다. Failure는 required verification을 건너뛰지 않으며 owned cleanup
-결과와 함께 non-zero로 종료한다.
+Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
+order. The Compose lane's readiness and the
+supply-chain lane's verified digest become delivery input. The recovery lane
+uses a separate synthetic state and integrity oracle. A failure does not skip
+required verification and exits non-zero along with the owned cleanup
+result.
 
 ## Deployment View
 
-Tracked scripts, policies, schemas, sample artifact와 fixtures가 실행 계약을
-정의한다. Runtime container, volume, network, generated SBOM, signature working
-file, database state는 task-scoped transient resource다. 실행 전 exact target과
-승인 경계를 확인하며 unknown identity에는 자동 cleanup 또는 promotion을
-수행하지 않는다.
+Tracked scripts, policies, schemas, sample artifacts, and fixtures define the
+execution contract. Runtime containers, volumes, networks, generated SBOM,
+signature working files, and database state are task-scoped transient
+resources. Before execution, confirm the exact target and approval boundary,
+and never run automatic cleanup or promotion against an unknown identity.
 
 ## Quality Attributes
 
-- **Isolation**: unique project identity와 label로 다른 workload를 보호한다.
-- **Security**: secret와 private key를 durable evidence에서 배제하고 digest
-  mismatch를 fail closed한다.
-- **Reproducibility**: versioned tool/policy/fixture와 explicit timeout을
-  사용한다.
-- **Recoverability**: configuration rollback과 data recovery를 구분한다.
-- **Observability**: subject, transition, result, cleanup, stable failure class를
-  비밀 없이 요약한다.
+- **Isolation**: protect other workloads with a unique project identity and
+  label.
+- **Security**: exclude secrets and private keys from durable evidence, and
+  fail closed on a digest mismatch.
+- **Reproducibility**: use versioned tools/policies/fixtures and explicit
+  timeouts.
+- **Recoverability**: distinguish configuration rollback from data recovery.
+- **Observability**: summarize the subject, transition, result, cleanup, and
+  stable failure class without secrets.
 
 ## Traceability
 

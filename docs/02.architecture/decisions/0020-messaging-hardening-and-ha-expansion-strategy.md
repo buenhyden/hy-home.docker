@@ -1,10 +1,10 @@
 ---
 title: "Messaging Hardening and HA Expansion Strategy"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0020"
 parent_ids:
@@ -15,61 +15,61 @@ created: "2026-03-28"
 
 ## Context
 
-이 문서는 `05-messaging` 계층에 대해 즉시 적용 가능한 하드닝(게이트웨이 체인, 이미지 태그 고정, 구성 정합성, CI 게이트)을 우선 도입하고, 카탈로그 확장 항목(DLQ/재처리/quorum queue/HA 확장)은 단계적으로 진행하는 결정을 기록한다.
+This document records the decision to first introduce immediately applicable hardening (gateway chain, pinned image tags, configuration consistency, CI gate) for the `05-messaging` layer, while proceeding with catalog expansion items (DLQ/reprocessing/quorum queue/HA expansion) in phases.
 
-메시징 계층은 운영상 민감한 관리 경로를 외부에 노출하며, 트래픽 급증/일시 장애에 취약할 수 있다. 또한 부동 태그 이미지와 개발 구성 정합성 문제는 재현성과 안정성을 낮춘다. 운영 회귀를 PR 단계에서 차단할 자동화된 기준선 검증이 필요하다.
+The messaging layer exposes operationally sensitive management paths externally, and can be vulnerable to traffic spikes/transient failures. Floating-tag images and dev configuration consistency issues also lower reproducibility and stability. Automated baseline verification is needed to block operational regressions at the PR stage.
 
 ## Decision
 
-- 즉시 하드닝 항목을 우선 반영한다.
-  - 관리 라우터에 `gateway-standard-chain@file` 적용
-  - `kafka-ui` 계열 이미지 태그를 고정 버전으로 핀
-  - `docker-compose.dev.yml` 경로 정합성 수정
-  - 메시징 하드닝 전용 검사 스크립트 + CI job 추가
-  - optimization-hardening Stage 01-05 문서 세트 생성 및 링크 동기화
-- RabbitMQ는 현행 `messaging-option` 운영 모델(선택 활성화)을 유지한다.
-- 카탈로그 확장 항목은 정책/가이드/런북 기반 승인 절차로 단계 적용한다.
+- Reflect the immediate hardening items first.
+  - Apply `gateway-standard-chain@file` to the management router
+  - Pin `kafka-ui` family image tags to fixed versions
+  - Fix `docker-compose.dev.yml` path consistency
+  - Add a messaging-hardening-specific check script plus a CI job
+  - Create the optimization-hardening Stage 01-05 document set and sync links
+- Keep RabbitMQ on its current `messaging-option` operating model (opt-in activation).
+- Apply catalog expansion items in phases through a policy/guide/runbook-based approval procedure.
 
 ## Consequences
 
 - **Positive**:
-  - 게이트웨이 경계 품질(트래픽 제어/장애 흡수)이 향상된다.
-  - 이미지 회귀 위험을 줄이고, 구성 재현성을 높인다.
-  - CI에서 메시징 하드닝 회귀를 조기 차단한다.
+  - Gateway boundary quality (traffic control/failure absorption) improves.
+  - Reduces image regression risk and raises configuration reproducibility.
+  - CI blocks messaging-hardening regressions early.
 - **Trade-offs**:
-  - SSO 체인 적용으로 운영 자동화 스크립트 일부 조정이 필요할 수 있다.
-  - 카탈로그 확장은 단계 이행이므로 단기 효과는 하드닝 중심으로 제한된다.
+  - Applying the SSO chain may require adjusting some operational automation scripts.
+  - Catalog expansion is a phased rollout, so short-term effect stays centered on hardening.
 
 ### Explicit Non-goals
 
-- 이번 변경에서 메시징 토폴로지 자체를 즉시 재구성하는 작업
-- 애플리케이션 로직 기반 재처리 파이프라인 구현
-- 클라우드 메시징 서비스 전환
+- Immediately restructuring the messaging topology itself in this change
+- Implementing an application-logic-based reprocessing pipeline
+- Switching to a cloud messaging service
 
 ### Agent-related Example Decisions
 
-- Tool gating: `check-all-hardening.sh 05-messaging`를 CI 게이트로 강제
-- Guardrail strategy: 부동 태그 금지, middleware 표준 체인 강제, 문서 링크 무결성 유지
+- Tool gating: Enforce `check-all-hardening.sh 05-messaging` as a CI gate
+- Guardrail strategy: Prohibit floating tags, enforce the standard middleware chain, maintain document link integrity
 
 ## Options Considered
 
-### 카탈로그 확장 항목을 즉시 전면 구현
+### Implement all catalog expansion items immediately
 
 - Good:
-  - 단기간에 많은 기능적 개선 가능
+  - Can deliver many functional improvements in the short term
 - Bad:
-  - 변경 반경이 커져 장애 원인 분리와 롤백이 어려움
+  - Change scope grows, making failure isolation and rollback harder
 
-### 문서만 갱신하고 compose/CI 변경은 보류
+### Update documentation only and hold off on compose/CI changes
 
 - Good:
-  - 단기 구현 부담 감소
+  - Reduces short-term implementation burden
 - Bad:
-  - 실제 운영 회귀를 자동 차단하지 못함
+  - Cannot automatically block actual operational regressions
 
 ## Traceability
 
-이 결정의 확인 근거는 `Related Documents`에 연결된 Architecture Description, Spec, Operations 문서와 현재 저장소 구성으로 한정한다. 별도 실행 증거가 없는 런타임 상태는 주장하지 않는다.
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision Drivers
 

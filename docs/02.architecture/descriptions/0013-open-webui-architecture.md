@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -17,17 +17,17 @@ created: "2026-03-27"
 
 ## Context and Stakeholders
 
-이 문서는 Open WebUI의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름(Ollama 인터페이스, Qdrant RAG 통합), 운영 관점을 정리하는 기준 문서다.
+This document defines the reference architecture and quality attributes of Open WebUI. It is the baseline document that records the system boundary, responsibilities, data flow (Ollama interface, Qdrant RAG integration), and the operational view.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
 Open WebUI acts as the presentation layer and orchestration hub for AI services. it bridges the gap between raw API backends (Ollama) and end-users, while also providing the logic for document-based RAG.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships, non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
   - Web UI (Frontend/Backend).
@@ -47,7 +47,7 @@ Open WebUI acts as the presentation layer and orchestration hub for AI services.
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary, and verification expectation to which the attributes below apply. Concrete execution evidence is owned by the related Spec and Operations documents.
 
 - **Performance**: CUDA-accelerated backend for embedding generation.
 - **Security**: Native Keycloak OIDC; the gateway provides TLS and the standard chain, while password login, signup, email merge and OAuth role/group management are disabled in Compose.
@@ -60,7 +60,7 @@ Open WebUI acts as the presentation layer and orchestration hub for AI services.
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves as the view for that concern.
 
 Open WebUI is deployed as a Docker container within the `ai` tier. Traefik
 terminates TLS and applies `gateway-standard-chain@file`; Open WebUI owns
@@ -80,7 +80,7 @@ Open WebUI communicates internally via `ai_net` with Ollama; RAG vectors stay in
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this section and the existing infrastructure/deployment descriptions.
 
 - **Key Entities / Flows**:
   - User Input -> Open WebUI -> Ollama (Inference).
@@ -107,7 +107,7 @@ complete RAG recovery.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

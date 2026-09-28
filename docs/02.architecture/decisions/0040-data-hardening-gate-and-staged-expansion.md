@@ -1,10 +1,10 @@
 ---
 title: "04-Data Hardening Gate and Staged Expansion"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0040"
 parent_ids:
@@ -18,64 +18,69 @@ created: "2026-09-24"
 
 ## Context
 
-ADR-0019는 `04-data` 계층의 즉시 하드닝 항목을 먼저 반영하고, HA·lifecycle·
-backup/recovery 확장은 정책과 절차로 단계적으로 도입하기로 결정했다. 즉시 항목
-가운데 `ksql` tier label 정규화는 ksqlDB가 SPEC-0180 S19에서 제거되어(ADR-0039)
-더 이상 대상이 없다. 나머지 결정은 그대로 유효하므로, 이 ADR은 현재 서비스 기준으로
-같은 결정을 다시 적는다.
+ADR-0019 decided to apply the immediate hardening items of the `04-data` layer
+first, and to introduce HA, lifecycle, and backup/recovery expansion
+gradually through policy and procedure. Among the immediate items,
+normalizing the `ksql` tier label no longer has a target because ksqlDB was
+removed in SPEC-0180 S19 (ADR-0039). The remaining decisions stay valid, so
+this ADR rewrites the same decisions against the current services.
 
-04-data는 여러 엔진으로 이루어져 한 번에 바꾸면 장애 반경이 크다. 그래서 회귀를
-막는 자동 검증 gate가 필요하다.
+04-data consists of several engines, so changing them all at once has a large
+blast radius. An automated validation gate is therefore needed to prevent
+regressions.
 
 ## Decision
 
-- 즉시 하드닝 항목은 Compose 계약으로 구현하고 gate로 지킨다.
-  - `supabase` 핵심 서비스 healthcheck 계약
-  - `valkey-cluster-exporter` 시크릿 경로를 `service_valkey_password`로 정규화
-  - `seaweedfs` malformed expose token 금지
-  - `scripts/hardening/check-all-hardening.sh 04-data`와 CI `infrastructure-hardening`
-    gate
-- 새 04-data 서비스(예: SPEC-0180의 lakehouse 엔진)는 같은 gate에 자기 검사를
-  더한다.
-- HA, lifecycle, backup/recovery drill 같은 확장은 정책과 runbook의 승인된 전환
-  절차로 관리한다.
-- `template-stateful-*`, `template-infra-*` 상속 모델을 유지한다.
+- Implement immediate hardening items as Compose contracts and protect them
+  with a gate.
+  - `supabase` core service healthcheck contract.
+  - Normalize the `valkey-cluster-exporter` secret path to
+    `service_valkey_password`.
+  - Ban malformed expose tokens in `seaweedfs`.
+  - `scripts/hardening/check-all-hardening.sh 04-data` and the CI
+    `infrastructure-hardening` gate.
+- New 04-data services (for example, SPEC-0180's lakehouse engines) add their
+  own checks to the same gate.
+- Manage expansions such as HA, lifecycle, and backup/recovery drills through
+  the approved transition procedure in policy and runbooks.
+- Keep the `template-stateful-*` and `template-infra-*` inheritance model.
 
 ## Consequences
 
 - **Positive**:
-  - 04-data 구성 회귀를 CI에서 일찍 막는다.
-  - 확장 과제가 운영 정책과 연결되어 우선순위가 분명하다.
+  - Catches 04-data configuration regressions early in CI.
+  - Expansion work is tied to operations policy, making priority clear.
 - **Trade-offs**:
-  - healthcheck는 liveness부터 시작하며 readiness 고도화는 후속 단계다.
-  - 엔진별 성능·HA 개선은 단계적으로 해야 한다.
+  - Healthchecks start from liveness; readiness refinement is a later stage.
+  - Per-engine performance and HA improvements must happen incrementally.
 
 ### Explicit Non-goals
 
-- 각 엔진의 대규모 HA topology 재구성
-- 비즈니스 query 최적화와 schema refactoring
-- 클라우드 관리형 서비스 전환
+- Large-scale HA topology restructuring for each engine.
+- Business query optimization and schema refactoring.
+- Migration to cloud-managed services.
 
 ## Options Considered
 
-### 모든 04-data 서비스를 동시에 HA 기준으로 확장
+### Expand all 04-data services to an HA standard at once
 
-- **Good**: 가용성을 빠르게 높일 수 있다.
-- **Bad**: 변경 반경이 크고 회귀 원인을 가르기 어렵다.
+- **Good**: Can raise availability quickly.
+- **Bad**: Large change radius makes it hard to isolate regression causes.
 
-### 문서만 갱신하고 Compose와 CI 변경을 보류
+### Update only documentation and defer Compose and CI changes
 
-- **Good**: 단기 변경 위험이 낮다.
-- **Bad**: 실제 운영 회귀를 막지 못한다.
+- **Good**: Low short-term change risk.
+- **Bad**: Does not prevent actual operational regressions.
 
 ## Traceability
 
-근거는 `check-all-hardening.sh`의 04-data 검사, CI `infrastructure-hardening`
-gate와 현재 저장소 구성이다. 기록되지 않은 런타임 상태는 주장하지 않는다.
+The basis is `check-all-hardening.sh`'s 04-data checks, the CI
+`infrastructure-hardening` gate, and the current repository configuration.
+Unrecorded runtime state is not claimed.
 
 ## Related Documents
 
-- **Superseded ADR**: `ADR-0019` (`docs/98.archive/superseded/`에 보존)
+- **Superseded ADR**: `ADR-0019` (preserved under `docs/98.archive/superseded/`)
 - **Architecture Description**: [0019-data-optimization-hardening-architecture.md](../descriptions/0019-data-optimization-hardening-architecture.md)
 - **Requirements**: [0004-data.md](../../01.requirements/0004-data.md)
 - **Related ADR**: [ADR-0004](0004-postgresql-ha-patroni.md), [ADR-0039](0039-analytics-engines-after-lakehouse-convergence.md)

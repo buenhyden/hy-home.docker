@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -16,95 +16,102 @@ created: "2026-05-17"
 
 ## Overview
 
-This policy binds current source configuration to data protection, security,
-resource, lifecycle and independently verifiable operator controls.
+이 정책은 현재 소스 구성을 data protection, security, resource, lifecycle,
+독립적으로 검증 가능한 operator control에 결합한다.
 
 ## Policy Scope
 
-Kafka-family services remain OPTIONAL. A named producer/consumer and approved
-capacity, retention, security and recovery plan are required before activation.
-Controls for removed broker families do not apply to the current implementation.
+Kafka-family 서비스는 OPTIONAL로 유지된다. 활성화 전에 이름이 지정된
+producer/consumer와 승인된 capacity, retention, security, recovery 계획이
+필요하다. 제거된 broker family에 대한 control은 현재 구현에 적용되지
+않는다.
 
 ## Controls
 
-- Select exact root profiles; never operate the leaf file as a separate Compose
-  project. Treat `messaging-cluster` as same-host LAB topology.
-- Keep broker and Connect volumes distinct and preserve `kafka_net`, health checks
-  and shared resource limits.
-- Current broker, controller and host listeners are PLAINTEXT. Do not claim
-  transport confidentiality or client authentication. Restrict exposure and plan
-  broker TLS/SASL as a separate architectural change before sensitive workloads.
-- Kafbat must retain native OIDC/RBAC, local CA trust and
-  `kafbat_client_secret`. Its route uses only the standard gateway chain; do not
-  substitute forwarding-header authentication.
-- Topic creation/deletion, partition increase, retention reduction, consumer
-  offset movement and connector changes require explicit change scope and rollback.
-- The bootstrap topics request replication factor 3 and therefore require three
-  healthy brokers. A one-broker selection must not run that initialization as if
-  it were valid.
+- exact root profile만 선택한다. leaf file을 별도의 Compose project로
+  운영하지 않는다. `messaging-cluster`는 same-host LAB topology로 취급한다.
+- broker와 Connect volume을 구분하고, `kafka_net`, health check, shared
+  resource limit을 유지한다.
+- 현재 broker, controller, host listener는 PLAINTEXT다. transport
+  confidentiality나 client authentication을 주장하지 않는다. 노출을
+  제한하고, sensitive workload 이전에 broker TLS/SASL을 별도 architectural
+  change로 계획한다.
+- Kafbat은 native OIDC/RBAC, local CA trust, `kafbat_client_secret`을
+  유지해야 한다. route는 표준 gateway chain만 사용하며, forwarding-header
+  authentication으로 대체하지 않는다.
+- Topic 생성/삭제, partition 증가, retention 축소, consumer offset 이동,
+  connector 변경에는 명시적인 change scope와 rollback이 필요하다.
+- bootstrap topic은 replication factor 3을 요청하므로 healthy broker 3개가
+  필요하다. broker 1개 선택으로 이 initialization을 유효한 것처럼 실행해서는
+  안 된다.
 
 ### Change data capture
 
-- CDC credentials, grants and publication belong to the `debezium-db-provision`
-  job. Never give the connector superuser, database ownership or write grants
-  beyond the `debezium_heartbeat` schema it owns for the heartbeat query.
-- Keep `FileConfigProvider` restricted by `allowed.paths` and the Connect REST
-  gateway route behind SSO. Treat direct `kafka_net` access to port 8083 as a
-  recorded gap, not an authorization control.
-- Registering, reconfiguring, restarting with a new snapshot mode or deleting a
-  connector needs approval naming the connector and source database.
-- Replication slots and connector offsets are recovery state. Deleting a slot or
-  resetting offsets is a destructive resynchronization, never a routine fix; it
-  needs approval, a downstream duplicate/gap plan and a new snapshot.
-- Monitor slot lag against `max_slot_wal_keep_size`. An invalidated slot means
-  missed changes until a new snapshot completes.
+- CDC credential, grant, publication은 `debezium-db-provision` job에
+  속한다. connector에는 superuser, database ownership, 또는 heartbeat
+  query를 위해 소유한 `debezium_heartbeat` schema를 넘어서는 write grant를
+  절대 부여하지 않는다.
+- `FileConfigProvider`는 `allowed.paths`로 제한하고, Connect REST gateway
+  route는 SSO 뒤에 유지한다. port 8083에 대한 직접 `kafka_net` 접근은
+  authorization control이 아니라 기록된 gap으로 취급한다.
+- connector를 등록, 재구성, 새 snapshot mode로 재시작, 삭제하려면
+  connector와 source database를 명시한 승인이 필요하다.
+- Replication slot과 connector offset은 recovery state다. slot 삭제나
+  offset reset은 routine fix가 아니라 destructive resynchronization이며,
+  승인, downstream duplicate/gap 계획, 새 snapshot이 필요하다.
+- `max_slot_wal_keep_size` 대비 slot lag를 모니터링한다. slot이
+  invalidate되면 새 snapshot이 완료될 때까지 변경 사항이 누락된다.
 
 ### Data protection
 
-Recovery scope includes topic records/configuration, consumer offsets, KRaft
-metadata, Schema Registry history and IDs, Connect definitions and internal
-config/offset/status topics. Prefer producer replay or approved cross-cluster
-replication to a separate compatible target. A raw live copy of broker log dirs is
-not a backup. Store manifests and artifacts on an encrypted distinct destination.
+Recovery scope는 topic records/configuration, consumer offset, KRaft
+metadata, Schema Registry history와 ID, Connect definition, internal
+config/offset/status topic을 포함한다. 별도의 compatible target으로의
+producer replay나 승인된 cross-cluster replication을 우선한다. broker log
+디렉터리의 raw live copy는 backup이 아니다. manifest와 artifact는
+encrypted된 별도 destination에 저장한다.
 
-For selected workloads, set workload-specific data retention and RPO/RTO; the
-planning recovery-artifact retention is daily 30 days and weekly 90 days. Until
-then, the planning ceiling is RPO 24 hours and RTO 8 hours and is unverified.
-Shared resource-template limits remain mandatory. Removal requires producer,
-consumer, topic, schema, offset and connector inventory plus replay/restore proof. A restore must be
-rehearsed in isolation and prove schema compatibility, end offsets, record counts
-or checksums, consumer positions and paused-then-resumed connector behavior.
+선택된 workload에는 workload별 data retention과 RPO/RTO를 설정한다;
+계획된 recovery-artifact retention은 daily 30일, weekly 90일이다. 그
+전까지 계획 상한은 RPO 24시간, RTO 8시간이며 검증되지 않았다. Shared
+resource-template limit은 계속 필수다. Removal에는 producer, consumer,
+topic, schema, offset, connector inventory와 replay/restore 증거가
+필요하다. Restore는 isolation 환경에서 rehearsed되어야 하며, schema
+compatibility, end offset, record count 또는 checksum, consumer position,
+paused-then-resumed connector 동작을 증명해야 한다.
 
 ### Upgrade and license policy
 
-Review Apache Kafka protocol/storage compatibility, Confluent component
-compatibility and license/edition terms, Kafbat release/security notes and client
-support before a pin change. Preserve rollback and current recovery artifacts.
-Do not assume Cluster Linking or other commercial/edition-specific capability is
-available.
+pin 변경 전에 Apache Kafka protocol/storage compatibility, Confluent
+component compatibility와 license/edition terms, Kafbat release/security
+notes, client support를 검토한다. rollback과 현재 recovery artifact를
+보존한다. Cluster Linking이나 다른 commercial/edition-specific 기능이
+사용 가능하다고 가정하지 않는다.
 
 ## Exceptions
 
-The optional stack may be absent; no listener-security exception is implied. Exceptions do not authorize runtime mutation, plaintext secrets, raw active
-storage copies or same-host availability claims.
+optional stack은 없을 수 있다; listener-security exception이 암시되지
+않는다. exception은 runtime mutation, plaintext secret, raw active storage
+copy, same-host availability 주장을 승인하지 않는다.
 
 ## Verification
 
-Verify root configuration and scoped static policy checks, then require an
-isolated compatible restore with application-level acceptance before promotion or
-cutover. Record unverified runtime properties explicitly.
+root 구성과 scoped static policy check를 검증한 다음, promotion이나
+cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 
 ## Review Cadence
 
-Review after profile, image, volume, credential, consumer, retention or upstream
-lifecycle change and at least annually while retained.
+profile, image, volume, credential, consumer, retention, upstream
+lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
 
 ## Traceability
 
 - Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
-  and the [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
+  와 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `POL-0036`; parent: `AD-0005`.
-- Runtime authority remains the linked Compose/source files; exact pins stay there.
+- Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
+  그곳에 유지된다.
 
 ### References
 

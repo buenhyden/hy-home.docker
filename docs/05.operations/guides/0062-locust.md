@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -22,60 +22,58 @@ created: "2026-05-10"
 
 ### Purpose and classification
 
-Locust is a DEV-only distributed load generator. It is retained for Python-based
-scenarios that need a coordinating web UI and one or more workers. Both
-`locust-master` and `locust-worker` belong only to the `testing` profile; broad
-`tooling` selection does not start either service. A test run is an external
-effect on the named target and requires target-owner approval, limits, and a
-stop condition.
+Locust는 DEV 전용 distributed load generator다. Coordinating web UI와 하나 이상의
+worker가 필요한 Python-based scenario를 위해 유지된다. `locust-master`와
+`locust-worker` 모두 `testing` profile에만 속하며, 넓은 `tooling` selection으로는
+둘 다 시작되지 않는다. Test run은 지정된 target에 external effect를 주므로
+target-owner 승인, limit, stop condition이 필요하다.
 
 ### Implementation and data flow
 
-- Source: [Locust Compose](../../../infra/09-tooling/locust/docker-compose.yml)
-  and its sibling Dockerfile. The Dockerfile/build declaration owns the runtime
-  source; the derived image projection is navigation, not build authority.
-- Root selection: `docker compose --profile testing ...` from the repository
-  root. The root project supplies the project default network; do not use the leaf as a
-  standalone project.
+- Source: [Locust Compose](../../../infra/09-tooling/locust/docker-compose.yml)와
+  그 sibling Dockerfile. Dockerfile/build 선언이 runtime source를 소유하며, derived
+  image projection은 navigation일 뿐 build authority가 아니다.
+- Root selection: repository root에서 `docker compose --profile testing ...`.
+  Root project가 project default network를 제공하므로, leaf를 standalone project로
+  사용하지 않는다.
 - Flow: operator/browser -> host port `${LOCUST_HOST_PORT:-18089}` -> master UI;
-  worker -> `locust-master` over the project default network; master and worker read the shared
-  `locust-data` bind-backed volume at `/mnt/locust`.
-- Dependency: the worker waits for the master's HTTP healthcheck. Target services
-  are deliberately not Compose dependencies and must already be approved and
-  reachable.
-- Health: the master probes its UI; the worker checks its process. Health does
-  not prove that the target is safe or that a test result is valid.
-- Resources: both services inherit `template-infra-med`. Compose declares two
-  `locust-worker` replicas. An approved test may override that default with
-  `--scale locust-worker=N` while still targeting both Locust services.
+  worker -> project default network를 통해 `locust-master`; master와 worker는
+  `/mnt/locust`에서 공유 `locust-data` bind-backed volume을 읽는다.
+- Dependency: worker는 master의 HTTP healthcheck를 기다린다. Target service는
+  의도적으로 Compose dependency에서 뺐으며 이미 승인되고 도달 가능해야 한다.
+- Health: master는 자신의 UI를 probe하고, worker는 자신의 process를 확인한다.
+  Health는 target이 안전하다거나 test result가 유효하다는 것을 증명하지 않는다.
+- Resources: 두 service 모두 `template-infra-med`를 상속한다. Compose는
+  `locust-worker` replica 2개를 선언한다. 승인된 test는 두 Locust service를 모두
+  지정하고 `--scale locust-worker=N`으로 이 default를 override할 수 있다.
 
-The scenario directory can contain target URLs, credentials, payloads, and test
-results. Keep credentials in an approved secret channel, exclude them from
-scenario files and evidence, and sanitize request/response data before retention.
+Scenario directory에는 target URL, credential, payload, test result가 들어 있을 수
+있다. Credential은 승인된 secret channel에 보관하고, scenario file과 evidence에서
+제외하며, retention 전에 request/response data를 sanitize한다.
 
 ### Normal use
 
-1. Record the target, test owner, maximum users/spawn rate/duration, abort SLI,
-   and worker count.
-2. From the repository root run `docker compose --profile testing config --quiet`
-   and confirm the selected services with `docker compose --profile testing config --services`.
-3. Review the scenario in the host directory behind `locust-data`. Confirm that
-   it cannot modify production data unless that exact effect was approved.
-4. Under runtime approval, start only `locust-master` and `locust-worker`, then
-   use the host-bound UI. Stop the run immediately when the target abort SLI is
-   crossed.
-5. Preserve configuration commit, scenario digest, sanitized aggregate results,
-   and final stopped state. Raw request bodies, cookies, tokens, and personal
-   data are not evidence.
+1. Target, test owner, maximum users/spawn rate/duration, abort SLI, worker
+   count를 기록한다.
+2. Repository root에서 `docker compose --profile testing config --quiet`를
+   실행하고 `docker compose --profile testing config --services`로 선택된
+   service를 확인한다.
+3. `locust-data` 뒤의 host directory에 있는 scenario를 검토한다. 정확히 그 effect를
+   승인받지 않았다면 production data를 수정할 수 없는지 확인한다.
+4. Runtime 승인을 받은 뒤 `locust-master`와 `locust-worker`만 시작하고 host-bound UI를
+   사용한다. Target abort SLI를 넘으면 즉시 run을 중지한다.
+5. Configuration commit, scenario digest, sanitized aggregate result, final
+   stopped state를 보존한다. Raw request body, cookie, token, personal data는
+   evidence가 아니다.
 
 ### Persistence, backup, and upgrade
 
-Locust has no application database. The bind-backed scenario/result directory is
-the only local persistent scope. Back it up as ordinary files only while no test
-is writing to it; Git-tracked scenarios remain source authority. Before a Locust
-or dependency upgrade, validate the scenario syntax in an isolated run, execute
-a small approved canary, then compare worker registration and aggregate metrics.
-No backup, restore, or load execution was performed by this documentation task.
+Locust에는 application database가 없다. Bind-backed scenario/result directory가
+유일한 local persistent scope다. Test가 쓰고 있지 않을 때만 ordinary file로
+backup한다. Git-tracked scenario가 source authority로 남는다. Locust 또는
+dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 작은
+승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
+이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
 ## Common Checks
 
@@ -85,8 +83,8 @@ No backup, restore, or load execution was performed by this documentation task.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0062-locust.md) to stop load, diagnose worker loss, recover scenario
-files, or perform an approved upgrade canary.
+Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행에는
+[runbook](../runbooks/0062-locust.md)을 사용한다.
 
 ## Traceability
 

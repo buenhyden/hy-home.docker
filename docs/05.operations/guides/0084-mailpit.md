@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -21,47 +21,49 @@ created: "2026-09-19"
 
 ### Purpose and classification
 
-Mailpit is a DEV mail-capture service for application and integration tests. It
-is not a delivery MTA and does not replace optional Stalwart. It belongs to
-`dev`, `local`, and `mail-dev`; it is excluded from HOME. The UI and SMTP host
-ports are bound to `127.0.0.1`, while the UI is also routed through Traefik.
+Mailpit은 application과 integration test를 위한 DEV mail-capture
+service이다. delivery MTA가 아니며 선택적인 Stalwart를 대체하지 않는다.
+`dev`, `local`, `mail-dev`에 속하며 HOME에서는 제외된다. UI와 SMTP host
+port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅된다.
 
 ### Current implementation
 
-- [Mailpit Compose](../../../infra/10-communication/mailpit/docker-compose.yml)
-  owns the image, profiles, ports, environment, healthcheck, and volume.
-- SMTP listens inside `edge_net` and on loopback host port
-  `${MAILPIT_SMTP_HOST_PORT:-1025}`. The UI uses loopback
-  `${MAILPIT_UI_HOST_PORT:-8025}` and `mailpit.${DEFAULT_URL}` through the
-  gateway middleware chain.
-- `${DEFAULT_COMMUNICATION_DIR}/mailpit/data` is bind-backed at `/data` and
-  `MP_DATABASE=/data/mailpit.db` selects persistent SQLite. `MP_MAX_MESSAGES=5000`
-  prunes older messages by count.
-- `MP_SMTP_AUTH_ACCEPT_ANY=1` and `MP_SMTP_AUTH_ALLOW_INSECURE=1` deliberately
-  accept arbitrary credentials over plaintext SMTP for test compatibility. Do
-  not publish this listener or route it to external mail.
-- The `/mailpit readyz` healthcheck proves process readiness, not message capture,
-  UI authorization, retention, or restoration.
+- [Mailpit Compose](../../../infra/10-communication/mailpit/docker-compose.yml)가
+  image, profile, port, environment, healthcheck, volume을 관장한다.
+- SMTP는 `edge_net` 내부와 loopback host port
+  `${MAILPIT_SMTP_HOST_PORT:-1025}`에서 listen한다. UI는 loopback
+  `${MAILPIT_UI_HOST_PORT:-8025}`와 gateway middleware chain을 통한
+  `mailpit.${DEFAULT_URL}`을 사용한다.
+- `${DEFAULT_COMMUNICATION_DIR}/mailpit/data`가 `/data`에 bind로 연결되고
+  `MP_DATABASE=/data/mailpit.db`가 영구 SQLite를 지정한다.
+  `MP_MAX_MESSAGES=5000`은 개수 기준으로 오래된 메시지를 정리한다.
+- `MP_SMTP_AUTH_ACCEPT_ANY=1`과 `MP_SMTP_AUTH_ALLOW_INSECURE=1`은 테스트
+  호환성을 위해 plaintext SMTP로 임의의 credential을 의도적으로 수락한다.
+  이 listener를 외부에 공개하거나 외부 메일로 라우팅하지 않는다.
+- `/mailpit readyz` healthcheck는 process readiness만 증명하며, 메시지
+  capture, UI 인증, retention, restoration은 증명하지 않는다.
 
 ### Normal use
 
-1. Validate from the root with `docker compose --profile mail-dev config --quiet`.
-2. Configure a development application to send to `mailpit:${MAILPIT_SMTP_PORT:-1025}`
-   on `edge_net`; host tools use the loopback host port.
-3. Send only synthetic or approved test mail. The database contains bodies,
-   headers, addresses, and attachments and must be treated as sensitive test data.
-4. Verify capture through the authenticated UI or a bounded API query, then
-   delete/expire test data under the retention policy.
+1. root에서 `docker compose --profile mail-dev config --quiet`로
+   validate한다.
+2. 개발용 application이 `edge_net`의
+   `mailpit:${MAILPIT_SMTP_PORT:-1025}`로 전송하도록 설정한다. host tool은
+   loopback host port를 사용한다.
+3. 합성 또는 승인된 test mail만 전송한다. database에는 본문, header, 주소,
+   첨부가 들어 있으므로 민감한 test data로 취급해야 한다.
+4. 인증된 UI나 제한된 API query로 capture를 확인한 뒤, retention policy에
+   따라 test data를 삭제/만료시킨다.
 
 ### Backup and upgrade
 
-Mailpit supports live message export with `mailpit dump` and restore-style
-ingestion with `mailpit ingest`. Prefer a live HTTP dump over copying an active
-SQLite/WAL file. If copying the database, stop Mailpit and copy the database
-plus SQLite sidecars consistently. Before an image upgrade, export messages,
-record the database checksum, recreate only Mailpit, and verify capture and
-message count. Restore first into an isolated Mailpit instance. These procedures
-are documented but were not executed by this task.
+Mailpit은 `mailpit dump`로 live message export를, `mailpit ingest`로
+restore 방식의 ingestion을 지원한다. 활성 SQLite/WAL 파일을 복사하기보다
+live HTTP dump를 우선 사용한다. database를 복사해야 한다면 Mailpit을 멈추고
+database와 SQLite sidecar를 일관되게 함께 복사한다. 이미지 upgrade 전에는
+메시지를 export하고, database checksum을 기록하고, Mailpit만 재생성한 뒤
+capture와 메시지 수를 검증한다. restore는 먼저 격리된 Mailpit instance에서
+수행한다. 이 절차는 문서로 남겼지만 이 task에서 실행하지는 않았다.
 
 ## Common Checks
 
@@ -71,8 +73,8 @@ are documented but were not executed by this task.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0084-mailpit.md) for capture failures, consistent export/restore,
-retention incidents, and image upgrades.
+capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
+[runbook](../runbooks/0084-mailpit.md)을 사용한다.
 
 ## Traceability
 

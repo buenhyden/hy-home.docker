@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0023"
 parent_ids: []
@@ -14,32 +14,32 @@ created: "2026-04-01"
 
 ## Problem and Goals
 
-이 문서는 프로젝트 내 인프라 서비스의 Docker 네트워크 소속을 흐름 단위로 분리하고 각 네트워크의 서브넷을 보장하기 위한 제품 요구사항을 정의한다. 이를 통해 서비스 간 통신의 표준화와 예측 가능한 IP 관리를 실현한다.
+This document defines product requirements to split the Docker network membership of infrastructure services in the project by traffic flow and guarantee the subnet of each network. This standardizes inter-service communication and enables predictable IP management.
 
 ### Problem Statement
 
-여러 `docker-compose` 파일이 파편화되어 있고, 한때 모든 서비스가 단일 `infra_net` mesh를 공유해 서로 도달할 수 있었으며, 일부 서비스는 네트워크가 명시되어 있지 않거나 서브넷 설정이 모호할 수 있다. 이는 마이크로서비스 간의 통신 복잡도를 높이고 문제 해결 시 혼선이 발생할 수 있는 원인이 된다.
+Multiple `docker-compose` files are fragmented, once all services shared a single `infra_net` mesh and could reach each other, and some services may have no declared network or ambiguous subnet settings. This raises inter-microservice communication complexity and can cause confusion during troubleshooting.
 
 ## Stakeholders and User Needs
 
-인프라 서비스가 흐름 단위로 분리된 네트워크를 통해 안전하고 효율적으로 통신하며, 명확한 IP 대역 관리를 통해 네트워크 충돌을 방지하고 운영 투명성을 높인다.
+Infrastructure services communicate safely and efficiently through networks split by traffic flow, and clear IP block management prevents network conflicts and increases operational transparency.
 
 ### Personas
 
-- **Infrastructure Engineer**: 전체 네트워크 구조를 관리하고 서비스 간 통신 문제를 해결해야 함.
-- **DevOps Engineer**: 새로운 서비스를 추가할 때 표준 네트워크 환경을 보장받아야 함.
+- **Infrastructure Engineer**: must manage the overall network structure and resolve inter-service communication issues.
+- **DevOps Engineer**: must be guaranteed a standard network environment when adding a new service.
 
 ### Key Use Cases
 
-- **STORY-01**: 관리자는 각 서비스가 실제 사용하는 상대와만 통신할 수 있도록 네트워크 경계를 보장받고 싶어 한다.
-- **STORY-02**: 운영자는 각 network의 `10.250.x.0/24` 대역과 고정 주소 사용 여부를 예측 가능하게 관리하고 싶어 한다.
-- **STORY-03**: 운영자는 사용하지 않는 외부 연동(k3d)이 Compose 서비스에 연결되어 있지 않기를 원한다.
+- **STORY-01**: An admin wants the network boundary guaranteed so each service can only communicate with the peers it actually uses.
+- **STORY-02**: An operator wants to predictably manage each network's `10.250.x.0/24` block and whether fixed addresses are used.
+- **STORY-03**: An operator wants unused external integrations (k3d) to not be connected to Compose services.
 
 ## Functional Requirements
 
-- **REQ-0023-FR-0001**: 모든 활성 서비스는 실제로 사용하는 상대가 있는 네트워크에만 연결되어야 하며, 상대가 없으면 프로젝트 기본 네트워크를 사용한다.
-- **REQ-0023-FR-0002**: 각 네트워크의 서브넷은 root Compose에 `10.250.x.0/24`로 명시되어야 함.
-- **REQ-0023-FR-0003**: 어떤 서비스도 `k3d-hyhome` 네트워크에 연결하지 않는다(2026-09-23 소유자 결정으로 k3d 연동 제거).
+- **REQ-0023-FR-0001**: Every active service must connect only to networks with peers it actually uses, and use the project default network when it has no peer.
+- **REQ-0023-FR-0002**: Each network's subnet must be declared as `10.250.x.0/24` in the root Compose.
+- **REQ-0023-FR-0003**: No service connects to the `k3d-hyhome` network (k3d integration removed by owner decision on 2026-09-23).
 
 ## Non-functional Requirements
 
@@ -51,17 +51,17 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0023-FR-0001**: `docker-compose config` 결과에서 각 서비스의 네트워크가 선언된 흐름과 일치함.
-- **REQ-0023-FR-0002**: 각 네트워크의 IPAM 설정이 선언된 `10.250.x.0/24` 대역을 가리킴.
+- **REQ-0023-FR-0001**: In `docker-compose config` output, each service's network matches its declared flow.
+- **REQ-0023-FR-0002**: Each network's IPAM setting points to the declared `10.250.x.0/24` block.
 
 ## Constraints
 
 - **In Scope**:
-  - 루트 `docker-compose.yml` 및 `include`된 모든 `docker-compose` 파일 수정.
-  - 분리된 네트워크의 서브넷 표준화.
+  - Modifying the root `docker-compose.yml` and every `include`d `docker-compose` file.
+  - Standardizing the subnets of separated networks.
 - **Out of Scope**:
-  - repository가 소유하지 않는 네트워크(예: `project_net`, `k3d-hyhome`)의 서브넷 변경.
-  - 컨테이너 내부 서비스 로직 수정.
+  - Changing the subnet of networks not owned by the repository (e.g. `project_net`, `k3d-hyhome`).
+  - Modifying service logic inside containers.
 
 ### AI Agent Requirements
 
@@ -69,9 +69,9 @@ N/A
 
 ## Risks
 
-- **Risks**: IP 충돌 가능성 (기존에 수동으로 할당된 IP가 있을 경우).
-- **Dependencies**: Root `docker-compose.yml`의 `networks` 기본 정의에 의존.
-- **Assumptions**: `docker compose` V2의 `include` 기능을 사용하여 설정이 병합됨.
+- **Risks**: possibility of IP conflicts (if IPs were previously assigned manually).
+- **Dependencies**: depends on the `networks` base definitions in the root `docker-compose.yml`.
+- **Assumptions**: configuration is merged using the `include` feature of `docker compose` V2.
 
 ## Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -19,52 +19,75 @@ created: "2026-09-19"
 
 ## Usage
 
-ComfyUI is the always-on HOME image-workflow UI selected by `ai` and
-`ai-image`. Root Compose includes [its implementation](../../../infra/08-ai/comfyui/docker-compose.yml); the service is reached through Traefik and also binds its declared loopback host port. `gateway-standard-chain@file,sso-errors@file,sso-auth@file` protects the public route.
+ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
+root Compose가 [해당 구현](../../../infra/08-ai/comfyui/docker-compose.yml)을
+포함하며 이 서비스는 Traefik을 거쳐 도달하고 선언된 loopback 호스트 포트도
+바인딩한다. `gateway-standard-chain@file,sso-errors@file,sso-auth@file`이 공개
+라우트를 보호한다.
 
-The service uses the current upstream image declared in Compose. Its pinned
-source, license, lifecycle and upgrade notes are owned by the upstream image
-and [ComfyUI repository](https://github.com/Comfy-Org/ComfyUI); the local
-[Dockerfile](../../../infra/08-ai/comfyui/Dockerfile) is a separate, currently unselected build authority. The [derived Compose image projection](../../../infra/tech-stack.versions.json) is only a drift view.
+이 서비스는 Compose에 선언된 현재 업스트림 이미지를 사용한다. pin된 소스,
+라이선스, 라이프사이클, 업그레이드 노트는 업스트림 이미지와
+[ComfyUI 저장소](https://github.com/Comfy-Org/ComfyUI)가 소유한다. 로컬
+[Dockerfile](../../../infra/08-ai/comfyui/Dockerfile)은 현재 선택되지 않은 별도의
+빌드 권한이다. [파생된 Compose 이미지 프로젝션](../../../infra/tech-stack.versions.json)은
+drift 확인용 뷰일 뿐이다.
 
-### Data and configuration boundary
+### 데이터와 설정 경계
 
 | Mount | Contents | Recovery treatment |
 | --- | --- | --- |
-| `models` | downloaded model weights | replaceable only after recording source and checksum/licensing evidence |
-| `custom_nodes` | third-party executable node code | preserve revision inventory; review before install or update |
-| `user`, `input`, `output` | workflows, user settings, supplied and generated assets | back up as user data before destructive work |
-| Hugging Face and Torch caches | downloaded artifacts | rebuildable cache, never a substitute for model provenance |
+| `models` | 다운로드된 모델 가중치 | 출처와 checksum/라이선스 증거를 기록한 후에만 교체 가능 |
+| `custom_nodes` | 서드파티 실행 가능 노드 코드 | 리비전 인벤토리를 보존한다; 설치나 업데이트 전에 검토한다 |
+| `user`, `input`, `output` | 워크플로, 사용자 설정, 제공 및 생성된 자산 | 파괴적 작업 전에 사용자 데이터로 백업한다 |
+| Hugging Face와 Torch 캐시 | 다운로드된 아티팩트 | 재빌드 가능한 캐시, 모델 출처의 대체물이 아님 |
 
-`COMFYUI_ARGS` must retain the listener and port matched by the healthcheck and
-Traefik backend. `HF_HOME`, `TORCH_HOME`, NVIDIA compute/utility capabilities,
-`gpus: all`, 4 GiB memory and two CPUs are declared source limits, not measured
-headroom. Shared-GPU peak concurrency with Ollama is unverified.
+`COMFYUI_ARGS`는 healthcheck와 Traefik 백엔드가 일치시키는 listener와 포트를
+유지해야 한다. `HF_HOME`, `TORCH_HOME`, NVIDIA compute/utility capability,
+`gpus: all`, 4 GiB 메모리, CPU 2개는 선언된 소스 한도일 뿐 측정된 여유 자원이
+아니다. Ollama와의 공유 GPU 피크 동시성은 검증되지 않았다.
 
-### Normal operation
+### 일반적인 운영
 
-Use an approved workflow, record the required model and custom-node revisions,
-then queue it through the UI. A successful `/system_stats` response shows that
-the endpoint responds; it does not prove a model can load or a workflow is safe.
-Use the [runbook](../runbooks/0081-comfyui.md) for approval-gated runtime checks and recovery.
+승인된 워크플로를 사용하고 필요한 모델과 custom-node 리비전을 기록한 다음
+UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가 응답한다는
+사실만 보여줄 뿐, 모델을 로드할 수 있는지나 워크플로가 안전한지는 증명하지
+않는다. 승인 게이트된 런타임 점검과 복구에는
+[runbook](../runbooks/0081-comfyui.md)을 사용한다.
 
-### Source-backed lifecycle contract
+### 소스 기반 라이프사이클 계약
 
-- The selected `yanwk/comfyui-boot:cu126-slim` image is authoritative; the local Dockerfile is currently unselected. Record the image digest, CUDA/driver compatibility, model digests/licenses, workflow dependencies, and custom-node revisions before upgrade.
-- `models`, `custom_nodes`, `user`, `input`, and `output` are the recovery set; caches are rebuildable only from recorded sources. Environment values include listener/port and cache paths; registry/download tokens, if introduced, remain secret-owner inputs.
-- Traefik's standard/error/SSO chains protect the route; the loopback port is for local operations. Dependencies are NVIDIA runtime/driver, model storage, gateway/auth, root CA, and `edge_net`.
-- Use `docker compose --profile ai --profile ai-image config --quiet` from root. Before upgrade, stop queue intake and active jobs, make a consistent stopped snapshot, test the new image/nodes/models on isolated mounts, and verify `/system_stats`, GPU visibility, expected nodes, and a representative workflow.
-- ComfyUI is GPL-3.0 licensed; custom nodes and models carry separate licenses. Use the [official repository](https://github.com/Comfy-Org/ComfyUI) and [Manager guidance](https://docs.comfy.org/manager/overview).
+- 선택된 `yanwk/comfyui-boot:cu126-slim` 이미지가 권위를 갖는다. 로컬
+  Dockerfile은 현재 선택되지 않았다. 업그레이드 전에 이미지 digest,
+  CUDA/드라이버 호환성, 모델 digest/라이선스, 워크플로 의존성, custom-node
+  리비전을 기록한다.
+- `models`, `custom_nodes`, `user`, `input`, `output`이 복구 대상 집합이다.
+  캐시는 기록된 소스로부터만 재빌드 가능하다. 환경 값에는 listener/포트와 캐시
+  경로가 포함된다. registry/다운로드 토큰이 도입되면 여전히 secret 소유자
+  입력이다.
+- Traefik의 standard/error/SSO 체인이 라우트를 보호한다. loopback 포트는 로컬
+  운영용이다. 의존성은 NVIDIA 런타임/드라이버, 모델 스토리지, 게이트웨이/인증,
+  root CA, `edge_net`이다.
+- root에서 `docker compose --profile ai --profile ai-image config --quiet`를
+  사용한다. 업그레이드 전에는 큐 유입과 활성 작업을 중지하고, 일관된 정지
+  스냅샷을 만들고, 격리된 마운트에서 새 이미지/노드/모델을 테스트하고,
+  `/system_stats`, GPU 가시성, 예상 노드, 대표 워크플로를 검증한다.
+- ComfyUI는 GPL-3.0 라이선스이다. custom node와 모델은 별도의 라이선스를 갖는다.
+  [공식 저장소](https://github.com/Comfy-Org/ComfyUI)와
+  [Manager 가이드](https://docs.comfy.org/manager/overview)를 사용한다.
 
 ## Common Checks
 
-- Inspect profiles, route, mounts, resources and healthcheck in the [Compose source](../../../infra/08-ai/comfyui/docker-compose.yml).
-- Inspect actual custom-node and model provenance before an upgrade; do not trust a cache directory as provenance.
-- Use the central [backup policy](../policies/0021-backup-and-restore.md) before changing persistent content.
+- [Compose 소스](../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
+  라우트, 마운트, 리소스, healthcheck를 점검한다.
+- 업그레이드 전에 실제 custom-node와 모델 출처를 점검한다; 캐시 디렉터리를
+  출처로 신뢰하지 않는다.
+- 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../policies/0021-backup-and-restore.md)을
+  사용한다.
 
 ## Runbook Handoff
 
-Use the [ComfyUI Runbook](../runbooks/0081-comfyui.md) for approval-gated diagnosis and recovery.
+승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../runbooks/0081-comfyui.md)을
+사용한다.
 
 ## Traceability
 

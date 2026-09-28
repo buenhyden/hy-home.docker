@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -16,39 +16,39 @@ created: "2026-09-23"
 
 ## When to Use
 
-The `conftest` job exits non-zero.
+`conftest` 작업이 0이 아닌 상태로 종료될 때 사용한다.
 
 ## Procedure
 
-1. Run it and read the first failing line:
+1. 실행하고 첫 실패 줄을 읽는다.
 
    ```bash
    docker compose --profile policy-check run --rm conftest
    ```
 
-2. A failure in the `verify` summary is a broken rule or test in
-   `infra/09-tooling/conftest/policy/`; fix the Rego before anything else.
-3. `FAIL - <file> - compose - service <name>: …` or `… - dockerfile - …`
-   names the declaration and the rule. Fix the declaration: add the profile,
-   pin the image, move the literal into a Docker secret, or add `--checksum`.
-4. If the declaration is intended (a new privileged need, for example), change
-   the allowlist in the policy file with its reason in a reviewed change.
-5. Exit `2` or an `exceptions` count above zero means a file did not parse;
-   the named file is invalid YAML or Dockerfile syntax.
+2. `verify` 요약의 실패는 `infra/09-tooling/conftest/policy/`의 깨진 규칙이나
+   테스트다. 무엇보다 Rego부터 수정한다.
+3. `FAIL - <file> - compose - service <name>: …` 또는 `… - dockerfile - …`는
+   선언과 규칙을 명시한다. 선언을 수정한다. 프로파일을 추가하거나, 이미지를
+   고정하거나, 리터럴을 Docker secret으로 옮기거나, `--checksum`을
+   추가한다.
+4. 선언이 의도한 것이면(예: 새 권한 필요), 정책 파일의 allowlist를
+   사유와 함께 검토받은 변경으로 바꾼다.
+5. 종료 `2` 또는 `exceptions` 개수가 0보다 크면 파일을 파싱하지 못했다는
+   뜻이다. 명시된 파일이 잘못된 YAML이나 Dockerfile 문법이다.
 
 ## Evidence
 
-Record the three summary lines (verify, compose, dockerfile) and the source
-commit.
+세 요약 줄(verify, compose, dockerfile)과 소스 커밋을 기록한다.
 
 ## Rollback or Recovery
 
-The job changes nothing and holds no state.
+이 작업은 아무것도 바꾸지 않으며 상태도 갖지 않는다.
 
 ## Escalation
 
-Stop on any request to mount `secrets/`, `.env` or the Docker socket into the
-job, or to turn a `deny` into a `warn` to make a failing change pass.
+`secrets/`, `.env` 또는 Docker 소켓을 작업에 마운트하라는 요청, 또는 실패하는
+변경을 통과시키기 위해 `deny`를 `warn`으로 바꾸라는 요청이 있으면 중단한다.
 
 ## Traceability
 
@@ -58,4 +58,4 @@ job, or to turn a `deny` into a `warn` to make a failing change pass.
 
 ## Related Documents
 
-- [Conftest package README](../../../infra/09-tooling/conftest/README.md)
+- [Conftest 패키지 README](../../../infra/09-tooling/conftest/README.md)

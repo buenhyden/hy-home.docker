@@ -1,10 +1,10 @@
 ---
 title: "Local-Isolated Readiness Evidence"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-05"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0028"
 parent_ids:
@@ -15,58 +15,61 @@ created: "2026-07-19"
 
 ## Context
 
-Compose rendering과 정적 검증은 observed readiness, representative recovery,
-artifact trust, promotion/rollback을 증명하지 않는다. 저장소에는 이 네 lane을
-수행하는 현재 스크립트와 sample service가 구현되어 있으며, 그 실행은 다른
-workload와 원격 상태를 침범하지 않아야 한다.
+Compose rendering and static validation do not prove observed readiness,
+representative recovery, artifact trust, or promotion/rollback. The repository
+implements the current scripts and sample service that perform these four
+lanes, and their execution must not encroach on other workloads or remote state.
 
 ## Decision Drivers
 
-- 실제 동작을 관찰하되 production, shared runtime, registry, credential을
-  변경하지 않는다.
-- state와 Docker resource를 task-owned 경계 안에 둔다.
-- supply-chain과 delivery 판정을 immutable image digest에 결합한다.
-- network-dependent 관찰이 blocking CI를 불안정하게 만들지 않는다.
+- Observe real behavior without changing production, shared runtime, registry,
+  or credentials.
+- Keep state and Docker resources within a task-owned boundary.
+- Bind supply-chain and delivery judgments to an immutable image digest.
+- Do not let network-dependent observation destabilize blocking CI.
 
 ## Options Considered
 
 ### Static-only validation
 
-안전하고 빠르지만 runtime, recovery, tamper, rollback 동작을 증명하지 못한다.
+Safe and fast, but does not prove runtime, recovery, tamper, or rollback
+behavior.
 
 ### Local-isolated contract-first rehearsal
 
-Synthetic input과 고유 project identity를 사용해 네 lane을 독립적으로
-검증한다. Production realism은 제한되지만 blast radius와 재현성이 명확하다.
+Independently validates the four lanes using synthetic input and a unique
+project identity. Production realism is limited, but blast radius and
+reproducibility are clear.
 
 ### Remote-first validation
 
-실제 registry와 control plane을 검증할 수 있지만 credential과 외부 상태
-변경이 필요해 현재 승인 범위를 넘는다.
+Can validate real registry and control plane, but requires credential and
+external state changes that exceed the current approval scope.
 
 ## Decision
 
-Local-isolated contract-first rehearsal을 채택한다.
+Adopt local-isolated contract-first rehearsal.
 
-- Compose readiness는 `check-compose-core-readiness.sh`와 공통 library가 exact
-  service set, timeout, health, owned teardown을 검증한다.
-- PostgreSQL recovery는 `rehearse-postgres-logical-upgrade.sh`가 synthetic
-  logical backup/restore, representative upgrade, integrity oracle을 검증한다.
-- Supply chain은 `verify-sample-service-supply-chain.sh`와
-  `check-supply-chain-policy.py`가 sample-service digest에 SBOM, policy,
-  provenance, signature 및 negative fixtures를 결합한다.
-- Delivery는 `rehearse-sample-service-delivery.sh`가 verified digest의 canary,
-  promotion, injected failure, previous-digest rollback을 검증한다.
-- Network-dependent remote observation은 advisory이며 deterministic local
-  policy와 fixture가 blocking 판정을 소유한다.
+- Compose readiness: `check-compose-core-readiness.sh` and the common library
+  validate the exact service set, timeout, health, and owned teardown.
+- PostgreSQL recovery: `rehearse-postgres-logical-upgrade.sh` validates
+  synthetic logical backup/restore, representative upgrade, and the integrity
+  oracle.
+- Supply chain: `verify-sample-service-supply-chain.sh` and
+  `check-supply-chain-policy.py` combine SBOM, policy, provenance, signature,
+  and negative fixtures on the sample-service digest.
+- Delivery: `rehearse-sample-service-delivery.sh` validates canary, promotion,
+  injected failure, and previous-digest rollback of the verified digest.
+- Network-dependent remote observation is advisory; deterministic local policy
+  and fixtures own the blocking judgment.
 
 ## Consequences
 
-- 실제 동작 evidence를 작은 로컬 blast radius로 재현할 수 있다.
-- Production topology, 전체 Compose profile, live data recovery, remote
-  release control 완료를 주장할 수 없다.
-- Raw output과 ephemeral key material은 tracked evidence가 될 수 없고,
-  current Task에는 비밀이 제거된 요약만 남는다.
+- Real-behavior evidence can be reproduced with a small local blast radius.
+- Cannot claim production topology, full Compose profile, live data recovery,
+  or remote release control completion.
+- Raw output and ephemeral key material cannot become tracked evidence, and the
+  current Task retains only a secret-scrubbed summary.
 
 ## Traceability
 

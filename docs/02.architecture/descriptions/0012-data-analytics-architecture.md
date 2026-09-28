@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:
@@ -19,11 +19,11 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-본 문서는 `04-data/analytics` 서브 티어의 기술적 뼈대와 시스템 아키텍처를 정의한다. 핵심 데이터 티어로부터 분리된 분석 전용 하이퍼스케일 엔진들(InfluxDB, OpenSearch)의 배치 전략, 데이터 흐름, 그리고 플랫폼 통합 방식을 상세히 기술한다. 스트림 처리(Flink)와 OLAP 웨어하우징(Trino)은 `04-data/lakehouse`가 소유하며 이 설명의 범위 밖이다.
+This document defines the technical skeleton and system architecture of the `04-data/analytics` sub-tier. It details the deployment strategy, data flow, and platform integration approach of the analytics-only hyperscale engines (InfluxDB, OpenSearch) that are separated from the core data tier. Stream processing (Flink) and OLAP warehousing (Trino) are owned by `04-data/lakehouse` and fall outside the scope of this description.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
 - **Identifier**: `Architecture Description-0012`
 - **Domain**: Data Architecture (Analytics)
@@ -32,36 +32,36 @@ created: "2026-03-26"
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
 ### Owns (Responsibilities)
 
-- **Time-series Persistence**: 엣지 디바이스 및 센서 데이터의 고밀도 저장.
-- **Distributed Searching**: 분산 환경에서의 로그/도큐먼트 인덱싱 및 검색.
+- **Time-series Persistence**: High-density storage of edge device and sensor data.
+- **Distributed Searching**: Distributed log/document indexing and search.
 
 ### Consumes (Dependencies)
 
-- **Core Data**: PostgreSQL/Redis 등 핵심 스토리지의 변경 데이터(CDC).
-- **Infrastructure**: Docker Compose 오케스트레이션 및 NVMe 기반 영구 스토리지.
+- **Core Data**: Change data (CDC) from core storage such as PostgreSQL/Redis.
+- **Infrastructure**: Docker Compose orchestration and NVMe-based persistent storage.
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Performance**: 대량 기록 시에도 조회 지연이 일정하게 유지되어야 함 (LSM 트리 기반 엔진 활용).
-- **Scalability**: 데이터량 및 쿼리 부하에 따라 OpenSearch 노드 확장 가능성 보장.
-- **Observability**: 현재 compose가 선언한 healthcheck, service logs, Traefik route, and linked operations runbook evidence를 우선 사용한다. `/metrics` endpoint는 서비스별 compose에 선언된 경우에만 current implementation evidence로 취급한다.
-- **Reliability**: 분석 시스템의 장애가 핵심 데이터 티어(SQL)의 서비스 가용성에 영향을 주지 않는 완전 격리 보장.
+- **Performance**: Query latency must stay consistent even under heavy write volume (leveraging LSM-tree-based engines).
+- **Scalability**: Guarantees the ability to scale OpenSearch nodes according to data volume and query load.
+- **Observability**: Prioritizes the healthcheck, service logs, Traefik route, and linked operations runbook evidence that the current compose declares. A `/metrics` endpoint is treated as current implementation evidence only when declared in the per-service compose.
+- **Reliability**: Guarantees complete isolation so that a failure in the analytics system does not affect the service availability of the core data tier (SQL).
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+This section uses the context, component, or deployment representation as the view for the relevant concern.
 
-현재 tracked compose는 analytics engines and endpoints를 제공한다. Kafka-to-engine ingestion and dashboard datasets are application or workflow concerns and are not wired as automatic data pipelines in the analytics compose files.
+The current tracked compose provides analytics engines and endpoints. Kafka-to-engine ingestion and dashboard datasets are application or workflow concerns and are not wired as automatic data pipelines in the analytics compose files.
 
 ```mermaid
 graph LR
@@ -85,17 +85,17 @@ graph LR
 
 ### Infrastructure Strategy
 
-- **Networking**: 모든 서비스는 선언된 network를 사용하지만 호스트 노출 방식은 서비스별 Compose 선언을 따른다. OpenSearch와 OpenSearch Dashboards HTTP 경로는 Traefik을 사용한다. OpenSearch cluster의 node1은 Performance Analyzer `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`을 호스트에 게시한다. 이 포트들은 Gateway 전용 노출로 간주하지 않는다.
+- **Networking**: Every service uses its declared network, but the host exposure method follows each service's Compose declaration. OpenSearch and the OpenSearch Dashboards HTTP path use Traefik. Node1 of the OpenSearch cluster publishes the Performance Analyzer `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}` port to the host. These ports are not treated as Gateway-only exposure.
 - **Storage Bindings**:
-  - InfluxDB, OpenSearch, OpenSearch Dashboards는 bind-backed named volume을 사용한다.
-  - 현재 compose의 device paths는 `${DEFAULT_DATA_DIR}/influxdb`, `${DEFAULT_DATA_DIR}/opensearch` 계열이다.
-  - 고성능 디스크(NVMe) 활용은 권장 사항이며, 성능 수치의 완료 증거는 별도 benchmark evidence가 필요하다.
+  - InfluxDB, OpenSearch, and OpenSearch Dashboards use bind-backed named volumes.
+  - The device paths in the current compose are the `${DEFAULT_DATA_DIR}/influxdb` and `${DEFAULT_DATA_DIR}/opensearch` series.
+  - Using high-performance disks (NVMe) is a recommendation, and completion evidence for performance figures needs separate benchmark evidence.
 - **Config Management**: Docker Secrets and environment variables are used where declared by each compose file.
 
 ### AI Agent Architecture
 
-- **Metadata Access**: AI 에이전트는 분석용 스키마 정보와 메타데이터에 대한 읽기 권한을 가짐.
-- **Query Optimization**: 에이전트는 비효율적인 분석 쿼리 패턴을 감지하고 OpenSearch 인덱싱 등의 최적화 제안 가능.
+- **Metadata Access**: The AI agent has read access to analytics schema information and metadata.
+- **Query Optimization**: The agent can detect inefficient analytics query patterns and suggest optimizations such as OpenSearch indexing.
 
 #### Additional Boundaries and Constraints
 
@@ -108,13 +108,13 @@ graph LR
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
-- **Ingestion**: 현재 compose는 ingestion endpoints and dependencies를 제공한다. Kafka CDC, OpenSearch indexing, and InfluxDB writes require separate producer/workflow evidence.
+- **Ingestion**: The current compose provides ingestion endpoints and dependencies. Kafka CDC, OpenSearch indexing, and InfluxDB writes require separate producer/workflow evidence.
 - **Storage Strategy**:
   - InfluxDB: 3 Core data/plugin volumes with database and HTTP line-protocol endpoint/schema contracts on port `8181`; token provisioning and authenticated access remain runtime-unverified.
-  - OpenSearch: 루씬(Lucene) 인덱스 분산 저장.
-- **Consistency**: 최종 일관성(Eventual Consistency) 모델을 기본으로 채택하여 처리량 극대화.
+  - OpenSearch: Distributed storage of Lucene indexes.
+- **Consistency**: Adopts the eventual consistency model by default to maximize throughput.
 
 ## Deployment View
 
@@ -122,7 +122,7 @@ The existing infrastructure strategy section defines the deployment boundary for
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

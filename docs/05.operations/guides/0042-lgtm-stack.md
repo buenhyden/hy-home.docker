@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0042"
 parent_ids: []
@@ -52,14 +52,14 @@ created: "2026-03-25"
 
 2. Data path를 기준으로 각 component 역할을 확인한다.
 
-   - **Metrics**: Prometheus scrapes exporters and stores TSDB data in `prometheus-data`.
-   - **Logs**: Alloy sends Docker logs to Loki at `http://loki:3100/loki/api/v1/push`; Loki stores chunks/indexes in SeaweedFS bucket `loki-bucket`.
-   - **Traces**: Alloy accepts OTLP on `4317/4318` and exports traces to Tempo; Tempo stores blocks in SeaweedFS bucket `tempo-bucket`.
-   - **Visualization**: Grafana provisions datasources for Prometheus, Loki, Tempo, Alertmanager, and Pyroscope.
-   - **Alerting**: Prometheus sends alerts to Alertmanager at `alertmanager:9093`.
-   - **Batch metrics**: Pushgateway buffers metrics for short-lived jobs.
-   - **Container metrics**: cAdvisor exposes container resource metrics.
-   - **Profiles**: Pyroscope provides the profile backend and Grafana datasource.
+   - **Metrics**: Prometheus가 exporter를 scrape하고 TSDB 데이터를 `prometheus-data`에 저장한다.
+   - **Logs**: Alloy가 Docker 로그를 `http://loki:3100/loki/api/v1/push`로 Loki에 보내며, Loki는 chunk/index를 SeaweedFS bucket `loki-bucket`에 저장한다.
+   - **Traces**: Alloy가 `4317/4318`에서 OTLP를 받아 Tempo로 trace를 export하며, Tempo는 block을 SeaweedFS bucket `tempo-bucket`에 저장한다.
+   - **Visualization**: Grafana가 Prometheus, Loki, Tempo, Alertmanager, Pyroscope를 위한 datasource를 provision한다.
+   - **Alerting**: Prometheus가 `alertmanager:9093`으로 alert를 보낸다.
+   - **Batch metrics**: Pushgateway가 단기 job을 위해 metric을 버퍼링한다.
+   - **Container metrics**: cAdvisor가 container 리소스 metric을 노출한다.
+   - **Profiles**: Pyroscope가 profile backend와 Grafana datasource를 제공한다.
 
 3. Grafana datasource wiring을 확인한다.
 
@@ -67,7 +67,7 @@ created: "2026-03-25"
    rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
-4. Storage and retention boundary를 확인한다.
+4. Storage와 retention boundary를 확인한다.
 
    ```bash
    rg -n 'bucketnames: loki-bucket|retention_period: 168h|bucket: tempo-bucket|block_retention: 24h|storage.tsdb|pyroscope-data' infra/06-observability/loki/config/loki-config.yaml infra/06-observability/tempo/config/tempo.yaml infra/06-observability/docker-compose.yml
@@ -75,19 +75,19 @@ created: "2026-03-25"
 
 5. Service-specific 문서로 이동한다.
 
-   - Prometheus: metrics and alert rules
-   - Loki: logs and SeaweedFS storage
-   - Tempo: traces and SeaweedFS storage
-   - Grafana: dashboards, datasources, SSO
-   - Alloy: telemetry collection pipelines
-   - Alertmanager: alert routing and silences
-   - Pushgateway: ephemeral/batch metrics
-   - Pyroscope: profiles
+   - Prometheus: metric과 alert rule
+   - Loki: log와 SeaweedFS storage
+   - Tempo: trace와 SeaweedFS storage
+   - Grafana: dashboard, datasource, SSO
+   - Alloy: telemetry 수집 pipeline
+   - Alertmanager: alert routing과 silence
+   - Pushgateway: ephemeral/batch metric
+   - Pyroscope: profile
 
 ### Common Pitfalls
 
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
-- **Retention assumption**: Loki `168h`, Tempo `24h`, Pyroscope local filesystem boundary는 각 service policy와 config를 확인해야 한다.
+- **Retention assumption**: Loki `168h`, Tempo `24h`, Pyroscope local filesystem boundary는 각 service policy와 config에서 확인해야 한다.
 - **Collector assumption**: Alloy pipeline이 실패하면 Loki/Tempo/Prometheus/Grafana가 정상이어도 telemetry가 비어 보일 수 있다.
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
@@ -110,7 +110,7 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Prometheus guide](0045-prometheus.md)

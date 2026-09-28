@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -19,56 +19,57 @@ created: "2026-05-10"
 
 ## Usage
 
-### Purpose and classification
+### 목적과 분류
 
-SonarQube Community Build is an on-demand **OPTIONAL** code-quality/SAST service
-under `tooling` and `sast`, excluded from HOME. This repository does not define a
-universal merge quality gate in this service guide; project/CI owners decide how
-analysis results gate delivery.
+SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTIONAL**
+코드 품질/SAST 서비스이며 HOME에서 제외된다. 이 저장소는 이 서비스 가이드에서
+범용 병합 품질 게이트를 정의하지 않는다. 분석 결과로 배포를 어떻게 게이팅할지는
+프로젝트/CI 소유자가 정한다.
 
-### Current implementation and flow
+### 현재 구현과 흐름
 
-- [SonarQube Compose](../../../infra/09-tooling/sonarqube/docker-compose.yml)
-  owns the runtime image, profiles, DB secret, JVM heap, routes, volumes, and health.
-- Browser/scanner -> Traefik -> SonarQube. The route uses OAuth2 Proxy
-  ForwardAuth. No tracked SonarQube SAML/OIDC configuration proves native
-  Keycloak login or group provisioning; SonarQube users, permissions, and analysis
-  tokens remain application-owned.
-- PostgreSQL at `${POSTGRES_MNG_HOSTNAME}` stores authoritative projects,
-  settings, issues, users, and analysis state. `/opt/sonarqube/data` stores local
-  search indexes and `/opt/sonarqube/logs` stores logs. The Compose leaf has no
-  persistent extensions/plugins/config volume.
-- `sonarqube_db_password` is file-mounted. Analysis tokens are created in
-  SonarQube and never belong in Compose or evidence.
-- Both web and search JVMs are capped at 512 MiB heap by tracked environment;
-  the service inherits `template-stateful-high`.
-- `/api/system/health` proves process health only; it does not prove DB backup,
-  index consistency, scanner authorization, or gateway login.
+- [SonarQube Compose](../../../infra/09-tooling/sonarqube/docker-compose.yml)가
+  런타임 이미지, profile, DB secret, JVM heap, 라우트, 볼륨, health를 정의한다.
+- 브라우저/스캐너 -> Traefik -> SonarQube 순으로 흐른다. 라우트는 OAuth2 Proxy
+  ForwardAuth를 사용한다. 추적되는 SonarQube SAML/OIDC 설정이 없으므로 네이티브
+  Keycloak 로그인이나 그룹 프로비저닝은 증명되지 않는다. SonarQube 사용자, 권한,
+  분석 토큰은 여전히 애플리케이션 소유 영역이다.
+- `${POSTGRES_MNG_HOSTNAME}`의 PostgreSQL이 권위 있는 프로젝트, 설정, 이슈,
+  사용자, 분석 상태를 저장한다. `/opt/sonarqube/data`는 로컬 검색 인덱스를,
+  `/opt/sonarqube/logs`는 로그를 저장한다. Compose leaf에는 영속적인
+  extensions/plugins/config 볼륨이 없다.
+- `sonarqube_db_password`는 파일로 마운트된다. 분석 토큰은 SonarQube에서
+  생성되며 Compose나 증거에는 절대 포함되지 않는다.
+- 추적되는 환경변수가 web과 search JVM의 heap을 모두 512 MiB로 제한한다.
+  이 서비스는 `template-stateful-high`를 상속한다.
+- `/api/system/health`는 프로세스 health만 증명한다. DB 백업, 인덱스 일관성,
+  스캐너 인가, 게이트웨이 로그인을 증명하지 않는다.
 
-### Normal use
+### 일반적인 사용
 
-1. Validate `docker compose --profile sast config --quiet` from the root and
-   verify the management PostgreSQL dependency separately.
-2. Start only SonarQube, wait for system health, then verify gateway access and
-   SonarQube permissions as separate controls.
-3. Use an expiring project/global analysis token with the minimum permission.
-   Keep it out of shell history and logs.
-4. Run a scanner for the intended project and record project key, commit, quality
-   result, and task ID without token or source content.
+1. 루트에서 `docker compose --profile sast config --quiet`로 검증하고 management
+   PostgreSQL 의존성을 별도로 확인한다.
+2. SonarQube만 시작하고 system health를 기다린 다음, 게이트웨이 접근과 SonarQube
+   권한을 별도 통제로 검증한다.
+3. 최소 권한의 만료 가능한 프로젝트/글로벌 분석 토큰을 사용한다. 토큰이 shell history와
+   로그에 남지 않게 한다.
+4. 대상 프로젝트에 스캐너를 실행하고 토큰이나 소스 콘텐츠 없이 프로젝트 키,
+   커밋, 품질 결과, task ID를 기록한다.
 
-### Backup, restore, and upgrade
+### 백업, 복원, 업그레이드
 
-The database is the backup authority. Official guidance uses database-native
-backup and rebuilds Elasticsearch indexes after restore. A consistent recovery
-also preserves tracked config, DB secret custody, and any externally installed
-plugins/config not represented here. Restore to an isolated DB, start SonarQube
-with local indexes absent, allow reindexing, and verify projects/settings/users
-and representative scans. Deleting active indexes is never a first-line repair.
+데이터베이스가 백업 권한을 갖는다. 공식 가이드는 데이터베이스 네이티브 백업을
+사용하고 복원 후 Elasticsearch 인덱스를 재구축한다. 일관되게 복구하려면 추적되는 설정,
+DB secret 보관, 여기 표현되지 않은 외부 설치 plugin/config도 보존해야 한다.
+격리된 DB로 복원하고, 로컬 인덱스가 없는 상태로 SonarQube를 시작하여 재인덱싱을
+허용한 다음, 프로젝트/설정/사용자와 대표 스캔을 검증한다. 활성 인덱스 삭제는
+절대 1차 복구 방법으로 삼지 않는다.
 
-Before upgrade, back up/verify the DB, read all release/upgrade notes, confirm DB
-and host prerequisites, inventory plugins, and test on a restored copy. Rollback
-requires both the previous image and the pre-upgrade database; image rollback
-alone cannot undo schema migration. No backup/restore/upgrade ran here.
+업그레이드 전에는 DB를 백업/검증하고, 모든 release/업그레이드 노트를 읽고, DB와
+호스트 전제 조건을 확인하고, plugin 인벤토리를 작성하고, 복원된 사본에서
+테스트한다. 롤백에는 이전 이미지와 업그레이드 이전 데이터베이스가 모두 필요하다.
+이미지 롤백만으로는 스키마 마이그레이션을 되돌릴 수 없다. 여기서는 백업/복원/
+업그레이드를 실행하지 않았다.
 
 ## Common Checks
 
@@ -78,8 +79,8 @@ alone cannot undo schema migration. No backup/restore/upgrade ran here.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0066-sonarqube.md) for DB failures, indexing recovery, analysis queues,
-or upgrades.
+DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../runbooks/0066-sonarqube.md)을
+사용한다.
 
 ## Traceability
 

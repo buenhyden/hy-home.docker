@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -23,40 +23,42 @@ created: "2026-09-23"
 
 ### Purpose and classification
 
-Superset is the OPTIONAL BI web application, selected by `bi`. It explores
-and charts lakehouse tables through Trino. Grafana stays the operational
-observability tool; Superset is for data analysis.
+Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino를
+통해 레이크하우스 테이블을 탐색하고 차트로 만든다. Grafana는 운영
+관측 도구로 남고, Superset은 데이터 분석용이다.
 
 ### Current implementation
 
-- **Image.** [Superset Compose](../../../infra/04-data/analytics/superset/docker-compose.yml)
-  builds `apache/superset` plus the PostgreSQL driver, Authlib and the Trino
-  dialect pinned in `requirements.txt`.
-- **Metadata.** `superset-db-provision` creates the `superset` role and
-  database on `mng-pg` through the shared feature runner. `superset-init` runs
-  `superset db upgrade`, `superset init` and registers the `lakehouse` database
-  as `trino://superset@trino:8080/lakehouse`. All three are idempotent.
-- **Login.** Native Keycloak OIDC (client `home-superset`, PKCE S256) through
-  Flask-AppBuilder. The first login creates a `Gamma` user, which sees no
-  data; an Admin grants roles. The route uses `gateway-standard-chain@file`
-  only, as for the other native OIDC services.
-- **Secrets.** The signing key, the database password and the client secret
-  are Docker secret files read by `superset_config.py`. The database URI with
-  the password is built in memory; nothing puts a credential in the
-  environment or on a command line. The local root CA is added to the public
-  bundle for the Keycloak calls.
-- **Runtime.** One gunicorn process, 1 CPU and 1 GiB, read-only root with
-  tmpfs for `SUPERSET_HOME`; networks `edge_net` (Traefik, Keycloak alias),
-  `mng_data_net` (`mng-pg`) and `object_net` (Trino).
+- **Image.** [Superset Compose](../../../infra/04-data/analytics/superset/docker-compose.yml)는
+  `apache/superset`에 PostgreSQL 드라이버, Authlib, `requirements.txt`에
+  고정된 Trino 다이얼렉트를 더해 빌드한다.
+- **Metadata.** `superset-db-provision`은 공유 기능 러너를 통해 `mng-pg`에
+  `superset` 역할과 데이터베이스를 생성한다. `superset-init`은
+  `superset db upgrade`, `superset init`을 실행하고 `lakehouse`
+  데이터베이스를 `trino://superset@trino:8080/lakehouse`로 등록한다. 셋
+  모두 멱등적이다.
+- **Login.** Flask-AppBuilder를 통한 네이티브 Keycloak OIDC(클라이언트
+  `home-superset`, PKCE S256)다. 처음 로그인하면 데이터를 보지 못하는
+  `Gamma` 사용자가 생성되고 역할은 Admin이 부여한다. 다른 네이티브
+  OIDC 서비스와 마찬가지로 라우트는 `gateway-standard-chain@file`만
+  사용한다.
+- **Secrets.** 서명 키, 데이터베이스 비밀번호, 클라이언트 시크릿은
+  `superset_config.py`가 읽는 Docker secret 파일이다. 비밀번호가 든
+  데이터베이스 URI는 메모리에서 조립하며 자격 증명은 하나도 환경 변수나
+  명령줄에 두지 않는다. Keycloak을 호출할 수 있도록 로컬 루트 CA를 공개
+  번들에 추가한다.
+- **Runtime.** gunicorn 프로세스 하나, 1 CPU, 1 GiB, `SUPERSET_HOME`용
+  tmpfs를 둔 읽기 전용 루트; 네트워크는 `edge_net`(Traefik, Keycloak
+  별칭), `mng_data_net`(`mng-pg`), `object_net`(Trino)이다.
 
 ### Commands and side effects
 
 | Command | Effect |
 | --- | --- |
-| `docker compose --profile bi up -d superset` | Provisions the database, migrates, then starts the web server |
-| `docker compose --profile bi --profile lakehouse up -d superset trino` | Same, with the lakehouse engine available for queries |
-| `docker compose --profile bi run --rm superset-init` | Re-runs migration and role sync (after an upgrade) |
-| `docker compose --profile bi exec superset superset fab create-admin --username <keycloak username> …` | Creates an Admin before that user's first OIDC login |
+| `docker compose --profile bi up -d superset` | 데이터베이스를 프로비저닝하고 마이그레이션한 다음 웹 서버 시작 |
+| `docker compose --profile bi --profile lakehouse up -d superset trino` | 동일하되 레이크하우스 엔진도 쿼리에 쓸 수 있게 함 |
+| `docker compose --profile bi run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
+| `docker compose --profile bi exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
 
 ## Common Checks
 
@@ -65,7 +67,7 @@ observability tool; Superset is for data analysis.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0097-superset.md) for first setup, login failures and upgrades.
+최초 설정, 로그인 실패, 업그레이드는 [runbook](../runbooks/0097-superset.md)을 따른다.
 
 ## Traceability
 
