@@ -84,7 +84,7 @@ created: "2026-06-04"
    bash scripts/hardening/check-all-hardening.sh
    ```
 
-   이들을 default/core Compose와 supported hardening tier check로 취급한다. `services_total=5`를 근거로 전체 workspace Docker coverage를 주장하지 않는다.
+   이 check들은 default/core Compose와 supported hardening tier check로 본다. `services_total=5`를 근거로 전체 workspace Docker coverage를 주장하지 않는다.
 
 6. source-label scan을 실행한다.
 
@@ -97,7 +97,7 @@ created: "2026-06-04"
 
 ### Verification Steps
 
-이 runbook은 JSON parsing, hook payload simulation, Graphify health reporting, repository validator, default/core Docker check, supported hardening tier check, source-label scan이 모두 예상대로 완료될 때 성공한 것이다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
+이 runbook은 JSON parsing, hook payload simulation, Graphify health reporting, repository validator, default/core Docker check, supported hardening tier check, source-label scan이 모두 예상대로 완료되면 성공이다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
 
 ### Observability and Evidence Sources
 
@@ -111,7 +111,7 @@ created: "2026-06-04"
 ### Safe Rollback or Recovery Procedure
 
 - 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
-- runtime catalog drift는 canonical agent governance role, skill, provider registry로부터 provider projection을 다시 생성한다.
+- runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
 - Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
 - `10-communication` 실패는 해당 profile이 명시적으로 범위에 포함되지 않는 한 별도의 infra remediation 경로를 연다.
 
@@ -135,7 +135,7 @@ created: "2026-06-04"
 
 ## Escalation
 
-verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 담당 operator에게 중단하고 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
+verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 담당 operator에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
 
 ## Traceability
 

@@ -84,7 +84,7 @@ repository를 열려면 같은 Restic password가 필요하므로 두 값의 off
 
 ## Common Checks
 
-Checks that change no backup data (Restic still writes a short-lived lock):
+backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
 
 ```bash
 docker exec -u postgres mng-pg pgbackrest --stanza=mng info

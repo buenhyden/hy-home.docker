@@ -54,8 +54,8 @@ created: "2026-05-10"
 ### Prerequisites
 
 - `infra/04-data/analytics/influxdb/docker-compose.yml`
-- Request input: operator-selected database name; preserved registry entries for `influxdb_api_token` and `influxdb_password` are local metadata, not leaf server wiring or provisioning
-- `edge_net` access for service-to-service checks
+- 요청 입력: operator가 선택한 database 이름. 보존된 registry의 `influxdb_api_token`, `influxdb_password` 항목은 local metadata일 뿐 leaf server wiring이나 provisioning이 아니다
+- 서비스 간 점검을 위한 `edge_net` 접근 권한
 
 ### Step-by-step Instructions
 

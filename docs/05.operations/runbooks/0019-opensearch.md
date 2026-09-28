@@ -18,13 +18,13 @@ created: "2026-05-17"
 
 > Scope: OpenSearch primary stack readiness, HTTPS health check, `opensearch-cluster` topology evidence.
 
-이 런북은 OpenSearch primary stack(`opensearch` profile) 또는 three-node topology(`opensearch-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`; three-node topology는 `opensearch-node1..3` service names를 사용한다.
+이 런북은 OpenSearch primary stack(`opensearch` profile) 또는 three-node topology(`opensearch-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`를, three-node topology는 `opensearch-node1..3` service names를 사용한다.
 
 ### Purpose
 
 - HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
 - primary stack과 cluster variant를 혼동하지 않는다.
-- index/shard 작업 전 snapshot or escalation evidence를 확보한다.
+- index/shard 작업 전 snapshot이나 escalation evidence를 확보한다.
 
 ## When to Use
 
@@ -37,8 +37,8 @@ created: "2026-05-17"
 ### Checklist
 
 - [ ] `data` 단독인지 `opensearch-cluster`까지 선택했는지 기록했다.
-- [ ] admin password is read securely and not persisted.
-- [ ] index or shard mutation requires owner approval.
+- [ ] admin password는 안전하게 읽고 저장하지 않는다.
+- [ ] index나 shard 변경에는 owner 승인이 필요하다.
 
 ### Steps
 
@@ -84,7 +84,7 @@ created: "2026-05-17"
 
 ### Planned isolated snapshot restore
 
-이 절차는 upstream guidance를 바탕으로 문서화된 것이며 **이 task에서 실행되지 않았다**.
+이 절차는 upstream guidance를 바탕으로 문서화했으며 **이 task에서 실행되지 않았다**.
 
 1. 선택한 topology, cluster UUID/version, index inventory, shard health, repository plugin/configuration, encryption과 credential owner, 가용 disk, 승인된 restore 목적지를 기록한다. tracked security configuration과 certificate는 별도로 보존한다.
 2. least-privilege credential로 live data volume 밖의 repository를 등록하거나 검증한다. `.opendistro_security`를 제외한 named snapshot을 만들고 `SUCCESS`를 기다린 뒤 포함된 index와 실패 내역을 기록한다. live data-directory copy에 의존하지 않는다.

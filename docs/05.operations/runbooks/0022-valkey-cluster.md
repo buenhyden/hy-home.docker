@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-이 subject에 대한 승인된 static diagnosis, backup 계획, isolated recovery에
+이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
 
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 static validation은 이 문서화 task에서 안전하게 수행할 수 있다. cluster
 시작, 데이터 쓰기, live backup, restore, membership 변경은 계획된 operator
-작업이며 실행되지 않았다.
+작업이며 실행하지 않았다.
 
 ## Procedure
 
@@ -44,14 +44,14 @@ mapping을 확인한다. rendered 경로가 비어 있거나 예상과 다르면
 1. 승인된 maintenance window를 열고 application writer를 식별한다.
 2. engine/image source, cluster node ID, slot ownership, primary/replica
    관계, persistence mode를 기록한다. write를 일시 정지하거나 명시적으로
-   합의된 consistency point를 확립한다.
-3. 각 primary에서 RDB checkpoint를 요청하고 검증한다. 완전한 RDB와, 활성화된
-   경우 모든 AOF base/increment 파일 및 manifest를 하나의 세트로 복사한다.
+   합의한 consistency point를 정한다.
+3. 각 primary에서 RDB checkpoint를 요청하고 검증한다. 완전한 RDB, 그리고 활성화된
+   경우 모든 AOF base/increment 파일과 manifest를 한 세트로 복사한다.
    rewrite 중인 AOF는 복사하지 않는다.
 4. configuration과 cluster metadata의 diagnostic copy를 포함하되,
    `nodes.conf`는 재사용할 파일이 아니라 source identity로 표시한다.
-5. node role, timestamp, file size, checksum의 manifest를 작성한다. 세트를
-   제한된 custody 아래의 별도 encrypted 목적지로 전송한다.
+5. node role, timestamp, file size, checksum의 manifest를 작성한다. 세트는
+   custody가 제한된 별도의 encrypted 목적지로 전송한다.
 
 ### Planned isolated restore
 
@@ -59,9 +59,9 @@ mapping을 확인한다. rendered 경로가 비어 있거나 예상과 다르면
    비어 있고 network-isolated된 6-node target을 준비한다. application
    client는 연결하지 않는다.
 2. 새 cluster identity로 의도한 three-primary/three-replica topology를
-   재구성한다. 각 primary backup을 문서화된 slot owner에 mapping하며,
-   관련 없는 node set을 절대 병합하지 않는다.
-3. target node가 정지된 상태에서, 완전한 각 persistence 세트를 올바른
+   재구성한다. 각 primary backup을 문서화된 slot owner에 mapping하고
+   관련 없는 node set은 절대 병합하지 않는다.
+3. target node를 정지한 상태에서 완전한 persistence 세트 각각을 올바른
    ownership으로 빈 data 디렉터리에 배치한다. live `nodes.conf`는 재사용하지
    않는다.
 4. isolated target만 시작한다. AOF loading이 truncation이나 repair 없이
@@ -82,9 +82,9 @@ gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한
 ## Rollback or Recovery
 
 실패한 cutover는 identity와 write boundary를 검증한 뒤 client를 보존된 원본
-cluster로 되돌린다. backup 세트와 isolated target은 그대로 보존된다.
+cluster로 되돌린다. backup 세트와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
-보존된 rollback window를 거친 뒤에만 발생한다.
+보존된 rollback window를 거친 뒤에만 진행한다.
 
 ## Escalation
 
@@ -96,7 +96,7 @@ slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 
 - Runtime source: [Valkey Cluster Compose](../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
-- dated verification record가 명시적으로 실행되었다고 말하지 않는 한, 절차는 계획된 것이다.
+- dated verification record가 실행 사실을 명시하지 않는 한, 이 절차는 계획 단계다.
 
 ### References
 

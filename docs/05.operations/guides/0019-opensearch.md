@@ -112,7 +112,7 @@ created: "2026-05-10"
 - [OpenSearch upgrade guidance](https://docs.opensearch.org/latest/install-and-configure/upgrade-opensearch/index/)
 - [OpenSearch source and Apache-2.0 licence](https://github.com/opensearch-project/OpenSearch)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations guides index](../README.md)
 - [Operations policy](../policies/0019-opensearch.md)

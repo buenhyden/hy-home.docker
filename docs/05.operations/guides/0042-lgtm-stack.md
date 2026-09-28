@@ -110,7 +110,7 @@ N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 �
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Prometheus guide](0045-prometheus.md)

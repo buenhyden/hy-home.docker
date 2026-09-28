@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## When to Use
 
-이 subject에 대한 승인된 static diagnosis, backup 계획, isolated recovery에
+이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
 
@@ -39,11 +39,11 @@ backup과 restore를 확인한다.
 ### Alerts
 
 - `SeaweedFSS3Down`: `docker compose ps seaweedfs-s3`와 그 로그를 확인한다.
-  metrics listener가 S3 프로세스를 공유하므로, target이 다운되었다는 것은
-  보통 S3가 다운되었거나 재시작 중이라는 뜻이다.
+  metrics listener가 S3 프로세스를 공유하므로, target이 다운되었다면
+  보통 S3가 다운되었거나 재시작 중이다.
 - `SeaweedFSDataDiskLow`: data-disk filesystem의 여유 공간이 15% 미만이다.
   20 GiB 미만이 되면 volume server가 write 수락을 멈춘다(`-minFreeSpace`).
-  그 지점 전에 공간을 확보하거나 escalation한다. 객체 삭제는 승인된 task가
+  그 전에 공간을 확보하거나 escalation한다. 객체 삭제는 승인된 task가
   필요하다.
 
 ### First activation (approved task)
@@ -62,12 +62,12 @@ backup과 restore를 확인한다.
 ### Retained MinIO data
 
 Loki, Tempo, MLflow는 2026-09-22에 SeaweedFS로 이전했다(SPEC-0180 S07). 각
-bucket은 그 copy에서 나온 `hyhome-migration/<bucket>.cutover` marker를
-가지고 있다. 그 후 source에서 MinIO가 제거되었다. 2026-09-25에 SPEC-0182
+bucket에는 그 copy에서 나온 `hyhome-migration/<bucket>.cutover` marker가
+있다. 그 뒤 source에서 MinIO를 제거했다. 2026-09-25에 SPEC-0182
 W5는 데이터 디렉터리 `${DEFAULT_DATA_DIR}/minio/data-1`, volume
 `hy-home-infra_minio-data`, 격리된 MinIO credential 파일, `quay.io/minio/minio`
-image를 폐기했으며, 이로써 S07의 MinIO rollback 경로는 끝났다. SeaweedFS가
-이 bucket들의 유일한 copy를 가지고 있다.
+image를 폐기했고 이로써 S07의 MinIO rollback 경로는 끝났다. 이 bucket들의
+유일한 copy는 SeaweedFS에 있다.
 
 ### Backup (daily, RUN-0021)
 
@@ -77,9 +77,9 @@ staging export로 복사, 그 다음 Restic이 `data/seaweedfs/volume`과
 `data/seaweedfs/master`를 읽고, 그 다음 EXIT trap에서
 `volume.vacuum.enable`. script는 `weed shell`의 exit가 0이 아니거나 그
 출력에 오류 텍스트가 있을 때, export가 비어 있을 때, master와 filer 중
-하나만 실행 중일 때 run을 실패시킨다. stale export는 각 save 전에
-제거된다. SeaweedFS가 아예 실행 중이지 않은 것은 실패가 아니다.
-SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum을 꺼진 채로 남긴다.
+하나만 실행 중일 때 run을 실패로 처리한다. stale export는 save 전마다
+지운다. SeaweedFS가 아예 실행 중이 아니면 실패로 보지 않는다.
+SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum이 꺼진 채로 남는다.
 `seaweedfs-master`에서 `hyhome-seaweedfs.sh shell`을 통해
 `volume.vacuum.enable`을 실행한다.
 
@@ -104,9 +104,9 @@ gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한
 ## Rollback or Recovery
 
 실패한 cutover는 write boundary를 검증한 뒤 client를 보존된 원본 store로
-되돌린다. coordinated artifact와 isolated target은 그대로 보존된다.
+되돌린다. coordinated artifact와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
-보존된 rollback window를 거친 뒤에만 발생한다.
+보존된 rollback window를 거친 뒤에만 진행한다.
 
 ## Escalation
 
@@ -118,7 +118,7 @@ export 없이 volume tree를 절대 복원하지 않는다.
 
 - Runtime source: [SeaweedFS Compose](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.
-- isolated rehearsal은 2026-09-22에 실행되었다(SPEC-0180 Task 0008 S06). HOME activation과 HOME restore는 아직 실행되지 않았다.
+- isolated rehearsal은 2026-09-22에 실행했다(SPEC-0180 Task 0008 S06). HOME activation과 HOME restore는 아직 실행하지 않았다.
 
 ### References
 

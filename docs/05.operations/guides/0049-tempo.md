@@ -112,7 +112,7 @@ created: "2026-05-10"
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0049-tempo.md)

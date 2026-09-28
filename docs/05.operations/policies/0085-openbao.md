@@ -105,11 +105,11 @@ Compose/profile 검증과 [runbook](../runbooks/0085-openbao.md)이 별도의 �
 
 - Governing architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](../guides/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../runbooks/0085-openbao.md)
-- Official OpenBao TCP listener parameters: <https://openbao.org/docs/configuration/listener/tcp/>
-- Official OpenBao authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
-- Official OpenBao deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
-- Official OpenBao deprecation note for unauthenticated generate-root: <https://openbao.org/community/deprecation/unauthed-generate-root/>
-- Official OpenBao release notes for authenticated root generation: <https://openbao.org/community/release-notes/2-6-0/>
+- OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
+- OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
+- OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
+- unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
+- authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
 
 ## Related Documents
 

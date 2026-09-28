@@ -28,7 +28,7 @@ created: "2026-05-17"
 
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
 - OAuth login loop, `OAuth Login Failed`, or unexpected Viewer/Editor/Admin role이 발생할 때.
-- Dashboard panels show `Datasource not found`, `Query error`, or empty trace/log/profile links.
+- Dashboard 패널에 `Datasource not found`, `Query error`가 표시되거나 trace/log/profile link가 비어 있을 때.
 - Provisioned dashboard JSON or datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
 - `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider, or route 변경 후 rollback 가능성을 확인해야 할 때.
 
@@ -110,9 +110,9 @@ created: "2026-05-17"
 
 - [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
 - [ ] `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
-- [ ] Provisioned datasource identities remain unchanged: UIDs `Prometheus`, `Loki`, `Tempo`, `alertmanager`, and Pyroscope datasource type `grafana-pyroscope-datasource`.
-- [ ] Dashboard providers remain `editable: false`, and tracked dashboard JSON count is expected.
-- [ ] OAuth role mapping still maps `/admins` to `Admin`, `/editors` to `Editor`, and others to `Viewer`.
+- [ ] Provisioned datasource identity가 변경되지 않았다: UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`.
+- [ ] Dashboard provider가 여전히 `editable: false`이고, tracked dashboard JSON 개수가 예상값과 일치한다.
+- [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, 나머지를 `Viewer`로 매핑한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources

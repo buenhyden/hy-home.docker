@@ -99,7 +99,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0049-tempo.md)

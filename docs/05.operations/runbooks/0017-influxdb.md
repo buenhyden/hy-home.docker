@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 - InfluxDB 3 Core database/endpoint source contract mismatch를 방지한다.
 - Root secret metadata를 leaf token provisioning으로 오인하지 않고 health 상태를 확인한다.
-- cleanup or retention changes를 escalation 없이 임의 수행하지 않도록 한다.
+- cleanup이나 retention 변경을 escalation 없이 임의 수행하지 않도록 한다.
 
 ## When to Use
 
@@ -37,7 +37,7 @@ created: "2026-05-17"
 ### Checklist
 
 - [ ] compose file이 `docker-compose.yml`인지 기록한다.
-- [ ] Root secret declarations are not leaf mounts; token provisioning evidence가 없음을 기록한다.
+- [ ] root secret 선언은 leaf mount가 아니다. token provisioning evidence가 없음을 기록한다.
 - [ ] volume cleanup이나 retention 변경이 필요한 경우 owner approval을 확보한다.
 
 ### Steps
@@ -79,9 +79,9 @@ created: "2026-05-17"
 
 ### Planned isolated backup and restore
 
-이 절차는 upstream guidance를 바탕으로 문서화된 것이며 **이 task에서 실행되지 않았다**.
+이 절차는 upstream guidance를 바탕으로 문서화했으며 **이 task에서 실행되지 않았다**.
 
-1. `node0`, source image 호환 경계, database 목록, data/plugin bind 경로, 가용 공간, owner, live volume 외부의 승인된 목적지를 기록한다. writer를 정지시키거나 downtime을 예약한다. live recursive copy는 허용된 backup이 아니다.
+1. `node0`, source image 호환 경계, database 목록, data/plugin bind 경로, 가용 공간, owner, live volume 외부의 승인된 목적지를 기록한다. writer를 정지하거나 downtime을 예약한다. live recursive copy는 허용된 backup이 아니다.
 2. runtime/data approval을 받은 후 write를 중지하거나 drain하고, `node0` object-store 내용을 upstream 순서(`snapshots/`, `dbs/`, `wal/`, `catalog/`, 그 다음 `_catalog_checkpoint`)대로 복사한다. 재생성되는 `table-snapshots/`는 제외한다. ownership, mode, manifest, checksum을 보존한다.
 3. 동일한 node ID와 호환되는 InfluxDB 3 Core image로 새 isolated target을 만든다. 빈 data directory로 복원하며, active bind 경로에는 절대 덮어쓰지 않는다.
 4. isolated target만 시작한다. readiness를 확인하고, 예상 database/table을 나열하고, 대표 시간 범위와 row count를 비교하고, 별도로 제공된 credential로 authenticated query를 테스트하고, 로그와 checksum evidence를 보존한다.
@@ -95,7 +95,7 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-rehearsal 동안 원본 service와 bind 경로를 변경하지 않는다. 실패한 restore는 isolated target만 폐기하고 변경되지 않은 원본으로 되돌아가는 방식으로 rollback한다. live 경로로 파일을 복사하는 것을 허용하지 않는다.
+rehearsal 동안 원본 service와 bind 경로를 변경하지 않는다. 실패한 restore는 isolated target만 폐기하고 변경되지 않은 원본으로 되돌아가는 방식으로 rollback한다. live 경로로의 파일 복사는 허용하지 않는다.
 
 ## Escalation
 
