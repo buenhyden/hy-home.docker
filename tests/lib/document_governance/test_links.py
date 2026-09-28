@@ -1974,6 +1974,14 @@ class NavigationModeTests(unittest.TestCase):
         body = "```text\nx/\n├── README.md\n└── a/\n    └── spec.md\n```\n"
         self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))
 
+    def test_three_space_tree_naming_a_grandchild_file_fails(self) -> None:
+        body = "```text\nx/\n├── README.md\n└── a/\n   └── spec.md\n```\n"
+        self.assertEqual({"navigation-descendant-tree"}, self._codes("# X\n\n" + body))
+
+    def test_tree_directory_without_trailing_slash_passes(self) -> None:
+        body = "```text\nx/\n└── a\n    └── b\n```\n"
+        self.assertEqual(set(), self._codes("# X\n\n" + body))
+
     def test_folder_label_on_a_leaf_fails(self) -> None:
         self.assertIn(
             "navigation-label-mismatch", self._codes("# X\n\n[a/](a/spec.md)\n")

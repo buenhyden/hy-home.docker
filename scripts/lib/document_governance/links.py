@@ -1252,17 +1252,28 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
                 )
         if not router:
             continue
-        for line_no, line in _fenced_lines(node.text):
-            branch = _TREE_BRANCH.search(line)
-            if branch is None:
-                continue
-            depth = len(line[: branch.start()]) // 4 + 1
-            name = line[branch.end() :].split("#", 1)[0].strip().split(" ")[0]
+        branches = [
+            (line_no, branch.start(), line[branch.end() :])
+            for line_no, line in _fenced_lines(node.text)
+            if (branch := _TREE_BRANCH.search(line)) is not None
+        ]
+        # Trees indent each level by a fixed width that varies between
+        # diagrams (3 or 4 columns); the smallest nonzero indent is one level.
+        unit = min((start for _, start, _ in branches if start), default=4)
+        subtree_directories = {
+            pathlib.PurePosixPath(path).name
+            for path in tracked_directories
+            if directory_text and path.startswith(f"{directory_text}/")
+        }
+        for line_no, start, rest in branches:
+            depth = start // unit + 1
+            name = rest.split("#", 1)[0].strip().split(" ")[0]
             if (
                 depth >= 2
                 and name
                 and not name.endswith("/")
                 and name != "README.md"
+                and name not in subtree_directories
                 and "<" not in name
             ):
                 findings.append(
