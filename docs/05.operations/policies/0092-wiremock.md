@@ -16,8 +16,8 @@ created: "2026-09-23"
 
 ## Overview
 
-WireMock은 추적되는 stub으로 HTTP 요청에 응답하고 자신이 받은 것을 기록한다. 그
-admin API는 인증되지 않으므로 노출과 stub 내용이 control이다.
+WireMock은 추적되는 stub으로 HTTP 요청에 응답하고 받은 요청을 기록한다. admin
+API에는 인증이 없으므로 노출과 stub 내용이 곧 control이다.
 
 ## Policy Scope
 
@@ -32,11 +32,11 @@ admin API는 인증되지 않으므로 노출과 stub 내용이 control이다.
   admin 권한을 가진다. named consumer가 추가되면 범위가 제한된 네트워크를 받는다.
 - 추적되는 mapping만이 지속적인 stub이다. stub body는 합성 데이터다. 캡처된 운영
   response, credential, 토큰, 개인 데이터는 사용하지 않는다.
-- 실제 upstream으로의 recording이나 proxying은 정책상 금지된다. read-only mount는
-  recording을 저장하는 것만 막는다. admin API를 통해 recording을 시작하거나
-  `proxyBaseUrl`을 가진 stub을 만드는 것은 기술적으로 막혀 있지 않다.
-- request journal은 제한된 상태로 유지한다. stub에 전송된 요청은 테스트 credential을
-  포함할 수 있으며 실행 중에는 admin API를 통해 읽을 수 있다.
+- 실제 upstream을 대상으로 한 recording이나 proxying은 정책으로 금지한다. read-only
+  mount는 recording 저장만 막는다. admin API로 recording을 시작하거나
+  `proxyBaseUrl`을 가진 stub을 만드는 일은 기술적으로 막혀 있지 않다.
+- request journal은 제한된 상태로 유지한다. stub에 보낸 요청에는 테스트 credential이
+  들어 있을 수 있고 실행 중에는 admin API로 읽을 수 있다.
 
 ## Exceptions
 
@@ -63,4 +63,3 @@ WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 �
 
 - [WireMock Compose source](../../../infra/09-tooling/wiremock/docker-compose.yml)
 - [Compose profile vocabulary](0078-compose-profile-vocabulary.md)
-</content>

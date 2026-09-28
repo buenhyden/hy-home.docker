@@ -74,4 +74,3 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 - [Guide](../guides/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md)
 - 런타임 고정값은 [observability Compose](../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)
-</content>

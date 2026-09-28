@@ -17,8 +17,8 @@ created: "2026-09-23"
 ## Overview
 
 hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의
-OpenBao 인증 경로를 사용한다. 이 정책은 그 집합, 인증 방식, 두 저장소 사이에
-오가는 자격 증명 처리 방식을 고정한다.
+OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를
+오가는 자격 증명의 처리 방식을 고정한다.
 
 ## Policy Scope
 
@@ -45,13 +45,13 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합, 인증 방식, 
   임시 root 세션이 필요하다.
 - Prometheus는 클러스터에서 Basic Auth(`INFRA-007`)로 `/api/v1/`을 통해서만
   도달 가능하다. 클러스터는 자격 증명을 OpenBao `secret/platform/prometheus-api`
-  로만 받으며, 이는 `OBS-013`, `INFRA-007`과 같은 회전에서 함께 바뀐다.
+  로만 받으며 이 자격 증명은 `OBS-013`, `INFRA-007`과 같은 회전에서 함께 바뀐다.
   Prometheus host 포트는 게시하지 않으며 UI는 SSO를 유지한다. Grafana는
   host 포트도 익명 접근도 없다. Kiali는 `secret/platform/grafana-api`의
   Viewer 서비스 계정 `k8s-kiali`(90일) 토큰으로 읽는다.
 - Loki `3100`, Tempo `3200`, `mng-valkey` `26379`는 gateway 인증 없이 모든
   host interface에 게시된 상태를 유지한다(Valkey는 비밀번호를 유지한다).
-  이는 클러스터에 대해 허용된 LAN 노출이며, 범위를 좁히려면 엔드포인트
+  클러스터를 위해 허용한 LAN 노출이며 범위를 좁히려면 엔드포인트
   추가와 같은 수준의 검토가 필요하다.
 - 값은 저장소 경계를 파일이나 보호된 채널을 통해서만 넘긴다. chat, issue
   텍스트, 명령줄 인자, 로그로는 절대 넘기지 않는다. 증거는 이름, boolean,

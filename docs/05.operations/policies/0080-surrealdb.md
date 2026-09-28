@@ -42,12 +42,12 @@ created: "2026-09-19"
 - **Required**: 복구는 새롭고 격리된 호환 대상과 승인된 root, namespace,
   또는 database 자격 증명을 사용한다. import 전에 `OPTION IMPORT` 기대치를
   확인한다.
-- **Required**: import는 부분적으로 성공할 수 있으므로, 실패한 대상은 재시도
+- **Required**: import는 부분적으로 성공할 수 있으므로 실패한 대상은 재시도
   전에 폐기하고 비어 있는 상태로 다시 생성한다. namespace/database, 테이블,
   스키마, 권한, 레코드 수 불변조건, 대표 읽기를 검증한다.
 - **Required**: 업그레이드는 upstream 저장 형식 순서를 따르며 복구 테스트를
-  거친 export, 용량 검토, 명시적 롤백 지점, 승인을 필요로 한다. 제거는
-  보존된 export 증거와 확인된 소비자 종료를 필요로 한다.
+  거친 export, 용량 검토, 명시적 롤백 지점, 승인이 필요하다. 제거에는
+  보존된 export 증거와 확인된 소비자 종료가 필요하다.
 - **Allowed**: Compose 렌더링, 서비스 상태, 준비 상태, 마스킹된 인증 메타데이터
   점검.
 - **Disallowed**: 준비 상태를 고치기 위해 비밀번호 파일을 변경하는 것,
@@ -69,7 +69,7 @@ created: "2026-09-19"
 ## Review Cadence
 
 매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
-업그레이드, 또는 제거 변경 전에 검토한다.
+업그레이드, 제거 변경 전에 검토한다.
 
 ## Traceability
 

@@ -17,7 +17,7 @@ created: "2026-05-17"
 ## Overview
 
 Dozzle는 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한은 직접적인
-Docker API 접근에 대한 필수 보완 통제다.
+Docker API 접근을 보완하는 필수 통제다.
 
 ## Policy Scope
 
@@ -28,12 +28,12 @@ Docker API 접근에 대한 필수 보완 통제다.
 
 - `admin`/`admin-logs`만 사용한다. Dozzle을 HOME 밖에 유지한다.
 - 네이티브 OIDC, 시크릿 파일 전달, TLS issuer 신뢰, 관리자 CIDR allowlist를
-  보존한다. 역할/필터를 검증한다. 로그인만으로는 최소 권한이 아니다.
-- `:ro`임에도 불구하고 소켓을 root와 동등한 것으로 취급한다. 승인된
-  요구사항과 소켓 제한 설계가 다르게 말하지 않는 한 shell/actions는 꺼진
+  보존한다. 역할/필터를 검증한다. 로그인만으로 최소 권한이 되지는 않는다.
+- `:ro`여도 소켓을 root와 동등한 것으로 취급한다. 승인된
+  요구사항과 소켓 제한 설계가 달리 정하지 않는 한 shell/actions는 꺼진
   상태를 유지한다.
 - Dozzle을 보존(retention) 용도로 사용하지 않는다. 자격 증명, 개인 데이터,
-  또는 비공개 요청을 포함할 수 있는 로그에는 마스킹과 최소 접근을 적용한다.
+  비공개 요청을 포함할 수 있는 로그에는 마스킹과 최소 접근을 적용한다.
 - `/data` 백업/복구 전에 Dozzle을 중지한다. 복구 테스트에는 격리된/비프로덕션
   Docker 엔드포인트를 사용한다.
 - 업그레이드 전에 upstream 권고와 OIDC 동작을 검토한다. 폐기 시 설정을
@@ -51,7 +51,7 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 
 ## Review Cadence
 
-이미지/보안 권고, OIDC/CIDR, 소켓, 또는 설정 변경 시 검토한다.
+이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
 
 ## Traceability
 

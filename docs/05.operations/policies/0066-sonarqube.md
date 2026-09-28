@@ -16,8 +16,8 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 추적 중인 SonarQube Community Build 배포를 다루며, 유료 에디션 기능,
-네이티브 Keycloak 통합, 또는 범용 CI 게이트를 가정하지 않는다.
+이 정책은 추적 중인 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
+네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
 ## Policy Scope
 
@@ -48,18 +48,18 @@ created: "2026-05-17"
 
 ## Exceptions
 
-유료 기능, 네이티브 SAML/OIDC 프로비저닝, 또는 더 넓은 품질 게이트 요구사항은
+유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
 각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
 
 ## Verification
 
 헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
-백그라운드 작업 완료, 대표 분석, 그리고 주장된 경우의 백업/복구 증거가
-포함된다.
+백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
+증거도 포함된다.
 
 ## Review Cadence
 
-릴리스, DB/플러그인/인증/토큰, 리소스, 또는 보존 정책 변경 시 검토한다.
+릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
 
 ## Traceability
 

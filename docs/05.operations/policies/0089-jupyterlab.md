@@ -17,7 +17,7 @@ created: "2026-09-21"
 ## Overview
 
 JupyterLab은 임의의 코드를 실행한다. kernel이나 terminal에 도달할 수 있는 사람은 누구든
-컨테이너와 그것이 읽을 수 있는 모든 credential을 제어한다.
+컨테이너와 컨테이너가 읽을 수 있는 모든 credential을 제어한다.
 
 ## Policy Scope
 
@@ -33,14 +33,14 @@ backup, 제거.
   나올 때까지 여러 사람에게 접근을 허용하지 않는다.
 - secret, Docker socket, 공유 storage credential을 컨테이너에 마운트하지 않는다.
   노트북의 MLflow 접근은 artifact proxy를 통한다.
-- work directory는 저장소 밖에 owner UID 1000으로 유지한다. 사용자 데이터로서
+- work directory는 저장소 밖에 owner UID 1000으로 유지한다. 사용자 데이터로
   백업한다.
 - 라이브러리 버전을 고정한다. 의존성 변경은 다른 이미지 변경처럼 검토한다.
 
 ## Exceptions
 
 내부 MLflow SDK 경로는 인증되지 않는다 (`POL-0088` 참고). terminal은 단일 사용자를
-위해 활성화 상태로 유지된다. 추가 검토 없이 비활성화하는 것은 허용된다.
+위해 활성화 상태로 유지한다. 추가 검토 없이 비활성화해도 된다.
 
 ## Verification
 
@@ -62,4 +62,3 @@ kernel 시작과 WebSocket, 토큰을 받지 못한 realm user의 거부.
 - [Image Dockerfile](../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../infra/tech-stack.versions.json)
 - [JupyterLab Compose source](../../../infra/11-laboratory/jupyterlab/docker-compose.yml)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
-</content>

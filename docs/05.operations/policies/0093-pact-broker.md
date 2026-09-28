@@ -16,8 +16,8 @@ created: "2026-09-23"
 
 ## Overview
 
-브로커의 검증 결과가 어떤 버전을 배포할 수 있는지를 결정하므로, 누가 publish와
-verify를 할 수 있는지, 그리고 어디까지 도달 가능한지가 통제 대상이다.
+브로커의 검증 결과가 어떤 버전을 배포할 수 있는지 정하므로, 누가 publish와
+verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 통제 대상이다.
 
 ## Policy Scope
 
@@ -32,19 +32,19 @@ verify를 할 수 있는지, 그리고 어디까지 도달 가능한지가 통�
   소유자의 데이터베이스를 거부한다.
 - Basic auth는 계속 활성화하고 `PACT_BROKER_ALLOW_PUBLIC_READ`는 `false`를
   유지한다. heartbeat만 공개한다.
-- host 포트는 `127.0.0.1`에만 publish한다. loopback을 넘어서는 라우트는 TLS와
-  SSO 또는 토큰 인증을 먼저 추가하는 검토된 변경이 필요하다.
+- host 포트는 `127.0.0.1`에만 publish한다. loopback 밖으로 나가는 라우트를
+  열려면 먼저 TLS와 SSO 또는 토큰 인증을 추가하는 검토된 변경을 거쳐야 한다.
 - 자격 증명은 Docker secrets에서 가져오며 Compose `environment`, argv, 로그,
   publish된 pact 어디에도 나타나지 않는다. pact는 캡처된 운영 payload가 아닌
   합성 예시를 담는다.
 - analytics ping은 비활성 상태를 유지한다.
 - `PACT_BROKER_BASE_URL`은 설정하지 않은 채로 둔다. 생성되는 링크는 요청의
-  `Host`를 따르며, 이는 유일한 리스너가 loopback인 동안에는 안전하고
-  네트워크 내 클라이언트가 동작하게 해 준다. 라우트가 추가되면 설정한다.
+  `Host`를 따른다. 리스너가 loopback 하나뿐인 동안에는 이 방식이 안전하고
+  네트워크 안의 클라이언트도 동작한다. 라우트가 추가되면 설정한다.
 
 ## Exceptions
 
-없음. 두 번째, 읽기 전용 자격 증명은 consumer가 필요로 할 때만 추가한다.
+없음. 읽기 전용인 두 번째 자격 증명은 consumer가 필요로 할 때만 추가한다.
 
 ## Verification
 

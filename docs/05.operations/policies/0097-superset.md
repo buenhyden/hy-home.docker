@@ -34,8 +34,8 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
   이름이 명시된 Keycloak 사용자에게 부여하며, 누가 왜 부여했는지를 Task에
   기록한다.
 - signing key, 데이터베이스 비밀번호, client secret은 Docker secret 파일에서
-  가져온다. 이 중 어느 것도 환경 변수, 명령줄 인자, 설정 안의 평문 URI가
-  되지 않는다.
+  가져온다. 어느 것도 환경 변수, 명령줄 인자, 설정 안의 평문 URI로 두지
+  않는다.
 - 메타데이터 데이터베이스는 `mng-pg`에서 feature-owned로 존재하며
   `mng_data_net`에서만 도달 가능하다. host 포트는 없다.
 - UI에서 추가한 데이터 연결은 범위가 한정된 identity를 사용한다. 어떤

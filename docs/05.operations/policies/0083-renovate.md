@@ -16,13 +16,13 @@ created: "2026-09-19"
 
 ## Overview
 
-Renovate는 원격 저장소 쓰기 권한을 가진, 명시적으로 선택하는 `dependency-update` job이다.
-HOME이나 일반 도구 기동의 일부가 절대 아니다.
+Renovate는 원격 저장소 쓰기 권한을 가지며 명시적으로 선택하는 `dependency-update` job이다.
+HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 
 ## Policy Scope
 
 이 정책은 `renovate`와 그 Docker Secret, 설정, 캐시, 원격 변경사항, 업그레이드, 증거를
-다룬다. 업데이트 전략의 권위는 `POL-0086`이 유지한다.
+다룬다. 업데이트 전략의 권위는 `POL-0086`에 있다.
 
 ## Controls
 
@@ -34,7 +34,7 @@ HOME이나 일반 도구 기동의 일부가 절대 아니다.
   취급한다.
 - 브랜치와 pull request를 생성할 수 있으므로 실제 job 실행 전에 승인을 받는다. 머지,
   닫기, 토큰 회전은 별도로 승인되는 작업이다.
-- 캐시는 일회성으로 유지한다. 저장소의 진실로 취급하거나 비즈니스 상태로서 백업하지
+- 캐시는 일회성으로 유지한다. 저장소의 진실로 취급하거나 비즈니스 상태로 백업하지
   않는다. 지속적인 설정과 생성된 변경사항은 Git과 원격 호스팅 서비스가 소유한다.
 - 이미지의 불변 선언, 공식 마이그레이션/릴리스 검토, 엄격한 검증, dry-run/discovery,
   범위가 제한된 하나의 canary 저장소를 통해 업그레이드한다.
@@ -49,7 +49,7 @@ self-host 설정 검증을 반드시 통과해야 한다.
 ## Exceptions
 
 토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
-만료일, 롤백, 보안 검토가 필요하다. 구문 검증은 실제 실행 승인의 예외가 될 수 없다.
+만료일, 롤백, 보안 검토가 필요하다. 구문 검증을 통과해도 실제 실행 승인은 면제되지 않는다.
 
 ## Review Cadence
 
@@ -67,4 +67,3 @@ self-host 설정 검증을 반드시 통과해야 한다.
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Renovate security and permissions](https://docs.renovatebot.com/security-and-permissions/)
 - [Operations index](../README.md)
-</content>

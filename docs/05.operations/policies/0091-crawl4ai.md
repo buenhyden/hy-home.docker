@@ -16,8 +16,8 @@ created: "2026-09-21"
 
 ## Overview
 
-Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리되고
-인증되며 사용되지 않는 상태로 유지된다.
+Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리하고
+인증을 적용한 채 사용하지 않는 상태로 유지한다.
 
 ## Policy Scope
 
@@ -26,11 +26,11 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 ## Controls
 
 - `crawl4ai`를 통해서만 선택한다. `ai`, `notebook`, HOME에 절대 추가하지 않는다.
-- 선언된 네트워크에 연결하거나, host 포트를 게시하거나, public route를 추가하지
+- 선언된 네트워크에 연결하거나 host 포트를 게시하거나 public route를 추가하지
   않는다.
 - 항상 token secret과 함께 실행한다. provider key를 추적되는 파일로 전달하지 않는다.
-- consumer는 그 토큰도 설정하는 검토된 변경을 통해 `crawl4ai_net`에 해당 consumer를
-  추가함으로써만 연결한다.
+- consumer는 `crawl4ai_net`에 해당 consumer를 추가하고 그 토큰도 설정하는 검토된
+  변경으로만 연결한다.
 
 ## Exceptions
 
@@ -43,7 +43,7 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 ## Review Cadence
 
-이미지 업그레이드, consumer 연결 시, 그리고 각 service rationalization 검토마다
+이미지 업그레이드나 consumer 연결 시, 그리고 service rationalization 검토 때마다
 검토한다. consumer가 여전히 없으면 패키지를 제거한다.
 
 ## Traceability
@@ -55,4 +55,3 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 ## Related Documents
 
 - [Crawl4AI Compose source](../../../infra/08-ai/crawl4ai/docker-compose.yml)
-</content>

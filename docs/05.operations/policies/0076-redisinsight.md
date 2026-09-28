@@ -28,8 +28,8 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 
 - `admin`/`admin-data`만 사용한다. HOME 밖에 유지한다.
 - ForwardAuth와 관리자 CIDR을 보존한다. 고유한 최소 권한 대상 계정을
-  사용한다. 파괴적인 Workbench 명령은 대상 소유자의 승인을 필요로 한다.
-- `/data`와 백업을 민감한 것으로 취급한다. 현재 소스에는 `RI_ENCRYPTION_KEY`가
+  사용한다. 파괴적인 Workbench 명령은 대상 소유자의 승인이 필요하다.
+- `/data`와 백업을 민감 정보로 취급한다. 현재 소스에는 `RI_ENCRYPTION_KEY`가
   없다. 이를 보안 공백으로 기록하고 보장으로 취급하지 않는다.
 - RedisInsight 백업은 클라이언트 설정만 다룬다. 대상 Redis/Valkey 백업은 각
   엔진 소유자를 따르며 `/data`로 대체할 수 없다.
@@ -50,7 +50,7 @@ gateway/CIDR 허용/거부, 대상 계정 범위, 설정 지속성을 검증하�
 
 ## Review Cadence
 
-이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 또는 저장소 변경 시 검토한다.
+이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 저장소 변경 시 검토한다.
 
 ## Traceability
 

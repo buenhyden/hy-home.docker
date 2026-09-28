@@ -38,11 +38,11 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, Dep
 | 설명형 문서 | human/agent 검토와 기존 metadata validator | authority 링크; 정당화된 정확 리터럴 예외만 |
 
 datasource가 릴리스 timestamp를 제공할 때, 정기적인 patch/minor 업데이트는 설정된
-7일 soak window를 따른다. `timestamp-optional`은 timestamp가 없는 registry가 무한정
-기다리는 것을 방지한다. 그런 업데이트는 Monday 일정과 필수 수동 검토를 유지하며, 이에
-대해서는 7일 age가 주장되지 않는다. Major 업데이트는 별도로 유지된다. 보안 경고는
-일반 대기를 우회하고 명시적 검토를 받는다. 긴급성이 마이그레이션이나 롤백 증거를
-우회하지는 않는다. 이 fast path는 설정된 manager가 실제로 수신하는 취약점 경고에
+7일 soak window를 따른다. `timestamp-optional`이 있어 timestamp가 없는 registry에서도 무한정
+기다리지 않는다. 그런 업데이트는 Monday 일정과 필수 수동 검토를 유지하며 7일 age를
+주장하지 않는다. Major 업데이트는 별도로 다룬다. 보안 경고는
+일반 대기를 우회하고 명시적 검토를 받는다. 긴급하더라도 마이그레이션이나 롤백 증거를
+건너뛰지 않는다. 이 fast path는 설정된 manager가 실제로 수신하는 취약점 경고에
 적용되며, 컨테이너 이미지 CVE 스캐닝이나 설치된 이미지의 취약점 범위를 확립하지 않는다.
 infra automerge를 활성화하거나 self-host allowedCommands를 넓히지 않는다. 설정 구문은
 저장소/전역 모드를 분리한 공식 strict validator를 통과해야 한다.
@@ -57,7 +57,7 @@ digest로 대체하지 않는다.
 ## Exceptions
 
 변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
-`infra/image-tag-policy.exceptions.json`에 존재한다. 서술식 예외로는 source-image
+`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
 검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
 GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 
@@ -84,4 +84,3 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 - [Runtime version projection](../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../renovate.json5)
 - [Dependabot scope](../../../.github/dependabot.yml)
-</content>

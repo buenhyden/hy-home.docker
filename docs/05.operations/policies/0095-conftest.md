@@ -17,8 +17,8 @@ created: "2026-09-23"
 ## Overview
 
 `infra/09-tooling/conftest/policy/` 아래의 Rego 규칙은 저장소 컨테이너
-baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않으며, 각 규칙은
-다른 정책이 이미 소유한 통제를 그대로 재진술한다.
+baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않으며 각 규칙은
+다른 정책이 이미 소유한 통제를 그대로 다시 적은 것이다.
 
 ## Policy Scope
 
