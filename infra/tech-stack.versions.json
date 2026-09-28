@@ -372,7 +372,7 @@
       },
       "images": [
         "hyhome/n8n:2.29.5-local",
-        "n8nio/runners:2.39.7"
+        "n8nio/runners:2.41.3"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -387,7 +387,7 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/runners:2.39.7"
+            "n8nio/runners:2.41.3"
           ]
         }
       ]
@@ -444,7 +444,7 @@
         "amir20/dozzle": "external"
       },
       "images": [
-        "amir20/dozzle:v11.1.0"
+        "amir20/dozzle:v11.1.1"
       ],
       "compose_files": [
         "infra/11-laboratory/dozzle/docker-compose.yml"
@@ -453,7 +453,7 @@
         {
           "compose_file": "infra/11-laboratory/dozzle/docker-compose.yml",
           "images": [
-            "amir20/dozzle:v11.1.0"
+            "amir20/dozzle:v11.1.1"
           ]
         }
       ]
@@ -554,7 +554,7 @@
         "renovate/renovate": "external"
       },
       "images": [
-        "renovate/renovate:44.103.2-full"
+        "renovate/renovate:44.115.12-full"
       ],
       "compose_files": [
         "infra/09-tooling/renovate/docker-compose.yml"
@@ -563,7 +563,7 @@
         {
           "compose_file": "infra/09-tooling/renovate/docker-compose.yml",
           "images": [
-            "renovate/renovate:44.103.2-full"
+            "renovate/renovate:44.115.12-full"
           ]
         }
       ]
@@ -598,7 +598,7 @@
         "axllent/mailpit": "external"
       },
       "images": [
-        "axllent/mailpit:v1.31.1"
+        "axllent/mailpit:v1.31.2"
       ],
       "compose_files": [
         "infra/10-communication/mailpit/docker-compose.yml"
@@ -607,7 +607,7 @@
         {
           "compose_file": "infra/10-communication/mailpit/docker-compose.yml",
           "images": [
-            "axllent/mailpit:v1.31.1"
+            "axllent/mailpit:v1.31.2"
           ]
         }
       ]
@@ -1132,7 +1132,7 @@
         "influxdb": "external"
       },
       "images": [
-        "influxdb:3.11.4-core"
+        "influxdb:3.11.5-core"
       ],
       "compose_files": [
         "infra/04-data/analytics/influxdb/docker-compose.yml"
@@ -1141,7 +1141,7 @@
         {
           "compose_file": "infra/04-data/analytics/influxdb/docker-compose.yml",
           "images": [
-            "influxdb:3.11.4-core"
+            "influxdb:3.11.5-core"
           ]
         }
       ]
@@ -1535,7 +1535,7 @@
         "supabase/logflare": "external"
       },
       "images": [
-        "supabase/logflare:1.50.12"
+        "supabase/logflare:1.50.15"
       ],
       "compose_files": [
         "infra/04-data/operational/supabase/docker-compose.yml"
@@ -1544,7 +1544,7 @@
         {
           "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
           "images": [
-            "supabase/logflare:1.50.12"
+            "supabase/logflare:1.50.15"
           ]
         }
       ]
@@ -1579,7 +1579,7 @@
         "supabase/realtime": "external"
       },
       "images": [
-        "supabase/realtime:v2.137.2"
+        "supabase/realtime:v2.138.1"
       ],
       "compose_files": [
         "infra/04-data/operational/supabase/docker-compose.yml"
@@ -1588,7 +1588,7 @@
         {
           "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
           "images": [
-            "supabase/realtime:v2.137.2"
+            "supabase/realtime:v2.138.1"
           ]
         }
       ]
@@ -1601,7 +1601,7 @@
         "supabase/storage-api": "external"
       },
       "images": [
-        "supabase/storage-api:v1.79.2"
+        "supabase/storage-api:v1.79.4"
       ],
       "compose_files": [
         "infra/04-data/operational/supabase/docker-compose.yml"
@@ -1610,7 +1610,7 @@
         {
           "compose_file": "infra/04-data/operational/supabase/docker-compose.yml",
           "images": [
-            "supabase/storage-api:v1.79.2"
+            "supabase/storage-api:v1.79.4"
           ]
         }
       ]
