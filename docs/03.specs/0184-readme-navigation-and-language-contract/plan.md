@@ -1,8 +1,8 @@
 ---
 title: "README Navigation and Language Contract Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -43,7 +43,7 @@ that changes validator behavior starts with a regression test that is observed
 failing. The two new link modes stay unregistered in `MODE_HANDLERS` (inactive)
 until W13, so each intermediate commit keeps the existing gates green.
 
-1. **W1: Language field and judge.** This unit is executed directly.
+1. W1: **Language field and judge.** This unit is executed directly.
    - Schema: add `"language": {"enum": ["ko", "en"]}` to
      `docs/99.templates/contracts/document-profile.schema.json`
      `$defs/profile.properties`.
@@ -135,7 +135,7 @@ until W13, so each intermediate commit keeps the existing gates green.
    - Tests in `test_registry.py`: the schema rejects `language: "fr"`; every
      README-named profile path declares `ko`; the three new README paths
      classify to exactly one profile.
-2. **W2: Navigation mode (inactive).** This unit is executed directly.
+2. W2: **Navigation mode (inactive).** This unit is executed directly.
    - In `scripts/lib/document_governance/links.py`, add `check_navigation(graph)`
      beside `check_entrypoint`. Do not register it in `MODE_HANDLERS` yet.
      - Children come from `git ls-files -z` under the README's directory. The
@@ -173,7 +173,7 @@ until W13, so each intermediate commit keeps the existing gates green.
        - A router citing `../other/y.md`.
        - A directory holding only `.gitkeep`.
        - A router whose tree names `a/` and `a/README.md`.
-3. **W3: Language enforcement (inactive link mode, active changed check).**
+3. W3: **Language enforcement (inactive link mode, active changed check).**
    This unit is executed directly.
    - In `links.py`, add `check_language(graph)`. It loads the Registry and,
      for every node whose `classify_path` profile declares `language` and
@@ -201,7 +201,7 @@ until W13, so each intermediate commit keeps the existing gates green.
        in that language passes `language_mismatch`. With the opposite sample,
        it fails. This repository has no document generator, so the filled
        template is the generated-output evidence.
-4. **W4: Stage 03 index shape.** This unit is executed directly.
+4. W4: **Stage 03 index shape.** This unit is executed directly.
    - `metadata/reference.py` `_index_membership_findings` accepts a member when
      the member path, its package directory, or its package `README.md` is
      linked.
@@ -212,7 +212,7 @@ until W13, so each intermediate commit keeps the existing gates green.
      - One sentence that routes completed packages to the Stage 98 README.
    - Tests in `metadata/test_reference.py` `IndexMembershipTests`: a
      directory link counts as membership; a missing package still fails.
-5. **W5: Template catalog retirement.** This unit is executed directly.
+5. W5: **Template catalog retirement.** This unit is executed directly.
    - Remove `template_catalog` from `registry.json`, from the schema `required`
      list and `properties`, from `DocumentRegistry` and `load_registry` in
      `registry.py`, and from `_template_catalog_findings` and its call in
@@ -224,7 +224,7 @@ until W13, so each intermediate commit keeps the existing gates green.
      the Registry `template_roles` as the type-to-template owner.
    - Update `docs/99.templates/README.md` and `stage-authoring-matrix.md` where
      they name the catalog table.
-6. **W6: Retention Catalog relocation.** This unit is executed directly.
+6. W6: **Retention Catalog relocation.** This unit is executed directly.
    - Create `docs/98.archive/retention-catalog.md`:
      - English.
      - Frontmatter copied from the `readme` shape with type
@@ -251,7 +251,7 @@ until W13, so each intermediate commit keeps the existing gates green.
      record the observation in the Task.
    - Rewrite `docs/98.archive/README.md` in Korean as a router: the class
      directories and a link to `retention-catalog.md`, with no row.
-7. **W7: Governance text.** This unit is executed directly and gets a
+7. W7: **Governance text.** This unit is executed directly and gets a
    `rules-engineer` review.
    - `documentation-protocol.md#authoring-rules` states the three-level
      language priority, the structure-token rule, the heuristic and its
@@ -265,23 +265,23 @@ until W13, so each intermediate commit keeps the existing gates green.
      projection is regenerated through the registered renderer.
    - Also update the statement in the Stage 98 README text that the README is
      the only current document there.
-8. **W8: Repository-surface READMEs.** Dispatched to a subagent.
+8. W8: **Repository-surface READMEs.** Dispatched to a subagent.
    - Files: `README.md`, `_workspace/**/README.md`, `evals/README.md`,
      `examples/**/README.md`, `projects/**/README.md`, `scripts/README.md`,
      `secrets/README.md`, `tests/**/README.md`.
-9. **W9: `docs/` READMEs.** Dispatched to a subagent.
+9. W9: **`docs/` READMEs.** Dispatched to a subagent.
    - Files: `docs/README.md` and every README under Stages 01, 02, 05, 90,
      and 99, excluding those W4, W5, and W6 already rewrote, and excluding
      `docs/98.archive/**` records.
    - Frozen Stage 98 bodies are never edited.
-10. **W10: Governance and provider READMEs.** Dispatched to a subagent.
+10. W10: **Governance and provider READMEs.** Dispatched to a subagent.
     - `.agents/**/README.md`.
     - The runtime-governance README template and the route sentence in
       `scripts/operations/provider_surface_renderer.py:298` in Korean. After
       the edit, regenerate `.claude/README.md` and `.codex/README.md` through
       the renderer and prove renderer parity.
-11. **W11: `infra/` layers 01 through 05.** Dispatched to a subagent.
-12. **W12: `infra/` layers 06 through 11 and remaining infra READMEs.**
+11. W11: **`infra/` layers 01 through 05.** Dispatched to a subagent.
+12. W12: **`infra/` layers 06 through 11 and remaining infra READMEs.**
     Dispatched to a subagent.
 
     Brief shared by W8 through W12:
@@ -296,14 +296,14 @@ until W13, so each intermediate commit keeps the existing gates green.
     - Do not edit Compose, config, or runtime files.
     - Do not commit. The controller reviews each unit, runs the checks, and
       commits one commit per work unit.
-13. **W13: Activation and verification.** This unit is executed directly.
+13. W13: **Activation and verification.** This unit is executed directly.
     - Register `navigation` and `language` in `MODE_HANDLERS` and update the
       pinned mode tuple at `test_links.py:1303`.
     - Run `check-document-links.py --mode all`, the metadata, archive,
       lifecycle, and operations validators, the unit suites, and the changed
       and full gate profiles.
     - Record results against baseline in the Task.
-14. **W14: Final review.**
+14. W14: **Final review.**
     - A fresh reviewer checks the whole branch diff against SPEC-0184.
     - Findings are fixed in follow-up commits.
     - The branch and worktree are kept local; nothing is pushed.

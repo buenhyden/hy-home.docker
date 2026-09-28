@@ -1,8 +1,8 @@
 ---
 title: "README Navigation and Language Contract"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -108,15 +108,22 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1 | PASS: `ProfileLanguageTests` and `test_language` red, then green (`e18c2d8fc`) | `docs/99.templates/registry.json` |
-| 2 | W2, W13 | PASS: `NavigationModeTests` through `run_mode`; `--mode navigation` 964 documents, failures 0 (`8e661bc00`) | `.agents/governance/documentation-protocol.md` |
-| 3 | W1, W3, W13 | PASS: `LanguageModeTests` and `DeclaredLanguageBodyTests`; `--mode language` 964 documents, failures 0 (`8e661bc00`) | `.agents/governance/documentation-protocol.md` |
-| 4 | W6 | PASS: 26 of 26 catalog lines identical after the move; archive tests 169 OK; lifecycle violations 0 (`fe050df6d`) | `docs/98.archive/retention-catalog.md` |
-| 5 | W4 | PASS: the directory-route test fails on the old README (4 != 37) and passes on the new one (`cbbce9254`) | `docs/03.specs/README.md` |
-| 6 | W5 | PASS: `TemplateRoutingTests` red, then green (`cbbce9254`) | `docs/99.templates/registry.json` |
-| 7 | W7 | PASS: hook-rule, heading, and Registry tests OK; renderer parity `drift=0` (`3774bb73d`) | `.agents/governance/documentation-protocol.md` |
-| 8 | W8, W9, W10, W11, W12 | PASS: every README passes `--mode language` and `--mode navigation`; humanize gates OK or known false-positive WARN (`2c358eb51`, `37b48b702`, `acac7bd9e`, `7e3e08185`, `be949f338`) | each README |
-| 9 | W13 | PARTIAL: `tests/lib` 936 OK at W13 and `tests/lib/document_governance` 736 OK after the W14 fixes; `tests/validation` 675 OK (23 skipped) before and after; links `--mode all` failures 0; every changed-profile member except `check-conftest-policy.sh` returns 0, including metadata `check-changed` after the merge was rebuilt. `check-conftest-policy.sh` was not run (blocked) | N/A: gate evidence only |
+| 1 | W1 | PASS: `ProfileLanguageTests` and `test_language` red, then green (`e18c2d8fc`) | [docs/99.templates/registry.json](../../../../docs/99.templates/registry.json) |
+| 2 | W2 | PASS: `NavigationModeTests` red, then green (`6122fa0b0`) | [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 2 | W13 | PASS: `--mode navigation` registered and passing, 964 documents, failures 0 (`8e661bc00`) | [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 3 | W3 | PASS: `LanguageModeTests` and `DeclaredLanguageBodyTests` red, then green (`0eb6362a0`) | [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 3 | W13 | PASS: `--mode language` registered and passing, 964 documents, failures 0 (`8e661bc00`) | [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 4 | W6 | PASS: 26 of 26 catalog lines identical after the move; archive tests 169 OK; lifecycle violations 0 (`fe050df6d`) | N/A: Stage 98 record `docs/98.archive/retention-catalog.md`; active documents cite it without a link |
+| 5 | W4 | PASS: the directory-route test fails on the old README (4 != 37) and passes on the new one (`cbbce9254`) | [docs/03.specs/README.md](../../../../docs/03.specs/README.md) |
+| 6 | W5 | PASS: `TemplateRoutingTests` red, then green (`cbbce9254`) | [docs/99.templates/registry.json](../../../../docs/99.templates/registry.json) |
+| 7 | W7 | PASS: hook-rule, heading, and Registry tests OK; renderer parity `drift=0` (`3774bb73d`) | [.agents/governance/documentation-protocol.md](../../../../.agents/governance/documentation-protocol.md) |
+| 8 | W8 | PASS: repository-surface READMEs pass `--mode language` and `--mode navigation` (`2c358eb51`) | [README.md](../../../../README.md) |
+| 8 | W9 | PASS: `docs/` READMEs pass both modes (`37b48b702`) | [docs/README.md](../../../../docs/README.md) |
+| 8 | W10 | PASS: governance and provider READMEs pass both modes; renderer `drift=0` (`acac7bd9e`) | [.agents/README.md](../../../../.agents/README.md) |
+| 8 | W11 | PASS: gateway through messaging READMEs pass both modes (`7e3e08185`) | [infra/README.md](../../../../infra/README.md) |
+| 8 | W12 | PASS: observability through laboratory READMEs pass both modes (`be949f338`) | [infra/README.md](../../../../infra/README.md) |
+| 9 | W13 | PASS: `tests/lib` 944 OK and `tests/validation` 675 OK (23 skipped) at `82da63633`; links `--mode all` failures 0; metadata `check-changed` and `check-active` violations 0; every changed and full profile member returns 0 except `check-conftest-policy.sh`, which was not run because the request forbids `docker compose run` and `down` (baseline: not run) | N/A: gate evidence only |
+| 9 | W14 | PASS: whole-branch review 0 critical, 4 important, 8 minor; all important fixed and re-verified (`5aeaf6432`, `5b3b489e4`, `9ce4304a6`) | N/A: review evidence only |
 
 ## Review Evidence
 
@@ -179,6 +186,10 @@ Final gate evidence was recorded at W13 on 2026-09-28, after the `main` merge.
 - `9ce4304a6` W14 fix: restore the script purposes and OpenBao policy scopes.
 - `2fccbb236` read navigation tree depth from each diagram's own indent.
 - `c781ef79f` route the 2026 incident records through a year README.
+- `82da63633` accept the incident year README in the operations catalog.
+- `72928676e` local integration into `main` (not pushed).
+- `d03b592bc`, `da11bcd1b`, `bf2be547d`, and this commit: lifecycle
+  promotion to review, approved and accepted, active, and completed.
 
 ## Rulings
 
