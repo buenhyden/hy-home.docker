@@ -68,7 +68,7 @@ def _full_profile_unittest_modules() -> list[str]:
         if invocation.entrypoint == gate_runner._INTERNAL_ADAPTER_PATH
         and invocation.argv[:1] == ("run-unittest",)
         and invocation.argv[-1:] == ("-v",)
-        for module in invocation.argv[1:-1]
+        for module in ci_gate_adapters._unittest_arguments(invocation.argv[1:])[0]
     ]
 
 

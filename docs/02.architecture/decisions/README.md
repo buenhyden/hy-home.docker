@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.5.2"
+version: "1.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-28"
 layer: "architecture"
 ---
 
@@ -40,7 +40,6 @@ docs/02.architecture/decisions/
 ├── 0028-local-isolated-readiness-evidence.md
 ├── 0032-canonical-agent-governance-home.md
 ├── 0034-canonical-knowledge-and-prompt-surfaces.md
-├── 0036-archive-occupancy-citation-and-frozen-identity.md
 ├── 0037-package-disposition-wait-and-task-cancellation.md
 ├── 0038-selective-native-oidc-for-native-auth-apps.md
 ├── 0039-analytics-engines-after-lakehouse-convergence.md
@@ -60,7 +59,7 @@ docs/02.architecture/decisions/
 - `ADR-0027`:
   ADR-0029가 supersede한 Stage 00 adapter decision.
 - [`ADR-0028`](./0028-local-isolated-readiness-evidence.md):
-  local-isolated readiness evidence strategy.
+  local-isolated readiness evidence 전략을 채택한 accepted decision.
 - `ADR-0029`:
   ADR-0032가 supersede한 이전 workspace governance authority decision.
 - `ADR-0030`:
@@ -77,16 +76,16 @@ docs/02.architecture/decisions/
   accepted decision.
 - `ADR-0035`:
   Stage 98을 네 retention class와 두 route disposition으로 나누고 인용
-  가능성을 처분의 이름에서 도출한 decision. ADR-0033을 supersede했고, ADR-0036이
+  가능성을 처분의 이름에서 도출한 decision. ADR-0033을 supersede했고 ADR-0036이
   이것을 supersede하며 유지되는 규칙을 다시 적었다.
-- [`ADR-0036`](./0036-archive-occupancy-citation-and-frozen-identity.md):
+- `ADR-0036`:
   활성 package 안의 completed Task 허용, route 기록 인용 금지, 보존본과
-  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점을 요구하는 accepted
-  decision. ADR-0035를 supersede하며, 그 규칙 가운데 유지되는 것을 다시 적었다.
+  catalog `Source`의 기계 비교, 종료된 Incident의 종료 시점을 요구했던 보존
+  decision. ADR-0037이 대체했다. ADR-0035를 supersede하며 그 규칙 가운데 유지되는 것을 다시 적었다.
 - [`ADR-0037`](./0037-package-disposition-wait-and-task-cancellation.md):
   모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진
-  cancelled Task 허용을 제안하는 proposed decision. 수락 시 ADR-0036을
-  supersede하며, SPEC-0179가 수락을 소유한다.
+  cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을
+  채택한 accepted decision. ADR-0036을 대체하며 SPEC-0179가 구현·검증을 소유한다.
 - [`ADR-0038`](./0038-selective-native-oidc-for-native-auth-apps.md):
   Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는

@@ -73,6 +73,8 @@
       "identity_recovery_decisions",
       "requirement_allocation_recovery_decisions",
       "branch_integration_receipts",
+      "cancellation",
+      "archive_authorizations",
       "action",
       "conditions",
       "enabled",
@@ -194,6 +196,306 @@
         "Task result",
         "Durable owner"
       ]
+    },
+    "archive_retention": {
+      "standard_version": "3.0.0",
+      "catalog_path": "docs/98.archive/retention-catalog.md",
+      "capture_section": "Retention Catalog",
+      "capture_columns": [
+        "Record",
+        "Class",
+        "Names",
+        "Source"
+      ],
+      "assessment_section": "Current Assessments",
+      "assessment_columns": [
+        "Record",
+        "Assessment",
+        "Availability",
+        "Current Owner",
+        "Decision",
+        "Reason",
+        "Assessed At",
+        "Hold"
+      ],
+      "assessment_values": [
+        "unreviewed",
+        "usable",
+        "superseded",
+        "withdrawn",
+        "invalidated"
+      ],
+      "availability_values": [
+        "retained",
+        "git-history-only"
+      ],
+      "default_assessment": "unreviewed",
+      "default_availability": "retained",
+      "absence_token": "none",
+      "legacy_capture_revision": "cb11af64194432d94739c47046ed707010634468",
+      "citation_order": [
+        "resolve",
+        "assessment",
+        "route-record",
+        "profile",
+        "context",
+        "integrity"
+      ],
+      "blocked_assessments": [
+        "withdrawn",
+        "invalidated"
+      ],
+      "history_only_availability": "git-history-only",
+      "legacy_transition_units": [
+        "superseded/02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md"
+      ],
+      "disposition_entry_statuses": {
+        "requirements-package": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "architecture-description": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "adr": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "spec": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "data-model-contract": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "plan": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "task": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "guide": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "policy": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "runbook": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "incident": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "postmortem": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "reference-category-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "research": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "audit": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "data": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "research-member": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "audit-member": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "migration": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "tombstone": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "documentation-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "repository-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "package-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "runtime-governance-readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "readme": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-policy": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-hook-policy": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-role": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-skill": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-provider": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-provider-index": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-sdlc": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-knowledge": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-knowledge-index": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-prompt": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "governance-prompt-index": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "runtime-projection-claude": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "runtime-projection-codex": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "template-source": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
+        "generated": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ]
+      }
+    },
+    "incident_closure": {
+      "incident_status": "resolved",
+      "postmortem_status": "published",
+      "corrective_section": "Corrective Actions"
     }
   },
   "profiles": [
@@ -578,7 +880,9 @@
         "completed_at",
         "identity_recovery_decisions",
         "requirement_allocation_recovery_decisions",
-        "branch_integration_receipts"
+        "branch_integration_receipts",
+        "cancellation",
+        "archive_authorizations"
       ],
       "required_sections": [
         "Objective",
@@ -604,6 +908,11 @@
       "exceptions": [],
       "frontmatter_values": {
         "layer": "specs"
+      },
+      "required_frontmatter_by_status": {
+        "cancelled": [
+          "cancellation"
+        ]
       }
     },
     {
@@ -1306,6 +1615,34 @@
       }
     },
     {
+      "id": "archive-retention-catalog",
+      "type": "archive/retention-catalog",
+      "frontmatter_policy": "required",
+      "path_pattern": "docs/98.archive/retention-catalog.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": null,
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [],
+      "required_sections": [
+        "Overview",
+        "Retention Catalog"
+      ],
+      "optional_sections": [
+        "Current Assessments"
+      ],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": []
+    },
+    {
       "id": "documentation-readme",
       "type": "common/documentation-readme",
       "frontmatter_policy": "required",
@@ -1547,8 +1884,7 @@
         "Related Documents"
       ],
       "optional_sections": [
-        "Audience",
-        "Retention Catalog"
+        "Audience"
       ],
       "lifecycle_id": "living",
       "traceability": {},
@@ -3951,8 +4287,8 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 43,
-      "next_number": 44,
+      "high_water": 44,
+      "next_number": 45,
       "child_spaces": {}
     },
     "spec": {
@@ -4015,6 +4351,7 @@
   "transitions": {
     "adr": "architecture-decision",
     "architecture-description": "architecture-description",
+    "archive-retention-catalog": "living",
     "audit": "publication",
     "audit-member": "publication",
     "data": "publication",

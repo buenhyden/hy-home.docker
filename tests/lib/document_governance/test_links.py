@@ -465,6 +465,8 @@ class IgnoredLinkTargetTests(unittest.TestCase):
         targets: dict[str, set[str]] = {}
         for relative in self._tracked_markdown():
             document = pathlib.PurePosixPath(relative)
+            if not (ROOT / relative).exists():
+                continue  # The worktree may contain an authorized unstaged deletion.
             body = (ROOT / relative).read_text(encoding="utf-8", errors="replace")
             for match in self.LINK.finditer(body):
                 target = match.group("target").split("#", 1)[0]
@@ -543,6 +545,29 @@ class DocumentGraphTests(unittest.TestCase):
         )
         self.assertEqual(("visible", "after"), tuple(link.label for link in links))
 
+    def test_reference_html_wiki_and_footnote_links_share_normalization(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        text = """[full][ ARCHIVE target ]
+[collapsed][]
+<a href="docs%2F98.archive/completed/03.specs/0001-done/spec.md#top">html</a>
+[[docs/98.archive/completed/03.specs/0001-done/spec.md#top|wiki]]
+[^note]: [footnote](docs/98.archive/completed/03.specs/0001-done/spec.md#top)
+[archive TARGET]: docs/98.archive/completed/03.specs/0001-done/spec.md#top
+[collapsed]: docs/98.archive/completed/03.specs/0001-done/spec.md#top
+`[hidden][archive target] <a href="hidden.md"> [[hidden.md]]`
+<!-- [hidden][archive target] -->
+"""
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"), text
+        )
+        self.assertEqual([1, 2, 3, 4, 5], [link.line for link in links])
+        self.assertEqual(
+            {"docs/98.archive/completed/03.specs/0001-done/spec.md"},
+            {link.target.as_posix() for link in links},
+        )
+        self.assertEqual({"top"}, {link.fragment for link in links})
+
     def test_local_markdown_link_parser_ignores_nonrendered_links(self) -> None:
         from scripts.lib.document_governance.links import parse_local_markdown_links
 
@@ -551,6 +576,9 @@ class DocumentGraphTests(unittest.TestCase):
             """[rendered](rendered.md)
 `[inline](inline.md)`
 ![image](image.md)
+![[embedded-image.md]]
+![reference-image][image]
+[image]: image.md
 ```markdown
 [fenced](fenced.md)
 ```
@@ -769,6 +797,308 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertIn("document-frontmatter-invalid", codes)
         with self.assertRaises(TypeError):
             graph.nodes[0].metadata["status"] = "active"
+
+    def test_invalidated_package_directory_cannot_bypass_assessment(self) -> None:
+        from scripts.lib.document_governance import links
+
+        unit = "completed/03.specs/0001-old/"
+        registry = mock.Mock(
+            common={
+                "archive_retention": {
+                    "blocked_assessments": ["withdrawn", "invalidated"],
+                    "history_only_availability": "git-history-only",
+                }
+            }
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "source.md"
+            source.write_text(f"[package](docs/98.archive/{unit})\n")
+            target = root / "docs/98.archive" / unit / "spec.md"
+            target.parent.mkdir(parents=True)
+            target.write_text("# Old\n")
+            with mock.patch.object(
+                links,
+                "_archive_link_context",
+                return_value=(
+                    registry,
+                    {
+                        unit: mock.Mock(
+                            assessment="invalidated", availability="retained"
+                        )
+                    },
+                    {},
+                ),
+            ):
+                codes = {
+                    item.code
+                    for item in links.check_alignment(
+                        links.build_document_graph([source], repo_root=root)
+                    )
+                }
+            self.assertIn("archive-assessment-link", codes)
+
+    def test_alignment_reports_malformed_archive_contract(self) -> None:
+        from scripts.lib.document_governance import links
+
+        for raw in (
+            "null",
+            "[]",
+            '{"common":null}',
+            '{"common":{"archive_retention":{}}}',
+        ):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(raw)
+                codes = {
+                    item.code
+                    for item in links.check_alignment(
+                        links.build_document_graph([], repo_root=root)
+                    )
+                }
+                self.assertIn("archive-link-contract-invalid", codes)
+
+    def test_assessment_blocks_incident_exemption_without_hiding_missing_target(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import links
+
+        unit = "resolved/05.operations/incidents/0001-old.md"
+        registry = mock.Mock(
+            common={
+                "archive_retention": {
+                    "blocked_assessments": ["withdrawn", "invalidated"],
+                    "history_only_availability": "git-history-only",
+                }
+            }
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/05.operations/incidents/0002-current.md"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                f"---\ntype: operation/incident\n---\n[old](docs/98.archive/{unit})\n"
+            )
+            graph = links.build_document_graph([source], repo_root=root)
+            for assessment, availability in (
+                ("invalidated", "retained"),
+                ("withdrawn", "retained"),
+                ("usable", "git-history-only"),
+            ):
+                with (
+                    self.subTest(assessment=assessment, availability=availability),
+                    mock.patch.object(
+                        links,
+                        "_archive_link_context",
+                        create=True,
+                        return_value=(
+                            registry,
+                            {
+                                unit: mock.Mock(
+                                    assessment=assessment, availability=availability
+                                )
+                            },
+                            {},
+                        ),
+                    ),
+                ):
+                    codes = {item.code for item in links.check_alignment(graph)}
+                    self.assertIn("archive-assessment-link", codes)
+                    self.assertIn("missing-link-target", codes)
+
+    def test_link_diagnostics_escape_controls_and_bound_target_length(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "source.md"
+            source.write_text("[escape](bad\x1b[31m)\n[long](" + "a" * 1024 + ")\n")
+            findings = links.check_alignment(
+                links.build_document_graph([source], repo_root=root)
+            )
+            self.assertTrue(findings)
+            for finding in findings:
+                self.assertFalse(any(ord(char) < 32 for char in finding.message))
+                self.assertLessEqual(len(finding.message), 512)
+
+    def test_alignment_rejects_decoded_controls_in_rendered_link_destinations(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "source.md"
+            source.write_text("[control](source.md?value=%00)\n")
+            findings = check_alignment(build_document_graph([source], repo_root=root))
+            self.assertIn("unsafe-local-link", {item.code for item in findings})
+
+    def test_all_link_forms_receive_the_archive_boundary(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        target = (
+            "docs%2F98.archive/completed/%2e%2e/retired/01.requirements/0001-old.md"
+        )
+        body = (
+            f"[inline]({target})\n[reference][old]\n"
+            f"[^footnote]: [footnote]({target})\n<a href='{target}'>html</a>\n"
+            f"[[{target}|wiki]]\n[old]: {target}\n"
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/source.md"
+            source.parent.mkdir()
+            source.write_text(body)
+            findings = check_alignment(build_document_graph([source], repo_root=root))
+            boundary = [item for item in findings if item.code == "active-archive-link"]
+            self.assertEqual(
+                {f"docs/source.md:{line}" for line in range(1, 6)},
+                {item.path for item in boundary},
+            )
+
+    def test_historical_links_use_capture_revision_and_legacy_failures_are_observed(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            original = root / "docs/03.specs/0001-example/spec.md"
+            target = root / "docs/03.specs/0001-example/target.md"
+            original.parent.mkdir(parents=True)
+            original.write_text(
+                "[valid](target.md#present)\n[missing](never.md)\n[anchor](target.md#absent)\n"
+            )
+            target.write_text("# Present\n")
+            directory_index = original.parent / "folder/README.md"
+            directory_index.parent.mkdir()
+            directory_index.write_text("# Section\n")
+            original.write_text(original.read_text() + "[directory](folder/#section)\n")
+            track_repository(root)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(root),
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "capture",
+                ],
+                check=True,
+            )
+            sha = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+            ).strip()
+            target.unlink()
+            unit = "completed/03.specs/0001-example/"
+            preserved = root / "docs/98.archive" / unit / "spec.md"
+            preserved.parent.mkdir(parents=True)
+            preserved.write_text(original.read_text())
+            graph = links.build_document_graph([preserved], repo_root=root)
+            sources = {unit: (sha, "docs/03.specs/0001-example")}
+            for legacy in (False, True):
+                with (
+                    self.subTest(legacy=legacy),
+                    mock.patch(
+                        "scripts.lib.document_governance.archive_snapshots.is_legacy_capture",
+                        return_value=legacy,
+                    ),
+                ):
+                    with mock.patch.object(
+                        links,
+                        "_archive_link_context",
+                        return_value=(
+                            mock.Mock(
+                                common={
+                                    "archive_retention": {
+                                        "legacy_capture_revision": sha
+                                    }
+                                }
+                            ),
+                            {},
+                            sources,
+                        ),
+                    ):
+                        findings = links.check_alignment(graph)
+                    self.assertEqual(
+                        {
+                            "historical-link-missing-target",
+                            "historical-link-missing-anchor",
+                        },
+                        {item.code for item in findings},
+                    )
+                    self.assertEqual(
+                        {"warning" if legacy else "error"},
+                        {item.severity for item in findings},
+                    )
+                    self.assertFalse(any(item.path.endswith(":1") for item in findings))
+
+    def test_unchanged_sealed_route_uses_its_last_authored_revision(self) -> None:
+        from scripts.lib.document_governance import links
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            route = root / "docs/98.archive/migrations/0001-record.md"
+            target = root / "docs/02.architecture/decisions/0001-old.md"
+            route.parent.mkdir(parents=True)
+            target.parent.mkdir(parents=True)
+            route.write_text(
+                "---\ntype: archive/migration\nstatus: sealed\n---\n"
+                "[decision](../../02.architecture/decisions/0001-old.md#decision)\n"
+            )
+            target.write_text("# Decision\n")
+            track_repository(root)
+            subprocess.run(
+                [
+                    "git",
+                    "-C",
+                    str(root),
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "seal",
+                ],
+                check=True,
+            )
+            sha = subprocess.check_output(
+                ["git", "-C", str(root), "rev-parse", "HEAD"], text=True
+            ).strip()
+            target.unlink()
+            registry = mock.Mock(
+                common={"archive_retention": {"legacy_capture_revision": sha}}
+            )
+            with mock.patch.object(
+                links, "_archive_link_context", return_value=(registry, {}, {})
+            ):
+                self.assertEqual(
+                    [],
+                    links.check_alignment(
+                        links.build_document_graph([route], repo_root=root)
+                    ),
+                )
+                route.write_text(route.read_text() + "New current edit\n")
+                codes = {
+                    item.code
+                    for item in links.check_alignment(
+                        links.build_document_graph([route], repo_root=root)
+                    )
+                }
+                self.assertIn("missing-link-target", codes)
 
     def test_alignment_rejects_missing_and_current_to_tombstone_links(self) -> None:
         from scripts.lib.document_governance.links import (
@@ -1173,6 +1503,122 @@ class DocumentGraphTests(unittest.TestCase):
 
 
 class DocumentLinksCliTests(unittest.TestCase):
+    def test_alignment_cannot_disable_an_adopted_retention_contract(self) -> None:
+        import json
+
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        spec = importlib.util.spec_from_file_location(
+            "archive_removed_contract_cli", CLI
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for removal in ("file", "block", "model"):
+            with self.subTest(removal=removal), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                path = root / "docs/99.templates/registry.json"
+                path.parent.mkdir(parents=True)
+                raw = json.loads(DEFAULT_REGISTRY.read_text())
+                path.write_text(json.dumps(raw))
+                track_repository(root)
+                subprocess.run(
+                    [
+                        "git",
+                        "-C",
+                        str(root),
+                        "-c",
+                        "user.name=Fixture",
+                        "-c",
+                        "user.email=fixture@example.invalid",
+                        "commit",
+                        "-qm",
+                        "adopt",
+                    ],
+                    check=True,
+                )
+                if removal == "file":
+                    path.unlink()
+                else:
+                    altered = {
+                        **raw,
+                        "common": {
+                            key: value
+                            for key, value in raw["common"].items()
+                            if key != "archive_retention"
+                        },
+                    }
+                    if removal == "model":
+                        altered["common"]["archive_disposition_model"] = "transition"
+                    path.write_text(json.dumps(altered))
+                stderr = io.StringIO()
+                with (
+                    mock.patch("sys.stderr", stderr),
+                    mock.patch("sys.stdout", io.StringIO()),
+                ):
+                    result = module.main(["--root", str(root), "--mode", "alignment"])
+                self.assertEqual(
+                    1, result, "adopted history must prevent disabling the link gate"
+                )
+                self.assertIn("archive-link-contract-invalid", stderr.getvalue())
+
+    def test_alignment_cli_reports_malformed_registry_without_traceback(self) -> None:
+        spec = importlib.util.spec_from_file_location("archive_invalid_cli", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for raw in ("null", "[]", '{"common":{"archive_retention":{}}}'):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as temp:
+                root = pathlib.Path(temp)
+                registry = root / "docs/99.templates/registry.json"
+                registry.parent.mkdir(parents=True)
+                registry.write_text(raw)
+                track_repository(root)
+                stderr = io.StringIO()
+                with mock.patch("sys.stderr", stderr):
+                    self.assertEqual(
+                        1, module.main(["--root", str(root), "--mode", "alignment"])
+                    )
+                self.assertIn("document-link-input-invalid", stderr.getvalue())
+
+    def test_alignment_cli_includes_frozen_sources_and_reports_warning_without_failure(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import LinkFinding
+
+        spec = importlib.util.spec_from_file_location("archive_links_cli", CLI)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            path = root / "docs/98.archive/retired/01.requirements/0001-old.md"
+            path.parent.mkdir(parents=True)
+            path.write_text("---\nstatus: retired\n---\n[old](missing.md)\n")
+            track_repository(root)
+            self.assertNotIn(path, module._paths(root))
+            observed = []
+
+            def warnings(mode, graph):
+                observed.extend(node.path.as_posix() for node in graph.nodes)
+                return [
+                    LinkFinding(
+                        "legacy.md:1",
+                        "historical-link-missing-target",
+                        "observed",
+                        "warning",
+                    )
+                ]
+
+            output = io.StringIO()
+            with (
+                mock.patch.object(module, "run_mode", side_effect=warnings),
+                mock.patch("sys.stdout", output),
+                mock.patch("sys.stderr", io.StringIO()),
+            ):
+                result = module.main(["--root", str(root), "--mode", "alignment"])
+            self.assertEqual(0, result)
+            self.assertIn(path.relative_to(root).as_posix(), observed)
+            self.assertIn("failures=0", output.getvalue())
+            self.assertIn("warnings=1", output.getvalue())
+
     def test_historical_command_evidence_does_not_hide_current_commands(self) -> None:
         from scripts.lib.agent_governance.agent_governance_contract import (
             HISTORICAL_TABLE_MARKER,

@@ -22,7 +22,7 @@ EXPECTED_PORTS = {"18000", "18443", "18082", "18083", "18200"}
 EXPECTED_IMAGES = {
     "keycloak": (
         "quay.io/keycloak/keycloak@"
-        "sha256:0aae0de7fca85525f727d3354df17896092de8bb26ae4c12d89c77e5df8cbce4"
+        "sha256:82a77884f3af238beab1e7afd63b5f530e1b5c0590bd7aa60b40a40463e29b2c"
     ),
     "oauth2-proxy": (
         "quay.io/oauth2-proxy/oauth2-proxy@"
@@ -30,28 +30,28 @@ EXPECTED_IMAGES = {
     ),
     "traefik": (
         "traefik@"
-        "sha256:21a3d83696379bac6434bb32e1dde0aff0e84ef2abd053ed3db87d3f45e749b2"
+        "sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0"
     ),
     "vault": (
         "hashicorp/vault@"
-        "sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+        "sha256:47f14a6acb98f48d798a07df7c83f23a6e636e1cf724c5f8ff165cb32667a1e2"
     ),
     "vault-agent": (
         "hashicorp/vault@"
-        "sha256:a296a888b118615dc01d5f1a6846e6d4a7277946caaed5b447008fff5fe06b54"
+        "sha256:47f14a6acb98f48d798a07df7c83f23a6e636e1cf724c5f8ff165cb32667a1e2"
     ),
 }
 EXPECTED_CONFIG_DIGESTS = {
     "quay.io/keycloak/keycloak": (
-        "sha256:1361d6e492058a69d979ab735cfc19e73e5f1e0a707e8fa5cfb610c00bc3cff2"
+        "sha256:b2f3e1b85071d17a1da8d2cbcc54707853d19c74ae027071789ea1bb12b3ec89"
     ),
     "quay.io/oauth2-proxy/oauth2-proxy": (
         "sha256:cf3a5d50849b1799260d6aca62367c333b33472f208cbbdaab243a831b1a622f"
     ),
     "traefik": (
-        "sha256:7982c57cc89de38c6ca9e3f17caa0569890d2043f6f5271c78ad75a2cff50f32"
+        "sha256:f9309349d2c1477b15d04728f38882ba2e9a50b7f76729541121a7ee60d53490"
     ),
     "hashicorp/vault": (
-        "sha256:1747a4ab1e1bea8938269b23827165c5d80eecbdb5c115fd58e6380569537c84"
+        "sha256:7a32cec814d1d2781ed5a2d3631254649039717be8084328e2b4374e147b6a3c"
     ),
 }

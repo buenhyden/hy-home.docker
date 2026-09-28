@@ -118,3 +118,8 @@ lifecycle/ID 할당의 기준으로 사용하고, 수동 실행에는 이벤트 
 - [Scripts README](../scripts/README.md)
 - [Documentation protocol](../.agents/governance/documentation-protocol.md)
 - [Task checklists](../.agents/governance/task-checklists.md)
+
+The `run-unittest` gate adapter permits skips only for explicitly registered
+opt-in runtime TestCase scopes following `--optional-runtime-skips`. Every
+observed skip must match one of those classes; required or unregistered skips
+fail the gate. Full module selection and nonzero test execution remain mandatory.

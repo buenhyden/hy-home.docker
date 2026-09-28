@@ -342,6 +342,9 @@
         "tests.lib.document_governance.lifecycle.test_promoted",
         "tests.lib.document_governance.test_architecture",
         "tests.lib.document_governance.test_archive",
+        "tests.lib.document_governance.test_archive_assessments",
+        "tests.lib.document_governance.test_archive_catalog_contract",
+        "tests.lib.document_governance.test_archive_snapshots",
         "tests.lib.document_governance.test_identity_history",
         "tests.lib.document_governance.test_links",
         "tests.lib.document_governance.test_metadata_validator",
@@ -737,6 +740,12 @@
         "tests.validation.test_mng_pg_init_sql",
         "tests.validation.test_config_mount_hashes",
         "tests.validation.test_service_wiring_contracts",
+        "--optional-runtime-skips",
+        "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
+        "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
+        "tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests",
+        "tests.validation.test_compose_baseline_gates.StalwartRehearsalTests",
+        "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "-v"
       ],
       "cwd": ".",
@@ -1436,10 +1445,10 @@
       "security_disposition": "approved-node24"
     },
     "github/codeql-action/upload-sarif": {
-      "sha": "b96794f015dfd88f77b49b1c93e0fa7110f94c63",
+      "sha": "1c5b675653bb5c22dbe9b12b556ec555138e09fd",
       "runtime": "node24",
-      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/b96794f015dfd88f77b49b1c93e0fa7110f94c63/upload-sarif/action.yml",
-      "retrieved_at": "2026-09-19",
+      "manifest_url": "https://raw.githubusercontent.com/github/codeql-action/1c5b675653bb5c22dbe9b12b556ec555138e09fd/upload-sarif/action.yml",
+      "retrieved_at": "2026-09-28",
       "consumers": [
         ".github/workflows/ci-quality.yml"
       ],

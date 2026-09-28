@@ -117,6 +117,7 @@ class MigrationStateTests(unittest.TestCase):
         ]
         current = [
             "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             "docs/98.archive/tombstones/03.specs/0001-test.md",
             "docs/98.archive/migrations/0004-new-migration.md",
             "docs/03.specs/0172-document-contract-convergence/spec.md",
@@ -700,45 +701,131 @@ class ArchiveMinimizationTests(unittest.TestCase):
             self.assertEqual(1, len(findings))
             self.assertIn("remains in an active stage", findings[0])
 
-    def test_stage_03_occupancy_is_judged_per_package(self) -> None:
-        """A finished Task is admitted while its package is unfinished.
-
-        Stages 01, 02, 05 and 90 keep the per-document rule, which
-        `test_active_stages_hold_no_terminal_document` guards.
-        """
-
-        def occupancy(
-            spec_status: str, task_status: str, plan_status: str = "active"
-        ) -> tuple[str, ...]:
-            with tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
-                package = root / "docs/03.specs/0001-example"
-                (package / "tasks").mkdir(parents=True)
-                (package / "spec.md").write_text(
-                    f"---\nstatus: {spec_status}\n---\n\n# Spec\n", encoding="utf-8"
+    def _occupancy(
+        self,
+        spec_status,
+        task_status,
+        plan_status="active",
+        cancellation=None,
+        registry=None,
+    ):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            package = root / "docs/03.specs/0001-example"
+            (package / "tasks").mkdir(parents=True)
+            documents = {
+                "spec.md": {"status": spec_status, "artifact_id": "SPEC-0001"},
+                "tasks/tsk-0001-example.md": {
+                    "status": task_status,
+                    "artifact_id": "SPEC-0001-TSK-0001",
+                },
+            }
+            if plan_status is not None:
+                documents["plan.md"] = {"status": plan_status}
+            if cancellation is not None:
+                documents["tasks/tsk-0001-example.md"]["cancellation"] = cancellation
+            for name, metadata in documents.items():
+                (package / name).write_text(
+                    "---\n" + yaml.safe_dump(metadata) + "---\n\n"
+                    "## Acceptance Contract\n\n1. Criterion.\n",
+                    encoding="utf-8",
                 )
-                (package / "plan.md").write_text(
-                    f"---\nstatus: {plan_status}\n---\n\n# Plan\n", encoding="utf-8"
-                )
-                (package / "tasks/tsk-0001-example.md").write_text(
-                    f"---\nstatus: {task_status}\n---\n\n# Task\n", encoding="utf-8"
-                )
-                subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            standalone = root / "docs/02.architecture/decisions/0001-example.md"
+            standalone.parent.mkdir(parents=True)
+            standalone.write_text("---\nstatus: cancelled\n---\n", encoding="utf-8")
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            if registry is None:
                 return self.archive.validate_active_stage_occupancy(root)
+            return self.archive.validate_active_stage_occupancy(root, registry)
 
-        with self.subTest("a completed Task in an unfinished package is admitted"):
-            self.assertEqual((), occupancy("active", "completed"))
-        with self.subTest("a cancelled Task stays a finding"):
-            findings = occupancy("active", "cancelled")
-            self.assertEqual(1, len(findings))
-            self.assertIn("tsk-0001-example.md", findings[0])
-        with self.subTest("a terminal Spec is a finding"):
-            findings = occupancy("completed", "completed")
-            self.assertTrue(any("spec.md" in finding for finding in findings))
-        with self.subTest("a terminal Plan is a finding"):
-            findings = occupancy("active", "in-progress", plan_status="completed")
-            self.assertTrue(any("plan.md" in finding for finding in findings))
+    def test_stage_03_occupancy_is_judged_per_package(self) -> None:
+        cancellation = {
+            "reason": "No longer needed",
+            "approved_by": "@owner",
+            "approved_at": "2026-09-28",
+            "criteria": [],
+        }
+        cases = (
+            ("active", "completed", "active", None, 0),
+            ("active", "cancelled", "active", cancellation, 0),
+            ("active", "cancelled", "active", None, 1),
+            ("active", "in-progress", "completed", None, 1),
+            ("completed", "completed", "completed", None, 0),
+            ("completed", "completed", None, None, 0),
+            ("completed", "cancelled", "completed", cancellation, 0),
+            ("completed", "completed", "active", None, 1),
+            ("completed", "in-progress", "completed", None, 1),
+            ("completed", "cancelled", "completed", None, 1),
+            ("cancelled", "completed", "completed", None, 3),
+            ("superseded", "completed", "completed", None, 3),
+        )
+        for spec, task, plan, record, expected in cases:
+            with self.subTest(spec=spec, task=task, plan=plan, record=record):
+                findings = self._occupancy(spec, task, plan, record)
+                stage_03 = [item for item in findings if "docs/03.specs/" in item]
+                self.assertEqual(expected, len(stage_03), findings)
+                self.assertEqual(1, len(findings) - len(stage_03), findings)
+
+    def test_stage_03_occupancy_reads_registry_lifecycles(self) -> None:
+        import dataclasses
+
+        from scripts.lib.document_governance.registry import load_registry
+
+        registry = load_registry()
+        altered = dataclasses.replace(
+            registry,
+            lifecycle_terminal_statuses={
+                **registry.lifecycle_terminal_statuses,
+                "task": tuple(
+                    value
+                    for value in registry.lifecycle_terminal_statuses["task"]
+                    if value != "cancelled"
+                ),
+            },
+        )
+        cancellation = {
+            "reason": "No longer needed",
+            "approved_by": "@owner",
+            "approved_at": "2026-09-28",
+            "criteria": [],
+        }
+        normal = self._occupancy(
+            "completed", "cancelled", "completed", cancellation, registry
+        )
+        changed = self._occupancy(
+            "completed", "cancelled", "completed", cancellation, altered
+        )
+        self.assertEqual(1, len(normal), normal)
+        self.assertEqual(2, len(changed), changed)
+        self.assertEqual(
+            normal, tuple(item for item in changed if "docs/02.architecture/" in item)
+        )
+
+    def test_standalone_occupancy_reads_registry_disposition_entries(self) -> None:
+        import dataclasses
+
+        from scripts.lib.document_governance.registry import load_registry
+
+        registry = load_registry()
+        contract = registry.common["archive_retention"]
+        altered = dataclasses.replace(
+            registry,
+            common={
+                **registry.common,
+                "archive_retention": {
+                    **contract,
+                    "disposition_entry_statuses": {
+                        **contract["disposition_entry_statuses"],
+                        "adr": (),
+                    },
+                },
+            },
+        )
+        self.assertEqual(
+            1, len(self._occupancy("active", "completed", registry=registry))
+        )
+        self.assertEqual((), self._occupancy("active", "completed", registry=altered))
 
     def test_archive_has_only_registered_minimal_roots(self) -> None:
         inventory = self.archive.load_archive(ROOT / "docs/98.archive")
@@ -746,7 +833,11 @@ class ArchiveMinimizationTests(unittest.TestCase):
         # it, so the required roots are a subset and the whole is bounded by
         # the registered set.
         required = {"README.md", "migrations", "tombstones"}
-        allowed = required | set(self.archive.PRESERVED_DISPOSITIONS)
+        allowed = (
+            required
+            | {"retention-catalog.md"}
+            | set(self.archive.PRESERVED_DISPOSITIONS)
+        )
         self.assertLessEqual(required, set(inventory.root_entries))
         self.assertLessEqual(set(inventory.root_entries), allowed)
         self.assertEqual(
@@ -1360,7 +1451,7 @@ class RetentionCatalogTests(unittest.TestCase):
     ) -> None:
         table = "\n".join([header, "| --- | --- | --- | --- |", *rows])
         self._write(
-            "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             f"# Archive\n\n## Retention Catalog\n\n{table}\n\n"
             "## Related Documents\n\n- Index\n",
         )
@@ -1370,6 +1461,96 @@ class RetentionCatalogTests(unittest.TestCase):
             finding.code
             for finding in self.archive.validate_retention_catalog(self.root)
         }
+
+    def test_disposition_scans_reject_symlinks_without_enumerating_targets(
+        self,
+    ) -> None:
+        for kind in ("root", "member"):
+            with self.subTest(kind=kind):
+                subtree = self.root / "docs/98.archive/resolved"
+                outside = self.root / "outside"
+                outside.mkdir(exist_ok=True)
+                if kind == "root":
+                    subtree.symlink_to(outside, target_is_directory=True)
+                else:
+                    subtree.mkdir()
+                    (subtree / "escape").symlink_to(outside, target_is_directory=True)
+                try:
+                    with mock.patch.object(
+                        pathlib.Path, "rglob", side_effect=AssertionError("unsafe scan")
+                    ):
+                        self.assertTrue(
+                            self.archive.validate_preservation_boundary(
+                                self.root / "docs/98.archive"
+                            )
+                        )
+                        codes = {
+                            finding.code
+                            for finding in self.archive.validate_catalog_coverage(
+                                self.root, self.base
+                            )
+                        }
+                        self.assertIn("catalog-record-unsafe", codes)
+                finally:
+                    if kind == "member":
+                        (subtree / "escape").unlink()
+                        subtree.rmdir()
+                    else:
+                        subtree.unlink()
+
+    def test_recovery_count_rejects_symlink_without_enumerating_target(self) -> None:
+        import contextlib
+        import io
+
+        from scripts.lib.document_governance.lifecycle import recovery
+
+        outside = self.root / "outside"
+        outside.mkdir()
+        (self.root / "docs/98.archive/resolved").symlink_to(
+            outside, target_is_directory=True
+        )
+        output = io.StringIO()
+        with (
+            mock.patch.object(
+                self.archive,
+                "load_archive",
+                return_value=self.archive.ArchiveInventory((), (), ()),
+            ),
+            mock.patch.object(
+                self.archive, "load_task10_preservation_decisions", return_value=()
+            ),
+            mock.patch.object(
+                self.archive, "load_task10_recovery_references", return_value=()
+            ),
+            mock.patch.object(
+                pathlib.Path, "rglob", side_effect=AssertionError("unsafe scan")
+            ),
+            contextlib.redirect_stdout(output),
+        ):
+            self.assertEqual(1, recovery.run(self.root))
+        self.assertIn("archive-subtree-unsafe: resolved", output.getvalue())
+        self.assertIn("preserved=2", output.getvalue())
+
+    def test_retirement_scan_rejects_symlink_root(self) -> None:
+        subtree = self.root / "docs/98.archive/retired"
+        moved = self.root / "retired-original"
+        subtree.rename(moved)
+        subtree.symlink_to(moved, target_is_directory=True)
+        with self.assertRaises((ValueError, OSError)):
+            self.archive.retention_catalog_retirements(self.root)
+
+    def test_names_owner_rejects_symlink_ancestor(self) -> None:
+        outside = self.root / "owner-original"
+        outside.mkdir()
+        (outside / "0004-owner.md").write_text("# Owner\n")
+        target = self.root / "docs/02.architecture/descriptions"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.symlink_to(outside, target_is_directory=True)
+        self.assertFalse(
+            self.archive._names_owner_path(
+                self.root, "`docs/02.architecture/descriptions/0004-owner.md`"
+            )
+        )
 
     def test_a_complete_catalog_passes(self) -> None:
         self.assertEqual(set(), self.codes())
@@ -1409,6 +1590,53 @@ class RetentionCatalogTests(unittest.TestCase):
     def test_a_unit_added_over_the_base_matches_its_source(self) -> None:
         self._preserve_after_base()
         self.assertEqual(set(), self.identity_codes())
+
+    def test_catalog_identity_rejects_symlink_payload_and_ancestor(self) -> None:
+        preserved = self._preserve_after_base()
+        for ancestor in (False, True):
+            with self.subTest(ancestor=ancestor):
+                target = preserved.parent if ancestor else preserved
+                relocated = self.root / "relocated"
+                target.rename(relocated)
+                target.symlink_to(relocated, target_is_directory=ancestor)
+                try:
+                    self.assertIn("catalog-record-unsafe", self.identity_codes())
+                    self.assertIn("catalog-record-unsafe", self.codes())
+                finally:
+                    target.unlink()
+                    relocated.rename(target)
+
+    def test_catalog_identity_rejects_symlink_package_member(self) -> None:
+        package = self.root / "docs/98.archive/completed/03.specs/0001-example"
+        member = package / "spec.md"
+        relocated = self.root / "relocated.md"
+        member.rename(relocated)
+        member.symlink_to(relocated)
+        findings = self.archive.validate_catalog_identity(self.root, self.source)
+        self.assertIn("catalog-record-unsafe", {item.code for item in findings})
+
+    def test_catalog_rejects_symlink_package_root(self) -> None:
+        package = self.root / "docs/98.archive/completed/03.specs/0001-example"
+        relocated = self.root / "relocated-package"
+        package.rename(relocated)
+        package.symlink_to(relocated, target_is_directory=True)
+        self.assertIn("catalog-record-unsafe", self.codes())
+        findings = self.archive.validate_catalog_identity(self.root, self.source)
+        self.assertIn("catalog-record-unsafe", {item.code for item in findings})
+
+    def test_catalog_identity_rejects_unsafe_source_arguments(self) -> None:
+        for source in (
+            "--help:docs/03.specs/0001-example",
+            f"{self.source}:../outside",
+        ):
+            with self.subTest(source=source):
+                self.readme(self.rows(package_source=source))
+                findings = self.archive.validate_catalog_identity(
+                    self.root, self.source
+                )
+                self.assertIn(
+                    "catalog-source-invalid", {item.code for item in findings}
+                )
 
     def test_a_lifecycle_field_difference_passes(self) -> None:
         preserved = self._preserve_after_base()
@@ -1492,6 +1720,25 @@ class RetentionCatalogTests(unittest.TestCase):
             },
         )
 
+    def test_a_row_the_base_kept_in_the_stage_readme_is_not_compared(self) -> None:
+        """SPEC-0179 Archive 3.0.0: a base that predates the catalog record is still a base."""
+
+        catalog = self.root / "docs/98.archive/retention-catalog.md"
+        text = catalog.read_text(encoding="utf-8")
+        catalog.unlink()
+        self._write("docs/98.archive/README.md", text)
+        _fixture_git(self.root, "add", "-A")
+        _fixture_git(self.root, "commit", "-q", "-m", "catalog in readme")
+        legacy_base = _fixture_git(self.root, "rev-parse", "HEAD")
+        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", text)
+        body = self.root / "docs/98.archive/retired/01.requirements/0002-withdrawn.md"
+        body.write_text("# Withdrawn\n\nAdded after preservation.\n", encoding="utf-8")
+        self.assertEqual(
+            (),
+            tuple(self.archive.validate_catalog_identity(self.root, legacy_base)),
+        )
+
     def test_a_row_present_at_the_base_is_not_compared(self) -> None:
         """Behavior Contract 9: the comparison is not retroactive."""
 
@@ -1502,7 +1749,24 @@ class RetentionCatalogTests(unittest.TestCase):
     def test_the_section_and_header_are_required(self) -> None:
         self.readme(self.rows(), header="| Record | Class | Source |")
         self.assertIn("catalog-header-invalid", self.codes())
-        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", "# Retention Catalog\n")
+        self.assertIn("catalog-missing", self.codes())
+
+    def test_a_catalog_left_in_the_stage_readme_is_not_read(self) -> None:
+        """SPEC-0179 Archive 3.0.0: the README routes; the record holds the rows."""
+
+        table = "\n".join(
+            [
+                "| Record | Class | Names | Source |",
+                "| --- | --- | --- | --- |",
+                *self.rows(),
+            ]
+        )
+        self._write(
+            "docs/98.archive/README.md",
+            f"# Archive\n\n## Retention Catalog\n\n{table}\n",
+        )
+        (self.root / "docs/98.archive/retention-catalog.md").unlink()
         self.assertIn("catalog-missing", self.codes())
 
     def test_one_row_per_unit(self) -> None:
@@ -1567,7 +1831,7 @@ class RetentionCatalogTests(unittest.TestCase):
         )
 
     def test_retention_rules_are_inert_at_transition(self) -> None:
-        self._write("docs/98.archive/README.md", "# Archive\n")
+        self._write("docs/98.archive/retention-catalog.md", "# Retention Catalog\n")
         self._write("docs/98.archive/retired/05.operations/0006-gone.md", "# Gone\n")
         self.assertTrue(self.archive.validate_retention(self.root, self.base))
         self._write_model("transition")
@@ -1761,8 +2025,9 @@ class WithdrawalRecordTests(unittest.TestCase):
             f"| `{record}` | retired | Withdrawn. | `x:docs/{record}` |\n"
             for record in records
         )
+        self.write("docs/98.archive/README.md", "# Archive\n")
         self.write(
-            "docs/98.archive/README.md",
+            "docs/98.archive/retention-catalog.md",
             "# Archive\n\n## Retention Catalog\n\n"
             "| Record | Class | Names | Source |\n| --- | --- | --- | --- |\n" + rows,
         )

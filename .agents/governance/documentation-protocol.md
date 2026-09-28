@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "2.7.0"
+version: "3.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-16"
+updated: "2026-09-28"
 ---
 
 # Documentation Protocol
@@ -23,8 +23,8 @@ authoring behavior and `scripts/` owns executable validation.
   and executable interface contracts.
 - Stage 05 owns operator guidance, policies, runbooks, and incidents.
 - Stage 90 owns non-normative research, audits, and reference data.
-- Stage 98 owns four retention classes that hold frozen bodies and two route
-  dispositions that hold none; Git history recovers frozen content.
+- Stage 98 owns four capture classes for frozen units and two route
+  dispositions that hold no body; current assessment and availability are separate.
 - Stage 99 owns profiles, schemas, and copyable templates.
 
 Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
@@ -249,14 +249,16 @@ it, so a disposition with no record yet has no directory. The families are two
 kinds, and the kind decides what a directory holds and whether a current
 document may cite it.
 
-A **retention class** holds a whole body that was once current, under the
-profile that governed it then. A governed document that is no longer current
-leaves Stages 01, 02, 03, 05, 90, and 99 and is kept in the class that matches
-what happened to it. Retention follows the profile: frozen bodies remain
-immutable, while Git-history-only disposition retains recoverable provenance
-without a compatibility copy. Disposition requires its own authorization.
+A **retention class** records why a whole document or package left its current
+stage, under the profile that governed it then. A governed document that is no
+longer current leaves Stages 01, 02, 03, 05, 90, and 99 and is captured in the
+class that matches what happened to it. Availability is a separate judgment:
+`retained` keeps the immutable whole body in the current tree; approved
+`git-history-only` keeps its catalog provenance and recoverable Git source
+without a current payload or compatibility copy. Disposition requires its own
+authorization.
 
-| Class | Holds | Must name | Citable from an active stage |
+| Class | Captured scope | Must name | Citable from an active stage |
 | --- | --- | --- | --- |
 | `completed/` | Work that finished and landed | What it promoted | yes |
 | `superseded/` | Content a newer current authority replaced | The document that replaced it | no; cite its successor |
@@ -272,45 +274,68 @@ record that names it.
 | `tombstones/` | Nothing | The retired route, its successor or absence, and the reason | no |
 | `migrations/` | Nothing | The moved scope and its current owner, as `MIG-####` | no |
 
-Citability follows from the naming rather than being stipulated beside it. A
-retention class may be cited exactly when its own body still leads a reader to
-current authority: `completed` through its Promotion declaration and `resolved`
-through its corrective-work owner. A `superseded` body names its replacement,
-so the citation belongs on that successor, because citing a replaced rule is
-how it returns. `retired` carries no pointer, so citing it would strand a
-reader on a withdrawn rule.
+Citability is the repository's explicit use policy, enforced by the Registry's
+ordered rules; a directory name alone does not establish authority. Captured
+completion or incident resolution remains historical evidence. Current rules
+cite their current owner.
 
 What no Stage 98 record carries, in any family, is a second recovery ledger: no
 redirect, path ledger, self-designed body digest, branch SHA, or recovery
 commit. The catalog's Retention Envelope names the source Git object once;
-normal Git history remains the recovery mechanism for frozen content.
+normal Git history remains the recovery mechanism for frozen content. Existing
+Task Commit Ledgers are original execution evidence and remain unchanged; they
+are not duplicate Archive recovery ledgers.
 
 #### Links into Stage 98
 
-Links between documents inside `docs/` keep their existing contracts, and a
-machine reference a program opens is not a link. A document never links into
-`docs/98.archive/` beyond its index and the retention classes whose own body
-still leads a reader to current authority: `completed/`, through its promotion
-declaration, and `resolved/`, as historical evidence, through its
-corrective-work owner. It cites the successor instead of a `superseded/` body
-and the current route instead of a `retired/` body, a tombstone, or a
-migration. A frozen record it must still name is named by identifier and
-reached through the index. Only an `operation/incident` record and its
-`operation/postmortem` may cite an archive path directly, because the evidence
-such an account rests on is often the archived record itself. A route record
-holds no body, so that exception has nothing to reach there and `tombstones/`
-and `migrations/` stay closed to every source profile.
+Links between documents inside `docs/` keep their existing contracts. Resolve
+path, profile, and preservation unit first; then apply current assessment and
+availability restrictions, route-record restrictions, source-profile and capture
+class permissions, current-owner or historical-context checks, and link integrity,
+in that order. `withdrawn`, `invalidated`, and `git-history-only` units cannot be
+ordinary direct payload targets, even from an Incident or Postmortem. Cite the
+current assessment, erratum, or Archive index instead. `superseded` assessment
+routes current authority to its successor.
 
-#### Git-history-only dispositions
+The Archive index and catalog provide historical discovery. Current documents
+may cite retained `completed/` and `resolved/` bodies as historical evidence;
+`operation/incident` and `operation/postmortem` may also cite other retained
+classes as evidence subject to the earlier restrictions. `tombstones/` and
+`migrations/` remain closed to every ordinary source profile because they hold
+routes, not bodies. Frozen-body links are interpreted at the captured source
+commit and original path, never repaired against today's tree. Current catalog
+and assessment links still use current link checks. A historical broken target
+is an observation or erratum, not permission to rewrite its source.
 
-No profile is registered as Git-history-only. Until one is, every current
-disposition keeps a frozen body, and the requirement and accepted decision
-that forbid leaving a preserved body in Git alone apply unchanged.
+#### Current assessment and Git-history-only availability
 
-A new record satisfies the registered template and check. A sealed Tombstone or
-Migration keeps the form it was written in rather than being rewritten to this
-model, so the two shapes coexist and a change that adds a record uses the
-current one.
+The existing Retention Catalog owns optional current assessment rows, at most
+one per unit. The capture envelope remains immutable. Assessment values are
+`unreviewed`, `usable`, `superseded`, `withdrawn`, and `invalidated`; availability
+is independently `retained` or `git-history-only`. No row means
+`unreviewed` and `retained`, never implicit approval or usability. Do not seed
+empty rows. A real reassessment records its decision, reason, actual date,
+retention hold, and conditional current owner; `superseded` requires a real
+successor. Previous judgments remain in Git history. Do not delete an assessment
+to regain the default, or restore `invalidated` to `usable` without evidence.
+
+Removing a retained unit requires separate unit/action/date-scoped approval,
+reassessment, no hold, completed current-consumer cutover, reachable source
+history with recoverable objects, and complete unit absence. The decision is a
+pinned Task revision with authority and scope verified at that revision; an
+existing ID, a proposed ADR, or an approver name alone proves no authorization.
+A later lifecycle change does not invalidate an approval valid at its original
+revision. Partial deletion, renaming, rewriting, and deletion of the capture row
+are rejected. Keep the catalog and capture envelope and route discovery to them,
+not a missing payload. Restoration is a separately explained recovery into a
+current owner, not silent resurrection of frozen authority.
+
+`git-history-only` means that the current tree supplies no payload; it makes no
+claim about purging Git history, clones, forks, or caches. `purged` is not a
+registered availability value. Secret exposure follows separately authorized
+credential revocation and security response, not ordinary archival deletion.
+Tests of removal use isolated Git fixtures and grant no permission to remove
+real records. A sealed Tombstone or Migration keeps its original form.
 
 ### Retention by status
 
@@ -321,28 +346,27 @@ registered frozen archive routes, and withdrawn ones move to `retired/`. Do not
 record completion or supersession as a withdrawal.
 
 Before package completion, apply the [completion checklist](task-checklists.md#before-completion).
-An all-files run requires its explicit approval and Git-visible, non-ignored
-Task-owned state, and uses only the controlled wrapper. It binds its evidence to
-a Task under `docs/03.specs/`, and completion preserves
-that Task under `docs/98.archive/completed/`, where it is a frozen record that
-must not take new evidence. A completing change therefore writes its final
-evidence in the commit before the move, so the completing commit changes only
-lifecycle fields, the move, the Stage 03 index row, the Retention Catalog row,
-and consumers.
+Record final evidence while the package is still editable. All-files checks
+retain their explicit approval and controlled-wrapper requirements. A completed
+Spec may wait in Stage 03 when its Plan is completed and every Task is completed
+or validly cancelled. Its completion receipt must cover every numbered Spec
+criterion and Plan work unit before disposition. Waiting is neither active work
+nor disposition approval; the Stage 03 index routes to the package without a
+second status ledger. A later authorized move preserves the prepared source
+object, including the original Task evidence.
 
-Preservation is what a terminal status means, and the corpus check applies it
-per package in Stage 03 and per document in every other active stage. A finished
-Task of an unfinished package may therefore read `completed` where it stands: the
-Spec's status says whether the package is still current, and an admitted
-`completed` Task grants no disposition, because the package still moves whole
-with its Spec's terminal transition. A terminal Spec or Plan in Stage 03 stays a
-finding, a `cancelled` Task stays a finding, and a package whose Spec is terminal
-keeps no member in an active stage.
-
-An active stage may hold no package at all. Stage 03 is empty exactly when no
-change is in flight, which is a state to reach rather than avoid. A registered
-index still governs the packages preservation moved, so index membership counts
-a preserved member by the path it was moved from.
+Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
+Task terminal sets. In an unfinished package, completed Tasks and validly
+cancelled Tasks may remain; a terminal Plan may not. A cancelled Task records
+nonempty `reason` and `approved_by`, a valid `approved_at` date, and `criteria`.
+Each criterion names a Spec acceptance number and exactly one of another
+non-cancelled Task in the package (`reassigned_to`) or a nonempty withdrawal
+reason (`withdrawn`). An empty list means no assigned criterion. Withdrawal
+never exempts a criterion still present in the Spec from PASS evidence.
+A cancelled or superseded Spec keeps no package members in active Stage 03.
+Standalone documents keep their per-document disposition rule. No rule here
+renames lifecycle statuses or applies a union of terminal sets to other stages.
+Stage 03 may be empty when no package remains, including no waiting package.
 
 ### Retirement preconditions
 
@@ -364,12 +388,27 @@ investigate, not permission to delete.
 Record the authoring obligations and consumer cutover in the current Task's
 promotion receipt. A withdrawal's Retention Catalog row carries the withdrawal
 reason, and a sealed Tombstone that already carries it in `Reason` keeps it.
-Verification compares a preserved unit with the `Source` object its Retention
-Catalog row names: the member set, each member's Git file mode, and the bytes
-after the frontmatter, with only the registered lifecycle fields free to differ
-in value and only `superseded_by` free to be added. A row written before that
-comparison existed stays a verification limit rather than a claim, and no frozen
-body is rewritten to manufacture a later status.
+Verification compares each unit against the single source commit/path in its
+capture envelope. Captures already present at cutover
+`be949f338056ee05ca139ea72403576aa18f21d8` retain their legacy comparison:
+member set, Git modes, body bytes, and only the registered lifecycle-field
+allowances. Older rows without provable identity remain explicit verification
+limits rather than retroactive identity claims. The explicitly registered ADR-0036 bootstrap capture alone also
+uses that narrow legacy metadata transition. Every other new capture preserves
+the complete raw Git blob bytes, modes, and member set exactly, including
+frontmatter. Prepare closure, promotion, and links at the original path before
+freezing; without an authorized commit boundary, report the prepared result
+rather than inventing a source commit. Never reformat legacy bodies or envelopes.
+
+Validate the selected worktree, index, or commit explicitly. Retained-unit
+history detects deletion of both a unit and its catalog row. A recorded SHA is
+not reachability: missing history or objects is an unverifiable result, not
+success. Raw object identity and checkout representation are separate checks;
+attributes, encoding, and line-ending conversions can change the latter. Report
+an unsupported checkout representation separately, execute no external filters,
+and never renormalize frozen records. Resource bounds protect the checker and
+never authorize deletion. Unsupported gitlinks or unavailable external large
+objects remain explicit recovery limits.
 
 Age may trigger a disposition review. It never triggers a deletion.
 

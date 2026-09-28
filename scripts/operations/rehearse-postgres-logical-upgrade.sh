@@ -2,16 +2,16 @@
 
 set -o pipefail
 
-SOURCE_IMAGE='postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+SOURCE_IMAGE='postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
 TARGET_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 DUMP_CLIENT_IMAGE='postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-SOURCE_IMAGE_REPO_DIGEST='postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+SOURCE_IMAGE_REPO_DIGEST='postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
 TARGET_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 DUMP_CLIENT_IMAGE_REPO_DIGEST='postgres@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94'
+SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24'
 TARGET_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
 DUMP_CLIENT_IMAGE_TARGET_DESCRIPTOR_DIGEST='sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15'
-SOURCE_IMAGE_CONFIG_ID='sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8'
+SOURCE_IMAGE_CONFIG_ID='sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537'
 TARGET_IMAGE_CONFIG_ID='sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183'
 DUMP_CLIENT_IMAGE_CONFIG_ID='sha256:bd1890816ae0b8ad4644f05728570d4be774e1f1490d7232f5084b52ea335183'
 PROJECT_PREFIX='hyhome-ior-20260719'
@@ -811,7 +811,7 @@ assert_safe_images_paths_and_project() {
   local required
   local command_name
 
-  [ "$SOURCE_IMAGE" = 'postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+  [ "$SOURCE_IMAGE" = 'postgres:17.11-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24' ] || {
     print_failure preflight source-image-drift
     return 10
   }
@@ -823,7 +823,7 @@ assert_safe_images_paths_and_project() {
     print_failure preflight dump-client-image-drift
     return 10
   }
-  [ "$SOURCE_IMAGE_REPO_DIGEST" = 'postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+  [ "$SOURCE_IMAGE_REPO_DIGEST" = 'postgres@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24' ] || {
     print_failure preflight source-image-repo-digest-drift
     return 10
   }
@@ -835,7 +835,7 @@ assert_safe_images_paths_and_project() {
     print_failure preflight dump-client-image-repo-digest-drift
     return 10
   }
-  [ "$SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST" = 'sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94' ] || {
+  [ "$SOURCE_IMAGE_TARGET_DESCRIPTOR_DIGEST" = 'sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24' ] || {
     print_failure preflight source-image-target-descriptor-drift
     return 10
   }
@@ -847,7 +847,7 @@ assert_safe_images_paths_and_project() {
     print_failure preflight dump-client-image-target-descriptor-drift
     return 10
   }
-  [ "$SOURCE_IMAGE_CONFIG_ID" = 'sha256:d741b376874687de90374fd34f55c6b2760e8f7bd7e4ae5cd47f50757fc08cf8' ] || {
+  [ "$SOURCE_IMAGE_CONFIG_ID" = 'sha256:79bd7c99e923138f136f8009d6bffa66e21e9d4fda5c0c561b00fc9c90cfe537' ] || {
     print_failure preflight source-image-config-id-drift
     return 10
   }

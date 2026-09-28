@@ -12,7 +12,7 @@ import pathlib
 import re
 import stat
 import subprocess
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from typing import Any
 
 import yaml
@@ -1017,9 +1017,6 @@ ACTIVE_STAGE_PREFIXES = (
     "docs/05.operations/",
     "docs/90.references/",
 )
-TERMINAL_DOCUMENT_STATUSES = frozenset(
-    {"completed", "cancelled", "superseded", "retired"}
-)
 _STAGE_03_PREFIX = "docs/03.specs/"
 _STAGE_03_MEMBER_PROFILES = ("spec", "plan", "task")
 
@@ -1038,16 +1035,17 @@ def _stage_03_package(relative: str) -> str | None:
     return None
 
 
-def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
-    """Return every terminal-status document still sitting in an active stage.
-
-    An active stage holds current work. A document whose status is terminal has
-    left that state, so it belongs under the `docs/98.archive/` subtree for its
-    disposition. Without this the placement rule is prose and a finished
-    document can sit beside live work indefinitely.
-    """
-
+def validate_active_stage_occupancy(
+    root: pathlib.Path, registry: DocumentRegistry | None = None
+) -> tuple[str, ...]:
+    """Judge Stage 03 packages, including completed disposition waiting."""
     from scripts.lib.document_governance.frontmatter import read_frontmatter_values
+    from scripts.lib.document_governance.spec_packages import (
+        SpecPackageError,
+        acceptance_criterion_numbers,
+        disposition_entry_statuses,
+        task_cancellation_findings,
+    )
 
     root = pathlib.Path(root)
     tracked = subprocess.run(
@@ -1058,17 +1056,17 @@ def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
         check=False,
     ).stdout.split()
     findings: list[str] = []
-    members: dict[str, list[tuple[str, str]]] = {}
-    spec_status: dict[str, str] = {}
+    members: dict[str, dict[str, Mapping[str, Any]]] = {}
     for relative in tracked:
         if not relative.endswith(".md") or not relative.startswith(
             ACTIVE_STAGE_PREFIXES
         ):
             continue
         try:
-            status = read_frontmatter_values(root / relative).get("status")
+            metadata = read_frontmatter_values(root / relative)
         except Exception:
             continue
+        status = metadata.get("status")
         if not isinstance(status, str):
             continue
         package = (
@@ -1077,35 +1075,88 @@ def validate_active_stage_occupancy(root: pathlib.Path) -> tuple[str, ...]:
             else None
         )
         if package is None:
-            if status in TERMINAL_DOCUMENT_STATUSES:
+            standalone_registry = (
+                registry if registry is not None else _catalog_registry()
+            )
+            profile = classify_path(relative, standalone_registry)
+            if profile and status in disposition_entry_statuses(
+                profile, standalone_registry
+            ):
                 findings.append(
                     f"{relative}: {status} document remains in an active stage"
                 )
-            continue
-        members.setdefault(package, []).append((relative, status))
-        if relative == f"{package}/spec.md":
-            spec_status[package] = status
+        else:
+            members.setdefault(package, {})[relative] = metadata
+    if not members:
+        return tuple(findings)
+    if registry is None:
+        registry_path = root / "docs/99.templates/registry.json"
+        registry = (
+            load_registry(registry_path) if registry_path.is_file() else load_registry()
+        )
+    terminal = registry.lifecycle_terminal_statuses
     for package, package_members in sorted(members.items()):
-        # A package is the unit of occupancy. Its Spec's status says whether the
-        # package is still current, so a terminal Spec leaves nothing behind
-        # while an unfinished one may hold a Task that is already finished.
-        if spec_status.get(package) in TERMINAL_DOCUMENT_STATUSES:
+        spec = package_members.get(f"{package}/spec.md", {})
+        spec_status = spec.get("status")
+        if spec_status in terminal["spec"] and spec_status != "completed":
             findings.extend(
-                f"{relative}: package with a terminal Spec keeps no member in an"
-                " active stage"
-                for relative, _ in sorted(package_members)
+                f"{relative}: package with a terminal Spec keeps no member in an active stage"
+                for relative in sorted(package_members)
             )
             continue
-        for relative, status in sorted(package_members):
-            if status not in TERMINAL_DOCUMENT_STATUSES:
+        task_statuses = {
+            metadata.get("artifact_id", ""): metadata["status"]
+            for relative, metadata in package_members.items()
+            if relative.startswith(f"{package}/tasks/")
+        }
+        for relative, metadata in sorted(package_members.items()):
+            status = metadata["status"]
+            kind = (
+                "spec"
+                if relative == f"{package}/spec.md"
+                else ("plan" if relative == f"{package}/plan.md" else "task")
+            )
+            if kind == "spec":
                 continue
-            if status == "completed" and not relative.endswith(
-                ("/spec.md", "/plan.md")
-            ):
-                # A finished Task says so with its own status. The package still
-                # moves whole, with its Spec's terminal transition.
+            if kind == "plan":
+                invalid = (
+                    status != "completed"
+                    if spec_status == "completed"
+                    else status in terminal["plan"]
+                )
+            elif spec_status == "completed":
+                invalid = status not in terminal["task"]
+            else:
+                invalid = status in terminal["task"] and status not in {
+                    "completed",
+                    "cancelled",
+                }
+            if invalid:
+                findings.append(
+                    f"{relative}: {status} member violates package occupancy"
+                )
                 continue
-            findings.append(f"{relative}: {status} document remains in an active stage")
+            if kind == "task" and status == "cancelled":
+                try:
+                    criteria = acceptance_criterion_numbers(
+                        (root / package / "spec.md").read_text(encoding="utf-8"),
+                        str(
+                            registry.common["spec_completion_evidence"]["spec_section"]
+                        ),
+                    )
+                    findings.extend(
+                        f"{relative}: {finding}"
+                        for finding in task_cancellation_findings(
+                            metadata.get("artifact_id", ""),
+                            metadata.get("cancellation"),
+                            frozenset(criteria),
+                            task_statuses,
+                        )
+                    )
+                except (OSError, SpecPackageError) as error:
+                    findings.append(
+                        f"{relative}: cancellation criteria unavailable: {error}"
+                    )
     return tuple(findings)
 
 
@@ -1126,8 +1177,15 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
     findings: list[str] = []
 
     expected: dict[str, str] = {}
-    for tombstone in sorted((archive_root / "tombstones").rglob("*.md")):
-        text = tombstone.read_text(encoding="utf-8")
+    try:
+        tombstones = _catalog_members(archive_root / "tombstones", True) or {}
+    except (OSError, ValueError):
+        return ("tombstones: archive subtree is unsafe",)
+    for member, (_, raw) in sorted(tombstones.items()):
+        if not member.endswith(".md"):
+            continue
+        tombstone = archive_root / "tombstones" / member
+        text = raw.decode("utf-8")
         if adopted and _tombstone_headings(text) == _ROUTE_TOMBSTONE_SECTIONS:
             # A route-shape Tombstone names a route and pairs with no body.
             continue
@@ -1145,16 +1203,15 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
         disposition: {} for disposition in PRESERVED_DISPOSITIONS
     }
     for disposition in preserved:
-        subtree = archive_root / disposition
-        if not subtree.is_dir():
+        try:
+            members = preserved_member_paths(archive_root, disposition)
+        except (OSError, ValueError):
+            findings.append(f"{disposition}: archive subtree is unsafe")
             continue
-        for record in sorted(subtree.rglob("*.md")):
-            relative = f"{disposition}/{record.relative_to(subtree).as_posix()}"
-            origin = preserved_origin_path(
-                record.as_posix()[record.as_posix().index("docs/98.archive/") :]
-                if "docs/98.archive/" in record.as_posix()
-                else f"docs/98.archive/{relative}"
-            )
+        for relative in members:
+            if not relative.endswith(".md"):
+                continue
+            origin = preserved_origin_path(f"docs/98.archive/{relative}")
             if origin is not None:
                 preserved[disposition][origin] = relative
 
@@ -1193,9 +1250,9 @@ def validate_preservation_boundary(archive_root: pathlib.Path) -> tuple[str, ...
 
 
 _ARCHIVE_PREFIX = "docs/98.archive/"
-_ARCHIVE_INDEX = "docs/98.archive/README.md"
-_CATALOG_SECTION = re.compile(r"(?ms)^## Retention Catalog[ \t]*\n(.*?)(?=^## |\Z)")
-_CATALOG_HEADER = ("Record", "Class", "Names", "Source")
+# The catalog is its own record so the Stage 98 README can stay a router
+# (SPEC-0179 Archive 3.0.0); its header and rows are unchanged by the move.
+_CATALOG_RECORD = "docs/98.archive/retention-catalog.md"
 _CATALOG_SEPARATOR = re.compile(r"(?:\|:?-{3,}:?){4}\|")
 # A catalog unit is a directory the Registry registers as one whole package: a
 # Spec package or an Incident bundle. Every other preserved file is its own unit.
@@ -1274,24 +1331,43 @@ def retention_unit(record: str) -> str:
     return record
 
 
-def _names_owner_path(root: pathlib.Path, names: str) -> bool:
+def _names_owner_path(
+    root: pathlib.Path,
+    names: str,
+    owner_exists: Callable[[pathlib.PurePosixPath], bool] | None = None,
+    registry: DocumentRegistry | None = None,
+) -> bool:
     """Whether `names` cites a current document a Registry profile classifies."""
 
     for span in _CODE_SPAN.findall(names):
         path = _safe_path(span)
         if path is None or path.as_posix().startswith(_ARCHIVE_PREFIX):
             continue
-        target = root / path
         if (
-            target.is_file()
-            and not target.is_symlink()
-            and classify_path(path, _catalog_registry()) is not None
+            classify_path(
+                path, registry if registry is not None else _catalog_registry()
+            )
+            is None
         ):
-            return True
+            continue
+        try:
+            if owner_exists is None:
+                _read_regular(root / path)
+            elif not owner_exists(path):
+                continue
+        except (OSError, ValueError):
+            continue
+        return True
     return False
 
 
-def _names_are_valid(root: pathlib.Path, disposition: str, names: str) -> bool:
+def _names_are_valid(
+    root: pathlib.Path,
+    disposition: str,
+    names: str,
+    owner_exists: Callable[[pathlib.PurePosixPath], bool] | None = None,
+    registry: DocumentRegistry | None = None,
+) -> bool:
     """Whether `Names` holds what its class must name, with no invented identifier."""
 
     _, identifiers, incident, incident_records = _catalog_contract()
@@ -1305,7 +1381,7 @@ def _names_are_valid(root: pathlib.Path, disposition: str, names: str) -> bool:
         return (
             names.strip() == _NO_DURABLE_CONTRACT
             or identifiers.search(names) is not None
-            or _names_owner_path(root, names)
+            or _names_owner_path(root, names, owner_exists, registry)
         )
     match = incident.search(names)
     if match is None:
@@ -1313,7 +1389,7 @@ def _names_are_valid(root: pathlib.Path, disposition: str, names: str) -> bool:
     owner = incident_records.sub(" ", names)
     return (
         identifiers.search(owner) is not None
-        or _names_owner_path(root, owner)
+        or _names_owner_path(root, owner, owner_exists, registry)
         or _NO_CORRECTIVE_ACTION.search(owner) is not None
     )
 
@@ -1325,9 +1401,14 @@ def _catalog_cells(line: str) -> tuple[str, ...]:
 def _catalog_rows(
     text: str,
 ) -> tuple[tuple[RetentionCatalogRow, ...], list[ArchiveFinding]]:
-    section = _CATALOG_SECTION.search(text)
+    contract = _catalog_registry().common["archive_retention"]
+    header = tuple(contract["capture_columns"])
+    section = re.search(
+        rf"(?ms)^## {re.escape(contract['capture_section'])}[ \t]*\n(.*?)(?=^## |\Z)",
+        text,
+    )
     if section is None:
-        return (), [ArchiveFinding("catalog-missing", _ARCHIVE_INDEX)]
+        return (), [ArchiveFinding("catalog-missing", _CATALOG_RECORD)]
     lines = [
         line.strip()
         for line in section.group(1).splitlines()
@@ -1335,16 +1416,16 @@ def _catalog_rows(
     ]
     if (
         len(lines) < 2
-        or _catalog_cells(lines[0]) != _CATALOG_HEADER
+        or _catalog_cells(lines[0]) != header
         or _CATALOG_SEPARATOR.fullmatch(re.sub(r"\s", "", lines[1])) is None
     ):
-        return (), [ArchiveFinding("catalog-header-invalid", _ARCHIVE_INDEX)]
+        return (), [ArchiveFinding("catalog-header-invalid", _CATALOG_RECORD)]
     rows: list[RetentionCatalogRow] = []
     findings: list[ArchiveFinding] = []
     for line in lines[2:]:
         cells = _catalog_cells(line)
-        if len(cells) != len(_CATALOG_HEADER):
-            findings.append(ArchiveFinding("catalog-row-malformed", _ARCHIVE_INDEX))
+        if len(cells) != len(header):
+            findings.append(ArchiveFinding("catalog-row-malformed", _CATALOG_RECORD))
             continue
         rows.append(RetentionCatalogRow(*cells))
     return tuple(rows), findings
@@ -1357,7 +1438,7 @@ def _code_span(value: str) -> str | None:
 
 def _catalog_index_text(root: pathlib.Path) -> str | None:
     try:
-        return _decode_document(root / _ARCHIVE_INDEX)
+        return _decode_document(root / _CATALOG_RECORD)
     except ValueError:
         return None
 
@@ -1388,19 +1469,136 @@ def _catalog_source_findings(
     return findings
 
 
+def _catalog_members(
+    path: pathlib.Path, is_package: bool
+) -> dict[str, tuple[str, bytes]] | None:
+    """Snapshot a retention unit without following links or reading special files."""
+
+    parent, descriptor, name, snapshot = _open_directory_path(
+        path.parent, "retention unit parent"
+    )
+    members: dict[str, tuple[str, bytes]] = {}
+    entry_count = byte_count = 0
+
+    def visit(
+        directory: int, prefix: str, names: tuple[str, ...] | None = None
+    ) -> None:
+        nonlocal entry_count, byte_count
+        entries = (
+            tuple(
+                (item, os.stat(item, dir_fd=directory, follow_symlinks=False))
+                for item in names
+            )
+            if names is not None
+            else _bounded_entries(
+                directory, label="retention unit", limit=MAX_ARCHIVE_ENTRIES
+            )
+        )
+        for filename, metadata in entries:
+            entry_count += 1
+            if entry_count > MAX_ARCHIVE_ENTRIES:
+                raise ValueError("retention unit entry limit exceeded")
+            relative = f"{prefix}{filename}" if is_package else ""
+            if stat.S_ISDIR(metadata.st_mode) and is_package:
+                child, before = _open_directory_at(
+                    directory, filename, "retention member"
+                )
+                try:
+                    visit(child, f"{relative}/")
+                    _verify_directory(
+                        directory, filename, child, before, "retention member"
+                    )
+                finally:
+                    os.close(child)
+            else:
+                raw = _read_regular_at(
+                    directory, filename, "retention member", expected=metadata
+                )
+                byte_count += len(raw)
+                if byte_count > MAX_ARCHIVE_BYTES:
+                    raise ValueError("retention unit byte limit exceeded")
+                mode = "100755" if metadata.st_mode & stat.S_IXUSR else "100644"
+                members[relative] = (mode, raw)
+
+    try:
+        try:
+            os.stat(path.name, dir_fd=descriptor, follow_symlinks=False)
+        except FileNotFoundError:
+            return None
+        if is_package:
+            child, before = _open_directory_at(descriptor, path.name, "retention unit")
+            try:
+                visit(child, "")
+                _verify_directory(
+                    descriptor, path.name, child, before, "retention unit"
+                )
+            finally:
+                os.close(child)
+        else:
+            visit(descriptor, "", (path.name,))
+        _verify_directory(parent, name, descriptor, snapshot, "retention unit parent")
+        return members
+    finally:
+        os.close(descriptor)
+        os.close(parent)
+
+
+def preserved_member_paths(
+    archive_root: pathlib.Path, disposition: str
+) -> tuple[str, ...]:
+    """Enumerate one preserved subtree through the bounded no-follow reader."""
+
+    if disposition not in PRESERVED_DISPOSITIONS:
+        raise ValueError("unregistered preservation disposition")
+    try:
+        members = _catalog_members(archive_root / disposition, True) or {}
+    except (OSError, ValueError) as error:
+        raise ValueError("preserved subtree is unsafe") from error
+    return tuple(f"{disposition}/{member}" for member in sorted(members))
+
+
 def validate_retention_catalog(root: pathlib.Path) -> tuple[ArchiveFinding, ...]:
-    """Validate every Retention Catalog row in the Stage 98 index."""
+    """Validate every Retention Catalog row in the Stage 98 catalog record."""
 
     root = pathlib.Path(root)
     text = _catalog_index_text(root)
     if text is None:
-        return (ArchiveFinding("catalog-missing", _ARCHIVE_INDEX),)
+        return (ArchiveFinding("catalog-missing", _CATALOG_RECORD),)
     rows, findings = _catalog_rows(text)
+    from scripts.lib.document_governance.archive_assessments import (
+        assessment_lookup,
+        preserved_payload_members,
+        retention_contract_enabled,
+        validate_archive_assessments,
+    )
+
+    try:
+        standard = retention_contract_enabled(root)
+    except (OSError, ValueError):
+        return (ArchiveFinding("assessment-contract-unavailable", _CATALOG_RECORD),)
+    history_only: set[str] = set()
+    if standard:
+        try:
+            assessments = assessment_lookup(root, _catalog_registry())
+            requested = {
+                unit
+                for unit, row in assessments.items()
+                if row.availability == "git-history-only"
+            }
+            if requested:
+                assessment_findings = validate_archive_assessments(
+                    root, registry=_catalog_registry()
+                )
+                findings.extend(assessment_findings)
+                if not assessment_findings:
+                    history_only = requested
+        except (OSError, ValueError):
+            findings.append(ArchiveFinding("assessment-table-invalid", _CATALOG_RECORD))
     seen: set[str] = set()
     for row in rows:
         record = _code_span(row.record)
         if record is None or _safe_path(record.rstrip("/")) is None:
-            findings.append(ArchiveFinding("catalog-record-invalid", _ARCHIVE_INDEX))
+            findings.append(ArchiveFinding("catalog-record-invalid", _CATALOG_RECORD))
             continue
         path = f"{_ARCHIVE_PREFIX}{record}"
         if record in seen:
@@ -1420,8 +1618,16 @@ def validate_retention_catalog(root: pathlib.Path) -> tuple[ArchiveFinding, ...]
         ):
             findings.append(ArchiveFinding("catalog-unit-invalid", path))
         target = root / path
-        if not (target.is_dir() if is_package else target.is_file()):
-            findings.append(ArchiveFinding("catalog-record-missing", path))
+        try:
+            missing = (
+                not preserved_payload_members(root, record)
+                if standard
+                else _catalog_members(target, is_package) is None
+            )
+            if missing and record not in history_only:
+                findings.append(ArchiveFinding("catalog-record-missing", path))
+        except (OSError, ValueError):
+            findings.append(ArchiveFinding("catalog-record-unsafe", path))
         if not _names_are_valid(root, disposition, row.names):
             findings.append(ArchiveFinding("catalog-names-invalid", path))
         findings.extend(_catalog_source_findings(root, path, row.source, is_package))
@@ -1447,9 +1653,8 @@ def retention_catalog_retirements(
     records = retention_catalog_records(root)
     archive = root / _ARCHIVE_PREFIX
     origins: set[pathlib.PurePosixPath] = set()
-    for path in sorted((archive / "retired").rglob("*")):
-        relative = path.relative_to(archive).as_posix()
-        if not path.is_file() or retention_unit(relative) not in records:
+    for relative in preserved_member_paths(archive, "retired"):
+        if retention_unit(relative) not in records:
             continue
         origin = preserved_origin_path(f"{_ARCHIVE_PREFIX}{relative}")
         if origin is not None:
@@ -1467,19 +1672,24 @@ def validate_catalog_coverage(
         root, ["ls-tree", "-r", "-z", "--name-only", base, "--", "docs/98.archive"]
     )
     if listed.returncode:
-        return (ArchiveFinding("catalog-base-unreadable", _ARCHIVE_INDEX),)
+        return (ArchiveFinding("catalog-base-unreadable", _CATALOG_RECORD),)
     at_base = set(listed.stdout.decode("utf-8", "replace").split("\0"))
     recorded = retention_catalog_records(root)
     findings: list[ArchiveFinding] = []
     for disposition in PRESERVED_DISPOSITIONS:
-        subtree = root / _ARCHIVE_PREFIX / disposition
-        if not subtree.is_dir():
+        try:
+            members = preserved_member_paths(root / _ARCHIVE_PREFIX, disposition)
+        except (OSError, ValueError):
+            findings.append(
+                ArchiveFinding(
+                    "catalog-record-unsafe", f"{_ARCHIVE_PREFIX}{disposition}"
+                )
+            )
             continue
-        for record in sorted(subtree.rglob("*")):
-            relative = record.relative_to(root).as_posix()
-            if not record.is_file() or relative in at_base:
+        for relative in members:
+            if f"{_ARCHIVE_PREFIX}{relative}" in at_base:
                 continue
-            unit = retention_unit(relative.removeprefix(_ARCHIVE_PREFIX))
+            unit = retention_unit(relative)
             if unit not in recorded:
                 findings.append(
                     ArchiveFinding("catalog-row-missing", f"{_ARCHIVE_PREFIX}{unit}")
@@ -1567,7 +1777,12 @@ def validate_catalog_identity(
     if text is None:
         return ()
     rows, _ = _catalog_rows(text)
-    at_base = _run_git(root, ["show", f"{base}:{_ARCHIVE_INDEX}"])
+    at_base = _run_git(root, ["show", f"{base}:{_CATALOG_RECORD}"])
+    if at_base.returncode:
+        # ponytail: a base older than the catalog record kept its rows in the
+        # Stage 98 README. Remove this read once no supported base predates
+        # SPEC-0179 Archive 3.0.0.
+        at_base = _run_git(root, ["show", f"{base}:docs/98.archive/README.md"])
     base_records: frozenset[str] = frozenset()
     if not at_base.returncode:
         base_rows, _ = _catalog_rows(at_base.stdout.decode("utf-8", "replace"))
@@ -1582,8 +1797,19 @@ def validate_catalog_identity(
         if record is None or record in base_records:
             continue
         path = f"{_ARCHIVE_PREFIX}{record}"
+        if (
+            _safe_path(record.rstrip("/")) is None
+            or record.partition("/")[0] not in PRESERVED_DISPOSITIONS
+        ):
+            findings.append(ArchiveFinding("catalog-record-invalid", _CATALOG_RECORD))
+            continue
         commit, separator, origin = (_code_span(row.source) or "").partition(":")
-        if not separator:
+        if (
+            not separator
+            or not recovery_commit_is_valid(commit)
+            or _safe_path(origin) is None
+        ):
+            findings.append(ArchiveFinding("catalog-source-invalid", path))
             continue
         listed = _run_git(root, ["ls-tree", "-r", "-z", commit, "--", origin])
         if listed.returncode:
@@ -1596,21 +1822,16 @@ def validate_catalog_identity(
             mode, _, rest = meta.partition(" ")
             source[member[len(origin) :].lstrip("/")] = (mode, rest.split(" ")[1])
         unit = root / path.rstrip("/")
-        preserved: dict[str, pathlib.Path] = (
-            {
-                member.relative_to(unit).as_posix(): member
-                for member in sorted(unit.rglob("*"))
-                if member.is_file()
-            }
-            if unit.is_dir()
-            else ({"": unit} if unit.is_file() else {})
-        )
+        try:
+            preserved = _catalog_members(unit, record.endswith("/")) or {}
+        except (OSError, ValueError):
+            findings.append(ArchiveFinding("catalog-record-unsafe", path))
+            continue
         if set(source) != set(preserved):
             findings.append(ArchiveFinding("catalog-source-members-differ", path))
             continue
         for member, (mode, blob) in sorted(source.items()):
-            target = preserved[member]
-            expected = "100755" if os.access(target, os.X_OK) else "100644"
+            expected, preserved_bytes = preserved[member]
             if mode != expected:
                 findings.append(ArchiveFinding("catalog-source-mode-differs", path))
             blob_bytes = _run_git(root, ["cat-file", "blob", blob])
@@ -1619,7 +1840,7 @@ def validate_catalog_identity(
                 continue
             findings.extend(
                 ArchiveFinding(code, path)
-                for code in _identity_findings(blob_bytes.stdout, target.read_bytes())
+                for code in _identity_findings(blob_bytes.stdout, preserved_bytes)
             )
     return tuple(sorted(set(findings)))
 
@@ -1629,12 +1850,45 @@ def validate_retention(
 ) -> tuple[ArchiveFinding, ...]:
     """Run the Retention Catalog rules, which apply only once the model is adopted."""
 
+    from scripts.lib.document_governance.archive_assessments import (
+        retention_contract_enabled,
+        validate_archive_assessments,
+    )
+
+    try:
+        standard = retention_contract_enabled(root)
+    except (OSError, ValueError):
+        return (ArchiveFinding("assessment-contract-unavailable", _CATALOG_RECORD),)
     if archive_disposition_model(root) != ARCHIVE_MODEL_ADOPTED:
-        return ()
+        return (
+            (ArchiveFinding("assessment-contract-unavailable", _CATALOG_RECORD),)
+            if standard
+            else ()
+        )
     findings = list(validate_retention_catalog(root))
     if base is not None:
         findings.extend(validate_catalog_coverage(root, base))
-        findings.extend(validate_catalog_identity(root, base))
+        identities = validate_catalog_identity(root, base)
+        if standard:
+            transition = (
+                _catalog_registry()
+                .common["archive_retention"]
+                .get("legacy_transition_units", ())
+            )
+            identities = tuple(
+                item
+                for item in identities
+                if item.path.removeprefix(_ARCHIVE_PREFIX) in transition
+            )
+        findings.extend(identities)
+    if standard:
+        from scripts.lib.document_governance.archive_snapshots import (
+            validate_archive_snapshots,
+        )
+
+        registry = _catalog_registry()
+        findings.extend(validate_archive_assessments(root, base, registry))
+        findings.extend(validate_archive_snapshots(root, base or "HEAD", registry))
     return tuple(sorted(set(findings)))
 
 
@@ -1651,7 +1905,11 @@ def load_archive(archive_root: pathlib.Path) -> ArchiveInventory:
         # it, so each is optional; nothing outside this set may appear.
         required_entries = {"README.md", "migrations", "tombstones"}
         model = archive_disposition_model(pathlib.Path(archive_root).parent.parent)
-        allowed_entries = required_entries | set(admitted_preserved_dispositions(model))
+        allowed_entries = (
+            required_entries
+            | {"retention-catalog.md"}
+            | set(admitted_preserved_dispositions(model))
+        )
         if not required_entries <= set(entries) or not set(entries) <= allowed_entries:
             raise ValueError(
                 "Stage 98 root must contain README.md, migrations/, tombstones/, "

@@ -50,12 +50,19 @@ def run(root: pathlib.Path, base: str | None = None) -> int:
     for finding in retention:
         print(f"{finding.code}: {finding.path}: validation rule is not satisfied")
     violations = len(findings) + len(boundary) + len(occupancy) + len(retention)
-    preserved = sum(
-        1
-        for disposition in PRESERVED_DISPOSITIONS
-        for _ in (root / "docs/98.archive" / disposition).rglob("*.md")
-        if (root / "docs/98.archive" / disposition).is_dir()
-    )
+    preserved = 0
+    for disposition in PRESERVED_DISPOSITIONS:
+        try:
+            members = archive_authority.preserved_member_paths(
+                root / "docs/98.archive", disposition
+            )
+        except (OSError, ValueError):
+            print(
+                f"archive-subtree-unsafe: {disposition}: validation rule is not satisfied"
+            )
+            violations += 1
+            continue
+        preserved += sum(member.endswith(".md") for member in members)
     print(
         "archive recovery: "
         f"migrations={len(inventory.migrations)} "

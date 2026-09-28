@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import dataclasses
+import html
+import json
 import pathlib
 import posixpath
 import re
@@ -22,6 +24,7 @@ from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
     admitted_preserved_dispositions,
     archive_disposition_model,
+    load_registry,
 )
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
@@ -181,6 +184,12 @@ def _without_html_comments(line: str, active: bool) -> tuple[str, bool]:
     return "".join(rendered), active
 
 
+_REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[(?!\^)([^\]]+)\]:\s*<?([^\s>]+)")
+_REFERENCE_USE = re.compile(r"(?<!!)(?<!\[)\[([^\[\]]+)\]\[([^\[\]]*)\]")
+_WIKI_LINK = re.compile(r"(?<!!)\[\[([^\]\n]+)\]\]")
+_HTML_HREF = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+
+
 def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
     fence: str | None = None
     html_comment = False
@@ -331,8 +340,30 @@ def parse_local_markdown_links(
     """Parse normalized local links from supplied Markdown without filesystem I/O."""
 
     links: list[DocumentLink] = []
-    for line_no, line in _unfenced_lines(text):
-        for label, raw in _markdown_destinations(line):
+    lines = tuple(
+        (number, _without_inline_code(line)) for number, line in _unfenced_lines(text)
+    )
+    references: dict[str, str] = {}
+    for _, line in lines:
+        definition = _REFERENCE_DEFINITION.match(line)
+        if definition is not None:
+            key = " ".join(definition[1].casefold().split())
+            references.setdefault(key, definition[2])
+    for line_no, line in lines:
+        if _REFERENCE_DEFINITION.match(line):
+            continue
+        destinations = list(_markdown_destinations(line))
+        for use in _REFERENCE_USE.finditer(line):
+            key = " ".join((use[2] or use[1]).casefold().split())
+            if key in references:
+                destinations.append((use[1], references[key]))
+        destinations.extend(
+            ("", html.unescape(match[1])) for match in _HTML_HREF.finditer(line)
+        )
+        for match in _WIKI_LINK.finditer(line):
+            target, separator, label = match[1].partition("|")
+            destinations.append((label if separator else target, target))
+        for label, raw in destinations:
             resolved = _normalized_target(source, raw)
             if resolved is None:
                 continue
@@ -492,8 +523,14 @@ def build_document_graph(
     )
 
 
+def _diagnostic_text(message: str) -> str:
+    return json.dumps(message, ensure_ascii=True)[1:-1][:512]
+
+
 def _finding(link: DocumentLink, code: str, message: str) -> LinkFinding:
-    return LinkFinding(f"{link.source.as_posix()}:{link.line}", code, message)
+    return LinkFinding(
+        f"{link.source.as_posix()}:{link.line}", code, _diagnostic_text(message)
+    )
 
 
 def _document_profile(
@@ -594,23 +631,258 @@ def _target_headings(
         return None, "link-target-unreadable"
 
 
+def _historical_headings(root, provenance):
+    """Select the same directory index as current links, at the original tree."""
+    from scripts.lib.document_governance.git_provenance import _run_git
+
+    object_id = provenance.object_id
+    if provenance.object_type == "tree":
+        listed = _run_git(root, ["ls-tree", "-z", object_id])
+        if listed.returncode:
+            return None
+        indexes = {}
+        for entry in listed.stdout.split(b"\0"):
+            if not entry:
+                continue
+            header, name = entry.split(b"\t", 1)
+            mode, kind, oid = header.decode("ascii").split()
+            name = name.decode("utf-8")
+            if mode in {"100644", "100755"} and kind == "blob" and name.endswith(".md"):
+                indexes[name] = oid
+        candidates = ("README.md", "spec.md", *sorted(indexes))
+        object_id = next(
+            (indexes[name] for name in candidates if name in indexes), None
+        )
+        if object_id is None:
+            return ()
+    if not isinstance(object_id, str) or not re.fullmatch(
+        r"[0-9a-f]{40}|[0-9a-f]{64}", object_id
+    ):
+        return None
+    blob = _run_git(root, ["cat-file", "blob", object_id])
+    if blob.returncode:
+        return None
+    try:
+        return _headings(blob.stdout.decode("utf-8"))
+    except UnicodeError:
+        return None
+
+
+def _historical_link_findings(graph, links, sources, registry, legacy_units=()):
+    """Resolve frozen links at their capture, never against today's checkout."""
+    from scripts.lib.document_governance.archive import retention_unit
+    from scripts.lib.document_governance.archive_snapshots import is_legacy_capture
+    from scripts.lib.document_governance.git_provenance import (
+        verify_recovery_blobs_batch,
+    )
+
+    findings = []
+    requests = []
+    generations = {}
+    unrecorded = 0
+    for link in links:
+        relative = link.source.as_posix().removeprefix("docs/98.archive/")
+        unit = retention_unit(relative)
+        if unit not in sources:
+            unrecorded += 1
+            continue
+        if unit not in generations:
+            generations[unit] = unit in legacy_units or is_legacy_capture(
+                graph.repo_root, unit, registry
+            )
+        severity = "warning" if generations[unit] else "error"
+        commit, origin = sources[unit]
+        member = relative[len(unit) :] if unit.endswith("/") else ""
+        original = (
+            pathlib.PurePosixPath(origin) / member
+            if member
+            else pathlib.PurePosixPath(origin)
+        )
+        resolved = _normalized_target(original, link.raw_target)
+        if resolved is None:
+            continue
+        target, fragment, absolute, outside = resolved
+        if absolute or outside or link.has_unsafe_target:
+            findings.append(
+                LinkFinding(
+                    f"{link.source}:{link.line}",
+                    "historical-link-unsafe-target",
+                    _diagnostic_text(link.raw_target),
+                    severity,
+                )
+            )
+            continue
+        requests.append((link, target, fragment, commit, severity))
+    identities = tuple(
+        dict.fromkeys((target, commit) for _, target, _, commit, _ in requests)
+    )
+    proven = {}
+    for offset in range(0, len(identities), 512):
+        batch = identities[offset : offset + 512]
+        proven.update(
+            zip(
+                batch,
+                verify_recovery_blobs_batch(batch, repo_root=graph.repo_root),
+                strict=True,
+            )
+        )
+    heading_cache = {}
+    for link, target, fragment, commit, severity in requests:
+        result = proven[target, commit]
+        code = None
+        if not result.exists:
+            code = "historical-link-missing-target"
+        elif not result.is_regular_blob and result.object_type != "tree":
+            code = "historical-link-unsafe-target"
+        elif fragment:
+            if result.object_id not in heading_cache:
+                heading_cache[result.object_id] = _historical_headings(
+                    graph.repo_root, result
+                )
+            headings = heading_cache[result.object_id]
+            if headings is None:
+                code = "historical-link-unreadable-target"
+            elif fragment not in headings:
+                code = "historical-link-missing-anchor"
+        if code:
+            findings.append(
+                LinkFinding(
+                    f"{link.source}:{link.line}",
+                    code,
+                    _diagnostic_text(f"{commit}:{target}: {link.raw_target}"),
+                    severity,
+                )
+            )
+    if unrecorded:
+        findings.append(
+            LinkFinding(
+                "docs/98.archive/retention-catalog.md",
+                "historical-links-unrecorded",
+                f"{unrecorded} legacy links have no capture source; historical resolution unverified",
+                "warning",
+            )
+        )
+    return findings
+
+
+def _sealed_route_sources(graph, registry):
+    """Unchanged sealed route records retain their last authored Git context."""
+    from scripts.lib.document_governance.git_provenance import _run_git
+
+    sources = {}
+    legacy = set()
+    linked = {link.source for link in graph.links}
+    for node in graph.nodes:
+        path = node.path.as_posix()
+        if (
+            node.path not in linked
+            or not path.startswith(_ROUTE_RECORD_PREFIXES)
+            or node.metadata.get("status") != "sealed"
+        ):
+            continue
+        head = _run_git(graph.repo_root, ["cat-file", "blob", f"HEAD:{path}"])
+        if head.returncode or head.stdout != node.text.encode("utf-8"):
+            continue
+        changed = _run_git(
+            graph.repo_root, ["log", "-1", "--format=%H", "HEAD", "--", path]
+        )
+        commit = changed.stdout.decode("ascii").strip()
+        if changed.returncode or not re.fullmatch(r"[0-9a-f]{40}", commit):
+            raise ValueError("sealed route source unavailable")
+        unit = path.removeprefix("docs/98.archive/")
+        sources[unit] = (commit, path)
+        revision = registry.common["archive_retention"]["legacy_capture_revision"]
+        baseline = _run_git(graph.repo_root, ["cat-file", "blob", f"{revision}:{path}"])
+        if not baseline.returncode and baseline.stdout == head.stdout:
+            legacy.add(unit)
+    return sources, frozenset(legacy)
+
+
+def _archive_link_context(root):
+    """Load the adopted contract; pre-contract fixture trees keep legacy routing."""
+    from scripts.lib.document_governance.archive_assessments import (
+        assessment_lookup,
+        capture_sources,
+        retention_contract_enabled,
+    )
+
+    if not retention_contract_enabled(root):
+        return None, {}, {}
+    path = pathlib.Path("docs/99.templates/registry.json")
+    raw = json.loads(read_bounded_regular(root, path))
+    if not isinstance(raw, Mapping) or not isinstance(raw.get("common", {}), Mapping):
+        raise ValueError("Archive Registry is not an object")
+    if raw["common"].get("archive_disposition_model") != ARCHIVE_MODEL_ADOPTED:
+        raise ValueError("Archive retention requires the adopted disposition model")
+    contract = raw["common"]["archive_retention"]
+    if (
+        not isinstance(contract, Mapping)
+        or not isinstance(contract.get("blocked_assessments"), list)
+        or not all(isinstance(value, str) for value in contract["blocked_assessments"])
+        or not isinstance(contract.get("history_only_availability"), str)
+        or not isinstance(contract.get("legacy_capture_revision"), str)
+    ):
+        raise ValueError("Archive retention contract is malformed")
+    registry = load_registry(root / path)
+    return registry, assessment_lookup(root, registry), capture_sources(root, registry)
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     """Validate current local links, archive boundaries, anchors, and old templates."""
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
     preserved_prefixes = _preserved_link_prefixes(graph)
+    try:
+        registry, assessments, sources = _archive_link_context(graph.repo_root)
+    except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
+        registry, assessments, sources = None, {}, {}
+        findings.append(
+            LinkFinding(
+                "docs/98.archive/retention-catalog.md",
+                "archive-link-contract-invalid",
+                "cannot resolve Archive assessment/source contract",
+            )
+        )
+    route_sources = {}
+    if registry is not None:
+        try:
+            route_sources, legacy_routes = _sealed_route_sources(graph, registry)
+            historical = tuple(
+                link
+                for link in graph.links
+                if link.source.as_posix().startswith(preserved_prefixes)
+                or link.source.as_posix().removeprefix("docs/98.archive/")
+                in route_sources
+            )
+            findings.extend(
+                _historical_link_findings(
+                    graph,
+                    historical,
+                    {**sources, **route_sources},
+                    registry,
+                    legacy_routes,
+                )
+            )
+        except (OSError, ValueError, TypeError, KeyError):
+            findings.append(
+                LinkFinding(
+                    "docs/98.archive/retention-catalog.md",
+                    "historical-link-source-invalid",
+                    "bounded historical source validation failed",
+                )
+            )
     citable_prefixes = (
         _ADOPTED_CITABLE_ARCHIVE_PREFIXES
         if archive_disposition_model(graph.repo_root) == ARCHIVE_MODEL_ADOPTED
         else (_CITABLE_ARCHIVE_PREFIX,)
     )
     for link in graph.links:
-        if link.source.as_posix().startswith(preserved_prefixes):
-            # A preserved record's outbound links named what existed when it was
-            # written. Requiring them to resolve now would force edits to the
-            # record the archive exists to preserve. Links *into* a preserved
-            # record are still checked, because that target is a live file.
+        if (
+            link.source.as_posix().startswith(preserved_prefixes)
+            or link.source.as_posix().removeprefix("docs/98.archive/") in route_sources
+        ):
+            # The historical pass above owns frozen outbound links.
             continue
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
@@ -618,7 +890,34 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
         if link.outside_repository:
             findings.append(_finding(link, "link-outside-repository", link.raw_target))
             continue
+        if link.has_unsafe_target:
+            findings.append(_finding(link, "unsafe-local-link", link.raw_target))
         target_text = link.target.as_posix()
+        if registry is not None and target_text.startswith("docs/98.archive/"):
+            relative = target_text.removeprefix("docs/98.archive/")
+            matches = [
+                value
+                for unit, value in assessments.items()
+                if relative == unit.rstrip("/")
+                or (unit.endswith("/") and relative.startswith(unit))
+            ]
+            if len(matches) > 1:
+                findings.append(
+                    _finding(
+                        link,
+                        "archive-link-contract-invalid",
+                        "ambiguous assessment unit",
+                    )
+                )
+            assessment = matches[0] if len(matches) == 1 else None
+            contract = registry.common["archive_retention"]
+            if assessment is not None and (
+                assessment.assessment in contract["blocked_assessments"]
+                or assessment.availability == contract["history_only_availability"]
+            ):
+                findings.append(
+                    _finding(link, "archive-assessment-link", link.raw_target)
+                )
         outside_archive = not link.source.as_posix().startswith("docs/98.archive/")
         if (
             outside_archive

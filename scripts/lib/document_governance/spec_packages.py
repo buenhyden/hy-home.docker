@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import dataclasses
+import datetime
 import os
 import pathlib
 import re
@@ -96,6 +97,7 @@ class SpecDocument:
     parent_ids: tuple[str, ...]
     body: str = ""
     branch_integration_receipts: tuple[BranchIntegrationReceipt, ...] = ()
+    cancellation: object = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -543,6 +545,7 @@ def _parse_document(
             parent_ids,
             body=record.body,
             branch_integration_receipts=receipts,
+            cancellation=record.metadata.get("cancellation"),
         ),
         current,
     )
@@ -634,6 +637,92 @@ def _completion_visible_lines(body: str) -> list[str]:
     return visible
 
 
+def _contract_section(body: str, heading: str) -> list[str]:
+    lines = _completion_visible_lines(body)
+    marker = "## " + heading
+    starts = [index for index, line in enumerate(lines) if line == marker]
+    if len(starts) != 1:
+        raise SpecPackageError(f"completion requires one {marker}")
+    start = starts[0] + 1
+    end = next(
+        (index for index in range(start, len(lines)) if lines[index].startswith("## ")),
+        len(lines),
+    )
+    return lines[start:end]
+
+
+def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:
+    """Read visible numbered criteria from the registered acceptance section."""
+    return tuple(
+        int(value)
+        for value in re.findall(
+            r"^([1-9][0-9]*)\. \S",
+            "\n".join(_contract_section(spec_body, heading)),
+            re.M,
+        )
+    )
+
+
+def task_cancellation_findings(
+    task_id: str,
+    cancellation: object,
+    criteria: frozenset[int],
+    task_statuses: Mapping[str, str],
+) -> tuple[str, ...]:
+    """Judge cancellation without changing metadata or exempting completion."""
+    if not isinstance(cancellation, Mapping):
+        return ("cancellation must be an object",)
+    for field in ("reason", "approved_by"):
+        value = cancellation.get(field)
+        if not isinstance(value, str) or not value.strip():
+            return (f"cancellation {field} must be a nonempty string",)
+    approved_at = cancellation.get("approved_at")
+    if (
+        not isinstance(approved_at, str)
+        or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", approved_at) is None
+    ):
+        return ("cancellation approved_at must be a YYYY-MM-DD date",)
+    try:
+        datetime.date.fromisoformat(approved_at)
+    except ValueError:
+        return ("cancellation approved_at must be a valid date",)
+    entries = cancellation.get("criteria")
+    if not isinstance(entries, (list, tuple)):
+        return ("cancellation criteria must be a list",)
+    seen_criteria: set[int] = set()
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            return ("cancellation criteria entry must be an object",)
+        criterion = entry.get("criterion")
+        if type(criterion) is not int or criterion not in criteria:
+            return ("cancellation criterion must name a Spec acceptance criterion",)
+        if criterion in seen_criteria:
+            return ("cancellation criterion must occur only once",)
+        seen_criteria.add(criterion)
+        if ("reassigned_to" in entry) == ("withdrawn" in entry):
+            return (
+                "cancellation criterion needs exactly one of reassigned_to or withdrawn",
+            )
+        if "withdrawn" in entry:
+            if (
+                not isinstance(entry["withdrawn"], str)
+                or not entry["withdrawn"].strip()
+            ):
+                return ("cancellation withdrawn must be a nonempty reason",)
+        else:
+            target = entry["reassigned_to"]
+            if (
+                not isinstance(target, str)
+                or target == task_id
+                or target not in task_statuses
+                or task_statuses[target] == "cancelled"
+            ):
+                return (
+                    "cancellation reassigned_to must name another non-cancelled package Task",
+                )
+    return ()
+
+
 def _validate_completion_evidence(
     spec: SpecDocument,
     plan: SpecDocument | None,
@@ -658,22 +747,13 @@ def _validate_completion_evidence(
         )
 
     def section(document: SpecDocument, key: str) -> list[str]:
-        heading = "## " + str(contract[key])
-        lines = _completion_visible_lines(document.body)
-        starts = [index for index, line in enumerate(lines) if line == heading]
-        if len(starts) != 1:
-            raise SpecPackageError(
-                f"completion requires one {heading} in {document.path}"
-            )
-        start = starts[0] + 1
-        end = next(
-            (i for i in range(start, len(lines)) if lines[i].startswith("## ")),
-            len(lines),
-        )
-        return lines[start:end]
+        return _contract_section(document.body, str(contract[key]))
 
-    criteria = re.findall(
-        r"^([1-9][0-9]*)\. \S", "\n".join(section(spec, "spec_section")), re.M
+    criteria = tuple(
+        str(number)
+        for number in acceptance_criterion_numbers(
+            spec.body, str(contract["spec_section"])
+        )
     )
     work = re.findall(
         r"^[1-9][0-9]*\. (W[1-9][0-9]*): \S",
@@ -926,6 +1006,21 @@ def _load_package(
             )
         _validate_execution_states(spec, plan, tasks)
         if completion_evidence:
+            task_statuses = {task.artifact_id: task.status for task in tasks}
+            for task in tasks:
+                if task.status != "cancelled":
+                    continue
+                heading = str(
+                    registry.common["spec_completion_evidence"]["spec_section"]
+                )
+                findings = task_cancellation_findings(
+                    task.artifact_id,
+                    task.cancellation,
+                    frozenset(acceptance_criterion_numbers(spec.body, heading)),
+                    task_statuses,
+                )
+                if findings:
+                    raise SpecPackageError(f"{task.path}: {findings[0]}")
             _validate_completion_evidence(spec, plan, tasks, registry)
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
         if "contracts" in entries:
@@ -1050,7 +1145,18 @@ def _documents(
     return result
 
 
-_TERMINAL_STATUSES = frozenset({"completed", "cancelled", "superseded", "retired"})
+def disposition_entry_statuses(
+    profile_id: str, registry: DocumentRegistry | None = None
+) -> frozenset[str]:
+    """Read disposition states separately from lifecycle terminal states."""
+    active = registry if registry is not None else load_registry()
+    contract = active.common.get("archive_retention", {})
+    statuses = contract.get("disposition_entry_statuses", {}).get(profile_id)
+    if not isinstance(statuses, (list, tuple)) or not all(
+        isinstance(status, str) for status in statuses
+    ):
+        raise SpecPackageError(f"disposition entry statuses missing for {profile_id}")
+    return frozenset(statuses)
 
 
 def validate_spec_package_lifecycle(
@@ -1059,6 +1165,7 @@ def validate_spec_package_lifecycle(
     *,
     retired_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
     preserved_paths: frozenset[pathlib.PurePosixPath] = frozenset(),
+    registry: DocumentRegistry | None = None,
 ) -> tuple[SpecPackageFinding, ...]:
     """Enforce the canonical retention contract on Spec Package removals.
 
@@ -1075,6 +1182,7 @@ def validate_spec_package_lifecycle(
     terminal by the change that retires it.
     """
 
+    active_registry = registry if registry is not None else load_registry()
     previous_documents = _documents(previous)
     current_documents = _documents(current)
     retained_packages = frozenset(package.spec.path.parts[2] for package in current)
@@ -1087,7 +1195,9 @@ def validate_spec_package_lifecycle(
     for path, document in sorted(previous_documents.items()):
         if path in current_documents or path.parts[2] not in retained_packages:
             continue
-        if document.status not in _TERMINAL_STATUSES:
+        if document.status not in disposition_entry_statuses(
+            document.profile_id, active_registry
+        ):
             findings.append(
                 SpecPackageFinding(
                     "execution-evidence-deletion-forbidden",
@@ -1781,7 +1891,10 @@ def _preserved_package_is_terminal(
         and spec.status == required_status
         and source_members
         <= {member.path.relative_to(source.spec.path.parent) for member in members}
-        and all(member.status in _TERMINAL_STATUSES for member in members)
+        and all(
+            member.status in disposition_entry_statuses(member.profile_id, registry)
+            for member in members
+        )
     )
 
 
@@ -1909,7 +2022,10 @@ def _validate_receipt_carrier(
     if (
         completed.spec.artifact_id != receipt.source_artifact_id
         or completed.spec.status != "completed"
-        or any(member.status not in _TERMINAL_STATUSES for member in completed_members)
+        or any(
+            member.status not in disposition_entry_statuses(member.profile_id, registry)
+            for member in completed_members
+        )
     ):
         return _invalid_receipt(
             carrier,
@@ -2057,6 +2173,7 @@ def validate_repository_spec_package_lifecycle(
         current,
         retired_paths=_recorded_retirements(root),
         preserved_paths=ordinary_preserved | branch_preserved,
+        registry=registry,
     )
     return tuple(sorted((*receipt_findings, *lifecycle_findings)))
 
@@ -2092,7 +2209,11 @@ def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath
     )
     if archive_disposition_model(root) != ARCHIVE_MODEL_ADOPTED:
         return recorded
-    return recorded | retention_catalog_retirements(root)
+    try:
+        return recorded | retention_catalog_retirements(root)
+    except (OSError, ValueError):
+        # The archive gate reports the unsafe catalog; it grants no exemption.
+        return frozenset()
 
 
 def resolve_lifecycle_base(root: pathlib.Path, explicit: str | None = None) -> str:

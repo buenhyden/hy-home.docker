@@ -390,6 +390,27 @@ def validate_registry(
         if isinstance(spaces, Mapping):
             _validate_identity_space_bounds(spaces, "identity_spaces", findings)
         return tuple(sorted(set(findings)))
+    contract = raw.get("common", {}).get("archive_retention")
+    if isinstance(contract, Mapping):
+        expected = {
+            profile["id"]
+            for profile in raw["profiles"]
+            if profile.get("frontmatter_policy") == "required"
+            and not profile["id"].startswith("archive-")
+        }
+        entries = contract["disposition_entry_statuses"]
+        allowed = set(raw["common"]["allowed_statuses"])
+        if set(entries) != expected or any(
+            not states or len(set(states)) != len(states) or not set(states) <= allowed
+            for states in entries.values()
+        ):
+            findings.append(
+                RegistryFinding(
+                    "archive-disposition-contract-invalid",
+                    "common.archive_retention.disposition_entry_statuses",
+                    "Every governed current profile needs registered nonempty disposition-entry states",
+                )
+            )
     profiles = raw.get("profiles")
     profile_ids: list[str] = []
     profile_types: list[str] = []
@@ -1053,6 +1074,38 @@ def resolve_template_placeholders(values: Mapping[str, object]) -> dict[str, obj
     }
 
 
+def _frontmatter_format_checker() -> FormatChecker:
+    """Enforce dates without jsonschema's optional timestamp dependency."""
+    checker = FormatChecker()
+
+    @checker.checks("date", raises=ValueError)
+    def valid_date(value: object) -> bool:
+        if not isinstance(value, str):
+            return True
+        return (
+            re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is not None
+            and dt.date.fromisoformat(value) is not None
+        )
+
+    @checker.checks("date-time", raises=ValueError)
+    def valid_timestamp(value: object) -> bool:
+        if not isinstance(value, str):
+            return True
+        if (
+            re.fullmatch(
+                r"[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt][0-9]{2}:[0-9]{2}:[0-9]{2}"
+                r"(?:\.[0-9]+)?(?:[Zz]|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])",
+                value,
+            )
+            is None
+        ):
+            return False
+        parsed = dt.datetime.fromisoformat(value.upper().replace("Z", "+00:00"))
+        return parsed.tzinfo is not None
+
+    return checker
+
+
 def validate_frontmatter(
     values: Mapping[str, object],
     schema_path: pathlib.Path = DEFAULT_FRONTMATTER_SCHEMA,
@@ -1066,7 +1119,9 @@ def validate_frontmatter(
         Draft202012Validator.check_schema(schema)
     except SchemaError as error:
         raise RegistryError("frontmatter schema is not valid Draft 2020-12") from error
-    validator = Draft202012Validator(schema, format_checker=FormatChecker())
+    validator = Draft202012Validator(
+        schema, format_checker=_frontmatter_format_checker()
+    )
     normalized = _json_schema_value(values)
     return tuple(
         RegistryFinding(
@@ -1160,7 +1215,11 @@ def validate_profile_values(
     for key in profile.get("required_frontmatter_by_status", {}).get(
         values.get("status"), ()
     ):
-        if key not in values or values[key] in (None, "", [], ()):
+        if (
+            key not in values
+            or values[key] in (None, "", [], (), {})
+            or (isinstance(values[key], str) and not values[key].strip())
+        ):
             findings.append(
                 RegistryFinding(
                     "status-frontmatter-required",

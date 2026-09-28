@@ -29,6 +29,8 @@
     "identity_recovery_decisions": {"$ref": "#/$defs/identityRecoveryDecisions"},
     "requirement_allocation_recovery_decisions": {"$ref": "#/$defs/requirementAllocationRecoveryDecisions"},
     "branch_integration_receipts": {"$ref": "#/$defs/branchIntegrationReceipts"},
+    "archive_authorizations": {"$ref": "#/$defs/archiveAuthorizations"},
+    "cancellation": {"$ref": "#/$defs/taskCancellation"},
     "reviewed_at": {"type": "string", "format": "date"},
     "next_review_at": {"type": "string", "format": "date"},
     "occurred_at": {"type": "string", "format": "date-time"},
@@ -68,6 +70,47 @@
     "tools": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
   },
   "$defs": {
+    "archiveAuthorizations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["unit", "action", "approved_by", "approved_at", "evidence", "status"],
+        "properties": {
+          "unit": {"type": "string", "pattern": "\\S"},
+          "action": {"enum": ["assess", "rehabilitate", "remove"]},
+          "approved_by": {"type": "string", "pattern": "\\S"},
+          "approved_at": {"type": "string", "format": "date"},
+          "evidence": {"type": "string", "pattern": "^#[A-Za-z0-9][A-Za-z0-9._-]*$"},
+          "status": {"const": "approved"}
+        }
+      }
+    },
+    "taskCancellation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "approved_by", "approved_at", "criteria"],
+      "properties": {
+        "reason": {"type": "string", "pattern": "\\S"},
+        "approved_by": {"type": "string", "pattern": "\\S"},
+        "approved_at": {"type": "string", "format": "date"},
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["criterion"],
+            "properties": {
+              "criterion": {"type": "integer"},
+              "reassigned_to": {"type": "string", "pattern": "^SPEC-[0-9]{4}-TSK-[0-9]{4}$"},
+              "withdrawn": {"type": "string", "pattern": "\\S"}
+            },
+            "oneOf": [{"required": ["reassigned_to"]}, {"required": ["withdrawn"]}]
+          }
+        }
+      }
+    },
     "implementationServices": {
       "type": "object",
       "minProperties": 1,

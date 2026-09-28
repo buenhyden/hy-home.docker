@@ -137,6 +137,23 @@ read-only on 2026-09-15.
 - <https://www.writethedocs.org/guide/docs-as-code/>
 - <https://spec.commonmark.org/>
 
+### 2026-09-28 외부 근거 재확인
+
+Archive 표준안 3.0.0 대조를 위해 다음 공식 설명을 다시 조회했습니다. 기존
+2026-09-15 관찰은 당시의 증거로 유지합니다. 이번 구현·검증 결과는 현재
+SPEC-0179 Task가 소유하며 완료된 SPEC-0185를 다시 열지 않습니다.
+
+| 출처 | 확인한 범위 | 이 저장소에 대한 한계 |
+| --- | --- | --- |
+| [Git ls-tree](https://git-scm.com/docs/git-ls-tree) | tree 항목의 mode, object type, object name, path를 조회하며 `-z`로 경로 경계를 보존 | 객체 조회가 승인이나 보존 ref 유지를 증명하지 않음 |
+| [Git attributes](https://git-scm.com/docs/gitattributes) | text/EOL, encoding, filter가 index와 checkout 표현에 관여 | 현재 작업 트리 바이트 비교만으로 Git 정본·index 동일성을 주장하지 않음; 동결 자료에 renormalize를 수행하지 않음 |
+| [JSON Schema 조건부 검증](https://json-schema.org/understanding-json-schema/reference/conditionals) | `if`/`then`/`else`와 조건 선택자의 존재 여부를 명시적으로 설계 | schema에 승인자 문자열이 있다는 사실은 실제 승인 권한·단위·시점의 증거가 아님 |
+
+위 자료는 여섯 처분 디렉터리, 다섯 현재 평가값, history-only 제거 권한을
+정하지 않습니다. 이들은 별도 채택이 필요한 저장소 설계입니다. 재검토 조건은
+새 보존 세대, 평가 schema, index/checkout 비교 또는 승인 검증 계약이 도입될
+때입니다. 다른 R01–R28 자료의 이번 재조회는 수행하지 않았습니다.
+
 ## Implications
 
 - The six dispositions, the retention classes' names, and the prohibition on a
@@ -161,7 +178,7 @@ read-only on 2026-09-15.
 - [Document retention policy](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 - [REQ-0026 Document Retention and Retirement](../../../01.requirements/0026-document-retention-and-retirement.md)
 - ADR-0035 Stage 98 Retention Classes and Route Dispositions (superseded)
-- [ADR-0036 Archive Occupancy, Route Citation, and Frozen Identity](../../../02.architecture/decisions/0036-archive-occupancy-citation-and-frozen-identity.md)
+- [ADR-0037 Package Waiting, Cancellation and Archive Reassessment](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [SPEC-0177 Archive Disposition Enforcement](../../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md)
 - [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
 

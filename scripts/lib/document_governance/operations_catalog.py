@@ -1376,6 +1376,53 @@ def _date_time(value: object) -> dt.datetime | None:
     return parsed
 
 
+def _incident_closure_findings(
+    root: pathlib.Path,
+    packet: pathlib.PurePosixPath,
+    documents: Mapping[str, tuple[Mapping, str]],
+    contract: Mapping,
+) -> tuple[CatalogFinding, ...]:
+    from scripts.lib.document_governance.archive import (
+        _catalog_contract,
+        _names_are_valid,
+    )
+    from scripts.lib.document_governance.archive_assessments import _current_owner
+    from scripts.lib.document_governance.spec_packages import _contract_section
+
+    incident, _ = documents.get("incident", ({}, ""))
+    if incident.get("status") != contract.get("incident_status"):
+        return ()
+    postmortem, body = documents.get("postmortem", ({}, ""))
+    if postmortem.get("status") != contract.get("postmortem_status"):
+        return (
+            _finding(
+                "incident-postmortem-required",
+                packet,
+                "resolved incident requires a published postmortem",
+            ),
+        )
+    try:
+        section = "\n".join(_contract_section(body, contract["corrective_section"]))
+        names = str(incident.get("artifact_id", "")) + " " + section
+        valid = _names_are_valid(root, "resolved", names)
+        if valid and re.search(r"no corrective action:\s*\S", section) is None:
+            _, identifiers, _, incident_records = _catalog_contract()
+            candidates = identifiers.findall(incident_records.sub(" ", section))
+            candidates += re.findall(r"`(docs/[^`]+)`", section)
+            valid = any(_current_owner(root, candidate) for candidate in candidates)
+    except (KeyError, OSError, ValueError, UnicodeError):
+        valid = False
+    if not valid:
+        return (
+            _finding(
+                "incident-corrective-owner-required",
+                packet,
+                "postmortem requires a current corrective owner or no-action reason",
+            ),
+        )
+    return ()
+
+
 def _index_member_links(text: str) -> Counter[str]:
     """Count the index's links to sibling member files, ignoring anchors."""
 
@@ -1701,6 +1748,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                             "incident required; postmortem optional",
                         )
                     )
+                packet_documents = {}
                 for child_entry in packet_entries:
                     child_relative = packet_relative / child_entry.name
                     require_tracked(child_relative)
@@ -1724,6 +1772,7 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                             _finding(error.code, child_relative, str(error))
                         )
                         continue
+                    packet_documents[role] = (metadata, child_text)
                     profile = profiles.get(role)
                     if not isinstance(profile, Mapping):
                         findings.append(
@@ -1854,6 +1903,14 @@ def validate_current_operations(root: pathlib.Path) -> tuple[CatalogFinding, ...
                                     "resolved before occurred",
                                 )
                             )
+                findings.extend(
+                    _incident_closure_findings(
+                        root,
+                        packet_relative,
+                        packet_documents,
+                        registry["common"]["incident_closure"],
+                    )
+                )
     return tuple(sorted(set(findings)))
 
 
