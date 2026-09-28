@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/requirement"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0027"
 parent_ids: []
@@ -15,50 +15,86 @@ created: "2026-09-19"
 
 ## Problem and Goals
 
-한 대의 Linux 호스트에서 실제 HOME 서비스와 개발 작업을 운영한다. 구현,
-운영 문서, 설정 및 버전 갱신 규칙의 불일치를 제거하여 운영자 한 명이 각
-서비스의 필요성, 접근 경로, 상태와 복구 방법을 설명할 수 있어야 한다.
-이 요구사항은 사용자가 요청한 전면 감사·재설계 범위를 기록한 초안이다.
-문서 작성과 구현 권한이 실제 서비스 배포 또는 데이터 변경 승인을 뜻하지 않는다.
+Operate real HOME services and development work on a single Linux host.
+Remove inconsistencies in implementation, operations documentation,
+configuration, and version-update rules so one operator can explain each
+service's necessity, access path, status, and recovery method. This
+requirement is a draft recording the full audit/redesign scope the user
+requested. Authoring documents and implementation does not imply approval to
+deploy real services or change data.
 
 ## Stakeholders and User Needs
 
-- HOME 사용자는 접근·인증 기반과 AI·워크플로우 기능을 상시 사용할 수 있어야 한다.
-- 개발자는 필요한 개발·실험 기능을 선택하고 HOME 가용성에 미치는 영향을 알아야 한다.
-- 운영자는 값 노출 없이 설정을 정렬하고 변경 전후 상태와 복구 가능성을 검증해야 한다.
+- A HOME user must be able to use the access/authentication foundation and
+  AI/workflow features at all times.
+- A developer must be able to select the development/experiment features
+  they need and know the impact on HOME availability.
+- An operator must align configuration without exposing values and verify
+  state and recoverability before and after a change.
 
 ## Functional Requirements
 
-- **REQ-0027-FR-0001**: 모든 현재 서비스는 HOME, DEV, OPTIONAL, LAB, REMOVE 또는 MIGRATE로 분류하고 소비자, 데이터, 자원 및 유지 근거를 설명해야 한다.
-- **REQ-0027-FR-0002**: HOME은 AI·워크플로우와 필수 종속 기능을 상시 제공하며 개발·실험·갱신 작업은 명시적으로 선택해야 한다.
-- **REQ-0027-FR-0003**: 서비스 선택 어휘와 종속 관계는 실제 실행 구성과 일치하고 상호 배타 조합 및 부수 효과를 설명해야 한다.
-- **REQ-0027-FR-0004**: 각 유지 서비스는 구현 탐색, 정상 사용, 운영 규칙 및 장애 복구 문서를 가져야 한다.
-- **REQ-0027-FR-0005**: 공개 설정 및 비밀정보 메타데이터는 현재 소비자와 대응하며 로컬 동기화는 기존 값과 알 수 없는 사용자 항목을 보존해야 한다.
-- **REQ-0027-FR-0006**: 정확한 실행 버전은 구현 선언이 소유하고 각 의존성 영역은 하나의 갱신 제안 소유자만 가져야 한다.
-- **REQ-0027-FR-0007**: 배포 전에 구체적인 대상, 사전 조건, 검증 및 복구 절차를 제시하고 승인을 받은 변경만 실행해야 한다.
-- **REQ-0027-FR-0008**: 승인된 실행 검증은 기동·상태·인증·영속성·자원·백업·복구 결과를 실제 증거와 미검증 항목으로 구분해야 한다.
+- **REQ-0027-FR-0001**: Every current service must be classified as HOME,
+  DEV, OPTIONAL, LAB, REMOVE, or MIGRATE, describing its consumers, data,
+  resources, and reason for retention.
+- **REQ-0027-FR-0002**: HOME must provide AI/workflow and required dependent
+  features at all times, while development, experimentation, and update work
+  must be explicitly opted in.
+- **REQ-0027-FR-0003**: The service selection vocabulary and dependency
+  relationships must match the actual running configuration and describe
+  mutually exclusive combinations and side effects.
+- **REQ-0027-FR-0004**: Each retained service must have documentation for
+  implementation discovery, normal use, operating rules, and failure
+  recovery.
+- **REQ-0027-FR-0005**: Public configuration and secret metadata must
+  correspond to current consumers, and local sync must preserve existing
+  values and unknown user entries.
+- **REQ-0027-FR-0006**: The implementation declaration owns the exact
+  running version, and each dependency area must have only one owner for
+  update proposals.
+- **REQ-0027-FR-0007**: Before deployment, present the concrete target,
+  preconditions, verification, and recovery procedure, and execute only
+  approved changes.
+- **REQ-0027-FR-0008**: Approved execution verification must separate
+  startup, status, authentication, persistence, resource, backup, and
+  recovery results into actual evidence versus unverified items.
 
 ## Non-functional Requirements
 
-- **REQ-0027-NFR-0001 — Confidentiality**: 비밀번호, 토큰, 키 및 로컬 비밀 값은 출력·보고서·모델 문맥·버전 관리에 포함하지 않아야 한다.
-- **REQ-0027-NFR-0002 — Recoverability**: 구성 복원과 데이터 복원을 구분하며 검증되지 않은 백업으로 복구 가능성을 주장하지 않아야 한다.
-- **REQ-0027-NFR-0003 — Maintainability**: 문서는 구현의 정확한 패치 버전을 중복 소유하지 않으며 필요한 예외는 이유와 근거를 명시해야 한다.
-- **REQ-0027-NFR-0004 — Verifiability**: 검증은 최신 main을 기준으로 실행하고 미실행·실패·차단된 결과를 성공으로 기록하지 않아야 한다.
+- **REQ-0027-NFR-0001 — Confidentiality**: Passwords, tokens, keys, and
+  local secret values must not appear in output, reports, model context, or
+  version control.
+- **REQ-0027-NFR-0002 — Recoverability**: Distinguish configuration restore
+  from data restore, and do not claim recoverability from an unverified
+  backup.
+- **REQ-0027-NFR-0003 — Maintainability**: Documentation must not duplicate
+  ownership of the implementation's exact patch version, and any needed
+  exception must state its reason and basis.
+- **REQ-0027-NFR-0004 — Verifiability**: Verification must run against the
+  latest main, and unexecuted, failed, or blocked results must not be
+  recorded as success.
 
 ## Constraints
 
-실제 운영 데이터가 존재하는 단일 물리 호스트를 대상으로 한다. 같은 호스트의
-복수 컨테이너나 프로파일은 물리 장애 격리를 제공하지 않는다. 비밀 값 회전,
-파괴적 데이터 작업, 재부팅 및 실행 서비스 변경은 별도 승인 범위를 따른다.
-동결된 과거 문서와 발급된 식별자의 의미는 보존한다.
+Targets a single physical host with real operational data. Multiple
+containers or profiles on the same host do not provide physical failure
+isolation. Secret rotation, destructive data operations, reboots, and
+running-service changes follow a separate approval scope. Frozen historical
+documents and the meaning of issued identifiers are preserved.
 
 ## Acceptance Criteria
 
-1. 모든 서비스의 분류와 HOME 필수 기능·종속 관계를 코드와 문서에서 확인할 수 있다.
-2. 설정·비밀 메타데이터·프로파일·버전 소유권의 누락 및 충돌을 자동 검사하고 실제 결과를 기록한다.
-3. 현재 문서는 구현과 공식 근거에 연결되며 필요한 운영·복구 절차를 제공한다.
-4. 로컬 동기화는 값 보존과 노출 방지를 검증하며 실행 배포는 구체적 승인 후에만 수행한다.
-5. 검토 가능한 변경 이력과 검증 결과, 잔여 위험 및 미완료 실행 검증을 제공한다.
+1. The classification of every service and HOME's required features and
+   dependencies can be confirmed in code and documentation.
+2. Missing entries and conflicts in configuration, secret metadata, profile,
+   and version ownership are checked automatically, and actual results are
+   recorded.
+3. Current documents link to the implementation and authoritative basis and
+   provide the required operations/recovery procedures.
+4. Local sync verifies value preservation and exposure prevention, and
+   execution deployment happens only after concrete approval.
+5. A reviewable change history, verification results, residual risk, and
+   incomplete execution verification are provided.
 
 ## Traceability
 
@@ -67,6 +103,8 @@ created: "2026-09-19"
 
 ## Risks
 
-공유 호스트·스토리지·GPU의 장애 및 자원 경합은 여러 HOME 기능에 영향을 준다.
-상시 필요하다는 사용자 요구는 현재 하드웨어에서 모든 동시 작업이 가능하다는
-검증 결과가 아니므로 실제 자원 측정과 복구 리허설이 필요하다.
+Failures and resource contention on shared host, storage, and GPU affect
+multiple HOME features. The user's requirement for always-on availability is
+not a verification result that all concurrent workloads are possible on the
+current hardware, so real resource measurement and recovery rehearsal are
+needed.

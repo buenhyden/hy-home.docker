@@ -1,10 +1,10 @@
 ---
 title: "Laboratory Tier (11-laboratory) Product Requirements"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0012"
 parent_ids: []
@@ -14,33 +14,33 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `11-laboratory` 계층의 제품 요구사항을 정의한다. 시스템 관리자, 개발자, AI Agent가 분산된 인프라 서비스의 접근점과 상태를 한곳에서 확인하고 관리할 수 있도록 통합 대시보드와 관리 UI 요구사항을 정리한다.
+This document defines the product requirements for the `11-laboratory` tier. It sets out the unified dashboard and admin UI requirements so system administrators, developers, and AI agents can check and manage the access points and state of distributed infrastructure services in one place.
 
 ### Problem Statement
 
-인프라 서비스 접근점, 컨테이너 상태, 데이터 저장소 디버깅 도구, 로컬 노트북형 실험 도구가 분산되면 운영자는 상태 확인과 장애 대응에 불필요한 시간을 쓰게 된다. `11-laboratory`는 RedisInsight, Dozzle, Open Notebook 같은 관리/실험 표면을 SSO로 보호하면서 한곳에서 탐색 가능하게 해야 한다.
+When infrastructure service access points, container state, data store debugging tools, and local notebook-style experiment tools are scattered, operators waste time on status checks and incident response. `11-laboratory` must make admin/experiment surfaces such as RedisInsight, Dozzle, and Open Notebook explorable in one place while protecting them with SSO.
 
 ## Stakeholders and User Needs
 
-`11-laboratory` 계층은 시스템 관리자 및 개발자를 위한 통합 제어 센터와 실험적인 고립 환경을 제공한다. 분산된 인프라 서비스들을 시각화하고, 컨테이너 및 데이터 리소스에 대한 직관적인 관리 인터페이스를 구축하여 운영 효율성을 극대화한다.
+The `11-laboratory` tier provides a unified control center and an isolated experimentation environment for system administrators and developers. It visualizes distributed infrastructure services and builds an intuitive management interface for container and data resources to maximize operational efficiency.
 
 ### Personas
 
-- **System Administrator**: 전체 컨테이너 상태를 모니터링하고 가동 중인 서비스들을 제어한다.
-- **Backend Developer**: Redis 등 데이터 저장소의 데이터를 시각적으로 확인하고 디버깅한다.
-- **AI Agent**: 인프라 구성 정보를 파악하고 서비스 접근점을 확인한다.
+- **System Administrator**: monitors overall container state and controls running services.
+- **Backend Developer**: visually inspects and debugs data in data stores such as Redis.
+- **AI Agent**: understands infrastructure configuration and checks service access points.
 
 ### Key Use Cases
 
-- **컨테이너 로그 확인**: Dozzle을 통해 승인된 컨테이너 로그를 확인한다.
-- **데이터 시각화**: RedisInsight를 통해 Redis 클러스터의 키 분 분포 및 성능을 분석한다.
-- **노트북형 실험**: Open Notebook을 통해 로컬 지식 작업과 SurrealDB-backed 실험을 수행한다.
+- **Checking container logs**: checks approved container logs through Dozzle.
+- **Data visualization**: analyzes key distribution and performance of the Redis cluster through RedisInsight.
+- **Notebook-style experimentation**: performs local knowledge work and SurrealDB-backed experiments through Open Notebook.
 
 ## Functional Requirements
 
-- **REQ-0012-FR-0001**: 모든 활성 인프라 서비스는 대시보드에 자동으로 또는 수동 설정을 통해 노출되어야 한다.
-- **REQ-0012-FR-0002**: 모든 관리 도구 UI route는 Traefik SSO 미들웨어와 allowlist 경계로 보호되어 인증된 사용자만 접근할 수 있어야 한다.
-- **REQ-0012-FR-0004**: `admin` profile이 선택하는 Laboratory 서비스(Dozzle, RedisInsight, Open Notebook, SurrealDB)는 root compose `admin` profile 정적 검증에 포함되어야 한다.
+- **REQ-0012-FR-0001**: Every active infrastructure service must be exposed on the dashboard, either automatically or through manual configuration.
+- **REQ-0012-FR-0002**: Every admin tool UI route must be protected by the Traefik SSO middleware and allowlist boundary so only authenticated users can access it.
+- **REQ-0012-FR-0004**: Laboratory services selected by the `admin` profile (Dozzle, RedisInsight, Open Notebook, SurrealDB) must be included in the root compose `admin` profile static validation.
 
 ## Non-functional Requirements
 
@@ -52,14 +52,14 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0012-FR-0001**: root `admin` profile validation이 active Laboratory services를 실패 없이 렌더링한다.
-- **REQ-0012-FR-0002**: RedisInsight, Dozzle, Open Notebook의 UI route가 Traefik gateway+allowlist+SSO 경계로 보호됨.
+- **REQ-0012-FR-0001**: root `admin` profile validation renders active Laboratory services without failure.
+- **REQ-0012-FR-0002**: The UI routes of RedisInsight, Dozzle, and Open Notebook are protected by the Traefik gateway+allowlist+SSO boundary.
 
 ## Constraints
 
-- **In Scope**: RedisInsight, Dozzle, Open Notebook/SurrealDB 구성 및 연동.
-- **Out of Scope**: 개별 비즈니스 애플리케이션의 관리 UI.
-- **Non-goals**: 하드웨어 수준의 모니터링(06-observability 담당).
+- **In Scope**: configuring and integrating RedisInsight, Dozzle, Open Notebook/SurrealDB.
+- **Out of Scope**: admin UIs of individual business applications.
+- **Non-goals**: hardware-level monitoring (owned by 06-observability).
 
 ### AI Agent Requirements
 

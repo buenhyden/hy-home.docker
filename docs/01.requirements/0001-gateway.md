@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Product Requirements"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0001"
 parent_ids: []
@@ -14,36 +14,36 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `hy-home.docker` 에코시스템의 통합 진입점인 `01-gateway` 티어의 제품 요구사항을 정의한다. 현재 구현은 `core`/`dev` profile이 선택하는 Traefik edge router와 전용 `nginx` profile이 선택하는 Nginx 특수 경로 프록시 leaf로 구성되며, 트래픽 라우팅, TLS 종료, 보안 미들웨어 체인(SSO, Rate Limit 등)을 오케스트레이션한다.
+This document defines the product requirements for the `01-gateway` tier, the unified entry point of the `hy-home.docker` ecosystem. The current implementation consists of the Traefik edge router selected by the `core`/`dev` profiles and the Nginx special-path proxy leaf selected by the dedicated `nginx` profile, orchestrating traffic routing, TLS termination, and the security middleware chain (SSO, rate limit, and so on).
 
 ### Problem Statement
 
-- 여러 마이크로서비스가 분산되어 있어 각각에 대한 개별적인 보안 설정(TLS, Auth)을 관리하기 어려움.
-- 서비스 Discovery가 자동화되지 않으면 운영 복잡도가 증가함.
-- 외부 노출 경로에 대한 중앙 집중식 제어와 가시성(Logging/Metrics)이 부족함.
+- With multiple microservices distributed across the platform, managing individual security settings (TLS, auth) for each service is difficult.
+- Without automated service discovery, operational complexity increases.
+- Centralized control and visibility (logging/metrics) over externally exposed paths are lacking.
 
 ## Stakeholders and User Needs
 
-모든 외부 트래픽에 대해 단일화되고 안전하며 관찰 가능한 진입점을 제공하여 시스템의 보안을 강화하고 서비스 노출을 단순화한다.
+Provide a unified, secure, and observable entry point for all external traffic to strengthen system security and simplify service exposure.
 
 ### Personas
 
-- **Infrastructure Engineer**: 시스템 전체의 트래픽 흐름을 설계하고 TLS 및 네트워크 보안을 관리함.
-- **Backend Developer**: 자신의 서비스를 외부로 쉽고 안전하게 노출하고자 함.
-- **Security Auditor**: 모든 진입 트래픽에 대한 인증 및 인가 정책 준수를 모니터링함.
+- **Infrastructure Engineer**: Designs the overall traffic flow of the system and manages TLS and network security.
+- **Backend Developer**: Wants to expose their own service externally, easily and safely.
+- **Security Auditor**: Monitors compliance with authentication and authorization policy for all inbound traffic.
 
 ### Key Use Cases
 
-- **STORY-01**: 사용자가 브라우저를 통해 서비스에 접속하면 자동으로 HTTPS로 연결되고, 유효한 인증서가 제공되어야 함.
-- **STORY-02**: 관리자는 Traefik 대시보드를 통해 현재 라우팅 규칙과 서비스 상태를 실시간으로 확인할 수 있어야 함.
-- **STORY-03**: 특정 경로(예: `/keycloak/`, `/cdn/`)에 대해 Nginx leaf를 통한 정교한 경로 재작성 및 헤더 조작이 가능해야 하며, Nginx runtime은 명시적 root network/dependency context에서만 다뤄야 함.
+- **STORY-01**: When a user accesses a service through a browser, the connection must be automatically upgraded to HTTPS with a valid certificate.
+- **STORY-02**: An administrator must be able to view current routing rules and service status in real time through the Traefik dashboard.
+- **STORY-03**: For specific paths (for example, `/keycloak/`, `/cdn/`), the Nginx leaf must support fine-grained path rewriting and header manipulation, and the Nginx runtime must be handled only in an explicit root network/dependency context.
 
 ## Functional Requirements
 
-- **REQ-0001-FR-0001**: HTTP(80) 트래픽을 HTTPS(443)로 강제 리다이렉트해야 함.
-- **REQ-0001-FR-0002**: Docker Provider를 통해 컨테이너 생성을 감지하고 라우트를 자동 생성해야 함.
-- **REQ-0001-FR-0003**: TLS 1.2/1.3 및 최신 Cipher Suite를 지원하여 통신 보안을 보장해야 함.
-- **REQ-0001-FR-0004**: OAuth2 Proxy와 연동하여 특정 경로에 대한 인증(SSO) 미들웨어를 제공해야 함.
+- **REQ-0001-FR-0001**: HTTP(80) traffic must be forcibly redirected to HTTPS(443).
+- **REQ-0001-FR-0002**: The system must detect container creation via the Docker Provider and automatically generate routes.
+- **REQ-0001-FR-0003**: The system must support TLS 1.2/1.3 and modern cipher suites to guarantee communication security.
+- **REQ-0001-FR-0004**: The system must integrate with OAuth2 Proxy to provide authentication (SSO) middleware for specific paths.
 
 ## Non-functional Requirements
 
@@ -55,20 +55,20 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0001-FR-0001**: 모든 외부 노출 서비스는 100% TLS를 통해 접근되어야 함.
-- **REQ-0001-FR-0002**: 신규 컨테이너 배포 시 별도의 설정 파일 수정 없이 60초 이내에 라우팅이 활성화되어야 함.
+- **REQ-0001-FR-0001**: All externally exposed services must be accessed via TLS 100% of the time.
+- **REQ-0001-FR-0002**: When a new container is deployed, routing must become active within 60 seconds without any separate configuration file edits.
 
 ## Constraints
 
 - **In Scope**:
-  - Traefik (Edge Router) 기반 root-active 동적 라우팅.
-  - `nginx` profile이 선택하는 Nginx 기반 특수 경로 프록시 및 헤더 조작.
-  - TLS 종료 및 인증서 관리.
+  - Root-active dynamic routing based on Traefik (Edge Router).
+  - Nginx-based special-path proxying and header manipulation selected by the `nginx` profile.
+  - TLS termination and certificate management.
 - **Out of Scope**:
-  - 개별 서비스 내부의 비즈니스 로직.
-  - 장기 로그 저장 (Observability 티어 담당).
+  - Business logic internal to individual services.
+  - Long-term log storage (owned by the Observability tier).
 - **Non-goals**:
-  - 자체 인증 서버 구현 (Auth 티어 담당).
+  - Implementing a dedicated authentication server (owned by the Auth tier).
 
 ### AI Agent Requirements
 
@@ -79,8 +79,8 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Risks
 
-- **Dependency**: 컨테이너 Discovery를 위해 Docker Socket 접근 권한이 필요함.
-- **Assumption**: `scripts/operations/gen-secrets.sh`를 통해 필요한 인증서와 파일들이 사전에 준비되어 있음.
+- **Dependency**: Docker Socket access is required for container discovery.
+- **Assumption**: The required certificates and files are prepared in advance via `scripts/operations/gen-secrets.sh`.
 
 ## Traceability
 

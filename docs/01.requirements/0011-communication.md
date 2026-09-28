@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Product Requirements"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0011"
 parent_ids: []
@@ -14,35 +14,35 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-이 문서는 `10-communication` 계층의 제품 요구사항을 정의한다. 이 계층은 현재 구현된 메일 통신 인프라를 담당하며, 개발용 SMTP 샌드박스와 운영용 메일 서버를 통합하여 안전하고 신뢰할 수 있는 메일 환경을 구축하는 것을 목표로 한다.
+This document defines the product requirements for the `10-communication` tier. This tier owns the currently implemented mail communication infrastructure and aims to build a safe, reliable mail environment by integrating a development SMTP sandbox with the production mail server.
 
 ### Problem Statement
 
-현재 메일 발송 로직이 파편화되어 있고, 성능 및 보안 정책이 일관되지 않아 대규모 알림 처리 시 신뢰성을 보장하기 어렵다. 또한 개발 환경에서 실제 운영 메일이 발송될 위험이 존재한다.
+Mail sending logic is currently fragmented, and inconsistent performance and security policy make it hard to guarantee reliability under large-scale notification load. There is also a risk that development environments send real production mail.
 
 ## Stakeholders and User Needs
 
-모든 알림 및 통신 데이터가 보안 가이드라인에 따라 안전하게 처리되고, 개발 단계에서의 실수로 인한 오발송을 원천 차단하는 지능형 통신 허브를 제공한다.
+Provide an intelligent communication hub that handles all notification and communication data safely under security guidelines and eliminates misdirected sends caused by mistakes during development.
 
 ### Personas
 
-- **Developer**: 개발 과정에서 서버에서 발송되는 메일을 실제 수신함이 아닌 로컬 샌드박스에서 즉시 확인하고 싶어 한다.
-- **Admin**: 운영 메일 서버의 전송 성공률(Deliverability)을 높이고, 스팸 차단 정책(SPF, DKIM)을 중앙에서 관리하고 싶어 한다.
-- **Security Officer**: 모든 외부 통신이 암호화되고 인증된 사용자만 메일을 발송할 수 있도록 통제하고 싶어 한다.
+- **Developer**: wants to immediately check mail sent from the server in a local sandbox during development, instead of a real inbox.
+- **Admin**: wants to increase the deliverability of the production mail server and manage anti-spam policy (SPF, DKIM) centrally.
+- **Security Officer**: wants to ensure all external communication is encrypted and only authenticated users can send mail.
 
 ### Key Use Cases
 
-- **STORY-01**: 개발자는 MailHog UI를 통해 테스트용 메일이 실제로 외부로 나가지 않고 정상적으로 캡처되었는지 확인한다.
-- **STORY-02**: 시스템은 Stalwart를 통해 사용자 가입 환영 메일을 암호화된 채널로 안전하게 발송한다.
-- **STORY-03**: 관리자는 외부 메일 서비스로의 발송 시 스팸으로 분류되지 않도록 Stalwart에 SPF/DKIM 설정을 적용한다.
+- **STORY-01**: A developer confirms via the MailHog UI that test mail is captured correctly instead of leaving the system.
+- **STORY-02**: The system sends user sign-up welcome mail over an encrypted channel via Stalwart.
+- **STORY-03**: An admin applies SPF/DKIM settings on Stalwart so mail sent to external services is not classified as spam.
 
 ## Functional Requirements
 
-- **REQ-0011-FR-0001**: 개발용 SMTP 트랩 서비스 제공 (MailHog).
-- **REQ-0011-FR-0002**: 운영용 고성능 IMAP/SMTP/JMAP 메일 서버 제공 (Stalwart).
-- **REQ-0011-FR-0003**: 메일 전송 데이터의 실시간 UI 모니터링 및 검색 지원.
-- **REQ-0011-FR-0004**: TLS 암호화를 통한 보안 통신 보장.
-- **REQ-0011-FR-0005**: 시스템 SSO(Keycloak) 기반의 관리 UI 접근 제어.
+- **REQ-0011-FR-0001**: Provide a development SMTP trap service (MailHog).
+- **REQ-0011-FR-0002**: Provide a high-performance production IMAP/SMTP/JMAP mail server (Stalwart).
+- **REQ-0011-FR-0003**: Support real-time UI monitoring and search of mail transmission data.
+- **REQ-0011-FR-0004**: Guarantee secure communication through TLS encryption.
+- **REQ-0011-FR-0005**: Control access to the admin UI based on system SSO (Keycloak).
 
 ## Non-functional Requirements
 
@@ -54,21 +54,21 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0011-FR-0001**: 개발 환경에서의 운영 메일 오발송 제로(Zero).
-- **REQ-0011-FR-0002**: optional mail compose가 valid network 소속, Docker Secret 참조, SSO 보호 UI route를 갖춘 상태로 hardening 검증을 통과.
-- **REQ-0011-FR-0003**: 외부 전송 성공률, TLS 버전, DNS deliverability 지표는 운영 승격 시 별도 evidence로 검증하며 현재 optional compose의 완료 기준으로 간주하지 않음.
+- **REQ-0011-FR-0001**: Zero accidental production mail sends from the development environment.
+- **REQ-0011-FR-0002**: The optional mail compose passes hardening verification with valid network membership, Docker Secret references, and an SSO-protected UI route.
+- **REQ-0011-FR-0003**: External delivery success rate, TLS version, and DNS deliverability metrics are verified as separate evidence at production promotion, and are not treated as completion criteria for the current optional compose.
 
 ## Constraints
 
 - **In Scope**:
-  - SMTP 트래핑 및 운영 메일 서비스.
-  - 메일 프로토콜 보안 및 인증 정책.
-  - 전송 이력 및 데이터 지속성 관리.
+  - SMTP trapping and production mail service.
+  - Mail protocol security and authentication policy.
+  - Delivery history and data persistence management.
 - **Out of Scope**:
-  - 그룹웨어 또는 메신저 클라이언트 (웹메일 UI 등은 별도 계층 고려 가능).
-  - 마케팅 자동화 도구.
+  - Groupware or messenger clients (a webmail UI may be considered as a separate tier).
+  - Marketing automation tools.
 - **Non-goals**:
-  - 퍼블릭 이메일 서비스(Gmail 등)의 완전한 대체.
+  - Fully replacing public email services (Gmail, etc.).
 
 ### AI Agent Requirements
 
@@ -76,8 +76,8 @@ N/A
 
 ## Risks
 
-- **Risks**: 메일 서버 IP 차단(Blacklist) 시 외부 발송 중단 위험.
-- **Dependencies**: `02-auth` (SSO 인증), `secrets/certs` (TLS 인증서).
+- **Risks**: risk of outbound delivery stopping if the mail server IP is blacklisted.
+- **Dependencies**: `02-auth` (SSO authentication), `secrets/certs` (TLS certificates).
 
 ## Traceability
 

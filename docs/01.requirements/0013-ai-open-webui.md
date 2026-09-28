@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Product Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0013"
 parent_ids: []
@@ -14,7 +14,7 @@ created: "2026-03-27"
 
 ## Problem and Goals
 
-이 문서는 Open WebUI의 제품 요구사항을 정의한다. Open WebUI는 로컬 LLM과의 상호작용 및 RAG(Retrieval-Augmented Generation) 오케스트레이션을 위한 종합적인 웹 인터페이스를 제공한다. 사용자 가치, 문제 정의, 성공 기준을 명확히 하여 후속 설계와 구현의 기준으로 사용한다.
+This document defines the product requirements for Open WebUI. Open WebUI provides a comprehensive web interface for interacting with local LLMs and orchestrating RAG (Retrieval-Augmented Generation). It clarifies user value, problem definition, and success criteria to serve as the basis for subsequent design and implementation.
 
 ### Problem Statement
 
