@@ -275,18 +275,6 @@ def _load_yaml(
     return MappingProxyType(value)
 
 
-def load_artifact_contract(
-    root: pathlib.Path, path: pathlib.Path
-) -> Mapping[str, object]:
-    """Compatibility loader for explicitly supplied legacy transition fixtures."""
-    root = root.absolute()
-    try:
-        relative = path.absolute().relative_to(root)
-    except ValueError as error:
-        raise ContractLoadError("AGC-UNSAFE-PATH") from error
-    return _load_yaml(root, pathlib.PurePosixPath(relative.as_posix()))
-
-
 def _frontmatter(text: str, path: pathlib.PurePosixPath) -> Mapping[str, object]:
     if not text.startswith("---\n"):
         raise ContractLoadError(f"AGC-FRONTMATTER-MISSING path={path}")
