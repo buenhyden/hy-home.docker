@@ -1,10 +1,10 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -22,7 +22,7 @@ created: "2026-03-25"
 
 ### Airflow DAG Basics Usage
 
-> Fundamental patterns for writing Airflow DAGs in the `hy-home.docker` stack.
+> `hy-home.docker` stack에서 Airflow DAG를 작성하는 기본 pattern이다.
 
 ---
 
@@ -37,18 +37,18 @@ created: "2026-03-25"
 
 #### Purpose
 
-To ensure all DAGs written for the project follow consistent patterns and utilize the shared infrastructure (PostgreSQL, SeaweedFS) correctly.
+프로젝트용으로 작성한 모든 DAG가 일관된 pattern을 따르고 공유 infrastructure(PostgreSQL, SeaweedFS)를 올바르게 사용하도록 보장한다.
 
 #### Prerequisites
 
-- Access to `${DEFAULT_WORKFLOW_DIR}/airflow/dags`.
-- Basic understanding of Python and Apache Airflow TaskFlow API.
+- `${DEFAULT_WORKFLOW_DIR}/airflow/dags` 접근 권한.
+- Python과 Apache Airflow TaskFlow API에 대한 기본 이해.
 
 #### Step-by-step Instructions
 
 ##### 1. DAG Definition Pattern
 
-Use the `@dag` decorator for modern, readable pipelines.
+pipeline을 현대적이고 읽기 쉽게 작성하려면 `@dag` decorator를 사용한다.
 
 ```python
 from airflow.decorators import dag, task
@@ -72,12 +72,12 @@ my_workflow()
 
 ##### 2. File Placement
 
-Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-scheduler`, `airflow-dag-processor`, and `airflow-worker` pick them up through the configured bind volume.
+`.py` file을 `${DEFAULT_WORKFLOW_DIR}/airflow/dags`에 배치한다. `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`가 설정된 bind volume으로 이 file을 pick up한다.
 
 #### Common Pitfalls
 
-- **Relative Imports**: Avoid relative imports within DAGs; use the `plugins/` directory for shared logic.
-- **Heavy Initialization**: Do not perform heavy computations or database queries at the top level of the DAG file; keep it within `@task`.
+- **Relative Imports**: DAG 내부에서 relative import를 피한다. 공유 로직에는 `plugins/` 디렉터리를 사용한다.
+- **Heavy Initialization**: DAG file의 top level에서 무거운 연산이나 database query를 수행하지 않는다. `@task` 안에 유지한다.
 
 ## Common Checks
 
@@ -86,7 +86,7 @@ Place your `.py` files in `${DEFAULT_WORKFLOW_DIR}/airflow/dags`. The `airflow-s
 
 ## Runbook Handoff
 
-N/A — 이 가이드에 대응하는 runbook이 없습니다.
+N/A — 이 가이드에 대응하는 runbook이 없다.
 
 ## Traceability
 
@@ -96,7 +96,7 @@ N/A — 이 가이드에 대응하는 runbook이 없습니다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Airflow system guide](0050-airflow.md)

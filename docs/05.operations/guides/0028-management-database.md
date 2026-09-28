@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -23,54 +23,53 @@ created: "2026-05-10"
 
 ## Usage
 
-The management database is a five-service HOME dependency for authentication,
-workflow and tooling. `mng-pg` stores the `n8n`, `keycloak`, `airflow`,
-`terrakube`, `sonarqube`, `postgres`, and configured application databases.
-`mng-valkey` is the shared Airflow/n8n broker/cache. Grafana is not wired to
-management PostgreSQL in current Compose; it owns `grafana-data` and uses its
-current default database configuration.
+management database는 인증, 워크플로, 도구를 위한 5개 서비스로 구성된 HOME
+의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
+`postgres`, 그리고 구성된 애플리케이션 데이터베이스를 저장한다. `mng-valkey`는
+Airflow/n8n이 공유하는 broker/cache다. Grafana는 현재 Compose에서 management
+PostgreSQL에 연결되지 않는다. 자체 `grafana-data`를 소유하고 기본 데이터베이스
+구성을 그대로 사용한다.
 
 ### Current implementation
 
-[`infra/04-data/operational/mng-db/docker-compose.yml`](../../../infra/04-data/operational/mng-db/docker-compose.yml)
-defines `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, and
-`mng-valkey-exporter`. Profiles `mng`, `core`, `dev`, and `local` select both
-engines and init; exporters are selected by `mng` and `dev`.
+[`infra/04-data/operational/mng-db/docker-compose.yml`](../../../infra/04-data/operational/mng-db/docker-compose.yml)은
+`mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를
+정의한다. `mng`, `core`, `dev`, `local` profile은 엔진과 init을 함께 선택하고,
+exporter는 `mng`와 `dev`에서 선택된다.
 
-PostgreSQL owns `mng-pg-data` at `${DEFAULT_MANAGEMENT_DIR}/pg` and uses the
-`mng_db_password` secret. The base init job reads only the base
-service-specific database password secrets and creates those roles/databases
-idempotently. Optional capabilities provision their own objects in separate
-feature jobs (`mlflow-db-provision`, `dbt-db-provision`,
-`debezium-db-provision`) that share the input-validating
-[runner](../../../infra/04-data/operational/mng-db/pg/provision/run-feature-provision.sh)
-but keep their SQL and grants in their own packages. `mlops`, `data-science`,
-`analytics-engineering` and `cdc` also select `mng-pg` and `mng-pg-init` for
-dependency closure; the base job never reads their credentials, so `core`,
-`mng`, `dev` and `local` start without them.
+PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
+`mng_db_password` secret을 사용한다. 기본 init job은 base 서비스별 데이터베이스
+비밀번호 secret만 읽어 해당 role/database를 idempotent하게 생성한다. 선택적
+기능은 자체 객체를 별도 feature job(`mlflow-db-provision`, `dbt-db-provision`,
+`debezium-db-provision`)에서 provision한다. 이 job들은 입력을 검증하는
+[runner](../../../infra/04-data/operational/mng-db/pg/provision/run-feature-provision.sh)를
+공유하지만 SQL과 grant는 각자의 패키지에 둔다. `mlops`, `data-science`,
+`analytics-engineering`, `cdc`도 의존성 closure를 위해 `mng-pg`와 `mng-pg-init`을
+선택하지만, base job은 이들의 credential을 읽지 않으므로 `core`, `mng`, `dev`,
+`local`은 이들 없이 기동한다.
 
-The declared command sets `wal_level=logical`, `max_replication_slots`,
-`max_wal_senders` and `max_slot_wal_keep_size` for CDC. A running instance keeps
-its previous settings until an approved recreate, which restarts every consumer
-of the management database. Logical WAL adds a small amount of WAL volume; slots
-are created only by a registered CDC connector. Valkey owns
-`mng-valkey-data` at `${DEFAULT_MANAGEMENT_DIR}/valkey`, enables AOF, and reads
-`mng_valkey_password`. Both use `mng_data_net`; PostgreSQL and Valkey host bindings
-come from root environment keys. Health checks and resources come from shared
-templates.
+선언된 command는 CDC를 위해 `wal_level=logical`, `max_replication_slots`,
+`max_wal_senders`, `max_slot_wal_keep_size`를 설정한다. 실행 중인 인스턴스는
+승인된 recreate 전까지 이전 설정을 유지한다. recreate하면 management database의
+모든 consumer가 재시작된다. logical WAL은 WAL 볼륨을 소폭 늘리고, slot은
+등록된 CDC connector만 생성한다. Valkey는 `${DEFAULT_MANAGEMENT_DIR}/valkey`의
+`mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`를 읽는다.
+둘 다 `mng_data_net`을 사용하며, PostgreSQL과 Valkey의 host binding은 root
+환경 키에서 온다. healthcheck와 리소스 제한은 공유 템플릿에서 온다.
 
 ### Images, configuration and resource controls
 
-The Compose file is authoritative for pinned upstream PostgreSQL, Valkey and the
-two exporter image families; repository Renovate may propose updates and the
-version projection is derived. PostgreSQL uses `POSTGRES_PASSWORD_FILE`,
-`POSTGRES_USER`, `POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME` and `POSTGRES_PORT`;
-init adds `SERVICE_POSTGRES_USERNAME` and `SERVICE_POSTGRES_DB`. Root port keys
-control host bindings. `mng-pg` extends `template-stateful-db-med`, `mng-valkey`
-`template-stateful-low`, init `template-job-low`, and exporters
-`template-infra-readonly-low`; engine/exporter health checks are declared. Current
-consumers connect over `mng_data_net`; init creates roles/databases after PostgreSQL
-health, while exporters observe the engines.
+Compose 파일은 핀된 upstream PostgreSQL, Valkey, 두 exporter 이미지 계열의
+권위 있는 정의다. 저장소 Renovate가 업데이트를 제안하면 버전 projection은
+파생된다. PostgreSQL은 `POSTGRES_PASSWORD_FILE`, `POSTGRES_USER`,
+`POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME`, `POSTGRES_PORT`를 사용하며, init은
+`SERVICE_POSTGRES_USERNAME`과 `SERVICE_POSTGRES_DB`를 추가한다. root 포트 키가
+host binding을 제어한다. `mng-pg`는 `template-stateful-db-med`를,
+`mng-valkey`는 `template-stateful-low`를, init은 `template-job-low`를,
+exporter는 `template-infra-readonly-low`를 extend하며, 엔진/exporter
+healthcheck가 선언되어 있다. 현재 consumer는 `mng_data_net`으로 연결되며,
+init은 PostgreSQL health 이후 role/database를 생성하고 exporter는 엔진을
+관찰한다.
 
 ### Static preflight
 
@@ -79,21 +78,22 @@ docker compose --env-file .env.example --profile mng config --quiet
 docker compose --env-file .env.example --profile mng config --services
 ```
 
-Run from the repository root. Do not render or start the leaf file alone. Do not
-rerun init, rotate credentials, query HOME databases or change broker queues
-without an approved runtime task.
+저장소 루트에서 실행한다. leaf 파일만 단독으로 렌더링하거나 기동하지 않는다.
+승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME
+데이터베이스를 조회하거나, broker queue를 변경하지 않는다.
 
 ### Backup, recovery and upgrades
 
-PostgreSQL requires a logical dump of global roles plus every database. Valkey
-requires one complete AOF set/manifest and an RDB checkpoint; an incident owner
-must decide whether stale queued work is safe to replay. [RUN-0028](../runbooks/0028-management-database.md)
-defines isolated restore order and application validation.
+PostgreSQL은 global role과 모든 데이터베이스의 logical dump가 필요하다.
+Valkey는 완전한 AOF set/manifest 하나와 RDB checkpoint 하나가 필요하며,
+incident owner가 지연된 대기 작업을 재실행해도 안전한지 판단해야 한다.
+[RUN-0028](../runbooks/0028-management-database.md)이 격리된 복구 순서와
+애플리케이션 검증을 정의한다.
 
-PostgreSQL major upgrades use logical dump/restore or another separately approved
-upstream method. Minor image and Valkey changes still require release notes,
-backup and rollback. Never attach a new major PostgreSQL image to the existing
-`PGDATA` or copy live database files.
+PostgreSQL major upgrade는 logical dump/restore 또는 별도로 승인된 다른
+upstream 방법을 사용한다. minor 이미지 변경과 Valkey 변경도 release note,
+backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDATA`에
+연결하거나 실행 중인 데이터베이스 파일을 복사하지 않는다.
 
 ### Official references
 
@@ -105,13 +105,13 @@ backup and rollback. Never attach a new major PostgreSQL image to the existing
 
 ## Common Checks
 
-Confirm exact root profiles, services, health/resource controls, writable-state
-ownership, secret references, exposure and the engine-specific recovery boundary.
-A static pass is configuration evidence only; runtime and restore remain separate.
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
 ## Traceability
 
-- Artifact: `GDE-0028`; governing policy: `POL-0028`.
+- Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
 - Runtime authority: `infra/04-data/operational/mng-db/docker-compose.yml`.
 
 ## Related Documents

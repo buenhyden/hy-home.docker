@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -19,38 +19,38 @@ created: "2026-05-10"
 
 ## Usage
 
-### Purpose and classification
+### 목적과 분류
 
-Dozzle is an OPTIONAL admin log viewer under `admin` and `admin-logs`. It is not
-a log archive; container logs remain owned by Docker/logging backends. Dozzle
-persists UI/user settings in `${DEFAULT_MANAGEMENT_DIR}/dozzle`, but not a second
-authoritative copy of the viewed logs.
+Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 로그 아카이브가
+아니다. 컨테이너 로그는 여전히 Docker/로깅 백엔드가 소유한다. Dozzle은
+`${DEFAULT_MANAGEMENT_DIR}/dozzle`에 UI/사용자 설정을 영속화하지만, 조회한 로그의
+두 번째 권위 사본을 보관하지는 않는다.
 
-### Current implementation and risk
+### 현재 구현과 위험
 
-- [Dozzle Compose](../../../infra/11-laboratory/dozzle/docker-compose.yml)
-  owns profiles, OIDC, route, IP allowlist, secret, health, and mounts.
-- It uses native OIDC against Keycloak via `DOZZLE_AUTH_*` and the
-  `dozzle_client_secret`. Traefik applies the gateway standard chain and an admin
-  CIDR allowlist, not OAuth2 Proxy ForwardAuth.
-- The Docker socket is mounted `:ro`, but upstream warns that read-only file mode
-  does not restrict Docker API methods; compromise can be root-equivalent. Current
-  source declares no socket proxy.
-- `/data` persists settings. The CA file supports issuer trust. The health command
-  proves Dozzle process health, not OIDC, socket authorization, or log coverage.
+- [Dozzle Compose](../../../infra/11-laboratory/dozzle/docker-compose.yml)가
+  profile, OIDC, 라우트, IP 허용목록, secret, health, 마운트를 정의한다.
+- `DOZZLE_AUTH_*`와 `dozzle_client_secret`을 통해 Keycloak에 대한 네이티브 OIDC를
+  사용한다. Traefik은 OAuth2 Proxy ForwardAuth가 아니라 게이트웨이 표준 체인과
+  admin CIDR 허용목록을 적용한다.
+- Docker socket은 `:ro`로 마운트되지만, 업스트림은 읽기 전용 파일 모드가 Docker
+  API 메서드를 제한하지 않는다고 경고한다. 침해되면 root와 동등해질 수 있다.
+  현재 소스는 socket proxy를 선언하지 않는다.
+- `/data`는 설정을 영속화한다. CA 파일은 issuer 신뢰를 지원한다. health 명령은
+  OIDC, socket 인가, 로그 커버리지가 아니라 Dozzle 프로세스 health만 증명한다.
 
-### Normal use, backup, and upgrade
+### 일반적인 사용, 백업, 업그레이드
 
-Validate `docker compose --profile admin-logs config --quiet`, confirm CIDRs and
-OIDC client/claims, then start only Dozzle. Verify login with a least-privilege
-test identity and confirm shell/actions remain disabled unless explicitly
-configured and approved. Sanitize logs before evidence capture.
+`docker compose --profile admin-logs config --quiet`로 검증하고, CIDR와 OIDC
+client/claim을 확인한 다음 Dozzle만 시작한다. 최소 권한 테스트 identity로 로그인을
+검증하고 명시적으로 설정하고 승인하지 않았다면 shell/actions가 비활성 상태로
+유지되는지 확인한다. 증거를 캡처하기 전에 로그를 정제한다.
 
-Back up `/data` only for settings continuity; it does not back up container logs.
-Stop Dozzle for a consistent copy. Restore the settings copy against an isolated
-Dozzle connected to a non-production Docker endpoint or no socket. Before upgrade,
-review security advisories/release notes and test OIDC plus filtered log access.
-No backup, restore, or upgrade ran here.
+`/data`는 설정 연속성을 위해서만 백업한다. 컨테이너 로그는 백업하지 않는다. 일관된
+복사를 위해 Dozzle을 중지한다. 프로덕션이 아닌 Docker endpoint에 연결되거나 socket이
+없는 격리된 Dozzle에 설정 사본을 복원한다. 업그레이드 전에는 보안 권고/release
+노트를 검토하고 OIDC와 필터링된 로그 접근을 테스트한다. 여기서는 백업, 복원,
+업그레이드를 실행하지 않았다.
 
 ## Common Checks
 
@@ -59,7 +59,8 @@ No backup, restore, or upgrade ran here.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0072-dozzle.md) for OIDC, socket, log-stream, settings, and upgrade recovery.
+OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
+[runbook](../runbooks/0072-dozzle.md)을 사용한다.
 
 ## Traceability
 

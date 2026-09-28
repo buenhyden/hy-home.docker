@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -28,53 +28,56 @@ created: "2026-05-10"
 
 ## Usage
 
-Kafka is an OPTIONAL event-streaming capability. No current HOME consumer proves
-that it should run continuously. The three brokers share one Docker host, so the
-`messaging-cluster` profile tests KRaft/replication behavior without providing
-host availability. The current implementation contains no second broker family.
+Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. Kafka를 지속적으로 실행해야 한다는
+근거를 제시한 HOME consumer는 현재 없다. 세 브로커가 하나의 Docker host를
+공유하므로 `messaging-cluster` profile은 host 가용성은 제공하지 못하고
+KRaft/replication 동작을 테스트한다. 현재 구현에는 두 번째 broker family가
+없다.
 
 ### Current implementation
 
-[`infra/05-messaging/kafka/docker-compose.yml`](../../../infra/05-messaging/kafka/docker-compose.yml)
-defines ten services:
+[`infra/05-messaging/kafka/docker-compose.yml`](../../../infra/05-messaging/kafka/docker-compose.yml)은
+10개 서비스를 정의한다.
 
 | Service | Role | Current selectors |
 | --- | --- | --- |
 | `kafka-1` | KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
-| `kafka-2`, `kafka-3` | additional same-host brokers/controllers | `messaging-cluster` |
-| `schema-registry` | schema storage/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
-| `kafka-connect` | connector runtime with the Debezium PostgreSQL plugin | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
-| `debezium-db-provision` | CDC source role, grants and publication on `mng-pg` | `cdc` |
+| `kafka-2`, `kafka-3` | 추가 동일 host broker/controller | `messaging-cluster` |
+| `schema-registry` | 스키마 저장소/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
+| `kafka-connect` | Debezium PostgreSQL plugin을 갖춘 connector runtime | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
+| `debezium-db-provision` | CDC source role, `mng-pg`에 대한 grant와 publication | `cdc` |
 | `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
-| `kafbat-ui` | administrative UI with native OIDC/RBAC | `messaging`, `messaging-admin` |
-| `kafka-exporter`, `kafka-init` | metrics and topic bootstrap | `messaging`, `messaging-broker`, `messaging-cluster` |
+| `kafbat-ui` | native OIDC/RBAC를 갖춘 관리 UI | `messaging`, `messaging-admin` |
+| `kafka-exporter`, `kafka-init` | 메트릭과 topic bootstrap | `messaging`, `messaging-broker`, `messaging-cluster` |
 
-`kafka-1-data`, `kafka-2-data`, `kafka-3-data`, and `kafka-connect-data` are
-bind-backed named volumes under `${DEFAULT_MESSAGE_BROKER_DIR}/kafka`. Broker
-listeners are currently `PLAINTEXT`, including published host listeners; there is
-no broker authentication or TLS. All services use `kafka_net` and shared resource
-and health templates.
+`kafka-1-data`, `kafka-2-data`, `kafka-3-data`, `kafka-connect-data`는
+`${DEFAULT_MESSAGE_BROKER_DIR}/kafka` 아래의 bind-backed named volume이다.
+broker listener는 현재 게시된 host listener를 포함해 `PLAINTEXT`이며, broker
+인증이나 TLS가 없다. 모든 서비스는 `kafka_net`과 공유 리소스/health
+템플릿을 사용한다.
 
-Kafbat renders its native `auth.type: OAUTH2` configuration into tmpfs, reads
-`kafbat_client_secret`, trusts the local CA and applies group-based RBAC. Its
-Traefik route uses `gateway-standard-chain@file`; the gateway is transport and
-header protection, while Kafbat itself performs authentication. No forwarding-auth gateway chain belongs on this native-OIDC route.
-The Kafka Connect REST route now adds `sso-errors`/`sso-auth`: the API can create
-connectors that resolve provider files, so anonymous gateway access was a
-credential-exfiltration path. `kafka_net` peers (including Kafbat) still reach
-port 8083 directly without authentication; that internal path is a recorded gap.
+Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
+`kafbat_client_secret`을 읽고, local CA를 신뢰하며, group 기반 RBAC를
+적용한다. 이 서비스의 Traefik route는 `gateway-standard-chain@file`을
+사용한다. gateway는 전송/헤더 보호를 담당하고, 인증 자체는 Kafbat이 수행한다.
+이 native-OIDC route에는 forwarding-auth gateway chain을 붙이면 안 된다.
+Kafka Connect REST route는 이제 `sso-errors`/`sso-auth`를 추가한다. 이 API는
+provider 파일을 참조하는 connector를 생성할 수 있으므로, 익명 gateway
+접근은 credential-exfiltration 경로였다. `kafka_net` peer(Kafbat 포함)는
+여전히 인증 없이 포트 8083에 직접 접근할 수 있다. 이 내부 경로는 기록된
+gap이다.
 
 ### Images, configuration and resource controls
 
-The Compose file owns pinned Confluent Kafka/Schema/Connect/REST, Kafbat and Kafka
-exporter image families; repository Renovate may propose updates and the version
-projection is derived. Broker keys include `CLUSTER_ID`, `KAFKA_PROCESS_ROLES`,
-quorum/listener/advertised-listener/log/replication settings and node IDs. Schema,
-Connect and REST use their namespaced keys; Kafbat uses
-`KAFKA_CLUSTERS_0_*`, `DYNAMIC_CONFIG_ENABLED`, and `KAFBAT_OAUTH_CLIENT_ID` plus
-the client-secret file. Brokers and Connect extend high stateful templates;
-Schema, REST and Kafbat medium infrastructure templates; exporter low and init job
-low. All long-running services declare health checks.
+Compose 파일은 핀된 Confluent Kafka/Schema/Connect/REST, Kafbat, Kafka
+exporter 이미지 계열을 소유한다. 저장소 Renovate가 업데이트를 제안하면 버전
+projection은 파생된다. broker 키에는 `CLUSTER_ID`, `KAFKA_PROCESS_ROLES`,
+quorum/listener/advertised-listener/log/replication 설정, node ID가 포함된다.
+Schema, Connect, REST는 각자의 네임스페이스 키를 사용하며, Kafbat은
+`KAFKA_CLUSTERS_0_*`, `DYNAMIC_CONFIG_ENABLED`, `KAFBAT_OAUTH_CLIENT_ID`와
+client-secret 파일을 사용한다. broker와 Connect는 high stateful 템플릿을,
+Schema/REST/Kafbat은 medium infrastructure 템플릿을, exporter는 low를, init
+job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선언한다.
 
 ### Static preflight and profile choice
 
@@ -84,38 +87,40 @@ docker compose --env-file .env.example --profile messaging config --services
 docker compose --env-file .env.example --profile messaging-cluster config --quiet
 ```
 
-Run from the repository root. The init job creates `infra-events` and
-`application-logs` with replication factor 3, so its bootstrap is valid only when
-three healthy brokers are available; do not treat the single-broker `messaging`
-selection as successful topic initialization without a separately approved fix.
-Starting services, creating topics or producing test records is runtime work.
+저장소 루트에서 실행한다. init job은 replication factor 3으로 `infra-events`와
+`application-logs`를 생성하므로, 건강한 broker 3개가 있어야만 bootstrap이
+유효하다. 별도로 승인된 fix 없이는 단일 broker `messaging` 선택을 topic
+초기화 성공으로 보지 않는다. 서비스 시작, topic 생성, 테스트 레코드 생성은
+runtime 작업이다.
 
 ### Change data capture (`cdc`)
 
-`cdc` selects the broker, Schema Registry, Connect, `mng-pg` and
-`debezium-db-provision`. The job runs the feature SQL in
-[`connect/debezium/provisioning/mng-pg.sql`](../../../infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql):
-a `debezium` login with `REPLICATION` but no superuser, `CONNECT`, `USAGE` and
-`SELECT` on the published schema (plus default privileges for later tables), a
-`debezium_heartbeat` schema it owns with one `heartbeat` table, and the
-publication `hyhome_app_publication` over exactly those two schemas. It never
-creates or drops replication slots, and it refuses to alter a role it did not
-create (roles carry the comment marker `hy-home:feature:debezium`).
+`cdc`는 broker, Schema Registry, Connect, `mng-pg`, `debezium-db-provision`을
+선택한다. 이 job은
+[`connect/debezium/provisioning/mng-pg.sql`](../../../infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql)의
+feature SQL을 실행한다: superuser는 아니지만 `REPLICATION` 권한을 가진
+`debezium` login, 게시된 schema에 대한 `CONNECT`, `USAGE`, `SELECT`(이후
+테이블에 대한 default privilege 포함), 하나의 `heartbeat` 테이블을 가진 자체
+소유 `debezium_heartbeat` schema, 그리고 정확히 이 두 schema에 대한
+`hyhome_app_publication` publication. 이 job은 replication slot을 생성하거나
+삭제하지 않으며, 자신이 생성하지 않은 role을 변경하지 않는다(role은
+`hy-home:feature:debezium` 주석 마커를 가진다).
 
-Connect renders `/tmp/connect-secrets/debezium.properties` from the
-`debezium_postgres_password` secret on every start (Java-properties escaping,
-mode 0600, tmpfs) and restricts `FileConfigProvider` to that directory with
-`allowed.paths`. The connector definition
-[`postgres-connector.json`](../../../infra/05-messaging/kafka/connect/debezium/postgres-connector.json)
-references `${file:/tmp/connect-secrets/debezium.properties:password}` and uses
-`pgoutput`, slot `hyhome_app_slot` and `publication.autocreate.mode=disabled`.
-Because `mng-pg` hosts several databases, WAL written by Keycloak, n8n or Airflow
-does not advance a slot on a quiet `app_db`; every 60 seconds the connector's
-`heartbeat.action.query` upserts `debezium_heartbeat.heartbeat`, and that change
-lets it confirm a newer LSN. This bounds retained WAL only while the connector
-runs; a stopped or paused connector still pins WAL up to `max_slot_wal_keep_size`.
+Connect는 시작할 때마다 `debezium_postgres_password` secret에서
+`/tmp/connect-secrets/debezium.properties`를 렌더링하고(Java-properties
+escaping, mode 0600, tmpfs), `FileConfigProvider`를 `allowed.paths`로 해당
+디렉터리에 제한한다. connector 정의
+[`postgres-connector.json`](../../../infra/05-messaging/kafka/connect/debezium/postgres-connector.json)은
+`${file:/tmp/connect-secrets/debezium.properties:password}`를 참조하고
+`pgoutput`, slot `hyhome_app_slot`, `publication.autocreate.mode=disabled`를
+사용한다. `mng-pg`는 여러 데이터베이스를 호스팅하므로, Keycloak, n8n,
+Airflow가 기록하는 WAL은 조용한 `app_db`의 slot을 진행시키지 않는다. 60초마다
+connector의 `heartbeat.action.query`가 `debezium_heartbeat.heartbeat`를
+upsert한다. 이 변경 덕분에 더 새로운 LSN을 확인할 수 있다. 이 방식은
+connector가 실행되는 동안에만 보존된 WAL을 제한한다. 중지되거나 일시정지된
+connector는 여전히 `max_slot_wal_keep_size`까지 WAL을 고정한다.
 
-These states are distinct and each needs its own evidence:
+다음 상태는 서로 구분되며 상태마다 자체 증거가 필요하다.
 
 | State | Evidence |
 | --- | --- |
@@ -125,35 +130,37 @@ These states are distinct and each needs its own evidence:
 | Snapshot complete | Connector metrics or log show the initial snapshot finished |
 | Changes captured | A test change appears on the `hyhome.app.*` topic |
 
-`mng-pg` declares `wal_level=logical`, `max_replication_slots`,
-`max_wal_senders` and `max_slot_wal_keep_size` (2048 MB by default). The
-running instance still uses its old command until an approved recreate, which
-restarts the management database for Keycloak, n8n, Airflow and others. Once a
-slot exists, WAL is retained until the connector confirms it, bounded by
-`max_slot_wal_keep_size`; exceeding it invalidates the slot and forces a new
-snapshot. Registering the connector, changing it or triggering a snapshot is a
-runtime change that needs an approval naming the connector and database.
+`mng-pg`는 `wal_level=logical`, `max_replication_slots`, `max_wal_senders`,
+`max_slot_wal_keep_size`(기본값 2048 MB)를 선언한다. 실행 중인 인스턴스는
+승인된 recreate 전까지 이전 command를 그대로 사용한다. recreate하면 Keycloak,
+n8n, Airflow 등을 위한 management database가 재시작된다. slot이 존재하면
+connector가 확인할 때까지 WAL이 보존되고 그 양은 `max_slot_wal_keep_size`로
+제한된다. 이 한도를 넘으면 slot이 무효화되고 새 snapshot이 강제된다. connector
+등록, 변경, snapshot 트리거는 connector와 데이터베이스를 명시한 승인이
+필요한 runtime 변경이다.
 
 ## Runbook Handoff
 
-Kafka recovery includes more than broker directories. Inventory topic data and
-configs, partition counts, consumer-group offsets, KRaft cluster metadata,
-Schema Registry `_schemas` history/IDs, Connect connector definitions and its
-config/offset/status topics. Prefer replay from an authoritative producer source
-or approved cross-cluster replication to a fresh isolated cluster. Raw broker
-log-directory reuse and live KRaft identity reuse are prohibited.
+Kafka 복구 범위는 broker 디렉터리보다 넓다. topic 데이터와 config,
+partition 수, consumer-group offset, KRaft cluster metadata, Schema Registry
+`_schemas` history/ID, Connect connector 정의와 그 config/offset/status
+topic을 목록으로 정리한다. 신뢰할 수 있는 producer source에서 replay하거나,
+새로 격리한 cluster로 승인된 cross-cluster replication을 하는 방식을 우선한다.
+원시 broker log-directory 재사용과 실행 중인 KRaft identity 재사용은 금지한다.
 
-[RUN-0036](../runbooks/0036-kafka.md) restores schemas before dependent records, recreates topic
-configuration, restores/repositions offsets, keeps connectors paused, and proves
-end offsets plus application consumption before cutover. An image or protocol
-upgrade requires official compatibility review for Kafka, Confluent components,
-Kafbat, clients and stored formats, with a current recovery artifact and rollback.
+[RUN-0036](../runbooks/0036-kafka.md)은 의존 레코드보다 먼저 schema를
+복원하고, topic 구성을 재생성하고, offset을 복원/재배치하고, connector를
+일시정지 상태로 유지하며, cutover 전에 end offset과 애플리케이션 소비를
+증명한다. 이미지나 프로토콜 업그레이드에는 Kafka, Confluent 구성 요소,
+Kafbat, 클라이언트, 저장 형식에 대한 공식 호환성 검토와 현재 recovery
+artifact 및 rollback이 필요하다.
 
 ### License and source boundary
 
-Apache Kafka and Kafbat are Apache-2.0 projects. Schema Registry, Connect and REST
-images come from Confluent and require separate current license/edition review;
-Cluster Linking or other edition-specific features are not declared or assumed.
+Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. Schema Registry, Connect,
+REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검토가
+필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
+않는다.
 
 ### Official references
 
@@ -167,13 +174,13 @@ Cluster Linking or other edition-specific features are not declared or assumed.
 
 ## Common Checks
 
-Confirm exact root profiles, services, health/resource controls, writable-state
-ownership, secret references, exposure and the engine-specific recovery boundary.
-A static pass is configuration evidence only; runtime and restore remain separate.
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
 ## Traceability
 
-- Artifact: `GDE-0036`; governing policy: `POL-0036`.
+- Artifact: `GDE-0036`; 거버넌스 정책: `POL-0036`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml` and the
   [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 

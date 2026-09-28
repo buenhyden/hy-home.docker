@@ -1,10 +1,10 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -84,12 +84,12 @@ created: "2026-05-10"
 
 ### Source-backed operating contract
 
-- **Purpose/classification/source**: `tempo` is an `OPTIONAL` trace store selected by `obs`/`tracing`; [Compose](../../../infra/06-observability/docker-compose.yml) and [Tempo config](../../../infra/06-observability/tempo/config/tempo.yaml) are authoritative.
-- **Flow/state**: Alloy receives OTLP and sends traces to Tempo. Durable blocks reside in SeaweedFS bucket `tempo-bucket`; `tempo-data:/var/tempo` holds ingest WAL, metrics-generator WAL, and local temporary blocks. Grafana queries Tempo.
-- **Secrets/dependencies/security**: `S3_ACCESS_KEY` and `seaweedfs_s3_tempo_secret_key` access object storage. SeaweedFS, Alloy, Grafana, gateway auth, root CA, and the declared networks are dependencies. Do not render credentials or expose OTLP/query routes beyond declared controls.
-- **Resources/normal use**: source limits are not headroom. Render at root, validate readiness, send a labeled test trace through Alloy, query it, and monitor WAL/object-store errors.
-- **Lifecycle**: quiesce trace intake, coordinate a consistent `tempo-bucket` backup with the SeaweedFS owner, and preserve local WAL/temp state/config at the same recovery point. Upgrade through supported versions and verify WAL replay plus historical/new traces.
-- **Upstream/license**: follow official [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/) and [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/). Tempo is AGPL-3.0 licensed.
+- **목적/분류/출처**: `tempo`는 `obs`/`tracing`이 선택하는 `OPTIONAL` trace store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Tempo config](../../../infra/06-observability/tempo/config/tempo.yaml)가 authoritative하다.
+- **Flow/state**: Alloy가 OTLP를 수신해 Tempo로 trace를 전송한다. 내구성 있는 block은 SeaweedFS bucket `tempo-bucket`에 있고, `tempo-data:/var/tempo`는 ingest WAL, metrics-generator WAL, local temporary block을 보관한다. Grafana가 Tempo를 query한다.
+- **Secrets/dependencies/security**: `S3_ACCESS_KEY`와 `seaweedfs_s3_tempo_secret_key`로 object storage에 접근한다. SeaweedFS, Alloy, Grafana, gateway auth, root CA와 선언된 network가 dependency다. Credential을 render하거나 OTLP/query route를 선언된 통제 이상으로 노출하지 않는다.
+- **Resources/normal use**: source의 limit은 headroom이 아니다. Root에서 render하고, readiness를 validate하고, Alloy를 통해 labeled test trace를 보내 query한 뒤 WAL/object-store error를 monitor한다.
+- **Lifecycle**: trace intake를 quiesce하고, SeaweedFS owner와 함께 `tempo-bucket`의 consistent backup을 조율하며, local WAL/temp state/config를 같은 recovery point에 보존한다. 지원되는 version으로 upgrade하고 WAL replay와 historical/new trace를 검증한다.
+- **Upstream/license**: 공식 [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/)와 [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/) 가이드를 따른다. Tempo는 AGPL-3.0 라이선스다.
 
 ## Common Checks
 

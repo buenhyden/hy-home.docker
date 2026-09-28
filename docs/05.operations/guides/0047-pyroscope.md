@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -79,12 +79,12 @@ created: "2026-05-10"
 
 ### Source-backed operating contract
 
-- **Purpose/classification/source**: `pyroscope` is an `OPTIONAL` continuous-profile store selected by `obs`/`profiling`; [Compose](../../../infra/06-observability/docker-compose.yml) and [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml) are authoritative.
-- **Flow/dependencies/security**: clients or an Alloy profile source would write profiles; Grafana queries them. Current Alloy config has a write sink but no profile source, so end-to-end collection is not proven. Traefik protects the route; Grafana, producers, storage, and the declared networks are dependencies.
-- **State/resources**: single-node filesystem state is under `pyroscope-data:/var/lib/pyroscope`; there are no service Docker Secrets. Source resource values are limits, not measured headroom.
-- **Normal use**: render from root, verify readiness with `profilecli ready`, ingest a labeled test profile only from an approved client, and query it from Pyroscope/Grafana.
-- **Lifecycle**: stop writes and take a consistent stopped filesystem snapshot; preserve config and producer labels. Upgrade with storage-format guidance, then verify historical/new profile queries and producer compatibility.
-- **Upstream/license**: follow official [storage](https://grafana.com/docs/pyroscope/latest/configure-server/storage/) and [deployment modes](https://grafana.com/docs/pyroscope/latest/reference-pyroscope-v2-architecture/deployment-modes/) guidance. Pyroscope is AGPL-3.0 licensed.
+- **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `OPTIONAL` continuous-profile store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
+- **Flow/dependencies/security**: client 또는 Alloy profile source가 profile을 write하고 Grafana가 query한다. 현재 Alloy config에는 write sink만 있고 profile source가 없어 end-to-end collection이 증명되지 않았다. Traefik이 route를 보호하며, Grafana, producer, storage와 선언된 network가 dependency다.
+- **State/resources**: single-node filesystem state는 `pyroscope-data:/var/lib/pyroscope` 아래에 있고, service Docker Secret은 없다. Source의 resource 값은 limit이지 측정된 headroom이 아니다.
+- **Normal use**: root에서 render하고, `profilecli ready`로 readiness를 확인하고, 승인된 client에서만 labeled test profile을 ingest해 Pyroscope/Grafana에서 query한다.
+- **Lifecycle**: write를 중지하고 consistent stopped filesystem snapshot을 만든다. Config와 producer label을 보존한다. Storage-format 가이드에 따라 upgrade한 뒤 historical/new profile query와 producer 호환성을 검증한다.
+- **Upstream/license**: 공식 [storage](https://grafana.com/docs/pyroscope/latest/configure-server/storage/)와 [deployment modes](https://grafana.com/docs/pyroscope/latest/reference-pyroscope-v2-architecture/deployment-modes/) 가이드를 따른다. Pyroscope는 AGPL-3.0 라이선스다.
 
 ## Common Checks
 

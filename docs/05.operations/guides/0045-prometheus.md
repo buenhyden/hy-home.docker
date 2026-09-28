@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -19,11 +19,11 @@ created: "2026-05-10"
 
 # Prometheus Usage Guide
 
-관련 구성요소의 현재 선언은 [버전 레지스트리](../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
+관련 구성요소의 현재 선언은 [버전 레지스트리](../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인한다.
 
 ## Usage
 
-`node-exporter` collects host metrics for Prometheus. Its host mounts and namespace grants are defined by Compose and require review before changing scope.
+`node-exporter`는 Prometheus를 위해 host metrics를 수집한다. Host mount와 namespace grant는 Compose에 정의되어 있고 scope를 바꾸기 전에 검토해야 한다.
 
 ### Overview
 
@@ -77,12 +77,12 @@ created: "2026-05-10"
    docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
    ```
 
-   Rule glob expansion must occur in the container. An unquoted host-side path
-   under `/etc/prometheus` does not exist on the host, and `promtool check
-   rules` accepts existing file arguments rather than expanding a literal
-   wildcard. The config check also verifies referenced credential files; while
-   the staged `openbao_token` is unprovisioned it can stop at that prerequisite,
-   so use the container-side rule check for independent rule syntax evidence.
+   Rule glob expansion은 container 내부에서 일어나야 한다. `/etc/prometheus` 아래
+   unquoted host-side path는 host에 존재하지 않으며, `promtool check
+   rules`는 literal wildcard를 확장하는 대신 존재하는 file argument만 받는다. Config
+   check은 참조된 credential file도 검증하는데 staged `openbao_token`이
+   unprovisioned 상태면 이 prerequisite에서 멈출 수 있다. 그래서 독립적인 rule syntax
+   evidence를 위해 container-side rule check을 사용한다.
 
 4. Target 상태는 Prometheus UI `Targets` page 또는 Prometheus API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이며, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
 
@@ -126,87 +126,87 @@ graph TD
 
 `prometheus.yml`은 Prometheus가 수집하는 scrape job의 source of truth다.
 
-- **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway and observability services.
+- **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway 및 observability services.
 - **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
 - **Applications**: Keycloak, n8n, Airflow, OpenBao, Ollama exporter.
 
 #### GPU metrics (DCGM Exporter, opt-in `obs-gpu`)
 
-`dcgm-exporter` is selected only by `obs-gpu`; neither the eight-profile
-operating command nor HOME starts it. It reserves every NVIDIA GPU through the
-Compose device reservation, runs without extra capabilities (the `SYS_ADMIN`
-grant for DCP profiling fields was removed because the host GPU cannot provide
-them) and exposes `9400` on `obs_net` only. Both `prometheus.yml` and
-`prometheus.dev.yml` always scrape `dcgm-exporter:9400` with label
-`domain="gpu"`, so the target is simply down while the profile is off; no
-per-target down alert exists for it.
+`dcgm-exporter`는 `obs-gpu`에서만 선택되며, eight-profile operating command도 HOME도
+이를 시작하지 않는다. Compose device reservation을 통해 모든 NVIDIA GPU를 예약하고,
+추가 capability 없이 실행되며(host GPU가 제공할 수 없어 DCP profiling field용
+`SYS_ADMIN` grant는 제거됨), `obs_net`에서만 `9400`을 노출한다. `prometheus.yml`과
+`prometheus.dev.yml` 모두 항상 `domain="gpu"` label로 `dcgm-exporter:9400`을
+scrape한다. 그래서 profile이 꺼져 있으면 target은 그냥 down 상태이고 per-target down
+alert는 없다.
 
-The Grafana dashboard `Infrastructure/dcgm-exporter.json` and the
-`alert_rules.local.gpu.yml` rules (temperature, XID, framebuffer) read DCGM
-metrics only. A present dashboard or a silent rule is not evidence of
-collection. The 2026-09-21 read-only host check found one GeForce GTX 1060 6 GB,
-an installed NVIDIA driver, the `nvidia` Docker runtime and the NVIDIA Container
-Toolkit (exact versions are Task evidence, not a pin). DCGM targets data-center GPUs; on this consumer card some fields may be
-missing, so collection is **unverified** until an approved run shows
-`up{job="dcgm-exporter"} == 1` and non-empty `DCGM_FI_DEV_GPU_TEMP` and
-`DCGM_FI_DEV_FB_USED` series with the expected `gpu`/`modelName` labels.
+Grafana dashboard `Infrastructure/dcgm-exporter.json`과 `alert_rules.local.gpu.yml`
+rule(temperature, XID, framebuffer)은 DCGM metric만 읽는다. Dashboard가 있거나
+rule이 조용하다고 해서 collection의 증거가 되지는 않는다. 2026-09-21 read-only host
+check에서 GeForce GTX 1060 6 GB 1대, 설치된 NVIDIA driver, `nvidia` Docker runtime,
+NVIDIA Container Toolkit을 확인했다(정확한 버전은 pin이 아니라 Task evidence다).
+DCGM은 data-center GPU를 대상으로 하며 이 consumer card에서는 일부 field가 누락될
+수 있다. 그래서 승인된 실행이 `up{job="dcgm-exporter"} == 1`과 비어있지 않은
+`DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_FB_USED` series를 예상되는 `gpu`/`modelName`
+label과 함께 보여주기 전까지 collection은 **미검증** 상태다.
 
 #### 2. Alerting Rule System
 
-Rules are partitioned into domain-specific files in `config/alert_rules/`.
+Rule은 `config/alert_rules/`에 domain별 file로 나뉘어 있다.
 
-- Local domain files use the `alert_rules.local.*.yml` naming pattern.
-- Kubernetes, Keycloak, the secret service (`alert_rules.vault.yml`, named after the `vault_` metric prefix OpenBao keeps) and recording rules are loaded as explicit files in `prometheus.yml`.
-- Rule changes must be validated before reload.
+- Local domain file은 `alert_rules.local.*.yml` naming pattern을 사용한다.
+- Kubernetes, Keycloak, secret service(`alert_rules.vault.yml`, OpenBao가 유지하는
+  `vault_` metric prefix에서 이름을 따옴)와 recording rule은 `prometheus.yml`에
+  explicit file로 loading된다.
+- Rule 변경은 reload 전에 validate해야 한다.
 
 #### 3. Storage (TSDB)
 
-- Prometheus data is persisted in the `prometheus-data` volume.
-- Current compose does not declare explicit retention flags.
-- Recording rules are used to pre-calculate expensive PromQL expressions.
+- Prometheus data는 `prometheus-data` volume에 저장된다.
+- 현재 compose는 explicit retention flag를 선언하지 않는다.
+- Recording rule로 비용이 큰 PromQL expression을 미리 계산한다.
 
 ### Integration Patterns
 
 #### Grafana DataSource
 
-Prometheus is the primary metrics datasource for Grafana dashboards.
+Prometheus는 Grafana dashboard의 primary metrics datasource다.
 
 #### Alertmanager Integration
 
-Prometheus evaluates rules on the configured `evaluation_interval` and dispatches active alerts to Alertmanager for deduplication and notification routing.
+Prometheus는 설정된 `evaluation_interval`로 rule을 평가하고, active alert를
+deduplication과 notification routing을 위해 Alertmanager로 전달한다.
 
 #### HTTP API for hy-home.k8s
 
-Machine clients that cannot pass SSO, such as the hy-home.k8s cluster, use the
-Prometheus HTTP API through Traefik at `https://prometheus.${DEFAULT_URL}/api/v1/`:
-Alloy remote write to `/api/v1/write` and Kiali queries to
-`/api/v1/query*`. The `prometheus-api` router admits only `/api/v1/` requests
-that carry a Basic `Authorization` header, and `prometheus-api-auth` checks Basic Auth against `INFRA-007`, which
-`gen-secrets.sh` derives from `PROMETHEUS_API_USERNAME` (`OBS-012`) and
-`secrets/observability/prometheus_api_password.txt` (`OBS-013`). The client
-needs that username and password, the Prometheus host name resolved to the
-Traefik bind address, and trust in the gateway certificate. Give cluster series
-a distinguishing external label such as `cluster`. The UI stays behind SSO,
-and so do the UI's own `/api/v1/` calls, which carry the SSO cookie and no
-Basic header; a signed-in browser is therefore not asked for a second login.
-No Prometheus host port is published. hy-home.k8s reads the credential from
-OpenBao `secret/platform/prometheus-api` through External Secrets, so a
-password rotation also updates that entry; the
-[integration runbook](../runbooks/0096-k8s-integration.md#rotating-the-prometheus-api-credential)
-covers all three places.
+hy-home.k8s cluster처럼 SSO를 통과할 수 없는 machine client는 Traefik을 통해
+`https://prometheus.${DEFAULT_URL}/api/v1/`에서 Prometheus HTTP API를 사용한다.
+Alloy는 `/api/v1/write`로 remote write하고, Kiali는 `/api/v1/query*`로 query한다.
+`prometheus-api` router는 Basic `Authorization` header를 가진 `/api/v1/` request만
+허용하고, `prometheus-api-auth`는 `gen-secrets.sh`가 `PROMETHEUS_API_USERNAME`
+(`OBS-012`)과 `secrets/observability/prometheus_api_password.txt`(`OBS-013`)에서
+유도한 `INFRA-007`에 대해 Basic Auth를 확인한다. Client는 해당 username과 password,
+Traefik bind address로 resolve된 Prometheus host name, gateway certificate에 대한
+신뢰가 필요하다. Cluster series에는 `cluster` 같은 구분되는 external label을 부여한다.
+UI는 SSO 뒤에 있고, UI 자체의 `/api/v1/` 호출도 SSO cookie를 가지고 Basic header
+없이 동작하므로 로그인된 browser에는 두 번째 로그인을 요구하지 않는다. Prometheus
+host port는 publish되지 않는다. hy-home.k8s는 External Secrets를 통해 OpenBao
+`secret/platform/prometheus-api`에서 credential을 읽으므로, password rotation은
+해당 entry도 갱신해야 한다. [integration runbook](../runbooks/0096-k8s-integration.md#rotating-the-prometheus-api-credential)이
+세 곳을 모두 다룬다.
 
 #### Keycloak Observation
 
-Prometheus scrapes `keycloak:9000` with `domain: "auth"` label in the current config.
+Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 scrape한다.
 
 ### Source-backed operating contract
 
-- **Purpose/classification/source**: `prometheus` is a `HOME` metrics/rules service and its mapped `node-exporter` is also `HOME`; `obs`/`obs-core`/`dev` plus narrower alerting/batch profiles select it. [Compose](../../../infra/06-observability/docker-compose.yml), scrape config, and rule files are authoritative.
-- **Flow/state**: Prometheus scrapes exporters/services, evaluates rules, sends alerts to Alertmanager, accepts explicitly configured remote-write, and stores local TSDB blocks/WAL in `prometheus-data:/prometheus`. No external long-term metrics store is declared.
-- **Secrets/dependencies/security**: `opensearch_exporter_password`, the Qdrant read-only key `qdrant_read_only_api_key` (AI-009), and staged `openbao_token` are scrape secrets. The tracked token/policy contract does not prove the running target loaded it. Exporters, Alertmanager, gateway auth, root CA, storage, and `obs_net` are dependencies; never expose secret-bearing rendered config.
-- **Resources/normal use**: source retention/resource flags are configuration, not headroom. Render from root, run `promtool` config/rules checks, verify readiness, targets, rule health, and a bounded query before changes.
-- **Lifecycle**: `--web.enable-lifecycle` and remote-write receiver are enabled, but `--web.enable-admin-api` is not. Therefore do not prescribe the online snapshot endpoint. Use an approved stopped consistent copy/storage snapshot, or separately approve and validate an admin-API design. Upgrade with TSDB compatibility review and verify WAL replay, queries, rules, alerts, and remote-write.
-- **Upstream/license**: follow official [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/). Prometheus is Apache-2.0 licensed.
+- **목적/분류/출처**: `prometheus`는 `HOME` metrics/rules service이며, mapping된 `node-exporter`도 `HOME`이다. `obs`/`obs-core`/`dev`와 더 좁은 alerting/batch profile이 이를 선택한다. [Compose](../../../infra/06-observability/docker-compose.yml), scrape config, rule file이 authoritative하다.
+- **Flow/state**: Prometheus는 exporter/service를 scrape하고, rule을 평가하고, Alertmanager로 alert를 보내며, explicit하게 설정된 remote-write를 받아들이고, `prometheus-data:/prometheus`에 local TSDB block/WAL을 저장한다. External long-term metrics store는 선언되어 있지 않다.
+- **Secrets/dependencies/security**: `opensearch_exporter_password`, Qdrant read-only key `qdrant_read_only_api_key`(AI-009), staged `openbao_token`이 scrape secret이다. Tracked token/policy contract는 실행 중인 target이 이를 loading했음을 증명하지 않는다. Exporter, Alertmanager, gateway auth, root CA, storage, `obs_net`이 dependency이며, secret이 포함된 rendered config는 절대 노출하지 않는다.
+- **Resources/normal use**: source의 retention/resource flag는 headroom이 아니라 configuration이다. Root에서 render하고, `promtool` config/rules check을 실행하고, readiness, target, rule health, bounded query를 변경 전에 확인한다.
+- **Lifecycle**: `--web.enable-lifecycle`과 remote-write receiver는 활성화되어 있지만 `--web.enable-admin-api`는 아니다. 따라서 online snapshot endpoint를 처방하지 않는다. 승인된 stopped consistent copy/storage snapshot을 사용하거나 admin-API design을 별도로 승인하고 검증한다. TSDB 호환성을 검토하며 upgrade하고 WAL replay, query, rule, alert, remote-write를 검증한다.
+- **Upstream/license**: 공식 [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/) 가이드를 따른다. Prometheus는 Apache-2.0 라이선스다.
 
 ## Common Checks
 

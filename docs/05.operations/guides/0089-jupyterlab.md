@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -21,56 +21,60 @@ created: "2026-09-21"
 
 ### Purpose and classification
 
-JupyterLab is an OPTIONAL single-user notebook server selected only by
-`data-science`, which also selects MLflow. It is outside HOME and the current
-eight-profile operating command.
+JupyterLab은 `data-science`만 선택하는 OPTIONAL single-user notebook
+server이며 `data-science`는 MLflow도 함께 선택한다. HOME에도, 현재 8개
+profile 운용 명령에도 들어 있지 않다.
 
 ### Current implementation
 
-- [JupyterLab Compose](../../../infra/11-laboratory/jupyterlab/docker-compose.yml)
-  builds a scipy-notebook image with pinned libraries and runs one Jupyter Server.
-- Notebooks live in `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`, outside the
-  repository. The bind uses `create_host_path: false`, so a missing directory
-  fails the start instead of creating a root-owned one that UID 1000 cannot write.
-- The server requires the `jupyter_token` secret. Startup refuses a token
-  shorter than 16 characters.
+- [JupyterLab Compose](../../../infra/11-laboratory/jupyterlab/docker-compose.yml)는
+  pinned library를 가진 scipy-notebook image를 빌드하고 Jupyter Server 하나를
+  실행한다.
+- notebook은 repository 밖의 `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`에
+  있다. bind에 `create_host_path: false`를 쓰므로 디렉터리가 없으면
+  UID 1000이 쓸 수 없는 root 소유 디렉터리를 만드는 대신 시작에
+  실패한다.
+- server에는 `jupyter_token` secret이 필요하며 16자 미만의 token이면 시작을
+  거부한다.
 
 ### Access paths and isolation
 
 | Path | Control | What it does not provide |
 | --- | --- | --- |
-| Browser route | Gateway SSO, then the server token (cookie afterwards); REST and kernel WebSockets follow the same route | Per-user identity inside Jupyter; every SSO user who knows the token is the same UID 1000 |
-| Direct `ai_net` access to port 8888 | Server token | Network isolation; peers can attempt the API |
-| Kernels and terminals | Run as UID 1000 in the container | Isolation between people, CPU/memory quotas per user |
+| 브라우저 route | Gateway SSO, 이후 server token(이후 cookie); REST와 kernel WebSocket도 같은 route를 따름 | Jupyter 내부의 user별 identity; token을 아는 모든 SSO user가 동일한 UID 1000이 됨 |
+| port 8888에 대한 직접 `ai_net` access | Server token | Network isolation; peer가 API를 시도할 수 있음 |
+| Kernel과 terminal | container 내 UID 1000으로 실행 | 사람 간 isolation, user별 CPU/memory quota |
 
-SSO proves who reached the gateway; it does not isolate kernels or files. Real
-multi-user isolation needs JupyterHub with a spawner and per-user storage. That
-is a separate design and dependency decision; do not paste JupyterHub settings
-into this single-user server.
+SSO는 누가 gateway에 도달했는지 증명할 뿐, kernel이나 파일을 격리하지
+않는다. 진정한 multi-user isolation에는 spawner와 user별 storage를 가진
+JupyterHub가 필요하다. 이는 설계와 dependency를 따로 결정할 일이다. 이
+single-user server에 JupyterHub 설정을 붙여넣지 않는다.
 
 ### MLflow from notebooks
 
-`MLFLOW_TRACKING_URI` points to `http://mlflow:5000` on `ai_net`, which
-bypasses the browser SSO route and has no MLflow-level authentication. Runs
-logged from a notebook are not attributed to an SSO user. Artifacts upload
-through the MLflow proxy, so the notebook holds no object-storage credential. If MLflow
-authentication is adopted later, give notebooks a dedicated MLflow identity
-instead of reopening an unauthenticated API.
+`MLFLOW_TRACKING_URI`는 `ai_net`의 `http://mlflow:5000`을 가리킨다. 이 경로는
+브라우저 SSO route를 우회하며 MLflow 수준의 인증이 없다. notebook에서 기록한
+run은 SSO user에게 귀속되지 않는다. artifact는 MLflow proxy를 통해
+upload되므로 notebook은 object-storage credential을 보유하지 않는다. 나중에
+MLflow 인증을 채택하면 인증되지 않은 API를 다시 열지 말고 notebook에
+전용 MLflow identity를 부여한다.
 
 ### Normal use and backup
 
-Stop the server before copying the work directory. Treat notebooks and outputs
-as potentially sensitive data. Rebuild the image to change libraries; keep the
-MLflow client version aligned with the server.
+work 디렉터리를 복사하기 전에 server를 멈춘다. notebook과 output은 민감할
+수 있는 data로 취급한다. library를 바꾸려면 image를 재빌드하고, MLflow
+client version을 server와 맞춘다.
 
 ## Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=data-science bash scripts/validation/validate-docker-compose.sh`
-- Unauthenticated request to the route returns 401 (gateway); a request to `/api/status` without the token returns 403 (server).
+- route에 인증 없이 요청하면 401(gateway)을 반환하고, token 없이 `/api/status`에
+  요청하면 403(server)을 반환한다.
 
 ## Runbook Handoff
 
-Use the [runbook](../runbooks/0089-jupyterlab.md) for token, start, kernel and restore problems.
+token, 시작, kernel, restore 문제에는
+[runbook](../runbooks/0089-jupyterlab.md)을 사용한다.
 
 ## Traceability
 
@@ -81,6 +85,6 @@ Use the [runbook](../runbooks/0089-jupyterlab.md) for token, start, kernel and r
 
 ## Related Documents
 
-- [Image Dockerfile](../../../infra/11-laboratory/jupyterlab/Dockerfile) and [derived version projection](../../../infra/tech-stack.versions.json)
+- [Image Dockerfile](../../../infra/11-laboratory/jupyterlab/Dockerfile) 및 [derived version projection](../../../infra/tech-stack.versions.json)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
 - [Jupyter Docker Stacks common options](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html)
