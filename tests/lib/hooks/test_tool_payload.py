@@ -53,6 +53,20 @@ class NativeEditPayloadTests(unittest.TestCase):
             edit_targets(self.root, data),
         )
 
+    def test_session_scratchpad_is_not_a_repository_target(self) -> None:
+        scratch = "/tmp/claude-1000/-home-user-repo/0123abcd/scratchpad/run/final.md"
+        self.assertEqual(
+            (),
+            edit_targets(self.root, {"tool_name": "Write", "tool_input": {"file_path": scratch}}),
+        )
+        for path in (
+            "/tmp/claude-1000/-home-user-repo/0123abcd/scratchpad/../escape.md",
+            "/tmp/claude-1000/-home-user-repo/0123abcd/notes.md",
+            "/tmp/claude-1000/scratchpad/final.md",
+        ):
+            with self.subTest(path=path), self.assertRaises(PayloadError):
+                edit_targets(self.root, {"tool_name": "Write", "tool_input": {"file_path": path}})
+
     def test_unsafe_paths_fail_before_consumers_can_write(self) -> None:
         outside = self.root.parent / "outside.txt"
         (self.root / "link").symlink_to(self.root.parent, target_is_directory=True)
