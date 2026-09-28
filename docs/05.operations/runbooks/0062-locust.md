@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -16,71 +16,69 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use when target health degrades during a test, workers disconnect, the master UI
-fails, scenario files are damaged, or a Locust image/dependency upgrade needs an
-approved canary. All commands run from the repository root.
+test 중 target health가 저하되거나, worker가 연결이 끊기거나, master UI가 실패하거나,
+scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
+사용한다. 모든 command는 저장소 루트에서 실행한다.
 
 ## Procedure
 
-1. Record target, users, spawn rate, duration, worker count, scenario digest, and
-   the first failing target SLI. Do not collect cookies, tokens, or response bodies.
-2. Stop load before diagnosis:
+1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
+   실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
+2. 진단 전에 load를 중지한다.
 
    ```bash
    docker compose --profile testing stop locust-worker locust-master
    ```
 
-3. Capture bounded status and logs:
+3. bounded status와 로그를 캡처한다.
 
    ```bash
    docker compose --profile testing ps locust-master locust-worker
    docker compose --profile testing logs --tail=200 locust-master locust-worker
    ```
 
-4. Confirm `docker compose --profile testing config --quiet`. Inspect the master
-   health failure before recreating a worker. If the target SLI has not recovered,
-   leave Locust stopped and escalate to the target owner.
-5. When the master is healthy and restart is approved, start the master first,
-   then the worker:
+4. `docker compose --profile testing config --quiet`로 확인한다. worker를 재생성하기
+   전에 master health failure를 점검한다. target SLI가 회복되지 않았으면 Locust를
+   중지 상태로 두고 target owner에게 escalation한다.
+5. master가 healthy이고 재시작이 승인되면 master를 먼저 시작하고 worker를 시작한다.
 
    ```bash
    docker compose --profile testing up -d locust-master
    docker compose --profile testing up -d locust-worker
    ```
 
-6. For scenario recovery, keep both services stopped, copy the current
-   bind-backed scenario directory to a protected quarantine path, restore the
-   reviewed files into a separate directory, compare hashes, and only then
-   replace the active files. Never restore captured credentials or raw personal data.
-7. For an upgrade, rebuild from the reviewed Dockerfile, start one master and one
-   worker, and run a small separately approved canary. Roll back the image/build
-   change if workers fail to register or statistics diverge. Keep the target
-   stopped between attempts.
+6. scenario 복구 시에는 두 service를 모두 중지한 상태로 두고, 현재 bind-backed scenario
+   디렉터리를 protected quarantine path로 복사하고, 검토된 파일을 별도 디렉터리로
+   복원하고, hash를 비교한 뒤에만 active file을 교체한다. 캡처된 credential이나 raw
+   personal data는 절대 복원하지 않는다.
+7. upgrade 시에는 검토된 Dockerfile에서 rebuild하고, master 하나와 worker 하나를
+   시작하여 별도로 승인된 소규모 canary를 실행한다. worker 등록에 실패하거나 통계가
+   벌어지면 image/build 변경을 롤백한다. 시도 사이에는 target을 중지 상태로 유지한다.
 
 ### Verification Steps
 
-- Master UI health succeeds and the expected worker count registers.
-- A separately approved canary stays within the named target SLI.
-- The final full run is either explicitly approved or Locust remains stopped.
-- Scenario/result restore and upgrade rehearsal remain **unexecuted** until a
-  Task records the protected paths, commands, and observed results.
+- Master UI health가 성공하고 예상 worker count가 등록된다.
+- 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
+- 최종 full run은 명시적으로 승인되었거나 Locust가 중지 상태로 남아 있다.
+- scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
+  관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
 ## Evidence
 
-Record command exits, timestamps, configuration commit, scenario digest, worker
-count, sanitized aggregates, target SLI, and final stopped/running disposition.
+command exit, timestamp, configuration commit, scenario digest, worker count,
+sanitized aggregate, target SLI, 최종 stopped/running 상태를 기록한다.
 
 ## Rollback or Recovery
 
-Stop Locust, restore the prior reviewed scenario/build in isolation, then repeat
-static validation and a small approved canary. No action in this runbook rolls
-back the target service or repairs target data.
+Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
+validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
+롤백하거나 target data를 복구하지 않는다.
 
 ## Escalation
 
-Escalate when target health does not recover after load stops, workers cannot
-register against a healthy master, scenario provenance is unknown, or secrets or
-personal data appear in logs/results.
+load 중지 후에도 target health가 회복되지 않거나, worker가 healthy master에 등록되지
+않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
+나타날 때 escalation한다.
 
 ## Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -16,21 +16,21 @@ created: "2026-09-22"
 
 ## When to Use
 
-Use to prepare the backup repositories, switch `mng-pg` to the pgBackRest
-image, run or verify a backup, restore PostgreSQL to a point in time in
-isolation, restore files from Restic, or delete old snapshots. Every step that
-restarts a service, writes a repository or deletes snapshots needs its own
-approval naming the target.
+backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
+backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
+복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제할 때
+사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
+모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
 ## Procedure
 
-Run commands from the repository root of the running checkout. Never print
-secret files or the rendered Compose model.
+실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
+rendered Compose model을 절대 출력하지 않는다.
 
 ### 1. Prepare `.env`, directories and keys (once, before the change is checked out on the host)
 
-Sync `.env` first: until `BACKUP_STATE_REPO_DIR` is set, recreating `mng-pg`
-fails on a missing repository path.
+먼저 `.env`를 sync한다. `BACKUP_STATE_REPO_DIR`가 설정되기 전까지는
+`mng-pg`를 재생성할 때 repository 경로가 없어 실패한다.
 
 ```bash
 bash scripts/operations/gen-secrets.sh --sync-metadata
@@ -41,18 +41,18 @@ sudo install -d -o 70 -g 70 -m 0750 "$state/pgbackrest"
 install -d -m 0700 "$state/restic" "$state/staging" "$host/restic"
 ```
 
-Expected: `.env` gains `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
-`BACKUP_STATE_MAX_GIB` and `POSTGRES_ARCHIVE_TIMEOUT` with existing values
-untouched, the directories exist with the listed owners, and BKP-001/BKP-002
-files exist. Copy both key
-values to offline custody before the first backup. Stop if a path already holds
-data you did not create.
+Expected: `.env`에 `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
+`BACKUP_STATE_MAX_GIB`, `POSTGRES_ARCHIVE_TIMEOUT`가 기존 값은 그대로 둔 채
+추가되고, 나열된 owner로 디렉터리가 존재하며, BKP-001/BKP-002 파일이
+존재한다. 첫 backup 전에 두 key 값을 offline custody로 복사한다. 경로에
+이미 자신이 만들지 않은 데이터가 있으면 중단한다.
 
 ### 2. Switch `mng-pg` to the pgBackRest image (approval: restarts every management-DB consumer)
 
-Preconditions: a fresh logical dump to a 0600 file, for example
-`docker exec mng-pg sh -c 'pg_dumpall -U "$POSTGRES_USER"' > "$state/pre-pgbackrest.sql"`,
-and at least 20 GiB free under the state directory.
+전제 조건: 예를 들어
+`docker exec mng-pg sh -c 'pg_dumpall -U "$POSTGRES_USER"' > "$state/pre-pgbackrest.sql"`로
+0600 파일에 만든 최신 logical dump, 그리고 state 디렉터리 아래 최소 20 GiB의
+여유 공간.
 
 ```bash
 docker compose build mng-pg
@@ -61,13 +61,14 @@ docker exec -u postgres mng-pg pgbackrest --stanza=mng stanza-create
 docker exec -u postgres mng-pg pgbackrest --stanza=mng check
 ```
 
-Expected: `mng-pg` healthy, `stanza-create` and `check` end with `completed
-successfully`, `SHOW archive_mode` returns `on`. Until `stanza-create` succeeds,
-`archive_command` fails and WAL stays in `pg_wal`; past
-`archive-push-queue-max` (4 GiB) pgBackRest drops WAL to protect the disk,
-which leaves a point-in-time recovery gap until the next full backup.
-Rollback: restore the previous image line in Compose and `up -d --no-deps mng-pg`;
-set `archive_mode=off` first if the repository is unavailable.
+Expected: `mng-pg`가 healthy하고, `stanza-create`와 `check`가 `completed
+successfully`로 끝나며, `SHOW archive_mode`가 `on`을 반환한다.
+`stanza-create`가 성공하기 전까지 `archive_command`는 실패하고 WAL은
+`pg_wal`에 남는다. `archive-push-queue-max`(4 GiB)를 넘으면 pgBackRest는
+disk를 보호하기 위해 WAL을 폐기하며, 이는 다음 full backup 전까지
+point-in-time recovery 공백을 남긴다.
+Rollback: Compose에서 이전 image line을 복원하고 `up -d --no-deps mng-pg`를
+실행한다. repository를 사용할 수 없으면 먼저 `archive_mode=off`를 설정한다.
 
 ### 3. Initialize Restic and install the timer (once)
 
@@ -79,7 +80,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now hyhome-backup.timer
 ```
 
-`init` skips a repository that already exists and never re-keys it.
+`init`은 이미 존재하는 repository를 건너뛰며 절대 re-key하지 않는다.
 
 ### 4. Run or verify a backup
 
@@ -90,25 +91,25 @@ docker exec -u postgres mng-pg pgbackrest --stanza=mng info
 docker compose --profile backup run --rm --no-deps restic snapshots
 ```
 
-Expected: exit 0, a new pgBackRest backup, two new Restic snapshots, `restic
-check` "no errors were found", and an empty `staging/`. Exit 75 means another
-run holds the lock; exit 64 means a missing directory, less than 20 GiB free,
-or a repository on the same filesystem as, or inside, its source. A run that
-logs "over the 5 GiB budget; Restic backup skipped" exits 1 with pgBackRest
-done and Restic untouched: review the logged sizes and request the approved
-`forget-prune` (step 7) or a larger budget. The unit stops after four hours; staging is still
-emptied, and a stale Restic lock is cleared with `restic unlock` once no Restic
-process runs.
+Expected: exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, `restic
+check` "no errors were found", and an empty `staging/`. exit 75는 다른 run이 lock을
+쥐고 있다는 뜻이고, exit 64는 디렉터리 누락, 20 GiB 미만의 여유 공간, 또는
+repository가 source와 같은 filesystem 위에 있거나 그 내부에 있다는 뜻이다.
+"over the 5 GiB budget; Restic backup skipped"를 로그에 남기는 run은 exit 1로
+끝나며 pgBackRest는 완료되고 Restic은 건드리지 않는다. 기록된 크기를 검토하고
+승인된 `forget-prune`(step 7) 또는 더 큰 budget을 요청한다. unit은 4시간 후
+정지하며, staging은 그래도 비워지고, 실행 중인 Restic 프로세스가 없을 때
+`restic unlock`으로 stale Restic lock을 해제한다.
 
-When SeaweedFS is running, the run also pauses vacuum and exports filer
-metadata; error text from `weed shell`, an empty export, or only one of master
-and filer running makes the run exit 1 (RUN-0024).
+SeaweedFS가 실행 중이면 run은 vacuum도 일시 정지하고 filer metadata를
+export한다. `weed shell`의 오류 텍스트, 빈 export, master와 filer 중 하나만
+실행 중인 경우 run은 exit 1로 끝난다(RUN-0024).
 
 ### 5. Point-in-time restore of `mng-pg` into isolation
 
-Restore into a new directory, never over the live `PGDATA`. Set `SCRATCH_ROOT`
-to a directory on the data disk: `mktemp` alone lands on the system disk, which
-a full restore can fill. Image names come from Compose, which owns the pins:
+live `PGDATA` 위가 아닌 새 디렉터리로 복원한다. `SCRATCH_ROOT`를 data disk
+위의 디렉터리로 설정한다. `mktemp`만 쓰면 system disk에 놓이며, full restore가
+이를 가득 채울 수 있다. image 이름은 pin을 소유하는 Compose에서 가져온다.
 
 ```bash
 pg_image="$(docker compose config --images mng-pg)"
@@ -128,9 +129,9 @@ docker run --rm \
       --type=time "--target='"$target"'" --target-action=promote --archive-mode=off restore'
 ```
 
-Start the restored copy with the same image entrypoint, the cipher secret and
-the repository mounted read-only, on an internal network, because recovery
-reads WAL through `archive-get`:
+recovery가 `archive-get`으로 WAL을 읽기 때문에, 복원된 copy는 동일한 image
+entrypoint, cipher secret, read-only로 mount한 repository를 사용해 internal
+network에서 시작한다.
 
 ```bash
 docker network create --internal restore-check
@@ -143,15 +144,14 @@ docker run -d --name mng-pg-restore-check --network restore-check \
   "$pg_image" postgres -c archive_mode=off
 ```
 
-Expected log lines: `recovery stopping before commit`, `selected new timeline
-ID`. Verify application rows with `psql`, then remove the container and network
-and delete the scratch copy. Replacing the live cluster is a separate approved
-cutover.
+Expected log line: `recovery stopping before commit`, `selected new timeline
+ID`. `psql`로 application row를 검증한 뒤 container와 network를 제거하고
+scratch copy를 삭제한다. live cluster 교체는 별도의 승인된 cutover이다.
 
 ### 6. Restore files from Restic
 
-Restore into a scratch directory with a plain container; the hardened job has
-no rights to reapply ownership:
+일반 container로 scratch 디렉터리에 복원한다. hardened job은 ownership을
+다시 적용할 권한이 없다.
 
 ```bash
 restic_image="$(docker compose --profile backup config --images restic)"
@@ -162,12 +162,13 @@ docker run --rm -e RESTIC_PASSWORD_FILE=/pw \
   "$restic_image" -r /repo --no-lock restore latest --target /out --include /src/state/exports
 ```
 
-Use `"$host/restic"` for `secrets/` and `.env`.
-Compare with `sha256sum`, then copy only the reviewed files back.
+`secrets/`와 `.env`에는 `"$host/restic"`을 사용한다.
+`sha256sum`으로 비교한 뒤 검토된 파일만 다시 복사한다.
 
-SeaweedFS is restored as one set: `--include /src/state/volumes/data/seaweedfs`
-together with `/src/state/exports/seaweedfs-filer.meta` from the same snapshot,
-then RUN-0024 (volume and master trees in place, empty filer store,
+SeaweedFS는 하나의 세트로 복원한다: 같은 snapshot의
+`--include /src/state/volumes/data/seaweedfs`와
+`/src/state/exports/seaweedfs-filer.meta`를 함께 사용한 뒤 RUN-0024를
+따른다(volume과 master tree가 제자리에 있고, filer store가 비어 있으며,
 `fs.meta.load`).
 
 ### 7. Delete old snapshots (approval: irreversible)
@@ -177,30 +178,30 @@ docker compose --profile backup run --rm --no-deps \
   -e HYHOME_PRUNE_CONFIRM=delete-old-snapshots restic forget-prune
 ```
 
-Keeps 30 daily, 13 weekly and 12 monthly snapshots per set. pgBackRest expires
-its own backups by `repo1-retention-full=2`.
+세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다.
+pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 
 ## Evidence
 
-Record the command, exit status, pgBackRest backup label, Restic snapshot IDs,
-restored row counts or file hashes and elapsed time. Never record key values,
-dump contents or rendered configuration.
+command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
+count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
+configuration은 절대 기록하지 않는다.
 
 ## Rollback or Recovery
 
-- `archive_command` failing: `pgbackrest --stanza=mng check` shows the cause;
-  fix the repository path or ownership, or set `archive_mode=off` with approval
-  before `pg_wal` fills the disk ([RUN-0035](0035-storage-exhaustion.md)).
-- Wrong or lost key: pgBackRest `info` reports `status: error`; Restic reports
-  `wrong password or no key found`. Recover the key from offline custody; there
-  is no other way to read the repository.
-- Interrupted Restic run: rerun; `restic unlock` only after confirming no
-  other Restic process runs.
+- `archive_command` 실패: `pgbackrest --stanza=mng check`가 원인을 보여준다.
+  `pg_wal`이 disk를 채우기 전에 repository 경로나 ownership을 고치거나,
+  approval을 받아 `archive_mode=off`를 설정한다([RUN-0035](0035-storage-exhaustion.md)).
+- 잘못되었거나 잃어버린 key: pgBackRest `info`가 `status: error`를 보고하고
+  Restic은 `wrong password or no key found`를 보고한다. offline custody에서
+  key를 복구한다. repository를 읽을 다른 방법은 없다.
+- 중단된 Restic run: 다시 실행한다. 다른 Restic 프로세스가 실행 중이지
+  않음을 확인한 후에만 `restic unlock`한다.
 
 ## Escalation
 
-Escalate to the owner when a restore rehearsal fails, when both disks report
-errors, or when a key is lost.
+restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
+잃어버렸을 때 owner에게 escalation한다.
 
 ## Traceability
 

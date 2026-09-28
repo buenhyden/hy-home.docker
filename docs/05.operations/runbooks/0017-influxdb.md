@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0017"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: InfluxDB 3 Core service readiness, database/endpoint verification, and unprovisioned-token escalation.
+> Scope: InfluxDB 3 Core service readiness, database/endpoint 검증, unprovisioned-token escalation.
 
 이 런북은 InfluxDB 3 Core service가 unhealthy이거나 database/endpoint readiness 또는 token-provisioning 문제가 의심될 때 사용한다.
 
@@ -49,7 +49,7 @@ created: "2026-05-17"
    python3 scripts/validation/check-document-links.py --mode all
    ```
 
-2. After separate runtime-read approval, inspect the root-project service state and logs without rendering secrets.
+2. 별도의 runtime-read approval을 받은 후, secret을 노출하지 않고 root-project service 상태와 로그를 확인한다.
 
    ```bash
    docker compose --profile influxdb ps influxdb
@@ -66,40 +66,40 @@ created: "2026-05-17"
 
 ### Verification Steps
 
-- [ ] compose file exists and docs implementation alignment passes.
-- [ ] primary v3 endpoint returns `200`, `204`, or `401` as accepted by compose healthcheck.
-- [ ] write endpoint/schema contract is `POST /api/v3/write_lp?db=<operator-selected-database>`; source-only validation cannot prove authorization and no write is sent during a readiness check.
-- [ ] final evidence records compose file, container state, and whether escalation was needed.
+- [ ] compose file이 존재하고 docs implementation alignment가 통과한다.
+- [ ] primary v3 endpoint가 compose healthcheck가 허용하는 `200`, `204`, `401` 중 하나를 반환한다.
+- [ ] write endpoint/schema contract는 `POST /api/v3/write_lp?db=<operator-selected-database>`이다. source-only validation으로는 authorization을 증명할 수 없으며 readiness check 중에는 어떤 write도 전송하지 않는다.
+- [ ] 최종 evidence에 compose file, container 상태, escalation 필요 여부를 기록한다.
 
 ### Observability and Evidence Sources
 
 - **Logs**: `docker compose ... logs influxdb --tail 100`
-- **Metrics**: N/A - no metrics endpoint is declared in the InfluxDB compose.
-- **Evidence**: compose file selected, health response code, token-provisioning escalation state, volume pressure summary
+- **Metrics**: N/A - InfluxDB compose에 선언된 metrics endpoint가 없다.
+- **Evidence**: 선택한 compose file, health 응답 코드, token-provisioning escalation 상태, volume pressure 요약
 
 ### Planned isolated backup and restore
 
-This procedure is documented from upstream guidance and **has not been executed in this task**.
+이 절차는 upstream guidance를 바탕으로 문서화된 것이며 **이 task에서 실행되지 않았다**.
 
-1. Record `node0`, the source image compatibility boundary, database list, data/plugin bind paths, available space, owners, and an approved destination outside the live volume. Quiesce writers or schedule downtime; a live recursive copy is not an accepted backup.
-2. After runtime/data approval, stop or drain writes and copy the `node0` object-store content in the upstream order: `snapshots/`, `dbs/`, `wal/`, `catalog/`, then `_catalog_checkpoint`. Exclude regenerated `table-snapshots/`. Preserve ownership, modes, a manifest, and checksums.
-3. Create a fresh isolated target with the same node ID and a compatible InfluxDB 3 Core image. Restore into an empty data directory; never overlay the active bind path.
-4. Start only the isolated target. Confirm readiness, enumerate expected databases/tables, compare representative time ranges and row counts, test an authenticated query with a separately supplied credential, and retain logs plus checksum evidence.
-5. On any catalog/WAL error or validation mismatch, stop the target, discard the failed isolated target, and retry from an untouched recovery copy. Do not repair or replace the live volume in place.
-6. Cutover, restart, retention changes, or deletion require a separate approval naming the target and rollback window. Until a rehearsal records success, restoration remains unverified.
+1. `node0`, source image 호환 경계, database 목록, data/plugin bind 경로, 가용 공간, owner, live volume 외부의 승인된 목적지를 기록한다. writer를 정지시키거나 downtime을 예약한다. live recursive copy는 허용된 backup이 아니다.
+2. runtime/data approval을 받은 후 write를 중지하거나 drain하고, `node0` object-store 내용을 upstream 순서(`snapshots/`, `dbs/`, `wal/`, `catalog/`, 그 다음 `_catalog_checkpoint`)대로 복사한다. 재생성되는 `table-snapshots/`는 제외한다. ownership, mode, manifest, checksum을 보존한다.
+3. 동일한 node ID와 호환되는 InfluxDB 3 Core image로 새 isolated target을 만든다. 빈 data directory로 복원하며, active bind 경로에는 절대 덮어쓰지 않는다.
+4. isolated target만 시작한다. readiness를 확인하고, 예상 database/table을 나열하고, 대표 시간 범위와 row count를 비교하고, 별도로 제공된 credential로 authenticated query를 테스트하고, 로그와 checksum evidence를 보존한다.
+5. catalog/WAL 오류나 validation mismatch가 있으면 target을 중지하고 실패한 isolated target을 폐기한 뒤 손대지 않은 recovery copy에서 다시 시도한다. live volume을 제자리에서 수리하거나 교체하지 않는다.
+6. cutover, restart, retention 변경, 삭제는 target과 rollback window를 명시한 별도 approval이 필요하다. rehearsal이 성공을 기록하기 전까지 restoration은 검증되지 않은 상태다.
 
 ## Evidence
 
-- Record compose file, health response code, token-provisioning escalation state, log summary, and final action.
-- Do not record secret values.
+- compose file, health 응답 코드, token-provisioning escalation 상태, 로그 요약, 최종 조치를 기록한다.
+- secret 값은 기록하지 않는다.
 
 ## Rollback or Recovery
 
-Keep the original service and bind paths unchanged during rehearsal. A failed restore rolls back by destroying only the isolated target and returning to the unchanged source; it does not authorize copying files into the live path.
+rehearsal 동안 원본 service와 bind 경로를 변경하지 않는다. 실패한 restore는 isolated target만 폐기하고 변경되지 않은 원본으로 되돌아가는 방식으로 rollback한다. live 경로로 파일을 복사하는 것을 허용하지 않는다.
 
 ## Escalation
 
-Escalate when token provisioning or authenticated write acceptance is needed, health does not match accepted response codes, disk pressure requires cleanup, or the observed database/endpoint contract differs from source.
+token provisioning이나 authenticated write acceptance가 필요할 때, health가 허용된 응답 코드와 일치하지 않을 때, disk pressure로 cleanup이 필요할 때, 관찰된 database/endpoint contract가 source와 다를 때 escalation한다.
 
 ## Traceability
 

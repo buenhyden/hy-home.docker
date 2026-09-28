@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -16,13 +16,13 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use for approved static diagnosis, backup planning or isolated recovery of this
-exact subject. Live writes, restore, cutover, cleanup and credential changes need
-a separately approved task.
+이 subject에 대한 승인된 static diagnosis, backup 계획, isolated recovery에
+사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
+승인된 task가 필요하다.
 
 ## Procedure
 
-From the repository root:
+repository root에서 실행한다.
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
@@ -30,91 +30,95 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-The rehearsal renders the real services on disposable data. It checks that
-anonymous and wrong-credential requests are refused, that filer and volume
-HTTP need a JWT, that gRPC requires a client certificate, the consumer S3 API,
-persistence across restart, a read failing while the volume server is down,
-and backup and restore into empty stores.
+rehearsal은 disposable data에서 실제 service를 렌더링한다. anonymous 및
+wrong-credential 요청이 거부되는지, filer와 volume HTTP가 JWT를 요구하는지,
+gRPC가 client certificate를 요구하는지, consumer S3 API, restart 후
+persistence, volume server가 다운된 동안 read가 실패하는지, 빈 store로의
+backup과 restore를 확인한다.
 
 ### Alerts
 
-- `SeaweedFSS3Down`: check `docker compose ps seaweedfs-s3` and its logs; the
-  metrics listener shares the S3 process, so a down target usually means S3 is
-  down or restarting.
-- `SeaweedFSDataDiskLow`: free space on the data-disk filesystem is under 15%.
-  Below 20 GiB the volume server stops accepting writes (`-minFreeSpace`); free
-  space or escalate before that point. Deleting objects needs an approved task.
+- `SeaweedFSS3Down`: `docker compose ps seaweedfs-s3`와 그 로그를 확인한다.
+  metrics listener가 S3 프로세스를 공유하므로, target이 다운되었다는 것은
+  보통 S3가 다운되었거나 재시작 중이라는 뜻이다.
+- `SeaweedFSDataDiskLow`: data-disk filesystem의 여유 공간이 15% 미만이다.
+  20 GiB 미만이 되면 volume server가 write 수락을 멈춘다(`-minFreeSpace`).
+  그 지점 전에 공간을 확보하거나 escalation한다. 객체 삭제는 승인된 task가
+  필요하다.
 
 ### First activation (approved task)
 
-1. `bash scripts/operations/gen-secrets.sh` creates STRG-008, STRG-009 and
-   STRG-010; set `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` in `.env`.
-2. `bash infra/04-data/lake-and-object/seaweedfs/bin/gen-grpc-certs.sh` issues
-   the gRPC certificates into `secrets/certs/seaweedfs` (kept unless
-   `--rotate`).
-3. Create `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` owned by UID
-   1000 (the host operator), then
-   `docker compose --profile seaweedfs up -d --wait`.
-4. Verify with the admin identity: create and delete a disposable bucket, and
-   confirm an anonymous request returns 403.
+1. `bash scripts/operations/gen-secrets.sh`가 STRG-008, STRG-009, STRG-010을
+   생성한다. `.env`에 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`를 설정한다.
+2. `bash infra/04-data/lake-and-object/seaweedfs/bin/gen-grpc-certs.sh`가
+   gRPC certificate를 `secrets/certs/seaweedfs`에 발급한다(`--rotate`를
+   쓰지 않는 한 유지된다).
+3. `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}`를 UID 1000(host
+   operator)으로 생성한 뒤
+   `docker compose --profile seaweedfs up -d --wait`를 실행한다.
+4. admin identity로 검증한다: disposable bucket을 만들고 삭제하며, anonymous
+   요청이 403을 반환하는지 확인한다.
 
 ### Retained MinIO data
 
-Loki, Tempo and MLflow moved to SeaweedFS on 2026-09-22 (SPEC-0180 S07); each
-bucket holds a `hyhome-migration/<bucket>.cutover` marker from that copy.
-MinIO was then removed from the source. On 2026-09-25 SPEC-0182 W5 disposed
-of its data directory `${DEFAULT_DATA_DIR}/minio/data-1`, the volume
-`hy-home-infra_minio-data`, the quarantined MinIO credential files and the
-`quay.io/minio/minio` image, so the S07 rollback path to MinIO has ended.
-SeaweedFS holds the only copy of these buckets.
+Loki, Tempo, MLflow는 2026-09-22에 SeaweedFS로 이전했다(SPEC-0180 S07). 각
+bucket은 그 copy에서 나온 `hyhome-migration/<bucket>.cutover` marker를
+가지고 있다. 그 후 source에서 MinIO가 제거되었다. 2026-09-25에 SPEC-0182
+W5는 데이터 디렉터리 `${DEFAULT_DATA_DIR}/minio/data-1`, volume
+`hy-home-infra_minio-data`, 격리된 MinIO credential 파일, `quay.io/minio/minio`
+image를 폐기했으며, 이로써 S07의 MinIO rollback 경로는 끝났다. SeaweedFS가
+이 bucket들의 유일한 copy를 가지고 있다.
 
 ### Backup (daily, RUN-0021)
 
-`hyhome-backup.sh` runs, through `seaweedfs-master`:
-`volume.vacuum.disable`, then `fs.meta.save -o /tmp/filer.meta /` copied to the
-staging export, then Restic reads `data/seaweedfs/volume` and
-`data/seaweedfs/master`, then `volume.vacuum.enable` in its EXIT trap. The
-script fails the run on a non-zero `weed shell` exit or error text in its
-output, on an empty export, or when only one of master and filer runs; a stale export is removed before each save. SeaweedFS not running at all
-is not a failure. A run killed with SIGKILL (for example at the unit's stop
-timeout) leaves vacuum off: run `volume.vacuum.enable` through
-`hyhome-seaweedfs.sh shell` in `seaweedfs-master`.
+`hyhome-backup.sh`는 `seaweedfs-master`를 통해 다음을 실행한다:
+`volume.vacuum.disable`, 그 다음 `fs.meta.save -o /tmp/filer.meta /`를
+staging export로 복사, 그 다음 Restic이 `data/seaweedfs/volume`과
+`data/seaweedfs/master`를 읽고, 그 다음 EXIT trap에서
+`volume.vacuum.enable`. script는 `weed shell`의 exit가 0이 아니거나 그
+출력에 오류 텍스트가 있을 때, export가 비어 있을 때, master와 filer 중
+하나만 실행 중일 때 run을 실패시킨다. stale export는 각 save 전에
+제거된다. SeaweedFS가 아예 실행 중이지 않은 것은 실패가 아니다.
+SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum을 꺼진 채로 남긴다.
+`seaweedfs-master`에서 `hyhome-seaweedfs.sh shell`을 통해
+`volume.vacuum.enable`을 실행한다.
 
 ### Restore (isolated first)
 
-1. Restore the Restic snapshot's `data/seaweedfs/{volume,master}` and the
-   `seaweedfs-filer.meta` export (RUN-0021 step 5) to an empty target at the
-   same version, with an empty `filer` directory.
-2. Start the four services and wait for health.
-3. Copy the export into `seaweedfs-master` and run `fs.meta.load` through
-   `hyhome-seaweedfs.sh shell`, then `volume.fsck`; objects changed during the
-   backup's Restic window may be missing (POL-0024).
-4. Read back objects of every bucket through S3 and compare counts and bytes
-   with the manifest before any client is switched.
+1. Restic snapshot의 `data/seaweedfs/{volume,master}`와
+   `seaweedfs-filer.meta` export(RUN-0021 step 5)를 동일한 version의 빈
+   target에 빈 `filer` 디렉터리와 함께 복원한다.
+2. 네 service를 시작하고 health를 기다린다.
+3. export를 `seaweedfs-master`로 복사하고 `hyhome-seaweedfs.sh shell`을 통해
+   `fs.meta.load`를 실행한 뒤 `volume.fsck`를 실행한다. backup의 Restic
+   window 동안 변경된 객체는 누락될 수 있다(POL-0024).
+4. client를 전환하기 전에 S3를 통해 모든 bucket의 객체를 읽어 manifest와
+   count/byte를 비교한다.
 
 ## Evidence
 
-Record source revision/version, scope, timestamps, manifest/checksum summary,
-commands and exit status, validation result, observed recovery point/time and all
-unverified gaps. Exclude secrets, raw payloads and private resolved paths.
+source revision/version, scope, timestamp, manifest/checksum 요약, command와
+exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
+gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
 ## Rollback or Recovery
 
-A failed cutover returns clients to the preserved original store after validating
-its write boundary; coordinated artifacts and the isolated target remain retained. Cutover occurs only after owner approval,
-final consistency capture, application validation and a retained rollback window.
+실패한 cutover는 write boundary를 검증한 뒤 client를 보존된 원본 store로
+되돌린다. coordinated artifact와 isolated target은 그대로 보존된다.
+cutover는 owner approval, 최종 consistency capture, application validation,
+보존된 rollback window를 거친 뒤에만 발생한다.
 
 ## Escalation
 
-Stop for missing filer metadata, topology mismatch, orphaned volumes, checksum
-failure, security exposure or version incompatibility. Never restore volume
-trees without the filer metadata export of the same snapshot.
+filer metadata 누락, topology mismatch, 고아 volume, checksum 실패, 보안
+노출, version 비호환이 있으면 중단한다. 동일 snapshot의 filer metadata
+export 없이 volume tree를 절대 복원하지 않는다.
 
 ## Traceability
 
 - Runtime source: [SeaweedFS Compose](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.
-- The isolated rehearsal ran on 2026-09-22 (SPEC-0180 Task 0008 S06); HOME activation and HOME restore have not run.
+- isolated rehearsal은 2026-09-22에 실행되었다(SPEC-0180 Task 0008 S06). HOME activation과 HOME restore는 아직 실행되지 않았다.
 
 ### References
 

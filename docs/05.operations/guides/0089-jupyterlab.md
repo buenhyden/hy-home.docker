@@ -22,7 +22,7 @@ created: "2026-09-21"
 ### Purpose and classification
 
 JupyterLab은 `data-science`만 선택하는 OPTIONAL single-user notebook
-server이며 `data-science`는 MLflow도 함께 선택한다. HOME에도, 현재 8개
+server이며, 이 profile은 MLflow도 함께 선택한다. HOME에도, 현재 8개
 profile 운용 명령에도 들어 있지 않다.
 
 ### Current implementation

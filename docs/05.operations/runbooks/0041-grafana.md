@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -131,12 +131,12 @@ created: "2026-05-17"
 
 ### Planned isolated restore rehearsal
 
-Status: **planned and not executed**. No successful Grafana SQLite restore is claimed.
+Status: **planned and not executed**. Grafana SQLite restore 성공 사례를 주장하지 않는다.
 
-1. Record image/plugin/schema identities and object counts, quiesce users/alerts, stop Grafana, then snapshot all of `grafana-data` consistently with provisioning and secret references.
-2. Restore into a separate project/network with a test route and test Keycloak client; keep production datasources read-only or replace them with test endpoints.
-3. Start Grafana and verify SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth, and that anonymous requests are refused.
-4. On mismatch, stop the isolated project and retain logs/checksums. Return to untouched backup; production state/client/route replacement is separately approved.
+1. image/plugin/schema identity와 object count를 기록하고, user/alert를 quiesce한 뒤 Grafana를 중지하고, provisioning과 secret reference에 맞춰 `grafana-data` 전체를 snapshot한다.
+2. test route와 test Keycloak client를 사용하는 별도 project/network로 복원한다. production datasource는 read-only로 유지하거나 test endpoint로 대체한다.
+3. Grafana를 시작하고 SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth를 검증하며 anonymous request가 거부되는지 확인한다.
+4. 불일치가 발견되면 isolated project를 중지하고 log/checksum을 보존한다. untouched backup으로 돌아가며, production state/client/route 교체는 별도로 승인받는다.
 
 ## Evidence
 
@@ -161,7 +161,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, role mapp
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative이며, [derived Compose image projection](../../../infra/tech-stack.versions.json)은 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0041-grafana.md)

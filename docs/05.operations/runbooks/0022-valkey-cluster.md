@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -16,84 +16,87 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use for approved static diagnosis, backup planning or isolated recovery of this
-exact subject. Live writes, restore, cutover, cleanup and credential changes need
-a separately approved task.
+이 subject에 대한 승인된 static diagnosis, backup 계획, isolated recovery에
+사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
+승인된 task가 필요하다.
 
 ### Scope
 
-Static validation is safe to perform in this documentation task. Starting the
-cluster, writing data, taking a live backup, restoring or changing membership is
-planned operator work and was not executed.
+static validation은 이 문서화 task에서 안전하게 수행할 수 있다. cluster
+시작, 데이터 쓰기, live backup, restore, membership 변경은 계획된 operator
+작업이며 실행되지 않았다.
 
 ## Procedure
 
-From the repository root:
+repository root에서 실행한다.
 
 ```bash
 docker compose --env-file .env.example --profile valkey-cluster config --quiet
 docker compose --env-file .env.example --profile valkey-cluster config --services
 ```
 
-Confirm six node services, the init job and exporter; six distinct data volumes;
-`lab_net`; the password secret; node health checks; and the 6379–6384 client and
-16379–16384 bus mappings. Stop if rendered paths are empty or unexpected.
+6개 node service, init job, exporter; 6개의 서로 다른 data volume; `lab_net`;
+password secret; node health check; 6379–6384 client와 16379–16384 bus
+mapping을 확인한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
 
 ### Planned backup procedure
 
-1. Open an approved maintenance window and identify the application writers.
-2. Record engine/image source, cluster node IDs, slot ownership, primary/replica
-   relationships and persistence mode. Pause writes or establish an explicitly
-   accepted consistency point.
-3. On each primary, request and verify an RDB checkpoint. Copy the complete RDB
-   and, when enabled, every AOF base/increment file plus its manifest as one set.
-   Do not copy an AOF while it is being rewritten.
-4. Include configuration and a diagnostic copy of cluster metadata, but mark
-   `nodes.conf` as source identity rather than a file to reuse.
-5. Write a manifest of node role, timestamp, file size and checksum. Transfer the
-   sets to a separate encrypted destination under restricted custody.
+1. 승인된 maintenance window를 열고 application writer를 식별한다.
+2. engine/image source, cluster node ID, slot ownership, primary/replica
+   관계, persistence mode를 기록한다. write를 일시 정지하거나 명시적으로
+   합의된 consistency point를 확립한다.
+3. 각 primary에서 RDB checkpoint를 요청하고 검증한다. 완전한 RDB와, 활성화된
+   경우 모든 AOF base/increment 파일 및 manifest를 하나의 세트로 복사한다.
+   rewrite 중인 AOF는 복사하지 않는다.
+4. configuration과 cluster metadata의 diagnostic copy를 포함하되,
+   `nodes.conf`는 재사용할 파일이 아니라 source identity로 표시한다.
+5. node role, timestamp, file size, checksum의 manifest를 작성한다. 세트를
+   제한된 custody 아래의 별도 encrypted 목적지로 전송한다.
 
 ### Planned isolated restore
 
-1. Provision an empty, network-isolated six-node target at a persistence-compatible
-   Valkey version with disposable credentials. Do not connect application clients.
-2. Recreate the intended three-primary/three-replica topology with fresh cluster
-   identity. Map each primary backup to the documented slot owner; never merge
-   unrelated node sets.
-3. With target nodes stopped, place each complete persistence set in its empty
-   data directory with correct ownership. Do not reuse live `nodes.conf`.
-4. Start only the isolated target. Confirm AOF loading completes without truncation
-   or repair, `cluster_state` is healthy, all slots are covered, and replicas are
-   attached to the intended primaries.
-5. Compare per-slot/key counts and selected values with the manifest, then run a
-   disposable cluster-aware client read/write/delete test.
-6. Record observed recovery point and elapsed time. A separate approved cutover
-   must pause writers, take a final backup, switch clients, validate, and retain
-   the previous state for rollback.
+1. persistence-compatible Valkey version과 disposable credential을 사용해
+   비어 있고 network-isolated된 6-node target을 준비한다. application
+   client는 연결하지 않는다.
+2. 새 cluster identity로 의도한 three-primary/three-replica topology를
+   재구성한다. 각 primary backup을 문서화된 slot owner에 mapping하며,
+   관련 없는 node set을 절대 병합하지 않는다.
+3. target node가 정지된 상태에서, 완전한 각 persistence 세트를 올바른
+   ownership으로 빈 data 디렉터리에 배치한다. live `nodes.conf`는 재사용하지
+   않는다.
+4. isolated target만 시작한다. AOF loading이 truncation이나 repair 없이
+   완료되는지, `cluster_state`가 healthy한지, 모든 slot이 커버되는지,
+   replica가 의도한 primary에 연결되는지 확인한다.
+5. slot/key count와 선택된 값을 manifest와 비교한 뒤, disposable
+   cluster-aware client로 read/write/delete test를 실행한다.
+6. 관찰된 recovery point와 소요 시간을 기록한다. 별도로 승인된 cutover는
+   writer를 일시 정지하고, 최종 backup을 만들고, client를 전환하고,
+   검증하고, rollback을 위해 이전 상태를 보존해야 한다.
 
 ## Evidence
 
-Record source revision/version, scope, timestamps, manifest/checksum summary,
-commands and exit status, validation result, observed recovery point/time and all
-unverified gaps. Exclude secrets, raw payloads and private resolved paths.
+source revision/version, scope, timestamp, manifest/checksum 요약, command와
+exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
+gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
 ## Rollback or Recovery
 
-A failed cutover returns clients to the preserved original cluster after validating
-its identity and write boundary; backup sets and the isolated target remain retained. Cutover occurs only after owner approval,
-final consistency capture, application validation and a retained rollback window.
+실패한 cutover는 identity와 write boundary를 검증한 뒤 client를 보존된 원본
+cluster로 되돌린다. backup 세트와 isolated target은 그대로 보존된다.
+cutover는 owner approval, 최종 consistency capture, application validation,
+보존된 rollback window를 거친 뒤에만 발생한다.
 
 ## Escalation
 
-Stop for missing AOF segments, checksum mismatch, unexpected identity, uncovered
-slots, replica drift or any prompt to repair/truncate persistence. Preserve logs
-without secret values and escalate to the data owner.
+AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은
+slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
+중단한다. secret 값 없이 로그를 보존하고 data owner에게 escalation한다.
 
 ## Traceability
 
 - Runtime source: [Valkey Cluster Compose](../../../infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
-- Procedures are planned unless a dated verification record explicitly says they ran.
+- dated verification record가 명시적으로 실행되었다고 말하지 않는 한, 절차는 계획된 것이다.
 
 ### References
 

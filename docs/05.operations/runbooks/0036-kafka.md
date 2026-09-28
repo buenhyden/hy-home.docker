@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -16,13 +16,12 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use for approved static diagnosis, backup planning or isolated recovery of this
-exact subject. Live writes, restore, cutover, cleanup and credential changes need
-a separately approved task.
+승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 대한 격리된 복구에 사용한다.
+실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
 ## Procedure
 
-From the repository root:
+저장소 루트에서 실행한다.
 
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
@@ -30,102 +29,110 @@ docker compose --env-file .env.example --profile messaging config --services
 docker compose --env-file .env.example --profile messaging-cluster config --quiet
 ```
 
-Confirm the ten expected services, distinct broker/Connect volumes, `kafka_net`,
-health checks, Kafbat native OIDC secret/config, standard gateway chain and
-PLAINTEXT listeners. Confirm `kafka-init` replication factor 3 is paired with the
-three-broker selector before any runtime use.
+10개 예상 서비스, 별도의 broker/Connect volume, `kafka_net`, health check,
+Kafbat native OIDC secret/config, 표준 gateway chain, PLAINTEXT listener를
+확인한다. 어떤 runtime 사용 전에도 `kafka-init`의 replication factor 3이
+three-broker selector와 짝을 이루는지 확인한다.
 
 ### CDC connector lifecycle
 
-1. Preconditions: `debezium-db-provision` exited `0`; `mng-pg` reports
-   `SHOW wal_level` = `logical`; Connect logs `debezium.properties rendered`;
-   the plugin class is listed by `GET /connector-plugins`.
-2. Registration is an approved runtime change. From a container on `kafka_net`:
-   `PUT /connectors/hyhome-app-postgres/config` with the tracked JSON body.
-3. Verify each state separately: `GET .../status` shows connector and task
-   `RUNNING`; the log reports the snapshot completed; a test change in an
-   approved table appears on its `hyhome.app.*` topic.
-4. Lag: query `pg_replication_slots` for `hyhome_app_slot` (`active`,
-   `wal_status`, `pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn)`).
-   `wal_status = lost` means the slot was invalidated.
-5. Pause with `PUT .../pause` for maintenance; the slot keeps WAL while paused,
-   so bound the pause by the free disk and `max_slot_wal_keep_size`.
-6. Resynchronization (approved only): stop the connector, record the
-   downstream boundary, drop the slot and reset offsets together, re-register
-   with a new snapshot, and reconcile duplicates downstream. Never drop the
-   slot alone as a quick fix.
-7. Password rotation: replace the secret, re-run `debezium-db-provision`,
-   restart Connect (re-renders the properties file), then restart the connector.
+1. 전제조건: `debezium-db-provision`이 `0`으로 종료됨; `mng-pg`가
+   `SHOW wal_level` = `logical`을 보고함; Connect 로그에
+   `debezium.properties rendered`가 남음; `GET /connector-plugins`에 plugin
+   class가 나열됨.
+2. 등록은 승인된 runtime 변경이다. `kafka_net`에 있는 컨테이너에서
+   추적되는 JSON body로 `PUT /connectors/hyhome-app-postgres/config`를
+   실행한다.
+3. 각 상태를 개별적으로 검증한다: `GET .../status`가 connector와 task의
+   `RUNNING`을 보여준다; 로그가 snapshot 완료를 보고한다; 승인된 table의
+   테스트 변경이 해당 `hyhome.app.*` topic에 나타난다.
+4. Lag: `hyhome_app_slot`에 대해 `pg_replication_slots`를 조회한다
+   (`active`, `wal_status`,
+   `pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn)`).
+   `wal_status = lost`는 slot이 무효화되었음을 의미한다.
+5. 유지보수를 위해 `PUT .../pause`로 일시 중지한다. 일시 중지 중에도 slot이
+   WAL을 유지하므로 여유 디스크와 `max_slot_wal_keep_size`로 일시 중지 기간을
+   제한한다.
+6. 재동기화(승인된 경우에만): connector를 중지하고, downstream boundary를
+   기록하고, slot 삭제와 offset 재설정을 함께 수행하고, 새 snapshot으로
+   재등록하고, downstream 중복을 조정한다. 간단한 조치로 slot만 삭제하지
+   않는다.
+7. 비밀번호 rotation: secret을 교체하고, `debezium-db-provision`을 다시
+   실행하고, Connect를 재시작한 뒤(properties 파일이 다시 렌더링됨),
+   connector를 재시작한다.
 
 ### Planned backup or replication capture
 
-1. Identify producers, consumers, schemas, connectors, retention and an accepted
-   recovery point. Pause or fence changes to topics, schemas and connectors.
-2. Export a manifest of cluster ID, broker/storage format, topic configurations,
-   partition counts, high-water marks and consumer-group offsets.
-3. Replicate/replay user topic records to a separate compatible Kafka target using
-   an approved mechanism. Verify per-partition source and target end offsets and
-   record counts/checksums where the data format supports them.
-4. Migrate Schema Registry history with an official compatible procedure that
-   preserves schema subjects, versions and IDs required by serialized data.
-5. Export Connect connector definitions without secrets and preserve its
-   config/offset/status state through a compatible supported method. Record how
-   each external system will be reconciled.
-6. Protect manifests and any exported data on a separate encrypted destination.
-   Do not copy active broker log directories or KRaft metadata piecemeal.
+1. producer, consumer, schema, connector, retention, 수용 가능한 recovery
+   point를 식별한다. topic, schema, connector에 대한 변경을 일시 중지하거나
+   fence한다.
+2. cluster ID, broker/storage format, topic configuration, partition 개수,
+   high-water mark, consumer-group offset의 manifest를 export한다.
+3. 승인된 메커니즘을 사용해 사용자 topic record를 별도의 호환 Kafka
+   target으로 복제/재생한다. partition별 source와 target의 end offset을
+   검증하고, 데이터 format이 지원하는 경우 개수/checksum을 기록한다.
+4. serialized 데이터가 요구하는 schema subject, version, ID를 보존하는 공식
+   호환 절차로 Schema Registry 이력을 마이그레이션한다.
+5. secret 없이 Connect connector 정의를 export하고 호환되는 지원 방법으로
+   config/offset/status 상태를 보존한다. 각 외부 시스템을 어떻게 조정할지
+   기록한다.
+6. manifest와 export된 데이터를 별도의 암호화된 destination에서 보호한다.
+   active broker log 디렉터리나 KRaft metadata를 부분적으로 복사하지 않는다.
 
 ### Planned isolated restore
 
-1. Provision a fresh network-isolated Kafka target at a compatible version with a
-   new cluster identity. Keep external producers, consumers and connectors blocked.
-2. Recreate topic configurations and partition counts. Restore schemas/IDs before
-   loading records that depend on them.
-3. Replay/replicate topic records and validate every partition's expected end
-   offset, sample key/value/checksum and retention behavior.
-4. Restore or deliberately reposition consumer offsets, documenting any replay or
-   skipped range. Recreate connector definitions with credentials from protected
-   custody; keep connectors paused while validating their offset/status state.
-5. Run disposable producer/consumer schema-compatible tests. Resume a connector
-   only against isolated test endpoints and verify idempotency/reconciliation.
-6. Record observed recovery point, elapsed time and gaps. A separate cutover task
-   fences source writes, captures final deltas, switches clients and preserves
-   rollback. Do not reuse the live KRaft cluster ID.
+1. 호환 버전에서 새 cluster identity를 가진 network-isolated Kafka target을
+   준비한다. 외부 producer, consumer, connector는 차단된 상태로 유지한다.
+2. topic configuration과 partition 개수를 재생성한다. 여기 의존하는 record를
+   로드하기 전에 schema/ID를 복원한다.
+3. topic record를 재생/복제하고 모든 partition의 예상 end offset, 샘플
+   key/value/checksum, retention 동작을 검증한다.
+4. consumer offset을 복원하거나 의도적으로 재배치하며, replay나 건너뛴
+   범위를 문서화한다. 보호된 custody에서 가져온 credential로 connector
+   정의를 재생성한다. offset/status 상태를 검증하는 동안 connector는 일시
+   중지 상태로 유지한다.
+5. disposable producer/consumer schema-호환 테스트를 실행한다. connector는
+   격리된 test endpoint에 대해서만 재개하고 idempotency/reconciliation을
+   검증한다.
+6. 관측된 recovery point, 소요 시간, gap을 기록한다. 별도 cutover task가
+   source 쓰기를 fence하고, 최종 delta를 캡처하고, client를 전환하고,
+   rollback을 보존한다. live KRaft cluster ID를 재사용하지 않는다.
 
-Rehearsal 2026-09-22 (steps 1–3, owner-approved): a disposable single-node KRaft
-Kafka and Schema Registry at the live versions on an `--internal` network. All
-four subjects were imported in `IMPORT` mode with identical IDs; the one CDC
-topic (three partitions, 563 records) was copied with the same partition and
-timestamp, and a SHA-256 digest over every key, value and header matched. The
-connector config (password replaced by its provider reference) and offsets were
-captured for step 4. Steps 4–6 were not run: a Connect worker against the live
-database would consume the production replication slot. The rehearsal stack was
-removed.
+Rehearsal 2026-09-22 (1~3단계, owner 승인됨): `--internal` 네트워크의 live
+버전에서 disposable single-node KRaft Kafka와 Schema Registry. 4개 subject
+모두 동일한 ID로 `IMPORT` 모드로 import되었다. 하나의 CDC topic(3개
+partition, 563개 record)이 동일한 partition과 timestamp로 복사되었으며 모든
+key, value, header에 대한 SHA-256 digest가 일치했다. connector config
+(비밀번호는 provider 참조로 대체)와 offset이 4단계용으로 캡처되었다.
+4~6단계는 실행되지 않았다: live database에 대한 Connect worker는 production
+replication slot을 소비하게 된다. rehearsal stack은 제거되었다.
 
 ## Evidence
 
-Record source revision/version, scope, timestamps, manifest/checksum summary,
-commands and exit status, validation result, observed recovery point/time and all
-unverified gaps. Exclude secrets, raw payloads and private resolved paths.
+source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
+상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
+secret, raw payload, private resolved path는 제외한다.
 
 ## Rollback or Recovery
 
-A failed cutover returns producers and consumers to the preserved source cluster
-after offset/write-boundary validation; the replay source and target remain retained. Cutover occurs only after owner approval,
-final consistency capture, application validation and a retained rollback window.
+cutover가 실패하면 offset/write-boundary 검증 이후 producer와 consumer를
+보존된 source cluster로 되돌리며, replay source와 target은 계속 보존된다.
+cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증, 보존된
+rollback window 이후에만 실행한다.
 
 ## Escalation
 
-Stop on schema-ID drift, missing partitions, offset gaps, checksum mismatch,
-connector side effects, incompatible storage/protocol format or pressure to
-repair raw broker directories. No backup or restore was executed by this
-documentation task.
+schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
+부작용, 호환되지 않는 storage/protocol format, 또는 raw broker 디렉터리를
+수리하라는 압박에서 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
+않았다.
 
 ## Traceability
 
 - Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
-  and the [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
+  및 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
-- Procedures are planned unless a dated verification record explicitly says they ran.
+- 절차는 날짜가 기록된 verification record가 실행되었음을 명시하지 않는 한 계획 상태다.
 
 ### References
 

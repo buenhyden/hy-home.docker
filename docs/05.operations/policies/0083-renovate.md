@@ -1,10 +1,10 @@
 ---
 title: "Renovate Policy"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -16,47 +16,45 @@ created: "2026-09-19"
 
 ## Overview
 
-Renovate is an explicitly selected `dependency-update` job with remote repository
-write capability. It is never part of HOME or ordinary tooling startup.
+Renovate는 원격 저장소 쓰기 권한을 가진, 명시적으로 선택하는 `dependency-update` job이다.
+HOME이나 일반 도구 기동의 일부가 절대 아니다.
 
 ## Policy Scope
 
-The policy covers `renovate`, its Docker Secret, configuration, cache, remote
-changes, upgrades, and evidence. `POL-0086` remains the update-strategy authority.
+이 정책은 `renovate`와 그 Docker Secret, 설정, 캐시, 원격 변경사항, 업그레이드, 증거를
+다룬다. 업데이트 전략의 권위는 `POL-0086`이 유지한다.
 
 ## Controls
 
-- Mount `renovate_token` only as the declared secret and grant the minimum
-  repositories and permissions. Never print the token file or rendered secret.
-- Preserve `allowScripts: false` and the explicit command allowlist. Expanding
-  either requires security review and a bounded justification.
-- Strictly validate repository and self-host configs before a run. Treat a
-  validator PASS as syntax evidence only.
-- Obtain authorization before any live job because it can write branches and
-  pull requests. Merge, close, and token rotation are separately authorized
-  actions.
-- Keep the cache disposable. Do not treat it as repository truth or back it up as
-  business state. Git and the remote hosting service own durable configuration
-  and generated changes.
-- Upgrade by immutable image declaration, official migration/release review,
-  strict validation, dry-run/discovery, and one bounded canary repository.
-- Record job time, config commit, intended repositories, image declaration,
-  sanitized result, and generated PRs without secret values.
+- `renovate_token`은 선언된 secret으로만 마운트하고 최소한의 저장소와 권한만 부여한다.
+  토큰 파일이나 렌더링된 secret을 절대 출력하지 않는다.
+- `allowScripts: false`와 명시적 명령어 allowlist를 유지한다. 둘 중 하나라도 확장하려면
+  보안 검토와 범위가 명확한 정당화가 필요하다.
+- 실행 전 저장소와 self-host 설정을 엄격히 검증한다. validator PASS는 구문 증거로만
+  취급한다.
+- 브랜치와 pull request를 생성할 수 있으므로 실제 job 실행 전에 승인을 받는다. 머지,
+  닫기, 토큰 회전은 별도로 승인되는 작업이다.
+- 캐시는 일회성으로 유지한다. 저장소의 진실로 취급하거나 비즈니스 상태로서 백업하지
+  않는다. 지속적인 설정과 생성된 변경사항은 Git과 원격 호스팅 서비스가 소유한다.
+- 이미지의 불변 선언, 공식 마이그레이션/릴리스 검토, 엄격한 검증, dry-run/discovery,
+  범위가 제한된 하나의 canary 저장소를 통해 업그레이드한다.
+- job 실행 시각, 설정 커밋, 대상 저장소, 이미지 선언, sanitize된 결과, secret 값 없이
+  생성된 PR을 기록한다.
 
 ## Verification
 
-Repository and self-host config validation must pass before any live run, per [Runbook step 1](../runbooks/0083-renovate.md#procedure).
+[Runbook step 1](../runbooks/0083-renovate.md#procedure)에 따라 실제 실행 전에 저장소와
+self-host 설정 검증을 반드시 통과해야 한다.
 
 ## Exceptions
 
-Any broader token permission, repository scope, allowed command, script
-execution, or remote mutation requires a recorded owner, expiry, rollback, and
-security review. Syntax validation is never an exception to live-run approval.
+토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
+만료일, 롤백, 보안 검토가 필요하다. 구문 검증은 실제 실행 승인의 예외가 될 수 없다.
 
 ## Review Cadence
 
-Review monthly and whenever the image, token scope, repository list, managers,
-allowed commands, or `POL-0086` changes.
+매월, 그리고 이미지, 토큰 범위, 저장소 목록, manager, 허용 명령어, `POL-0086`이 변경될
+때마다 검토한다.
 
 ## Traceability
 
@@ -69,3 +67,4 @@ allowed commands, or `POL-0086` changes.
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Renovate security and permissions](https://docs.renovatebot.com/security-and-permissions/)
 - [Operations index](../README.md)
+</content>

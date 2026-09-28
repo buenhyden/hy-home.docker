@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "POL-0091"
 parent_ids:
@@ -16,34 +16,35 @@ created: "2026-09-21"
 
 ## Overview
 
-Crawl4AI is an SSRF-capable service. It stays isolated, authenticated and
-unused until a reviewed consumer needs it.
+Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리되고
+인증되며 사용되지 않는 상태로 유지된다.
 
 ## Policy Scope
 
-Activation, network placement, authentication, consumers, provider keys and removal.
+활성화, 네트워크 배치, 인증, consumer, provider key, 제거.
 
 ## Controls
 
-- Select only through `crawl4ai`; never add it to `ai`, `notebook` or HOME.
-- Never attach it to the declared networks, publish a host port or add a public route.
-- Always run with the token secret; never pass provider keys through a tracked file.
-- Connect a consumer only by adding that consumer to `crawl4ai_net` in a
-  reviewed change that also sets its token.
+- `crawl4ai`를 통해서만 선택한다. `ai`, `notebook`, HOME에 절대 추가하지 않는다.
+- 선언된 네트워크에 연결하거나, host 포트를 게시하거나, public route를 추가하지
+  않는다.
+- 항상 token secret과 함께 실행한다. provider key를 추적되는 파일로 전달하지 않는다.
+- consumer는 그 토큰도 설정하는 검토된 변경을 통해 `crawl4ai_net`에 해당 consumer를
+  추가함으로써만 연결한다.
 
 ## Exceptions
 
-`GET /health` is unauthenticated upstream behavior.
+`GET /health`는 인증되지 않은 upstream 동작이다.
 
 ## Verification
 
-Static rendering and template baseline; live: `/health` 200, other endpoints 401
-without token, and no resolution of `mng-pg` or `openbao` from the container.
+정적 렌더링과 template baseline. 런타임: `/health` 200, 다른 endpoint는 토큰 없이 401,
+컨테이너에서 `mng-pg`나 `openbao`가 resolve되지 않는다.
 
 ## Review Cadence
 
-Review on image upgrade, consumer connection, and at each service
-rationalization review; remove the package if it still has no consumer.
+이미지 업그레이드, consumer 연결 시, 그리고 각 service rationalization 검토마다
+검토한다. consumer가 여전히 없으면 패키지를 제거한다.
 
 ## Traceability
 
@@ -54,3 +55,4 @@ rationalization review; remove the package if it still has no consumer.
 ## Related Documents
 
 - [Crawl4AI Compose source](../../../infra/08-ai/crawl4ai/docker-compose.yml)
+</content>

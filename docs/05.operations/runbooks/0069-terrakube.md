@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -16,15 +16,15 @@ created: "2026-05-17"
 
 ## When to Use
 
-Use for API/UI/executor failure, stuck runs, OIDC failure, missing state/output,
-or an approved backup/restore/upgrade. Work from the repository root.
+API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
+승인된 backup/restore/upgrade에 사용한다. 저장소 루트에서 작업한다.
 
 ## Procedure
 
-1. Freeze new Terrakube runs. Record workspace/run IDs, VCS ref, state key,
-   component status, and whether any apply is active. Do not stop an active apply
-   until its remote effect and recovery owner are understood.
-2. Validate and inspect bounded state:
+1. 새 Terrakube run을 동결한다. workspace/run ID, VCS ref, state key, component
+   status, apply 진행 여부를 기록한다. remote effect와 recovery owner가 파악되기
+   전에는 active apply를 중지하지 않는다.
+2. bounded state를 validate하고 점검한다.
 
    ```bash
    docker compose --profile iac config --quiet
@@ -32,52 +32,52 @@ or an approved backup/restore/upgrade. Work from the repository root.
    docker compose --profile iac logs --tail=200 terrakube-api terrakube-ui terrakube-executor
    ```
 
-3. Classify before restarting:
-   - UI only: inspect gateway and OIDC redirect/claims.
-   - API DB errors: inspect `mng-pg`; do not retry migrations repeatedly.
-   - missing state/output: inspect SeaweedFS bucket/key and DB reference without
-     downloading state into logs.
-   - stuck execution: inspect Valkey coordination and executor/Docker access;
-     confirm remote provider action before cancellation or replay.
-4. Restart only the failed component after the dependency and active-run check.
-   Replaying a job or apply requires separate authorization.
+3. 재시작 전에 분류한다.
+   - UI만: gateway와 OIDC redirect/claim을 점검한다.
+   - API DB error: `mng-pg`를 점검한다. migration을 반복적으로 재시도하지 않는다.
+   - missing state/output: state를 로그로 다운로드하지 않고 SeaweedFS bucket/key와
+     DB reference를 점검한다.
+   - stuck execution: Valkey coordination과 executor/Docker access를 점검하고,
+     취소나 replay 전에 remote provider action을 확인한다.
+4. dependency와 active-run check 후 실패한 component만 재시작한다. job이나 apply를
+   replay하려면 별도 authorization이 필요하다.
 
 ### Coordinated backup and isolated restore
 
-1. Block scheduling, wait for or safely resolve active runs, then stop API/UI and
-   executor so no Terrakube writer remains.
-2. Use the PostgreSQL owner's online logical/physical backup procedure and the
-   SeaweedFS set in the daily backup (RUN-0024) for `tfstate`. Record one recovery-point
-   receipt joining DB backup ID, object snapshot/version inventory, source commit,
-   and Keycloak/client configuration. Capture no secret/state contents.
-3. Restore both stores to isolated targets. Use replacement secrets and disable
-   provider, VCS webhook, and executor egress.
-4. Start the restored component set against only the isolated stores. Verify
-   organization/workspace/run counts, referenced state/output keys, OIDC role
-   mapping, and a non-applying plan. Do not point the restored executor at live accounts.
-5. Promote only after review; otherwise discard the isolated copy and leave the
-   source unchanged.
+1. scheduling을 차단하고, active run을 대기하거나 안전하게 해결한 뒤, Terrakube
+   writer가 남지 않도록 API/UI와 executor를 중지한다.
+2. `tfstate`에 대해서는 PostgreSQL owner의 online logical/physical backup 절차와
+   daily backup(RUN-0024)에 포함된 SeaweedFS set을 사용한다. DB backup ID, object
+   snapshot/version inventory, source commit, Keycloak/client configuration을
+   연결하는 recovery-point receipt 하나를 기록한다. secret/state 내용은 캡처하지 않는다.
+3. 두 store를 모두 isolated target으로 복원한다. replacement secret을 사용하고
+   provider, VCS webhook, executor egress를 비활성화한다.
+4. isolated store에 대해서만 복원된 component set을 시작한다. organization/
+   workspace/run count, 참조된 state/output key, OIDC role mapping, non-applying
+   plan을 확인한다. 복원된 executor를 live account로 향하게 하지 않는다.
+5. 검토 후에만 promote한다. 그렇지 않으면 isolated copy를 폐기하고 source를 그대로
+   둔다.
 
 ### Upgrade
 
-Complete the coordinated backup, review every migration/release note, test the
-new API/UI/executor against restored stores, then upgrade the compatible set.
-On failure, stop the new set and restore both DB and objects with the prior images.
+coordinated backup을 완료하고, 모든 migration/release note를 검토하고, 복원된
+store에 대해 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
+시에는 새 set을 중지하고 DB와 object를 이전 image로 함께 복원한다.
 
 ## Evidence
 
-Record sanitized component health, run/workspace counts, backup IDs/checksums,
-state-key counts, release/source commit, non-applying plan result, and final state.
+sanitized component health, run/workspace count, backup ID/checksum, state-key
+count, release/source commit, non-applying plan 결과, 최종 상태를 기록한다.
 
 ## Rollback or Recovery
 
-These coordinated backup/restore and upgrade steps are **planned but unexecuted**.
-Do not claim recovery from a component restart or one-store snapshot.
+이 coordinated backup/restore와 upgrade 단계는 **계획되었으나 미실행** 상태이다.
+component restart나 단일 store snapshot으로부터 recovery를 주장하지 않는다.
 
 ## Escalation
 
-Stop on an active/unknown apply, missing DB-object consistency, Docker-socket
-unexpected access, auth ambiguity, unavailable backup, or destructive migration.
+active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access, auth
+모호성, backup 불가, destructive migration이 있으면 중단한다.
 
 ## Traceability
 
