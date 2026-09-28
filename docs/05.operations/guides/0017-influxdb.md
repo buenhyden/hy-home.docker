@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0017"
 parent_ids:
@@ -27,13 +27,13 @@ created: "2026-05-10"
 
 | Field | Current contract |
 | --- | --- |
-| Classification and consumer | OPTIONAL, on-demand time-series experiment. No named production workload or measured capacity is confirmed. |
-| Compose ownership | Root project includes [the InfluxDB Compose fragment](../../../infra/04-data/analytics/influxdb/docker-compose.yml); profile `influxdb`; service `influxdb`. Compose owns the runtime image and Renovate owns update proposals. |
-| Data flow and exposure | Clients on `edge_net` write/query HTTP on container port `8181`; Traefik publishes `influxdb.${DEFAULT_URL}` through `gateway-standard-chain@file`. There is no direct host port. |
-| Persistence | Bind-backed named volumes `influxdb-data` and `influxdb-plugins` map below `${DEFAULT_DATA_DIR}/influxdb`. The server uses local object storage with node ID `node0`. |
-| Configuration and credentials | The command declares the data and plugin directories. The leaf service mounts no Docker Secret and does not provision a token; any authenticated write therefore needs separately managed runtime credentials. |
-| Health and resources | `/` accepts `200`, `204`, or `401`; `template-stateful-med` supplies 1 CPU, 512 MiB, restart policy, log rotation, dropped capabilities, and `no-new-privileges`. |
-| Recovery and upgrade | InfluxDB 3 Core has no built-in backup command. Use its documented ordered local-object-store copy only during an approved quiet/downtime window, restore to a fresh compatible instance, and validate before cutover. Review Core release notes before changing the Compose pin. |
+| Classification and consumer | OPTIONAL, on-demand time-series experiment이다. 명명된 production workload나 측정된 capacity는 확인되지 않았다. |
+| Compose ownership | root project는 [InfluxDB Compose fragment](../../../infra/04-data/analytics/influxdb/docker-compose.yml)를 include한다. profile은 `influxdb`, service는 `influxdb`이다. Compose가 runtime image를 소유하고 Renovate가 update 제안을 소유한다. |
+| Data flow and exposure | `edge_net`의 client가 container port `8181`에서 HTTP로 write/query한다. Traefik이 `gateway-standard-chain@file`을 통해 `influxdb.${DEFAULT_URL}`을 publish한다. 직접 host port는 없다. |
+| Persistence | bind-backed named volume `influxdb-data`와 `influxdb-plugins`가 `${DEFAULT_DATA_DIR}/influxdb` 아래로 매핑된다. server는 node ID `node0`으로 local object storage를 사용한다. |
+| Configuration and credentials | command가 data와 plugin directory를 선언한다. leaf service는 Docker Secret을 mount하지 않고 token을 provision하지 않는다. 따라서 authenticated write에는 별도로 관리되는 runtime credential이 필요하다. |
+| Health and resources | `/`는 `200`, `204`, `401`을 수용한다. `template-stateful-med`가 1 CPU, 512 MiB, restart policy, log rotation, dropped capabilities, `no-new-privileges`를 제공한다. |
+| Recovery and upgrade | InfluxDB 3 Core에는 내장 backup 명령이 없다. 승인된 quiet/downtime window에만 문서화된 순서의 local-object-store 복사를 사용하고, 새 호환 instance로 restore한 뒤 cutover 전에 검증한다. Compose pin을 변경하기 전에 Core release note를 검토한다. |
 
 ### Usage Type
 
@@ -71,11 +71,11 @@ created: "2026-05-10"
    curl -i http://influxdb:8181/
    ```
 
-   The compose healthcheck accepts HTTP `200`, `204`, or `401` from `/` because token-protected service readiness can still return an auth challenge. 이 명령은 승인된 runtime context에서만 실행하며, 본 변경은 source-only verification만 수행한다.
+   compose healthcheck는 token-protected service readiness도 auth challenge를 반환할 수 있으므로 `/`에서 HTTP `200`, `204`, `401`을 수용한다. 이 명령은 승인된 runtime context에서만 실행하며, 본 변경은 source-only verification만 수행한다.
 
 3. Line Protocol write contract를 확인한다.
 
-   `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>`는 authorized operator/named token을 요구한다. Token creation/provisioning과 authenticated write acceptance는 separate runtime approval이 필요하며 아직 검증되지 않았다.
+   `POST http://influxdb:8181/api/v3/write_lp?db=<operator-selected-database>`는 authorized operator/named token을 요구한다. Token creation/provisioning과 authenticated write acceptance에는 separate runtime approval이 필요하며 아직 검증되지 않았다.
 
 ### Common Pitfalls
 

@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0012"
 parent_ids: []
@@ -20,7 +20,7 @@ created: "2026-07-06"
 
 ### Edge Routing Stack Usage
 
-> Step-by-step procedure for deploying and configuring the entry point infrastructure.
+> entry point infrastructure를 배포하고 구성하기 위한 단계별 절차.
 
 ---
 
@@ -36,20 +36,20 @@ created: "2026-07-06"
 
 #### Purpose
 
-This guide helps the reader validate the Traefik edge router selected by `core`/`dev` and understand the Nginx path-proxy boundary drawn by the `nginx` profile.
+이 가이드는 `core`/`dev`가 선택하는 Traefik edge router를 검증하고, `nginx` profile이 그리는 Nginx path-proxy boundary를 이해하도록 돕는다.
 
 #### Prerequisites
 
-- Docker & Docker Compose installed.
-- Valid domain name (configured in `DEFAULT_URL` environment variable).
-- Secrets generated via `scripts/operations/gen-secrets.sh`.
-- Certificates available in `secrets/certs/`.
+- Docker와 Docker Compose가 설치되어 있어야 한다.
+- 유효한 domain name(`DEFAULT_URL` environment variable에 설정)이 있어야 한다.
+- `scripts/operations/gen-secrets.sh`로 생성한 secret이 있어야 한다.
+- `secrets/certs/`에 certificate가 있어야 한다.
 
 #### Step-by-step Instructions
 
 ##### 1. Verify Network Contract
 
-Use the root compose validator instead of creating networks ad hoc. The root compose declares the flow-scoped networks and the external network contracts.
+network를 임의로 만드는 대신 root compose validator를 사용한다. root compose는 flow-scoped network와 external network contract를 선언한다.
 
 ```bash
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
@@ -57,32 +57,32 @@ HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
 
 ##### 2. Configure Traefik
 
-1. Review `infra/01-gateway/traefik/config/traefik.yml`.
-2. Ensure dynamic configuration in `infra/01-gateway/traefik/dynamic/` is present.
-3. Verify TLS certificates are mapped correctly in `tls.yaml`.
+1. `infra/01-gateway/traefik/config/traefik.yml`을 검토한다.
+2. `infra/01-gateway/traefik/dynamic/`의 dynamic configuration이 존재하는지 확인한다.
+3. `tls.yaml`에서 TLS certificate가 올바르게 매핑되어 있는지 확인한다.
 
 ##### 3. Validate Gateway Stack
 
-Validate the current gateway contract before any runtime action:
+runtime action 전에 현재 gateway contract를 검증한다.
 
 ```bash
 bash scripts/hardening/check-all-hardening.sh 01-gateway
 ```
 
-Runtime start/stop/reload actions are not part of this guide. Traefik runtime work must use the approved root compose context. Nginx runtime work requires an explicit root network/dependency context: the root includes `infra/01-gateway/nginx/docker-compose.yml` unconditionally, but the service is selected by the `nginx` profile and depends on backend services.
+runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefik runtime 작업은 승인된 root compose context를 사용해야 한다. Nginx runtime 작업은 명시적인 root network/dependency context가 필요하다. root는 `infra/01-gateway/nginx/docker-compose.yml`을 무조건 include하지만, service는 `nginx` profile이 선택하며 backend service에 의존한다.
 
 #### 4. Verify Functionality
 
-- For static evidence, use `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh` and `bash scripts/hardening/check-all-hardening.sh 01-gateway`.
-- For runtime evidence after approval, check the Traefik dashboard and `docker compose exec traefik traefik healthcheck --ping` in the running root stack.
-- For Nginx runtime evidence after approval, run `docker compose exec nginx nginx -t` only in the explicitly provisioned Nginx context.
+- static 증거는 `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/hardening/check-all-hardening.sh 01-gateway`를 사용한다.
+- 승인 후 runtime 증거는 실행 중인 root stack에서 Traefik dashboard와 `docker compose exec traefik traefik healthcheck --ping`을 확인한다.
+- 승인 후 Nginx runtime 증거는 명시적으로 provision된 Nginx context에서만 `docker compose exec nginx nginx -t`를 실행한다.
 
 #### Common Pitfalls
 
-- **Cert Name Mismatch**: Ensure `tls.yaml` points to the correct filenames in `secrets/certs/`.
-- **Port Conflicts**: Port 80 and 443 must be available on the host.
-- **Network Isolation**: Backend services must be on `edge_net`, the Traefik Docker provider network, to be discovered.
-- **Service-local Compose**: Standalone `infra/01-gateway/*/docker-compose.yml` rendering is not gateway readiness evidence because it lacks the root network/secret/dependency context.
+- **Cert Name Mismatch**: `tls.yaml`이 `secrets/certs/`의 올바른 파일명을 가리키는지 확인한다.
+- **Port Conflicts**: 호스트에서 port 80과 443을 사용할 수 있어야 한다.
+- **Network Isolation**: backend service가 발견되려면 Traefik Docker provider network인 `edge_net`에 있어야 한다.
+- **Service-local Compose**: 독립적인 `infra/01-gateway/*/docker-compose.yml` 렌더링은 root network/secret/dependency context가 없으므로 gateway readiness 증거가 아니다.
 
 ## Common Checks
 
@@ -90,16 +90,16 @@ Runtime start/stop/reload actions are not part of this guide. Traefik runtime wo
 
 ## Runbook Handoff
 
-Runtime recovery is handled by [Traefik runbook](../runbooks/0013-traefik.md) and [Nginx runbook](../runbooks/0011-nginx.md).
+runtime recovery는 [Traefik runbook](../runbooks/0013-traefik.md)과 [Nginx runbook](../runbooks/0011-nginx.md)이 처리한다.
 
 ## Traceability
 
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: none — no Policy or Runbook shares number `0012`.
+- Subject peers: none — `0012` 번호를 공유하는 Policy나 Runbook이 없다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- Runtime pins: Compose/Dockerfile 선언이 authoritative이며, [curated version projection](../../../infra/tech-stack.versions.json)은 drift 검증을 제공한다.
 
 - [Operations index](../README.md)
 - [Gateway Traefik guide](0013-traefik.md)

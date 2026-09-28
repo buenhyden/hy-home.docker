@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.1"
+version: "1.5.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -23,32 +23,32 @@ created: "2026-05-10"
 
 ## Usage
 
-SeaweedFS is the S3 object store; it replaced MinIO in SPEC-0180 S07. It is part of HOME through the consumer profiles. S3 at
-`http://seaweedfs-s3:8333` (path-style, region `us-east-1`) is the only
-interface. The privileged FUSE mount was removed in S04, and the master and
-filer have no route.
+SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다.
+consumer profile을 통해 HOME에 속한다. `http://seaweedfs-s3:8333`
+(path-style, region `us-east-1`)의 S3가 유일한 interface이다. privileged
+FUSE mount는 S04에서 제거되었으며 master와 filer에는 route가 없다.
 
 ### Current implementation
 
-[`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)
-defines `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer` and
-`seaweedfs-s3`. Profiles `seaweedfs` and `storage-seaweedfs` select all four.
-Each starts through
-[`config/hyhome-seaweedfs.sh`](../../../infra/04-data/lake-and-object/seaweedfs/config/hyhome-seaweedfs.sh)
-as UID 1000. The script builds `security.toml` (volume and filer JWT keys, gRPC
-mTLS) and, for S3, the identities file from Docker secrets. It refuses to start
-when a secret or certificate is missing.
+[`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)은
+`seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를
+정의한다. profile `seaweedfs`와 `storage-seaweedfs`가 네 service를 모두
+선택한다. 각 service는 UID 1000으로
+[`config/hyhome-seaweedfs.sh`](../../../infra/04-data/lake-and-object/seaweedfs/config/hyhome-seaweedfs.sh)를
+통해 시작한다. 이 script는 `security.toml`(volume과 filer JWT key, gRPC
+mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다.
+secret이나 certificate가 없으면 시작을 거부한다.
 
-State is on the data disk: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`
-and `/filer` (the embedded leveldb2 store). Master, volume and filer are only
-on `seaweed_internal`. S3 also joins `object_net` for clients and `edge_net`
-for the `s3.${DEFAULT_URL}` route.
+state는 data disk에 있다: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`,
+`/filer`(embedded leveldb2 store). master, volume, filer는 오직
+`seaweed_internal`에만 있다. S3는 여기에 더해 client용 `object_net`과
+`s3.${DEFAULT_URL}` route용 `edge_net`에도 join한다.
 
-Only S3 serves Prometheus metrics (`-metricsPort=9327`); Prometheus scrapes
-`seaweedfs-s3:9327` over `edge_net` as job `seaweedfs-s3`. Master, volume and
-filer stay unscraped on the internal network. Alerts: `SeaweedFSS3Down`
-(target down 2m) and `SeaweedFSDataDiskLow` (data-disk filesystem under 15%
-free for 10m, from node-exporter).
+S3만 Prometheus metric(`-metricsPort=9327`)을 제공한다. Prometheus는
+`edge_net`을 통해 job `seaweedfs-s3`로 `seaweedfs-s3:9327`을 scrape한다.
+master, volume, filer는 internal network에서 scrape되지 않는다. Alert:
+`SeaweedFSS3Down`(target down 2분)과 `SeaweedFSDataDiskLow`(node-exporter
+기준 data-disk filesystem free 15% 미만 10분).
 
 ### Consumers, buckets and migration
 
@@ -61,27 +61,28 @@ free for 10m, from node-exporter).
 | Spark (Iceberg) | `lakehouse` table bucket | `lakehouse` | STRG-015 |
 | Nginx `/cdn/` | `cdn-bucket` | `anonymous` (object reads only) | none |
 
-`seaweedfs-buckets` (aws-cli, admin identity) creates the five buckets and,
-under `lakehouse` only, `seaweedfs-table-bucket` creates the `lakehouse` table
-bucket, its policy and the `dev` and `test` namespaces, all idempotently; every bucket-owning consumer waits for it (Nginx waits for
-`seaweedfs-s3` only). The S07 cutover copied each
-MinIO bucket through the S3 API and left a `hyhome-migration/<bucket>.cutover`
-marker object; the copy job was removed with MinIO. The retained MinIO data,
-volume and image were disposed of on 2026-09-25 (SPEC-0182 W5), which ended
-the S07 rollback path.
+`seaweedfs-buckets`(aws-cli, admin identity)는 다섯 개 bucket을 생성하고,
+`lakehouse`에 한해 `seaweedfs-table-bucket`이 `lakehouse` table bucket과 그
+policy, `dev`/`test` namespace를 모두 idempotent하게 생성한다. bucket을
+소유한 모든 consumer는 이를 기다린다(Nginx는 `seaweedfs-s3`만 기다린다).
+S07 cutover는 각 MinIO bucket을 S3 API를 통해 복사하고
+`hyhome-migration/<bucket>.cutover` marker object를 남겼다. copy job은
+MinIO와 함께 제거되었다. 보존되어 있던 MinIO data, volume, image는
+2026-09-25(SPEC-0182 W5)에 폐기되어 S07 rollback path가
+종료되었다.
 
 ### Images, configuration and resource controls
 
-The Compose file owns the pinned `chrislusf/seaweedfs` image; Renovate may
-propose updates and the version projection is derived. Root
-`SEAWEEDFS_*_HTTP_PORT` and `SEAWEEDFS_*_GRPC_PORT` keys control the listeners.
-`SEAWEEDFS_S3_ADMIN_ACCESS_KEY` names the admin identity. Its secret key
-(STRG-010) and the JWT keys (STRG-008, STRG-009) are secret files, and the gRPC
-certificates come from `bin/gen-grpc-certs.sh`. Master and filer extend
-`template-stateful-med`, volume `template-stateful-high`, and S3
-`template-infra-med`; every service has a health check. The volume server
-refuses writes below 20 GiB free. Flow: master → volume, filer →
-master/volume, then S3 → filer.
+Compose 파일은 고정된 `chrislusf/seaweedfs` image를 소유한다. Renovate가
+update를 제안할 수 있으며 version projection은 파생물이다. root의
+`SEAWEEDFS_*_HTTP_PORT`와 `SEAWEEDFS_*_GRPC_PORT` key가 listener를 제어한다.
+`SEAWEEDFS_S3_ADMIN_ACCESS_KEY`가 admin identity의 이름을 정한다. 그 secret
+key(STRG-010)와 JWT key(STRG-008, STRG-009)는 secret 파일이며 gRPC
+certificate는 `bin/gen-grpc-certs.sh`로 만든다. master와 filer는
+`template-stateful-med`를, volume은 `template-stateful-high`를, S3는
+`template-infra-med`를 extend한다. 모든 service에 health check가 있다.
+volume server는 free 20 GiB 미만에서 write를 거부한다. flow: master →
+volume, filer → master/volume, 그다음 S3 → filer.
 
 ### Static preflight and rehearsal
 
@@ -91,8 +92,8 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-Run these from the repository root. The rehearsal needs Docker and uses only
-disposable data.
+repository root에서 실행한다. rehearsal은 Docker가 필요하며 disposable
+data만 사용한다.
 
 ### Verified S3 behaviour (4.47, 2026-09-22 rehearsal)
 
@@ -101,24 +102,25 @@ disposable data.
 | Anonymous PUT/list, wrong secret | 403; `SignatureDoesNotMatch` |
 | Filer GET/PUT and volume POST without JWT | 401 |
 | gRPC without a client certificate | TLS alert `certificate required` |
-| PUT with content type, user metadata and tags; HEAD; tagging read | preserved |
-| Range GET, list with prefix, URL-encoded key with space and `+` | correct bytes and key |
-| 20 MiB multipart upload | round trip identical; ETag has the `-N` part suffix, so it is not an MD5 |
-| Presigned GET | correct bytes |
-| Key `a` then `a/b` | both stored and readable with their own bytes |
-| Volume server stopped | GET fails instead of returning data |
-| Restart; restore of volume and master trees plus `fs.meta.load` into empty stores | objects identical |
+| PUT with content type, user metadata and tags; HEAD; tagging read | preserved (보존됨) |
+| Range GET, list with prefix, URL-encoded key with space and `+` | correct bytes and key (정확함) |
+| 20 MiB multipart upload | round trip identical; ETag has the `-N` part suffix, so it is not an MD5 (MD5가 아님) |
+| Presigned GET | correct bytes (정확함) |
+| Key `a` then `a/b` | both stored and readable with their own bytes (모두 저장 및 자체 바이트로 읽기 가능) |
+| Volume server stopped | GET fails instead of returning data (data를 반환하는 대신 실패) |
+| Restart; restore of volume and master trees plus `fs.meta.load` into empty stores | objects identical (동일함) |
 
-Versioning, Object Lock, SSE, notifications and lifecycle rules were not
-tested. S07 tests any that a consumer needs before its cutover.
+Versioning, Object Lock, SSE, notification, lifecycle rule은 테스트하지
+않았다. S07은 cutover 전에 consumer에게 필요한 것을 테스트한다.
 
 ### Recovery and lifecycle
 
-The backup set is the filer metadata export plus the volume and master trees,
-taken in that order with vacuum paused ([RUN-0024](../runbooks/0024-seaweedfs.md), RUN-0021).
+backup set은 filer metadata export, volume tree, master tree로 이루어지며
+vacuum을 일시 중지한 채 이 순서대로 수행한다
+([RUN-0024](../runbooks/0024-seaweedfs.md), RUN-0021).
 
-An image upgrade needs an official release review and a passing rehearsal.
-SeaweedFS is Apache-2.0 licensed.
+image를 upgrade하려면 공식 release를 검토하고 rehearsal을 통과해야 한다.
+SeaweedFS의 license는 Apache-2.0이다.
 
 ### Official references
 
@@ -128,9 +130,10 @@ SeaweedFS is Apache-2.0 licensed.
 
 ## Common Checks
 
-Confirm exact root profiles, services, health/resource controls, writable-state
-ownership, secret references, exposure and the engine-specific recovery boundary.
-A static pass is configuration evidence only; runtime and restore remain separate.
+정확한 root profile, service, health/resource control, writable-state
+ownership, secret reference, exposure, engine별 recovery boundary를
+확인한다. static pass는 configuration 증거일 뿐이다. runtime과 restore는
+별개로 남는다.
 
 ## Traceability
 
