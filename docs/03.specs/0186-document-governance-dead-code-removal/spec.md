@@ -1,8 +1,8 @@
 ---
 title: "Document Governance Dead Code Removal Specification"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"

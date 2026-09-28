@@ -1,8 +1,8 @@
 ---
 title: "Document Governance Dead Code Removal"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "specs"
@@ -42,7 +42,8 @@ every acceptance criterion of [SPEC-0186](../spec.md).
 
 W0 and W4 ran the twelve changed-profile members except
 `check-conftest-policy.sh`, which runs `docker compose` and is outside this
-request. Every member returned 0 both times, and each member's closing summary
+request. The receipt records the W0 baseline under W4, because receipt
+units start at W1. Every member returned 0 both times, and each member's closing summary
 lines match between the two runs, apart from the merge-base hash.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -53,8 +54,7 @@ lines match between the two runs, apart from the merge-base hash.
 | 5 | W2 | PASS: `test_archive` 78 tests OK after the removal | [archive.py](../../../../scripts/lib/document_governance/archive.py) |
 | 3 | W3 | PASS: `_reviewed_evidence_findings` has no caller, so the Foundation wave, its Stage 04 paths, the consumer-scan helpers, and six finding codes were unreachable; removed (`d6b8fdb23`) | [lifecycle/contract.py](../../../../scripts/lib/document_governance/lifecycle/contract.py) |
 | 5 | W3 | PASS: `tests/validation/lifecycle` and `test_promoted` OK after the removal | [lifecycle/contract.py](../../../../scripts/lib/document_governance/lifecycle/contract.py) |
-| 4 | W0 | PASS: twelve members returned 0; summaries recorded, including metadata `selected=4 violations=0`, links `documents=968 failures=0`, lifecycle `violations=0` | [Plan](../plan.md) |
-| 4 | W4 | PASS: the same twelve members returned 0 with summaries equal to W0 | [Plan](../plan.md) |
+| 4 | W4 | PASS: twelve members returned 0 at W0 and again at W4, with equal summaries, including metadata `selected=4 violations=0`, links `documents=968 failures=0`, and lifecycle `violations=0` | [Plan](../plan.md) |
 | 5 | W4 | PASS: `tests/lib` 943 tests OK (one removed with W2); `tests/validation` 675 tests OK, 23 skipped | [Plan](../plan.md) |
 
 ## Review Evidence
