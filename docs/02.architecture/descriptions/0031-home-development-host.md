@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -16,19 +16,22 @@ created: "2026-09-19"
 
 ## Context and Stakeholders
 
-한 대의 Linux 서버를 HOME 서비스와 개발 실험이 공유한다. 사용자는 AI와
-워크플로우도 HOME 상시 기능으로 지정했다. 목표는 운영자 한 명이 상태와
-복구 경로를 설명할 수 있는 범위에서 서비스를 유지하는 것이다. 실제 소비자가
-확인되지 않은 선택 기능은 상시 기동 비용을 HOME에 전가하지 않는다.
+One Linux server shares HOME service and development experiments. The user
+also designated AI and workflow as always-on HOME capabilities. The goal is
+to keep the service within the scope where one operator can explain state
+and the recovery path. An optional capability with no confirmed real
+consumer does not push its always-on startup cost onto HOME.
 
 ## System Boundaries
 
-루트 Compose가 include를, 서비스 profile이 활성화를 소유한다. 어휘의 정규
-소유자는 [POL-0078](../../05.operations/policies/0078-compose-profile-vocabulary.md)이다.
-운영 데이터를 가진 현재 호스트와 실험용 별도 Compose project를 구분한다.
-프로파일은 보안 격리 경계가 아니며 같은 Docker daemon 장애를 공유한다.
-공유 Compose network는 기존 구현의 신뢰 경계로, 이 설계가
-완전한 네트워크 격리를 입증하지 않는다.
+The root Compose owns include, and the service profile owns activation. The
+canonical owner of the vocabulary is
+[POL-0078](../../05.operations/policies/0078-compose-profile-vocabulary.md).
+Distinguish the current host, which holds operational data, from a separate
+Compose project for experiments. Profiles are not a security isolation
+boundary and share the same Docker daemon failure. The shared Compose network
+is an existing implementation's trust boundary, and this design does not
+prove complete network isolation.
 
 ## Components
 

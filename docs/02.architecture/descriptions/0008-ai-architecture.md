@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -15,76 +15,76 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-이 문서는 `08-ai` 계층의 참조 아키텍처와 품질 속성을 정의한다. 로컬 환경에서의 고성능 LLM 추론 및 RAG 시스템을 위한 GPU 자원 할당, 서비스 경계, 그리고 데이터 흐름에 대한 구조적 가이드라인을 제공한다.
+This document defines the reference architecture and quality attributes of the `08-ai` layer. It provides structural guidelines on GPU resource allocation, service boundaries, and data flow for high-performance local LLM inference and RAG systems.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-`08-ai` 계층은 시스템의 '지능'을 담당하는 핵심 영역으로, 프라이버시가 보호되는 로컬 추론 엔진과 이를 활용하는 UI/RAG 인터페이스를 소유한다. NVIDIA GPU 자원을 추론 연산에 집중적으로 사용하며, 외부 모델 API에 의존하지 않는 독립적인 AI 에코시스템을 구축한다.
+The `08-ai` layer is the core area responsible for the system's "intelligence" and owns the privacy-preserving local inference engine and the UI/RAG interface that uses it. It intensively uses NVIDIA GPU resources for inference computation and builds an independent AI ecosystem that does not depend on external model APIs.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
 - **Owns**:
-  - LLM 추론 엔진 (`Ollama`)
-  - AI 사용자 인터페이스 및 RAG 오케스트레이터 (`Open WebUI`)
-  - 로컬 모델 가중치 및 설정 관리
+  - LLM inference engine (`Ollama`)
+  - AI user interface and RAG orchestrator (`Open WebUI`)
+  - Local model weight and configuration management
   - ComfyUI image-workflow interface and its persistent workflow assets
 - **Consumes**:
-  - GPU 하드웨어 자원 (via NVIDIA Container Toolkit)
-  - 벡터 데이터베이스 (`04-data/qdrant`)
-  - 사용자 인증 및 SSO (`02-auth/keycloak`)
+  - GPU hardware resources (via NVIDIA Container Toolkit)
+  - Vector database (`04-data/qdrant`)
+  - User authentication and SSO (`02-auth/keycloak`)
 - **Does Not Own**:
-  - 벡터 처리 서버 자체 (Qdrant 인스턴스는 Data 계층 소유)
-  - 서비스 모니터링 수집기 (Observability 계층 소유)
+  - The vector processing server itself (the Qdrant instance is owned by the Data layer)
+  - The service monitoring collector (owned by the Observability layer)
 - **Non-goals**:
-  - 고사양 GPU 클러스터 컴퓨팅 (단일 노드 또는 단일 리소스 그룹 최적화 중심)
-  - 모델의 직접적인 학습(Training) 환경 제공
+  - High-end GPU cluster computing (focused on optimizing a single node or a single resource group)
+  - Providing a direct model training environment
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Performance**: NVIDIA CUDA 가속을 통한 저지연 추론 달성. FP16/INT8 양자화 모델 활용 권장.
-- **Security**: 모든 데이터는 프로젝트 내부 네트워크(`ai_net`) 내에 머물며, Keycloak을 통한 엄격한 RBAC 적용.
-- **Reliability**: Healthcheck를 통한 추론 엔진 상태 감시 및 자동 복구.
-- **Scalability**: 필요 시 Worker 컨테이너 증설을 통한 수평 확장(단, GPU 할당 정책 준수 필요).
-- **Observability**: `ollama-exporter`를 통해 VRAM 사용량, 모델 로드 상태, API 호출 통계 상시 모니터링.
+- **Performance**: Achieves low-latency inference through NVIDIA CUDA acceleration. Recommends using FP16/INT8 quantized models.
+- **Security**: All data stays within the project's internal network (`ai_net`), with strict RBAC applied through Keycloak.
+- **Reliability**: Monitors inference engine status and performs automatic recovery through Healthcheck.
+- **Scalability**: Horizontal scaling through added Worker containers as needed (subject to compliance with the GPU allocation policy).
+- **Observability**: Continuously monitors VRAM usage, model load status, and API call statistics through `ollama-exporter`.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+This section uses the context, component, or deployment representation as the view for the relevant concern.
 
-시스템은 하이브리드 구조로 운영된다.
+The system operates as a hybrid structure.
 
-1. **Inference Layer (Backend)**: Ollama가 모델 저장소와 GPU를 직접 제어하며 OpenAI 호환 API를 제공한다.
-2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI가 채팅 UI와 더불어 RAG 로직(Embedding → Search → Augment)을 수행한다. 벡터는 Open WebUI 로컬 저장소에 두며 Qdrant는 쓰지 않는다(`VECTOR_DB` 미설정).
+1. **Inference Layer (Backend)**: Ollama directly controls the model store and GPU and provides an OpenAI-compatible API.
+2. **Interaction Layer (Frontend/Orchestrator)**: Open WebUI performs RAG logic (Embedding -> Search -> Augment) alongside the chat UI. Vectors sit in Open WebUI's local storage; Qdrant is not used (`VECTOR_DB` is unset).
 
 ### AI Agent Architecture
 
-- **Model/Provider Strategy**: 로컬 Ollama를 기본 제공자로 지정하되, 중요 태스크에 한해 외부 API(Claude/OpenAI)로의 폴백 전략 지원.
-- **Tooling Boundary**: 에이전트는 Ollama API를 인터페이스로 사용하며 직접 모델 가중치나 GPU 드라이버를 조작하지 않는다.
-- **Latency / Cost Budget**: 모델 리로딩 횟수 최소화 및 경량 임베딩 모델(`qwen3-embedding:0.6b`) 사용으로 리소스 효율 극대화.
+- **Model/Provider Strategy**: Designates local Ollama as the default provider, with a fallback strategy to external APIs (Claude/OpenAI) supported only for important tasks.
+- **Tooling Boundary**: The agent uses the Ollama API as its interface and does not directly manipulate model weights or the GPU driver.
+- **Latency / Cost Budget**: Maximizes resource efficiency by minimizing the number of model reloads and using a lightweight embedding model (`qwen3-embedding:0.6b`).
 
 ## Data Flow
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
 - **Key Entities / Flows**: User Prompt → Open WebUI (RAG Context Enrich) → Ollama (Inference) → Response Streaming.
-- **Storage Strategy**: 대용량 모델 파일(`${DEFAULT_AI_MODEL_DIR}/ollama`)은 bind mount를 통해 호스트의 대용량 스토리지와 직접 연동한다.
-- **Data Boundaries**: 사용자/채팅/업로드 상태는 Open WebUI의 기본 SQLite
-  data volume에, vector state는 Qdrant에 존재하며 두 저장소는 별도 owner가
-  조정해 복구한다. ComfyUI workflow/user/input/output/custom-node state와
-  model provenance는 해당 service mounts에 있다. 추론 엔진에는 context가
-  일시적으로 전달된다.
+- **Storage Strategy**: Large model files (`${DEFAULT_AI_MODEL_DIR}/ollama`) connect directly to the host's large-scale storage through a bind mount.
+- **Data Boundaries**: User/chat/upload state sits in Open WebUI's default SQLite
+  data volume, and vector state sits in Qdrant; the two stores are recovered
+  through coordination by separate owners. ComfyUI workflow/user/input/output/custom-node
+  state and model provenance sit in that service's mounts. Context is passed to
+  the inference engine only transiently.
 
 ## Deployment View
 
@@ -94,11 +94,11 @@ created: "2026-03-26"
   `ai-llm` selects Ollama/Open WebUI, `ollama` selects Ollama/exporter, and
   `ai-image` selects ComfyUI. Compose resource declarations are source limits,
   not measured shared-GPU headroom.
-- **Operational Evidence**: `nvidia-smi`를 통한 실시간 GPU 상태 확인 및 `ollama-exporter` 대시보드.
+- **Operational Evidence**: Real-time GPU status check through `nvidia-smi` and the `ollama-exporter` dashboard.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

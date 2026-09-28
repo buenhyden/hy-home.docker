@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -15,58 +15,75 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `08-ai` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. gateway 경계 보안, GPU concurrency 제어, stateful 운영 일관성, health 기반 관측 안정성, 카탈로그 기반 운영 확장 정책을 아키텍처 관점에서 정리한다.
+This document defines the optimization/hardening reference architecture of
+the `08-ai` layer. It organizes the gateway boundary security, GPU
+concurrency control, stateful operational consistency, health-based
+observation stability, and catalog-based operational expansion policy from
+an architecture perspective.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded
+in this section and the following views. Only concerns confirmed in the
+existing document are covered here.
 
-AI tier는 두 개의 핵심 평면으로 구성된다.
+The AI tier consists of two core planes.
 
-- Ollama (로컬 LLM 추론/임베딩 엔진)
-- Open WebUI (사용자 인터페이스 + RAG 오케스트레이션)
+- Ollama (local LLM inference/embedding engine)
+- Open WebUI (user interface + RAG orchestration)
 
-외부 진입은 Traefik TLS 경계에서 표준 middleware+SSO 체인을 공유한다.
+External entry shares the standard middleware+SSO chain at the Traefik TLS
+boundary.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships,
+non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - AI 관리 경로 gateway/SSO 경계 계약
-  - Ollama GPU concurrency/resource 보호 계약
-  - Open WebUI stateful 운영 계약
-  - AI hardening CI 정책 게이트
-  - 08-ai 카탈로그 확장 정책(모델 승격/접근 통제/로그 정책)
+  - AI management path gateway/SSO boundary contract
+  - Ollama GPU concurrency/resource protection contract
+  - Open WebUI stateful operation contract
+  - AI hardening CI policy gate
+  - 08-ai catalog expansion policy (model promotion/access control/log policy)
 - **Consumes**:
-  - `01-gateway` 표준 middleware chain
+  - `01-gateway` standard middleware chain
   - `02-auth` SSO middleware
-  - `04-data` Qdrant 및 데이터 계층
+  - `04-data` Qdrant and the data layer
 - **Does Not Own**:
-  - 모델 학습/파인튜닝 파이프라인
-  - Qdrant 내부 스키마/인덱스 운영 세부
+  - Model training/fine-tuning pipeline
+  - Qdrant internal schema/index operation detail
 - **Non-goals**:
-  - 즉시 분산 GPU 스케줄러 도입
-  - 즉시 외부 LLM provider 병행 표준화
+  - Immediate adoption of a distributed GPU scheduler
+  - Immediate standardization of parallel external LLM providers
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
 
-- **Performance**: Ollama concurrency/queue 상한으로 GPU 과부하를 억제한다.
-- **Security**: gateway-standard-chain + SSO 체인으로 공개 경계 보안을 통일한다.
-- **Reliability**: health-gated dependency/healthcheck로 기동 안정성과 관측 신뢰도를 강화한다.
-- **Scalability**: 모델 승격/리소스 정책 기반으로 단계적 확장을 가능하게 한다.
-- **Observability**: exporter metrics health 계약과 CI 하드닝 게이트를 표준화한다.
-- **Operability**: `check-all-hardening.sh 08-ai`를 AI tier 운영 기준선으로 사용한다.
+- **Performance**: suppresses GPU overload with an Ollama concurrency/queue
+  ceiling.
+- **Security**: unifies public boundary security with the
+  gateway-standard-chain + SSO chain.
+- **Reliability**: strengthens boot stability and observation reliability
+  with health-gated dependency/healthcheck.
+- **Scalability**: enables staged expansion based on model promotion/resource
+  policy.
+- **Observability**: standardizes the exporter metrics health contract and
+  the CI hardening gate.
+- **Operability**: uses `check-all-hardening.sh 08-ai` as the AI tier
+  operational baseline.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves
+as the view for that concern.
 
 - **Ingress path**:
   - Client -> Traefik(websecure) -> ollama/chat routers -> Ollama/Open WebUI
@@ -74,21 +91,24 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
   - Open WebUI -> Ollama (generation + embedding)
   - Open WebUI -> its local vector store (vector retrieval)
 - **Control plane**:
-  - SSO middleware, 정책 게이트 script/CI, 운영 문서(guides/policies/runbooks)
+  - SSO middleware, policy gate script/CI, operational documents (guides/policies/runbooks)
 
 ## Data Flow
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
 
 - **Key Entities / Flows**:
-  - 모델 아티팩트, 대화/세션 메타데이터, 임베딩 벡터 참조
+  - model artifacts, conversation/session metadata, embedding vector
+    references
 - **Storage Strategy**:
-  - Ollama 모델 캐시: `${DEFAULT_AI_MODEL_DIR}/ollama`
-  - Open WebUI 상태 데이터: `${DEFAULT_AI_MODEL_DIR}/open-webui`
+  - Ollama model cache: `${DEFAULT_AI_MODEL_DIR}/ollama`
+  - Open WebUI state data: `${DEFAULT_AI_MODEL_DIR}/open-webui`
 - **Data Boundaries**:
-  - 벡터 인덱스 실데이터는 Qdrant 소유, AI tier는 호출/활용 정책을 소유한다.
+  - Qdrant owns the actual vector index data, and the AI tier owns the
+    call/usage policy.
 
 ## Deployment View
 
@@ -105,17 +125,17 @@ AI tier는 두 개의 핵심 평면으로 구성된다.
 ## Evolution
 
 - **Ollama**:
-  - 모델 캐시/스토리지 운영 정책 명문화
-  - GPU scheduling/concurrency 상한 운영 표준화
-  - 모델 승격 절차(실험 -> 운영) 수립
+  - formalizing the model cache/storage operational policy
+  - standardizing GPU scheduling/concurrency ceiling operation
+  - establishing a model promotion procedure (experiment -> production)
 - **Open WebUI**:
-  - SSO 강제/우회 금지 기준 강화
-  - 모델 접근 권한 분리(역할/환경)
-  - 대화 로그 보존/마스킹 정책 강화
+  - strengthening SSO enforcement/no-bypass criteria
+  - separating model access permission (role/environment)
+  - strengthening conversation log retention/masking policy
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

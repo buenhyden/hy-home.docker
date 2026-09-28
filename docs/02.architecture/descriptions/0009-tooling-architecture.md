@@ -1,10 +1,10 @@
 ---
 title: "Tooling Tier Architecture Description"
-version: "2.1.0"
+version: "2.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -15,82 +15,84 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-이 문서는 `09-tooling` 계층의 참조 아키텍처와 품질 속성을 정의한다. 인프라 자동화, 품질 분석, 성능 테스트 도구들의 시스템 경계, 책임, 그리고 공통 인프라와의 연동 구조를 제공한다.
+This document defines the reference architecture and quality attributes of the `09-tooling` layer. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-`09-tooling` 계층은 프로젝트의 '운영 효율성'과 '품질 보증'을 담당하는 보조 계층이다. IaC 엔진, 분석 서버, 테스트 워커 등으로 구성되며, 공개 관리 UI가 있는 서비스는 gateway/SSO 경계를 사용하고, 필요한 서비스만 PostgreSQL, SeaweedFS, Valkey 같은 data tier backend와 연동한다.
+The `09-tooling` layer is an auxiliary layer responsible for the project's "operational efficiency" and "quality assurance." It consists of an IaC engine, an analysis server, test workers, and similar components; services with a public admin UI use the gateway/SSO boundary, and only the services that need it integrate with data tier backends such as PostgreSQL, SeaweedFS, and Valkey.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
 - **Owns**:
-  - IaC CLI helper (`OpenTofu`)와 자동화 플랫폼 (`Terrakube`)
-  - 정적 코드 분석 엔진 (`SonarQube`)
-  - 분산 부하 테스트 시스템 (`Locust`)과 명시적 부하 테스트 작업 (`k6`)
-  - 사설 패키지/이미지 스토리지 (`Registry`)
-  - 수동 의존성 업데이트 작업 (`Renovate`)
+  - IaC CLI helper (`OpenTofu`) and automation platform (`Terrakube`)
+  - Static code analysis engine (`SonarQube`)
+  - Distributed load-testing system (`Locust`) and explicit load-testing jobs (`k6`)
+  - Private package/image storage (`Registry`)
+  - Manual dependency update jobs (`Renovate`)
 - **Consumes**:
-  - 데이터 지속성 서비스 (`04-data` / PostgreSQL, SeaweedFS, Valkey)
-  - 공통 인증 서비스 (`02-auth` / Keycloak)
-  - 네트워크 리소스 (선언된 Compose network)
+  - Data persistence services (`04-data` / PostgreSQL, SeaweedFS, Valkey)
+  - Common authentication service (`02-auth` / Keycloak)
+  - Network resources (declared Compose network)
 - **Does Not Own**:
-  - 코어 비즈니스 애플리케이션 서비스
-  - 전역 관제 및 로깅 스택 (06-observability)
+  - Core business application services
+  - The global monitoring and logging stack (06-observability)
 - **Non-goals**:
-  - 실서비스의 트래픽 라우팅 및 외부 노출 관리 (Gateway 계층 소유)
+  - Traffic routing and external exposure management for live services (owned by the Gateway layer)
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Scalability**: Locust 워커와 Terrakube 실행 용량은 승인된 구성 변경으로 조정한다. 현재 고정 Compose 서비스가 자동 확장을 구현하거나 검증했다는 뜻은 아니다.
-- **Security**: SonarQube/Terrakube 같은 공개 관리 UI에 gateway+SSO 체인 적용.
-- **Reliability**: IaC state/object persistence를 선언된 backend에 보관한다. 동일 호스트의 SeaweedFS와 PostgreSQL은 독립 장애 도메인이 아니므로 호스트 장애 시 연속성을 보장하지 않는다. 백업과 격리 복구 검증은 별도 운영 증거가 필요하다.
-- **Operability**: 중앙 집중식 대시보드 및 API를 통한 통합 제어 환경 제공.
+- **Scalability**: Locust worker and Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
+- **Security**: Applies a gateway+SSO chain to public admin UIs such as SonarQube/Terrakube.
+- **Reliability**: Keeps IaC state/object persistence in the declared backend. SeaweedFS and PostgreSQL on the same host are not independent failure domains, so continuity is not guaranteed during a host failure. Backup and isolated recovery verification need separate operational evidence.
+- **Operability**: Provides a unified control environment through a centralized dashboard and API.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+This section uses the context, component, or deployment representation as the view for the relevant concern.
 
-시스템은 '관리형 도구(Managed Tools)'와 '실행형 도구(Execution Tools)'로 나뉜다.
+The system is divided into "Managed Tools" and "Execution Tools."
 
-1. **Management**: SonarQube, Terrakube API 등은 해당 profile을 선택한 환경에서 중앙 상태를 관리한다. HOME 상시 기동 대상으로 자동 포함하지 않는다.
-2. **Execution**: Terrakube Worker, Locust Worker 등은 작업 발생 시 리소스를 점유하며 실제 연산을 수행한다.
+1. **Management**: SonarQube, the Terrakube API, and similar services manage central state in an environment where the matching profile is selected. They are not automatically included as HOME always-on targets.
+2. **Execution**: Terrakube Worker, Locust Worker, and similar services occupy resources and perform the actual computation when a job occurs.
 
 ## Data Flow
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
-- **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / IaC Configuration → OpenTofu 또는 Terrakube Plan → 승인된 Apply.
-- **Storage Strategy**: Terrakube state/object data는 SeaweedFS S3 backend를 사용하고, SonarQube/Terrakube metadata는 management PostgreSQL을 사용한다. Registry와 OpenTofu workspace는 현재 bind mount 기반 local persistence를 사용한다. Syncthing runtime은 제거되었으며 파일 동기화 경로를 소유하지 않는다.
-- **Data Boundaries**: 각 도구는 별도의 데이터베이스 또는 스키마를 사용하여 데이터 간섭을 방지한다.
+- **Key Entities / Flows**: Source Code → SonarQube Scan → Quality Result / IaC Configuration → OpenTofu or Terrakube Plan → Approved Apply.
+- **Storage Strategy**: Terrakube state/object data uses the SeaweedFS S3 backend, and SonarQube/Terrakube metadata uses the management PostgreSQL. Registry and the OpenTofu workspace currently use bind-mount-based local persistence. The Syncthing runtime has been removed and does not own a file-sync path.
+- **Data Boundaries**: Each tool uses a separate database or schema to prevent data interference.
 
 ## Deployment View
 
-- **Runtime / Platform**: 현재 root Compose include 및 profile 계약을 사용하는 Docker Compose.
-- **Deployment Model**: root `docker-compose.yml`은 모든 leaf를 include하고
-  profile이 서비스를 선택한다. `tooling`은 Registry와 SonarQube만,
-  `testing`은 k6와 Locust master/worker 모두, `iac`은 OpenTofu와 Terrakube
-  API/UI/executor 모두, `dependency-update`는 Renovate만 선택한다. `registry`
-  와 `sast`는 해당 단일 역할을 선택한다. `analytics-engineering`은 dbt와 그
-  DB provisioning 작업, `contract-testing`은 Pact Broker와 그 DB provisioning
-  작업, `api-mock`은 WireMock, `backup`은 Restic과 SQLite export 작업,
-  `policy-check`는 Conftest 작업만 선택한다. 이 도구들은 HOME에 포함되지 않는다.
+- **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
+- **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
+  a profile selects the service. `tooling` selects only Registry and
+  SonarQube; `testing` selects both k6 and Locust master/worker; `iac`
+  selects OpenTofu and the Terrakube API/UI/executor together;
+  `dependency-update` selects only Renovate. `registry` and `sast` each
+  select that single role. `analytics-engineering` selects dbt and its DB
+  provisioning job; `contract-testing` selects Pact Broker and its DB
+  provisioning job; `api-mock` selects WireMock; `backup` selects Restic and
+  the SQLite export job; `policy-check` selects only the Conftest job. These
+  tools are not included in HOME.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

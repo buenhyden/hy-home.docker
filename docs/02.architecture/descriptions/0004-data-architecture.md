@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -15,43 +15,43 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-이 문서는 `04-data` 티어의 참조 아키텍처와 품질 속성을 정의한다. 시스템 경계, 책임, 데이터 흐름, 운영 관점을 정리하는 기준 문서다. 본 아키텍처는 다중 모델 영속성 계층을 지향하며, 고가용성(HA)과 보안 격리를 핵심 설계 원칙으로 한다.
+This document defines the reference architecture and quality attributes of the `04-data` tier. It is the baseline document that organizes the system boundary, responsibilities, data flow, and operational perspective. This architecture targets a multi-model persistence layer, with high availability (HA) and security isolation as its core design principles.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-`04-data` 티어는 플랫폼의 모든 영속성 데이터를 소유하며, 관계형, NoSQL, 캐시, 오브젝트, 벡터 등 다양한 데이터 요구사항을 충족하는 인프라를 제공한다.
+The `04-data` tier owns all persistent data of the platform and provides infrastructure that meets diverse data requirements: relational, NoSQL, cache, object, and vector.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
-- **Owns**: 데이터베이스 인스턴스, 스토리지 볼륨, 백업 데이터, 데이터 전용 네트워크(`mng_data_net`, `lab_net`).
-- **Consumes**: Docker Secrets, OpenBao 시크릿, 시스템 리소스(CPU/RAM/Storage).
-- **Does Not Own**: 애플리케이션 비즈니스 코드, 사용자 UI, 네트워크 외부 노출(Gateway 담당).
-- **Non-goals**: 실시간 대시보드 시각화 (Observability 티어에서 담당).
+- **Owns**: Database instances, storage volumes, backup data, data-only networks (`mng_data_net`, `lab_net`).
+- **Consumes**: Docker Secrets, OpenBao secrets, system resources (CPU/RAM/Storage).
+- **Does Not Own**: Application business code, user UI, external network exposure (owned by Gateway).
+- **Non-goals**: Real-time dashboard visualization (owned by the Observability tier).
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Performance**: Valkey 클러스터를 통한 밀리초 단위 응답 보장.
-- **Security**: 흐름별 network 격리 및 Docker Secrets 기반 인증.
-- **Reliability**: Patroni/Etcd 기반의 자동 장애 조치(Failover).
-- **Scalability**: 데이터 샤딩 및 노드 확장이 용이한 마이크로서비스 친화적 구성.
-- **Observability**: Prometheus Exporter를 통한 실시간 상태 모니터링.
-- **Operability**: 표준화된 백업/복구 런북 제공.
+- **Performance**: Guarantees millisecond-scale response through the Valkey cluster.
+- **Security**: Per-flow network isolation and Docker Secrets-based authentication.
+- **Reliability**: Automatic failover based on Patroni/Etcd.
+- **Scalability**: A microservice-friendly configuration that eases data sharding and node expansion.
+- **Observability**: Real-time status monitoring through the Prometheus Exporter.
+- **Operability**: Provides a standardized backup/recovery runbook.
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+This section uses the context, component, or deployment representation as the view for the relevant concern.
 
-`04-data` 티어는 `hy-home.docker`의 기초 계층으로, 모든 상위 티어(Auth, AI, App 등)에 데이터 저장소를 공급한다.
+The `04-data` tier is the foundation layer of `hy-home.docker`, supplying data storage to all upper tiers (Auth, AI, App, and others).
 
 ```mermaid
 graph TD
@@ -91,11 +91,11 @@ graph TD
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
-- **Key Entities / Flows**: 트랜잭션 데이터(SQL), 비정형 자산(S3), 검색 인덱스(Vector).
-- **Storage Strategy**: 호스트 볼륨 바인드 마운트(`${DEFAULT_DATA_DIR}`).
-- **Data Boundaries**: 각 서비스는 독립된 볼륨과 물리적 격리를 유지함.
+- **Key Entities / Flows**: Transaction data (SQL), unstructured assets (S3), search index (Vector).
+- **Storage Strategy**: Host volume bind mounts (`${DEFAULT_DATA_DIR}`).
+- **Data Boundaries**: Each service keeps an independent volume and physical isolation.
 
 ## Deployment View
 
@@ -105,7 +105,7 @@ graph TD
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

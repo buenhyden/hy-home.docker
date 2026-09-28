@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.2.2"
+version: "1.2.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -15,56 +15,75 @@ created: "2026-03-28"
 
 ## Context and Stakeholders
 
-이 문서는 `05-messaging` 계층의 최적화/하드닝 참조 아키텍처를 정의한다. 현재 구현된 Kafka 관리 트래픽 경로를 게이트웨이 표준 체인과 인증 경계로 정렬하고, 운영 회귀를 CI 기준선 검증으로 차단하는 구조를 설명한다.
+This document defines the optimization/hardening reference architecture of
+the `05-messaging` layer. It describes the structure that aligns the
+currently implemented Kafka management traffic path with the gateway
+standard chain and the authentication boundary, and blocks operational
+regression through CI baseline verification.
 
 ### Stakeholders and Concerns
 
-요구사항 소유자, 구현자와 운영자는 이 절과 후속 뷰에 기록된 관심사를 공유한다. 여기서는 기존 문서에서 확인되는 관심사만 다룬다.
+Requirement owners, implementers, and operators share the concerns recorded
+in this section and the following views. Only concerns confirmed in the
+existing document are covered here.
 
-메시징 계층은 Kafka broker 데이터 평면과 관리 UI/API 평면을 분리해 운영한다. 관리 평면은 Traefik TLS 종료 지점에서 표준 미들웨어를 적용하고, 데이터 평면은 `kafka_net` 내부 경계에서 서비스 헬스 기반 의존 관계를 유지한다.
+The messaging layer operates the Kafka broker data plane and the management
+UI/API plane separately. The management plane applies standard middleware at
+the Traefik TLS termination point, and the data plane keeps a service
+health-based dependency relationship within the `kafka_net` internal
+boundary.
 
 ## System Boundaries
 
-이 절은 현재 문서가 이미 기록한 시스템 경계, 소비 관계, non-goal과 제약을 보존한다.
+This section preserves the system boundary, consumption relationships,
+non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - 메시징 관리 경로 라우팅/미들웨어 계약
-  - Kafka UI 이미지 버전 고정 정책
-  - 메시징 하드닝 기준선 검증(CI + script)
-  - optimization-hardening 문서 추적성
+  - Messaging management path routing/middleware contract
+  - Kafka UI image version pinning policy
+  - Messaging hardening baseline verification (CI + script)
+  - optimization-hardening document traceability
 - **Consumes**:
-  - `01-gateway` Traefik 미들웨어 체인
-  - `02-auth` SSO 체계
-  - `06-observability` 지표/알림
+  - `01-gateway` Traefik middleware chain
+  - `02-auth` SSO scheme
+  - `06-observability` metrics/alerts
 - **Does Not Own**:
-  - Producer/Consumer 애플리케이션 구현
-  - 비메시징 티어 인프라 구성
+  - Producer/consumer application implementation
+  - Non-messaging tier infrastructure configuration
 - **Non-goals**:
-  - 즉시 멀티리전/멀티클러스터 전환
-  - 앱 레벨 재처리 코드 구현
+  - Immediate multi-region/multi-cluster migration
+  - App-level reprocessing code implementation
 
 ## Quality Attributes
 
 ### Quality Scenarios
 
-품질 시나리오는 아래 속성이 적용되는 기존 구성, 실패 경계와 연결된 검증 기대를 가리킨다. 구체적인 실행 증거는 관련 Spec과 Operations 문서가 소유한다.
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
 
-- **Performance**: 게이트웨이 표준 체인으로 burst 트래픽 제어 및 일시적 장애 흡수
-- **Security**: TLS 종료 + SSO 보호 + 부동 태그 금지
-- **Reliability**: healthcheck 의존성과 롤링 복구 절차로 가용성 유지
-- **Scalability**: 카탈로그 기반으로 DLQ/재처리/quorum queue 확장 준비
-- **Observability**: compose health + exporter 지표 + CI 증적 연계
-- **Operability**: 표준 스크립트 + runbook + 정책 문서로 운영 단일 계약 유지
+- **Performance**: burst traffic control and transient-failure absorption
+  through the gateway standard chain
+- **Security**: TLS termination + SSO protection + floating-tag prohibition
+- **Reliability**: availability kept through healthcheck dependency and a
+  rolling recovery procedure
+- **Scalability**: catalog-based readiness for DLQ/reprocessing/quorum queue
+  expansion
+- **Observability**: linkage of compose health + exporter metrics + CI
+  evidence
+- **Operability**: a single operational contract kept through standard
+  scripts + runbook + policy documents
 
 ## Components
 
 ### Viewpoints and Views
 
-이 절의 컨텍스트, 구성 요소 또는 배치 표현을 해당 관심사의 뷰로 사용한다.
+The context, component, or deployment representation in this section serves
+as the view for that concern.
 
 - Kafka:
   - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-  - 여기에 `messaging-cluster`를 더한 경우: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - When `messaging-cluster` is added to this: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
 - Internal Path:
@@ -73,31 +92,35 @@ created: "2026-03-28"
 ### AI Agent Architecture
 
 - **Model/Provider Strategy**: N/A
-- **Tooling Boundary**: 메시징 변경은 하드닝/문서 추적성 검증 통과 필수
-- **Memory & Context Strategy**: Spec/Plan/Runbook/Catalog 링크를 실행 컨텍스트로 고정
-- **Guardrail Boundary**: 부동 태그, 무검증 middleware 변경, 무근거 노출 확대 금지
-- **Latency / Cost Budget**: 운영 정책에서 관리
+- **Tooling Boundary**: messaging changes must pass hardening/document
+  traceability verification
+- **Memory & Context Strategy**: pins Spec/Plan/Runbook/Catalog links as
+  execution context
+- **Guardrail Boundary**: prohibits floating tags, unverified middleware
+  changes, and ungrounded exposure expansion
+- **Latency / Cost Budget**: managed in the operational policy
 
 ## Data Flow
 
 ### Data and Control Flows
 
-데이터 및 제어 흐름은 이 절과 기존 인프라·배치 설명에 명시된 상호작용만 포함한다.
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
 
 - **Key Entities / Flows**:
   - Kafka topics (event/log streams)
 - **Storage Strategy**:
-  - `${DEFAULT_MESSAGE_BROKER_DIR}` 기반 상태 데이터 분리
+  - state data separation based on `${DEFAULT_MESSAGE_BROKER_DIR}`
 - **Data Boundaries**:
-  - 장기 보관/분석은 `04-data` 계층으로 오프로딩
+  - long-term retention/analytics is offloaded to the `04-data` layer
 
 ## Deployment View
 
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
-  - `messaging` profile: Kafka `kafka-1` 단일 broker와 선택한 schema/connect/rest/admin 구성
-  - `messaging-cluster`를 더한 경우: 같은 파일의 Kafka 3 broker 모델. 파일 단독 검증에는 root network/secret context가 필요하다
+  - `messaging` profile: Kafka `kafka-1` single broker with the selected schema/connect/rest/admin configuration
+  - When `messaging-cluster` is added: the same file's Kafka 3-broker model. Standalone file validation needs the root network/secret context
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
@@ -105,7 +128,7 @@ created: "2026-03-28"
 
 ## Traceability
 
-상위 요구사항의 disposition과 관련 결정·구현 명세는 `Related Documents`의 PRD, ADR, Spec 링크가 소유한다. 이 설명은 그 문서의 역할을 대체하지 않는다.
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 
