@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.9"
+version: "0.3.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -182,6 +182,7 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | 5 | W6 | PASS: Prometheus, Loki, Pyroscope, `n8n-db` and `airflow-db` report healthy, Tempo and Alertmanager answer through the proxy; `grafana_reader` is not superuser, is read-only by default, has a 30 s timeout, 4 connections and `SELECT` on five tables (`b2cf9feaf`) | [RUN-0041](../../../05.operations/runbooks/0041-grafana.md) |
 | 6 | W6 | PASS: 49 active targets in 38 jobs with no scrape URL twice; the down targets all belong to stopped services (`kafka-2`, `kafka-3`, HAProxy, etcd, OpenSearch, MongoDB, Cassandra, the PostgreSQL cluster, the Valkey cluster and the three unstarted Valkey exporters) | [GDE-0045](../../../05.operations/guides/0045-prometheus.md) |
 | 7 | W6 | PASS except Airflow spans: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. Airflow spans wait for the first DAG run (Deferred Items) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 4 | W6 | PASS: Keycloak Capacity Planning now resolves its last query; after the owner's Dozzle sign-in on 2026-09-30, `keycloak_user_events_total` reports `login` 2, `code_to_token` 2, `user_info_request` 1 and `permission_token` 133 | [Keycloak Compose](../../../../infra/02-auth/keycloak/docker-compose.yml) |
 | 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
 | 9 | W7 | DEFERRED: needs the final SPEC-0182 W8 figures after 2026-10-03 | N/A: deferred to W7 |
 | 10 | W5 | PASS: GDE, POL and RUN-0041, GDE and POL-0045, GDE-0040, RUN-0047, RUN-0050 and the Grafana README describe the new state (`22475253c`) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
@@ -224,5 +225,5 @@ None yet.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` and `seaweedfs-s3` CPU throttling (firing), `mng-valkey-exporter` CPU throttling (pending), Flower memory (`ContainerHighMemoryUsage` firing), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
-| Confirm Keycloak `keycloak_user_events_total` and OAuth2 Proxy `oauth2_proxy_requests_total` after the first sign-ins (none since the recreates as of 2026-09-30 04:00; the Keycloak options match its event-metrics guide), and Airflow DAG-run metrics and traces after the first DAG run; none existed right after the recreates | agent | First traffic |
+| Confirm OAuth2 Proxy `oauth2_proxy_requests_total` after a sign-in to a `sso-auth` route (Prometheus, Flower, n8n and others; Dozzle, Grafana, Open WebUI and OpenBao use their own OIDC clients), and Airflow DAG-run metrics and traces after the first DAG run | agent | First traffic |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |
