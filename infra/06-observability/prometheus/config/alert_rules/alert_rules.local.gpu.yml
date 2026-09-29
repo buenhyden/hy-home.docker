@@ -1,10 +1,10 @@
 groups:
   # ============================================================================
-  # GPU (DCGM Exporter, opt-in `obs-gpu` profile)
+  # GPU (DCGM Exporter, `obs-gpu` profile, part of HOME)
   # ============================================================================
   # Every rule reads a DCGM metric, so the group stays silent while obs-gpu is
   # not selected. No per-target `up == 0` rule is added: the scrape job is
-  # always configured and would alert whenever the opt-in profile is off.
+  # always configured and would alert whenever obs-gpu is not selected.
   # Field availability depends on the GPU model; consumer GeForce cards may not
   # expose every field, so a silent rule is not proof of a healthy GPU.
   - name: gpu_alerts

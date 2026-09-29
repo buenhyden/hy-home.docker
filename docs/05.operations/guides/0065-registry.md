@@ -1,6 +1,6 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ created: "2026-05-10"
 
 ### 목적과 분류
 
-Registry는 `tooling`과 `registry` 하위의 온디맨드 OPTIONAL OCI 이미지 저장소이다.
+Registry는 `registry`(HOME)와 `tooling`이 선택하는 `HOME` OCI 이미지 저장소이다.
 push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. 로컬에서 빌드한
 이미지는 추적되는 Dockerfile로부터 재현할 수 있지만, push된 서드파티나 고유
 아티팩트는 digest/콘텐츠가 백업되어 있거나 신뢰할 수 있는 업스트림에서 여전히

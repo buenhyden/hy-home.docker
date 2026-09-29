@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -130,10 +130,10 @@ graph TD
 - **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
 - **Applications**: Keycloak, n8n, Airflow, OpenBao, Ollama exporter.
 
-#### GPU metrics (DCGM Exporter, opt-in `obs-gpu`)
+#### GPU metrics (DCGM Exporter, `obs-gpu`)
 
-`dcgm-exporter`는 `obs-gpu`에서만 선택되며, eight-profile operating command도 HOME도
-이를 시작하지 않는다. Compose device reservation을 통해 모든 NVIDIA GPU를 예약하고,
+`dcgm-exporter`는 `obs-gpu`에서만 선택되며, SPEC-0182 W6에서 소유자가 `obs-gpu`를
+HOME에 추가했으므로 HOME이 이를 시작한다(POL-0078). Compose device reservation을 통해 모든 NVIDIA GPU를 예약하고,
 추가 capability 없이 실행되며(host GPU가 제공할 수 없어 DCP profiling field용
 `SYS_ADMIN` grant는 제거됨), `obs_net`에서만 `9400`을 노출한다. `prometheus.yml`과
 `prometheus.dev.yml` 모두 항상 `domain="gpu"` label로 `dcgm-exporter:9400`을

@@ -1,23 +1,23 @@
 ---
 title: "Docker Registry"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2026-03-19"
 ---
 
 <!-- [ID:09-tooling:registry] -->
 # Docker Registry
 
-> 온디맨드 **OPTIONAL** OCI 이미지 저장소이며 호스트 엔드포인트는 loopback 전용 인증되지 않은 HTTP입니다.
+> **HOME** OCI 이미지 저장소이며 호스트 엔드포인트는 loopback 전용 인증되지 않은 HTTP입니다.
 
 ## Overview
 
-이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 임시로 저장·배포하는 **OPTIONAL** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 같은 network의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
+이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 저장·배포하는 **HOME** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 같은 network의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
 
-`registry` 서비스는 민감하지 않은 아티팩트를 위한 온디맨드 로컬 OCI 저장소입니다. 호스트 엔드포인트는 `127.0.0.1`에 바인딩되어 있으며 인증 없는 HTTP입니다. 같은 네트워크의 컨테이너도 인증 없이 접근할 수 있습니다. TLS와 접근 제어가 구현되고 테스트되기 전까지는 독점적이거나 민감한 이미지를 저장하지 말고 승인된 신뢰 네트워크 밖으로 엔드포인트를 노출하지 않습니다.
+`registry` 서비스는 민감하지 않은 아티팩트를 위한 로컬 OCI 저장소입니다. 호스트 엔드포인트는 `127.0.0.1`에 바인딩되어 있으며 인증 없는 HTTP입니다. 같은 네트워크의 컨테이너도 인증 없이 접근할 수 있습니다. TLS와 접근 제어가 구현되고 테스트되기 전까지는 독점적이거나 민감한 이미지를 저장하지 말고 승인된 신뢰 네트워크 밖으로 엔드포인트를 노출하지 않습니다.
 
 ## Audience
 
