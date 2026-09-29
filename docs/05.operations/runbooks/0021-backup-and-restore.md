@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -39,6 +39,7 @@ state=/home/hyunyoun/backups                 # the BACKUP_STATE_REPO_DIR value (
 host=/home/hyunyoun/storage/backups          # the BACKUP_HOST_REPO_DIR value (data disk)
 sudo install -d -o 70 -g 70 -m 0750 "$state/pgbackrest"
 install -d -m 0700 "$state/restic" "$state/staging" "$host/restic"
+install -d -m 0755 "$state/metrics"          # before node-exporter is (re)created
 ```
 
 Expected: `.env`에 `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
@@ -109,6 +110,18 @@ exit 1로 끝난다.
 SeaweedFS가 실행 중이면 run은 vacuum도 일시 정지하고 filer metadata를
 export한다. `weed shell`이 오류 텍스트를 내거나, export가 비었거나, master와 filer 중 하나만
 실행 중이면 run은 exit 1로 끝난다(RUN-0024).
+
+exit 0으로 끝난 run만 `$state/metrics/hyhome_backup.prom`에
+`hyhome_backup_last_success_timestamp_seconds`를 쓴다. node-exporter는 이
+디렉터리를 read-only로 mount하고, Compose는 디렉터리를 만들지 않으므로 없으면
+node-exporter가 시작되지 않는다. 이때는 step 1의 `install -d`를 host user로
+실행한다. timestamp를 쓰지 못한 run은 "backup succeeded but its success
+timestamp was not written"을 남기고 exit 1로 끝난다.
+
+| Alert | 조건 | 대응 |
+| --- | --- | --- |
+| `HyhomeBackupStale` | 마지막 성공 후 26시간 경과, 또는 metric이 26시간 동안 없음 | `systemctl list-timers hyhome-backup.timer`와 서비스 결과를 보고, journal의 상태 줄로 멈춘 단계를 찾는다. 원인을 고친 뒤 이 step으로 한 번 실행한다. |
+| `HostSystemDiskLow` | `/` 여유 공간 25 GiB 미만이 15분 지속 | 20 GiB 아래에서는 다음 run이 exit 64로 멈춘다. `docker system df`로 빌드 캐시와 어떤 container도 쓰지 않는 image를 확인하고, 승인을 받아 정리한다. |
 
 ### 5. Point-in-time restore of `mng-pg` into isolation
 
@@ -211,6 +224,7 @@ restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나,
 ## Traceability
 
 - Guide: [GDE-0021](../guides/0021-backup-and-restore.md); Policy: [POL-0021](../policies/0021-backup-and-restore.md)
+- Alerts: [host backup rules](../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)
 - Runtime pins: [Restic Compose](../../../infra/09-tooling/restic/docker-compose.yml)
   and the [`mng-pg` image](../../../infra/04-data/operational/mng-db/pg/backup/Dockerfile)
 - Rehearsal: `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`

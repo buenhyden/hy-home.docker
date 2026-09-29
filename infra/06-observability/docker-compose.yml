@@ -392,11 +392,20 @@ services:
       - '--web.listen-address=:9100'
       - '--no-collector.timex'
       - '--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($$|/)'
+      - '--collector.textfile.directory=/textfile'
 
     volumes:
       - '/:/host/root:ro,rslave'
       - '/proc:/host/proc:ro'
       - '/sys:/host/sys:ro'
+      # hyhome-backup.sh writes its success timestamp here (SPEC-0192). The
+      # host user creates the directory; Docker must not create it as root.
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/metrics
+        target: /textfile
+        read_only: true
+        bind:
+          create_host_path: false
     expose:
       - '9100'
     healthcheck:

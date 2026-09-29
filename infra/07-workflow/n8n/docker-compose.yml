@@ -114,7 +114,9 @@ services:
       mng_data_net: {}
       obs_net: {}
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz || exit 1' ]
+      # Readiness fails while the database connection is lost; /healthz stayed
+      # green through six hours of 503s on 2026-09-29 (SPEC-0192).
+      test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${N8N_PORT:-5678}/healthz/readiness || exit 1' ]
       interval: 30s
       timeout: 10s
       retries: 5

@@ -176,4 +176,24 @@ fi
 # Size trend for capacity review (journal): repositories grow with retained
 # changes only; pgBackRest is bounded by retention, Restic until forget-prune.
 echo "repository sizes: state=$(( $(size_kib "$state_repo") / 1024 ))MiB (budget ${max_gib}GiB) host=$(( $(size_kib "$host_repo/restic") / 1024 ))MiB" || true
+
+# Only a clean run records its time; HyhomeBackupStale alerts on every other
+# end, including a timeout that kills this script (SPEC-0192). node-exporter
+# reads the directory read-only and ignores the temporary name.
+if (( status == 0 )); then
+    metrics_dir="$state_repo/metrics"
+    metrics_tmp="$metrics_dir/.hyhome_backup.tmp"
+    if mkdir -p "$metrics_dir" && chmod 0755 "$metrics_dir" &&
+        printf '%s\n' \
+            '# HELP hyhome_backup_last_success_timestamp_seconds End of the last hyhome-backup run that exited 0.' \
+            '# TYPE hyhome_backup_last_success_timestamp_seconds gauge' \
+            "hyhome_backup_last_success_timestamp_seconds $(date +%s)" >"$metrics_tmp" &&
+        chmod 0644 "$metrics_tmp" &&
+        mv -f "$metrics_tmp" "$metrics_dir/hyhome_backup.prom"; then
+        :
+    else
+        echo "backup succeeded but its success timestamp was not written" >&2
+        status=1
+    fi
+fi
 exit "$status"

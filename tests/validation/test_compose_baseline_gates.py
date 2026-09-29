@@ -3641,5 +3641,68 @@ class SeaweedfsS3MetricsContractTests(unittest.TestCase):
         self.assertTrue(any("node_filesystem_avail_bytes" in e for e in exprs))
 
 
+class BackupAndHostAlertingContractTests(unittest.TestCase):
+    """Stale backups, a filling system disk and an n8n without its database
+    each went unalerted on 2026-09-26 to 09-29 (SPEC-0192)."""
+
+    def test_only_a_successful_run_writes_the_timestamp_atomically(self) -> None:
+        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
+            encoding="utf-8"
+        )
+        tail = script[script.index("repository sizes:") :]
+        self.assertIn("if (( status == 0 )); then", tail)
+        self.assertIn("hyhome_backup_last_success_timestamp_seconds", tail)
+        self.assertIn('chmod 0644 "$metrics_tmp"', tail)
+        self.assertIn('mv -f "$metrics_tmp" "$metrics_dir/hyhome_backup.prom"', tail)
+
+    def test_node_exporter_reads_the_metrics_directory_read_only(self) -> None:
+        import yaml
+
+        compose = ROOT / "infra/06-observability/docker-compose.yml"
+        service = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"][
+            "node-exporter"
+        ]
+        self.assertIn("--collector.textfile.directory=/textfile", service["command"])
+        mount = next(
+            v
+            for v in service["volumes"]
+            if isinstance(v, dict) and v.get("target") == "/textfile"
+        )
+        self.assertTrue(mount["read_only"])
+        self.assertFalse(mount["bind"]["create_host_path"])
+        self.assertTrue(mount["source"].startswith("${BACKUP_STATE_REPO_DIR"))
+        self.assertTrue(mount["source"].endswith("}/metrics"))
+
+    def test_backup_staleness_and_system_disk_rules(self) -> None:
+        import yaml
+
+        rules = yaml.safe_load(
+            (
+                ROOT
+                / "infra/06-observability/prometheus/config/alert_rules"
+                / "alert_rules.local.infra.yml"
+            ).read_text(encoding="utf-8")
+        )
+        by_name = {
+            r["alert"]: r for g in rules["groups"] for r in g["rules"] if "alert" in r
+        }
+        stale = by_name["HyhomeBackupStale"]["expr"]
+        self.assertIn(
+            "time() - hyhome_backup_last_success_timestamp_seconds > 26 * 3600", stale
+        )
+        self.assertIn("absent(hyhome_backup_last_success_timestamp_seconds)", stale)
+        disk = by_name["HostSystemDiskLow"]
+        self.assertIn('mountpoint="/"', disk["expr"])
+        self.assertIn("< 25 * 1024 * 1024 * 1024", disk["expr"])
+        self.assertEqual("15m", disk["for"])
+
+    def test_n8n_health_check_needs_the_database(self) -> None:
+        import yaml
+
+        compose = ROOT / "infra/07-workflow/n8n/docker-compose.yml"
+        services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
+        self.assertIn("/healthz/readiness", " ".join(services["n8n"]["healthcheck"]["test"]))
+
+
 if __name__ == "__main__":
     unittest.main()

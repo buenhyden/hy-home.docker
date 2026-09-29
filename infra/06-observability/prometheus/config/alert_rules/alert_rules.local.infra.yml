@@ -102,3 +102,37 @@ groups:
           summary: 'n8n 리더 인스턴스 없음'
           description: 'n8n 리더가 감지되지 않습니다. (HA 구성/리더 선출/메트릭 노출 상태를 확인하세요.)'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
+
+  # ============================================================================
+  # [3] Host backup and system disk (SPEC-0192)
+  # ============================================================================
+  - name: host_backup_alerts
+    rules:
+      # [What] No successful backup in 26 h / 26시간 동안 성공한 백업 없음
+      # Only a run that exits 0 writes the timestamp, so a timeout, a preflight
+      # stop or a timer that never fired all show up as staleness.
+      - alert: HyhomeBackupStale
+        expr: |
+          time() - hyhome_backup_last_success_timestamp_seconds > 26 * 3600
+            or absent(hyhome_backup_last_success_timestamp_seconds)
+        for: 15m
+        labels:
+          severity: critical
+          domain: backup
+        annotations:
+          summary: '26시간 넘게 성공한 야간 백업이 없음'
+          description: 'hyhome-backup.service가 최근 26시간 동안 정상 종료하지 않았습니다. 타이머와 서비스 상태, journal의 상태 줄을 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
+
+      # [What] System disk under 25 GiB free / 시스템 디스크 여유 25GiB 미만
+      # The backup refuses to start under 20 GiB free on this disk.
+      - alert: HostSystemDiskLow
+        expr: node_filesystem_avail_bytes{job="node-exporter",mountpoint="/"} < 25 * 1024 * 1024 * 1024
+        for: 15m
+        labels:
+          severity: warning
+          domain: backup
+        annotations:
+          summary: '시스템 디스크 여유 공간 25GiB 미만'
+          description: '/ 여유 공간이 {{ $value | humanize1024 }}B입니다. 20GiB 아래로 내려가면 야간 백업이 시작되지 않습니다. 쓰지 않는 Docker 이미지와 빌드 캐시를 먼저 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
