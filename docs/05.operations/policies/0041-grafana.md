@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -40,7 +40,18 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
   - Datasources는
     `infra/06-observability/grafana/provisioning/datasources/datasource.yml`
     로 선언하고, dashboard references는 `Prometheus`, `Loki`, `Tempo`,
-    `alertmanager`, `Pyroscope` 같은 provisioned UID와 맞춘다.
+    `alertmanager`, `Pyroscope`, `n8n-db`, `airflow-db` 같은 provisioned
+    UID 또는 datasource 변수와 맞춘다.
+  - 서비스 대시보드는 방출 메트릭과 맞는 벤더·mixin·grafana.com 대시보드를
+    먼저 쓰고, 파일의 `description`에 출처와 revision 또는 commit을 남긴다.
+    맞는 것이 없을 때만 로컬 대시보드를 둔다(SPEC-0193).
+  - 같은 소스를 같은 목적으로 그리는 대시보드는 하나만 둔다. Grafana README의
+    Service Coverage 표가 모든 Compose 서비스의 메트릭 소스와 대시보드를
+    기록하고, 대시보드 계약 테스트가 표와 파일을 대조한다.
+  - 이미 provision된 dashboard의 `uid`는 바꾸지 않는다. 교체하는 dashboard는
+    새 경로와 새 `uid`로 둔다.
+  - PostgreSQL datasource는 `grafana_reader`(named table `SELECT`만, 읽기 전용
+    세션)로만 접속하고, 비밀번호는 Docker Secret file로만 주입한다.
   - Grafana role mapping은 Keycloak groups `/admins`, `/editors`, `/viewers`와
     `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`를 기준으로 한다. catch-all
     `Viewer`를 두지 않으며 strict mode로 그 밖의 realm 사용자를 거부한다.

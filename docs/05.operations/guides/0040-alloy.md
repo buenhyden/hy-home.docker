@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-24"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -99,7 +99,9 @@ created: "2026-05-10"
 - **Relabeling regex**: `service_name` 또는 `scope` label이 잘못 지정되면 logs/metrics/profile query가 분산된다.
 - **Network filter**: Docker discovery는 `project_net|`obs_net``만 keep한다. 다른 network의 container는 의도적으로 제외될 수 있다.
 - **Exporter assumption**: Downstream backend가 unhealthy이면 Alloy pipeline이 정상이어도 telemetry가 보이지 않을 수 있다.
-- **Profiling assumption**: `pyroscope.write` endpoint가 있다고 해서 profile source가 자동으로 수집되는 것은 아니다.
+- **Profiling assumption**: `pyroscope.write` endpoint가 있다고 해서 profile source가 자동으로 수집되는 것은 아니다. SPEC-0193부터 `pyroscope.scrape "go_services"`가 `/debug/pprof`을 제공하는 Go 서비스 11개를 30초마다 가져온다. eBPF는 쓰지 않는다.
+- **Config file selection**: HOME은 `ALLOY_CONFIG_FILE=config.home.alloy`를 마운트한다. `config.alloy`만 고치면 실행 중인 Alloy에는 반영되지 않으므로 두 파일을 함께 고치고 `/-/reload`로 확인한다.
+- **Self metrics**: Alloy 자체 metric은 Prometheus job `alloy`가 직접 수집한다. Alloy 안에서 self remote-write를 두면 같은 series가 `integrations/self`로 한 번 더 들어온다.
 - **Docker socket boundary**: Docker socket and container log mounts는 read-only여야 한다.
 
 ### Source-backed operating contract

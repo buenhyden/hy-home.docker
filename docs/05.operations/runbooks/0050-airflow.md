@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -129,6 +129,8 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 
 - **Signals**: Grafana Alert (Worker Down), Flower (Queue Length).
 - **Evidence to Capture**: `docker compose logs --tail=100 airflow-scheduler airflow-worker airflow-apiserver`, broker ping, `airflow celery inspect ping`, DAG list 결과.
+- **Metrics**: statsd exporter mapping은 DAG, task, pool, DAG 파일 이름을 `dag_id`, `task_id`, `pool_name`, `dag_file` label로 옮기고, 규칙에 없는 네 단계 이상 이름은 버린다(SPEC-0193). DAG run·task 메트릭(`airflow_dagrun_*`, `airflow_task_finish_total`)은 DAG가 실행된 뒤에야 생긴다. Grafana `Applications/airflow`(mixin)와 `Applications/airflow-db`(`airflow-db` SQL datasource)가 이를 본다.
+- **Traces**: apiserver, worker, DAG processor, triggerer는 OTLP/HTTP로 Alloy(`alloy:4318`)에 trace를 보낸다. scheduler는 `AIRFLOW__TRACES__OTEL_ON=false`다. Airflow 3.3.1에서 scheduler tracing을 켜면 8974 health server가 뜨지 않아 컨테이너가 unhealthy로 남는다(2026-09-30 확인: SIGUSR2 stack dump에 health thread가 없었고, tracing만 끈 같은 컨테이너는 healthy).
 
 ### Safe Rollback or Recovery Procedure
 

@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -105,6 +105,35 @@ created: "2026-05-17"
    ```
 
    이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
+
+9. Grafana가 시작 직후 재시작을 반복하고 로그에 `Failed to provision data
+   sources ... data source not found`가 있으면, 이미 있는 datasource의 UID를
+   provisioning이 바꾸려는 경우다. `datasource.yml` 맨 위에 해당 이름의
+   `deleteDatasources` 항목을 두고 재시작한다(SPEC-0193, Pyroscope).
+
+   ```bash
+   docker logs --since 5m infra-grafana 2>&1 | grep 'Failed to provision data sources'
+   docker restart infra-grafana
+   ```
+
+10. 로그에 `failed to save dashboard ... deprecatedInternalID=... is already in
+    use`가 있으면, 기존 dashboard의 `uid`를 바꿨거나 지운 파일과 같은 경로에
+    다른 `uid`를 둔 경우다. 유지하는 dashboard는 이전 `uid`로 되돌리고,
+    교체하는 dashboard는 새 파일 경로로 옮긴다. provider가 옛 dashboard를 지우고
+    새 것을 만든다.
+
+11. SQL dashboard(`n8n-db`, `airflow-db`)가 인증 오류를 내면 reader role을 다시
+    provision한다. 이 job은 멱등이며 값을 출력하지 않는다.
+
+    ```bash
+    docker compose up --no-deps --no-build grafana-db-provision
+    docker inspect grafana-db-provision -f '{{.State.ExitCode}}'
+    ```
+
+12. Datasource health API는 Tempo에 400, Alertmanager에 500을 돌려준다. 두
+    plugin이 backend health를 제공하지 않기 때문이며 장애가 아니다. 대신
+    `/api/datasources/proxy/uid/Tempo/api/echo`와
+    `/api/datasources/proxy/uid/alertmanager/api/v2/status`로 확인한다.
 
 ### Verification Steps
 

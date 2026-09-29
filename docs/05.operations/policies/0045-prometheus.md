@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -45,15 +45,19 @@ alert-rule surface에 적용된다.
     기준으로 한다. Prometheus의 `15s`, cAdvisor의 `1m`과 같은
     service-specific interval은 의도하고 검토한 값으로 유지해야 한다.
   - Scrape job은
-    `infra/06-observability/prometheus/config/prometheus.yml`에서
-    관리한다.
+    `infra/06-observability/prometheus/config/prometheus.yml`과
+    `prometheus.dev.yml`에서 같은 내용으로 관리한다. 소스 하나를 두 job이
+    수집하지 않으며, 모든 target은 `cluster="hy-home"`,
+    `namespace="hy-home"` 라벨을 가진다(SPEC-0193).
   - Alert와 recording rule은
     `/etc/prometheus/alert_rules/alert_rules.local.*.yml`,
     `/etc/prometheus/alert_rules/alert_rules.keycloak.yml`,
     `/etc/prometheus/alert_rules/alert_rules.openbao.yml`,
-    `/etc/prometheus/alert_rules/recording_rules.yml`에서 로드된다.
+    `/etc/prometheus/alert_rules/recording_rules*.yml`에서 로드된다.
   - Alert rule은 `expr`, 해당되는 경우 `for`, `labels.severity`, 실행
-    가능한 `annotations`를 포함해야 한다.
+    가능한 `annotations`, 해당 서비스 runbook 파일을 가리키는
+    `annotations.runbook_url`을 포함해야 한다. `expr`은 소스가 실행 중일
+    때 방출하는 metric만 쓰며, on-demand job은 `up == 0`으로 알리지 않는다.
   - `opensearch_exporter_password`, `openbao_token`,
     `qdrant_read_only_api_key`(AI-009, Qdrant read-only key; Prometheus는
     full `qdrant_api_key`를 절대 보유하지 않는다)는 Docker Secret file
@@ -124,7 +128,7 @@ alert-rule surface에 적용된다.
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
 - Prometheus config:
-  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules.yml|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 

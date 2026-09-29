@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -101,7 +101,12 @@ created: "2026-05-17"
 
 - **Logs**: `docker logs --tail=200 infra-pyroscope`, `docker logs --tail=200 infra-alloy`
 - **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
-- **Config**: `pyroscope.yaml`, Alloy `pyroscope.write`, Grafana datasource provisioning
+- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
+- **Profile sources**: `service_name` label 값을 조회해 수집 중인 서비스를 확인한다. 2026-09-30 기준 11개(alertmanager, alloy, grafana, loki, mng-pg-exporter, node-exporter, prometheus, pyroscope, registry, seaweedfs-s3, tempo)다.
+
+  ```bash
+  docker exec infra-grafana sh -c "wget -qO- --header 'Content-Type: application/json' --post-data '{\"name\":\"service_name\",\"start\":$(( ($(date +%s)-600)*1000 )),\"end\":$(( $(date +%s)*1000 ))}' http://pyroscope:4040/querier.v1.QuerierService/LabelValues"
+  ```
 - **Runtime**: `docker stats --no-stream infra-pyroscope`, `pyroscope-data` volume boundary
 - **Evidence to Capture**: failing symptom, log excerpt, affected profile source or label, restart timestamp, final recovery or escalation state
 

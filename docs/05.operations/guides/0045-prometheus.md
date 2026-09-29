@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -124,11 +124,22 @@ graph TD
 
 #### 1. Scrape Configurations
 
-`prometheus.yml`은 Prometheus가 수집하는 scrape job의 source of truth다.
+`prometheus.yml`과 `prometheus.dev.yml`은 같은 38개 job을 담는다(SPEC-0193). Compose는
+`PROMETHEUS_CONFIG_FILE`로 둘 중 하나를 고르며, 계약 테스트가 두 파일의 `scrape_configs`가
+같은지 확인한다.
 
-- **Internal monitoring**: Prometheus self-scrape, Alertmanager, Alloy, gateway 및 observability services.
-- **Infrastructure tier**: PostgreSQL 17/18 family services, Valkey, Kafka, Qdrant, OpenSearch, etcd.
-- **Applications**: Keycloak, n8n, Airflow, OpenBao, Ollama exporter.
+- **Host and containers**: node-exporter, cAdvisor, DCGM exporter.
+- **Observability**: Prometheus, Alertmanager, Alloy, Loki, Tempo, Pyroscope, Grafana, Gatus.
+- **Gateway, auth, security**: Traefik, Keycloak, OAuth2 Proxy(`:44180`), OpenBao.
+- **Datastores and tooling**: `mng-pg`와 `mng-valkey` exporter, Qdrant, SeaweedFS S3, registry(debug listener `:5001`).
+- **Workflow and AI**: Airflow statsd exporter(`airflow-monitor`), Flower, n8n, Ollama exporter.
+- **On-demand**: Kafka broker·Connect·Schema Registry(JMX agent), Kafka exporter, 보조 Valkey exporter, Valkey cluster, PostgreSQL HA와 HAProxy, etcd, OpenSearch, MongoDB·Cassandra exporter. 이 서비스가 멈춰 있으면 target이 down인 것이 정상이며, `up`을 보는 alert는 이 job을 감시하지 않는다.
+
+규칙:
+
+- 소스 하나는 job 하나가 수집한다. 같은 target을 두 job이 긁으면 series가 두 벌 생긴다(이전 `airflow-exporter`, Alloy self remote-write의 `integrations/self`).
+- 모든 target에 `cluster="hy-home"`, `namespace="hy-home"` 라벨을 붙인다. mixin 대시보드가 이 라벨로 변수를 채운다. PostgreSQL HA의 클러스터 이름은 `pg_cluster` 라벨이다.
+- Prometheus는 `--enable-feature=exemplar-storage`로 exemplar를 저장해 Grafana에서 metric → trace 링크가 동작한다.
 
 #### GPU metrics (DCGM Exporter, `obs-gpu`)
 
@@ -141,7 +152,7 @@ scrape한다. 그래서 profile이 꺼져 있으면 target은 그냥 down 상태
 alert는 없다.
 
 Grafana dashboard `Infrastructure/dcgm-exporter.json`과 `alert_rules.local.gpu.yml`
-rule(temperature, XID, framebuffer)은 DCGM metric만 읽는다. Dashboard가 있거나
+rule(temperature, framebuffer; XID rule은 이 GPU가 XID series를 내지 않아 SPEC-0193에서 제거)은 DCGM metric만 읽는다. Dashboard가 있거나
 rule이 조용하다고 해서 collection의 증거가 되지는 않는다. 2026-09-21 read-only host
 check에서 GeForce GTX 1060 6 GB 1대, 설치된 NVIDIA driver, `nvidia` Docker runtime,
 NVIDIA Container Toolkit을 확인했다(정확한 버전은 pin이 아니라 Task evidence다).
@@ -155,10 +166,21 @@ label과 함께 보여주기 전까지 collection은 **미검증** 상태다.
 Rule은 `config/alert_rules/`에 domain별 file로 나뉘어 있다.
 
 - Local domain file은 `alert_rules.local.*.yml` naming pattern을 사용한다.
-- Kubernetes, Keycloak, secret service(`alert_rules.openbao.yml`, OpenBao가 유지하는
-  `vault_` metric prefix에서 이름을 따옴)와 recording rule은 `prometheus.yml`에
-  explicit file로 loading된다.
+- Keycloak, OpenBao(`alert_rules.openbao.yml`, OpenBao가 유지하는 `vault_` metric
+  prefix를 읽음)와 recording rule(`recording_rules*.yml`)은 explicit file 또는 glob으로
+  loading된다. recording rule은 Loki·Tempo mixin의 것만 있으며 upstream 그대로 둔다.
 - Rule 변경은 reload 전에 validate해야 한다.
+
+SPEC-0193(2026-09-30)의 rule 기준:
+
+- 각 rule은 소스 서비스가 실행 중일 때 실제로 방출하는 metric 이름만 쓴다. 2026-09-29 감사에서
+  78개 중 26개가 방출되지 않는 이름을 써서 발화할 수 없었다(Keycloak 전부, OpenSearch의
+  `elasticsearch_*`, `TraefikServiceDown`, `N8nWorkflowFailed`, `GpuXidError` 등). 이름을 고칠 수
+  있는 rule은 고치고, 소스가 없는 rule과 역할이 겹치는 rule은 지웠다(78 → 66).
+- on-demand 서비스는 `up == 0`으로 알리지 않는다. 서비스가 떠 있을 때만 생기는 metric(`redis_up`,
+  `pg_up`, `opensearch_cluster_status` 등)으로 판단한다.
+- 모든 rule의 `runbook_url`은 해당 서비스의 runbook 파일을 가리킨다. 계약 테스트가 파일 존재를
+  확인한다.
 
 #### 3. Storage (TSDB)
 

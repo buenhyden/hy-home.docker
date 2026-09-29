@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.5"
+version: "0.3.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -146,6 +146,21 @@ acceptance criterion of [SPEC-0193](../spec.md).
     `obs_net`.
   - HOME runs `config.home.alloy` (`ALLOY_CONFIG_FILE`), not `config.alloy`;
     the W1 and W2 Alloy changes were applied to it and Alloy reloaded.
+- 2026-09-30 W5: contract tests and documents. The Grafana README lists all
+  152 Compose services with their metrics source and dashboards and all 49
+  dashboards with their source; `ObservabilityDashboardContractTests` checks
+  UIDs, datasource placeholders, source notes, query overlap (under half
+  for every pair; the largest is 12%), table-to-file and table-to-job
+  agreement, identical scrape sets with the two static labels, and
+  runbook links. The Patroni dashboard was removed: the Spilo Patroni API
+  sits on `lab_net`, which Prometheus does not reach. `docs/05.operations`:
+  GDE-0041 (catalog rules, signal-correlation table, Drilldown backends, the
+  external-dashboard survey with adopted and rejected candidates), POL-0041
+  (external-first, UID and SQL datasource rules), RUN-0041 (datasource UID,
+  dashboard path, reader role and health-API recovery), GDE and POL-0045
+  (scrape set and alert rule standards), GDE-0040 (HOME config file, pprof,
+  self metrics), RUN-0047 (profile sources) and RUN-0050 (statsd mapping,
+  scheduler tracing).
 
 ## Verification Evidence
 
@@ -178,4 +193,9 @@ None yet.
 
 ## Deferred Items
 
-None yet.
+| Item | Owner | Trigger or date |
+| --- | --- | --- |
+| W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` CPU throttling (firing), Flower memory (`ContainerHighMemoryUsage` pending), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
+| Confirm Keycloak `keycloak_user_events_total` and OAuth2 Proxy `oauth2_proxy_requests_total` after the first sign-ins, and Airflow DAG-run metrics and traces after the first DAG run; none existed right after the recreates | agent | First traffic |
+| Owner confirmation of the Loki and Tempo job-selector exception to ruling 4 | @buenhyden | Before the completion receipt |
+| CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |
