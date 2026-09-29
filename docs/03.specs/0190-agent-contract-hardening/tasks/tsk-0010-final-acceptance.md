@@ -41,17 +41,52 @@ no runtime action follows merely from the name of a validation command.
 
 ## Verification Evidence
 
-NOT_RUN: final changed/full execution, controlled all-files wrapper, whole-branch
-independent review and final 39-criterion reconciliation.
+BLOCKED / NOT_RUN: final changed/full execution and controlled all-files wrapper.
+Independent read-only safety preflight resolved 36 actual leaf invocations for
+each current local profile; explain lists only 13 canonical validator routes.
+Default Compose validation creates .env/dummy secret paths; PostgreSQL
+check-config-only invalidates a canonical handoff and queries Docker resources;
+Conftest runs/removes a container and can pull an image. Baseline checks render
+real checkout Compose configuration. The runner isolates HOME but strips a
+DOCKER_HOST override, so it cannot select a dedicated daemon by that route.
+No registered equivalent offline/fixture profile exists. Replacing required
+leaves would weaken the gate and is not an acceptance route.
+
+A later separately authorized run needs a clean disposable checkout at the exact
+reviewed commit, no copied private inputs, an explicitly scoped Docker daemon
+and already-local images (or explicit pull permission). The all-files wrapper
+also reaches the same public changed gate and Docker-based hadolint. It cannot
+run safely merely because some pre-commit dependency caches already exist.
+No public profile or Docker operation was executed in this preflight.
+
+W1's historical PASS selected a narrower docs-state suite set and did not cover
+the now-selected operations leaves. It cannot establish current final acceptance.
+Whole-branch review and final 39-criterion reconciliation remain in progress.
 
 PATH preflight found pre-commit at the existing user-local executable with its
 own venv and Docker CLI at /usr/bin/docker. coverage, shellcheck, yamllint, ruff
 and conftest were absent from PATH. This is an availability observation, not
 permission to install or proof about cached pre-commit environments.
 
+Final-review correction: a child leader could exit successfully while a
+background descendant survived. Paired synthetic Docker/Git regressions
+(non-capture/capture) witnessed two failures in 1.920s. Reusing the existing
+stop routine now sends SIGKILL to remaining group members after the leader wait
+and calls it on normal completion too; original command exits remain intact.
+Final H: 49/49 PASS in 19.574s, exit 0. Two ShellCheck SC1007 findings were
+corrected with explicit empty CDPATH assignments; five changed shell files then
+passed the existing pinned ShellCheck, exit 0. No real Docker was used.
+
+Existing pinned cached linters were located without installation. Four changed
+YAML files passed yamllint; 60 admitted changed Markdown files passed
+markdownlint-cli2 with a temporary identical configuration except fix=false.
+These are scoped checks, not the blocked all-files wrapper. Coverage remains
+unavailable. W8's earlier tool absence meant PATH availability at that time.
+
 ## Review Evidence
 
-Whole-branch independent review pending. Unit reviews remain in their owning
+Independent final reviewer approved the descendant correction: CLEAR.
+Whole-branch review continues. Unit reviews remain in their owning
 Tasks and do not substitute for final acceptance.
 
 ## Commit Ledger

@@ -35,8 +35,8 @@ case "$#" in
   ;;
 *) usage >&2; exit 2 ;;
 esac
-SCRIPT_DIR="$(CDPATH= cd -- "${BASH_SOURCE[0]%/*}" && pwd -P)" || exit 2
-REPO_ROOT="$(CDPATH= cd -- "$SCRIPT_DIR/../../../.." && pwd -P)" || exit 2
+SCRIPT_DIR="$(CDPATH='' cd -- "${BASH_SOURCE[0]%/*}" && pwd -P)" || exit 2
+REPO_ROOT="$(CDPATH='' cd -- "$SCRIPT_DIR/../../../.." && pwd -P)" || exit 2
 if ! command -v python3 >/dev/null 2>&1; then
   blocked_bootstrap python-runtime
   exit 2
@@ -113,17 +113,20 @@ def child(argv: list[str], cwd: pathlib.Path, env: dict[str, str],
         try:
             process.wait(timeout=KILL_GRACE_SECONDS)
         except subprocess.TimeoutExpired:
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-            process.wait()
+            pass
+        # The leader may exit before a descendant that ignores SIGTERM.
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait()
     if not capture:
         try:
             process.wait(timeout=TIMEOUT_SECONDS)
         except subprocess.TimeoutExpired:
             stop()
             return 124, b"", "timeout"
+        stop()
         return process.returncode, b"", None
     assert process.stdout is not None
     data = bytearray()
@@ -151,6 +154,7 @@ def child(argv: list[str], cwd: pathlib.Path, env: dict[str, str],
     except subprocess.TimeoutExpired:
         stop()
         return 124, b"", "timeout"
+    stop()
     return process.returncode, bytes(data), None
 def identity(observed: os.stat_result) -> tuple[int, ...]:
     return (observed.st_dev, observed.st_ino, observed.st_mode, observed.st_uid,
