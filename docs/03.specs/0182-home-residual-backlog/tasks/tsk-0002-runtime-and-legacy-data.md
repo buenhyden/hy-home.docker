@@ -1,6 +1,6 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.2"
+version: "0.4.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -139,6 +139,13 @@ Read-only investigation of 2026-09-25:
   separate, irreversible decision; stopping Kafka would also break the kept
   `kafbat-ui` and `kafka-rest-proxy` and fire `KafkaBrokerDown`. Afterwards
   no container was unhealthy.
+- 2026-09-29, criterion 5 by a manual run of `hyhome-backup.sh` as the unit
+  user: the first attempt stopped at preflight (exit 64) because the system
+  disk that holds `BACKUP_STATE_REPO_DIR` had 17.5 GiB free, under the 20 GiB
+  floor, so the 2026-09-30 timer run would have stopped the same way. The
+  owner pruned the Docker build cache, and 20 images no container used and no
+  Compose file, Dockerfile or hook pinned were removed; free space rose to
+  45 GiB. The rerun exited 0 in 80 s.
 
 ## Verification Evidence
 
@@ -165,6 +172,12 @@ Read-only investigation of 2026-09-25:
   02:31Z. Vacuum is enabled: its disable flag is master memory state and the
   master was recreated; `hyhome-backup.service` was inactive with its last
   run successful.
+- Criterion 5: the 2026-09-29 rerun made a differential pgBackRest backup,
+  exported `mng-valkey.rdb` inside the 300 s limit, saved state snapshot
+  `bfeca109` and host snapshot `1d5c4080`, and `restic check` found no errors
+  in either repository. The state snapshot lists no `vault` path; the host
+  snapshot's `vault`/`openbao` matches are the OpenBao custody files and
+  `supabase_vault_enc_key.txt`, none from the retired Vault.
 
 ## Review Evidence
 
@@ -187,5 +200,5 @@ See the Plan.
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
-| Confirm a successful `hyhome-backup.service` run and a Restic snapshot without `security/vault` (criterion 5); investigate the RDB export if it hangs again | agent | After the 2026-09-30 03:37 KST run |
+| Confirm the timer run passes the 20 GiB free-space preflight; the system disk shares space with Docker images and build cache | agent | After the 2026-09-30 03:37 KST run |
 | Retire the CDC pipeline (connector and `hyhome_app_slot`), which has no consumer, or keep it | @buenhyden | Owner decision; no date |
