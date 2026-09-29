@@ -181,8 +181,8 @@ services:
     secrets:
       - pg_haproxy_stats_password
     ports:
-      - '${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
-      - '${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
+      - '${HOST_LAN_BIND_IP:-192.168.0.13}:${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
+      - '${HOST_LAN_BIND_IP:-192.168.0.13}:${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
     expose:
       - '${HAPROXY_METRICS_PORT:-8404}'
     command:
