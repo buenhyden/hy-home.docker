@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.2"
+version: "0.7.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -126,6 +126,21 @@ so a browser renders the one-link "Found" page instead of redirecting. Access
 is refused either way; the owner confirms the browser experience during the
 logout row.
 
+W9, owner rows run by the agent with owner approval (criterion 9),
+2026-09-29. Two disposable `hy-home.realm` users were created with `kcadm.sh`
+inside the Keycloak container, `sso-test-outsider` in `/users` and
+`sso-test-admin` in `/admins`; the flows ran with `curl` through the gateway
+at `192.168.0.13`, and both users were deleted afterwards (realm back to one
+user). Passwords and cookies stayed in `0600` scratch files, never printed,
+and were deleted.
+
+| Row | Result |
+| --- | --- |
+| User outside `/admins` | pass: after the Keycloak sign-in the flow ended at `/oauth2/callback` with `403`, no upstream content, and one OAuth2 Proxy `unauthorized` line for the user; the `/admins` user reached the Prometheus UI |
+| Logout | pass: `/oauth2/sign_out` answered `302`, and the next request to `prometheus` went `302` to the Keycloak authorization endpoint |
+| Role removal | pass: right after removal from `/admins` the existing Proxy cookie still reached Prometheus, as the 1 h `cookie_refresh` allows; after sign-out and a new sign-in the flow ended with `403` |
+| Native OIDC signed in | pass for six apps, not determined for two. `/users` user: Gatus API `401` (subject allowlist), Open WebUI back at `/auth` with API `401` (sign-up off, no account made), Grafana login error with API `401` (strict role mapping), Kafbat `VIEW` and `MESSAGES_READ` only (readonly), Airflow API `403`. `/admins` user: Kafbat all 12 actions, Airflow API `200`. Grafana, Open WebUI and OpenBao were not signed in as the `/admins` user because each would keep a local account or entity after the Keycloak user is deleted; OpenBao binds `groups=["/openbao-admins"]`. Dozzle v11.1.0's OIDC start path was not found from its login page, so its row needs a browser check |
+
 W7, restore rehearsals (criterion 7), 2026-09-25, each on an `--internal`
 network with no route to production and scratch on the data disk:
 
@@ -189,6 +204,6 @@ See the Plan.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | R2 setup (bucket, lock, token, secrets, `init`) and re-landing #277 | @buenhyden | When the owner is ready; RUN-0021 §8 comes back with it |
-| W9 owner rows: user outside `/admins`, logout, role removal, native OIDC signed in | @buenhyden | Before the completion receipt |
+| W9 native OIDC rows not determined: Dozzle sign-in, and Grafana, Open WebUI and OpenBao signed in as an `/admins` user | @buenhyden | Browser check before the completion receipt |
 | W11 supervised reboot and the RUN-0098 rehearsal record | @buenhyden | After fresh backups and `restic check` |
 | W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
