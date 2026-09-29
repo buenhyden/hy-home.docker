@@ -1,6 +1,6 @@
 ---
 title: "HOME Classification and Valkey Key Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -82,7 +82,8 @@ Out of scope:
 
 1. `VALKEY_MNG_HOST_POST` appears nowhere outside `docs/98.archive/` and the
    SPEC-0188 records, and `.env` and `.env.example` share keys and order.
-2. No current document calls Tempo or Pyroscope `OPTIONAL`.
+2. No current document calls Tempo or Pyroscope `OPTIONAL`; m0021's dated
+   ledgers and snapshot tables keep what they recorded.
 3. `validate-docker-compose.sh`, `run-ci-gate.py --profile full`, `tests/lib`,
    and `tests/validation` pass.
 
