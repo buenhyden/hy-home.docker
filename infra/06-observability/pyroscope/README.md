@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2026-03-19"
 ---
 
@@ -90,7 +90,7 @@ pyroscope/
 
 ### Convergence contract
 
-- Classification: **OPTIONAL**. Exact profiles: `obs`, `profiling`.
+- Classification: **HOME**. Exact profiles: `obs`, `profiling`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d pyroscope`.
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0047-pyroscope.md`; ID: `GDE-0047`, `POL-0047`, `RUN-0047`.

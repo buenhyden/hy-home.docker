@@ -1,6 +1,6 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -63,7 +63,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 ### Lifecycle and data controls
 
-- Tempo는 `OPTIONAL`로 유지한다; runtime presence가 있다고 해서 재분류하지 않는다. 앞으로 HOME-only로 전환할 때는 기존 Tempo를 명시적으로 중지해야 한다.
+- Tempo는 `HOME`이다. SPEC-0182 W6에서 소유자가 `tracing`을 HOME에 추가했다(POL-0078). `tracing`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Tempo를 명시적으로 중지한다.
 - `tempo-bucket`, local WAL/temp state, config, 대응하는 SeaweedFS credential을 하나의 조율된 recovery set으로 취급한다; object-store owner가 bucket backup/restore를 수행한다.
 - consistency 캡처 전에 OTLP ingestion을 멈춘다. isolated bucket/path로 rehearse하고 WAL replay, historical/new trace query, metrics-generator 동작, Alloy/Grafana integration을 검증한다.
 - Removal은 producer/exporter migration, retention 결정, credential/route 정리, object나 local data를 삭제하기 전 명시적 승인이 필요하다.

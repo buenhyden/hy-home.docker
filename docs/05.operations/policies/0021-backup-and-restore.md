@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -53,7 +53,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Qdrant vector collection | `qdrant-data` → `${DEFAULT_DATA_DIR}/qdrant/data` | Qdrant collection/full-storage snapshot을 별도 target으로 복사; live directory 복사를 snapshot으로 취급하지 않는다 | source-at-rest encryption 미검증; encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Qdrant operations가 isolated snapshot restore를 소유한다. |
 | Prometheus metrics | `prometheus-data` → `${DEFAULT_OBSERVABILITY_DIR}/prometheus` | 지원되면 engine snapshot, 아니면 stopped filesystem snapshot; tracked scrape/rule configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Prometheus operations가 TSDB validation을 소유한다. |
 | Loki logs | WAL/cache/rule용 `loki-data` → `${DEFAULT_OBSERVABILITY_DIR}/loki`, 그리고 SeaweedFS `loki-bucket` | Loki quiescence, local WAL/rule snapshot, SeaweedFS set(RUN-0024)을 조정; 양쪽을 동일한 recovery point로 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Loki operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |
-| Tempo trace(OPTIONAL 서비스, 보존되는 HOME bucket state) | WAL/cache용 `tempo-data` → `${DEFAULT_OBSERVABILITY_DIR}/tempo`, 그리고 SeaweedFS `tempo-bucket` | trace가 보존될 때 Tempo quiescence, local WAL snapshot, SeaweedFS object backup을 조정 | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | 선택 시 RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Tempo operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |
+| Tempo trace(HOME 서비스, 보존되는 bucket state) | WAL/cache용 `tempo-data` → `${DEFAULT_OBSERVABILITY_DIR}/tempo`, 그리고 SeaweedFS `tempo-bucket` | trace가 보존될 때 Tempo quiescence, local WAL snapshot, SeaweedFS object backup을 조정 | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | 선택 시 RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Tempo operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |
 | Alertmanager silence/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped 또는 application-consistent snapshot; tracked routing configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Alertmanager operations가 silence와 route validation을 소유한다. |
 | Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | 중복 또는 누락된 ingestion이 허용되지 않을 때 stopped snapshot; 그렇지 않으면 loss window를 기록하고 tracked config로부터 rebuild | source-at-rest encryption 미검증; 보존 시 encrypted destination 필수; 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Rebuild는 telemetry gap을 수용할 때만 허용된다. |
 

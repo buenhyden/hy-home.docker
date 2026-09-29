@@ -1,6 +1,6 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -84,7 +84,7 @@ created: "2026-05-10"
 
 ### Source-backed operating contract
 
-- **목적/분류/출처**: `tempo`는 `obs`/`tracing`이 선택하는 `OPTIONAL` trace store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Tempo config](../../../infra/06-observability/tempo/config/tempo.yaml)가 authoritative하다.
+- **목적/분류/출처**: `tempo`는 `obs`/`tracing`이 선택하는 `HOME` trace store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Tempo config](../../../infra/06-observability/tempo/config/tempo.yaml)가 authoritative하다.
 - **Flow/state**: Alloy가 OTLP를 수신해 Tempo로 trace를 전송한다. 내구성 있는 block은 SeaweedFS bucket `tempo-bucket`에 있고, `tempo-data:/var/tempo`는 ingest WAL, metrics-generator WAL, local temporary block을 보관한다. Grafana가 Tempo를 query한다.
 - **Secrets/dependencies/security**: `S3_ACCESS_KEY`와 `seaweedfs_s3_tempo_secret_key`로 object storage에 접근한다. SeaweedFS, Alloy, Grafana, gateway auth, root CA와 선언된 network가 dependency다. Credential을 render하거나 OTLP/query route를 선언된 통제 이상으로 노출하지 않는다.
 - **Resources/normal use**: source의 limit은 headroom이 아니다. Root에서 render하고, readiness를 validate하고, Alloy를 통해 labeled test trace를 보내 query한 뒤 WAL/object-store error를 monitor한다.

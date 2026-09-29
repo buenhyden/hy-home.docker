@@ -1,6 +1,6 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -56,7 +56,7 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `mng-valkey-data`를 소유하고 AOF를 활성화하며 `mng_valkey_password`를 읽는다.
 둘 다 `mng_data_net`을 사용한다. PostgreSQL host port(`POSTGRES_HOST_PORT`,
 기본값 `25432`)는 `127.0.0.1`에만 게시하고, Valkey host port
-(`VALKEY_MNG_HOST_POST`, 기본값 `26379`)는 `HOST_LAN_BIND_IP`(기본값
+(`VALKEY_MNG_HOST_PORT`, 기본값 `26379`)는 `HOST_LAN_BIND_IP`(기본값
 `192.168.0.13`)에 게시해 k3d Argo CD 캐시가 도달한다. healthcheck와 리소스
 제한은 공유 템플릿에서 온다.
 

@@ -1,6 +1,6 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -69,7 +69,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ### Lifecycle and data controls
 
-- Keep Pyroscope `OPTIONAL`; a currently running container does not change classification. Explicit future targets must stop it when leaving profiling because `HOME up` does not remove preexisting extras.
+- Pyroscope는 `HOME`이다. SPEC-0182 W6에서 소유자가 `profiling`을 HOME에 추가했다(POL-0078). `profiling`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Pyroscope를 명시적으로 중지한다.
 - Retain gateway auth and local filesystem boundaries. A configured write sink without a profile source is not collection evidence.
 - Back up only after stopping writes/service or using a validated consistent snapshot. Rehearse on isolated storage and verify historical/new queries plus producer labels.
 - Removal requires producer/Grafana cleanup, retention decision, route shutdown, and explicit approval before deleting `pyroscope-data`.

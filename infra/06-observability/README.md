@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.7"
+version: "1.0.8"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2025-11-12"
 ---
 
@@ -140,7 +140,7 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 
 ### Convergence service and command map
 
-모든 명령은 저장소 루트에서 실행합니다. `docker compose --profile <profile> config --quiet`는 정적 사전 점검이고, `docker compose --profile <profile> up -d <service>`는 지정한 대상을 시작합니다. `HOME`을 선택해도 기존에 실행 중인 OPTIONAL 컨테이너는 자동으로 중지되지 않으므로, 향후 전환 시 승인된 대상에 Pyroscope, Tempo, Pushgateway가 없다면 명시적으로 중지해야 합니다.
+모든 명령은 저장소 루트에서 실행합니다. `docker compose --profile <profile> config --quiet`는 정적 사전 점검이고, `docker compose --profile <profile> up -d <service>`는 지정한 대상을 시작합니다. profile 선택을 바꿔도 이미 실행 중인 컨테이너는 자동으로 중지되지 않습니다. 새 대상에 Pushgateway가 없거나 `tracing`·`profiling`이 빠지면 해당 Pushgateway, Tempo, Pyroscope를 명시적으로 중지해야 합니다.
 
 | Service | Class | Exact profiles |
 | --- | --- | --- |
@@ -151,8 +151,8 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 | `node-exporter`, `cadvisor` | HOME | `obs`, `obs-host`, `dev` |
 | `gatus` | HOME | `obs`, `availability`, `dev` |
 | `alertmanager` | HOME | `obs`, `alerting` |
-| `tempo` | OPTIONAL | `obs`, `tracing` |
-| `pyroscope` | OPTIONAL | `obs`, `profiling` |
+| `tempo` | HOME | `obs`, `tracing` |
+| `pyroscope` | HOME | `obs`, `profiling` |
 | `pushgateway` | OPTIONAL | `obs`, `batch-metrics` |
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/README.md` 하위의 `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, `0087`입니다.

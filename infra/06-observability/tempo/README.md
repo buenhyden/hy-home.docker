@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2026-01-12"
 ---
 
@@ -94,7 +94,7 @@ tempo/
 
 ### Convergence contract
 
-- Classification: **OPTIONAL**. Exact profiles: `obs`, `tracing`.
+- Classification: **HOME**. Exact profiles: `obs`, `tracing`.
 - Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
 - Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d tempo`.
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/0049-tempo.md`; ID: `GDE-0049`, `POL-0049`, `RUN-0049`.
