@@ -2,7 +2,7 @@
 title: "Document Authority and Link Normalization"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -37,7 +37,7 @@ W7/W9 evidence still required before those criteria can close.
   closure context in evals and shared Git-policy/runbook coupling.
 - Current W2 map adds the four exact documentation owners before mutation.
   Manifest/evaluator changes remain W9; Git workflow wording remains W7.
-- Tests and implementation have not started; this Task is a prepared draft.
+- Approved implementation is starting; acceptance evidence remains pending.
 
 ## Verification Evidence
 
