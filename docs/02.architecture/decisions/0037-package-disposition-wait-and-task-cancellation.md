@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -127,7 +127,7 @@ commits, remote integration, runtime operations or secret access.
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- [SPEC-0179](../../03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
+- [SPEC-0179](../../98.archive/completed/03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
 - [Archive index, including predecessor ADR-0036](../../98.archive/README.md)
 - [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
 
