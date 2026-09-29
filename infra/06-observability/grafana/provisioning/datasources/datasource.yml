@@ -1,7 +1,13 @@
 apiVersion: 1
 
+# Datasource identities are fixed UIDs; dashboards reference these UIDs or a
+# datasource variable (POL-0041). Cross-signal links (SPEC-0193):
+#   metrics --exemplar traceID--> traces
+#   logs    --trace ID field---> traces
+#   traces  --service.name-----> logs, metrics (span metrics), profiles
+# `$$` escapes Grafana's environment expansion in provisioning files.
+
 datasources:
-  # 1. Prometheus
   - name: Prometheus
     type: prometheus
     uid: Prometheus
@@ -9,9 +15,19 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
     jsonData:
-      timeInterval: 15s
+      # Equal to the scrape interval, so $__rate_interval covers four samples.
+      timeInterval: 30s
+      httpMethod: POST
+      prometheusType: Prometheus
+      prometheusVersion: 3.14.0
+      cacheLevel: Medium
+      incrementalQuerying: true
+      incrementalQueryOverlapWindow: 10m
+      exemplarTraceIdDestinations:
+        # Tempo's metrics generator attaches exemplars labelled traceID.
+        - name: traceID
+          datasourceUid: Tempo
 
-  # 2. Loki
   - name: Loki
     type: loki
     uid: Loki
@@ -19,51 +35,111 @@ datasources:
     url: http://loki:3100
     jsonData:
       maxLines: 1000
+      derivedFields:
+        - name: TraceID
+          matcherType: regex
+          matcherRegex: '(?:traceID|trace_id|traceId|TraceId)["=:\s]+"?([0-9a-fA-F]{16,32})'
+          url: '$${__value.raw}'
+          datasourceUid: Tempo
+          urlDisplayLabel: View trace
 
-  # 3. Tempo (Trace)
   - name: Tempo
     type: tempo
     uid: Tempo
     access: proxy
     url: http://tempo:3200
-    basicAuth: false
-    isDefault: false
     jsonData:
-      # Trace에서 Log로 바로 가기 위한 설정
       tracesToLogsV2:
-        datasourceUid: 'Loki'
-        spanStartTimeShift: '30m' # Span 시작 시간 기준 전후 30분 검색
-        simpleTimeRange: true
-        tags: ['job', 'instance', 'container_name'] # 매칭할 태그
-        filterByTraceID: true # 로그에 traceID가 있다면 정확히 매칭
-        filterBySpanID: true
-      # Service Graph (노드 간 연결 관계 시각화)
+        datasourceUid: Loki
+        spanStartTimeShift: '-5m'
+        spanEndTimeShift: '5m'
+        # Alloy labels container logs with service_name (the Compose service).
+        tags:
+          - key: service.name
+            value: service_name
+        filterByTraceID: true
+        filterBySpanID: false
+      tracesToMetrics:
+        datasourceUid: Prometheus
+        spanStartTimeShift: '-5m'
+        spanEndTimeShift: '5m'
+        tags:
+          - key: service.name
+            value: service
+        queries:
+          - name: Request rate
+            query: 'sum(rate(traces_spanmetrics_calls_total{$$__tags}[5m]))'
+          - name: Error rate
+            query: 'sum(rate(traces_spanmetrics_calls_total{$$__tags,status_code="STATUS_CODE_ERROR"}[5m]))'
+          - name: p95 latency
+            query: 'histogram_quantile(0.95, sum by (le)(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m])))'
+      tracesToProfiles:
+        datasourceUid: Pyroscope
+        tags:
+          - key: service.name
+            value: service_name
+        profileTypeId: 'process_cpu:cpu:nanoseconds:cpu:nanoseconds'
       serviceMap:
-        datasourceUid: 'Prometheus'
+        datasourceUid: Prometheus
       nodeGraph:
         enabled: true
       search:
         hide: false
-      lokiSearch:
-        datasourceUid: 'Loki'
+      traceQuery:
+        timeShiftEnabled: true
+        spanStartTimeShift: '-30m'
+        spanEndTimeShift: '30m'
+      streamingEnabled:
+        search: true
+        metrics: true
+
   - name: Alertmanager
     type: alertmanager
     uid: alertmanager
     access: proxy
-    # Docker Network 내부 통신이므로 서비스명(alertmanager) 사용
     url: http://alertmanager:9093
     jsonData:
-      implementation: prometheus # Prometheus와 함께 사용하는 표준 Alertmanager
-      handleGrafanaManagedAlerts: false # 외부(Prometheus) 알람만 처리할 경우 false
-
-  # - name: Influxdb
-  #   type: grafana-influxdb-datasource
-  #   access: proxy
-  #   url: http://influxdb:8181
-  #   isDefault: false
+      implementation: prometheus
+      # Prometheus rules only; Grafana-managed alerts are not used.
+      handleGrafanaManagedAlerts: false
 
   - name: Pyroscope
     type: grafana-pyroscope-datasource
+    uid: Pyroscope
     access: proxy
     url: http://pyroscope:4040
-    isDefault: false
+    jsonData:
+      minStep: 15s
+
+  # Read-only SQL datasources for the n8n and Airflow dashboards. The role is
+  # created by grafana-db-provision with SELECT on named tables only, and
+  # every session is read-only with a 30 s statement timeout.
+  - name: n8n DB
+    type: grafana-postgresql-datasource
+    uid: n8n-db
+    url: mng-pg:5432
+    user: ${GRAFANA_DB_READER_USER}
+    jsonData:
+      database: n8n
+      sslmode: disable
+      postgresVersion: 1800
+      maxOpenConns: 2
+      maxIdleConns: 1
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: $__file{/run/secrets/grafana_reader_password}
+
+  - name: Airflow DB
+    type: grafana-postgresql-datasource
+    uid: airflow-db
+    url: mng-pg:5432
+    user: ${GRAFANA_DB_READER_USER}
+    jsonData:
+      database: airflow
+      sslmode: disable
+      postgresVersion: 1800
+      maxOpenConns: 2
+      maxIdleConns: 1
+      connMaxLifetime: 14400
+    secureJsonData:
+      password: $__file{/run/secrets/grafana_reader_password}

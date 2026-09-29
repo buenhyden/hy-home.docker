@@ -87,19 +87,9 @@ loki.write "local_loki" {
 /*****************************************************************
  * 2. METRICS PIPELINE (Prometheus)
  *****************************************************************/
-// Alloy 자체 메트릭 노출
-prometheus.exporter.self "alloy_metrics" {}
-
-prometheus.scrape "alloy_scrape" {
-  targets    = prometheus.exporter.self.alloy_metrics.targets
-  forward_to = [prometheus.remote_write.local_prom.receiver]
-}
-
-prometheus.remote_write "local_prom" {
-  endpoint {
-    url = "http://prometheus:9090/api/v1/write"
-  }
-}
+// Prometheus scrapes Alloy's own /metrics as job "alloy". A self
+// remote-write here sent the same series a second time as job
+// "integrations/self", so it was removed (SPEC-0193).
 
 /*****************************************************************
  * 3. TRACING PIPELINE (Tempo)

@@ -378,6 +378,7 @@ services:
     command: celery flower
     networks:
       edge_net: {}
+      obs_net: {}
       airflow_net: {}
       mng_data_net: {}
     healthcheck:

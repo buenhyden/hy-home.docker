@@ -75,6 +75,7 @@
         "infra/04-data/operational/supabase/docker-compose.yml",
         "infra/04-data/relational/postgresql-cluster/docker-compose.yml",
         "infra/05-messaging/kafka/docker-compose.yml",
+        "infra/06-observability/docker-compose.yml",
         "infra/09-tooling/dbt/docker-compose.yml",
         "infra/09-tooling/pact-broker/docker-compose.yml",
         "infra/11-laboratory/mlflow/docker-compose.yml"
@@ -106,6 +107,12 @@
         },
         {
           "compose_file": "infra/05-messaging/kafka/docker-compose.yml",
+          "images": [
+            "postgres:18.6-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
             "postgres:18.6-alpine"
           ]

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -155,7 +155,7 @@ label과 함께 보여주기 전까지 collection은 **미검증** 상태다.
 Rule은 `config/alert_rules/`에 domain별 file로 나뉘어 있다.
 
 - Local domain file은 `alert_rules.local.*.yml` naming pattern을 사용한다.
-- Kubernetes, Keycloak, secret service(`alert_rules.vault.yml`, OpenBao가 유지하는
+- Kubernetes, Keycloak, secret service(`alert_rules.openbao.yml`, OpenBao가 유지하는
   `vault_` metric prefix에서 이름을 따옴)와 recording rule은 `prometheus.yml`에
   explicit file로 loading된다.
 - Rule 변경은 reload 전에 validate해야 한다.

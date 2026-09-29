@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -50,7 +50,7 @@ alert-rule surface에 적용된다.
   - Alert와 recording rule은
     `/etc/prometheus/alert_rules/alert_rules.local.*.yml`,
     `/etc/prometheus/alert_rules/alert_rules.keycloak.yml`,
-    `/etc/prometheus/alert_rules/alert_rules.vault.yml`,
+    `/etc/prometheus/alert_rules/alert_rules.openbao.yml`,
     `/etc/prometheus/alert_rules/recording_rules.yml`에서 로드된다.
   - Alert rule은 `expr`, 해당되는 경우 `for`, `labels.severity`, 실행
     가능한 `annotations`를 포함해야 한다.

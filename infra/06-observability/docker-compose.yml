@@ -72,7 +72,7 @@ services:
       - '/bin/sh'
       - '-c'
     command: >
-      "exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver"
+      "exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --web.console.libraries=/usr/share/prometheus/console_libraries --web.console.templates=/usr/share/prometheus/consoles --web.enable-lifecycle --web.enable-remote-write-receiver --enable-feature=exemplar-storage"
     volumes:
       - ./prometheus/config/${PROMETHEUS_CONFIG_FILE:-prometheus.dev.yml}:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/config/alert_rules:/etc/prometheus/alert_rules:ro
@@ -279,6 +279,9 @@ services:
       service: template-stateful-med
     image: grafana/grafana:13.2.2
     container_name: infra-grafana
+    # 512 MiB (template) peaked at 97% in the SPEC-0182 W8 window; SPEC-0193 W7
+    # confirms the value from the final W8 figures.
+    mem_limit: ${GRAFANA_MEM_LIMIT:-1g}
     environment:
       GF_SERVER_ROOT_URL: https://grafana.${DEFAULT_URL}
       GF_SERVER_DOMAIN: grafana.${DEFAULT_URL}
@@ -330,6 +333,9 @@ services:
       # session; a caller needing more (e.g. Kiali dashboard lookup) must use a
       # Grafana service-account token, not anonymous access.
       GF_AUTH_ANONYMOUS_ENABLED: 'false'
+      # Read-only login for the n8n and Airflow SQL dashboards (SPEC-0193);
+      # created by grafana-db-provision, password from the Docker secret.
+      GRAFANA_DB_READER_USER: ${GRAFANA_DB_READER_USER:-grafana_reader}
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro
@@ -338,6 +344,7 @@ services:
     secrets:
       - grafana_admin_password
       - grafana_client_secret
+      - grafana_reader_password
     depends_on:
       prometheus:
         condition: service_healthy
@@ -373,6 +380,49 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
+      # The PostgreSQL datasources reach mng-pg as grafana_reader only.
+      mng_data_net: {}
+
+  grafana-db-provision:
+    profiles:
+      - obs
+      - obs-core
+      - dev
+    extends:
+      file: ../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: grafana-db-provision
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_IDENTIFIERS: GRAFANA_DB_READER_USER GRAFANA_N8N_DB_NAME GRAFANA_AIRFLOW_DB_NAME
+      PROVISION_SECRETS: GRAFANA_DB_READER_PASSWORD=/run/secrets/grafana_reader_password
+      GRAFANA_DB_READER_USER: ${GRAFANA_DB_READER_USER:-grafana_reader}
+      GRAFANA_N8N_DB_NAME: n8n
+      GRAFANA_AIRFLOW_DB_NAME: airflow
+    volumes:
+      - ../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./grafana/provisioning/db/mng-pg.sql:/provision/mng-pg.sql:ro
+    secrets:
+      - mng_postgres_password
+      - grafana_reader_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+        required: false
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
 
   node-exporter:
     profiles:

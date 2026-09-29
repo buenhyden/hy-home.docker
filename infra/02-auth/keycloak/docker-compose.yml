@@ -59,6 +59,11 @@ services:
       KC_HTTP_ENABLED: 'true'
       KC_PROXY_HEADERS: xforwarded
       KC_METRICS_ENABLED: 'true'
+      # Series the Keycloak troubleshooting and capacity dashboards and the
+      # Keycloak alert rules read (SPEC-0193).
+      KC_HTTP_METRICS_HISTOGRAMS_ENABLED: 'true'
+      KC_CACHE_METRICS_HISTOGRAMS_ENABLED: 'true'
+      KC_EVENT_METRICS_USER_ENABLED: 'true'
       KC_HEALTH_ENABLED: 'true'
       KC_DB_POOL_INITIAL_SIZE: 1
       KC_DB_POOL_MIN_SIZE: 1

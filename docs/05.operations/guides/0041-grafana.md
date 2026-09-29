@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -12,6 +12,7 @@ parent_ids:
 implementation_services:
   infra/06-observability/docker-compose.yml:
   - grafana
+  - grafana-db-provision
 created: "2026-05-10"
 ---
 

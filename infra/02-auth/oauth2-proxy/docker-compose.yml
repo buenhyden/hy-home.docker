@@ -34,6 +34,8 @@ services:
       - OAUTH2_PROXY_REDIRECT_URL=https://auth.${DEFAULT_URL}/oauth2/callback
       - OAUTH2_PROXY_COOKIE_DOMAINS=.${DEFAULT_URL}
       - OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}
+      # Prometheus metrics for job oauth2-proxy (SPEC-0193); not routed.
+      - OAUTH2_PROXY_METRICS_ADDRESS=:44180
     volumes:
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy.cfg:ro
       - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/rootCA.pem:ro
@@ -54,6 +56,7 @@ services:
       traefik.http.services.oauth2-proxy-svc.loadbalancer.server.port: ${OAUTH2_PROXY_PORT:-4180}
     networks:
       edge_net: {}
+      obs_net: {}
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -qO- http://127.0.0.1:${OAUTH2_PROXY_PORT:-4180}/ping >/dev/null 2>&1 || exit 1' ]

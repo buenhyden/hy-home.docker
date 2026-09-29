@@ -115,6 +115,10 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: '${KAFKA_BOOTSTRAP_SERVERS_URI:-PLAINTEXT://kafka-1:19092}'
       SCHEMA_REGISTRY_KAFKASTORE_RETRY_BACKOFF_MS: 500
       SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
+      # JMX metrics for Prometheus job schema-registry (Confluent rule file, SPEC-0193).
+      SCHEMA_REGISTRY_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/confluent_schemaregistry.yml
+    volumes:
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     expose:
       - '${SCHEMA_REGISTRY_PORT:-8081}'
     labels:
@@ -150,6 +154,7 @@ services:
       start_period: 60s
     networks:
       edge_net: {}
+      obs_net: {}
       kafka_net: {}
 
   kafka-connect:
@@ -215,6 +220,8 @@ services:
       CONNECT_CONFIG_PROVIDERS_FILE_CLASS: org.apache.kafka.common.config.provider.FileConfigProvider
       # KIP-993: connector configs may resolve files only from this directory.
       CONNECT_CONFIG_PROVIDERS_FILE_PARAM_ALLOWED_PATHS: /tmp/connect-secrets
+      # JMX metrics for Prometheus job kafka-connect (Confluent rule file, SPEC-0193).
+      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=9404:/usr/share/jmx_exporter/kafka_connect.yml
 
     command:
       - /bin/bash
@@ -224,6 +231,7 @@ services:
     volumes:
       - kafka-connect-data:/var/lib/kafka-connect:rw
       - ./connect/render-connect-secrets.sh:/usr/local/bin/render-connect-secrets.sh:ro
+      - ./jmx-exporter:/usr/share/jmx_exporter:ro
     labels:
       <<: *tier-label
       traefik.enable: 'true'
@@ -261,6 +269,7 @@ services:
       start_period: 60s
     networks:
       edge_net: {}
+      obs_net: {}
       kafka_net: {}
       mng_data_net: {}
 

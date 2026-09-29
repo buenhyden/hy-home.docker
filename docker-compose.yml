@@ -299,6 +299,9 @@ secrets:
   superset_db_password:
     file: ./secrets/db/postgres/superset_password.txt
 
+  grafana_reader_password:
+    file: ./secrets/db/postgres/grafana_reader_password.txt
+
   superset_secret_key:
     file: ./secrets/tools/superset_secret_key.txt
 
