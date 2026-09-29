@@ -1,8 +1,8 @@
 ---
 title: "Fail-Closed Infrastructure Static Validation"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -49,26 +49,46 @@ Own R09/R34/R39 evidence with supporting units retaining their receipts.
 
 ## Verification Evidence
 
-NOT_RUN: W4 RED/GREEN H, Bash syntax, available lint and isolated structural
-acceptance. Fake binaries prove helper behavior, not real Compose correctness.
-No installed yamllint/shellcheck was observed during preflight; do not install.
+- RED: focused helper class exited 1; five tests exposed six expected contract
+  failures in missing-tool reporting, Git/plugin failure, unsafe graph handling,
+  cwd-independent execution and isolation.
+- Final focused class: 13/13 PASS; independent reviewer rerun in 9.798s.
+- Final H: registered sanitized unittest adapter for
+  `tests.validation.test_agent_governance_ci_routing -v`, exit 0,
+  43/43 tests in 15.675s.
+- `bash -n .agents/skills/infra-validate/scripts/static-checks.sh`: exit 0.
+- `git diff --check --cached`: exit 0; exact three implementation files only.
+- Actual helper: exit 2, PASS=9 FAIL=0 BLOCKED=6 NOT_RUN=2. The actual graph is
+  outside the conservative supported subset; yamllint and shellcheck are absent.
+  Compose checks are prerequisite-blocked, with no Docker/Compose/daemon access.
+  Cleanup passed and no invocation-owned fixture remained.
+- Fake tools prove routing, isolation, timeout and aggregation behavior; they
+  do not establish real Compose or linter semantics. No installation occurred.
+- Observed final index contained only the same reviewed three files; working
+  copies matched the reviewed diff. Root adds only this Task and Plan evidence.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| R09 | W4 | NOT_RUN | infra-validate helper and skill |
-| R34 | W4 | NOT_RUN | Existing command/helper contract |
-| R39 | W4 | NOT_RUN | Existing helper regression tests |
+| R09 | W4 | Helper behavior PASS; real required-tool acceptance BLOCKED | infra-validate helper and skill |
+| R34 | W4 | Existing entrypoint retained; focused and full H PASS | Existing command/helper contract |
+| R39 | W4 | Failure/isolation contract PASS; cross-unit/native proof remains open | Existing helper regression tests |
 
 ## Review Evidence
 
-Implementation review pending. Review must cover no-follow tracked-source
-copying, repository-local owned temporary cleanup, graph validation before
-Compose, sanitized child environment, bounded execution and safe diagnostics.
+Independent read-only IaC review CLEAR on the final exact three-file diff.
+Review confirmed finite supported graph fields, conservative include-object and
+extends rejection, independent lint after graph failure, live bounded Git capture,
+isolated Python and child environment, no-follow/identity-checked inputs,
+exclusive fixture writes, explicit lint configuration, owned cleanup, complete
+child-exit metadata and FAIL-over-BLOCKED precedence. Helper is 788 lines.
+The reviewed implementation preserves the public Compose validator unchanged.
 
 ## Commit Ledger
 
-Root creates and validates real draft, ready and in-progress predecessors
-before authorizing implementation. No W4 implementation commit yet.
+Task predecessors: draft `f37c9451d`, ready `46aaab815`, in-progress `9eb97f3d3`.
+The user-directed future evaluation migration was recorded in `4aa3d0011`.
+This completed local implementation Task is committed with its reviewed helper;
+Git owns the implementation hash. Spec-wide environment acceptance stays open.
 
 ## Rulings
 
@@ -84,5 +104,6 @@ before authorizing implementation. No W4 implementation commit yet.
 
 ## Deferred Items
 
-Real runtime/secret and provider/native observations remain separately scoped.
-W5 owns style classification; no concurrent writer may change the shared test file.
+W10 retains actual tool-dependent, runtime/secret and provider/native acceptance.
+The observed BLOCKED result cannot close those criteria or the overall Spec.
+W5 owns the next serial change to style classification and the shared test file.

@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -214,22 +214,22 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    include check ID, state, safe category and child exit; the final summary
    counts each state and follows the Spec's 0/1/2 precedence.
 
-   - [ ] Add `InfraAndStyleSkillHelperTests` cases with a temporary Git repository
+   - [x] Add `InfraAndStyleSkillHelperTests` cases with a temporary Git repository
      and fake command PATH: missing required binaries/plugin, Git failure,
      child failure plus BLOCKED, timeout, no eligible shell input, cwd at root/
      subdirectory/skill directory and a root containing spaces. Assert exit and
      each state; synthetic secret sentinels must never appear in diagnostics.
-   - [ ] Add `test_static_checks_do_not_touch_real_checkout`: pre-existing .env,
+   - [x] Add `test_static_checks_do_not_touch_real_checkout`: pre-existing .env,
      ignored data and outside symlinks are unread and unchanged; every attempted
      Docker subcommand is captured, with daemon operations forbidden.
      Run H to observe RED without touching real environments or services.
-   - [ ] Resolve root from the script; capture Git discovery status directly.
+   - [x] Resolve root from the script; capture Git discovery status directly.
      Define the required set once: Git/Bash, Docker+Compose, yamllint, and
      shellcheck for eligible tracked infrastructure scripts. Any additional
      command needed by the implementation is itself an explicit prerequisite.
      Apply a 60-second child bound and a 4-KiB diagnostic budget per check;
      emit bounded categories rather than raw stderr/Compose output.
-   - [ ] Isolate Compose into a task-owned repository-local temporary copy of
+   - [x] Isolate Compose into a task-owned repository-local temporary copy of
      reviewed tracked inputs. Copy current regular tracked source files, including
      reviewed worktree edits, with no-follow reads; never copy .git, real .env,
      ignored data or credential bodies. Use public
@@ -241,7 +241,7 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      rendering. The copy gets its own temporary Git root for the retained
      validator. Do not source an environment file, run a secret generator or
      contact a daemon. Cleanup removes only paths created by this invocation.
-   - [ ] Run H, Bash syntax, available lint and isolated real-CLI structural
+   - [x] Run H, Bash syntax, available lint and isolated real-CLI structural
      acceptance. Fake binaries prove aggregation, not Compose correctness.
      If safe isolation or a required tool is unavailable, record BLOCKED and
      continue independent units; never change the required set to get exit 0.

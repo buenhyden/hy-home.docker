@@ -4,10 +4,12 @@ import json
 import os
 import pathlib
 import re
+import shutil
 import shlex
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 
 import yaml
@@ -18,6 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 POST_TOOL = ROOT / "scripts/hooks/post-tool-validate.sh"
 EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
 QA_CI_TOOLS = ROOT / "scripts/operations/use-qa-ci-tools.sh"
+INFRA_STATIC = ROOT / ".agents/skills/infra-validate/scripts/static-checks.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
@@ -710,6 +713,498 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             )
             self.assertNotEqual(0, result.returncode)
             self.assertIn("second.sh", result.stderr)
+
+
+class InfraAndStyleSkillHelperTests(unittest.TestCase):
+    CHECKS = {
+        "bash-runtime", "python-runtime", "yaml-parser", "git-discovery",
+        "tracked-snapshot", "input-graph", "support-tools", "fixture-git",
+        "yaml-lint", "shell-lint", "docker-cli", "compose-plugin",
+        "compose-config-render", "compose-structure", "runtime-observation",
+        "secret-values", "fixture-cleanup",
+    }
+
+    @staticmethod
+    def _write_executable(path: pathlib.Path, body: str) -> None:
+        path.write_text("#!/bin/sh\n" + body, encoding="utf-8")
+        path.chmod(0o755)
+
+    def _repo(self, base: pathlib.Path, compose: str = "services:\n  app:\n    image: busybox\n") -> tuple[pathlib.Path, pathlib.Path]:
+        repo = base / "repo with spaces"
+        script = repo / ".agents/skills/infra-validate/scripts/static-checks.sh"
+        validator = repo / "scripts/validation/validate-docker-compose.sh"
+        script.parent.mkdir(parents=True)
+        validator.parent.mkdir(parents=True)
+        script.write_bytes(INFRA_STATIC.read_bytes())
+        validator.write_bytes((ROOT / "scripts/validation/validate-docker-compose.sh").read_bytes())
+        (repo / "docker-compose.yml").write_text(compose, encoding="utf-8")
+        (repo / ".env.example").write_text("APP_PORT=1234\n", encoding="utf-8")
+        (repo / ".yamllint").write_text("extends: default\n", encoding="utf-8")
+        (repo / ".shellcheckrc").write_text(
+            "external-sources=true\nsource-path=SCRIPTDIR\n", encoding="utf-8"
+        )
+        policy = repo / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+        policy.parent.mkdir(parents=True)
+        policy.write_text("| Named selection | Profiles |\n| --- | --- |\n| HOME | `core` |\n", encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+        subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
+        tools = base / "tools"
+        tools.mkdir()
+        for name in ("bash", "cp", "dirname", "git", "mkdir", "python3", "rm", "sed", "sleep", "sort", "tr", "wc"):
+            target = shutil.which(name)
+            if target:
+                (tools / name).symlink_to(target)
+        trace = tools / "docker.trace"
+        environment_trace = tools / "docker.env"
+        self._write_executable(
+            tools / "docker",
+            f'printf "%s\\n" "$*" >> {shlex.quote(str(trace))}\n'
+            f'plugin={shlex.quote(str(tools / "plugin.exit"))}\n'
+            f'failure={shlex.quote(str(tools / "docker.exit"))}\n'
+            f'delay={shlex.quote(str(tools / "docker.sleep"))}\n'
+            f'survived={shlex.quote(str(tools / "docker.survived"))}\n'
+            f'printf "PWD=%s\\nHOME=%s\\nXDG=%s\\nDOCKER_CONFIG=%s\\nDOCKER_HOST=%s\\nTMPDIR=%s\\nPATH=%s\\nCOMPOSE=%s\\n" "$PWD" "$HOME" "$XDG_CONFIG_HOME" "$DOCKER_CONFIG" "$DOCKER_HOST" "$TMPDIR" "$PATH" "${{COMPOSE_PROJECT_NAME-}}" > {shlex.quote(str(environment_trace))}\n'
+            'if [ -f "$delay" ]; then trap "" TERM; (trap "" TERM; /bin/sleep 10; : > "$survived") & wait; fi\n'
+            'case "$*" in\n'
+            '  "compose version") if [ -f "$plugin" ]; then read -r status < "$plugin"; exit "$status"; fi; exit 0 ;;\n'
+            '  *"config --profiles"*) printf "core\\n" ;;\n'
+            '  *"config --services"*) printf "app\\n" ;;\n'
+            '  *"config --format json"*) printf "{\\\"services\\\":{}}\\n" ;;\n'
+            'esac\nif [ -f "$failure" ]; then read -r status < "$failure"; exit "$status"; fi\nexit 0\n',
+        )
+        self._write_executable(
+            tools / "yamllint",
+            f'printf "%s\\n" "$@" > {shlex.quote(str(tools / "yaml.args"))}\n'
+            f'failure={shlex.quote(str(tools / "yaml.exit"))}\n'
+            'if [ -f "$failure" ]; then read -r status < "$failure"; exit "$status"; fi\nexit 0\n',
+        )
+        self._write_executable(
+            tools / "shellcheck",
+            f'printf "%s\\n" "$@" > {shlex.quote(str(tools / "shell.args"))}\n'
+            f'failure={shlex.quote(str(tools / "shell.exit"))}\n'
+            'if [ -f "$failure" ]; then read -r status < "$failure"; exit "$status"; fi\nexit 0\n',
+        )
+        return repo, tools
+
+    @staticmethod
+    def _run(repo: pathlib.Path, tools: pathlib.Path, *args: str, cwd: pathlib.Path | None = None, extra: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
+        env = {"PATH": str(tools), "LC_ALL": "C"}
+        env.update(extra or {})
+        return subprocess.run(["/bin/bash", str(repo / ".agents/skills/infra-validate/scripts/static-checks.sh"), *args], cwd=cwd or repo, text=True, capture_output=True, env=env, check=False)
+
+    @staticmethod
+    def _track(repo: pathlib.Path, relative: str, body: str, *, executable: bool = False) -> pathlib.Path:
+        target = repo / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(body, encoding="utf-8")
+        if executable:
+            target.chmod(0o755)
+        subprocess.run(["git", "add", relative], cwd=repo, check=True)
+        return target
+
+    def _assert_report(self, result: subprocess.CompletedProcess[str]) -> None:
+        lines = result.stdout.splitlines()
+        records = {line.split()[0] for line in lines if " category=" in line}
+        self.assertTrue(self.CHECKS <= records, result.stdout)
+        self.assertTrue(any(line.startswith("summary ") for line in lines))
+        self.assertTrue(all(len(line.encode("utf-8")) <= 4096 for line in lines))
+        self.assertTrue(all("child_exit=" in line for line in lines if " category=" in line))
+
+    def test_static_checks_close_cli_and_ignore_cwd(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            for cwd in (repo, repo / "scripts", repo / ".agents/skills/infra-validate"):
+                result = self._run(repo, tools, cwd=cwd)
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                self.assertIn("shell-lint NOT_APPLICABLE category=no-eligible-input", result.stdout)
+                self.assertIn("runtime-observation NOT_RUN", result.stdout)
+            self.assertEqual(0, self._run(repo, tools, "--help").returncode)
+            bad = self._run(repo, tools, "--bad")
+            self.assertEqual(2, bad.returncode)
+            self.assertFalse((tools / "docker.trace").read_text().startswith("--bad"))
+
+    def test_static_checks_aggregate_fail_over_blocked(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            (tools / "yamllint").unlink()
+            (tools / "docker.exit").write_text("37", encoding="utf-8")
+            result = self._run(repo, tools)
+            self.assertEqual(1, result.returncode, result.stdout)
+            self.assertIn("yaml-lint BLOCKED category=missing-tool", result.stdout)
+            self.assertIn("compose-config-render FAIL category=command-failed child_exit=37", result.stdout)
+            self.assertRegex(result.stdout, r"summary .*FAIL=[1-9].*BLOCKED=[1-9]")
+
+    def test_static_checks_block_git_and_plugin_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            real_git = (tools / "git").resolve()
+            (tools / "git").unlink()
+            self._write_executable(tools / "git", f'exit 41\n# {real_git}\n')
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode)
+            self.assertIn("git-discovery BLOCKED category=command-failed child_exit=41", result.stdout)
+            self.assertIn("support-tools PASS category=available", result.stdout)
+            self.assertIn("docker-cli PASS category=available", result.stdout)
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            (tools / "plugin.exit").write_text("42", encoding="utf-8")
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode)
+            self.assertIn("compose-plugin BLOCKED category=plugin-unavailable child_exit=42", result.stdout)
+
+    def test_static_checks_bound_git_failures_and_index_races(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            (tools / "git").unlink()
+            (tools / "git").write_text("#!/missing/interpreter\n", encoding="utf-8")
+            (tools / "git").chmod(0o755)
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode)
+            self.assertIn("git-discovery BLOCKED category=launch-error child_exit=127", result.stdout)
+        for name, body, category in (
+            (
+                "invalid",
+                'if [ "$1" = ls-files ]; then printf "\\377"; exit 0; fi\n',
+                "invalid-output",
+            ),
+            (
+                "oversize",
+                'if [ "$1" = rev-parse ]; then while :; do printf "'
+                + ("x" * 96)
+                + '"; done; fi\n',
+                "output-limit",
+            ),
+        ):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as directory:
+                repo, tools = self._repo(pathlib.Path(directory))
+                script = repo / ".agents/skills/infra-validate/scripts/static-checks.sh"
+                if name == "oversize":
+                    script.write_text(
+                        script.read_text(encoding="utf-8").replace(
+                            "MAX_CAPTURE = 16 * 1024 * 1024", "MAX_CAPTURE = 64"
+                        ),
+                        encoding="utf-8",
+                    )
+                real_git = (tools / "git").resolve()
+                (tools / "git").unlink()
+                self._write_executable(
+                    tools / "git",
+                    body + f'exec {shlex.quote(str(real_git))} "$@"\n',
+                )
+                ambient = pathlib.Path(directory) / "ambient-tmp"
+                ambient.mkdir()
+                started = time.monotonic()
+                result = self._run(
+                    repo, tools, extra={"TMPDIR": str(ambient)}
+                )
+                elapsed = time.monotonic() - started
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertIn(
+                    f"git-discovery BLOCKED category={category}", result.stdout
+                )
+                if name == "oversize":
+                    self.assertLess(elapsed, 3)
+                    self.assertEqual([], list(ambient.iterdir()))
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            repo, tools = self._repo(base)
+            real_git = (tools / "git").resolve()
+            counter = tools / "ls-files.count"
+            (tools / "git").unlink()
+            self._write_executable(
+                tools / "git",
+                f'counter={shlex.quote(str(counter))}\n'
+                'if [ "$1" = ls-files ]; then\n'
+                '  count=0; [ ! -f "$counter" ] || read -r count < "$counter"\n'
+                '  count=$((count + 1)); printf "%s\\n" "$count" > "$counter"\n'
+                f'  {shlex.quote(str(real_git))} "$@"\n'
+                '  [ "$count" -lt 2 ] || printf "drift\\000"\n'
+                '  exit 0\n'
+                'fi\n'
+                f'exec {shlex.quote(str(real_git))} "$@"\n',
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED category=unsafe-input-graph", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            real_git = (tools / "git").resolve()
+            (tools / "git").unlink()
+            self._write_executable(
+                tools / "git",
+                'if [ "$1" = init ]; then exit 43; fi\n'
+                f'exec {shlex.quote(str(real_git))} "$@"\n',
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("fixture-git BLOCKED category=command-failed child_exit=43", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_fail_closed_for_missing_prerequisites(self) -> None:
+        cases = (
+            ("python3", "python-runtime"),
+            ("docker", "docker-cli"),
+            ("yamllint", "yaml-lint"),
+            ("cp", "support-tools"),
+        )
+        for executable, check in cases:
+            with self.subTest(executable=executable), tempfile.TemporaryDirectory() as directory:
+                repo, tools = self._repo(pathlib.Path(directory))
+                (tools / executable).unlink()
+                result = self._run(repo, tools)
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertIn(f"{check} BLOCKED category=missing-tool", result.stdout)
+                self._assert_report(result)
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            (tools / "python3").unlink()
+            self._write_executable(tools / "python3", "exit 1\n")
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode)
+            self.assertIn("yaml-parser BLOCKED category=missing-tool", result.stdout)
+            self._assert_report(result)
+
+    def test_static_checks_lint_every_tracked_candidate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            self._track(repo, "infra/check.sh", "#!/bin/sh\necho ok\n", executable=True)
+            self._track(repo, "infra/config.yml", "key: value\n")
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("shell-lint PASS category=validated child_exit=0", result.stdout)
+            self.assertIn("yaml-lint PASS category=validated child_exit=0", result.stdout)
+            self.assertEqual(
+                ["--rcfile=.shellcheckrc", "--severity=warning", "infra/check.sh"],
+                (tools / "shell.args").read_text(encoding="utf-8").splitlines(),
+            )
+            self.assertEqual(
+                ["-c", ".yamllint", "-s", "infra/config.yml"],
+                (tools / "yaml.args").read_text(encoding="utf-8").splitlines(),
+            )
+            (tools / "shell.exit").write_text("37", encoding="utf-8")
+            (tools / "yaml.exit").write_text("38", encoding="utf-8")
+            result = self._run(repo, tools)
+            self.assertEqual(1, result.returncode, result.stdout)
+            self.assertIn("shell-lint FAIL category=command-failed child_exit=37", result.stdout)
+            self.assertIn("yaml-lint FAIL category=command-failed child_exit=38", result.stdout)
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            self._track(repo, "infra/check.sh", "#!/bin/sh\necho ok\n", executable=True)
+            (tools / "shellcheck").unlink()
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("shell-lint BLOCKED category=missing-tool child_exit=127", result.stdout)
+
+    def test_static_checks_block_unsafe_graph_before_docker(self) -> None:
+        cases = (
+            ("services:\n  app:\n    image: busybox\n    volumes: ['/outside:/inside']\n", "external-absolute-path"),
+            ("services:\n  app:\n    image: busybox\n    env_file: ${MISSING}\n", "unresolved-path-interpolation"),
+            ("services:\n  app:\n    image: one\n  app:\n    image: two\n", "unsupported-input-graph"),
+            ("services:\n  app:\n    build: []\n", "unsupported-input-graph"),
+            ("services:\n  app:\n    image: busybox\n    label_file: ./labels\n", "unsupported-input-graph"),
+            ("services:\n  app:\n    image: busybox\n    credential_spec: {file: ./cred}\n", "unsupported-input-graph"),
+            ("services:\n  app:\n    image: busybox\n    develop: {watch: [{path: ./src, action: sync}]}\n", "unsupported-input-graph"),
+            ("services: {app: {image: busybox}}\nconfigs: {bad: {unknown_file: ./x}}\n", "unsupported-input-graph"),
+            ("unknown_top: {file: ./x}\nservices: {}\n", "unsupported-input-graph"),
+            ("services: {app: {image: busybox, unknown_host: ./x}}\n", "unsupported-input-graph"),
+            ("include: [{path: child.yml, project_directory: project, env_file: include.env}]\nservices: {}\n", "unsupported-input-graph"),
+            ("services: {app: {image: busybox, extends: {file: base.yml, service: base}}}\n", "unsupported-input-graph"),
+        )
+        for compose, category in cases:
+            with self.subTest(category=category), tempfile.TemporaryDirectory() as directory:
+                repo, tools = self._repo(pathlib.Path(directory), compose)
+                result = self._run(repo, tools)
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertIn(f"input-graph BLOCKED category={category}", result.stdout)
+                self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_continue_lint_after_graph_block(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(
+                pathlib.Path(directory),
+                "services:\n  app:\n    image: busybox\n    volumes: ['/outside:/x']\n",
+            )
+            self._track(repo, "infra/check.sh", "#!/bin/sh\necho ok\n", executable=True)
+            self._track(repo, "infra/config.yml", "key: value\n")
+            (tools / "shell.exit").write_text("37", encoding="utf-8")
+            (tools / "yaml.exit").write_text("38", encoding="utf-8")
+            result = self._run(repo, tools)
+            self.assertEqual(1, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED category=external-absolute-path", result.stdout)
+            self.assertIn("shell-lint FAIL category=command-failed child_exit=37", result.stdout)
+            self.assertIn("yaml-lint FAIL category=command-failed child_exit=38", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_validate_the_reachable_compose_graph(self) -> None:
+        compose = (
+            "include: [child.yml]\n"
+            "services:\n"
+            "  app:\n"
+            "    image: busybox\n"
+            "    env_file: {path: app.env, required: true}\n"
+            "    build:\n"
+            "      context: build\n"
+            "      dockerfile: Dockerfile\n"
+            "      additional_contexts: {extra: extra}\n"
+            "    volumes:\n"
+            "      - ./config.txt:/config:ro\n"
+            "      - {type: bind, source: ./bind, target: /bind}\n"
+            "configs: {cfg: {file: ./config.txt}}\n"
+            "secrets: {generated: {file: ./generated/secret.txt}}\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            files = {
+                "child.yml": "services: {child: {image: busybox}}\n",
+                "app.env": "APP=fixture\n",
+                "build/Dockerfile": "FROM scratch\n",
+                "extra/keep": "fixture\n",
+                "bind/keep": "fixture\n",
+                "config.txt": "fixture\n",
+            }
+            for relative, body in files.items():
+                self._track(repo, relative, body)
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+    def test_static_checks_reject_symlink_and_sensitive_graph_inputs(self) -> None:
+        cases = ("infra/.env.local", "infra/secrets/value.txt")
+        for relative in cases:
+            with self.subTest(relative=relative), tempfile.TemporaryDirectory() as directory:
+                repo, tools = self._repo(
+                    pathlib.Path(directory),
+                    f"services:\n  app:\n    image: busybox\n    env_file: {relative}\n",
+                )
+                self._track(repo, relative, "DO_NOT_READ\n")
+                result = self._run(repo, tools)
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertFalse((tools / "docker.trace").exists())
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            repo, tools = self._repo(
+                base,
+                "services:\n  app:\n    image: busybox\n    volumes: ['./config/link:/x']\n",
+            )
+            outside = base / "outside"
+            outside.write_text("DO_NOT_READ", encoding="utf-8")
+            link = repo / "config/link"
+            link.parent.mkdir()
+            link.symlink_to(outside)
+            subprocess.run(["git", "add", "config/link"], cwd=repo, check=True)
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            repo, tools = self._repo(
+                base,
+                "services:\n  app:\n    image: busybox\n    volumes: ['./config:/x']\n",
+            )
+            self._track(repo, "config/data", "tracked\n")
+            shutil.rmtree(repo / "config")
+            outside_dir = base / "outside-dir"
+            outside_dir.mkdir()
+            (outside_dir / "data").write_text("DO_NOT_READ", encoding="utf-8")
+            (repo / "config").symlink_to(outside_dir, target_is_directory=True)
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_reject_cycles_and_generated_collisions(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(
+                pathlib.Path(directory),
+                "include: [child.yml]\nservices: {app: {image: busybox}}\n",
+            )
+            self._track(
+                repo,
+                "child.yml",
+                "include: [docker-compose.yml]\nservices: {child: {image: busybox}}\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED category=unsupported-input-graph", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(
+                pathlib.Path(directory),
+                "services: {app: {image: busybox}}\n"
+                "secrets: {bad: {file: ./.env.example}}\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn("input-graph BLOCKED category=unsafe-input-graph", result.stdout)
+            self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_timeout_kills_the_child_group(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            script = repo / ".agents/skills/infra-validate/scripts/static-checks.sh"
+            script.write_text(
+                script.read_text(encoding="utf-8")
+                .replace("TIMEOUT_SECONDS = 59", "TIMEOUT_SECONDS = 0.1")
+                .replace("KILL_GRACE_SECONDS = 1", "KILL_GRACE_SECONDS = 0.1"),
+                encoding="utf-8",
+            )
+            (tools / "docker.sleep").touch()
+            result = self._run(repo, tools)
+            self.assertEqual(1, result.returncode, result.stdout)
+            self.assertIn("compose-plugin FAIL category=timeout child_exit=124", result.stdout)
+            self.assertFalse((tools / "docker.survived").exists())
+
+    def test_static_checks_do_not_touch_real_checkout(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            base = pathlib.Path(directory)
+            repo, tools = self._repo(base)
+            sentinel = "SYNTHETIC_SECRET_MUST_NOT_LEAK"
+            env_file = repo / ".env"
+            env_file.write_text(sentinel, encoding="utf-8")
+            (repo / ".gitignore").write_text(".env\nignored/\n", encoding="utf-8")
+            ignored = repo / "ignored"
+            ignored.mkdir()
+            (ignored / "data").write_text(sentinel, encoding="utf-8")
+            outside = base / "outside"
+            outside.write_text(sentinel, encoding="utf-8")
+            (ignored / "outside-link").symlink_to(outside)
+            before = (
+                env_file.read_bytes(),
+                (ignored / "data").read_bytes(),
+                outside.read_bytes(),
+                env_file.stat(),
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertNotIn(sentinel, result.stdout + result.stderr)
+            self.assertEqual(before[:3], (env_file.read_bytes(), (ignored / "data").read_bytes(), outside.read_bytes()))
+            self.assertEqual(
+                (before[3].st_ino, before[3].st_size, before[3].st_mtime_ns),
+                (env_file.stat().st_ino, env_file.stat().st_size, env_file.stat().st_mtime_ns),
+            )
+            self.assertEqual([], list(repo.glob(".infra-static-*")))
+            calls = (tools / "docker.trace").read_text().splitlines()
+            self.assertTrue(calls)
+            self.assertTrue(all(call.startswith("compose ") for call in calls))
+            self.assertFalse(any("network" in call or "inspect" in call for call in calls))
+            child_env = dict(
+                line.split("=", 1)
+                for line in (tools / "docker.env").read_text(encoding="utf-8").splitlines()
+            )
+            self.assertTrue(child_env["PWD"].startswith(str(repo / ".infra-static-")))
+            self.assertEqual(child_env["PWD"] + "/.home", child_env["HOME"])
+            self.assertEqual(child_env["PWD"] + "/.xdg", child_env["XDG"])
+            self.assertEqual(child_env["PWD"] + "/.docker", child_env["DOCKER_CONFIG"])
+            self.assertEqual(child_env["PWD"] + "/.tmp", child_env["TMPDIR"])
+            self.assertEqual(child_env["PWD"] + "/.bin", child_env["PATH"])
+            self.assertEqual("", child_env["COMPOSE"])
+            self.assertEqual(
+                "unix://" + child_env["PWD"] + "/.no-docker.sock",
+                child_env["DOCKER_HOST"],
+            )
+            self._assert_report(result)
 
 
 class QaCiToolEnvironmentTests(unittest.TestCase):
