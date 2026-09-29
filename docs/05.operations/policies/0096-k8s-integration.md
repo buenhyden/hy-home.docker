@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -49,10 +49,13 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
   Prometheus host 포트는 게시하지 않으며 UI는 SSO를 유지한다. Grafana는
   host 포트도 익명 접근도 없다. Kiali는 `secret/platform/grafana-api`의
   Viewer 서비스 계정 `k8s-kiali`(90일) 토큰으로 읽는다.
-- Loki `3100`, Tempo `3200`, `mng-valkey` `26379`는 gateway 인증 없이 모든
-  host interface에 게시된 상태를 유지한다(Valkey는 비밀번호를 유지한다).
-  클러스터를 위해 허용한 LAN 노출이며 범위를 좁히려면 엔드포인트
-  추가와 같은 수준의 검토가 필요하다.
+- Loki `3100`, Tempo `3200`, `mng-valkey` `26379`, `alloy` `4317`/`4318`,
+  `pg-router` `15432`/`15433`는 gateway 인증 없이 `HOST_LAN_BIND_IP`
+  (기본값 `192.168.0.13`) 호스트 LAN 주소에만 게시된 상태를 유지한다
+  (Valkey는 비밀번호를 유지한다). 클러스터를 위해 허용한 LAN 노출이며
+  범위를 좁히려면 엔드포인트 추가와 같은 수준의 검토가 필요하다. 같은
+  주소에 게시되는 gateway 80/443을 빼면, 나머지 host 포트는 `127.0.0.1`에만
+  게시된다.
 - 값은 저장소 경계를 파일이나 보호된 채널을 통해서만 넘긴다. chat, issue
   텍스트, 명령줄 인자, 로그로는 절대 넘기지 않는다. 증거는 이름, boolean,
   비밀이 아닌 필드만 기록한다.

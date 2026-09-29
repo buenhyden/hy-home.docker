@@ -1,6 +1,6 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -27,7 +27,7 @@ created: "2026-05-17"
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
 - **Configs**: `infra/04-data/operational/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config --quiet
 - **Networks**: `supabase_net`
-- **Ports**: Kong `8000`/`8443`, analytics `4000`, Postgres `5432`, pooler `6543` as declared through compose host-port variables
+- **Ports**: Kong `8000`/`8443`, analytics `4000`, Postgres `5432`, pooler `6543`, all published on `127.0.0.1` only through compose host-port variables
 
 ## Controls
 
@@ -58,7 +58,7 @@ created: "2026-05-17"
   - Task/incident evidence와 해당 runbook 단계로 뒷받침되는 승인된 JWT나
     dashboard credential rotation.
   - 선언된 `SUPABASE_KONG_HTTP_HOST_PORT`와 `SUPABASE_KONG_HTTPS_HOST_PORT`
-    변수를 사용한 Kong host-port 접근.
+    변수를 사용한, `127.0.0.1`로 제한된 Kong host-port 접근.
 - **Disallowed**:
   - 게시되지 않은 local host port를 통한 direct Studio 접근을 가정하는 것.
   - 승인된 구현과 문서 갱신 없이 public Supabase API 노출을 위해 Kong을

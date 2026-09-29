@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-22"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -49,10 +49,11 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
 
-Nginx is selected only by `nginx`, publishes host ports 80/443, depends on a
-healthy `seaweedfs-s3`, and mounts its config and `${DEFAULT_CERT_DIR}` read-only. It is
-an alternative listener to Traefik: because both claim the same host ports, do
-not select `nginx` with `core`, `dev`, or `local` on one host.
+Nginx is selected only by `nginx`, publishes host ports 80/443 on
+`${HOST_LAN_BIND_IP:-192.168.0.13}`, depends on a healthy `seaweedfs-s3`, and
+mounts its config and `${DEFAULT_CERT_DIR}` read-only. It is an alternative
+listener to Traefik: because both claim the same host ports, do not select
+`nginx` with `core`, `dev`, or `local` on one host.
 
 ### Step-by-step Instructions
 

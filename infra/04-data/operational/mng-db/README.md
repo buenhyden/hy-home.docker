@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2025-12-03"
 ---
 
@@ -51,9 +51,11 @@ n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 dat
 
 PostgreSQL은 `mng_postgres_password`와 `pgbackrest_cipher_pass`를 읽습니다.
 init은 서비스 database password secret을 읽습니다. Valkey/exporter는
-`mng_valkey_password`를 읽습니다. 두 엔진 모두 `mng_data_net`을 사용하며
-루트 `POSTGRES_HOST_PORT`와 소스에 표기된 `VALKEY_MNG_HOST_POST` 키를 통해
-호스트 바인딩을 게시합니다. exporter는 내부용입니다. PostgreSQL은
+`mng_valkey_password`를 읽습니다. 두 엔진 모두 `mng_data_net`을 사용합니다.
+PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
+게시하고, Valkey는 소스에 표기된 `VALKEY_MNG_HOST_POST` 키로
+`HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는
+내부용입니다. PostgreSQL은
 `pg_isready`를, Valkey는 인증된 `PING`을, exporter는 HTTP 헬스 체크를
 사용하며 init은 완료 여부로 게이트됩니다. `pg/init-scripts/init_users_dbs.sql`은
 기본 role/database 초기화를 소유하며 optional-capability secret은 절대 읽지

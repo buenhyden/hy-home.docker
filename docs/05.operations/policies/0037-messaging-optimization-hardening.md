@@ -1,6 +1,6 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -40,9 +40,9 @@ Kafka다.
   secret으로 유지되고, local CA는 read-only로 마운트되며, route는 표준
   gateway chain을 사용한다. 이 route에서는 forward-auth header trust를
   금지한다.
-- Administrative endpoint와 host-published listener는 명시된 trusted
-  boundary 안에 유지한다. evidence는 token, client secret, record payload를
-  생략해야 한다.
+- Administrative endpoint와 host-published listener(`127.0.0.1`에만 게시)는
+  명시된 trusted boundary 안에 유지한다. evidence는 token, client secret,
+  record payload를 생략해야 한다.
 - replication factor 3이 선언된 곳에서는 topic/bootstrap 변경에
   three-broker compatibility가 필요하다.
 

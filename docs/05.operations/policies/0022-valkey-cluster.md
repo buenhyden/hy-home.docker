@@ -1,6 +1,6 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,8 +33,9 @@ lifecycle, 독립적으로 검증 가능한 operator control에 묶는다.
   않는다.
 - `service_valkey_password`를 Docker secret custody에 유지한다. 그 값을
   Compose, Markdown, shell history, evidence에 두지 않는다.
-- 공개된 client와 cluster-bus port를 trusted-network exposure로 취급한다.
-  현재 source는 authentication을 선언하지만 TLS는 선언하지 않는다.
+- client port(`6379`-`6384`)는 `127.0.0.1`에만 게시한다. cluster-bus port는
+  host에 게시하지 않는다. 현재 source는 authentication을 선언하지만 TLS는
+  선언하지 않는다.
 - 활성화 전에 client, dataset, retention, capacity hypothesis를 기록한다.
   한 host 위의 세 replica는 topology exercise이지 host availability가
   아니다.

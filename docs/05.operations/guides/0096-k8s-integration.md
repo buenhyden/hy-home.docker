@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -38,11 +38,13 @@ k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크�
 | 트레이스 | `http://192.168.0.13:3200` (Tempo) | 없음 | Tempo |
 | Argo CD 캐시 | `192.168.0.13:26379` (`mng-valkey`) | Valkey 비밀번호(`CACHE-007`, OpenBao `platform/argocd`를 통해 전달) | [Management database](0028-management-database.md) |
 | PostgreSQL이 필요한 앱(옵션) | `192.168.0.13:15432` 쓰기, `15433` 읽기 | OpenBao `platform/postgres-app`을 통한 데이터베이스 자격 증명 | `postgres-ha` 프로파일 |
+| Istio 트레이스 → Alloy OTLP | `192.168.0.13:4317`(gRPC), `4318`(HTTP) | 없음 | [Alloy](0040-alloy.md) |
 | OpenBao에서 클러스터로 | `https://192.168.0.13:6550` (k3d API) | `auth/kubernetes/config`의 클러스터 CA | OpenBao |
 
 제공하지 않는 것: 호스트 포트나 익명 접근을 통한 Grafana(오너 결정;
-Kiali는 대신 Viewer 토큰을 사용), `4317/4318`의 Alloy OTLP(HOME Alloy
-설정에는 OTLP 수신자가 없음). Traefik에는 `*.k8s.hy.home.arpa` 라우트가
+Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`에
+`otelcol.receiver.otlp`를 두며 이 포트는 `HOST_LAN_BIND_IP`(기본값
+`192.168.0.13`)에 게시된다. Traefik에는 `*.k8s.hy.home.arpa` 라우트가
 없다. 네이티브 k3s NodePort로 가는 인증 없는 catch-all은 지난 7일간
 요청이 없어 2026-09-24에 제거했다.
 

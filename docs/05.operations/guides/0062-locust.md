@@ -1,6 +1,6 @@
 ---
 title: "Locust Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -36,7 +36,7 @@ target-owner 승인, limit, stop condition이 필요하다.
 - Root selection: repository root에서 `docker compose --profile testing ...`.
   Root project가 project default network를 제공하므로, leaf를 standalone project로
   사용하지 않는다.
-- Flow: operator/browser -> host port `${LOCUST_HOST_PORT:-18089}` -> master UI;
+- Flow: operator/browser -> host port `127.0.0.1:${LOCUST_HOST_PORT:-18089}` -> master UI;
   worker -> project default network를 통해 `locust-master`; master와 worker는
   `/mnt/locust`에서 공유 `locust-data` bind-backed volume을 읽는다.
 - Dependency: worker는 master의 HTTP healthcheck를 기다린다. Target service는
