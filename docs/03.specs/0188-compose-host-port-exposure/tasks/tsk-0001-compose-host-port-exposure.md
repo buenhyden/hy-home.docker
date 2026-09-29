@@ -1,8 +1,8 @@
 ---
 title: "Compose Host Port Exposure"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -81,14 +81,11 @@ authorized to run locally.
 | 1 | W1 | PASS: 35 findings and each port's consumer recorded under Findings and Consumers (`efc07e473`) | N/A: one-time scope record |
 | 6 | W1 | PASS: baseline `check-conftest-policy.sh` on `d6b68128e`: 299 tests, 264 passed, 35 warnings, 0 failures | N/A: baseline run evidence |
 | 1 | W2 | PASS: the current tests against `main`'s `compose.rego` give 16 tests, 4 failures; against the new rule 16 passed (`2874eff56`) | [compose.rego](../../../../infra/09-tooling/conftest/policy/compose.rego) |
-| 2 | W3 | PASS: 24 Group C ports publish as `127.0.0.1:${X_HOST_PORT:-N}:N` across seven leaves (`bf61e5e68`, `f4cfd986d`, `ef4553812`, `1035273f2`, `9c030ae1d`, `ea331c849`, `e1cd6e95e`) | The leaf Compose files |
+| 2 | W3 | PASS: 24 Group C ports publish as `127.0.0.1:${X_HOST_PORT:-N}:N` across seven leaves (`bf61e5e68`, `f4cfd986d`, `ef4553812`, `1035273f2`, `9c030ae1d`, `ea331c849`, `e1cd6e95e`) | [compose.rego](../../../../infra/09-tooling/conftest/policy/compose.rego) |
 | 3 | W4 | PASS: the nine Group B ports and Traefik bind `${HOST_LAN_BIND_IP:-192.168.0.13}`; `.env.example` declares `HOST_LAN_BIND_IP` and drops `TRAEFIK_BIND_IP` (`e36a22b7b`) | [.env.example](../../../../.env.example) |
 | 4 | W5 | PASS: Conftest 294 tests, 294 passed, 0 warnings, 0 failures; the host publication rule is a `deny` (`b59da2517`) | [compose.rego](../../../../infra/09-tooling/conftest/policy/compose.rego) |
 | 5 | W6 | PASS: POL-0096, GDE-0096 (Alloy OTLP contradiction removed), GDE-0095, and 13 service documents state the bindings (`c6ae1a676`); POL-0095 and the Conftest README describe only the rule-agnostic `warn`-then-`deny` lifecycle, so neither needed a change | [POL-0096](../../../05.operations/policies/0096-k8s-integration.md) |
-| 6 | W7 | PASS: `validate-docker-compose.sh` selections=72, services_total=355; `docker compose --profile core config --quiet` rc 0 | N/A: run evidence for this change |
-| 6 | W7 | PASS: `run-ci-gate.py --profile full` rc 0 (13 members, including `check-conftest-policy.sh` and `check-operations-catalog.py`) after `fd0d23187` | N/A: run evidence for this change |
-| 6 | W7 | PASS: `tests/validation` 675 tests OK, 23 skipped; `tests/lib` 945 tests OK after `fd0d23187` (one failure before it, below) | N/A: run evidence for this change |
-| 6 | W7 | PASS: `pre-commit run --from-ref main --to-ref HEAD` rc 0 | N/A: run evidence for this change |
+| 6 | W7 | PASS: `validate-docker-compose.sh` selections=72, services_total=355; `docker compose --profile core config --quiet` rc 0; `run-ci-gate.py --profile full` rc 0 (13 members, including `check-conftest-policy.sh` and `check-operations-catalog.py`) after `fd0d23187`; `tests/validation` 675 tests OK, 23 skipped; `tests/lib` 945 tests OK after `fd0d23187` (one failure before it, below); `pre-commit run --from-ref main --to-ref HEAD` rc 0 | N/A: run evidence for this change |
 
 ## Review Evidence
 
