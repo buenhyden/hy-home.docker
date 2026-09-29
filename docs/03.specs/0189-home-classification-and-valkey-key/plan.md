@@ -28,7 +28,8 @@ everywhere, as [SPEC-0189](spec.md) describes.
 1. W1: Rename the key in Compose, `.env.example`, `.env`, GDE-0028, the
    `mng-db` README, and the m0021 row (criterion 1).
 2. W2: Classify Tempo and Pyroscope as `HOME` in AD-0006, GDE-0047, POL-0047,
-   GDE-0049, POL-0049, POL-0021, and the m0021 rows (criterion 2).
+   GDE-0049, POL-0049, POL-0021, the three observability READMEs, and the
+   m0021 rows (criterion 2).
 3. W3: Run Compose validation, the full gate, and both unit suites
    (criterion 3).
 

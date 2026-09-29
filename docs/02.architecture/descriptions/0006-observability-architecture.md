@@ -1,6 +1,6 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -86,9 +86,9 @@ Data and control flows include only the interactions specified in this section a
 ## Deployment View
 
 - **Runtime / Platform**: Container orchestration based on Docker Compose v2.x.
-- **Deployment Model**: `prometheus`, `grafana`, `loki`, `alloy`,
-  `node-exporter`, `cadvisor`, `gatus`, and `alertmanager` are `HOME`.
-  `tempo`, `pyroscope`, and `pushgateway` are `OPTIONAL`. `obs` is the full
+- **Deployment Model**: `prometheus`, `grafana`, `loki`, `alloy`, `tempo`,
+  `pyroscope`, `node-exporter`, `cadvisor`, `gatus`, and `alertmanager` are
+  `HOME`. `pushgateway` is `OPTIONAL`. `obs` is the full
   compatibility profile, and `obs-core`, `obs-host`, `logs`, `tracing`,
   `profiling`, `alerting`, `availability`, and `batch-metrics` provide narrower
   activation. A HOME profile start does not automatically stop an already

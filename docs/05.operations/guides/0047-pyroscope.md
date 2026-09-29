@@ -1,6 +1,6 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -79,7 +79,7 @@ created: "2026-05-10"
 
 ### Source-backed operating contract
 
-- **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `OPTIONAL` continuous-profile store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
+- **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `HOME` continuous-profile store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
 - **Flow/dependencies/security**: client 또는 Alloy profile source가 profile을 write하고 Grafana가 query한다. 현재 Alloy config에는 write sink만 있고 profile source가 없어 end-to-end collection이 증명되지 않았다. Traefik이 route를 보호하며, Grafana, producer, storage와 선언된 network가 dependency다.
 - **State/resources**: single-node filesystem state는 `pyroscope-data:/var/lib/pyroscope` 아래에 있고, service Docker Secret은 없다. Source의 resource 값은 limit이지 측정된 headroom이 아니다.
 - **Normal use**: root에서 render하고, `profilecli ready`로 readiness를 확인하고, 승인된 client에서만 labeled test profile을 ingest해 Pyroscope/Grafana에서 query한다.

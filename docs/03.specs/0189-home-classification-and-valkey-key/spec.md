@@ -25,7 +25,7 @@ inconsistencies. This package resolves both.
 - Tempo and Pyroscope are `HOME` in
   [POL-0078](../../05.operations/policies/0078-compose-profile-vocabulary.md),
   where the owner added `tracing` and `profiling` to HOME in SPEC-0182 W6
-  (2026-09-25). Seven other documents still call them `OPTIONAL`.
+  (2026-09-25). Ten other documents still call them `OPTIONAL`.
 
 The owner ruled on 2026-09-29 to fix the key and to unify the classification.
 The later HOME ruling wins.
@@ -38,8 +38,9 @@ In scope:
   the root `.env.example` and `.env` (key only, value kept),
   GDE-0028, the `mng-db` README, and the m0021 service inventory row.
 - The Tempo and Pyroscope classification in AD-0006 (observability
-  architecture), GDE-0047, POL-0047, GDE-0049, POL-0049, POL-0021, and the
-  m0021 service inventory rows.
+  architecture), GDE-0047, POL-0047, GDE-0049, POL-0049, POL-0021, the
+  `06-observability`, `tempo`, and `pyroscope` READMEs, and the m0021 service
+  inventory rows. Dated ledgers and snapshot tables in m0021 stay as recorded.
 
 Out of scope:
 
