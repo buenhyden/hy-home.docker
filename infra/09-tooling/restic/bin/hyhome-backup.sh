@@ -103,9 +103,17 @@ else
 fi
 
 if running mng-valkey; then
+    # The export normally takes seconds; a stalled one held every run until the
+    # unit timeout (2026-09-26 to 09-29), so Restic never ran. The limit runs
+    # inside the container so the export ends there too, and a partial file is
+    # dropped rather than backed up.
     docker exec mng-valkey sh -c \
-        'REDISCLI_AUTH="$(cat /run/secrets/mng_valkey_password)" valkey-cli --no-auth-warning --rdb -' \
-        >"$staging/mng-valkey.rdb" || status=1
+        'REDISCLI_AUTH="$(cat /run/secrets/mng_valkey_password)" timeout 300 valkey-cli --no-auth-warning --rdb -' \
+        >"$staging/mng-valkey.rdb" || {
+        echo "mng-valkey RDB export failed or timed out; export dropped" >&2
+        rm -f "$staging/mng-valkey.rdb"
+        status=1
+    }
 else
     echo "mng-valkey not running: RDB export skipped" >&2
     status=1
