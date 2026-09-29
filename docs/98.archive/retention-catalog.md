@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.1"
+version: "1.1.2"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,8 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0189-home-classification-and-valkey-key/` | completed | POL-0078 | `c4f6e829543ff9f20a51c755118fa97b9dd012b0:docs/03.specs/0189-home-classification-and-valkey-key` |
+| `completed/03.specs/0188-compose-host-port-exposure/` | completed | POL-0096 | `24b3e45c7fba5f11455c2a9b333463dfccfd3398:docs/03.specs/0188-compose-host-port-exposure` |
 | `completed/03.specs/0187-document-language-migration/` | completed | ADR-0044 | `9143ad8a3f93b63b3b07991901d803a18a36060b:docs/03.specs/0187-document-language-migration` |
 | `completed/03.specs/0186-document-governance-dead-code-removal/` | completed | no durable contract | `a406430b2da388b13c863698d438cfd44c3151c9:docs/03.specs/0186-document-governance-dead-code-removal` |
 | `completed/03.specs/0184-readme-navigation-and-language-contract/` | completed | ADR-0044 | `ac15a6f84f61c666b90926418bc697da6e0687af:docs/03.specs/0184-readme-navigation-and-language-contract` |
