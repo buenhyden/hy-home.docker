@@ -250,9 +250,12 @@ def sensitive_source(relative: str) -> bool:
     name = lowered[-1] if lowered else ""
     if relative == ".env.example":
         return False
-    if any(part == "secrets" for part in lowered):
+    if any(part in {"secrets", ".ssh", "ssh", ".aws", ".kube", "credentials",
+                    "credential", "keystore", "keystores", "private-key", "private_key", "private-keys", "private_keys"}
+           for part in lowered):
         return True
-    if name.startswith(".env"):
+    if (name.startswith(".env") or name in {"id_rsa", "id_dsa", "id_ecdsa", "id_ed25519"}
+            or name.endswith((".key", ".pem", ".p12", ".pfx", ".jks", ".keystore"))):
         return True
     if any(token in name for token in ("credential", "password", "token")):
         return not name.endswith((".sh", ".py", ".md", ".example", ".template"))

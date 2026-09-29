@@ -39,7 +39,7 @@ emit() { printf '%s=%s\n' "$1" "$2"; }
 list() {
   local label="$1"; shift
   printf '%s_count=%d\n' "$label" "$#"
-  for item in "$@"; do printf '%s: %s\n' "$label" "$item"; done
+  for item in "$@"; do printf '%s: %q\n' "$label" "$item"; done
 }
 
 markdown=() shell=() python=() yaml=() json=() generated=() other=()

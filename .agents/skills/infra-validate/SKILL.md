@@ -3,7 +3,7 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.4.0"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -38,8 +38,9 @@ The approved infrastructure change and its validation contract must identify whi
    The helper snapshots reviewed tracked inputs with no-follow reads into an
    invocation-owned repository-local fixture, replaces public environment keys
    with synthetic values, and validates every Compose path edge before Docker.
-   It never reads a real `.env`, credential body, ignored host data or Docker
-   context.
+   It rejects real `.env`, known credential/key paths, ignored host data and
+   Docker context before copying. Path classification is not content scanning;
+   reviewed inputs must also exclude credentials disguised under ordinary names.
 2. Read every result record. Required Git, Bash, Python/PyYAML, Docker Compose,
    YAML lint and conditional shell lint evidence is `PASS`, `FAIL` or
    `BLOCKED`; zero eligible tracked shell inputs is `NOT_APPLICABLE`.
