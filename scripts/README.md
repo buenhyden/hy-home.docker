@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 created: "2026-02-21"
 ---
 
@@ -450,7 +450,8 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
 - [Agent Evaluation Harness](../evals/README.md) - 형제 자동화 루트; `evals/README.md`가 이 manifest도 등록하는 eval 표면을 소유합니다
-- Workspace Governance Authority (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- [현재 워크스페이스 거버넌스](../.agents/README.md)
+- Canonical home의 과거 결정: ADR-0032
 - Document Profile Registry (`docs/99.templates/registry.json`)
 - [Documentation index](../docs/README.md)
 

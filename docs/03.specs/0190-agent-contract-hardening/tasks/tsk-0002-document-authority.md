@@ -1,8 +1,8 @@
 ---
 title: "Document Authority and Link Normalization"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -37,12 +37,26 @@ W7/W9 evidence still required before those criteria can close.
   closure context in evals and shared Git-policy/runbook coupling.
 - Current W2 map adds the four exact documentation owners before mutation.
   Manifest/evaluator changes remain W9; Git workflow wording remains W7.
-- Approved implementation is starting; acceptance evidence remains pending.
+- Implemented normalized own-repository stage links while preserving README and
+  directory navigation, literal examples, provenance and docs-internal links.
+- Current agent authority now points to canonical governance. The stale evaluation
+  route points to root evals. Public CLI and general graph semantics remain.
+- Scope: the exact ten Plan W2 files; no installation or remote action.
 
 ## Verification Evidence
 
-NOT_RUN: normalized link-form RED/GREEN, entrypoint CLI, metadata and semantic
-review. Expected outcomes follow Plan W2; no acceptance result is inferred.
+- RED: Verification L exited 1, 90 tests in 97.706s; seven expected failures
+  exposed absolute paths, separator/case variants, GitHub URLs, fenced links
+  and previously forbidden README/directory navigation.
+- Focused boundary tests witnessed RED then GREEN for slash-containing refs,
+  file-like trailing slash, comments/fences, autolinks and file URLs.
+- Final Verification L: the Plan registered sanitized run-unittest adapter with
+  `tests.lib.document_governance.test_links -v`; exit 0, 90 tests in 85.025s.
+- `python3 scripts/validation/check-document-links.py --mode entrypoint`:
+  exit 0, 978 documents, 9891 links, 0 failures and 0 warnings.
+- `git diff --check`: exit 0. No installed ruff/coverage; no coverage claim.
+- R03/R11/R23: W2 implementation and static evidence PASS; overall criteria
+  remain open for the separately owned W7/W9 semantic consumer corrections.
 
 ## Review Evidence
 
@@ -50,9 +64,16 @@ review. Expected outcomes follow Plan W2; no acceptance result is inferred.
 - Preserve ADR provenance, README navigation, output-path examples, negative
   fixture references and scoped machine inputs. Current authority is distinct.
 
+- Independent rules-engineer final review CLEAR after six boundary findings
+  were corrected and rerun; reviewed all ten changed files.
+- Preserved machine use: hardening tier 03 reads REQ-0003 solely to assert its
+  architecture trace link; Compose reads the named HOME profile section;
+  document validators and authoring use registered schema/template inputs.
+  These are bounded validation inputs, never current agent instruction owners.
+
 ## Commit Ledger
 
-No W2 implementation commit yet.
+This Task is committed with the reviewed W2 implementation; Git owns the hash.
 
 ## Rulings
 

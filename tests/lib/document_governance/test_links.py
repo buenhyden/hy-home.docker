@@ -1701,7 +1701,7 @@ class DocumentLinksCliTests(unittest.TestCase):
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)
 
-    def test_entrypoint_mode_allows_only_the_docs_index_from_outside_docs(
+    def test_entrypoint_mode_allows_readme_and_directory_navigation(
         self,
     ) -> None:
         from scripts.lib.document_governance.links import (
@@ -1735,12 +1735,83 @@ class DocumentLinksCliTests(unittest.TestCase):
             )
 
         self.assertEqual(
-            ["infra/README.md:2", "infra/README.md:3", "infra/README.md:4"],
+            ["infra/README.md:2"],
             [finding.path for finding in findings],
         )
         self.assertEqual(
             {"stage-link-outside-docs"}, {finding.code for finding in findings}
         )
+
+    def test_entrypoint_normalizes_stage_link_forms(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "infra/README.md"
+            source.parent.mkdir()
+            target = "docs/03.specs/0001-example/spec.md"
+            forms = (
+                f"[rule](../{target}#contract)",
+                f"[rule](/{target})",
+                f"[rule]({root}/{target})",
+                f"[rule](file://{root}/{target})",
+                f"[rule](../{target}/)",
+                "[rule](../DOCS\\03.SPECS\\0001-example\\spec.md)",
+                "[rule](../%64ocs/%30%33.specs/0001-example/spec.md)",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/main/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/main/{target})",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/feature/w2/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/feature/w2/{target})",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/feature/docs/rework/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/feature/docs/rework/{target})",
+                f"<https://github.com/buenhyden/hy-home.docker/blob/main/{target}>",
+                f"<https://raw.githubusercontent.com/buenhyden/hy-home.docker/main/{target}>",
+                f"[rule][owner]\n[owner]: ../{target}",
+                f'<a href="../{target}#rule">rule</a>',
+                f"[[../{target}|rule]]",
+                f"```markdown\n[rule](../{target})\n```",
+                f"```markdown\n<!--\n[rule](../{target})\n-->\n```",
+            )
+            for text in forms:
+                with self.subTest(text=text):
+                    source.write_text(text, encoding="utf-8")
+                    findings = check_entrypoint(
+                        build_document_graph([source], repo_root=root)
+                    )
+                    self.assertEqual(
+                        ["stage-link-outside-docs"], [f.code for f in findings]
+                    )
+                    self.assertEqual(text, source.read_text(encoding="utf-8"))
+
+    def test_entrypoint_preserves_navigation_and_non_authoritative_examples(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "README.md"
+            text = (
+                "[docs](docs/README.md)\n[stage](docs/03.specs/README.md)\n"
+                "[directory](docs/03.specs/)\n[stage root](docs/03.specs)\n"
+                "<!-- [history](docs/03.specs/example.md) -->\n"
+                "<!--\n[history](docs/03.specs/example.md)\n-->\n"
+                "Output example: `docs/03.specs/0001-example/spec.md`\n"
+                "Historical decision: ADR-0032 (`docs/02.architecture/decisions/0032-old.md`).\n"
+                "```text\ndocs/03.specs/0001-example/tasks/tsk-0001-example.md\n```\n"
+                "[external](https://example.org/docs/03.specs/example.md)\n"
+                "<https://github.com/other/project/blob/main/docs/03.specs/example.md>\n"
+                "[other repository](https://github.com/other/project/blob/main/docs/03.specs/example.md)\n"
+            )
+            source.write_text(text, encoding="utf-8")
+            self.assertEqual(
+                [], check_entrypoint(build_document_graph([source], repo_root=root))
+            )
+            self.assertEqual(text, source.read_text(encoding="utf-8"))
 
     def test_entrypoint_mode_leaves_links_between_docs_documents_alone(self) -> None:
         from scripts.lib.document_governance.links import (

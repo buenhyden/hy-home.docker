@@ -1,6 +1,6 @@
 ---
 title: "GitHub Control Surface"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -106,6 +106,6 @@ python3 scripts/validation/check-github-workflow-contract.py
 - [로컬 main-protection 제안](./rulesets/main-protection.md)
 - [에이전트 거버넌스 개요](../.agents/README.md)
 - [현재 정본 에이전트 거버넌스 작업 체크리스트](../.agents/governance/task-checklists.md)
-- 워크스페이스 거버넌스 권한 (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
+- Canonical home의 과거 결정: ADR-0032 (현재 권한은 위 에이전트 거버넌스가 소유)
 - [저장소 README](../README.md)
 - [문서 인덱스](../docs/README.md)

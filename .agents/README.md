@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 layer: "agent-governance"
 ---
 
@@ -40,6 +40,11 @@ Stage 99(`docs/99.templates/README.md`)는 document profile, path, identifier,
 lifecycle 값, template을 소유합니다. 등록된 script는 executable check를
 소유합니다. 현재 Spec Package Task는 실행 evidence를 소유하며 보존된 Stage 98
 record와 Git history가 완료된 evidence를 보관합니다.
+README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현재 지침은 개별 stage
+문서에 의존하지 않습니다. 현재 agent 규칙은 해당 governance owner에 두며,
+승인된 Spec/Task 읽기와 필요한 registry/schema/template 입력은
+[문서 경계 규칙](governance/documentation-protocol.md#entry-point-for-documents-outside-docs)에
+따릅니다. 과거 결정의 출처 표시는 현재 실행 권한을 부여하지 않습니다.
 
 ## Structure
 

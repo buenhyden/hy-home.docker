@@ -193,7 +193,9 @@ _WIKI_LINK = re.compile(r"(?<!!)\[\[([^\]\n]+)\]\]")
 _HTML_HREF = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
 
 
-def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
+def _unfenced_lines(
+    text: str, *, include_fenced: bool = False
+) -> Iterable[tuple[int, str]]:
     fence: str | None = None
     html_comment = False
     for line_no, line in enumerate(text.splitlines(), start=1):
@@ -228,7 +230,7 @@ def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
             elif fence == marker:
                 fence = None
             continue
-        if fence is None:
+        if fence is None or include_fenced:
             yield line_no, line
 
 
@@ -336,16 +338,12 @@ def _normalized_target(
     return target, (fragment if separator and fragment else None), absolute, outside
 
 
-def parse_local_markdown_links(
-    source: pathlib.PurePosixPath,
-    text: str,
-) -> tuple[DocumentLink, ...]:
-    """Parse normalized local links from supplied Markdown without filesystem I/O."""
+def _link_destinations(
+    lines: Iterable[tuple[int, str]],
+) -> Iterable[tuple[int, str, str]]:
+    """Share destination syntax without changing which lines each mode reads."""
 
-    links: list[DocumentLink] = []
-    lines = tuple(
-        (number, _without_inline_code(line)) for number, line in _unfenced_lines(text)
-    )
+    lines = tuple((number, _without_inline_code(line)) for number, line in lines)
     references: dict[str, str] = {}
     for _, line in lines:
         definition = _REFERENCE_DEFINITION.match(line)
@@ -367,22 +365,33 @@ def parse_local_markdown_links(
             target, separator, label = match[1].partition("|")
             destinations.append((label if separator else target, target))
         for label, raw in destinations:
-            resolved = _normalized_target(source, raw)
-            if resolved is None:
-                continue
-            target, fragment, absolute, outside = resolved
-            links.append(
-                DocumentLink(
-                    source=source,
-                    target=target,
-                    raw_target=raw,
-                    fragment=fragment,
-                    line=line_no,
-                    absolute=absolute,
-                    outside_repository=outside,
-                    label=label,
-                )
+            yield line_no, label, raw
+
+
+def parse_local_markdown_links(
+    source: pathlib.PurePosixPath,
+    text: str,
+) -> tuple[DocumentLink, ...]:
+    """Parse normalized local links from supplied Markdown without filesystem I/O."""
+
+    links: list[DocumentLink] = []
+    for line_no, label, raw in _link_destinations(_unfenced_lines(text)):
+        resolved = _normalized_target(source, raw)
+        if resolved is None:
+            continue
+        target, fragment, absolute, outside = resolved
+        links.append(
+            DocumentLink(
+                source=source,
+                target=target,
+                raw_target=raw,
+                fragment=fragment,
+                line=line_no,
+                absolute=absolute,
+                outside_repository=outside,
+                label=label,
             )
+        )
     return tuple(links)
 
 
@@ -1063,23 +1072,79 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     return sorted(set(findings))
 
 
-def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
-    """Keep stage documents reachable from outside `docs/` through one entry point.
+def _entrypoint_target(
+    graph: DocumentGraph, source: pathlib.PurePosixPath, raw: str
+) -> pathlib.PurePosixPath | None:
+    """Normalize routing spellings only; never fetch a URL or resolve a path."""
 
-    A file outside `docs/` cannot know when a stage document is superseded,
-    renamed or archived, so a direct link into a stage rots silently: most of
-    the links this rule first rejected already pointed at specs that no longer
-    exist. `docs/README.md` is the one route that stays valid, and naming a
-    stage path as text keeps the reference without claiming it resolves.
+    value = urllib.parse.unquote(html.unescape(raw)).replace("\\", "/").casefold()
+    if _URL.match(value) or value.startswith("//"):
+        try:
+            url = urllib.parse.urlsplit(value)
+        except ValueError:
+            return None
+        if url.scheme == "file" and url.hostname in {None, "localhost"}:
+            value = url.path
+        else:
+            # Explicit identity keeps offline/source-only graphs deterministic.
+            own = "/buenhyden/hy-home.docker/"
+            if not url.path.startswith(own):
+                return None
+            tail = url.path[len(own):]
+            if url.hostname == "github.com" and tail.startswith(("blob/", "raw/")):
+                tail = tail.split("/", 1)[1]
+            elif url.hostname != "raw.githubusercontent.com":
+                return None
+            # Git refs may contain slashes; conservatively classify the docs
+            # suffix without resolving the ref against a network or Git state.
+            stage = re.search(r"/(docs/[0-9]{2}\.[^/]+(?:/.*)?)$", tail)
+            if stage is None:
+                return None
+            value = stage[1]
+    root = graph.repo_root.as_posix().casefold().rstrip("/") + "/"
+    if value.startswith(root):
+        value = value[len(root):]
+    resolved = _normalized_target(
+        pathlib.PurePosixPath(source.as_posix().casefold()), value
+    )
+    if resolved is None:
+        return None
+    target = resolved[0]
+    path = re.split(r"[?#]", value, maxsplit=1)[0]
+    directory = len(target.parts) == 2 or (path.endswith("/") and not target.suffix)
+    if target.name == "readme.md" or directory:
+        return None
+    return target
+
+
+def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
+    """Reject outside-docs individual stage links, retaining navigation routes.
+
+    Fenced clickable forms are checked too; literal examples and provenance
+    remain semantic review inputs, not mechanically inferred authority.
     """
 
     findings: list[LinkFinding] = list(graph.input_findings)
-    for link in graph.links:
-        if link.source.as_posix().startswith(f"{_DOC_ROOT}/"):
+    for node in graph.nodes:
+        if node.path.as_posix().casefold().startswith(f"{_DOC_ROOT}/"):
             continue
-        if not _STAGE_DIRECTORY.match(link.target.as_posix()):
-            continue
-        findings.append(_finding(link, "stage-link-outside-docs", link.raw_target))
+        lines = tuple(_unfenced_lines(node.text, include_fenced=True))
+        destinations = list(_link_destinations(lines))
+        destinations.extend(
+            (number, "", match[1])
+            for number, text in lines
+            for match in re.finditer(
+                r"<((?:https?|file)://[^<>\s]+)>", _without_inline_code(text), re.I
+            )
+        )
+        for line, _, raw in destinations:
+            target = _entrypoint_target(graph, node.path, raw)
+            if target is not None and _STAGE_DIRECTORY.match(target.as_posix()):
+                findings.append(
+                    LinkFinding(
+                        f"{node.path.as_posix()}:{line}", "stage-link-outside-docs", raw
+                    )
+                )
     return sorted(set(findings))
 
 

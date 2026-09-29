@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 ---
 
 # Agent Bootstrap Policy
@@ -31,6 +31,11 @@ Provide the sole repository bootstrap sequence for supported agents.
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.
+Loading governing stage documents and the current Task is scoped execution
+context, not permission for outside-docs instructions to depend on an individual
+stage document. Current agent rules live in their canonical governance owner;
+README navigation, historical provenance and typed machine inputs follow the
+[documentation protocol](documentation-protocol.md#entry-point-for-documents-outside-docs).
 
 ## Authority and Precedence
 

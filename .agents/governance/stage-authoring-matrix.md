@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.2.1"
+version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 ---
 
 # Stage Authoring Matrix
@@ -28,6 +28,10 @@ Document language and README navigation follow
 [documentation protocol](documentation-protocol.md#document-language) and its
 [README navigation](documentation-protocol.md#readme-navigation) rule.
 A template source declares the layer of its destination where the profile requires it.
+Stage ownership does not make an individual stage document a current instruction
+source for files outside docs. Use README navigation and canonical agent rules;
+scoped execution reads and required registry/schema/template inputs retain the
+narrow exceptions in that protocol.
 
 ## Document Type Families
 
