@@ -88,9 +88,9 @@ def copy_fixture(root: pathlib.Path) -> None:
     findings = validate_canonical_agent_home(ROOT)
     if findings:
         raise ValueError(f"invalid canonical fixture inventory: {findings}")
-    native_paths = (
+    tracked_paths = (
         subprocess.run(
-            ["git", "ls-files", "-z", "--", ".claude", ".codex"],
+            ["git", "ls-files", "-z", "--", ".claude", ".codex", ".agents/skills"],
             cwd=ROOT,
             capture_output=True,
             check=True,
@@ -105,7 +105,14 @@ def copy_fixture(root: pathlib.Path) -> None:
         r"[.]claude/(?:README[.]md|CLAUDE[.]md|settings[.]json)|"
         r"[.]codex/(?:README[.]md|hooks[.]json))"
     )
-    names = {name for name in native_paths if native_pattern.fullmatch(name)}
+    resource_pattern = re.compile(
+        r"[.]agents/skills/[a-z0-9-]+/(?:scripts|references|assets)/.+"
+    )
+    names = {
+        name
+        for name in tracked_paths
+        if native_pattern.fullmatch(name) or resource_pattern.fullmatch(name)
+    }
     names.update(
         {
             ".agents/README.md",

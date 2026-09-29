@@ -8,13 +8,20 @@ import fnmatch
 import json
 import os
 import pathlib
+import posixpath
 import re
 import stat
+import urllib.parse
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from types import MappingProxyType
 
 import yaml
+
+from scripts.lib.document_governance.links import (
+    _unfenced_lines,
+    parse_local_markdown_links,
+)
 
 GOVERNANCE = pathlib.PurePosixPath(".agents")
 PROVIDERS = GOVERNANCE / "governance/providers"
@@ -59,6 +66,10 @@ REGISTRY_KEYS = {
     "generated_roots",
 }
 MAX_TEXT_BYTES = 4 * 1024 * 1024
+MAX_SKILL_RESOURCE_ENTRIES = 4096
+MAX_SKILL_RESOURCE_DEPTH = 64
+MAX_SKILL_RESOURCE_TEXT_BYTES = 16 * 1024 * 1024
+MAX_SKILL_RESOURCE_MARKDOWN_BRACKETS = 16_384
 IDENTIFIER_PATTERN = re.compile(r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*")
 SAFE_REPOSITORY_PATH_PART = re.compile(r"\.?[A-Za-z0-9][A-Za-z0-9._-]*")
 _RETIRED_PROVIDER = "ge" + "mini"
@@ -71,6 +82,14 @@ UNSUPPORTED_TOKEN = re.compile(
     r"docs/00\.agent-governance(?:/|\b)|"
     r"subagent-protocol\.md|harness-implementation-map\.md|"
     r"memory\.template\.md|progress\.template\.md)"
+)
+_RESOURCE_CODE_TOKEN = re.compile(
+    r"`+((?:(?:[.][.]/|[.]/)*)(?:scripts|references|assets)/[^`\n]+)`+"
+)
+_RESOURCE_PLAIN_TOKEN = re.compile(
+    r"(?m)(?:^|[ \t])"
+    r"((?:(?:[.][.]/|[.]/)*)(?:scripts|references|assets)/"
+    r"[^\s`'\"<>()\[\]]+)"
 )
 RETIRED_PATHS = ("docs/00.agent-governance",)
 RETIRED_PROVIDER_DIRECTORY = "." + _RETIRED_PROVIDER
@@ -203,10 +222,43 @@ def _safe_relative(value: str | pathlib.PurePath) -> pathlib.PurePosixPath:
     return raw
 
 
-def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
+def _file_identity(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _open_verified_directory(
+    parent: int,
+    name: str,
+    flags: int,
+    expected: os.stat_result,
+    error: str,
+) -> tuple[int, os.stat_result]:
+    child = os.open(name, flags, dir_fd=parent)
+    try:
+        opened = os.fstat(child)
+        if _file_identity(opened) != _file_identity(expected):
+            raise ContractLoadError(error)
+        return child, opened
+    except Exception:
+        os.close(child)
+        raise
+
+
+def _open_regular_file(
+    root: pathlib.Path,
+    safe: pathlib.PurePosixPath,
+    expected_identity: tuple[int, int, int, int, int, int] | None = None,
+) -> tuple[int, os.stat_result]:
     root = root.absolute()
-    safe = _safe_relative(relative)
     parent = -1
+    descriptor = -1
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     try:
         parent = os.open(root, directory_flags)
@@ -214,11 +266,13 @@ def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
             before = os.stat(part, dir_fd=parent, follow_symlinks=False)
             if not stat.S_ISDIR(before.st_mode):
                 raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
-            child = os.open(part, directory_flags, dir_fd=parent)
-            opened = os.fstat(child)
-            if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
-                os.close(child)
-                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+            child, _opened = _open_verified_directory(
+                parent,
+                part,
+                directory_flags,
+                before,
+                f"AGC-UNSAFE-FILE path={safe}",
+            )
             os.close(parent)
             parent = child
         metadata = os.stat(safe.name, dir_fd=parent, follow_symlinks=False)
@@ -226,31 +280,56 @@ def _read_text(root: pathlib.Path, relative: str | pathlib.PurePath) -> str:
             raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
         if metadata.st_mode & 0o444 == 0:
             raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}")
+        if expected_identity is not None and _file_identity(metadata) != expected_identity:
+            raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
         descriptor = os.open(
             safe.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent
         )
-        with os.fdopen(descriptor, "rb") as source:
-            opened = os.fstat(source.fileno())
-            if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
-                metadata.st_dev,
-                metadata.st_ino,
-            ):
-                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
-            payload = source.read(MAX_TEXT_BYTES + 1)
-            after = os.fstat(source.fileno())
-            if (opened.st_size, opened.st_mtime_ns, opened.st_ctime_ns) != (
-                after.st_size,
-                after.st_mtime_ns,
-                after.st_ctime_ns,
-            ):
-                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+        opened = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or _file_identity(opened) != _file_identity(metadata)
+        ):
+            raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
     except FileNotFoundError as error:
+        if descriptor >= 0:
+            os.close(descriptor)
         raise ContractLoadError(f"AGC-FILE-MISSING path={safe}") from error
     except OSError as error:
+        if descriptor >= 0:
+            os.close(descriptor)
         raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}") from error
+    except Exception:
+        if descriptor >= 0:
+            os.close(descriptor)
+        raise
     finally:
         if parent >= 0:
             os.close(parent)
+    return descriptor, opened
+
+
+def _read_text(
+    root: pathlib.Path,
+    relative: str | pathlib.PurePath,
+    *,
+    expected_identity: tuple[int, int, int, int, int, int] | None = None,
+) -> str:
+    safe = _safe_relative(relative)
+    descriptor, opened = _open_regular_file(root, safe, expected_identity)
+    try:
+        try:
+            source = os.fdopen(descriptor, "rb")
+        except OSError:
+            os.close(descriptor)
+            raise
+        with source:
+            payload = source.read(MAX_TEXT_BYTES + 1)
+            after = os.fstat(source.fileno())
+            if _file_identity(opened) != _file_identity(after):
+                raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
+    except OSError as error:
+        raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}") from error
     if len(payload) > MAX_TEXT_BYTES:
         raise ContractLoadError(f"AGC-FILE-TOO-LARGE path={safe}")
     try:
@@ -1273,12 +1352,291 @@ def canonical_source_paths(root: pathlib.Path) -> tuple[pathlib.PurePosixPath, .
 
 
 # A skill owns the code, reference material, and output templates only it uses.
-# The canonical home is otherwise a closed set, and it stays closed: exactly
-# these three directory names may appear inside a skill package, their contents
-# are the skill's own and are not registered file by file, and nothing else at a
-# skill's top level is admitted. The traversal does not descend into them, so an
-# asset tree cannot smuggle a new canonical input past the inventory.
+# The canonical home is otherwise a closed set: these are the only resource
+# directories admitted inside a skill package, and every descendant must be
+# safely reachable from that skill's procedure.
 SKILL_OWNED_DIRECTORIES = frozenset({"scripts", "references", "assets"})
+
+
+def _resource_targets(text: str) -> tuple[str, ...]:
+    lines = tuple(line for _, line in _unfenced_lines(text, include_fenced=True))
+    targets = [
+        match.group(1).rstrip(".,;:")
+        for line in lines
+        for match in _RESOURCE_CODE_TOKEN.finditer(line)
+    ]
+    for line in lines:
+        if line.lstrip().startswith(("[", "![", "<")):
+            continue
+        targets.extend(
+            match.group(1).rstrip(".,;:")
+            for match in _RESOURCE_PLAIN_TOKEN.finditer(line)
+        )
+    return tuple(dict.fromkeys(targets))
+
+
+def _procedure_body(text: str) -> str:
+    if not text.startswith("---\n"):
+        return text
+    boundary = text.find("\n---\n", 4)
+    return text[boundary + 5 :] if boundary >= 0 else text
+
+
+def _verify_directory_identity(
+    root: pathlib.Path,
+    relative: pathlib.PurePosixPath,
+    expected: tuple[int, int, int, int, int, int],
+) -> None:
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    descriptor = os.open(root.absolute(), flags)
+    try:
+        for part in relative.parts:
+            before = os.stat(part, dir_fd=descriptor, follow_symlinks=False)
+            if not stat.S_ISDIR(before.st_mode):
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-NONREGULAR path={relative}"
+                )
+            child, _opened = _open_verified_directory(
+                descriptor,
+                part,
+                flags,
+                before,
+                f"AGC-SKILL-RESOURCE-RACE path={relative}",
+            )
+            os.close(descriptor)
+            descriptor = child
+        if _file_identity(os.fstat(descriptor)) != expected:
+            raise ContractLoadError(f"AGC-SKILL-RESOURCE-RACE path={relative}")
+    except OSError as error:
+        raise ContractLoadError(
+            f"AGC-SKILL-RESOURCE-UNREADABLE path={relative}"
+        ) from error
+    finally:
+        os.close(descriptor)
+
+
+def _resource_target(
+    raw: str,
+    current: pathlib.PurePosixPath,
+    skill_root: pathlib.PurePosixPath,
+    inventory: Mapping[
+        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
+    ],
+) -> pathlib.PurePosixPath | None:
+    try:
+        parsed = urllib.parse.urlsplit(raw)
+    except ValueError as error:
+        if any(part in raw for part in SKILL_OWNED_DIRECTORIES):
+            raise ContractLoadError(
+                f"AGC-SKILL-RESOURCE-UNSUPPORTED path={raw}"
+            ) from error
+        return None
+    if parsed.scheme or parsed.netloc or not parsed.path or parsed.path.startswith("/"):
+        return None
+    decoded = urllib.parse.unquote(parsed.path)
+    if "\\" in decoded or any(ord(character) < 32 for character in decoded):
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-UNSUPPORTED path={raw}")
+
+    stripped = decoded
+    while stripped.startswith(("./", "../")):
+        stripped = stripped[2:] if stripped.startswith("./") else stripped[3:]
+    first = stripped.split("/", 1)[0]
+    local_hint = first in SKILL_OWNED_DIRECTORIES
+    if local_hint and any(character in decoded for character in "{}*?[]"):
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-UNSUPPORTED path={raw}")
+
+    base = skill_root if decoded.split("/", 1)[0] in SKILL_OWNED_DIRECTORIES else current.parent
+    normalized = pathlib.PurePosixPath(
+        posixpath.normpath((base / decoded).as_posix())
+    )
+    if normalized.is_absolute() or ".." in normalized.parts:
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-ESCAPE path={raw}")
+    if (
+        normalized.parts[:2] == (".agents", "skills")
+        and normalized.parts[:3] != skill_root.parts
+        and len(normalized.parts) > 3
+        and normalized.parts[3] in SKILL_OWNED_DIRECTORIES
+    ):
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-CROSS-SKILL path={raw}")
+    if normalized == skill_root:
+        return None
+    within_skill = normalized.parts[: len(skill_root.parts)] == skill_root.parts
+    if not within_skill:
+        if local_hint:
+            raise ContractLoadError(f"AGC-SKILL-RESOURCE-ESCAPE path={raw}")
+        return None
+    relative = normalized.relative_to(skill_root)
+    if not relative.parts or relative.parts[0] not in SKILL_OWNED_DIRECTORIES:
+        return None
+    if any(character in normalized.as_posix() for character in "{}*?[]"):
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-UNSUPPORTED path={raw}")
+    if normalized in inventory:
+        return normalized
+    if decoded.startswith("scripts/"):
+        return None
+    raise ContractLoadError(f"AGC-SKILL-RESOURCE-MISSING path={normalized}")
+
+
+def _validate_skill_resources(
+    root: pathlib.Path, skill_root: pathlib.PurePosixPath
+) -> None:
+    skill_root = _safe_relative(skill_root)
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    inventory: dict[
+        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
+    ] = {}
+    directories: dict[
+        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
+    ] = {}
+    entry_count = 0
+
+    def walk(descriptor: int, relative: pathlib.PurePosixPath, depth: int) -> None:
+        nonlocal entry_count
+        entries = []
+        with os.scandir(descriptor) as iterator:
+            for entry in iterator:
+                entry_count += 1
+                if entry_count > MAX_SKILL_RESOURCE_ENTRIES:
+                    raise ContractLoadError(
+                        f"AGC-SKILL-RESOURCE-ENTRY-LIMIT path={skill_root}"
+                    )
+                entries.append(entry)
+        for entry in sorted(entries, key=lambda item: item.name):
+            before = entry.stat(follow_symlinks=False)
+            child_relative = relative / entry.name
+            if stat.S_ISDIR(before.st_mode):
+                if depth >= MAX_SKILL_RESOURCE_DEPTH:
+                    raise ContractLoadError(
+                        f"AGC-SKILL-RESOURCE-DEPTH-LIMIT path={child_relative}"
+                    )
+                child, opened = _open_verified_directory(
+                    descriptor,
+                    entry.name,
+                    directory_flags,
+                    before,
+                    f"AGC-SKILL-RESOURCE-RACE path={child_relative}",
+                )
+                try:
+                    directories[child_relative] = _file_identity(opened)
+                    walk(child, child_relative, depth + 1)
+                finally:
+                    os.close(child)
+            elif stat.S_ISREG(before.st_mode):
+                inventory[child_relative] = _file_identity(before)
+            else:
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-NONREGULAR path={child_relative}"
+                )
+            after = os.stat(entry.name, dir_fd=descriptor, follow_symlinks=False)
+            if _file_identity(before) != _file_identity(after):
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-RACE path={child_relative}"
+                )
+
+    descriptor = -1
+    try:
+        descriptor = os.open(root.absolute(), directory_flags)
+        for part in skill_root.parts:
+            before = os.stat(part, dir_fd=descriptor, follow_symlinks=False)
+            if not stat.S_ISDIR(before.st_mode):
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-NONREGULAR path={skill_root}"
+                )
+            child, _opened = _open_verified_directory(
+                descriptor,
+                part,
+                directory_flags,
+                before,
+                f"AGC-SKILL-RESOURCE-RACE path={skill_root}",
+            )
+            os.close(descriptor)
+            descriptor = child
+        directories[skill_root] = _file_identity(os.fstat(descriptor))
+        for owned_name in sorted(SKILL_OWNED_DIRECTORIES):
+            try:
+                before = os.stat(owned_name, dir_fd=descriptor, follow_symlinks=False)
+            except FileNotFoundError:
+                continue
+            if not stat.S_ISDIR(before.st_mode):
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-NONREGULAR path={skill_root / owned_name}"
+                )
+            child, opened = _open_verified_directory(
+                descriptor,
+                owned_name,
+                directory_flags,
+                before,
+                f"AGC-SKILL-RESOURCE-RACE path={skill_root / owned_name}",
+            )
+            try:
+                directories[skill_root / owned_name] = _file_identity(opened)
+                walk(child, skill_root / owned_name, 0)
+            finally:
+                os.close(child)
+            after = os.stat(owned_name, dir_fd=descriptor, follow_symlinks=False)
+            if _file_identity(before) != _file_identity(after):
+                raise ContractLoadError(
+                    f"AGC-SKILL-RESOURCE-RACE path={skill_root / owned_name}"
+                )
+    except OSError as error:
+        raise ContractLoadError(
+            f"AGC-SKILL-RESOURCE-UNREADABLE path={skill_root}"
+        ) from error
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+    for path, identity in inventory.items():
+        relative = path.relative_to(skill_root)
+        if identity[2] & 0o111 and relative.parts[0] != "scripts":
+            raise ContractLoadError(f"AGC-SKILL-RESOURCE-EXECUTABLE path={path}")
+
+    source = skill_root / "SKILL.md"
+    pending: list[pathlib.PurePosixPath] = []
+    scheduled: set[pathlib.PurePosixPath] = set()
+
+    def discover(text: str, current: pathlib.PurePosixPath) -> None:
+        if text.count("[") > MAX_SKILL_RESOURCE_MARKDOWN_BRACKETS:
+            raise ContractLoadError(
+                f"AGC-SKILL-RESOURCE-MARKDOWN-OUTPUT-LIMIT path={current}"
+            )
+        raw_targets = [
+            link.raw_target for link in parse_local_markdown_links(current, text)
+        ]
+        raw_targets.extend(_resource_targets(text))
+        for raw in raw_targets:
+            target = _resource_target(raw, current, skill_root, inventory)
+            if target is not None and target not in scheduled:
+                scheduled.add(target)
+                pending.append(target)
+
+    discover(_procedure_body(_read_text(root, source)), source)
+    reachable: set[pathlib.PurePosixPath] = set()
+    text_bytes = 0
+    for current in pending:
+        reachable.add(current)
+        relative = current.relative_to(skill_root)
+        if relative.parts[0] == "assets":
+            continue
+        text = _read_text(
+            root, current, expected_identity=inventory[current]
+        )
+        text_bytes += len(text.encode("utf-8"))
+        if text_bytes > MAX_SKILL_RESOURCE_TEXT_BYTES:
+            raise ContractLoadError(
+                f"AGC-SKILL-RESOURCE-TEXT-LIMIT path={skill_root}"
+            )
+        if relative.parts[0] == "references":
+            discover(_procedure_body(text), current)
+
+    orphaned = sorted(set(inventory) - reachable)
+    if orphaned:
+        raise ContractLoadError(f"AGC-SKILL-RESOURCE-ORPHAN path={orphaned[0]}")
+    for path, identity in inventory.items():
+        descriptor, _opened = _open_regular_file(root, path, identity)
+        os.close(descriptor)
+    for path, identity in directories.items():
+        _verify_directory_identity(root, path, identity)
 
 
 def _skill_owned(relative: pathlib.PurePosixPath, observed: set[str]) -> frozenset[str]:
@@ -1336,6 +1694,8 @@ def validate_canonical_agent_home(root: pathlib.Path) -> list[Finding]:
             after = os.stat(entry.name, dir_fd=descriptor, follow_symlinks=False)
             if (before.st_dev, before.st_ino) != (after.st_dev, after.st_ino):
                 raise ValueError("canonical input changed")
+        if len(relative.parts) == 3 and relative.parts[:2] == (".agents", "skills"):
+            _validate_skill_resources(root, relative)
 
     try:
         directories: dict[pathlib.PurePosixPath, set[str]] = {}

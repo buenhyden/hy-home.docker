@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -172,29 +172,31 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    **Modify:** `scripts/lib/agent_governance/agent_governance_contract.py`,
    `tests/lib/agent_governance/test_agent_governance_contract.py`,
    `tests/validation/test_provider_surface_renderer.py` (shared fixture resource
-   copying only), `.agents/README.md` (doc-writer contribution).
+   copying only), `.agents/README.md` (doc-writer contribution),
+   `scripts/lib/document_governance/links.py` and
+   `tests/lib/document_governance/test_links.py` (shared Markdown opener bounds).
    **Interface:** `validate_canonical_agent_home()` retains its caller contract;
    resource traversal reuses `_read_text`'s bounded/no-follow identity checks.
    Add private `_validate_skill_resources(root: pathlib.Path, skill_root:
    pathlib.PurePosixPath) -> None`; return existing Finding records at the public boundary and translate internal
    ContractLoadError consistently with the existing validator.
 
-   - [ ] Extend current bundle tests with direct and transitive reference success;
+   - [x] Extend current bundle tests with direct and transitive reference success;
      nested symlink, FIFO, socket/device-mode, replaced inode, traversal, orphan,
      unsupported local reference syntax and executable reference failures.
      Assert no out-of-root read and no resource execution. Use synthetic trees;
      mock device mode without privileged device creation.
-   - [ ] Run G and witness RED for currently unvisited resource trees.
-   - [ ] Traverse directories without following links and bound the traversal
+   - [x] Run G and witness RED for currently unvisited resource trees.
+   - [x] Traverse directories without following links and bound the traversal
      to 4096 entries per skill, 64 directory levels and 16 MiB of reference text
      per skill, retaining the existing per-file text cap. These are validator
      denial limits, not resource-count assertions about the repository.
-   - [ ] Resolve Markdown links and explicit local tokens beginning `scripts/`,
+   - [x] Resolve Markdown links and explicit local tokens beginning `scripts/`,
      `references/`, `assets/`, including relative links from reached references.
      Start reachability at SKILL.md; metadata/openai.yaml are not resources.
      Allow an executable only below scripts and reachable from the procedure.
      Binary assets may be terminal nodes, never text to execute or import.
-   - [ ] Run G, P and the repository contract; verify all current resources still
+   - [x] Run L, G, P and the repository contract; verify all current resources still
      pass and over-limit fixtures fail deterministically. Commit as
      `fix(agent): Validate nested skill resource boundaries`.
 
@@ -588,3 +590,17 @@ receipts cite the other Task's evidence rather than duplicating results.
 - Applicable BLOCKED/NOT_RUN evidence keeps the package open. Local implementation
   may be reported separately, but all-criteria completion cannot be claimed until
   observation requirements pass or the user explicitly changes the requirement.
+
+- W3 independent review reproduced quadratic scanning in the reused Markdown
+  opener patterns before the resource graph bound applies. Extend W3 by the
+  existing shared parser and its test file before editing them; exclude nested
+  opening brackets from two character classes and consume destination spans
+  once rather than rescanning overlapping malformed openers; retain the parser interface,
+  and add L. Retain a pre-parse 16,384-opening-bracket limit as a separate
+  output/allocation bound because the shared parser materializes link records;
+  this bound does not substitute for fixing repeated CPU work. No new parser.
+
+- W3 shared parser completion consumes complete link/title spans, masks hidden
+  grammar contexts, handles escape parity, and extracts exact HTML attributes
+  with the standard library. Comment/frontmatter content is not a procedure
+  consumer. These corrections remain within the amended six-file map.

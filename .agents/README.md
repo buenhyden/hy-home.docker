@@ -1,6 +1,6 @@
 ---
 title: "AI Agent Governance"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -27,6 +27,14 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
   `references/`, output이 사용하는 template을 위한 `assets/`도 소유할 수
   있습니다. 이 세 이름이 허용의 전부입니다. 그 내용은 해당 skill 고유의 것이라
   registry row가 필요 없고 skill 최상위에는 그 외 어떤 것도 존재할 수 없습니다.
+  resource는 `SKILL.md` 절차 본문에서 직접 또는 전이적으로 도달해야 합니다.
+  절차 본문과 도달한 `references/`의 Markdown link 및 명시적 local token만
+  graph edge가 됩니다. `scripts/`는 bounded UTF-8 terminal이고 `assets/`는
+  읽지 않는 binary terminal이므로 그 내용을 dependency 문법으로 해석하지 않습니다.
+  validator는 symlink와 비정규 node를 따르지 않으며 skill마다 4,096개 entry,
+  64단계 directory, 16 MiB text로 순회를 제한합니다. Markdown graph output은
+  parse 전에 여는 대괄호 16,384개로 제한합니다. 실행 bit는 도달 가능한 `scripts/`
+  file에만 허용됩니다.
 - `knowledge/`는 저장소 surface에서 canonical owner로의 검증된 routing과 저장소
   vocabulary, verification coverage를 소유합니다.
 - `prompts/`는 반복 작업을 위한 재사용 가능한 input/output contract를

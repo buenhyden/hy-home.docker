@@ -11,6 +11,7 @@ import re
 import subprocess
 import urllib.parse
 from collections.abc import Iterable, Mapping
+from html.parser import HTMLParser
 from types import MappingProxyType
 
 from scripts.lib.document_governance.frontmatter import (
@@ -31,7 +32,7 @@ from scripts.lib.document_governance.registry import (
 )
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-_LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
+_LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\[\]\n]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 _CATALOG_PAIR = re.compile(r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)")
 _DOC_ROOT = "docs"
@@ -189,8 +190,82 @@ def _without_html_comments(line: str, active: bool) -> tuple[str, bool]:
 
 _REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[(?!\^)([^\]]+)\]:\s*<?([^\s>]+)")
 _REFERENCE_USE = re.compile(r"(?<!!)(?<!\[)\[([^\[\]]+)\]\[([^\[\]]*)\]")
-_WIKI_LINK = re.compile(r"(?<!!)\[\[([^\]\n]+)\]\]")
-_HTML_HREF = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_WIKI_LINK = re.compile(r"(?<!!)\[\[([^\[\]\n]+)\]\]")
+
+
+class _HrefAttributeParser(HTMLParser):
+    """Collect values from exact ``href`` attributes in one bounded tag."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: list[str] = []
+
+    def handle_starttag(
+        self, _tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        self.values.extend(
+            value for name, value in attrs if name == "href" and value is not None
+        )
+
+
+def _html_href_values(tag: str) -> tuple[str, ...]:
+    parser = _HrefAttributeParser()
+    parser.feed(tag)
+    parser.close()
+    return tuple(parser.values)
+
+
+def _is_escaped(text: str, offset: int) -> bool:
+    backslashes = 0
+    while offset > 0 and text[offset - 1] == "\\":
+        backslashes += 1
+        offset -= 1
+    return backslashes % 2 == 1
+
+
+def _html_tag_spans(line: str) -> Iterable[tuple[int, int]]:
+    """Yield raw HTML tag spans, respecting quotes and bounding malformed input."""
+
+    cursor = 0
+    while (start := line.find("<", cursor)) >= 0:
+        index = start + 1
+        if index < len(line) and line[index] == "/":
+            index += 1
+        if (
+            index >= len(line)
+            or not line[index].isascii()
+            or not line[index].isalpha()
+        ):
+            cursor = start + 1
+            continue
+        index += 1
+        while index < len(line) and (
+            line[index] == "-"
+            or (line[index].isascii() and line[index].isalnum())
+        ):
+            index += 1
+        if index < len(line) and not (
+            line[index].isspace() or line[index] in "/>"
+        ):
+            cursor = start + 1
+            continue
+        quote: str | None = None
+        while index < len(line):
+            character = line[index]
+            if quote is not None:
+                if character == quote:
+                    quote = None
+            elif character in "\"'":
+                quote = character
+            elif character == ">":
+                index += 1
+                yield start, index
+                cursor = index
+                break
+            index += 1
+        else:
+            yield start, len(line)
+            return
 
 
 def _unfenced_lines(
@@ -256,20 +331,59 @@ def _without_inline_code(line: str) -> str:
     return "".join(rendered)
 
 
-def _markdown_destinations(line: str) -> Iterable[tuple[str, str]]:
+def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
     """Yield labeled destinations with angle and nested-parenthesis support."""
 
+    def consume_tail(text: str, cursor: int) -> int | None:
+        while cursor < len(text) and text[cursor].isspace():
+            cursor += 1
+        if cursor < len(text) and text[cursor] == ")":
+            return cursor + 1
+        if cursor >= len(text) or text[cursor] not in "\"'(":
+            return None
+        delimiter = ")" if text[cursor] == "(" else text[cursor]
+        cursor += 1
+        while cursor < len(text):
+            if text[cursor] == "\\":
+                cursor += 2
+                continue
+            if text[cursor] == delimiter:
+                cursor += 1
+                break
+            cursor += 1
+        else:
+            return None
+        while cursor < len(text) and text[cursor].isspace():
+            cursor += 1
+        if cursor < len(text) and text[cursor] == ")":
+            return cursor + 1
+        return None
+
     text = _without_inline_code(line)
-    for opening in _LINK_OPEN.finditer(text):
+    position = 0
+    while (opening := _LINK_OPEN.search(text, position)) is not None:
+        if _is_escaped(text, opening.start()):
+            position = opening.end()
+            continue
         cursor = opening.end()
         while cursor < len(text) and text[cursor].isspace():
             cursor += 1
         if cursor >= len(text):
-            continue
+            return
         if text[cursor] == "<":
             closing = text.find(">", cursor + 1)
-            if closing >= 0:
-                yield opening.group("label"), text[cursor + 1 : closing]
+            if closing < 0:
+                return
+            end = consume_tail(text, closing + 1)
+            if end is None:
+                return
+            yield (
+                opening.group("label"),
+                text[cursor + 1 : closing],
+                opening.start(),
+                end,
+            )
+            position = end
             continue
         start = cursor
         depth = 0
@@ -281,15 +395,27 @@ def _markdown_destinations(line: str) -> Iterable[tuple[str, str]]:
                 if depth == 0:
                     destination = text[start:cursor].strip()
                     if destination:
-                        yield opening.group("label"), destination.split(maxsplit=1)[0]
+                        yield (
+                            opening.group("label"),
+                            destination.split(maxsplit=1)[0],
+                            opening.start(),
+                            cursor + 1,
+                        )
+                    position = cursor + 1
                     break
                 depth -= 1
             elif character.isspace() and depth == 0:
                 destination = text[start:cursor]
+                end = consume_tail(text, cursor)
+                if end is None:
+                    return
                 if destination:
-                    yield opening.group("label"), destination
+                    yield opening.group("label"), destination, opening.start(), end
+                position = end
                 break
             cursor += 1
+        else:
+            return
 
 
 def _slug(value: str) -> str:
@@ -353,15 +479,54 @@ def _link_destinations(
     for line_no, line in lines:
         if _REFERENCE_DEFINITION.match(line):
             continue
-        destinations = list(_markdown_destinations(line))
-        for use in _REFERENCE_USE.finditer(line):
+        tags = tuple(_html_tag_spans(line))
+        destinations: list[tuple[str, str]] = []
+        spans = list(tags)
+        inline_spans: list[tuple[int, int]] = []
+        tag_index = 0
+        for label, raw, start, end in _markdown_destinations(line):
+            while tag_index < len(tags) and tags[tag_index][1] <= start:
+                tag_index += 1
+            if (
+                tag_index < len(tags)
+                and tags[tag_index][0] <= start < tags[tag_index][1]
+            ):
+                continue
+            destinations.append((label, raw))
+            spans.append((start, end))
+            inline_spans.append((start, end))
+        inline_index = 0
+        for tag_start, tag_end in tags:
+            while (
+                inline_index < len(inline_spans)
+                and inline_spans[inline_index][1] <= tag_start
+            ):
+                inline_index += 1
+            if (
+                inline_index < len(inline_spans)
+                and inline_spans[inline_index][0] <= tag_start
+                < inline_spans[inline_index][1]
+            ):
+                continue
+            if not line[tag_start:tag_end].endswith(">"):
+                continue
+            destinations.extend(
+                ("", value)
+                for value in _html_href_values(line[tag_start:tag_end])
+            )
+        masked = list(line)
+        for start, end in spans:
+            masked[start:end] = " " * (end - start)
+        remaining = "".join(masked)
+        for use in _REFERENCE_USE.finditer(remaining):
+            if _is_escaped(remaining, use.start()):
+                continue
             key = " ".join((use[2] or use[1]).casefold().split())
             if key in references:
                 destinations.append((use[1], references[key]))
-        destinations.extend(
-            ("", html.unescape(match[1])) for match in _HTML_HREF.finditer(line)
-        )
-        for match in _WIKI_LINK.finditer(line):
+        for match in _WIKI_LINK.finditer(remaining):
+            if _is_escaped(remaining, match.start()):
+                continue
             target, separator, label = match[1].partition("|")
             destinations.append((label if separator else target, target))
         for label, raw in destinations:
@@ -1211,8 +1376,12 @@ def _navigation_destinations(node: DocumentNode) -> Iterable[tuple[int, str, str
         match = _REFERENCE_DEFINITION.match(line)
         if match:
             yield line_no, "", match.group(2)
-        for href in _HTML_HREF.finditer(line):
-            yield line_no, "", href.group(1)
+        for start, end in _html_tag_spans(line):
+            tag = line[start:end]
+            if not tag.endswith(">"):
+                continue
+            for href in _html_href_values(tag):
+                yield line_no, "", href
 
 
 def _raw_label(lines: list[str], link: DocumentLink) -> str:

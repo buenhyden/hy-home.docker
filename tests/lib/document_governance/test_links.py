@@ -507,6 +507,33 @@ class IgnoredLinkTargetTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_local_markdown_link_parser_bounds_malformed_opening_brackets(
+        self,
+    ) -> None:
+        program = """
+import pathlib
+
+from scripts.lib.document_governance.links import parse_local_markdown_links
+
+source = pathlib.PurePosixPath("docs/source.md")
+for prefix in ("[" * 2_048, "[[" * 2_048):
+    assert parse_local_markdown_links(source, prefix + "x" * 100_000) == ()
+assert parse_local_markdown_links(
+    source, "[x](" * 256 + "a" * 100_000
+) == ()
+assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", program],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=2,
+        )
+
+        self.assertEqual(0, result.returncode, result.stderr)
+
     def test_fence_info_comment_opener_does_not_hide_later_rendered_links(self) -> None:
         from scripts.lib.document_governance.links import parse_local_markdown_links
 
@@ -522,6 +549,134 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertEqual(
             ("docs/visible.md",),
             tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_unclosed_angle_destination_stops_only_its_line(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            "[broken](<missing [hidden](hidden.md)\n"
+            "[visible](visible.md) [next](next.md)\n",
+        )
+
+        self.assertEqual(
+            ("docs/visible.md", "docs/next.md"),
+            tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_inline_link_titles_are_consumed_before_following_links(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            '[vendor](<https://example.test> "[hidden](hidden.md)") '
+            '[double](double.md "title") [single](single.md \'title\') '
+            "[parenthesized](parenthesized.md (title)) [next](next.md)\n"
+            "[invalid](invalid.md title-without-close [spoof](spoof.md)\n",
+        )
+
+        self.assertEqual(
+            (
+                "docs/double.md",
+                "docs/single.md",
+                "docs/parenthesized.md",
+                "docs/next.md",
+            ),
+            tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_link_grammars_do_not_rescan_titles_or_html_attributes(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        cases = {
+            "reference use in title": (
+                '[vendor](<https://example.test> "[hidden][run]") '
+                "[visible](visible.md)\n[run]: hidden.md\n"
+            ),
+            "wiki link in title": (
+                '[vendor](<https://example.test> "[[hidden.md]]") '
+                "[visible](visible.md)\n"
+            ),
+            "html link in title": (
+                "[vendor](<https://example.test> '<a href=\"hidden.md\">') "
+                "[visible](visible.md)\n"
+            ),
+            "markdown link in html attribute": (
+                '<a title="[hidden](hidden.md)" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "greater-than in double-quoted html attribute": (
+                '<a title="x > [hidden](hidden.md)" '
+                'href="https://example.test">vendor</a> [visible](visible.md)\n'
+            ),
+            "greater-than in single-quoted html attribute": (
+                "<a title='x > [hidden](hidden.md)' "
+                'href="https://example.test">vendor</a> [visible](visible.md)\n'
+            ),
+            "unquoted html attribute and empty tags": (
+                "<a title=[hidden](hidden.md)><a/></a> [visible](visible.md)\n"
+            ),
+            "href text inside another attribute": (
+                '<a title="href=\'hidden.md\'" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "data href is not href": (
+                '<a data-href="hidden.md" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "escaped markdown opener": (
+                r"\[hidden](hidden.md) [visible](visible.md)" "\n"
+            ),
+        }
+
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                links = parse_local_markdown_links(
+                    pathlib.PurePosixPath("docs/source.md"), text
+                )
+                self.assertEqual(
+                    ("docs/visible.md",),
+                    tuple(link.target.as_posix() for link in links),
+                )
+
+        even_escape = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            r"\\[visible](visible.md)",
+        )
+        self.assertEqual(
+            ("docs/visible.md",),
+            tuple(link.target.as_posix() for link in even_escape),
+        )
+
+        local_href = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            '<a href="local.md">local</a>',
+        )
+        self.assertEqual(
+            ("docs/local.md",),
+            tuple(link.target.as_posix() for link in local_href),
+        )
+
+    def test_navigation_html_uses_only_exact_href_attributes(self) -> None:
+        from scripts.lib.document_governance.links import (
+            DocumentNode,
+            _navigation_destinations,
+        )
+
+        node = DocumentNode(
+            path=pathlib.PurePosixPath("docs/README.md"),
+            text=(
+                '<a title="href=\'spoof.md\'" data-href="data.md" '
+                'href="actual.md">actual</a>\n'
+            ),
+            metadata={},
+            headings=(),
+        )
+
+        self.assertEqual(
+            ((1, "", "actual.md"),),
+            tuple(_navigation_destinations(node)),
         )
 
     def test_inline_code_comment_opener_does_not_hide_later_rendered_links(
