@@ -47,19 +47,6 @@ groups:
           description: "{{ $labels.name }} 컨테이너가 메모리 리밋의 95% 이상을 사용 중입니다. OOM 위험이 있습니다.\n  VALUE = {{ $value }}"
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
 
-      # [What] Container Volume Usage High / 볼륨 사용량 높음
-      - alert: ContainerVolumeUsage
-        expr: (1 - (sum(container_fs_inodes_free{name!=""}) BY (instance) /
-          sum(container_fs_inodes_total) BY (instance))) * 100 > 80
-        for: 15m
-        labels:
-          severity: warning
-          domain: infrastructure
-        annotations:
-          summary: '컨테이너 볼륨 사용량 높음: {{ $labels.instance }}'
-          description: "컨테이너 볼륨 사용량이 80%를 초과했습니다.\n  VALUE = {{ $value }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0035-storage-exhaustion.md'
-
       # [What] Container CPU Throttled / CPU 쓰로틀링
       - alert: ContainerHighThrottleRate
         expr: |

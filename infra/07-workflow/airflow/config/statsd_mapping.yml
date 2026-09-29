@@ -3,6 +3,7 @@
 # name set stays fixed and matches the Grafana Airflow mixin dashboard
 # (airflow_dagrun_*, airflow_pool_*, airflow_ti_*, airflow_task_finish_total).
 # Rules are tried in order; the catch-alls keep up to three static segments
+# (written ${N}: in $1_$2 the exporter reads a variable named "1_")
 # and anything longer that no rule names is dropped rather than turned into
 # one metric per DAG file.
 mappings:
@@ -84,10 +85,11 @@ mappings:
     labels:
       pool_name: $1
 
-  - match: airflow.dag_processing.last_duration.*
+  - match: airflow.dag_processing.last_duration.*.*
     name: airflow_dag_processing_last_duration
     labels:
-      dag_file: $1
+      bundle: $1
+      dag_file: $2
   - match: airflow.dag_processing.last_run.seconds_ago.*
     name: airflow_dag_processing_last_run_seconds_ago
     labels:
@@ -108,11 +110,11 @@ mappings:
 
   # Static names: one, two or three segments.
   - match: airflow.*
-    name: airflow_$1
+    name: airflow_${1}
   - match: airflow.*.*
-    name: airflow_$1_$2
+    name: airflow_${1}_${2}
   - match: airflow.*.*.*
-    name: airflow_$1_$2_$3
+    name: airflow_${1}_${2}_${3}
 
   # Longer names no rule above covers embed identifiers; drop them.
   - match: .

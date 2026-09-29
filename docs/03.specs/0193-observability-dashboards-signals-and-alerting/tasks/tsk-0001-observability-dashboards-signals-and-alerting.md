@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.11"
+version: "0.3.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -170,6 +170,26 @@ acceptance criterion of [SPEC-0193](../spec.md).
   `alloy` job keeps native and classic histograms. Afterwards Kafka Cluster
   48 of 57, Kafka Topics 10 of 11, Alloy Controller 7 of 8, Alloy Loki 9 of
   12. The m0021 row for `airflow-scheduler` dropped `obs_net`.
+- 2026-09-30 W6 follow-up 2, from the owner's DAG run approval and reports:
+  - The first example DAG run stayed `queued`: since the W6 recreate every
+    DAG file parse ran past the 50 s timeout under OTel tracing, so all DAGs
+    were `is_stale`. Tracing is off for the DAG processor; then the worker
+    reserved the task without running it, and tracing is off for it too.
+    Both left `obs_net`. `tutorial_taskflow_api` then succeeded twice and is
+    paused again.
+  - The statsd mapping wrote `airflow_$1_$2`, which the exporter reads as a
+    variable `1_`, so every two- and three-segment name collapsed into
+    `airflow_`. Now `${N}`, and DAG processing durations carry `bundle` and
+    `dag_file`; checked on a throwaway exporter before the live one.
+  - Alloy logged `fetch profile failed` twice a minute: SeaweedFS S3 answers
+    `/debug/pprof/block` and `/mutex` only after 40 s. SeaweedFS now has its
+    own scrape with those two off.
+  - cAdvisor logged a rootfs `stat` error per container since 2026-09-23:
+    the Docker root is outside `/var/lib/docker` and uses the containerd
+    snapshotter. Its `disk` metric is off; `ContainerVolumeUsage` could never
+    fire (its numerator series never existed) and was removed (65 alerts).
+  - Traces Drilldown showed "An error occurred in the query": the datasource
+    streams results, and Tempo lacked `stream_over_http_enabled`. Added.
 
 ## Verification Evidence
 
@@ -181,10 +201,11 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | 4 | W6 | PASS with recorded gaps: on 2026-09-30, against the live metric names, every dashboard of a running service resolves its queries except panels for features not in use (Loki and Tempo cloud stores, memcache, envoy, Kafka tiered storage, Confluent Server stray partitions, hardware fans, SeaweedFS admin, DCGM profiling, Grafana-managed alerts), series that need traffic (Airflow DAG runs, Flower events, Keycloak user events, OAuth2 Proxy requests, consumer lag, loaded Ollama models, connectors) and the pre-1.0 JMX name `jvm_memory_bytes_max` (one panel each in three Confluent dashboards); stopped on-demand services (HAProxy, etcd, OpenSearch, MongoDB, Cassandra, k6) have no series | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 5 | W6 | PASS: Prometheus, Loki, Pyroscope, `n8n-db` and `airflow-db` report healthy, Tempo and Alertmanager answer through the proxy; `grafana_reader` is not superuser, is read-only by default, has a 30 s timeout, 4 connections and `SELECT` on five tables (`b2cf9feaf`) | [RUN-0041](../../../05.operations/runbooks/0041-grafana.md) |
 | 6 | W6 | PASS: 49 active targets in 38 jobs with no scrape URL twice; the down targets all belong to stopped services (`kafka-2`, `kafka-3`, HAProxy, etcd, OpenSearch, MongoDB, Cassandra, the PostgreSQL cluster, the Valkey cluster and the three unstarted Valkey exporters) | [GDE-0045](../../../05.operations/guides/0045-prometheus.md) |
-| 7 | W6 | PASS except Airflow spans: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. Airflow spans wait for the first DAG run (Deferred Items) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 7 | W6 | PASS except Airflow spans: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. no Airflow spans after two DAG runs, because tracing had to be turned off for the scheduler, DAG processor and worker (owner decision in Deferred Items). Traces Drilldown queries failed until Tempo got `stream_over_http_enabled` (follow-up 2) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 4 | W6 | PASS: Keycloak Capacity Planning now resolves its last query; after the owner's Dozzle sign-in on 2026-09-30, `keycloak_user_events_total` reports `login` 2, `code_to_token` 2, `user_info_request` 1 and `permission_token` 133 | [Keycloak Compose](../../../../infra/02-auth/keycloak/docker-compose.yml) |
 | 4 | W6 | PASS: after the owner's Prometheus and Flower sign-ins on 2026-09-30, `oauth2_proxy_requests_total` and `oauth2_proxy_response_duration_seconds` report 35 requests (code 202), and the OAuth2 Proxy dashboard resolves both queries | [OAuth2 Proxy dashboard](../../../../infra/06-observability/grafana/dashboards/Gateway/oauth2-proxy.json) |
-| 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
+| 4 | W6 | PASS: after two example DAG runs on 2026-09-30, Airflow (mixin) resolves 15 of 21 queries (missing only failure, schedule-delay and SLA series: the runs were manual and succeeded, and Airflow 3 has no SLA) and Flower 6 of 6 | [statsd mapping](../../../../infra/07-workflow/airflow/config/statsd_mapping.yml) |
+| 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting; 65 after `ContainerVolumeUsage` was removed); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
 | 9 | W7 | DEFERRED: needs the final SPEC-0182 W8 figures after 2026-10-03 | N/A: deferred to W7 |
 | 10 | W5 | PASS: GDE, POL and RUN-0041, GDE and POL-0045, GDE-0040, RUN-0047, RUN-0050 and the Grafana README describe the new state (`22475253c`) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 11 | W8 | PASS: at `687d97213`, `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped). The earlier run at `854dad511` failed once on the stale `airflow-scheduler` inventory row, fixed in `687d97213` | N/A: run evidence for this change |
@@ -226,5 +247,5 @@ None yet.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` and `seaweedfs-s3` CPU throttling (firing), `mng-valkey-exporter` CPU throttling (pending), Flower memory (`ContainerHighMemoryUsage` firing), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
-| Confirm Airflow DAG-run metrics and traces and the Flower task panels (`flower_events_total`, task runtime and prefetch) after the first DAG run | agent | First DAG run |
+| Owner decision on Airflow tracing: on Airflow 3.3.1 only the apiserver and triggerer can keep it, and neither sends DAG or task spans, so ruling 3 yields no Airflow traces | @buenhyden | Before the completion receipt |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |

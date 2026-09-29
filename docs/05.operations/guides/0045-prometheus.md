@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -177,6 +177,9 @@ SPEC-0193(2026-09-30)의 rule 기준:
   78개 중 26개가 방출되지 않는 이름을 써서 발화할 수 없었다(Keycloak 전부, OpenSearch의
   `elasticsearch_*`, `TraefikServiceDown`, `N8nWorkflowFailed`, `GpuXidError` 등). 이름을 고칠 수
   있는 rule은 고치고, 소스가 없는 rule과 역할이 겹치는 rule은 지웠다(78 → 66).
+  `ContainerVolumeUsage`도 나중에 지웠다(→ 65). cAdvisor는 컨테이너별 rootfs 사용량을 읽지 못하고
+  (Docker root가 `/var/lib/docker` 밖에 있고 containerd snapshotter를 쓴다), 로그 오류만 남겼다.
+  이제 `disk` metric을 끄고, 호스트 디스크는 node-exporter의 `HostSystemDiskLow`가 맡는다.
 - on-demand 서비스는 `up == 0`으로 알리지 않는다. 서비스가 떠 있을 때만 생기는 metric(`redis_up`,
   `pg_up`, `opensearch_cluster_status` 등)으로 판단한다.
 - 모든 rule의 `runbook_url`은 해당 서비스의 runbook 파일을 가리킨다. 계약 테스트가 파일 존재를
