@@ -1,8 +1,8 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -54,6 +54,10 @@ None yet.
 ## Rulings
 
 - 2026-09-30: Owner rulings 1–5 of the Spec.
+- 2026-09-30: Owner approved the package, the W6 runtime changes and the
+  pushes, and asked that the Grafana reader password be created with its
+  entries in `secrets/SENSITIVE_ENV_VARS.md` and its `.example`, and any
+  environment key in `.env` and `.env.example`.
 
 ## Deferred Items
 
