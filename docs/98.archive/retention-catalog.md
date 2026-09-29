@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.2"
+version: "1.1.3"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,7 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0190-home-classification-remaining/` | completed | POL-0078 | `315bd7997c4a591afeb568867f846f1988034ab5:docs/03.specs/0190-home-classification-remaining` |
 | `completed/03.specs/0189-home-classification-and-valkey-key/` | completed | POL-0078 | `c4f6e829543ff9f20a51c755118fa97b9dd012b0:docs/03.specs/0189-home-classification-and-valkey-key` |
 | `completed/03.specs/0188-compose-host-port-exposure/` | completed | POL-0096 | `24b3e45c7fba5f11455c2a9b333463dfccfd3398:docs/03.specs/0188-compose-host-port-exposure` |
 | `completed/03.specs/0187-document-language-migration/` | completed | ADR-0044 | `9143ad8a3f93b63b3b07991901d803a18a36060b:docs/03.specs/0187-document-language-migration` |
