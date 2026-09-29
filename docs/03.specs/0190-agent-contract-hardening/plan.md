@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -394,6 +394,7 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `scripts/lib/agent_governance/agent_governance_contract.py`,
    `scripts/lib/document_governance/registry.py`,
    `scripts/lib/document_governance/references.py`,
+   `scripts/lib/document_governance/metadata/lifecycle.py`,
    `scripts/lib/gate/ci_gate_adapters.py`,
    `scripts/validation/check-script-manifest.py`,
    `scripts/validation/ci_gate_runner.py`, `scripts/README.md`,
@@ -406,6 +407,7 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `tests/validation/test_ci_gate_plan.py`,
    `tests/validation/test_ci_gate_execution_context.py`,
    `tests/lib/document_governance/metadata/test_profile.py`,
+   `tests/lib/document_governance/test_registry.py`,
    `tests/validation/lifecycle/test_contract.py`,
    `docs/03.specs/0190-agent-contract-hardening/spec.md`,
    `docs/03.specs/0190-agent-contract-hardening/plan.md`.
@@ -420,7 +422,16 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `common.inventory_excludes`: the catalog remains evaluator-owned data without
    document frontmatter. Existing evaluator/manifest/link/canonical checks still
    govern it; test that a sibling unregistered Markdown file remains rejected.
-   No directory exemption, new profile, schema or template. Bootstrap includes evaluations in its
+   No directory exemption, new profile, schema or template. The existing metadata
+   historical-baseline helper also maps exactly `.agents/evaluations/README.md`
+   to the trusted base's `evals/README.md` blob, preserving type/identity checks,
+   prior lifecycle status and introduced-body validation. This is historical
+   provenance only, never a live loading alias or an initial-state override.
+   Add a regression to the existing registry tests for exact-path continuity,
+   mismatched type/unrelated destination rejection and retained body checks;
+   run that module plus a changed-metadata CLI check against the pre-move base.
+   Reuse the existing helper and its reference integration, without another
+   migration engine. Bootstrap includes evaluations in its
    canonical language/category boundary while evaluation data stays input, not
    automatically loaded execution instructions. Update manifest roots, both root-relative
    runtime calculations, active document discovery, gate preflight/dispatch and
@@ -669,3 +680,11 @@ receipts cite the other Task's evidence rather than duplicating results.
   no structural schema/template change is needed.
   Other work units and external/runtime
   boundaries remain unchanged. No migration write precedes its completed map.
+
+- Read-only W9 preflight found that changed-metadata selection discards Git
+  rename pairs and the base corpus excludes the old root evaluation README.
+  Without historical continuity the active moved README fails initial-state
+  validation. Add only the existing metadata lifecycle helper and registry
+  regression module to W9's exact map before implementation; retain the current
+  reference integration and all state/type/body checks. This is necessary for
+  the user-authorized migration, not approval to relax lifecycle validation.
