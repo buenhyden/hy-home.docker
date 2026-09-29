@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -135,7 +135,10 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    **Modify:** `.agents/governance/documentation-protocol.md`,
    `.agents/governance/bootstrap.md`, `.agents/governance/stage-authoring-matrix.md`,
    `.agents/README.md`, `scripts/lib/document_governance/links.py`,
-   `tests/lib/document_governance/test_links.py`.
+   `tests/lib/document_governance/test_links.py`,
+   `.agents/skills/provider-model-evaluation/SKILL.md`, `scripts/README.md`,
+   `README.md`, `.github/repository-surface.md` (the semantic audit identified
+   stale current-authority claims; historical provenance remains intact).
    **Retain public CLI:** `scripts/validation/check-document-links.py`.
    **Interface:** retain `check_entrypoint` and `MODE_HANDLERS` result shapes;
    extend target classification, not the CLI or general document graph protocol.
