@@ -1,6 +1,6 @@
 ---
 title: "Workflows"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,6 +33,18 @@ Every repository change follows one lifecycle:
    with rationale, review disposition, and remaining uncertainty.
 8. **Handoff** — `workflow-supervisor` reports the next owner or completion
    without broadening scope.
+
+After required approval, routine semantic review may close through the smallest
+relevant deterministic checks plus an independent read-only agent reviewer who
+did not implement the change. The reviewer evaluates the same diff and revision,
+maps each applicable acceptance criterion to its canonical source and evidence,
+and rejects unsupported claims. Record findings, `BLOCKED`, `NOT_RUN`, and
+remaining uncertainty in the owning Task. Escalate semantic review to a human
+when criteria or authority remain ambiguous, reviewers disagree, high-risk
+uncertainty remains, a new or out-of-scope operation is needed, or a canonical
+or protected-branch rule requires human review. Existing approval remains
+applicable only while its recorded scope is unchanged; review and delegation
+cannot broaden it.
 
 Static validation and independent review precede a separately approved
 operational action. An implementation that fails validation or independent
