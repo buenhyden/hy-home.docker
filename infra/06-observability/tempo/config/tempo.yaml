@@ -5,6 +5,10 @@ server:
   # Tempo gRPC server; OTLP gRPC port와는 별도
   grpc_listen_port: 9095
 
+# Grafana's Tempo datasource streams search and TraceQL metrics results over
+# the HTTP port; without this, Traces Drilldown queries fail (SPEC-0193).
+stream_over_http_enabled: true
+
 
 # ---------- OTLP trace 수신 ----------
 distributor:

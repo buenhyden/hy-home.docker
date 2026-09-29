@@ -497,6 +497,11 @@ services:
       - /dev/kmsg
     command:
       - '--docker_only=true'
+      # The Docker root sits outside /var/lib/docker and uses the containerd
+      # snapshotter, so per-container rootfs usage (disk) cannot be read and
+      # only logged errors; host disk comes from node-exporter. The rest is
+      # cAdvisor's default list.
+      - '--disable_metrics=advtcp,cpu_topology,cpuset,disk,hugetlb,memory_numa,process,referenced_memory,resctrl,sched,tcp,udp'
       - '--housekeeping_interval=30s'
       - '--max_housekeeping_interval=35s'
       - '--event_storage_event_limit=default=0'

@@ -197,9 +197,14 @@ services:
     container_name: airflow-dag-processor
     read_only: false
     command: dag-processor
+    environment:
+      <<: *airflow-common-env
+      # Airflow 3.3.1: with OTel tracing on, every forked file processor runs
+      # past the 50 s parse timeout and is killed, so all DAGs go stale
+      # (verified 2026-09-30; the same file parses in 4 s in-process).
+      AIRFLOW__TRACES__OTEL_ON: 'false'
     networks:
       airflow_net: {}
-      obs_net: {}
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type DagProcessorJob --hostname "$${HOSTNAME}"' ]
@@ -224,11 +229,13 @@ services:
     command: celery worker
     networks:
       airflow_net: {}
-      obs_net: {}
       mng_data_net: {}
     environment:
       <<: *airflow-common-env
       DUMB_INIT_SETSID: '0'
+      # Airflow 3.3.1: with OTel tracing on, the prefork pool reserves tasks
+      # but never runs them (verified 2026-09-30).
+      AIRFLOW__TRACES__OTEL_ON: 'false'
     healthcheck:
       test: [ 'CMD-SHELL', 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"' ]
       interval: 15s

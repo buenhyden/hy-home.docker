@@ -1,6 +1,6 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -132,7 +132,7 @@ created: "2026-05-10"
 
 - **Metrics Drilldown**: Prometheus datasource의 `timeInterval`이 scrape 간격(30 s)과 같아 `$__rate_interval`이 샘플 네 개를 덮는다.
 - **Logs Drilldown**: Loki의 `volume_enabled`, `pattern_ingester`, `discover_log_levels`가 서비스별 볼륨, 패턴, 레벨 보기를 채운다.
-- **Traces Drilldown**: Tempo 3.0.3은 TraceQL metrics를 기본으로 답한다. trace를 보내는 서비스는 Traefik, Keycloak, Grafana, Airflow(apiserver, worker, DAG processor, triggerer)이며 샘플링은 10%다. Airflow scheduler는 제외한다(RUN-0050).
+- **Traces Drilldown**: Tempo 3.0.3은 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana, Airflow(apiserver, triggerer)이며 샘플링은 10%다. Airflow scheduler, DAG processor, worker는 제외한다(RUN-0050).
 - **Profiles Drilldown**: Alloy `pyroscope.scrape "go_services"`가 `/debug/pprof`을 제공하는 Go 서비스 11개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, registry)에서 30초마다 가져온다. eBPF는 쓰지 않는다.
 - **SQL datasources**: `n8n-db`, `airflow-db`는 `grafana-db-provision`이 만든 `grafana_reader`로 접속한다. 이 role은 n8n `execution_entity`·`workflow_entity`와 Airflow `dag`·`dag_run`·`task_instance`만 `SELECT`하며, 세션은 읽기 전용이고 statement timeout 30 s, 연결 4개로 제한된다.
 

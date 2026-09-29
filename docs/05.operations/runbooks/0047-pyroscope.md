@@ -1,6 +1,6 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -101,7 +101,7 @@ created: "2026-05-17"
 
 - **Logs**: `docker logs --tail=200 infra-pyroscope`, `docker logs --tail=200 infra-alloy`
 - **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
-- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
+- **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`, `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
 - **Profile sources**: `service_name` label 값을 조회해 수집 중인 서비스를 확인한다. 2026-09-30 기준 11개(alertmanager, alloy, grafana, loki, mng-pg-exporter, node-exporter, prometheus, pyroscope, registry, seaweedfs-s3, tempo)다.
 
   ```bash
