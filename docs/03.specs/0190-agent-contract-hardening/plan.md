@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -38,8 +38,9 @@ No new package or installation is proposed.
 
 ### Global constraints
 
-- Written-spec approval is recorded on 2026-09-29; this Plan has no execution
-  approval yet. No implementation or Task has been created by Plan authoring.
+- Written-spec and Plan/execution approvals were given on 2026-09-29.
+  Approved execution includes local logical commits and bounded independent
+  review; external/runtime/cost boundaries below remain separate.
 - Retain all 14 role IDs, both sets of role projections and the 23 existing
   skills; add only `stateful-recovery-contract-review`. Retention still needs
   a reviewed file-level disposition, not an inventory-count assertion.
@@ -567,9 +568,9 @@ receipts cite the other Task's evidence rather than duplicating results.
 
 ## Rulings
 
-- The human approved the written Spec; this Plan is the requested review artifact.
-  New-document draft metadata is retained under the current registry. This is
-  not a claim that implementation is approved or that any acceptance is complete.
+- The human approved the written Spec and this Plan for local execution on
+  2026-09-29. Initial drafts were committed before lifecycle promotion. Approval
+  permits the named implementation; it does not establish acceptance results.
   Local lifecycle commits are executable after Plan approval; an eventual PR
   against a base without the draft still requires separately approved sequential
   integration. This Plan does not promise one-shot mergeability or authorize it.

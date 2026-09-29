@@ -2,7 +2,7 @@
 title: "Agent Contract Hardening Specification"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -28,10 +28,10 @@ The owner approved the incremental design, option A, on 2026-09-29 after its
 research/design review. That approval authorizes this written specification and
 its allocation/index edits only. After independent review, the owner approved
 this written specification on 2026-09-29 and authorized Plan authoring. Its
-frontmatter retains the initial draft state required for a newly introduced
-document; that machine state does not revoke or broaden the recorded human
-approval. The Plan remains subject to separate approval before Task activation
-and implementation. No acceptance criterion is reported as implemented here.
+frontmatter is transitioning through the registered local predecessor states;
+that machine state does not broaden the recorded human approval. The owner
+approved the Plan and local execution on 2026-09-29, including reviewed logical
+commits, while preserving the separate external/runtime boundaries. No acceptance criterion is reported as implemented here.
 
 The incoming execution request normalized its repeated item 37 into R37 agents,
 R38 workflows and R39 commands. This specification preserves all R01–R39 and the
