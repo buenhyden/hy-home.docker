@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.3"
+version: "0.7.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -94,6 +94,9 @@ Read-only investigation of 2026-09-25:
   (`infra/09-tooling/restic/README.md` states no R2 path exists); the
   RUN-0098 Verification Record has no rehearsal row. The RUN-0021 and
   RUN-0088 deferred item was resolved in #281.
+- 2026-09-29 W9: the owner completed the browser checks the agent could not
+  make: Dozzle sign-in, and Grafana, Open WebUI and OpenBao signed in as an
+  `/admins` user. Every W9 row now has a result.
 
 ## Verification Evidence
 
@@ -139,7 +142,7 @@ and were deleted.
 | User outside `/admins` | pass: after the Keycloak sign-in the flow ended at `/oauth2/callback` with `403`, no upstream content, and one OAuth2 Proxy `unauthorized` line for the user; the `/admins` user reached the Prometheus UI |
 | Logout | pass: `/oauth2/sign_out` answered `302`, and the next request to `prometheus` went `302` to the Keycloak authorization endpoint |
 | Role removal | pass: right after removal from `/admins` the existing Proxy cookie still reached Prometheus, as the 1 h `cookie_refresh` allows; after sign-out and a new sign-in the flow ended with `403` |
-| Native OIDC signed in | pass for six apps, not determined for two. `/users` user: Gatus API `401` (subject allowlist), Open WebUI back at `/auth` with API `401` (sign-up off, no account made), Grafana login error with API `401` (strict role mapping), Kafbat `VIEW` and `MESSAGES_READ` only (readonly), Airflow API `403`. `/admins` user: Kafbat all 12 actions, Airflow API `200`. Grafana, Open WebUI and OpenBao were not signed in as the `/admins` user because each would keep a local account or entity after the Keycloak user is deleted; OpenBao binds `groups=["/openbao-admins"]`. Dozzle v11.1.0's OIDC start path was not found from its login page, so its row needs a browser check |
+| Native OIDC signed in | pass for all eight apps; the last four by the owner's browser check of 2026-09-29. `/users` user: Gatus API `401` (subject allowlist), Open WebUI back at `/auth` with API `401` (sign-up off, no account made), Grafana login error with API `401` (strict role mapping), Kafbat `VIEW` and `MESSAGES_READ` only (readonly), Airflow API `403`. `/admins` user: Kafbat all 12 actions, Airflow API `200`. Grafana, Open WebUI and OpenBao were not signed in as the `/admins` user because each would keep a local account or entity after the Keycloak user is deleted; OpenBao binds `groups=["/openbao-admins"]`. Dozzle v11.1.0's OIDC start path was not found from its login page. The owner then signed in to Dozzle, and to Grafana, Open WebUI and OpenBao as an `/admins` user, and reported each check complete |
 
 W7, restore rehearsals (criterion 7), 2026-09-25, each on an `--internal`
 network with no route to production and scratch on the data disk:
@@ -204,6 +207,5 @@ See the Plan.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | R2 setup (bucket, lock, token, secrets, `init`) and re-landing #277 | @buenhyden | When the owner is ready; RUN-0021 §8 comes back with it |
-| W9 native OIDC rows not determined: Dozzle sign-in, and Grafana, Open WebUI and OpenBao signed in as an `/admins` user | @buenhyden | Browser check before the completion receipt |
 | W11 supervised reboot and the RUN-0098 rehearsal record | @buenhyden | After fresh backups and `restic check` |
 | W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
