@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.4"
+version: "1.1.5"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,7 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0183-operations-role-layout/` | completed | ADR-0043 | `cce796818043f6663441470d1f3c6604bfb5193a:docs/03.specs/0183-operations-role-layout` |
 | `completed/03.specs/0179-package-disposition-wait-and-task-cancellation/` | completed | ADR-0037 | `a451616821ff460750f39517b08495dd69d5c16c:docs/03.specs/0179-package-disposition-wait-and-task-cancellation` |
 | `completed/03.specs/0190-home-classification-remaining/` | completed | POL-0078 | `315bd7997c4a591afeb568867f846f1988034ab5:docs/03.specs/0190-home-classification-remaining` |
 | `completed/03.specs/0189-home-classification-and-valkey-key/` | completed | POL-0078 | `c4f6e829543ff9f20a51c755118fa97b9dd012b0:docs/03.specs/0189-home-classification-and-valkey-key` |

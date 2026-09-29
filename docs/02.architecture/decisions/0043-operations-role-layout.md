@@ -1,6 +1,6 @@
 ---
 title: "Operations Role Layout"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -96,7 +96,7 @@ Facts at baseline `0deb430ea`:
 - Parent architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - Superseded structural decision: SPEC-0158 and MIG-0002's catalog convergence
   (Stage 98 preserved record)
-- Execution: [SPEC-0183](../../03.specs/0183-operations-role-layout/spec.md)
+- Execution: [SPEC-0183](../../98.archive/completed/03.specs/0183-operations-role-layout/spec.md)
 
 ## Compliance
 
