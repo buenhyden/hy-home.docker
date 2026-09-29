@@ -1,6 +1,6 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-Registry는 OPTIONAL 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브
+Registry는 `HOME` 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브
 TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트워크에서만 서비스할 수 있다.
 
 ## Policy Scope
@@ -26,7 +26,7 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 
 ## Controls
 
-- **Activation:** `registry` 또는 일반 `tooling`을 사용한다. HOME에서는 제외한다.
+- **Activation:** `registry` 또는 일반 `tooling`을 사용한다. SPEC-0182 W6에서 소유자가 `registry`를 HOME에 추가했다(POL-0078).
 - **Exposure/auth:** 호스트 포트는 `127.0.0.1`에 바인딩되지만, 프로젝트 기본
   네트워크의 컨테이너는 인증 없이도 여전히 접근할 수 있다. 방화벽이나 데몬
   제한을 가정하지 않는다. 민감한 용도나 더 넓은 접근 전에는 TLS와 인증, 또는

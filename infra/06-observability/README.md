@@ -1,6 +1,6 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.8"
+version: "1.0.9"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -153,6 +153,7 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 | `alertmanager` | HOME | `obs`, `alerting` |
 | `tempo` | HOME | `obs`, `tracing` |
 | `pyroscope` | HOME | `obs`, `profiling` |
+| `dcgm-exporter` | HOME | `obs-gpu` |
 | `pushgateway` | OPTIONAL | `obs`, `batch-metrics` |
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/README.md` 하위의 `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, `0087`입니다.
