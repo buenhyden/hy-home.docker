@@ -1,8 +1,8 @@
 ---
 title: "Repository-Root Style Classification"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -43,25 +43,38 @@ acceptance remains BLOCKED in W4/W10 evidence and is not overridden here.
 
 ## Verification Evidence
 
-NOT_RUN: focused RED/GREEN H, Bash syntax and available shell lint.
-Preserve output buckets, no-argument staged mode, `--base <ref>` ref...HEAD mode,
-and standalone `--help`/`-h`. Test root/subdirectory/skill/space-containing cwd,
-generated marker after frontmatter, malformed CLI, Git failure and marker read
-failure. Missing installed lint remains explicit rather than a success claim.
+- RED: full H ran 47 tests in 16.622s and exposed 21 expected failures.
+- GREEN: final independent full H passed 47/47 in 17.658s through the
+  registered sanitized unittest adapter; focused four methods also passed.
+- `bash -n .agents/skills/style-validation/scripts/classify-changed-files.sh`
+  and `git diff --check`: exit 0. Executable mode remains 100755.
+- Cases cover all buckets, root/subdirectory/skill cwd in a space-containing
+  repository, staged/base selection, spaces/newlines, marker after frontmatter,
+  uppercase extension preservation, binary NUL and split-line negatives,
+  closed CLI, Git partial-output failure, head/grep failure, missing inputs and
+  unsafe symlink/path rejection before a marker read.
+- ShellCheck and shfmt are unavailable; no installation or lint PASS claimed.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| R09/R12/R34/R39 supporting checks | W5 | NOT_RUN | Existing style helper, skill and helper regression class |
+| R09/R12/R34/R39 supporting checks | W5 | Focused/full H and Bash syntax PASS; installed lint unavailable | Existing style helper, skill and helper regression class |
 
 ## Review Evidence
 
-Independent exact-diff review pending. Tests must preserve category behavior and
-actual error propagation without weakening the previous W4 checks.
+Independent code-reviewer specification and quality verdicts: CLEAR / APPROVED.
+Review found and verified corrections for global case-insensitive matching
+changing extension buckets, and shell substitution losing binary NUL bytes.
+The final helper uses a consuming non-quiet grep with pipeline status checking,
+retains case-sensitive extension classification and reports neither partial
+Git discovery nor failed marker reads as successful bucket output.
+The known path-check/read race limitation is explicitly documented; W5 does not
+claim descriptor-based race protection. No new dependency or framework.
 
 ## Commit Ledger
 
-Root validates and commits draft, ready and in-progress predecessors before GO.
-No W5 implementation commit yet.
+Task predecessors: draft `626179d1b`, ready `9f365996a`, in-progress `f92ef7d9d`.
+The reviewed implementation and this completion receipt form one logical commit;
+Git records its hash. Required broad/native acceptance remains owned by W10.
 
 ## Rulings
 

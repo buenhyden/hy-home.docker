@@ -258,12 +258,12 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    discovery and marker reads use the same root, and malformed args/Git/read
    failure are nonzero instead of silently classifying authored content.
 
-   - [ ] Add `test_classification_uses_root_for_generated_markers` and
+   - [x] Add `test_classification_uses_root_for_generated_markers` and
      `test_classification_rejects_discovery_and_marker_read_failures` in the
      helper test class. Assert identical buckets across the W4 cwd matrix.
-   - [ ] Run H for RED; fix root-relative Git and file reads, capturing discovery
+   - [x] Run H for RED; fix root-relative Git and file reads, capturing discovery
      errors rather than masking them in process substitution.
-   - [ ] Run H and Bash syntax/lint; compare retained category outputs and
+   - [x] Run H and Bash syntax/lint; compare retained category outputs and
      commit as `fix(qa): Resolve style classification from repository root`.
 
 6. **W6: Add read-only recovery review and role routing.** Primary: skill-creator;
