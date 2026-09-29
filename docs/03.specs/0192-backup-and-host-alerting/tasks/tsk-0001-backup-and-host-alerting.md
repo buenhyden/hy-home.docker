@@ -1,8 +1,8 @@
 ---
 title: "Backup and Host Alerting"
-version: "0.3.1"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"

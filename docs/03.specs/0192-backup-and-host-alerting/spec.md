@@ -1,8 +1,8 @@
 ---
 title: "Backup and Host Alerting Specification"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
