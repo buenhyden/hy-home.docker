@@ -123,9 +123,12 @@ class AgentFunctionRoutesTest(unittest.TestCase):
             with self.subTest(prompt=prompt):
                 self.assertIn(skill_path, run_dispatcher(prompt))
         for prompt in (
-            "recover a deleted git branch", "restore production now",
+            "recover a deleted git branch",
+            "restore production now",
             "Implement a stateful recovery contract",
-            "check recovery", "write a recovery procedure", "good morning",
+            "check recovery",
+            "write a recovery procedure",
+            "good morning",
         ):
             with self.subTest(prompt=prompt):
                 self.assertNotIn(skill_path, run_dispatcher(prompt))

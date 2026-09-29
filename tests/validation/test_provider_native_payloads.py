@@ -120,8 +120,9 @@ class NativeHookRoutingTests(unittest.TestCase):
 
     def test_native_config_excludes_runtime_and_broad_scratch_grants(self) -> None:
         allow = set(
-            json.loads((ROOT / ".claude/settings.json").read_text())["permissions"]
-            ["allow"]
+            json.loads((ROOT / ".claude/settings.json").read_text())["permissions"][
+                "allow"
+            ]
         )
         removed = {
             "Bash(docker compose config:*)",

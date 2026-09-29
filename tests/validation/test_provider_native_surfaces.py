@@ -124,12 +124,8 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         self.assertEqual({"policy": {"allow_implicit_invocation": False}}, controls)
 
         projection = renderer.expected_native_projection(ROOT)
-        self.assertIn(
-            pathlib.Path(f".claude/skills/{skill_id}/SKILL.md"), projection
-        )
-        self.assertNotIn(
-            pathlib.Path(f".codex/skills/{skill_id}/SKILL.md"), projection
-        )
+        self.assertIn(pathlib.Path(f".claude/skills/{skill_id}/SKILL.md"), projection)
+        self.assertNotIn(pathlib.Path(f".codex/skills/{skill_id}/SKILL.md"), projection)
 
     def test_unknown_provider_fails_closed(self) -> None:
         renderer = load_renderer()
