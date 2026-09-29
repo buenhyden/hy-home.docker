@@ -1,8 +1,8 @@
 ---
 title: "Remaining HOME Classification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
