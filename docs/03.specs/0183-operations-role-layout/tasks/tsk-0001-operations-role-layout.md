@@ -1,10 +1,10 @@
 ---
 title: "Operations Role Layout"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0183-TSK-0001"
 parent_ids:
@@ -142,6 +142,14 @@ and record every document's disposition here.
   `/api/v2/dags` `401`; a JWT signed with another key fails validation with
   `InvalidSignatureError`. `airflow.<domain>` does not resolve on this host,
   so the probes pinned the Traefik address.
+- W17 (closeout review, 2026-09-29): At the owner's request the package was
+  checked against the current workspace. Every acceptance criterion holds on
+  the current tree, rechecked where the receipt says so. The receipt was
+  rewritten in the completion form (one row per criterion and Plan work unit,
+  `PASS:` results, linked or `N/A:` owners). The Spec's Open Questions and
+  ADR-0043's Follow-up no longer name the `inc-2026-0002` handoff, which W13
+  closed. The package then moved through review, approval with ADR-0043
+  accepted, activation, and completion.
 
 ## Verification Evidence
 
@@ -407,14 +415,19 @@ incident packet check.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W4 | met: Registry tests pass in the full gate; no `operations-domain-readme` or `subject-member` remains outside rejection tests | Stage 99 Registry |
-| 2 | W4 | met: 225 moves, identifiers unchanged; catalog tree and 14 READMEs deleted | Stage 05 role directories |
-| 3 | W4 | met: the operations check reports no index membership finding for the three indexes | Stage 05 README and role indexes |
-| 4 | W3, W4 | met: RED 69 of 86 on the catalog validator; `check-operations-catalog.py` PASS | `scripts/lib/document_governance/operations_catalog.py` |
-| 5 | W4, W6 | met: `check-document-links.py --mode all` PASS; remaining mentions classified in Rulings | Stage 05 and active consumers |
-| 6 | W5 | met: commits `372bbcf62` and `6ea2d9bc6` | `scripts/README.md`, incidents README |
-| 7 | W7 | met: commit `6f4efaedd` | MIG-0005 |
-| 8 | W8 | met with a recorded exception; see Gate Results | this Task |
+| 2 | W1 | PASS: baseline `0deb430ea` and the 225-row move map recorded before any write, with no target collision, duplicate identifier, or slug collision | N/A: one-time scope record |
+| 5 | W1 | PASS: each document's consumers counted in the disposition ledger above | N/A: one-time scope record |
+| 1 | W2 | PASS: this package and ADR-0043 added (`7c1666f61`) | [ADR-0043](../../../02.architecture/decisions/0043-operations-role-layout.md) |
+| 4 | W3 | PASS: the role-first tests failed on the catalog validator first: 86 tests, 13 failures, 56 errors (`ae3d21af7`) | [operations catalog tests](../../../../tests/lib/document_governance/test_operations_catalog.py) |
+| 1 | W4 | PASS: rechecked 2026-09-29: the `guide`, `policy`, and `runbook` profiles use role paths with `direct` identity, the three role READMEs are registered, and no `operations-domain-readme`, `operation/domain-readme`, or `subject-member` remains (`ae3d21af7`, `9ae25732a`) | [Registry](../../../99.templates/registry.json) |
+| 2 | W4 | PASS: rechecked 2026-09-29: 77 Guides, 75 Policies, and 73 Runbooks, each file number equal to its artifact number; no `catalog/` directory | [Stage 05 README](../../../05.operations/README.md) |
+| 3 | W4 | PASS: rechecked 2026-09-29: each role README links every member exactly once under 13 domain headings, and the Stage 05 README routes to the three role indexes and incidents | [Guides index](../../../05.operations/guides/README.md) |
+| 4 | W4 | PASS: `check-operations-catalog.py` PASS on 2026-09-29; regression tests cover a reintroduced catalog path, a number unequal to the artifact number, a duplicate slug, an unindexed member, and an active catalog mention | [operations_catalog.py](../../../../scripts/lib/document_governance/operations_catalog.py) |
+| 5 | W4 | PASS: `check-document-links.py --mode all` PASS on 2026-09-29; outside Stage 98, Stage 90, Stage 03, and tests, only ADR-0043's context line and a `lifecycle.py` constant name the catalog, both marked `retired-route-record` | [check-document-links.py](../../../../scripts/validation/check-document-links.py) |
+| 6 | W5 | PASS: `scripts/README.md` states that no maintained LLM Wiki generator exists (`372bbcf62`); the incidents README routes to `2026/`, whose index lists inc-2026-0002, and no absence note remains (`6ea2d9bc6`) | [scripts README](../../../../scripts/README.md) |
+| 5 | W6 | PASS: role-boundary corrections applied per ledger row (`f2983b9c4`, `db4f9a22b`, `b26460e1e`) | N/A: one-time corrections recorded per ledger row |
+| 7 | W7 | PASS: MIG-0005 records the moved scope and owner (`6f4efaedd`) | N/A: MIG-0005 is a frozen Stage 98 route record |
+| 8 | W8 | PASS: full gate exit 0 on `a97d384c1` after the rebase (16 suites, 1504 tests, 23 skipped) and hosted CI on PR #282; on 2026-09-29 `run-ci-gate.py --profile full` exited 0 at `b5babb26e` | N/A: run evidence for this change |
 
 ### Gate Results
 
@@ -556,6 +569,9 @@ rebase merge gave them new SHAs on `main`.
   `403`, and Pools, DAGs, Assets, and HITL returned `200` (Traefik paths and
   status codes only). Which step cleared the last `403` is not recorded, and
   the postmortem says so.
+- 2026-09-29: Owner asked that SPEC-0183 be checked against the current
+  workspace and its lifecycle reviewed; the implementation is confirmed in the
+  workspace.
 
 ## Deferred Items
 
