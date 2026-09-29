@@ -1,8 +1,8 @@
 ---
 title: "Observability Dashboards, Signals and Alerting Specification"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
