@@ -2,7 +2,7 @@
 title: "Evaluation Migration and Recovery Acceptance"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
