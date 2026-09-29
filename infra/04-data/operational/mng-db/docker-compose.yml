@@ -154,7 +154,7 @@ services:
       - -c
       - max_slot_wal_keep_size=${POSTGRES_MAX_SLOT_WAL_KEEP_SIZE:-2048MB}
     ports:
-      - '${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
     volumes:
       - mng-pg-data:/var/lib/postgresql/data:rw
       # pgBackRest repository (POL-0021). An unset key renders a path that does
