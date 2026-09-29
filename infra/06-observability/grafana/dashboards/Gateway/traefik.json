@@ -21,7 +21,7 @@
       }
     ]
   },
-  "description": "Source: traefik/traefik contrib/grafana/traefik.json @v3.7.13 (= grafana.com 17346 revision 9). Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: traefik/traefik contrib/grafana/traefik.json at the pinned Traefik release tag (= grafana.com 17346 revision 9). Provisioned by hy-home (SPEC-0193).",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,

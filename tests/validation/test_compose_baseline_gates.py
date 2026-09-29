@@ -3706,5 +3706,147 @@ class BackupAndHostAlertingContractTests(unittest.TestCase):
         )
 
 
+class ObservabilityDashboardContractTests(unittest.TestCase):
+    """One provisioned dashboard per role, every service covered, and alerts
+    that link their runbooks (SPEC-0193)."""
+
+    OBS = ROOT / "infra/06-observability"
+    DASHBOARDS = OBS / "grafana/dashboards"
+
+    def _dashboards(self) -> dict[str, dict]:
+        return {
+            str(path.relative_to(self.DASHBOARDS))[: -len(".json")]: json.loads(
+                path.read_text(encoding="utf-8")
+            )
+            for path in sorted(self.DASHBOARDS.rglob("*.json"))
+        }
+
+    @staticmethod
+    def _queries(dashboard: dict) -> set[str]:
+        found: set[str] = set()
+
+        def walk(node) -> None:
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if key in ("expr", "rawSql") and isinstance(value, str):
+                        found.add(re.sub(r"\s+", "", value))
+                    else:
+                        walk(value)
+            elif isinstance(node, list):
+                for item in node:
+                    walk(item)
+
+        walk(dashboard.get("panels", []) + dashboard.get("rows", []))
+        return found
+
+    def test_dashboards_have_unique_uids_resolved_datasources_and_a_source(
+        self,
+    ) -> None:
+        dashboards = self._dashboards()
+        uids = [d["uid"] for d in dashboards.values()]
+        self.assertEqual(len(uids), len(set(uids)))
+        for name, dashboard in dashboards.items():
+            self.assertNotIn("__inputs", dashboard, name)
+            variables = {
+                v.get("name") for v in dashboard.get("templating", {}).get("list", [])
+            }
+            for placeholder in set(
+                re.findall(r"\$\{(DS_[A-Z0-9_]+)\}", json.dumps(dashboard))
+            ):
+                self.assertIn(placeholder, variables, name)
+            self.assertRegex(
+                dashboard.get("description", ""), r"^(Source: |Local dashboard)", name
+            )
+
+    def test_no_two_dashboards_share_half_their_queries(self) -> None:
+        queries = {n: self._queries(d) for n, d in self._dashboards().items()}
+        names = sorted(n for n in queries if queries[n])
+        for i, first in enumerate(names):
+            for second in names[i + 1 :]:
+                shared = len(queries[first] & queries[second])
+                smaller = min(len(queries[first]), len(queries[second]))
+                self.assertLess(shared / smaller, 0.5, (first, second))
+
+    def test_readme_covers_every_service_every_job_and_every_dashboard(self) -> None:
+        import yaml
+
+        readme = (self.OBS / "grafana/README.md").read_text(encoding="utf-8")
+        section = readme[
+            readme.index("### Service Coverage") : readme.index("### Dashboard Sources")
+        ]
+        rows = [
+            [cell.strip() for cell in line.strip("|").split("|")]
+            for line in section.splitlines()
+            if line.startswith("| ") and not line.startswith(("| Layer", "| ---"))
+        ]
+        services = {
+            name
+            for path in (ROOT / "infra").rglob("docker-compose*.yml")
+            for name in (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(
+                "services", {}
+            )
+            or {}
+        }
+        listed = [row[1].strip("`") for row in rows]
+        self.assertEqual(sorted(services), sorted(listed))
+        jobs = {
+            job["job_name"]
+            for job in yaml.safe_load(
+                (self.OBS / "prometheus/config/prometheus.dev.yml").read_text(
+                    encoding="utf-8"
+                )
+            )["scrape_configs"]
+        }
+        named_jobs = {j for row in rows for j in re.findall(r"`([a-z0-9-]+)`", row[2])}
+        self.assertEqual(jobs, named_jobs)
+        referenced = {
+            d for row in rows for d in re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", row[3])
+        }
+        self.assertEqual(set(self._dashboards()), referenced)
+
+    def test_both_prometheus_files_hold_one_labelled_scrape_set(self) -> None:
+        import yaml
+
+        config = self.OBS / "prometheus/config"
+        dev, prod = (
+            yaml.safe_load((config / name).read_text(encoding="utf-8"))
+            for name in ("prometheus.dev.yml", "prometheus.yml")
+        )
+        self.assertEqual(dev["scrape_configs"], prod["scrape_configs"])
+        seen: set[str] = set()
+        for job in dev["scrape_configs"]:
+            for static in job["static_configs"]:
+                self.assertEqual(
+                    "hy-home", static["labels"]["cluster"], job["job_name"]
+                )
+                self.assertEqual(
+                    "hy-home", static["labels"]["namespace"], job["job_name"]
+                )
+                for target in static["targets"]:
+                    self.assertNotIn(target, seen, job["job_name"])
+                    seen.add(target)
+
+    def test_every_alert_rule_links_an_existing_runbook(self) -> None:
+        import yaml
+
+        prefix = "https://github.com/buenhyden/hy-home.docker/blob/main/"
+        for path in sorted(
+            (self.OBS / "prometheus/config/alert_rules").glob("alert_rules*.yml")
+        ):
+            for group in yaml.safe_load(path.read_text(encoding="utf-8"))["groups"]:
+                for rule in group["rules"]:
+                    if "alert" not in rule:
+                        continue
+                    url = rule["annotations"]["runbook_url"]
+                    self.assertTrue(
+                        url.startswith(prefix + "docs/05.operations/runbooks/"),
+                        rule["alert"],
+                    )
+                    self.assertFalse(url.endswith("README.md"), rule["alert"])
+                    self.assertTrue(
+                        (ROOT / url[len(prefix) :]).is_file(), rule["alert"]
+                    )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,10 +1,10 @@
 ---
 title: "Grafana Visualization and Dashboards"
-version: "1.0.3"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-30"
 created: "2026-01-12"
 ---
 
@@ -92,9 +92,224 @@ grafana/
 
 - 대시보드 프로바이더는 `/etc/grafana/dashboards/*`에서 JSON 파일을 마운트합니다.
 - 프로바이더 `editable: false`는 대시보드를 코드 소유 상태로 유지합니다.
-- 대시보드 보유 현황은 `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`로 확인합니다.
+- 대시보드 보유 현황과 서비스별 매핑은 아래 Service Coverage와 Dashboard Sources 표가 기준이며, `tests/validation/test_compose_baseline_gates.py`의 대시보드 계약 테스트가 표와 파일을 대조합니다.
 - Keycloak 그룹 `/admins`와 `/editors`는 Grafana `Admin`, `Editor`로 매핑되며 그 외 인증된 사용자는 기본적으로 `Viewer`가 됩니다.
 - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret 파일 참조를 통해 주입됩니다.
+
+### Service Coverage
+
+모든 Compose 서비스가 한 번씩 나옵니다. 컨테이너 대시보드와 Logs Drilldown은 전체를 다루고, 메트릭 소스가 있는 서비스는 자기 대시보드를 따로 가집니다. Metrics source가 `none`이면 이 스택이 수집하는 메트릭이 없다는 뜻입니다(SPEC-0193).
+
+| Layer | Service | Metrics source | Dashboards | Note |
+| --- | --- | --- | --- | --- |
+| 01-gateway | `nginx` | none | `Infrastructure/containers` | container metrics and logs only |
+| 01-gateway | `traefik` | `traefik` | `Gateway/traefik`, `Infrastructure/containers` |  |
+| 02-auth | `keycloak` | `keycloak` | `Security/keycloak-troubleshooting`, `Security/keycloak-capacity-planning`, `Infrastructure/containers` |  |
+| 02-auth | `oauth2-proxy` | `oauth2-proxy` | `Gateway/oauth2-proxy`, `Infrastructure/containers` |  |
+| 02-auth | `oauth2-proxy-valkey` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 02-auth | `oauth2-proxy-valkey-exporter` | `oauth2-proxy-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 03-security | `openbao` | `openbao` | `Security/openbao`, `Infrastructure/containers` |  |
+| 03-security | `openbao-agent` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `analytics` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `auth` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `cassandra-exporter` | `cassandra-exporter` | `Infrastructure/cassandra`, `Infrastructure/containers` |  |
+| 04-data | `cassandra-node1` | `cassandra-exporter` | `Infrastructure/cassandra`, `Infrastructure/containers` |  |
+| 04-data | `couchdb-1` | none | `Infrastructure/containers` | Prometheus endpoint needs admin credentials or its own port; not scraped |
+| 04-data | `couchdb-2` | none | `Infrastructure/containers` | as couchdb-1 |
+| 04-data | `couchdb-3` | none | `Infrastructure/containers` | as couchdb-1 |
+| 04-data | `couchdb-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `db` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `etcd-1` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
+| 04-data | `etcd-2` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
+| 04-data | `etcd-3` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
+| 04-data | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `imgproxy` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `influxdb` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `kong` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `meta` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mng-valkey` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 04-data | `mng-valkey-exporter` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 04-data | `mongo-express` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mongo-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mongo-key-generator` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mongodb-arbiter` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
+| 04-data | `mongodb-exporter` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
+| 04-data | `mongodb-rep1` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
+| 04-data | `mongodb-rep2` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
+| 04-data | `neo4j` | none | `Infrastructure/containers` | Community edition has no metrics endpoint |
+| 04-data | `opensearch` | `opensearch` | `Infrastructure/opensearch-cluster`, `Infrastructure/opensearch-node`, `Infrastructure/opensearch-search-and-index`, `Infrastructure/containers` |  |
+| 04-data | `opensearch-dashboards` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `opensearch-node1` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `opensearch-node2` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `opensearch-node3` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `pg-0` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-0-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-1` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-1-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-2` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-2-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `pg-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `pg-router` | `haproxy` | `Infrastructure/haproxy-overview`, `Infrastructure/containers` |  |
+| 04-data | `qdrant` | `qdrant` | `Infrastructure/qdrant-overview`, `Infrastructure/containers` |  |
+| 04-data | `realtime` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `rest` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-buckets` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-filer` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-master` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-s3` | `seaweedfs-s3` | `Infrastructure/seaweedfs`, `Infrastructure/containers` |  |
+| 04-data | `seaweedfs-table-bucket` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-volume` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `studio` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `supavisor` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `superset` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `valkey-cluster-exporter` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `valkey-node-0` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-node-1` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-node-2` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-node-3` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-node-4` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `valkey-node-5` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
+| 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
+| 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 05-messaging | `kafbat-ui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 05-messaging | `kafka-1` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
+| 05-messaging | `kafka-2` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
+| 05-messaging | `kafka-3` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
+| 05-messaging | `kafka-connect` | `kafka-connect` | `Infrastructure/kafka-connect`, `Infrastructure/containers` |  |
+| 05-messaging | `kafka-exporter` | `kafka-exporter` | `Infrastructure/kafka-consumer-lag`, `Infrastructure/containers` |  |
+| 05-messaging | `kafka-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 05-messaging | `kafka-rest-proxy` | none | `Infrastructure/containers` | container metrics and logs only |
+| 05-messaging | `schema-registry` | `schema-registry` | `Infrastructure/schema-registry`, `Infrastructure/containers` |  |
+| 06-observability | `alertmanager` | `alertmanager` | `Observability/alertmanager-overview`, `Infrastructure/containers` |  |
+| 06-observability | `alloy` | `alloy` | `Observability/alloy-controller`, `Observability/alloy-resources`, `Observability/alloy-opentelemetry`, `Observability/alloy-loki`, `Infrastructure/containers` |  |
+| 06-observability | `cadvisor` | `cadvisor` | `Infrastructure/containers` |  |
+| 06-observability | `dcgm-exporter` | `dcgm-exporter` | `Infrastructure/dcgm-exporter`, `Infrastructure/containers` |  |
+| 06-observability | `gatus` | `gatus` | `Observability/gatus`, `Infrastructure/containers` |  |
+| 06-observability | `grafana` | `grafana` | `Observability/grafana`, `Infrastructure/containers` |  |
+| 06-observability | `grafana-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 06-observability | `loki` | `loki` | `Observability/loki-operational`, `Observability/loki-reads`, `Observability/loki-writes`, `Observability/loki-chunks`, `Infrastructure/containers` |  |
+| 06-observability | `node-exporter` | `node-exporter` | `Infrastructure/node-exporter`, `Infrastructure/containers` |  |
+| 06-observability | `prometheus` | `prometheus` | `Observability/prometheus-overview`, `Infrastructure/containers` |  |
+| 06-observability | `pushgateway` | none | `Infrastructure/containers` | container metrics and logs only |
+| 06-observability | `pyroscope` | `pyroscope` | `Observability/pyroscope`, `Infrastructure/containers` |  |
+| 06-observability | `tempo` | `tempo` | `Observability/tempo-operational`, `Observability/tempo-reads`, `Observability/tempo-writes`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-apiserver` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-dag-processor` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 07-workflow | `airflow-scheduler` | `airflow-monitor` | `Applications/airflow`, `Applications/airflow-db`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-statsd-exporter` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-triggerer` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-valkey` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-valkey-exporter` | `airflow-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `airflow-worker` | `airflow-monitor` | `Applications/airflow`, `Infrastructure/containers` |  |
+| 07-workflow | `flower` | `flower` | `Applications/flower`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n` | `n8n-monitor` | `Applications/n8n-system-health`, `Applications/n8n-workflow-analytics`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n-task-runner` | none | `Infrastructure/containers` | container metrics and logs only |
+| 07-workflow | `n8n-task-runner-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 07-workflow | `n8n-valkey` | `n8n-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n-valkey-exporter` | `n8n-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
+| 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
+| 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
+| 08-ai | `open-webui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `dbt` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `dbt-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
+| 09-tooling | `locust-master` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `locust-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `opentofu` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `pact-broker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `pact-broker-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `registry` | `registry` | `Infrastructure/docker-registry`, `Infrastructure/containers` |  |
+| 09-tooling | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `sonarqube` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `terrakube-ui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `wiremock` | none | `Infrastructure/containers` | container metrics and logs only |
+| 10-communication | `mailpit` | none | `Infrastructure/containers` | container metrics and logs only |
+| 10-communication | `stalwart` | none | `Infrastructure/containers` | container metrics and logs only |
+| 10-communication | `stalwart-config` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `dozzle` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `jupyterlab` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `mlflow` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `mlflow-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-laboratory | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
+
+### Dashboard Sources
+
+프로비저닝된 대시보드마다 출처와 revision을 기록합니다. 방출되는 메트릭과 맞는 벤더·mixin·grafana.com 대시보드가 있으면 그것을 쓰고, 없을 때만 로컬 대시보드를 둡니다.
+
+| Dashboard | UID | Source |
+| --- | --- | --- |
+| `Applications/airflow` | `hyhome-airflow` | monitoring-mixins apache-airflow/apache-airflow-overview.json (2026-03-26) |
+| `Applications/airflow-db` | `hyhome-airflow-db` | Local dashboard: no external dashboard matches airflow metadata database (read-only) |
+| `Applications/flower` | `hyhome-flower` | Local dashboard: no external dashboard matches flower |
+| `Applications/n8n-system-health` | `applications-n8n-system-health` | grafana.com dashboard 24474 revision 1 (2025-11-26) |
+| `Applications/n8n-workflow-analytics` | `applications-n8n-workflow-analytics` | grafana.com dashboard 24475; datasource set to the read-only n8n-db |
+| `Applications/ollama` | `applications-ollama` | local: no external dashboard matches lucabecker42/ollama-exporter |
+| `Gateway/oauth2-proxy` | `hyhome-oauth2-proxy` | Local dashboard: no external dashboard matches oauth2-proxy |
+| `Gateway/traefik` | `gateway-traefik` | traefik/traefik contrib/grafana/traefik.json at the pinned Traefik release tag (= grafana.com 17346 revision 9) |
+| `Infrastructure/cassandra` | `hyhome-cassandra` | grafana.com dashboard 6400 revision 2 (2018-06-14) |
+| `Infrastructure/containers` | `hyhome-containers` | grafana.com dashboard 19792 revision 6 (2024-11-24) |
+| `Infrastructure/dcgm-exporter` | `Oxed_c6Wz` | NVIDIA/dcgm-exporter grafana/dcgm-exporter-dashboard.json (2023-08-11) |
+| `Infrastructure/docker-registry` | `infrastructure-docker-registry` | grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry |
+| `Infrastructure/etcd-cluster` | `hyhome-etcd` | monitoring-mixins etcd/etcd.json (2026-09-24) |
+| `Infrastructure/haproxy-overview` | `hyhome-haproxy` | grafana.com dashboard 12693 revision 14 (2026-04-11) |
+| `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30) |
+| `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
+| `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |
+| `Infrastructure/kafka-consumer-lag` | `hyhome-kafka-consumer-lag` | grafana.com dashboard 7589 revision 5 (2018-08-21) |
+| `Infrastructure/kafka-topics` | `hyhome-kafka-topics` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-topics-kraft.json |
+| `Infrastructure/mongodb` | `hyhome-mongodb` | grafana.com dashboard 16490 revision 1 (2022-06-24) |
+| `Infrastructure/node-exporter` | `rYdddlPWk` | grafana.com dashboard 1860 revision 45 (2026-04-11) |
+| `Infrastructure/opensearch-cluster` | `hyhome-opensearch-cluster` | monitoring-mixins opensearch/opensearch-cluster-overview.json (2026-06-11) |
+| `Infrastructure/opensearch-node` | `hyhome-opensearch-node` | monitoring-mixins opensearch/opensearch-node-overview.json (2026-06-11) |
+| `Infrastructure/opensearch-search-and-index` | `hyhome-opensearch-search` | monitoring-mixins opensearch/opensearch-search-and-index-overview.json (2026-06-11) |
+| `Infrastructure/postgresql` | `hyhome-postgres` | grafana.com dashboard 9628 revision 8 (2024-12-06) |
+| `Infrastructure/qdrant-overview` | `hyhome-qdrant` | grafana.com dashboard 24603 revision 1 (2025-12-25) |
+| `Infrastructure/redis` | `hyhome-redis` | oliver006/redis_exporter contrib/grafana_prometheus_redis_dashboard.json (= grafana.com 763 revision 6) |
+| `Infrastructure/schema-registry` | `hyhome-schema-registry` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/schema-registry-cluster.json |
+| `Infrastructure/seaweedfs` | `hyhome-seaweedfs` | seaweedfs/seaweedfs other/metrics/grafana_seaweedfs.json (2026-09-01) |
+| `Infrastructure/valkey-cluster` | `hyhome-valkey-cluster` | grafana.com dashboard 21914 revision 1 (2024-09-14) |
+| `Observability/alertmanager-overview` | `hyhome-alertmanager` | monitoring-mixins alertmanager/alertmanager-overview.json (2026-06-20) |
+| `Observability/alloy-controller` | `hyhome-alloy-controller` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-controller.json |
+| `Observability/alloy-loki` | `hyhome-alloy-loki` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-loki.json |
+| `Observability/alloy-opentelemetry` | `hyhome-alloy-opentelemetry` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-opentelemetry.json |
+| `Observability/alloy-resources` | `hyhome-alloy-resources` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-resources.json |
+| `Observability/gatus` | `hyhome-gatus` | TwiN/gatus .examples/docker-compose-grafana-prometheus gatus.json (2025-10-25) |
+| `Observability/grafana` | `hyhome-grafana` | grafana/grafana grafana-mixin/dashboards/grafana-overview.json (2025-08-25) |
+| `Observability/loki-chunks` | `hyhome-loki-chunks` | grafana/loki production/loki-mixin-compiled loki-chunks.json; job selectors set to the single-binary job |
+| `Observability/loki-operational` | `hyhome-loki-operational` | grafana/loki production/loki-mixin-compiled loki-operational.json; job selectors set to the single-binary job |
+| `Observability/loki-reads` | `hyhome-loki-reads` | grafana/loki production/loki-mixin-compiled loki-reads.json; job selectors set to the single-binary job |
+| `Observability/loki-writes` | `hyhome-loki-writes` | grafana/loki production/loki-mixin-compiled loki-writes.json; job selectors set to the single-binary job |
+| `Observability/prometheus-overview` | `hyhome-prometheus` | monitoring-mixins prometheus/prometheus.json (2026-08-27) |
+| `Observability/pyroscope` | `hyhome-pyroscope` | Local dashboard: no external dashboard matches pyroscope |
+| `Observability/tempo-operational` | `hyhome-tempo-operational` | grafana/tempo operations/tempo-mixin-compiled tempo-operational.json; job selectors set to the single-binary job |
+| `Observability/tempo-reads` | `hyhome-tempo-reads` | grafana/tempo operations/tempo-mixin-compiled tempo-reads.json; job selectors set to the single-binary job |
+| `Observability/tempo-writes` | `hyhome-tempo-writes` | grafana/tempo operations/tempo-mixin-compiled tempo-writes.json; job selectors set to the single-binary job |
+| `Security/keycloak-capacity-planning` | `hyhome-keycloak-capacity` | keycloak/keycloak-grafana-dashboard dashboards/keycloak-capacity-planning-dashboard.json @f819507c13 |
+| `Security/keycloak-troubleshooting` | `hyhome-keycloak-troubleshooting` | keycloak/keycloak-grafana-dashboard dashboards/keycloak-troubleshooting-dashboard.json @f819507c13 |
+| `Security/openbao` | `openbao` | grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao |
 
 ## How to Work in This Area
 
