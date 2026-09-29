@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import bisect
 import dataclasses
 import html
 import json
@@ -200,9 +201,7 @@ class _HrefAttributeParser(HTMLParser):
         super().__init__(convert_charrefs=True)
         self.values: list[str] = []
 
-    def handle_starttag(
-        self, _tag: str, attrs: list[tuple[str, str | None]]
-    ) -> None:
+    def handle_starttag(self, _tag: str, attrs: list[tuple[str, str | None]]) -> None:
         self.values.extend(
             value for name, value in attrs if name == "href" and value is not None
         )
@@ -223,6 +222,24 @@ def _is_escaped(text: str, offset: int) -> bool:
     return backslashes % 2 == 1
 
 
+def _html_tag_end(
+    text: str, index: int, quote: str | None = None
+) -> tuple[int, str | None, bool]:
+    """Advance once through a tag, retaining only its unfinished quote state."""
+
+    while index < len(text):
+        character = text[index]
+        if quote is not None:
+            if character == quote:
+                quote = None
+        elif character in "\"'":
+            quote = character
+        elif character == ">":
+            return index + 1, None, True
+        index += 1
+    return index, quote, False
+
+
 def _html_tag_spans(line: str) -> Iterable[tuple[int, int]]:
     """Yield raw HTML tag spans, respecting quotes and bounding malformed input."""
 
@@ -231,41 +248,22 @@ def _html_tag_spans(line: str) -> Iterable[tuple[int, int]]:
         index = start + 1
         if index < len(line) and line[index] == "/":
             index += 1
-        if (
-            index >= len(line)
-            or not line[index].isascii()
-            or not line[index].isalpha()
-        ):
+        if index >= len(line) or not line[index].isascii() or not line[index].isalpha():
             cursor = start + 1
             continue
         index += 1
         while index < len(line) and (
-            line[index] == "-"
-            or (line[index].isascii() and line[index].isalnum())
+            line[index] == "-" or (line[index].isascii() and line[index].isalnum())
         ):
             index += 1
-        if index < len(line) and not (
-            line[index].isspace() or line[index] in "/>"
-        ):
+        if index < len(line) and not (line[index].isspace() or line[index] in "/>"):
             cursor = start + 1
             continue
-        quote: str | None = None
-        while index < len(line):
-            character = line[index]
-            if quote is not None:
-                if character == quote:
-                    quote = None
-            elif character in "\"'":
-                quote = character
-            elif character == ">":
-                index += 1
-                yield start, index
-                cursor = index
-                break
-            index += 1
-        else:
-            yield start, len(line)
+        end, _, complete = _html_tag_end(line, index)
+        yield start, end
+        if not complete:
             return
+        cursor = end
 
 
 def _unfenced_lines(
@@ -464,12 +462,73 @@ def _normalized_target(
     return target, (fragment if separator and fragment else None), absolute, outside
 
 
+def _continued_html_lines(
+    lines: Iterable[tuple[int, str]],
+) -> Iterable[tuple[int, str]]:
+    """Join only unfinished tags in linear time, bounded by supplied text.
+
+    Gaps in selected physical lines break continuity. Markdown titles cannot
+    start HTML state, and unfinished attributes remain masked at end of input.
+    """
+
+    chunks: list[str] = []
+    first = previous = 0
+    quote: str | None = None
+    pending = False
+    for number, line in lines:
+        if chunks and number != previous + 1:
+            yield first, "\n".join(chunks)
+            chunks = []
+            pending, quote = False, None
+        if not chunks:
+            first = number
+        chunks.append(line)
+        previous = number
+        offset = 0
+        if pending:
+            offset, quote, complete = _html_tag_end(line, 0, quote)
+            if not complete:
+                continue
+            pending = False
+        for start, end in _html_tag_spans(line[offset:]):
+            start += offset
+            end += offset
+            if end != len(line):
+                continue
+            if any(
+                not _is_escaped(line, opening.start())
+                and opening.end() <= start
+                and not line[opening.end() : start].strip()
+                for opening in _LINK_OPEN.finditer(line)
+            ):
+                # An unfinished angle destination belongs to Markdown; it must
+                # not carry HTML state into the next physical line.
+                continue
+            if any(
+                begin <= start < finish
+                for _, _, begin, finish in _markdown_destinations(line)
+            ):
+                continue
+            _, quote, complete = _html_tag_end(line, start + 1)
+            if not complete:
+                pending = True
+        if not pending:
+            yield first, "\n".join(chunks)
+            chunks = []
+    if chunks:
+        yield first, "\n".join(chunks)
+
+
 def _link_destinations(
     lines: Iterable[tuple[int, str]],
 ) -> Iterable[tuple[int, str, str]]:
     """Share destination syntax without changing which lines each mode reads."""
 
-    lines = tuple((number, _without_inline_code(line)) for number, line in lines)
+    lines = tuple(
+        _continued_html_lines(
+            (number, _without_inline_code(line)) for number, line in lines
+        )
+    )
     references: dict[str, str] = {}
     for _, line in lines:
         definition = _REFERENCE_DEFINITION.match(line)
@@ -480,7 +539,8 @@ def _link_destinations(
         if _REFERENCE_DEFINITION.match(line):
             continue
         tags = tuple(_html_tag_spans(line))
-        destinations: list[tuple[str, str]] = []
+        destinations: list[tuple[int, str, str]] = []
+        newlines = tuple(index for index, char in enumerate(line) if char == "\n")
         spans = list(tags)
         inline_spans: list[tuple[int, int]] = []
         tag_index = 0
@@ -492,7 +552,7 @@ def _link_destinations(
                 and tags[tag_index][0] <= start < tags[tag_index][1]
             ):
                 continue
-            destinations.append((label, raw))
+            destinations.append((start, label, raw))
             spans.append((start, end))
             inline_spans.append((start, end))
         inline_index = 0
@@ -504,14 +564,15 @@ def _link_destinations(
                 inline_index += 1
             if (
                 inline_index < len(inline_spans)
-                and inline_spans[inline_index][0] <= tag_start
+                and inline_spans[inline_index][0]
+                <= tag_start
                 < inline_spans[inline_index][1]
             ):
                 continue
             if not line[tag_start:tag_end].endswith(">"):
                 continue
             destinations.extend(
-                ("", value)
+                (tag_start, "", value)
                 for value in _html_href_values(line[tag_start:tag_end])
             )
         masked = list(line)
@@ -523,14 +584,14 @@ def _link_destinations(
                 continue
             key = " ".join((use[2] or use[1]).casefold().split())
             if key in references:
-                destinations.append((use[1], references[key]))
+                destinations.append((use.start(), use[1], references[key]))
         for match in _WIKI_LINK.finditer(remaining):
             if _is_escaped(remaining, match.start()):
                 continue
             target, separator, label = match[1].partition("|")
-            destinations.append((label if separator else target, target))
-        for label, raw in destinations:
-            yield line_no, label, raw
+            destinations.append((match.start(), label if separator else target, target))
+        for offset, label, raw in destinations:
+            yield line_no + bisect.bisect_left(newlines, offset), label, raw
 
 
 def parse_local_markdown_links(
@@ -1255,7 +1316,7 @@ def _entrypoint_target(
             own = "/buenhyden/hy-home.docker/"
             if not url.path.startswith(own):
                 return None
-            tail = url.path[len(own):]
+            tail = url.path[len(own) :]
             if url.hostname == "github.com" and tail.startswith(("blob/", "raw/")):
                 tail = tail.split("/", 1)[1]
             elif url.hostname != "raw.githubusercontent.com":
@@ -1268,7 +1329,7 @@ def _entrypoint_target(
             value = stage[1]
     root = graph.repo_root.as_posix().casefold().rstrip("/") + "/"
     if value.startswith(root):
-        value = value[len(root):]
+        value = value[len(root) :]
     resolved = _normalized_target(
         pathlib.PurePosixPath(source.as_posix().casefold()), value
     )
