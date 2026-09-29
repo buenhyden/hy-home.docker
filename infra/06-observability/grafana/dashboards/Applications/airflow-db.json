@@ -1,0 +1,158 @@
+{
+  "id": null,
+  "uid": "hyhome-airflow-db",
+  "title": "Airflow Runs (DB)",
+  "editable": false,
+  "schemaVersion": 41,
+  "tags": [
+    "hy-home",
+    "local"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "DAG runs by state",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "airflow-db"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "airflow-db"
+          },
+          "rawSql": "SELECT $__timeGroupAlias(start_date, '1h'), state AS metric, count(*) AS value FROM dag_run WHERE $__timeFilter(start_date) GROUP BY 1, 2 ORDER BY 1",
+          "format": "time_series",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Task duration p95 by DAG",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "airflow-db"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "airflow-db"
+          },
+          "rawSql": "SELECT $__timeGroupAlias(start_date, '1h'), dag_id AS metric, percentile_cont(0.95) WITHIN GROUP (ORDER BY duration) AS value FROM task_instance WHERE $__timeFilter(start_date) AND duration IS NOT NULL GROUP BY 1, 2 ORDER BY 1",
+          "format": "time_series",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "Failed task instances",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "airflow-db"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "airflow-db"
+          },
+          "rawSql": "SELECT dag_id, task_id, run_id, try_number, start_date, end_date, duration FROM task_instance WHERE state = 'failed' AND $__timeFilter(start_date) ORDER BY start_date DESC LIMIT 50",
+          "format": "table",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Running task instances",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "airflow-db"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {},
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "airflow-db"
+          },
+          "rawSql": "SELECT dag_id, task_id, run_id, start_date, round(extract(epoch FROM now() - start_date)) AS running_seconds FROM task_instance WHERE state = 'running' ORDER BY start_date LIMIT 50",
+          "format": "table",
+          "editorMode": "code"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": []
+  },
+  "description": "Local dashboard: no external dashboard matches airflow metadata database (read-only). Provisioned by hy-home (SPEC-0193)."
+}

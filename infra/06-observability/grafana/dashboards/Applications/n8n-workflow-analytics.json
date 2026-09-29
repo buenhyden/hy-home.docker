@@ -4,8 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
+          "type": "grafana-postgresql-datasource",
+          "uid": "n8n-db"
         },
         "enable": true,
         "hide": true,
@@ -15,8 +15,8 @@
       }
     ]
   },
-  "description": "Comprehensive analytics dashboard for n8n workflow automation platform. Monitor workflow execution performance, track success rates, identify bottlenecks, and optimize your automation workflows.  \r\n\r\nhttps://github.com/nluecke/grafana-n8n-dashboards/tree/main/dashboards/postgresql",
-  "editable": true,
+  "description": "Source: grafana.com dashboard 24475; datasource set to the read-only n8n-db. Provisioned by hy-home (SPEC-0193).",
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 78,
@@ -37,8 +37,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Total number of workflows in the system",
       "fieldConfig": {
@@ -74,7 +74,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -86,8 +88,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -121,8 +123,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Number of currently active workflows",
       "fieldConfig": {
@@ -158,7 +160,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -170,8 +174,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -186,8 +190,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Total execution count in selected time range",
       "fieldConfig": {
@@ -223,7 +227,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -235,8 +241,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -251,8 +257,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Percentage of successful executions in time range",
       "fieldConfig": {
@@ -298,7 +304,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -310,8 +318,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -326,8 +334,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Number of failed executions (error or crashed) in time range",
       "fieldConfig": {
@@ -371,7 +379,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -383,8 +393,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -399,8 +409,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Executions currently in progress",
       "fieldConfig": {
@@ -444,7 +454,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -456,8 +468,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -491,8 +503,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "P95, Maximum, Average, and Median execution duration in the last 24 hours",
       "fieldConfig": {
@@ -537,7 +549,9 @@
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "fields": "",
           "values": true
         },
@@ -549,8 +563,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -580,8 +594,8 @@
         {
           "dataset": "n8n_data",
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -610,8 +624,8 @@
         {
           "dataset": "n8n_data",
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -640,8 +654,8 @@
         {
           "dataset": "n8n_data",
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -687,8 +701,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Execution counts over time by status (success, error, crashed)",
       "fieldConfig": {
@@ -803,7 +817,10 @@
       "id": 26,
       "options": {
         "legend": {
-          "calcs": ["sum", "mean"],
+          "calcs": [
+            "sum",
+            "mean"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -818,8 +835,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "time_series",
           "hide": false,
@@ -834,8 +851,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Execution duration percentiles over time (P50, P95, P99)",
       "fieldConfig": {
@@ -904,7 +921,10 @@
       "id": 27,
       "options": {
         "legend": {
-          "calcs": ["last", "max"],
+          "calcs": [
+            "last",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -919,8 +939,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "time_series",
           "hide": false,
@@ -948,8 +968,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Most frequently executed workflows",
       "fieldConfig": {
@@ -1055,8 +1075,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -1071,8 +1091,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Success rate trend by day",
       "fieldConfig": {
@@ -1157,8 +1177,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -1193,8 +1213,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Execution queue depth over time showing queued and running executions",
       "fieldConfig": {
@@ -1263,7 +1283,10 @@
       "id": 33,
       "options": {
         "legend": {
-          "calcs": ["last", "max"],
+          "calcs": [
+            "last",
+            "max"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -1278,8 +1301,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "time_series",
@@ -1313,8 +1336,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Top 10 slowest workflows by average duration",
       "fieldConfig": {
@@ -1402,8 +1425,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -1418,8 +1441,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Top 10 workflows with the most failures",
       "fieldConfig": {
@@ -1533,8 +1556,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -1562,8 +1585,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Workflows with recent updates or activation changes",
       "fieldConfig": {
@@ -1665,8 +1688,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -1681,8 +1704,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Workflows tagged for categorization",
       "fieldConfig": {
@@ -1726,8 +1749,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -1742,8 +1765,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Current execution queue with pending workflows",
       "fieldConfig": {
@@ -1805,8 +1828,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -1840,8 +1863,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Long running executions that may be stuck",
       "fieldConfig": {
@@ -1917,8 +1940,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "editorMode": "code",
           "format": "table",
@@ -1952,8 +1975,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
+        "type": "grafana-postgresql-datasource",
+        "uid": "n8n-db"
       },
       "description": "Recent execution errors with details",
       "fieldConfig": {
@@ -2035,8 +2058,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
+            "type": "grafana-postgresql-datasource",
+            "uid": "n8n-db"
           },
           "format": "table",
           "hide": false,
@@ -2052,7 +2075,11 @@
   ],
   "preload": false,
   "schemaVersion": 42,
-  "tags": ["n8n", "postgresql"],
+  "tags": [
+    "hy-home",
+    "n8n",
+    "postgresql"
+  ],
   "templating": {
     "list": []
   },
@@ -2063,6 +2090,6 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "n8n Workflow & Execution Analytics",
-  "uid": "applications-n8n-workflow-analytics",
+  "uid": "hyhome-n8n-workflow-analytics",
   "version": 2
 }

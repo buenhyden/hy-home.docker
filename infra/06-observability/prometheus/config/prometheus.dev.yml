@@ -255,7 +255,8 @@ scrape_configs:
   # ============================================================================
   # ON-DEMAND (OPTIONAL and LAB services; down while stopped)
   # ============================================================================
-  - job_name: "kafka"
+  # Job names kafka-broker, kafka-connect and schema-registry match the Confluent dashboards.
+  - job_name: "kafka-broker"
     static_configs:
       - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
         labels:
@@ -280,6 +281,7 @@ scrape_configs:
           namespace: "hy-home"
           domain: "messaging"
           env: "hy-home"
+          kafka_connect_cluster_id: "kafka-connect-cluster"
 
   - job_name: "schema-registry"
     static_configs:

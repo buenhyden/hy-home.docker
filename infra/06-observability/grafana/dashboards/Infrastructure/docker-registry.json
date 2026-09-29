@@ -15,7 +15,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 90,
@@ -85,7 +85,9 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["mean"],
+          "calcs": [
+            "mean"
+          ],
           "fields": "",
           "values": false
         },
@@ -100,7 +102,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "process_start_time_seconds{app=\"$app\", instance=\"$instance\"} * 1000",
+          "expr": "process_start_time_seconds{job=\"registry\", instance=\"$instance\"} * 1000",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "",
@@ -161,7 +163,9 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["max"],
+          "calcs": [
+            "max"
+          ],
           "fields": "",
           "values": false
         },
@@ -237,7 +241,9 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["max"],
+          "calcs": [
+            "max"
+          ],
           "fields": "",
           "values": false
         },
@@ -313,7 +319,9 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["mean"],
+          "calcs": [
+            "mean"
+          ],
           "fields": "",
           "values": false
         },
@@ -393,7 +401,9 @@
         "orientation": "horizontal",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
-          "calcs": ["mean"],
+          "calcs": [
+            "mean"
+          ],
           "fields": "",
           "values": false
         },
@@ -490,7 +500,12 @@
       "id": 30,
       "options": {
         "legend": {
-          "calcs": ["mean", "lastNotNull", "max", "min"],
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -590,7 +605,12 @@
       "id": 32,
       "options": {
         "legend": {
-          "calcs": ["mean", "lastNotNull", "max", "min"],
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -701,7 +721,12 @@
       "id": 34,
       "options": {
         "legend": {
-          "calcs": ["mean", "lastNotNull", "max", "min"],
+          "calcs": [
+            "mean",
+            "lastNotNull",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -815,7 +840,9 @@
       "id": 26,
       "options": {
         "legend": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -916,7 +943,9 @@
       "id": 18,
       "options": {
         "legend": {
-          "calcs": ["lastNotNull"],
+          "calcs": [
+            "lastNotNull"
+          ],
           "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
@@ -1193,7 +1222,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": false
@@ -1275,7 +1304,7 @@
           "color": "rgba(255,0,255,0.7)"
         },
         "filterValues": {
-          "le": 1e-9
+          "le": 1e-09
         },
         "legend": {
           "show": false
@@ -1412,48 +1441,16 @@
   "preload": false,
   "refresh": "10s",
   "schemaVersion": 42,
-  "tags": ["docker", "registry", "internals"],
+  "tags": [
+    "docker",
+    "hy-home",
+    "internals",
+    "registry"
+  ],
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "includeAll": false,
-        "name": "namespace",
-        "options": [],
-        "query": "query_result(registry_http_in_flight_requests)",
-        "refresh": 2,
-        "regex": "/.*kubernetes_namespace=\"([^\"]+).*/",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "includeAll": false,
-        "name": "app",
-        "options": [],
-        "query": "query_result(registry_http_in_flight_requests{kubernetes_namespace=\"$namespace\"})",
-        "refresh": 2,
-        "regex": "/.*app=\"([^\"]+)/",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "alertmanager:9093",
-          "value": "alertmanager:9093"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "Prometheus"
@@ -1461,10 +1458,11 @@
         "includeAll": false,
         "name": "instance",
         "options": [],
-        "query": "query_result(up{app=\"$app\"})",
+        "query": "label_values(up{job=\"registry\"}, instance)",
         "refresh": 1,
         "regex": "/.*instance=\"([^\"]+).*/",
-        "type": "query"
+        "type": "query",
+        "definition": "label_values(up{job=\"registry\"}, instance)"
       }
     ]
   },
@@ -1475,6 +1473,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "Docker Registry",
-  "uid": "infrastructure-docker-registry",
-  "version": 2
+  "uid": "hyhome-docker-registry",
+  "version": 2,
+  "description": "Source: grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry. Provisioned by hy-home (SPEC-0193)."
 }

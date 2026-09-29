@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -87,6 +87,18 @@ acceptance criterion of [SPEC-0193](../spec.md).
     (`GF_TRACING_OPENTELEMETRY_*`, probabilistic 0.1) and Airflow
     (`AIRFLOW__TRACES__OTEL_*`, OTLP/HTTP) send to Alloy; the five Airflow
     process services joined `obs_net` to reach it.
+- 2026-09-30 W3: dashboards. 30 files removed or replaced as the Spec's
+  dispositions list; 41 written by a build script that pins each upstream
+  file (grafana.com revision, repository commit or mixin date), resolves
+  `__inputs` to the provisioned UIDs, sets a `hyhome-*` UID and records the
+  source in each description; 9 kept with fixes (OpenBao job and datasource,
+  registry variables, n8n analytics on `n8n-db`, source notes). The scrape
+  job `kafka` became `kafka-broker`, and Connect carries
+  `kafka_connect_cluster_id`, so the Confluent dashboards need no edit. Local
+  dashboards: Pyroscope (its upstream one is Kubernetes-only), Flower,
+  OAuth2 Proxy, and Airflow Runs (DB) on `airflow-db`, which replaces the
+  Airflow 2 SQL dashboard (it queried the removed `execution_date`). 50
+  dashboards, no duplicate UID, no unresolved datasource placeholder.
 
 ## Verification Evidence
 

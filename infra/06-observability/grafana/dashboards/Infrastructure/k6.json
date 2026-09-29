@@ -15,8 +15,8 @@
       }
     ]
   },
-  "description": "Visualize k6 OSS results stored in Prometheus",
-  "editable": true,
+  "description": "Source: grafana.com dashboard 19665 revision 3 (2024-04-30). Provisioned by hy-home (SPEC-0193).",
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,
   "id": 127,
@@ -107,7 +107,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [10, 10],
+                  "dash": [
+                    10,
+                    10
+                  ],
                   "fill": "dash"
                 }
               },
@@ -145,7 +148,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [10, 10],
+                  "dash": [
+                    10,
+                    10
+                  ],
                   "fill": "dash"
                 }
               }
@@ -1234,7 +1240,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [10, 10],
+                  "dash": [
+                    10,
+                    10
+                  ],
                   "fill": "dash"
                 }
               }
@@ -1256,7 +1265,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [10, 10],
+                  "dash": [
+                    10,
+                    10
+                  ],
                   "fill": "dash"
                 }
               }
@@ -1271,7 +1283,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [10, 10],
+                  "dash": [
+                    10,
+                    10
+                  ],
                   "fill": "dash"
                 }
               },
@@ -1476,7 +1491,9 @@
           "countRows": false,
           "enablePagination": true,
           "fields": "",
-          "reducer": ["sum"],
+          "reducer": [
+            "sum"
+          ],
           "show": false
         },
         "frameIndex": 2,
@@ -1551,19 +1568,27 @@
           "options": {
             "fields": {
               "Value #B": {
-                "aggregations": ["min"],
+                "aggregations": [
+                  "min"
+                ],
                 "operation": "aggregate"
               },
               "Value #C": {
-                "aggregations": ["max"],
+                "aggregations": [
+                  "max"
+                ],
                 "operation": "aggregate"
               },
               "Value #D": {
-                "aggregations": ["mean"],
+                "aggregations": [
+                  "mean"
+                ],
                 "operation": "aggregate"
               },
               "Value #E": {
-                "aggregations": ["mean"],
+                "aggregations": [
+                  "mean"
+                ],
                 "operation": "aggregate"
               },
               "method": {
@@ -1708,7 +1733,9 @@
           "countRows": false,
           "enablePagination": true,
           "fields": "",
-          "reducer": ["sum"],
+          "reducer": [
+            "sum"
+          ],
           "show": false
         },
         "frameIndex": 2,
@@ -1741,7 +1768,10 @@
         {
           "id": "labelsToFields",
           "options": {
-            "keepLabels": ["__name__", "check"],
+            "keepLabels": [
+              "__name__",
+              "check"
+            ],
             "mode": "columns"
           }
         },
@@ -1750,7 +1780,9 @@
           "options": {
             "fields": {
               "Value": {
-                "aggregations": ["mean"],
+                "aggregations": [
+                  "mean"
+                ],
                 "operation": "aggregate"
               },
               "check": {
@@ -1758,7 +1790,10 @@
                 "operation": "groupby"
               },
               "k6_checks_rate": {
-                "aggregations": ["sum", "count"],
+                "aggregations": [
+                  "sum",
+                  "count"
+                ],
                 "operation": "aggregate"
               }
             }
@@ -1912,7 +1947,11 @@
   "preload": false,
   "refresh": "",
   "schemaVersion": 42,
-  "tags": ["prometheus", "k6"],
+  "tags": [
+    "hy-home",
+    "k6",
+    "prometheus"
+  ],
   "templating": {
     "list": [
       {
@@ -1999,6 +2038,6 @@
   "timepicker": {},
   "timezone": "",
   "title": "k6 Prometheus",
-  "uid": "infrastructure-k6",
+  "uid": "hyhome-k6",
   "version": 2
 }

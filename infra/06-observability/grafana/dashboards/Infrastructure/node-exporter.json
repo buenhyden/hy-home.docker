@@ -1,42 +1,4 @@
 {
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "bargauge",
-      "name": "Bar gauge",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "11.6.1"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -59,7 +21,7 @@
       }
     ]
   },
-  "editable": true,
+  "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
@@ -15445,6 +15407,7 @@
   "refresh": "1m",
   "schemaVersion": 41,
   "tags": [
+    "hy-home",
     "linux"
   ],
   "templating": {
@@ -15529,8 +15492,8 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Node Exporter Full",
-  "uid": "rYdddlPWk",
+  "uid": "hyhome-node-exporter",
   "version": 101,
   "weekStart": "",
-  "gnetId": 1860
+  "description": "Source: grafana.com dashboard 1860 revision 45 (2026-04-11). Provisioned by hy-home (SPEC-0193)."
 }

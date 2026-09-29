@@ -1,30 +1,4 @@
 {
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "6.7.3"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -39,9 +13,8 @@
       }
     ]
   },
-  "description": "This dashboard is to display the metrics from DCGM Exporter on a Kubernetes (1.19+) cluster",
-  "editable": true,
-  "gnetId": 12239,
+  "description": "Source: NVIDIA/dcgm-exporter grafana/dcgm-exporter-dashboard.json (2023-08-11). Provisioned by hy-home (SPEC-0193).",
+  "editable": false,
   "graphTooltip": 0,
   "id": null,
   "iteration": 1588401887165,
@@ -725,7 +698,9 @@
   "refresh": false,
   "schemaVersion": 22,
   "style": "dark",
-  "tags": [],
+  "tags": [
+    "hy-home"
+  ],
   "templating": {
     "list": [
       {
@@ -814,7 +789,7 @@
   },
   "timezone": "",
   "title": "NVIDIA DCGM Exporter Dashboard",
-  "uid": "Oxed_c6Wz",
+  "uid": "hyhome-dcgm-exporter",
   "variables": {
     "list": []
   },
