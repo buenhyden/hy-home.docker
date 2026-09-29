@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.6"
+version: "0.3.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -186,6 +186,11 @@ None yet.
   binary here. Static labels and the mixin recording rules apply, and only
   those dashboards' job selectors are rewritten to the single job; to be
   confirmed with the owner.
+- 2026-09-30: Owner confirmed the Loki and Tempo exception: the seven mixin
+  dashboards keep the single-job selector rewrite, recorded in each
+  dashboard description. Relabelling to per-component jobs was rejected
+  because it copies every series per component, and dropping the dashboards
+  was rejected because it loses the read and write path views.
 - 2026-09-30: Owner approved the package, the W6 runtime changes and the
   pushes, and asked that the Grafana reader password be created with its
   entries in `secrets/SENSITIVE_ENV_VARS.md` and its `.example`, and any
@@ -197,5 +202,4 @@ None yet.
 | --- | --- | --- |
 | W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` CPU throttling (firing), Flower memory (`ContainerHighMemoryUsage` pending), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
 | Confirm Keycloak `keycloak_user_events_total` and OAuth2 Proxy `oauth2_proxy_requests_total` after the first sign-ins, and Airflow DAG-run metrics and traces after the first DAG run; none existed right after the recreates | agent | First traffic |
-| Owner confirmation of the Loki and Tempo job-selector exception to ruling 4 | @buenhyden | Before the completion receipt |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |
