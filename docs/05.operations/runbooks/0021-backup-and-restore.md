@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -100,6 +100,11 @@ repository가 source와 같은 filesystem 위에 있거나 그 내부에 있다�
 승인된 `forget-prune`(step 7) 또는 더 큰 budget을 요청한다. unit은 4시간 후
 정지하는데 그래도 staging은 비워진다. 실행 중인 Restic 프로세스가 없을 때
 `restic unlock`으로 stale Restic lock을 해제한다.
+
+`mng-valkey` RDB 내보내기는 컨테이너 안에서 300초 제한으로 실행한다. 제한을
+넘기거나 실패하면 "mng-valkey RDB export failed or timed out; export dropped"를
+남기고 불완전한 파일을 지운 뒤 나머지 단계와 Restic을 계속 진행하며, run은
+exit 1로 끝난다.
 
 SeaweedFS가 실행 중이면 run은 vacuum도 일시 정지하고 filer metadata를
 export한다. `weed shell`이 오류 텍스트를 내거나, export가 비었거나, master와 filer 중 하나만

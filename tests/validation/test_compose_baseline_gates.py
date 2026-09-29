@@ -1809,6 +1809,16 @@ class BackupContractTests(unittest.TestCase):
         ]
         self.assertIn('find "$staging" -mindepth 1 -delete', cleanup)
         self.assertIn("volume.vacuum.enable", cleanup)
+        # A stalled RDB export must not hold the run until the unit timeout
+        # (2026-09-26 to 09-29): the limit runs inside the container, so the
+        # export process ends there too, and a partial file is not backed up.
+        export = script[
+            script.index("if running mng-valkey; then") : script.index(
+                "backup-sqlite-export"
+            )
+        ]
+        self.assertIn("timeout 300 valkey-cli --no-auth-warning --rdb -", export)
+        self.assertIn('rm -f "$staging/mng-valkey.rdb"', export)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
         )
