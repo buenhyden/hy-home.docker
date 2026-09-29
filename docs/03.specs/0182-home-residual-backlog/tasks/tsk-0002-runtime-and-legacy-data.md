@@ -1,6 +1,6 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -126,6 +126,19 @@ Read-only investigation of 2026-09-25:
   export on 2026-09-26 is not established. The W6 decisions still hold on
   the host: none of the nine stopped services runs, and the four operator
   UIs and the six containers kept until W7 run.
+- 2026-09-29 W6 re-decision (owner delegated the decision to the agent):
+  none of the six has a consumer. JupyterLab holds no file in its work
+  directory; MLflow holds the two runs of the 2026-09-21 checks; the CDC
+  connector `hyhome-app-postgres` and its task are `RUNNING` but capture only
+  `hyhome.app.debezium_heartbeat.heartbeat`, and Kafka has no consumer group.
+  `jupyterlab` and `mlflow` were stopped (`docker stop`, restart policy
+  `unless-stopped`; their data stays in `mng-pg` and SeaweedFS, and neither
+  has a scrape job or alert). `kafka-1`, `kafka-connect`, `schema-registry`
+  and `kafka-exporter` stay: stopping Connect while `hyhome_app_slot` exists
+  would let `mng-pg` WAL grow without bound, and dropping the slot is a
+  separate, irreversible decision; stopping Kafka would also break the kept
+  `kafbat-ui` and `kafka-rest-proxy` and fire `KafkaBrokerDown`. Afterwards
+  no container was unhealthy.
 
 ## Verification Evidence
 
@@ -175,4 +188,4 @@ See the Plan.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | Confirm a successful `hyhome-backup.service` run and a Restic snapshot without `security/vault` (criterion 5); investigate the RDB export if it hangs again | agent | After the 2026-09-30 03:37 KST run |
-| Decide again on `kafka-1`, `kafka-connect`, `schema-registry`, `kafka-exporter`, `mlflow`, and `jupyterlab`, kept until W7 (criterion 6) | @buenhyden | Before the completion receipt |
+| Retire the CDC pipeline (connector and `hyhome_app_slot`), which has no consumer, or keep it | @buenhyden | Owner decision; no date |
