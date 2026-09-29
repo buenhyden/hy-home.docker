@@ -43,6 +43,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0179 | [Package Disposition Wait and Task Cancellation](./0179-package-disposition-wait-and-task-cancellation/) | 모든 구성원이 끝난 package의 처분 대기와 취소된 Task의 기록 방식 · 보관 승인 대기 |
 | SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0183 | [Operations Role Layout](./0183-operations-role-layout/) | Stage 05를 domain 우선 catalog에서 역할별 디렉터리로 전환 |
+| SPEC-0188 | [Compose Host Port Exposure](./0188-compose-host-port-exposure/) | 모든 인터페이스에 게시된 호스트 포트 35개를 필요한 범위로 좁히고 Conftest 규칙을 deny로 전환 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
