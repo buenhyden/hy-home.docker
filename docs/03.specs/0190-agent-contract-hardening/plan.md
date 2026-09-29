@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.0.3"
+version: "1.1.0"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -25,12 +25,13 @@ created: "2026-09-29"
 Implement [SPEC-0190](spec.md) through reversible changes to existing owners:
 validation helpers, resource boundaries, recovery review, authority/handoff
 contracts, native controls and model-free evaluations. Preserve existing public
-entrypoints, roles, provider models, operational data and unrelated work.
+CLI behavior, roles, provider models, operational data and unrelated work;
+W9 changes the evaluation subsystem path under the owner's explicit instruction.
 
 Architecture: extend the existing canonical validator and link scanner, retain
 skill-local helpers, and render only registered native projections. Reuse the
-current Task as the execution record and the four root eval files as the
-model-free comparison harness. No new orchestration service or memory database.
+current Task as the execution record and migrate the existing four-file
+model-free harness from `evals/` to `.agents/evaluations/` in W9. No new orchestration service or memory database.
 
 Technology: Bash, Python standard library and already-declared YAML support,
 Markdown/YAML/JSON/TOML contracts, the registered CI dispatcher and Git.
@@ -316,6 +317,8 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
    `evals/agent_output_eval.py`, `evals/fixture-catalog.md`,
    `tests/validation/test_agent_output_eval_fixtures.py`.
+   W7 also reconciles REQ-0024 and AD-0027 category/architecture descriptions
+   with the selected `.agents/evaluations/` owner; W9 performs the actual cutover.
    **Interface:** current Task owns state; handoff is its derived envelope;
    knowledge contains verified facts with existing Provenance/Refresh Triggers.
    Existing `score_text` and `run_regressions` own model-free judgments.
@@ -373,21 +376,68 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      scratch-parser regressions. Config parsing is not native delivery evidence.
      Commit as `fix(agent): Narrow native grants and report skipped lint`.
 
-9. **W9: Finish model-free evaluation and consumer alignment.** Primary:
+9. **W9: Migrate model-free evaluation and align its consumers.** Primary:
    qa-engineer; documentation contributor: doc-writer; reviewer: eval-engineer.
    Task: `tsk-0009-evaluation-consumers.md`.
 
-   **Modify:** `evals/{README.md,agent_output_eval.py,fixture-catalog.md}`,
+   **Move:** the four files `evals/{README.md,agent_output_eval.py,fixture-catalog.md,run-agent-output-eval-fixtures.sh}`
+   to the same basenames under `.agents/evaluations/`.
+   **Modify after move:** `.agents/evaluations/{README.md,agent_output_eval.py,fixture-catalog.md,run-agent-output-eval-fixtures.sh}`,
    `.agents/governance/providers/registry.yaml`, `scripts/manifest.yaml`,
    `tests/validation/test_agent_output_eval_fixtures.py`,
    `.agents/knowledge/verification-surface-map.md`,
    `docs/05.operations/{guides,policies,runbooks}/0004-harness-agent-first-engineering.md`.
-   **Retain:** `evals/run-agent-output-eval-fixtures.sh` path/interface and the
-   five workflow YAML identities. No new gate leaf is needed: existing modules
-   already belong to registered leaves. Do not edit CI YAML to duplicate tests.
+   **Additional audited consumers (modify):**
+   `.agents/README.md`, `.agents/governance/bootstrap.md`,
+   `.agents/knowledge/repository-map.md`,
+   `.agents/skills/provider-model-evaluation/SKILL.md`,
+   `scripts/lib/agent_governance/agent_governance_contract.py`,
+   `scripts/lib/document_governance/registry.py`,
+   `scripts/lib/document_governance/references.py`,
+   `scripts/lib/gate/ci_gate_adapters.py`,
+   `scripts/validation/check-script-manifest.py`,
+   `scripts/validation/ci_gate_runner.py`, `scripts/README.md`,
+   `.github/workflow-contract.yml`, `.github/CODEOWNERS`, `ruff.toml`,
+   `docs/99.templates/registry.json`,
+   `tests/lib/agent_governance/test_agent_governance_contract.py`,
+   `tests/lib/gate/test_ci_gate_adapters.py`,
+   `tests/validation/test_validator_entrypoints.py`,
+   `tests/validation/test_script_manifest.py`,
+   `tests/validation/test_ci_gate_plan.py`,
+   `tests/validation/test_ci_gate_execution_context.py`,
+   `tests/lib/document_governance/metadata/test_profile.py`,
+   `tests/validation/lifecycle/test_contract.py`,
+   `docs/03.specs/0190-agent-contract-hardening/spec.md`,
+   `docs/03.specs/0190-agent-contract-hardening/plan.md`.
+   This Spec and Plan update their current path references at cutover; completed
+   Tasks and frozen historical evidence keep their observed old paths.
+   No `.pre-commit-config.yaml` or provider projection path consumer was found;
+   verify these retained consumers without manufacturing a change.
+   **Consumer transition:** register exactly the four destination files in the
+   existing canonical source list and validator whitelist, not an unrestricted
+   subtree. In the existing Stage 99 registry, replace the repository-readme
+   additional path and add only `.agents/evaluations/fixture-catalog.md` to
+   `common.inventory_excludes`: the catalog remains evaluator-owned data without
+   document frontmatter. Existing evaluator/manifest/link/canonical checks still
+   govern it; test that a sibling unregistered Markdown file remains rejected.
+   No directory exemption, new profile, schema or template. Bootstrap includes evaluations in its
+   canonical language/category boundary while evaluation data stays input, not
+   automatically loaded execution instructions. Update manifest roots, both root-relative
+   runtime calculations, active document discovery, gate preflight/dispatch and
+   changed-path impact. The evaluation prefix retains all-six-suite impact.
+   Preserve executable modes and `tests/fixtures/agent-output-eval/`. Migrate
+   actual consumers atomically, without a duplicate root source or permanent
+   compatibility wrapper.
+   **Retain:** runner arguments/results and the five workflow YAML identities.
+   Existing modules remain in registered leaves; do not duplicate gates.
    **Interface:** add AOE-RECOVERY-001 using the existing Fixture/score result
-   shapes and registry evaluation-threshold mechanism; keep the root subsystem.
+   shapes and registry evaluation-threshold mechanism; change only the owned
+   subsystem location and required consumers alongside the approved new cases.
 
+   - [ ] Record equivalent pre-move fixture/regression results; update the closed
+     canonical-home and all proven active path consumers, then move all four
+     files together. Require the same cases/results after the move, no stale
+     active caller, no duplicate source, and preserved input/output boundaries.
    - [ ] Pin the recovery rubric before scoring: required input completeness,
      backup/rebuild justification, dependency order, objective/observation
      separation, human approval and refusal of operational execution. Use the
@@ -406,7 +456,10 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      Review maintenance/deployment-skeleton/derived modes (T23): include only
      needed assets, never personal state or inherited approval. No unrequested
      packaging implementation; a nonexistent mode needs explicit disposition.
-   - [ ] Run E and manifest/workflow contract checks; compare equivalent old/new
+   - [ ] Run E/ET/G/C/L and the existing manifest, validator-entrypoint, gate
+     adapter/plan/execution-context, GitHub workflow-contract and document
+     registry tests through the registered sanitized unittest adapter. Run
+     manifest/workflow checks and renderer check; compare equivalent old/new
      cases and require preserved negative detection. Run project-only skill
      stocktake with the same scope as research, keeping caches outside global
      state. Commit as `test(agent): Align recovery evaluations and consumers`.
@@ -486,6 +539,9 @@ results. For registered unittest modules use the existing sanitized adapter;
 | D | `rtk proxy python3 scripts/validation/run-ci-gate.py --profile changed` | selected registered gates exit 0 |
 | F | `rtk proxy python3 scripts/validation/run-ci-gate.py --profile full` | all authorized registered gates exit 0; otherwise explicit blocker |
 
+E uses the listed current path through W8; after W9 cutover use
+`.agents/evaluations/run-agent-output-eval-fixtures.sh` with identical arguments.
+W9 updates this command table and all active consumers at cutover.
 E steps also run ET after implementation. W2 additionally runs
 `rtk proxy python3 scripts/validation/check-document-links.py --mode entrypoint`.
 W6's writes use `rtk proxy python3 scripts/operations/provider_surface_renderer.py --write`.
@@ -604,3 +660,12 @@ receipts cite the other Task's evidence rather than duplicating results.
   grammar contexts, handles escape parity, and extracts exact HTML attributes
   with the standard library. Comment/frontmatter content is not a procedure
   consumer. These corrections remain within the amended six-file map.
+
+- On 2026-09-29 the owner explicitly changed the evaluation disposition to
+  migration into `.agents/evaluations/`. This supersedes root retention. W7
+  still edits the existing location before W9; W9 moves the resulting subsystem
+  and updates its exact audited consumers. The existing Stage 99 README
+  path mapping and exact code-owned catalog inventory exclusion are included;
+  no structural schema/template change is needed.
+  Other work units and external/runtime
+  boundaries remain unchanged. No migration write precedes its completed map.

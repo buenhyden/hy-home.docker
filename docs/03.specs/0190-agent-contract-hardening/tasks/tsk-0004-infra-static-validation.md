@@ -42,6 +42,11 @@ Own R09/R34/R39 evidence with supporting units retaining their receipts.
 - Current tracked Compose graph contains absolute/unresolved external paths;
   unproven isolation must produce BLOCKED before Docker, not an inferred PASS.
 
+- During W4 the owner explicitly revised future W9 from retaining `evals/`
+  to migrating its four-file subsystem into `.agents/evaluations/`. Root
+  amended Spec/Plan 1.1.0 and opened a read-only exact consumer audit before
+  any move. W4 implementation scope and separate runtime boundaries are unchanged.
+
 ## Verification Evidence
 
 NOT_RUN: W4 RED/GREEN H, Bash syntax, available lint and isolated structural

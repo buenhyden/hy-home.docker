@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Specification"
-version: "1.0.0"
+version: "1.1.0"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -81,12 +81,15 @@ The eventual Plan maps acceptance to exact files before any implementation:
   `scripts/lib/document_governance/links.py`, relevant hook and gate libraries,
   registered command entrypoints, `scripts/manifest.yaml`, existing tests and
   `.github/workflow-contract.yml`: contracts and their actual consumers.
-- `evals/`: current model-free evaluator, catalog and runner; update obsolete
-  criteria and add recovery review cases without moving the subsystem.
+- `evals/` to `.agents/evaluations/`: move the existing model-free evaluator,
+  catalog and runner together, update their actual consumers, remove obsolete
+  criteria and add recovery review cases without a second evaluation subsystem.
 - Governing Stage 01/02 owners and necessary current Stage 05 descriptions,
   and their indexes: only descriptions needed for these approved contracts.
-  Stage 99 changes are limited to this draft’s spec identity allocation; existing
-  skill profiles suffice. Any later schema/template change needs an identified
+  Stage 99 changes are limited to this package’s spec identity allocation and
+  replacing the existing evaluation README path plus the exact code-owned
+  catalog inventory exclusion during migration. The catalog remains covered by
+  evaluator, manifest, link and canonical inventory checks; existing profiles suffice. Any later schema/template change needs an identified
   missing field and separate scope approval. No general document reorganization
   or retroactive rewriting of frozen records.
 
@@ -349,14 +352,23 @@ regression and recovery evidence in the Plan before it is performed.
 
 ### Evaluation location and evidence
 
-Keep the four-file root evals subsystem: README.md, agent_output_eval.py,
-fixture-catalog.md and run-agent-output-eval-fixtures.sh. It already has manifest,
-CI, tests, ownership and knowledge consumers. Moving all four to .agents would
-change the closed root/registry/manifest/path contracts without correcting a
-behavioral defect; splitting data and runner would introduce cross-root coupling.
-Neither alternative is selected. Remove the retired LLM Wiki freshness criterion
-from current evaluation, correct the generic runner's authority/maintenance owner,
-and add AOE-RECOVERY-001 cases in the existing harness.
+The owner explicitly requested migration to `.agents/evaluations/` during local
+execution on 2026-09-29, superseding the earlier root-retention decision. Move
+README.md, agent_output_eval.py, fixture-catalog.md and
+run-agent-output-eval-fixtures.sh together. They evaluate shared agent behavior,
+so the canonical agent home is the selected owner. Keeping data and the dedicated
+runner together avoids a split subsystem; retaining root paths is no longer the
+selected disposition.
+
+Before moving files, the Plan enumerates actual registry, canonical-home,
+manifest, CI/pre-commit, test, discovery, path-calculation and documentation
+consumers. Update them in the same logical migration, preserving runner arguments,
+scoring behavior, safety boundaries and equivalent negative-case detection.
+Remove the old four source paths; do not leave duplicated sources or a permanent
+redirect. Preserve dated history as evidence. Remove the retired LLM Wiki
+freshness criterion, correct maintenance ownership, and add AOE-RECOVERY-001
+within the migrated existing harness. This changes location and consumers, not
+permission to run a paid/native evaluation or install anything.
 
 Pin rubric versions before scoring. Preserve normal/error/boundary cases and
 compare equivalent cases before/after changes. Stored/model-free outputs cannot
@@ -450,7 +462,7 @@ reason, not merely an unavailable tool or missing approval.
 29. **R29** — The pinned external agent sources and license have selected adopted/excluded elements; no upstream persona/install script grants tools, remote actions or implicit deployment rights. (T10,T22,T30).
 30. **R30** — Governance covers the real workspace domains and their operating boundaries, without turning static work into service or credential access. (T21,T24).
 31. **R31** — Common/native contracts remain in their proper owners; registry, schemas, templates and generated consumers agree, and no empty symmetry directories or parallel authorities are introduced. (T07,T11,T13,T23).
-32. **R32** — The retain/move/split evaluation decision is tied to actual files and consumers; retained root evaluations lose obsolete criteria, gain recovery coverage and preserve equivalent negative-case detection. (T20).
+32. **R32** — The retain/move/split evaluation decision is tied to actual files and consumers; the four-file subsystem moves to `.agents/evaluations/` with its actual consumers, loses obsolete criteria, gains recovery coverage and preserves equivalent negative-case detection. (T20).
 33. **R33** — Current stale path/version/role/evaluation claims are corrected from their source while dated history is preserved and local versions are not substituted for CI/runtime policy. (T25,T33).
 34. **R34** — Documentation, implementation and actual validation agree for changed invariants, including incomplete tool aggregation and cwd behavior; pre-existing/environment failures remain explicit. (T05,T06,T33).
 35. **R35** — Each role has an evidenced final disposition, actual responsibility/permission/consumer change or justified retention; four proposed responsibility updates are tested without losing independent review. (T28).
@@ -467,7 +479,7 @@ reason, not merely an unavailable tool or missing approval.
 | [AD-0027 Agent Governance Canonical Adapter](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md) | Source/provider architecture reused; approved extensions must reconcile its current wording |
 | [Stage 99](../../99.templates/README.md) | Spec shape, identity and lifecycle; this draft is not implementation approval |
 | [Canonical governance](../../../.agents/README.md) | Current policy, role, skill, knowledge and prompt owners |
-| [Evaluation surface](../../../evals/README.md) | Retained model-free evaluation owner and actual consumer |
+| [Current evaluation source](../../../evals/README.md) | Existing source pending the approved W9 migration; update this link at cutover |
 
 External design evidence was read on 2026-09-29. The
 [designated GeekNews article](https://news.hada.io/topic?id=26328) was a discovery
