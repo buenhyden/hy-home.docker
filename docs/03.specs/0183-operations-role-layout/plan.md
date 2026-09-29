@@ -1,10 +1,10 @@
 ---
 title: "Operations Role Layout Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0183-PLAN-0001"
 parent_ids:

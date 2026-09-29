@@ -1,8 +1,8 @@
 ---
 title: "Operations Role Layout"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "architecture"

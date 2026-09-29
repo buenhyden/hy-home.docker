@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.0"
+version: "1.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-09-29"
 layer: "architecture"
 ---
 
@@ -105,7 +105,7 @@ docs/02.architecture/decisions/
   owner와 재검토 trigger를 담는다(SPEC-0182 W10).
 - [`ADR-0043`](./0043-operations-role-layout.md):
   Stage 05를 domain catalog에서 역할 우선(`guides/`, `policies/`, `runbooks/`,
-  `incidents/`) 구조로 바꾸는 proposed decision(SPEC-0183).
+  `incidents/`) 구조로 바꾸는 accepted decision(SPEC-0183).
 - [`ADR-0044`](./0044-readme-navigation-and-document-language.md):
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
   통합하는 proposed decision(SPEC-0184).
