@@ -1,10 +1,10 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.4"
+version: "0.4.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0002"
 parent_ids:
@@ -194,6 +194,12 @@ Read-only investigation of 2026-09-25:
   in either repository. The state snapshot lists no `vault` path; the host
   snapshot's `vault`/`openbao` matches are the OpenBao custody files and
   `supabase_vault_enc_key.txt`, none from the retired Vault.
+- Timer run 2026-09-30 03:37:31–03:38:44 KST: `hyhome-backup.service`
+  result success, exit 0, so the 20 GiB preflight passed with 44 GiB free;
+  state snapshot `c4defa4d` and host snapshot `db636aba` saved, `restic
+  check` found no errors in either, state repository 1679 MiB of its 5 GiB
+  budget. The success metric file was rewritten at 03:38:43 (age 1.8 min at
+  the check), and `HyhomeBackupStale` and `HostSystemDiskLow` are inactive.
 
 ## Review Evidence
 
@@ -214,6 +220,4 @@ See the Plan.
 
 ## Deferred Items
 
-| Item | Owner | Trigger or date |
-| --- | --- | --- |
-| Confirm the timer run passes the 20 GiB free-space preflight; the system disk shares space with Docker images and build cache | agent | After the 2026-09-30 03:37 KST run |
+None.

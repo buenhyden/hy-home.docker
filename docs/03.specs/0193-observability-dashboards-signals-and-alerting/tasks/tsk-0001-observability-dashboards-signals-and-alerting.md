@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.7"
+version: "0.3.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -161,10 +161,31 @@ acceptance criterion of [SPEC-0193](../spec.md).
   (scrape set and alert rule standards), GDE-0040 (HOME config file, pprof,
   self metrics), RUN-0047 (profile sources) and RUN-0050 (statsd mapping,
   scheduler tracing).
+- 2026-09-30 W6 follow-up: a check of every dashboard query against the
+  live metric names found the Confluent broker dashboards on names the
+  local `kafka-config.yaml` never produced (Kafka Cluster 31 of 57, Kafka
+  Topics 5 of 11) and the Alloy dashboards on native histograms Prometheus
+  did not keep. The broker now uses Confluent's `kafka_broker.yml` from the
+  pinned commit (owner approved the `kafka-1` recreate; healthy), and the
+  `alloy` job keeps native and classic histograms. Afterwards Kafka Cluster
+  48 of 57, Kafka Topics 10 of 11, Alloy Controller 7 of 8, Alloy Loki 9 of
+  12. The m0021 row for `airflow-scheduler` dropped `obs_net`.
 
 ## Verification Evidence
 
-Not started.
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W5 | PASS: the README table lists all 152 Compose services (151 when the Spec was written, plus `grafana-db-provision`); `ObservabilityDashboardContractTests` fails on a job without a dashboard or a dashboard without a service (`f8c2c6f98`) | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
+| 2 | W3 | PASS: the 30 disposed files are gone, 49 dashboards remain, and the largest metric-name overlap of any pair is 12% (`8ad894202`, `f8c2c6f98`) | [contract tests](../../../../tests/validation/test_compose_baseline_gates.py) |
+| 3 | W3 | PASS: every external dashboard names its source and revision in its description; no `${DS_*}` placeholder or unknown datasource UID remains (`8ad894202`) | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
+| 4 | W6 | PASS with recorded gaps: on 2026-09-30, against the live metric names, every dashboard of a running service resolves its queries except panels for features not in use (Loki and Tempo cloud stores, memcache, envoy, Kafka tiered storage, Confluent Server stray partitions, hardware fans, SeaweedFS admin, DCGM profiling, Grafana-managed alerts), series that need traffic (Airflow DAG runs, Flower events, Keycloak user events, OAuth2 Proxy requests, consumer lag, loaded Ollama models, connectors) and the pre-1.0 JMX name `jvm_memory_bytes_max` (one panel each in three Confluent dashboards); stopped on-demand services (HAProxy, etcd, OpenSearch, MongoDB, Cassandra, k6) have no series | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 5 | W6 | PASS: Prometheus, Loki, Pyroscope, `n8n-db` and `airflow-db` report healthy, Tempo and Alertmanager answer through the proxy; `grafana_reader` is not superuser, is read-only by default, has a 30 s timeout, 4 connections and `SELECT` on five tables (`b2cf9feaf`) | [RUN-0041](../../../05.operations/runbooks/0041-grafana.md) |
+| 6 | W6 | PASS: 49 active targets in 38 jobs with no scrape URL twice; the down targets all belong to stopped services (`kafka-2`, `kafka-3`, HAProxy, etcd, OpenSearch, MongoDB, Cassandra, the PostgreSQL cluster, the Valkey cluster and the three unstarted Valkey exporters) | [GDE-0045](../../../05.operations/guides/0045-prometheus.md) |
+| 7 | W6 | PASS except Airflow spans: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. Airflow spans wait for the first DAG run (Deferred Items) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
+| 9 | W7 | DEFERRED: needs the final SPEC-0182 W8 figures after 2026-10-03 | N/A: deferred to W7 |
+| 10 | W5 | PASS: GDE, POL and RUN-0041, GDE and POL-0045, GDE-0040, RUN-0047, RUN-0050 and the Grafana README describe the new state (`22475253c`) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 11 | W8 | PASS: at `687d97213`, `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped). The earlier run at `854dad511` failed once on the stale `airflow-scheduler` inventory row, fixed in `687d97213` | N/A: run evidence for this change |
 
 ## Review Evidence
 
@@ -172,7 +193,9 @@ None yet.
 
 ## Commit Ledger
 
-None yet.
+- `3e3189516` W1, `54ce7346e` W2, `8ad894202` W3, `33f1c6f69` W4,
+  `b2cf9feaf` W6, `f8c2c6f98` and `22475253c` W5, `854dad511` ruling,
+  `687d97213` W6 follow-up.
 
 ## Rulings
 
