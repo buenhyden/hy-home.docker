@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -72,6 +72,21 @@ acceptance criterion of [SPEC-0193](../spec.md).
   - Not scraped: CouchDB (its Prometheus endpoint needs admin credentials or
     its own port setting), Neo4j Community, InfluxDB 3, Supabase, Trino,
     Flink, Spark, Kong and Vector.
+- 2026-09-30 W2: Drilldown backends.
+  - Loki: `pattern_ingester`, `volume_enabled`, `discover_log_levels` and
+    `allow_structured_metadata`; `-verify-config` reports the file valid.
+  - Tempo: unchanged. Tempo 3.0.3 already answers TraceQL metrics
+    (`{} | rate()` returned series on 2026-09-30), so no `local-blocks`
+    processor is needed.
+  - Profiles: Alloy `pyroscope.scrape "go_services"` pulls pprof every 30 s
+    from the eleven Go endpoints that served `/debug/pprof` (Prometheus,
+    Alertmanager, Loki, Tempo, Alloy, Pyroscope, node-exporter, SeaweedFS S3,
+    `mng-pg-exporter`) plus Grafana on 6060 and the registry debug port, each
+    with a `service_name` label.
+  - Traces: Keycloak (`KC_TRACING_*`, ratio 0.1), Grafana
+    (`GF_TRACING_OPENTELEMETRY_*`, probabilistic 0.1) and Airflow
+    (`AIRFLOW__TRACES__OTEL_*`, OTLP/HTTP) send to Alloy; the five Airflow
+    process services joined `obs_net` to reach it.
 
 ## Verification Evidence
 

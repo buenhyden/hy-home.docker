@@ -64,6 +64,12 @@ services:
       KC_HTTP_METRICS_HISTOGRAMS_ENABLED: 'true'
       KC_CACHE_METRICS_HISTOGRAMS_ENABLED: 'true'
       KC_EVENT_METRICS_USER_ENABLED: 'true'
+      # OTLP traces to Alloy at a 10% sample (SPEC-0193).
+      KC_TRACING_ENABLED: 'true'
+      KC_TRACING_ENDPOINT: http://alloy:4317
+      KC_TRACING_SAMPLER_TYPE: traceidratio
+      KC_TRACING_SAMPLER_RATIO: '0.1'
+      KC_TRACING_SERVICE_NAME: keycloak
       KC_HEALTH_ENABLED: 'true'
       KC_DB_POOL_INITIAL_SIZE: 1
       KC_DB_POOL_MIN_SIZE: 1

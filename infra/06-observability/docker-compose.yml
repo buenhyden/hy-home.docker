@@ -336,6 +336,15 @@ services:
       # Read-only login for the n8n and Airflow SQL dashboards (SPEC-0193);
       # created by grafana-db-provision, password from the Docker secret.
       GRAFANA_DB_READER_USER: ${GRAFANA_DB_READER_USER:-grafana_reader}
+      # Traces to Alloy's OTLP receiver at a 10% sample, and pprof on 6060 for
+      # Alloy's pyroscope.scrape; 6060 is not published (SPEC-0193).
+      GF_TRACING_OPENTELEMETRY_OTLP_ADDRESS: alloy:4317
+      GF_TRACING_OPENTELEMETRY_OTLP_PROPAGATION: w3c
+      GF_TRACING_OPENTELEMETRY_SAMPLER_TYPE: probabilistic
+      GF_TRACING_OPENTELEMETRY_SAMPLER_PARAM: '0.1'
+      GF_DIAGNOSTICS_PROFILING_ENABLED: 'true'
+      GF_DIAGNOSTICS_PROFILING_ADDR: 0.0.0.0
+      GF_DIAGNOSTICS_PROFILING_PORT: '6060'
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - ./grafana/dashboards:/etc/grafana/dashboards:ro
