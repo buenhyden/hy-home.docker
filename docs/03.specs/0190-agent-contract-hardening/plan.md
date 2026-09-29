@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -158,7 +158,7 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      current outside-docs authority. Keep schema/registry/template exceptions
      explicit by kind, consumer, need and scope; never a stage-wide whitelist.
    - [x] Review authored `.agents/`, `.claude/`, `.codex/`, root shims, `scripts/`,
-     `tests/` and `evals/` for semantic authority dependence. Record each finding
+     `tests/` and `.agents/evaluations/` (formerly `evals/`) for semantic authority dependence. Record each finding
      and exact owner in this Task. Plain artifact IDs/provenance are not findings
      merely because they mention a stage. If a real defect needs an unlisted
      write, amend the exact file map before that write; do not perform blanket
@@ -315,10 +315,11 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `.agents/prompts/{handoff,diff-review,commit-message,test-design}.md`,
    `docs/01.requirements/0024-agent-governance-standardization.md`,
    `docs/02.architecture/descriptions/0027-agent-governance-canonical-adapter.md`,
-   `evals/agent_output_eval.py`, `evals/fixture-catalog.md`,
+   `.agents/evaluations/agent_output_eval.py`, `.agents/evaluations/fixture-catalog.md`,
    `tests/validation/test_agent_output_eval_fixtures.py`.
-   W7 also reconciles REQ-0024 and AD-0027 category/architecture descriptions
-   with the selected `.agents/evaluations/` owner; W9 performs the actual cutover.
+   W7 reconciled REQ-0024 and AD-0027 with the selected evaluation owner and
+   edited the evaluator and catalog at their former evals paths. The current
+   paths above reflect the W9 cutover.
    **Interface:** current Task owns state; handoff is its derived envelope;
    knowledge contains verified facts with existing Provenance/Refresh Triggers.
    Existing `score_text` and `run_regressions` own model-free judgments.
@@ -408,9 +409,10 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    `tests/validation/test_ci_gate_execution_context.py`,
    `tests/lib/document_governance/metadata/test_profile.py`,
    `tests/lib/document_governance/test_registry.py`,
-   `tests/validation/lifecycle/test_contract.py`,
    `docs/03.specs/0190-agent-contract-hardening/spec.md`,
    `docs/03.specs/0190-agent-contract-hardening/plan.md`.
+   Verify `tests/validation/lifecycle/test_contract.py` without changing it: the
+   consumer audit found no evaluation-path dependency in that module.
    This Spec and Plan update their current path references at cutover; completed
    Tasks and frozen historical evidence keep their observed old paths.
    No `.pre-commit-config.yaml` or provider projection path consumer was found;
@@ -445,29 +447,29 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    shapes and registry evaluation-threshold mechanism; change only the owned
    subsystem location and required consumers alongside the approved new cases.
 
-   - [ ] Record equivalent pre-move fixture/regression results; update the closed
+   - [x] Record equivalent pre-move fixture/regression results; update the closed
      canonical-home and all proven active path consumers, then move all four
      files together. Require the same cases/results after the move, no stale
      active caller, no duplicate source, and preserved input/output boundaries.
-   - [ ] Pin the recovery rubric before scoring: required input completeness,
+   - [x] Pin the recovery rubric before scoring: required input completeness,
      backup/rebuild justification, dependency order, objective/observation
      separation, human approval and refusal of operational execution. Use the
      same existing threshold convention as comparable safety-sensitive fixtures;
      no lower threshold merely to pass a stored response.
-   - [ ] Add direct/paraphrased/ambiguous/out-of-scope cases and explicit negative
+   - [x] Add direct/paraphrased/ambiguous/out-of-scope cases and explicit negative
      cases for a volume mistaken for backup, missing key custody, runtime
      restore instructions and static output claimed as recovery success.
      Record the no-skill baseline and run E to witness missing coverage.
-   - [ ] Add fixture and threshold atomically, update exact fixture/category
+   - [x] Add fixture and threshold atomically, update exact fixture/category
      expectations, and remove only the obsolete LLM Wiki freshness criterion
      from AOE-DOC-001 and its catalog. Keep historical observations intact.
-   - [ ] Correct the generic evaluator wrapper's manifest authority/maintenance
+   - [x] Correct the generic evaluator wrapper's manifest authority/maintenance
      owner to the current evaluation contract and Task-approved role; align
      operational guidance with safe fixture validation and current consumers.
      Review maintenance/deployment-skeleton/derived modes (T23): include only
      needed assets, never personal state or inherited approval. No unrequested
      packaging implementation; a nonexistent mode needs explicit disposition.
-   - [ ] Run E/ET/G/C/L and the existing manifest, validator-entrypoint, gate
+   - [x] Run E/ET/G/C/L and the existing manifest, validator-entrypoint, gate
      adapter/plan/execution-context, GitHub workflow-contract and document
      registry tests through the registered sanitized unittest adapter. Run
      manifest/workflow checks and renderer check; compare equivalent old/new
@@ -485,14 +487,14 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
     **Interface:** produces numbered acceptance receipts and reviewed commit
     evidence, keeping static/native/hosted/operational results separate.
 
-    - [ ] Verify the file-level dispositions for all retained roles, skills,
+    - [x] Verify the file-level dispositions for all retained roles, skills,
       native agents, workflows and commands; record actual consumer changes,
       justified retention, no orphan adapters and no copied authority.
     - [ ] Run the final registered changed/full profiles after the safety
       preflight in Verification. Run the controlled all-files wrapper only from
       a clean linked worktree after reviewed logical commits; never run it
       directly on the shared checkout or use hook bypass/environment SKIP.
-    - [ ] Obtain a whole-branch independent review and resolve material findings
+    - [x] Obtain a whole-branch independent review and resolve material findings
       within the retry/scope bounds. Rerun affected checks after fixes, not every
       full suite after every unrelated prose edit.
     - [ ] Use the observation matrix below to request only still-needed concrete
@@ -543,16 +545,16 @@ results. For registered unittest modules use the existing sanitized adapter;
 | H | `rtk proxy env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 scripts/lib/gate/ci_gate_adapters.py run-unittest tests.validation.test_agent_governance_ci_routing -v` | helper and hook-routing regressions pass |
 | P | `rtk proxy env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 scripts/lib/gate/ci_gate_adapters.py run-unittest tests.validation.test_provider_native_surfaces tests.validation.test_provider_surface_renderer tests.validation.test_agent_function_routes -v` | source preservation, invocation and routing pass |
 | N | `rtk proxy env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 scripts/lib/gate/ci_gate_adapters.py run-unittest tests.validation.test_hook_rules tests.lib.hooks.test_tool_payload tests.validation.test_provider_native_payloads -v` | malformed/unsafe payloads reject; retained routes pass |
-| E | `rtk proxy bash evals/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` | all fixture and regression checks pass |
+| E | `rtk proxy bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions` | all fixture and regression checks pass |
 | ET | `rtk proxy env -i PATH=/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 python3 scripts/lib/gate/ci_gate_adapters.py run-unittest tests.validation.test_agent_output_eval_fixtures -v` | evaluator mutation/negative cases pass |
 | C | `rtk proxy python3 scripts/validation/check-agent-governance-contract.py --mode repository --section all` | repository contract passes |
 | R | `rtk proxy python3 scripts/operations/provider_surface_renderer.py --check` | zero projection drift |
 | D | `rtk proxy python3 scripts/validation/run-ci-gate.py --profile changed` | selected registered gates exit 0 |
 | F | `rtk proxy python3 scripts/validation/run-ci-gate.py --profile full` | all authorized registered gates exit 0; otherwise explicit blocker |
 
-E uses the listed current path through W8; after W9 cutover use
-`.agents/evaluations/run-agent-output-eval-fixtures.sh` with identical arguments.
-W9 updates this command table and all active consumers at cutover.
+E uses the migrated canonical evaluation path. The W9 Task preserves equivalent
+pre-move/post-move results with identical arguments; completed earlier Tasks
+retain their observed historical commands.
 E steps also run ET after implementation. W2 additionally runs
 `rtk proxy python3 scripts/validation/check-document-links.py --mode entrypoint`.
 W6's writes use `rtk proxy python3 scripts/operations/provider_surface_renderer.py --write`.

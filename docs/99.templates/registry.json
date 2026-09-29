@@ -109,6 +109,7 @@
       "doc_type"
     ],
     "inventory_excludes": [
+      ".agents/evaluations/fixture-catalog.md",
       "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
     ],
     "root_exceptions": {
@@ -1722,7 +1723,7 @@
       "additional_paths": [
         ".github/repository-surface.md",
         "_workspace/README.md",
-        "evals/README.md",
+        ".agents/evaluations/README.md",
         "examples/README.md",
         "infra/README.md",
         "projects/README.md",

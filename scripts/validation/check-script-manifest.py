@@ -73,7 +73,7 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
 # Automation roots the manifest governs. Declaration and coverage both read
 # this tuple, so a root can never become declarable without also becoming
 # required: the two rules cannot drift apart the way two literals would.
-MANIFEST_ROOTS = ("evals/", "scripts/")
+MANIFEST_ROOTS = (".agents/evaluations/", "scripts/")
 SELF_PATH = "scripts/validation/check-script-manifest.py"
 REQUIRED_LOCAL_PATHS = frozenset(
     {

@@ -3,7 +3,7 @@ name: "provider-model-evaluation"
 description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and deterministic model-free regression evidence. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 metadata:
   title: "provider-model-evaluation"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -67,7 +67,7 @@ acceptance, entitlement, quality, cost, or latency.
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)
-- [Agent output evaluation fixtures](../../../evals/README.md)
+- [Agent output evaluation fixtures](../../evaluations/README.md)
 - [Current workspace governance](../../README.md)
 - Historical canonical-home decision: ADR-0032
 - [Documentation index](../../../docs/README.md)

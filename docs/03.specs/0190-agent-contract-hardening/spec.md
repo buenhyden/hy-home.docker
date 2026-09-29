@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Specification"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -479,7 +479,7 @@ reason, not merely an unavailable tool or missing approval.
 | [AD-0027 Agent Governance Canonical Adapter](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md) | Source/provider architecture reused; approved extensions must reconcile its current wording |
 | [Stage 99](../../99.templates/README.md) | Spec shape, identity and lifecycle; this draft is not implementation approval |
 | [Canonical governance](../../../.agents/README.md) | Current policy, role, skill, knowledge and prompt owners |
-| [Current evaluation source](../../../evals/README.md) | Existing source pending the approved W9 migration; update this link at cutover |
+| [Current evaluation source](../../../.agents/evaluations/README.md) | Canonical evaluation subsystem after the approved W9 migration |
 
 External design evidence was read on 2026-09-29. The
 [designated GeekNews article](https://news.hada.io/topic?id=26328) was a discovery

@@ -54,7 +54,7 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "scripts/lib/gate/github_workflow_contract.py" = ["F401"]
 
 # `B023` fires 59 times and every one is in a test, none in `scripts/` or
-# `evals/`. Each is the same shape: a closure built inside a `subTest` loop and
+# `.agents/evaluations/`. Each is the same shape: a closure built inside a `subTest` loop and
 # consumed within that same iteration, which is the benign case the rule cannot
 # distinguish from the harmful one. Binding each loop variable would change the
 # signature of nested helpers in nine files to no behavioural effect, so the

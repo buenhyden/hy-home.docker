@@ -1,6 +1,6 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -183,7 +183,7 @@ argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CI / quality gate           | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
-| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `evals/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
+| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `.agents/evaluations/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
@@ -449,7 +449,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
-- [Agent Evaluation Harness](../evals/README.md) - 형제 자동화 루트; `evals/README.md`가 이 manifest도 등록하는 eval 표면을 소유합니다
+- [Agent Evaluation Harness](../.agents/evaluations/README.md) - canonical model-free evaluation surface; registry와 manifest가 evaluator consumer를 등록합니다
 - [현재 워크스페이스 거버넌스](../.agents/README.md)
 - Canonical home의 과거 결정: ADR-0032
 - Document Profile Registry (`docs/99.templates/registry.json`)

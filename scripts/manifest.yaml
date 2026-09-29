@@ -1,6 +1,6 @@
 schema_version: 1
 files:
-- path: evals/README.md
+- path: .agents/evaluations/README.md
   kind: contract
   authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
@@ -11,32 +11,32 @@ files:
   successor: null
   tests:
   - tests/validation/test_script_manifest.py
-- path: evals/agent_output_eval.py
+- path: .agents/evaluations/agent_output_eval.py
   kind: validator
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
-  - evals/run-agent-output-eval-fixtures.sh
+  - .agents/evaluations/run-agent-output-eval-fixtures.sh
   - tests/validation/test_validator_entrypoints.py
   disposition: retain
   successor: null
   tests:
   - tests/validation/test_agent_output_eval_fixtures.py
   - tests/validation/test_validator_entrypoints.py
-- path: evals/fixture-catalog.md
+- path: .agents/evaluations/fixture-catalog.md
   kind: contract
   authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
-  - evals/README.md
+  - .agents/evaluations/README.md
   disposition: retain
   successor: null
   tests: []
-- path: evals/run-agent-output-eval-fixtures.sh
+- path: .agents/evaluations/run-agent-output-eval-fixtures.sh
   kind: runner
-  authority: .agents/skills/provider-model-evaluation/SKILL.md
+  authority: .agents/evaluations/README.md
   lifecycle: active
   mutation: none
   consumers:

@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.0.5"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -94,6 +94,24 @@ created: "2026-06-04"
    ```
 
 7. 변경된 파일, command 결과, Graphify health 상태, `10-communication` 같은 out-of-scope infra profile 실패를 포함한 잔여 위험을 보고한다.
+
+### Model-free Evaluation Maintenance
+
+평가 변경에는 저장소 루트에서 합성 입력만 사용하는 다음 명령을 실행한다.
+
+```bash
+bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
+```
+
+종료 코드와 fixture·regression 결과를 현재 Task에 기록한다. 이 명령은 모델을
+호출하거나 실제 복구를 수행하지 않는다. 필요한 네 소스와 소비자만 유지하고
+별도 deployment-skeleton·파생 패키지·개인 상태·이전 승인 복사본은 추가하지 않는다.
+
+상위 changed/full 게이트와 infrastructure 단계는 먼저 실제 leaf의 부작용을
+검토한다. Compose 검증은 환경·임시 secret 경로를 만들 수 있고 Conftest는 Docker
+컨테이너를 실행한다. 승인된 비밀 없는 격리 사본과 필요한 도구·이미지를 확보하지
+못하면 해당 검사는 BLOCKED/NOT_RUN으로 기록하고 가능한 정적 검사를 계속한다.
+합성 fixture 성공으로 누락된 전체 게이트나 native 관측을 대체하지 않는다.
 
 ### Verification Steps
 

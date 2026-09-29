@@ -18,11 +18,6 @@ from types import MappingProxyType
 
 import yaml
 
-from scripts.lib.document_governance.links import (
-    _unfenced_lines,
-    parse_local_markdown_links,
-)
-
 GOVERNANCE = pathlib.PurePosixPath(".agents")
 PROVIDERS = GOVERNANCE / "governance/providers"
 REGISTRY = PROVIDERS / "registry.yaml"
@@ -30,6 +25,7 @@ CANONICAL_SKILL_PATTERN = ".agents/skills/{skill_id}/SKILL.md"
 SUPPORTED_PROVIDERS = ("claude", "codex")
 ROOT_ENTRIES = (
     "README.md",
+    "evaluations",
     "governance",
     "knowledge",
     "prompts",
@@ -280,15 +276,17 @@ def _open_regular_file(
             raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
         if metadata.st_mode & 0o444 == 0:
             raise ContractLoadError(f"AGC-UNREADABLE-FILE path={safe}")
-        if expected_identity is not None and _file_identity(metadata) != expected_identity:
+        if (
+            expected_identity is not None
+            and _file_identity(metadata) != expected_identity
+        ):
             raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
         descriptor = os.open(
             safe.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent
         )
         opened = os.fstat(descriptor)
-        if (
-            not stat.S_ISREG(opened.st_mode)
-            or _file_identity(opened) != _file_identity(metadata)
+        if not stat.S_ISREG(opened.st_mode) or _file_identity(opened) != _file_identity(
+            metadata
         ):
             raise ContractLoadError(f"AGC-UNSAFE-FILE path={safe}")
     except FileNotFoundError as error:
@@ -1323,6 +1321,10 @@ def _canonical_source_paths(
         REGISTRY,
         PROVIDERS / "README.md",
         GOVERNANCE / "governance/sdlc.md",
+        GOVERNANCE / "evaluations/README.md",
+        GOVERNANCE / "evaluations/agent_output_eval.py",
+        GOVERNANCE / "evaluations/fixture-catalog.md",
+        GOVERNANCE / "evaluations/run-agent-output-eval-fixtures.sh",
     }
     patterns = (
         r"[.]agents/governance/[a-z][a-z0-9-]*[.]md",
@@ -1359,6 +1361,8 @@ SKILL_OWNED_DIRECTORIES = frozenset({"scripts", "references", "assets"})
 
 
 def _resource_targets(text: str) -> tuple[str, ...]:
+    from scripts.lib.document_governance.links import _unfenced_lines
+
     lines = tuple(line for _, line in _unfenced_lines(text, include_fenced=True))
     targets = [
         match.group(1).rstrip(".,;:")
@@ -1419,9 +1423,7 @@ def _resource_target(
     raw: str,
     current: pathlib.PurePosixPath,
     skill_root: pathlib.PurePosixPath,
-    inventory: Mapping[
-        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
-    ],
+    inventory: Mapping[pathlib.PurePosixPath, tuple[int, int, int, int, int, int]],
 ) -> pathlib.PurePosixPath | None:
     try:
         parsed = urllib.parse.urlsplit(raw)
@@ -1445,10 +1447,12 @@ def _resource_target(
     if local_hint and any(character in decoded for character in "{}*?[]"):
         raise ContractLoadError(f"AGC-SKILL-RESOURCE-UNSUPPORTED path={raw}")
 
-    base = skill_root if decoded.split("/", 1)[0] in SKILL_OWNED_DIRECTORIES else current.parent
-    normalized = pathlib.PurePosixPath(
-        posixpath.normpath((base / decoded).as_posix())
+    base = (
+        skill_root
+        if decoded.split("/", 1)[0] in SKILL_OWNED_DIRECTORIES
+        else current.parent
     )
+    normalized = pathlib.PurePosixPath(posixpath.normpath((base / decoded).as_posix()))
     if normalized.is_absolute() or ".." in normalized.parts:
         raise ContractLoadError(f"AGC-SKILL-RESOURCE-ESCAPE path={raw}")
     if (
@@ -1482,12 +1486,8 @@ def _validate_skill_resources(
 ) -> None:
     skill_root = _safe_relative(skill_root)
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
-    inventory: dict[
-        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
-    ] = {}
-    directories: dict[
-        pathlib.PurePosixPath, tuple[int, int, int, int, int, int]
-    ] = {}
+    inventory: dict[pathlib.PurePosixPath, tuple[int, int, int, int, int, int]] = {}
+    directories: dict[pathlib.PurePosixPath, tuple[int, int, int, int, int, int]] = {}
     entry_count = 0
 
     def walk(descriptor: int, relative: pathlib.PurePosixPath, depth: int) -> None:
@@ -1596,6 +1596,8 @@ def _validate_skill_resources(
     scheduled: set[pathlib.PurePosixPath] = set()
 
     def discover(text: str, current: pathlib.PurePosixPath) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
         if text.count("[") > MAX_SKILL_RESOURCE_MARKDOWN_BRACKETS:
             raise ContractLoadError(
                 f"AGC-SKILL-RESOURCE-MARKDOWN-OUTPUT-LIMIT path={current}"
@@ -1618,14 +1620,10 @@ def _validate_skill_resources(
         relative = current.relative_to(skill_root)
         if relative.parts[0] == "assets":
             continue
-        text = _read_text(
-            root, current, expected_identity=inventory[current]
-        )
+        text = _read_text(root, current, expected_identity=inventory[current])
         text_bytes += len(text.encode("utf-8"))
         if text_bytes > MAX_SKILL_RESOURCE_TEXT_BYTES:
-            raise ContractLoadError(
-                f"AGC-SKILL-RESOURCE-TEXT-LIMIT path={skill_root}"
-            )
+            raise ContractLoadError(f"AGC-SKILL-RESOURCE-TEXT-LIMIT path={skill_root}")
         if relative.parts[0] == "references":
             discover(_procedure_body(text), current)
 

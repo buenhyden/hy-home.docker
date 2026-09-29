@@ -1339,7 +1339,7 @@
         "prefixes": [
           ".github/",
           ".pre-commit-config.yaml",
-          "evals/",
+          ".agents/evaluations/",
           "projects/",
           "scripts/",
           "tests/"

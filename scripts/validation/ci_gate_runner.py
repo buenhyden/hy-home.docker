@@ -623,7 +623,7 @@ def execute_execution_plan(
                                 invocation,
                                 gate_id=("preflight-only.agent-output-eval-dependency"),
                                 entrypoint=pathlib.PurePosixPath(
-                                    "evals/agent_output_eval.py"
+                                    ".agents/evaluations/agent_output_eval.py"
                                 ),
                                 argv=(),
                                 cwd=pathlib.PurePosixPath("."),

@@ -1,6 +1,6 @@
 ---
 title: "AI Agent Governance"
-version: "1.3.2"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -39,6 +39,9 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
   vocabulary, verification coverage를 소유합니다.
 - `prompts/`는 반복 작업을 위한 재사용 가능한 input/output contract를
   소유합니다.
+- `evaluations/`는 결정론적이고 model-free인 fixture 평가 input을 소유합니다.
+  이 data는 실행 지침으로 자동 로드되지 않으며 evaluator, registry와 manifest가
+  각각의 소비 경계를 소유합니다.
 - `governance/providers/registry.yaml`은 provider identity, model/permission
   translation, projection route, hook fact를 소유합니다.
 - [Claude](../.claude/provider.md)와 [Codex](../.codex/provider.md)는 각자의
@@ -59,6 +62,7 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 ```text
 .agents/
 ├── README.md
+├── evaluations/ # deterministic model-free evaluation inputs
 ├── governance/  # policy, SDLC, hooks, provider registry
 ├── knowledge/   # 검증된 routing과 vocabulary
 ├── prompts/     # 재사용 가능한 input/output contract

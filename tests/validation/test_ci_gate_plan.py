@@ -471,7 +471,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     0,
                     sum(
                         item.entrypoint
-                        == pathlib.PurePosixPath("evals/agent_output_eval.py")
+                        == pathlib.PurePosixPath(
+                            ".agents/evaluations/agent_output_eval.py"
+                        )
                         for item in plan
                     ),
                 )

@@ -2023,7 +2023,7 @@ _NON_DOCS_FILES = frozenset(
         "README.md",
         "_workspace/README.md",
         "_workspace/repo-support/README.md",
-        "evals/README.md",
+        ".agents/evaluations/README.md",
         "infra/README.md",
         "projects/README.md",
         "scripts/README.md",

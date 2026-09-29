@@ -215,9 +215,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
             detail = skill / "references/detail.md"
             detail.parent.mkdir()
             detail.write_text("[nested](nested/more.md)\n", encoding="utf-8")
-            (skill / "references/angle space.md").write_text(
-                "angle", encoding="utf-8"
-            )
+            (skill / "references/angle space.md").write_text("angle", encoding="utf-8")
             (skill / "references/encoded space.md").write_text(
                 "encoded", encoding="utf-8"
             )
@@ -238,7 +236,9 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 {str(call.args[1]) for call in read.call_args_list},
             )
 
-    def test_skill_resources_reject_nonregular_nodes_without_following_them(self) -> None:
+    def test_skill_resources_reject_nonregular_nodes_without_following_them(
+        self,
+    ) -> None:
         for kind in ("symlink", "fifo", "socket"):
             with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
                 root = pathlib.Path(directory)
@@ -408,7 +408,9 @@ class AgentGovernanceContractTests(unittest.TestCase):
                     ["AGC-CANONICAL-HOME"],
                     [finding.code for finding in findings],
                 )
-                self.assertEqual("outside sentinel", outside.read_text(encoding="utf-8"))
+                self.assertEqual(
+                    "outside sentinel", outside.read_text(encoding="utf-8")
+                )
 
     def test_skill_resource_allows_safe_outward_citations(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -476,15 +478,14 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 '[vendor](<https://example.test> "[hidden][run]")\n'
                 "[run]: ./scripts/run.sh\n",
                 '[vendor](<https://example.test> "[[./scripts/run.sh]]")\n',
-                "[vendor](<https://example.test> "
-                "'<a href=\"./scripts/run.sh\">')\n",
+                "[vendor](<https://example.test> '<a href=\"./scripts/run.sh\">')\n",
                 '<a title="[hidden](./scripts/run.sh)" '
                 'href="https://example.test">vendor</a>\n',
                 '<a title="x > [hidden](./scripts/run.sh)" '
                 'href="https://example.test">vendor</a>\n',
                 "<a title='x > [hidden](./scripts/run.sh)' "
                 'href="https://example.test">vendor</a>\n',
-                '<a title="href=\'./scripts/run.sh\'" '
+                "<a title=\"href='./scripts/run.sh'\" "
                 'href="https://example.test">vendor</a>\n',
                 '<a data-href="./scripts/run.sh" '
                 'href="https://example.test">vendor</a>\n',
@@ -497,9 +498,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                         root, pathlib.PurePosixPath(".agents/skills/sample")
                     )
 
-            source.write_text(
-                '<a href="./scripts/run.sh">run</a>\n', encoding="utf-8"
-            )
+            source.write_text('<a href="./scripts/run.sh">run</a>\n', encoding="utf-8")
             contract._validate_skill_resources(
                 root, pathlib.PurePosixPath(".agents/skills/sample")
             )
@@ -544,7 +543,9 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 return real_read(root_path, relative, **kwargs)
 
             with (
-                mock.patch.object(contract, "_read_text", side_effect=add_after_inventory),
+                mock.patch.object(
+                    contract, "_read_text", side_effect=add_after_inventory
+                ),
                 self.assertRaisesRegex(contract.ContractLoadError, "RACE"),
             ):
                 contract._validate_skill_resources(
@@ -631,9 +632,7 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 (references / f"part-{number}.md").write_text(
                     "x" * contract.MAX_TEXT_BYTES, encoding="utf-8"
                 )
-            (skill / "SKILL.md").write_text(
-                "\n".join(links[:4]), encoding="utf-8"
-            )
+            (skill / "SKILL.md").write_text("\n".join(links[:4]), encoding="utf-8")
             contract._validate_skill_resources(
                 root, pathlib.PurePosixPath(".agents/skills/sample")
             )
@@ -830,7 +829,15 @@ class AgentGovernanceContractTests(unittest.TestCase):
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)
         self.assertEqual(
-            ("README.md", "governance", "knowledge", "prompts", "roles", "skills"),
+            (
+                "README.md",
+                "evaluations",
+                "governance",
+                "knowledge",
+                "prompts",
+                "roles",
+                "skills",
+            ),
             state.root_entries,
         )
         self.assertEqual(
