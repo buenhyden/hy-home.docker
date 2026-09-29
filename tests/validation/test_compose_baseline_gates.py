@@ -3701,7 +3701,9 @@ class BackupAndHostAlertingContractTests(unittest.TestCase):
 
         compose = ROOT / "infra/07-workflow/n8n/docker-compose.yml"
         services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
-        self.assertIn("/healthz/readiness", " ".join(services["n8n"]["healthcheck"]["test"]))
+        self.assertIn(
+            "/healthz/readiness", " ".join(services["n8n"]["healthcheck"]["test"])
+        )
 
 
 if __name__ == "__main__":
