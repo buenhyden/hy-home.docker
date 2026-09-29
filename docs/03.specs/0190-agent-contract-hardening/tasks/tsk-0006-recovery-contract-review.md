@@ -1,8 +1,8 @@
 ---
 title: "Read-Only Recovery Contract Review"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -40,24 +40,62 @@ W5 released shared-test ownership after its reviewed logical commit.
 
 ## Verification Evidence
 
-NOT_RUN: P RED/GREEN, G/H/C, skill validation, renderer source preservation and
-second-run stability. New skill starts draft 0.1.0, then follows actual committed
-review and active predecessors; lifecycle approval is not invented by generation.
+- P focused RED: two methods, exit 1, 0.749s; missing skill produced one
+  expected error and one expected failure. Focused GREEN: 2/2, exit 0, 1.215s.
+- Route RED: 6 tests, four expected missing-route failures, 0.546s. Independent
+  review then found an implementation-request collision; witnessed one RED
+  before narrowing the keywords. Final route 6/6, independent 0.765s.
+- Final registered sanitized adapters: G 53/53 in 81.148s; P 57/57 in 53.597s;
+  H 47/47 in 18.823s; all exit 0.
+- Repository contract C: failures=0. Renderer write/check/write/check: exit 0,
+  two providers, drift=0; canonical source hashes preserved and second generated
+  bytes unchanged. Active-state final renderer check: drift=0.
+- System skill-creator quick_validate, dispatcher Bash syntax, git diff --check:
+  exit 0. Existing executable modes preserved.
+- Exactly four new canonical files and nine generated files: one Claude skill,
+  four Claude roles, four Codex roles. No README drift or Codex skill copy.
+- Only iac-reviewer gains the new explicit-only skill; role IDs, provider
+  model/effort, permission/tool profiles and needs_revalidation remain unchanged.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| R01/R02/R05/R24/R27/R28/R29/R35/R36/R37 | W6 | NOT_RUN | Recovery review skill, existing roles and provider consumers |
+| R01/R28/R35 | W6 | Role routing and independence PASS | Four canonical role deltas and retained domain owners |
+| R02/R24/R27/R36 | W6 | New skill, two resources, invocation and missing-reference tests PASS; W9 evaluation pending | Recovery skill and three routing skills |
+| R05/R29/R37 | W6 | Static native mapping/projection PASS; live invocation NOT_OBSERVED | Registry, renderer and narrow prompt route |
+
+Retained domain responsibility: infra-implementer owns Compose/network/data
+implementation; iac-reviewer owns independent IaC/recovery review;
+security-auditor owns secret/access review; drift-detector owns runtime
+observation; incident-responder owns approved incident actions; qa-engineer
+and ci-cd-engineer own tests/gates; doc-writer owns runbooks; hook-developer
+owns provider implementation; skill-creator owns canonical skills;
+rules-engineer reviews policy and workflow-supervisor routes work. Human
+operational approval remains separate. No retained role loses unique duties.
 
 ## Review Evidence
 
-Independent read-only IaC and policy review pending. Verify named implementer,
-reviewer and human approver remain distinct, readiness never means successful
-recovery, and an ambiguous or operational request cannot gain execution rights.
+Independent IaC review CLEAR after focused corrections: three distinct owners,
+separate operational approval boundary, per-evidence source/time, backup artifact
+identity/integrity/freshness/prior restoreability, and historical evidence
+separated from this review's invariant operational NOT_RUN. Independent native
+route review CLEAR; policy/source/generated projection review CLEAR.
+
+Static forward probes F1-F11: volume-only, missing key custody, contradictory
+order/version, operational request, missing contract, self-approval, objectives
+masquerading as observations, secret payload and missing capacity/isolation
+were BLOCKED or stopped. Complete sanitized contracts and provable rebuild
+could yield READY_FOR_SEPARATE_RECOVERY_APPROVAL. Provider-native invocation
+remained NOT_OBSERVED; current operational action remained NOT_RUN. These are
+independent static behavioral probes, not a native or operational experiment.
+No upstream persona, installer, tool grant or automatic deployment was copied.
 
 ## Commit Ledger
 
-Root validates and commits Task draft, ready and in-progress predecessors before
-implementation GO. New skill lifecycle commits retain their actual prior states.
+Task: draft `d0adf1b64`, ready `ebe2da394`, in-progress `a9726ce4d`.
+Skill: draft `2efc0060a`, review `32ff793cf`, active `00644a8f4`; each promotion
+passed metadata against its actual predecessor with zero overrides.
+The remaining reviewed connections, projections and receipt form the final
+W6 logical commit, whose hash is owned by Git.
 
 ## Rulings
 

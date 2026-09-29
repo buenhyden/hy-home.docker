@@ -81,7 +81,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         renderer = load_renderer()
         state = renderer.load_agent_governance(ROOT)
         self.assertEqual(14, len(state.roles))
-        self.assertEqual(23, len(state.skills))
+        self.assertEqual(24, len(state.skills))
         for provider in state.provider_records:
             self.assertEqual(
                 ".agents/skills/{skill_id}/SKILL.md", provider.canonical_skill_pattern
@@ -103,6 +103,33 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
             self.assertIs(native["disable-model-invocation"], True)
             self.assertEqual(skill.description, native["description"])
             self.assertNotIn("## Procedure", payload)
+
+    def test_recovery_review_is_owned_by_the_read_only_iac_reviewer(self) -> None:
+        renderer = load_renderer()
+        state = renderer.load_agent_governance(ROOT)
+        skill_id = "stateful-recovery-contract-review"
+        skill = next(item for item in state.skills if item.skill_id == skill_id)
+        roles = {item.agent_id: item for item in state.roles}
+
+        self.assertEqual("iac-reviewer", skill.owner_agent)
+        self.assertEqual("read-only", roles[skill.owner_agent].permission_profile)
+        self.assertEqual(
+            ["iac-reviewer"],
+            [item.agent_id for item in state.roles if skill_id in item.skill_ids],
+        )
+
+        controls = yaml.safe_load(
+            (ROOT / skill.source_path.parent / "agents/openai.yaml").read_text()
+        )
+        self.assertEqual({"policy": {"allow_implicit_invocation": False}}, controls)
+
+        projection = renderer.expected_native_projection(ROOT)
+        self.assertIn(
+            pathlib.Path(f".claude/skills/{skill_id}/SKILL.md"), projection
+        )
+        self.assertNotIn(
+            pathlib.Path(f".codex/skills/{skill_id}/SKILL.md"), projection
+        )
 
     def test_unknown_provider_fails_closed(self) -> None:
         renderer = load_renderer()

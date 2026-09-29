@@ -112,6 +112,24 @@ class AgentFunctionRoutesTest(unittest.TestCase):
         self.assertIn(".agents/skills/security-audit/SKILL.md", context)
         self.assertIn(canonical_description("security-audit"), context)
 
+    def test_recovery_review_routes_only_specific_review_requests(self) -> None:
+        skill_path = ".agents/skills/stateful-recovery-contract-review/SKILL.md"
+        for prompt in (
+            "Review this stateful recovery contract",
+            "Please perform a recovery contract review",
+            "We need a recovery readiness review before seeking approval",
+            "Request a disaster recovery review of this sanitized plan",
+        ):
+            with self.subTest(prompt=prompt):
+                self.assertIn(skill_path, run_dispatcher(prompt))
+        for prompt in (
+            "recover a deleted git branch", "restore production now",
+            "Implement a stateful recovery contract",
+            "check recovery", "write a recovery procedure", "good morning",
+        ):
+            with self.subTest(prompt=prompt):
+                self.assertNotIn(skill_path, run_dispatcher(prompt))
+
     def test_an_unmatched_prompt_adds_no_context(self) -> None:
         self.assertEqual("", run_dispatcher("good morning"))
 
