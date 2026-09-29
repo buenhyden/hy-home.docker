@@ -527,7 +527,7 @@ services:
       - ./pyroscope/config/pyroscope.yaml:/etc/pyroscope/pyroscope.yaml:ro
       - pyroscope-data:/var/lib/pyroscope:rw
     ports:
-      - '${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
+      - '127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}'
     healthcheck:
       test: [ 'CMD', '/usr/bin/profilecli', 'ready', '--url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}' ]
       interval: 30s
