@@ -1,12 +1,12 @@
 ---
 title: "Repository Authority Map"
-version: "0.2.3"
+version: "0.3.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 created: "2026-09-06"
-observed_at: "2026-09-07"
+observed_at: "2026-09-29"
 review_cycle: "on-surface-change"
 ---
 
@@ -21,9 +21,9 @@ column names the document that holds it.
 
 ## Scope
 
-Tracked repository surfaces and their canonical owners. Excluded: runtime
-state, service health, credential contents, user-global provider settings, and
-anything outside this repository.
+Tracked repository surfaces and their canonical owners, plus the selected
+pending evaluation target. Excluded: runtime state, service health, credential
+contents, user-global provider settings, and anything outside this repository.
 
 ## Surface Ownership
 
@@ -49,7 +49,8 @@ anything outside this repository.
 | `scripts/lib/**` | importable domain logic | focused tests | `tests/lib/**` |
 | `scripts/operations/**`, `scripts/validation/**` | executable entrypoints | focused tests plus harness validation | `tests/validation/**` |
 | `tests/**` | `tests/lib` for library behavior, `tests/validation` for CLI | production code never reads `tests/` | the suites themselves |
-| `evals/**` | deterministic model-free agent-output evaluation | synthetic fixtures only | agent-output eval fixture gate |
+| `evals/**` | deterministic model-free agent-output evaluation | synthetic fixtures only; current location until W9 cutover | agent-output eval fixture gate |
+| `.agents/evaluations/**` | selected canonical evaluation owner | W9 migration target; not yet an active source | W9 migration verification |
 | `infra/**`, `docker-compose.yml` | the Compose layer | scoped Compose validation and Task approval | `validate-docker-compose.sh`, hardening checks |
 | `secrets/**` | path and policy context only | metadata-only evidence; values are never read | template security baseline |
 | `graphify-out/**` | untracked local navigation snapshot | advisory when its commit differs from HEAD, and absent until rebuilt | regenerate with the CLI; never hand-edit or track |
@@ -96,7 +97,20 @@ documents. The Entry Order was re-read from `bootstrap.md` at `f71449eff` on
 categories this map's own ownership table lists and so routed to neither. The knowledge graph under `graphify-out/` was not used as evidence
 because its build commit differs from HEAD. The `docs/98.archive/**` row was
 re-read from the documentation protocol's Stage 98 dispositions section on
-2026-09-15, in the change that added that section.
+2026-09-15, in the change that added that section. On 2026-09-29, the active
+Spec and Plan at `b097e11c1ff006c7d504f40937a54b68493e7bc7`,
+`evals/agent_output_eval.py`, and the Provider Registry were re-read to
+corroborate the current evaluation source and selected pending target.
+
+## Knowledge Validity
+
+The facts here are valid only while their named sources agree with the stated
+observation range and no refresh trigger has fired. They cover tracked,
+non-secret routing facts only; credential contents, private state, and
+user-global configuration remain excluded. A named source change, deletion,
+correction, or review expiry invalidates the affected fact until it is re-read.
+An obligation or durable decision routes to its canonical owner; this map is
+then refreshed or retired rather than copied.
 
 ## Refresh Triggers
 

@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.2.2"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -72,12 +72,18 @@ independent policy sources.
   or fixed file counts.
 - **REQ-0024-FR-0014**: `.agents/`'s canonical categories are limited to
   governance, role, invocable skill, verified navigational knowledge, and
-  reusable prompt contract, each of which must have a registered Stage 99
-  profile and canonical root inventory. Knowledge and prompt content must not
-  duplicate mandatory rules, detailed design, specifications, or runbook
+  reusable prompt contract, and selected canonical model-free evaluation input.
+  Markdown instruction categories have a registered Stage 99 profile and
+  canonical root inventory; evaluator-owned code and data follow the registered
+  canonical inventory and script manifest instead. Knowledge and prompt content
+  must not duplicate mandatory rules, detailed design, specifications, or runbook
   bodies, and must instead route to the canonical owner. No category owns
-  execution progress state, and the current Spec Package Task remains the
-  sole progress/handoff authority.
+  execution progress state, and the current Spec Package Task remains the sole
+  progress/handoff authority. Verified knowledge may preserve reusable durable
+  domain facts with source, owner, validity, sensitivity, and invalidation; it
+  remains navigation, not workflow authority. The selected
+  `.agents/evaluations/` target and its migration and verification evidence belong
+  to the active Spec Package.
 
 ## Non-functional Requirements
 

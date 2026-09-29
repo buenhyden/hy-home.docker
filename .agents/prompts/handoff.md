@@ -1,10 +1,10 @@
 ---
 title: "Handoff Prompt"
-version: "0.2.0"
+version: "0.3.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-07"
+updated: "2026-09-29"
 created: "2026-09-06"
 ---
 
@@ -29,25 +29,38 @@ resuming never requires the previous conversation.
   implied.
 - The approval scope recorded in the Task's `Inputs`.
 - The governing Spec's `Acceptance Contract` and the Plan's work-unit labels.
+- Repository and worktree identities, relevant owned-file digests, the current
+  non-revoked approval source and scope, exclusive writer, partial-result state,
+  declared applicable request, token, time, concurrency, and retry ceilings;
+  shared-budget identity and remaining allocation; unsupported fields recorded
+  as unknown; and knowledge validity.
 
-Stop and request the missing input if the Task, the branch, or the approval
-scope cannot be identified.
+The receiver re-reads Git and the Task. On a repository, worktree, HEAD, digest,
+approval, writer, partial-result, budget, or knowledge-validity mismatch, refuse
+mutation and additional spending, record the mismatch and required reconciliation,
+and return to `workflow-supervisor`. A digest is resume evidence, not a standing
+completion SHA gate. Stop and request the missing input if the Task, branch, or
+approval scope cannot be identified.
 
 ## Output Contract
 
 A single block with exactly these labeled parts, in this order:
 
 1. **Task** — the Task path and artifact id; the governing Spec and Plan.
-2. **Position** — branch, HEAD, working-tree state, and which Plan work unit is
-   next.
+2. **Position** — repository and worktree identities, branch, HEAD, relevant
+   owned-file digests, working-tree state, and which Plan work unit is next.
 3. **Purpose** — the objective in one sentence, taken from the Spec.
 4. **Approved scope** — what the current authorization does and does not cover,
-   copied from the Task, not inferred.
-5. **File ownership** — which paths this work owns, and which paths belong to a
-   concurrent package or another worker and must not be touched.
+   copied from the Task, including its source and current non-revoked state; its
+   declared applicable request, token, time, concurrency, and retry ceilings;
+   shared-budget identity and remaining allocation; and unsupported fields
+   recorded as unknown, not inferred.
+5. **File ownership** — which paths this work owns, the exclusive writer, the
+   partial-result state, and which paths belong to a concurrent package or
+   another worker and must not be touched.
 6. **Verification state** — each check with its exit code and one of PASS,
-   FAIL, BLOCKED, NOT_RUN, or N/A. A blocked or unexecuted check names its
-   missing input.
+   FAIL, BLOCKED, NOT_RUN, or N/A, plus knowledge validity. A blocked or
+   unexecuted check names its missing input.
 7. **Not executed** — checks, observations, and actions deliberately not
    performed, each with its reason.
 8. **Next action** — the single next step, expressed as a command or an edit to

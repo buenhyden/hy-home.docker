@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.1.2"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 ---
 
 # Git Workflow Governance
@@ -65,8 +65,12 @@ Use Conventional Commits with explicit scopes where possible.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- For release tag creation, follow the Release Management Runbook
-  (`docs/05.operations/runbooks/0009-release-management.md`).
+- Before pushing a `v*.*.*` tag, require `CHANGELOG.md` to contain that exact
+  release-tag string, scoped validation, readiness evidence, and a linked Task.
+  A remote tag or release remains subject to separately approved exact target
+  and action. Follow the Stage 05
+  [operations runbook index](../../docs/05.operations/runbooks/README.md) for
+  executable release procedure details.
 
 ## 5. Agent Completion Commit Discipline
 
@@ -92,4 +96,4 @@ GitHub-specific enforcement rules (branch protection, required checks, CODEOWNER
 
 - `.agents/governance/github-governance.md`
 - `.agents/governance/quality-standards.md`
-- `docs/05.operations/runbooks/0009-release-management.md`
+- [Operations runbook index](../../docs/05.operations/runbooks/README.md)

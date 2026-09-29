@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.6.0"
+version: "0.7.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-29"
 created: "2026-09-06"
-observed_at: "2026-09-15"
+observed_at: "2026-09-29"
 review_cycle: "on-gate-change"
 ---
 
@@ -167,7 +167,21 @@ The Test Ownership table has a different source and had no stated one when this
 map was written, which is how it came to describe a `tests/fixtures/` layer that
 a completed convergence had already emptied. Its rows are now read from
 `git ls-files` at `e7ec6e78b` on 2026-09-15, which reports zero tracked paths
-under that prefix, as it did on 2026-09-07. A row here names a location that the tracked tree actually contains.
+under that prefix, as it did on 2026-09-07. A row here names a location that the
+tracked tree actually contains. On 2026-09-29, the active Spec and Plan at
+`b097e11c1ff006c7d504f40937a54b68493e7bc7` and
+`evals/run-agent-output-eval-fixtures.sh` were re-read to corroborate the
+current static local evaluator gate and its selected migration target.
+
+## Knowledge Validity
+
+The facts here are valid only while their named sources agree with the stated
+observation range and no refresh trigger has fired. They cover tracked,
+non-secret routing facts only; credential contents, private state, and
+user-global configuration remain excluded. A named source change, deletion,
+correction, or review expiry invalidates the affected fact until it is re-read.
+An obligation or durable decision routes to its canonical owner; this map is
+then refreshed or retired rather than copied.
 
 ## Refresh Triggers
 
@@ -178,6 +192,8 @@ under that prefix, as it did on 2026-09-07. A row here names a location that the
 - A leaf joins or leaves the local exclusion set in `ci_gate_runner.py`.
 - The `tests/lib` and `tests/validation` ownership boundary changes, or a test
   location named in the Test Ownership table is added, moved, or emptied.
+- Evaluation ownership or its changed-path routing changes. The current gate is
+  static and local; native, hosted, and operational observations remain separate.
 
 ## Related Documents
 

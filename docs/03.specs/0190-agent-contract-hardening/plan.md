@@ -323,27 +323,27 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    knowledge contains verified facts with existing Provenance/Refresh Triggers.
    Existing `score_text` and `run_regressions` own model-free judgments.
 
-   - [ ] Add deterministic refusal cases for changed HEAD/digest, wrong worktree,
+   - [x] Add deterministic refusal cases for changed HEAD/digest, wrong worktree,
      revoked approval, concurrent writer, partial result, expired knowledge,
      injected evaluation instruction, exhausted budget, bounded 429/backoff
      and competing tasks consuming the same budget. Assert that evidence of
      refusal is required and static-only native success claims fail the rubric.
      Run E for RED; these evaluate recorded outputs, not a new runtime engine.
-   - [ ] Separate design/spec/plan approvals, static/operational workflow and
+   - [x] Separate design/spec/plan approvals, static/operational workflow and
      corrective incident routing; preserve one narrower retry/two attempts.
      Express Task-declared request/token/time/concurrency/retry ceilings and
      native enforcement/observation source. No guessed account RPM/TPM, price,
      universal token budget, provider key or unrequested inference gateway.
-   - [ ] Extend the handoff required inputs and refusal contract; place durable
+   - [x] Extend the handoff required inputs and refusal contract; place durable
      verified facts, scope/source/owner/date/sensitivity/invalidation in existing
      knowledge sections. Reconcile REQ/AD navigation-only wording with this
      bounded fact reuse, leaving detailed design/runbooks at their stage owners.
      Keep frozen ADRs untouched; prompts acquire no execution authority.
-   - [ ] Keep Git hooks, editor actions, CI and issue coordination separate.
+   - [x] Keep Git hooks, editor actions, CI and issue coordination separate.
      Projects remains the preferred future option, Linear an alternative;
      neither receives a sync job. Preserve failure/NOT_RUN/approval in output
      style. Do not invent an editor action or modify user bindings.
-   - [ ] Run E, metadata/link checks and independent semantic review. Real budget
+   - [x] Run E, metadata/link checks and independent semantic review. Real budget
      enforcement stays unresolved for W10 until a supported native route is
      observed. Commit as `docs(agent): Define bounded workflow and handoff contracts`.
 

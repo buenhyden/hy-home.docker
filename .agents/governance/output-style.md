@@ -1,10 +1,10 @@
 ---
 title: "Output Style"
-version: "1.1.1"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 ---
 
 # Output Style
@@ -41,6 +41,11 @@ a skipped step, and state completion only after the check that proves it has
 run. Completion obligations themselves belong to
 [task checklists](task-checklists.md); this policy owns only how the result is
 reported.
+
+Name `FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, missing or revoked approval, and
+partial results explicitly. Label static, configured, native, hosted, and
+operational evidence by the observation actually made; one does not prove
+another.
 
 Provider-native presentation may adapt rendering but may not change governance
 authority, language routing, or acceptance criteria.
