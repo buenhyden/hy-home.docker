@@ -41,7 +41,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | ID | Package | 목적 |
 | --- | --- | --- |
 | SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
-| SPEC-0191 | [Backup Valkey Export Timeout](./0191-backup-valkey-export-timeout/) | 야간 백업의 `mng-valkey` RDB 내보내기에 제한시간을 두어 멈춘 내보내기가 전체 백업을 막지 않게 함 |
+| SPEC-0191 | [Backup Valkey Export Timeout](./0191-backup-valkey-export-timeout/) | 야간 백업의 `mng-valkey` RDB 내보내기에 제한시간을 두어 멈춘 내보내기가 전체 백업을 막지 않게 함 · 보관 승인 대기 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
