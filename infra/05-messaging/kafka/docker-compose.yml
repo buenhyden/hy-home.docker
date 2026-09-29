@@ -73,7 +73,7 @@ services:
       KAFKA_JMX_OPTS: >-
         -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
       KAFKA_OPTS: >-
-        -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
+        -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
       KAFKA_NODE_ID: 1
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka-1:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://${KAFKA_EXTERNAL_HOSTNAME:-localhost}:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}'
       KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
@@ -571,7 +571,7 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
       KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
-      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
+      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
       KAFKA_NODE_ID: 2
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}
       KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
@@ -619,7 +619,7 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
       KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
       KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
-      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka-config.yaml
+      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
       KAFKA_NODE_ID: 3
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}
       KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}

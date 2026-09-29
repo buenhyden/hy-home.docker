@@ -82,7 +82,10 @@ scrape_configs:
           namespace: "hy-home"
           domain: "observability"
 
+  # The Alloy mixin dashboards query native histograms; classic buckets stay for rules.
   - job_name: "alloy"
+    scrape_native_histograms: true
+    always_scrape_classic_histograms: true
     static_configs:
       - targets: ["alloy:12345"]
         labels:

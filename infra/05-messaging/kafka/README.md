@@ -1,10 +1,10 @@
 ---
 title: "Kafka Messaging"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-30"
 created: "2025-11-12"
 ---
 
@@ -47,7 +47,7 @@ listener는 PLAINTEXT이며 broker TLS/클라이언트 인증은 선언되어 �
 유지되며 일부 라우트는 Traefik을 사용합니다. Broker, Schema Registry,
 Connect, REST, Kafbat, exporter는 각 역할에 맞는 healthcheck를 선언하고
 init은 one-shot job입니다.
-[`jmx-exporter/kafka-config.yaml`](jmx-exporter/kafka-config.yaml)과 OIDC
+[`jmx-exporter/kafka_broker.yml`](jmx-exporter/kafka_broker.yml)(Confluent 규칙, SPEC-0193)과 OIDC
 템플릿이 마운트되는 설정 소스입니다.
 
 Kafbat은 [`kafbat-ui/dynamic_config.template.yaml`](kafbat-ui/dynamic_config.template.yaml)을
