@@ -1,8 +1,8 @@
 ---
 title: "Compose Host Port Exposure Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
