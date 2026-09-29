@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0182"
 parent_ids:
@@ -165,9 +165,11 @@ up to twelve months; that is the accepted cost of not rewriting snapshots.
 
 ## Open Questions
 
-The offsite target and the auto-unseal mechanism are open until the memos
-are decided. The measurement window and the keep or stop list are the
-owner's choices.
+None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
+target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
+2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. The keep or
+stop decision for the six containers kept until W7 is still the owner's
+(Task 0002).
 
 ## Operational Impact
 
