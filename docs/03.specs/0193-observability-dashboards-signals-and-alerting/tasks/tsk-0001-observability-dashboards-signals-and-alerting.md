@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.4"
+version: "0.3.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -123,6 +123,29 @@ acceptance criterion of [SPEC-0193](../spec.md).
     `--collector.postmaster` for `PostgresqlRestarted`.
   - `recording_rules.yml` removed: none of its six rules had a consumer, and
     the Loki ones duplicate the mixin rules.
+- 2026-09-30 W6: rollout, one service at a time with owner approval.
+  - `grafana-db-provision` exited 0; `grafana_reader` is not superuser, has
+    connection limit 4, `default_transaction_read_only=on`,
+    `statement_timeout=30s`, and `SELECT` on exactly the five tables.
+  - Grafana recreated with 1 GiB, then restarted seven times: the Pyroscope
+    datasource existed without a UID and could not move to the fixed UID.
+    `deleteDatasources` for it fixed the start. The nine kept dashboards got
+    their previous UIDs back, and six replaced files were renamed
+    (`postgresql`, `qdrant-overview`, `etcd-cluster`, `haproxy-overview`,
+    `prometheus-overview`, `alertmanager-overview`), because Grafana 13
+    refuses a new UID at a path whose old dashboard still holds the internal
+    ID. Afterwards 50 dashboards, no provisioning error.
+  - Prometheus, Loki and Alloy recreated (Loki and Alloy forced, their
+    change being a mounted file); Keycloak, OAuth2 Proxy, the registry,
+    `mng-pg-exporter`, the Airflow services, Flower, Schema Registry and
+    Kafka Connect recreated and healthy.
+  - `airflow-scheduler` stayed unhealthy: with OTel tracing on, Airflow 3.3.1
+    never starts the scheduler health server on 8974 (a SIGUSR2 stack dump
+    showed no health thread; the same container with tracing off was
+    healthy). Tracing is off for the scheduler only, which also leaves
+    `obs_net`.
+  - HOME runs `config.home.alloy` (`ALLOY_CONFIG_FILE`), not `config.alloy`;
+    the W1 and W2 Alloy changes were applied to it and Alloy reloaded.
 
 ## Verification Evidence
 

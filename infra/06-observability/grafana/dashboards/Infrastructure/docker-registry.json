@@ -1473,7 +1473,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "Docker Registry",
-  "uid": "hyhome-docker-registry",
+  "uid": "infrastructure-docker-registry",
   "version": 2,
   "description": "Source: grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry. Provisioned by hy-home (SPEC-0193)."
 }

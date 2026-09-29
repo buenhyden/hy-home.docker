@@ -167,9 +167,14 @@ services:
     container_name: airflow-scheduler
     read_only: false
     command: scheduler
+    environment:
+      <<: *airflow-common-env
+      # Airflow 3.3.1: with OTel tracing on, the scheduler never starts its
+      # health server on 8974 (verified 2026-09-30), so the container stays
+      # unhealthy. Tracing stays on for the other Airflow services (SPEC-0193).
+      AIRFLOW__TRACES__OTEL_ON: 'false'
     networks:
       airflow_net: {}
-      obs_net: {}
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD', 'curl', '--fail', 'http://localhost:8974/health' ]

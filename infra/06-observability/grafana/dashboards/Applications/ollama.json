@@ -904,7 +904,7 @@
   },
   "timezone": "browser",
   "title": "Ollama Exporter (lucabecker42)",
-  "uid": "hyhome-ollama",
+  "uid": "applications-ollama",
   "version": 1,
   "description": "Source: local: no external dashboard matches lucabecker42/ollama-exporter. Provisioned by hy-home (SPEC-0193)."
 }

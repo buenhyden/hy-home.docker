@@ -87,19 +87,9 @@ loki.write "local_loki" {
 /*****************************************************************
  * 2. METRICS PIPELINE (Prometheus)
  *****************************************************************/
-// Alloy 자체 메트릭 노출
-prometheus.exporter.self "alloy_metrics" {}
-
-prometheus.scrape "alloy_scrape" {
-  targets    = prometheus.exporter.self.alloy_metrics.targets
-  forward_to = [prometheus.remote_write.local_prom.receiver]
-}
-
-prometheus.remote_write "local_prom" {
-  endpoint {
-    url = "http://prometheus:9090/api/v1/write"
-  }
-}
+// Prometheus scrapes Alloy's own /metrics as job "alloy". A self
+// remote-write here sent the same series a second time as job
+// "integrations/self", so it was removed (SPEC-0193).
 
 /*****************************************************************
  * 3. TRACING PIPELINE (Tempo)
@@ -131,5 +121,40 @@ otelcol.exporter.otlp "tempo" {
     tls {
       insecure = true
     }
+  }
+}
+
+/*****************************************************************
+ * 4. PROFILING PIPELINE (Pyroscope)
+ *****************************************************************/
+// Pull Go pprof from the services that serve /debug/pprof (SPEC-0193). No
+// eBPF: nothing here needs host PID or privileges. service_name matches the
+// Loki label and the Tempo service.name so the Drilldown links resolve.
+pyroscope.scrape "go_services" {
+  targets = [
+    {"__address__" = "prometheus:9090", "service_name" = "prometheus"},
+    {"__address__" = "alertmanager:9093", "service_name" = "alertmanager"},
+    {"__address__" = "loki:3100", "service_name" = "loki"},
+    {"__address__" = "tempo:3200", "service_name" = "tempo"},
+    {"__address__" = "alloy:12345", "service_name" = "alloy"},
+    {"__address__" = "pyroscope:4040", "service_name" = "pyroscope"},
+    {"__address__" = "grafana:6060", "service_name" = "grafana"},
+    {"__address__" = "node-exporter:9100", "service_name" = "node-exporter"},
+    {"__address__" = "seaweedfs-s3:9327", "service_name" = "seaweedfs-s3"},
+    {"__address__" = "mng-pg-exporter:9187", "service_name" = "mng-pg-exporter"},
+    {"__address__" = "registry:5001", "service_name" = "registry"},
+  ]
+  scrape_interval = "30s"
+  forward_to      = [pyroscope.write.local_pyroscope.receiver]
+}
+
+pyroscope.write "local_pyroscope" {
+  endpoint {
+    url = "http://pyroscope:4040"
+  }
+
+  external_labels = {
+    env     = "dev",
+    cluster = "hy-home",
   }
 }

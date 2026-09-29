@@ -1,5 +1,12 @@
 apiVersion: 1
 
+# The Pyroscope datasource was first provisioned without a UID; Grafana cannot
+# move an existing datasource to a new UID in place, so it is deleted by name
+# and created again with the fixed UID (SPEC-0193).
+deleteDatasources:
+  - name: Pyroscope
+    orgId: 1
+
 # Datasource identities are fixed UIDs; dashboards reference these UIDs or a
 # datasource variable (POL-0041). Cross-signal links (SPEC-0193):
 #   metrics --exemplar traceID--> traces
