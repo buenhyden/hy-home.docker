@@ -1,8 +1,8 @@
 ---
 title: "HOME Classification and Valkey Key Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
