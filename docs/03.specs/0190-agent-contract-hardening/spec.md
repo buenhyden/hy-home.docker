@@ -2,7 +2,7 @@
 title: "Agent Contract Hardening Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"

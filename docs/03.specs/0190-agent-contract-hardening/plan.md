@@ -2,7 +2,7 @@
 title: "Agent Contract Hardening Implementation Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"

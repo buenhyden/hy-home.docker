@@ -2,7 +2,7 @@
 title: "Contract Hardening Execution Baseline"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -61,6 +61,8 @@ predecessors before implementing W2–W10. This Task is the execution record.
 - Focused lifecycle validation against d57878b: selected 3, violations 0,
   exit 0. Public local gate checks active content, not predecessor transitions.
 
+- Spec review→approved check against 8a67f161f: selected 1, violations 0, exit 0.
+
 ## Review Evidence
 
 - Independent Spec review: three material findings and one budget wording
@@ -71,6 +73,8 @@ predecessors before implementing W2–W10. This Task is the execution record.
   behavioral scope or acceptance claim is introduced.
 
 ## Commit Ledger
+
+- `8a67f161f`: validated Spec review, Plan approval and initial W1 Task.
 
 - `d57878b`: initial reviewed draft Spec/Plan, index and allocation baseline.
 
