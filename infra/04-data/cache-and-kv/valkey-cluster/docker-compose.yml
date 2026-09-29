@@ -76,7 +76,7 @@ services:
       PORT: ${VALKEY0_PORT}
       NODE_NAME: valkey-node-0
     ports:
-      - '${VALKEY0_PORT:-6379}:${VALKEY0_PORT:-6379}'
+      - '127.0.0.1:${VALKEY0_PORT:-6379}:${VALKEY0_PORT:-6379}'
     expose:
       - ${VALKEY0_BUS_PORT:-16379}
     volumes:
@@ -94,7 +94,7 @@ services:
       PORT: ${VALKEY1_PORT}
       NODE_NAME: valkey-node-1
     ports:
-      - '${VALKEY1_PORT:-6380}:${VALKEY1_PORT:-6380}'
+      - '127.0.0.1:${VALKEY1_PORT:-6380}:${VALKEY1_PORT:-6380}'
     expose:
       - ${VALKEY1_BUS_PORT:-16380}
     volumes:
@@ -112,7 +112,7 @@ services:
       PORT: ${VALKEY2_PORT}
       NODE_NAME: valkey-node-2
     ports:
-      - '${VALKEY2_PORT:-6381}:${VALKEY2_PORT:-6381}'
+      - '127.0.0.1:${VALKEY2_PORT:-6381}:${VALKEY2_PORT:-6381}'
     expose:
       - ${VALKEY2_BUS_PORT:-16381}
     volumes:
@@ -130,7 +130,7 @@ services:
       PORT: ${VALKEY3_PORT}
       NODE_NAME: valkey-node-3
     ports:
-      - '${VALKEY3_PORT:-6382}:${VALKEY3_PORT:-6382}'
+      - '127.0.0.1:${VALKEY3_PORT:-6382}:${VALKEY3_PORT:-6382}'
     expose:
       - ${VALKEY3_BUS_PORT:-16382}
     volumes:
@@ -148,7 +148,7 @@ services:
       PORT: ${VALKEY4_PORT}
       NODE_NAME: valkey-node-4
     ports:
-      - '${VALKEY4_PORT:-6383}:${VALKEY4_PORT:-6383}'
+      - '127.0.0.1:${VALKEY4_PORT:-6383}:${VALKEY4_PORT:-6383}'
     expose:
       - ${VALKEY4_BUS_PORT:-16383}
     volumes:
@@ -166,7 +166,7 @@ services:
       PORT: ${VALKEY5_PORT}
       NODE_NAME: valkey-node-5
     ports:
-      - '${VALKEY5_PORT:-6384}:${VALKEY5_PORT:-6384}'
+      - '127.0.0.1:${VALKEY5_PORT:-6384}:${VALKEY5_PORT:-6384}'
     expose:
       - ${VALKEY5_BUS_PORT:-16384}
     volumes:
