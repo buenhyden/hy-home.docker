@@ -2,7 +2,7 @@
 title: "Repository-Root Style Classification"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
