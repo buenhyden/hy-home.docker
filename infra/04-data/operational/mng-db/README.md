@@ -1,6 +1,6 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -53,7 +53,7 @@ PostgreSQL은 `mng_postgres_password`와 `pgbackrest_cipher_pass`를 읽습니�
 init은 서비스 database password secret을 읽습니다. Valkey/exporter는
 `mng_valkey_password`를 읽습니다. 두 엔진 모두 `mng_data_net`을 사용합니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
-게시하고, Valkey는 소스에 표기된 `VALKEY_MNG_HOST_POST` 키로
+게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는
 내부용입니다. PostgreSQL은
 `pg_isready`를, Valkey는 인증된 `PING`을, exporter는 HTTP 헬스 체크를
