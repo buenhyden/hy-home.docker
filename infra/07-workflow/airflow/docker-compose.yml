@@ -22,12 +22,9 @@ x-airflow-common-env: &airflow-common-env
   AIRFLOW__METRICS__STATSD_HOST: 'airflow-statsd-exporter'
   AIRFLOW__METRICS__STATSD_PORT: '${STATSD_AIRFLOW_PORT:-9125}'
   AIRFLOW__METRICS__STATSD_PREFIX: 'airflow'
-  # OTLP/HTTP traces to Alloy (SPEC-0193); the Airflow services join obs_net.
-  AIRFLOW__TRACES__OTEL_ON: 'true'
-  AIRFLOW__TRACES__OTEL_HOST: alloy
-  AIRFLOW__TRACES__OTEL_PORT: '4318'
-  AIRFLOW__TRACES__OTEL_SSL_ACTIVE: 'false'
-  AIRFLOW__TRACES__OTEL_SERVICE: airflow
+  # No OTel tracing: on Airflow 3.3.1 it hangs every forking process (the
+  # scheduler health server, DAG file processors, the Celery prefork pool;
+  # SPEC-0193, RUN-0050). Retest on the scheduler after an upgrade.
   _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   AIRFLOW__API_AUTH__JWT_SECRET_CMD: cat /run/secrets/airflow_api_jwt_secret
   AIRFLOW__API_AUTH__JWT_ISSUER: airflow
@@ -136,7 +133,6 @@ services:
     networks:
       edge_net: {}
       airflow_net: {}
-      obs_net: {}
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD', 'curl', '--fail', 'http://localhost:${AIRFLOW_PORT:-8080}/api/v2/monitor/health' ]
@@ -167,12 +163,6 @@ services:
     container_name: airflow-scheduler
     read_only: false
     command: scheduler
-    environment:
-      <<: *airflow-common-env
-      # Airflow 3.3.1: with OTel tracing on, the scheduler never starts its
-      # health server on 8974 (verified 2026-09-30), so the container stays
-      # unhealthy. Tracing stays on for the other Airflow services (SPEC-0193).
-      AIRFLOW__TRACES__OTEL_ON: 'false'
     networks:
       airflow_net: {}
       mng_data_net: {}
@@ -197,12 +187,6 @@ services:
     container_name: airflow-dag-processor
     read_only: false
     command: dag-processor
-    environment:
-      <<: *airflow-common-env
-      # Airflow 3.3.1: with OTel tracing on, every forked file processor runs
-      # past the 50 s parse timeout and is killed, so all DAGs go stale
-      # (verified 2026-09-30; the same file parses in 4 s in-process).
-      AIRFLOW__TRACES__OTEL_ON: 'false'
     networks:
       airflow_net: {}
       mng_data_net: {}
@@ -233,9 +217,6 @@ services:
     environment:
       <<: *airflow-common-env
       DUMB_INIT_SETSID: '0'
-      # Airflow 3.3.1: with OTel tracing on, the prefork pool reserves tasks
-      # but never runs them (verified 2026-09-30).
-      AIRFLOW__TRACES__OTEL_ON: 'false'
     healthcheck:
       test: [ 'CMD-SHELL', 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"' ]
       interval: 15s
@@ -261,7 +242,6 @@ services:
     command: triggerer
     networks:
       airflow_net: {}
-      obs_net: {}
       mng_data_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"' ]

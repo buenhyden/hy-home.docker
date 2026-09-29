@@ -1,6 +1,6 @@
 ---
 title: "Airflow Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -130,7 +130,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 - **Signals**: Grafana Alert (Worker Down), Flower (Queue Length).
 - **Evidence to Capture**: `docker compose logs --tail=100 airflow-scheduler airflow-worker airflow-apiserver`, broker ping, `airflow celery inspect ping`, DAG list 결과.
 - **Metrics**: statsd exporter mapping은 DAG, task, pool, DAG 파일 이름을 `dag_id`, `task_id`, `pool_name`, `dag_file` label로 옮기고, 규칙에 없는 네 단계 이상 이름은 버린다(SPEC-0193). 이름 템플릿은 `${1}_${2}`로 쓴다. `$1_$2`로 쓰면 exporter가 `1_`이라는 변수로 읽어 이름이 `airflow_` 하나로 뭉개진다(2026-09-30 확인). DAG run·task 메트릭(`airflow_dagrun_*`, `airflow_task_finish_total`)은 DAG가 실행된 뒤에야 생긴다. Grafana `Applications/airflow`(mixin)와 `Applications/airflow-db`(`airflow-db` SQL datasource)가 이를 본다.
-- **Traces**: apiserver와 triggerer만 OTLP/HTTP로 Alloy(`alloy:4318`)에 trace를 보낸다. scheduler, DAG processor, worker는 `AIRFLOW__TRACES__OTEL_ON=false`다. Airflow 3.3.1에서 tracing을 켜면 fork하는 프로세스가 멈춘다(2026-09-30 확인).
+- **Traces**: Airflow는 trace를 보내지 않는다. SPEC-0193에서 OTLP tracing을 켰다가 모두 껐다(2026-09-30, owner 결정). Airflow 3.3.1에서 tracing을 켜면 fork하는 프로세스가 멈춘다. Airflow 쪽 신호는 statsd metric, `airflow-db` SQL datasource, 로그로 본다. 업그레이드 뒤 다시 켜려면 scheduler 하나에서 먼저 health와 DAG run을 확인한다.
   - scheduler: 8974 health server가 뜨지 않아 unhealthy로 남는다. SIGUSR2 stack dump에 health thread가 없었다.
   - DAG processor: 파일마다 50 s parse timeout을 넘겨 kill되고, 모든 DAG가 `is_stale`이 되어 run이 `queued`에 머문다. 같은 파일을 프로세스 안에서 parse하면 4 s가 걸린다.
   - worker: prefork pool이 task를 reserve만 하고 실행하지 않는다.

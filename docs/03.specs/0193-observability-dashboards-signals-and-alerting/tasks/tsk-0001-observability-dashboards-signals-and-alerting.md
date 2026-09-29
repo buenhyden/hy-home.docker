@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.12"
+version: "0.3.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -201,7 +201,7 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | 4 | W6 | PASS with recorded gaps: on 2026-09-30, against the live metric names, every dashboard of a running service resolves its queries except panels for features not in use (Loki and Tempo cloud stores, memcache, envoy, Kafka tiered storage, Confluent Server stray partitions, hardware fans, SeaweedFS admin, DCGM profiling, Grafana-managed alerts), series that need traffic (Airflow DAG runs, Flower events, Keycloak user events, OAuth2 Proxy requests, consumer lag, loaded Ollama models, connectors) and the pre-1.0 JMX name `jvm_memory_bytes_max` (one panel each in three Confluent dashboards); stopped on-demand services (HAProxy, etcd, OpenSearch, MongoDB, Cassandra, k6) have no series | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 5 | W6 | PASS: Prometheus, Loki, Pyroscope, `n8n-db` and `airflow-db` report healthy, Tempo and Alertmanager answer through the proxy; `grafana_reader` is not superuser, is read-only by default, has a 30 s timeout, 4 connections and `SELECT` on five tables (`b2cf9feaf`) | [RUN-0041](../../../05.operations/runbooks/0041-grafana.md) |
 | 6 | W6 | PASS: 49 active targets in 38 jobs with no scrape URL twice; the down targets all belong to stopped services (`kafka-2`, `kafka-3`, HAProxy, etcd, OpenSearch, MongoDB, Cassandra, the PostgreSQL cluster, the Valkey cluster and the three unstarted Valkey exporters) | [GDE-0045](../../../05.operations/guides/0045-prometheus.md) |
-| 7 | W6 | PASS except Airflow spans: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. no Airflow spans after two DAG runs, because tracing had to be turned off for the scheduler, DAG processor and worker (owner decision in Deferred Items). Traces Drilldown queries failed until Tempo got `stream_over_http_enabled` (follow-up 2) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
+| 7 | W6 | PASS with the owner-ruled Airflow exception: Loki volume and patterns answer; Tempo holds `keycloak`, `grafana` and `traefik-gateway` spans and answers TraceQL metrics; Pyroscope holds 11 services; Prometheus `timeInterval` is 30 s. Airflow spans dropped by the owner's ruling (Airflow 3.3.1 tracing hangs its forking processes). Traces Drilldown queries failed until Tempo got `stream_over_http_enabled` (follow-up 2) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 4 | W6 | PASS: Keycloak Capacity Planning now resolves its last query; after the owner's Dozzle sign-in on 2026-09-30, `keycloak_user_events_total` reports `login` 2, `code_to_token` 2, `user_info_request` 1 and `permission_token` 133 | [Keycloak Compose](../../../../infra/02-auth/keycloak/docker-compose.yml) |
 | 4 | W6 | PASS: after the owner's Prometheus and Flower sign-ins on 2026-09-30, `oauth2_proxy_requests_total` and `oauth2_proxy_response_duration_seconds` report 35 requests (code 202), and the OAuth2 Proxy dashboard resolves both queries | [OAuth2 Proxy dashboard](../../../../infra/06-observability/grafana/dashboards/Gateway/oauth2-proxy.json) |
 | 4 | W6 | PASS: after two example DAG runs on 2026-09-30, Airflow (mixin) resolves 15 of 21 queries (missing only failure, schedule-delay and SLA series: the runs were manual and succeeded, and Airflow 3 has no SLA) and Flower 6 of 6 | [statsd mapping](../../../../infra/07-workflow/airflow/config/statsd_mapping.yml) |
@@ -241,11 +241,16 @@ None yet.
   pushes, and asked that the Grafana reader password be created with its
   entries in `secrets/SENSITIVE_ENV_VARS.md` and its `.example`, and any
   environment key in `.env` and `.env.example`.
+- 2026-09-30: Owner ruled Airflow tracing off everywhere (ruling 3 withdrawn
+  for Airflow): on 3.3.1 it hangs the scheduler, DAG processor and worker,
+  and the apiserver and triggerer alone send no DAG or task spans. The
+  `AIRFLOW__TRACES__*` settings and the Airflow services' `obs_net`
+  memberships added for it are removed; RUN-0050 records the retest
+  condition.
 
 ## Deferred Items
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` and `seaweedfs-s3` CPU throttling (firing), `mng-valkey-exporter` CPU throttling (pending), Flower memory (`ContainerHighMemoryUsage` firing), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
-| Owner decision on Airflow tracing: on Airflow 3.3.1 only the apiserver and triggerer can keep it, and neither sends DAG or task spans, so ruling 3 yields no Airflow traces | @buenhyden | Before the completion receipt |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |
