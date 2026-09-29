@@ -77,13 +77,53 @@ deny contains msg if {
 	msg := sprintf("service %s: %s carries a literal value; use a Docker secret", [name, key])
 }
 
-# Host publication beyond loopback is sometimes intended (ingress, mail), so it
-# is reported, not refused.
+# A host publication must name the address it binds (SPEC-0188): loopback for a
+# host-local port, the host LAN address for one the k3d cluster reaches. The
+# raw string is read before interpolation, so `${VAR:-address}` counts as an
+# address when its default is not a wildcard.
+wildcard_addresses := {"", "0.0.0.0", "::", "[::]"}
+
+wildcard_host(host) if host in wildcard_addresses
+
+wildcard_host(host) if {
+	startswith(host, "${")
+	not contains(host, ":-")
+}
+
+wildcard_host(host) if {
+	startswith(host, "${")
+	trim_suffix(split(host, ":-")[1], "}") in wildcard_addresses
+}
+
+# `${...}` and `[...]` may hold colons, so they are masked before counting the
+# `host:container` or `address:host:container` fields.
+wide_port(port) if {
+	is_string(port)
+	fields := split(regex.replace(regex.replace(port, `\$\{[^}]*\}`, "V"), `\[[^\]]*\]`, "B"), ":")
+	count(fields) == 2
+}
+
+wide_port(port) if {
+	is_string(port)
+	fields := split(regex.replace(regex.replace(port, `\$\{[^}]*\}`, "V"), `\[[^\]]*\]`, "B"), ":")
+	count(fields) > 2
+	host := regex.find_n(`^(\$\{[^}]*\}|\[[^\]]*\]|[^:]*)`, port, 1)[0]
+	wildcard_host(host)
+}
+
+wide_port(port) if {
+	is_object(port)
+	port.published
+	wildcard_host(object.get(port, "host_ip", ""))
+}
+
+port_label(port) := port if is_string(port)
+
+port_label(port) := sprintf("%v", [port]) if not is_string(port)
+
 warn contains msg if {
 	some name, svc in input.services
 	some port in object.get(svc, "ports", [])
-	is_string(port)
-	count(split(port, ":")) > 1
-	not startswith(port, "127.0.0.1:")
-	msg := sprintf("service %s: port %s is published on all interfaces", [name, port])
+	wide_port(port)
+	msg := sprintf("service %s: port %s is published on all interfaces", [name, port_label(port)])
 }

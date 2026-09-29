@@ -46,3 +46,31 @@ test_wide_port_warns_and_loopback_does_not if {
 	count(warn) == 1 with input as svc({"ports": ["8080:80"]})
 	count(warn) == 0 with input as svc({"ports": ["127.0.0.1:8080:80", "80"]})
 }
+
+test_host_port_variables_without_an_address_are_wide if {
+	count(warn) == 1 with input as svc({"ports": ["${X_HOST_PORT:-8080}:${X_PORT:-80}"]})
+	count(warn) == 1 with input as svc({"ports": ["${X_HOST_PORT:-8443}:8443/tcp"]})
+}
+
+test_a_named_host_address_is_scoped if {
+	count(warn) == 0 with input as svc({"ports": [
+		"192.168.0.13:80:80",
+		"${HOST_LAN_BIND_IP:-192.168.0.13}:${X_HOST_PORT:-443}:${X_PORT:-443}",
+		"127.0.0.1:${X_HOST_PORT:-8080}:80",
+		"[::1]:8080:80",
+	]})
+}
+
+test_wildcard_and_unset_addresses_are_wide if {
+	count(warn) == 1 with input as svc({"ports": ["0.0.0.0:8080:80"]})
+	count(warn) == 1 with input as svc({"ports": ["[::]:8080:80"]})
+	count(warn) == 1 with input as svc({"ports": ["${BIND_IP}:8080:80"]})
+	count(warn) == 1 with input as svc({"ports": ["${BIND_IP:-0.0.0.0}:8080:80"]})
+}
+
+test_long_syntax_needs_a_host_ip if {
+	count(warn) == 1 with input as svc({"ports": [{"target": 80, "published": 8080}]})
+	count(warn) == 1 with input as svc({"ports": [{"target": 80, "published": 8080, "host_ip": "0.0.0.0"}]})
+	count(warn) == 0 with input as svc({"ports": [{"target": 80, "published": 8080, "host_ip": "127.0.0.1"}]})
+	count(warn) == 0 with input as svc({"ports": [{"target": 80}]})
+}
