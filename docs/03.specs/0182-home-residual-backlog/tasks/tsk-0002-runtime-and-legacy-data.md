@@ -1,10 +1,10 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0002"
 parent_ids:
@@ -113,6 +113,20 @@ Read-only investigation of 2026-09-25:
   `quay.io/minio/minio`. The SPEC-0180 S07 rollback path has ended and the
   legacy Vault root token is moot.
 
+- 2026-09-29 lifecycle review: `hyhome-backup.service` failed with result
+  `timeout` on each run from 2026-09-26 to 2026-09-29, killed at its 4 h
+  limit after about 3.5 s of CPU. Each run finished pgBackRest (for example
+  `20260926-185114F_20260928-184110D`, completed successfully) and then
+  waited in the `mng-valkey` RDB export (`valkey-cli --rdb -`, stuck after
+  `REPLCONF rdb-only`), so Restic never ran and no snapshot without the
+  Vault tree exists yet. The run of 2026-09-25 03:35 KST, before the W5
+  disposal, succeeded. After `mng-valkey` was recreated on 2026-09-29 for
+  SPEC-0188, the same export finished in 5 s (1098638 bytes, success); no
+  leftover backup process or replica connection remains. What held the first
+  export on 2026-09-26 is not established. The W6 decisions still hold on
+  the host: none of the nine stopped services runs, and the four operator
+  UIs and the six containers kept until W7 run.
+
 ## Verification Evidence
 
 - W5 disposal: volume absent from `docker volume ls`; `minio/data-1` and
@@ -158,4 +172,7 @@ See the Plan.
 
 ## Deferred Items
 
-None yet.
+| Item | Owner | Trigger or date |
+| --- | --- | --- |
+| Confirm a successful `hyhome-backup.service` run and a Restic snapshot without `security/vault` (criterion 5); investigate the RDB export if it hangs again | agent | After the 2026-09-30 03:37 KST run |
+| Decide again on `kafka-1`, `kafka-connect`, `schema-registry`, `kafka-exporter`, `mlflow`, and `jupyterlab`, kept until W7 (criterion 6) | @buenhyden | Before the completion receipt |

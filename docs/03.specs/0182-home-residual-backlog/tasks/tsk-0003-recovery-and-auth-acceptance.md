@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.1"
+version: "0.7.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -88,6 +88,12 @@ Read-only investigation of 2026-09-25:
   manual-unseal order of ADR-0042. Docker service and socket are enabled and
   the five `k3d-hyhome-*` containers use `unless-stopped`. The supervised
   reboot is pending owner.
+- 2026-09-29 lifecycle review: criteria 8, 9, 10 and 11 stay open. W8's
+  window ends 2026-10-02; the W9 owner rows have no result; ADR-0041 chose R2,
+  but its implementation was reverted in #279 and not re-landed
+  (`infra/09-tooling/restic/README.md` states no R2 path exists); the
+  RUN-0098 Verification Record has no rehearsal row. The RUN-0021 and
+  RUN-0088 deferred item was resolved in #281.
 
 ## Verification Evidence
 
@@ -164,8 +170,9 @@ are applied in the same PR. The owner's approval follows.
 | #276 | ADR-0041 and ADR-0042 accepted | merged |
 | #277 | R2 offsite copy | merged against the owner's hold |
 | #278 | W11 RUN-0098 cold start and reboot runbook | merged |
-| #279 | Revert #277 until the R2 setup | open |
-| this PR | W7, W9, W10 and W11 records | open |
+| #279 | Revert #277 until the R2 setup | merged |
+| #280 | W7, W9, W10 and W11 records | merged |
+| #281 | Task 0001 completed; RUN-0021 data-disk scratch; RUN-0088 rehearsal path | merged |
 
 ## Rulings
 
@@ -185,4 +192,3 @@ See the Plan.
 | W9 owner rows: user outside `/admins`, logout, role removal, native OIDC signed in | @buenhyden | Before the completion receipt |
 | W11 supervised reboot and the RUN-0098 rehearsal record | @buenhyden | After fresh backups and `restic check` |
 | W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
-| RUN-0021 steps 5–6 put `scratch` in `mktemp -d` on the system disk; RUN-0088 step 1 has no rehearsal path that leaves `mlflow` running | agent | Next RUN-0021 or RUN-0088 edit |
