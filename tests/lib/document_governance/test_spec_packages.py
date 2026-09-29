@@ -178,6 +178,7 @@ def _branch_handoff_fixture(
     *,
     carrier: str = "current",
     completed_record: str = "committed",
+    completed_slug: str = "source",
     receipt_updates: dict[str, str] | None = None,
 ) -> tuple[pathlib.Path, str, dict[str, str]]:
     subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
@@ -227,7 +228,7 @@ def _branch_handoff_fixture(
     _write_package(
         root / "docs/98.archive/completed/03.specs",
         number="0001",
-        slug="source",
+        slug=completed_slug,
         spec_status="completed",
     )
     if completed_record == "committed":
@@ -1314,6 +1315,58 @@ class SpecPackageTests(unittest.TestCase):
                         base_ref=commit,
                     ),
                 )
+
+    def test_divergent_branch_handoff_matches_completed_identity_across_slugs(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        for mutation in ("none", "uncommitted", "modified", "ambiguous"):
+            with (
+                self.subTest(mutation=mutation),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                stage, commit, _ = _branch_handoff_fixture(
+                    root,
+                    completed_slug="other-lineage",
+                    completed_record=(
+                        "uncommitted" if mutation == "uncommitted" else "committed"
+                    ),
+                )
+                completed = root / "docs/98.archive/completed/03.specs"
+                if mutation == "modified":
+                    with (completed / "0001-other-lineage/spec.md").open(
+                        "a", encoding="utf-8"
+                    ) as file:
+                        file.write("\nmodified\n")
+                elif mutation == "ambiguous":
+                    _write_package(
+                        completed,
+                        number="0001",
+                        slug="source",
+                        spec_status="completed",
+                    )
+                    with self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "duplicate.*identity"
+                    ):
+                        spec_packages.validate_repository_spec_package_lifecycle(
+                            root,
+                            spec_packages.load_spec_packages(stage),
+                            base_ref=commit,
+                        )
+                    continue
+                findings = spec_packages.validate_repository_spec_package_lifecycle(
+                    root,
+                    spec_packages.load_spec_packages(stage),
+                    base_ref=commit,
+                )
+                if mutation == "none":
+                    self.assertEqual((), findings)
+                else:
+                    self.assertIn(
+                        "branch-integration-receipt-invalid",
+                        {finding.code for finding in findings},
+                    )
 
     def test_divergent_branch_handoff_requires_exactly_one_receipt_carrier(
         self,

@@ -1990,17 +1990,19 @@ def _validate_receipt_carrier(
         )
     except (FileNotFoundError, SpecPackageError) as error:
         return _invalid_receipt(carrier, str(error))
-    completed = next(
-        (
-            package
-            for package in completed_packages
-            if package.spec.path.parent == origin
-        ),
-        None,
+    completed_matches = tuple(
+        package
+        for package in completed_packages
+        if package.spec.artifact_id == receipt.source_artifact_id
     )
-    if completed is None:
-        return _invalid_receipt(carrier, "same-origin completed record is missing")
-    completed_path = _standard_preserved_package_path("completed", origin)
+    if len(completed_matches) != 1:
+        return _invalid_receipt(
+            carrier, "same-identity completed record is missing or ambiguous"
+        )
+    completed = completed_matches[0]
+    completed_path = _standard_preserved_package_path(
+        "completed", completed.spec.path.parent
+    )
     try:
         completed_spec_bytes = _filesystem_package_tree(root, completed_path)[
             pathlib.PurePosixPath("spec.md")
@@ -2029,7 +2031,7 @@ def _validate_receipt_carrier(
     ):
         return _invalid_receipt(
             carrier,
-            "same-origin immutable completed record is missing or invalid",
+            "same-identity immutable completed record is missing or invalid",
         )
     if source_tree != preserved_tree:
         return _invalid_receipt(
