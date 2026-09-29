@@ -41,7 +41,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | ID | Package | 목적 |
 | --- | --- | --- |
 | SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
-| SPEC-0183 | [Operations Role Layout](./0183-operations-role-layout/) | Stage 05를 domain 우선 catalog에서 역할별 디렉터리로 전환 |
+| SPEC-0183 | [Operations Role Layout](./0183-operations-role-layout/) | Stage 05를 domain 우선 catalog에서 역할별 디렉터리로 전환 · 보관 승인 대기 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
