@@ -77,7 +77,8 @@ deny contains msg if {
 	msg := sprintf("service %s: %s carries a literal value; use a Docker secret", [name, key])
 }
 
-# A host publication must name the address it binds (SPEC-0188): loopback for a
+# A host publication must name the address it binds (SPEC-0188, a deny once
+# the source passed): loopback for a
 # host-local port, the host LAN address for one the k3d cluster reaches. The
 # raw string is read before interpolation, so `${VAR:-address}` counts as an
 # address when its default is not a wildcard.
@@ -121,7 +122,7 @@ port_label(port) := port if is_string(port)
 
 port_label(port) := sprintf("%v", [port]) if not is_string(port)
 
-warn contains msg if {
+deny contains msg if {
 	some name, svc in input.services
 	some port in object.get(svc, "ports", [])
 	wide_port(port)
