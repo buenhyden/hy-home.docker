@@ -1,6 +1,6 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.3"
+version: "0.4.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -153,6 +153,15 @@ Read-only investigation of 2026-09-25:
   fired for `n8n-monitor`. With owner approval `n8n` alone was recreated on
   the same image; readiness and `/metrics` returned 200, the target is up and
   no alert is active. Workers and task runners were unaffected.
+- 2026-09-29, CDC retired on the owner's choice: `app_db` had no `public`
+  table, so the connector captured only `debezium_heartbeat.heartbeat`, and
+  Kafka had no consumer group. Following RUN-0036 step 6, connector
+  `hyhome-app-postgres` was stopped, its offsets reset and the connector
+  deleted; `hyhome_app_slot` (inactive by then) and `hyhome_app_publication`
+  were dropped. No replication slot or publication remains. The connector
+  definition, `debezium-db-provision` and the Kafka stack stay, so RUN-0036
+  can register it again; the `hyhome.app.debezium_heartbeat.heartbeat` topic
+  and the heartbeat schema were left in place.
 
 ## Verification Evidence
 
@@ -208,4 +217,3 @@ See the Plan.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | Confirm the timer run passes the 20 GiB free-space preflight; the system disk shares space with Docker images and build cache | agent | After the 2026-09-30 03:37 KST run |
-| Retire the CDC pipeline (connector and `hyhome_app_slot`), which has no consumer, or keep it | @buenhyden | Owner decision; no date |
