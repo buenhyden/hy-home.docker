@@ -146,6 +146,13 @@ Read-only investigation of 2026-09-25:
   owner pruned the Docker build cache, and 20 images no container used and no
   Compose file, Dockerfile or hook pinned were removed; free space rose to
   45 GiB. The rerun exited 0 in 80 s.
+- 2026-09-29, n8n after the `mng-pg` recreate: from 05:32Z the main `n8n`
+  process answered every route except `/healthz` with 503 (its log shows
+  `Postgres pool client error: Connection terminated unexpectedly`), so the
+  Docker health check stayed green while `PrometheusInfraTargetsMissing`
+  fired for `n8n-monitor`. With owner approval `n8n` alone was recreated on
+  the same image; readiness and `/metrics` returned 200, the target is up and
+  no alert is active. Workers and task runners were unaffected.
 
 ## Verification Evidence
 
