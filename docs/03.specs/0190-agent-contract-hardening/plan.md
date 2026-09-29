@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Hardening Implementation Plan"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -108,12 +108,12 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    **Interface:** produces the Task approval/ownership envelope consumed by W2–W10,
    including the exact current base, owned paths and validation environment.
 
-   - [ ] Confirm Plan approval and the requested in-session execution method;
+   - [x] Confirm Plan approval and the requested in-session execution method;
      read installed executing-plans instructions without installing anything.
-   - [ ] Record the user approvals and independent Spec/Plan review, inspect
+   - [x] Record the user approvals and independent Spec/Plan review, inspect
      local/remote-tracking divergence read-only, and preserve the previous
      three-file authoring diff plus this Plan. Do not reset to main.
-   - [ ] Validate and commit the reviewed initial drafts after execution/commit
+   - [x] Validate and commit the reviewed initial drafts after execution/commit
      approval. For each subsequent transition run
      `rtk proxy python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD`
      against the real preceding local commit. Commit Spec draft→review and then
@@ -121,10 +121,10 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      validate Plan draft→approved against its own committed draft. Do not inject
      a CI context or alter the public runner to manufacture history. Later
      active parents and Task transitions use the same predecessor discipline.
-   - [ ] Record baseline checks, missing tools and separately authorized fixture
+   - [x] Record baseline checks, missing tools and separately authorized fixture
      boundaries. Record the previous changed-profile exit 0 as dated baseline
      evidence, not a substitute for testing subsequent code.
-   - [ ] Create later Tasks immediately before their unit; activate parents and
+   - [x] Create later Tasks immediately before their unit; activate parents and
      Task only through the admitted lifecycle. Commit reviewed setup as
      `docs(agent): Record approved contract hardening plan`.
 
@@ -143,26 +143,26 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    **Interface:** retain `check_entrypoint` and `MODE_HANDLERS` result shapes;
    extend target classification, not the CLI or general document graph protocol.
 
-   - [ ] Add table-driven `test_entrypoint_normalizes_stage_link_forms` and
+   - [x] Add table-driven `test_entrypoint_normalizes_stage_link_forms` and
      `test_entrypoint_preserves_navigation_and_non_authoritative_examples`:
      relative/absolute, GitHub blob/raw, percent-encoded, mixed case/separators,
      anchors, reference Markdown, HTML, wiki and fenced clickable forms must
      reject individual-stage links; README navigation and docs-internal links
      remain valid. Assert stable finding codes and no file writes.
-   - [ ] Run the link unit module (Verification L) and witness the intended RED.
+   - [x] Run the link unit module (Verification L) and witness the intended RED.
      Add negative controls for literal output-path examples and historical
      provenance so extending normalization cannot delete them indiscriminately.
-   - [ ] Implement normalization in `links.py` and reconcile the current policy:
+   - [x] Implement normalization in `links.py` and reconcile the current policy:
      README navigation is allowed; individual stage documents cannot supply
      current outside-docs authority. Keep schema/registry/template exceptions
      explicit by kind, consumer, need and scope; never a stage-wide whitelist.
-   - [ ] Review authored `.agents/`, `.claude/`, `.codex/`, root shims, `scripts/`,
+   - [x] Review authored `.agents/`, `.claude/`, `.codex/`, root shims, `scripts/`,
      `tests/` and `evals/` for semantic authority dependence. Record each finding
      and exact owner in this Task. Plain artifact IDs/provenance are not findings
      merely because they mention a stage. If a real defect needs an unlisted
      write, amend the exact file map before that write; do not perform blanket
      replacement or broaden approval into historical cleanup.
-   - [ ] Run L then the entrypoint CLI; obtain independent semantic review and
+   - [x] Run L then the entrypoint CLI; obtain independent semantic review and
      commit policy, scanner and regressions together as
      `fix(docs): Align agent document authority checks`.
 
@@ -171,7 +171,8 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
 
    **Modify:** `scripts/lib/agent_governance/agent_governance_contract.py`,
    `tests/lib/agent_governance/test_agent_governance_contract.py`,
-   `.agents/README.md` (doc-writer contribution).
+   `tests/validation/test_provider_surface_renderer.py` (shared fixture resource
+   copying only), `.agents/README.md` (doc-writer contribution).
    **Interface:** `validate_canonical_agent_home()` retains its caller contract;
    resource traversal reuses `_read_text`'s bounded/no-follow identity checks.
    Add private `_validate_skill_resources(root: pathlib.Path, skill_root:
@@ -193,7 +194,7 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
      Start reachability at SKILL.md; metadata/openai.yaml are not resources.
      Allow an executable only below scripts and reachable from the procedure.
      Binary assets may be terminal nodes, never text to execute or import.
-   - [ ] Run G and the repository contract; verify all current resources still
+   - [ ] Run G, P and the repository contract; verify all current resources still
      pass and over-limit fixtures fail deterministically. Commit as
      `fix(agent): Validate nested skill resource boundaries`.
 
