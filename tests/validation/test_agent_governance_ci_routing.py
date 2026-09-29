@@ -625,6 +625,55 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 )
                 self.assertEqual(37, result.returncode, result.stdout + result.stderr)
 
+    def test_post_tool_reports_missing_linters_for_eligible_files(self) -> None:
+        cases = (
+            ("scripts/example.sh", "SKIPPED shellcheck (missing tool)", "yamllint"),
+            ("config/example.yaml", "SKIPPED yamllint (missing tool)", "shellcheck"),
+            ("README.md", None, None),
+        )
+        for relative, expected, absent in cases:
+            with (
+                self.subTest(path=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                repo = pathlib.Path(directory)
+                subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+                target = repo / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    "#!/bin/sh\necho ok\n"
+                    if target.suffix == ".sh"
+                    else "key: value\n",
+                    encoding="utf-8",
+                )
+                fake_bin = repo / "fake-bin"
+                fake_bin.mkdir()
+                for command in ("bash", "dirname", "git", "python3", "readlink"):
+                    executable = shutil.which(command)
+                    self.assertIsNotNone(executable, command)
+                    (fake_bin / command).symlink_to(pathlib.Path(executable).resolve())
+
+                result = subprocess.run(
+                    ["bash", str(POST_TOOL), "--check"],
+                    cwd=repo,
+                    input=json.dumps({"tool_input": {"file_path": relative}}),
+                    capture_output=True,
+                    text=True,
+                    env={
+                        "PATH": str(fake_bin),
+                        "CODEX_PROJECT_DIR": str(repo),
+                    },
+                    check=False,
+                )
+
+                self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+                if expected is None:
+                    self.assertNotIn("SKIPPED shellcheck", result.stderr)
+                    self.assertNotIn("SKIPPED yamllint", result.stderr)
+                else:
+                    self.assertIn(expected, result.stderr)
+                    self.assertNotIn(absent, result.stderr)
+
     def test_post_tool_checks_shell_files_outside_scripts(self) -> None:
         for relative in ("infra/example.sh", "tests/example.sh", "example.sh"):
             for check in ("shellcheck", "syntax"):

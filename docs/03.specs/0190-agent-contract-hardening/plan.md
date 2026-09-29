@@ -362,17 +362,17 @@ not transition history. Human approval alone cannot bypass lifecycle checks.
    record without making the final required gate optional; actual failures
    retain existing exit propagation.
 
-   - [ ] Add `test_post_tool_reports_missing_linters_for_eligible_files` and
+   - [x] Add `test_post_tool_reports_missing_linters_for_eligible_files` and
      `test_native_config_excludes_runtime_and_broad_scratch_grants`; assert
      shellcheck/yamllint are named only for eligible inputs, with a reason,
      and retained available-linter failures remain nonzero. Run H/N for RED.
-   - [ ] Remove broad Compose config/log and Docker inspect automatic grants;
+   - [x] Remove broad Compose config/log and Docker inspect automatic grants;
      preserve only justified metadata commands. Remove broad tmp Write/Edit
      grants; do not substitute guessed native permission syntax.
-   - [ ] Emit `SKIPPED shellcheck (missing tool)` and equivalent yamllint records.
+   - [x] Emit `SKIPPED shellcheck (missing tool)` and equivalent yamllint records.
      Align authored adapters/style with shared evidence rules without copying
      shared policy or changing models/effort/needs_revalidation.
-   - [ ] Run H/N and existing hook payload, malformed-input, timeout, Stop and
+   - [x] Run H/N and existing hook payload, malformed-input, timeout, Stop and
      scratch-parser regressions. Config parsing is not native delivery evidence.
      Commit as `fix(agent): Narrow native grants and report skipped lint`.
 

@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-29"
 runtime: "codex"
 ---
 
@@ -53,6 +53,9 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).
 The shared policy and approved Task determine scope; this adapter adds no gate.
+The [shared output contract](../.agents/governance/output-style.md) keeps
+`FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, partial results, and required
+approval visible; this adapter cannot present any of them as completion.
 Static source structure and renderer parity do not prove live picker discovery,
 skill invocation, trusted hook delivery, entitlement, or runtime acceptance.
 Record those as unverified until directly observed within separate authorization.
