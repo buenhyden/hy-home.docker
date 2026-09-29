@@ -1,8 +1,8 @@
 ---
 title: "Contract Hardening Execution Baseline"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -65,6 +65,11 @@ predecessors before implementing W2–W10. This Task is the execution record.
 
 - Parent activation and W1 readiness check: selected 3, violations 0, exit 0.
 
+- W1 activation/W2 draft scope check against 54602fa: selected 3, violations 0, exit 0.
+- W2 readiness and execution transitions: each selected 1, violations 0, exit 0.
+- W1 setup is complete: active approved parents, committed active W2, exact
+  write ownership, baseline limitations and serial execution boundary recorded.
+
 ## Review Evidence
 
 - Independent Spec review: three material findings and one budget wording
@@ -79,6 +84,10 @@ predecessors before implementing W2–W10. This Task is the execution record.
 - `8a67f161f`: validated Spec review, Plan approval and initial W1 Task.
 
 - `d57878b`: initial reviewed draft Spec/Plan, index and allocation baseline.
+
+- `66dbebdf0`: approved Spec; `54602fa7c`: active parents and W1 ready.
+- `5cd153f74`: W1 execution, W2 draft and audited Plan scope amendment.
+- `8a0b54a7d`, `25d638c22`: validated W2 ready and in-progress transitions.
 
 ## Rulings
 
