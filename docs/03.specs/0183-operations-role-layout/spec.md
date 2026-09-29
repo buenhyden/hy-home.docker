@@ -1,10 +1,10 @@
 ---
 title: "Operations Role Layout Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "specs"
 artifact_id: "SPEC-0183"
 parent_ids:
@@ -148,8 +148,9 @@ binds a Guide to its Policy and Runbook by slug instead of by directory.
 
 ## Open Questions
 
-None blocking. Live verification of `inc-2026-0002` and link updates in other
-repositories are handoff items recorded in the Task.
+None. `inc-2026-0002` was resolved on owner evidence (Task W13) and its
+postmortem is published. Links in other repositories remain each owner's
+work, routed by MIG-0005.
 
 ## Operational Impact
 

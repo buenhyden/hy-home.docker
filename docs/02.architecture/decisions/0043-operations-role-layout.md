@@ -1,6 +1,6 @@
 ---
 title: "Operations Role Layout"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/architecture-decision"
 status: "proposed"
 owner: "@buenhyden"
@@ -105,6 +105,6 @@ check, and `check-document-links.py --mode all` enforce this decision.
 
 ## Follow-up
 
-- Verifying the resolution of `inc-2026-0002` is unrelated to this decision;
-  the SPEC-0183 Task tracks it as a handoff item.
+- `inc-2026-0002` is unrelated to this decision. It was resolved on owner
+  evidence (SPEC-0183 Task W13), and its postmortem is published.
 - Fixing links in other repositories is performed by each repository's owner.
