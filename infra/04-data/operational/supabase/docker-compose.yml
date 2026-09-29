@@ -57,8 +57,8 @@ services:
       - /var/run/kong
     restart: unless-stopped
     ports:
-      - ${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
-      - ${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
+      - 127.0.0.1:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
+      - 127.0.0.1:${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro
     secrets:
@@ -323,7 +323,7 @@ services:
     image: supabase/logflare:1.50.15
     restart: unless-stopped
     ports:
-      - ${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
+      - 127.0.0.1:${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
     depends_on:
       db:
         condition: service_healthy
@@ -418,8 +418,8 @@ services:
     image: supabase/supavisor:2.9.13
     restart: unless-stopped
     ports:
-      - ${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
-      - ${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543
+      - 127.0.0.1:${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
+      - 127.0.0.1:${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543
     volumes:
       - ${DEFAULT_DATA_DIR}/supabase/pooler/pooler.exs:/etc/pooler/pooler.exs:ro
     depends_on:

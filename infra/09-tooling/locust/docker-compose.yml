@@ -22,7 +22,7 @@ services:
     labels:
       <<: *tier-label
     ports:
-      - '${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
+      - '127.0.0.1:${LOCUST_HOST_PORT:-18089}:${LOCUST_PORT:-8089}'
     volumes:
       - locust-data:/mnt/locust:rw
     command: locust -f /mnt/locust/locustfile.py --master

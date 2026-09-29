@@ -1,6 +1,6 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -92,11 +92,10 @@ upgrade는 release note, client 호환성, rollback을 포함한 별도 계획�
 
 ### Security and license
 
-password secret은 transport encryption을 제공하지 않는다. publish한 host
-port와 cluster-bus reachability는 의도한 trusted host와 network로 제한해야
-한다. Valkey 자체 안내는 Cluster가 trusted network용으로 설계되었다고
-경고한다. Valkey는 BSD 3-Clause license를 사용하며, client와 image는 자체
-license를 유지한다.
+password secret은 transport encryption을 제공하지 않는다. client port는
+`127.0.0.1`에만 게시하며 cluster-bus port는 host에 게시하지 않는다. Valkey
+자체 안내는 Cluster가 trusted network용으로 설계되었다고 경고한다. Valkey는
+BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유지한다.
 
 ### Official references
 

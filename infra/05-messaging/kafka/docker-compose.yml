@@ -50,9 +50,9 @@ services:
       - kafka-1-data:/var/lib/kafka/data:rw
       - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      - '${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
-      - '${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
-      - '${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
+      - '127.0.0.1:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}'
+      - '127.0.0.1:${KAFKA_JMX_1_HOST_PORT:-19101}:${KAFKA_JMX_PORT:-9101}'
+      - '127.0.0.1:${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}'
     environment:
       CLUSTER_ID: ${KAFKA_CLUSTER_ID}
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -583,9 +583,9 @@ services:
       - kafka-2-data:/var/lib/kafka/data:rw
       - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      - ${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}
-      - ${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}
-      - ${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
+      - 127.0.0.1:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}
+      - 127.0.0.1:${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}
+      - 127.0.0.1:${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
     networks:
       kafka_net: {}
       obs_net: {}
@@ -631,9 +631,9 @@ services:
       - kafka-3-data:/var/lib/kafka/data:rw
       - ./jmx-exporter:/usr/share/jmx_exporter:ro
     ports:
-      - ${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}
-      - ${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}
-      - ${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
+      - 127.0.0.1:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}
+      - 127.0.0.1:${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}
+      - 127.0.0.1:${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
     networks:
       kafka_net: {}
       obs_net: {}

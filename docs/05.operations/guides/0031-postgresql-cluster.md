@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -76,8 +76,8 @@ created: "2026-05-10"
 
    | Endpoint | Host | Port | Purpose |
    | --- | --- | --- | --- |
-   | Write | `pg-router` | `${POSTGRES_WRITE_PORT:-15432}` | Patroni primary backend |
-   | Read | `pg-router` | `${POSTGRES_READ_PORT:-15433}` | Patroni replica backends |
+   | Write | `pg-router` (`${HOST_LAN_BIND_IP:-192.168.0.13}`) | `${POSTGRES_WRITE_PORT:-15432}` | Patroni primary backend |
+   | Read | `pg-router` (`${HOST_LAN_BIND_IP:-192.168.0.13}`) | `${POSTGRES_READ_PORT:-15433}` | Patroni replica backends |
    | Stats | `pg-haproxy.${DEFAULT_URL}` | `${HAPROXY_PORT:-7000}` via Traefik | HAProxy stats route |
 
 2. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.

@@ -1,6 +1,6 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -39,7 +39,7 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 
 | Namespace | Deny | Warn |
 | --- | --- | --- |
-| `compose` | 허용목록(`cadvisor`) 밖의 privileged 서비스; 프로파일 없는 서비스; `:latest` 또는 태그 없는 이미지; 리터럴 값을 가진 password, secret, token, key 변수 | 모든 인터페이스에 게시된 호스트 포트 |
+| `compose` | 허용목록(`cadvisor`) 밖의 privileged 서비스; 프로파일 없는 서비스; `:latest` 또는 태그 없는 이미지; 리터럴 값을 가진 password, secret, token, key 변수; 호스트 주소(리터럴 IP, `${VAR:-address}`, `[::1]`, long-syntax `host_ip`) 없이 게시된 호스트 포트, 또는 `0.0.0.0`/`::`에 게시된 호스트 포트 | — |
 | `dockerfile` | 태그 없거나 `:latest`인 `FROM`(빌드 스테이지와 `scratch`는 예외); `--checksum` 없이 URL에서 받는 `ADD` | — |
 
 리터럴이란 빈 값, `${…}` 보간, `/run/secrets/` 경로, 불리언, URL을

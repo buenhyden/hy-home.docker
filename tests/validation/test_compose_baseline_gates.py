@@ -3225,7 +3225,7 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         self.assertIn("10.250.1.2", airflow["FORWARDED_ALLOW_IPS"].split(","))
 
     def test_no_service_pins_keycloak_to_the_host_gateway(self) -> None:
-        # Traefik publishes only on TRAEFIK_BIND_IP, so host-gateway has no
+        # Traefik publishes only on HOST_LAN_BIND_IP, so host-gateway has no
         # listener on 443; containers reach Keycloak through the edge_net alias.
         pinned = sorted(
             name

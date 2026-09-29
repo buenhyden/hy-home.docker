@@ -195,7 +195,7 @@ services:
       # REST API (TLS on 기본) – Loki/Alloy에서 로그/메트릭 수집, 앱 연결
       # - "${ES_HOST_PORT}:${ES_PORT}"
       # Performance Analyzer / 메트릭 포트
-      - '${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
+      - '127.0.0.1:${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}'
     labels:
       - 'traefik.enable=true'
       # 1. OpenSearch API 라우터 (https://opensearch.${DEFAULT_URL})

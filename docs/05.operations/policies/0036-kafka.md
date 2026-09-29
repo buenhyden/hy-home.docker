@@ -1,6 +1,6 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,9 +33,10 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 - broker와 Connect volume을 구분하고, `kafka_net`, health check, shared
   resource limit을 유지한다.
 - 현재 broker, controller, host listener는 PLAINTEXT다. transport
-  confidentiality나 client authentication을 주장하지 않는다. 노출을
-  제한하고, sensitive workload 이전에 broker TLS/SASL을 별도 architectural
-  change로 계획한다.
+  confidentiality나 client authentication을 주장하지 않는다. external
+  listener, JMX, JMX exporter host 포트는 `127.0.0.1`에만 게시하며,
+  sensitive workload 이전에 broker TLS/SASL을 별도 architectural change로
+  계획한다.
 - Kafbat은 native OIDC/RBAC, local CA trust, `kafbat_client_secret`을
   유지해야 한다. route는 표준 gateway chain만 사용하며, forwarding-header
   authentication으로 대체하지 않는다.
