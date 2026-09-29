@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.3"
+version: "0.3.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -99,6 +99,30 @@ acceptance criterion of [SPEC-0193](../spec.md).
   OAuth2 Proxy, and Airflow Runs (DB) on `airflow-db`, which replaces the
   Airflow 2 SQL dashboard (it queried the removed `execution_date`). 50
   dashboards, no duplicate UID, no unresolved datasource placeholder.
+- 2026-09-30 W4: alerting. 78 rules became 66, and every rule links the
+  runbook of its service (before: 28 without a link, 43 to a directory
+  README); `promtool check rules` passes for all files.
+  - Rewritten on emitted names: Keycloak (user-event and HTTP histogram
+    metrics; four rules), OpenSearch (plugin `opensearch_*` names; five),
+    OpenBao (renamed from Vault; four), Valkey (no on-demand job in `up`),
+    `PostgresqlReplicationLag` (`pg_replication_lag_seconds`),
+    `HaproxyBackendDown` (`haproxy_backend_status`),
+    `ContainerHighThrottleRate` (Docker `name` label).
+  - Removed: duplicates `KeycloakHighLoginFailures`,
+    `KeycloakTokenRefreshFailed`, `PostgresConnectionsExhausted`; rules
+    without a possible source `TraefikServiceDown` (needs health checks),
+    `N8nWorkflowFailed` (n8n emits no such metric), `GpuXidError` (the XID
+    field is in DCGM's default counters but this GPU emits no series),
+    `PostgresqlTableNotAutoVacuumed` (the exporter reads one database),
+    `KeycloakNoSuccessfulLogins` and `KeycloakHighRegistrationFailureRate`
+    (self-registration is off), `VaultClusterHealth` (single node), and
+    `HAProxyDown` (an on-demand target is down whenever it is stopped).
+  - `PrometheusInfraTargetsMissing` watches HOME jobs only, now including
+    Loki, Grafana, Pyroscope, Gatus, the registry, OAuth2 Proxy and Flower.
+    New `GatusEndpointFailing`. The postgres exporters run with
+    `--collector.postmaster` for `PostgresqlRestarted`.
+  - `recording_rules.yml` removed: none of its six rules had a consumer, and
+    the Loki ones duplicate the mixin rules.
 
 ## Verification Evidence
 

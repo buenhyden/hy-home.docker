@@ -422,7 +422,7 @@ services:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
         export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-0:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
-        exec /bin/postgres_exporter
+        exec /bin/postgres_exporter --collector.postmaster
     depends_on:
       pg-0:
         condition: service_healthy
@@ -460,7 +460,7 @@ services:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
         export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-1:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
-        exec /bin/postgres_exporter
+        exec /bin/postgres_exporter --collector.postmaster
     depends_on:
       pg-1:
         condition: service_healthy
@@ -498,7 +498,7 @@ services:
       - |
         export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
         export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-2:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
-        exec /bin/postgres_exporter
+        exec /bin/postgres_exporter --collector.postmaster
     depends_on:
       pg-2:
         condition: service_healthy

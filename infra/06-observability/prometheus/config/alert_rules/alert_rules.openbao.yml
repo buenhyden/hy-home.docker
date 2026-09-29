@@ -1,61 +1,48 @@
+# OpenBao alert rules (SPEC-0193). OpenBao keeps Vault's vault_* metric
+# names; the rules are named for OpenBao, which replaced the retired Vault.
 groups:
-  - name: vault_rules
+  - name: openbao_rules
     rules:
-      - alert: VaultSealed
-        expr: vault_core_unsealed == 0
+      - alert: OpenBaoSealed
+        expr: vault_core_unsealed{job="openbao"} == 0
         for: 0m
         labels:
           severity: critical
+          domain: security
         annotations:
-          summary: Vault sealed (instance {{ $labels.instance }})
-          description:
-            "Vault instance is sealed on {{ $labels.instance }}\n  VALUE = {{
-            $value }}\n  LABELS = {{ $labels }}"
-      - alert: VaultTooManyPendingTokens
-        expr: avg(vault_token_create_count - vault_token_store_count) > 0
+          summary: 'OpenBao sealed ({{ $labels.instance }})'
+          description: 'OpenBao가 sealed 상태입니다. 수동 unseal 절차(ADR-0042)를 따르세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+
+      - alert: OpenBaoTooManyPendingTokens
+        expr: avg(vault_token_create_count{job="openbao"} - vault_token_store_count{job="openbao"}) > 0
         for: 5m
         labels:
           severity: warning
+          domain: security
         annotations:
-          summary:
-            Vault too many pending tokens (instance {{ $labels.instance }})
-          description:
-            "Too many pending tokens {{ $labels.instance }}: {{ $value | printf
-            \"%.2f\"}}%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      - alert: VaultTooManyInfinityTokens
-        expr: vault_token_count_by_ttl{creation_ttl="+Inf"} > 3
+          summary: 'OpenBao 저장 대기 토큰 존재'
+          description: '생성됐지만 저장되지 않은 토큰이 {{ $value }}개 있습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+
+      - alert: OpenBaoTooManyInfinityTokens
+        expr: vault_token_count_by_ttl{job="openbao", creation_ttl="+Inf"} > 3
         for: 5m
         labels:
           severity: warning
+          domain: security
         annotations:
-          summary:
-            Vault too many infinity tokens (instance {{ $labels.instance }})
-          description:
-            "Too many infinity tokens {{ $labels.instance }}: {{ $value | printf
-            \"%.2f\"}}%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      - alert: VaultClusterHealth
-        expr: sum(vault_core_active) / count(vault_core_active) <= 0.5
-        for: 0m
-        labels:
-          severity: critical
-        annotations:
-          summary: Vault cluster health (instance {{ $labels.instance }})
-          description:
-            "Vault cluster is not healthy {{ $labels.instance }}: {{ $value |
-            printf \"%.2f\"}}%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      # The scrape uses a finite-TTL metrics token (secrets/security/openbao_token.txt).
-      # A lapsed token makes every OpenBao series vanish, so the alerts above go
-      # silent; this one fires instead. Rotate the token (OpenBao runbook).
-      # It also fires while OpenBao is sealed or down: the authenticated scrape
-      # fails then too, so VaultSealed cannot fire and this is the seal signal.
+          summary: 'OpenBao 만료 없는 토큰 3개 초과'
+          description: 'TTL이 없는 토큰이 {{ $value }}개 있습니다. root 또는 장기 토큰 발급을 검토하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'
+
       - alert: OpenBaoMetricsScrapeFailing
         expr: up{job="openbao"} == 0
         for: 10m
         labels:
           severity: warning
+          domain: security
         annotations:
-          summary: OpenBao metrics scrape failing (instance {{ $labels.instance }})
-          description:
-            "Prometheus cannot scrape OpenBao sys/metrics on {{ $labels.instance
-            }}. Check that OpenBao is unsealed, then whether the metrics token
-            expired; rotate it per the OpenBao runbook."
+          summary: 'OpenBao 메트릭 수집 실패'
+          description: 'Prometheus가 OpenBao /v1/sys/metrics를 읽지 못합니다. 메트릭 토큰(SEC-002)의 만료나 sealed 상태를 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0085-openbao.md'

@@ -20,7 +20,7 @@ groups:
         annotations:
           summary: Prometheus job missing (instance {{ $labels.instance }})
           description: "프로메테우스 잡이 사라졌습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] All Targets Missing / 모든 타겟 다운
       - alert: PrometheusAllTargetsMissing
@@ -33,14 +33,14 @@ groups:
         annotations:
           summary: Prometheus all targets missing (job {{ $labels.job }})
           description: "프로메테우스 잡에 활성 타겟이 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Infra Targets Missing (Optional Tier) / 인프라 잡 타겟 다운(옵션)
       - alert: PrometheusInfraTargetsMissing
         # expr: sum by (job) (up{job=~"postgres-cluster|manage
         #   postgres|valkey-cluster|oauth2-proxy-valkey-exporter|mng-valkey-exporter|n8n-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|haproxy|keycloak|opensearch-exporter"})
         #   == 0
-        expr: sum by (job) (up{job=~"postgres-cluster|manage-postgres|valkey-cluster|mng-valkey-exporter|kafka-exporter|n8n-monitor|qdrant|seaweedfs-s3|haproxy|keycloak|opensearch-exporter"})
+        expr: sum by (job) (up{job=~"loki|manage-postgres|mng-valkey-exporter|n8n-monitor|airflow-monitor|flower|qdrant|seaweedfs-s3|keycloak|oauth2-proxy|grafana|pyroscope|gatus|registry|ollama-exporter|node-exporter|dcgm-exporter"})
           == 0
         for: 10m
         labels:
@@ -49,6 +49,7 @@ groups:
           summary: 'Infra targets missing (job {{ $labels.job }})'
           description: "인프라 잡 {{ $labels.job }} 의 모든 타겟이 다운되었습니다(또는
             실행되지 않음).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Configuration Reload Failure / 설정 리로드 실패
       - alert: PrometheusConfigurationReloadFailure
@@ -61,6 +62,7 @@ groups:
             $labels.instance }})
           description: "프로메테우스 설정 리로드에 실패했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Alertmanager Connection Failed / 얼럿매니저 연결 실패
       - alert: PrometheusNotConnectedToAlertmanager
@@ -72,7 +74,7 @@ groups:
         annotations:
           summary: Prometheus not connected to alertmanager (instance {{ $labels.instance }})
           description: "프로메테우스가 얼럿매니저에 연결할 수 없습니다.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0039-alertmanager.md'
 
       # [What] Prometheus Too Many Restarts / 프로메테우스 과다 재시작
       - alert: PrometheusTooManyRestarts
@@ -86,6 +88,7 @@ groups:
           summary: 'Prometheus too many restarts (instance {{ $labels.instance }})'
           description: "프로메테우스가 5분 내 2회 이상 재시작했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Prometheus Rule Evaluation Failures / 규칙 평가 실패
       - alert: PrometheusRuleEvaluationFailures
@@ -98,6 +101,7 @@ groups:
             }})'
           description: "프로메테우스 규칙 평가에 실패했습니다.\n  VALUE = {{ $value
             }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Prometheus TSDB Compaction Failed / TSDB 압축 실패
       - alert: PrometheusTsdbCompactionsFailed
@@ -110,6 +114,7 @@ groups:
             }})'
           description: "TSDB 압축에 실패했습니다.\n  VALUE = {{ $value }}\n  LABELS = {{
             $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       # [What] Alertmanager Config Not Synced / 얼럿매니저 설정 미동기화
       - alert: PrometheusAlertmanagerConfigNotSynced
@@ -121,3 +126,4 @@ groups:
           summary: 'Alertmanager config not synced'
           description: "얼럿매니저 인스턴스 간 설정이 동기화되지 않았습니다.\n  VALUE = {{
             $value }}\n  LABELS = {{ $labels }}"
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0039-alertmanager.md'

@@ -13,25 +13,4 @@ groups:
         annotations:
           summary: 'Keycloak 다운'
           description: 'Keycloak 인증 서버가 응답하지 않습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
-
-      - alert: KeycloakHighLoginFailures
-        expr: increase(keycloak_login_error_total[5m]) > 10
-        for: 2m
-        labels:
-          severity: warning
-          domain: auth
-        annotations:
-          summary: 'Keycloak 로그인 실패 급증'
-          description: '5분 내 로그인 실패가 10회를 초과했습니다.'
-          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/README.md'
-          dashboard_url: 'https://grafana.example.com/d/keycloak'
-
-      - alert: KeycloakTokenRefreshFailed
-        expr: increase(keycloak_refresh_token_error_total[5m]) > 10
-        for: 1m
-        labels:
-          severity: warning
-        annotations:
-          summary: 'Keycloak 토큰 갱신 실패 급증'
-          description: '5분 내 토큰 갱신 실패가 10회를 초과했습니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'

@@ -1,105 +1,61 @@
+# Keycloak 26 alert rules (SPEC-0193). User-event metrics come from
+# KC_EVENT_METRICS_USER_ENABLED (keycloak_user_events_total{event, error});
+# request latency from KC_HTTP_METRICS_HISTOGRAMS_ENABLED. The earlier rules
+# used Keycloak 2x extension names that this version never emits.
 groups:
   - name: keycloak_rules
     rules:
-      # Threshold of 5% is a rough default. Adjust based on your user base and expected error rates.
-      # A spike in failed logins may indicate a brute-force attack or misconfigured client.
+      # More than 5% of logins failing may be brute force or a broken client.
       - alert: KeycloakHighLoginFailureRate
-        expr:
-          (sum by (realm) (rate(keycloak_failed_login_attempts_total[5m])) /
-          (sum by (realm) (rate(keycloak_logins_total[5m])) + sum by (realm)
-          (rate(keycloak_failed_login_attempts_total[5m])))) * 100 > 5 and (sum
-          by (realm) (rate(keycloak_logins_total[5m])) + sum by (realm)
-          (rate(keycloak_failed_login_attempts_total[5m]))) > 0
+        expr: |
+          sum by (realm) (rate(keycloak_user_events_total{event="login", error!=""}[5m]))
+            / sum by (realm) (rate(keycloak_user_events_total{event="login"}[5m])) > 0.05
+          and sum by (realm) (rate(keycloak_user_events_total{event="login"}[5m])) > 0
         for: 5m
         labels:
           severity: warning
+          domain: auth
         annotations:
-          summary:
-            Keycloak high login failure rate (instance {{ $labels.instance }})
-          description:
-            "More than 5% of login attempts are failing in realm {{
-            $labels.realm }} (current value: {{ $value | printf \"%.1f\"
-            }}%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-        # Only fires when login attempts exist but none succeed — may indicate an authentication outage.
-      - alert: KeycloakNoSuccessfulLogins
-        expr:
-          sum by (realm) (rate(keycloak_logins_total[15m])) == 0 and (sum by
-          (realm) (rate(keycloak_logins_total[15m])) + sum by (realm)
-          (rate(keycloak_failed_login_attempts_total[15m]))) > 0
-        for: 5m
-        labels:
-          severity: critical
-        annotations:
-          summary:
-            Keycloak no successful logins (instance {{ $labels.instance }})
-          description:
-            "No successful logins in realm {{ $labels.realm }} for the last 15
-            minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-        # Threshold of 10% is a rough default. High refresh token errors may indicate expired sessions or token store issues.
+          summary: 'Keycloak 로그인 실패율 5% 초과 (realm {{ $labels.realm }})'
+          description: 'realm {{ $labels.realm }}의 로그인 중 {{ $value | humanizePercentage }}가 실패합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+
       - alert: KeycloakHighTokenRefreshErrorRate
-        expr:
-          (sum by (realm) (rate(keycloak_refresh_tokens_errors_total[5m])) / sum
-          by (realm) (rate(keycloak_refresh_tokens_total[5m]))) * 100 > 10 and
-          sum by (realm) (rate(keycloak_refresh_tokens_total[5m])) > 0
+        expr: |
+          sum by (realm) (rate(keycloak_user_events_total{event="refresh_token", error!=""}[5m]))
+            / sum by (realm) (rate(keycloak_user_events_total{event="refresh_token"}[5m])) > 0.1
+          and sum by (realm) (rate(keycloak_user_events_total{event="refresh_token"}[5m])) > 0
         for: 5m
         labels:
           severity: warning
+          domain: auth
         annotations:
-          summary:
-            Keycloak high token refresh error rate (instance {{ $labels.instance
-            }})
-          description:
-            "More than 10% of token refresh attempts are failing in realm {{
-            $labels.realm }} (current value: {{ $value | printf \"%.1f\"
-            }}%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      # Threshold of 10% is a rough default. Code-to-token failures may indicate misconfigured OAuth clients or replay attacks.
-      - alert: KeycloakHighCode-to-tokenExchangeErrorRate
-        expr:
-          (sum by (realm) (rate(keycloak_code_to_tokens_errors_total[5m])) / sum
-          by (realm) (rate(keycloak_code_to_tokens_total[5m]))) * 100 > 10 and
-          sum by (realm) (rate(keycloak_code_to_tokens_total[5m])) > 0
+          summary: 'Keycloak 토큰 갱신 오류율 10% 초과 (realm {{ $labels.realm }})'
+          description: 'realm {{ $labels.realm }}의 토큰 갱신 중 {{ $value | humanizePercentage }}가 실패합니다. 세션 만료나 캐시 문제를 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+
+      - alert: KeycloakHighCodeToTokenErrorRate
+        expr: |
+          sum by (realm) (rate(keycloak_user_events_total{event="code_to_token", error!=""}[5m]))
+            / sum by (realm) (rate(keycloak_user_events_total{event="code_to_token"}[5m])) > 0.1
+          and sum by (realm) (rate(keycloak_user_events_total{event="code_to_token"}[5m])) > 0
         for: 5m
         labels:
           severity: warning
+          domain: auth
         annotations:
-          summary:
-            Keycloak high code-to-token exchange error rate (instance {{
-            $labels.instance }})
-          description:
-            "More than 10% of code-to-token exchanges are failing in realm {{
-            $labels.realm }} (current value: {{ $value | printf \"%.1f\"
-            }}%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      # Threshold of 10% is a rough default.
-      - alert: KeycloakHighRegistrationFailureRate
-        expr:
-          (sum by (realm) (rate(keycloak_registrations_errors_total[5m])) / sum
-          by (realm) (rate(keycloak_registrations_total[5m]))) * 100 > 10 and
-          sum by (realm) (rate(keycloak_registrations_total[5m])) > 0
-        for: 5m
+          summary: 'Keycloak code-to-token 교환 오류율 10% 초과 (realm {{ $labels.realm }})'
+          description: 'OIDC 클라이언트의 code 교환 중 {{ $value | humanizePercentage }}가 실패합니다. 클라이언트 secret과 redirect URI를 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'
+
+      - alert: KeycloakSlowRequests
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_server_requests_seconds_bucket{job="keycloak"}[5m]))) > 2
+        for: 10m
         labels:
           severity: warning
+          domain: auth
         annotations:
-          summary:
-            Keycloak high registration failure rate (instance {{
-            $labels.instance }})
-          description:
-            "More than 10% of registration attempts are failing in realm {{
-            $labels.realm }} (current value: {{ $value | printf \"%.1f\"
-            }}%).\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-      # keycloak_request_duration is in milliseconds. Threshold of 2000ms (2 seconds) is a rough default.
-      - alert: KeycloakSlowRequestResponseTime
-        expr:
-          sum by (method) (rate(keycloak_request_duration_sum[5m])) / sum by
-          (method) (rate(keycloak_request_duration_count[5m])) > 2000 and sum by
-          (method) (rate(keycloak_request_duration_count[5m])) > 0
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary:
-            Keycloak slow request response time (instance {{ $labels.instance
-            }})
-          description:
-            "Keycloak {{ $labels.method }} requests are taking more than 2
-            seconds on average.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels
-            }}"
+          summary: 'Keycloak p95 응답 시간 2초 초과'
+          description: 'Keycloak HTTP 요청의 p95가 {{ $value | humanizeDuration }}입니다. DB 연결과 캐시를 확인하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0014-keycloak.md'

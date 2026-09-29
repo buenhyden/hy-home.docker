@@ -278,7 +278,7 @@ services:
       - |
         export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n');
         export DATA_SOURCE_NAME="postgresql://$$POSTGRES_USER:$$PGPASSWORD@$$POSTGRES_HOSTNAME:$$POSTGRES_PORT/$$POSTGRES_DB?sslmode=disable";
-        exec /bin/postgres_exporter
+        exec /bin/postgres_exporter --collector.postmaster
     depends_on:
       mng-pg:
         condition: service_healthy
