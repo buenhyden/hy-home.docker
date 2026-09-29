@@ -1,8 +1,8 @@
 ---
 title: "Backup and Host Alerting"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "specs"
@@ -47,7 +47,8 @@ None yet.
 
 ## Rulings
 
-None yet.
+- 2026-09-29: Owner approved the package, the W2 runtime changes
+  (recreate `node-exporter` and `n8n`, one backup run) and the pushes.
 
 ## Deferred Items
 
