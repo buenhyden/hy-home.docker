@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.13"
+version: "0.3.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -208,7 +208,7 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting; 65 after `ContainerVolumeUsage` was removed); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
 | 9 | W7 | DEFERRED: needs the final SPEC-0182 W8 figures after 2026-10-03 | N/A: deferred to W7 |
 | 10 | W5 | PASS: GDE, POL and RUN-0041, GDE and POL-0045, GDE-0040, RUN-0047, RUN-0050 and the Grafana README describe the new state (`22475253c`) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
-| 11 | W8 | PASS: at `687d97213`, `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped). The earlier run at `854dad511` failed once on the stale `airflow-scheduler` inventory row, fixed in `687d97213` | N/A: run evidence for this change |
+| 11 | W8 | PASS: at `19889efe6` (after the follow-ups), `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped); one earlier gate run there failed only on the runner's `/proc` process-group scan, which parsed every process cleanly when rerun. Before that, at `687d97213`, `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped). The earlier run at `854dad511` failed once on the stale `airflow-scheduler` inventory row, fixed in `687d97213` | N/A: run evidence for this change |
 
 ## Review Evidence
 
