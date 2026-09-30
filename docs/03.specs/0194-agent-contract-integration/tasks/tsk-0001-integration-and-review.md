@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -37,8 +37,13 @@ and record the integration result.
   failed as workflow run 36669340357 on two baseline whitespace defects.
   Commit `94b1bf373` corrects only those defects. Updating the PR description
   triggered the registered `edited` event and cancelled run 36671793467;
-  replacement run 36673358901 is pending on the same commit. This preparation of review status
-  remains unpublished until that initial-draft PR passes and merges.
+  replacement run 36673358901 failed on a high-severity brace-expansion
+  advisory. PR #318 was subsequently observed merged at 2026-09-30T06:00:00Z,
+  with head `94b1bf373` and merge `517397f27`; this merge is not CI PASS evidence.
+  Commit `3a5c32a12` updates only the three affected lock entries to official
+  patched versions 1.1.21 and 5.0.12. Independent read-only security review,
+  npm audit (zero vulnerabilities), and npm ci dry-run (531 planned packages)
+  passed. The next review PR must pass its own required hosted check.
 
 - 2026-09-29: The owner requested integration, push, merge, main synchronization
   and branch/worktree cleanup, excluding separately ongoing SPEC-0182. The owner
@@ -203,7 +208,10 @@ fallout was discarded. The first manual changed run returned exit 0 but an
 attempted read-only Markdown check unexpectedly applied the same Pyroscope
 blank line during execution; it is not exact-commit evidence. A fresh manual
 changed run uses the exact `94b1bf373` tree staged against `0470e3950` (18 paths),
-with no concurrent writers, and remains pending until its recorded exit.
+with no concurrent writers, and completed with exit 0. Post-run index tree
+identity and an empty unstaged diff confirm the exact tested tree. The log
+`/tmp/contract-bootstrap-changed-94b1.log` records this bootstrap result; it
+does not replace final source-integrated candidate QA.
 
 ## Review Evidence
 
