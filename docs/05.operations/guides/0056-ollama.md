@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -84,6 +84,22 @@ curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 }'
 ```
 
+#### 3a. Decision API Smoke
+
+Ollama [Ollama release notes](https://github.com/ollama/ollama/releases)의 `/v1/systemone`은 선택 또는 점수형 결정을 지원한다. 아래 요청은 실제 업무 데이터 없이 [tev1:0.8b](https://ollama.com/library/tev1)를 확인하며, `keep_alive: 0`으로 요청 뒤 모델을 내린다.
+
+```bash
+curl --fail-with-body --max-time 120 http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/v1/systemone \
+  -H 'Content-Type: application/json' \
+  -d '{"model":"tev1:0.8b","state":"Our checkout returns HTTP 500 errors.","questions":{"label":{"type":"choice","instructions":"Classify this ticket.","criteria":{"bug":"Software errors","billing":"Payments and refunds"}}},"keep_alive":0}'
+```
+
+선택값은 `criteria` 안에 있어야 하고, 확률은 유한한 `0`~`1` 값이며 합계가 약 `1`인지 확인한다. `confidence`와 선택 확률은 모델 판단값이지 정확도나 보정된 신뢰도가 아니다.
+
+GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 사용한다. [tev1:4b](https://ollama.com/library/tev1)(약 4.5 GB)와 [nimble:9b](https://ollama.com/library/nimble)(약 9.5 GB)는 파일 크기와 실행 메모리가 같지 않으므로 VRAM 여유를 별도로 확인한 승인된 rehearsal에서만 사용한다.
+
+[tev1:0.8b](https://ollama.com/library/tev1)가 없으면 승인된 rehearsal에서만 `docker compose exec ollama ollama pull tev1:0.8b`로 가져온 뒤 위 요청을 실행한다.
+
 #### 4. Open WebUI Integration Check
 
 1. Open WebUI 환경변수 `OLLAMA_BASE_URL`가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
@@ -111,7 +127,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - **Purpose/classification**: `ollama` and `ollama-exporter` are owner-confirmed `HOME` local inference and metrics services.
 - **Profiles/source**: `ai`/`ai-llm` select Ollama and `ollama` provides the service-specific selection; [Compose](../../../infra/08-ai/ollama/docker-compose.yml) and its selected image declaration are authoritative.
 - **Flow/dependencies**: Open WebUI and approved clients call Ollama over `ai_net`; exporter reads its API for Prometheus. NVIDIA runtime/driver, model storage, Traefik, gateway auth, and the root CA are prerequisites. The loopback host port is an operator endpoint, while the public route remains gateway protected.
-- **State/environment**: `ollama-models:/root/.ollama` holds model manifests/blobs. Preserve model name, source, digest, parameters, license, and compatibility evidence; cache presence alone is not provenance. Port/model/concurrency variables are non-secret; remote registry credentials, if used, follow the secret owner and never enter Compose output or logs.
+- **State/environment**: `ollama-data:/root/.ollama` holds model manifests/blobs. Preserve model name, source, digest, parameters, license, and compatibility evidence; cache presence alone is not provenance. Port/model/concurrency variables are non-secret; remote registry credentials, if used, follow the secret owner and never enter Compose output or logs.
 - **Resources/security**: Compose declares four CPUs, an 8 GiB limit, a 4 GiB reservation, and GPU access. These are source limits, not measured CPU/RAM/VRAM headroom. Do not expose an unauthenticated non-loopback API or run unreviewed model/tool content.
 - **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`, list/pull explicitly approved models, verify `/api/tags` and a representative inference, and monitor exporter/GPU signals. Before image or model migration, capture digests and model provenance, preserve the model volume or a reproducible manifest, upgrade one compatibility boundary at a time, then re-run inference and Open WebUI integration checks.
 - **Upstream/license**: use the official [Ollama repository](https://github.com/ollama/ollama) and release notes; Ollama is MIT licensed. Each model has separate terms that must be recorded and reviewed.
@@ -139,6 +155,8 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - [Ollama Compose](../../../infra/08-ai/ollama/docker-compose.yml)
 
 - [Ollama server configuration](https://docs.ollama.com/faq#how-do-i-configure-ollama-server): `OLLAMA_HOST`로 컨테이너 listener 주소와 포트를 함께 지정한다.
+
+- [Ollama release notes](https://github.com/ollama/ollama/releases), [tev1 model page](https://ollama.com/library/tev1), [nimble model page](https://ollama.com/library/nimble)
 
 - Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
 

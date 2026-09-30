@@ -43,6 +43,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0193 | [Observability Dashboards, Signals and Alerting](./0193-observability-dashboards-signals-and-alerting/) | 모든 서비스를 대시보드 하나씩으로 보이게 하고, metrics·logs·traces·profiles를 서로 연결하며, 실제로 발화할 수 있는 알림만 남김 |
 | SPEC-0194 | [Agent Contract Integration](./0194-agent-contract-integration/) | 분기 계약 변경 통합, 의미 검토 위임 및 완료 증거 정리 |
+| SPEC-0196 | [Ollama Decision Model Rehearsal](./0196-ollama-0-35-decision-model/) | Ollama 단일 서비스 업그레이드와 tev1:0.8b 결정 모델 호환성 스모크 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면

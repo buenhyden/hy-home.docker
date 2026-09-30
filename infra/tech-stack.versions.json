@@ -407,7 +407,7 @@
         "ollama/ollama": "external"
       },
       "images": [
-        "ollama/ollama:0.34.2"
+        "ollama/ollama:0.35.0"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -416,7 +416,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "ollama/ollama:0.34.2"
+            "ollama/ollama:0.35.0"
           ]
         }
       ]
