@@ -512,7 +512,9 @@ class DocumentGraphTests(unittest.TestCase):
     ) -> None:
         program = """
 import pathlib
+import sys
 
+sys.path.insert(0, sys.argv[1])
 from scripts.lib.document_governance.links import parse_local_markdown_links
 
 source = pathlib.PurePosixPath("docs/source.md")
@@ -524,7 +526,7 @@ assert parse_local_markdown_links(
 assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
 """
         result = subprocess.run(
-            [sys.executable, "-c", program],
+            [sys.executable, "-c", program, str(ROOT)],
             cwd=ROOT,
             capture_output=True,
             text=True,

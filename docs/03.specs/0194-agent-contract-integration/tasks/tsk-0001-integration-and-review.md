@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -36,6 +36,16 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Full on `db971359b` failed one of 628 document regressions:
+  the new parser-bound test's nested Python process assumed cwd import under
+  the gate's intentional `PYTHONSAFEPATH=1`. A focused same-environment RED
+  reproduced `ModuleNotFoundError`; the test now passes its resolved repository
+  root explicitly through argv and inserts only that path before import.
+  The same focused test then passed (0.534 seconds). Malformed-input assertions,
+  the two-second timeout and gate isolation are unchanged. Independent read-only
+  review cleared this test-only root-cause correction. Full must be rerun;
+  the failed log `/tmp/contract-final-full-db971.log` is not acceptance PASS.
 
 - 2026-09-30: Latest main `517397f27` is incorporated. Review PR #319 publishes
   `5502672f5`; its hosted checks remain pending. Local approved successor
