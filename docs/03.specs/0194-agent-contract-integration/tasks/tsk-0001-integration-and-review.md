@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -37,6 +37,17 @@ and record the integration result.
 
 ## Work Log
 
+- 2026-09-30: Latest main `517397f27` is incorporated. Review PR #319 publishes
+  `5502672f5`; its hosted checks remain pending. Local approved successor
+  `1389d23ce` passed metadata (4 documents, zero violations), Markdown,
+  renderer drift=0 and independent read-only review. It remains unpublished
+  until #319 lands. On clean committed implementation candidate `db971359b`,
+  the manual changed profile passed (empty-path repository-integrity fallback).
+  The controlled all-files wrapper also passed with before/after/changed/
+  unexpected counts all zero. Logs are `/tmp/contract-final-changed-db971.log`
+  and `/tmp/contract-final-precommit-db971.log`. Full is still running on a
+  separate clean copy of that exact commit; no final full PASS is inferred.
+
 - 2026-09-30: Committed activation `cc936b314` passed metadata for all three
   immediate transitions, Markdown and independent read-only review. The source
   `a46539a7b` merge is now prepared locally. The three conflicts retain current
@@ -70,9 +81,13 @@ and record the integration result.
   failed as workflow run 36669340357 on two baseline whitespace defects.
   Commit `94b1bf373` corrects only those defects. Updating the PR description
   triggered the registered `edited` event and cancelled run 36671793467;
-  replacement run 36673358901 failed on a newly reported high-severity
-  brace-expansion dependency advisory after all formatting checks passed. This preparation of review status
-  remains unpublished until that initial-draft PR passes and merges.
+  replacement run 36673358901 failed on a high-severity brace-expansion
+  advisory. PR #318 was subsequently observed merged at 2026-09-30T06:00:00Z,
+  with head `94b1bf373` and merge `517397f27`; this merge is not CI PASS evidence.
+  Commit `3a5c32a12` updates only the three affected lock entries to official
+  patched versions 1.1.21 and 5.0.12. Independent read-only security review,
+  npm audit (zero vulnerabilities), and npm ci dry-run (531 planned packages)
+  passed. The next review PR must pass its own required hosted check.
 
 - 2026-09-29: The owner requested integration, push, merge, main synchronization
   and branch/worktree cleanup, excluding separately ongoing SPEC-0182. The owner
