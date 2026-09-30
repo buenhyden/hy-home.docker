@@ -2,7 +2,7 @@
 title: "Ollama 0.35 Upgrade and Decision Model Smoke"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -54,7 +54,7 @@ Independent IaC review returned CLEAR for the pin/projection diff and runtime pl
 
 ## Commit Ledger
 
-2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; Spec approval transition commit: `c4aa1ae59`; Git history remains the resulting commit evidence.
+2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; Spec approval transition commit: `c4aa1ae59`; activation transition commit: `eba7243d1`; Git history remains the resulting commit evidence.
 
 ## Rulings
 
