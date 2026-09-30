@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Follow-up"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -17,22 +17,26 @@ created: "2026-09-30"
 
 ## Overview
 
-Own the native observations transferred from SPEC-0194 by the owner's explicit
-2026-09-30 decision to use a separate follow-up. Transfer changes ownership, not
-the original acceptance conditions or the status of missing evidence.
+Close the historically transferred native observations from SPEC-0194 after
+the owner's 2026-09-30 necessity ruling and independent read-only review found
+no necessary successor work. Closure withdraws unobserved native work; it does
+not convert missing evidence into PASS.
 
 ## Boundaries and Inputs
 
-Inputs are SPEC-0194, REQ-0024, AD-0027, and the original SPEC-0190 hardening
-packet at commit c86f55518b8a9a156e10e38fbd52d1a883063d6a, to be preserved under
-`docs/98.archive/superseded/03.specs/0190-agent-contract-hardening` by the
-integration handoff. Source R-identifiers below retain their original meaning.
+Inputs are SPEC-0194, REQ-0024, AD-0027, current `main` at
+`2dd9e805a5899d03a6221d29e3d64141ad7fd1af`, and the original immutable
+SPEC-0190 hardening packet at commit `c86f55518b8a9a156e10e38fbd52d1a883063d6a`,
+preserved by the integration handoff under
+`docs/98.archive/superseded/03.specs/0190-agent-contract-hardening`.
+Source R-identifiers below retain their original meaning.
 
-The user authorized transfer, not execution of these observations. No provider
-call, spending, hook trust change, global configuration change, editor action,
-service operation, or credential access is authorized by this draft. SPEC-0182
-remains separate. Coverage, public changed/full gates, controlled all-files QA,
-hosted checks, and Git delivery remain owned by SPEC-0194.
+The owner authorized necessity review and cancellation only, not runtime
+execution. No provider call, spending, hook trust change, global configuration
+change, editor action, service operation, credential access, authentication-file
+read, or raw-log capture is authorized. SPEC-0182 remains separate. Prior
+coverage and delivery evidence remain historically owned by completed SPEC-0194.
+This package owns validation of its cancellation lifecycle only.
 
 ## Behavior Contract
 
@@ -45,12 +49,16 @@ remains BLOCKED/NOT_RUN and cannot become PASS through transfer or static review
 
 ## Technical Approach
 
-After the required lifecycle approvals, propose only bounded observations using
-installed tools and synthetic inputs. Obtain concrete authorization before any
-native action or metered call. Preserve user bindings and global configuration.
-Use the current Task for evidence; introduce no model gateway, budget engine,
-parallel ledger, or evaluation framework. If no supported hard-enforcement
-route exists, keep that criterion blocked rather than inventing one.
+Apply only the registered four-stage lifecycle path: review/approved/ready,
+then approved/approved/ready, then active/active/in-progress, then
+cancelled/cancelled/cancelled for the Spec, Plan, and Task respectively. The
+final Task records each numbered acceptance criterion as withdrawn with the
+owner's cancellation reason. The final package then retires to the registered
+Stage 98 route with its tombstone and inbound references updated. No successor
+Task, provider invocation, synthetic target, model gateway, budget engine, or
+evaluation framework is created. The current Task preserves the sanitized
+preflight receipt and the limits that made every native result NOT_RUN or
+BLOCKED.
 
 ## Interfaces and Data
 
@@ -84,14 +92,20 @@ partial results visible. An unavailable observation is not non-applicability.
    or keep this criterion BLOCKED. A time limit or lexical refusal fixture is
    not proof of a monetary cap. Fulfill the original Plan's separate model
    entitlement requirement without reading authentication files or assuming
-   documented support proves account access.
+   documented support proves account access. Native invocations do not establish
+   backend request counts; no verified monetary, request, or token hard envelope
+   is available for Codex. The owner reports extra credits and automatic reload
+   disabled; this owner-supplied fact does not verify native enforcement.
 5. **R22:** Observe cross-provider handoff refusal before writes for stale HEAD
    or file digest, revoked approval, wrong worktree, overlapping writers, and
    ambiguous partial results; observe valid resumption from actual Task/commit
    evidence. Recorded-output fixtures alone do not prove native refusal.
 
-Every applicable criterion requires observed evidence and independent review
-before completion. SPEC-0194 delivery completion does not complete this package.
+All five criteria remain NOT_RUN or BLOCKED as recorded in the Task. They are
+withdrawn because the owner authorized cancellation of the unnecessary
+follow-up after independent necessity review, not because static checks,
+subscription state, or lifecycle closure supply native evidence. This review-stage document is not terminal; the
+remaining registered transitions and final cancellation evidence are required.
 
 ## Traceability
 
@@ -103,8 +117,8 @@ before completion. SPEC-0194 delivery completion does not complete this package.
 
 ## Open Questions
 
-Installed provider/editor versions, supported account controls and entitlement,
-concrete observation scope and limits, and execution authorization remain open.
+No native observation remains planned. The preserved Task records unobserved
+entitlement, editor behavior, and enforcement limits for historical clarity.
 
 ## Operational Impact
 

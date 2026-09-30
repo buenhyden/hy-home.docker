@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -16,52 +16,52 @@ created: "2026-09-30"
 
 ## Objective
 
-Observe only the transferred native obligations after separate execution
-approval, preserving the original acceptance and evidence boundaries.
+Cancel the unnecessary historically transferred native-observation follow-up
+through registered lifecycle transitions while preserving its evidence boundary.
 
 ## Dependencies
 
 - [Spec](spec.md) and SPEC-0194 delivery evidence at its reviewed revision.
 - Original hardening packet c86f55518b8a9a156e10e38fbd52d1a883063d6a.
-- Installed native tools, synthetic targets, an independent reviewer, and
-  explicit observation approval. No dependency installation is authorized.
+- The preserved 2026-09-30 preflight at source revision
+  `2dd9e805a5899d03a6221d29e3d64141ad7fd1af`, the independent necessity review,
+  and the owner's cancellation ruling. No native tool, target, or dependency is
+  required.
 
 ## Execution Sequence
 
-1. W1: Reconcile the transferred R04/R15/R18/R19/R22 receipts with SPEC-0194.
-   Identify installed versions and propose exact synthetic targets, actions,
-   refusal cases, and cleanup owners for criteria 1-5. Record original Plan
-   model-entitlement requirements separately from static model configuration.
-2. W2: Obtain concrete execution approval and provider/account context without
-   reading authentication files. State call/token/time/concurrency/retry/spend
-   limits and available supported hard enforcement. Unsupported enforcement
-   keeps criterion 4 BLOCKED; do not add an inference gateway or guess controls.
-3. W3: Observe approved native hook delivery and explicit skill/role invocation
-   for both providers, separately from syntax and deterministic regressions
-   (criteria 1-2). Preserve denied or failed results.
-4. W4: Observe the approved editor action/selection with unchanged bindings
-   (criterion 3), supported entitlement/budget enforcement (criterion 4), and
-   cross-provider handoff refusal plus valid resumption (criterion 5).
-5. W5: Obtain independent read-only review of each receipt against the same
-   revision. Complete only when all applicable criteria are evidenced; preserve
-   BLOCKED/NOT_RUN and keep this package open otherwise.
+1. W1: Preserve the sanitized preflight facts and all native NOT_RUN/BLOCKED
+   results. This first stage is Spec review, Plan approved, and Task ready.
+2. W2: Advance the Spec from review to approved while retaining Plan approved
+   and Task ready.
+3. W3: Advance the Spec from approved to active, Plan from approved to active,
+   and Task from ready to in-progress. Add the required cancellation frontmatter
+   with one withdrawal reason per criterion.
+4. W4: Cancel the active Spec, Plan, and Task. Retire the terminal package to
+   `docs/98.archive/retired/03.specs/0195-agent-native-observations`, add one
+   existing-retention-catalog row, and update all inbound references including
+   the dated SPEC-0194 disposition receipt. Do not report a native PASS or
+   create a successor Task.
 
 ## Risk and Rollback
 
-No blanket provider, service, secret, global configuration, or spending authority.
-Stop before unapproved actions. Synthetic target ownership and cleanup must be
-explicit; preserve pre-existing paths and user bindings. Record partial evidence
-instead of rerunning indefinitely or silently switching providers/models.
+No provider, service, secret, global configuration, editor, or spending action
+is authorized. Preserve the existing evidence and do not create an observation
+target. A failed or unavailable native observation remains historical NOT_RUN/BLOCKED
+evidence, never cancellation success.
 
 ## Verification
 
-Use existing syntax, hook, and handoff regressions for their encoded invariants.
-For criteria 1-5, record actual authorized native observations, exact version and
-revision, result metadata, and independent review in the Task. No static test
-substitutes for those observations. Coverage and delivery gates stay in SPEC-0194.
+Validate each lifecycle transition and required Task cancellation schema. The
+independent review must confirm the withdrawal reasons preserve, rather than
+replace, the existing native NOT_RUN/BLOCKED results. Coverage and delivery gates
+remain historical SPEC-0194 delivery evidence; this package validates only its
+cancellation lifecycle.
 
 ## Rulings
 
-- The user approved separate follow-up ownership on 2026-09-30, not execution.
-- Missing tools or unsupported controls do not waive acceptance.
+- The owner approved necessity review and cancellation on 2026-09-30, not
+  native execution.
+- Unsupported native-control facts remain historical NOT_RUN/BLOCKED evidence;
+  cancellation does not convert them into PASS.
 - Real recovery is outside this package; R27 requires read-only contract review.

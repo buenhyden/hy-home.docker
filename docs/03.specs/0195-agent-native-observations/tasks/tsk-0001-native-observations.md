@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Evidence"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -17,22 +17,51 @@ created: "2026-09-30"
 
 ## Objective
 
-Record approved native observations for the [Spec](../spec.md) and
-[Plan](../plan.md), without reclassifying unobserved facts as success.
+Record cancellation evidence for the [Spec](../spec.md) and [Plan](../plan.md),
+without reclassifying unobserved native facts as success.
 
 ## Inputs
 
 - SPEC-0194's delivered checks and transfer record.
 - Original hardening packet c86f55518b8a9a156e10e38fbd52d1a883063d6a.
-- Installed provider/editor versions, explicit execution scope and limits,
-  and sanitized synthetic targets, all to be established before observation.
+- The preserved preflight, independent necessity review, and owner cancellation
+  ruling; no new native tool, target, or execution input is needed.
 
 ## Work Log
 
-2026-09-30: The owner explicitly chose a separate follow-up for outstanding
-native/editor/budget observations. This draft receives R04/R15/R18/R19/R22 and
-the original Plan's model-entitlement observation. It does not authorize their
-execution or declare them complete.
+2026-09-30: The owner moved the historically transferred R04/R15/R18/R19/R22
+native observations into this follow-up. Current source HEAD was
+`2dd9e805a5899d03a6221d29e3d64141ad7fd1af`; `codex --version` reported
+`0.159.2` and `claude --version` reported `2.1.285`. The sanitized preflight
+receipt records subscription-login classifications and an allowlisted
+presence-only check for named API-key and base-URL environment variables. No
+provider call, direct authentication-file or global-configuration inspection,
+editor action, API paid usage, or fallback occurred.
+
+2026-09-30: The owner authorized necessity review and cancellation only. An
+independent read-only review agreed that this follow-up is unnecessary and has
+no successor Task. It does not establish native hook delivery, provider
+invocation, editor behavior, model entitlement, budget enforcement, or handoff
+refusal. This ready-stage Task preserves those missing facts for cancellation.
+The historical W1 preflight and W2 account-context preparation are complete;
+only native observation portions are NOT_RUN or BLOCKED and are withdrawn.
+
+### Withdrawal Preparation
+
+1. Criterion 1 (R04) will be withdrawn: no durable control needs a live hook
+   receipt beyond the delivered deterministic contract.
+2. Criterion 2 (R15) will be withdrawn: no durable provider-invocation control
+   remains after integration; a native call would add no retained behavior.
+3. Criterion 3 (R18) will be withdrawn: no editor behavior or binding change is
+   being delivered, and the editor remains on a separate PC.
+4. Criterion 4 (R19) will be withdrawn: the providers expose no supported hard
+   monetary/request/token envelope for this scope; subscription context cannot
+   become a durable enforcement control.
+5. Criterion 5 (R22) will be withdrawn: no new cross-provider handoff workflow
+   remains to protect, and no successor Task needs native resumption evidence.
+
+The cancellation frontmatter is intentionally deferred until this Task is
+in-progress, as required by the registered lifecycle transition.
 
 ## Verification Evidence
 
@@ -41,17 +70,23 @@ receipts remain owned by SPEC-0194 and are not native evidence.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1-W3/W5 | NOT_RUN: actual hook delivery | This Task, source R04 |
-| 2 | W1-W3/W5 | NOT_RUN: separate provider invocations | This Task, source R15 |
-| 3 | W1-W2/W4-W5 | NOT_RUN: editor observations | This Task, source R18 |
-| 4 | W1-W2/W4-W5 | BLOCKED: supported enforcement and entitlement unverified | This Task, source R19 and original Plan |
-| 5 | W1-W2/W4-W5 | NOT_RUN: native handoff refusal/resumption | This Task, source R22 |
+| 1 | Historical W1; closure W1-W4 | Preflight complete; NOT_RUN: withdrawn native hook delivery | This Task, source R04 |
+| 2 | Historical W1; closure W1-W4 | Preflight complete; NOT_RUN: withdrawn provider invocations | This Task, source R15 |
+| 3 | Historical W1-W2; closure W1-W4 | Preflight complete; NOT_RUN: withdrawn remote-editor behavior | This Task, source R18 |
+| 4 | Historical W1-W2; closure W1-W4 | Preflight complete; BLOCKED: withdrawn enforcement and entitlement | This Task, source R19 and original Plan |
+| 5 | Historical W1; closure W1-W4 | Preflight complete; NOT_RUN: withdrawn native handoff behavior | This Task, source R22 |
 
 ## Review Evidence
 
 Independent read-only merge_preflight review cleared the draft transfer and
 preserved conditions before bootstrap publication. This is not a review of
 native results; transfer approval is not an observation receipt.
+
+2026-09-30 independent read-only closure review found lifecycle and evidence
+wording issues in the initial closure draft. This stage records the legal first
+transitions, preserves W1/W2 preflight separately from native results, removes
+the observation-target proposal, and uses necessity-based withdrawals. The
+review did not observe or approve a native PASS.
 
 ## Commit Ledger
 
@@ -60,13 +95,20 @@ native results; transfer approval is not an observation receipt.
 
 ## Rulings
 
-- Coverage, public gates, controlled all-files QA, hosted checks, and Git delivery
-  remain SPEC-0194 obligations.
+- SPEC-0194 retains its completed delivery evidence; SPEC-0195 owns only the
+  cancellation lifecycle evidence.
+- Registry runtime/entitlement `needs_revalidation` remains unchanged;
+  cancellation supplies no direct native observation.
 - SPEC-0182 and real operational recovery remain outside this package.
 - Do not access credentials or change global configuration, trust, bindings,
   services, or provider spending under transfer authorization.
+- 2026-09-30 owner direction: “SPEC-0195에 관련한 사항들은 불필요 과제
+  취소(`cancelled`) 로 처리하고, 이전 spec, task, plan도 SPEC-0195과 관련이
+  있으면, 분석하여 검토하고 정리한다.” This authorizes cancellation and
+  evidence-based cleanup of prior related documents; it does not authorize
+  native runtime execution.
 
 ## Deferred Items
 
-Execution awaits the required lifecycle approvals and concrete bounded native
-observation authorization. All missing observations retain their current status.
+Cancellation awaits the remaining registered lifecycle transitions and final
+independent review. All missing observations retain their NOT_RUN/BLOCKED status.
