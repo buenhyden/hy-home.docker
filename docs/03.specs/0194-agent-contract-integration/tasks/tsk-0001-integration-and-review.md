@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.2.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -28,6 +28,13 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Approved predecessor `522433593` passed immediate-transition
+  metadata (4 documents, zero violations), Markdown, renderer drift=0 and
+  independent read-only review. Spec/Plan now enter active and this Task enters
+  in-progress locally under the existing implementation approval. Original
+  source integration and exact-byte handoff follow this committed activation;
+  remote publication still waits for each predecessor PR to land.
 
 - 2026-09-30: Review predecessor `91031eb99` records the independently reviewed
   scope, coverage ruling and bootstrap results. The owner already explicitly
