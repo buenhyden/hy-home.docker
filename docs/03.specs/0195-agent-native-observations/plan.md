@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Plan"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -32,14 +32,14 @@ through registered lifecycle transitions while preserving its evidence boundary.
 
 1. W1: Preserve the sanitized preflight facts and all native NOT_RUN/BLOCKED
    results. This first stage is Spec review, Plan approved, and Task ready.
-2. W2: Advance the Spec from review to approved while retaining Plan approved
-   and Task ready.
-3. W3: Advance the Spec from approved to active, Plan from approved to active,
-   and Task from ready to in-progress. Add the required cancellation frontmatter
-   with one withdrawal reason per criterion.
+2. W2: The Spec advanced from review to approved while the Plan remained
+   approved and the Task remained ready.
+3. W3: The Spec advanced from approved to active, the Plan from approved to
+   active, and the Task from ready to in-progress. Its cancellation frontmatter
+   records one withdrawal reason per criterion.
 4. W4: Cancel the active Spec, Plan, and Task. Retire the terminal package to
    `docs/98.archive/retired/03.specs/0195-agent-native-observations`, add one
-   existing-retention-catalog row, and update all inbound references including
+   new row in the existing Retention Catalog, and update all inbound references
    the dated SPEC-0194 disposition receipt. Do not report a native PASS or
    create a successor Task.
 

@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Evidence"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -11,6 +11,21 @@ parent_ids:
 - "SPEC-0195"
 - "SPEC-0195-PLAN-0001"
 created: "2026-09-30"
+cancellation:
+  reason: "The owner cancelled the unnecessary native-observation follow-up after independent necessity review."
+  approved_by: "@buenhyden"
+  approved_at: "2026-09-30"
+  criteria:
+  - criterion: 1
+    withdrawn: "No durable control needs a live native hook receipt beyond the delivered deterministic contract."
+  - criterion: 2
+    withdrawn: "No durable provider-invocation control remains after integration."
+  - criterion: 3
+    withdrawn: "No editor behavior or binding change is being delivered."
+  - criterion: 4
+    withdrawn: "No supported provider hard monetary, request, or token envelope exists for this scope."
+  - criterion: 5
+    withdrawn: "No new cross-provider handoff workflow remains to protect."
 ---
 
 # Agent Native Observation Evidence
@@ -60,8 +75,8 @@ only native observation portions are NOT_RUN or BLOCKED and are withdrawn.
 5. Criterion 5 (R22) will be withdrawn: no new cross-provider handoff workflow
    remains to protect, and no successor Task needs native resumption evidence.
 
-The cancellation frontmatter is intentionally deferred until this Task is
-in-progress, as required by the registered lifecycle transition.
+The Task is in-progress and now carries the required cancellation frontmatter.
+It preserves all native NOT_RUN/BLOCKED evidence pending terminal cancellation.
 
 ## Verification Evidence
 
@@ -98,6 +113,8 @@ checks passed. This is closure-process evidence only, not native evidence.
   submitted through SPEC-0194's bootstrap PR #318; native execution not started.
 - `ac8011293`: review-stage cancellation preparation; independent review CLEAR,
   no native observation executed.
+- `2390d3bc2`: approved-stage cancellation closure; independent review CLEAR,
+  no native observation or hosted CI result claimed.
 
 ## Rulings
 

@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Follow-up"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -49,7 +49,7 @@ remains BLOCKED/NOT_RUN and cannot become PASS through transfer or static review
 
 ## Technical Approach
 
-This approved closure advances through the registered path: approved/approved/
+This active closure advances through the registered path: approved/approved/
 ready, then active/active/in-progress, then cancelled/cancelled/cancelled for
 the Spec, Plan, and Task respectively. The final Task records each numbered
 acceptance criterion as withdrawn with the owner's cancellation reason. The
