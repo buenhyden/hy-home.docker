@@ -1,6 +1,6 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -224,7 +224,8 @@ Owner가 감독하는 재부팅 리허설마다 아래 표에 한 행씩 기록�
 | 2026-09-30 | 2. `mng-pg`, `mng-valkey`, Traefik, Keycloak | 10:03:53 KST | 10:03:53 KST | PASS: accepting connections; three healthy |
 | 2026-09-30 | 3. OpenBao sealed start | 09:45:14 KST | 10:03:53 KST | PASS: `openbao` and `openbao-agent` healthy, `Sealed true` |
 | 2026-09-30 | 4-5. Unseal and OIDC login (owner) | not recorded | before 10:10:05 KST | PASS: `Sealed false`, active leader; owner reported the `home-admin` login |
-| 2026-09-30 | 7. k3d | 10:03:53 KST | 10:10 KST | PARTIAL: five `k3d-hyhome-*` Up, 38 pods Running, ESO pods Running; `vault-backend` still `Ready=False` from 09:53:43 (sealed) and one ExternalSecret `SecretSyncedError` until the next reconcile |
+| 2026-09-30 | 6. SecretID delivery (owner, RUN-0085) | before 10:30:27 KST | 10:30:29 KST | PASS: Agent restarted 10:30:27, `authentication successful` 10:30:29, SecretID `consumed`, token renewed, no error after the restart |
+| 2026-09-30 | 7. k3d | 10:03:53 KST | 10:31 KST | PASS: five `k3d-hyhome-*` Up, 38 pods Running; `vault-backend` revalidated `Ready=True` at 10:11:17 after the unseal, and all six ExternalSecrets `SecretSynced` |
 
 ## Traceability
 

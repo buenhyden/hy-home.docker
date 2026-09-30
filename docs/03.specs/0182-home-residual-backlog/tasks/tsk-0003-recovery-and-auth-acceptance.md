@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.8"
+version: "0.7.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -142,8 +142,23 @@ Read-only investigation of 2026-09-25:
   every token expiry needs a new delivery. RUN-0098 stages 3 and 6 and its
   recovery point to it. Automatic re-login is a security design change
   left to a Spec; ADR-0042 assumed delivery only at restarts.
+- 2026-09-30 W11 stage 6: the owner ran the new RUN-0085 delivery; the
+  Agent authenticated at 10:30:29 KST. ESO had revalidated at 10:11:17. The
+  rehearsal is complete (criterion 11).
 
 ## Verification Evidence
+
+W11, supervised reboot rehearsal (criterion 11), 2026-09-30, RUN-0098:
+
+| Stage | Result |
+| --- | --- |
+| 0. Preconditions | pass: 09:37:52-09:39:07 KST, pgBackRest differential, Restic snapshots `9753742f` and `6236fc73`, `restic check` no errors |
+| 1. Docker and containers | pass: boot 09:44:30; `docker.service` active 10:01:23 (about 16.5 min restoring containers, API silent meanwhile); 54 of 54 containers back, all healthy by 10:03:53 |
+| 2. Data and auth | pass: `mng-pg` accepting connections; `mng-valkey`, Traefik, Keycloak healthy |
+| 3. OpenBao | pass: sealed start, `openbao` and `openbao-agent` healthy |
+| 4-5. Unseal and OIDC (owner) | pass: `Sealed false`, active leader, `home-admin` login |
+| 6. SecretID (owner) | pass: Agent authenticated 10:30:29, SecretID consumed; the procedure itself was written during the rehearsal (RUN-0085) |
+| 7. k3d | pass: five nodes Up, 38 pods Running, `vault-backend` `Ready=True` 10:11:17, six ExternalSecrets synced |
 
 W12, retired and entry-closed items (criterion 12):
 
@@ -252,5 +267,4 @@ See the Plan.
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
 | R2 setup (bucket, lock, token, secrets, `init`) and re-landing #277 | @buenhyden | When the owner is ready; RUN-0021 §8 comes back with it |
-| W11 supervised reboot and the RUN-0098 rehearsal record | @buenhyden | After fresh backups and `restic check` |
 | W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
