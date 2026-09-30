@@ -622,6 +622,11 @@ ROUTES = {
         "security audit", "vulnerability", "secret scan", "hardcoded secret",
         "privilege escalation", "exposed input",
     ],
+    "stateful-recovery-contract-review": [
+        "review this stateful recovery contract", "review the stateful recovery contract",
+        "stateful recovery contract review", "recovery contract review",
+        "recovery readiness review", "disaster recovery review",
+    ],
     "style-validation": [
         "pre-commit", "precommit", "markdownlint", "yamllint", "shellcheck",
         "lint", "formatting", "style check", "document metadata",

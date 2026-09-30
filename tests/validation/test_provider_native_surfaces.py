@@ -81,7 +81,7 @@ class ProviderNativeSurfaceTests(unittest.TestCase):
         renderer = load_renderer()
         state = renderer.load_agent_governance(ROOT)
         self.assertEqual(14, len(state.roles))
-        self.assertEqual(23, len(state.skills))
+        self.assertEqual(24, len(state.skills))
         for provider in state.provider_records:
             self.assertEqual(
                 ".agents/skills/{skill_id}/SKILL.md", provider.canonical_skill_pattern

@@ -119,6 +119,8 @@ canonical_sources:
   - .agents/skills/requirements-to-design-agent/agents/openai.yaml
   - .agents/skills/security-audit/SKILL.md
   - .agents/skills/security-audit/agents/openai.yaml
+  - .agents/skills/stateful-recovery-contract-review/SKILL.md
+  - .agents/skills/stateful-recovery-contract-review/agents/openai.yaml
   - .agents/skills/style-validation/SKILL.md
   - .agents/skills/style-validation/agents/openai.yaml
   - .agents/skills/task-breakdown-agent/SKILL.md
