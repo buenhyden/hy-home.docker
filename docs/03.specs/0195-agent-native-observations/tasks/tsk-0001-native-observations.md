@@ -1,6 +1,6 @@
 ---
 title: "Agent Native Observation Evidence"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -49,11 +49,14 @@ receipts remain owned by SPEC-0194 and are not native evidence.
 
 ## Review Evidence
 
-Pending independent review. Transfer approval is not an observation receipt.
+Independent read-only merge_preflight review cleared the draft transfer and
+preserved conditions before bootstrap publication. This is not a review of
+native results; transfer approval is not an observation receipt.
 
 ## Commit Ledger
 
-None; this is an uncommitted draft.
+- `a887e35e59a4465a2624afd67018cb67d1014af6`: draft registration and transfer,
+  submitted through SPEC-0194's bootstrap PR #318; native execution not started.
 
 ## Rulings
 

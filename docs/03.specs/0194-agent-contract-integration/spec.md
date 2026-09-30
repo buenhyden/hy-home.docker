@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"

@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -29,13 +29,21 @@ and record the integration result.
 
 ## Work Log
 
+- 2026-09-30: Bootstrap commit `a887e35e59a4465a2624afd67018cb67d1014af6`
+  was pushed to `origin/codex/contract-integration`; draft PR #318 targets
+  `main` in `buenhyden/hy-home.docker`. Its prior remote branch and PR were
+  absent. The user authorized push, PR, merge and cleanup; recovery is a reviewed
+  revert retaining the source commits. Required check `validation-changed`
+  is running as workflow run 36669340357. This preparation of review status
+  remains unpublished until that initial-draft PR passes and merges.
+
 - 2026-09-29: The owner requested integration, push, merge, main synchronization
   and branch/worktree cleanup, excluding separately ongoing SPEC-0182. The owner
   also explicitly requested automated checks plus independent read-only agent
   semantic review. Repository target is buenhyden/hy-home.docker; no protection
   changes, forced pushes, real service operations, or credentials are included.
 - Draft registration and its independent review precede lifecycle promotion.
-  No receipt, push, pull request, merge, or cleanup has occurred yet.
+  At initial drafting, no receipt, push, pull request, merge, or cleanup had occurred.
 
 ## Verification Evidence
 
@@ -136,9 +144,11 @@ Required human approvals remain intact.
 
 ## Commit Ledger
 
-None. The source packet is an evidence input, not this Task's commit. A
-`branch_integration_receipts` entry is written only after active lifecycle and
-an integration result.
+- `a887e35e59a4465a2624afd67018cb67d1014af6`: initial integration/native
+  follow-up drafts, original recovery skill draft, registration and discovery.
+- The source packet is an evidence input, not this Task's commit. A
+  `branch_integration_receipts` entry is written only after active lifecycle
+  and an integration result.
 
 ## Rulings
 
