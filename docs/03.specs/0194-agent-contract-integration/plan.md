@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration Plan"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/plan"
 status: "completed"
 owner: "@buenhyden"
@@ -44,8 +44,10 @@ outcomes.
    only after SPEC-0194 is active and its Task in-progress. The existing immutable
    same-ID HOME classification archive remains unchanged. Carry source R01-R39
    one-to-one from its final Task reconciliation. Transfer only the actual
-   R04/R15/R18/R19/R22 and model-entitlement observations to SPEC-0195 under the
-   owner's 2026-09-30 decision; retain their conditions and missing status.
+   R04/R15/R18/R19/R22 and model-entitlement observations to the
+   [SPEC-0195 withdrawal record](../../98.archive/retention-catalog.md#retention-catalog)
+   under the owner's 2026-09-30 decision; retain their conditions and missing
+   status.
    Do not claim source completion. The same-ID/different-slug
    case requires the existing receipt validator to select a unique completed
    identity at its actual immutable path. W2 owns only
@@ -71,8 +73,8 @@ outcomes.
    worktree state; complete the package through its registered lifecycle
    (criteria 5, 6, 7). Complete only after retained delivery requirements pass and
    the approved observation transfer to SPEC-0195 is committed and reviewed.
-   SPEC-0195 remains open until its own observed acceptance passes; branch
-   cleanup does not change those statuses.
+   SPEC-0195 was later cancelled and retired without native PASS; branch cleanup
+   did not alter its preserved NOT_RUN/BLOCKED evidence.
 
 ## Risk and Rollback
 

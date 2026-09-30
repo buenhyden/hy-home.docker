@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.8"
+version: "1.1.9"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -49,6 +49,7 @@ reads this table.
 | `completed/03.specs/0180-home-dev-convergence/` | completed | AD-0031 | `2a90260a6f9083993b2e61dee20a49e7b8bd858b:docs/03.specs/0180-home-dev-convergence` |
 | `completed/03.specs/0181-home-residual-operations/` | completed | AD-0031 | `98efce81b9481fd7f6a01c92b643b3f336679574:docs/03.specs/0181-home-residual-operations` |
 | `superseded/90.references/research/0081-roadmap/README.md` | superseded | RES-0002 | `bb43abb5e0894f45d1179a60770d489a0da41e7c:docs/90.references/research/0081-roadmap/README.md` |
+| `retired/03.specs/0195-agent-native-observations/` | retired | Owner withdrew the unnecessary SPEC-0195 native-observation follow-up; no successor exists. | `a31453d671153c5985bf08051cbe4b87bca5e6a5:docs/03.specs/0195-agent-native-observations` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/guide.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/policy.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` |
