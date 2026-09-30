@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -36,6 +36,17 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Committed final validator repair `c14f5480a` passed the manual
+  changed profile (empty-path repository-integrity fallback) and controlled
+  all-files wrapper; before/after/changed/unexpected path counts were all zero.
+  Logs are `/tmp/contract-final-changed-directory-fix.log` and
+  `/tmp/contract-final-precommit-directory-fix.log`. Full remains running on a
+  separate clean copy of that commit. Independent acceptance audit found no
+  additional retained-scope gap: all 12 frozen files match, HOME0190 and
+  SPEC-0182/0193 are unchanged, and SPEC-0195 preserves the approved obligations.
+  Final fresh changed-line coverage passed as detailed below; hosted delivery
+  and final full remain prerequisites, not inferred results.
 
 - 2026-09-30: Review PR #319 passed required validation-changed (run
   36677220072, 24m15s) and merged as `8de44c628`. Local main was fast-forwarded.
@@ -239,7 +250,7 @@ independent code review. Those source changes await later integration.
 | 4 | W5 | Not started | Forge required-check result |
 | 5 | W2/W5/W6 | Not started | Git history and worktree state |
 | 6 | W2/W6 | Approved transfer; review and commit pending | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
-| 7 | W4/W6 | Historical source PASS: 954/1,020; final validator repair remeasurement pending | This Task; owner-approved changed-line denominator |
+| 7 | W4/W6 | PASS: final changed Python lines 966/1,033 (93.51%), independently verified | This Task; owner-approved changed-line denominator |
 
 The temporary measurement receipt SHA-256 is
 `c717d7c2ba8ffeb251838359e1908bf1d9e1d9f6ba869a55bcb77bc025214ebf`; the stdlib-only
@@ -352,6 +363,39 @@ executable lines, 93.53%; this is not an 80% full-file coverage claim. Record it
 exact measured revision, command and independent review with this Task's current
 receipt, rather than attributing it to frozen W10. Shell behavior/lint checks
 remain separately evidenced. Coverage is retained in SPEC-0194, not transferred.
+
+### Final Changed-Line Remeasurement
+
+After the directory integrity repair, a fresh bounded stdlib measurement passed
+72/72 selected tests with no failures, errors, skips or timeout (exit 0;
+85.570 seconds of tests, 87.20 seconds overall). Changed executable Python lines
+are **966/1,033 (93.51%)**, satisfying the owner's aggregate 80% criterion.
+The repaired resource validator is 290/332; each of the other nine file counts
+matches the earlier table. The separate whole-file lower bound is
+6,510/13,088 (49.74%); it is not the acceptance denominator. The earlier
+954/1,020 observation remains a historical source result.
+
+The baseline remains `24b3e45c7fba5f11455c2a9b333463dfccfd3398`; rename-aware
+Git added/modified lines are intersected with stdlib executable lines. The
+helper started from HEAD `4f4330c52` while the repair was present in its working
+tree. All ten measured blobs were identical at start/end and match committed
+`c14f5480a`; the repaired validator blob is
+`fdfa5c9ac3dddd3b25f1dc035d554d4bc88296c3`. Independent read-only merge_preflight
+review recomputed 966/1,033 from Git and the actual observed line sets.
+
+```sh
+rtk proxy env -i PATH=/home/hyunyoun/.local/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 timeout 600 python3 -B /tmp/agent-contract-coverage-final.py
+```
+
+The exact line sets, 72 successful test IDs and ten blob fingerprints are in
+`/tmp/agent-contract-coverage-final.json`, SHA-256
+`7ef2d2be80504d7982b72bc8eabcda7b0e153da19a29789bb0cfb57592ec4379`.
+The helper SHA-256 is
+`667b64c51179ed15a0beef2fc0478a68e36901cbf64d3a04470da62346b07fa9`.
+This parent-process sample excludes subprocesses, temporary copies, separate
+threads and branch coverage. The large resource-boundary test and remaining
+references-module tests are omitted only from this extra sample; normal
+registered full gates remain unchanged and must independently pass.
 
 ### Frozen Evidence Key
 
