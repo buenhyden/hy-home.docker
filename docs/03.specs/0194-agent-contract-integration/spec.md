@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration Specification"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -108,6 +108,13 @@ fails closed for absent deterministic results, ambiguity, or protected changes.
    Transferred observations and the original source package are not reported as
    completed. Coverage and all other retained delivery requirements must be
    accurately resolved here.
+
+7. Under the owner's 2026-09-30 ruling, aggregate coverage of added or modified
+   executable Python lines in the approved implementation diff is at least 80%.
+   The Task records the source base/head, rename-aware line mapping, actual
+   observed line sets and counts, and measurement limits. This does not claim
+   80% whole-file or branch coverage. A time-limited instrumentation sample
+   does not replace the required passing registered tests.
 
 ## Traceability
 

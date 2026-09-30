@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.0"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -29,15 +29,81 @@ and record the integration result.
 
 ## Work Log
 
+- 2026-09-30: Bootstrap commit `a887e35e59a4465a2624afd67018cb67d1014af6`
+  was pushed to `origin/codex/contract-integration`; draft PR #318 targets
+  `main` in `buenhyden/hy-home.docker`. Its prior remote branch and PR were
+  absent. The user authorized push, PR, merge and cleanup; recovery is a reviewed
+  revert retaining the source commits. Required check `validation-changed`
+  failed as workflow run 36669340357 on two baseline whitespace defects.
+  Commit `94b1bf373` corrects only those defects. Updating the PR description
+  triggered the registered `edited` event and cancelled run 36671793467;
+  replacement run 36673358901 failed on a high-severity brace-expansion
+  advisory. PR #318 was subsequently observed merged at 2026-09-30T06:00:00Z,
+  with head `94b1bf373` and merge `517397f27`; this merge is not CI PASS evidence.
+  Commit `3a5c32a12` updates only the three affected lock entries to official
+  patched versions 1.1.21 and 5.0.12. Independent read-only security review,
+  npm audit (zero vulnerabilities), and npm ci dry-run (531 planned packages)
+  passed. The next review PR must pass its own required hosted check.
+
 - 2026-09-29: The owner requested integration, push, merge, main synchronization
   and branch/worktree cleanup, excluding separately ongoing SPEC-0182. The owner
   also explicitly requested automated checks plus independent read-only agent
   semantic review. Repository target is buenhyden/hy-home.docker; no protection
   changes, forced pushes, real service operations, or credentials are included.
 - Draft registration and its independent review precede lifecycle promotion.
-  No receipt, push, pull request, merge, or cleanup has occurred yet.
+  At initial drafting, no receipt, push, pull request, merge, or cleanup had occurred.
 
 ## Verification Evidence
+
+The owner explicitly answered "변경된 실행 줄 80%로 명시" on 2026-09-30
+after reviewing the changed-line and incomplete whole-file denominators.
+Criterion 7 uses that aggregate changed executable-line scope; the original
+source packet remains immutable. This is an explicit scope ruling, not a claim
+that whole-file coverage passed.
+
+Stdlib trace measurement on source `a46539a7b`, relative to `24b3e45c7`,
+observed 954/1,020 changed executable lines (93.53%). The separate whole-file
+lower bound is 6,974/13,075 (53.34%), not 80% acceptance. The denominator is
+stdlib `trace._find_executable_linenos()` intersected with rename-aware Git
+added/modified hunk lines; the evaluator move is R073, not a wholly new file.
+
+| Affected Python file | Observed changed executable lines | Total changed executable lines |
+| --- | ---: | ---: |
+| `.agents/evaluations/agent_output_eval.py` | 393 | 393 |
+| `scripts/lib/agent_governance/agent_governance_contract.py` | 278 | 319 |
+| `scripts/lib/document_governance/links.py` | 264 | 285 |
+| `scripts/lib/document_governance/metadata/lifecycle.py` | 5 | 6 |
+| `scripts/lib/document_governance/references.py` | 1 | 1 |
+| `scripts/lib/document_governance/registry.py` | 0 | 0 |
+| `scripts/lib/document_governance/spec_packages.py` | 8 | 11 |
+| `scripts/lib/gate/ci_gate_adapters.py` | 3 | 3 |
+| `scripts/validation/check-script-manifest.py` | 1 | 1 |
+| `scripts/validation/ci_gate_runner.py` | 1 | 1 |
+
+The initial broad stdlib trace attempt reached its 1,800-second limit without
+a saved result; no coverage is inferred from it. A narrower additional
+instrumentation sample used exact source filenames, omitted test/stdlib
+instrumentation, and saved line sets on each test and timeout:
+
+```sh
+rtk proxy env -i PATH=/home/hyunyoun/.local/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 timeout 600 python3 -B /tmp/agent-contract-coverage-focused.py
+```
+
+The temporary helper used only stdlib trace/unittest and existing tests; no
+repository tooling, dependency, gate, or test was changed. After 540.02 seconds
+it saved counts and returned exit 2 (timeout): 81 selected tests completed
+without failures, errors or skips, the 82nd was interrupted, and 11 were not
+started. Its sample is not a passing whole-suite result. The large
+`test_skill_resource_bounds_are_enforced` case was omitted from this additional
+measurement only; registered gate selection remains intact. Parent-process
+line observations exclude subprocesses, copied fixtures, threads, and branch
+coverage. The observed line sets cover non-test Python sources only. The precise temporary
+line-set receipt is
+`/tmp/agent-contract-coverage-measured-lines.json`; the table above preserves
+its result here. Independent read-only merge_preflight review reproduced the 954/1,020 result
+from Git and the exact line sets and cleared this Python metric. Shell
+coverage is not claimed; existing shell syntax, ShellCheck and functional
+regressions remain separate requirements.
 
 On 2026-09-30, origin/main advanced to 0470e3950. Its completed SPEC-0192
 backup package and active SPEC-0193 remain unchanged. The unpublished
@@ -64,9 +130,10 @@ the correction and new follow-up documents passed PR-base metadata
 (selected=10, violations=0, exceptions=0, overrides=0), Markdown (11 files),
 and cached diff checks. These checks do not replace final merged-candidate QA.
 
-Source evidence is focused/local-static. Public changed/full,
-hosted CI, native/provider observations, coverage, and runtime recovery remain
-unobserved. The historical source QA attempt stopped at identity-history regression:
+Before the later bootstrap and coverage observations above, source evidence
+was focused/local-static; public profiles, hosted CI, native observations,
+coverage and runtime recovery were unobserved. The historical source QA attempt
+stopped at identity-history regression:
 high-water mark 190 observed 191; no runtime leaf ran. This is NOT PASS.
 
 Bootstrap validation: PR-base metadata selected 7 documents with zero violations,
@@ -103,6 +170,12 @@ independent code review. Those source changes await later integration.
 | 4 | W5 | Not started | Forge required-check result |
 | 5 | W2/W5/W6 | Not started | Git history and worktree state |
 | 6 | W2/W6 | Approved transfer; review and commit pending | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
+| 7 | W4/W6 | PASS: observed 954/1,020 Python changed lines; independently verified | This Task; owner-approved changed-line denominator |
+
+The temporary measurement receipt SHA-256 is
+`c717d7c2ba8ffeb251838359e1908bf1d9e1d9f6ba869a55bcb77bc025214ebf`; the stdlib-only
+helper SHA-256 is `1c60c8e4b9f9c17c0592f509dfde677c3dc0dce6bc268bc5f855cbac01caee57`.
+They identify the reviewed observation inputs, not a standing branch-tip gate.
 
 ### Semantic Review Research
 
@@ -120,6 +193,26 @@ and escalation for ambiguity, disagreement, high-risk uncertainty, new scope,
 or an explicitly required human gate. Rules-engineer reviewed this boundary
 before implementation and cleared the resulting two-file policy diff.
 
+The first hosted run 36669340357 completed its regression and security checks
+but failed all-files formatting: one blank line after the Pyroscope runbook
+code fence and one final newline in the Kafka JMX configuration. Independent
+read-only review confirmed commit `94b1bf373` matches those two CI edits exactly,
+with no changed values or behavior. PR-base metadata selected 11 documents with
+zero violations; Markdown and YAML checks passed (existing YAML warnings remain).
+
+On clean detached `94b1bf373`, the registered
+`scripts/validation/run-agent-precommit-all-files.sh` ran with this tracked Task
+and the exact bootstrap/fix path prefixes. It returned exit 0:
+`hook_result=passed`, before/after/changed/unexpected counts all 0. No formatter
+fallout was discarded. The first manual changed run returned exit 0 but an
+attempted read-only Markdown check unexpectedly applied the same Pyroscope
+blank line during execution; it is not exact-commit evidence. A fresh manual
+changed run uses the exact `94b1bf373` tree staged against `0470e3950` (18 paths),
+with no concurrent writers, and completed with exit 0. Post-run index tree
+identity and an empty unstaged diff confirm the exact tested tree. The log
+`/tmp/contract-bootstrap-changed-94b1.log` records this bootstrap result; it
+does not replace final source-integrated candidate QA.
+
 ## Review Evidence
 
 Independent read-only merge_preflight review cleared the staged bootstrap and
@@ -136,11 +229,37 @@ Required human approvals remain intact.
 
 ## Commit Ledger
 
-None. The source packet is an evidence input, not this Task's commit. A
-`branch_integration_receipts` entry is written only after active lifecycle and
-an integration result.
+- `a887e35e59a4465a2624afd67018cb67d1014af6`: initial integration/native
+  follow-up drafts, original recovery skill draft, registration and discovery.
+- The source packet is an evidence input, not this Task's commit. A
+  `branch_integration_receipts` entry is written only after active lifecycle
+  and an integration result.
 
 ## Rulings
+
+The owner has already authorized design, Spec, Plan, implementation and Git
+integration. Independent read-only policy review confirmed local sequential
+lifecycle validation/review/commits may precede their remote publication.
+Each PR still publishes only the next immediate state after its predecessor
+lands; intermediate local commits never bypass merge-base-to-head validation.
+Source integration and its receipt begin only with local active Spec/Plan and
+in-progress Task. Candidate changes after QA require affected revalidation.
+
+Read-only package inventory at main `0470e3950` found no stale incomplete
+package to discard. SPEC-0182 is excluded. SPEC-0193 remains active: its
+criterion 9/W7 explicitly waits for SPEC-0182 W8 measurements after 2026-10-03.
+Existing completion receipts are preserved, not re-executed or rewritten.
+
+| Package | Evidence-based disposition | Archive commit |
+| --- | --- | --- |
+| SPEC-0179 | Completed Spec/Plan/Task; criteria 1-14 PASS retained | `39e933314` |
+| SPEC-0183 | Completed; criteria 1-8 PASS retained | `559cdd2bc` |
+| SPEC-0188 | Completed; criteria 1-6 PASS retained | `7fe6f896b` |
+| SPEC-0189 | Completed; criteria 1-3 PASS retained | `7fe6f896b` |
+| SPEC-0190 HOME | Completed; criteria 1-2 PASS retained | `159cf8bfb` |
+| SPEC-0191 | Completed; criteria 1-4 and failed/retest history retained | `acce0a6ba` |
+| SPEC-0192 backup | Completed; criteria 1-6 PASS retained | `f542942fe` |
+| SPEC-0190 hardening | Exact historical supersession to SPEC-0194/0195 pending | Frozen source `c86f55518` |
 
 - SPEC-0182 is separate ongoing work and excluded from disposition.
 - SPEC-0191 is completed and preserved at acce0a6ba. Its later committed
