@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -88,6 +88,22 @@ docker compose exec ollama ollama list
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```
 
+### 6. Scoped Upgrade Check and Rollback
+
+이미지 버전의 단일 기준은 `infra/08-ai/ollama/docker-compose.yml`의 `ollama` image pin이다. 저장소 root에서 변경 전 `hy-home-infra_ollama-data` 볼륨과 기존 모델 목록·digest를 기록하고, 승인된 변경에서만 `ollama` 하나를 재생성한다.
+
+```bash
+docker compose --project-name hy-home-infra --profile ollama config --quiet
+docker compose --project-name hy-home-infra --profile ollama pull ollama
+docker compose --project-name hy-home-infra --profile ollama up -d --no-deps --force-recreate ollama
+docker compose --project-name hy-home-infra --profile ollama ps ollama
+curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
+```
+
+재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, `ai_net`/`edge_net`, exporter와 Open WebUI backend `/api/tags`를 확인한다. decision 확인은 Guide의 synthetic `tev1:0.8b` 요청과 `keep_alive: 0`을 사용한다.
+
+실패 시 승인된 rollback 계획에 따라 Compose pin을 변경 전에 기록한 image tag/digest로 복원하고 derived version projection을 재생성한 뒤 같은 단일-service 명령을 실행한다. `hy-home-infra_ollama-data`와 기존 모델은 삭제·교체하지 않는다. rollback rehearsal과 인증된 브라우저 UI 검증은 아직 실행되지 않았다.
+
 ### Verification Steps
 
 - [ ] `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags` 성공
@@ -122,7 +138,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 Status: **planned and not executed**. This document contains no evidence of a successful Ollama model-store restore.
 
-1. Record the image digest, driver/runtime versions, model list, manifest/blob checksums, model source/license, Compose profiles, and a representative inference request/expected invariant. Stop model pulls and active inference before taking a consistent stopped copy or approved storage snapshot of `ollama-models`.
+1. Record the image digest, driver/runtime versions, model list, manifest/blob checksums, model source/license, Compose profiles, and a representative inference request/expected invariant. Stop model pulls and active inference before taking a consistent stopped copy or approved storage snapshot of `ollama-data`.
 2. Restore the copy to a separate project and isolated model path with no public route. If rebuilding instead, fetch only the recorded digest/version from the approved source and verify its license and checksum.
 3. Start Ollama with compatible GPU/runtime settings; verify `/api/tags`, model digest, GPU visibility, one representative inference, and exporter collection. Test Open WebUI only against the isolated endpoint.
 4. On any mismatch, stop the isolated service, retain logs and checksums, and return to the untouched backup/source manifest. Replacing the production volume or route needs a separate approved change.
@@ -155,3 +171,4 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Operations index](../README.md)
 - [Usage guide](../guides/0056-ollama.md)
 - [Operations policy](../policies/0056-ollama.md)
+- [Ollama release notes](https://github.com/ollama/ollama/releases)
