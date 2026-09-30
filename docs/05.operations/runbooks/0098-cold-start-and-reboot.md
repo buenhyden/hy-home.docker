@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -208,7 +208,7 @@ Owner가 감독하는 재부팅 리허설마다 아래 표에 한 행씩 기록�
 
 | Date | Stage | Start | End | Result |
 | --- | --- | --- | --- | --- |
-| | | | | |
+| 2026-09-30 | 0. Preconditions | 09:37:52 KST | 09:39:07 KST | PASS: pgBackRest diff, two Restic snapshots, `restic check` no errors |
 
 ## Traceability
 

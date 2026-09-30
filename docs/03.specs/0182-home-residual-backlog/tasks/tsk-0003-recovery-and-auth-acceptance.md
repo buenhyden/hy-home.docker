@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.5"
+version: "0.7.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -114,6 +114,16 @@ Read-only investigation of 2026-09-25:
   - disk growth: used bytes (`node_filesystem_size_bytes - node_filesystem_avail_bytes`,
     `fstype!~"tmpfs|overlay|squashfs"`) minus the same `offset 168h`.
   SPEC-0193 W7 sets its limits and alert thresholds from these figures.
+- 2026-09-30 W11 stage 0 (owner started the supervised reboot; R2 held):
+  `hyhome-backup.sh` run as its unit (`User=hyunyoun`, repo root, no env
+  file) 09:37:52–09:39:07 KST, rc 0: pgBackRest differential
+  `20260926-185114F_20260930-003754D`, Restic state snapshot `9753742f` and
+  host snapshot `6236fc73`, `restic check` no errors in both, state 1783 MiB
+  of 5 GiB; backup-age metric 47 s. Before the reboot: `docker.service` and
+  `docker.socket` enabled, the five `k3d-hyhome-*` containers
+  `unless-stopped` and running, 54 containers running with none unhealthy
+  (names saved outside the repo for the comparison), OpenBao unsealed
+  (Shamir 2 of 3), `openbao-agent` healthy, 44 GiB free.
 
 ## Verification Evidence
 
