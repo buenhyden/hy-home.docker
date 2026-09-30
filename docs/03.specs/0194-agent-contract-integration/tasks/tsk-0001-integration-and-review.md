@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.0.6"
+version: "1.0.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -36,6 +36,22 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Approved-stage PR #320 passed required validation-changed
+  (run 36679644694, 17m7s) and merged as `590f3bcca`. Local main was
+  fast-forwarded and the integration candidate incorporated that ancestry.
+  Full on clean committed `c14f5480a` then completed with exit 0, log
+  `/tmp/contract-final-full-directory-fix.log`; its working tree remained clean.
+  It passed 628 document/history regressions, 239 gate regressions, 53 resource
+  contract tests, 129 native/provider tests, 72 Compose selections with 360
+  selected services, policy checks and the final 157 metadata tests. Baseline
+  runtime cases explicitly report 23 skips; no real runtime acceptance is
+  inferred. The historical-link warning remains the existing baseline.
+  Together with that commit's changed and controlled-wrapper PASS, this clears
+  local implementation QA. Subsequent candidate changes are this Task evidence
+  and unchanged-tree ancestry only; actual latest-main metadata selected 53
+  documents with zero violations, exceptions or overrides. The implementation
+  PR still requires its own hosted check and merge before delivery completion.
 
 - 2026-09-30: Committed final validator repair `c14f5480a` passed the manual
   changed profile (empty-path repository-integrity fallback) and controlled
@@ -245,11 +261,11 @@ independent code review. Those source changes await later integration.
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W1-W5 | Local candidate and exact receipt prepared; remote delivery pending | Current Task after active lifecycle and merge receipt |
-| 2 | W1-W3 | Not started | Registered validators and bounded independent reviewer |
-| 3 | W4 | Not started | Registered CI gate evidence |
+| 2 | W1-W3 | PASS: automated checks and independent semantic/security review | Registered validators and bounded independent reviewer |
+| 3 | W4 | PASS: full and manual changed on c14f5480a; later evidence receives scoped checks | Registered CI gate evidence |
 | 4 | W5 | Not started | Forge required-check result |
 | 5 | W2/W5/W6 | Not started | Git history and worktree state |
-| 6 | W2/W6 | Approved transfer; review and commit pending | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
+| 6 | W2/W6 | PASS: approved observation transfer committed and independently reviewed; retained delivery remains open | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
 | 7 | W4/W6 | PASS: final changed Python lines 966/1,033 (93.51%), independently verified | This Task; owner-approved changed-line denominator |
 
 The temporary measurement receipt SHA-256 is
