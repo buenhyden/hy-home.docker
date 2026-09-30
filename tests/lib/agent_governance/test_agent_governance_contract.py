@@ -533,6 +533,14 @@ class AgentGovernanceContractTests(unittest.TestCase):
             source = skill / "SKILL.md"
             source.write_text("sample\n", encoding="utf-8")
             real_read = contract._read_text
+            real_identity = contract._file_identity
+
+            def coarse_directory_identity(metadata):
+                identity = real_identity(metadata)
+                if stat.S_ISDIR(metadata.st_mode):
+                    return (*identity[:3], 0, 0, 0)
+                return identity
+
             changed = False
 
             def add_after_inventory(root_path, relative, **kwargs):
@@ -543,6 +551,9 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 return real_read(root_path, relative, **kwargs)
 
             with (
+                mock.patch.object(
+                    contract, "_file_identity", side_effect=coarse_directory_identity
+                ),
                 mock.patch.object(
                     contract, "_read_text", side_effect=add_after_inventory
                 ),

@@ -1386,10 +1386,21 @@ def _procedure_body(text: str) -> str:
     return text[boundary + 5 :] if boundary >= 0 else text
 
 
+def _directory_entry_names(descriptor: int) -> frozenset[str]:
+    names: set[str] = set()
+    with os.scandir(descriptor) as entries:
+        for entry in entries:
+            if len(names) >= MAX_SKILL_RESOURCE_ENTRIES:
+                raise ContractLoadError("AGC-SKILL-RESOURCE-ENTRY-LIMIT")
+            names.add(entry.name)
+    return frozenset(names)
+
+
 def _verify_directory_identity(
     root: pathlib.Path,
     relative: pathlib.PurePosixPath,
     expected: tuple[int, int, int, int, int, int],
+    expected_names: frozenset[str],
 ) -> None:
     flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     descriptor = os.open(root.absolute(), flags)
@@ -1409,7 +1420,10 @@ def _verify_directory_identity(
             )
             os.close(descriptor)
             descriptor = child
-        if _file_identity(os.fstat(descriptor)) != expected:
+        if (
+            _file_identity(os.fstat(descriptor)) != expected
+            or _directory_entry_names(descriptor) != expected_names
+        ):
             raise ContractLoadError(f"AGC-SKILL-RESOURCE-RACE path={relative}")
     except OSError as error:
         raise ContractLoadError(
@@ -1488,6 +1502,7 @@ def _validate_skill_resources(
     directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
     inventory: dict[pathlib.PurePosixPath, tuple[int, int, int, int, int, int]] = {}
     directories: dict[pathlib.PurePosixPath, tuple[int, int, int, int, int, int]] = {}
+    directory_names: dict[pathlib.PurePosixPath, frozenset[str]] = {}
     entry_count = 0
 
     def walk(descriptor: int, relative: pathlib.PurePosixPath, depth: int) -> None:
@@ -1501,6 +1516,7 @@ def _validate_skill_resources(
                         f"AGC-SKILL-RESOURCE-ENTRY-LIMIT path={skill_root}"
                     )
                 entries.append(entry)
+        directory_names[relative] = frozenset(entry.name for entry in entries)
         for entry in sorted(entries, key=lambda item: item.name):
             before = entry.stat(follow_symlinks=False)
             child_relative = relative / entry.name
@@ -1552,6 +1568,7 @@ def _validate_skill_resources(
             os.close(descriptor)
             descriptor = child
         directories[skill_root] = _file_identity(os.fstat(descriptor))
+        directory_names[skill_root] = _directory_entry_names(descriptor)
         for owned_name in sorted(SKILL_OWNED_DIRECTORIES):
             try:
                 before = os.stat(owned_name, dir_fd=descriptor, follow_symlinks=False)
@@ -1634,7 +1651,7 @@ def _validate_skill_resources(
         descriptor, _opened = _open_regular_file(root, path, identity)
         os.close(descriptor)
     for path, identity in directories.items():
-        _verify_directory_identity(root, path, identity)
+        _verify_directory_identity(root, path, identity, directory_names[path])
 
 
 def _skill_owned(relative: pathlib.PurePosixPath, observed: set[str]) -> frozenset[str]:

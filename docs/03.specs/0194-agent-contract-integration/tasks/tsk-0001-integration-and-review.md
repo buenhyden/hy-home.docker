@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -36,6 +36,21 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Review PR #319 passed required validation-changed (run
+  36677220072, 24m15s) and merged as `8de44c628`. Local main was fast-forwarded.
+  Approved-stage PR #320 publishes `28aa0d8e4`; its required CI is pending.
+  On `4f4330c52`, manual changed passed, but full failed the resource directory
+  recheck regression (one of 53). A metadata-only directory fingerprint can
+  collide within a filesystem tick and miss a persistent late entry. A
+  deterministic metadata-collision RED reproduced the hole. The minimal repair
+  retains all identity/no-follow checks, snapshots immediate names during the
+  existing inventory, and compares bounded names through the final directory
+  descriptor. The strengthened race test passed (0.109 seconds); independent
+  security analysis confirmed an actual integrity defect rather than a timing
+  fixture issue. Full and changed require fresh final-candidate results.
+  The prior 93.53% source measurement remains historical; current coverage is
+  being remeasured because the validator implementation has changed.
 
 - 2026-09-30: Full on `db971359b` failed one of 628 document regressions:
   the new parser-bound test's nested Python process assumed cwd import under
@@ -224,7 +239,7 @@ independent code review. Those source changes await later integration.
 | 4 | W5 | Not started | Forge required-check result |
 | 5 | W2/W5/W6 | Not started | Git history and worktree state |
 | 6 | W2/W6 | Approved transfer; review and commit pending | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
-| 7 | W4/W6 | PASS: observed 954/1,020 Python changed lines; independently verified | This Task; owner-approved changed-line denominator |
+| 7 | W4/W6 | Historical source PASS: 954/1,020; final validator repair remeasurement pending | This Task; owner-approved changed-line denominator |
 
 The temporary measurement receipt SHA-256 is
 `c717d7c2ba8ffeb251838359e1908bf1d9e1d9f6ba869a55bcb77bc025214ebf`; the stdlib-only
