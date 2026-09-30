@@ -1,6 +1,6 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.14"
+version: "0.3.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -247,6 +247,12 @@ None yet.
   `AIRFLOW__TRACES__*` settings and the Airflow services' `obs_net`
   memberships added for it are removed; RUN-0050 records the retest
   condition.
+- 2026-09-30 W7 handoff for 2026-10-03: take the figures from the SPEC-0182
+  Task 0003 W8 queries; per Deferred Items row, set each `*_MEM_LIMIT` or
+  `cpus` in `.env`, `.env.example` (same keys and order) or the Compose
+  default, recreate one service at a time with owner approval, retune the
+  `ContainerHigh*` thresholds in `alert_rules.local.infra.yml`, record the
+  figures as criterion 9, run W8 again, then move the package to completed.
 
 ## Deferred Items
 

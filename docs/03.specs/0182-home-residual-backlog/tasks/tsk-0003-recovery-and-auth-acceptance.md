@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.4"
+version: "0.7.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -97,6 +97,23 @@ Read-only investigation of 2026-09-25:
 - 2026-09-29 W9: the owner completed the browser checks the agent could not
   make: Dozzle sign-in, and Grafana, Open WebUI and OpenBao signed in as an
   `/admins` user. Every W9 row now has a result.
+- 2026-09-30 W8 handoff for 2026-10-03. Window: 2026-09-26T00:00+09:00
+  (`1790348400`) to 2026-10-03T00:00+09:00 (`1790953200`), 168 h. Prometheus
+  has no samples 2026-09-26 11:05–18:10 and 2026-09-27 11:55–13:25 KST; state
+  the gaps with the figures. Run each query with
+  `docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?time=1790953200&query=<urlencoded>'`,
+  where `C` is `sum by (name)(rate(container_cpu_usage_seconds_total{name!=""}[5m]))`
+  and `M` is `sum by (name)(container_memory_working_set_bytes{name!=""})`:
+  - containers: `quantile_over_time(0.95, (C)[168h:5m])`,
+    `max_over_time((C)[168h:5m])`, and the same two for `M`;
+  - host: `1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))` and
+    `1 - node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes`, each
+    as p95 and max over `[168h:5m]`;
+  - GPU: `avg(DCGM_FI_DEV_GPU_UTIL)` p95 and max, `sum(DCGM_FI_DEV_FB_USED)`
+    max;
+  - disk growth: used bytes (`node_filesystem_size_bytes - node_filesystem_avail_bytes`,
+    `fstype!~"tmpfs|overlay|squashfs"`) minus the same `offset 168h`.
+  SPEC-0193 W7 sets its limits and alert thresholds from these figures.
 
 ## Verification Evidence
 
