@@ -45,7 +45,7 @@ outcomes.
    same-ID HOME classification archive remains unchanged. Carry source R01-R39
    one-to-one from its final Task reconciliation. Transfer only the actual
    R04/R15/R18/R19/R22 and model-entitlement observations to the
-   [SPEC-0195 withdrawal record](../../98.archive/retention-catalog.md#retention-catalog)
+   SPEC-0195 withdrawal record in `docs/98.archive/retention-catalog.md`
    under the owner's 2026-09-30 decision; retain their conditions and missing
    status.
    Do not claim source completion. The same-ID/different-slug

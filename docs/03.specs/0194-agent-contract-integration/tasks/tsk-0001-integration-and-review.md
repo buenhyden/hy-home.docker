@@ -247,7 +247,7 @@ full-run output was unavailable after interruption; no PASS is inferred.
 The owner explicitly answered "별도 후속 작업으로 이관" on 2026-09-30.
 Actual R04/R15/R18/R19/R22 and model-entitlement observations were transferred
 to SPEC-0195 with the transfer-time conditions and missing status. The
-subsequent withdrawal is recorded in the [SPEC-0195 withdrawal record](../../../98.archive/retention-catalog.md#retention-catalog).
+subsequent withdrawal is recorded in the SPEC-0195 withdrawal record in `docs/98.archive/retention-catalog.md`.
 This authorized transfer, not execution; no pending follow-up remains. Coverage and delivery gates remain in this Task.
 
 On 2026-09-30, `python3 scripts/validation/run-ci-gate.py --profile full`
@@ -306,7 +306,7 @@ independent code review. Those source changes await later integration.
 | 3 | W4 | PASS: full and manual changed on c14f5480a; merged-main changed passed | [validation runner](../../../../scripts/validation/run-ci-gate.py) |
 | 4 | W5 | PASS: required check on 1af10ff2b, run 36683228212 | [PR #321](https://github.com/buenhyden/hy-home.docker/pull/321) |
 | 5 | W6 | PASS: clean main/origin-main c103ef132 and finished implementation state cleaned | [cleanup receipt](#work-log) |
-| 6 | W2 | PASS: native observations transferred with unchanged conditions; retained delivery complete | [SPEC-0195 withdrawal record](../../../98.archive/retention-catalog.md#retention-catalog) |
+| 6 | W2 | PASS: native observations transferred with unchanged conditions; retained delivery complete | [subsequent withdrawal receipt](#deferred-items) |
 | 7 | W4 | PASS: final changed Python lines 966/1,033 (93.51%), independently verified | [coverage receipt](#final-changed-line-remeasurement) |
 
 The temporary measurement receipt SHA-256 is

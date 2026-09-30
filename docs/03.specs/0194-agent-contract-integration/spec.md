@@ -45,7 +45,7 @@ This source packet retains its original statuses, including unresolved work;
 preservation is not completion. SPEC-0194 retains the source delivery and deterministic-verification obligations.
 On 2026-09-30 the owner explicitly transferred outstanding actual observations
 for R04/R15/R18/R19/R22, including the original Plan model-entitlement requirement,
-to the [SPEC-0195 withdrawal record](../../98.archive/retention-catalog.md#retention-catalog).
+to the SPEC-0195 withdrawal record in `docs/98.archive/retention-catalog.md`.
 At transfer, their original conditions and BLOCKED/NOT_RUN status remained;
 transfer was neither a waiver nor execution approval. On 2026-09-30 the owner
 cancelled the unnecessary follow-up. The current native obligation was withdrawn,
