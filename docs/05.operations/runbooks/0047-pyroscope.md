@@ -107,6 +107,7 @@ created: "2026-05-17"
   ```bash
   docker exec infra-grafana sh -c "wget -qO- --header 'Content-Type: application/json' --post-data '{\"name\":\"service_name\",\"start\":$(( ($(date +%s)-600)*1000 )),\"end\":$(( $(date +%s)*1000 ))}' http://pyroscope:4040/querier.v1.QuerierService/LabelValues"
   ```
+
 - **Runtime**: `docker stats --no-stream infra-pyroscope`, `pyroscope-data` volume boundary
 - **Evidence to Capture**: failing symptom, log excerpt, affected profile source or label, restart timestamp, final recovery or escalation state
 
