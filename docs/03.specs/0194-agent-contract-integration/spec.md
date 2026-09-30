@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration Specification"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -125,8 +125,10 @@ fails closed for absent deterministic results, ambiguity, or protected changes.
 
 ## Open Questions
 
-Docker-backed profile availability and forge hosted-check visibility must be
-observed during execution; neither absence authorizes bypass.
+Docker-backed profiles and required hosted checks were observed successfully
+and recorded in the [completed Task](tasks/tsk-0001-integration-and-review.md).
+No retained delivery question remains open; transferred native observations
+remain with SPEC-0195 under their unchanged conditions.
 
 ## Operational Impact
 
