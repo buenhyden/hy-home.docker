@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import bisect
 import dataclasses
 import html
 import json
@@ -11,6 +12,7 @@ import re
 import subprocess
 import urllib.parse
 from collections.abc import Iterable, Mapping
+from html.parser import HTMLParser
 from types import MappingProxyType
 
 from scripts.lib.document_governance.frontmatter import (
@@ -31,7 +33,7 @@ from scripts.lib.document_governance.registry import (
 )
 
 _URL = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
-_LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\]]*)\]\(")
+_LINK_OPEN = re.compile(r"(?<!!)\[(?P<label>[^\[\]\n]*)\]\(")
 _HEADING = re.compile(r"^#{1,6}\s+(.+?)\s*#*\s*$")
 _CATALOG_PAIR = re.compile(r"\[OPER\]\(([^)]+)\),\s*\[RUN\]\(([^)]+)\)")
 _DOC_ROOT = "docs"
@@ -189,11 +191,84 @@ def _without_html_comments(line: str, active: bool) -> tuple[str, bool]:
 
 _REFERENCE_DEFINITION = re.compile(r"^\s{0,3}\[(?!\^)([^\]]+)\]:\s*<?([^\s>]+)")
 _REFERENCE_USE = re.compile(r"(?<!!)(?<!\[)\[([^\[\]]+)\]\[([^\[\]]*)\]")
-_WIKI_LINK = re.compile(r"(?<!!)\[\[([^\]\n]+)\]\]")
-_HTML_HREF = re.compile(r"""href\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_WIKI_LINK = re.compile(r"(?<!!)\[\[([^\[\]\n]+)\]\]")
 
 
-def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
+class _HrefAttributeParser(HTMLParser):
+    """Collect values from exact ``href`` attributes in one bounded tag."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.values: list[str] = []
+
+    def handle_starttag(self, _tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.values.extend(
+            value for name, value in attrs if name == "href" and value is not None
+        )
+
+
+def _html_href_values(tag: str) -> tuple[str, ...]:
+    parser = _HrefAttributeParser()
+    parser.feed(tag)
+    parser.close()
+    return tuple(parser.values)
+
+
+def _is_escaped(text: str, offset: int) -> bool:
+    backslashes = 0
+    while offset > 0 and text[offset - 1] == "\\":
+        backslashes += 1
+        offset -= 1
+    return backslashes % 2 == 1
+
+
+def _html_tag_end(
+    text: str, index: int, quote: str | None = None
+) -> tuple[int, str | None, bool]:
+    """Advance once through a tag, retaining only its unfinished quote state."""
+
+    while index < len(text):
+        character = text[index]
+        if quote is not None:
+            if character == quote:
+                quote = None
+        elif character in "\"'":
+            quote = character
+        elif character == ">":
+            return index + 1, None, True
+        index += 1
+    return index, quote, False
+
+
+def _html_tag_spans(line: str) -> Iterable[tuple[int, int]]:
+    """Yield raw HTML tag spans, respecting quotes and bounding malformed input."""
+
+    cursor = 0
+    while (start := line.find("<", cursor)) >= 0:
+        index = start + 1
+        if index < len(line) and line[index] == "/":
+            index += 1
+        if index >= len(line) or not line[index].isascii() or not line[index].isalpha():
+            cursor = start + 1
+            continue
+        index += 1
+        while index < len(line) and (
+            line[index] == "-" or (line[index].isascii() and line[index].isalnum())
+        ):
+            index += 1
+        if index < len(line) and not (line[index].isspace() or line[index] in "/>"):
+            cursor = start + 1
+            continue
+        end, _, complete = _html_tag_end(line, index)
+        yield start, end
+        if not complete:
+            return
+        cursor = end
+
+
+def _unfenced_lines(
+    text: str, *, include_fenced: bool = False
+) -> Iterable[tuple[int, str]]:
     fence: str | None = None
     html_comment = False
     for line_no, line in enumerate(text.splitlines(), start=1):
@@ -228,7 +303,7 @@ def _unfenced_lines(text: str) -> Iterable[tuple[int, str]]:
             elif fence == marker:
                 fence = None
             continue
-        if fence is None:
+        if fence is None or include_fenced:
             yield line_no, line
 
 
@@ -254,20 +329,59 @@ def _without_inline_code(line: str) -> str:
     return "".join(rendered)
 
 
-def _markdown_destinations(line: str) -> Iterable[tuple[str, str]]:
+def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
     """Yield labeled destinations with angle and nested-parenthesis support."""
 
+    def consume_tail(text: str, cursor: int) -> int | None:
+        while cursor < len(text) and text[cursor].isspace():
+            cursor += 1
+        if cursor < len(text) and text[cursor] == ")":
+            return cursor + 1
+        if cursor >= len(text) or text[cursor] not in "\"'(":
+            return None
+        delimiter = ")" if text[cursor] == "(" else text[cursor]
+        cursor += 1
+        while cursor < len(text):
+            if text[cursor] == "\\":
+                cursor += 2
+                continue
+            if text[cursor] == delimiter:
+                cursor += 1
+                break
+            cursor += 1
+        else:
+            return None
+        while cursor < len(text) and text[cursor].isspace():
+            cursor += 1
+        if cursor < len(text) and text[cursor] == ")":
+            return cursor + 1
+        return None
+
     text = _without_inline_code(line)
-    for opening in _LINK_OPEN.finditer(text):
+    position = 0
+    while (opening := _LINK_OPEN.search(text, position)) is not None:
+        if _is_escaped(text, opening.start()):
+            position = opening.end()
+            continue
         cursor = opening.end()
         while cursor < len(text) and text[cursor].isspace():
             cursor += 1
         if cursor >= len(text):
-            continue
+            return
         if text[cursor] == "<":
             closing = text.find(">", cursor + 1)
-            if closing >= 0:
-                yield opening.group("label"), text[cursor + 1 : closing]
+            if closing < 0:
+                return
+            end = consume_tail(text, closing + 1)
+            if end is None:
+                return
+            yield (
+                opening.group("label"),
+                text[cursor + 1 : closing],
+                opening.start(),
+                end,
+            )
+            position = end
             continue
         start = cursor
         depth = 0
@@ -279,15 +393,27 @@ def _markdown_destinations(line: str) -> Iterable[tuple[str, str]]:
                 if depth == 0:
                     destination = text[start:cursor].strip()
                     if destination:
-                        yield opening.group("label"), destination.split(maxsplit=1)[0]
+                        yield (
+                            opening.group("label"),
+                            destination.split(maxsplit=1)[0],
+                            opening.start(),
+                            cursor + 1,
+                        )
+                    position = cursor + 1
                     break
                 depth -= 1
             elif character.isspace() and depth == 0:
                 destination = text[start:cursor]
+                end = consume_tail(text, cursor)
+                if end is None:
+                    return
                 if destination:
-                    yield opening.group("label"), destination
+                    yield opening.group("label"), destination, opening.start(), end
+                position = end
                 break
             cursor += 1
+        else:
+            return
 
 
 def _slug(value: str) -> str:
@@ -336,15 +462,72 @@ def _normalized_target(
     return target, (fragment if separator and fragment else None), absolute, outside
 
 
-def parse_local_markdown_links(
-    source: pathlib.PurePosixPath,
-    text: str,
-) -> tuple[DocumentLink, ...]:
-    """Parse normalized local links from supplied Markdown without filesystem I/O."""
+def _continued_html_lines(
+    lines: Iterable[tuple[int, str]],
+) -> Iterable[tuple[int, str]]:
+    """Join only unfinished tags in linear time, bounded by supplied text.
 
-    links: list[DocumentLink] = []
+    Gaps in selected physical lines break continuity. Markdown titles cannot
+    start HTML state, and unfinished attributes remain masked at end of input.
+    """
+
+    chunks: list[str] = []
+    first = previous = 0
+    quote: str | None = None
+    pending = False
+    for number, line in lines:
+        if chunks and number != previous + 1:
+            yield first, "\n".join(chunks)
+            chunks = []
+            pending, quote = False, None
+        if not chunks:
+            first = number
+        chunks.append(line)
+        previous = number
+        offset = 0
+        if pending:
+            offset, quote, complete = _html_tag_end(line, 0, quote)
+            if not complete:
+                continue
+            pending = False
+        for start, end in _html_tag_spans(line[offset:]):
+            start += offset
+            end += offset
+            if end != len(line):
+                continue
+            if any(
+                not _is_escaped(line, opening.start())
+                and opening.end() <= start
+                and not line[opening.end() : start].strip()
+                for opening in _LINK_OPEN.finditer(line)
+            ):
+                # An unfinished angle destination belongs to Markdown; it must
+                # not carry HTML state into the next physical line.
+                continue
+            if any(
+                begin <= start < finish
+                for _, _, begin, finish in _markdown_destinations(line)
+            ):
+                continue
+            _, quote, complete = _html_tag_end(line, start + 1)
+            if not complete:
+                pending = True
+        if not pending:
+            yield first, "\n".join(chunks)
+            chunks = []
+    if chunks:
+        yield first, "\n".join(chunks)
+
+
+def _link_destinations(
+    lines: Iterable[tuple[int, str]],
+) -> Iterable[tuple[int, str, str]]:
+    """Share destination syntax without changing which lines each mode reads."""
+
     lines = tuple(
-        (number, _without_inline_code(line)) for number, line in _unfenced_lines(text)
+        _continued_html_lines(
+            (number, _without_inline_code(line)) for number, line in lines
+        )
     )
     references: dict[str, str] = {}
     for _, line in lines:
@@ -355,34 +538,86 @@ def parse_local_markdown_links(
     for line_no, line in lines:
         if _REFERENCE_DEFINITION.match(line):
             continue
-        destinations = list(_markdown_destinations(line))
-        for use in _REFERENCE_USE.finditer(line):
+        tags = tuple(_html_tag_spans(line))
+        destinations: list[tuple[int, str, str]] = []
+        newlines = tuple(index for index, char in enumerate(line) if char == "\n")
+        spans = list(tags)
+        inline_spans: list[tuple[int, int]] = []
+        tag_index = 0
+        for label, raw, start, end in _markdown_destinations(line):
+            while tag_index < len(tags) and tags[tag_index][1] <= start:
+                tag_index += 1
+            if (
+                tag_index < len(tags)
+                and tags[tag_index][0] <= start < tags[tag_index][1]
+            ):
+                continue
+            destinations.append((start, label, raw))
+            spans.append((start, end))
+            inline_spans.append((start, end))
+        inline_index = 0
+        for tag_start, tag_end in tags:
+            while (
+                inline_index < len(inline_spans)
+                and inline_spans[inline_index][1] <= tag_start
+            ):
+                inline_index += 1
+            if (
+                inline_index < len(inline_spans)
+                and inline_spans[inline_index][0]
+                <= tag_start
+                < inline_spans[inline_index][1]
+            ):
+                continue
+            if not line[tag_start:tag_end].endswith(">"):
+                continue
+            destinations.extend(
+                (tag_start, "", value)
+                for value in _html_href_values(line[tag_start:tag_end])
+            )
+        masked = list(line)
+        for start, end in spans:
+            masked[start:end] = " " * (end - start)
+        remaining = "".join(masked)
+        for use in _REFERENCE_USE.finditer(remaining):
+            if _is_escaped(remaining, use.start()):
+                continue
             key = " ".join((use[2] or use[1]).casefold().split())
             if key in references:
-                destinations.append((use[1], references[key]))
-        destinations.extend(
-            ("", html.unescape(match[1])) for match in _HTML_HREF.finditer(line)
-        )
-        for match in _WIKI_LINK.finditer(line):
-            target, separator, label = match[1].partition("|")
-            destinations.append((label if separator else target, target))
-        for label, raw in destinations:
-            resolved = _normalized_target(source, raw)
-            if resolved is None:
+                destinations.append((use.start(), use[1], references[key]))
+        for match in _WIKI_LINK.finditer(remaining):
+            if _is_escaped(remaining, match.start()):
                 continue
-            target, fragment, absolute, outside = resolved
-            links.append(
-                DocumentLink(
-                    source=source,
-                    target=target,
-                    raw_target=raw,
-                    fragment=fragment,
-                    line=line_no,
-                    absolute=absolute,
-                    outside_repository=outside,
-                    label=label,
-                )
+            target, separator, label = match[1].partition("|")
+            destinations.append((match.start(), label if separator else target, target))
+        for offset, label, raw in destinations:
+            yield line_no + bisect.bisect_left(newlines, offset), label, raw
+
+
+def parse_local_markdown_links(
+    source: pathlib.PurePosixPath,
+    text: str,
+) -> tuple[DocumentLink, ...]:
+    """Parse normalized local links from supplied Markdown without filesystem I/O."""
+
+    links: list[DocumentLink] = []
+    for line_no, label, raw in _link_destinations(_unfenced_lines(text)):
+        resolved = _normalized_target(source, raw)
+        if resolved is None:
+            continue
+        target, fragment, absolute, outside = resolved
+        links.append(
+            DocumentLink(
+                source=source,
+                target=target,
+                raw_target=raw,
+                fragment=fragment,
+                line=line_no,
+                absolute=absolute,
+                outside_repository=outside,
+                label=label,
             )
+        )
     return tuple(links)
 
 
@@ -1063,23 +1298,79 @@ def check_traceability(graph: DocumentGraph) -> list[LinkFinding]:
     return sorted(set(findings))
 
 
-def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
-    """Keep stage documents reachable from outside `docs/` through one entry point.
+def _entrypoint_target(
+    graph: DocumentGraph, source: pathlib.PurePosixPath, raw: str
+) -> pathlib.PurePosixPath | None:
+    """Normalize routing spellings only; never fetch a URL or resolve a path."""
 
-    A file outside `docs/` cannot know when a stage document is superseded,
-    renamed or archived, so a direct link into a stage rots silently: most of
-    the links this rule first rejected already pointed at specs that no longer
-    exist. `docs/README.md` is the one route that stays valid, and naming a
-    stage path as text keeps the reference without claiming it resolves.
+    value = urllib.parse.unquote(html.unescape(raw)).replace("\\", "/").casefold()
+    if _URL.match(value) or value.startswith("//"):
+        try:
+            url = urllib.parse.urlsplit(value)
+        except ValueError:
+            return None
+        if url.scheme == "file" and url.hostname in {None, "localhost"}:
+            value = url.path
+        else:
+            # Explicit identity keeps offline/source-only graphs deterministic.
+            own = "/buenhyden/hy-home.docker/"
+            if not url.path.startswith(own):
+                return None
+            tail = url.path[len(own) :]
+            if url.hostname == "github.com" and tail.startswith(("blob/", "raw/")):
+                tail = tail.split("/", 1)[1]
+            elif url.hostname != "raw.githubusercontent.com":
+                return None
+            # Git refs may contain slashes; conservatively classify the docs
+            # suffix without resolving the ref against a network or Git state.
+            stage = re.search(r"/(docs/[0-9]{2}\.[^/]+(?:/.*)?)$", tail)
+            if stage is None:
+                return None
+            value = stage[1]
+    root = graph.repo_root.as_posix().casefold().rstrip("/") + "/"
+    if value.startswith(root):
+        value = value[len(root) :]
+    resolved = _normalized_target(
+        pathlib.PurePosixPath(source.as_posix().casefold()), value
+    )
+    if resolved is None:
+        return None
+    target = resolved[0]
+    path = re.split(r"[?#]", value, maxsplit=1)[0]
+    directory = len(target.parts) == 2 or (path.endswith("/") and not target.suffix)
+    if target.name == "readme.md" or directory:
+        return None
+    return target
+
+
+def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
+    """Reject outside-docs individual stage links, retaining navigation routes.
+
+    Fenced clickable forms are checked too; literal examples and provenance
+    remain semantic review inputs, not mechanically inferred authority.
     """
 
     findings: list[LinkFinding] = list(graph.input_findings)
-    for link in graph.links:
-        if link.source.as_posix().startswith(f"{_DOC_ROOT}/"):
+    for node in graph.nodes:
+        if node.path.as_posix().casefold().startswith(f"{_DOC_ROOT}/"):
             continue
-        if not _STAGE_DIRECTORY.match(link.target.as_posix()):
-            continue
-        findings.append(_finding(link, "stage-link-outside-docs", link.raw_target))
+        lines = tuple(_unfenced_lines(node.text, include_fenced=True))
+        destinations = list(_link_destinations(lines))
+        destinations.extend(
+            (number, "", match[1])
+            for number, text in lines
+            for match in re.finditer(
+                r"<((?:https?|file)://[^<>\s]+)>", _without_inline_code(text), re.I
+            )
+        )
+        for line, _, raw in destinations:
+            target = _entrypoint_target(graph, node.path, raw)
+            if target is not None and _STAGE_DIRECTORY.match(target.as_posix()):
+                findings.append(
+                    LinkFinding(
+                        f"{node.path.as_posix()}:{line}", "stage-link-outside-docs", raw
+                    )
+                )
     return sorted(set(findings))
 
 
@@ -1146,8 +1437,12 @@ def _navigation_destinations(node: DocumentNode) -> Iterable[tuple[int, str, str
         match = _REFERENCE_DEFINITION.match(line)
         if match:
             yield line_no, "", match.group(2)
-        for href in _HTML_HREF.finditer(line):
-            yield line_no, "", href.group(1)
+        for start, end in _html_tag_spans(line):
+            tag = line[start:end]
+            if not tag.endswith(">"):
+                continue
+            for href in _html_href_values(tag):
+                yield line_no, "", href
 
 
 def _raw_label(lines: list[str], link: DocumentLink) -> str:

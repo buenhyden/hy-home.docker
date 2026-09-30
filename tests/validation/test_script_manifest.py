@@ -225,7 +225,7 @@ class ScriptManifestTests(unittest.TestCase):
 
     def test_eval_wrapper_declares_its_gate_adapter_consumer(self) -> None:
         """The CI gate adapter runs the wrapper, so it is a declared consumer."""
-        row = self.rows_by_path["evals/run-agent-output-eval-fixtures.sh"]
+        row = self.rows_by_path[".agents/evaluations/run-agent-output-eval-fixtures.sh"]
         self.assertEqual("retain", row["disposition"])
         self.assertIn("scripts/lib/gate/ci_gate_adapters.py", row["consumers"])
         self.assertEqual(
@@ -387,9 +387,9 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
 
     def test_evals_readme_states_its_manifest_registration_rule(self) -> None:
-        text = (ROOT / "evals/README.md").read_text(encoding="utf-8")
+        text = (ROOT / ".agents/evaluations/README.md").read_text(encoding="utf-8")
         compact = re.sub(r"\s+", " ", text)
-        # `evals/` is a manifest root, so an unregistered executable added here
+        # `.agents/evaluations/` is a manifest root, so an unregistered executable added here
         # must fail the gate exactly as it would under `scripts/`.
         self.assertIn("MANIFEST_ROOTS", compact)
         self.assertIn("scripts/manifest.yaml", compact)
@@ -945,13 +945,13 @@ class ScriptManifestValidationTests(unittest.TestCase):
 
     def test_python_evidence_follows_a_module_local_child_helper(self) -> None:
         """A child started through one module-local helper is still execution."""
-        target = "evals/example-runner.sh"
+        target = ".agents/evaluations/example-runner.sh"
         delegated = (
             "import subprocess\n"
             "def _run_child(argv):\n"
             "    return subprocess.run(list(argv), check=False)\n"
             "def run():\n"
-            "    return _run_child(('bash', 'evals/example-runner.sh'))\n"
+            "    return _run_child(('bash', '.agents/evaluations/example-runner.sh'))\n"
         )
         self.assertTrue(
             self.checker._reference_proves_use(
@@ -962,7 +962,7 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "def _describe(argv):\n"
             "    return list(argv)\n"
             "def run():\n"
-            "    return _describe(('bash', 'evals/example-runner.sh'))\n"
+            "    return _describe(('bash', '.agents/evaluations/example-runner.sh'))\n"
         )
         self.assertFalse(
             self.checker._reference_proves_use(

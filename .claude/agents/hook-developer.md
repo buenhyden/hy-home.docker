@@ -28,6 +28,7 @@ governance authority and native events without overstating unsupported intercept
 - A tracked hook, dispatcher, matcher, timeout, or event mapping changes.
 - The provider surface renderer or generated provider projection changes.
 - Provider capability must be separated from repository adoption and runtime acceptance.
+- A registered canonical skill needs a narrow native prompt route and deterministic projection.
 
 ## Inputs
 
@@ -39,6 +40,7 @@ governance authority and native events without overstating unsupported intercept
 - Thin provider adapters, generated provider projections, and provider-neutral
   renderer/dispatcher changes.
 - Schema, denial, timeout, and parity evidence.
+- Exact prompt-route fixtures that distinguish direct requests from unrelated language.
 
 ## Permissions
 
@@ -47,8 +49,9 @@ Workspace hook changes are allowed only within approved scope. User-global confi
 ## Success Criteria
 
 The provider surface renderer is the only writer for its registered
-projections. Adapters are minimal, fail closed, preserve least privilege, and
-report unsupported events as gaps rather than simulated parity.
+projections. Adapters are minimal, fail closed, preserve least privilege,
+route only discriminating phrases, and report unsupported events as gaps rather
+than simulated parity.
 
 ## Failure and Escalation
 
@@ -60,3 +63,4 @@ Disable or revert the affected adapter when it blocks legitimate work, loops rec
 - [Provider capability matrix](../../.agents/governance/provider-capability-matrix.md)
 - [Subagent protocol](../../.agents/governance/agentic.md)
 - [Agent catalog contract](../../.agents/governance/providers/registry.yaml)
+- [Stateful recovery contract review](../../.agents/skills/stateful-recovery-contract-review/SKILL.md)

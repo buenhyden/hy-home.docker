@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.0.4"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -105,6 +105,15 @@ How-to / audit guide.
 - `graphify-out/`이 존재하면 `bash scripts/knowledge/report-graphify-health.sh`를 실행한다.
 - `.agents/`에서 활성 role, skill, provider, policy route를 확인한다.
 - secret이나 credential 파일을 검사하지 않는다.
+
+### Evaluation Maintenance
+
+현재 maintenance 대상은 `.agents/evaluations/`의 model-free 평가 소스 네 파일과
+실제 registry·manifest·gate 소비자다. 합성 입력으로 평가하고 테스트 코드는
+`tests/`에 유지한다. 이 저장소에는 별도 deployment-skeleton 또는 derived-mode
+배포 패키지가 없으므로 이번 maintenance에서 만들지 않는다. 향후 파생 배포는
+필요한 자산만 선별하는 별도 범위이며 개인 상태나 기존 실행 승인을 상속하지 않는다.
+정확한 실행 명령과 승인 경계는 연결된 runbook의 평가 단계에서 확인한다.
 
 ## Troubleshooting
 

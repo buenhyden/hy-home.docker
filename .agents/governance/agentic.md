@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-10"
+updated: "2026-09-29"
 ---
 
 # Agentic Engineering Policy
@@ -44,10 +44,17 @@ files or read-only scope, governing Spec/Plan/Task, acceptance checks, mutation
 and external-action boundaries, shared-worktree non-reversion rule, and required
 return evidence.
 
-Workers report `working`, `blocked`, or `done`. A supervisor may request one
-narrower retry after a failed check. Repeated failure, conflicting authority,
-missing approval, or expanding blast radius stops and escalates. Provider
-delivery and hook events are neither approval nor completion evidence.
+Workers report `working`, `blocked`, or `done`. A delegation or resumption
+envelope records Task-declared applicable request, token, time, concurrency,
+and retry ceilings, the shared-budget identity and remaining allocation, and the
+approval source and scope. Unsupported fields are recorded unknown. It refuses
+an unapproved fallback, extra spend, or silent resume. A supervisor may request
+one narrower retry after a failed check. Repeated failure, conflicting authority,
+missing or revoked approval, exhausted declared budget, or expanding blast radius
+stops and escalates. Provider delivery and hook events are neither approval nor
+completion evidence. This contract does not infer account RPM, TPM, price, or a
+provider enforcement mechanism; only a supported native observation can show
+hard enforcement.
 
 ## External Capability Intake
 

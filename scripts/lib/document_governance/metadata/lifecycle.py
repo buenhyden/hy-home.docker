@@ -1079,14 +1079,17 @@ def _governance_moved_body_baseline(
     }
     origin = (
         "README.md"
-        if target.as_posix() == ".agents/README.md"
+        if target.as_posix() in {".agents/README.md", ".agents/evaluations/README.md"}
         else origins.get(profile_id)
     )
     if origin is None or profile_id is None:
         return None, None
-    text = _text_at_ref(
-        root, pathlib.Path(GOVERNANCE_RETIRED_PATHS[0]) / origin, base_ref
+    source = (
+        pathlib.Path("evals/README.md")
+        if target.as_posix() == ".agents/evaluations/README.md"
+        else pathlib.Path(GOVERNANCE_RETIRED_PATHS[0]) / origin
     )
+    text = _text_at_ref(root, source, base_ref)
     if text is None:
         return None, None
     try:

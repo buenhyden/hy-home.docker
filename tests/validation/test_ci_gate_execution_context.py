@@ -405,28 +405,33 @@ class DescriptorExecutionTests(unittest.TestCase):
                     return path
 
                 add_entrypoint("scripts/lib/gate/ci_gate_adapters.py")
-                dependency = root / "evals/agent_output_eval.py"
+                dependency = root / ".agents/evaluations/agent_output_eval.py"
                 if case == "untracked":
                     add_entrypoint(
-                        "evals/agent_output_eval.py",
+                        ".agents/evaluations/agent_output_eval.py",
                         tracked=False,
                     )
                 elif case == "symlink":
-                    target = add_entrypoint("evals/target.py")
+                    target = add_entrypoint(".agents/evaluations/target.py")
                     dependency.parent.mkdir(parents=True, exist_ok=True)
                     dependency.symlink_to(target.name)
                     REAL_SUBPROCESS_RUN(
-                        ["git", "add", "--", "evals/agent_output_eval.py"],
+                        [
+                            "git",
+                            "add",
+                            "--",
+                            ".agents/evaluations/agent_output_eval.py",
+                        ],
                         cwd=root,
                         check=True,
                     )
                 elif case == "mode":
                     add_entrypoint(
-                        "evals/agent_output_eval.py",
+                        ".agents/evaluations/agent_output_eval.py",
                         mode=0o644,
                     )
                 else:
-                    add_entrypoint("evals/agent_output_eval.py")
+                    add_entrypoint(".agents/evaluations/agent_output_eval.py")
                     if case == "identity":
                         dependency.write_text(
                             "#!/usr/bin/env python3\nraise SystemExit(9)\n",
@@ -449,7 +454,9 @@ class DescriptorExecutionTests(unittest.TestCase):
                     path: pathlib.PurePosixPath,
                 ) -> int:
                     descriptor = real_open_entrypoint(root_fd, path)
-                    if path == pathlib.PurePosixPath("evals/agent_output_eval.py"):
+                    if path == pathlib.PurePosixPath(
+                        ".agents/evaluations/agent_output_eval.py"
+                    ):
                         dependency_fds.append(descriptor)
                     return descriptor
 

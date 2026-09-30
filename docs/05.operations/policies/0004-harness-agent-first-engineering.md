@@ -1,6 +1,6 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -63,6 +63,13 @@ Registry가 표현한 적 없는 계층에 이름을 붙였고 Codex row는 Regi
 | Graph context health | Graphify는 health가 clean할 때만 navigation aid가 된다; contaminated output은 advisory로 남으며 tracked source 및 canonical 문서와 대조 검증해야 한다. |
 | Infra validation scope | HAFE completion은 default/core Compose와 지원되는 hardening tier에 의존할 수 있다; `10-communication` 같은 미편입 profile은 별도 infra remediation이 필요하다. |
 | AI Agent limits | [Agentic Engineering Policy](../../../.agents/governance/agentic.md#execution-rules)가 소유하며, Graphify의 경우 [Environment Constraints](../../../.agents/governance/environment-constraints.md#4-graphify)가 소유한다. |
+
+평가 maintenance는 `.agents/evaluations/`의 합성 입력과 등록된 소비자에 한정한다.
+평가 데이터는 자동 실행 지침이 아니다. 현재 존재하지 않는 deployment-skeleton과
+파생 배포 패키지는 별도 설계·승인 범위로 두며, 필요한 자산만 포함하고 개인 상태와
+이전 실행 승인을 복제하지 않는다. 정적 평가 성공을 native 호출이나 복구 성공으로
+기록하지 않는다. Docker·실제 환경 접근을 포함한 게이트는 해당 범위의 승인이 있어야
+실행하며, 실행 불가 상태는 검증 성공으로 바꾸지 않는다.
 
 ## Exceptions
 

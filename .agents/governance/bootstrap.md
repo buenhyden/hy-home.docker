@@ -1,10 +1,10 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 ---
 
 # Agent Bootstrap Policy
@@ -25,12 +25,18 @@ Provide the sole repository bootstrap sequence for supported agents.
    diff review, a commit message, or a test design. Neither grants a tool, a
    path, a permission, or an approval; the selected role's permission profile
    still governs, and the canonical owner a knowledge member routes to remains
-   the authority for what it says.
+   the authority for what it says. Evaluation data under `.agents/evaluations/`
+   is not automatically loaded as execution instructions.
 4. For repository changes, load the governing Requirements, Architecture, and
    Spec Package plus its current Task.
 5. Execute the applicable registered gates and record evidence in that Task.
 
 Root shims and adapters route to this sequence and do not define alternatives.
+Loading governing stage documents and the current Task is scoped execution
+context, not permission for outside-docs instructions to depend on an individual
+stage document. Current agent rules live in their canonical governance owner;
+README navigation, historical provenance and typed machine inputs follow the
+[documentation protocol](documentation-protocol.md#entry-point-for-documents-outside-docs).
 
 ## Authority and Precedence
 
@@ -56,7 +62,7 @@ that preserved record is what was removed.
 
 ## Hard Constraints
 
-- Canonical governance, roles, skills, knowledge, prompts, and native provider
+- Canonical governance, roles, skills, knowledge, prompts, evaluations, and native provider
   sources remain English-only, except their `README.md` files, which follow the
   [documentation protocol](documentation-protocol.md#document-language).
 - Stage documents are read-only unless the request authorizes change.

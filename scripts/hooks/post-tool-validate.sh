@@ -175,14 +175,22 @@ done
 # `.pre-commit-config.yaml` registers no shfmt hook, so shell files have no
 # registered formatting owner and this hook runs none. See
 # `.agents/governance/quality-standards.md` section 10.
-if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]] && command -v shellcheck >/dev/null 2>&1; then
-  # Severity is owned solely by the `shellcheck` hook arguments in
-  # `.pre-commit-config.yaml`; `.shellcheckrc` cannot set it. Matching that
-  # owner keeps this hook from rejecting what the registered gate accepts.
-  shellcheck --severity=warning "${SHELL_STYLE_FILES[@]}"
+if [[ "${#SHELL_STYLE_FILES[@]}" -gt 0 ]]; then
+  if command -v shellcheck >/dev/null 2>&1; then
+    # Severity is owned solely by the `shellcheck` hook arguments in
+    # `.pre-commit-config.yaml`; `.shellcheckrc` cannot set it. Matching that
+    # owner keeps this hook from rejecting what the registered gate accepts.
+    shellcheck --severity=warning "${SHELL_STYLE_FILES[@]}"
+  else
+    printf '%s\n' 'SKIPPED shellcheck (missing tool)' >&2
+  fi
 fi
-if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]] && command -v yamllint >/dev/null 2>&1; then
-  yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
+if [[ "${#YAML_STYLE_FILES[@]}" -gt 0 ]]; then
+  if command -v yamllint >/dev/null 2>&1; then
+    yamllint -c .yamllint "${YAML_STYLE_FILES[@]}"
+  else
+    printf '%s\n' 'SKIPPED yamllint (missing tool)' >&2
+  fi
 fi
 if [[ "${#EXISTING_CHANGED_FILES[@]}" -gt 0 ]]; then
   git diff --check -- "${EXISTING_CHANGED_FILES[@]}"

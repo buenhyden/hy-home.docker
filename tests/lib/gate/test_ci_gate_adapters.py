@@ -136,6 +136,16 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         self._assert_descriptor_root_is_passed_to_adapter_children()
 
+    def test_shell_syntax_git_pathspec_selects_evaluation_runner(self) -> None:
+        _, recorder = self.run_with_recorder(("check-shell-syntax",))
+        selected = REAL_SUBPROCESS_RUN(
+            recorder.calls[0][0], cwd=ROOT, capture_output=True, check=True
+        )
+        self.assertIn(
+            b".agents/evaluations/run-agent-output-eval-fixtures.sh",
+            selected.stdout.split(b"\0"),
+        )
+
     def test_check_shell_syntax_uses_nul_tracked_paths_and_one_bash_call(
         self,
     ) -> None:
@@ -145,7 +155,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 subprocess.CompletedProcess(
                     ("git",),
                     0,
-                    b"evals/a.sh\0scripts/b.sh\0.claude/hooks/c.sh\0",
+                    b".agents/evaluations/a.sh\0scripts/b.sh\0.claude/hooks/c.sh\0",
                     b"",
                 ),
                 subprocess.CompletedProcess(("bash",), 0, b"", b""),
@@ -158,14 +168,20 @@ class CiGateAdapterTests(unittest.TestCase):
                 "ls-files",
                 "-z",
                 "--",
-                "evals/**/*.sh",
+                ".agents/evaluations/*.sh",
                 "scripts/**/*.sh",
                 ".claude/hooks/*.sh",
             ),
             recorder.calls[0][0],
         )
         self.assertEqual(
-            ("bash", "-n", "evals/a.sh", "scripts/b.sh", ".claude/hooks/c.sh"),
+            (
+                "bash",
+                "-n",
+                ".agents/evaluations/a.sh",
+                "scripts/b.sh",
+                ".claude/hooks/c.sh",
+            ),
             recorder.calls[1][0],
         )
 
@@ -423,7 +439,7 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(
             (
                 "bash",
-                "evals/run-agent-output-eval-fixtures.sh",
+                ".agents/evaluations/run-agent-output-eval-fixtures.sh",
                 "--check-fixtures",
                 "--check-regressions",
             ),
@@ -452,7 +468,7 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         expected_argv = (
             "bash",
-            "evals/run-agent-output-eval-fixtures.sh",
+            ".agents/evaluations/run-agent-output-eval-fixtures.sh",
             "--check-fixtures",
             "--check-regressions",
         )

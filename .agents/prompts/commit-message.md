@@ -1,10 +1,10 @@
 ---
 title: "Commit Message Prompt"
-version: "0.1.1"
+version: "0.2.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-09-29"
 created: "2026-09-06"
 ---
 
@@ -24,13 +24,15 @@ produces a draft, never a commit.
 - `git status --porcelain`, so unstaged work is visible and excluded from the
   message.
 - The governing Plan work unit this commit closes.
+- The current worktree and staged-set digest, plus current approval validity.
 - The commit conventions in
   [git workflow](../governance/git-workflow.md), which governs commit usage.
   `.cz.toml` owns the type vocabulary and descriptions, message grammar,
   and header length.
 
-Stop and request staging if the staged set is empty or spans unrelated
-concerns.
+Stop and request staging if the staged set is empty or spans unrelated concerns.
+Stop the draft for stale or partial inputs, worktree disagreement, or revoked
+approval. This prompt never commits or claims check results.
 
 ## Output Contract
 

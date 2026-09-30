@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.6.0"
+version: "0.8.0"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-09-29"
 created: "2026-09-06"
-observed_at: "2026-09-15"
+observed_at: "2026-09-29"
 review_cycle: "on-gate-change"
 ---
 
@@ -85,7 +85,7 @@ that fallback. Exact prefixes remain owned by the workflow contract.
 | `.agents/`, `.claude/`, `.codex/`, `AGENTS.md`, `CLAUDE.md` | agent-governance, document-contract, document-graph, document-lifecycle |
 | `README.md`, `_workspace/`, `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/90.references/`, `docs/98.archive/`, `docs/99.templates/` | document-contract, document-graph, document-lifecycle |
 | `docker-compose.yml`, `docs/05.operations/`, `examples/`, `infra/`, `secrets/` | document-contract, document-graph, document-lifecycle, operations |
-| `.github/`, `.pre-commit-config.yaml`, `evals/`, `projects/`, `scripts/`, `tests/` | all six suites |
+| `.github/`, `.pre-commit-config.yaml`, `.agents/evaluations/`, `projects/`, `scripts/`, `tests/` | all six suites |
 | Root tool/commit paths declared in the contract, including `.cz.toml`, `.gitmessage`, and `ruff.toml` | repository-integrity |
 | any other tracked path | repository-integrity, by the declared fallback |
 
@@ -135,7 +135,7 @@ to separate and the intermediate-stash race it once caused cannot occur.
 | CLI and context | `tests/validation/` | entrypoints, argv, execution context, aggregates |
 | Synthetic input | underscore-prefixed modules beside their suite, such as `tests/lib/<domain>/_support.py` and `tests/validation/_sample_delivery_fixtures.py` | test-only inputs built deterministically; production code never reads them |
 | Operational rehearsal | `examples/operations/` | reusable synthetic operational input |
-| Agent output | `evals/` | deterministic, model-free fixture evaluation |
+| Agent output | `.agents/evaluations/` | deterministic, model-free fixture evaluation |
 
 ## Provenance
 
@@ -167,7 +167,26 @@ The Test Ownership table has a different source and had no stated one when this
 map was written, which is how it came to describe a `tests/fixtures/` layer that
 a completed convergence had already emptied. Its rows are now read from
 `git ls-files` at `e7ec6e78b` on 2026-09-15, which reports zero tracked paths
-under that prefix, as it did on 2026-09-07. A row here names a location that the tracked tree actually contains.
+under that prefix, as it did on 2026-09-07. A row here names a location that the
+tracked tree actually contains. On 2026-09-29, the active Spec and Plan at
+`b097e11c1ff006c7d504f40937a54b68493e7bc7` and
+`evals/run-agent-output-eval-fixtures.sh` were re-read to corroborate the
+then-current static evaluator and its selected migration target. The migration
+working tree based on `567e9ea00` was subsequently read on 2026-09-29 at
+`.agents/evaluations/run-agent-output-eval-fixtures.sh`,
+`.github/workflow-contract.yml`, and `scripts/lib/gate/ci_gate_adapters.py`.
+Those sources establish the canonical cutover and retained all-six-suite
+impact; the former path above preserves only the earlier observation.
+
+## Knowledge Validity
+
+The facts here are valid only while their named sources agree with the stated
+observation range and no refresh trigger has fired. They cover tracked,
+non-secret routing facts only; credential contents, private state, and
+user-global configuration remain excluded. A named source change, deletion,
+correction, or review expiry invalidates the affected fact until it is re-read.
+An obligation or durable decision routes to its canonical owner; this map is
+then refreshed or retired rather than copied.
 
 ## Refresh Triggers
 
@@ -178,6 +197,8 @@ under that prefix, as it did on 2026-09-07. A row here names a location that the
 - A leaf joins or leaves the local exclusion set in `ci_gate_runner.py`.
 - The `tests/lib` and `tests/validation` ownership boundary changes, or a test
   location named in the Test Ownership table is added, moved, or emptied.
+- Evaluation ownership or its changed-path routing changes. The current gate is
+  static and local; native, hosted, and operational observations remain separate.
 
 ## Related Documents
 

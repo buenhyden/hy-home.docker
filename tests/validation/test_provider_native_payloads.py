@@ -118,6 +118,29 @@ class NativeHookRoutingTests(unittest.TestCase):
             "Bash(python3 scripts/validation/run-ci-gate.py --profile changed:*)", allow
         )
 
+    def test_native_config_excludes_runtime_and_broad_scratch_grants(self) -> None:
+        allow = set(
+            json.loads((ROOT / ".claude/settings.json").read_text())["permissions"][
+                "allow"
+            ]
+        )
+        removed = {
+            "Bash(docker compose config:*)",
+            "Bash(docker compose logs:*)",
+            "Bash(docker inspect:*)",
+            "Write(//tmp/claude-*/**)",
+            "Edit(//tmp/claude-*/**)",
+        }
+        retained_metadata = {
+            "Bash(docker ps:*)",
+            "Bash(docker compose ps:*)",
+            "Bash(docker image ls:*)",
+        }
+
+        self.assertTrue(removed.isdisjoint(allow), removed & allow)
+        self.assertLessEqual(retained_metadata, allow)
+        self.assertFalse(any("//tmp/claude-" in grant for grant in allow), allow)
+
     def test_mixed_valid_invalid_targets_are_denied_before_tool_use(self) -> None:
         result = self.run_hook(
             {

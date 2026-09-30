@@ -3,11 +3,11 @@ name: "ops-runbook-agent"
 description: "Use when implemented and verified operational behavior needs an executable runbook with expected signals, recovery, and escalation."
 metadata:
   title: "ops-runbook-agent"
-  version: "1.1.1"
+  version: "1.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-26"
+  updated: "2026-09-29"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -30,8 +30,9 @@ Operational behavior must be implemented and verified; commands, expected outcom
 ## Procedure
 
 1. Define when the runbook applies, required access, safety checks, and the exact starting state.
-2. Write ordered commands with expected observations, decision points, and stop conditions grounded in current implementation.
-3. Add validation, rollback or recovery, evidence capture, and escalation steps, then test links and commands safely.
+2. For stateful recovery, route the sanitized contract through [stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md) before documenting executable recovery steps.
+3. Write ordered commands with expected observations, decision points, and stop conditions grounded in current implementation.
+4. Add validation, rollback or recovery, evidence capture, and escalation steps, then test links and commands safely.
 
 ## Outputs
 
@@ -41,15 +42,17 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 - Procedures are executable and expected outcomes are observable.
 - Rollback/recovery and escalation are explicit.
+- Recovery readiness, human approval, and operational evidence remain separate.
 - Incident packets use `docs/05.operations/incidents/<year>/inc-####-<slug>/`; the paired
   postmortem filename is fixed: Filename: `postmortem.md`.
 
 ## Failure Handling
 
-Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan.
+Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan. A static readiness review cannot be presented as a successful recovery.
 
 ## Related Documents
 
 - [Documentation writer](../../roles/doc-writer.md)
 - [Operations scope](../../governance/quality-standards.md)
 - [Documentation protocol](../../governance/documentation-protocol.md)
+- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)

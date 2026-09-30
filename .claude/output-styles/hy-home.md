@@ -27,6 +27,9 @@ the disagreement is a defect in this file.
   rather than with any other markup.
 - The terminal turns a `file:line` reference into a link, so evidence written in
   that form reaches its source in one step.
+- Canonical `FAIL`, `BLOCKED`, `SKIPPED`, and `NOT_RUN` results, partial
+  results, and required approval remain visible; presentation cannot turn them
+  into completion.
 
 These are rendering consequences of canonical rules, not additional rules.
 Reporting substance, evidence form, procedure style, and completion reporting

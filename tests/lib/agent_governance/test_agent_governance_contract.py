@@ -5,6 +5,8 @@ import json
 import os
 import pathlib
 import shutil
+import socket
+import stat
 import sys
 import tempfile
 import unittest
@@ -168,9 +170,8 @@ class AgentGovernanceContractTests(unittest.TestCase):
         The canonical home is a closed set, which previously meant a skill could
         hold nothing but `SKILL.md` and its invocation controls. Three directory
         names are admitted inside a skill package and their contents are the
-        skill's own, so an asset does not need a registry row to exist. The
-        traversal does not descend into them, so nothing inside can become an
-        unreviewed canonical input.
+        skill's own, so an asset does not need a registry row to exist. Their
+        descendants remain bounded, no-follow inputs reachable from the procedure.
         """
 
         for name in sorted(contract.SKILL_OWNED_DIRECTORIES):
@@ -180,7 +181,461 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 owned = root / ".agents/skills/adr-writing" / name
                 (owned / "nested").mkdir(parents=True)
                 (owned / "nested" / "payload.txt").write_text("x", encoding="utf-8")
+                source = root / ".agents/skills/adr-writing/SKILL.md"
+                source.write_text(
+                    source.read_text(encoding="utf-8")
+                    + f"\n[resource](./{name}/nested/payload.txt)\n",
+                    encoding="utf-8",
+                )
                 self.assertEqual([], contract.validate_canonical_agent_home(root))
+
+    def test_skill_resources_are_reachable_directly_and_transitively(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            skill = root / ".agents/skills/adr-writing"
+            source = skill / "SKILL.md"
+            source.write_text(
+                source.read_text(encoding="utf-8")
+                + "\n[procedure](./scripts/check.sh)\n"
+                + "[detail](./references/detail.md)\n"
+                + "[angle space](<./references/angle space.md>)\n"
+                + "[encoded space](./references/encoded%20space.md)\n"
+                + "[reference runner][runner]\n"
+                + "[runner]: ./scripts/reference-check.sh\n",
+                encoding="utf-8",
+            )
+            script = skill / "scripts/check.sh"
+            script.parent.mkdir()
+            script.write_text("#!/bin/sh\ntouch must-not-exist\n", encoding="utf-8")
+            script.chmod(0o755)
+            reference_script = skill / "scripts/reference-check.sh"
+            reference_script.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            reference_script.chmod(0o755)
+            detail = skill / "references/detail.md"
+            detail.parent.mkdir()
+            detail.write_text("[nested](nested/more.md)\n", encoding="utf-8")
+            (skill / "references/angle space.md").write_text("angle", encoding="utf-8")
+            (skill / "references/encoded space.md").write_text(
+                "encoded", encoding="utf-8"
+            )
+            nested = skill / "references/nested/more.md"
+            nested.parent.mkdir()
+            nested.write_text("[template](../../assets/result.bin)\n", encoding="utf-8")
+            asset = skill / "assets/result.bin"
+            asset.parent.mkdir()
+            asset.write_bytes(b"\xff\x00terminal")
+
+            with mock.patch.object(
+                contract, "_read_text", wraps=contract._read_text
+            ) as read:
+                self.assertEqual([], contract.validate_canonical_agent_home(root))
+            self.assertFalse((root / "must-not-exist").exists())
+            self.assertNotIn(
+                ".agents/skills/adr-writing/assets/result.bin",
+                {str(call.args[1]) for call in read.call_args_list},
+            )
+
+    def test_skill_resources_reject_nonregular_nodes_without_following_them(
+        self,
+    ) -> None:
+        for kind in ("symlink", "fifo", "socket"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                skill = root / ".agents/skills/adr-writing"
+                source = skill / "SKILL.md"
+                source.write_text(
+                    source.read_text(encoding="utf-8")
+                    + "\n[unsafe](./references/unsafe)\n",
+                    encoding="utf-8",
+                )
+                unsafe = skill / "references/unsafe"
+                unsafe.parent.mkdir()
+                outside = root / "outside-sentinel"
+                outside.write_bytes(b"outside sentinel")
+                opened_socket = None
+                if kind == "symlink":
+                    unsafe.symlink_to(outside)
+                elif kind == "fifo":
+                    os.mkfifo(unsafe)
+                else:
+                    opened_socket = socket.socket(socket.AF_UNIX)
+                    opened_socket.bind(str(unsafe))
+                try:
+                    with mock.patch.object(
+                        contract, "_read_text", wraps=contract._read_text
+                    ) as read:
+                        findings = contract.validate_canonical_agent_home(root)
+                finally:
+                    if opened_socket is not None:
+                        opened_socket.close()
+                self.assertEqual(
+                    ["AGC-CANONICAL-HOME"], [finding.code for finding in findings]
+                )
+                self.assertEqual(b"outside sentinel", outside.read_bytes())
+                self.assertNotIn(
+                    ".agents/skills/adr-writing/references/unsafe",
+                    {str(call.args[1]) for call in read.call_args_list},
+                )
+
+    def test_skill_resource_rejects_mocked_device_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            resource = skill / "references/device"
+            resource.parent.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "[device](./references/device)\n", encoding="utf-8"
+            )
+            resource.write_text("synthetic device", encoding="utf-8")
+            regular = stat.S_ISREG
+            with mock.patch.object(contract.stat, "S_ISREG", return_value=False):
+                with self.assertRaisesRegex(
+                    contract.ContractLoadError, "SKILL-RESOURCE"
+                ):
+                    contract._validate_skill_resources(
+                        root, pathlib.PurePosixPath(".agents/skills/sample")
+                    )
+            self.assertTrue(regular(resource.stat().st_mode))
+
+    def test_skill_resource_rejects_replacement_before_read(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            copy_governance_fixture(root)
+            skill = root / ".agents/skills/adr-writing"
+            source = skill / "SKILL.md"
+            source.write_text(
+                source.read_text(encoding="utf-8")
+                + "\n[detail](./references/detail.md)\n",
+                encoding="utf-8",
+            )
+            detail = skill / "references/detail.md"
+            detail.parent.mkdir()
+            detail.write_text("original", encoding="utf-8")
+            real_read = contract._read_text
+            replaced = False
+
+            def replace_before_read(root_path, relative, **kwargs):
+                nonlocal replaced
+                if str(relative).endswith("references/detail.md") and kwargs:
+                    replaced = True
+                    detail.unlink()
+                    detail.write_text("replacement sentinel", encoding="utf-8")
+                return real_read(root_path, relative, **kwargs)
+
+            with (
+                mock.patch.object(
+                    contract, "_read_text", side_effect=replace_before_read
+                ),
+                mock.patch.object(
+                    contract.os, "fdopen", wraps=contract.os.fdopen
+                ) as fdopen,
+                self.assertRaisesRegex(contract.ContractLoadError, "UNSAFE-FILE"),
+            ):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/adr-writing")
+                )
+            self.assertTrue(replaced)
+            self.assertEqual(1, fdopen.call_count)
+            self.assertEqual("replacement sentinel", detail.read_text(encoding="utf-8"))
+
+    def test_skill_resource_rejects_escape_orphan_and_unintended_execution(
+        self,
+    ) -> None:
+        cases = (
+            ("escape", "[bad](./references/../../../../outside.md)\n", None, 0o644),
+            ("malformed", "[bad](./references/{topic}.md)\n", None, 0o644),
+            ("plain-repo-escape", "[bad](../../../../outside.md)\n", None, 0o644),
+            (
+                "cross-skill",
+                "[cross](../other/references/payload.md)\n",
+                None,
+                0o644,
+            ),
+            (
+                "cross-skill-alias",
+                "[cross](../other/references/payload.md)\n",
+                "references/payload.md",
+                0o644,
+            ),
+            (
+                "external-url-alias",
+                "[vendor](https://example.test/scripts/run.sh)\n",
+                "scripts/run.sh",
+                0o755,
+            ),
+            (
+                "unused-reference-definition",
+                "[unused]: ./scripts/run.sh\n",
+                "scripts/run.sh",
+                0o755,
+            ),
+            ("orphan", "", "references/orphan.md", 0o644),
+            (
+                "executable-reference",
+                "[bad](./references/executable.md)\n",
+                "references/executable.md",
+                0o755,
+            ),
+            (
+                "executable-asset",
+                "[bad](./assets/executable.bin)\n",
+                "assets/executable.bin",
+                0o755,
+            ),
+            ("orphan-script", "", "scripts/orphan.sh", 0o755),
+        )
+        for name, link, relative, mode in cases:
+            with self.subTest(case=name), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                copy_governance_fixture(root)
+                skill = root / ".agents/skills/adr-writing"
+                source = skill / "SKILL.md"
+                source.write_text(
+                    source.read_text(encoding="utf-8") + "\n" + link,
+                    encoding="utf-8",
+                )
+                outside = root / "outside.md"
+                outside.write_text("outside sentinel", encoding="utf-8")
+                if relative is not None:
+                    target = skill / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_text("resource", encoding="utf-8")
+                    target.chmod(mode)
+                findings = contract.validate_canonical_agent_home(root)
+                self.assertEqual(
+                    ["AGC-CANONICAL-HOME"],
+                    [finding.code for finding in findings],
+                )
+                self.assertEqual(
+                    "outside sentinel", outside.read_text(encoding="utf-8")
+                )
+
+    def test_skill_resource_allows_safe_outward_citations(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text(
+                "[governance](../../governance/agentic.md)\n"
+                "`scripts/manifest.yaml` is a repository citation.\n",
+                encoding="utf-8",
+            )
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+
+    def test_skill_resource_uses_only_the_procedure_body_for_discovery(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            skill.mkdir(parents=True)
+            source = skill / "SKILL.md"
+            source.write_text(
+                "---\n"
+                'description: "Do not load ./references/missing.md"\n'
+                "---\n"
+                "\n# sample\n",
+                encoding="utf-8",
+            )
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+            source.write_text(
+                source.read_text(encoding="utf-8") + "\n`./assets/${name}`\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(contract.ContractLoadError, "UNSUPPORTED"):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+            source.write_text(
+                "[" * (contract.MAX_SKILL_RESOURCE_MARKDOWN_BRACKETS + 1),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                contract.ContractLoadError, "MARKDOWN-OUTPUT-LIMIT"
+            ):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+
+    def test_skill_resource_does_not_follow_link_titles_or_invalid_links(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            scripts = skill / "scripts"
+            scripts.mkdir(parents=True)
+            source = skill / "SKILL.md"
+            script = scripts / "run.sh"
+            script.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            script.chmod(0o755)
+
+            for body in (
+                '[vendor](<https://example.test> "[hidden](./scripts/run.sh)")\n',
+                "[fake](./scripts/run.sh title-without-close\n",
+                '[vendor](<https://example.test> "[hidden][run]")\n'
+                "[run]: ./scripts/run.sh\n",
+                '[vendor](<https://example.test> "[[./scripts/run.sh]]")\n',
+                "[vendor](<https://example.test> '<a href=\"./scripts/run.sh\">')\n",
+                '<a title="[hidden](./scripts/run.sh)" '
+                'href="https://example.test">vendor</a>\n',
+                '<a title="x > [hidden](./scripts/run.sh)" '
+                'href="https://example.test">vendor</a>\n',
+                "<a title='x > [hidden](./scripts/run.sh)' "
+                'href="https://example.test">vendor</a>\n',
+                "<a title=\"href='./scripts/run.sh'\" "
+                'href="https://example.test">vendor</a>\n',
+                '<a data-href="./scripts/run.sh" '
+                'href="https://example.test">vendor</a>\n',
+                "\\[hidden](./scripts/run.sh)\n",
+                "<!-- `./scripts/run.sh` -->\n",
+            ):
+                source.write_text(body, encoding="utf-8")
+                with self.assertRaisesRegex(contract.ContractLoadError, "ORPHAN"):
+                    contract._validate_skill_resources(
+                        root, pathlib.PurePosixPath(".agents/skills/sample")
+                    )
+
+            source.write_text('<a href="./scripts/run.sh">run</a>\n', encoding="utf-8")
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+
+            source.write_text("```sh\n./scripts/run.sh\n```\n", encoding="utf-8")
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+
+            script.unlink()
+            references = skill / "references"
+            assets = skill / "assets"
+            references.mkdir()
+            assets.mkdir()
+            source.write_text("[detail](./references/detail.md)\n", encoding="utf-8")
+            (references / "detail.md").write_text(
+                "---\ndescription: ./assets/template.bin\n---\n# Detail\n",
+                encoding="utf-8",
+            )
+            (assets / "template.bin").write_bytes(b"template")
+            with self.assertRaisesRegex(contract.ContractLoadError, "ORPHAN"):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+
+    def test_skill_resource_rechecks_directories_after_graph_reads(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            references = skill / "references"
+            references.mkdir(parents=True)
+            source = skill / "SKILL.md"
+            source.write_text("sample\n", encoding="utf-8")
+            real_read = contract._read_text
+            changed = False
+
+            def add_after_inventory(root_path, relative, **kwargs):
+                nonlocal changed
+                if relative == pathlib.PurePosixPath(".agents/skills/sample/SKILL.md"):
+                    changed = True
+                    (references / "late.md").write_text("late", encoding="utf-8")
+                return real_read(root_path, relative, **kwargs)
+
+            with (
+                mock.patch.object(
+                    contract, "_read_text", side_effect=add_after_inventory
+                ),
+                self.assertRaisesRegex(contract.ContractLoadError, "RACE"),
+            ):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+            self.assertTrue(changed)
+
+    def test_skill_resource_bounds_are_enforced(self) -> None:
+        with self.subTest(bound="entries"), tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            assets = skill / "assets"
+            assets.mkdir(parents=True)
+            (skill / "SKILL.md").write_text("sample\n", encoding="utf-8")
+            for number in range(contract.MAX_SKILL_RESOURCE_ENTRIES + 1):
+                (assets / f"{number:04d}").touch()
+            with self.assertRaisesRegex(contract.ContractLoadError, "ENTRY-LIMIT"):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+            (assets / f"{contract.MAX_SKILL_RESOURCE_ENTRIES:04d}").unlink()
+            (skill / "SKILL.md").write_text(
+                "\n".join(
+                    f"[asset {number}](./assets/{number:04d})"
+                    for number in range(contract.MAX_SKILL_RESOURCE_ENTRIES)
+                ),
+                encoding="utf-8",
+            )
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+
+        with self.subTest(bound="depth"), tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            nested = skill / "references"
+            for _ in range(contract.MAX_SKILL_RESOURCE_DEPTH + 1):
+                nested /= "nested"
+            nested.mkdir(parents=True)
+            (nested / "detail.md").write_text("detail", encoding="utf-8")
+            (skill / "SKILL.md").write_text("sample\n", encoding="utf-8")
+            with self.assertRaisesRegex(contract.ContractLoadError, "DEPTH-LIMIT"):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+            (nested / "detail.md").unlink()
+            nested.rmdir()
+            accepted = (
+                skill
+                / "references"
+                / pathlib.Path(
+                    *("nested" for _ in range(contract.MAX_SKILL_RESOURCE_DEPTH))
+                )
+            )
+            (accepted / "detail.md").write_text("detail", encoding="utf-8")
+            (skill / "SKILL.md").write_text(
+                "[detail](./"
+                + (accepted / "detail.md").relative_to(skill).as_posix()
+                + ")\n",
+                encoding="utf-8",
+            )
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
+
+        with self.subTest(bound="text"), tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            skill = root / ".agents/skills/sample"
+            references = skill / "references"
+            references.mkdir(parents=True)
+            links = []
+            payload = "x" * (contract.MAX_TEXT_BYTES - 1024)
+            for number in range(5):
+                name = f"part-{number}.md"
+                links.append(f"[part {number}](./references/{name})")
+                (references / name).write_text(payload, encoding="utf-8")
+            (skill / "SKILL.md").write_text("\n".join(links), encoding="utf-8")
+            with self.assertRaisesRegex(contract.ContractLoadError, "TEXT-LIMIT"):
+                contract._validate_skill_resources(
+                    root, pathlib.PurePosixPath(".agents/skills/sample")
+                )
+            (references / "part-4.md").unlink()
+            for number in range(4):
+                (references / f"part-{number}.md").write_text(
+                    "x" * contract.MAX_TEXT_BYTES, encoding="utf-8"
+                )
+            (skill / "SKILL.md").write_text("\n".join(links[:4]), encoding="utf-8")
+            contract._validate_skill_resources(
+                root, pathlib.PurePosixPath(".agents/skills/sample")
+            )
 
     def test_a_skill_may_not_invent_another_directory_or_a_loose_file(self) -> None:
         """The lift is exactly three names; everything else stays refused."""
@@ -374,7 +829,15 @@ class AgentGovernanceContractTests(unittest.TestCase):
         state = contract.load_agent_governance(ROOT)
         self.assertEqual(("claude", "codex"), state.providers)
         self.assertEqual(
-            ("README.md", "governance", "knowledge", "prompts", "roles", "skills"),
+            (
+                "README.md",
+                "evaluations",
+                "governance",
+                "knowledge",
+                "prompts",
+                "roles",
+                "skills",
+            ),
             state.root_entries,
         )
         self.assertEqual(
@@ -900,6 +1363,64 @@ class AgentGovernanceContractTests(unittest.TestCase):
                     )
             self.assertTrue(swapped)
             self.assertEqual(b"outside sentinel", outside.read_bytes())
+
+    def test_reader_closes_descriptors_when_acquisition_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            child_path = root / "child"
+            child_path.mkdir()
+            flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+            parent = os.open(root, flags)
+            opened = []
+            real_open = contract.os.open
+
+            def track_open(*args, **kwargs):
+                descriptor = real_open(*args, **kwargs)
+                opened.append(descriptor)
+                return descriptor
+
+            try:
+                with (
+                    mock.patch.object(contract.os, "open", side_effect=track_open),
+                    mock.patch.object(contract.os, "fstat", side_effect=OSError),
+                    mock.patch.object(
+                        contract.os, "close", wraps=contract.os.close
+                    ) as close,
+                    self.assertRaises(OSError),
+                ):
+                    contract._open_verified_directory(
+                        parent,
+                        "child",
+                        flags,
+                        child_path.stat(),
+                        "synthetic race",
+                    )
+                close.assert_any_call(opened[-1])
+            finally:
+                os.close(parent)
+
+            target = root / "payload.md"
+            target.write_text("payload", encoding="utf-8")
+            real_open_regular = contract._open_regular_file
+            opened.clear()
+
+            def track_regular(*args, **kwargs):
+                descriptor, metadata = real_open_regular(*args, **kwargs)
+                opened.append(descriptor)
+                return descriptor, metadata
+
+            with (
+                mock.patch.object(
+                    contract, "_open_regular_file", side_effect=track_regular
+                ),
+                mock.patch.object(contract.os, "fdopen", side_effect=OSError),
+                mock.patch.object(
+                    contract.os, "close", wraps=contract.os.close
+                ) as close,
+                self.assertRaisesRegex(contract.ContractLoadError, "UNREADABLE-FILE"),
+            ):
+                contract._read_text(root, pathlib.PurePosixPath("payload.md"))
+            close.assert_any_call(opened[-1])
 
     def test_active_reader_retains_finite_four_mebibyte_boundary(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

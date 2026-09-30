@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.1.1"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-09-29"
 ---
 
 # GitHub Governance Policy
@@ -31,6 +31,13 @@ Repo-local stricter rules always override this document; never weaken them on th
 - CODEOWNERS-triggered reviews are mandatory wherever remote protection enforces them. Agents must read the enforced state rather than assume it: when `require_code_owner_reviews` is enabled, an owned path's review must be obtained before merge; when it is disabled, `.github/CODEOWNERS` remains the ownership and review-routing record and no longer gates merges. Report which of the two applies; never record a review that protection did not require and no person gave.
 
 ## 2. Pull Request and Review Contract
+
+Issues provide intake, coordination, and branch links. The current Task owns
+approval, evidence, and lifecycle state; closing a stale Issue does not
+transition a Task. Projects is the preferred future coordination option and
+Linear is an alternative; neither is adopted here and neither receives a sync
+job. A remote Issue, tag, or release mutation requires approval naming the exact
+target and action.
 
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.

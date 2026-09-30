@@ -88,9 +88,9 @@ def copy_fixture(root: pathlib.Path) -> None:
     findings = validate_canonical_agent_home(ROOT)
     if findings:
         raise ValueError(f"invalid canonical fixture inventory: {findings}")
-    native_paths = (
+    tracked_paths = (
         subprocess.run(
-            ["git", "ls-files", "-z", "--", ".claude", ".codex"],
+            ["git", "ls-files", "-z", "--", ".claude", ".codex", ".agents/skills"],
             cwd=ROOT,
             capture_output=True,
             check=True,
@@ -105,7 +105,14 @@ def copy_fixture(root: pathlib.Path) -> None:
         r"[.]claude/(?:README[.]md|CLAUDE[.]md|settings[.]json)|"
         r"[.]codex/(?:README[.]md|hooks[.]json))"
     )
-    names = {name for name in native_paths if native_pattern.fullmatch(name)}
+    resource_pattern = re.compile(
+        r"[.]agents/skills/[a-z0-9-]+/(?:scripts|references|assets)/.+"
+    )
+    names = {
+        name
+        for name in tracked_paths
+        if native_pattern.fullmatch(name) or resource_pattern.fullmatch(name)
+    }
     names.update(
         {
             ".agents/README.md",
@@ -148,6 +155,29 @@ def parse_frontmatter(payload: bytes) -> dict[str, object]:
 
 
 class ProviderSurfaceRendererTests(unittest.TestCase):
+    def test_recovery_skill_membership_fails_closed_when_skill_is_missing(
+        self,
+    ) -> None:
+        renderer = load_renderer()
+        state = renderer.load_agent_governance(ROOT)
+        skill_id = "stateful-recovery-contract-review"
+        self.assertIn(skill_id, {item.skill_id for item in state.skills})
+        self.assertIn(
+            skill_id,
+            next(
+                item for item in state.roles if item.agent_id == "iac-reviewer"
+            ).skill_ids,
+        )
+
+        changed = replace(
+            state,
+            skills=tuple(item for item in state.skills if item.skill_id != skill_id),
+        )
+        findings = renderer.validate_contract_bundle(
+            ROOT, renderer.ContractBundle(changed)
+        )
+        self.assertIn("AGC-SKILL-REFERENCE", {item.code for item in findings})
+
     def test_role_tools_come_from_the_registry_not_the_renderer(self) -> None:
         """A role owns which tools it may use.
 
