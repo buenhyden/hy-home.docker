@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Follow-up"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -49,12 +49,12 @@ remains BLOCKED/NOT_RUN and cannot become PASS through transfer or static review
 
 ## Technical Approach
 
-Apply only the registered four-stage lifecycle path: review/approved/ready,
-then approved/approved/ready, then active/active/in-progress, then
-cancelled/cancelled/cancelled for the Spec, Plan, and Task respectively. The
-final Task records each numbered acceptance criterion as withdrawn with the
-owner's cancellation reason. The final package then retires to the registered
-Stage 98 route with its tombstone and inbound references updated. No successor
+This approved closure advances through the registered path: approved/approved/
+ready, then active/active/in-progress, then cancelled/cancelled/cancelled for
+the Spec, Plan, and Task respectively. The final Task records each numbered
+acceptance criterion as withdrawn with the owner's cancellation reason. The
+final package then retires to the registered Stage 98 route with one new row in the existing Retention Catalog and updated inbound
+references. No successor
 Task, provider invocation, synthetic target, model gateway, budget engine, or
 evaluation framework is created. The current Task preserves the sanitized
 preflight receipt and the limits that made every native result NOT_RUN or
