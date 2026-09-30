@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.3.0"
+version: "1.4.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -216,10 +216,15 @@ Cloudflare dashboard에서:
    automatic, storage class는 Standard로 한다(Infrequent Access는 최소 보관
    기간과 읽기에 요금을 매긴다).
 2. **Bucket → Settings → Bucket lock rules → Add rule**: 보관 기간 30일의
-   규칙을 prefix `data/`, `index/`, `snapshots/`, `keys/`, `config`에 하나씩
-   만든다. `locks/`에는 걸지 않는다. Restic이 자기 lock 파일을 지워야 한다.
-3. **R2 → Manage API tokens → Create API token**: 권한은 **Object Read &
-   Write**, 적용 대상은 그 bucket 하나, Admin 권한은 주지 않는다. 이 token은
+   규칙을 prefix `data/`, `snapshots/`, `keys/`, `config`에 하나씩 만든다.
+   `locks/`에는 걸지 않는다. Restic이 자기 lock 파일을 지워야 한다. `index/`에도
+   걸지 않는다. 8.5의 `prune`은 옛 index 파일을 지우고 새로 쓰는데, 지우지 못한
+   index가 이미 지운 pack을 가리키면 이후 copy가 그 데이터를 올리지 않고 건너뛸 수
+   있다. index를 잃어도 `restic repair index`가 pack에서 다시 만든다.
+3. **R2 → Manage API tokens → Create Account API token**: 사람 계정에 묶인 User
+   API token은 그 사용자가 계정에서 빠지면 멈추므로, 계정에 묶인 Account API
+   token을 쓴다. 권한은 **Object Read & Write**, 적용 대상은 그 bucket 하나,
+   Admin 권한은 주지 않는다. 이 token은
    bucket을 관리하거나 지우지 못하고, bucket lock은 잠긴 object의 삭제를
    거부한다. Access Key ID와 Secret Access Key(한 번만 표시된다), S3 endpoint
    `https://<account-id>.r2.cloudflarestorage.com`의 account ID를 적어 둔다.
@@ -255,7 +260,9 @@ docker compose --profile backup run --rm --no-deps restic-offsite check
 configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지 않는다.
 설정되면 로컬 Restic backup과 check가 성공한 뒤(staging을 비우고 SeaweedFS
 vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 원격에 없는 snapshot만
-올리고 `R2 latest snapshots:` 아래에 set마다 한 줄을 남긴다. 일요일에는 원격에
+올리고 `R2 latest snapshots:` 아래에 set마다 한 줄을, `R2 repository size:`에
+저장된 byte 수를 남긴다. orchestrator는 이 값을 성공 timestamp와 같은 파일에
+`hyhome_backup_offsite_repo_bytes`로 쓴다. 일요일에는 원격에
 `restic check --read-data-subset 10%`도 실행한다. copy나 check가 실패하면
 `offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
 실패처럼 unit이 exit 1로 끝난다. 로컬 backup은 그대로 유효하다. 로컬 단계가
@@ -302,11 +309,60 @@ repository를 다시 만들려면 같은 container 안에서
   `R2 latest snapshots:`가 보이고 unit이 exit 0으로 끝났다.
 - `docker compose --profile backup run --rm --no-deps restic-offsite snapshots`가
   두 set을 모두 나열한다. 일요일 run에는 원격의 `no errors were found`가 있다.
-- dashboard에 bucket lock rule 다섯 개와 token의 단일 bucket 범위가 보인다.
+- dashboard에 bucket lock rule 네 개(`data/`, `snapshots/`, `keys/`, `config`)와
+  token의 단일 bucket 범위가 보인다.
 - 오프사이트 복구를 검증했다고 말하기 전에, R2에서 scratch 디렉터리로의 복원
   리허설(8.3)을 소요 시간과 함께 기록한다.
-- 원격 snapshot 삭제는 이 host에서 실행하지 않는다. 별도의 admin credential,
-  따로 승인된 Task, lock 보관 기간이 지난 object가 필요하다.
+- 원격 snapshot 삭제는 8.5의 확인 절차로만 한다. 매일의 run은 지우지 않는다.
+
+#### 8.5 원격 forget-prune (owner-run, approval: 원격 삭제)
+
+R2에는 로컬의 `forget-prune`이 닿지 않으므로, 이 단계 없이는 올린 것이 계속
+쌓인다. 로컬 state 디렉터리는 2026-09-23 429 MiB에서 2026-09-30 1679 MiB로
+하루 약 180 MiB 늘었다. 원격도 비슷하게 늘면 1.5~2개월이면 무료 한도
+10 GB를 넘는다. 한 달에 한 번, 또는 `HyhomeOffsiteRepoNearFreeTier`가 뜨면
+실행한다:
+
+```bash
+docker compose --profile backup run --rm --no-deps \
+  -e HYHOME_PRUNE_CONFIRM=delete-old-remote-snapshots restic-offsite forget-prune
+```
+
+최근 30일의 snapshot은 모두 두고, 그보다 오래된 것은 한 달에 하나씩 12개월치만
+남긴다(`--keep-within 30d --keep-monthly 12`, host와 tag별). 30일 안의 object는
+bucket lock이 지키므로 지우지 않고, 지우는 것은 lock이 끝난 object뿐이다.
+`DeleteObject`는 무료다. 끝에 `R2 repository size:`를 남긴다. `prune`이 잠긴
+pack을 지우지 못했다고 경고하면, 그 pack은 index에서 빠진 채 남아 다음 달에
+지워진다. 곧바로 `restic-offsite check`로 `no errors were found`를 확인한다.
+Evidence에는 실행 시각, 지운 snapshot 수, 전후 `R2 repository size`를 적는다.
+
+#### 8.6 R2 과금을 0으로 유지하기
+
+2026-09-30 확인한 [R2 pricing](https://developers.cloudflare.com/r2/pricing/)
+기준: 무료 한도는 계정 단위로 Standard storage 10 GB-month, Class A 100만,
+Class B 1000만 건이다. storage는 날마다의 최대값을 한 달 평균한 값으로 매긴다.
+Infrequent Access에는 무료 한도가 없다. `DeleteObject`와
+`AbortMultipartUpload`는 무료다.
+
+| 항목 | 예상 사용량 | 관리 |
+| --- | --- | --- |
+| Storage | 첫 copy 약 1.8 GB, 이후 하루 약 180 MiB | 8.5를 매달 실행; 8 GB에서 `HyhomeOffsiteRepoNearFreeTier` |
+| Class A (PutObject, ListObjects 등) | 하루 copy 한 번에 pack, index, snapshot, lock 업로드와 list 수십 건, 한 달 수천 건 | 조치 불필요 |
+| Class B (GetObject, HeadObject 등) | copy의 index 읽기, 일요일 check의 10% pack 읽기, 한 달 수천 건 | 조치 불필요 |
+
+Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 지킨다:
+
+1. bucket의 storage class는 Standard로 두고, Infrequent Access로 옮기는
+   lifecycle rule을 만들지 않는다.
+2. object를 나이로 지우는 lifecycle rule을 만들지 않는다. Restic repository의
+   일부만 지우면 repository가 깨진다. 새 bucket에 기본으로 있는 "multipart
+   upload 7일 뒤 중단" 규칙은 그대로 둔다.
+3. **Manage Account → Billing → Billable Usage → Create budget alert**에서
+   허용되는 가장 낮은 금액(예: 1 USD)으로 budget alert를 만든다. 이 알림은 계정
+   전체의 사용량 기반 요금이 그 금액을 넘으면 email을 한 번 보낼 뿐, 사용을
+   멈추지 않는다. Pay-as-you-go 계정에서만 쓸 수 있다.
+4. 한 달에 한 번 bucket의 **Metrics** 탭에서 storage와 operation 수를 보고, 8.5의
+   Evidence 옆에 적는다.
 
 ## Evidence
 

@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.10"
+version: "0.7.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -157,6 +157,19 @@ Read-only investigation of 2026-09-25:
   directory today), which grows the state budget faster; the 2026-10-03 W8
   disk figures cover it. Owner steps (RUN-0021 8.1): the bucket, five lock
   rules, the bucket-scoped token, BKP-004/005, the two `.env` values.
+- 2026-09-30 W10 R2 free tier (owner: keep Cloudflare from billing). The
+  official pricing and billing pages (checked 2026-09-30): no hard spending
+  cap; budget alerts only email (Pay-as-you-go accounts); the free tier is
+  per account, Standard storage only, storage billed as the monthly average
+  of daily peaks; `DeleteObject` is free. Operations stay in the thousands a
+  month, so storage is the only exposure. `copy` now reports the stored
+  size, the orchestrator records `hyhome_backup_offsite_repo_bytes`, and
+  `HyhomeOffsiteRepoNearFreeTier` fires above 8 GB; a confirmed owner-run
+  `forget-prune` keeps 30 days plus 12 monthly snapshots (RUN-0021 8.5, 8.6).
+  `index/` left the lock list, because a locked stale index could make a
+  later copy skip data that prune had removed. Checked with a stub `restic`
+  (size line, refusal without confirmation, the forget arguments) and
+  `promtool`; the rule is loaded with health `ok`.
 
 ## Verification Evidence
 

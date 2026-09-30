@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -68,7 +68,9 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
    repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을
    관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
-   성공하면 offsite recovery가 생기며 원격 RPO는 하루다. 그 전까지는 모든
+   성공하면 offsite recovery가 생기며 원격 RPO는 하루다. 원격 보존은 owner가
+   매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)으로 R2 무료
+   한도 안에 둔다(RUN-0021 8.5, 8.6). 그 전까지는 모든
    복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(5 GiB, owner 2026-09-22)
    이다. 초과하면 run이 실패하고 Restic은 아무것도 쓰지 않는다;

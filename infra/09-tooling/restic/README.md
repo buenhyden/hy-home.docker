@@ -1,6 +1,6 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
@@ -35,7 +35,7 @@ Valkey RDB, SQLite 데이터베이스 세 개), `secrets/`와 `.env`.
 restic/
 ├── docker-compose.yml     # restic, restic-offsite, backup-sqlite-export (profile backup)
 ├── backup.sh              # snapshots | init | backup | check | forget-prune | cmd
-├── offsite.sh             # R2: snapshots | init | copy | check | cmd (no deletes)
+├── offsite.sh             # R2: snapshots | init | copy | check | forget-prune (confirmed) | cmd
 ├── export_sqlite.py       # Online Backup API copies with integrity check
 ├── sets/                  # state-include, state-exclude, host-exclude
 ├── bin/hyhome-backup.sh   # host orchestrator (lock, disk preflight, order)
@@ -80,7 +80,10 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   스크립트는 R2 키를 출력하지 않고 환경 변수로만 넘깁니다. 두 키 중 하나라도
   비어 있으면 오케스트레이터는 이 단계를 건너뜁니다. 로컬 backup과 check가
   성공한 뒤 `copy`를 실행하고, 일요일에는 `check --read-data-subset 10%`도
-  실행합니다. 실패하면 unit도 실패합니다.
+  실행합니다. 실패하면 unit도 실패합니다. `copy`는 원격의 저장 byte 수를
+  남기고 오케스트레이터가 이를 `hyhome_backup_offsite_repo_bytes`로 기록합니다.
+  원격 삭제는 owner가 확인 값과 함께 매달 실행하는 `forget-prune`뿐입니다
+  (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.
 

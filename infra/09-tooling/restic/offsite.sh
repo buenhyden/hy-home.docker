@@ -1,9 +1,10 @@
 #!/bin/sh
 # Offsite Restic entrypoint (ADR-0041): one Cloudflare R2 repository that
 # receives the snapshots of both local repositories (state and host).
-# Usage: offsite.sh {snapshots|init|copy|check|cmd <restic args...>}
-# Deletion is not offered: the bucket lock keeps objects and remote
-# forget/prune is a separate, owner-run procedure.
+# Usage: offsite.sh {snapshots|init|copy|check|forget-prune|cmd <restic args...>}
+# The daily run never deletes. forget-prune is the owner-run, separately
+# confirmed monthly procedure that keeps the remote inside the R2 free tier
+# (RUN-0021); it keeps every snapshot within the 30-day bucket lock.
 set -eu
 
 SETS="state host"
@@ -61,16 +62,34 @@ case "$action" in
         done
         echo "R2 latest snapshots:"
         restic snapshots --compact --latest 1
+        # Stored (compressed) bytes, which R2 bills; the orchestrator turns
+        # this line into hyhome_backup_offsite_repo_bytes.
+        size="$(restic stats --mode raw-data --json | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
+        echo "R2 repository size: ${size:-unknown} bytes"
         ;;
     check)
         # Weekly: structure plus a random tenth of the pack data.
         require_initialized
         restic check --read-data-subset 10%
         ;;
+    forget-prune)
+        # Deletes remote snapshots and data. Owner-run only, with an explicit,
+        # separately approved confirmation (RUN-0021 8.5). Everything younger
+        # than the 30-day bucket lock stays, so no locked object is removed;
+        # older history keeps one snapshot per month for a year.
+        if [ "${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-remote-snapshots" ]; then
+            echo "forget-prune needs HYHOME_PRUNE_CONFIRM=delete-old-remote-snapshots" >&2
+            exit 64
+        fi
+        require_initialized
+        restic forget --prune --group-by host,tags --keep-within 30d --keep-monthly 12
+        size="$(restic stats --mode raw-data --json | sed -n 's/.*"total_size":\([0-9]*\).*/\1/p')"
+        echo "R2 repository size: ${size:-unknown} bytes"
+        ;;
     cmd)
         case "${1:-}" in
             forget | prune | unlock)
-                echo "'$1' is not run from this host; see RUN-0021" >&2
+                echo "'$1' is not run directly; use forget-prune (RUN-0021 8.5)" >&2
                 exit 64
                 ;;
         esac

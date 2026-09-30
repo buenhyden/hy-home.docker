@@ -98,6 +98,20 @@ groups:
           description: 'hyhome-backup.service가 최근 26시간 동안 정상 종료하지 않았습니다. 타이머와 서비스 상태, journal의 상태 줄을 확인하세요.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
 
+      # [What] R2 offsite repository near the free tier / R2 무료 한도 근접
+      # R2 bills stored bytes above 10 GB a month; 8 GB leaves room for the
+      # owner's monthly remote forget-prune (RUN-0021 8.5, ADR-0041).
+      - alert: HyhomeOffsiteRepoNearFreeTier
+        expr: hyhome_backup_offsite_repo_bytes > 8e9
+        for: 1h
+        labels:
+          severity: warning
+          domain: backup
+        annotations:
+          summary: 'R2 오프사이트 저장소가 8 GB를 넘음'
+          description: 'R2 Restic 저장소가 {{ $value | humanize1024 }}B입니다. 무료 한도 10 GB를 넘기 전에 RUN-0021 8.5의 원격 forget-prune을 실행하세요.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0021-backup-and-restore.md'
+
       # [What] System disk under 25 GiB free / 시스템 디스크 여유 25GiB 미만
       # The backup refuses to start under 20 GiB free on this disk.
       - alert: HostSystemDiskLow

@@ -192,7 +192,9 @@ print("yes" if env.get("BACKUP_OFFSITE_R2_ACCOUNT_ID") and env.get("BACKUP_OFFSI
 if [[ "$offsite_configured" != yes ]]; then
     echo "offsite copy not configured (BACKUP_OFFSITE_R2_*); skipped"
 elif [[ "$restic_ok" == true ]]; then
-    "${compose[@]}" run --rm --no-deps restic-offsite copy || { echo "offsite copy to R2 failed" >&2; status=1; }
+    offsite_log="$("${compose[@]}" run --rm --no-deps restic-offsite copy)" || { echo "offsite copy to R2 failed" >&2; status=1; }
+    printf '%s\n' "${offsite_log:-}"
+    offsite_bytes="$(sed -n 's/^R2 repository size: \([0-9][0-9]*\) bytes$/\1/p' <<<"${offsite_log:-}")"
     if [[ "$(date +%u)" == 7 ]]; then
         "${compose[@]}" run --rm --no-deps restic-offsite check || { echo "offsite check of R2 failed" >&2; status=1; }
     fi
@@ -207,11 +209,21 @@ fi
 if (( status == 0 )); then
     metrics_dir="$state_repo/metrics"
     metrics_tmp="$metrics_dir/.hyhome_backup.tmp"
+    # The R2 size (stored bytes) feeds the free-tier alert (ADR-0041).
+    offsite_metric=()
+    if [[ -n "${offsite_bytes:-}" ]]; then
+        offsite_metric=(
+            '# HELP hyhome_backup_offsite_repo_bytes Stored size of the R2 Restic repository after the last copy.'
+            '# TYPE hyhome_backup_offsite_repo_bytes gauge'
+            "hyhome_backup_offsite_repo_bytes $offsite_bytes"
+        )
+    fi
     if mkdir -p "$metrics_dir" && chmod 0755 "$metrics_dir" &&
         printf '%s\n' \
             '# HELP hyhome_backup_last_success_timestamp_seconds End of the last hyhome-backup run that exited 0.' \
             '# TYPE hyhome_backup_last_success_timestamp_seconds gauge' \
-            "hyhome_backup_last_success_timestamp_seconds $(date +%s)" >"$metrics_tmp" &&
+            "hyhome_backup_last_success_timestamp_seconds $(date +%s)" \
+            "${offsite_metric[@]}" >"$metrics_tmp" &&
         chmod 0644 "$metrics_tmp" &&
         mv -f "$metrics_tmp" "$metrics_dir/hyhome_backup.prom"; then
         :

@@ -1907,9 +1907,20 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("already initialized; skipped", script)
         # Local repositories are mounted read-only, so the source is not locked.
         self.assertIn("copy --no-lock --from-repo", script)
-        self.assertNotRegex(script, r"\brestic (forget|prune|unlock)\b")
         self.assertNotIn("set -x", script)
         self.assertIn("forget | prune | unlock)", script)
+        # Remote deletion lives only in the confirmed forget-prune action, and
+        # keeps every snapshot inside the 30-day bucket lock.
+        prune = script.split("forget-prune)")[1].split(";;")[0]
+        self.assertIn(
+            '"${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-remote-snapshots"', prune
+        )
+        self.assertIn("--keep-within 30d", prune)
+        outside = script.replace(prune, "")
+        self.assertNotRegex(outside, r"\brestic (forget|prune|unlock)\b")
+        # copy reports the stored size for the free-tier alert.
+        self.assertIn("stats --mode raw-data --json", script)
+        self.assertIn("R2 repository size:", script)
 
     def test_orchestrator_copies_offsite_after_local_restic_succeeds(self) -> None:
         script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text(
@@ -1919,8 +1930,14 @@ class BackupContractTests(unittest.TestCase):
         self.assertLess(script.index("restic check || "), copy)
         self.assertIn("offsite copy not configured", script)
         self.assertIn('[[ "$restic_ok" == true ]]', script)
-        self.assertRegex(script, r"restic-offsite copy \|\| \{[^}]*status=1")
+        self.assertRegex(script, r"restic-offsite copy\)\" \|\| \{[^}]*status=1")
         self.assertIn("restic-offsite check", script)
+        self.assertIn("hyhome_backup_offsite_repo_bytes", script)
+        rules = (
+            ROOT
+            / "infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml"
+        ).read_text(encoding="utf-8")
+        self.assertIn("hyhome_backup_offsite_repo_bytes > 8e9", rules)
         # Plaintext exports are gone and SeaweedFS vacuum resumes before upload.
         self.assertLess(script.rindex("\ncleanup\n"), copy)
 
