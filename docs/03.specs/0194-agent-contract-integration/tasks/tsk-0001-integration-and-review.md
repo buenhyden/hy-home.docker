@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -34,7 +34,10 @@ and record the integration result.
   `main` in `buenhyden/hy-home.docker`. Its prior remote branch and PR were
   absent. The user authorized push, PR, merge and cleanup; recovery is a reviewed
   revert retaining the source commits. Required check `validation-changed`
-  is running as workflow run 36669340357. This preparation of review status
+  failed as workflow run 36669340357 on two baseline whitespace defects.
+  Commit `94b1bf373` corrects only those defects. Updating the PR description
+  triggered the registered `edited` event and cancelled run 36671793467;
+  replacement run 36673358901 is pending on the same commit. This preparation of review status
   remains unpublished until that initial-draft PR passes and merges.
 
 - 2026-09-29: The owner requested integration, push, merge, main synchronization
@@ -122,9 +125,10 @@ the correction and new follow-up documents passed PR-base metadata
 (selected=10, violations=0, exceptions=0, overrides=0), Markdown (11 files),
 and cached diff checks. These checks do not replace final merged-candidate QA.
 
-Source evidence is focused/local-static. Public changed/full,
-hosted CI, native/provider observations, coverage, and runtime recovery remain
-unobserved. The historical source QA attempt stopped at identity-history regression:
+Before the later bootstrap and coverage observations above, source evidence
+was focused/local-static; public profiles, hosted CI, native observations,
+coverage and runtime recovery were unobserved. The historical source QA attempt
+stopped at identity-history regression:
 high-water mark 190 observed 191; no runtime leaf ran. This is NOT PASS.
 
 Bootstrap validation: PR-base metadata selected 7 documents with zero violations,
@@ -184,6 +188,23 @@ and escalation for ambiguity, disagreement, high-risk uncertainty, new scope,
 or an explicitly required human gate. Rules-engineer reviewed this boundary
 before implementation and cleared the resulting two-file policy diff.
 
+The first hosted run 36669340357 completed its regression and security checks
+but failed all-files formatting: one blank line after the Pyroscope runbook
+code fence and one final newline in the Kafka JMX configuration. Independent
+read-only review confirmed commit `94b1bf373` matches those two CI edits exactly,
+with no changed values or behavior. PR-base metadata selected 11 documents with
+zero violations; Markdown and YAML checks passed (existing YAML warnings remain).
+
+On clean detached `94b1bf373`, the registered
+`scripts/validation/run-agent-precommit-all-files.sh` ran with this tracked Task
+and the exact bootstrap/fix path prefixes. It returned exit 0:
+`hook_result=passed`, before/after/changed/unexpected counts all 0. No formatter
+fallout was discarded. The first manual changed run returned exit 0 but an
+attempted read-only Markdown check unexpectedly applied the same Pyroscope
+blank line during execution; it is not exact-commit evidence. A fresh manual
+changed run uses the exact `94b1bf373` tree staged against `0470e3950` (18 paths),
+with no concurrent writers, and remains pending until its recorded exit.
+
 ## Review Evidence
 
 Independent read-only merge_preflight review cleared the staged bootstrap and
@@ -207,6 +228,14 @@ Required human approvals remain intact.
   and an integration result.
 
 ## Rulings
+
+The owner has already authorized design, Spec, Plan, implementation and Git
+integration. Independent read-only policy review confirmed local sequential
+lifecycle validation/review/commits may precede their remote publication.
+Each PR still publishes only the next immediate state after its predecessor
+lands; intermediate local commits never bypass merge-base-to-head validation.
+Source integration and its receipt begin only with local active Spec/Plan and
+in-progress Task. Candidate changes after QA require affected revalidation.
 
 Read-only package inventory at main `0470e3950` found no stale incomplete
 package to discard. SPEC-0182 is excluded. SPEC-0193 remains active: its
