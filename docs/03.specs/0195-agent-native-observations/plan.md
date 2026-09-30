@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Plan"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/plan"
-status: "active"
+status: "cancelled"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -37,11 +37,12 @@ through registered lifecycle transitions while preserving its evidence boundary.
 3. W3: The Spec advanced from approved to active, the Plan from approved to
    active, and the Task from ready to in-progress. Its cancellation frontmatter
    records one withdrawal reason per criterion.
-4. W4: Cancel the active Spec, Plan, and Task. Retire the terminal package to
-   `docs/98.archive/retired/03.specs/0195-agent-native-observations`, add one
-   new row in the existing Retention Catalog, and update all inbound references
-   the dated SPEC-0194 disposition receipt. Do not report a native PASS or
-   create a successor Task.
+4. W4: The active Spec, Plan, and Task were cancelled. The next step retires
+   this exact terminal source package to
+   `docs/98.archive/retired/03.specs/0195-agent-native-observations`, adds one
+   new row in the existing Retention Catalog, and updates all inbound references
+   including the dated SPEC-0194 disposition receipt. It does not report a
+   native PASS or create a successor Task.
 
 ## Risk and Rollback
 

@@ -1,8 +1,8 @@
 ---
 title: "Agent Native Observation Evidence"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "cancelled"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -57,26 +57,27 @@ editor action, API paid usage, or fallback occurred.
 independent read-only review agreed that this follow-up is unnecessary and has
 no successor Task. It does not establish native hook delivery, provider
 invocation, editor behavior, model entitlement, budget enforcement, or handoff
-refusal. This ready-stage Task preserves those missing facts for cancellation.
+refusal. At that ready stage, the Task preserved those missing facts for cancellation.
 The historical W1 preflight and W2 account-context preparation are complete;
 only native observation portions are NOT_RUN or BLOCKED and are withdrawn.
 
-### Withdrawal Preparation
+### Withdrawal Record
 
-1. Criterion 1 (R04) will be withdrawn: no durable control needs a live hook
+1. Criterion 1 (R04) is withdrawn: no durable control needs a live hook
    receipt beyond the delivered deterministic contract.
-2. Criterion 2 (R15) will be withdrawn: no durable provider-invocation control
+2. Criterion 2 (R15) is withdrawn: no durable provider-invocation control
    remains after integration; a native call would add no retained behavior.
-3. Criterion 3 (R18) will be withdrawn: no editor behavior or binding change is
+3. Criterion 3 (R18) is withdrawn: no editor behavior or binding change is
    being delivered, and the editor remains on a separate PC.
-4. Criterion 4 (R19) will be withdrawn: the providers expose no supported hard
+4. Criterion 4 (R19) is withdrawn: the providers expose no supported hard
    monetary/request/token envelope for this scope; subscription context cannot
    become a durable enforcement control.
-5. Criterion 5 (R22) will be withdrawn: no new cross-provider handoff workflow
+5. Criterion 5 (R22) is withdrawn: no new cross-provider handoff workflow
    remains to protect, and no successor Task needs native resumption evidence.
 
-The Task is in-progress and now carries the required cancellation frontmatter.
-It preserves all native NOT_RUN/BLOCKED evidence pending terminal cancellation.
+The Task is cancelled and retains the required cancellation frontmatter. It
+preserves all native NOT_RUN/BLOCKED evidence; retirement of this exact source
+package is the next step.
 
 ## Verification Evidence
 
@@ -115,6 +116,9 @@ checks passed. This is closure-process evidence only, not native evidence.
   no native observation executed.
 - `2390d3bc2`: approved-stage cancellation closure; independent review CLEAR,
   no native observation or hosted CI result claimed.
+- `6110f6cc1`: active-stage cancellation preparation; independent review CLEAR
+  and focused local lifecycle checks passed, with no native observation or
+  hosted CI result claimed.
 
 ## Rulings
 
@@ -133,5 +137,5 @@ checks passed. This is closure-process evidence only, not native evidence.
 
 ## Deferred Items
 
-Cancellation awaits the remaining registered lifecycle transitions and final
-independent review. All missing observations retain their NOT_RUN/BLOCKED status.
+This terminal source awaits exact retirement to Stage 98 and related inbound
+reference updates. All missing observations retain their NOT_RUN/BLOCKED status.
