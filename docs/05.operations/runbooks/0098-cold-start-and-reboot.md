@@ -1,6 +1,6 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.1.3"
+version: "0.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -102,9 +102,10 @@ docker compose exec -T openbao bao status
 ```
 
 Expected: 두 컨테이너 모두 `healthy`; `bao status`는 `Sealed  true`를 보여준다.
-`openbao-agent`는 이전 재시작에서 남은 토큰 파일이 있으면 자체 healthcheck
-(`test -s /openbao/agent/token`)를 통과할 수 있지만, sealed OpenBao에는 아직
-인증하지 못한 상태다.
+`openbao-agent`는 이전에 남은 token 파일만으로 자체 healthcheck
+(`test -s /openbao/agent/token`)를 통과하므로, `healthy`는 인증되었다는 뜻이 아니다.
+재부팅 뒤 Agent는 6단계의 새 SecretID를 받기 전까지 로그인하지 못하고
+`error getting path or data from method`를 반복해서 기록한다.
 
 ### 4. Owner unseal (대화형, hidden input)
 
@@ -130,10 +131,19 @@ OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 
 
 ### 6. SecretID 발급과 Agent 전달 (owner-run, 10분 이내)
 
-[RUN-0085 delivery 절차](0085-openbao.md#initial-bootstrap-and-credential-recovery)의
-명령을 그대로 쓴다. SecretID는 발급 후 10분, 1회용이며 Agent가 읽은 뒤 파일을
-지운다. SecretID 전달을 10분 안에 끝내지 못하면 다시 5단계부터 새 SecretID를
-발급한다.
+[RUN-0085 Renderer SecretID Delivery](0085-openbao.md#renderer-secretid-delivery)의
+1~4단계를 그대로 실행한다. 5단계의 UI 로그인과 별개로, 그 절차의 1단계에서 CLI
+OIDC 로그인을 한 번 더 한다. SecretID는 발급 후 10분, 1회용이며 Agent가 읽은 뒤
+파일을 지운다. 10분 안에 끝내지 못하면 그 절차의 2단계부터 새 SecretID를 발급한다.
+
+```bash
+docker logs --since 2m openbao-agent 2>&1 | grep -c 'authentication successful'
+docker exec openbao-agent sh -c 'test -e /openbao/agent/secret_id && echo not-consumed || echo consumed'
+```
+
+Expected: 개수 `1` 이상, `consumed`. 발급 시각과 결과를 아래 Verification Record에
+적는다. 이 단계를 끝내지 않으면 Agent는 렌더링을 갱신하지 못하지만 healthcheck는
+계속 `healthy`로 보인다(3단계).
 
 ### 7. hy-home.k8s(k3d) 컨테이너
 
@@ -186,9 +196,10 @@ SecretID, token 값은 기록하지 않는다.
 - 4단계(unseal)가 실패하면 [RUN-0085](0085-openbao.md)의
   Rollback or Recovery(protected Raft snapshot 복구)를 따른다; 이 런북은 새
   unseal 절차를 만들지 않는다.
-- 6단계(SecretID 전달)가 실패하거나 시간을 넘기면 이전 SecretID는 이미
-  소모되었으므로 5단계부터 다시 시작한다; Agent volume의 이전 토큰 파일을
-  지우지 않는다.
+- 6단계(SecretID 전달)가 실패하거나 시간을 넘기면
+  [RUN-0085](0085-openbao.md#renderer-secretid-delivery)의 실패 처리를 따라 새
+  SecretID를 발급한다. CLI 세션이 끝났으면 그 절차의 1단계부터 다시 시작한다.
+  Agent volume의 `role_id`와 이전 token 파일은 지우지 않는다.
 - 0단계의 백업이 실패한 상태로 재부팅을 강행하지 않는다: 재부팅 전 backup과
   `restic check`이 성공할 때까지 재시도한다.
 - 데이터베이스나 OpenBao의 복구(스냅샷 복원)는 각각

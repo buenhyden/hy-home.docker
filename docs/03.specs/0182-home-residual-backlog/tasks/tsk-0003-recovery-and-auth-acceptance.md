@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.7"
+version: "0.7.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -129,6 +129,19 @@ Read-only investigation of 2026-09-25:
   healthy by 10:03:53; owner unseal and `home-admin` login done before
   10:10). Open: stage 6 SecretID delivery (the agent logs no SecretID to
   read), and ESO `vault-backend` revalidation after the unseal.
+- 2026-09-30 SecretID runbook review (owner request): RUN-0098 stage 6
+  pointed at RUN-0085 "delivery commands" that did not exist; no Spec,
+  Task or runbook ever recorded them. The agent log shows it authenticated
+  once (2026-09-24 09:57Z), renewed until 2026-09-25, lost its token at
+  2026-09-26 16:51Z (`lifetime watcher done`) and failed 463 times since,
+  while its `test -s token` healthcheck stayed healthy. RUN-0085 now has a
+  Renderer SecretID Delivery procedure built from checked facts (no host
+  `bao`, the RUN-0096 client pattern, agent uid 100 can write its volume,
+  `-field` prints without a newline, token helper `$HOME/.vault-token`,
+  backoff about 4 minutes), a detection command, and the known limit that
+  every token expiry needs a new delivery. RUN-0098 stages 3 and 6 and its
+  recovery point to it. Automatic re-login is a security design change
+  left to a Spec; ADR-0042 assumed delivery only at restarts.
 
 ## Verification Evidence
 

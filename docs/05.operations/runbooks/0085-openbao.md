@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.5.2"
+version: "0.6.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -64,10 +64,116 @@ OpenBao를 unseal할 수 있다. 대화형 터미널에서 unseal하고
 `hy-home-renderer` AppRole은
 [renderer policy](../../../infra/03-security/openbao/config/policies/renderer.hcl)를
 사용한다. 구성된 두 KV v2 데이터 경로만 read하며, write/list/admin 권한은 부여하지 않는다.
-표준 default policy가 token 자체 갱신을 제공한다. Agent token의 갱신 가능 기간은 24시간이며
-SecretID는 10분 후 만료되고 1회만 사용할 수 있다. Agent는 SecretID 파일을 읽은 뒤
-삭제한다. 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
+표준 default policy가 token 자체 갱신을 제공한다. Agent token은 갱신되다가 최대 수명에서
+끝나며, SecretID는 10분 후 만료되고 1회만 사용할 수 있다. Agent는 SecretID 파일을 읽은 뒤
+삭제하므로, token이 끝나면 새 SecretID를 전달해야 한다(아래 Renderer SecretID Delivery). 기존 Docker Secret 소비자는 현재 파일을 계속 사용하며, 렌더링된 출력이 자동으로
 애플리케이션 mount를 전환하지는 않는다.
+
+### Renderer SecretID Delivery
+
+Agent는 `/openbao/agent/role_id`(volume `openbao-agent-data`에 남아 있다)와
+`/openbao/agent/secret_id`로 AppRole `hy-home-renderer`에 로그인하고, 읽은
+`secret_id` 파일을 지운다([agent.hcl](../../../infra/03-security/openbao/config/agent.hcl)).
+SecretID는 1회용이므로 Agent가 다시 로그인해야 할 때마다 새 SecretID를 전달한다.
+다시 로그인해야 하는 경우는 다음과 같다.
+
+- OpenBao 재시작과 unseal 뒤([RUN-0098](0098-cold-start-and-reboot.md) 6단계).
+- Agent token이 최대 수명에 닿은 뒤. 2026-09-24 09:57Z에 로그인한 token은
+  2026-09-25까지 갱신된 뒤 2026-09-26 16:51Z에 `lifetime watcher done`으로
+  끝났고, Agent는 그 뒤로 로그인하지 못했다.
+- `openbao-agent` 컨테이너를 새로 만든 뒤.
+
+**판별.** healthcheck(`test -s /openbao/agent/token`)는 남아 있는 옛 token
+파일만 보므로, Agent가 로그인하지 못해도 `healthy`다. 아래 개수가 0보다 크면
+전달이 필요하다.
+
+```bash
+docker logs --since 1h openbao-agent 2>&1 | grep -c 'error getting path or data from method'
+```
+
+**전제 조건.**
+
+- `bao status`가 `Sealed false`다.
+- `role_id`가 있고 `secret_id`가 없다(내용은 읽지 않는다).
+- 이 절차는 SecretID를 CLI 세션에서 발급해 Agent volume으로 바로 흘려보내므로, UI
+  OIDC 로그인만으로는 부족하다. 호스트에는 `bao` CLI가 없으므로
+  [RUN-0096](0096-k8s-integration.md) 5.2와 같은 일회용 client 컨테이너를 쓴다.
+- 브라우저가 다른 기기에서 실행되면 먼저 `ssh -L 8250:localhost:8250 <host>`로 OIDC
+  callback 포트를 포워딩한다.
+
+```bash
+docker compose exec -T openbao bao status | grep Sealed
+docker exec openbao-agent sh -c 'test -s /openbao/agent/role_id && echo role_id-ok; test -e /openbao/agent/secret_id && echo secret_id-present || echo secret_id-absent'
+```
+
+기대 결과: `Sealed false`, `role_id-ok`, `secret_id-absent`.
+
+**절차.** 저장소 루트에서 한 셸로 실행한다. `B`는 token을 호스트의 `0700` 임시
+디렉터리(`$T/.vault-token`)에만 저장한다.
+
+1. client를 정의하고 OIDC로 로그인한다. token은 출력되지 않는다. 이 단계에서는 SecretID의
+   10분이 아직 흐르지 않는다.
+
+   ```bash
+   T=$(mktemp -d); IMG=$(docker compose config --images openbao)
+   B() { docker run --rm -i --network host --user "$(id -u):$(id -g)" -e HOME=/h -v "$T:/h" \
+     -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem \
+     -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" --entrypoint bao "$IMG" "$@"; }
+   B login -no-print -method=oidc -path=oidc role=home-admin
+   B token lookup -format=json | grep -c '"hy-home-operator"'
+   ```
+
+   기대 결과: 브라우저 로그인 성공, 개수 `1` 이상. `0`이면 `/openbao-admins` 멤버십과
+   role을 확인한다(OIDC Configuration Contract).
+
+2. SecretID를 발급하고 같은 파이프로 Agent volume에 쓴다. 값은 화면, 명령 인자, shell
+   history에 남지 않는다. `-field`는 끝 줄바꿈 없이 값만 내보낸다. 임시 파일에 먼저 쓰고
+   비어 있지 않을 때만 `mv`로 바꾸므로, Agent가 반쯤 쓴 파일을 읽지 않는다. 발급 시점부터
+   10분 안에 3단계까지 끝낸다.
+
+   ```bash
+   B write -f -field=secret_id auth/approle/role/hy-home-renderer/secret-id \
+     | docker exec -i openbao-agent sh -c 'umask 077 && cat > /openbao/agent/secret_id.new && test -s /openbao/agent/secret_id.new && mv /openbao/agent/secret_id.new /openbao/agent/secret_id' \
+     && echo delivered || docker exec openbao-agent rm -f /openbao/agent/secret_id.new
+   ```
+
+   기대 결과: `delivered`. `docker exec`는 Agent와 같은 uid 100으로 쓰므로 Agent가 파일을
+   읽을 수 있다.
+
+3. Agent가 바로 읽게 재시작한다. 재시작하지 않으면 Agent는 다음 재시도(backoff 약 4~5분)에
+   읽는다.
+
+   ```bash
+   docker restart openbao-agent
+   docker logs --since 2m openbao-agent 2>&1 | grep -c 'authentication successful'
+   docker exec openbao-agent sh -c 'test -e /openbao/agent/secret_id && echo not-consumed || echo consumed; stat -c %y /openbao/agent/token'
+   ```
+
+   기대 결과: 개수 `1` 이상, `consumed`, token 파일 시각이 방금이다.
+
+4. 세션을 정리한다.
+
+   ```bash
+   B token revoke -self; rm -f "$T/.vault-token"; rmdir "$T"
+   ```
+
+   기대 결과: `rmdir`가 성공한다. 실패하면 `$T`에 남은 파일을 확인한다.
+
+**실패 처리.**
+
+- 2단계가 `permission denied`로 실패하면 로그인한 token에 `hy-home-operator`가 없다는
+  뜻이다. 1단계의 policy 확인으로 돌아간다.
+- 10분이 지나 3단계의 개수가 `0`이고 `invalid secret id`가 기록되면 2단계부터 새로
+  발급한다. 쓰이지 않은 SecretID는 만료되면 사라진다.
+- `secret_id.new`가 남아 있으면 지운 뒤 2단계를 다시 실행한다.
+
+**증거.** 발급 시각, `delivered`, 인증 성공 개수, `consumed`, token 파일 시각만
+현재 Task에 기록한다. SecretID, role_id, token 값은 기록하지 않는다.
+
+**알려진 한계.** SecretID가 1회용이고 읽은 뒤 지워지므로, Agent는 token이 최대 수명에
+닿으면 사람의 전달 없이 다시 로그인하지 못한다. 위 판별 명령으로 주기적으로 확인한다.
+자동 재로그인(주기 token, 재사용 가능한 SecretID와 CIDR 바인딩 등)은 보안 설계를
+바꾸므로 Spec으로 결정한다.
 
 ### Prometheus Metrics Credential
 
