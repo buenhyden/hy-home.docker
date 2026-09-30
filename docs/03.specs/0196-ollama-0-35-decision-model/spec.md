@@ -2,7 +2,7 @@
 title: "Ollama 0.35 Decision Model Rehearsal Specification"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"

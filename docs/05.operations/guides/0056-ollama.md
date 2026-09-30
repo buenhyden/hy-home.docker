@@ -86,7 +86,7 @@ curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 
 #### 3a. Decision API Smoke
 
-Ollama [Ollama release notes](https://github.com/ollama/ollama/releases)의 `/v1/systemone`은 선택 또는 점수형 결정을 지원한다. 아래 요청은 실제 업무 데이터 없이 [tev1:0.8b](https://ollama.com/library/tev1)를 확인하며, `keep_alive: 0`으로 요청 뒤 모델을 내린다.
+[Ollama release notes](https://github.com/ollama/ollama/releases)의 `/v1/systemone`은 선택 또는 점수형 결정을 지원한다. 아래 요청은 실제 업무 데이터 없이 [tev1:0.8b](https://ollama.com/library/tev1)를 확인하며, `keep_alive: 0`으로 요청 뒤 모델을 내린다.
 
 ```bash
 curl --fail-with-body --max-time 120 http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/v1/systemone \

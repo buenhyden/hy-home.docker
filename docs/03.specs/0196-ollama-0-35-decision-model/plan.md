@@ -1,8 +1,8 @@
 ---
 title: "Ollama 0.35 Decision Model Rehearsal Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
