@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration Specification"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/spec"
 status: "completed"
 owner: "@buenhyden"
@@ -45,9 +45,12 @@ This source packet retains its original statuses, including unresolved work;
 preservation is not completion. SPEC-0194 retains the source delivery and deterministic-verification obligations.
 On 2026-09-30 the owner explicitly transferred outstanding actual observations
 for R04/R15/R18/R19/R22, including the original Plan model-entitlement requirement,
-to [SPEC-0195](../0195-agent-native-observations/spec.md). Their original
-conditions and BLOCKED/NOT_RUN status remain; transfer is neither a waiver nor
-execution approval. Coverage, public profiles, controlled all-files QA, hosted
+to the SPEC-0195 withdrawal record in `docs/98.archive/retention-catalog.md`.
+At transfer, their original conditions and BLOCKED/NOT_RUN status remained;
+transfer was neither a waiver nor execution approval. On 2026-09-30 the owner
+cancelled the unnecessary follow-up. The current native obligation was withdrawn,
+no pending follow-up remains, and its frozen disposition preserves those missing
+results. Coverage, public profiles, controlled all-files QA, hosted
 checks, and Git delivery remain here.
 
 Integration preserves source obligations at their existing canonical owners and
@@ -128,7 +131,8 @@ fails closed for absent deterministic results, ambiguity, or protected changes.
 Docker-backed profiles and required hosted checks were observed successfully
 and recorded in the [completed Task](tasks/tsk-0001-integration-and-review.md).
 No retained delivery question remains open; transferred native observations
-remain with SPEC-0195 under their unchanged conditions.
+are preserved in the retired SPEC-0195 package under their transfer-time
+conditions; no pending native follow-up remains.
 
 ## Operational Impact
 

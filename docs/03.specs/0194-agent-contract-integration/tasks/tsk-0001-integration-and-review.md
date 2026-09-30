@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
@@ -71,7 +71,7 @@ and record the integration result.
   Task now enter completed together; the completed Stage 03 package may wait
   under the existing completion policy. The original superseded packet is not
   rewritten or falsely completed. SPEC-0182/0193 remain ongoing and SPEC-0195
-  remains draft with its original NOT_RUN/BLOCKED native observation conditions.
+  at that time remained draft with its original NOT_RUN/BLOCKED native observation conditions.
   No native invocation, service change, credential operation or real restore
   was performed by this completion.
 
@@ -98,7 +98,7 @@ and record the integration result.
   `/tmp/contract-final-precommit-directory-fix.log`. Full remains running on a
   separate clean copy of that commit. Independent acceptance audit found no
   additional retained-scope gap: all 12 frozen files match, HOME0190 and
-  SPEC-0182/0193 are unchanged, and SPEC-0195 preserves the approved obligations.
+  SPEC-0182/0193 are unchanged, and the later-retired SPEC-0195 package preserves the transferred conditions.
   Final fresh changed-line coverage passed as detailed below; hosted delivery
   and final full remain prerequisites, not inferred results.
 
@@ -245,9 +245,10 @@ integration draft was allocated SPEC-0194 to avoid their identities. Prior
 full-run output was unavailable after interruption; no PASS is inferred.
 
 The owner explicitly answered "별도 후속 작업으로 이관" on 2026-09-30.
-Actual R04/R15/R18/R19/R22 and model-entitlement observations now belong to
-SPEC-0195-TSK-0001 with unchanged conditions and missing status. This authorizes
-transfer, not execution. Coverage and delivery gates remain in this Task.
+Actual R04/R15/R18/R19/R22 and model-entitlement observations were transferred
+to SPEC-0195 with the transfer-time conditions and missing status. The
+subsequent withdrawal is recorded in the SPEC-0195 withdrawal record in `docs/98.archive/retention-catalog.md`.
+This authorized transfer, not execution; no pending follow-up remains. Coverage and delivery gates remain in this Task.
 
 On 2026-09-30, `python3 scripts/validation/run-ci-gate.py --profile full`
 completed with exit 0 on the 13-file bootstrap candidate based on 0470e3950.
@@ -305,7 +306,7 @@ independent code review. Those source changes await later integration.
 | 3 | W4 | PASS: full and manual changed on c14f5480a; merged-main changed passed | [validation runner](../../../../scripts/validation/run-ci-gate.py) |
 | 4 | W5 | PASS: required check on 1af10ff2b, run 36683228212 | [PR #321](https://github.com/buenhyden/hy-home.docker/pull/321) |
 | 5 | W6 | PASS: clean main/origin-main c103ef132 and finished implementation state cleaned | [cleanup receipt](#work-log) |
-| 6 | W2 | PASS: native observations transferred with unchanged conditions; retained delivery complete | [native follow-up](../../0195-agent-native-observations/tasks/tsk-0001-native-observations.md) |
+| 6 | W2 | PASS: native observations transferred with unchanged conditions; retained delivery complete | [subsequent withdrawal receipt](#deferred-items) |
 | 7 | W4 | PASS: final changed Python lines 966/1,033 (93.51%), independently verified | [coverage receipt](#final-changed-line-remeasurement) |
 
 The temporary measurement receipt SHA-256 is
@@ -363,9 +364,11 @@ Log above: registered changed/full profiles, controlled all-files wrapper,
 required hosted checks, independent review and Git delivery. Frozen source
 results remain historical; final delivery belongs to this Task and PR #321.
 
-The owner's explicit 2026-09-30 transfer assigns actual observations for
+The owner's explicit 2026-09-30 transfer assigned actual observations for
 R04/R15/R18/R19/R22 and the original Plan's entitlement requirement to
-SPEC-0195-TSK-0001. Their BLOCKED/NOT_RUN states and strict acceptance remain.
+the retired SPEC-0195 Task. Their BLOCKED/NOT_RUN states and strict acceptance
+were preserved at transfer; cancellation supplied no native observation and
+left no pending follow-up.
 Other native limitations are disclosed limits, not invented extra live-test
 requirements. R27 does not require an actual restore.
 
@@ -374,8 +377,8 @@ requirements. R27 does not require an actual restore.
 | R01 | `W6`, G/P/H role-routing tests and responsibility review | Local PASS: 14 roles, implementation/reviewer/approval boundaries | 0194: retain matrix; no added live role-invocation requirement |
 | R02 | `W6`, `W9`, 24-skill/10-resource disposition and consumer review | Local PASS: authored bodies, consumers, focused acceptance recorded | 0194: preserve disposition and consumer mapping |
 | R03 | `W2`, `W7`, authority tests and independent policy review | Local PASS: one current authority and failure handling | 0194: integrate the canonical semantic-review delegation change with its own receipt |
-| R04 | `W8`, H/N payload, failure, timeout and missing-lint tests | Local PASS: deterministic hook behavior; actual delivery NOT_RUN | 0195 criterion 1: actual native hook delivery |
-| R05 | `W6`, P/G mapping, renderer and membership rejection | Local PASS: role/skill/model/tool/permission mapping; invocation is not inferred | 0194: retain validated mappings; actual invocation is separately owned by R15 |
+| R04 | `W8`, H/N payload, failure, timeout and missing-lint tests | Local PASS: deterministic hook behavior; actual delivery NOT_RUN | Historical transfer later withdrawn by owner; NOT_RUN retained, no successor |
+| R05 | `W6`, P/G mapping, renderer and membership rejection | Local PASS: role/skill/model/tool/permission mapping; invocation is not inferred | 0194: retain validated mappings; native invocation observation was later withdrawn with R15 |
 | R06 | `W7`, `W9`, knowledge provenance/invalidation review | Local PASS: fact owner, source, observation, refresh and selected loading | 0194: preserve current-source contract; no live memory store required |
 | R07 | `W7`, E/ET envelope and refusal cases plus prompt review | Local PASS: required/partial inputs, outputs and authority boundaries | 0194: retain envelope contract |
 | R08 | `W7`, E/ET bounded retry/resume cases and approval review | Local PASS: design/spec/plan approvals and failure/resumption boundaries | 0194: preserve actual authorization and registered lifecycle |
@@ -383,16 +386,16 @@ requirements. R27 does not require an actual restore.
 | R10 | `W7`, `W8`, output review and H/N status cases | Local PASS: failures, non-execution and approvals stay visible | 0194: retain contract; no unsupported native rendering claim |
 | R11 | `W2` through `W9`, reviewed file/consumer dispositions | Local PASS: accepted findings have owners and transitions; history retained | 0194: PASS: source integration and approved transfer delivered, not blanket source completion |
 | R12 | `W3`, `W6`, G/P/H resource and trigger cases | Local PASS: bounded reachable resources and rejection behavior | 0194: retain regression coverage; percentage evidence is a separate delivery receipt |
-| R13 | `W6`, `W10`, model mapping and needs_revalidation review | Local PASS: support/entitlement/runtime remain distinct; no static clearance | 0194 retains mapping; 0195 criterion 4 owns original Plan entitlement observation |
-| R14 | `W7`, E/ET and memory/handoff ownership review | Local PASS: durable/short-term ownership, promotion, expiry and invalidation | 0194 retains contract; native cross-provider refusal is owned by R22 |
-| R15 | `W6`, `W8`, `W9`, P/N and renderer/consumer checks | Local PASS: canonical/native syntax, source preservation, zero drift and bounded derived modes; native acceptance NOT_RUN | 0195 criterion 2: separate actual Claude/Codex invocation observations |
+| R13 | `W6`, `W10`, model mapping and needs_revalidation review | Local PASS: support/entitlement/runtime remain distinct; no static clearance | Historical transfer later withdrawn by owner; `needs_revalidation` remains, no successor |
+| R14 | `W7`, E/ET and memory/handoff ownership review | Local PASS: durable/short-term ownership, promotion, expiry and invalidation | 0194 retains contract; native cross-provider refusal observation was later withdrawn with R22 |
+| R15 | `W6`, `W8`, `W9`, P/N and renderer/consumer checks | Local PASS: canonical/native syntax, source preservation, zero drift and bounded derived modes; native acceptance NOT_RUN | Historical transfer later withdrawn by owner; NOT_RUN retained, no successor |
 | R16 | `W7`, `W8`, loading/precedence review | Local PASS: explicit loading, language, safety and global-state boundary | 0194: preserve boundaries; cite real version evidence for any actual native claim |
 | R17 | `W5`, `W7`, `W8`, hook/partial-state regressions | Local PASS: Git-hook ownership and configured-versus-executed distinction | 0194: PASS: controlled all-files wrapper and actual Git hooks recorded; no paid call implied |
-| R18 | `W10`, preserved bindings and explicit CLI/editor distinction | Contract recorded; editor observation NOT_RUN | 0195 criterion 3: actual version/action/selection/keybinding observation |
-| R19 | `W7`, `W9`, E/ET exhaustion/contention/429 cases | Local PASS: deterministic bounds/refusal; actual hard enforcement BLOCKED | 0195 criterion 4: supported real enforcement and separately observed entitlement/account context |
+| R18 | `W10`, preserved bindings and explicit CLI/editor distinction | Contract recorded; editor observation NOT_RUN | Historical transfer later withdrawn by owner; NOT_RUN retained, no successor |
+| R19 | `W7`, `W9`, E/ET exhaustion/contention/429 cases | Local PASS: deterministic bounds/refusal; actual hard enforcement BLOCKED | Historical transfer later withdrawn by owner; BLOCKED retained, no successor |
 | R20 | `W8`, `W9`, native/trust fixtures and workflow contract | Local PASS: required identities, pins and privilege boundaries preserved | 0194: PASS: final-revision hosted validation-changed |
 | R21 | `W7`, coordination/Task-authority review | Local PASS: Issues linkage, Projects preference/Linear alternative and approval boundary | 0194: record actual PR/branch linkage; no new external coordination platform required |
-| R22 | `W7`, E/ET stale/digest/approval/writer recorded-output cases | Local PASS: refusal contract; actual cross-provider behavior NOT_RUN | 0195 criterion 5: native pre-write refusal and valid resumption |
+| R22 | `W7`, E/ET stale/digest/approval/writer recorded-output cases | Local PASS: refusal contract; actual cross-provider behavior NOT_RUN | Historical transfer later withdrawn by owner; NOT_RUN retained, no successor |
 | R23 | `W2`, final `W10` L 96/96 and independent semantic review | Local PASS: normalized authority cases and legitimate exceptions | 0194: retain source-owner separation and review integrated authority changes |
 | R24 | `W6`, `W9`, progressive disclosure and E baseline/trigger cases | Local PASS: direct/paraphrased/non-target, functional and baseline coverage | 0194: preserve fixtures; no additional native efficacy experiment required |
 | R25 | `W3`, G no-follow/type/race/resource-bound regressions | Local PASS: valid bundles pass and unsafe entries fail | 0194: retain existing contract/tests |
@@ -401,7 +404,7 @@ requirements. R27 does not require an actual restore.
 | R28 | `W6`, role responsibility and independence review | Local PASS: normal/exception work has distinct responsible roles | 0194: preserve separate operational approval boundary |
 | R29 | `W6`, pinned external source/license disposition review | Local PASS: adopted/excluded concepts bounded; no persona/install authority | 0194: preserve existing source and license disposition |
 | R30 | `W7`, `W8`, domain/approval and native-grant review | Local PASS: workspace coverage without service/credential grants | 0194: preserve boundary; no service observation required |
-| R31 | `W2`, `W6`, `W9`, C/P/registry/renderer checks | Local PASS: proper common/native owners and aligned generated consumers | 0194: retain alignment; actual invocation is separately owned by R15 |
+| R31 | `W2`, `W6`, `W9`, C/P/registry/renderer checks | Local PASS: proper common/native owners and aligned generated consumers | 0194: retain alignment; native invocation observation was later withdrawn with R15 |
 | R32 | `W9`, equivalent pre/post E 10/38 and final E 11/54, consumer tests | Local PASS: four-file migration, obsolete criterion removal and recovery coverage | 0194: deliver .agents/evaluations with consumers and no obsolete root copy |
 | R33 | `W2`, `W7`, `W9`, stale-fact/path review | Local PASS: current claims corrected and dated history preserved | 0194: reconcile current main without rewriting frozen results |
 | R34 | `W4`, `W5`, final `W10` H/lint evidence | Local PASS: helper implementation/output/fixtures agree; past failures remain explicit | 0194: PASS: final profiles and changed-line coverage reconciled |
@@ -550,7 +553,7 @@ Existing completion receipts are preserved, not re-executed or rewritten.
 | SPEC-0190 HOME | Completed; criteria 1-2 PASS retained | `159cf8bfb` |
 | SPEC-0191 | Completed; criteria 1-4 and failed/retest history retained | `acce0a6ba` |
 | SPEC-0192 backup | Completed; criteria 1-6 PASS retained | `f542942fe` |
-| SPEC-0190 hardening | Exact historical supersession delivered; SPEC-0194 completed and SPEC-0195 remains open | Frozen source `c86f55518` |
+| SPEC-0190 hardening | Exact historical supersession delivered; SPEC-0194 completed and SPEC-0195 retired | Frozen source `c86f55518` |
 
 - SPEC-0182 is separate ongoing work and excluded from disposition.
 - SPEC-0191 is completed and preserved at acce0a6ba. Its later committed
@@ -559,7 +562,12 @@ Existing completion receipts are preserved, not re-executed or rewritten.
 
 ## Deferred Items
 
-SPEC-0195 retains the transferred native observations and remains open. All
-retained SPEC-0194 coverage, public profiles, controlled all-files QA, hosted
-checks and implementation delivery are complete with the receipts above. R27
-requires read-only recovery review, not an actual restore.
+2026-09-30 disposition receipt: the owner cancelled the unnecessary SPEC-0195
+follow-up. The current native obligation was withdrawn and no pending follow-up
+remains. Its exact terminal source is frozen at
+`a31453d671153c5985bf08051cbe4b87bca5e6a5` under
+`docs/98.archive/retired/03.specs/0195-agent-native-observations/`; no native
+PASS was observed and the original NOT_RUN/BLOCKED results remain preserved.
+All retained SPEC-0194 coverage, public profiles, controlled all-files QA,
+hosted checks and implementation delivery are complete with the receipts above.
+R27 requires read-only recovery review, not an actual restore.
