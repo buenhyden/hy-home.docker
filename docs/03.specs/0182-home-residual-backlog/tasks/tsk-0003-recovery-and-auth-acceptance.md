@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.11"
+version: "0.7.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -170,6 +170,14 @@ Read-only investigation of 2026-09-25:
   later copy skip data that prune had removed. Checked with a stub `restic`
   (size line, refusal without confirmation, the forget arguments) and
   `promtool`; the rule is loaded with health `ok`.
+- 2026-09-30 W10 R2 setup (owner: bucket, lock rules, Account API token,
+  BKP-004/005, the two `.env` values). BKP-004/005 were 32 and 64 bytes at
+  mode 600; BKP-003 existed empty at mode 664, so `gen-secrets.sh` filled it
+  (16 characters, mode 640; the value was not printed). `restic-offsite
+  init` 12:04:27-12:04:37 KST created the R2 repository with the state
+  chunker parameters; the first `copy` 12:04:43-12:06:10 copied every local
+  snapshot of both sets (18 in R2) and reported 1303841307 stored bytes;
+  `check` 12:06:27-12:06:39 read 10% of the packs with no errors.
 
 ## Verification Evidence
 
@@ -291,5 +299,6 @@ See the Plan.
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
-| R2 setup (bucket, lock, token, secrets, `init`) and re-landing #277 | @buenhyden | When the owner is ready; RUN-0021 §8 comes back with it |
+| R2 restore rehearsal into scratch (RUN-0021 8.3) with elapsed time, before offsite recovery is claimed as verified; copy BKP-003 to offline custody | @buenhyden | Before criterion 10 is closed |
+| Monthly remote `forget-prune` (RUN-0021 8.5) and the Metrics tab reading (8.6) | @buenhyden | Monthly, or when `HyhomeOffsiteRepoNearFreeTier` fires |
 | W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
