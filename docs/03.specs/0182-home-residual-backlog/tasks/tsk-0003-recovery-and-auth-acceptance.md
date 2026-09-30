@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.6"
+version: "0.7.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -124,6 +124,11 @@ Read-only investigation of 2026-09-25:
   `unless-stopped` and running, 54 containers running with none unhealthy
   (names saved outside the repo for the comparison), OpenBao unsealed
   (Shamir 2 of 3), `openbao-agent` healthy, 44 GiB free.
+- 2026-09-30 W11 supervised reboot (owner): boot 09:44:30 KST; stages 1-5
+  pass as the RUN-0098 Verification Record shows (all 54 containers back,
+  healthy by 10:03:53; owner unseal and `home-admin` login done before
+  10:10). Open: stage 6 SecretID delivery (the agent logs no SecretID to
+  read), and ESO `vault-backend` revalidation after the unseal.
 
 ## Verification Evidence
 

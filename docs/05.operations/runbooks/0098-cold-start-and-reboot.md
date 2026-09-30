@@ -1,6 +1,6 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -169,7 +169,7 @@ Expected: External Secrets Operator pod가 `Running`이고, 이후 owner가
 
 | 단계 | 근거 | 예상 소요 |
 | --- | --- | --- |
-| 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 서비스마다 20~30초 안정화; 전체 시간은 **owner 확인 필요**(호스트마다 다름) |
+| 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 서비스마다 20~30초 안정화; 2026-09-30 리허설에서 Docker daemon이 컨테이너를 모두 복원하고 `active`가 되기까지 부팅 뒤 약 16.5분, 전체 healthy까지 약 19분(그동안 Docker API가 응답하지 않는다) |
 | 3. OpenBao sealed 시작, Agent 시작 | `openbao` healthcheck `interval 15s`, `start_period 20s` | 약 20~35초 |
 | 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
 | 6. SecretID 발급과 전달 | SecretID 유효기간 10분, 1회용 | 10분 이내에 끝나야 함 |
@@ -209,6 +209,11 @@ Owner가 감독하는 재부팅 리허설마다 아래 표에 한 행씩 기록�
 | Date | Stage | Start | End | Result |
 | --- | --- | --- | --- | --- |
 | 2026-09-30 | 0. Preconditions | 09:37:52 KST | 09:39:07 KST | PASS: pgBackRest diff, two Restic snapshots, `restic check` no errors |
+| 2026-09-30 | 1. Docker and containers | 09:44:30 KST (boot) | 10:03:53 KST | PASS: `docker.service` active at 10:01:23 (started 09:44:47; the API did not answer while it restored containers); the 54 containers running before are back, none missing or extra; five dependants of Keycloak and the DB restarted 4-5 times, then all healthy |
+| 2026-09-30 | 2. `mng-pg`, `mng-valkey`, Traefik, Keycloak | 10:03:53 KST | 10:03:53 KST | PASS: accepting connections; three healthy |
+| 2026-09-30 | 3. OpenBao sealed start | 09:45:14 KST | 10:03:53 KST | PASS: `openbao` and `openbao-agent` healthy, `Sealed true` |
+| 2026-09-30 | 4-5. Unseal and OIDC login (owner) | not recorded | before 10:10:05 KST | PASS: `Sealed false`, active leader; owner reported the `home-admin` login |
+| 2026-09-30 | 7. k3d | 10:03:53 KST | 10:10 KST | PARTIAL: five `k3d-hyhome-*` Up, 38 pods Running, ESO pods Running; `vault-backend` still `Ready=False` from 09:53:43 (sealed) and one ExternalSecret `SecretSyncedError` until the next reconcile |
 
 ## Traceability
 
