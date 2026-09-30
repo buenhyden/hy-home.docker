@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.9"
+version: "0.7.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -145,6 +145,18 @@ Read-only investigation of 2026-09-25:
 - 2026-09-30 W11 stage 6: the owner ran the new RUN-0085 delivery; the
   Agent authenticated at 10:30:29 KST. ESO had revalidated at 10:11:17. The
   rehearsal is complete (criterion 11).
+- 2026-09-30 W10 R2 re-landing (owner: "R2 setup and re-landing.
+  cloudflare"): #279's revert is reverted onto the current tree. Code applied
+  as #277 wrote it; the orchestrator runs the offsite step before the
+  SPEC-0192 success metric, so only a run that also copied offsite records
+  success. GDE, POL and RUN-0021 moved since #277, so its text was carried
+  into the current Korean documents (RUN-0021 step 8). The inventory row,
+  the Grafana coverage row and the secret-contract counts follow the new
+  job and its three secrets; `.env` gained the two empty keys. The state set
+  now also holds the pgBackRest repository (524 MiB of the 1769 MiB state
+  directory today), which grows the state budget faster; the 2026-10-03 W8
+  disk figures cover it. Owner steps (RUN-0021 8.1): the bucket, five lock
+  rules, the bucket-scoped token, BKP-004/005, the two `.env` values.
 
 ## Verification Evidence
 

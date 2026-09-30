@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -12,6 +12,7 @@ parent_ids:
 implementation_services:
   infra/09-tooling/restic/docker-compose.yml:
   - restic
+  - restic-offsite
   - backup-sqlite-export
 created: "2026-09-22"
 ---
@@ -26,6 +27,7 @@ created: "2026-09-22"
 | --- | --- | --- |
 | `mng-pg` 내부 pgBackRest | management PostgreSQL cluster의 physical backup, 연속적인 WAL archive, point-in-time recovery | 다른 모든 engine; database별 logical export |
 | Restic (`restic` job) | `sets/state-include.txt`에 allowlist된 file-safe tree의 encrypted, deduplicated snapshot, consistent export, `secrets/`와 `.env` | allowlist되지 않은 모든 것, 특히 live engine directory(PostgreSQL, Valkey, Kafka, OpenBao Raft, TSDB, log, search, LAB store)와 ComfyUI model |
+| `restic-offsite` job | 로컬 Restic repository 두 개(state set의 `pgbackrest/` 포함)를 Cloudflare R2 repository 하나로 `restic copy`, 원격 `check` | 로컬 쓰기, 원격 snapshot 삭제 |
 | `backup-sqlite-export` job | Online Backup API를 통한 Grafana, Gatus, Open WebUI SQLite database의 consistent copy | 다른 SQLite 파일 |
 | Host orchestrator `hyhome-backup.sh` | 순서, single-run lock, cross-disk preflight, PostgreSQL globals와 Valkey RDB export | retention delete (`forget-prune`) |
 
@@ -44,8 +46,11 @@ PostgreSQL recovery path는 오직 pgBackRest뿐이다.
   repository `restic/`.
 
 orchestrator는 자신이 보호하는 데이터와 같은 filesystem이나 그 내부에 있는
-repository를 거부한다. 두 repository 모두 같은 host에 있으므로 offsite
-recovery는 할 수 없다.
+repository를 거부한다. 오프사이트로는 로컬 run이 성공할 때마다
+`restic-offsite`가 두 Restic repository(state set에 `pgbackrest/` 포함)를
+Cloudflare R2 repository 하나로 복사한다(ADR-0041). owner가
+[RUN-0021](../runbooks/0021-backup-and-restore.md) 8단계의 R2 설정을 마치기
+전까지는 모든 복사본이 한 host에 있어 offsite recovery를 할 수 없다.
 
 ### Schedule and load
 

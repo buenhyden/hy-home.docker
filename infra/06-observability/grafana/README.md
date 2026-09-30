@@ -1,6 +1,6 @@
 ---
 title: "Grafana Visualization and Dashboards"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -239,6 +239,7 @@ grafana/
 | 09-tooling | `registry` | `registry` | `Infrastructure/docker-registry`, `Infrastructure/containers` |  |
 | 09-tooling | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-tooling | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-tooling | `restic-offsite` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-tooling | `sonarqube` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-tooling | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-tooling | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |

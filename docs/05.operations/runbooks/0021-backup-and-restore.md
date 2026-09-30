@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -18,8 +18,8 @@ created: "2026-09-22"
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
-복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제할 때
-사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
+복원하거나, Restic에서 파일을 복원하거나, 오래된 snapshot을 삭제하거나,
+R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
 ## Procedure
@@ -198,6 +198,115 @@ docker compose --profile backup run --rm --no-deps \
 
 세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다.
 pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
+
+### 8. Offsite copy (R2)
+
+`restic-offsite`는 로컬 Restic repository 두 개의 snapshot을 Cloudflare R2의
+Restic repository 하나로 복사한다(ADR-0041). state set에 `pgbackrest/`가
+들어 있으므로 PostgreSQL도 이 경로로 오프사이트에 가며 원격 RPO는 하루다.
+pgBackRest의 S3 repository는 따로 두지 않는다. state set은 이제
+`forget-prune` 전까지 본 모든 pgBackRest 파일을 담고 이 크기는
+`BACKUP_STATE_MAX_GIB`에 포함되므로, 로그의 크기를 지켜본다.
+
+#### 8.1 Owner 1회 설정 (approval: 새 credential과 첫 업로드)
+
+Cloudflare dashboard에서:
+
+1. **R2 → Create bucket**: 이름은 예를 들어 `hyhome-restic`, location은
+   automatic, storage class는 Standard로 한다(Infrequent Access는 최소 보관
+   기간과 읽기에 요금을 매긴다).
+2. **Bucket → Settings → Bucket lock rules → Add rule**: 보관 기간 30일의
+   규칙을 prefix `data/`, `index/`, `snapshots/`, `keys/`, `config`에 하나씩
+   만든다. `locks/`에는 걸지 않는다. Restic이 자기 lock 파일을 지워야 한다.
+3. **R2 → Manage API tokens → Create API token**: 권한은 **Object Read &
+   Write**, 적용 대상은 그 bucket 하나, Admin 권한은 주지 않는다. 이 token은
+   bucket을 관리하거나 지우지 못하고, bucket lock은 잠긴 object의 삭제를
+   거부한다. Access Key ID와 Secret Access Key(한 번만 표시된다), S3 endpoint
+   `https://<account-id>.r2.cloudflarestorage.com`의 account ID를 적어 둔다.
+
+host의 repository root에서, 값을 출력하지 않고:
+
+```bash
+umask 077
+bash scripts/operations/gen-secrets.sh --sync-metadata   # .env에 BACKUP_OFFSITE_R2_* 키 추가
+bash scripts/operations/gen-secrets.sh                   # BKP-003 restic_offsite_password.txt 생성
+IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_access_key_id.txt; unset r2       # BKP-004
+IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_secret_access_key.txt; unset r2   # BKP-005
+```
+
+`.env`에 `BACKUP_OFFSITE_R2_ACCOUNT_ID`(16진수 32자)와
+`BACKUP_OFFSITE_R2_BUCKET`을 넣는다. BKP-003, BKP-004, BKP-005, account ID,
+bucket 이름을 BKP-001/BKP-002 옆의 offline custody에 복사한다. host를 잃은
+뒤의 복구가 OpenBao에 기대면 안 되므로 OpenBao에는 절대 두지 않는다. 그다음
+state repository의 chunker 설정으로 원격을 초기화하고 첫 copy를 한다:
+
+```bash
+docker compose --profile backup run --rm --no-deps restic-offsite init
+docker compose --profile backup run --rm --no-deps restic-offsite copy
+docker compose --profile backup run --rm --no-deps restic-offsite check
+```
+
+`init`은 이미 초기화된 repository를 건너뛴다. Rollback: `.env`의 두 키를
+비우면 매일의 run이 오프사이트 단계를 건너뛴다.
+
+#### 8.2 매일의 동작
+
+`.env` 키 중 하나라도 비어 있으면 orchestrator는 `offsite copy not
+configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지 않는다.
+설정되면 로컬 Restic backup과 check가 성공한 뒤(staging을 비우고 SeaweedFS
+vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 원격에 없는 snapshot만
+올리고 `R2 latest snapshots:` 아래에 set마다 한 줄을 남긴다. 일요일에는 원격에
+`restic check --read-data-subset 10%`도 실행한다. copy나 check가 실패하면
+`offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
+실패처럼 unit이 exit 1로 끝난다. 로컬 backup은 그대로 유효하다. 로컬 단계가
+실패하면 `offsite copy skipped`를 남기고 아무것도 올리지 않는다. 원격이
+초기화되지 않았거나 닿지 않으면 exit 65다. 오프사이트까지 성공한 run만
+step 4의 성공 timestamp를 쓴다.
+
+#### 8.3 R2에서 복원
+
+host를 잃은 뒤: Docker를 설치하고, 이 repository를 check out하고, offline
+custody의 BKP-002~005를 `secrets/backup/`에 복원하고(umask 077), `.env` 키 두
+개를 넣는다. host set을 먼저 복원한다. `secrets/`(BKP-001 포함)와 `.env`가
+돌아온다:
+
+```bash
+account=...; bucket=...                     # offline custody에서
+restic_image="$(docker compose --profile backup config --images restic-offsite)"
+scratch="$(mktemp -d)"
+docker run --rm --entrypoint sh \
+  -e RESTIC_REPOSITORY="s3:https://$account.r2.cloudflarestorage.com/$bucket" \
+  -e AWS_DEFAULT_REGION=auto -e RESTIC_PASSWORD_FILE=/keys/restic_offsite_password.txt \
+  -v "$PWD/secrets/backup:/keys:ro" -v "$scratch:/out" "$restic_image" -ec '
+    AWS_ACCESS_KEY_ID="$(cat /keys/r2_access_key_id.txt)"
+    AWS_SECRET_ACCESS_KEY="$(cat /keys/r2_secret_access_key.txt)"
+    export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+    restic snapshots --compact --latest 1
+    restic restore latest --tag hyhome-host --target /out/host
+    restic restore latest --tag hyhome-state --target /out/state'
+```
+
+R2로 복사된 snapshot은 ID가 새로 붙으므로 시각, host, tag로 맞춘다.
+`$scratch/state/src/state/`에서 `pgbackrest/`를 `$state/pgbackrest`로 옮기고
+(owner 70:70, 0750) step 5의 point-in-time recovery를 따른다. 복구는 copy에 담긴
+마지막 WAL까지 간다. `exports/`와 `volumes/`는 step 6처럼 복원한다. 로컬
+repository를 다시 만들려면 같은 container 안에서
+`restic -r /out/repo init --password-file /keys/restic_password.txt --from-repo "$RESTIC_REPOSITORY" --from-password-file /keys/restic_offsite_password.txt --copy-chunker-params`
+를 실행한 뒤
+`restic -r /out/repo copy --password-file /keys/restic_password.txt --from-repo "$RESTIC_REPOSITORY" --from-password-file /keys/restic_offsite_password.txt --tag hyhome-state`
+를 실행한다.
+
+#### 8.4 Verification
+
+- `journalctl -u hyhome-backup.service`에 오늘 날짜의 state 줄과 host 줄이 있는
+  `R2 latest snapshots:`가 보이고 unit이 exit 0으로 끝났다.
+- `docker compose --profile backup run --rm --no-deps restic-offsite snapshots`가
+  두 set을 모두 나열한다. 일요일 run에는 원격의 `no errors were found`가 있다.
+- dashboard에 bucket lock rule 다섯 개와 token의 단일 bucket 범위가 보인다.
+- 오프사이트 복구를 검증했다고 말하기 전에, R2에서 scratch 디렉터리로의 복원
+  리허설(8.3)을 소요 시간과 함께 기록한다.
+- 원격 snapshot 삭제는 이 host에서 실행하지 않는다. 별도의 admin credential,
+  따로 승인된 Task, lock 보관 기간이 지난 object가 필요하다.
 
 ## Evidence
 

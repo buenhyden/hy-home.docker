@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -37,7 +37,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 
 | Owner and data class | Current state surface | Required backup method and destination | Encryption and retention | Planning target | Rehearsal and recovery owner |
 | --- | --- | --- | --- | --- | --- |
-| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; role과 grant는 cluster-wide | server image 내 pgBackRest: 일요일 full backup, 매일 differential, 지속적인 WAL archive(`archive_timeout`)를 system SSD의 `${BACKUP_STATE_REPO_DIR}/pgbackrest`로(예산은 control 2); globals-only export는 Restic으로; live `PGDATA` tree는 절대 복사하지 않는다 | BKP-001로 `aes-256-cbc` repository; full backup 두 개와 그 WAL 보존; Restic daily 30 / weekly 13 / monthly 12 | WAL archive 기준 RPO 5분, RTO 4시간; planning target, HOME data에서 미검증 | Synthetic full/diff/PITR rehearsal 통과(`BackupRestoreRehearsalTests`, 2026-09-22); 아직 HOME-data restore 없음. 절차: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
+| Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; role과 grant는 cluster-wide | server image 내 pgBackRest: 일요일 full backup, 매일 differential, 지속적인 WAL archive(`archive_timeout`)를 system SSD의 `${BACKUP_STATE_REPO_DIR}/pgbackrest`로(예산은 control 2); globals-only export와 pgBackRest repository 자체는 state Restic set에 들어가 R2로 간다(control 1); live `PGDATA` tree는 절대 복사하지 않는다 | BKP-001로 `aes-256-cbc` repository; full backup 두 개와 그 WAL 보존; Restic daily 30 / weekly 13 / monthly 12 | WAL archive 기준 RPO 5분, RTO 4시간; planning target, HOME data에서 미검증 | Synthetic full/diff/PITR rehearsal 통과(`BackupRestoreRehearsalTests`, 2026-09-22); 아직 HOME-data restore 없음. 절차: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
 | Management Valkey: OAuth2 Proxy session과 Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF 활성화 | Point-in-time RDB stream(`valkey-cli --rdb -`)을 export staging으로, 이후 Restic snapshot; live AOF 디렉터리는 제외; queued work를 replay할지 discard할지 기록 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; queued-job semantics는 incident 승인 필요 | Synthetic RDB export/reload rehearsal 2026-09-22; HOME-data restore 없음. Recovery: [RUN-0028](../runbooks/0028-management-database.md) |
 | OpenBao secrets와 Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | 별도 offline custody로 authenticated Raft snapshot; seal/recovery material은 해당 security runbook을 따른다 | Barrier encryption은 encrypted backup custody를 대체하지 않는다; daily 30일, monthly 1년 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. OpenBao security operations가 recovery를 소유한다. `openbao-agent-data`와 `openbao-agent-out`은 생성된 secret material을 담으며 일반 archive 밖에 있다. |
 | OpenBao Agent 생성 auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | rendered secret output은 일반적으로 backup하지 않는다. agent를 재인증하고 restore된 OpenBao에서 다시 render해 recovery한다; non-secret template source는 별도로 보존한다 | Output은 secret을 담고 source-at-rest encryption은 미검증; 일반 retention 없음 | derived output에는 data RPO가 적용되지 않는다; recovery target 4시간, 미검증 | No rehearsal. Security operations가 재인증, template 검증, stale output의 안전한 폐기를 소유한다. |
@@ -63,13 +63,20 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
    `BACKUP_STATE_REPO_DIR`(system SSD)는 data-disk state의 복사본을,
    `BACKUP_HOST_REPO_DIR`(data disk)는 `secrets/`와 `.env`의 복사본을 담는다;
    orchestrator는 자신의 source와 같은 filesystem에 있거나 그 안에 있는
-   repository를 거부한다. 모든 복사본이 한 host에 있으므로
-   **offsite recovery는 제공되지 않는다**.
+   repository를 거부한다. 오프사이트(ADR-0041): 로컬 backup과 check가
+   성공할 때마다 `restic-offsite`가 두 Restic repository의 snapshot을, state
+   set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
+   repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을
+   관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
+   성공하면 offsite recovery가 생기며 원격 RPO는 하루다. 그 전까지는 모든
+   복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(5 GiB, owner 2026-09-22)
    이다. 초과하면 run이 실패하고 Restic은 아무것도 쓰지 않는다;
    예산을 맞추려고 snapshot을 자동으로 삭제하지도 않는다.
-3. Backup key BKP-001과 BKP-002는 이 host 밖에 offline 사본을 둔다.
-   Restic의 host repository는 key를 담지만 열려면 BKP-002가 필요하다.
+3. Backup key BKP-001과 BKP-002, R2 secret BKP-003~005는 이 host 밖에
+   offline 사본을 두고 OpenBao에는 절대 두지 않는다. Restic의 host
+   repository는 key를 담지만 열려면 BKP-002가 필요하고, R2 repository는
+   BKP-003이 필요하다.
 4. backup을 소유하는 scheduler는 하나뿐이다: host의 `hyhome-backup.timer`.
    Airflow와 다른 scheduler는 backup을 실행하지 않는다. Snapshot 삭제
    (`forget-prune`)는 별도 승인을 받는 manual procedure다.
