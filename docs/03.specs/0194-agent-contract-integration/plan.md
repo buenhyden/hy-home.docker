@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration Plan"
-version: "0.1.1"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"

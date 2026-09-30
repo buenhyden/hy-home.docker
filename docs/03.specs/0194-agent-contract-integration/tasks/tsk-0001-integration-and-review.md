@@ -1,8 +1,8 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.4"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -28,6 +28,15 @@ and record the integration result.
 - REQ-0024, AD-0027, current `main`, and active SPEC-0182.
 
 ## Work Log
+
+- 2026-09-30: Review predecessor `91031eb99` records the independently reviewed
+  scope, coverage ruling and bootstrap results. The owner already explicitly
+  approved design, Spec, Plan and implementation, including separate SPEC-0195
+  observations and the 80% changed-Python-line denominator. This local stage
+  promotes Spec/Plan to approved, Task to ready and the reviewed recovery skill
+  to active. Publication waits for the preceding review stage to land. Source
+  integration and any receipt still wait for active Spec/Plan and in-progress
+  Task; no native/runtime execution is authorized by this transition.
 
 - 2026-09-30: Bootstrap commit `a887e35e59a4465a2624afd67018cb67d1014af6`
   was pushed to `origin/codex/contract-integration`; draft PR #318 targets
