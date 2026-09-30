@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -58,13 +58,18 @@ outcomes.
    requiring human judgment or approval (criterion 2).
 4. W4: Run changed and full profiles on the exact merge candidate; retain
    BLOCKED/NOT_RUN results where authorization or environment prevents proof
-   (criterion 3). Neither BLOCKED nor NOT_RUN permits terminal completion.
+   (criteria 3, 7). Neither BLOCKED nor NOT_RUN permits terminal completion.
+   Measure aggregate added/modified executable Python line coverage at 80% or
+   greater using existing stdlib tooling, under the owner's explicit 2026-09-30
+   denominator decision. Retain rename mapping and actual line sets; report
+   whole-file coverage, unmeasured processes and any instrumentation timeout
+   separately. Normal registered tests still require PASS.
 5. W5: Push, create and merge the pull request after hosted required checks;
    fast-forward local `main` from `origin/main` and record exact receipt
    (criteria 1, 4, 5).
 6. W6: Verify merged `main`; remove only clean completed integration branch and
    worktree state; complete the package through its registered lifecycle
-   (criteria 5, 6). Complete only after retained delivery requirements pass and
+   (criteria 5, 6, 7). Complete only after retained delivery requirements pass and
    the approved observation transfer to SPEC-0195 is committed and reviewed.
    SPEC-0195 remains open until its own observed acceptance passes; branch
    cleanup does not change those statuses.

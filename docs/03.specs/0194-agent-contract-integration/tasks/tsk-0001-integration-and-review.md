@@ -1,6 +1,6 @@
 ---
 title: "Agent Contract Integration and Review"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -46,6 +46,56 @@ and record the integration result.
   At initial drafting, no receipt, push, pull request, merge, or cleanup had occurred.
 
 ## Verification Evidence
+
+The owner explicitly answered "변경된 실행 줄 80%로 명시" on 2026-09-30
+after reviewing the changed-line and incomplete whole-file denominators.
+Criterion 7 uses that aggregate changed executable-line scope; the original
+source packet remains immutable. This is an explicit scope ruling, not a claim
+that whole-file coverage passed.
+
+Stdlib trace measurement on source `a46539a7b`, relative to `24b3e45c7`,
+observed 954/1,020 changed executable lines (93.53%). The separate whole-file
+lower bound is 6,974/13,075 (53.34%), not 80% acceptance. The denominator is
+stdlib `trace._find_executable_linenos()` intersected with rename-aware Git
+added/modified hunk lines; the evaluator move is R073, not a wholly new file.
+
+| Affected Python file | Observed changed executable lines | Total changed executable lines |
+| --- | ---: | ---: |
+| `.agents/evaluations/agent_output_eval.py` | 393 | 393 |
+| `scripts/lib/agent_governance/agent_governance_contract.py` | 278 | 319 |
+| `scripts/lib/document_governance/links.py` | 264 | 285 |
+| `scripts/lib/document_governance/metadata/lifecycle.py` | 5 | 6 |
+| `scripts/lib/document_governance/references.py` | 1 | 1 |
+| `scripts/lib/document_governance/registry.py` | 0 | 0 |
+| `scripts/lib/document_governance/spec_packages.py` | 8 | 11 |
+| `scripts/lib/gate/ci_gate_adapters.py` | 3 | 3 |
+| `scripts/validation/check-script-manifest.py` | 1 | 1 |
+| `scripts/validation/ci_gate_runner.py` | 1 | 1 |
+
+The initial broad stdlib trace attempt reached its 1,800-second limit without
+a saved result; no coverage is inferred from it. A narrower additional
+instrumentation sample used exact source filenames, omitted test/stdlib
+instrumentation, and saved line sets on each test and timeout:
+
+```sh
+rtk proxy env -i PATH=/home/hyunyoun/.local/bin:/usr/local/bin:/usr/bin:/bin LANG=C.UTF-8 timeout 600 python3 -B /tmp/agent-contract-coverage-focused.py
+```
+
+The temporary helper used only stdlib trace/unittest and existing tests; no
+repository tooling, dependency, gate, or test was changed. After 540.02 seconds
+it saved counts and returned exit 2 (timeout): 81 selected tests completed
+without failures, errors or skips, the 82nd was interrupted, and 11 were not
+started. Its sample is not a passing whole-suite result. The large
+`test_skill_resource_bounds_are_enforced` case was omitted from this additional
+measurement only; registered gate selection remains intact. Parent-process
+line observations exclude subprocesses, copied fixtures, threads, and branch
+coverage. The observed line sets cover non-test Python sources only. The precise temporary
+line-set receipt is
+`/tmp/agent-contract-coverage-measured-lines.json`; the table above preserves
+its result here. Independent read-only merge_preflight review reproduced the 954/1,020 result
+from Git and the exact line sets and cleared this Python metric. Shell
+coverage is not claimed; existing shell syntax, ShellCheck and functional
+regressions remain separate requirements.
 
 On 2026-09-30, origin/main advanced to 0470e3950. Its completed SPEC-0192
 backup package and active SPEC-0193 remain unchanged. The unpublished
@@ -111,6 +161,12 @@ independent code review. Those source changes await later integration.
 | 4 | W5 | Not started | Forge required-check result |
 | 5 | W2/W5/W6 | Not started | Git history and worktree state |
 | 6 | W2/W6 | Approved transfer; review and commit pending | SPEC-0195-TSK-0001 for native portions; this Task for retained delivery |
+| 7 | W4/W6 | PASS: observed 954/1,020 Python changed lines; independently verified | This Task; owner-approved changed-line denominator |
+
+The temporary measurement receipt SHA-256 is
+`c717d7c2ba8ffeb251838359e1908bf1d9e1d9f6ba869a55bcb77bc025214ebf`; the stdlib-only
+helper SHA-256 is `1c60c8e4b9f9c17c0592f509dfde677c3dc0dce6bc268bc5f855cbac01caee57`.
+They identify the reviewed observation inputs, not a standing branch-tip gate.
 
 ### Semantic Review Research
 
@@ -151,6 +207,22 @@ Required human approvals remain intact.
   and an integration result.
 
 ## Rulings
+
+Read-only package inventory at main `0470e3950` found no stale incomplete
+package to discard. SPEC-0182 is excluded. SPEC-0193 remains active: its
+criterion 9/W7 explicitly waits for SPEC-0182 W8 measurements after 2026-10-03.
+Existing completion receipts are preserved, not re-executed or rewritten.
+
+| Package | Evidence-based disposition | Archive commit |
+| --- | --- | --- |
+| SPEC-0179 | Completed Spec/Plan/Task; criteria 1-14 PASS retained | `39e933314` |
+| SPEC-0183 | Completed; criteria 1-8 PASS retained | `559cdd2bc` |
+| SPEC-0188 | Completed; criteria 1-6 PASS retained | `7fe6f896b` |
+| SPEC-0189 | Completed; criteria 1-3 PASS retained | `7fe6f896b` |
+| SPEC-0190 HOME | Completed; criteria 1-2 PASS retained | `159cf8bfb` |
+| SPEC-0191 | Completed; criteria 1-4 and failed/retest history retained | `acce0a6ba` |
+| SPEC-0192 backup | Completed; criteria 1-6 PASS retained | `f542942fe` |
+| SPEC-0190 hardening | Exact historical supersession to SPEC-0194/0195 pending | Frozen source `c86f55518` |
 
 - SPEC-0182 is separate ongoing work and excluded from disposition.
 - SPEC-0191 is completed and preserved at acce0a6ba. Its later committed
