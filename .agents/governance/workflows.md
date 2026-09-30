@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.0.1"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-29"
 ---
 
 # Workflows
@@ -21,8 +21,9 @@ Every repository change follows one lifecycle:
 2. **Design/plan** — an approved contributor records the bounded approach,
    acceptance contract, recovery, and smallest meaningful checks in the active
    Spec Package and Task.
-3. **Approval** — required human approval and read-only `rules-engineer` policy
-   review are resolved before a protected mutation begins.
+3. **Approval** — human approval for design, then the written Spec, then the
+   written Plan and execution are distinct. Required approval and read-only
+   `rules-engineer` policy review are resolved before a protected mutation begins.
 4. **Implement** — the assigned contributor changes only approved scope.
 5. **Validate** — `qa-engineer` runs focused checks and any applicable
    repository Gate; a configured hook is supporting evidence, not approval.
@@ -33,11 +34,27 @@ Every repository change follows one lifecycle:
 8. **Handoff** — `workflow-supervisor` reports the next owner or completion
    without broadening scope.
 
-An implementation that fails validation or independent review may receive one
-narrower retry, for at most two implementation attempts. A retry may correct
-the approved change but may not infer approval, add scope, change owners, or
-weaken a Gate. Stop and escalate after the bound, on unknown ownership, on an
-unresolved policy conflict, or when required evidence is unavailable.
+After required approval, routine semantic review may close through the smallest
+relevant deterministic checks plus an independent read-only agent reviewer who
+did not implement the change. The reviewer evaluates the same diff and revision,
+maps each applicable acceptance criterion to its canonical source and evidence,
+and rejects unsupported claims. Record findings, `BLOCKED`, `NOT_RUN`, and
+remaining uncertainty in the owning Task. Escalate semantic review to a human
+when criteria or authority remain ambiguous, reviewers disagree, high-risk
+uncertainty remains, a new or out-of-scope operation is needed, or a canonical
+or protected-branch rule requires human review. Existing approval remains
+applicable only while its recorded scope is unchanged; review and delegation
+cannot broaden it.
+
+Static validation and independent review precede a separately approved
+operational action. An implementation that fails validation or independent
+review may receive one narrower retry, for at most two implementation attempts.
+A retry may correct the approved change but may not infer approval, add scope,
+change owners, or weaken a Gate. Stop mutation and reconcile the Task when the
+repository, worktree, HEAD, relevant digest, current approval, exclusive writer,
+or partial-result state disagrees with the recorded handoff. Stop and escalate
+after the bound, on unknown ownership, on an unresolved policy conflict, or
+when required evidence is unavailable.
 
 Evidence is value-free and sanitized. Never record auth files, credentials,
 private keys, raw logs, secret values, shell history, or tokens.
@@ -60,7 +77,7 @@ and lifecycle values, and `scripts/` owns executable validation.
 - Code review: self-verification -> findings -> owner resolution -> re-verification.
 - Quality: tests first for behavior changes -> QA verification -> Task evidence.
 - Security: audit plus threat modeling; escalate exposed secrets or critical risk.
-- Incident: response record -> corrective action routed to its canonical stage.
+- Incident: response record -> corrective Task routed to its canonical stage.
 - Governance: source change -> validation -> regeneration -> independent review.
 
 Agents run all-files pre-commit only through

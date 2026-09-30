@@ -3,7 +3,7 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.3.1"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
@@ -33,14 +33,25 @@ The approved infrastructure change and its validation contract must identify whi
 
 ## Procedure
 
-1. Run [`scripts/static-checks.sh`](./scripts/static-checks.sh), which this skill
-   owns beside this file rather than at the repository root. It reports every
-   check it ran and, just as
-   importantly, names the ones it did not: an omitted line reads like a passing
-   one, so runtime observation and secret access appear as `NOT_RUN` rather
-   than disappearing.
-2. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
-3. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
+1. Run [`scripts/static-checks.sh`](./scripts/static-checks.sh) with no
+   arguments. The only other accepted forms are `--help` and `-h`.
+   The helper snapshots reviewed tracked inputs with no-follow reads into an
+   invocation-owned repository-local fixture, replaces public environment keys
+   with synthetic values, and validates every Compose path edge before Docker.
+   It rejects real `.env`, known credential/key paths, ignored host data and
+   Docker context before copying. Path classification is not content scanning;
+   reviewed inputs must also exclude credentials disguised under ordinary names.
+2. Read every result record. Required Git, Bash, Python/PyYAML, Docker Compose,
+   YAML lint and conditional shell lint evidence is `PASS`, `FAIL` or
+   `BLOCKED`; zero eligible tracked shell inputs is `NOT_APPLICABLE`.
+   Runtime observation and secret access remain `NOT_RUN`. Exit 1 means an
+   executed failure, exit 2 means incomplete required evidence, and exit 0
+   means every applicable required check passed. Executed failure takes
+   precedence over blocked evidence.
+   Support tools, isolated Git initialization and owned fixture cleanup are
+   required evidence and appear as their own records.
+3. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
+4. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
 
 ## Outputs
 

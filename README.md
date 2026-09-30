@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2025-11-12"
 ---
 
@@ -72,7 +72,7 @@ hy-home.docker/
 - [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
 - [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
 - [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- `docs/90.references/data` - Docker image/version drift 기준과 참고 규칙
+- `docs/90.references/data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
 - `docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh` - infra, secrets, 운영 문서 최신화 분석 명세
 
 ## Tech Stack
@@ -137,7 +137,7 @@ bash scripts/validation/validate-docker-compose.sh --preflight
 bash scripts/validation/validate-docker-compose.sh
 ```
 
-기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 이름의 정의는 Compose profile vocabulary (`docs/05.operations/policies/0078-compose-profile-vocabulary.md`)가 소유합니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
+기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 선언은 Compose 구성에서 확인하고, 운영 문서는 [문서 인덱스](docs/README.md)에서 탐색합니다. POL-0078의 HOME selection은 검증 스크립트가 조합 검사에 필요한 machine section만 읽는 입력이며 agent 실행 규칙을 소유하지 않습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
 ### 5. Repository contract 검증
 

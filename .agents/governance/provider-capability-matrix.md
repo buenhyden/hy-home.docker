@@ -1,10 +1,10 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-09-29"
 ---
 
 # Provider Capability Matrix
@@ -37,9 +37,13 @@ Native skill frontmatter uses `name`, `description`, and nested governance
 not invocation or approval. No skill adds tool grants or installers.
 
 Provider-native files may narrow behavior to actual capabilities. They cannot
-invent shared policy, roles, skills, approvals, or unsupported parity. A configured
-event or discoverable source proves tracked adoption, not a live event or picker
-result. Runtime acceptance remains distinct from repository support.
+invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
+hard-enforced control are separate facts. A configured event or discoverable
+source proves tracked adoption, not a live event or picker result. Runtime
+acceptance remains distinct from repository support. Account or subscription
+limits remain unknown until directly observed. Git hooks, provider hooks, editor
+actions, and CI are separate surfaces; an editor action requires its observed
+version and action ID.
 
 `.agents/` is the authored canonical source home, separate from generated native
 roots. Unknown or unsafe entries fail closed and are preserved for review;

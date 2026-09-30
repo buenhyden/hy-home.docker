@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.3.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-30"
 layer: "agent-governance"
 ---
 
@@ -27,10 +27,21 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
   `references/`, output이 사용하는 template을 위한 `assets/`도 소유할 수
   있습니다. 이 세 이름이 허용의 전부입니다. 그 내용은 해당 skill 고유의 것이라
   registry row가 필요 없고 skill 최상위에는 그 외 어떤 것도 존재할 수 없습니다.
+  resource는 `SKILL.md` 절차 본문에서 직접 또는 전이적으로 도달해야 합니다.
+  절차 본문과 도달한 `references/`의 Markdown link 및 명시적 local token만
+  graph edge가 됩니다. `scripts/`는 bounded UTF-8 terminal이고 `assets/`는
+  읽지 않는 binary terminal이므로 그 내용을 dependency 문법으로 해석하지 않습니다.
+  validator는 symlink와 비정규 node를 따르지 않으며 skill마다 4,096개 entry,
+  64단계 directory, 16 MiB text로 순회를 제한합니다. Markdown graph output은
+  parse 전에 여는 대괄호 16,384개로 제한합니다. 실행 bit는 도달 가능한 `scripts/`
+  file에만 허용됩니다.
 - `knowledge/`는 저장소 surface에서 canonical owner로의 검증된 routing과 저장소
   vocabulary, verification coverage를 소유합니다.
 - `prompts/`는 반복 작업을 위한 재사용 가능한 input/output contract를
   소유합니다.
+- `evaluations/`는 결정론적이고 model-free인 fixture 평가 input을 소유합니다.
+  이 data는 실행 지침으로 자동 로드되지 않으며 evaluator, registry와 manifest가
+  각각의 소비 경계를 소유합니다.
 - `governance/providers/registry.yaml`은 provider identity, model/permission
   translation, projection route, hook fact를 소유합니다.
 - [Claude](../.claude/provider.md)와 [Codex](../.codex/provider.md)는 각자의
@@ -40,12 +51,17 @@ Stage 99(`docs/99.templates/README.md`)는 document profile, path, identifier,
 lifecycle 값, template을 소유합니다. 등록된 script는 executable check를
 소유합니다. 현재 Spec Package Task는 실행 evidence를 소유하며 보존된 Stage 98
 record와 Git history가 완료된 evidence를 보관합니다.
+README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현재 지침은 개별 stage
+문서에 의존하지 않습니다. 현재 agent 규칙은 해당 governance owner에 두며,
+승인된 Spec/Task 읽기와 필요한 registry/schema/template 입력은
+`governance/documentation-protocol.md`의 문서 경계 규칙에 따릅니다. 과거 결정의 출처 표시는 현재 실행 권한을 부여하지 않습니다.
 
 ## Structure
 
 ```text
 .agents/
 ├── README.md
+├── evaluations/ # deterministic model-free evaluation inputs
 ├── governance/  # policy, SDLC, hooks, provider registry
 ├── knowledge/   # 검증된 routing과 vocabulary
 ├── prompts/     # 재사용 가능한 input/output contract

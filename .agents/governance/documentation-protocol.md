@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.0.1"
+version: "3.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,22 +33,38 @@ content. Root `DESIGN.md` remains UI and design-system authority only.
 
 ### Entry point for documents outside `docs/`
 
-A file outside `docs/` links to `docs/README.md` and to no other document under
-a numbered stage directory. The stage index is not an exception: a link to
-`docs/03.specs/README.md` is a link into a stage.
+Outside `docs/`, README navigation and directory-purpose routes are allowed.
+Do not link to individual numbered-stage documents or depend on them for current
+agent instructions. State the current rule in its canonical governance or fact
+owner and route readers through an appropriate README. An artifact ID, plain
+path, or former approval is not a substitute for that current rule.
 
-A file outside `docs/` cannot see when a stage document is superseded, renamed,
-or retired, so a direct link there rots without anyone noticing. When this rule
-was first enforced, thirteen of the links it rejected already pointed at specs
-that had been retired to Stage 98 and no longer existed.
+`leaf.docs-traceability` enforces deterministic link findings through the
+`entrypoint` mode of `check-document-links.py`, reading tracked Markdown plus
+`llms.txt`. It normalizes relative and absolute paths, this repository's GitHub
+blob/raw URLs, percent encoding, case, separators and anchors, including
+reference Markdown, HTML, wiki and fenced clickable forms. It does not infer
+semantic authority from prose. Review current authority dependence separately:
+literal output-path examples, negative test controls and dated historical
+provenance may remain when they do not direct current behavior. A code fence
+alone does not exempt a clickable stage-document route.
 
-Naming a stage path or artifact ID as text is unaffected, and machine inputs
-such as `docs/99.templates/registry.json` stay readable as code text; what the
-rule removes is the clickable route. `leaf.docs-traceability` owns enforcement
-through the `entrypoint` mode of `check-document-links.py`, which reads every
-tracked Markdown document plus `llms.txt`. Links between documents inside
-`docs/` keep their existing rules, and
-[Links into Stage 98](#links-into-stage-98) adds the rule for archive paths.
+Machine access is narrowly scoped: document-governance validators consume the
+Stage 99 registry and schemas to validate profiles and lifecycle; approved
+stage authoring reads the selected registered template to create that document;
+the Compose validator reads its named profile-vocabulary machine section to
+validate selections; `scripts/hardening/check-all-hardening.sh` reads the exact
+security Requirement input to assert its architecture trace link. These are
+validation data reads, not imports of agent instructions.
+These exceptions identify kind, consumer, necessity and
+scope; they grant no stage-wide link exemption or policy authority. Any new
+machine input must establish the same four facts at its owning consumer.
+
+Reading governing Requirements, Architecture, the approved Spec and current
+Task during authorized execution remains required by bootstrap. Such scoped
+reads, investigation, and docs-internal traceability are not outside-docs
+instruction dependencies. Links inside `docs/` keep their existing rules;
+[Links into Stage 98](#links-into-stage-98) governs archive citations.
 
 ## Authoring Rules
 

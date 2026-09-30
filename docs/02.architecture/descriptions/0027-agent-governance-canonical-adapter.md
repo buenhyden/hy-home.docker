@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -31,8 +31,8 @@ verifies projection drift.
   `.agents/knowledge/`, `.agents/prompts/` are the authored canonical source,
   not generated output or a compatibility copy.
 - `.agents/knowledge/` owns verified navigational knowledge that routes to the
-  canonical owner, and `.agents/prompts/` owns the input/output contract for
-  reusable prompts. Neither category duplicates mandatory rules or procedure
+  canonical owner and bounded durable facts with invalidation, and
+  `.agents/prompts/` owns the input/output contract for reusable prompts. Neither category duplicates mandatory rules or procedure
   bodies, and neither owns execution progress state.
 - `.claude/provider.md` and `.codex/provider.md` own each provider's loading
   and syntax differences. Generated README, role, and Claude skill adapters,
@@ -41,7 +41,9 @@ verifies projection drift.
 - The current Task owns the execution result. After completion, Stage 98
   preserves the frozen body, and Git proves the source and recovery history.
 - User-global configuration, credentials, provider availability, and
-  deployment state are outside this architecture.
+  deployment state are outside this architecture. The selected canonical
+  model-free evaluation target is `.agents/evaluations/`; migration and
+  verification evidence belong to the active Spec Package.
 
 ## Components
 
@@ -50,6 +52,7 @@ verifies projection drift.
 | canonical agent governance bootstrap and policies | authority resolution, safety, workflow |
 | canonical agent governance roles and skills | reusable provider-neutral behavior |
 | canonical agent governance knowledge | verified surface-to-authority routing and repository vocabulary |
+| canonical evaluation owner | model-free evaluation inputs, distinct from paid or native runtime evidence |
 | canonical agent governance prompts | reusable input and output contracts for recurring agent work |
 | Provider Registry | provider identity and translation facts |
 | Authored native provider documents | provider-specific loading and syntax |
@@ -69,7 +72,9 @@ discovery itself is neither an approval nor observed runtime acceptance.
 The Provider Registry's translation facts generate and verify the native
 surface, and the Stage 99 Registry verifies the profile and lifecycle of
 repository documents. The execution result returns to the current Task and
-the reviewed Git diff.
+the reviewed Git diff. Handoff is a derived Task view that rechecks repository
+and worktree identity,
+approval, evidence, and bounded shared allocations before resumption.
 
 ## Deployment View
 

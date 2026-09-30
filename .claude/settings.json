@@ -7,16 +7,10 @@
       "Bash(rg:*)",
       "Bash(docker ps:*)",
       "Bash(docker compose ps:*)",
-      "Bash(docker compose config:*)",
-      "Bash(docker compose logs:*)",
-      "Bash(docker inspect:*)",
       "Bash(docker image ls:*)",
       "Bash(python3 scripts/validation/run-ci-gate.py --profile changed:*)",
       "Bash(python3 scripts/validation/run-ci-gate.py --profile full:*)",
-      "Bash(bash scripts/knowledge/report-graphify-health.sh:*)",
-      "Write(//tmp/claude-*/**)",
-      "Edit(//tmp/claude-*/**)"
-
+      "Bash(bash scripts/knowledge/report-graphify-health.sh:*)"
     ],
     "deny": [
       "Bash(docker system prune:*)",

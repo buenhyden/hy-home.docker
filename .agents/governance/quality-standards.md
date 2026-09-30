@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.1.3"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 ---
 
 # Agent Quality and Security Standards
@@ -127,6 +127,14 @@ in the task evidence.
 | Model policy or reasoning-effort config      | agent governance policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
 | Agent lifecycle or semantic evaluation       | Typed repository `all` section, provider sync `--check`, the registered model-free fixture/regression suite, and selector tests                                                                          | Existing repository-contract and agent-output eval jobs           | Deterministic pass markers and sanitized lifecycle evidence             | Live model/provider execution remains unclaimed unless separately observed |
 | Approved high-risk surface                   | Surface-specific local checks plus co-located Task approval/evidence review; secrets use metadata-only evidence unless a concrete redacted target exists                                                | Remote GitHub, CI, runtime, or provider gates named in task      | Approval source, before/after evidence, rollback path, redaction notes | Approved but unexecuted surfaces are recorded as verified-only       |
+
+Deterministic checks prove only their encoded invariants. Fixture scores and
+synthetic regressions do not prove arbitrary prose semantics, live provider or
+model behavior, runtime outcomes, or protected-branch state. A semantic conclusion
+cites the exact diff and revision, applicable acceptance criterion, canonical
+source, and independent review disposition. Unobserved surfaces remain
+`BLOCKED`, `NOT_RUN`, or unverified as applicable. The review and human
+escalation route is owned by [workflows](workflows.md#change-lifecycle).
 
 ## 6. Generated-Artifact Freshness
 

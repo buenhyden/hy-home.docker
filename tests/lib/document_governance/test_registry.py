@@ -128,6 +128,108 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_evaluation_migration_registers_only_exact_sources(self) -> None:
+        from scripts.lib.agent_governance import agent_governance_contract as contract
+
+        registry = load_registry()
+        self.assertEqual(
+            "repository-readme",
+            classify_path(".agents/evaluations/README.md", registry),
+        )
+        self.assertIsNone(classify_path("evals/README.md", registry))
+        self.assertIn(
+            ".agents/evaluations/fixture-catalog.md",
+            registry.common["inventory_excludes"],
+        )
+        self.assertIsNone(classify_path(".agents/evaluations/unknown.md", registry))
+        sources = contract.canonical_source_paths(ROOT)
+        expected = {
+            pathlib.PurePosixPath(".agents/evaluations") / name
+            for name in (
+                "README.md",
+                "agent_output_eval.py",
+                "fixture-catalog.md",
+                "run-agent-output-eval-fixtures.sh",
+            )
+        }
+        self.assertEqual(
+            expected,
+            {p for p in sources if p.parent.as_posix() == ".agents/evaluations"},
+        )
+        raw = dict(contract._load_yaml(ROOT, contract.REGISTRY))
+        raw["canonical_sources"] = [str(p) for p in sources] + [
+            ".agents/evaluations/unknown.md"
+        ]
+        with self.assertRaises(contract.ContractLoadError):
+            contract._canonical_source_paths(raw)
+
+    def test_evaluation_readme_inherits_only_exact_typed_baseline(self) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        target = pathlib.Path(".agents/evaluations/README.md")
+        source = '---\ntype: "common/repository-readme"\nstatus: "active"\n---\n# Evaluations\n'
+        with (
+            mock.patch.object(
+                lifecycle, "_text_at_ref", return_value=source
+            ) as historical,
+            mock.patch.object(
+                lifecycle, "read_bounded_regular", return_value=source.encode()
+            ),
+        ):
+            record, text = lifecycle._governance_moved_body_baseline(
+                ROOT, target, profiles, "a" * 40
+            )
+            self.assertIsNotNone(record)
+            self.assertEqual("active", record.metadata["status"])
+            self.assertEqual(source, text)
+            from scripts.lib.document_governance.metadata.heading import (
+                _introduced_body_findings,
+            )
+
+            complete = (ROOT / target).read_text(encoding="utf-8")
+            self.assertEqual(
+                [],
+                _introduced_body_findings(record, complete, record, complete, profiles),
+            )
+            changed = complete.replace("## Overview", "## Missing Overview", 1)
+            self.assertIn(
+                "body-heading-missing",
+                {
+                    finding.code
+                    for finding in _introduced_body_findings(
+                        record, changed, record, complete, profiles
+                    )
+                },
+            )
+            self.assertEqual(
+                pathlib.Path("evals/README.md"), historical.call_args.args[1]
+            )
+            for previous in (
+                source.replace("common/repository-readme", "governance/policy"),
+                source.replace(
+                    'status: "active"', 'status: "active"\nartifact_id: "different"'
+                ),
+            ):
+                historical.return_value = previous
+                self.assertEqual(
+                    (None, None),
+                    lifecycle._governance_moved_body_baseline(
+                        ROOT, target, profiles, "a" * 40
+                    ),
+                )
+            historical.reset_mock()
+            self.assertEqual(
+                (None, None),
+                lifecycle._governance_moved_body_baseline(
+                    ROOT,
+                    pathlib.Path(".agents/evaluations/other.md"),
+                    profiles,
+                    "a" * 40,
+                ),
+            )
+            historical.assert_not_called()
+
     def test_canonical_agent_home_routes_replace_active_stage00(self) -> None:
         registry = load_registry()
         expected = {

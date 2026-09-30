@@ -1,10 +1,10 @@
 ---
 title: "Retention Catalog"
-version: "1.1.7"
+version: "1.1.8"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-09-30"
 ---
 
 # Retention Catalog
@@ -28,6 +28,7 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `superseded/03.specs/0190-agent-contract-hardening/` | superseded | SPEC-0194 | `c86f55518b8a9a156e10e38fbd52d1a883063d6a:docs/03.specs/0190-agent-contract-hardening` |
 | `completed/03.specs/0192-backup-and-host-alerting/` | completed | RUN-0021 | `dbb2413c8166e3d7cd1d9c4bd9e4680e0e03ea20:docs/03.specs/0192-backup-and-host-alerting` |
 | `completed/03.specs/0191-backup-valkey-export-timeout/` | completed | RUN-0021 | `ba0b3462e7806d793ae4b32be3c6d819ebe756db:docs/03.specs/0191-backup-valkey-export-timeout` |
 | `completed/03.specs/0183-operations-role-layout/` | completed | ADR-0043 | `cce796818043f6663441470d1f3c6604bfb5193a:docs/03.specs/0183-operations-role-layout` |

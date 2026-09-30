@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.2.3"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-16"
+  updated: "2026-09-29"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -38,8 +38,9 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 ## Procedure
 
 1. Stabilize the evidence timeline and classify impact without copying secrets, raw auth data, or unrelated logs.
-2. Execute only authorized diagnostic or recovery steps, recording command class, expected result, and observed outcome.
-3. Escalate on blast-radius growth, hand off prevention work, and trigger a postmortem when the incident is stabilized.
+2. When stateful recovery is proposed, hand the sanitized contract to [stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md) and keep its verdict separate from recovery authorization.
+3. Execute only authorized diagnostic or recovery steps, recording command class, expected result, and observed outcome.
+4. Escalate on blast-radius growth, hand off prevention work, and trigger a postmortem when the incident is stabilized.
 
 ## Outputs
 
@@ -49,6 +50,7 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 
 - Evidence is redacted and provenance-aware.
 - Response actions stay within the declared escalation boundary.
+- Stateful recovery has an independent readiness verdict and separate human approval before execution.
 - A cited preserved body is dated and named as preserved evidence, never as
   current state; the exception permits the citation, not the inference.
 - A paired postmortem is routed to
@@ -56,10 +58,11 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 
 ## Failure Handling
 
-Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain.
+Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain. A readiness verdict never proves recovery success.
 
 ## Related Documents
 
 - [Incident responder](../../roles/incident-responder.md)
 - [Operations scope](../../governance/quality-standards.md)
 - [Approval boundaries](../../governance/approval-boundaries.md)
+- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)

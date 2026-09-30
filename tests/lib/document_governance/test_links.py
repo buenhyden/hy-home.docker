@@ -507,6 +507,35 @@ class IgnoredLinkTargetTests(unittest.TestCase):
 
 
 class DocumentGraphTests(unittest.TestCase):
+    def test_local_markdown_link_parser_bounds_malformed_opening_brackets(
+        self,
+    ) -> None:
+        program = """
+import pathlib
+import sys
+
+sys.path.insert(0, sys.argv[1])
+from scripts.lib.document_governance.links import parse_local_markdown_links
+
+source = pathlib.PurePosixPath("docs/source.md")
+for prefix in ("[" * 2_048, "[[" * 2_048):
+    assert parse_local_markdown_links(source, prefix + "x" * 100_000) == ()
+assert parse_local_markdown_links(
+    source, "[x](" * 256 + "a" * 100_000
+) == ()
+assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
+"""
+        result = subprocess.run(
+            [sys.executable, "-c", program, str(ROOT)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=2,
+        )
+
+        self.assertEqual(0, result.returncode, result.stderr)
+
     def test_fence_info_comment_opener_does_not_hide_later_rendered_links(self) -> None:
         from scripts.lib.document_governance.links import parse_local_markdown_links
 
@@ -522,6 +551,134 @@ class DocumentGraphTests(unittest.TestCase):
         self.assertEqual(
             ("docs/visible.md",),
             tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_unclosed_angle_destination_stops_only_its_line(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            "[broken](<missing [hidden](hidden.md)\n"
+            "[visible](visible.md) [next](next.md)\n",
+        )
+
+        self.assertEqual(
+            ("docs/visible.md", "docs/next.md"),
+            tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_inline_link_titles_are_consumed_before_following_links(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        links = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            '[vendor](<https://example.test> "[hidden](hidden.md)") '
+            "[double](double.md \"title\") [single](single.md 'title') "
+            "[parenthesized](parenthesized.md (title)) [next](next.md)\n"
+            "[invalid](invalid.md title-without-close [spoof](spoof.md)\n",
+        )
+
+        self.assertEqual(
+            (
+                "docs/double.md",
+                "docs/single.md",
+                "docs/parenthesized.md",
+                "docs/next.md",
+            ),
+            tuple(link.target.as_posix() for link in links),
+        )
+
+    def test_link_grammars_do_not_rescan_titles_or_html_attributes(self) -> None:
+        from scripts.lib.document_governance.links import parse_local_markdown_links
+
+        cases = {
+            "reference use in title": (
+                '[vendor](<https://example.test> "[hidden][run]") '
+                "[visible](visible.md)\n[run]: hidden.md\n"
+            ),
+            "wiki link in title": (
+                '[vendor](<https://example.test> "[[hidden.md]]") '
+                "[visible](visible.md)\n"
+            ),
+            "html link in title": (
+                "[vendor](<https://example.test> '<a href=\"hidden.md\">') "
+                "[visible](visible.md)\n"
+            ),
+            "markdown link in html attribute": (
+                '<a title="[hidden](hidden.md)" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "greater-than in double-quoted html attribute": (
+                '<a title="x > [hidden](hidden.md)" '
+                'href="https://example.test">vendor</a> [visible](visible.md)\n'
+            ),
+            "greater-than in single-quoted html attribute": (
+                "<a title='x > [hidden](hidden.md)' "
+                'href="https://example.test">vendor</a> [visible](visible.md)\n'
+            ),
+            "unquoted html attribute and empty tags": (
+                "<a title=[hidden](hidden.md)><a/></a> [visible](visible.md)\n"
+            ),
+            "href text inside another attribute": (
+                '<a title="href=\'hidden.md\'" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "data href is not href": (
+                '<a data-href="hidden.md" href="https://example.test">vendor</a> '
+                "[visible](visible.md)\n"
+            ),
+            "escaped markdown opener": (
+                r"\[hidden](hidden.md) [visible](visible.md)" "\n"
+            ),
+        }
+
+        for name, text in cases.items():
+            with self.subTest(name=name):
+                links = parse_local_markdown_links(
+                    pathlib.PurePosixPath("docs/source.md"), text
+                )
+                self.assertEqual(
+                    ("docs/visible.md",),
+                    tuple(link.target.as_posix() for link in links),
+                )
+
+        even_escape = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            r"\\[visible](visible.md)",
+        )
+        self.assertEqual(
+            ("docs/visible.md",),
+            tuple(link.target.as_posix() for link in even_escape),
+        )
+
+        local_href = parse_local_markdown_links(
+            pathlib.PurePosixPath("docs/source.md"),
+            '<a href="local.md">local</a>',
+        )
+        self.assertEqual(
+            ("docs/local.md",),
+            tuple(link.target.as_posix() for link in local_href),
+        )
+
+    def test_navigation_html_uses_only_exact_href_attributes(self) -> None:
+        from scripts.lib.document_governance.links import (
+            DocumentNode,
+            _navigation_destinations,
+        )
+
+        node = DocumentNode(
+            path=pathlib.PurePosixPath("docs/README.md"),
+            text=(
+                '<a title="href=\'spoof.md\'" data-href="data.md" '
+                'href="actual.md">actual</a>\n'
+            ),
+            metadata={},
+            headings=(),
+        )
+
+        self.assertEqual(
+            ((1, "", "actual.md"),),
+            tuple(_navigation_destinations(node)),
         )
 
     def test_inline_code_comment_opener_does_not_hide_later_rendered_links(
@@ -1701,7 +1858,7 @@ class DocumentLinksCliTests(unittest.TestCase):
                 failures.append(path.relative_to(ROOT).as_posix())
         self.assertEqual([], failures)
 
-    def test_entrypoint_mode_allows_only_the_docs_index_from_outside_docs(
+    def test_entrypoint_mode_allows_readme_and_directory_navigation(
         self,
     ) -> None:
         from scripts.lib.document_governance.links import (
@@ -1735,12 +1892,141 @@ class DocumentLinksCliTests(unittest.TestCase):
             )
 
         self.assertEqual(
-            ["infra/README.md:2", "infra/README.md:3", "infra/README.md:4"],
+            ["infra/README.md:2"],
             [finding.path for finding in findings],
         )
         self.assertEqual(
             {"stage-link-outside-docs"}, {finding.code for finding in findings}
         )
+
+    def test_entrypoint_normalizes_stage_link_forms(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "infra/README.md"
+            source.parent.mkdir()
+            target = "docs/03.specs/0001-example/spec.md"
+            forms = (
+                f"[rule](../{target}#contract)",
+                f"[rule](/{target})",
+                f"[rule]({root}/{target})",
+                f"[rule](file://{root}/{target})",
+                f"[rule](../{target}/)",
+                "[rule](../DOCS\\03.SPECS\\0001-example\\spec.md)",
+                "[rule](../%64ocs/%30%33.specs/0001-example/spec.md)",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/main/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/main/{target})",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/feature/w2/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/feature/w2/{target})",
+                f"[rule](https://github.com/buenhyden/hy-home.docker/blob/feature/docs/rework/{target})",
+                f"[rule](https://raw.githubusercontent.com/buenhyden/hy-home.docker/feature/docs/rework/{target})",
+                f"<https://github.com/buenhyden/hy-home.docker/blob/main/{target}>",
+                f"<https://raw.githubusercontent.com/buenhyden/hy-home.docker/main/{target}>",
+                f"[rule][owner]\n[owner]: ../{target}",
+                f'<a href="../{target}#rule">rule</a>',
+                f"[[../{target}|rule]]",
+                f"```markdown\n[rule](../{target})\n```",
+                f"```markdown\n<!--\n[rule](../{target})\n-->\n```",
+            )
+            for text in forms:
+                with self.subTest(text=text):
+                    source.write_text(text, encoding="utf-8")
+                    findings = check_entrypoint(
+                        build_document_graph([source], repo_root=root)
+                    )
+                    self.assertEqual(
+                        ["stage-link-outside-docs"], [f.code for f in findings]
+                    )
+                    self.assertEqual(text, source.read_text(encoding="utf-8"))
+
+    def test_multiline_html_entrypoint_links_preserve_start_lines_and_attributes(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+            parse_local_markdown_links,
+        )
+
+        target = "docs/03.specs/0001-example/spec.md"
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "README.md"
+            for tag in (
+                f'<a\n href="{target}">rule</a>',
+                f"<a\n href='{target}'\n>rule</a>",
+                f'<a title="value >\n[spoof](hidden.md)"\n href="{target}">rule</a>',
+                f'<a\n data-href="hidden.md" title="href=\'spoof.md\'"\n href="{target}">rule</a>',
+            ):
+                with self.subTest(tag=tag):
+                    text = "Intro\n" + tag + " [next](next.md)\n"
+                    source.write_text(text, encoding="utf-8")
+                    findings = check_entrypoint(
+                        build_document_graph([source], repo_root=root)
+                    )
+                    self.assertEqual(["README.md:2"], [f.path for f in findings])
+                    links = parse_local_markdown_links(
+                        pathlib.PurePosixPath("README.md"), text
+                    )
+                    self.assertEqual(
+                        {target, "next.md"}, {str(link.target) for link in links}
+                    )
+                    self.assertEqual(
+                        2,
+                        next(link.line for link in links if str(link.target) == target),
+                    )
+                    self.assertEqual(
+                        2 + tag.count("\n"),
+                        next(
+                            link.line for link in links if str(link.target) == "next.md"
+                        ),
+                    )
+            for text in (
+                f'<a\n title="href=\'{target}\'" data-href="{target}"\n href="https://example.test">safe</a>',
+                f'<!-- <a\n href="{target}">hidden</a> -->',
+                f'`<a`\n href="{target}">literal',
+            ):
+                with self.subTest(safe=text):
+                    source.write_text(text, encoding="utf-8")
+                    self.assertEqual(
+                        [],
+                        check_entrypoint(
+                            build_document_graph([source], repo_root=root)
+                        ),
+                    )
+
+    def test_entrypoint_preserves_navigation_and_non_authoritative_examples(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "README.md"
+            text = (
+                "[docs](docs/README.md)\n[stage](docs/03.specs/README.md)\n"
+                "[directory](docs/03.specs/)\n[stage root](docs/03.specs)\n"
+                "<!-- [history](docs/03.specs/example.md) -->\n"
+                "<!--\n[history](docs/03.specs/example.md)\n-->\n"
+                "Output example: `docs/03.specs/0001-example/spec.md`\n"
+                "Historical decision: ADR-0032 (`docs/02.architecture/decisions/0032-old.md`).\n"
+                "```text\ndocs/03.specs/0001-example/tasks/tsk-0001-example.md\n```\n"
+                "[external](https://example.org/docs/03.specs/example.md)\n"
+                "<https://github.com/other/project/blob/main/docs/03.specs/example.md>\n"
+                "[other repository](https://github.com/other/project/blob/main/docs/03.specs/example.md)\n"
+            )
+            source.write_text(text, encoding="utf-8")
+            self.assertEqual(
+                [], check_entrypoint(build_document_graph([source], repo_root=root))
+            )
+            self.assertEqual(text, source.read_text(encoding="utf-8"))
 
     def test_entrypoint_mode_leaves_links_between_docs_documents_alone(self) -> None:
         from scripts.lib.document_governance.links import (

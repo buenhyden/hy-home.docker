@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
-version: "0.2.0"
+version: "0.3.0"
 type: "governance/knowledge-index"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-09-29"
 created: "2026-09-06"
 ---
 
@@ -42,9 +42,11 @@ route하고 link를 남깁니다.
 └── verification-surface-map.md
 ```
 
-모든 member는 `observed_at`과 `review_cycle`을 선언하여 staleness가 가정이
-아니라 탐지 가능하도록 하며 파생 근거가 된 tracked source를 이름 붙이는
-`Provenance` 섹션을 갖습니다.
+모든 member는 owner, scope, source, `observed_at`, validity, sensitivity,
+`review_cycle`, invalidation을 선언하여 staleness가 가정이 아니라 탐지
+가능하도록 하며 파생 근거가 된 tracked source를 이름 붙이는 `Provenance`
+섹션을 갖습니다. source 변경·삭제·정정 또는 review expiry가 발생하면 다시
+읽기 전까지 해당 fact는 invalid입니다.
 
 ## How to Work in This Area
 
