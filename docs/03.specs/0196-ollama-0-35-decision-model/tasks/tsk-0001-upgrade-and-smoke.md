@@ -54,7 +54,7 @@ Independent IaC review returned CLEAR for the pin/projection diff and runtime pl
 
 ## Commit Ledger
 
-2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; Git history remains the resulting commit evidence.
+2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; Spec approval transition commit: `c4aa1ae59`; Git history remains the resulting commit evidence.
 
 ## Rulings
 
