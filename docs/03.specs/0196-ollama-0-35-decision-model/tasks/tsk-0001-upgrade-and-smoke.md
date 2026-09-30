@@ -2,7 +2,7 @@
 title: "Ollama 0.35 Upgrade and Decision Model Smoke"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -17,7 +17,7 @@ created: "2026-09-30"
 
 ## Objective
 
-Execute W1 through W5 of the [Plan](../plan.md) and retain exact results for the acceptance criteria of [SPEC-0196](../spec.md).
+Execute W1 through W6 of the [Plan](../plan.md) and retain exact results for the acceptance criteria of [SPEC-0196](../spec.md).
 
 ## Inputs
 
@@ -42,11 +42,16 @@ Execute W1 through W5 of the [Plan](../plan.md) and retain exact results for the
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W2-W3, W6 | PASS: Compose and projection use `0.35.0`; projection check, quiet render, scoped two-service validation, diff check, metadata, and `python3 scripts/validation/run-ci-gate.py --profile changed` on 2026-09-30 passed; the bounded API and recovery guidance was recorded | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml), [version projection](../../../../infra/tech-stack.versions.json), [Guide](../../../05.operations/guides/0056-ollama.md), and [Runbook](../../../05.operations/runbooks/0056-ollama.md) |
-| 2 | W1, W3-W4 | PASS: post-recreate project, volume, GPU, resources, loopback port, networks, gateway and SSO labels matched the baseline | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml) |
-| 3 | W1, W4 | PASS: healthy `0.35.0`; both existing model names and exact digests preserved | no-update: runtime observation only; exact evidence remains in this Task |
-| 4 | W5 | PASS: `tev1:0.8b` exact digest recorded; choice schema/probabilities/usage passed; `bug` at 0.977011841; `/api/ps` empty after `keep_alive: 0` | no-update: bounded runtime observation only; exact evidence remains in this Task |
-| 5 | W5 | PASS with browser limit: existing 2,560-dimensional embedding, exporter metrics, and Open WebUI backend path passed; authenticated browser UI was NOT_RUN | [Ollama runbook](../../../05.operations/runbooks/0056-ollama.md) |
+| 1 | W2 | PASS: Compose and projection use `0.35.0`; scoped static validation passed | [version projection](../../../../infra/tech-stack.versions.json) |
+| 1 | W3 | PASS: quiet render, scoped two-service validation, diff check, metadata, and `python3 scripts/validation/run-ci-gate.py --profile changed` on 2026-09-30 passed | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml) |
+| 1 | W6 | PASS: the bounded API and recovery guidance was recorded | [Guide](../../../05.operations/guides/0056-ollama.md) |
+| 2 | W1 | PASS: baseline recorded project, volume, GPU, resources, loopback port, networks, gateway and SSO labels | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml) |
+| 2 | W3 | PASS: rendered boundaries matched the baseline | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml) |
+| 2 | W4 | PASS: post-recreate boundaries matched the baseline | [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml) |
+| 3 | W1 | PASS: baseline model names and exact digests recorded | [Task work log](#work-log) |
+| 3 | W4 | PASS: healthy `0.35.0`; both existing model names and exact digests preserved | [Task work log](#work-log) |
+| 4 | W5 | PASS: `tev1:0.8b` exact digest recorded; choice schema/probabilities/usage passed; `bug` at 0.977011841; `/api/ps` empty after `keep_alive: 0` | [Task work log](#work-log) |
+| 5 | W5 | PASS: browser limit retained; existing 2,560-dimensional embedding, exporter metrics, and Open WebUI backend path passed; authenticated browser UI was NOT_RUN | [Ollama runbook](../../../05.operations/runbooks/0056-ollama.md) |
 
 ## Review Evidence
 
@@ -54,7 +59,7 @@ Independent IaC review returned CLEAR for the pin/projection diff and runtime pl
 
 ## Commit Ledger
 
-2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; Spec approval transition commit: `c4aa1ae59`; activation transition commit: `eba7243d1`; Git history remains the resulting commit evidence.
+2026-09-30: the user authorized commit, push, PR merge, `main`/`origin/main` alignment, and cleanup. Initial draft commit: `ba448b1a7`; review/approved/ready transition commit: `c4aa1ae59`; Spec approval transition commit: `eba7243d1`; activation/in-progress transition commit: `29ad5ceac`; Git history remains the resulting completion evidence.
 
 ## Rulings
 

@@ -2,7 +2,7 @@
 title: "Ollama 0.35 Decision Model Rehearsal Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-09-30"
 layer: "specs"
@@ -27,12 +27,12 @@ Deliver and verify [SPEC-0196](spec.md) as a reversible, single-service upgrade 
 
 ## Execution Sequence
 
-1. W1 Baseline: record the current project, image digest, model digests, model volume, GPU/driver, port, health, and rollback target (criteria 2, 3).
-2. W2 Configuration: update the image pin and derived projection (criterion 1).
-3. W3 Preflight: render and validate Compose, inspect the exact diff, and obtain independent infrastructure review (criteria 1, 2).
-4. W4 Rollout: pull `0.35.0`, recreate only `ollama` with `--no-deps`, and verify health, version, boundaries, and preserved models (criteria 2, 3).
-5. W5 Model smoke: pull `tev1:0.8b`, record its digest, run the synthetic decision request with `keep_alive: 0`, check the existing embedding model, exporter and Open WebUI backend connectivity, and record limits (criteria 4, 5).
-6. W6 Documentation handoff: record the completed bounded API, version-pin source of truth, scoped recreate, and non-destructive recovery boundary in the existing Guide and Runbook (criteria 1, 4, 5).
+1. W1: Baseline — record the current project, image digest, model digests, model volume, GPU/driver, port, health, and rollback target (criteria 2, 3).
+2. W2: Configuration — update the image pin and derived projection (criterion 1).
+3. W3: Preflight — render and validate Compose, inspect the exact diff, and obtain independent infrastructure review (criteria 1, 2).
+4. W4: Rollout — pull `0.35.0`, recreate only `ollama` with `--no-deps`, and verify health, version, boundaries, and preserved models (criteria 2, 3).
+5. W5: Model smoke — pull `tev1:0.8b`, record its digest, run the synthetic decision request with `keep_alive: 0`, check the existing embedding model, exporter and Open WebUI backend connectivity, and record limits (criteria 4, 5).
+6. W6: Documentation handoff — record the completed bounded API, version-pin source of truth, scoped recreate, and non-destructive recovery boundary in the existing Guide and Runbook (criterion 1).
 
 ## Risk and Rollback
 
