@@ -2,7 +2,7 @@
 title: "Infrastructure Tier Layout Implementation Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -35,7 +35,7 @@ are implemented together. The Task owns observed execution and review results.
 ## Dependencies
 
 - The user approved the written specification on 2026-10-01. Its frontmatter
-  remains draft for first registration; this does not negate the approval or
+  used draft for first registration; this did not negate the approval or
   invent a committed lifecycle transition. Apply normal transitions when
   registering subsequent lifecycle changes.
 - Read the Spec and current repository instructions at execution start.
@@ -45,8 +45,9 @@ are implemented together. The Task owns observed execution and review results.
 - Before implementation, create the package Task
   `tasks/tsk-0001-tier-layout-and-consistency.md` using the registered template.
   It owns baseline, RED/GREEN, acceptance receipts and review evidence.
-- Runtime changes, remote publication and data operations are outside this
-  plan's execution authorization. All Compose rendering uses `.env.example`.
+- Original W1–W6 authorization excluded runtime changes, remote publication
+  and data operations; W7 records the separately approved bounded delivery.
+  W1–W6 Compose rendering uses `.env.example`.
 
 ### Global constraints
 
@@ -88,6 +89,8 @@ PostgreSQL and SeaweedFS shared. Preserve frozen history.
    (acceptance 7 plus the applicable preservation and validation criteria).
 6. W6: Rename the approved platform capability and reconcile all active consumers
    (acceptance8 plus preservation/validation criteria2–6); written Plan review approved.
+7. W7: Deliver through protected main, reconcile the authorized runtime targets,
+   and record actual operational completion separately from source acceptance.
 
 ### W1: Baseline and regression checks
 
@@ -531,7 +534,8 @@ all issued IDs, filenames and body corrections from SPEC0198.
   to this evidence in Task0002; criteria1–7 retain prior receipts and final checks.
   Commit boundaries remain coherent source/test relocation and documentation/
   projection alignment; actual commits/publication require delivery authority.
-  Do not reset other work, clean worktrees, push or merge as part of this Plan.
+  Do not reset other work, clean worktrees, push or merge as part of W6
+  source implementation; W7 owns the later authorized delivery.
 
 ### W7: Authorized delivery and operational application
 
@@ -574,8 +578,9 @@ paths/hashes and outcomes. A missing host privilege blocks that step only.
 
 ## Risk and Rollback
 
-Moving source mounts can affect future recreations even if current containers
-continue running. Inventory source mounts and stop on a requirement for live
+For W1–W6 source implementation, moving source mounts can affect future
+recreations even if current containers continue running. Inventory source mounts
+and stop on a requirement for live
 path reconciliation; arrange a separate approved operation rather than
 restarting containers. Source-model equality permits only the exact approved
 Spec path/label allowlists and its sole Conftest entrypoint token exception.
@@ -607,12 +612,12 @@ rehearsal remains outside this scope. Hosted CI-only gates are NOT_RUN until a
 separately authorized delivery supplies their results. A broad full-suite
 rerun is not required unless changed-path routing or a new finding justifies it.
 
-Execution complete, 2026-10-01: all source/document work units and independent reviews accepted; final `python3 scripts/validation/run-ci-gate.py --profile changed` exit0. The reviewable packet is staged but uncommitted. Live deployment/recovery, installed-unit refresh and remote publication remain outside this completion. Detailed outcomes, earlier failed attempts and remaining implementation limits are preserved in the canonical Tasks.
+Source acceptance checkpoint, 2026-10-01: all source/document work units and independent reviews accepted; final `python3 scripts/validation/run-ci-gate.py --profile changed` exit0. At that checkpoint the reviewable packet was staged but uncommitted. Later authorized delivery and runtime reconciliation are tracked in SPEC0197 Plan W7 and Task0002; source acceptance does not substitute for those observations. Detailed outcomes, earlier failed attempts and remaining implementation limits are preserved in the canonical Tasks.
 
 ## Rulings
 
 - Written Spec approval: user, 2026-10-01, including dbt's move from Tooling.
-- Plan registration status: draft; original W1–W4 native execution approved on
+- Initial Plan registration used draft; original W1–W4 native execution approved on
   2026-10-01. C Spec and W5 Plan approved on the same date, preserving the selected method.
 - Selected method: native, serialized relocation with one independent final
   review. Original implementation and documentation were performed in this

@@ -2,7 +2,7 @@
 title: "W7 Cross-Cutting Operations Reconciliation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -179,6 +179,9 @@ Independent review reopened one source nuance missed in the initial F1 acceptanc
 | Independent acceptance | Accepted | Independent fix-round1 review below |
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No staging or commit was performed by W7. Parent owns integration commit boundaries and any later approval.
 

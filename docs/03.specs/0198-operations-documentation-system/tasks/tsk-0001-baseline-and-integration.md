@@ -2,7 +2,7 @@
 title: "Operations Audit Baseline and Integration"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -664,6 +664,18 @@ not final package acceptance; W6/W7 and the frozen combined gate remain open.
 
 ## Verification Evidence
 
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: all 225 baseline leaves and 153 service identities are accounted for in the accepted audit | [Operations documentation](../../../05.operations/README.md) |
+| 2 | W2 | PASS: issued identities and role paths are preserved and final navigation and ownership checks pass | [Operations navigation](../../../05.operations/README.md) |
+| 3 | W7 | PASS: system operating routes and common owners were reconciled with explicit capability limits | [System operations guide](../../../05.operations/guides/0099-system-operations.md) |
+| 4 | W3 | PASS: identity ownership and applicable role documents were checked across all accepted service waves | [Operations documentation](../../../05.operations/README.md) |
+| 5 | W4 | PASS: the 59-leaf data audit preserved section mappings and resolved reviewed documentary conflicts | [Operations documentation](../../../05.operations/README.md) |
+| 5 | W5 | PASS: the 60-leaf observability, workflow and AI audit reconciled source versions, topics and section mappings | [Operations documentation](../../../05.operations/README.md) |
+| 5 | W6 | PASS: the 67-leaf tooling, communication and laboratory audit preserved historical payloads and closed review findings | [Operations documentation](../../../05.operations/README.md) |
+| 6 | W8 | PASS: the final frozen changed gate and independent semantic review accepted the integrated source tree | N/A: Gate and independent review receipts remain in this execution Task. |
+| 7 | W8 | PASS: source verification is distinguished from unperformed runtime and recovery observations | N/A: Execution boundaries and unperformed observations remain in the wave Tasks. |
+
 Historical pre-acceptance checkpoint (subsequently resolved by the language and
 wave receipts above): intermediate language check, 2026-10-01, during active W5 authoring: `python3 scripts/validation/check-document-links.py --mode language` reported18 Korean-language mismatches, all in W5-owned leaves. The author received the exact paths and must correct meaningful prose, not thresholds or padding. This is an in-progress FAIL, not final W5 acceptance. Separate manual W2–W4 audit also identified English explanatory prose despite earlier numeric checks; correction and independent language re-review remain required.
 
@@ -681,7 +693,7 @@ Current receipt status: W1–W8 are accepted. All wave and adjacent-owner review
 | Runtime, build, recovery and hosted CI | NOT_RUN | Outside W1 public-source scope |
 | Domain-code coverage/new tests | N/A | Documentation-only change; no executable repository logic modified |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W1, W3-W8 | W1 exact manifest and all W1–W7 receipts accepted | Existing role documents and wave Tasks |
 | 2 | W2, W8 | PASS: navigation and153 identity-owner joins verified by final W8 checks | Operations indexes |
@@ -725,6 +737,9 @@ On2026-10-01 the third frozen `python3 scripts/validation/run-ci-gate.py --profi
 Independent final integration review: Spec PASS / quality APPROVED. All67 W6 bodies match their accepted hashes;20 W7 bodies match fix1 and RUN-0096 matches its accepted adjacent-fix hash; six navigation bodies remain unchanged. All225 baseline leaves plus two system leaves,153 identities and1377 service/topic cells are accounted for. Current source scope is complete. Registered Conftest used an isolated temporary policy container; application deployment, secret rotation, build/recovery rehearsal, installed-unit refresh and hosted CI remain NOT_RUN. Existing source nonconformances retain their controls and require separately scoped implementation.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No SPEC-0198 implementation commit. Preserve current unrelated/staged work;
 workers do not commit or mutate the shared index. Proposed delivery boundaries

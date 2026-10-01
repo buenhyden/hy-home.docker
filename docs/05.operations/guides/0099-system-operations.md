@@ -2,7 +2,7 @@
 title: "System Operations Guide"
 version: "0.1.0"
 type: "operation/guide"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"

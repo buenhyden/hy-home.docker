@@ -2,7 +2,7 @@
 title: "InfluxDB (TSDB)"
 version: "1.0.6"
 type: "common/package-readme"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2025-11-21"

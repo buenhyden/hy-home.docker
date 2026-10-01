@@ -2,7 +2,7 @@
 title: "Infrastructure Tier Layout and Documentation Consistency"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -30,7 +30,7 @@ inventory drift without changing runtime behavior.
 The user approved the original Data/Analytics design and requested its written
 specification on
 2026-10-01. The user subsequently approved that original written specification and requested the
-implementation plan on 2026-10-01. Frontmatter remains draft for initial
+implementation plan on 2026-10-01. Initial frontmatter used draft for
 registration; the user also approved the original written Plan and selected native execution
 with independent final review on 2026-10-01.
 
@@ -42,8 +42,8 @@ inputs. The approved scope covers structure, classification, configuration
 references and documentation, including dbt's change of tier ownership.
 
 Preserve service behavior, activation, images, credentials, resource limits and
-persistent data. Do not deploy, restart, consolidate or retire services, move
-host data, or split the root Compose project. SPEC-0182 and other concurrent
+persistent data. W1–W6 source implementation does not deploy, restart,
+consolidate or retire services, move host data, or split the root Compose project. SPEC-0182 and other concurrent
 packages retain their scope. Frozen archives and dated research snapshots
 are not rewritten to make their historical paths look current.
 
@@ -457,8 +457,9 @@ private overrides or running containers use the new paths.
    or unsupported completion claims.
 6. The eventual Task records baseline, allowed comparison exceptions,
    commands/results and acceptance-to-durable-document mapping. It separates
-   source verification from unperformed runtime reconciliation. No private
-   values, host-data moves, restarts or unrelated SPEC-0182 changes occur.
+   source verification from unperformed runtime reconciliation. Source validation performs no private-value reads, host-data moves or restarts
+   and does not change unrelated SPEC-0182 work. The separately authorized
+   operational follow-on records its own bounded actions and observations.
 
 7. All eighteen packages and twenty-seven identities from the three reviewed
    tiers have an
@@ -475,7 +476,8 @@ private overrides or running containers use the new paths.
    and current documentation use the final name. Existing Compose profiles and
    runtime/persistence contracts remain equal. Negative regression, source-file
    preservation and independent read-only review prove the bounded migration;
-   installed-unit refresh and runtime reconciliation remain explicitly NOT_RUN.
+   the source-only receipt records installed-unit refresh and runtime
+   reconciliation as NOT_RUN. Authorized W7 execution must record its own results.
 
 ## Traceability
 
@@ -504,7 +506,9 @@ and subsequently approved Plan W6.1–W6.4. Naming implementation and scoped
 independent review are complete. The final frozen combined `changed` gate passed
 on2026-10-01 after SPEC0198 integration; both Tasks record source acceptance.
 The previous implementation evidence remains valid for its original scope,
-and the final integrated receipts complete the expanded source package. Runtime changes remain excluded.
+and the final integrated receipts complete the expanded source package.
+The operational follow-on below is separately authorized and remains pending
+until its own W7 results are observed.
 
 ## Operational Impact
 

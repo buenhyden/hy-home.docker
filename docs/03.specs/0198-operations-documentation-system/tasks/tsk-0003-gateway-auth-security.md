@@ -2,7 +2,7 @@
 title: "Gateway Authentication and Security Documentation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -296,6 +296,9 @@ Full changed-profile and terminal acceptance remain W8 responsibilities; hosted
 CI and operational checks are not claimed by this task-scoped content verdict.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No W3 staging or commit by the worker. Parent staged this newly created Task for
 checker discovery; existing18 leaves were already tracked. Before snapshots were

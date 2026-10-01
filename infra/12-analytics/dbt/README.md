@@ -2,7 +2,7 @@
 title: "Analytics dbt Transformation Job"
 version: "1.0.3"
 type: "common/package-readme"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2026-09-21"

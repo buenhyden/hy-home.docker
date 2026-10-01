@@ -2,7 +2,7 @@
 title: "Operations Documentation System Implementation Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -33,7 +33,7 @@ inspection and official product/version documentation. No new dependency.
 
 - Written Spec approved by the user on 2026-10-01, including exhaustive topic
   coverage, lossless consolidation and current-version contradiction resolution.
-  Frontmatter remains draft for initial registration; do not fabricate committed
+  Initial registration used draft; subsequent transitions record actual committed
   lifecycle transitions. Implementation is authorized by the user's written Plan approval.
 - Use SPEC-0197's reviewed twelve-tier layout. Before editing, inspect the
   current branch/base, its final validation receipt, concurrent work and actual
@@ -77,6 +77,15 @@ secret access, live probe/rehearsal or speculative recovery procedure.
    read-only source and runtime evidence, with expected signals and stop points.
 
 ## Execution Sequence
+
+1. W1: Baseline, exhaustive evidence ledger and source versions.
+2. W2: Shared content owners and system operating entrypoint.
+3. W3: Gateway, identity and security.
+4. W4: Data, messaging and analytics.
+5. W5: Observability, workflow and AI.
+6. W6: Tooling, communication and laboratory.
+7. W7: Workspace, cross-cutting subjects and whole-system reconciliation.
+8. W8: Integrated verification and completion receipts.
 
 ### File ownership and exact baseline map
 
@@ -326,7 +335,7 @@ operations module/test owner and measure at least 80% changed executable lines.
 No new checker or runtime test is planned absent such a gap. Source verification,
 live procedure validation and recovery rehearsal remain separate evidence types.
 
-Execution complete, 2026-10-01: all source/document work units and independent reviews accepted; final `python3 scripts/validation/run-ci-gate.py --profile changed` exit0. The reviewable packet is staged but uncommitted. Live deployment/recovery, installed-unit refresh and remote publication remain outside this completion. Detailed outcomes, earlier failed attempts and remaining implementation limits are preserved in the canonical Tasks.
+Source acceptance checkpoint, 2026-10-01: all source/document work units and independent reviews accepted; final `python3 scripts/validation/run-ci-gate.py --profile changed` exit0. At that checkpoint the reviewable packet was staged but uncommitted. Later authorized delivery and runtime reconciliation are tracked in SPEC0197 Plan W7 and Task0002; source acceptance does not substitute for those observations. Detailed outcomes, earlier failed attempts and remaining implementation limits are preserved in the canonical Tasks.
 
 ## Rulings
 
