@@ -1,10 +1,10 @@
 ---
 title: "CI Delivery Gate Optimization"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "specs"
 artifact_id: "SPEC-0199"
 parent_ids:
@@ -30,8 +30,9 @@ The user requested a review of local, remote, and GitHub Actions verification;
 evidence-based removal of one-off, legacy, deprecated, duplicate,
 contradictory, and excessive scripts and tests; and a tag that follows main.
 The user selected `main-current` and approved this architectural design on
-2026-10-01. This written Spec remains subject to separate review before a
-Plan or implementation begins.
+2026-10-01. The user approved the written Spec on 2026-10-01 and requested
+an implementation Plan; the written Plan was approved on 2026-10-02 with
+same-session implementation and an independent final review.
 
 ## Boundaries and Inputs
 

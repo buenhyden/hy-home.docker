@@ -1,10 +1,10 @@
 ---
 title: "CI Delivery Gate Optimization Implementation Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "specs"
 artifact_id: "SPEC-0199-PLAN-0001"
 parent_ids:
@@ -334,6 +334,6 @@ The minimal main-push route reuses the already registered Zizmor adapter
 directly instead of adding a third public profile or another gate runner.
 The initial script/test audit found no deletion candidate with a proven
 replacement; W1 may change that finding only with specific consumer and
-regression evidence. The recommended execution method is native same-session
-implementation with one independent whole-branch reviewer because W2-W4
-share the workflow contract and runner interfaces.
+regression evidence. The user selected native same-session implementation with one
+independent whole-branch reviewer on 2026-10-02; W2-W4 share the workflow
+contract and runner interfaces.
