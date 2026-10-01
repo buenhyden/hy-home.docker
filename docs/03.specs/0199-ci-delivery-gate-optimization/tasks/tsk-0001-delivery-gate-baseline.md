@@ -62,16 +62,19 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 - W2 final checks: wrapper contract PASS; 131 hook, routing, deferred-path, and workflow regression tests PASS; provider contract PASS (`failures=0`); script manifest and workflow contract PASS; Bash syntax, cached pinned Ruff 0.15.12 check/format, and ShellCheck 0.11.0 PASS. The external `core.hooksPath` remained untouched. The tracked declaration affects future installations, not the observed global hook.
 - W2 test disposition: `test_precommit_selector_admits_every_contract_changed_prefix` was the only deleted test. Its precondition (two public pre-commit profile hooks) no longer exists after W2, so its selector parity assertion became false by design. `test_public_hooks_are_absent_and_cheap_hooks_remain`, the existing gate path-selection tests, and `test_public_gate_surfaces_do_not_copy_atomic_commands` provide the replacement assertions. No script file was deleted.
 
+- W3 RED: the title-only route and trusted `PR_ACTION` projection failed focused tests before implementation. W3 GREEN: the runner admits a bounded, regular, unambiguous GitHub `edited` event with only `changes.title` and selects the registered git-flow root; malformed or mixed edits take the existing changed route. The required `validation-changed` job name, PR triggers and static command remain unchanged. 85 gate-plan, execution-context and workflow-contract tests passed, and the workflow checker passed (`workflows=5`, `jobs=7`, `actions=8`).
+- W3 test-output incident: an initial failing mock assertion serialized the inherited process environment into a local tool transcript. The test now clears inherited environment values and uses nonserializing call-count assertions. No credential values were added to tracked files. GitHub, Hugging Face and Vault/OpenBao credentials present in that process environment should be rotated by their owners; transcript retention and rotation are external to this repository change.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W0, W1, W5 | W1 PASS: phase matrix, installed-hook path and remote required context recorded; W5 policy pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 3 | W3, W5 | NOT_RUN: required PR context and title edit routing pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 3 | W3, W5 | LOCAL PASS: required PR name and triggers preserved; title-only routing has focused regression coverage; hosted status pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 4 | W4, W5 | NOT_RUN: main-push security and manual full separation pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
 | 5 | W4, W5 | NOT_RUN: `main-current` safety and hosted update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
-| 6 | W1, W4 | W1-W2 PASS: 76 active manifest entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; W4 registration pending | [Script manifest](../../../../scripts/manifest.yaml) |
+| 6 | W1, W4 | W1-W3 PASS: 76 active manifest entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; W4 registration pending | [Script manifest](../../../../scripts/manifest.yaml) |
 | 7 | W5 | NOT_RUN: canonical policy, review, and hosted delivery pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence

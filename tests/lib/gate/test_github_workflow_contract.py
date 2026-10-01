@@ -110,7 +110,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         document = self.load_contract_document(ROOT)
 
-        self.assertEqual(expected, workflow.data["on"]["pull_request"]["types"])
+        trigger = workflow.data["on"]["pull_request"]
+        self.assertEqual(expected, trigger["types"])
+        self.assertEqual(["main"], trigger["branches"])
+        self.assertNotIn("paths", trigger)
+        self.assertNotIn("paths-ignore", trigger)
+        changed = workflow.data["jobs"]["validation-changed"]
+        self.assertEqual("github.event_name == 'pull_request'", changed["if"])
+        self.assertEqual("${{ github.event.action }}", changed["env"]["PR_ACTION"])
         self.assertEqual(
             expected,
             document["workflows"][".github/workflows/ci-quality.yml"]["triggers"][

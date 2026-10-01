@@ -5,6 +5,7 @@ import collections.abc
 import dataclasses
 import enum
 import errno
+import json
 import os
 import pathlib
 import re
@@ -66,6 +67,7 @@ _MAX_PROC_PID_ENTRIES = 65_536
 _MAX_PROC_STAT_BYTES = 4_096
 _PROC_ROOT = pathlib.Path("/proc")
 _MAX_CHANGED_PATH_BYTES = 1024 * 1024
+_MAX_GITHUB_EVENT_BYTES = 1024 * 1024
 _MAX_CHANGED_PATHS = 10_000
 _FULL_SHA = re.compile(r"[0-9a-f]{40}\Z")
 _LOCAL_EXCLUDED_GATE_IDS = frozenset(
@@ -658,6 +660,42 @@ def execute_execution_plan(
         _remove_home(home)
 
 
+def _is_title_only_edit(environ: Mapping[str, str]) -> bool:
+    """Use the narrow PR title route only for an unambiguous GitHub event."""
+
+    if (
+        environ.get("GITHUB_ACTIONS") != "true"
+        or environ.get("EVENT_NAME") != "pull_request"
+        or environ.get("PR_ACTION") != "edited"
+    ):
+        return False
+    event_path = environ.get("GITHUB_EVENT_PATH", "")
+    if not event_path or not pathlib.Path(event_path).is_absolute():
+        return False
+    try:
+        fd = os.open(event_path, os.O_RDONLY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(fd)
+            if not stat.S_ISREG(info.st_mode) or info.st_size > _MAX_GITHUB_EVENT_BYTES:
+                return False
+            payload = os.read(fd, _MAX_GITHUB_EVENT_BYTES + 1)
+        finally:
+            os.close(fd)
+        if len(payload) > _MAX_GITHUB_EVENT_BYTES:
+            return False
+        event = json.loads(payload)
+    except (OSError, UnicodeError, ValueError):
+        return False
+    return (
+        isinstance(event, dict)
+        and event.get("action") == "edited"
+        and isinstance(event.get("changes"), dict)
+        and set(event["changes"]) == {"title"}
+        and isinstance(event["changes"]["title"], dict)
+        and isinstance(event["changes"]["title"].get("from"), str)
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = _GateArgumentParser(
         description="Execute registered repository CI gates",
@@ -689,6 +727,17 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         public_contract = parse_public_gate_contract(document)
         context = derive_execution_context(os.environ)
+        if (
+            arguments.profile == "changed"
+            and context is ExecutionContext.PULL_REQUEST
+            and _is_title_only_edit(os.environ)
+        ):
+            plan = build_public_execution_plan(registry, ("ci.git-flow-contract",))
+            if arguments.explain:
+                for invocation in plan:
+                    print(f"repository-integrity\t{invocation.entrypoint}")
+                return 0
+            return execute_execution_plan(root, plan, os.environ)
         changed_paths = (
             ()
             if arguments.profile == "full"

@@ -1001,6 +1001,7 @@ def _workflow_projection_findings(
                 "EVENT_NAME": "${{ github.event_name }}",
                 "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
                 "PR_TITLE": "${{ github.event.pull_request.title }}",
+                "PR_ACTION": "${{ github.event.action }}",
                 "HEAD_REF": "${{ github.head_ref }}",
             },
         ),
