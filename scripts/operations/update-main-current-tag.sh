@@ -33,7 +33,10 @@ if [[ -n $expected ]]; then
       echo 'non-commit channel tag refused' >&2; exit 1;
     }
   }
-  [[ $expected != "$GITHUB_SHA" ]] || exit 0
+  if [[ $expected == "$GITHUB_SHA" ]]; then
+    printf 'main-current old=%s new=%s (unchanged)\n' "$expected" "$GITHUB_SHA"
+    exit 0
+  fi
 fi
 
 [[ $(git ls-remote origin refs/heads/main) == "$GITHUB_SHA"$'\t'refs/heads/main ]] || {
@@ -41,3 +44,4 @@ fi
 }
 git push --porcelain --force-with-lease="refs/tags/main-current:$expected" \
   origin "$GITHUB_SHA:refs/tags/main-current"
+printf 'main-current old=%s new=%s\n' "${expected:-<absent>}" "$GITHUB_SHA"

@@ -97,7 +97,7 @@ Inventory 표는 각 entrypoint의 용도를 설명합니다.
 | Typed Gate Runner | [run-ci-gate.py](./validation/run-ci-gate.py) | closed `changed`/`full` public profile을 tracked descriptor-bound entrypoint에서 최소 환경과 bounded timeout으로 설명하거나 실행한다 |
 | Typed Gate Adapters | [ci_gate_adapters.py](./lib/gate/ci_gate_adapters.py) | shell interpolation이나 ambient secret forwarding 없이 typed gate leaf가 사용하는 closed 인자 문법을 구현한다 |
 | GitHub Workflow Contract Gate | [check-github-workflow-contract.py](./validation/check-github-workflow-contract.py) | tracked workflow trigger, permission, concurrency, job identity, canonical typed gate registry, 로컬로 evidence화된 full-SHA Action 의존성을 정확히 검증한다 |
-| CI-only Pre-commit Entry Point | [run-ci-precommit.sh](./validation/run-ci-precommit.sh) | GitHub Actions 안에서만 고정된 all-files hook 명령을 실행하며 gate가 소유한 `public-validation-*` hook 두 개는 건너뛰어 두 orchestrator가 서로 재진입하지 않게 한다; 이 스크립트는 Agent 인가 경로가 아니다 |
+| CI-only Pre-commit Entry Point | [run-ci-precommit.sh](./validation/run-ci-precommit.sh) | GitHub Actions 안에서만 고정된 all-files hook 명령을 실행한다. 제거된 공개 프로필 hook은 호출하거나 건너뛰지 않으며, 이 스크립트는 Agent 인가 경로가 아니다 |
 | Storybook Contract Check | [check-storybook-contract.sh](./validation/check-storybook-contract.sh) | Storybook CI 스크립트, workflow 연결, 90% coverage 임계값 메타데이터를 강제한다 |
 | QuickWin Baseline Check | [check-quickwin-baseline.sh](./validation/check-quickwin-baseline.sh) | PLN-QW-001~005 baseline control을 강제한다 |
 | Template & Security Baseline Check | [check-template-security-baseline.sh](./validation/check-template-security-baseline.sh) | template 채택과 필수 보안 통제를 강제한다 |

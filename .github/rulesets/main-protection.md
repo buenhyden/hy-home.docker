@@ -61,9 +61,11 @@ registered root DAG exactly once through static typed-gate invocations.
 
 - `validation-changed`
 
-`validation-full` runs after main pushes and on manual dispatch. It is not a PR
-pre-merge gate; a failure after a push detects a problem in the pushed revision
-and cannot retroactively prevent that merge.
+`validation-full` runs only on manual dispatch. Main pushes run `main-security`
+on the merged revision, then `update-main-current` only after that audit succeeds.
+Neither post-merge job is a PR pre-merge gate; a failure after a push cannot
+retroactively prevent that merge. The required PR context remains
+`validation-changed` on every PR event, including title edits.
 
 GitHub treats a job skipped by a job-level condition as successful for required
 checks. A whole workflow skipped by path/branch filters or a commit-message

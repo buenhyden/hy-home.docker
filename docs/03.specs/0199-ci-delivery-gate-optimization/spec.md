@@ -1,6 +1,6 @@
 ---
 title: "CI Delivery Gate Optimization"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -83,8 +83,11 @@ Keep the PR workflow eligible for every PR to main, including documentation
 changes. Do not apply workflow-level path filters that leave the required check
 pending when GitHub skips a workflow. Preserve cancellation of stale runs, but
 do not cancel a newer candidate's check in favor of an older one. A PR title
-edit may rerun title validation when required by the existing git-flow
-contract; it does not justify an unrelated full-suite rerun.
+edit reruns the required changed profile, including git-flow validation.
+This repetition is necessary because an edited run can cancel an in-progress
+synchronize run under the workflow's concurrency group. A git-flow-only
+success under the same required job name would otherwise allow the candidate
+SHA to appear green without a completed changed-profile result.
 
 The post-merge path must have an explicit narrow profile or equivalent
 registered route in the existing gate system. Define its allowed gate leaves

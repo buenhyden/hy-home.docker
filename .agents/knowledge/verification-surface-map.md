@@ -22,8 +22,9 @@ The workflow contract owns the actual composition; this map is navigation.
 
 The two public validation profiles, the six public suites, their root gate
 nodes, the prefix rules that select suites for a changed path, and the leaves
-the local context withholds. Excluded: Hosted CI job scheduling, remote branch
-protection, and any runtime observation.
+the local context withholds. Hosted job scheduling is routed to the
+[canonical phase matrix](../governance/quality-standards.md#canonical-delivery-phase-matrix);
+remote branch protection and runtime observation are outside this map.
 
 ## Public Entrypoints
 
@@ -101,20 +102,19 @@ unknown valid path retains every root of every selected suite. Unavailable or in
 changed-path evidence fails closed before planning. `full` retains all suite
 roots before the execution-context exclusions above apply.
 
-## Two Selectors, One Requirement
+## Changed Route and PR Title Edits
 
-Two routing surfaces have different responsibilities:
-
-- `.github/workflow-contract.yml` `public_gate.changed_path_rules` decides which
-  suites a changed path needs.
-- `.pre-commit-config.yaml` admits every path for both public hooks and sets
-  `always_run: true`, so empty or deletion-only input does not omit validation.
-
-The hook does not maintain a second impact list. Registered regressions compare
-its admitted paths and always-run behavior with the public routing contract.
-Automatic commit hooks observe the index with surviving untracked inputs;
-direct local `changed` observes the staged/unstaged/untracked union. A receipt
-from either route proves its own snapshot only.
+`.github/workflow-contract.yml` `public_gate.changed_path_rules` selects the
+suites for a changed path. The tracked pre-commit declaration no longer
+contains public `changed` or `full` hooks; the required PR
+`validation-changed` job owns that hosted check. On a GitHub PR `edited` event,
+the required job still selects the normal changed-path route and its
+registered git-flow leaf. A title-only shortcut under the required job would
+make an edited run capable of replacing an unfinished synchronize check.
+No workflow-level path filter is applied, so the required context remains
+eligible for documentation-only and title-only PR events. The installed
+`core.hooksPath` can differ from the tracked declaration and must be observed
+separately.
 
 ## Generated Outputs and Staging Order
 
@@ -151,7 +151,10 @@ replaces it rather than extending it.
 The previous claim that the path rules were unchanged is superseded by the
 explicit root-tool rules and optional-root selection now described above.
 The workflow contract remains the execution authority; a disagreement between
-this navigation map and that source is a defect in this map. Dated execution
+this navigation map and that source is a defect in this map. On 2026-10-02,
+SPEC-0199 re-read the changed-route owner, tracked hooks and quality workflow
+at implementation commit `371f9f3d5`; the prior public-hook admission claim
+was superseded by the PR-owned route above. Dated execution
 and staging-recovery receipts belong to the current Spec Package Task.
 
 The local exclusion table is transcribed from `_LOCAL_EXCLUDED_GATE_IDS` and

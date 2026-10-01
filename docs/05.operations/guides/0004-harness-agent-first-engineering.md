@@ -47,8 +47,11 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 현재 Hadolint는 짝지어진 revision과 image tag를 사용하지만 image byte까지
 고정한 것은 아니다. digest 도입에는 별도 검토된 update/rollback 경계가 필요하다.
 
-`validation-changed`는 PR, `validation-full`은 main push/manual 실행을 담당한다.
-현재 PR `edited`와 event/ref별 concurrency가 title 검사와 수동 진단을 분리한다.
+`validation-changed`는 모든 PR의 필수 검사이고, 제목만 수정한 PR도 변경 범위
+검사와 git-flow 검사를 실행한다. 제목 변경 실행이 진행 중인 코드 변경 검사를 취소할
+수 있어 필수 검사를 축소하지 않는다. `validation-full`은 수동 점검에만 사용한다. main push에서는
+병합된 SHA의 Zizmor/SARIF 검사를 수행하고 성공하면 `main-current` 채널 태그를
+갱신한다. PR `edited`와 event/ref별 concurrency가 제목 검사와 수동 진단을 분리한다.
 공유 setup만으로 중복 gate라고 판단하거나 local 성공을 hosted 재실행으로
 기록하지 않는다. 정확한 진단·검증 순서는 Runbook의 CI 절로 전달한다.
 

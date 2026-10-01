@@ -1008,7 +1008,6 @@ def _workflow_projection_findings(
                 "EVENT_NAME": "${{ github.event_name }}",
                 "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
                 "PR_TITLE": "${{ github.event.pull_request.title }}",
-                "PR_ACTION": "${{ github.event.action }}",
                 "HEAD_REF": "${{ github.head_ref }}",
             },
         ),
@@ -1084,6 +1083,21 @@ def _workflow_projection_findings(
             )
             continue
         if raw_job_id in {"main-security", "update-main-current"}:
+            expected_keys = {
+                "if",
+                "permissions",
+                "runs-on",
+                "timeout-minutes",
+                "steps",
+            } | ({"needs"} if raw_job_id == "update-main-current" else set())
+            if set(raw_job) != expected_keys:
+                findings.append(
+                    _finding(
+                        "workflow-gate-execution-context-invalid",
+                        path,
+                        f"job {raw_job_id} contains unadmitted execution controls",
+                    )
+                )
             action_shas = {item.action: item.sha for item in contract.actions}
             if raw_job_id == "main-security":
                 expected_steps = [

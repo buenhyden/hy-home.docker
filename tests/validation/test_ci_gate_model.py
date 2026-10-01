@@ -96,7 +96,8 @@ class PublicSuiteModelTests(unittest.TestCase):
         jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
             "jobs"
         ]
-        for name, job in jobs.items():
+        for name in ("validation-changed", "validation-full"):
+            job = jobs[name]
             steps = job["steps"]
             runner_index = next(
                 i

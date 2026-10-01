@@ -66,7 +66,7 @@ Quality dimensions:
 
 - **Local**: fail-fast validation, for example
   `scripts/validation/run-ci-gate.py --profile changed`, automatic commit hooks
-  for formatting and linting, and pre-push structural contract scripts. Agents
+  for cheap formatting and linting, and explicit focused checks. Agents
   must not invoke `pre-commit run` directly. Approved final QA all-files
   execution uses only `scripts/validation/run-agent-precommit-all-files.sh` from
   an initially clean linked worktree with a tracked co-located Task and reviewed
@@ -78,13 +78,28 @@ Quality dimensions:
   requires `GITHUB_ACTIONS=true` and `CI=true`, sets its own skip list, and
   executes the exact pinned CI command. It is not a local or Agent
   authorization path. The public gate reaches it as the `leaf.pre-commit`
-  root of the `repository-integrity` suite, which is the changed-profile
-  fallback, so formatting and linting gate every push and pull request.
+  root of the `repository-integrity` suite for every PR event, including
+  title edits, so an edited run cannot replace a cancelled revision check
+  with narrower evidence.
 - **Anti-duplication**: do not execute the same heavy workloads redundantly. A
-  task with a dedicated gate leaf is skipped in the CI `pre-commit` runner. The
-  `public-validation-changed` and `public-validation-full` hooks are skipped
-  for a second reason: the gate invokes the runner, so running them from inside
-  it would make the two orchestrators call each other without end.
+  task with a dedicated gate leaf is skipped in the CI `pre-commit` runner.
+  The removed `public-validation-changed` and `public-validation-full` hook
+  registrations must not be reintroduced: the PR job owns the public changed
+  gate and manual dispatch owns the full audit.
+
+### Canonical delivery phase matrix
+
+| Boundary | Automatic owner | Distinct evidence |
+| --- | --- | --- |
+| Commit | Installed local cheap secret, format, lint and message checks; tracked `.pre-commit-config.yaml` declares cheap checks only | Staged bytes; the installed `core.hooksPath` must be observed separately |
+| Feature push | No automatic public gate in this repository | Explicit focused local checks remain available |
+| Agent Stop | Status and completion diagnostics only | Current working-tree state; no second changed-profile run |
+| PR to main | Required `validation-changed` for opened, synchronized, reopened and edited PRs; title edits still run changed selection | Candidate revision and PR identity; all PR actions use changed-path selection |
+| Main push | `main-security` runs the registered Zizmor adapter and uploads SARIF | Merged SHA in the hosted security context; no routine six-suite full rerun |
+| Successful main-push audit | `update-main-current` with `contents: write` only | Leased channel tag old/new SHA, after rechecking current remote main |
+| Manual dispatch | `validation-full` | Intentional all-suite audit of the selected ref |
+
+CodeQL and external security integrations remain separate hosted observations. An absent, cancelled or failed required PR status does not authorize a merge. A failed `main-security` or tag update remains a visible post-merge failure; recovery follows `docs/05.operations/runbooks/0009-release-management.md`. The out-of-repository installed Git hook is not changed by editing the tracked declaration.
 
 ### Local QA Environment
 

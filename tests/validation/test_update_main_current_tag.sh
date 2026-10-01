@@ -34,9 +34,11 @@ assert_release() {
 }
 
 # A missing channel tag is created; the same commit is idempotent.
-run_update "$first"
+receipt=$(run_update "$first")
+[[ $receipt == *"main-current old=<absent> new=$first"* ]]
 test "$(remote_tag)" = "$first"
-run_update "$first"
+receipt=$(run_update "$first")
+[[ $receipt == *"main-current old=$first new=$first (unchanged)"* ]]
 test "$(remote_tag)" = "$first"
 assert_release
 

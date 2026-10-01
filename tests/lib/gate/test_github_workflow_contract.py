@@ -119,7 +119,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertNotIn("paths-ignore", trigger)
         changed = workflow.data["jobs"]["validation-changed"]
         self.assertEqual("github.event_name == 'pull_request'", changed["if"])
-        self.assertEqual("${{ github.event.action }}", changed["env"]["PR_ACTION"])
         self.assertEqual(
             expected,
             document["workflows"][".github/workflows/ci-quality.yml"]["triggers"][
@@ -1084,6 +1083,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for job_id, mutation in (
             ("update-main-current", lambda job: job.pop("needs")),
             ("main-security", lambda job: job["steps"].pop()),
+            ("main-security", lambda job: job.update({"continue-on-error": True})),
+            (
+                "update-main-current",
+                lambda job: job.update({"continue-on-error": True}),
+            ),
         ):
             with self.subTest(job=job_id):
                 data = copy.deepcopy(document.data)

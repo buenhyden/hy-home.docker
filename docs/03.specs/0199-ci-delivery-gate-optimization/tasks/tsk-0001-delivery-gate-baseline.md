@@ -34,7 +34,7 @@ The user approved the written Spec, Plan, same-session implementation, and indep
 | Commit | Installed ECC pre-commit secret scan; declared `.pre-commit-config.yaml` also binds `public-validation-changed` to `run-ci-gate.py --profile changed` | Local staged bytes; declared hook is not installed here | Keep unique secret/format/message checks; remove the declared duplicate public gate in W2 |
 | Feature push | Installed ECC pre-push has no supported checks here; declared pre-push binds `public-validation-full` | Local branch tip; declared hook is not installed here | Remove declared full gate in W2; focused checks remain explicit |
 | Agent Stop | Both provider bindings call `agent-event-hook.sh Stop`, which runs changed after dirty Git status with a 540-second budget | Local working tree, often the same edits checked earlier | Remove the automatic changed run in W2; keep cheap status and completion diagnostics |
-| PR to main | `validation-changed` calls `run-ci-gate.py --profile changed` for opened, synchronized, reopened, and edited PRs; title-only edits still run the full changed selection | Hosted candidate SHA and main comparison base; required strict context | Keep required name and revision gate; title-only edit executes only registered git-flow leaf in W3 |
+| PR to main | `validation-changed` calls `run-ci-gate.py --profile changed` for opened, synchronized, reopened, and edited PRs; title-only edits still run the full changed selection | Hosted candidate SHA and main comparison base; required strict context | Keep required name and changed-profile revision gate for title edits as well |
 | Main push | `validation-full` calls `run-ci-gate.py --profile full` and uploads Zizmor SARIF | Hosted merged SHA; repeats PR-owned QA suites | Replace routine full with registered Zizmor/SARIF security job in W4 |
 | Manual dispatch | `validation-full` calls `run-ci-gate.py --profile full` and uploads SARIF | Explicit selected ref | Retain deliberate full audit in W4 |
 | Other hosted security | CodeQL default setup and external GitGuardian run independently | Their hosted revision and service context | Retain as distinct external observations |
@@ -67,13 +67,17 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 
 - W4 RED: the bare-remote tag test failed before the updater existed. W4 GREEN: `validation-full` is manual-only; the main-push `main-security` job runs the registered Zizmor adapter and uploads SARIF, and `update-main-current` depends on its success with job-scoped `contents: write`. A bare-remote test passed creation, idempotence, stale-main refusal, annotated-tag refusal, failed remote push, concurrent tag lease rejection, and release-tag preservation. 136 combined gate, routing and workflow tests passed; the workflow checker passed (`workflows=5`, `jobs=9`, `actions=8`); manifest, shell syntax, ShellCheck, Ruff and active-document metadata checks passed. Hosted main-push execution and remote tag movement remain unobserved until protected merge.
 
+- W5 independent-review correction: the first title-only optimization could let an `edited` run cancel a pending `synchronize` run and satisfy the same required status with only git-flow. The fast path and `PR_ACTION` projection were removed. A focused regression now proves even a title-only `edited` payload executes changed-path collection plus git-flow and document gates. The review also found a new runbook heading forbidden by the changed-body contract; the content was retained under the existing Overview and `check-changed --base-ref origin/main` passed with zero violations. The initial 85-test W3 result describes the superseded candidate, not the final route.
+
+- W5 local integration: the first broad `changed` run reached the OIDC entrypoint tests and failed only because two unrelated checkout files had local mode `775` under umask `002`, although Git records both as `100755`. Resetting those two worktree permissions to `755` changed no tracked bytes or Git mode; both failing tests then passed. The second broad run exposed an existing gate-model test that assumed every workflow job calls the public gate; it now checks the two jobs that actually do, and the 91 focused gate/workflow tests pass. A final broad changed run is pending. The mode correction is local environment repair.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W0, W1, W5 | W1 PASS: phase matrix, installed-hook path and remote required context recorded; W5 policy pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 3 | W3, W5 | LOCAL PASS: required PR name and triggers preserved; title-only routing has focused regression coverage; hosted status pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 3 | W3, W5 | LOCAL PASS: required PR name and triggers preserved; edited title reruns changed profile by regression; hosted status pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 4 | W4, W5 | LOCAL PASS: manual full and main-push security have distinct guarded jobs; hosted main push pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
 | 5 | W4, W5 | LOCAL PASS: bare-remote creation, idempotence, stale/race/annotated/rejection cases; hosted tag update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
 | 6 | W1, W4 | W1-W4 PASS: 76 baseline entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; tag updater registered with its shell test | [Script manifest](../../../../scripts/manifest.yaml) |
@@ -81,7 +85,7 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 
 ## Review Evidence
 
-Pending independent read-only review of the implementation candidate.
+Independent read-only review found two blocking issues: a forbidden runbook heading and the unsafe title-only shortcut under the required PR context. Both were corrected in W5; changed-document metadata and the edited-event regression passed. The same independent reviewer re-reviewed the corrected diff and found no remaining merge blocker. The workflow checker also rejects extra execution-control keys on the main security and tag jobs, including `continue-on-error`; its mutation test passed.
 
 ## Commit Ledger
 
@@ -95,4 +99,4 @@ The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53
 
 ## Deferred Items
 
-None at Task creation. Failed, skipped, and not-run checks will remain explicit until observed.
+Credential values inherited by an initial failing W3 test were printed into a local tool transcript. The test harness no longer serializes the environment, and no recognized credential values were found in tracked changes; credential owners should rotate the exposed GitHub, Hugging Face and Vault/OpenBao credentials and review their audit logs. Transcript retention and rotation are external to this repository package. Hosted PR/main-push checks and remote tag read-back remain pending until protected delivery.

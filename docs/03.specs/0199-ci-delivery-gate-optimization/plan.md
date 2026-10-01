@@ -1,6 +1,6 @@
 ---
 title: "CI Delivery Gate Optimization Implementation Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -77,8 +77,9 @@ Every script/test removal needs a consumer, replacement and regression record.
 
 ### Review focus
 
-1. PR body/base edit masquerades as a title-only edit: W3's test permits
-   title-only fast path only when the trusted event change set is exactly title.
+1. A title edit cancels an in-progress synchronize run: W3 keeps the full
+   changed profile under the required context for every edited event, so a
+   git-flow-only result cannot replace unfinished revision validation.
 2. A stale main run moves the tag backward: W4's bare-remote test advances
    main before the tag action and requires a nonzero result with unchanged tag.
 3. Concurrent tag movement is overwritten: W4's lease test changes the remote
@@ -101,8 +102,8 @@ Every script/test removal needs a consumer, replacement and regression record.
    pre-commit/pre-push routes and Stop's mandatory changed-profile run while
    retaining cheap unique checks and CI pre-commit recursion safety.
 3. **W3 — PR required context.** Keep `validation-changed` for all PRs,
-   restricting title-only edits to the git-flow check while other revisions
-   run the existing changed selection.
+   running the existing changed selection for edited events as well as
+   opened, synchronized and reopened revisions.
 4. **W4 — Merged security and channel tag.** Make `full` manual-only; run
    registered Zizmor/SARIF on main push and move the leased channel tag only
    after success.
@@ -198,24 +199,20 @@ hosted PR quality owner.
 `tests/validation/test_agent_governance_ci_routing.py`.
 
 **Interfaces:** The existing `--profile changed` remains the one static
-command in `validation-changed`. Add
-`_is_title_only_edit(environ: Mapping[str, str]) -> bool` in the runner:
-read a size-bounded `GITHUB_EVENT_PATH` JSON only for a GitHub PR `edited`
-event, return true only when `changes` has exactly the `title` key, and
-return false on missing/malformed/ambiguous input. True selects only the
-registered `ci.git-flow-contract` root; false uses current changed-path
-roots. Never interpolate payload values into shell or accept a caller-supplied
-arbitrary root list.
+command in `validation-changed` for opened, synchronized, reopened and edited
+PR events. Do not add a title-only fast path to this required context. An
+edited run can cancel an in-progress synchronize run on the same PR ref; a
+successful git-flow-only replacement would leave the candidate SHA without
+completed changed-profile evidence. The runner retains its existing
+changed-path selection and registered git-flow leaf for every PR event.
 
-- [ ] Add failing `test_title_only_edit_runs_git_flow_only`,
-  `test_ambiguous_edit_runs_changed_profile`, and workflow trigger/filter
-  cases for open/synchronize/reopen. Assert that the required job remains
-  eligible for all PRs. A stale or missing hosted status is verified at W5,
-  not simulated as a local success. Capture the expected failures.
-- [ ] Pass the trusted event action/change-set to the runner, admit the
-  title-only route, and keep `validation-changed` as the required job on
-  every PR to main. Update the focused checker without weakening its
-  checkout, SHA, permission or event checks.
+- [ ] Add a focused regression that supplies a title-only `edited` payload but
+  verifies changed-path collection and both git-flow and document gates still
+  run. Assert all four PR actions and the absence of workflow path filters.
+- [ ] Keep the required `validation-changed` job and static command on every
+  PR to main. The focused checker must retain checkout, SHA, permission,
+  concurrency and event checks. Do not accept a narrower success under the
+  required name.
 - [ ] Run `python3 -m unittest tests.validation.test_ci_gate_plan
   tests.validation.test_ci_gate_execution_context
   tests.lib.gate.test_github_workflow_contract -v` and

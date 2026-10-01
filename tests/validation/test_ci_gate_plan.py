@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import dataclasses
 import io
-import json
 import os
 import pathlib
 import shutil
@@ -1107,51 +1106,27 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 self.assertEqual((), metadata.allowed_env_keys)
 
 
-class TitleEditRoutingTests(unittest.TestCase):
-    @staticmethod
-    def _environment(path: pathlib.Path) -> dict[str, str]:
-        return {
-            "HYHOME_CI_GATE_ROOT": str(ROOT),
-            "PATH": os.defpath,
-            "GITHUB_ACTIONS": "true",
-            "EVENT_NAME": "pull_request",
-            "PR_ACTION": "edited",
-            "GITHUB_EVENT_PATH": str(path),
-            "PR_BASE_SHA": "a" * 40,
-            "PR_TITLE": "docs: Valid title",
-            "HEAD_REF": "codex/topic",
-        }
-
-    def test_title_only_edit_runs_git_flow_only(self) -> None:
+class EditedPRRoutingTests(unittest.TestCase):
+    def test_title_only_edit_still_runs_required_changed_gate(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
-            path = pathlib.Path(directory) / "event.json"
-            path.write_text(
-                json.dumps({"action": "edited", "changes": {"title": {"from": "old"}}}),
+            event = pathlib.Path(directory) / "event.json"
+            event.write_text(
+                '{"action":"edited","changes":{"title":{"from":"old"}}}',
                 encoding="utf-8",
             )
+            environment = {
+                "HYHOME_CI_GATE_ROOT": str(ROOT),
+                "PATH": os.defpath,
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_ACTION": "edited",
+                "GITHUB_EVENT_PATH": str(event),
+                "PR_BASE_SHA": "a" * 40,
+                "PR_TITLE": "docs: Valid title",
+                "HEAD_REF": "codex/topic",
+            }
             with (
-                mock.patch.dict(os.environ, self._environment(path), clear=True),
-                mock.patch.object(runner, "collect_changed_paths") as changed,
-                mock.patch.object(
-                    runner, "execute_execution_plan", return_value=0
-                ) as execute,
-            ):
-                self.assertEqual(0, runner.main(["--profile", "changed"]))
-            self.assertFalse(changed.called, "title-only edits must skip changed paths")
-            self.assertEqual(
-                ["leaf.git-flow-contract"],
-                [item.gate_id for item in execute.call_args.args[1]],
-            )
-
-    def test_ambiguous_edit_runs_changed_profile(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            path = pathlib.Path(directory) / "event.json"
-            path.write_text(
-                json.dumps({"action": "edited", "changes": {"title": {}, "base": {}}}),
-                encoding="utf-8",
-            )
-            with (
-                mock.patch.dict(os.environ, self._environment(path), clear=True),
+                mock.patch.dict(os.environ, environment, clear=True),
                 mock.patch.object(
                     runner,
                     "collect_changed_paths",
@@ -1164,27 +1139,5 @@ class TitleEditRoutingTests(unittest.TestCase):
                 self.assertEqual(0, runner.main(["--profile", "changed"]))
             self.assertEqual(1, changed.call_count)
             gate_ids = {item.gate_id for item in execute.call_args.args[1]}
+            self.assertIn("leaf.git-flow-contract", gate_ids)
             self.assertIn("leaf.repo-document-metadata", gate_ids)
-            self.assertGreater(len(gate_ids), 1)
-
-    def test_title_fast_path_rejects_untrusted_or_ambiguous_events(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            path = pathlib.Path(directory) / "event.json"
-            env = self._environment(path)
-            for payload in (
-                {},
-                {"action": "edited", "changes": {}},
-                {"action": "edited", "changes": {"title": {}, "body": {}}},
-                {"action": "synchronize", "changes": {"title": {}}},
-            ):
-                with self.subTest(payload=payload):
-                    path.write_text(json.dumps(payload), encoding="utf-8")
-                    self.assertFalse(runner._is_title_only_edit(env))
-            path.write_text("{invalid", encoding="utf-8")
-            self.assertFalse(runner._is_title_only_edit(env))
-            path.write_bytes(b"x" * (1024 * 1024 + 1))
-            self.assertFalse(runner._is_title_only_edit(env))
-            self.assertFalse(
-                runner._is_title_only_edit({**env, "PR_ACTION": "synchronize"})
-            )
-            self.assertFalse(runner._is_title_only_edit({**env, "GITHUB_ACTIONS": ""}))
