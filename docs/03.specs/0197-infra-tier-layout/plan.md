@@ -2,7 +2,7 @@
 title: "Infrastructure Tier Layout Implementation Plan"
 version: "0.1.0"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -545,10 +545,10 @@ Task0002 owns actual receipts. Existing source acceptance remains unchanged.
 
 - [x] Record independent source/security review, frozen changed-gate PASS,
   remote protection, live identities/images/mounts and old-source config hashes.
-- [ ] Register legal lifecycle transitions, publish the reviewed branch through
+- [x] Register legal lifecycle transitions, publish the reviewed branch through
   a main PR, require hosted checks, and preserve the original planning drafts
   through their exact recovery commit before synchronizing the main checkout.
-- [ ] Preserve public old bind-source bytes for target-only rollback. After
+- [x] Preserve public old bind-source bytes for target-only rollback. After
   main integration, recreate master, volume, filer and S3 in that order, then
   Registry, Dozzle and RedisInsight individually with no dependencies, build,
   pull, volume renewal or optional-profile startup. Wait for existing health
@@ -558,16 +558,26 @@ Task0002 owns actual receipts. Existing source acceptance remains unchanged.
   through an explicit temporary image override; its prior v11.1.1 source gap
   is not an upgrade authorization. Independent runtime review accepted this
   seven-target scope and preservation contract.
-- [ ] Apply only the installed Restic ExecStart source-prefix change after
+- [x] Apply only the installed Restic ExecStart source-prefix change after
   confirming the new main target exists and the captured unit hash matches.
   Preserve host-specific unit settings and timer state; validate the unit and
-  daemon-reload without starting backup. Root authentication is currently
-  unavailable; do not bypass it or claim this step passed without observation.
-- [ ] Record container health, exact image/mount preservation, installed-unit
-  verification and hosted delivery evidence. Complete SPEC0197/0198 only when
-  required work is actually done; verify SPEC0194 is already completed.
-  Commit final receipts through the same protected PR process, synchronize
-  main/origin/main, and remove only the fully delivered clean branch/worktree.
+  daemon-reload without starting backup. Root authentication was initially
+  unavailable on2026-10-01; the owner subsequently executed the reviewed helper.
+  Independent read-back confirmed the exact unit token, ownership and timer
+  preservation. No backup was started and the temporary bridge was removed.
+- [x] Record observed container health, exact image/mount preservation,
+  installed-unit verification, source delivery and independent acceptance in
+  Task0002. These observations complete W7 operational acceptance; they do not
+  claim future receipt publication or workspace cleanup.
+
+Required delivery follow-through: publish the active and then completed
+SPEC0197/0198 packages through their legal lifecycle transitions and the same
+protected PR process. Verify SPEC0194 remains completed after those packages.
+After the final receipt PR passes required CI and merges, synchronize local
+main/origin/main, verify all named recovery commits are reachable, and remove
+only the fully delivered clean task branch/worktree. These post-merge steps
+remain mandatory and pending until observed; do not report overall delivery
+complete before executing and verifying them.
 
 Rollback is target-only: use the captured image, previous tier and preserved
 public source bindings if a recreation fails; retain all existing volumes and
