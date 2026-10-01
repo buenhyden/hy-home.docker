@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -16,83 +16,66 @@ created: "2026-05-17"
 
 ## Usage
 
-### Overview
+이 가이드는 개발자·운영자·AI Agent가 실제 호출 흐름에 맞는 network를 선택하도록
+돕는다. 구조적 할당은 [AD-0026 Networks](../../02.architecture/descriptions/0026-standardize-infra-net.md#networks-spec-0180-s05),
+선언은 [루트 Compose](../../../docker-compose.yml)와 해당 service fragment가
+소유한다. 서비스가 여러 network를 공유해도 개별 인증·권한 검증을 대신하지 않는다.
 
-이 문서는 인프라 서비스를 실제 흐름에 맞는 network에 연결하는 가이드다. 프로젝트의 일관성을 유지하기 위해 표준 딕셔너리 기반의 네트워크 정의 방식을 따른다.
+### Flow and membership
 
-### Usage Type
+Traefik이 route하는 backend는 `edge_net`, Prometheus scrape 대상은 `obs_net`,
+관리 PostgreSQL/Valkey 소비자는 `mng_data_net`, S3 소비자는 `object_net`처럼
+실제 peer가 있는 network만 사용한다. peer가 없으면 project default network를
+사용한다. 서비스 membership은 dictionary로 적는다.
 
-`how-to | system-guide`
+```yaml
+networks:
+  edge_net: {}
+  obs_net: {}
+```
 
-### Target Audience
+고정 주소는 다른 곳이 해당 주소를 신뢰하는 경우에만 부여하고 Compose 주석으로
+이유를 남긴다. Traefik trusted-proxy 주소와 OpenSearch node announce 주소가
+현재 예다. 대부분의 서비스는 dynamic 주소를 받는다. 고정 주소는 같은 network의
+subnet 안, dynamic pool 밖이어야 하며 다른 service와 겹치지 않아야 한다.
 
-- Developer
-- Operator
-- AI Agent
+root include는 파일을 읽고 profile·직접 service target은 실행 대상을 정한다.
+모든 선언을 검토했다고 모든 서비스를 기동한 것은 아니다. root의 external network,
+leaf 소유 isolated network와 root 생성 network를 구분한다. k3d와 Compose는
+Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
+[0096](0096-k8s-integration.md)이 소유한다.
 
-### Purpose
+### Common pitfalls
 
-이 가이드는 시스템 관리자나 개발자가 신규 서비스 또는 기존 서비스를 `hy-home.docker`의 분리된 network 구조에 올바르게 연결하는 것을 돕는다.
-
-### Prerequisites
-
-- `hy-home.docker` 프로젝트 루트 디렉터리에 대한 쓰기 권한.
-- Docker Compose v2.0 이상.
-- `docs/02.architecture/descriptions/0026-standardize-infra-net.md`의 current
-  structural allocation table.
-
-### Step-by-step Instructions
-
-1. **필요한 flow 확인**:
-   - 서비스가 실제로 호출하는 상대를 확인한다. Traefik route가 있으면 `edge_net`,
-     Prometheus가 scrape하면 `obs_net`, `mng-pg`/`mng-valkey`를 쓰면 `mng_data_net`,
-     S3를 쓰면 `object_net`이다. 전체 표는
-     `docs/02.architecture/descriptions/0026-standardize-infra-net.md`의 **Networks**가 소유한다.
-2. **Compose 파일 수정**:
-   - `services:` 하위의 대상 서비스에서 사용하는 network만 딕셔너리 형태로 적는다.
-
-   ```yaml
-   networks:
-     edge_net: {}
-     obs_net: {}
-   ```
-
-   - 고정 주소는 다른 곳이 그 주소를 신뢰할 때만 부여하고 사유를 주석으로 남긴다.
-     상대가 없는 서비스는 `networks:` 자체를 생략해 프로젝트 기본 network를 쓴다.
-3. **루트 Docker Compose 수정**:
-   - 프로젝트 루트의 `docker-compose.yml` 내 `include:` 섹션에 해당 파일이 있는지 확인한다. include는 무조건 병합되므로, 실제 기동 여부는 선택한 profile로 판단한다.
-4. **구성 검증**:
-   - repository root에서 `bash scripts/validation/validate-docker-compose.sh`를 실행하여 기본 compose 구조와 root network 컨텍스트를 검증한다.
-   - 특정 tier profile을 변경한 경우 해당 profile을 `HYHOME_COMPOSE_PROFILES`에 지정해 동일 검증을 반복한다.
-
-### Common Pitfalls
-
-- **IP Conflict**: 고정 주소를 부여할 때 `rg -n "ipv4_address:" infra docker-compose.yml`로 중복을 확인한다.
-- **Indentation Error**: YAML 딕셔너리 구조에서의 들여쓰기 오류 주의.
-- **Network Scope**: 해당 network의 선언된 `10.250.x.0/24` 밖 주소를 쓰면 배포가 실패한다.
-- **Multi-homed bind**: 여러 network에 붙은 서버는 `0.0.0.0`에 bind한다. 자기 이름은 한
-  network에서만 해석되므로 그 주소에 bind하면 다른 network의 client가 닿지 못한다.
-- **Missing peer network**: 이름이 해석되지 않으면 대개 두 서비스가 공유하는 network가 없다는 뜻이다.
+- 다중 network 서버가 자기 DNS 이름의 한 주소에만 bind하면 다른 network의
+  client가 닿지 못할 수 있다. 해당 listener는 승인된 container 내부
+  `0.0.0.0` bind와 명시적 membership을 사용하며 host 공개 범위는 별도 통제한다.
+- DNS 실패는 공통 network 누락 외에도 미선택·중단 service나 alias 차이가 원인일
+  수 있다. 실제 target과 선언부터 확인하고 network를 무작정 추가하지 않는다.
+- 다른 network에서 같은 주소를 쓰는 것과 같은 network 안의 중복을 구분한다.
+  단순 검색은 중복 검증이 아니며 YAML 들여쓰기와 subnet도 함께 확인한다.
+- 필요한 Compose 기능은 [개발환경 Guide](0002-developer-environment.md)를 따른다.
+  쓰기·runtime 권한이 없어도 공개 선언을 읽을 수 있지만 변경·조회 승인은 별도다.
 
 ## Common Checks
 
-- `bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES="workflow" bash scripts/validation/validate-docker-compose.sh` (변경한 profile 값으로 대체)
-- `rg -n "ipv4_address:" infra docker-compose.yml`
+root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
+함께 대조한다. [RUN-0077](../runbooks/0077-ip-address-management.md)의 승인된
+공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
+선택·준비 상태의 차이는 [시스템 Guide](0099-system-operations.md)를 따른다.
 
 ## Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0077-ip-address-management.md)을 따른다.
+membership·주소 변경, 충돌 진단과 scoped rollback은
+[RUN-0077](../runbooks/0077-ip-address-management.md)이 소유한다.
 
 ## Traceability
 
-- Declared parent: [Compose Network Membership Operations Policy](../policies/0077-ip-address-management.md) (`POL-0077`)
-- Governing authority: [Compose Network Segmentation Architecture Description](../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- Subject peers: [Policy](../policies/0077-ip-address-management.md) (`POL-0077`), [Runbook](../runbooks/0077-ip-address-management.md) (`RUN-0077`)
+- 상위 Policy: [POL-0077](../policies/0077-ip-address-management.md)
+- 구조: [AD-0026](../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- 같은 주제: [Policy](../policies/0077-ip-address-management.md), [Runbook](../runbooks/0077-ip-address-management.md)
 
 ## Related Documents
 
 - [Operations index](../README.md)
-- [Compose network segmentation architecture](../../02.architecture/descriptions/0026-standardize-infra-net.md)
-- [Operations policy](../policies/0077-ip-address-management.md)
-- [Recovery runbook](../runbooks/0077-ip-address-management.md)
+- [hy-home.k8s 통합](0096-k8s-integration.md)

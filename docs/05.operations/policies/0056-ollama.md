@@ -4,7 +4,7 @@ version: "2.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -27,7 +27,7 @@ Ollama 추론 엔진 운영 전반:
 - 추론 계층 변경 승인 및 검증
 
 - **Systems**: `ollama`, `ollama-exporter`, `open-webui`
-- **Environments**: Local, Dev, Homelab, Production-like rehearsal
+- **Environments**: 로컬·개발·홈랩과 운영 환경에 준하는 rehearsal
 
 ## Controls
 
@@ -48,11 +48,15 @@ Ollama 추론 엔진 운영 전반:
 
 ### Lifecycle and data controls
 
-- Ollama and its exporter remain `HOME`. Model additions and replacements require source, digest, model-card/license, resource fit, and representative quality/safety evidence.
-- Treat model blobs as rebuildable only when the exact artifact is reproducible; otherwise preserve the model volume as recovery data. User prompts or generated content are outside this service volume and follow their owning application.
-- Before upgrade, record image/model digests and GPU/driver compatibility, preserve a recoverable model set, and verify API, exporter, representative inference, and Open WebUI integration before accepting the new version.
-- Resource declarations are caps/reservations, not headroom claims. Any concurrency increase requires measured CPU, RAM, VRAM, latency, and failure evidence under the shared-GPU workload.
-- Removal requires an approved model-retention decision, provenance export, client shutdown, route removal, and explicit approval before deleting the model volume.
+- Ollama와 exporter를 HOME으로 유지한다. 모델 추가·교체에는 source/digest/model-card·license, 자원 적합성과 대표 품질·안전 근거가 필요하다.
+- 정확한 artifact를 재현할 수 있을 때만 blob을 재구축 가능 자산으로 본다. 그렇지 않으면 model volume을 보존한다. Prompt·생성 결과는 사용하는 애플리케이션이 소유한다.
+- Upgrade 전에 image/model digest와 GPU/driver 호환성을 기록하고 복구 가능한 모델 집합을 보존한다. API/exporter/대표 추론/WebUI 연동을 검증한 뒤 수용한다.
+- 한도·예약은 여유 증거가 아니다. 동시성 확대에는 공유 GPU에서 CPU/RAM/VRAM·latency·실패를 측정한 근거가 필요하다.
+- 제거에는 모델 보존 결정, 출처 export, client 중지, route 제거와 model volume 삭제 승인이 필요하다.
+
+### Model and exporter capacity boundary
+
+`ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.
 
 ## Exceptions
 
@@ -72,6 +76,8 @@ Ollama 추론 엔진 운영 전반:
 - 증적:
   - 배포 로그, 모델 태그 기록, hardening/compose 검증 결과, 롤백 결과
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
 - **Quarterly**: 모델 포트폴리오/자원 정책 검토
@@ -86,7 +92,7 @@ Ollama 추론 엔진 운영 전반:
 
 - [Ollama API authentication](https://docs.ollama.com/api/authentication): local API의 무인증 동작과 cloud API 인증을 구분한다.
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0056-ollama.md)

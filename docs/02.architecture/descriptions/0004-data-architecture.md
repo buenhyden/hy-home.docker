@@ -1,116 +1,90 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.4"
+version: "1.0.6"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
 - "REQ-0004"
 created: "2026-03-26"
 ---
+
 # Data Tier (04-data) Architecture Description
 
 ## Context and Stakeholders
 
-This document defines the reference architecture and quality attributes of the `04-data` tier. It is the baseline document that organizes the system boundary, responsibilities, data flow, and operational perspective. This architecture targets a multi-model persistence layer, with high availability (HA) and security isolation as its core design principles.
-
-### Stakeholders and Concerns
-
-Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
-
-The `04-data` tier owns all persistent data of the platform and provides infrastructure that meets diverse data requirements: relational, NoSQL, cache, object, and vector.
+Data provides storage and data-platform packages for HOME applications and
+explicitly selected development workloads. Operators need to distinguish
+shared HOME state from OPTIONAL platforms and LAB topologies. Package names
+are direct children of `infra/04-data`; Analytics processing lives in
+`infra/12-analytics` under ADR-0045.
 
 ## System Boundaries
 
-This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
-
-- **Owns**: Database instances, storage volumes, backup data, data-only networks (`mng_data_net`, `lab_net`).
-- **Consumes**: Docker Secrets, OpenBao secrets, system resources (CPU/RAM/Storage).
-- **Does Not Own**: Application business code, user UI, external network exposure (owned by Gateway).
-- **Non-goals**: Real-time dashboard visualization (owned by the Observability tier).
+Data owns its database/object-store configuration and state contracts. It does
+not own every persistent file in the platform: analytics checkpoints,
+application metadata and package-local stores remain with their consumers.
+Secrets, ingress and backup orchestration retain their existing owners.
+Supabase is an intact optional data platform, including its bundled interfaces.
+No package is split solely to make a folder taxonomy more uniform.
 
 ## Quality Attributes
 
-### Quality Scenarios
-
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
-
-- **Performance**: Guarantees millisecond-scale response through the Valkey cluster.
-- **Security**: Per-flow network isolation and Docker Secrets-based authentication.
-- **Reliability**: Automatic failover based on Patroni/Etcd.
-- **Scalability**: A microservice-friendly configuration that eases data sharding and node expansion.
-- **Observability**: Real-time status monitoring through the Prometheus Exporter.
-- **Operability**: Provides a standardized backup/recovery runbook.
+- HOME mng-pg and mng-valkey are shared single-instance dependencies, separate
+  from LAB PostgreSQL/Valkey clusters. Same-host replicas do not provide host HA.
+- Performance and failover require measured workload/recovery evidence; this
+  description makes no tier-wide latency or availability guarantee.
+- Preserve declared secret, network, port and persistent path boundaries.
+  A folder or Compose profile does not add isolation.
+- Recovery follows each engine's supported backup/restore process and POL-0021;
+  a volume declaration or a Git rollback is not a verified data backup.
 
 ## Components
 
-### Viewpoints and Views
+| Packages | Responsibility | Classification |
+| --- | --- | --- |
+| mng-db | shared PostgreSQL/Valkey, provisioning and exporters | HOME |
+| seaweedfs | shared S3 storage and Iceberg REST catalog | HOME |
+| qdrant | vector persistence for AI consumers | HOME |
+| supabase | separate application data platform | OPTIONAL |
+| influxdb, neo4j | time-series and graph persistence | OPTIONAL |
+| opensearch | search/index storage and optional cluster topology | OPTIONAL / LAB |
+| postgresql-cluster, valkey-cluster | independent cluster rehearsals | LAB |
+| cassandra, couchdb, mongodb | selected nonrelational engines | LAB |
+| redisinsight | local connection/settings metadata and Redis/Valkey administration | OPTIONAL |
 
-This section uses the context, component, or deployment representation as the view for the relevant concern.
-
-The `04-data` tier is the foundation layer of `hy-home.docker`, supplying data storage to all upper tiers (Auth, AI, App, and others).
-
-```mermaid
-graph TD
-    subgraph "External/App Layer"
-        APP[Applications]
-    end
-
-    subgraph "04-data Tier"
-        ROUTER[pg-router HAProxy]
-        V_CLSTR[Valkey Cluster 6-nodes]
-        OBJ[SeaweedFS S3]
-        QDRANT[Qdrant Vector]
-
-        subgraph "PostgreSQL HA Cluster"
-            PG0[PostgreSQL Primary]
-            PG1[PostgreSQL Replica]
-            PG2[PostgreSQL Replica]
-            ETCD[Etcd Quorum 3-nodes]
-        end
-    end
-
-    APP --> ROUTER
-    APP --> V_CLSTR
-    APP --> OBJ
-    APP --> QDRANT
-
-    ROUTER --> PG0
-    ROUTER --> PG1
-    ROUTER --> PG2
-
-    PG0 --- ETCD
-    PG1 --- ETCD
-    PG2 --- ETCD
-```
+The PostgreSQL cluster retains Patroni, etcd, pg-router and exporters. Those
+components do not describe HOME's mng-pg topology. SurrealDB stays with its
+sole consumer Open Notebook in `08-ai`. RedisInsight owns only its administration metadata; target engine backups remain owned by the corresponding Data service. Restic stays in Tooling as cross-platform orchestration.
 
 ## Data Flow
 
-### Data and Control Flows
-
-Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
-
-- **Key Entities / Flows**: Transaction data (SQL), unstructured assets (S3), search index (Vector).
-- **Storage Strategy**: Host volume bind mounts (`${DEFAULT_DATA_DIR}`).
-- **Data Boundaries**: Each service keeps an independent volume and physical isolation.
+Auth, Workflow, Tooling and Analytics use declared mng-db identities. AI uses
+Qdrant. Observability, AI and Analytics share SeaweedFS with their own storage
+identities. Flink/Spark/Trino consume its Iceberg catalog; dbt transforms
+PostgreSQL data. Existing Compose dependencies and profiles define actual
+activation; this description does not assert an automatic ingestion pipeline.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose / Linux.
-- **Deployment Model**: Multi-node Cluster (HA).
-- **Operational Evidence**: `docker ps`, `patronictl list`, `valkey-cli cluster nodes`.
+The root Compose includes package files. Exact profiles and networks remain
+in source and POL-0078. The structural move preserves service names, images,
+ports, secrets, persistent volume identities and host paths. It does not
+restart containers or reconcile existing source mounts.
 
 ## Traceability
 
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+- [REQ-0004](../../01.requirements/0004-data.md)
+- [REQ-0027](../../01.requirements/0027-home-development-host.md)
+- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
+- [SPEC-0197](../../03.specs/0197-infra-tier-layout/spec.md)
 
 ## Related Documents
 
-- **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
-- **Spec**: [../../03.specs/004-data/spec.md](0004-data-architecture.md)
-- **ADR**: [../decisions/0004-postgresql-ha-patroni.md](../decisions/0004-postgresql-ha-patroni.md)
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [curated version projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+- [Data packages](../../../infra/04-data/README.md)
+- [Analytics architecture](0012-data-analytics-architecture.md)
+- [Backup policy](../../05.operations/policies/0021-backup-and-restore.md)
+- [Profile vocabulary](../../05.operations/policies/0078-compose-profile-vocabulary.md)

@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 created: "2026-03-19"
 ---
 
@@ -77,7 +77,7 @@ pyroscope/
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 - 설정 변경 후 `docker logs --tail=200 infra-pyroscope`로 프로파일링 수집을 확인합니다.
 - Alloy가 프로파일링 데이터를 전송한 후 Grafana Pyroscope 데이터소스에 프로파일이 나타나는지 확인합니다.
-- `docker exec infra-pyroscope wget -q --spider http://localhost:4040/ready`로 Pyroscope 준비 상태를 확인합니다.
+- `docker compose exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:4040`로 Pyroscope 준비 상태를 확인합니다.
 
 ## Troubleshooting
 

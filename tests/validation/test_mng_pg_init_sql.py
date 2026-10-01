@@ -25,8 +25,8 @@ try:  # Optional: see the module docstring.
 except ImportError:  # pragma: no cover - exercised by the skip below.
     PostgresContainer = None
 
-COMPOSE = Path("infra/04-data/operational/mng-db/docker-compose.yml")
-INIT_SQL = Path("infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql")
+COMPOSE = Path("infra/04-data/mng-db/docker-compose.yml")
+INIT_SQL = Path("infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql")
 
 BOOTSTRAP_USER = "hyhome_admin"
 BOOTSTRAP_DB = "postgres"

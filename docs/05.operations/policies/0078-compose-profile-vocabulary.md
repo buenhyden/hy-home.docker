@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.8.4"
+version: "1.9.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0078"
 parent_ids: []
@@ -42,7 +42,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
 | `analytics-engineering` | capability | dbt 변환 작업과 feature 소유 DB 권한 준비; 명시적 명령만 쓰기 수행 | `mng-pg`, `mng-pg-init`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
-| `api-mock` | capability | 개발·테스트용 HTTP stub 서버; tracked mapping만 제공 | `wiremock` | No | normal service startup; admin API는 loopback 전용 | current |
+| `api-mock` | capability | 개발·테스트용 HTTP stub 서버; tracked mapping만 제공 | `wiremock` | No | normal service startup; host 게시만 loopback 전용이며 project default network peer는 인증 없는 admin API에 접근 가능 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `backup` | automation | Restic 백업·SQLite export·R2 offsite copy 작업; host timer와 명시적 명령만 실행 | `restic`, `restic-offsite`, `backup-sqlite-export` | No | backup repository and export staging writes when run; `restic-offsite`는 R2 원격 저장소에 추가만 함 | current |
@@ -108,7 +108,9 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 
 ## Controls
 
-`Default? = No`는 profile을 명시하지 않으면 자동 선택되지 않는다는 뜻이다.
+`Default? = No`는 직접 service target, CLI profile, `COMPOSE_PROFILES` 활성화가
+없는 기동에서는 자동 선택되지 않는다는 뜻이다. 직접 지정한 service는 profile을
+켜지 않아도 실행될 수 있다. 선택 의미는 [시스템 Guide](../guides/0099-system-operations.md#selection-and-readiness)를 따른다.
 일반 서비스 기동도 데이터 쓰기를 유발할 수 있다. 추가 부수 효과 열은 초기화·작업·
 host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 `Lifecycle = current`는 추적된 현행 selector라는 뜻이며 HOME 기본 기동·필수성·운영 준비 완료를 뜻하지 않는다. `MIGRATE`는 승인된 전환 작업에만 사용한다.
@@ -127,12 +129,17 @@ host mount를 별도로 표시하며 실행 승인을 대신하지 않는다.
 | --- | --- | --- |
 | HOME | `core`, `mng`, `ai`, `workflow`, `obs-core`, `obs-host`, `availability`, `logs`, `alerting`, `storage`, `tracing`, `profiling`, `obs-gpu`, `registry` | `automation`, `lifecycle`, `topology` |
 
-소유자가 2026-09-21 현재 운영 중이라고 밝힌 명령은 `local`, `core`, `mng`, `ai`,
-`dev`, `workflow`, `obs`, `admin` 8개 profile 조합이다. 이는 관측된 운영 선택이며
-재실행·재시작·새 기능 활성화 승인이 아니다. 이 조합은 `mlops`, `data-science`,
-`analytics-engineering`, `cdc`, `obs-gpu`, `crawl4ai`, `notebook`을 선택하지 않고,
-2026-09-21 변경 전후 렌더링 서비스 이름 집합이 같다. 새 기능은 필요할 때 이
-조합에 profile을 명시적으로 추가한다.
+> Historical evidence (not current authority; source: Git history):
+> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0078 HOME activation.
+> 소유자가 2026-09-21 현재 운영 중이라고 밝힌 명령은 `local`, `core`, `mng`, `ai`,
+> `dev`, `workflow`, `obs`, `admin` 8개 profile 조합이다. 이는 관측된 운영 선택이며
+> 재실행·재시작·새 기능 활성화 승인이 아니다. 이 조합은 `mlops`, `data-science`,
+> `analytics-engineering`, `cdc`, `obs-gpu`, `crawl4ai`, `notebook`을 선택하지 않고,
+> 2026-09-21 변경 전후 렌더링 서비스 이름 집합이 같다. 새 기능은 필요할 때 이
+> 조합에 profile을 명시적으로 추가한다.
+
+현재 선택은 위 HOME 행과 소유자가 승인한 exact profile을 따른다. 과거 조합에
+대한 추가 지침은 현재 activation 권한이 아니다.
 
 HOME은 위 profile의 이름 있는 선택이며 새 Compose profile이 아니다. 이 선택은 HOME
 후보 선택이다. 사용자가 AI와 workflow 상시 필요를 확인했으므로 관리 DB·공유
@@ -155,9 +162,9 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
-| supabase with surrealdb/notebook/admin | 기본 host 8000 중복 가능; 함께 선택하기 전에 host binding 조정 |
+| supabase with surrealdb/notebook/admin | 현재 SurrealDB host8000 게시 선언은 주석이고 Open Notebook host API는5055이므로 기본 충돌을 단정하지 않는다. SurrealDB host8000을 별도 활성화하면 Supabase Kong과 충돌 여부를 확인한 뒤 binding을 조정한다. |
 | mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 단독 선택도 `mng-pg`·`mng-pg-init`(및 필요 시 SeaweedFS·Kafka)를 폐포로 함께 선택한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
-| cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자 전체가 재시작된다 |
+| cdc with running mng-pg | 선언된 `wal_level=logical` 명령은 승인된 `mng-pg` 재생성 후에만 적용되며 관리 DB 소비자의 연결이 끊길 수 있다. 자동 소비자 재시작 전파는 선언되어 있지 않으며 각 service의 재연결·readiness를 확인한다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
 | crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
 | contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
@@ -185,9 +192,16 @@ python3 scripts/validation/check-operations-catalog.py
 검증 입력이 아니다. 첫 명령의 기본 모드는 HOME 조합도 함께 렌더링하여 profile
 사이에만 나타나는 host port 충돌을 같은 검사로 확인한다.
 
+검사에 앞서 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의
+임시 입력 생성·private 읽기 경계를 확인한다. `HYHOME_COMPOSE_PROFILES` override는
+기본 every-profile/HOME 검사를 지정 합집합 하나로 바꾸므로 실제 범위를 기록한다.
+선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를
+보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
+[Grafana Guide](../guides/0041-grafana.md)에서 확인한다.
+
 ## Review Cadence
 
-- **Owner**: Infra/DevOps Engineer.
+- **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
 - **Cadence**: profile 또는 서비스 선언을 변경할 때.
 - **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
 

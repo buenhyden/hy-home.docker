@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -23,12 +23,12 @@ created: "2026-05-17"
 이 정책은 `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스, 해당 서비스에 메트릭을 push하는 작업, Pushgateway의 stale metric cleanup, 그리고 Prometheus scrape 연동 계약에 적용된다.
 
 - **Systems**: `pushgateway` service/container, image [prom/pushgateway image declaration](../../../infra/06-observability/docker-compose.yml), port `9091`, `/-/ready` healthcheck, `pushgateway.${DEFAULT_URL}` protected Traefik route, Prometheus scrape integration contract
-- **Environments**: `obs` Docker Compose profile in the local/homelab observability tier
+- **Environments**: 로컬·홈랩 관측 환경의 `obs` 또는 `batch-metrics` Docker Compose profile
 
 ## Controls
 
 - **Required**:
-  - Compose 서비스는 `profiles: [obs]`, `template-infra-readonly-low`, image [prom/pushgateway image declaration](../../../infra/06-observability/docker-compose.yml), expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
+  - Compose 서비스는 `profiles: [obs, batch-metrics]`, `template-infra-readonly-low`, image [prom/pushgateway image declaration](../../../infra/06-observability/docker-compose.yml), expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
   - Pushgateway는 Prometheus가 직접 scrape할 수 없는 단기 실행 작업, 배치 작업, CI/CD 작업에만 사용한다.
   - 모든 push path에는 안정적인 `job` label을 포함해야 한다.
   - `instance` label은 안정적인 worker, node, or bounded execution identity를 구분할 때만 사용한다. 고유 request ID, user ID, unbounded build ID는 cleanup evidence가 없는 한 label로 쓰지 않는다.
@@ -41,15 +41,15 @@ created: "2026-05-17"
   - 별도 승인된 prototype에서 제한된 label set으로 짧게 검증하는 행위.
 - **Disallowed**:
   - 장기 실행 서비스의 일반 metrics collection을 Pushgateway로 우회하는 행위.
-  - high-cardinality label, unbounded tenant/user/request/build identifiers, secret-bearing label or metric payload.
+  - cardinality가 높은 label, 상한 없는 tenant·user·request·build 식별자, secret을 포함한 label·지표 payload를 사용하는 행위.
   - 현재 Compose에 선언되지 않은 persistence option, route relaxation, image change, or scrape-job behavior를 문서에서 구현 완료로 표현하는 행위.
 
 ### Lifecycle and data controls
 
-- Keep Pushgateway `OPTIONAL`; starting it for a batch window or finding a preexisting running container does not reclassify it as `HOME`.
-- Current metrics are volatile. Require grouping-key ownership, stale-series deletion, authenticated gateway access, and producer-side truth; no persistence or exact restore may be claimed.
-- Upgrade/restart plans must accept metric loss and arrange controlled repush of current observations. Resource changes require observed series/cardinality evidence.
-- Removal requires producer migration/disablement, Prometheus scrape cleanup, stale-group deletion, and route shutdown; there is no service data volume to delete.
+- Pushgateway는 OPTIONAL을 유지한다. Batch 동안 시작하거나 기존 실행 컨테이너를 발견해도 HOME으로 재분류하지 않는다.
+- Metric은 휘발성이므로 grouping-key 소유권, stale-series 삭제, gateway 인증과 producer의 실제 관측을 요구한다. 영속 보존·정확한 복구를 주장하지 않는다.
+- Upgrade/restart는 metric 손실을 승인하고 현재 관측의 제한된 재전송을 준비해야 한다. 자원 변경에는 series/cardinality 근거가 필요하다.
+- 제거에는 producer 이전·중지, scrape 정리, stale group 삭제와 route 폐쇄가 필요하다. 삭제할 자체 데이터 볼륨은 없다.
 
 ## Exceptions
 
@@ -63,9 +63,11 @@ created: "2026-05-17"
 - **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
 - **Documentation Check**: guide and runbook은 사용법과 복구 절차만 설명하고, policy control은 이 문서에 유지한다.
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
-Quarterly, and on material change to image version, Docker profile, route middleware, healthcheck, persistence behavior, Prometheus scrape job, label policy, or cleanup automation.
+분기마다, 그리고 image·profile·route middleware·healthcheck·영속성·scrape job·label 정책·cleanup 자동화가 바뀔 때 검토한다.
 
 ## Traceability
 
@@ -74,7 +76,7 @@ Quarterly, and on material change to image version, Docker profile, route middle
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0046-pushgateway.md)

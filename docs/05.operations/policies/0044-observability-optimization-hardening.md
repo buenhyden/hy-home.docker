@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -28,7 +28,7 @@ created: "2026-05-10"
 - `.github/workflow-contract.yml` `leaf.infrastructure-hardening` gate (`ci-quality.yml`의 `validation-changed`/`validation-full` job이 실행)
 
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
-- **Environments**: local, development, homelab operations, production-like validation
+- **Environments**: 로컬·개발·홈랩 운영과 운영 환경에 준하는 검증
 
 ## Controls
 
@@ -75,10 +75,16 @@ created: "2026-05-10"
 
 ### Lifecycle and data controls
 
-- Keep both exporters `HOME`; host PID, privileged mode, device and host mounts require security review for every scope expansion.
-- Keep node-exporter internal and cAdvisor gateway protected. Neither service may receive unrelated secrets or writable host mounts.
-- No durable exporter backup exists; recovery is recreation from tracked Compose followed by Prometheus target and series-continuity verification.
-- Resource/cardinality changes need measured scrape and host impact. Removal requires rule/dashboard dependency review and an accepted observability-gap record.
+- 두 exporter의 HOME 분류를 유지하고 host PID·privileged·device/host mount 확대에는 보안 검토를 요구한다.
+- node-exporter는 내부 전용, cAdvisor는 보호 route를 유지하며 무관한 secret이나 writable host mount를 추가하지 않는다.
+- 별도 영속 exporter backup은 없다. 추적 Compose로 복구한 뒤 target과 series 연속성을 검증한다.
+- 자원/cardinality 변경에는 scrape/host 영향 측정이 필요하다. 제거에는 rule/dashboard 의존성 검토와 관측 공백 승인이 필요하다.
+
+### cAdvisor and static-check limits
+
+cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는 privileged 관측기다. 공통 template이 capability를 제거한다고 격리를 보장하지 않는다. Disk metric 등 제외 collector, container label/cardinality와 보호 route를 유지한다. Health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 자체 애플리케이션 데이터나 Docker Secret은 없고 복구 대상은 승인된 image/config와 telemetry 기준이다.
+
+관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
 ## Exceptions
 
@@ -93,6 +99,8 @@ created: "2026-05-10"
 - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
 - Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
 - 월 1회 정기 검토
@@ -105,7 +113,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0044-observability-optimization-hardening.md)

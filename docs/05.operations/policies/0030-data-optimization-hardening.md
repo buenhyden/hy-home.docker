@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0030"
 parent_ids:
@@ -56,6 +56,10 @@ credential이나 data 없이 기록한다. Runtime check는 별도로 승인되�
 우회하지 않는다. 승인된 범위 안에서 patch하거나 소유 architecture와 운영
 subject로 escalate한다. Data 삭제, volume 재사용, 파괴적 restore는 명시적
 승인을 요구한다.
+
+### Accountable lifecycle boundary
+
+적용 identity: GDE-0017/0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034의 명명된 data identities. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 

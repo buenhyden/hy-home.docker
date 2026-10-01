@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -58,7 +58,7 @@ airflow/
 
 - base: [Dockerfile declaration](Dockerfile)
 - image: [declared runtime image](../../tech-stack.versions.json)
-- Python 버전: [Dockerfile](Dockerfile)의 `PYTHON_VERSION` 인자로 선언됨
+- Python constraints 선택: [Dockerfile](Dockerfile)의 `PYTHON_VERSION`은 constraints URL을 선택하며 base image의 interpreter 버전을 바꾸지 않습니다. 실제 interpreter와 constraints의 일치는 별도 빌드 검증이 필요합니다.
 - provider: `apache-airflow-providers-keycloak`, [Dockerfile](Dockerfile)에 고정됨
 - auth manager:
   `airflow.providers.keycloak.auth_manager.keycloak_auth_manager.KeycloakAuthManager`

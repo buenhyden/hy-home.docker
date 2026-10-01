@@ -4,13 +4,13 @@ version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
 - "POL-0089"
 implementation_services:
-  infra/11-laboratory/jupyterlab/docker-compose.yml:
+  infra/12-analytics/jupyterlab/docker-compose.yml:
   - jupyterlab
 created: "2026-09-21"
 ---
@@ -27,7 +27,7 @@ profile 운용 명령에도 들어 있지 않다.
 
 ### Current implementation
 
-- [JupyterLab Compose](../../../infra/11-laboratory/jupyterlab/docker-compose.yml)는
+- [JupyterLab Compose](../../../infra/12-analytics/jupyterlab/docker-compose.yml)는
   pinned library를 가진 scipy-notebook image를 빌드하고 Jupyter Server 하나를
   실행한다.
 - notebook은 repository 밖의 `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`에
@@ -41,8 +41,8 @@ profile 운용 명령에도 들어 있지 않다.
 
 | Path | Control | What it does not provide |
 | --- | --- | --- |
-| 브라우저 route | Gateway SSO, 이후 server token(이후 cookie); REST와 kernel WebSocket도 같은 route를 따름 | Jupyter 내부의 user별 identity; token을 아는 모든 SSO user가 동일한 UID 1000이 됨 |
-| port 8888에 대한 직접 `ai_net` access | Server token | Network isolation; peer가 API를 시도할 수 있음 |
+| 브라우저 route | Gateway SSO, 이후 server token(이후 cookie); REST와 kernel WebSocket도 같은 route를 따름 | Jupyter 내부의 user별 identity; gateway의 `/admins` 허용 후 token을 아는 사용자가 동일한 UID 1000을 공유함 |
+| 직접 `edge_net`·`ai_net` access | Server token | Network isolation; peer가 API를 시도할 수 있음 |
 | Kernel과 terminal | container 내 UID 1000으로 실행 | 사람 간 isolation, user별 CPU/memory quota |
 
 SSO는 누가 gateway에 도달했는지 증명할 뿐, kernel이나 파일을 격리하지
@@ -61,20 +61,37 @@ MLflow 인증을 채택하면 인증되지 않은 API를 다시 열지 말고 no
 
 ### Normal use and backup
 
-work 디렉터리를 복사하기 전에 server를 멈춘다. notebook과 output은 민감할
-수 있는 data로 취급한다. library를 바꾸려면 image를 재빌드하고, MLflow
-client version을 server와 맞춘다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0089-jupyterlab.md)의 `작업 디렉터리와 라이브러리 보존` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=data-science bash scripts/validation/validate-docker-compose.sh`
-- route에 인증 없이 요청하면 401(gateway)을 반환하고, token 없이 `/api/status`에
-  요청하면 403(server)을 반환한다.
+- 승인된 런타임 검사에서 gateway 로그인 redirect와 인가 거부, 서버 token 거부를
+  각각 확인한다. `sso-errors`가 인증 실패 401을 302로 바꿀 수 있으므로 외부 route의
+  응답을 무조건 401로 기대하지 않는다. health의 `/api` 응답은 인증·kernel 증거가 아니다.
 
 ## Runbook Handoff
 
 token, 시작, kernel, restore 문제에는
 [runbook](../runbooks/0089-jupyterlab.md)을 사용한다.
+
+### 정상 사용과 준비 조건
+
+한 명의 승인된 사용자가 notebook·kernel·terminal을 사용한다. 출력과 work 파일에는
+민감 정보가 포함될 수 있으므로 공유·삭제 전에 보존 범위를 확인한다. MLflow에 대한
+의존성은 선택적 health 대기이며 `data-science` 전체 기동은 다른 서버·helper도
+선택할 수 있다. 자원 제한은 서비스 전체에 적용되며 사용자별 quota가 아니다.
+
+Dockerfile의 base 날짜와 직접 library pin은 정확한 Lab·Server·Python 실행 버전이나
+transitive dependency를 증명하지 않는다. 새 build와 rollback 전에 resolved 이미지·
+의존성을 확인한다. 호스트 포트는 게시되지 않지만 두 네트워크 peer가 token 인증
+listener에 접근할 수 있으므로 물리적 격리를 주장하지 않는다.
+
+### 소스 검토의 한계
+
+여기서 설명한 네트워크는 선언상 연결 가능한 경로다. 실제 peer 연결·인터넷 공개·
+사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
+해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
 
 ## Traceability
 
@@ -85,6 +102,6 @@ token, 시작, kernel, restore 문제에는
 
 ## Related Documents
 
-- [Image Dockerfile](../../../infra/11-laboratory/jupyterlab/Dockerfile) 및 [derived version projection](../../../infra/tech-stack.versions.json)
+- [Image Dockerfile](../../../infra/12-analytics/jupyterlab/Dockerfile) 및 [derived version projection](../../../infra/tech-stack.versions.json)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)
 - [Jupyter Docker Stacks common options](https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html)

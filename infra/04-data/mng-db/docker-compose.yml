@@ -1,0 +1,298 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  mng-pg-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/pg
+  mng-valkey-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_MANAGEMENT_DIR}/valkey
+services:
+  mng-valkey:
+    profiles:
+      - mng
+      - core
+      - dev
+      - local
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: valkey/valkey:9.1.2-alpine
+    container_name: mng-valkey
+    hostname: mng-valkey
+    user: '999:999'
+    volumes:
+      - mng-valkey-data:/data:rw
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    secrets:
+      - mng_valkey_password
+    command: >
+      sh -c ' exec valkey-server --requirepass "$$(cat /run/secrets/mng_valkey_password)" --appendonly yes --port 6379 '
+    ports:
+      - ${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}
+    expose:
+      - '${VALKEY_PORT:-6379}'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'V_PASS=$$(cat /run/secrets/mng_valkey_password); valkey-cli -a $$V_PASS -h 127.0.0.1 -p ${VALKEY_PORT:-6379} ping | grep PONG' ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      mng_data_net: {}
+
+  mng-valkey-exporter:
+    profiles:
+      - mng
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.91.1-alpine
+    container_name: mng-valkey-exporter
+    expose:
+      - '${VALKEY_EXPORTER_PORT:-9121}'
+    entrypoint:
+      - /bin/sh
+      - -c
+    command:
+      - |
+        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
+        exec /redis_exporter \
+          -redis.addr=redis://mng-valkey:${VALKEY_PORT} \
+          -redis.password="$$VALKEY_PASSWORD" \
+          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+    secrets:
+      - mng_valkey_password
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      mng-valkey:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      mng_data_net: {}
+      obs_net: {}
+  mng-pg:
+    profiles:
+      - mng
+      - core
+      - dev
+      - local
+      # Dependency closure for feature profiles; feature SQL and credentials
+      # live in each feature job, not here.
+      - mlops
+      - data-science
+      - analytics-engineering
+      - cdc
+      - contract-testing
+      - bi
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-med
+    # The plain PostgreSQL image plus pgBackRest (./pg/backup/Dockerfile), so
+    # archive_command runs inside the server as the postgres user.
+    image: hy-home/mng-pg:18.6-pgbackrest
+    build:
+      context: ./pg/backup
+      dockerfile: Dockerfile
+    container_name: mng-pg
+    hostname: mng-pg
+    # Official entrypoint creates/chowns PGDATA and drops to postgres.
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    shm_size: 256mb
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # pgBackRest connects through the local socket as the bootstrap superuser;
+      # the repository passphrase arrives through the include path, not env.
+      PGBACKREST_PG1_USER: ${POSTGRES_DEFAULT_USER}
+      PGBACKREST_CONFIG_INCLUDE_PATH: /tmp/pgbackrest/conf.d
+    command:
+      - postgres
+      - -c
+      - wal_level=logical
+
+      # Continuous WAL archiving to the pgBackRest repository (RPO bound by
+      # archive_timeout). A failing archive keeps WAL in pg_wal; watch disk use.
+      - -c
+      - archive_mode=on
+      - -c
+      - archive_command=pgbackrest --stanza=mng archive-push %p
+      - -c
+      - archive_timeout=${POSTGRES_ARCHIVE_TIMEOUT:-300}
+
+      - -c
+      - max_replication_slots=${POSTGRES_MAX_REPLICATION_SLOTS:-4}
+
+      - -c
+      - max_wal_senders=${POSTGRES_MAX_WAL_SENDERS:-4}
+
+      - -c
+      - max_slot_wal_keep_size=${POSTGRES_MAX_SLOT_WAL_KEEP_SIZE:-2048MB}
+    ports:
+      - '127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}'
+    volumes:
+      - mng-pg-data:/var/lib/postgresql/data:rw
+      # pgBackRest repository (POL-0021). An unset key renders a path that does
+      # not exist, so only mng-pg (re)creation fails instead of every command.
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/pgbackrest
+        target: /var/lib/pgbackrest
+        bind:
+          create_host_path: false
+    secrets:
+      - mng_postgres_password
+      - pgbackrest_cipher_pass
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"' ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      mng_data_net: {}
+
+  mng-pg-init:
+    profiles:
+      - mng
+      - core
+      - dev
+      - local
+      # Dependency closure for feature profiles; feature SQL and credentials
+      # live in each feature job, not here.
+      - mlops
+      - data-science
+      - analytics-engineering
+      - cdc
+      - contract-testing
+      - bi
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: postgres:18.6-alpine
+    container_name: mng-pg-init
+    environment:
+      POSTGRES_HOSTNAME: mng-pg
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      SERVICE_POSTGRES_USERNAME: ${SERVICE_POSTGRES_USERNAME:-app_user}
+      SERVICE_POSTGRES_DB: ${SERVICE_POSTGRES_DB:-app_db}
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        export PGPASSWORD="$$(tr -d '\n' </run/secrets/mng_postgres_password)"
+
+        until pg_isready -h "$$POSTGRES_HOSTNAME" -p "$$POSTGRES_PORT" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"; do
+          sleep 2
+        done
+
+        N8N_DB_PASSWORD="$$(tr -d '\n' </run/secrets/n8n_db_password)"
+        KEYCLOAK_DB_PASSWORD="$$(tr -d '\n' </run/secrets/keycloak_db_password)"
+        AIRFLOW_DB_PASSWORD="$$(tr -d '\n' </run/secrets/airflow_db_password)"
+        TERRAKUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/terrakube_db_password)"
+        SONARQUBE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/sonarqube_db_password)"
+        SERVICE_DB_PASSWORD="$$(tr -d '\n' </run/secrets/service_postgres_password)"
+
+        psql \
+          -h "$$POSTGRES_HOSTNAME" \
+          -p "$$POSTGRES_PORT" \
+          -U "$$POSTGRES_USER" \
+          -d "$$POSTGRES_DB" \
+          -v ON_ERROR_STOP=1 \
+          -v n8n_db_password="$$N8N_DB_PASSWORD" \
+          -v keycloak_db_password="$$KEYCLOAK_DB_PASSWORD" \
+          -v airflow_db_password="$$AIRFLOW_DB_PASSWORD" \
+          -v terrakube_db_password="$$TERRAKUBE_DB_PASSWORD" \
+          -v sonarqube_db_password="$$SONARQUBE_DB_PASSWORD" \
+          -v service_postgres_username="$$SERVICE_POSTGRES_USERNAME" \
+          -v service_postgres_password="$$SERVICE_DB_PASSWORD" \
+          -v service_postgres_db="$$SERVICE_POSTGRES_DB" \
+          -f /work/init_users_dbs.sql
+    volumes:
+      - ./pg/init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+    secrets:
+      - mng_postgres_password
+      - service_postgres_password
+      - n8n_db_password
+      - keycloak_db_password
+      - airflow_db_password
+      - terrakube_db_password
+      - sonarqube_db_password
+    networks:
+      mng_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  mng-pg-exporter:
+    profiles:
+      - mng
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: prometheuscommunity/postgres-exporter:v0.20.1
+    container_name: mng-pg-exporter
+    environment:
+      POSTGRES_HOSTNAME: mng-pg
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+    expose:
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
+    entrypoint:
+      - '/bin/sh'
+      - '-c'
+      - |
+        export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n');
+        export DATA_SOURCE_NAME="postgresql://$$POSTGRES_USER:$$PGPASSWORD@$$POSTGRES_HOSTNAME:$$POSTGRES_PORT/$$POSTGRES_DB?sslmode=disable";
+        exec /bin/postgres_exporter --collector.postmaster
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+    secrets:
+      - mng_postgres_password
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      mng_data_net: {}
+      obs_net: {}

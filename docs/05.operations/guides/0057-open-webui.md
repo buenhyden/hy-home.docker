@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -99,13 +99,19 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 ### Source-backed operating contract
 
-- **Purpose/classification**: `open-webui` is an owner-confirmed `HOME` chat/RAG interface.
-- **Profiles/source**: `ai`/`ai-llm` select the service. [Compose](../../../infra/08-ai/open-webui/docker-compose.yml), its selected image, and startup environment are authoritative.
-- **Flow/dependencies**: users enter through Traefik `gateway-standard-chain@file`; native Keycloak OIDC uses client `home-openwebui`; Open WebUI calls Ollama over `ai_net` and keeps vectors in its local store. Current source does not use `sso-auth@file`. Password login/signup, email merge, and OAuth role/group management remain disabled.
-- **State/secrets**: `open-webui:/app/backend/data` contains the default SQLite database, uploads, chat/user state, and application data. Preserve `openwebui_oidc_client_secret`, session/auth secrets declared by Compose, the root CA. RAG vectors live in the same data volume, so no separate vector-store backup applies. Never expose values in rendered config or logs.
-- **Resources/security**: Compose values are source limits, not measured headroom. Keep the UI behind native OIDC and the gateway standard chain; do not enable local password/signup paths as an incident workaround.
-- **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`; verify health, OIDC login, Ollama model listing, and a controlled RAG query. Stop Open WebUI before a consistent SQLite/data-volume backup. For upgrades, preserve the volume and matching secrets, review upstream migrations, update one version boundary, then verify identities/chats/uploads/OIDC and coordinate Qdrant recovery separately.
-- **Upstream/license**: follow official [environment configuration](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [updates/backups](https://docs.openwebui.com/getting-started/updating/), and [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) guidance. Verify the license terms of the pinned Open WebUI release before redistribution or modified deployment.
+- **목적·분류**: `open-webui`는 소유자가 확인한 `HOME` chat/RAG interface다.
+- **profile·구현 소유권**: `ai`/`ai-llm`으로 서비스를 선택한다. [Compose](../../../infra/08-ai/open-webui/docker-compose.yml), 선택된 image와 startup 환경 설정이 구현을 소유한다.
+- **흐름·의존성**: 사용자는 Traefik `gateway-standard-chain@file`을 통해 접속한다. native Keycloak OIDC는 client `home-openwebui`를 사용한다. Open WebUI는 `ai_net`으로 Ollama를 호출하고 vector를 local store에 보관한다. 현재 source는 `sso-auth@file`을 사용하지 않는다. password login/signup, email merge와 OAuth role/group 관리는 비활성화된 상태를 유지한다.
+- **상태·secret**: `open-webui:/app/backend/data`에는 기본 SQLite database, upload, chat/user state와 application data가 있다. `openwebui_oidc_client_secret`, Compose가 선언한 session/auth secret과 root CA를 보존한다. RAG vector도 같은 data volume에 있으므로 별도 vector-store backup은 적용되지 않는다. 렌더링된 config나 log에 값을 노출하지 않는다.
+- **자원·보안**: Compose 값은 source limit이며 측정된 여유 용량이 아니다. UI를 native OIDC와 gateway standard chain 뒤에 유지한다. incident 우회책으로 local password/signup 경로를 활성화하지 않는다.
+- **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 health, OIDC login, Ollama model 목록과 통제된 RAG query를 검증한다. 일관된 SQLite/data-volume backup 전에 Open WebUI를 중지한다. upgrade할 때는 volume과 이에 맞는 secret을 보존하고 upstream migration을 검토한 뒤 version 경계를 한 번에 하나씩 변경한다. 이후 identity/chat/upload/OIDC를 검증하고, RUN-0057을 통해 서로 대응하는 local Chroma index와 upload를 확인한다. Qdrant 의존성은 선언되어 있지 않다.
+- **공식 문서·license**: 공식 [환경 설정](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [update/backup](https://docs.openwebui.com/getting-started/updating/), [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) 지침을 따른다. 재배포하거나 수정하여 배포하기 전에 고정된 Open WebUI release의 license 조건을 확인한다.
+
+### Local data and authentication boundary
+
+선언 릴리스는 `DATA_DIR/vector_db`의 Chroma를 기본으로 쓰며 Compose에는 외부 vector-store나 Qdrant 연결이 없다. SQLite·vector·upload·identity와 embedding-model 출처를 함께 보존한다. CUDA image 이름만으로 GPU가 할당되지는 않으며 WebUI에는 GPU 예약이 없다. 로컬 entrypoint는 한 줄 OIDC secret과 검증된 CA bundle을 읽고 인자가 없으면 upstream `bash start.sh`로 시작한다.
+
+`ENABLE_PASSWORD_AUTH=false`는 폼 숨김과 별도로 password 인증을 막는다. `ENABLE_OAUTH_PERSISTENT_CONFIG=false`는 OAuth 설정만 관장하며 모든 저장 설정을 끄지 않는다. 선언 버전의 `key/value`별 schema에 과거 단일 `id/data` 행 SQL 복구를 적용하지 않는다. Native login, signup/password 거부와 identity 연속성은 승인된 별도 검사로 확인하며 health가 대신하지 않는다.
 
 ## Common Checks
 
@@ -127,7 +133,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 - [Open WebUI Compose](../../../infra/08-ai/open-webui/docker-compose.yml)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0057-open-webui.md)

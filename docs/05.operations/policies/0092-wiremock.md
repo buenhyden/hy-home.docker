@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0092"
 parent_ids:
@@ -40,8 +40,8 @@ API에는 인증이 없으므로 노출과 stub 내용이 곧 control이다.
 
 ## Exceptions
 
-없음. 다른 네트워크에서 도달 가능한 stub이 필요한 consumer는 host binding을 넓히는
-대신 프로젝트 기본 네트워크에 합류한다.
+현재 승인된 예외는 없다. 새로운 consumer의 네트워크 연결은 범위와 admin API
+권한을 검토한 변경이어야 한다. host binding이나 기본 네트워크 참여를 자동으로 넓히지 않는다.
 
 ## Verification
 
@@ -53,13 +53,20 @@ root filesystem을 증명하는 격리된 실행.
 WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 제안될 때마다
 검토한다.
 
+### 소유권과 자원
+
+책임자는 `@buenhyden`이다. journal 개수 한도와 컨테이너 자원 제한을 모두 유지한다.
+삭제·재시작으로 사라지는 메모리 자료는 복구 약속 대상이 아니며 민감한 요청을 보존
+근거로 복제해서는 안 된다. mapping·이미지 변경은 합성 canary와 검토된 rollback
+원본을 확보하고 적용한다.
+
 ## Traceability
 
 - [Guide](../guides/0092-wiremock.md) (`GDE-0092`)
 - [Runbook](../runbooks/0092-wiremock.md) (`RUN-0092`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [WireMock Compose source](../../../infra/09-tooling/wiremock/docker-compose.yml)
+- [WireMock Compose source](../../../infra/11-quality/wiremock/docker-compose.yml)
 - [Compose profile vocabulary](0078-compose-profile-vocabulary.md)

@@ -1,10 +1,10 @@
 ---
 title: "Loki Log Aggregation System"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -79,7 +79,7 @@ loki/
 | Command | Description |
 | :--- | :--- |
 | `docker compose --profile obs up -d loki` | 저장소 루트에서 Loki 시작 |
-| `docker compose --profile obs restart loki` | 승인된 설정 또는 시크릿 참조 변경 후 Loki 재시작 |
+| `docker compose --profile obs restart loki` | 이미 연결된 설정 파일 내용의 승인된 재적용; Compose·시크릿 참조·이미지 또는 baked entrypoint 변경은 RUN-0043을 따르되 marker 보존 결함이 해소되기 전에는 재생성 중단 |
 | `docker compose --profile obs logs -f loki` | 저장소 루트에서 Loki 로그 확인 |
 
 ## Configuration

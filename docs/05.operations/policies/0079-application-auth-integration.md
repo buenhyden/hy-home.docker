@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.5.1"
+version: "0.6.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -28,7 +28,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - Apache Airflow
 - OpenBao
 - 신규 OIDC-capable internal applications
-- Open WebUI/Gatus native integrations and the deferred Terrakube candidate under Task 0004
+- Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
 
 ## Controls
 
@@ -67,6 +67,22 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 과거 OAuth callback URL 또는 authorization code 재사용
 - Keycloak access token을 Airflow internal JWT로 취급
 
+### Source nonconformance and ownership
+
+운영 책임자는 @buenhyden이다. 현재 `grafana-static` source는 Grafana host의
+`/favicon.ico`와 `/robots.txt` exact path를 middleware 없이 공개하며 Method
+제한도 없다. Guide의 기존 static-only 표와 이름 allowlist 검사는 위 무인증 금지
+통제의 승인 예외를 증명하지 않는다. 통제는 유지하고 승인 provenance가 없는
+현재 구현 불일치는 별도 정책/구현 결정으로 해결한다. source와 테스트를 이 문서
+변경으로 수정했다고 주장하지 않으며 route 확대는 허용하지 않는다.
+LAN/TLS 도달 경계, 전체 chain 우회와 이름 검사 한계는
+[Guide의 source 한계](../guides/0079-application-auth-integration.md)에
+기록한다. 기존 Task0008 S18 의도는 더 강한 Spec/Policy 요구를 변경하는 명시적
+owner 예외가 아니므로, 새 예외가 필요하면 정확한 범위·위험·만료/종료·검증을
+포함한 owner 판단을 먼저 기록한다.
+공통 Secret 보존·runtime 변경 승인은 [POL-0006](0006-infrastructure-optimization-governance.md)과
+[POL-0021](0021-backup-and-restore.md)을 적용한다.
+
 ## Exceptions
 
 긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
@@ -83,7 +99,7 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - Airflow/Kafbat/OpenBao/Open WebUI/Gatus/Superset router = gateway-only; Gatus는 외부 metrics 제외
 - ForwardAuth 대상 서비스 = SSO chain 유지
 - Keycloak client redirect URI/public URL 정합
-- Compose client secret Docker Secret mapping
+- Compose client secret의 Docker Secret mapping
 - OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../runbooks/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 
@@ -91,10 +107,10 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 - Keycloak update
 - OAuth2 Proxy update
-- Airflow Keycloak provider update
-- Kafbat UI update
+- Airflow Keycloak provider 업데이트
+- Kafbat UI 업데이트
 - 신규 Native OIDC 서비스 승인
-- Quarterly auth integration review
+- 분기별 인증 연동 검토
 
 ## Traceability
 
@@ -104,7 +120,7 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Keycloak Guide](../guides/0014-keycloak.md)
 - [OAuth2 Proxy Guide](../guides/0015-oauth2-proxy.md)

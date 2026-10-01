@@ -304,7 +304,7 @@ services:
       DEBEZIUM_PUBLICATION: hyhome_app_publication
       DEBEZIUM_SOURCE_OWNER: '${SERVICE_POSTGRES_USERNAME:-app_user}'
     volumes:
-      - ../../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ../../04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
       - ./connect/debezium/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
     secrets:
       - mng_postgres_password

@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.6.4"
+version: "0.7.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -87,8 +87,7 @@ sequenceDiagram
 
 실제 앱 요청은 Traefik이 전달한다. `static://200`인 OAuth2 Proxy가 모든 앱의
 본문을 대신 프록시하는 구성이 아니다. 현재 `sso-auth`는 내부
-`/oauth2/auth`를 호출하고, `sso-errors`는 401/403을 sign-in으로 연결한다.
-따라서 권한 거부도 재로그인처럼 보일 수 있다. 설정 근거는
+`/oauth2/auth`를 호출하고, `sso-errors`는401–403에서 sign-in 응답 본문을 사용한다. 현재 status rewrite는401→302뿐이며403은 그대로 유지한다. 설정 근거는
 [Traefik middleware](../../../infra/01-gateway/traefik/dynamic/middleware.yml)이며,
 2xx일 때 원래 요청을 진행하는 동작은 [공식 ForwardAuth 문서](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/)에서 확인했다.
 
@@ -173,8 +172,7 @@ PKCE를 기준으로 설계하고, password grant나 implicit flow를 편의상 
 `keycloak-oidc`, S256, Redis 프로토콜의 Valkey 세션을 사용한다.
 `allowed_groups = ["/admins"]`이므로 Keycloak `/admins` 그룹 구성원만 SSO route를
 통과한다(owner 결정 2026-09-24). 다른 realm 사용자는 앱에 도달하지 못한다.
-`sso-errors`가 401–403을 로그인 흐름으로 바꾸므로 route에서 403이 그대로 보이지
-않는다. 거부는 OAuth2 Proxy 로그의 그룹 거부 기록과 로그인 흐름 끝의 Proxy 오류
+`sso-errors`는401만302로 바꾸며403은 유지한다. 따라서403을 모두 redirect로 설명하지 않는다. 거부는 OAuth2 Proxy 로그의 그룹 거부 기록과 로그인 흐름 끝의 Proxy 오류
 화면으로 확인한다.
 `groups` claim은 Kafbat이 `/admins`를 매핑하는 것과 같은 전체 경로 형식이다.
 native OIDC route는 이 allowlist를 거치지 않으므로 각 앱의 역할 매핑이 따로
@@ -184,8 +182,7 @@ native OIDC route는 이 allowlist를 거치지 않으므로 각 앱의 역할 �
 `172.19.0.0/16`은 당시 공용 network의 모든 컨테이너가 Traefik 경유 요청에서 SSO를
 우회하게 했고, 확인된 소비자(Gatus·exporter는 서비스를 직접 호출)가 없어
 2026-09-21 변경에서 제거했다. `trusted_proxy_ips`는 forwarded header를 보낼 수 있는
-proxy 범위를 정하는 별개 설정이며 인증 생략이 아니다. 현재 Traefik의 고정 주소
-Traefik 고정 주소 `10.250.1.2/32`(`edge_net`, SPEC-0180 S05)만 신뢰한다(미설정 시 모든 주소를 신뢰한다는 경고가 있었음). Traefik 진입점에는
+proxy 범위를 정하는 별개 설정이며 인증 생략이 아니다. 현재 Traefik 고정 주소 `10.250.1.2/32`(`edge_net`, SPEC-0180 S05)만 신뢰한다(미설정 시 모든 주소를 신뢰한다는 경고가 있었음). Traefik 진입점에는
 `forwardedHeaders` 신뢰가 없어 외부 client가 보낸 `X-Forwarded-For`를 덮어쓴다.
 같은 날 host loopback과 LAN 주소에서 무인증 GET으로 SSO 보호 route(Alloy)를 요청해
 두 경로 모두 `401`을 확인했다. 이는 한 route의 상태 코드 관측이며 전체 route의
@@ -197,8 +194,7 @@ token을 재사용 가능하게 노출했고 SonarQube·Terrakube 같은 자체 
 충돌했으므로 제거했다. token이 실제로 필요한 소비자는 전용 middleware를 별도로
 정의하고 검증한다. `trustForwardHeader: false`여도 백엔드가 같은 network이나 host
 port로 직접 접근 가능하면 신뢰 헤더 방식의 보호가 성립한다고 볼 수 없다.
-Traefik dynamic 디렉터리는 파일 감시로 적용되므로 이 변경을 main checkout에
-병합하는 순간이 gateway 적용 시점이며, Proxy 설정은 재시작 후 적용된다.
+Traefik dynamic directory는 file watch 대상이다. 실제 실행 컨테이너의 mount source 변경이 적용 경계이며 Git merge만으로 배포를 단정하지 않는다. Proxy 단일 설정 파일은 POL-0006의 재생성·hash 확인을 따른다.
 
 ### 로그아웃과 권한 회수
 
@@ -254,7 +250,7 @@ Open WebUI는 OAuth role/group 자동 관리를 끄고 기존 로컬 관리자 �
 DB persistence 영향을 받으므로 UI/API readback으로 종료 여부를 확인한다.
 구체적 파일 소유권과 복구는 [Open WebUI runbook](../runbooks/0057-open-webui.md)에 있다.
 
-Candidate cutover completion criteria:
+전환 후보의 완료 기준:
 
 - 전용 Keycloak client와 정확한 redirect URI를 등록하고 client secret은 Docker Secret
   또는 승인된 secret store로만 전달한다.
@@ -356,24 +352,10 @@ Client:
 
 #### Authorization bootstrap
 
-```bash
-docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
-```
-
-생성 대상:
-
-- scopes: `GET`, `POST`, `PUT`, `DELETE`, `MENU`, `LIST`
-- resources: `Dag`, `Asset`, `Pool`, `View`, ...
-- role policies
-- permissions
-
-0.9.0 upgrade 후 기존 non-team permission repair <!-- runtime-version-exception: compatibility — 이 provider 경계부터 기존 permission row를 새 team-aware schema로 다시 생성해야 함 -->:
-
-```bash
-docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
-```
-
-provider update만으로 기존 Keycloak permissions는 자동 갱신되지 않는다.
+Keycloak에는 method/menu/list scope, Dag/Asset/Pool/View resource, role policy와
+permission이 필요하다. bootstrap과 provider 경계의 기존 permission 재생성 명령은
+[Keycloak Runbook](../runbooks/0014-keycloak.md#application-authorization-provisioning)이
+소유한다. provider update만으로 기존 Keycloak permissions는 자동 갱신되지 않는다.
 
 ### Airflow 장애 패턴
 
@@ -416,60 +398,77 @@ Keycloak resource authorization 문제다.
 
 ### Route Authentication Matrix
 
-Every Traefik HTTP router, from Compose labels and from the file provider
-(`infra/01-gateway/traefik/dynamic/`), either carries
-`sso-errors@file,sso-auth@file` or appears below with the authentication that
-replaces it. The test checks each declaration separately, so a router name
-declared by two services (`opensearch`) fails if either loses its chain. There are no TCP
-routers, because ForwardAuth cannot protect them.
-`RouteAuthContractTests` in `tests/validation/test_compose_baseline_gates.py`
-fails when a router is neither, when this list names a router that no longer
-exists or now uses SSO, or when a router has no middleware at all (except
-`grafana-static`).
+Compose label과 file provider(`infra/01-gateway/traefik/dynamic/`)에 선언된 모든 Traefik HTTP router는
+`sso-errors@file,sso-auth@file`을 사용하거나 아래 표에 이를 대신하는 인증 방식이 명시되어 있다.
+test는 각 선언을 개별적으로 확인하므로 두 서비스가 같은 router 이름(`opensearch`)을
+선언한 경우 어느 한쪽에서라도 chain이 빠지면 실패한다. ForwardAuth는 TCP router를 보호할 수 없으므로
+TCP router는 두지 않는다.
+`RouteAuthContractTests`(`tests/validation/test_compose_baseline_gates.py`)는 router가
+두 조건 중 어느 것도 충족하지 않거나, 표에 더 이상 존재하지 않는 router 또는 이제 SSO를
+사용하는 router가 있거나, router에 middleware가 전혀 없으면 실패한다(`grafana-static` 제외).
 
 | Router | Authentication without the SSO chain |
 | --- | --- |
-| `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao`, `superset` | native OIDC (Dozzle also IP allowlist) |
-| `keycloak`, `oauth2-proxy` | the identity provider and the ForwardAuth service |
-| `couchdb`, `haproxy-stats`, `neo4j` | application admin credentials |
-| `influxdb` | InfluxDB token (auth on by default) |
-| `mongo-express` | mongo-express basic auth (`ME_CONFIG_BASICAUTH=true`) |
-| `open-notebook` | application password and IP allowlist |
-| `opensearch` (both variants), `opensearch-dashboards` | OpenSearch security plugin |
-| `dashboard` (Traefik), `prometheus-api` | Traefik basic auth |
-| `s3` | S3 SigV4 identities |
-| `grafana-static` | none: two static files only |
+| `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao`, `superset` | native OIDC(Dozzle은 IP allowlist도 적용) |
+| `keycloak`, `oauth2-proxy` | identity provider와 ForwardAuth 서비스 자체 |
+| `couchdb`, `haproxy-stats`, `neo4j` | application 관리자 credential |
+| `influxdb` | InfluxDB token(인증은 기본 활성화) |
+| `mongo-express` | mongo-express basic auth(`ME_CONFIG_BASICAUTH=true`) |
+| `open-notebook` | application password와 IP allowlist |
+| `opensearch`(두 variant), `opensearch-dashboards` | OpenSearch security plugin |
+| `dashboard`(Traefik), `prometheus-api` | Traefik basic auth |
+| `s3` | S3 SigV4 identity |
+| `grafana-static` | 인증 없음: 정확히 `/favicon.ico`와 `/robots.txt` 경로만 해당; Method matcher 없음; 소유자의 해결을 기다리는 policy 미준수 상태 |
 
-On 2026-09-24 (SPEC-0180 S18) four routes that reached an application with no
-identity check were closed: `qdrant` (HOME, no API key) and the Kafka
-`kafka-rest` and `schema-registry` APIs now use the SSO chain; `mongo-express`
-now enables the basic auth its credentials were meant for. The Qdrant gRPC
-TCP route was removed. Containers keep using the service names on their
-networks.
+2026-09-24(SPEC-0180 S18)에 identity 확인 없이 application에 도달하던 route 네 개의
+허점을 막았다. `qdrant`(HOME, API key 없음)와 Kafka의 `kafka-rest`, `schema-registry` API에
+SSO chain을 적용했고, `mongo-express`에는 기존 credential이 의도했던 basic auth를
+활성화했다. Qdrant gRPC TCP route는 제거했다. container는 계속 각자의 network에서
+service 이름을 사용한다.
 
 ### SSO Behavioural Matrix
 
-The route matrix above is static. This matrix records how the live gateway
-behaves (SPEC-0182 criterion 9). Every row ends as pass, fail, or
-owner-declined with a reason. Agent rows use read-only GETs without
-credentials or cookies, sent from the host to the gateway address
-(`curl -sk --resolve <host>:443:192.168.0.13 https://<host>/`). Owner rows
-need a signed-in browser or Keycloak admin access.
+위 route matrix는 정적 정보다. 이 matrix는 SPEC-0182 criterion9 test 사례와 날짜가 명시된
+증거 경로를 보존하며 현재 gateway를 새로 관찰한 결과가 아니다. 각 행은 pass, fail 또는
+사유를 명시한 owner-declined로 마무리한다. agent 행은 host에서 gateway 주소로 credential이나
+cookie 없이 읽기 전용 GET을 보낸다(승인된 host·CA를 사용하는 상태 코드 전용 요청이며
+TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloak 관리자 접근이 필요하다.
 
 | Behaviour | Routers covered | Method | Expected | Performer |
 | --- | --- | --- | --- | --- |
-| No cookie, SSO route | the 19 live routers carrying `sso-auth`: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/` (`/favicon.ico` for `redisinsight-static`) | No upstream content; response points to the Keycloak authorization endpoint | agent |
-| No cookie, API client | `alloy` (`Accept: application/json`), `prometheus` (`/api/v1/status/buildinfo`) | GET without credentials | `401` | agent |
-| No session, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | GET `/`, the app's login path, and one API path | Login starts at Keycloak or the app's login page; the API refuses | agent |
-| User outside `/admins` | every SSO route | Sign in as a realm user outside `/admins`, open an SSO route | Refused: OAuth2 Proxy logs the group denial; the flow ends on the Proxy error page (`sso-errors` hides the `403`) | owner |
-| Logout | every SSO route | Signed in, open `https://auth.hy.home.arpa/oauth2/sign_out`, then an SSO route | Proxy cookie cleared; the next request goes to Keycloak again (Keycloak SSO may sign in again without a prompt) | owner |
-| Role removal | every SSO route | Signed in, remove the user from `/admins` in Keycloak, wait for `cookie_refresh` (1h) or sign out and back in | Access refused after the session refresh | owner |
-| Valkey unreachable | every SSO route | Disconnect only `oauth2-proxy` from `mng_data_net`, request an SSO route with and without a cookie, reconnect | Fails closed: no upstream content, with or without a cookie | owner approval, then agent or owner |
-| Native OIDC signed-in behaviour | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | Sign in, check role mapping, sign out | Each app applies its own client and role mapping; the Proxy allowlist does not apply | owner |
+| Cookie 없음, SSO route | 이 matrix에 기록된 `sso-auth` router 19개: `alertmanager`, `alloy`, `cadvisor`, `comfyui`, `flower`, `jupyter`, `kafka-connect`, `kafka-rest`, `loki`, `mlflow`, `n8n`, `ollama`, `prometheus`, `pyroscope`, `qdrant`, `redisinsight`, `redisinsight-static`, `schema-registry`, `tempo` | GET `/`(`/favicon.ico`는 `redisinsight-static`용) | upstream content가 노출되지 않고 응답이 Keycloak authorization endpoint를 가리킴 | agent |
+| Cookie 없음, API client | `alloy`(`Accept: application/json`), `prometheus`(`/api/v1/status/buildinfo`) | credential 없이 GET | 과거 기대값은 `401`이었으나 현재 `sso-errors`는 401→302로 바꾸므로 선택한 route/status와 upstream content 비노출을 각각 기록함 | agent |
+| Session 없음, native OIDC | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | `/`, app login 경로, API 경로 하나에 GET | Keycloak이나 app login 페이지에서 로그인이 시작되고 API는 거부함 | agent |
+| `/admins` 밖의 사용자 | 모든 SSO route | `/admins` 밖의 realm 사용자로 로그인하고 SSO route에 접속 | 거부됨: OAuth2 Proxy가 group 거부를 log에 남기고 Proxy 오류 페이지에서 flow가 끝남(현재 `sso-errors`는 `403`을 유지) | owner |
+| Logout | 모든 SSO route | 로그인 후 `https://auth.hy.home.arpa/oauth2/sign_out`에 접속하고 SSO route에 다시 접속 | Proxy cookie가 삭제되고 다음 요청은 다시 Keycloak으로 이동함(Keycloak SSO가 prompt 없이 다시 로그인할 수 있음) | owner |
+| Role 제거 | 모든 SSO route | 로그인 후 Keycloak의 `/admins`에서 사용자를 제거하고 `cookie_refresh`(1h)를 기다리거나 logout 후 다시 로그인 | session refresh 이후 접근 거부 | owner |
+| Valkey 도달 불가 | 모든 SSO route | `oauth2-proxy`만 `mng_data_net`에서 분리하고 cookie가 있을 때와 없을 때 각각 SSO route를 요청한 뒤 다시 연결 | fail-closed: cookie 유무와 관계없이 upstream content 비노출 | owner 승인 후 agent 또는 owner |
+| Native OIDC 로그인 상태의 동작 | `open-webui`, `grafana`, `airflow`, `gatus`, `kafka-ui`, `dozzle`, `openbao` | 로그인하고 role mapping을 확인한 뒤 logout | 각 app이 자체 client와 role mapping을 적용하며 Proxy allowlist는 적용되지 않음 | owner |
 
-Row results, including the owner rows still pending, are recorded in the
-[SPEC-0182 Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
-Verification Evidence and Work Log.
+아직 대기 중인 owner 행을 포함한 각 행의 결과는
+[SPEC-0182 Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)의
+Verification Evidence와 Work Log에 기록되어 있다.
+
+### Scope and current limitations
+
+이 문서는 cross-cutting integration 설명이며 별도 Compose service를 소유하지 않는다.
+기동·resource·persistence·backup은 각 서비스 subject와 [시스템 Guide](0099-system-operations.md)가
+소유한다. 위 2026-09 조사·전환 표는 당시 사실/미검증 후보를 보존하며 제품의 현재
+설치 버전이나 모든 앱 로그인 결과를 대신하지 않는다. 새 전환은 해당 owning
+Guide의 실제 Compose/build와 그 릴리스 공식 근거를 다시 확인해야 한다.
+
+`grafana-static`은 실제 source에 middleware 없이 있는 두 exact path다. 검증기는
+예외 router 이름을 허용하지만 [POL-0079](../policies/0079-application-auth-integration.md)의
+무인증 금지 요구가 자동 면제되는 것은 아니다. 정책 승인 근거가 확정되기 전에는
+구현 미준수로 유지하고 route를 확대하지 않는다. method 제한도 선언되어 있지 않다.
+현재 rule은 `Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt`
+exact Path, priority200, `grafana-svc`이며 LAN 주소의 TLS gateway를 통한다.
+모든 HTTP method에서 표준 middleware chain 전체를 건너뛰지만 upstream 응답이나
+민감한 정보 노출은 관찰하지 않았다. 이름 allowlist 검사는 host/path/service/priority와
+method 범위를 고정하지 않는다. 완료된 SPEC0180 Task0008 S18의 “open by design”
+기록은 더 강한 Spec/Policy 금지와 충돌하며 별도 만료·종료 조건을 갖춘 owner 예외가
+확인되지 않았다. 구현 보호/제거 또는 정확한 범위·위험·종료·검증을 기록한 owner
+정책 결정이 필요하며, exact-rule 회귀 검사는 별도 구현 변경에 속한다.
 
 ### 서비스별 정적 검증
 
@@ -506,7 +505,7 @@ docker compose exec -T airflow-apiserver airflow dags list
 
 ## Common Checks
 
-Verify each application uses its documented ForwardAuth or native OIDC path, the client ID matches provisioned Keycloak metadata, and unauthorized access is rejected. Do not print client secrets or tokens. Container health alone does not prove role authorization.
+각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
 
 ## Traceability
 
@@ -516,11 +515,11 @@ Verify each application uses its documented ForwardAuth or native OIDC path, the
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Keycloak Guide](0014-keycloak.md)
 - [OAuth2 Proxy Guide](0015-oauth2-proxy.md)
 - [Kafka/Kafbat Guide](0036-kafka.md)
 - [Airflow Guide](0050-airflow.md)
 - [OpenBao Guide](0085-openbao.md)
-- Official references reviewed: 2026-09-19; runtime pins remain in implementation sources.
+- 공식 참고 문서 확인일: 2026-09-19. runtime version 고정값은 구현 source가 소유한다.

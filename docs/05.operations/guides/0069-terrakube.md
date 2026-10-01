@@ -4,13 +4,13 @@ version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
 - "POL-0069"
 implementation_services:
-  infra/09-tooling/terrakube/docker-compose.yml:
+  infra/09-platform-ops/terrakube/docker-compose.yml:
   - terrakube-api
   - terrakube-executor
   - terrakube-ui
@@ -31,7 +31,7 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 
 ### 구현과 데이터 흐름
 
-- [Terrakube Compose](../../../infra/09-tooling/terrakube/docker-compose.yml)가
+- [Terrakube Compose](../../../infra/09-platform-ops/terrakube/docker-compose.yml)가
   서비스, profile, 이미지, secret, healthcheck, 라우트, executor의 Docker socket
   접근을 정의한다. 파생된 이미지 프로젝션은 런타임 pin을 소유하지 않는다.
 - 브라우저 -> Traefik -> `terrakube-ui`; UI -> `terrakube-api`; API는
@@ -57,41 +57,48 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
    서비스 세 개와 별도로 선택된 의존성을 모두 확인한다.
 3. credential이나 state를 출력하지 않고 PostgreSQL, SeaweedFS `tfstate`,
    Valkey, Keycloak, 게이트웨이 준비 상태를 검증한다.
-4. 의존성과 Docker socket 권한 검토 후에만 Terrakube 서비스를 시작한다. UI
-   로그인, API 인가, executor 등록, 적용하지 않는 plan을 별도로 검증한다.
+4. 현재 인증 경로 제한을 먼저 확인한다. 브라우저 로그인만으로 CLI/API와 executor
+   실행이 가능하다고 판단하지 않는다. 아래 제한을 별도 구현 검토로 해소하고 승인을
+   받은 뒤에만 서비스 기동·등록·비적용 plan 검증을 런북에 따라 수행한다.
 5. 인프라를 apply하거나 destroy하려면 별도의 원격 변경 승인이 필요하다.
 
 ### 상태, 백업, 업그레이드
 
-복구에는 일관된 세트가 필요하다. Terrakube PostgreSQL 데이터베이스, SeaweedFS
-`tfstate` object/버전, 관련 Keycloak client/role 설정, 추적되는 Compose, secret
-메타데이터/보관 정보. Valkey는 조정 상태이므로 비어 있거나 정지된 제어 플레인과
-일관되어야 한다. 조정된 데이터베이스/object 스냅샷을 찍기 전에 새 실행을 중지하고
-API/executor를 정지한다. provider와 webhook egress를 비활성화한 격리 환경에서만
-복원하고, DB/state-key 참조 일관성과 적용하지 않는 plan을 검증한다. SeaweedFS
-사본 하나나 DB 덤프 하나만으로 복구 가능성을 추정하지 않는다.
-
-업그레이드 전에는 이 조정된 백업을 확보하고, Terrakube release/마이그레이션
-노트를 읽고, 복원된 사본에 대해 테스트하고, 컴포넌트 세트 하나를 함께 롤포워드한다.
-마이그레이션 이후 데이터베이스/state 롤백 없이 이미지만 롤백하는 것은 안전하지
-않다. 이 문서 작업에서는 백업/복원과 업그레이드 리허설을 실행하지 않았다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0069-terrakube.md)의 `복구 세트와 버전 변경` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `docker compose --profile iac config --quiet`
 - `docker compose --profile iac config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ## Runbook Handoff
 
 실행 실패, 조정된 백업/복원, OIDC 진단, 업그레이드에는
 [runbook](../runbooks/0069-terrakube.md)을 사용한다.
 
+### 현재 실행 경로의 제한
+
+추적되는 Compose와 README는 cookie 기반 ForwardAuth가 Terraform CLI/API 토큰
+요청 및 공개 API URL을 사용하는 executor 요청을 막는 상태임을 명시한다. 전용
+`home-terrakube` client/audience와 RBAC 활성화는 별도 승인된 구현 변경이 필요하다.
+현재 gateway 통제는 유지하며 로그인·health 성공을 실행 가능 증거로 기록하지 않는다.
+인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다.
+
+### 컴포넌트별 준비와 자원
+
+UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기화 의존성은
+선택적이며 PostgreSQL·Valkey readiness를 기다리는 선언은 없다. API/executor는
+`edge_net`, `terrakube_net`, `mng_data_net`, `object_net`, UI는 앞의 두 네트워크에
+연결된다. 각 자원 제한은 Compose·공통 템플릿이 소유한다. executor가 참조하는
+외부 도구의 `main` 및 Terraform release 목록은 특정 workspace 엔진 버전의 증거가
+아니다. 사용한 도구·엔진의 실제 식별자를 승인된 실행 근거에 남겨야 한다.
+
 ## Traceability
 
 - [Policy](../policies/0069-terrakube.md) (`POL-0069`)
 - [Runbook](../runbooks/0069-terrakube.md) (`RUN-0069`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 

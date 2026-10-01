@@ -1,26 +1,26 @@
 ---
-title: "Analytics Tier (04-data/analytics) Product Requirements"
-version: "1.1.1"
+title: "Analytics Services Product Requirements"
+version: "1.1.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "requirements"
 artifact_id: "REQ-0005"
 parent_ids: []
 created: "2026-03-26"
 ---
-# Analytics Tier (04-data/analytics) Product Requirements
+# Analytics Services Product Requirements
 
-> This document defines the product requirements for the specialized analytics data engines within the `04-data/analytics` sub-tier.
+> This document defines the product requirements for the specialized analytics data engines across storage in `04-data` and processing in `12-analytics`.
 
 ## Problem and Goals
 
-This document defines the platform's analytics requirements. Time-series and log search are handled by dedicated engines in `04-data/analytics` (InfluxDB, OpenSearch), while stream processing and SQL/OLAP analysis are handled by engines in `04-data/lakehouse` (Flink, Trino) on top of Iceberg tables (ADR-0039).
+This document defines the platform's analytics requirements. Time-series and log search are handled by dedicated storage engines in `04-data` (InfluxDB, OpenSearch), while stream processing and SQL/OLAP analysis are handled by engines in `12-analytics` (Flink, Trino) on top of Iceberg tables (ADR-0039).
 
 ### Problem Statement
 
-The current implementation holds InfluxDB and OpenSearch compose under `infra/04-data/analytics`, and Flink and Trino compose under `infra/04-data/lakehouse`. This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
+The current implementation holds InfluxDB and OpenSearch compose under `infra/04-data`, and Flink and Trino compose under `infra/12-analytics`. This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
 
 ## Stakeholders and User Needs
 

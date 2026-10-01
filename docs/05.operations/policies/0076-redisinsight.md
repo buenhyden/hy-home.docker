@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -52,6 +52,13 @@ gateway/CIDR 허용/거부, 대상 계정 범위, 설정 지속성을 검증하�
 
 이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 저장소 변경 시 검토한다.
 
+### 직접 접근 제한
+
+현재 다섯 네트워크의 peer 접근에는 gateway 인증이 자동 적용되지 않는다.
+접근 제한 통제는 유지하며 이 구현 격차를 `@buenhyden`에게 보고한다. CIDR·SSO
+성공만으로 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된
+credential을 진단 출력으로 사용하지 않는다.
+
 ## Traceability
 
 - [가이드](../guides/0076-redisinsight.md) (`GDE-0076`)
@@ -60,6 +67,6 @@ gateway/CIDR 허용/거부, 대상 계정 범위, 설정 지속성을 검증하�
 
 ## Related Documents
 
-- [RedisInsight Compose 소스](../../../infra/11-laboratory/redisinsight/docker-compose.yml)
+- [RedisInsight Compose 소스](../../../infra/04-data/redisinsight/docker-compose.yml)
 - [RedisInsight 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)
 - [RedisInsight 문서](https://redis.io/docs/latest/develop/tools/insight/)

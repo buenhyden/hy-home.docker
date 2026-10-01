@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-24"
 ---
 
@@ -28,7 +28,7 @@ created: "2025-11-24"
 
 ### In Scope
 
-- 11개 기능 티어에 걸친 서비스 정의.
+- 12개 기능 티어에 걸친 서비스 정의.
 - 루트 `docker-compose.yml`을 통한 전역 오케스트레이션.
 - Compose 파일 목록과 각 서비스를 선택하는 프로필.
 - **Docker Profiles**(`core`, `mng`, `obs` 등)를 사용한 표준화된 실행 모델.
@@ -39,22 +39,6 @@ created: "2025-11-24"
 - 세부 내부 서비스 설정 (`docs/05.operations/` 또는 하위 모듈 README 참고).
 - 애플리케이션 비즈니스 로직과 프론트엔드 소스 코드.
 - 자격 증명 및 민감 변수 (`secrets/`에서 관리).
-
-## Infrastructure Tiers (01-11)
-
-| Tier | Category | Key Services | Status |
-| :--- | :--- | :--- | :--- |
-| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / 선택적; disposition 참고 |
-| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
-| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
-| **04** | **Data** | [mng-db](./04-data/operational/mng-db), [SeaweedFS](./04-data/lake-and-object/seaweedfs), [Qdrant](./04-data/specialized/qdrant) | HOME / 선택적; disposition 참고 |
-| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 클러스터는 LAB |
-| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo) | HOME / 선택적; disposition 참고 |
-| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
-| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui) | HOME |
-| **09** | **Tooling** | [SonarQube](./09-tooling/sonarqube), [Terrakube](./09-tooling/terrakube) | Dev/Ops |
-| **10** | **Communication** | [Mailpit](./10-communication/mailpit), [Stalwart](./10-communication/stalwart) | DEV / 선택적 |
-| **11** | **Laboratory** | [Dozzle](./11-laboratory/dozzle), [RedisInsight](./11-laboratory/redisinsight), [Open Notebook](./11-laboratory/open-notebook) | Admin |
 
 ## Compose Inventory Snapshot
 
@@ -111,7 +95,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 | `dependency-update` | Renovate 업데이트 작업만; `tooling`과 HOME에서 제외됨 |
 
 HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
-41-service selection이다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
+profile 조합이다. 현재 서비스 목록은 공개 예제 환경의 `docker compose config --services`로 조회한다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
 AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼저 확인한다.
 초기화 job의 성공 종료와 daemon의 health를 구분한다. cluster·legacy·maintenance
 프로파일은 업무 소비자와 검증 목적이 확인될 때만 별도로 선택한다.
@@ -134,6 +118,23 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 
 ## Structure
 
+각 tier의 기능과 현재 패키지 배치는 다음과 같습니다.
+
+| Tier | Category | Key Services | Status |
+| :--- | :--- | :--- | :--- |
+| **01** | **Gateway** | [Traefik](./01-gateway/traefik), [Nginx](./01-gateway/nginx) | HOME / 선택적; disposition 참고 |
+| **02** | **Identity** | [Keycloak](./02-auth/keycloak), [OAuth2-Proxy](./02-auth/oauth2-proxy) | HOME / 선택적; disposition 참고 |
+| **03** | **Security** | [OpenBao](./03-security/openbao) | HOME 부트스트랩 |
+| **04** | **Data** | [mng-db](./04-data/mng-db), [SeaweedFS](./04-data/seaweedfs), [Qdrant](./04-data/qdrant), [RedisInsight](./04-data/redisinsight) | HOME / 선택적; disposition 참고 |
+| **05** | **Messaging** | [Kafka](./05-messaging/kafka) | 선택적; 클러스터는 LAB |
+| **06** | **Observability** | [Grafana](./06-observability/grafana), [Prometheus](./06-observability/prometheus), [Loki](./06-observability/loki), [Tempo](./06-observability/tempo), [Dozzle](./06-observability/dozzle) | HOME / 선택적; disposition 참고 |
+| **07** | **Workflow** | [Airflow](./07-workflow/airflow), [n8n](./07-workflow/n8n) | HOME / 선택적; disposition 참고 |
+| **08** | **AI** | [Ollama](./08-ai/ollama), [Open WebUI](./08-ai/open-webui), [ComfyUI](./08-ai/comfyui), [Open Notebook](./08-ai/open-notebook), [MLflow](./08-ai/mlflow) | HOME / 선택적 |
+| **09** | **Platform Operations** | [OpenTofu](./09-platform-ops/opentofu), [Terrakube](./09-platform-ops/terrakube), [Registry](./09-platform-ops/registry), [Renovate](./09-platform-ops/renovate), [Restic](./09-platform-ops/restic) | HOME / 명시적 작업 |
+| **10** | **Communication** | [Stalwart](./10-communication/stalwart) | 선택적 내부 메일 |
+| **11** | **Quality** | [k6](./11-quality/k6), [Locust](./11-quality/locust), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
+| **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL / LAB |
+
 ```text
 infra/
 ├── 01-gateway/        # Edge Routing & SSL Ingress
@@ -144,12 +145,18 @@ infra/
 ├── 06-observability/  # Monitoring, Logging, Tracing
 ├── 07-workflow/       # DAG Orchestration & Automation
 ├── 08-ai/             # LLM Inference & RAG Engines
-├── 09-tooling/        # DevOps, QA & Performance Tools
-├── 10-communication/  # Mail & Messaging Infrastructure
-├── 11-laboratory/     # Experimental & Admin Dashboards
+├── 09-platform-ops/        # IaC, 아티팩트, 의존성 유지보수와 공통 백업
+├── 10-communication/  # 운영 메일
+├── 11-quality/        # 소프트웨어·설정·성능·계약 검증과 테스트 메일
+├── 12-analytics/      # Processing, SQL, quality, BI and transformation
 ├── common-optimizations.yml # Shared Docker templates
 └── README.md          # This file
 ```
+
+Data와 Analytics는 중간 분류 폴더 없이 패키지를 직접 배치합니다. Observability는
+tier Compose가 여러 하위 설정 폴더를 묶고 Dozzle만 별도 leaf Compose를
+사용하는 예외입니다. 디렉터리
+번호는 기동 순서가 아니며 root include와 service profile이 선택을 결정합니다.
 
 ## Service Documentation Rubric
 

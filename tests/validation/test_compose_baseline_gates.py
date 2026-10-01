@@ -605,8 +605,8 @@ class PostgresInitializationContractTests(unittest.TestCase):
         return [
             (ROOT / path).read_text(encoding="utf-8")
             for path in (
-                "infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql",
-                "infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql",
+                "infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql",
+                "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
             )
         ]
 
@@ -701,7 +701,7 @@ class MailpitHealthContractTests(unittest.TestCase):
     def test_native_healthcheck_and_custom_ui_port_contract(self):
         import yaml
 
-        text = (ROOT / "infra/10-communication/mailpit/docker-compose.yml").read_text()
+        text = (ROOT / "infra/11-quality/mailpit/docker-compose.yml").read_text()
         for ui_port in (8025, 18025):
             with self.subTest(ui_port=ui_port):
                 rendered = text.replace("${MAILPIT_UI_PORT:-8025}", str(ui_port))
@@ -743,14 +743,15 @@ class MailpitHealthContractTests(unittest.TestCase):
             for name in (
                 "scripts/hardening/check-all-hardening.sh",
                 "scripts/lib/hardening-lib.sh",
-                "infra/10-communication/stalwart/docker-compose.yml",
-                "infra/10-communication/stalwart/config/plan.ndjson",
-                "infra/10-communication/mailpit/docker-compose.yml",
+                "infra/11-quality/sonarqube/docker-compose.yml",
+                "infra/11-quality/wiremock/docker-compose.yml",
+                "infra/11-quality/pact-broker/docker-compose.yml",
+                "infra/11-quality/mailpit/docker-compose.yml",
             ):
                 target = root / name
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_text((ROOT / name).read_text())
-            target = root / "infra/10-communication/mailpit/docker-compose.yml"
+            target = root / "infra/11-quality/mailpit/docker-compose.yml"
             original = target.read_text()
             for test in (
                 None,
@@ -776,7 +777,7 @@ class MailpitHealthContractTests(unittest.TestCase):
                     [
                         "bash",
                         str(root / "scripts/hardening/check-all-hardening.sh"),
-                        "10-communication",
+                        "11-quality",
                     ],
                     cwd=root,
                     env=env,
@@ -836,23 +837,23 @@ class OllamaPortContractTests(unittest.TestCase):
         )
 
 
-MNG_DB_COMPOSE = "infra/04-data/operational/mng-db/docker-compose.yml"
-PG_CLUSTER_COMPOSE = "infra/04-data/relational/postgresql-cluster/docker-compose.yml"
+MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
+PG_CLUSTER_COMPOSE = "infra/04-data/postgresql-cluster/docker-compose.yml"
 PROVISION_RUNNER = (
-    "infra/04-data/operational/mng-db/pg/provision/run-feature-provision.sh"
+    "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
 )
 # Feature-owned mng-pg provisioning jobs: (compose file, job, SQL file, profiles).
 FEATURE_JOBS = (
     (
-        "infra/11-laboratory/mlflow/docker-compose.yml",
+        "infra/08-ai/mlflow/docker-compose.yml",
         "mlflow-db-provision",
-        "infra/11-laboratory/mlflow/provisioning/mng-pg.sql",
+        "infra/08-ai/mlflow/provisioning/mng-pg.sql",
         {"mlops", "data-science"},
     ),
     (
-        "infra/09-tooling/dbt/docker-compose.yml",
+        "infra/12-analytics/dbt/docker-compose.yml",
         "dbt-db-provision",
-        "infra/09-tooling/dbt/provisioning/mng-pg.sql",
+        "infra/12-analytics/dbt/provisioning/mng-pg.sql",
         {"analytics-engineering"},
     ),
     (
@@ -862,15 +863,15 @@ FEATURE_JOBS = (
         {"cdc"},
     ),
     (
-        "infra/09-tooling/pact-broker/docker-compose.yml",
+        "infra/11-quality/pact-broker/docker-compose.yml",
         "pact-broker-db-provision",
-        "infra/09-tooling/pact-broker/provisioning/mng-pg.sql",
+        "infra/11-quality/pact-broker/provisioning/mng-pg.sql",
         {"contract-testing"},
     ),
     (
-        "infra/04-data/analytics/superset/docker-compose.yml",
+        "infra/12-analytics/superset/docker-compose.yml",
         "superset-db-provision",
-        "infra/04-data/analytics/superset/provisioning/mng-pg.sql",
+        "infra/12-analytics/superset/provisioning/mng-pg.sql",
         {"bi"},
     ),
 )
@@ -921,12 +922,12 @@ class FeatureProvisioningContractTests(unittest.TestCase):
             (
                 MNG_DB_COMPOSE,
                 "mng-pg-init",
-                "infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql",
+                "infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql",
             ),
             (
                 PG_CLUSTER_COMPOSE,
                 "pg-cluster-init",
-                "infra/04-data/relational/postgresql-cluster/init-scripts/init_users_dbs.sql",
+                "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
             ),
         ):
             with self.subTest(job=job):
@@ -1221,7 +1222,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             {"PGPASSWORD": "synthetic-admin"},
             extra=[
                 "-v",
-                f"{ROOT / 'infra/04-data/operational/mng-db/pg/init-scripts/init_users_dbs.sql'}:/work/init.sql:ro",
+                f"{ROOT / 'infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql'}:/work/init.sql:ro",
             ],
         )
         assert result.returncode == 0, result.stderr
@@ -1404,7 +1405,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         # SPEC-0180 S16: provisioning, the init job's own command twice, then
         # the web server; the password carries a quote, a backslash and an @.
         self.assertEqual(0, self.provision("superset-db-provision").returncode)
-        compose = "infra/04-data/analytics/superset/docker-compose.yml"
+        compose = "infra/12-analytics/superset/docker-compose.yml"
         init = _compose_service(compose, "superset-init")
         image = init["image"]
         built = subprocess.run(
@@ -1414,7 +1415,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                 "-q",
                 "-t",
                 image,
-                str(ROOT / "infra/04-data/analytics/superset"),
+                str(ROOT / "infra/12-analytics/superset"),
             ],
             capture_output=True,
             text=True,
@@ -1626,7 +1627,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                     "-v",
                     f"{ROOT / PROVISION_RUNNER}:/provision/run-feature-provision.sh:ro",
                     "-v",
-                    f"{ROOT / 'infra/11-laboratory/mlflow/provisioning/mng-pg.sql'}:/provision/mng-pg.sql:ro",
+                    f"{ROOT / 'infra/08-ai/mlflow/provisioning/mng-pg.sql'}:/provision/mng-pg.sql:ro",
                     "-e",
                     f"PGHOST={self.tag}-db",
                     "-e",
@@ -1667,9 +1668,9 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
 
 
-RESTIC_COMPOSE = "infra/09-tooling/restic/docker-compose.yml"
-PGBACKREST_DIR = "infra/04-data/operational/mng-db/pg/backup"
-RESTIC_DIR = "infra/09-tooling/restic"
+RESTIC_COMPOSE = "infra/09-platform-ops/restic/docker-compose.yml"
+PGBACKREST_DIR = "infra/04-data/mng-db/pg/backup"
+RESTIC_DIR = "infra/09-platform-ops/restic"
 
 
 def _compose_command(service: dict) -> list[str]:
@@ -2289,7 +2290,7 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         self.assertIn("wrong password", wrong.stderr)
 
 
-SEAWEEDFS_DIR = "infra/04-data/lake-and-object/seaweedfs"
+SEAWEEDFS_DIR = "infra/04-data/seaweedfs"
 FLINK_SERVICES = ("flink-jobmanager", "flink-taskmanager")
 SEAWEEDFS_SERVICES = (
     "seaweedfs-master",
@@ -3380,7 +3381,7 @@ class NetworkSegmentationContractTests(unittest.TestCase):
 class ConftestPolicyGateTests(unittest.TestCase):
     """The Conftest CI gate runs the declared job, and the job stays isolated."""
 
-    COMPOSE = "infra/09-tooling/conftest/docker-compose.yml"
+    COMPOSE = "infra/11-quality/conftest/docker-compose.yml"
 
     def test_job_reads_infra_only_without_network_or_root(self) -> None:
         service = _compose_service(self.COMPOSE, "conftest")
@@ -3398,7 +3399,7 @@ class ConftestPolicyGateTests(unittest.TestCase):
         self.assertIn("run --rm conftest", script)
 
     def test_every_policy_has_unit_tests(self) -> None:
-        policy = ROOT / "infra/09-tooling/conftest/policy"
+        policy = ROOT / "infra/11-quality/conftest/policy"
         rules = {p.stem for p in policy.glob("*.rego") if not p.stem.endswith("_test")}
         tests = {p.stem.removesuffix("_test") for p in policy.glob("*_test.rego")}
         self.assertEqual(rules, tests)
@@ -3691,7 +3692,7 @@ class QdrantApiKeyContractTests(unittest.TestCase):
     ) -> None:
         import yaml
 
-        compose = ROOT / "infra/04-data/specialized/qdrant/docker-compose.yml"
+        compose = ROOT / "infra/04-data/qdrant/docker-compose.yml"
         services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
         service = services["qdrant"]
         self.assertIn("qdrant_api_key", service["secrets"])
@@ -3727,7 +3728,7 @@ class SeaweedfsS3MetricsContractTests(unittest.TestCase):
     ) -> None:
         import yaml
 
-        compose = ROOT / "infra/04-data/lake-and-object/seaweedfs/docker-compose.yml"
+        compose = ROOT / "infra/04-data/seaweedfs/docker-compose.yml"
         services = yaml.safe_load(compose.read_text(encoding="utf-8"))["services"]
         for name, service in services.items():
             has_metrics = any(

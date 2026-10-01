@@ -4,7 +4,7 @@ version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -67,15 +67,23 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
 검토한다.
 
+### 현재 실행 경로의 제한
+
+추적되는 Compose와 README는 cookie 기반 ForwardAuth가 Terraform CLI/API 토큰
+요청 및 공개 API URL을 사용하는 executor 요청을 막는 상태임을 명시한다. 전용
+`home-terrakube` client/audience와 RBAC 활성화는 별도 승인된 구현 변경이 필요하다.
+현재 gateway 통제는 유지하며 로그인·health 성공을 실행 가능 증거로 기록하지 않는다.
+인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다.
+
 ## Traceability
 
 - [가이드](../guides/0069-terrakube.md) (`GDE-0069`)
 - [런북](../runbooks/0069-terrakube.md) (`RUN-0069`)
-- [Tooling 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [Terrakube Compose 소스](../../../infra/09-tooling/terrakube/docker-compose.yml)
+- [Terrakube Compose 소스](../../../infra/09-platform-ops/terrakube/docker-compose.yml)
 - [Terrakube 문서](https://docs.terrakube.io/)
 - [Terrakube 라이선스](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)
 - [운영 인덱스](../README.md)

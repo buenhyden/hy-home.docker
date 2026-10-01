@@ -4,7 +4,7 @@ version: "2.0.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-12-03"
 ---
 
@@ -12,7 +12,10 @@ created: "2025-12-03"
 
 ## Overview
 
-Stalwart는 내부 전용 메일 서버다. host port와 relay가 없고 `mail_net`의 컨테이너만 메일을 제출한다. `mail-server` profile에서만 선택되며 운영 subject는 `0070-mail`이다. 개발 캡처는 [Mailpit](../mailpit/README.md) 및 subject `0084-mailpit`이 담당한다.
+Stalwart는 내부 전용 메일 서버를 목표로 하며 host port와 외부 relay를 선언하지 않는다.
+다만 현재 서버는 `mail_net`과 `edge_net` 양쪽에 연결되고 listener는 wildcard 주소에
+바인딩된다. 따라서 `mail_net` 전용 접근 통제가 구현됐다고 볼 수 없다. 정책은 유지하며
+네트워크 제한 보완은 별도 구현 과제로 남는다. `mail-server` profile에서만 선택되며 운영 subject는 `0070-mail`이다. 개발 캡처는 [Mailpit](../../11-quality/mailpit/README.md) 및 subject `0084-mailpit`이 담당한다.
 
 ## Audience
 
@@ -48,10 +51,10 @@ stalwart/
 | --- | --- |
 | Profile | `mail-server` |
 | Image | [Compose](docker-compose.yml); [derived Compose image projection](../../tech-stack.versions.json) |
-| Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/var/lib/stalwart` (빈 디렉터리로 준비; 첫 기동 때 image 사용자 UID 2000 소유가 됨) |
+| Data | `${DEFAULT_COMMUNICATION_DIR}/stalwart/data` → `/var/lib/stalwart` (소스가 기대하는 사용자 UID는 2000; 첫 기동 전 실제 경로의 소유권·권한을 별도 확인하고 자동 보정을 가정하지 않음) |
 | Configuration | `config/plan.ndjson`을 `stalwart-config`가 적용; listener 변경은 다음 재시작부터 |
 | Secret | `stalwart_password` (COMM-006) → recovery admin; Compose에 credential 없음. 한 줄, `:` 없는 값이어야 함(`user:password`로 조합) |
-| Host ports | 없음. SMTP 25·submission 587·IMAPS 993은 `mail_net` 전용 |
+| Host ports | 없음. SMTP 25·submission 587·IMAPS 993은 wildcard listener이며 `mail_net`·`edge_net` peer 접근을 구분해 검토해야 함 |
 | Relay | 없음 (`allowRelaying = false`); 설정 도메인 밖 수신자는 SMTP `550`(`Relay not allowed`) |
 | UI | `mail.${DEFAULT_URL}` → 8080, Traefik SSO 보호 |
 
@@ -66,8 +69,9 @@ stalwart/
 ```bash
 docker compose --env-file .env.example --profile mail-server config --services
 bash scripts/hardening/check-all-hardening.sh 10-communication
-HYHOME_MAIL_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StalwartRehearsalTests
 ```
+
+별도 실행 승인이 있는 경우에만 `HYHOME_MAIL_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.StalwartRehearsalTests`로 런타임 리허설을 수행한다. 정적 검사 결과는 배달·복구 성공을 뜻하지 않는다.
 
 ## Troubleshooting
 

@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -53,6 +53,13 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 
 이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
 
+### 책임과 예외 구분
+
+책임자는 `@buenhyden`이다. Dozzle의 네이티브 OIDC는 승인된 인증 방식이며
+ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 예외가 CIDR·issuer
+신뢰·socket 권한 통제를 면제하지 않는다. 선언된 자원 상한을 바꿀 때는 관찰된 로그
+처리량과 호스트 용량을 근거로 검토한다.
+
 ## Traceability
 
 - [가이드](../guides/0072-dozzle.md) (`GDE-0072`)
@@ -61,5 +68,5 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 
 ## Related Documents
 
-- [Dozzle Compose 소스](../../../infra/11-laboratory/dozzle/docker-compose.yml)
+- [Dozzle Compose 소스](../../../infra/06-observability/dozzle/docker-compose.yml)
 - [Dozzle 보안 고려사항](https://dozzle.dev/guide/authentication#security-considerations)

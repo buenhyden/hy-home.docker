@@ -165,7 +165,7 @@ bash scripts/operations/gen-secrets.sh --sync-metadata-prune
 주석을 보존합니다. 빠진 공개 키와 placeholder 행만 추가하며 secret 파일 생성·읽기·
 변경, htpasswd 생성, 회전은 수행하지 않습니다. 경로 이탈·symlink·중복 ID/키·해석할 수
 없는 행은 거부하고 원자적 파일 교체를 사용합니다. 기존 대상도 regular
-non-symlink 파일이어야 하고 정확한 `0600` mode여야 합니다. mode drift는 check에서
+non-symlink 파일이어야 합니다. `0600`은 정렬 후 목표 mode입니다. mode만 다른 경우는 입력 거부가 아니라 check에서
 변경 필요로 보고하고 write에서 내용과 함께 원자적으로 `0600`으로 교체합니다.
 동시 수동 편집은 중단하고 다시 검사합니다. 개인 값을 shell `source`로
 실행하거나 전체 내용을 출력하지 않습니다.

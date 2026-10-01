@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0084"
 parent_ids:
@@ -58,6 +58,13 @@ loopback/internal 네트워크 경계 안에서만 허용된다.
 
 포트, 인증, 보존, 데이터베이스 경로, 프로필, 이미지가 변경될 때 검토한다.
 
+### 접근 경계의 의미
+
+gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 peer listener에는
+동등한 네이티브 UI 인증이 선언되지 않았다. 테스트용 SMTP의 임의 인증 수락을
+실제 인증으로 해석하지 않는다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터
+소유자를 확인해야 하며 신뢰하지 않는 consumer의 연결을 허용해서는 안 된다.
+
 ## Traceability
 
 - [Guide](../guides/0084-mailpit.md) (`GDE-0084`)
@@ -66,7 +73,7 @@ loopback/internal 네트워크 경계 안에서만 허용된다.
 
 ## Related Documents
 
-- [Mailpit Compose source](../../../infra/10-communication/mailpit/docker-compose.yml)
+- [Mailpit Compose source](../../../infra/11-quality/mailpit/docker-compose.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Mailpit storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
 - [Mailpit runtime options](https://mailpit.axllent.org/docs/configuration/runtime-options/)

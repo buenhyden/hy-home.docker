@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -56,7 +56,7 @@ pushgateway/
 
 ### Starting the Service
 
-저장소 루트에서 observability 프로필을 통해 Pushgateway를 시작하거나 재시작합니다.
+저장소 루트에서 승인된 대상만 시작하거나 재시작합니다. 재시작하면 현재 메트릭을 잃으므로 재전송 담당자와 유효한 관측 범위를 먼저 확인합니다.
 
 ```bash
 docker compose --profile obs up -d pushgateway
@@ -81,7 +81,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 ## Operational Status
 
 > [!CAUTION]
-> Pushgateway는 범용 프록시가 **아닙니다**. 메트릭은 명시적으로 삭제하거나 덮어쓸 때까지 게이트웨이에 남아 있습니다. 관리되지 않는 메트릭 증가는 메모리 고갈과 성능 저하로 이어질 수 있습니다.
+> Pushgateway는 범용 프록시가 **아닙니다**. 프로세스가 유지되는 동안 메트릭에는 자동 TTL이 없어 삭제하거나 덮어쓸 때까지 남습니다. 현재 영속화 설정이 없으므로 재시작 시 잃으며, 복구는 여전히 유효한 관측을 다시 push하는 방식입니다. 관리되지 않는 메트릭 증가는 메모리 고갈과 성능 저하로 이어질 수 있습니다.
 
 ## Validation
 

@@ -4,13 +4,13 @@ version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
 - "POL-0082"
 implementation_services:
-  infra/09-tooling/opentofu/docker-compose.yml:
+  infra/09-platform-ops/opentofu/docker-compose.yml:
   - opentofu
 created: "2026-09-19"
 ---
@@ -28,8 +28,8 @@ HOME과 일반 `tooling`에서는 제외된다. root project는 inline Dockerfil
 credential 마운트라도 원격 API 권한을 부여한다.
 
 이 작업에는 daemon healthcheck가 없고 `restart: "no"`이다. `template-job-low`가
-resource/security 기준선을 정의한다. 선언된 network는 provider/backend 네트워크
-접근을 허용한다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
+resource/security 기준선을 정의한다. 선언된 기본 네트워크의 도달 가능성을 별도로 확인한다. private `object_net`의
+tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가는 별도 검토가 필요하다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
 
 ### State and command semantics
 
@@ -45,13 +45,14 @@ resource/security 기준선을 정의한다. 선언된 network는 provider/backe
 
 ### Normal use
 
-1. repository root에서 작업하며 `infra/09-tooling/opentofu/workspace` 아래의
+1. repository root에서 작업하며 `infra/09-platform-ops/opentofu/workspace` 아래의
    정확한 디렉터리, backend, workspace 이름, account, 예상 리소스를 식별한다.
 2. `docker compose --profile iac config --quiet`를 실행하고
    `docker compose --profile iac config --services`로 예상한 IaC service만
    있는지 확인한다.
-3. 권한 없이 하는 smoke check는
-   `docker compose --profile iac run --rm opentofu version`이다.
+3. 버전 조회도 credential·workspace를 마운트한 컨테이너를 만든다. 실행이 승인된
+   경우에만 `docker compose --profile iac run --rm --no-deps opentofu version`을
+   사용하며 소스만 읽는 정적 검사와 구분한다.
 4. read-only provider/backend 권한으로 정확한 workspace에 대해 initialization,
    formatting, validation, 검토된 plan을 실행한다. plan과 state 파일은 Git
    밖의 보호된 경로에 보관하고 그 내용을 evidence에 붙여넣지 않는다.
@@ -60,19 +61,13 @@ resource/security 기준선을 정의한다. 선언된 network는 provider/backe
 
 ### Backup and upgrade
 
-upgrade나 state 작업 전에 backend를 확인한다. 로컬 state의 경우 모든 writer를
-멈추고 state와 backup 파일을 mode-0600으로 복사한다. 원격 backend의 경우
-atomic/versioned backup 기능이나 `tofu state pull`을 보호된 파일로 사용하며,
-그 출력을 터미널이나 채팅으로 보내지 않는다. 신뢰하기 전에 분리된/테스트용
-backend로 격리된 restore를 검증한다. 중간의 모든 OpenTofu upgrade 노트를
-검토하고 apply하지 않고 저장된 plan workflow를 테스트한다. 이 문서를 변경하면서
-plan, state backup, restore, provider 호출은 실행하지 않았다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `docker compose --profile iac config --quiet`
-- `docker compose --profile iac run --rm opentofu version`
-- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `docker compose --profile iac run --rm --no-deps opentofu version`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
 ## Runbook Handoff
 
@@ -83,7 +78,7 @@ state 복구, lock 진단, plan/apply 분리, upgrade에는
 
 - [Policy](../policies/0082-opentofu.md) (`POL-0082`)
 - [Runbook](../runbooks/0082-opentofu.md) (`RUN-0082`)
-- [OpenTofu Compose](../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [OpenTofu Compose](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 
 ## Related Documents
 

@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0073"
 parent_ids:
@@ -60,6 +60,14 @@ UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노
 릴리스, provider/모델, API 경로, DB 스키마, 키, 보존 정책 변경 시
 검토한다.
 
+### 승인된 예외와 책임
+
+공유 SSO 제거는 소유자 커밋 `b90b74837`, 포괄 admin 선택 제거는 `d5912ab03`의
+승인된 경계다. 변경 가능한 이미지 예외는 저장소의 image-tag 예외 원본에 따라
+Laboratory Operator가 매월 검토하고 사용할 rollback 이미지 식별자를 보존한다.
+책임자 `@buenhyden`의 별도 검토 없이 이 예외를 인증 생략·API 확대·v3 전환으로
+확장하지 않는다. 암호화 키 손실은 DB 복원만으로 복구되지 않는다.
+
 ## Traceability
 
 - [가이드](../guides/0073-open-notebook.md) (`GDE-0073`)
@@ -68,6 +76,6 @@ UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노
 
 ## Related Documents
 
-- [Open Notebook Compose 소스](../../../infra/11-laboratory/open-notebook/docker-compose.yml)
+- [Open Notebook Compose 소스](../../../infra/08-ai/open-notebook/docker-compose.yml)
 - [Open Notebook 보안](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)
 - [SurrealDB 백업 및 복구](https://surrealdb.com/docs/manage/self-hosted/backups-and-recovery)

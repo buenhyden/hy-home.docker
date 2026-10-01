@@ -1,10 +1,10 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -50,7 +50,7 @@ ollama/
 | --- | --- |
 | Purpose | `08-ai`의 Ollama Inference Engine 서비스 leaf; 서비스: `ollama`, `ollama-exporter`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Config files | `docker-compose.yml` |
-| Config values | env 키: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; 프로필: `ai`, `dev` |
+| Config values | env 키: `OLLAMA_HOST`, `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE`; 프로필: `ai`, `ai-llm`, `ollama` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/08-ai/ollama/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | `ai_net`, `edge_net`, `obs_net` |
 | Volumes | `ollama-data:/root/.ollama:rw`, `ollama-data` |

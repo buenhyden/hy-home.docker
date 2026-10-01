@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -14,7 +14,7 @@ created: "2026-05-17"
 
 # Performance Testing Operations Policy
 
-> `hy-home.docker` 환경에서 Locust 기반 성능 테스트를 실행하기 위한 운영 지침 및 거버넌스입니다.
+> `hy-home.docker` 환경에서 Locust/k6 기반 성능 테스트를 실행하기 위한 운영 지침 및 거버넌스입니다.
 
 ---
 
@@ -30,10 +30,10 @@ created: "2026-05-17"
 
 ## Policy Scope
 
-- `infra/09-tooling/locust/docker-compose.yml`
-- `infra/09-tooling/k6/docker-compose.yml`
-- Locust request statistics and test evidence
-- Approved local, development, and homelab performance-test windows
+- `infra/11-quality/locust/docker-compose.yml`
+- `infra/11-quality/k6/docker-compose.yml`
+- Locust 요청 통계와 테스트 근거
+- 승인된 local·development·homelab 성능 테스트 시간대
 
 ### Target Audience
 
@@ -43,20 +43,20 @@ created: "2026-05-17"
 
 ## Controls
 
-- **Required**: Preserve the operational contract documented in the linked guide and source configuration.
-- **Allowed**: Documentation-only corrections that keep links and verification evidence current.
-- **Disallowed**: Secret values, credential dumps, or unapproved runtime changes in this policy document.
+- **Required**: 연결된 가이드와 구현 원본의 운영 계약을 유지한다.
+- **Allowed**: 링크와 검증 근거를 갱신하는 문서 수정을 허용한다.
+- **Disallowed**: 비밀 값, 자격 증명 덤프와 승인되지 않은 실행 환경 변경을 금지한다.
 
 ### Operational Standards
 
 #### 1. 테스트 예약 및 사전 공지 (Pre-testing)
 
-- **부하 규모**: 초당 10,000 요청 이상의 대규모 테스트 시 사전에 인프라 팀과 협조해야 함.
+- **부하 규모**: 초당 10,000 요청 이상의 대규모 테스트 시 사전에 플랫폼 책임자 `@buenhyden` 및 대상 서비스 소유자와 협조해야 함.
 - **영향 범위**: 테스트 대상 서비스뿐만 아니라 공유 자원(데이터베이스, 네트워크 대역폭)에 대한 부하를 고려해야 함.
 
 #### 2. 환경 격리 (Environment Isolation)
 
-- **네트워크**: the project default network 내에서 실행되며, 필요한 경우 부하 생성을 위한 전용 워커 노드를 분리하여 배치함.
+- **네트워크**: Locust는 기본 네트워크, k6는 `obs_net`에서 실행된다. 별도 네트워크나 워커 배치는 영향 범위 검토와 승인을 거친다. 프로필 선택만으로 물리적으로 격리되지 않는다.
 - **데이터베이스**: 가능한 경우 실제 운영 DB가 아닌 복제본 또는 테스트 전용 환경을 대상으로 테스트를 수행해야 함.
 
 #### 3. 지표 관리 및 보존 (Retention)
@@ -79,22 +79,22 @@ N/A — 현재 승인된 예외 없음.
 
 ## Verification
 
-- Review this policy with its matching guide, runbook, and linked infra/config documents before material operations changes.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` after policy or linked operations document updates.
-- Run `python3 scripts/validation/check-document-links.py --mode traceability` when execution or operations links change.
+- 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
+- 정책이나 연결된 운영 문서를 변경하면 `python3 scripts/validation/run-ci-gate.py --profile changed`로 검증한다.
+- 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
 
 ## Review Cadence
 
-- Review when linked service configuration, architecture, or runbook behavior changes.
+- 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
 
 ## Traceability
 
-- Declared parent: [Tooling Tier Architecture Description](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- Subject peers: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
+- 상위 문서: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- 동일 주제 문서: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0064-performance-testing.md)

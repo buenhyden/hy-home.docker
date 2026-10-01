@@ -30,12 +30,12 @@ from tests.lib.gate.subprocess_support import gate_root_pass_fds
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 REGISTRY_PATH = ROOT / "infra/tech-stack.versions.json"
 RENOVATE_CONFIG = ROOT / "renovate.json5"
-RENOVATE_GLOBAL_CONFIG = ROOT / "infra/09-tooling/renovate/config/config.js"
+RENOVATE_GLOBAL_CONFIG = ROOT / "infra/09-platform-ops/renovate/config/config.js"
 DEPENDABOT_CONFIG = ROOT / ".github/dependabot.yml"
 HARDENING_CHECKER = ROOT / "scripts/hardening/check-all-hardening.sh"
 OAUTH_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/Dockerfile"
 OAUTH_DEV_DOCKERFILE = ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"
-DOZZLE_COMPOSE = ROOT / "infra/11-laboratory/dozzle/docker-compose.yml"
+DOZZLE_COMPOSE = ROOT / "infra/06-observability/dozzle/docker-compose.yml"
 DRIFT_COMPONENTS = (
     "Traefik",
     "Keycloak",
@@ -76,7 +76,7 @@ DIRECT_RUNTIME_DOCS = (
     "infra/06-observability/pyroscope/README.md",
     "infra/06-observability/tempo/README.md",
     "infra/08-ai/README.md",
-    "infra/11-laboratory/dozzle/README.md",
+    "infra/06-observability/dozzle/README.md",
     "docs/05.operations/guides/0040-alloy.md",
     "docs/05.operations/guides/0045-prometheus.md",
     "docs/05.operations/policies/0040-alloy.md",
@@ -143,7 +143,7 @@ def updater_contract_findings(
         findings.append("npm updater ownership overlaps Dependabot")
 
     custom_managers = renovate.get("customManagers")
-    expected_pattern = r"/^infra\/09-tooling\/opentofu\/docker-compose\.yml$/"
+    expected_pattern = r"/^infra\/09-platform-ops\/opentofu\/docker-compose\.yml$/"
     if not isinstance(custom_managers, list) or len(custom_managers) != 1:
         findings.append("custom regex manager count drift")
     else:

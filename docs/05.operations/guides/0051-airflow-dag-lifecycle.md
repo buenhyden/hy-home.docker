@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
@@ -51,7 +51,7 @@ created: "2026-03-25"
 pipeline을 현대적이고 읽기 쉽게 작성하려면 `@dag` decorator를 사용한다.
 
 ```python
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from datetime import datetime
 
 @dag(
@@ -83,6 +83,10 @@ my_workflow()
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
+
+### Public DAG interface
+
+선언된 Airflow의 `airflow.sdk` TaskFlow API를 사용한다. Task code가 Airflow metadata DB를 직접 조회해서는 안 된다. 업무용 PostgreSQL 작업은 별도 Connections와 transaction/idempotency 통제를 따른다. Staging/production은 승격 단계이며 별도 stack 존재를 증명하지 않는다. 복구는 [RUN-0050](../runbooks/0050-airflow.md)을 공유하고 기존 GDE-0051/POL-0052 ID 예외를 유지한다.
 
 ## Runbook Handoff
 

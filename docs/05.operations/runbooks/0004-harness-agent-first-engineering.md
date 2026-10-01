@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -30,12 +30,12 @@ created: "2026-06-04"
 ### Checklist
 
 - [ ] `git status --short --branch`를 확인한다.
-- [ ] `graphify-out/GRAPH_REPORT.md`를 읽는다.
+- [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
 - [ ] `bash scripts/knowledge/report-graphify-health.sh`를 실행한다.
 - [ ] 문서를 편집하기 전에 runtime policy 변경이 필요 없는지 확인한다.
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
-- [ ] 아래의 모든 verification command를 실행한다.
+- [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
 
 ### Procedure
 
@@ -43,7 +43,7 @@ created: "2026-06-04"
 
    ```bash
    git status --short --branch
-   sed -n '1,120p' graphify-out/GRAPH_REPORT.md
+   if [ -f graphify-out/GRAPH_REPORT.md ]; then sed -n '1,120p' graphify-out/GRAPH_REPORT.md; else echo 'NOT_RUN: Graphify report absent'; fi
    bash scripts/knowledge/report-graphify-health.sh
    ```
 
@@ -58,7 +58,7 @@ created: "2026-06-04"
    ```bash
    python3 -m json.tool .codex/hooks.json >/dev/null
    python3 -m json.tool .claude/settings.json >/dev/null
-   bash -n .claude/hooks/*.sh scripts/**/*.sh
+   while IFS= read -r -d '' file; do bash -n "$file" || exit; done < <(git ls-files -z '*.sh')
    python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
    ```
@@ -84,7 +84,11 @@ created: "2026-06-04"
    bash scripts/hardening/check-all-hardening.sh
    ```
 
-   이 check들은 default/core Compose와 supported hardening tier check로 본다. `services_total=5`를 근거로 전체 workspace Docker coverage를 주장하지 않는다.
+   Compose validator의 기본 선택은 모든 선언 profile과 HOME이며, 두 baseline
+   script의 기본 선택은 `core`다. `HYHOME_COMPOSE_PROFILES` override와 hardening의
+   실제 대상 범위를 각각 기록한다. selector별 합계는 중복 서비스가 포함될 수 있다.
+   [RUN-0086](0086-dependency-version-management.md#static-configuration-validation)의
+   입력·부작용 경계를 먼저 적용하며 config PASS를 live readiness로 기록하지 않는다.
 
 6. source-label scan을 실행한다.
 
@@ -93,7 +97,42 @@ created: "2026-06-04"
    ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex .agents
    ```
 
-7. 변경된 파일, command 결과, Graphify health 상태, `10-communication` 같은 out-of-scope infra profile 실패를 포함한 잔여 위험을 보고한다.
+7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
+
+### CI quality-gate version alignment
+
+1. `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
+   `.pre-commit-config.yaml`, 그리고 실패한 job log를 읽는다. event, revision,
+   job, hook, image 또는 binary 참조, rule identifier를 기록한다. local
+   명령은 자신이 사용한 executable만 증명한다.
+2. pre-commit repository의 `rev`를 hook manifest와 비교한다. upstream
+   `v2.14.0`의 Hadolint `hadolint-docker` hook은 `docker_image` hook이며
+   그 entry는 태그 없는 `ghcr.io/hadolint/hadolint hadolint`이다. 따라서
+   hook revision이 container image 버전을 선택하지 않는다. entry를
+   repository revision과 같은 release로 고정하고 focused regression으로
+   한쪽으로 치우친 변경을 거부한다. upstream
+   [v2.14.0 hook manifest](https://raw.githubusercontent.com/hadolint/hadolint/v2.14.0/.pre-commit-hooks.yaml)
+   가 이 동작의 authority이다.
+3. release tag는 선택된 Hadolint 버전을 정렬하지만 image byte까지 고정하지는
+   않는다. immutable digest는 별도로 검토된 maintenance path를 거칠 때만
+   고려한다. 이 path는 짝지어진 revision, tag, digest, update owner를 어떻게
+   최신 상태로 유지할지 명시한다.
+4. focused regression과 workflow-contract check를 실행한 다음, 적용 가능한
+   가장 작은 local gate를 실행한다. hosted 결과는 GitHub Actions가 변경된
+   revision을 실행할 때까지 pending 상태로 남는다. local reproduction 성공은
+   rerun이 아니다.
+5. `validation-changed`와 `validation-full`을 분리해서 유지한다. 전자는
+   필수 pull-request gate이고, 후자는 main push 또는 manual dispatch에서
+   실행되며 추가 권한으로 SARIF를 업로드한다. 공유된 setup은 중복의 증거가
+   아니다. workflow/event/ref concurrency key는 push와 manual 실행을 분리한
+   채 각 event/ref 그룹 안의 오래된 실행을 취소한다. 이 방식은
+   [GitHub의 concurrency 안내](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency)를
+   따른다.
+6. trigger, permission, gate node, consumer가 사용되지 않음을 inventory가
+   증명할 때까지는 단순화를 제안으로만 취급한다. commit 없이 title만 편집하면
+   이전의 green 실행이 그대로 남을 수 있으므로, title-dependent validation에는
+   `edited` event 평가가 필요하다. 이 가이드는 event, required check,
+   permission, remote ruleset을 변경하지 않는다.
 
 ### Model-free Evaluation Maintenance
 
@@ -115,7 +154,7 @@ bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --ch
 
 ### Verification Steps
 
-이 runbook은 JSON parsing, hook payload simulation, Graphify health reporting, repository validator, default/core Docker check, supported hardening tier check, source-label scan이 모두 예상대로 완료되면 성공이다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
+이 runbook은 JSON parsing, hook payload simulation, Graphify health reporting, repository validator, 실제 선택이 기록된 Compose/baseline/hardening check, source-label scan이 모두 예상대로 완료되면 성공이다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
 
 ### Observability and Evidence Sources
 
@@ -131,14 +170,13 @@ bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --ch
 - 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
 - runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
 - Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
-- `10-communication` 실패는 해당 profile이 명시적으로 범위에 포함되지 않는 한 별도의 infra remediation 경로를 연다.
+- 영향받은 infra 실패가 승인된 범위 밖이면 별도 remediation으로 전달하며 실패/미실행 상태를 성공으로 바꾸지 않는다.
 
 ### Related Operational Documents
 
 - [Operations Policy](../policies/0004-harness-agent-first-engineering.md)
 - [Usage Guide](../guides/0004-harness-agent-first-engineering.md)
-- Plan
-- Task Evidence
+- 현재 승인된 Spec Package의 Plan과 Task evidence
 - [Agent Governance Hub](../../../.agents/README.md)
 
 ## Evidence
@@ -153,12 +191,12 @@ bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --ch
 
 ## Escalation
 
-verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 담당 operator에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
+verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
 
 ## Traceability
 
-- Declared parent: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
-- Subject peers: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`)
+- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`)
 
 ## Related Documents
 

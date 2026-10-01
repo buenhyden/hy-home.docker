@@ -1,10 +1,10 @@
 ---
 title: "Operations Policies"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 ---
 
@@ -18,11 +18,11 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 
 ## Audience
 
-- Operators
-- Developers
+- 운영자
+- 개발자
 - SREs
-- Security Officers
-- AI Agents
+- 보안 담당자
+- AI 에이전트
 
 ## Scope
 
@@ -35,15 +35,27 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 도메인은 경로가 아니라 이 인덱스의 분류다. `관련 문서` 열은 같은 subject의
 다른 역할 문서를 가리킨다.
 
-### 00 Workspace
+시스템 전반의 기동·인증·복구·용량·업데이트는 아래 공통 분류에서 시작한다.
+티어별 서비스는 01–12 분류에서 찾고, 행의 관련 문서로 같은 subject의 다른 역할을
+확인한다. 작업 공간과 공통 연결은 번호 없는 분류이며 별도 인프라 티어가 아니다.
+서비스와 공통 문서의 연결은 적용 범위를 설명하며 서비스 소유권을 추가하지 않는다.
+
+### Cross-cutting system and lifecycle
 
 | Policy | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
 | [common optimization exceptions](0001-common-optimizations-template-exceptions.md) | `POL-0001` | active | — |
-| [harness engineering](0004-harness-agent-first-engineering.md) | `POL-0004` | active | [Guide](../guides/0004-harness-agent-first-engineering.md), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) |
 | [infrastructure optimization governance](0006-infrastructure-optimization-governance.md) | `POL-0006` | active | — |
 | [Compose profile vocabulary](0078-compose-profile-vocabulary.md) | `POL-0078` | active | — |
 | [Dependency version management](0086-dependency-version-management.md) | `POL-0086` | draft | [Guide](../guides/0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md) |
+| [Backup and restore](0021-backup-and-restore.md) | `POL-0021` | active | [Guide](../guides/0021-backup-and-restore.md), [Runbook](../runbooks/0021-backup-and-restore.md) |
+| [Optimization hardening](0074-laboratory-optimization-hardening.md) | `POL-0074` | active | [Guide](../guides/0074-laboratory-optimization-hardening.md), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) |
+
+### Cross-cutting workspace
+
+| Policy | ID | 상태 | 관련 문서 |
+| --- | --- | --- | --- |
+| [harness engineering](0004-harness-agent-first-engineering.md) | `POL-0004` | active | [Guide](../guides/0004-harness-agent-first-engineering.md), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) |
 
 ### 01 Gateway
 
@@ -72,7 +84,6 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 | --- | --- | --- | --- |
 | [Analytics — InfluxDB](0017-influxdb.md) | `POL-0017` | active | [Guide](../guides/0017-influxdb.md), [Runbook](../runbooks/0017-influxdb.md) |
 | [Analytics — OpenSearch](0019-opensearch.md) | `POL-0019` | active | [Guide](../guides/0019-opensearch.md), [Runbook](../runbooks/0019-opensearch.md) |
-| [Backup and restore](0021-backup-and-restore.md) | `POL-0021` | active | [Guide](../guides/0021-backup-and-restore.md), [Runbook](../runbooks/0021-backup-and-restore.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `POL-0022` | active | [Guide](../guides/0022-valkey-cluster.md), [Runbook](../runbooks/0022-valkey-cluster.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `POL-0024` | active | [Guide](../guides/0024-seaweedfs.md), [Runbook](../runbooks/0024-seaweedfs.md) |
 | [NoSQL — Cassandra](0025-cassandra.md) | `POL-0025` | active | [Guide](../guides/0025-cassandra.md), [Runbook](../runbooks/0025-cassandra.md) |
@@ -84,8 +95,7 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 | [Relational — PostgreSQL Cluster](0031-postgresql-cluster.md) | `POL-0031` | active | [Guide](../guides/0031-postgresql-cluster.md), [Runbook](../runbooks/0031-postgresql-cluster.md) |
 | [Specialized — Neo4j](0033-neo4j.md) | `POL-0033` | active | [Guide](../guides/0033-neo4j.md), [Runbook](../runbooks/0033-neo4j.md) |
 | [Specialized — Qdrant](0034-qdrant.md) | `POL-0034` | active | [Guide](../guides/0034-qdrant.md), [Runbook](../runbooks/0034-qdrant.md) |
-| [Lakehouse — Iceberg engines](0094-lakehouse.md) | `POL-0094` | draft | [Guide](../guides/0094-lakehouse.md), [Runbook](../runbooks/0094-lakehouse.md) |
-| [Analytics — Superset](0097-superset.md) | `POL-0097` | draft | [Guide](../guides/0097-superset.md), [Runbook](../runbooks/0097-superset.md) |
+| [RedisInsight](0076-redisinsight.md) | `POL-0076` | active | [Guide](../guides/0076-redisinsight.md), [Runbook](../runbooks/0076-redisinsight.md) |
 
 ### 05 Messaging
 
@@ -109,6 +119,7 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 | [Retention](0048-telemetry-retention.md) | `POL-0048` | active | — |
 | [Tempo](0049-tempo.md) | `POL-0049` | active | [Guide](../guides/0049-tempo.md), [Runbook](../runbooks/0049-tempo.md) |
 | [Gatus](0087-gatus.md) | `POL-0087` | draft | [Guide](../guides/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md) |
+| [Dozzle](0072-dozzle.md) | `POL-0072` | active | [Guide](../guides/0072-dozzle.md), [Runbook](../runbooks/0072-dozzle.md) |
 
 ### 07 Workflow
 
@@ -128,47 +139,51 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 | [Optimization hardening](0058-ai-optimization-hardening.md) | `POL-0058` | active | [Guide](../guides/0058-ai-optimization-hardening.md), [Runbook](../runbooks/0058-ai-optimization-hardening.md) |
 | [ComfyUI](0081-comfyui.md) | `POL-0081` | draft | [Guide](../guides/0081-comfyui.md), [Runbook](../runbooks/0081-comfyui.md) |
 | [Crawl4AI](0091-crawl4ai.md) | `POL-0091` | active | [Guide](../guides/0091-crawl4ai.md), [Runbook](../runbooks/0091-crawl4ai.md) |
+| [Open Notebook](0073-open-notebook.md) | `POL-0073` | active | [Guide](../guides/0073-open-notebook.md), [Runbook](../runbooks/0073-open-notebook.md) |
+| [SurrealDB](0080-surrealdb.md) | `POL-0080` | draft | [Guide](../guides/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md) |
+| [MLflow](0088-mlflow.md) | `POL-0088` | active | [Guide](../guides/0088-mlflow.md), [Runbook](../runbooks/0088-mlflow.md) |
 
-### 09 Tooling
+### 09 Platform Operations
 
 | Policy | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
 | [IaC deployment policy](0060-iac-deployment.md) | `POL-0060` | active | — |
-| [k6](0061-k6.md) | `POL-0061` | active | [Guide](../guides/0061-k6.md), [Runbook](../runbooks/0061-k6.md) |
-| [Locust](0062-locust.md) | `POL-0062` | active | [Guide](../guides/0062-locust.md), [Runbook](../runbooks/0062-locust.md) |
 | [Optimization hardening](0063-tooling-optimization-hardening.md) | `POL-0063` | active | [Guide](../guides/0063-tooling-optimization-hardening.md), [Runbook](../runbooks/0063-tooling-optimization-hardening.md) |
-| [Performance testing](0064-performance-testing.md) | `POL-0064` | active | [Guide](../guides/0064-performance-testing.md), [Runbook](../runbooks/0064-performance-testing.md) |
 | [Registry](0065-registry.md) | `POL-0065` | active | [Guide](../guides/0065-registry.md), [Runbook](../runbooks/0065-registry.md) |
-| [SonarQube](0066-sonarqube.md) | `POL-0066` | active | [Guide](../guides/0066-sonarqube.md), [Runbook](../runbooks/0066-sonarqube.md) |
 | [Terraform](0068-terraform.md) | `POL-0068` | active | [Guide](../guides/0068-terraform.md), [Runbook](../runbooks/0068-terraform.md) |
 | [Terrakube](0069-terrakube.md) | `POL-0069` | active | [Guide](../guides/0069-terrakube.md), [Runbook](../runbooks/0069-terrakube.md) |
 | [OpenTofu](0082-opentofu.md) | `POL-0082` | draft | [Guide](../guides/0082-opentofu.md), [Runbook](../runbooks/0082-opentofu.md) |
 | [Renovate](0083-renovate.md) | `POL-0083` | draft | [Guide](../guides/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md) |
-| [dbt](0090-dbt.md) | `POL-0090` | active | [Guide](../guides/0090-dbt.md), [Runbook](../runbooks/0090-dbt.md) |
-| [WireMock](0092-wiremock.md) | `POL-0092` | active | [Guide](../guides/0092-wiremock.md), [Runbook](../runbooks/0092-wiremock.md) |
-| [Pact Broker](0093-pact-broker.md) | `POL-0093` | active | [Guide](../guides/0093-pact-broker.md), [Runbook](../runbooks/0093-pact-broker.md) |
-| [Conftest](0095-conftest.md) | `POL-0095` | draft | [Guide](../guides/0095-conftest.md), [Runbook](../runbooks/0095-conftest.md) |
 
 ### 10 Communication
 
 | Policy | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
 | [Stalwart mail](0070-mail.md) | `POL-0070` | active | [Guide](../guides/0070-mail.md), [Runbook](../runbooks/0070-mail.md) |
-| [Mailpit](0084-mailpit.md) | `POL-0084` | draft | [Guide](../guides/0084-mailpit.md), [Runbook](../runbooks/0084-mailpit.md) |
 
-### 11 Laboratory
+### 11 Quality
 
 | Policy | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
-| [Dozzle](0072-dozzle.md) | `POL-0072` | active | [Guide](../guides/0072-dozzle.md), [Runbook](../runbooks/0072-dozzle.md) |
-| [Open Notebook](0073-open-notebook.md) | `POL-0073` | active | [Guide](../guides/0073-open-notebook.md), [Runbook](../runbooks/0073-open-notebook.md) |
-| [Optimization hardening](0074-laboratory-optimization-hardening.md) | `POL-0074` | active | [Guide](../guides/0074-laboratory-optimization-hardening.md), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) |
-| [RedisInsight](0076-redisinsight.md) | `POL-0076` | active | [Guide](../guides/0076-redisinsight.md), [Runbook](../runbooks/0076-redisinsight.md) |
-| [SurrealDB](0080-surrealdb.md) | `POL-0080` | draft | [Guide](../guides/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md) |
-| [MLflow](0088-mlflow.md) | `POL-0088` | active | [Guide](../guides/0088-mlflow.md), [Runbook](../runbooks/0088-mlflow.md) |
+| [k6](0061-k6.md) | `POL-0061` | active | [Guide](../guides/0061-k6.md), [Runbook](../runbooks/0061-k6.md) |
+| [Locust](0062-locust.md) | `POL-0062` | active | [Guide](../guides/0062-locust.md), [Runbook](../runbooks/0062-locust.md) |
+| [Performance testing](0064-performance-testing.md) | `POL-0064` | active | [Guide](../guides/0064-performance-testing.md), [Runbook](../runbooks/0064-performance-testing.md) |
+| [SonarQube](0066-sonarqube.md) | `POL-0066` | active | [Guide](../guides/0066-sonarqube.md), [Runbook](../runbooks/0066-sonarqube.md) |
+| [WireMock](0092-wiremock.md) | `POL-0092` | active | [Guide](../guides/0092-wiremock.md), [Runbook](../runbooks/0092-wiremock.md) |
+| [Pact Broker](0093-pact-broker.md) | `POL-0093` | active | [Guide](../guides/0093-pact-broker.md), [Runbook](../runbooks/0093-pact-broker.md) |
+| [Conftest](0095-conftest.md) | `POL-0095` | draft | [Guide](../guides/0095-conftest.md), [Runbook](../runbooks/0095-conftest.md) |
+| [Mailpit](0084-mailpit.md) | `POL-0084` | draft | [Guide](../guides/0084-mailpit.md), [Runbook](../runbooks/0084-mailpit.md) |
+
+### 12 Analytics
+
+| Policy | ID | 상태 | 관련 문서 |
+| --- | --- | --- | --- |
+| [Lakehouse — Iceberg engines](0094-lakehouse.md) | `POL-0094` | draft | [Guide](../guides/0094-lakehouse.md), [Runbook](../runbooks/0094-lakehouse.md) |
+| [Analytics — Superset](0097-superset.md) | `POL-0097` | draft | [Guide](../guides/0097-superset.md), [Runbook](../runbooks/0097-superset.md) |
+| [dbt](0090-dbt.md) | `POL-0090` | active | [Guide](../guides/0090-dbt.md), [Runbook](../runbooks/0090-dbt.md) |
 | [JupyterLab](0089-jupyterlab.md) | `POL-0089` | active | [Guide](../guides/0089-jupyterlab.md), [Runbook](../runbooks/0089-jupyterlab.md) |
 
-### 12 Infra Net
+### Cross-cutting connectivity
 
 | Policy | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
@@ -180,7 +195,9 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 1. 새 Policy는 [Policy template](../../99.templates/templates/operations/policy.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고, 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.
 3. 문서를 추가, 이동, 삭제하면 이 인덱스에 한 줄로 반영한다. 검증기는 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
-4. 해당 역할이 필요 없는 subject에는 빈 문서를 만들지 않는다.
+4. Compose 서비스가 연결된 subject는 Guide/Policy/Runbook 세 역할을 모두 유지한다.
+   서비스 연결이 없는 공통·작업 공간 subject는 필요한 역할만 두고 빈 문서를 만들지 않는다.
+   공통 통제·절차는 소유 문서로 연결하고 서비스별 적용 조건과 차이를 각 역할에 남긴다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -12,56 +12,61 @@ created: "2025-11-12"
 
 ## Overview
 
-이 tier는 영속 엔진과 상태 저장이 필요한 플랫폼 의존성을 담습니다. 루트
-Compose 프로젝트가 leaf 파일을 include하고 공유 네트워크, secret, `extends`를
-소유합니다. leaf를 독립 프로젝트로 다루지 말고 저장소 루트에서 운영하십시오.
+데이터 저장·접근 기반 패키지를 서비스 이름으로 바로 배치합니다. 처리·변환·품질
+검증·BI는 [12 Analytics](../12-analytics/README.md)가 담당합니다. 루트 Compose가
+각 패키지를 include하며, 실행 여부는 기존 profile이 결정합니다.
 
 ## Audience
 
-이 패키지 맵의 독자는 저장소 데이터 tier의 operator와 maintainer입니다.
+공유 데이터와 선택형 데이터베이스의 operator·maintainer를 위한 인덱스입니다.
 
 ## Scope
 
-루트 Compose 프로젝트가 선택하는 데이터 패키지 카테고리와 카테고리별로 문서화된 운영
-경계를 다룹니다.
+HOME 공유 상태와 오브젝트·벡터 저장소, OPTIONAL 데이터 플랫폼, LAB 토폴로지를
+다룹니다. 애플리케이션 업무 로직과 분석 처리의 소유권은 포함하지 않습니다.
 
 ## Structure
 
-### 카테고리 맵
+| Package | 역할 | 분류 | 선택·소비 경계 |
+| --- | --- | --- | --- |
+| [mng-db](mng-db/) | 공유 PostgreSQL·Valkey | HOME | 인증·Workflow·Tooling·Analytics 의존성; 패키지의 profile 참조 |
+| [supabase](supabase/) | 별도 데이터 플랫폼 | OPTIONAL | `supabase`; 공유 mng-db와 스키마·볼륨을 합치지 않음 |
+| [postgresql-cluster](postgresql-cluster/) | Patroni·etcd·HAProxy 토폴로지 | LAB | `postgres-ha`; HOME mng-pg와 별개 |
+| [valkey-cluster](valkey-cluster/) | 6노드 캐시·KV 토폴로지 | LAB | `valkey-cluster`; HOME mng-valkey와 별개 |
+| [cassandra](cassandra/) | wide-column 저장소 | LAB | `cassandra` |
+| [couchdb](couchdb/) | 문서 동기화 저장소 | LAB | `couchdb` |
+| [mongodb](mongodb/) | 문서 저장소·replica set | LAB | `mongodb` |
+| [seaweedfs](seaweedfs/) | 공유 S3·Iceberg REST catalog | HOME | `storage`; 관측·AI·Analytics가 함께 사용 |
+| [influxdb](influxdb/) | 시계열 저장소 | OPTIONAL | `influxdb` |
+| [opensearch](opensearch/) | 검색·인덱스 저장소 | OPTIONAL / LAB | `opensearch` / `opensearch-cluster` |
+| [neo4j](neo4j/) | 그래프 저장소 | OPTIONAL | `graph` |
+| [redisinsight](redisinsight/) | Redis/Valkey 관리 UI | OPTIONAL | `admin`, `admin-data`; 대상 데이터는 각 엔진 소유 |
+| [qdrant](qdrant/) | 벡터 저장소 | HOME | `ai`, `ai-llm`, `qdrant` |
 
-| Category | Directory | Summary |
-| --- | --- | --- |
-| [operational/](operational/README.md) | 운영 데이터 | `mng-db`(HOME 공유 PostgreSQL/Valkey), `supabase`(OPTIONAL 별도 애플리케이션 플랫폼) |
-| [cache-and-kv/](cache-and-kv/README.md) | 캐시/키-값 저장소 | `valkey-cluster`(LAB) |
-| [lake-and-object/](lake-and-object/README.md) | Lake/오브젝트 저장소 | `seaweedfs`(HOME S3 스토어, Iceberg REST catalog 제공) |
-| [analytics/](analytics/README.md) | 분석 | `influxdb`(OPTIONAL), `opensearch`(OPTIONAL/LAB), `superset`(OPTIONAL BI) |
-| [lakehouse/](lakehouse/) | Lakehouse(README 없음, 폴더 자체를 확인) | `flink`, `great-expectations`, `spark`, `trino`(모두 OPTIONAL) |
-| [nosql/](nosql/README.md) | NoSQL | `cassandra`, `couchdb`, `mongodb`(모두 LAB) |
-| [relational/](relational/README.md) | 관계형 데이터베이스 | `postgresql-cluster`(LAB) |
-| [specialized/](specialized/README.md) | 특화 데이터 서비스 | `qdrant`(HOME 벡터 스토어), `neo4j`(OPTIONAL 그래프) |
+SurrealDB는 단일 소비자인 [Open Notebook](../08-ai/open-notebook/) 패키지에
+속합니다. Data가 플랫폼의 모든 영속 상태를 소유하는 것은 아닙니다.
 
-각 서비스의 정확한 profile, classification, 관계는 해당 카테고리 README와
-서비스별 README가 소유합니다.
-
-SurrealDB는 유일한 소비자인 [`11-laboratory/open-notebook`](../11-laboratory/open-notebook/surrealdb/README.md)로
-이전되어 이 tier에는 없습니다.
+RedisInsight `/data`는 민감한 연결·설정 메타데이터를 보관합니다. 현재 추적된
+`RI_ENCRYPTION_KEY`는 없으며 대상 데이터 백업과 별도로 복구합니다. Gateway·
+admin CIDR·SSO 경계를 유지하고 내부 네트워크 접근도 별도로 검토합니다.
 
 ## How to Work in This Area
 
-### Operating contract
-
-- 루트 프로젝트를 통해 맵에 있는 정확한 profile을 사용합니다. 예:
-  `docker compose --env-file .env.example --profile mng config --quiet`.
-- 렌더링된 secret이나 비공개 resolved host 경로를 증거에 출력하지 않습니다.
-- 호스트 디렉터리로 백업되는 named volume은 영속 상태일 뿐 백업이 아닙니다.
-  동일 호스트 replica는 호스트 손실을 막지 못합니다.
-- 선택된 모든 엔진에는 named consumer, 용량/보존 경계, 엔진 지원 백업, 별도
-  암호화된 목적지, 격리된 복구 절차가 필요합니다.
-- 이미지, 토폴로지, credential, volume, migration, 정리 변경에는 소유
-  Stage 05 guide/policy/runbook과 승인된 task가 필요합니다.
+- 저장소 루트에서 정확한 profile을 선택합니다. `core`나 디렉터리 이름만으로
+  데이터 의존성 전체가 기동되지는 않습니다.
+- 같은 호스트의 복제 노드는 호스트 장애를 격리하지 않습니다. HOME 단일 인스턴스와
+  LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습니다.
+- 모든 상태 소유자는 named consumer, 용량·보존 경계, 엔진 지원 백업, 별도 암호화
+  목적지와 격리된 복구 절차가 필요합니다. named volume 자체는 백업이 아닙니다.
+- Valkey LAB 복구에는 조율된 RDB checkpoint와 완전한 AOF set/manifest, 새로운
+  cluster identity가 필요합니다. 게시된 client/bus 포트의 노출 경계를 유지합니다.
+- SeaweedFS는 소비자별 bucket identity를 사용합니다. 이전 MinIO 데이터는 기존
+  복구 절차에 따라 보존하며 폴더 정리 때문에 제거하지 않습니다.
+- runtime 버전은 각 Compose/Dockerfile 선언을 따릅니다. 서비스별 설정·secret
+  참조·운영 문서는 해당 패키지 README에서 찾습니다.
 
 ## Related Documents
 
-[문서 진입점](../../docs/README.md)을 사용해 Stage 05 운영 인덱스
-(`docs/05.operations/README.md`)를 찾으십시오. 특히 HOME state-owner
-matrix를 다루는 POL-0021과 storage exhaustion을 다루는 RUN-0035를 참고하십시오.
+- [인프라 인덱스](../README.md)
+- [문서 진입점](../../docs/README.md): Stage 05의 서비스 Guide·Policy·Runbook,
+  백업 POL-0021 및 저장 공간 RUN-0035를 확인합니다.

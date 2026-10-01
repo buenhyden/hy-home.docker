@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -34,8 +34,7 @@ fixed address.
   else takes a dynamic address.
 - `project_net`, the host firewall and any cloud VPC stay outside this
   architecture's ownership. No service joins `k3d-hyhome`; the owner removed
-  the k3d integration on 2026-09-23, so the k8s cluster reaches no Compose
-  service.
+  the k3d integration on 2026-09-23. This removes shared-bridge membership, not the separately approved Kubernetes LAN endpoints governed by POL-0096.
 
 ## Components
 
@@ -62,10 +61,10 @@ automatic address pool cannot take one first.
 | `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
 
-Services with no container peer (Registry, Renovate, OpenTofu, Locust) use the
+Services with no container peer (Renovate, OpenTofu, Locust) use the
 project default network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic` and `backup-sqlite-export` keep
-`network_mode: none`; only `restic-offsite` has egress. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP.
+`network_mode: none`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP; listener bindings also permit peer access from both networks.
 
 ## Data Flow
 

@@ -4,7 +4,7 @@ version: "0.2.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0080"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-09-19"
 ### Checklist
 
 - [ ] 저장소 루트에서 작업하고 선택한 정확한 profile을 기록한다.
-- [ ] configuration commit, Dockerfile/[Compose](../../../infra/11-laboratory/open-notebook/docker-compose.yml) 버전 권한과 [runtime version projection](../../../infra/tech-stack.versions.json), 엔진 버전(Open Notebook에는 SurrealDB v2가 필수), namespace, database, 예상 스키마와 record invariant를 기록한다.
+- [ ] configuration commit, Dockerfile/[Compose](../../../infra/08-ai/open-notebook/docker-compose.yml) 버전 권한과 [runtime version projection](../../../infra/tech-stack.versions.json), 엔진 버전(Open Notebook에는 SurrealDB v2가 필수), namespace, database, 예상 스키마와 record invariant를 기록한다.
 - [ ] `surreal_db_password`와 원본 레코드는 증거에서 제외한다.
 - [ ] export, import, stop, upgrade, volume 작업 전에 별도 승인을 받는다.
 
@@ -49,10 +49,10 @@ created: "2026-09-19"
 
 1. 승인을 받아 소스 버전, namespace/database, auth level, table/schema/permission 인벤토리, record-count invariant, export 옵션과 여유 용량을 기록한다. 보호된 credential 입력을 사용한다.
 2. 명시적으로 지정한 namespace와 database에 대해 업스트림 `surreal export` 워크플로를 실행한다. manifest, checksum, 버전, scope, 캡처 시각, 보존 기간, 만료 시점과 함께 export를 보존한다. credential은 아티팩트에 export하지 않는다.
-3. 프로덕션 port, network, volume, secret을 전혀 공유하지 않는, SurrealDB v2로 동작하는(v3는 Open Notebook과 호환되지 않음) 새 호환 target을 준비한다. import에 필요한 auth scope로 별도 테스트 credential을 생성한다.
-4. `OPTION IMPORT` 동작을 확인하고, 비어 있는 target과 명시적 namespace/database에 대해 업스트림 `surreal import` 워크플로를 실행한다.
+3. 프로덕션 port, network, volume, secret을 전혀 공유하지 않고 현재 배포의 v2 유지 정책에 맞는 새 호환 target을 준비한다. import에 필요한 auth scope로 별도 테스트 credential을 생성한다. 선택한 Open Notebook 이미지와의 v3 호환성을 단정하지 않으며, 정확한 이미지 조합의 근거와 별도 승인 전에는 v3를 사용하지 않는다.
+4. 선택한 v2 CLI의 옵션·인증 및 import 처리 동작을 확인하고, 비어 있는 target과 명시적 namespace/database에 대해 업스트림 `surreal import` 워크플로를 실행한다.
 5. readiness, 인증된 namespace/database 접근, table, 스키마 정의, permission, record-count invariant, 대표 read-only 쿼리를 검증한다. 증거를 정제한다.
-6. import가 오류나 invariant 불일치를 보고하면 target을 부분 변경된 것으로 간주하고 volume을 폐기한 뒤 빈 상태로 재생성한다. 같은 target에서는 절대 재시도하지 않는다.
+6. import가 오류나 invariant 불일치를 보고하면 target을 부분 변경된 것으로 간주하고 격리 보존한다. 재시도는 별도의 빈 대상으로 하며 기존 volume 삭제는 진단·보존 종료 후 따로 승인받는다. 같은 target에서는 절대 재시도하지 않는다.
 
 ### Verification Steps
 
@@ -63,7 +63,7 @@ created: "2026-09-19"
 
 ### Safe Rollback or Recovery Procedure
 
-문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 격리된 target과 전용 volume만 폐기해 롤백한다. source와 보호된 export는 그대로 둔다.
+문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 target과 전용 volume을 격리 보존하고 추가 쓰기를 중지한다. 삭제는 별도의 승인된 정리이며 자동 롤백이 아니다. source와 보호된 export는 그대로 둔다.
 
 ## Evidence
 
@@ -91,4 +91,4 @@ credential, 버전/스토리지 형식 호환성, namespace/database scope, 부�
 - [SurrealDB authentication](https://surrealdb.com/docs/learn/security/authentication/summary)
 - [SurrealDB licensing](https://surrealdb.com/license)
 - [운영 인덱스](../README.md)
-- [Infrastructure README](../../../infra/11-laboratory/open-notebook/README.md)
+- [Infrastructure README](../../../infra/08-ai/open-notebook/README.md)

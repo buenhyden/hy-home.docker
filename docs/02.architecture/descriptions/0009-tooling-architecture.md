@@ -1,27 +1,27 @@
 ---
-title: "Tooling Tier Architecture Description"
-version: "2.1.1"
+title: "Platform Operations and Software Verification Architecture Description"
+version: "2.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
 - "REQ-0010"
 created: "2026-03-26"
 ---
-# Tooling Tier Architecture Description
+# Platform Operations and Software Verification Architecture Description
 
 ## Context and Stakeholders
 
-This document defines the reference architecture and quality attributes of the `09-tooling` layer. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
+This document defines the reference architecture and quality attributes of platform operations in `09-platform-ops` and software verification in `11-quality`. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
 
 ### Stakeholders and Concerns
 
 Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-The `09-tooling` layer is an auxiliary layer responsible for the project's "operational efficiency" and "quality assurance." It consists of an IaC engine, an analysis server, test workers, and similar components; services with a public admin UI use the gateway/SSO boundary, and only the services that need it integrate with data tier backends such as PostgreSQL, SeaweedFS, and Valkey.
+These capability tiers retain the logical tooling obligations and form an auxiliary layer responsible for the project's "operational efficiency" and "quality assurance." It consists of an IaC engine, an analysis server, test workers, and similar components; services with a public admin UI use the gateway/SSO boundary, and only the services that need it integrate with data tier backends such as PostgreSQL, SeaweedFS, and Valkey.
 
 ## System Boundaries
 
@@ -33,6 +33,8 @@ This section preserves the system boundaries, consumption relationships, non-goa
   - Distributed load-testing system (`Locust`) and explicit load-testing jobs (`k6`)
   - Private package/image storage (`Registry`)
   - Manual dependency update jobs (`Renovate`)
+  - Cross-platform backup orchestration (`Restic` and its SQLite export helper)
+  - Contract/API/policy verification and development mail capture in Quality (`Pact Broker`, `WireMock`, `Conftest`, `Mailpit`)
 - **Consumes**:
   - Data persistence services (`04-data` / PostgreSQL, SeaweedFS, Valkey)
   - Common authentication service (`02-auth` / Keycloak)
@@ -87,8 +89,8 @@ Data and control flows include only the interactions specified in this section a
   provisioning job; `contract-testing` selects Pact Broker and its DB
   provisioning job; `api-mock` selects WireMock; `backup` selects Restic and
   the SQLite export job; `policy-check` selects only the Conftest job. These
-  tools are not included in HOME.
-- **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-tooling`, service healthcheck, approved root-context runtime evidence.
+  profile names span capability tiers and are unchanged by relocation. Registry is a HOME service; the other listed optional/job capabilities are not implicitly activated by a directory move. dbt belongs to Analytics.
+- **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`, service healthcheck, approved root-context runtime evidence.
 
 ## Traceability
 

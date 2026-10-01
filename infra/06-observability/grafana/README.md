@@ -1,10 +1,10 @@
 ---
 title: "Grafana Visualization and Dashboards"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -75,7 +75,7 @@ grafana/
 | Command | Description |
 | :--- | :--- |
 | `docker compose --profile obs up -d grafana` | 저장소 루트에서 Grafana 시작 |
-| `docker compose --profile obs restart grafana` | 승인된 프로비저닝, 대시보드, 시크릿 참조 변경 후 Grafana 재시작 |
+| `docker compose --profile obs restart grafana` | 이미 연결된 provisioning·dashboard 파일 내용의 승인된 재적용; Compose 환경·시크릿 참조·이미지 변경에는 RUN-0041의 재생성 절차 사용 |
 | `docker compose --profile obs logs -f grafana` | 저장소 루트에서 Grafana 로그 확인 |
 
 ## Configuration
@@ -93,7 +93,7 @@ grafana/
 - 대시보드 프로바이더는 `/etc/grafana/dashboards/*`에서 JSON 파일을 마운트합니다.
 - 프로바이더 `editable: false`는 대시보드를 코드 소유 상태로 유지합니다.
 - 대시보드 보유 현황과 서비스별 매핑은 아래 Service Coverage와 Dashboard Sources 표가 기준이며, `tests/validation/test_compose_baseline_gates.py`의 대시보드 계약 테스트가 표와 파일을 대조합니다.
-- Keycloak 그룹 `/admins`와 `/editors`는 Grafana `Admin`, `Editor`로 매핑되며 그 외 인증된 사용자는 기본적으로 `Viewer`가 됩니다.
+- Keycloak 그룹 `/admins`, `/editors`, `/viewers`는 각각 Grafana `Admin`, `Editor`, `Viewer`로 매핑됩니다. OAuth role mapping은 strict이므로 역할이 없는 사용자의 `Viewer` fallback을 보장하지 않습니다. 일반 조직 기본 역할과 OAuth 수용 조건을 구분합니다.
 - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret 파일 참조를 통해 주입됩니다.
 
 ### Service Coverage
@@ -122,10 +122,10 @@ grafana/
 | 04-data | `etcd-1` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
 | 04-data | `etcd-2` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
 | 04-data | `etcd-3` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
-| 04-data | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `imgproxy` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `influxdb` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `kong` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -165,14 +165,14 @@ grafana/
 | 04-data | `seaweedfs-s3` | `seaweedfs-s3` | `Infrastructure/seaweedfs`, `Infrastructure/containers` |  |
 | 04-data | `seaweedfs-table-bucket` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-volume` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `studio` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `supavisor` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `superset` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `superset` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `valkey-cluster-exporter` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
 | 04-data | `valkey-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `valkey-node-0` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
@@ -226,35 +226,35 @@ grafana/
 | 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `open-webui` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `dbt` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `dbt-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
-| 09-tooling | `locust-master` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `locust-worker` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `opentofu` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `pact-broker` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `pact-broker-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `registry` | `registry` | `Infrastructure/docker-registry`, `Infrastructure/containers` |  |
-| 09-tooling | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `restic-offsite` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `sonarqube` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `terrakube-ui` | none | `Infrastructure/containers` | container metrics and logs only |
-| 09-tooling | `wiremock` | none | `Infrastructure/containers` | container metrics and logs only |
-| 10-communication | `mailpit` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `backup-sqlite-export` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `conftest` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `dbt` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `dbt-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
+| 11-quality | `locust-master` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `locust-worker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `opentofu` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `pact-broker` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `pact-broker-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `registry` | `registry` | `Infrastructure/docker-registry`, `Infrastructure/containers` |  |
+| 09-platform-ops | `renovate` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `restic` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `restic-offsite` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `sonarqube` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `terrakube-api` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `terrakube-executor` | none | `Infrastructure/containers` | container metrics and logs only |
+| 09-platform-ops | `terrakube-ui` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `wiremock` | none | `Infrastructure/containers` | container metrics and logs only |
+| 11-quality | `mailpit` | none | `Infrastructure/containers` | container metrics and logs only |
 | 10-communication | `stalwart` | none | `Infrastructure/containers` | container metrics and logs only |
 | 10-communication | `stalwart-config` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `dozzle` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `jupyterlab` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `mlflow` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `mlflow-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-laboratory | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
+| 06-observability | `dozzle` | none | `Infrastructure/containers` | container metrics and logs only |
+| 12-analytics | `jupyterlab` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `mlflow` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `mlflow-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
 
 ### Dashboard Sources
 

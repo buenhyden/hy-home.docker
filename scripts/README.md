@@ -156,8 +156,8 @@ Inventory 표는 각 entrypoint의 용도를 설명합니다.
 | Observability | `06-observability`, `observability`, `obs` |
 | Workflow      | `07-workflow`, `workflow`                  |
 | AI            | `08-ai`, `ai`                              |
-| Tooling       | `09-tooling`, `tooling`                    |
-| Laboratory    | `11-laboratory`, `laboratory`, `lab`       |
+| Platform Operations | `09-platform-ops`, `platform-ops`                    |
+| Quality       | `11-quality`, `quality`                   |
 
 ## Script Lifecycle
 

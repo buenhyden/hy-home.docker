@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.5.1"
+version: "1.5.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -37,8 +37,7 @@ profile)는 `storage`와 함께 동작한다.
   때문이다. `/data` mount만으로는 경로를 증명하지 못하며, rehearsal이 파일이
   실제로 그 위치에 있는지 확인한다.
 - **S3 identity.** `seaweedfs-s3`는 secret으로 구성된 명시적 identity(admin:
-  `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity가 있으면
-  anonymous request를 거부한다. S07에서 추가된 모든 consumer는
+  `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`와 STRG-010)로만 시작한다. Identity 구성은 scoped 인증을 요구하며 명시된 CDN anonymous-read 예외만 허용한다. S07에서 추가된 모든 consumer는
   `config/s3-identities.conf`에 자신의 bucket(loki, tempo, mlflow, terrakube,
   lakehouse)으로 범위가 한정된 identity를 갖는다. 어떤 consumer도 admin을 쓰지
   않으며, `anonymous`는 `cdn-bucket`의 객체만 읽을 수 있다. Bucket은 consumer가
@@ -52,8 +51,7 @@ profile)는 `storage`와 함께 동작한다.
   제공한다. Master, volume, filer는 `seaweed_internal`(internal)에만 있으며
   master의 인증되지 않은 `/dir/assign`은 그곳에서만 접근할 수 있다.
 - **최소 노출면.** Lance listener와 내장 IAM API는 꺼져 있다. Iceberg REST
-  catalog는 `object_net`에서만 `${SEAWEEDFS_ICEBERG_PORT:-8181}`로 listen하며
-  route가 없다. 동일한 identity(SigV4)로 서명한다. Table bucket은 `lakehouse`
+  catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의4.47 listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없고 데이터 관리 route는 인증 middleware를 사용한다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
   하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
   table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
   `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
@@ -94,6 +92,10 @@ Image 갱신에는 공식 release와 license 검토, 통과한 `SeaweedfsRehears
 승인이 필요하다. 새 consumer identity는 해당 consumer의 cutover와 같은
 change에서 추가한다.
 
+### Accountable lifecycle boundary
+
+적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-volume`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+
 ## Exceptions
 
 FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
@@ -112,7 +114,7 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 ## Traceability
 
-- Runtime source: [SeaweedFS Compose](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml).
+- Runtime source: [SeaweedFS Compose](../../../infra/04-data/seaweedfs/docker-compose.yml).
 - Artifact: `POL-0024`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
 

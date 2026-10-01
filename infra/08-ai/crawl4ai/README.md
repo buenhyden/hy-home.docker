@@ -1,10 +1,10 @@
 ---
 title: "AI Crawl4AI Crawler"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2026-09-21"
 ---
 
@@ -53,7 +53,7 @@ Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 
 | --- | --- |
 | Profile | `crawl4ai`만 해당; `ai`, `notebook`, HOME에서는 선택되지 않음 |
 | Network / port | `crawl4ai_net`만 해당; 내부 `11235`를 `expose`로 노출; 호스트 포트 없음, Traefik 라우트 없음 |
-| Authentication | 시크릿 `crawl4ai_api_token`(AI-006)이 `CRAWL4AI_API_TOKEN`으로 내보내짐; 이후 업스트림은 `GET /health`를 제외한 모든 엔드포인트에서 `Authorization: Bearer`를 요구함 |
+| Authentication | 시크릿 `crawl4ai_api_token`(AI-006)이 `CRAWL4AI_API_TOKEN`으로 내보내짐; protected data/admin API의 Bearer/JWT 인증과 health·root·monitor·token·UI/static 예외를 구분함; 정확한 버전별 범위와 `/token` 제한은 GDE/POL-0091 참조 |
 | Hardening | `template-infra-high`, `cap_drop: ALL`, `no-new-privileges`, tmpfs 작업 경로를 사용하는 읽기 전용 루트, `mem_limit: 4g`, `pids_limit: 512`, 전용 `shm_size` |
 | Persistence | 없음; 출력과 캐시는 tmpfs |
 | Health | `GET /health` (설계상 인증 없음); API 응답 여부만 증명하며 브라우저 렌더링을 증명하지는 않음 |

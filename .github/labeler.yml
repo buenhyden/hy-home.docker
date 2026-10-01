@@ -35,17 +35,21 @@ area/infra/ai:
   - changed-files:
       - any-glob-to-any-file: "infra/08-ai/**/*"
 
-area/infra/tooling:
+area/infra/platform-ops:
   - changed-files:
-      - any-glob-to-any-file: "infra/09-tooling/**/*"
+      - any-glob-to-any-file: "infra/09-platform-ops/**/*"
 
 area/infra/communication:
   - changed-files:
       - any-glob-to-any-file: "infra/10-communication/**/*"
 
-area/infra/laboratory:
+area/infra/quality:
   - changed-files:
-      - any-glob-to-any-file: "infra/11-laboratory/**/*"
+      - any-glob-to-any-file: "infra/11-quality/**/*"
+
+area/infra/analytics:
+  - changed-files:
+      - any-glob-to-any-file: "infra/12-analytics/**/*"
 
 # Documentation
 area/docs:

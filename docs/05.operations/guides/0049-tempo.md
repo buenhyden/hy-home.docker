@@ -1,10 +1,10 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -43,7 +43,7 @@ created: "2026-05-10"
 ### Prerequisites
 
 - [Grafana Alloy](0040-alloy.md)가 OTLP `4317`/`4318` receiver를 열고 `tempo:4317` exporter로 trace를 전달해야 한다.
-- [SeaweedFS](../../../infra/04-data/lake-and-object/seaweedfs/README.md)에 `tempo-bucket`이 준비되어 있어야 한다.
+- [SeaweedFS](../../../infra/04-data/seaweedfs/README.md)에 `tempo-bucket`이 준비되어 있어야 한다.
 - [Grafana](0041-grafana.md)에 Tempo datasource URL `http://tempo:3200`이 provisioning되어 있어야 한다.
 - Docker Secret value는 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` secret ID와 file reference만 문서화한다.
 
@@ -58,7 +58,7 @@ created: "2026-05-10"
 2. Tempo config의 ingestion, retention, storage, metrics generator boundary를 확인한다.
 
    ```bash
-   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|block_retention: 24h|compacted_block_retention: 1h|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333' infra/06-observability/tempo/config/tempo.yaml
+   rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333' infra/06-observability/tempo/config/tempo.yaml
    ```
 
 3. Alloy에서 Tempo exporter가 `tempo:4317`을 가리키는지 확인한다.
@@ -91,12 +91,22 @@ created: "2026-05-10"
 - **Lifecycle**: trace intake를 quiesce하고, SeaweedFS owner와 함께 `tempo-bucket`의 consistent backup을 조율하며, local WAL/temp state/config를 같은 recovery point에 보존한다. 지원되는 version으로 upgrade하고 WAL replay와 historical/new trace를 검증한다.
 - **Upstream/license**: 공식 [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/)와 [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/) 가이드를 따른다. Tempo는 AGPL-3.0 라이선스다.
 
+### Retention enforcement gap
+
+[POL-0048](../policies/0048-telemetry-retention.md)은 block 24h, compacted block 1h를 요구하지만 현재 설정에는 둘 다 없다. 선언된 Tempo 기본값은 336h/1h이므로 24h 준수가 입증되지 않는다. Bucket/receiver에 일치한 `rg`를 retention 검증으로 간주하지 않는다. 별도로 확인하고 누락은 통제 실패로 기록한다. 버전에 맞는 별도 구현 수정이 필요하다. Tempo 3은 backend scheduler/worker compaction 설정을 사용하므로 Tempo 2의 `compactor` 블록을 복사하지 않는다. 소스 검증은 실제 삭제나 trace 복원 증거가 아니다.
+
+### Approved LAN integration boundary
+
+Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](../policies/0096-k8s-integration.md#controls)의 기존 k3d 예외에 따라 Tempo HTTP `3200`을 `HOST_LAN_BIND_IP`(공개 기본값 `192.168.0.13`)에 gateway 인증·서비스 TLS 없이 게시한다. 완료된 SPEC-0188 Task의 2026-09-29 owner 승인에 따른 것으로 W5가 만든 예외가 아니다. Loki `auth_enabled: false`는 사용자 인증이 아니며 Tempo에도 native 인증 계층이 없다. Gateway middleware는 직접 포트를 보호하지 않는다.
+
+예외는 지정 cluster 통합 목적과 설정된 LAN 인터페이스로 한정한다. 소스에는 k3d만 식별하는 인증이 없으며 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰하지 않았다. 사람은 보호된 hostname을, 기계 검증은 [GDE-0096](../guides/0096-k8s-integration.md)을 따른다. 실제 log/trace payload 대신 상태와 시험 ID만 남긴다. 재바인딩·제거·인증/TLS 추가·노출 확대는 통합 소유자와 조정한 별도 승인 변경이다.
+
 ## Common Checks
 
 - `docker compose --profile obs ps tempo`
 - `docker logs --tail=100 infra-tempo`
 - `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
-- `rg -n 'block_retention: 24h|compacted_block_retention: 1h|bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
+- `rg -n 'bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
 
 ## Runbook Handoff
 

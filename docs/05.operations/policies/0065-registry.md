@@ -4,7 +4,7 @@ version: "1.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -27,7 +27,7 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 ## Controls
 
 - **Activation:** `registry` 또는 일반 `tooling`을 사용한다. SPEC-0182 W6에서 소유자가 `registry`를 HOME에 추가했다(POL-0078).
-- **Exposure/auth:** 호스트 포트는 `127.0.0.1`에 바인딩되지만, 프로젝트 기본
+- **Exposure/auth:** 호스트 포트는 `127.0.0.1`에 바인딩되지만, `obs_net`
   네트워크의 컨테이너는 인증 없이도 여전히 접근할 수 있다. 방화벽이나 데몬
   제한을 가정하지 않는다. 민감한 용도나 더 넓은 접근 전에는 TLS와 인증, 또는
   신뢰할 수 있는 인증 리버스 프록시를 구현하고 검증한다. 안전하지 않은 registry
@@ -66,10 +66,10 @@ TLS/인증, push, pull, digest 일치가 포함된다.
 
 - [가이드](../guides/0065-registry.md) (`GDE-0065`)
 - [런북](../runbooks/0065-registry.md) (`RUN-0065`)
-- [Tooling 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [Registry Compose 소스](../../../infra/09-tooling/registry/docker-compose.yml)
+- [Registry Compose 소스](../../../infra/09-platform-ops/registry/docker-compose.yml)
 - [CNCF Distribution 배포](https://distribution.github.io/distribution/about/deploying/)
 - [가비지 컬렉션](https://distribution.github.io/distribution/about/garbage-collection/)

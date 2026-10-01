@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0012"
 parent_ids: []
@@ -16,11 +16,11 @@ created: "2026-07-06"
 
 ### Overview
 
-이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`가, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
+이 문서는 `01-gateway` 티어의 초기 설정 및 검증 가이드이다. 루트 stack은 두 파일을 모두 무조건 include하고 profile이 기동을 가른다. Traefik은 `core`/`dev`/`local`이, Nginx는 전용 `nginx` profile이 선택하며, 컨테이너 실행은 승인된 runtime context에서만 다룬다.
 
 ### Edge Routing Stack Usage
 
-> entry point infrastructure를 배포하고 구성하기 위한 단계별 절차.
+> gateway 선택과 정적 검증 경계를 이해하기 위한 안내.
 
 ---
 
@@ -36,13 +36,13 @@ created: "2026-07-06"
 
 #### Purpose
 
-이 가이드는 `core`/`dev`가 선택하는 Traefik edge router를 검증하고, `nginx` profile이 그리는 Nginx path-proxy boundary를 이해하도록 돕는다.
+이 가이드는 `core`/`dev`/`local`이 선택하는 Traefik edge router를 검증하고, `nginx` profile이 그리는 Nginx path-proxy boundary를 이해하도록 돕는다.
 
 #### Prerequisites
 
 - Docker와 Docker Compose가 설치되어 있어야 한다.
 - 유효한 domain name(`DEFAULT_URL` environment variable에 설정)이 있어야 한다.
-- `scripts/operations/gen-secrets.sh`로 생성한 secret이 있어야 한다.
+- 승인된 secret owner가 준비한 기존 credential과 참조가 있어야 한다. 생성·회전은 이 Guide의 검증 절차에 포함하지 않는다.
 - `secrets/certs/`에 certificate가 있어야 한다.
 
 #### Step-by-step Instructions
@@ -87,6 +87,12 @@ runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefi
 ## Common Checks
 
 - Step-by-step Instructions 의 검증 단계를 따른다.
+
+Nginx health의 HTTP redirect·placeholder 인증 한계는 [Nginx Guide](0011-nginx.md),
+Traefik chain의 limiter 미준수·401/403 차이는 [Traefik Guide](0013-traefik.md)에
+명시되어 있다. 두 gateway가 같은 host bind를 점유하므로 동시 선택하지 않는다.
+정적 검증만으로 이 한계가 해소되거나 인증·복구가 성공한 것은 아니다.
+시스템 영향과 profile 공통 의미는 [System Guide](0099-system-operations.md)를 따른다.
 
 ## Runbook Handoff
 

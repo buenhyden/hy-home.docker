@@ -1,10 +1,10 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.0.1"
+version: "3.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0003"
 parent_ids: []
@@ -30,11 +30,17 @@ Compose 모델은 증거에 포함하지 않는다.
 저장소 루트에서 기존 메타데이터 도구를 사용한다.
 
 ```bash
-bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 bash scripts/operations/gen-secrets.sh --dry-run
+# private metadata 읽기가 승인된 경우에만 다음 비교를 실행한다.
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 ```
 
-첫 명령은 유지할 값을 출력하지 않고 공개/개인 키 집합의 정확한 일치를 검사한다.
+`--dry-run`은 공개 schema와 파일 존재 메타데이터를 사용한다. 반면 metadata
+check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
+검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
+`2`는 unsafe/ambiguous 입력이다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
+
+두 번째 명령은 유지할 값을 출력하지 않고 공개/개인 키 집합의 정확한 일치를 검사한다.
 `--dry-run`은 생성 계획이며 런타임 인증 성공이나 credential 회전의 증거가 아니다.
 `--check`는 생성 도구 의존성도 확인하므로 `htpasswd` 등 도구가 없으면 실패한다.
 
@@ -56,7 +62,7 @@ bash scripts/operations/gen-secrets.sh --dry-run
 
 ## Traceability
 
-- Subject peers: none — no Policy or Runbook shares number `0003`.
+- 같은 번호 `0003`의 Policy/Runbook은 없다.
 
 ## Related Documents
 

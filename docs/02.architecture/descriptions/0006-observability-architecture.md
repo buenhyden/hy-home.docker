@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -36,6 +36,7 @@ This section preserves the system boundaries, consumption relationships, non-goa
   - Continuous profiling (Pyroscope)
   - Unified dashboard (Grafana)
   - Unified telemetry collection (Alloy)
+  - Optional operator Docker-log inspection (Dozzle, separate leaf Compose)
 - **Consumes**:
   - **SeaweedFS (04-data)**: S3 storage for log and trace data.
   - **Keycloak (02-auth)**: OIDC provider for Grafana SSO login.
@@ -63,7 +64,7 @@ Quality scenarios point to the existing configuration these attributes apply to 
 
 This section uses the context, component, or deployment representation as the view for the relevant concern.
 
-In the current source, Docker logs and OTLP traces pass through **Grafana Alloy** to Loki/Tempo, and Prometheus scrapes exporters/services directly. Only Alloy self-metrics are delivered to Prometheus via remote write. A Pyroscope write sink exists, but with no profile source, end-to-end profile collection is not established with the current configuration alone. Users query each datasource in **Grafana**.
+In the current source, Docker logs and OTLP traces pass through **Grafana Alloy** to Loki/Tempo, and Prometheus scrapes exporters/services directly. Prometheus scrapes Alloy self-metrics directly; the former Alloy self-remote-write loop is absent. Alloy declares pprof sources forwarding to Pyroscope, but successful end-to-end collection still needs runtime evidence. Users query each datasource in **Grafana**.
 
 ## Data Flow
 
@@ -72,16 +73,16 @@ In the current source, Docker logs and OTLP traces pass through **Grafana Alloy*
 Data and control flows include only the interactions specified in this section and the existing infrastructure/deployment description.
 
 - **Key Entities / Flows**:
-  - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus remote write
+  - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus scrape
   - **Logs Flow**: Docker Logs -> Alloy -> Loki -> SeaweedFS
   - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> SeaweedFS
-  - **Profiles Flow**: Pyroscope sink is configured, but no Alloy profile source is declared
+  - **Profiles Flow**: declared Alloy pprof sources -> Pyroscope; collection success remains unverified
 - **Storage Strategy**:
   - Metrics: Prometheus local TSDB
   - Logs: Loki SeaweedFS bucket `loki-bucket`, `retention_period: 168h`
-  - Traces: Tempo SeaweedFS bucket `tempo-bucket`, `block_retention: 24h`
+  - Traces: Tempo SeaweedFS bucket `tempo-bucket`; policy targets24h, but current source omits `block_retention`. The version-specific default is336h; this policy/implementation gap remains unresolved.
   - Profiles: Pyroscope local filesystem backend
-- **Data Boundaries**: The principle is that all telemetry data communicates only within the `obs_net` internal network.
+- **Data Boundaries**: Scrapes and datasource queries use `obs_net`; object storage uses `object_net` and UI routes use `edge_net`. Approved Kubernetes LAN ingress/query exceptions remain governed by POL-0096; tier placement does not imply network-only isolation.
 
 ## Deployment View
 
@@ -93,6 +94,7 @@ Data and control flows include only the interactions specified in this section a
   `profiling`, `alerting`, `availability`, and `batch-metrics` provide narrower
   activation. A HOME profile start does not automatically stop an already
   running optional container.
+- **Optional inspection:** `infra/06-observability/dozzle/docker-compose.yml` remains a separate leaf selected by `admin`/`admin-logs`; native OIDC, CIDR controls, socket visibility and settings persistence stay unchanged.
 - **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
 
 ## Traceability

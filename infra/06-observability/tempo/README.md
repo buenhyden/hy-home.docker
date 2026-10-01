@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.6"
+version: "1.0.8"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -54,7 +54,7 @@ tempo/
 | Category | Technology | Runtime source | Role |
 | :--- | :--- | :--- | :--- |
 | Tracing | [Grafana Tempo](https://github.com/grafana/tempo) | Compose에 선언됨 | 분산 트레이싱 백엔드 |
-| Storage | [SeaweedFS](../../04-data/lake-and-object/seaweedfs/README.md) | [Compose](../../04-data/lake-and-object/seaweedfs/docker-compose.yml) | S3 호환 오브젝트 스토어 |
+| Storage | [SeaweedFS](../../04-data/seaweedfs/README.md) | [Compose](../../04-data/seaweedfs/docker-compose.yml) | S3 호환 오브젝트 스토어 |
 | Ingestion | [Grafana Alloy](../alloy/README.md) | Compose에 선언됨 | OTLP 수신 및 전달 |
 
 ## Available Scripts
@@ -114,7 +114,7 @@ tempo/
 | Purpose | `06-observability`의 Tempo Distributed Tracing 서비스 leaf; compose 서비스 `tempo`, 이미지 출처는 [Compose](../docker-compose.yml) |
 | Config files | `config`, `config/tempo.yaml` |
 | Config values | compose에 선언된 비밀이 아닌 설정 키 없음 |
-| Compose linkage | `../docker-compose.yml`에 선언되고 루트 파일이 이를 무조건 include합니다. `tempo`는 `obs`, `dev` 프로필에서 해석됩니다 |
+| Compose linkage | `../docker-compose.yml`에 선언되고 루트 파일이 이를 무조건 include합니다. `tempo`는 `obs`, `tracing` 프로필에서 해석됩니다 |
 | Networks | `edge_net`, `object_net`, `obs_net` |
 | Volumes | `./tempo/config/tempo.yaml:/etc/tempo.yaml:ro`, `tempo-data:/var/tempo:rw` |
 | Ports | `${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` |

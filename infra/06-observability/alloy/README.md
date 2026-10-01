@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -30,10 +30,10 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
 - **Ingestion**: OTLP(gRPC/HTTP), Docker 소켓 디스커버리.
 - **Processing**: 대상 재레이블링, 메타데이터 보강, 배치 처리.
 - **Exporting**:
-  - Metrics -> Prometheus
+  - Metrics -> Prometheus가 Alloy `/metrics`를 직접 scrape함; self remote-write는 제거됨
   - Logs -> Loki
   - Traces -> Tempo
-  - Profiling -> 프로파일 소스가 설정된 경우 Pyroscope writer 엔드포인트
+  - Profiling -> 선언된 Go pprof/SeaweedFS scrape 소스에서 Pyroscope writer로 전달
 - **Status**: Alloy UI를 통한 실시간 파이프라인 디버깅.
 
 ### Out of Scope
@@ -96,7 +96,7 @@ alloy/
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 - `config.alloy` 변경 후 `docker logs --tail=200 infra-alloy`로 OTLP 파이프라인 상태를 확인합니다.
-- Loki, Prometheus, Tempo가 Alloy exporter로부터 데이터를 수신하는지 확인하여 텔레메트리 전달을 검증합니다. Pyroscope의 경우 writer 엔드포인트가 설정되어 있는지만 확인하고 프로파일 소스가 명시적으로 연결된 경우에만 프로파일 수집을 주장합니다.
+- Loki/Tempo 전달, Prometheus의 Alloy scrape, 선언된 pprof 소스의 Pyroscope 전달을 각각 확인합니다. 추적 설정 `config/config.alloy`에 scrape 소스가 있어도 실제 수집 성공은 별도 관찰로 검증합니다.
 
 ## Troubleshooting
 

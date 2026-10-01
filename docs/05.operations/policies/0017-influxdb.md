@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Operations Policy"
-version: "1.0.2"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0017"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-05-17"
 
 ## Overview
 
-이 문서는 `infra/04-data/analytics/influxdb`의 InfluxDB 운영 정책을 정의한다. Current implementation은 InfluxDB 3 Core 단일 compose와 database/endpoint source contract만 정의하며 token provisioning은 runtime-unverified 상태다.
+이 문서는 `infra/04-data/influxdb`의 InfluxDB 운영 정책을 정의한다. Current implementation은 InfluxDB 3 Core 단일 compose와 database/endpoint source contract만 정의하며 token provisioning은 runtime-unverified 상태다.
 
 ## Policy Scope
 
@@ -39,13 +39,17 @@ created: "2026-05-17"
 - **Allowed**: 서비스 시작 없는 source-only Compose 및 문서 validation.
 - **Disallowed**: static source check를 runtime acceptance, authorization, data-migration evidence로 제시하는 것; source-only validation은 authorization을 증명할 수 없다.
 
+### Accountable lifecycle boundary
+
+적용 identity: `influxdb`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+
 ## Exceptions
 
 장기 retention 또는 수동 data cleanup은 owner 승인과 사용된 database, volume, token boundary를 보여주는 evidence가 필요하다.
 
 ## Verification
 
-- `test -f infra/04-data/analytics/influxdb/docker-compose.yml`
+- `test -f infra/04-data/influxdb/docker-compose.yml`
 - operator가 선택한 database 이름, port `8181`, `/api/v3/write_lp`가 source와 active docs 전반에서 일치하는지 확인한다. token provisioning을 주장하지 않는다.
 - `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
@@ -64,9 +68,9 @@ created: "2026-05-17"
 ## Related Documents
 
 - [InfluxDB 3 Core backup and restore](https://docs.influxdata.com/influxdb3/core/admin/backup-restore/)
-- [Compose implementation](../../../infra/04-data/analytics/influxdb/docker-compose.yml)
+- [Compose implementation](../../../infra/04-data/influxdb/docker-compose.yml)
 
 - [Operations policies index](../README.md)
 - [Usage guide](../guides/0017-influxdb.md)
 - [Recovery runbook](../runbooks/0017-influxdb.md)
-- [Infra README](../../../infra/04-data/analytics/influxdb/README.md)
+- [Infra README](../../../infra/04-data/influxdb/README.md)

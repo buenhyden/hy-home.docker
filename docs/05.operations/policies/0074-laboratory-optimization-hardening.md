@@ -1,10 +1,10 @@
 ---
-title: "11-Laboratory Optimization Hardening Operations Policy"
+title: "Administration and Experimentation Hardening Operations Policy"
 version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -12,31 +12,31 @@ parent_ids:
 created: "2026-05-10"
 ---
 
-# 11-Laboratory Optimization Hardening Operations Policy
+# Administration and Experimentation Hardening Operations Policy
 
 ## Overview
 
-이 문서는 `11-laboratory` 계층 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
+이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
 
 ## Policy Scope
 
-- `infra/11-laboratory/*/docker-compose.yml`
+- 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`, `infra/12-analytics/jupyterlab/`
 - `.env.example` (`LAB_ALLOWED_CIDRS`)
-- `scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 
 - **Systems**: dozzle, redisinsight, open-notebook, surrealdb
-- **Environments**: Local, Dev, Stage, Production-like management plane
+- **Environments**: local·DEV·stage 및 production-like 관리 환경
 
 ## Controls
 
 - **Required**:
-  - 모든 Laboratory 라우터는 `gateway-standard-chain@file` + service별 IP allowlist + `sso-errors@file,sso-auth@file`를 적용한다.
+  - 라우터는 해당 서비스 정책의 gateway·IP allowlist·인증 통제를 적용한다. Dozzle의 native OIDC와 Open Notebook의 공유 SSO 제외 예외를 유지한다.
   - 모든 compose는 root 선언된 network context에 합류하는 service network block을 유지한다.
   - dashboard direct host `ports` 노출을 금지한다.
   - dozzle docker socket은 read-only로 유지한다.
-  - open-notebook UI route는 allowlist+large-body+SSO 경계를 유지하고, credential은 Docker Secret file로만 주입한다.
-  - Open Notebook API와 SurrealDB host-bound ports는 현재 구현 경계로 기록하되, production-like promotion 전 direct exposure review를 수행해야 한다.
-  - laboratory 변경은 `check-all-hardening.sh 11-laboratory` 및 CI `infrastructure-hardening` 통과가 필수다.
+  - open-notebook UI route는 승인된 allowlist+large-body+앱 비밀번호 경계를 유지하고, credential은 Docker Secret file로만 주입한다.
+  - Open Notebook API의 loopback 게시와 SurrealDB의 호스트 게시 없음은 현재 경계로 기록하되, production-like promotion 전 direct exposure review를 수행해야 한다.
+  - laboratory 변경은 `check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics` 및 CI `infrastructure-hardening` 통과가 필수다.
   - optimization-hardening 문서(PRD~Procedure)와 README 인덱스를 동기화한다.
 - **Allowed**:
   - 카탈로그 확장 항목을 단계적으로 도입하는 정책/절차/문서 작업
@@ -68,7 +68,7 @@ created: "2026-05-10"
 ## Verification
 
 - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
@@ -79,12 +79,12 @@ created: "2026-05-10"
 
 ## Traceability
 
-- Declared parent: [11-laboratory Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- Subject peers: [Guide](../guides/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
+- 상위 문서: [Administration and Experimentation Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- 동일 주제 문서: [Guide](../guides/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [curated version projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0074-laboratory-optimization-hardening.md)

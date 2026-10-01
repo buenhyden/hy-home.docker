@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0068"
 parent_ids:
@@ -31,14 +31,21 @@ state가 자동으로 호환된다고 가정하지 않는다.
 
 [이관 Runbook](../runbooks/0068-terraform.md)은 기존 state 보호를, [OpenTofu Runbook](../runbooks/0082-opentofu.md)은 현재 CLI 실행을 소유한다.
 
+### 실행 도구의 적용 범위
+
+독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지
+OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을
+참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인한다. 일반 서비스의
+포트·HTTP health·daemon 재시작은 이 이관 주제에 적용되지 않는다.
+
 ## Traceability
 
-- Governing architecture: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
-- Retained migration subject: [Guide](0068-terraform.md), [Policy](../policies/0068-terraform.md), [Runbook](../runbooks/0068-terraform.md)
-- Current implementation owner: [OpenTofu](0082-opentofu.md)
+- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 유지되는 이관 주제: [Guide](0068-terraform.md), [Policy](../policies/0068-terraform.md), [Runbook](../runbooks/0068-terraform.md)
+- 현재 구현 소유자: [OpenTofu](0082-opentofu.md)
 
 ## Related Documents
 
 - [Operations index](../README.md)
-- [OpenTofu implementation](../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [OpenTofu implementation](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 - [Version projection](../../../infra/tech-stack.versions.json)

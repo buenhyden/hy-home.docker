@@ -4,7 +4,7 @@ version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0042"
 parent_ids: []
@@ -70,7 +70,7 @@ created: "2026-03-25"
 4. Storage와 retention boundary를 확인한다.
 
    ```bash
-   rg -n 'bucketnames: loki-bucket|retention_period: 168h|bucket: tempo-bucket|block_retention: 24h|storage.tsdb|pyroscope-data' infra/06-observability/loki/config/loki-config.yaml infra/06-observability/tempo/config/tempo.yaml infra/06-observability/docker-compose.yml
+   rg -n 'bucketnames: loki-bucket|retention_period: 168h|bucket: tempo-bucket|storage.tsdb|pyroscope-data' infra/06-observability/loki/config/loki-config.yaml infra/06-observability/tempo/config/tempo.yaml infra/06-observability/docker-compose.yml
    ```
 
 5. Service-specific 문서로 이동한다.
@@ -87,7 +87,7 @@ created: "2026-03-25"
 ### Common Pitfalls
 
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
-- **Retention assumption**: Loki `168h`, Tempo `24h`, Pyroscope local filesystem boundary는 각 service policy와 config에서 확인해야 한다.
+- **Retention assumption**: Loki `168h` 요구에는 marker persistence gap이 있고 Tempo `24h` 요구는 source에서 설정되지 않았다. [POL-0048](../policies/0048-telemetry-retention.md)의 미준수 구분과 Pyroscope capacity 경계를 따른다. 다른 항목의 regex match는 retention 검증이 아니다.
 - **Collector assumption**: Alloy pipeline이 실패하면 Loki/Tempo/Prometheus/Grafana가 정상이어도 telemetry가 비어 보일 수 있다.
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.

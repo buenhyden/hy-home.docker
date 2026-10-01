@@ -4,7 +4,7 @@ version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -21,20 +21,20 @@ created: "2026-05-10"
 ## Policy Scope
 
 - `infra/07-workflow/airflow/docker-compose.yml`
-- `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,docker-entrypoint.sh}`
+- `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh}`
 - `scripts/hardening/check-all-hardening.sh 07-workflow`
 
 - **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner, workflow Valkey
-- **Environments**: Local, Dev, Stage, Production-like
+- **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
 ## Controls
 
 - **Required**:
-  - Airflow/Flower/n8n 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+  - Airflow 공개 라우터는 `gateway-standard-chain@file`과 native Keycloak SSO를 유지한다. Flower/n8n은 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 유지한다. Airflow double-auth 추가는 표준 복구가 아니다.
   - `dedicated-valkey` profile은 `airflow-valkey`를 기동할 뿐이다. 실제 전환에는 `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`의 matching pair가 필요하다.
   - `dedicated-valkey`를 선택하지 않은 경우의 shared `mng-valkey` broker 경계를 문서와 검증 evidence에 명시한다.
   - n8n worker/task-runner healthcheck를 필수로 유지한다.
-  - n8n task-runner는 `n8n`/`n8n-valkey` health 기반 의존성을 유지하고, `dedicated-valkey` profile을 선택하지 않았을 때의 `mng-valkey` broker 경계를 명시한다.
+  - n8n task-runner는 main health, task-runner-worker는 worker health 의존성을 유지한다. 선택 broker/DB readiness를 별도로 확인하고 `dedicated-valkey`와 실제 host/secret 선택을 구분한다.
   - n8n compose 기본 이미지는 custom image([hyhome/n8n image declaration](../../../infra/07-workflow/n8n/docker-compose.yml))를 사용한다.
   - n8n runtime은 non-root이며 entrypoint secret guard를 유지한다.
   - workflow 변경은 `check-all-hardening.sh 07-workflow` 및 CI `infrastructure-hardening`을 통과해야 한다.
@@ -62,6 +62,10 @@ created: "2026-05-10"
 - 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
 - 단, 변경 승인 기록과 동일 릴리스 내 원상 복구/재검증이 필수다.
 
+### Static gate boundary
+
+`check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
+
 ## Verification
 
 - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
@@ -69,6 +73,8 @@ created: "2026-05-10"
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 
@@ -82,7 +88,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0054-workflow-optimization-hardening.md)

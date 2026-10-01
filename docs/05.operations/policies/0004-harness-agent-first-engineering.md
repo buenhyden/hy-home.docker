@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -21,12 +21,10 @@ created: "2026-06-04"
 canonical agent governance는 `.agents/`에 있다: governance policy가 규칙을 소유하고,
 Provider Registry가 provider identity, model, permission translation을 소유하며,
 role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측면만 소유한다 —
-하네스를 언제 실행하는지, 어떻게 점검하는지, 점검이 실패하면 무엇을 하는지.
+하네스 실행·검증의 승인 경계와 실패 보고 기준이다. 실제 순서는 Runbook이 소유한다.
 
-그래서 아래 통제 항목은 규칙을 다시 서술하는 대신 각 항목의 소유자를 가리킨다.
-canonical 규칙을 프로즈로 요약한 통제는 결국 그 규칙과 어긋났다: model row는
-Registry가 표현한 적 없는 계층에 이름을 붙였고 Codex row는 Registry가 이미 채택한
-카탈로그를 여전히 금지했다. 소유자를 가리키는 통제는 그런 식으로 어긋날 수 없다.
+아래 표는 canonical 규칙의 소유자로 연결한다. 모델·permission·scope를 이 문서에
+별도 값으로 복제하지 않는다.
 
 ## Policy Scope
 
@@ -54,14 +52,14 @@ Registry가 표현한 적 없는 계층에 이름을 붙였고 Codex row는 Regi
 | Thin root shims | Root 파일은 상세 policy를 `.agents/`와 runtime overlay에 위임한다. |
 | Runtime mirror parity | Native role adapter와 thin Claude skill pointer는 authored `.agents` source와 동기화 상태를 유지한다; canonical 파일은 renderer output이 되지 않는다. |
 | Runtime parity scope | Repository check는 catalog, model, scope import, protocol-reference parity를 증명한다; 모든 runtime 문서의 semantic parity를 증명하지는 않는다. |
-| Model selection | 각 role은 `work_profile`을 선언하고 Provider Registry가 그 profile을 provider model에 매핑한다. 이 문서는 매핑을 다시 서술하지 않는다: 매핑을 supervisor model 하나와 worker model 하나로 요약한 결과는 worker 열세 개 중 여섯 개에서 틀렸다. `adversarial-review` role은 supervisor와 같은 tier로 resolve되고 `routine-validation`은 나머지보다 낮은 tier로 resolve되기 때문이다. |
+| Model selection | role의 `work_profile`과 Provider Registry의 provider mapping을 따른다. 현재 모델·계층·개수를 별도로 선언하지 않는다. |
 | Scope imports | 각 runtime agent는 정확히 하나의 primary scope를 import한다. |
 | Hook safety | Runtime hook은 shell command substitution 부작용 없이 실제 payload shape를 파싱해야 한다. |
 | Codex boundary | Governance는 Codex catalog를 채택했다: Provider Registry가 native agent pattern을 선언하고 renderer가 role당 하나의 adapter를 hook configuration 옆에 작성한다. Codex surface가 무엇을 담는지는 이 문서가 아니라 registry가 결정한다. |
 | Template-first docs | 새 stage 문서는 `docs/99.templates/`를 사용하고 parent README 파일을 갱신한다. |
 | Source-label prevention | Active runtime/governance 파일은 외부 harness source label을 참조하지 않아야 한다. |
 | Graph context health | Graphify는 health가 clean할 때만 navigation aid가 된다; contaminated output은 advisory로 남으며 tracked source 및 canonical 문서와 대조 검증해야 한다. |
-| Infra validation scope | HAFE completion은 default/core Compose와 지원되는 hardening tier에 의존할 수 있다; `10-communication` 같은 미편입 profile은 별도 infra remediation이 필요하다. |
+| Infra validation scope | 적용 gate의 현재 선택 범위를 기록한다. Compose validator와 baseline script의 기본 범위가 다르며 범위 밖 remediation은 별도 승인한다. |
 | AI Agent limits | [Agentic Engineering Policy](../../../.agents/governance/agentic.md#execution-rules)가 소유하며, Graphify의 경우 [Environment Constraints](../../../.agents/governance/environment-constraints.md#4-graphify)가 소유한다. |
 
 평가 maintenance는 `.agents/evaluations/`의 합성 입력과 등록된 소비자에 한정한다.
@@ -77,7 +75,7 @@ Registry가 표현한 적 없는 계층에 이름을 붙였고 Codex row는 Regi
 - `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
 - CLI를 사용할 수 없을 때 `graphify` refresh를 건너뛸 수 있지만 건너뛴 사실은 보고해야 한다.
 - `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
-- `10-communication` compose/include/IP remediation은 infra change로 명시적으로 scope되지 않는 한 HAFE 범위 밖이다.
+- 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
 
 ## Verification
 
@@ -92,8 +90,8 @@ Registry가 표현한 적 없는 계층에 이름을 붙였고 Codex row는 Regi
 
 ## Traceability
 
-- Declared parent: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
-- Subject peers: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 ## Related Documents
 

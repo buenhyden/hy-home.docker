@@ -1,25 +1,22 @@
 ---
-title: "11-Laboratory Optimization Hardening Architecture Description"
-version: "1.1.2"
+title: "Administration and Experimentation Hardening Architecture Description"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0025"
 parent_ids:
 - "REQ-0012"
 created: "2026-03-28"
 ---
-# 11-Laboratory Optimization Hardening Architecture Description
+# Administration and Experimentation Hardening Architecture Description
 
 ## Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
-the `11-laboratory` layer. It specifies the architecture contract that places
-the management UI behind the gateway security chain, SSO authentication, and
-the IP allowlist boundary, and controls experimental service operational
-drift with a CI gate.
+administration and experimentation capabilities across Data, Observability, AI and Analytics. Existing source-specific authentication remains authoritative: RedisInsight ForwardAuth, Dozzle native OIDC, and Open Notebook password-file authentication with gateway CIDR controls. These exceptions predate relocation (POL-0073); the move grants no new authentication exemption. CI checks source drift, not live access acceptance.
 
 ### Stakeholders and Concerns
 
@@ -27,7 +24,7 @@ Requirement owners, implementers, and operators share the concerns recorded
 in this section and the following views. Only concerns confirmed in the
 existing document are covered here.
 
-The laboratory tier is a management tool layer for operator productivity,
+The distributed administration capability is a management tool set for operator productivity,
 but a "security boundary first" design is needed because it handles
 high-privilege UIs.
 
@@ -41,11 +38,11 @@ This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
 
 - **Owns**:
-  - Laboratory UI ingress boundary contract (gateway chain + SSO + allowlist)
+  - Service-specific UI ingress boundary contract (gateway chain, authentication and declared allowlist)
   - network boundary contract
-  - management UI direct host exposure prohibition contract
+  - prohibition of unapproved direct host exposure; Open Notebook retains its existing loopback API publication
   - dozzle least-privilege (socket read-only) contract
-  - open-notebook UI route SSO/allowlist/large-body boundary and Docker
+  - open-notebook UI password/allowlist/large-body boundary and Docker
     Secret injection contract
   - laboratory hardening CI policy gate
 - **Consumes**:
@@ -67,8 +64,7 @@ The quality scenarios point to the existing configuration, failure boundary,
 and verification expectation to which the attributes below apply. Concrete
 execution evidence is owned by the related Spec and Operations documents.
 
-- **Security**: removes direct host exposure, applies the dual
-  allowlist+SSO boundary
+- **Security**: preserves each declared gateway/authentication boundary and the Open Notebook loopback API exception; peer-network bypass requires separate evidence
 - **Reliability**: secures minimum runtime stability based on the compose
   contract and healthcheck
 - **Operability**: standardizes regression recovery based on the CI
@@ -101,17 +97,17 @@ This hardening Architecture Description does not introduce production data owner
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose (`infra/11-laboratory/*`)
+- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `infra/12-analytics/jupyterlab`)
 - **Deployment Model**:
   - per-service compose + a common template (`infra/common-optimizations.yml`)
 - **Operational Evidence**:
   - compose static checks
-  - `scripts/hardening/check-all-hardening.sh 11-laboratory`
+  - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
   - CI `infrastructure-hardening` job
 
 ## Evolution
 
-- **Management UI**: keeping SSO+allowlist, applying an automatic
+- **Management UI**: keeping the approved service-specific authentication and ingress controls, applying an automatic
   expiration policy for experimental services
 - **dozzle**: restricting the log viewing scope (rule blocking access to
   production logs), ongoing review of least-privilege

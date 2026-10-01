@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.6.0"
+version: "0.7.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -33,11 +33,49 @@ created: "2026-09-19"
 3. initialized/unsealed 상태를 별도로 확인한 뒤, 내용을 읽지 않고 destination 존재 여부와
    권한을 검증한다. AppRole provisioning과 unseal은 owner-controlled credential 절차가
    필요하다.
-4. 배포가 승인되면 이 서비스들만 명시하고 initialization job과 daemon readiness를 별도로
+4. 배포가 승인되면 이 서비스들만 명시하고 수동 initialization/unseal과 daemon readiness를 별도로
    검증한다. 예상치 못한 mount나 실패한 점검이 있으면 중단하고, 전체 stack으로 범위를
    넓히지 않는다.
 
 [Implementation](../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
+
+### Lifecycle and maintenance boundary
+
+`openbao`와 `openbao-agent`만 대상으로 하며 기본 `security` 선택을 사용한다.
+기존 local image와 root network, bind 경로의 소유권·용량, 보존된 Raft identity,
+승인된 unseal 관리자가 준비되지 않았다면 시작/중지를 진행하지 않는다.
+
+```bash
+HYHOME_COMPOSE_PROFILES=security bash scripts/validation/validate-docker-compose.sh
+# 이후 명령은 대상 runtime 변경이 승인된 경우에만 실행한다.
+docker compose --profile security up -d --no-deps --no-build --pull never openbao
+```
+
+`bao status`의 exit0은 unsealed, exit2는 sealed, 그 밖은 오류다. 현재 Compose
+health는0/2를 모두 허용한다. 이미 initialize된 저장소를 다시 initialize하지 않는다.
+위 initial/bootstrap 또는 승인된 unseal 뒤 실제 `Sealed false`를 확인하고, 새로
+필요한 SecretID를 아래 절차로 전달한 후 Agent만 시작한다.
+
+```bash
+docker compose --profile security up -d --no-deps --no-build --pull never openbao-agent
+# 승인된 중지는 Agent부터 수행하며 secret 출력 갱신이 멈춘다.
+docker compose stop openbao-agent
+docker compose stop openbao
+```
+
+stop은 volume이나 credential을 지우지 않는다. server restart는 다시 unseal을,
+Agent restart는 유효한 AppRole 재인증 입력을 요구할 수 있다. `agent.hcl` 단일 파일
+변경은 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의
+대상 재생성·hash 검사를 따른다. Compose의 server 환경 변경도 재생성이 필요하다.
+재생성 전후 Raft mount identity가 바뀌면 중단한다. 자동 bootstrap job은 없으며
+이 절차의 daemon health를 초기화 완료로 표시하지 않는다.
+
+upgrade는 [RUN-0086](0086-dependency-version-management.md), backup·retention은
+[POL-0021](../policies/0021-backup-and-restore.md)을 적용한다. 아래 격리 restore는
+계획이지 검증된 실행 명령이 아니다. artifact·custody·격리 target·승인·독립 검토가
+없으면 복구는 BLOCKED이며 @buenhyden에게 반환한다. in-place Raft downgrade,
+기존 volume restore, 마지막 관리 credential 삭제는 금지한다. 제거/cleanup은
+consumer와 보호 자료 disposition이 별도 승인된 뒤에만 수행하며 명령을 추정하지 않는다.
 
 ### Initial Bootstrap and Credential Recovery
 
@@ -49,13 +87,11 @@ OIDC 로그인, 기대되는 non-root policy, 인증된 recovery, Agent 인증/�
 스냅샷이 모두 성공한 뒤에만 폐기해야 한다. setup이 실패하면 운영자 복구를 위해 보호된
 복구 자료를 유지한다.
 
-Owner 결정(2026-09-22): 세 share는 `secrets/security/openbao_unseal_keys.txt`
-(SEC-003, share 한 줄당 하나, `0600`, Git-ignored, 컨테이너에 절대 mount하지 않음)에
-함께 보관한다. 이 결정은 분리 custody의 명시적 예외다. 그 파일을 읽을 수 있는 사람은 누구나
-OpenBao를 unseal할 수 있다. 대화형 터미널에서 unseal하고
-(`docker compose exec openbao bao operator unseal`) 숨겨진 프롬프트에 share 하나를
-붙여넣는다. share를 절대 인자로 전달하지 않는다. 비공개 registry는 SEC-003의 placeholder만
-보관하며, 그 파일이 유일한 사본이다. 레거시 Vault 파일로는 OpenBao를 unseal할 수 없다.
+기존2026-09-22 custody 결정과 단일 파일 위험·미기록 종료 조건은
+[POL-0085 Exceptions](../policies/0085-openbao.md#existing-custody-decision-and-missing-closure)가
+소유한다. 이 예외는 share 분리 검증을 뜻하지 않는다. 승인된 운영자는 대화형
+`docker compose exec openbao bao operator unseal`의 숨겨진 prompt로 share를 하나씩
+전달한다. 인자로 전달하지 않으며 레거시 Vault share로 OpenBao를 unseal할 수 없다.
 2026-09-25 SPEC-0182 W5가 그 파일들(`secrets/.retired/2026-09-23/security/`의
 `vault_token.txt`와 `vault_unseal_keys.legacy.txt`), 보존된 Vault 트리
 `${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`, 레거시 `hashicorp/vault` 이미지를
@@ -115,6 +151,7 @@ docker exec openbao-agent sh -c 'test -s /openbao/agent/role_id && echo role_id-
    10분이 아직 흐르지 않는다.
 
    ```bash
+   set -o pipefail
    T=$(mktemp -d); IMG=$(docker compose config --images openbao)
    B() { docker run --rm -i --network host --user "$(id -u):$(id -g)" -e HOME=/h -v "$T:/h" \
      -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem \
@@ -196,7 +233,7 @@ docker exec openbao-agent sh -c 'test -s /openbao/agent/role_id && echo role_id-
 4. 승인된 재생성 전에 Compose와 Prometheus 구성을 검증한다. Prometheus만 재생성하고
    구성 로드/reload가 성공했음을 확인한 뒤, 원본 target 응답이나 로그를 기록하지 않고
    `openbao` target이 `UP`을 보고할 것을 요구한다.
-5. 먼저 교체본을 생성하고 검증한 뒤, `0600` 파일을 원자적으로 교체하고 Prometheus만
+5. 먼저 교체본을 생성하고 검증한 뒤, consumer용 `0640`/`SECRETS_GID` 파일을 원자적으로 교체하고 Prometheus만
    재생성하고 새 target을 확인하고 accessor로 이전 token을 폐기해 회전시킨다.
    레거시 Vault root token 권한이나 scrape job을 절대 복원하지 않는다.
 
@@ -206,7 +243,7 @@ source/runtime 구성을 계속 사용 가능하게 유지하고, accessor로 �
 Prometheus만 재생성한다. source rollback은 `vault_token`을 다시 도입해서는 안 된다.
 전용 credential 경로가 복구될 때까지 OpenBao metrics는 비활성 상태로 둔다.
 
-5단계 명령은 [hy-home.k8s integration runbook](0096-k8s-integration.md)의
+아래 policy 발급·검증·회전 명령은 [hy-home.k8s integration runbook](0096-k8s-integration.md)의
 throwaway 클라이언트(5.2, `/s/k8s`는 host의 owner-only `/tmp/bao-k8s`)에서, 그
 임시 root 세션(5.4, `R`이 명령마다 root를 전달) 안에서 실행한다. operator policy는
 `prometheus` policy를 가진 token을 발급할 수 없다.
@@ -243,10 +280,30 @@ docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query
 install -m 600 secrets/security/openbao_metrics_token.custody /tmp/bao-k8s/old.custody
 ```
 
+다음은 한 줄씩 실행하고 결과를 확인한다. 처음 두 검사는 accessor가 정확히 한 개이고
+비어 있지 않음을 요구한다. 폐기 전 조회와 폐기 요청이 모두 성공하지 않으면 즉시
+중단한다. 원본 응답은 보호된 세션 디렉터리에만 보관하며 출력하거나 증거에 복사하지 않는다.
+
 ```sh
-R token revoke -accessor "$(sed -n 's/^accessor=//p' /s/k8s/old.custody)"
-R token lookup-accessor "$(sed -n 's/^accessor=//p' /s/k8s/old.custody)" >/dev/null 2>&1 && echo "old: STILL VALID" || echo "old: revoked"
+umask 077
+test "$(grep -c '^accessor=' /s/k8s/old.custody)" -eq 1
+OLD_ACCESSOR=$(sed -n 's/^accessor=//p' /s/k8s/old.custody)
+test -n "$OLD_ACCESSOR"
+R token lookup -accessor -format=json "$OLD_ACCESSOR" >/s/k8s/old-before.json 2>/s/k8s/old-before.err
+R token revoke -accessor "$OLD_ACCESSOR" >/s/k8s/old-revoke.out 2>/s/k8s/old-revoke.err
+R token lookup -accessor -format=json "$OLD_ACCESSOR" >/s/k8s/old-after.json 2>/s/k8s/old-after.err
+R token lookup -format=json >/s/k8s/caller-control.json 2>/s/k8s/caller-control.err
+bao status -format=json >/s/k8s/server-control.json 2>/s/k8s/server-control.err
 ```
+
+[공식 CLI](https://openbao.org/docs/commands/token/lookup/)의 형식은
+`token lookup -accessor`이다. 폐기 전 같은 accessor 조회와 폐기 요청의 성공,
+이후 관리 호출자의 유효 권한과 unsealed 서버 상태, 같은 accessor에 대한 서버의
+명시적인 invalid-accessor 응답을 모두 확인해야 `old: revoked`로 기록한다.
+폐기 후 조회가 성공하면 `STILL VALID`이다. 일반403·DNS·TLS·timeout·sealed·CLI·
+응답 해석 실패는 `INDETERMINATE`이며 폐기 증거가 아니다. 이 경우 아래 custody
+교체·정리를 실행하지 말고 보호된 응답과 관리 세션을 보존하여 원인을 확인한다.
+폐기가 확인된 경우에만 다음 단계로 진행한다.
 
 ```bash
 umask 077
@@ -259,7 +316,9 @@ rm -f /tmp/bao-k8s/old.custody /tmp/bao-k8s/metrics.custody
 ```
 
 예상 결과: `old: revoked`, 그다음 새 만료일(secret이 아니므로 기록한다). 그런 다음 통합
-runbook의 root 폐기 단계(`root revoked`, `Started false`)로 root 세션을 종료한다.
+runbook의 root 폐기 단계로 root 세션을 종료한다. `Started false`는 발급 시도 종료일
+뿐 root 폐기 증거가 아니다. root 폐기도 해당 절차의 서버 응답과 양성 대조로
+확인한 후, 이 단계에서 만든 보호된 응답 파일과 `OLD_ACCESSOR`를 정리한다.
 
 Agent 재시작 전에 승인된 운영자는 보호된 채널을 통해 새 SecretID를 전달해야 한다.
 RoleID/SecretID 파일(0600, 컨테이너 UID 100/GID 1000)을 배치하는 동안 Agent만 중단한
@@ -270,7 +329,11 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 인증된 권한이 필요하다. quorum key만으로는 그 endpoint를 승인할 수 없다. 자동화 지름길로
 활성 영구 root token을 저장하지 않는다.
 
-전달 명령. OIDC 운영자가 SecretID를 발급할 수 있다(통합 runbook의 5.2 클라이언트와 5.3
+### Renderer delivery from an existing integration session
+
+기본 전달은 위 Renderer SecretID Delivery를 따른다. 아래는 이미 승인된 RUN-0096
+client 세션이 존재할 때의 대안이며 두 절차를 연속 실행해 SecretID를 중복 발급하지 않는다.
+OIDC 운영자가 SecretID를 발급할 수 있다(통합 runbook의 5.2 클라이언트와 5.3
 로그인, root 불필요).
 
 ```sh
@@ -303,16 +366,16 @@ readiness를 증명할 수 없다.
 
 | Surface | Required setting |
 | --- | --- |
-| Keycloak realm/client | `hy-home.realm` / `home-openbao`, confidential client-secret authentication |
-| Flows | Authorization Code enabled; S256 PKCE required; implicit/password/service-account flows disabled |
-| Claim mapper | `oidc-group-membership-mapper`; claim `groups`; full group paths in ID token |
-| Membership | Existing operator `hyunyoun` belongs to `/openbao-admins`; no automatic grant to all realm users |
-| OpenBao mount/role | `oidc` / `home-admin`, role type `oidc`, user claim `sub`, groups claim `groups` |
-| Binding | Exact `bound_claims.groups=["/openbao-admins"]`, audience `home-openbao` |
-| Issuer | `https://keycloak.hy.home.arpa/realms/hy-home.realm`; verified CA supplied through `oidc_discovery_ca_pem` |
+| Keycloak realm/client | `hy-home.realm` / `home-openbao`, confidential client-secret 인증 |
+| Flow | Authorization Code 활성화; S256 PKCE 필수; implicit/password/service-account flow 비활성화 |
+| Claim mapper | `oidc-group-membership-mapper`; claim은 `groups`; ID token에 전체 group 경로 포함 |
+| Membership | 기존 운영자 `hyunyoun`은 `/openbao-admins`에 속함; 모든 realm 사용자에게 자동 권한 부여하지 않음 |
+| OpenBao mount/role | `oidc` / `home-admin`, role type은 `oidc`, user claim은 `sub`, groups claim은 `groups` |
+| Binding | 정확한 `bound_claims.groups=["/openbao-admins"]`, audience는 `home-openbao` |
+| Issuer | `https://keycloak.hy.home.arpa/realms/hy-home.realm`; 검증된 CA를 `oidc_discovery_ca_pem`으로 제공 |
 | UI callback | `https://openbao.hy.home.arpa/ui/vault/auth/oidc/oidc/callback` |
 | CLI callback | `http://localhost:8250/oidc/callback` |
-| Human token | `hy-home-operator` plus standard `default`; TTL 1h, max TTL 4h; no root or periodic token |
+| 사용자 token | `hy-home-operator`와 기본 `default`; TTL 1h, 최대 TTL 4h; root 또는 periodic token 아님 |
 
 위 hostname은 현재 HOME default다. 도메인이 바뀌면 issuer, 인증서, 정확한 redirect를 함께
 갱신하며, wildcard redirect는 도입하지 않는다. Keycloak은 자신의 client secret을 저장하고
@@ -384,6 +447,15 @@ Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
 승인된 복구 창에서만 사용한다. 일반 운영에서는
 [listener contract](https://openbao.org/docs/configuration/listener/tcp/)가 요구하는 대로
 계속 비활성 상태로 유지해야 한다.
+
+### Exact policy validation
+
+Kubernetes auth의 ESO 허용 범위는 [POL-0085](../policies/0085-openbao.md#hy-homek8s-kubernetes-auth)의
+기존 승인된 다섯 data/metadata 항목 read로 제한한다. 정적 hardening은 일부 금지
+capability를 검사하지만 정확한 전체 path set이나 실제 설치 role을 증명하지 않는다.
+renderer 두 경로 read와 사람 operator의 platform credential create/update는 별개다.
+승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
+결과로 확인하며 불일치 시 중단한다.
 
 ## Evidence
 

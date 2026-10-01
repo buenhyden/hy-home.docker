@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0057"
 parent_ids:
@@ -26,8 +26,8 @@ Open WebUI 서비스 운영 전반:
 - 문서 업로드/인덱싱/삭제 기준
 - Open WebUI와 Ollama 연동 구성 변경 관리
 
-- **Systems**: `open-webui`, `ollama`, `qdrant`, `traefik`, `oauth2-proxy`, `keycloak`
-- **Environments**: Local, Dev, Homelab, Production-like rehearsal
+- **Systems**: `open-webui`, `ollama`, 로컬 SQLite·Chroma·업로드 저장소, `traefik`, `keycloak`. 현재 native OIDC 경로는 Qdrant나 OAuth2 Proxy에 의존하지 않는다.
+- **Environments**: 로컬·개발·홈랩과 운영 환경에 준하는 rehearsal
 
 ## Controls
 
@@ -46,11 +46,17 @@ Open WebUI 서비스 운영 전반:
 
 ### Lifecycle and data controls
 
-- Open WebUI remains `HOME`; native Keycloak OIDC and `gateway-standard-chain@file` are required. Do not add `sso-auth@file` or enable password/signup/email-merge/role-management fallbacks without a reviewed auth design.
-- SQLite/application data, uploads, RAG vectors (the local store in the same volume) and the exact auth/OIDC secret set form one recovery boundary. Selecting an external vector store with `VECTOR_DB` would split that boundary and needs a re-index.
-- Stop writes before copying SQLite or the data volume. Restore to isolated storage/project first and verify identities, chats, uploads, OIDC, model access, and controlled RAG retrieval before any production replacement.
-- Upgrade only with a prior recoverable copy, migration review, pinned image identity, and rollback evidence. Source resource limits do not prove spare capacity.
-- Removal requires exported user/content evidence, revoked OIDC client/secrets, disabled routes, and explicit approval before persistent deletion.
+- WebUI를 HOME으로 유지하고 native Keycloak OIDC와 표준 gateway를 요구한다. 검토된 인증 설계 없이 proxy SSO나 password/signup/email-merge/role-management 대안을 켜지 않는다.
+- SQLite/application, upload, 로컬 RAG vector와 정확한 auth/OIDC secret 집합을 한 복구 경계로 취급한다. `VECTOR_DB`로 외부 저장소를 선택하면 경계가 분리되고 재인덱싱이 필요하다.
+- SQLite/data copy 전에 쓰기를 멈추고 격리 복원에서 identity/chat/upload/OIDC/model access와 시험 RAG를 검증한 뒤 production 교체를 승인한다.
+- Upgrade에는 복구 가능한 copy, migration 검토, image identity와 rollback 근거가 필요하다. 선언 한도는 여유 증거가 아니다.
+- 제거에는 사용자·내용 export, OIDC client/secret 폐기, route 중지와 영속 데이터 삭제 승인이 필요하다.
+
+### Local data and authentication boundary
+
+선언 릴리스는 `DATA_DIR/vector_db`의 Chroma를 기본으로 쓰며 Compose에는 외부 vector-store나 Qdrant 연결이 없다. SQLite·vector·upload·identity와 embedding-model 출처를 함께 보존한다. CUDA image 이름만으로 GPU가 할당되지는 않으며 WebUI에는 GPU 예약이 없다. 로컬 entrypoint는 한 줄 OIDC secret과 검증된 CA bundle을 읽고 인자가 없으면 upstream `bash start.sh`로 시작한다.
+
+`ENABLE_PASSWORD_AUTH=false`는 폼 숨김과 별도로 password 인증을 막는다. `ENABLE_OAUTH_PERSISTENT_CONFIG=false`는 OAuth 설정만 관장하며 모든 저장 설정을 끄지 않는다. 선언 버전의 `key/value`별 schema에 과거 단일 `id/data` 행 SQL 복구를 적용하지 않는다. Native login, signup/password 거부와 identity 연속성은 승인된 별도 검사로 확인하며 health가 대신하지 않는다.
 
 ## Exceptions
 
@@ -68,6 +74,8 @@ Open WebUI 서비스 운영 전반:
 - 증적:
   - 변경 티켓(또는 PR), 검증 로그, 롤백 결과
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
 - **Quarterly**: 정책/권한/데이터 취급 기준 검토
@@ -80,7 +88,7 @@ Open WebUI 서비스 운영 전반:
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0057-open-webui.md)

@@ -4,13 +4,13 @@ version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
 - "POL-0084"
 implementation_services:
-  infra/10-communication/mailpit/docker-compose.yml:
+  infra/11-quality/mailpit/docker-compose.yml:
   - mailpit
 created: "2026-09-19"
 ---
@@ -28,9 +28,9 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 
 ### Current implementation
 
-- [Mailpit Compose](../../../infra/10-communication/mailpit/docker-compose.yml)가
+- [Mailpit Compose](../../../infra/11-quality/mailpit/docker-compose.yml)가
   image, profile, port, environment, healthcheck, volume을 관장한다.
-- SMTP는 `edge_net` 내부와 loopback host port
+- SMTP는 `edge_net`·`mail_net` 내부와 loopback host port
   `${MAILPIT_SMTP_HOST_PORT:-1025}`에서 listen한다. UI는 loopback
   `${MAILPIT_UI_HOST_PORT:-8025}`와 gateway middleware chain을 통한
   `mailpit.${DEFAULT_URL}`을 사용한다.
@@ -52,29 +52,31 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
    loopback host port를 사용한다.
 3. 합성 또는 승인된 test mail만 전송한다. database에는 본문, header, 주소,
    첨부가 들어 있으므로 민감한 test data로 취급해야 한다.
-4. 인증된 UI나 제한된 API query로 capture를 확인한 뒤, retention policy에
+4. gateway 인증 경로 또는 승인된 loopback/peer 경로의 제한된 조회로 capture를
+   확인한 뒤, retention policy에
    따라 test data를 삭제/만료시킨다.
 
 ### Backup and upgrade
 
-Mailpit은 `mailpit dump`로 live message export를, `mailpit ingest`로
-restore 방식의 ingestion을 지원한다. 활성 SQLite/WAL 파일을 복사하기보다
-live HTTP dump를 우선 사용한다. database를 복사해야 한다면 Mailpit을 멈추고
-database와 SQLite sidecar를 일관되게 함께 복사한다. 이미지 upgrade 전에는
-메시지를 export하고, database checksum을 기록하고, Mailpit만 재생성한 뒤
-capture와 메시지 수를 검증한다. restore는 먼저 격리된 Mailpit instance에서
-수행한다. 이 절차는 문서로 남겼지만 이 task에서 실행하지는 않았다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0084-mailpit.md)의 `반출 방식과 업그레이드 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `docker compose --profile mail-dev config --quiet`
 - `docker compose --profile mail-dev config --services`
-- `bash scripts/hardening/check-all-hardening.sh 10-communication`
+- `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ## Runbook Handoff
 
 capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
 [runbook](../runbooks/0084-mailpit.md)을 사용한다.
+
+### 접근 경계의 의미
+
+gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 peer listener에는
+동등한 네이티브 UI 인증이 선언되지 않았다. 테스트용 SMTP의 임의 인증 수락을
+실제 인증으로 해석하지 않는다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터
+소유자를 확인해야 하며 신뢰하지 않는 consumer의 연결을 허용해서는 안 된다.
 
 ## Traceability
 

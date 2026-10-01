@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -30,6 +30,8 @@ created: "2026-05-17"
 ## Controls
 
 - **Required**:
+  - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
+  - readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차를 수행해야 한다.
   - Keycloak은 `template-infra-high`를 사용한다.
   - DB/Admin 비밀은 `/run/secrets` 파일에서 읽어 환경 변수로 주입한다.
   - readiness healthcheck(`/health/ready`)를 유지한다.
@@ -40,8 +42,18 @@ created: "2026-05-17"
 - **Disallowed**:
   - 시크릿 평문 하드코딩
   - 인증 우회 목적 설정 변경
-  - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
-  - readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차를 수행해야 한다.
+
+### Shared controls and accountability
+
+운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
+종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다. 공통 자원 상한과
+mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), profile·
+상호 배제는 [POL-0078](0078-compose-profile-vocabulary.md), image 변경과 검토는
+[POL-0086](0086-dependency-version-management.md)을 적용한다. OOM·반복 재시작·
+인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
+보존할 상태와 private credential은 [POL-0021](0021-backup-and-restore.md)의
+접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
+volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
 ## Exceptions
 
@@ -78,7 +90,7 @@ created: "2026-05-17"
 
 - [Official upstream operational documentation](https://www.keycloak.org/server/containers)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0014-keycloak.md)

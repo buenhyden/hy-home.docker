@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.4.1"
+version: "1.4.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -35,7 +35,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 
 ### HOME state-owner matrix
 
-| Owner and data class | Current state surface | Required backup method and destination | Encryption and retention | Planning target | Rehearsal and recovery owner |
+| 소유자와 data 분류 | 현재 상태가 저장되는 곳 | 필수 backup 방식과 저장 대상 | 암호화와 보존 | 계획 목표 | rehearsal·복구 소유자 |
 | --- | --- | --- | --- | --- | --- |
 | Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; role과 grant는 cluster-wide | server image 내 pgBackRest: 일요일 full backup, 매일 differential, 지속적인 WAL archive(`archive_timeout`)를 system SSD의 `${BACKUP_STATE_REPO_DIR}/pgbackrest`로(예산은 control 2); globals-only export와 pgBackRest repository 자체는 state Restic set에 들어가 R2로 간다(control 1); live `PGDATA` tree는 절대 복사하지 않는다 | BKP-001로 `aes-256-cbc` repository; full backup 두 개와 그 WAL 보존; Restic daily 30 / weekly 13 / monthly 12 | WAL archive 기준 RPO 5분, RTO 4시간; planning target, HOME data에서 미검증 | Synthetic full/diff/PITR rehearsal 통과(`BackupRestoreRehearsalTests`, 2026-09-22); 아직 HOME-data restore 없음. 절차: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
 | Management Valkey: OAuth2 Proxy session과 Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF 활성화 | Point-in-time RDB stream(`valkey-cli --rdb -`)을 export staging으로, 이후 Restic snapshot; live AOF 디렉터리는 제외; queued work를 replay할지 discard할지 기록 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; queued-job semantics는 incident 승인 필요 | Synthetic RDB export/reload rehearsal 2026-09-22; HOME-data restore 없음. Recovery: [RUN-0028](../runbooks/0028-management-database.md) |
@@ -59,21 +59,23 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 
 ## Controls
 
+전체 export·백업·검증 성공이 유효 복구 세트의 필수 조건이다. 현재 `restic_ok`는 Restic backup/check만 gate하므로 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패에도 partial snapshot/copy가 생길 수 있다. 종료1·성공 timestamp 부재를 실패로 유지하고 snapshot 존재로 승격하지 않는다. 자동 skip 강화는 별도 구현 사항이다. `archive_timeout`의 5분은 segment 전환 설정이며 성공 archive RPO 보장이 아니다.
+
 1. destination은 source volume 밖에, 다른 physical disk에 있어야 한다.
    `BACKUP_STATE_REPO_DIR`(system SSD)는 data-disk state의 복사본을,
    `BACKUP_HOST_REPO_DIR`(data disk)는 `secrets/`와 `.env`의 복사본을 담는다;
    orchestrator는 자신의 source와 같은 filesystem에 있거나 그 안에 있는
-   repository를 거부한다. 오프사이트(ADR-0041): 로컬 backup과 check가
-   성공할 때마다 `restic-offsite`가 두 Restic repository의 snapshot을, state
+   repository를 거부한다. 서로 다른 filesystem이 같은 physical disk일 수 있으므로 물리 매핑 검증은 별도 필수다. 오프사이트(ADR-0041): 로컬 backup과 check가
+   성공하면 `restic-offsite`가 두 Restic repository의 snapshot을, state
    set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2
    repository 하나로 복사한다. host의 token은 object를 쓸 수 있지만 bucket을
    관리하거나 지우지 못한다. owner가 RUN-0021의 R2 설정을 마치고 첫 copy가
-   성공하면 offsite recovery가 생기며 원격 RPO는 하루다. 원격 보존은 owner가
+   성공하면 원격 사본이 생긴다. 전체 export 성공과 격리 restore를 별도로 확인하기 전 recoverability는 미검증이며 원격 RPO 하루는 계획 목표다. 원격 보존은 owner가
    매달 실행하는 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)으로 R2 무료
-   한도 안에 둔다(RUN-0021 8.5, 8.6). 그 전까지는 모든
+   한도 초과 위험을 검토한다; 보존/과금 상한을 보장하지 않는다(RUN-0021 8.5, 8.6). 그 전까지는 모든
    복사본이 한 host에 있어 **offsite recovery는 제공되지 않는다**.
 2. SSD repository의 크기 예산은 `BACKUP_STATE_MAX_GIB`(5 GiB, owner 2026-09-22)
-   이다. 초과하면 run이 실패하고 Restic은 아무것도 쓰지 않는다;
+   이다. pgBackRest와 export 이후 검사에서 초과하면 run이 실패하고 해당 Restic 단계를 건너뛴다. 실행 중 quota는 아니며 후속 쓰기로 초과할 수 있다;
    예산을 맞추려고 snapshot을 자동으로 삭제하지도 않는다.
 3. Backup key BKP-001과 BKP-002, R2 secret BKP-003~005는 이 host 밖에
    offline 사본을 두고 OpenBao에는 절대 두지 않는다. Restic의 host
@@ -105,6 +107,10 @@ Rehearsal은 isolated target, 호환되는 engine version, disposable credential
 경과 시간을 기록하며, 관찰된 recovery point를 명시하고, 이후 test copy를
 폐기하거나 안전하게 보관한다. Production 교체는 rollback을 갖추고 별도로
 승인된 cutover다.
+
+### Accountable lifecycle boundary
+
+적용 identity: `restic`, `restic-offsite`, `backup-sqlite-export`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 
@@ -148,7 +154,7 @@ snapshot은 위의 Restic retention에 따라 age out된다.
 ## Related Documents
 
 - [Backup and Restore Guide](../guides/0021-backup-and-restore.md) and [Runbook](../runbooks/0021-backup-and-restore.md)
-- Runtime sources: [Restic Compose](../../../infra/09-tooling/restic/docker-compose.yml), [pgBackRest image](../../../infra/04-data/operational/mng-db/pg/backup/Dockerfile) and the [derived image projection](../../../infra/tech-stack.versions.json)
+- Runtime sources: [Restic Compose](../../../infra/09-platform-ops/restic/docker-compose.yml), [pgBackRest image](../../../infra/04-data/mng-db/pg/backup/Dockerfile) and the [derived image projection](../../../infra/tech-stack.versions.json)
 - [Data Architecture](../../02.architecture/descriptions/0004-data-architecture.md)
 - [Data hardening policy](0030-data-optimization-hardening.md)
 - [Storage exhaustion runbook](../runbooks/0035-storage-exhaustion.md)
