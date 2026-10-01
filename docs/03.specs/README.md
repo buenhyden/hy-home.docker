@@ -1,6 +1,6 @@
 ---
 title: "03.specs"
-version: "1.2.9"
+version: "1.2.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -45,6 +45,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0194 | [Agent Contract Integration](./0194-agent-contract-integration/) | 분기 계약 변경 통합, 의미 검토 위임 및 완료 증거 정리; 보관 승인 대기 |
 | SPEC-0197 | [Infrastructure Tier Layout](./0197-infra-tier-layout/) | Data 평탄화, Analytics·Quality 재편, Platform Operations 명명과 구성·문서 정합성; 보관 승인 대기 |
 | SPEC-0198 | [Operations Documentation System](./0198-operations-documentation-system/) | 시스템·tier·서비스 운영 문서 연결, 전수 누락·중복·버전 충돌 점검과 보완; 보관 승인 대기 |
+| SPEC-0199 | [CI Delivery Gate Optimization](./0199-ci-delivery-gate-optimization/) | 로컬·PR·병합 후 QA 실행 경계 정리, 근거 기반 스크립트·테스트 정리, main-current 태그 갱신 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
