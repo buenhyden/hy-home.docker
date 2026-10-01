@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.3.2"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -14,17 +14,21 @@ created: "2026-06-04"
 
 ## Overview
 
-이 문서는 `infra/01-gateway` 부터 `infra/11-laboratory` 까지 운영 중인 서비스에 대해, 현재 구성 기준의 운영 갭을 점검하고 서비스별 최적화 및 추가 권장사항을 정리한다.
-범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 구현 절차는 각 Procedure에서 관리한다.
+이 정책은 root Compose가 include하는 모든 tracked infra service의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
+범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
 ## Policy Scope
 
-- 대상: `infra/` 하위 게이트웨이/인증/보안/데이터/메시징/관측성/워크플로/AI/툴링/커뮤니케이션/랩 서비스
+- 대상: `infra/` 하위 게이트웨이/인증/보안/데이터/메시징/관측성/워크플로/AI/플랫폼 운영/커뮤니케이션/품질/분석 서비스
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-- **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
+- **Systems**: root에 include된 tracked Compose의 모든 service identity. 현재 명단은 Guide binding과 operations catalog가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
+
+> Historical evidence (not current authority; source: Git history):
+> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0006 Policy Scope.
+> - **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
 
 ## Controls
 
@@ -46,26 +50,22 @@ created: "2026-06-04"
   대체하지 않는다.
 - 새 service는 root include, POL-0078 canonical profile membership, public
   environment/secret schema, image projection/update owner, service README와
-  Guide/Policy/Runbook을 함께 갱신한다. Guide의 optional
-  `implementation_services` mapping이 exact Compose path/service binding을 소유하고,
-  existing operations-catalog validator가 global join을 검증한다.
+  Guide/Policy/Runbook을 함께 갱신한다. service를 소유한 Guide에는
+  `implementation_services` mapping이 필수이며 exact Compose path/service binding을
+  소유한다. service를 소유하지 않는 공통 subject에서는 생략할 수 있다.
+  existing operations-catalog validator가 같은 mapping의 global join을 검증하며
+  별도 registry를 만들지 않는다.
 - HOME profile membership과 full profile vocabulary table은
   [POL-0078](0078-compose-profile-vocabulary.md)에서만 관리한다.
-- **Recreate on edit**: 단일 파일 bind mount(`./config/x.yml:/etc/x.yml`)는
-  mount 시점의 inode를 고정한다. editor와 branch 전환은 파일을 새 inode로
-  교체하므로 container는 이전 내용을 계속 읽고, `restart`도 이를 바꾸지 않는다.
-  따라서 단일 파일로 mount된 configuration을 수정한 뒤에는
-  `docker compose up -d --force-recreate <service>`로 해당 service를 재생성한다.
-  Mount는 directory로 바꾸지 않으며 이 규칙과 hash 점검이 통제 수단이다.
-- **Post-apply hash check**: 모든 live apply(`up -d`, recreate, 설정 변경 반영)
-  직후 container를 시작한 checkout에서
-  `python3 scripts/operations/check-config-mount-hashes.py --root <checkout>`을
-  실행한다. `DIFF`(exit 1)는 recreate 누락이므로 해당 service를 재생성하고 다시
-  점검한다. `cat`이 없는 image는 `UNREADABLE`로 표시되며,
-  `--helper-image <local image with cat>`은 일시적 `--rm` helper container를
-  띄우므로 해당 apply 승인 범위에서만 사용한다. `secrets/` 경로와 파일 내용은
-  읽거나 출력하지 않는다. `docker cp`는 bind mount를 host 경로로 해석해 오래된
-  inode를 보지 못하므로 이 점검에 쓰지 않는다.
+- **Recreate on edit**: 단일 파일 bind configuration을 수정해 inode가 교체되면
+  기존 container가 이전 byte를 유지할 수 있다. 승인된 해당 service 재생성이
+  필요하며 `restart`로 대신하지 않는다. mount를 directory로 바꾸지 않는다.
+- **Post-apply hash check**: 모든 live apply 직후 실행 checkout의 기대 config
+  mount가 빠짐없이 일치해야 한다. `DIFF`는 byte 불일치이며 원인은 별도로 확인한다.
+  `UNREADABLE`, 행0, 누락 coverage나 query 실패는 완료 증거가 아니다. exit0만으로
+  통과시키지 않는다. `secrets/` 값과 파일 내용은 읽거나 출력하지 않으며 `docker cp`는
+  stale inode 점검을 대신하지 않는다. helper container의 별도 실행 효과까지 포함한
+  명령·중단·복구는 [RUN-0086](../runbooks/0086-dependency-version-management.md#runtime-configuration-apply)이 소유한다.
 
 ### AI Agent Policy
 
@@ -83,9 +83,13 @@ plan의 고유한 현재 사실을 하나의 canonical owner로 통합합니다.
 #### Priority Model
 
 - Priority Score = `Risk Reduction(40) + Availability Impact(25) + Security Impact(25) + Execution Effort Inverse(10)`
-- Tier A: `01-gateway`, `02-auth`, `03-security`, `04-data`, `05-messaging`, `06-observability`
-- Tier B: `07-workflow`, `08-ai`, `09-tooling`, `10-communication`
-- Tier C: `11-laboratory`
+- 기존 Tier A: `01-gateway`, `02-auth`, `03-security`, `04-data`, `05-messaging`, `06-observability`
+- 기존 Tier B: `07-workflow`, `08-ai`, `09-platform-ops`, `10-communication`
+- 기존 Tier C: 당시 `11-laboratory`에 분류한 실험 대상
+
+이 분류는 보존하는 우선순위 백로그이며 현재 티어 구성이나 activation 명단이
+아니다. Quality/Analytics의 새 대상이나 재분류된 package에 우선순위·예외를
+자동 상속하지 않는다. 아직 평가하지 않은 대상은 해당 Policy와 별도 검토로 남긴다.
 
 #### Roadmap Disposition
 
@@ -104,6 +108,12 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 ### Tier-by-Tier Optimization & Expansion Catalog
 
+다음은 기존 backlog의 모든 항목을 보존한 목록이다. 각 제안은 현재 기능 부재나
+완료를 단정하지 않으며 subject Policy/Runbook이 실제 상태와 통제를 소유한다.
+path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 dozzle/redisinsight
+항목은 각각06/04로 옮겼으며 이 배치 변경은 profile이나 위험 승인을 바꾸지 않는다. Quality/Analytics의 나머지 대상은 미평가 backlog로
+남기며 이 목록을 전체 서비스 inventory로 사용하지 않는다.
+
 #### 01-gateway
 
 - [traefik](../../../infra/01-gateway/traefik/README.md): 엔트리포인트별 `rate-limit`/`retry`/`circuit-breaker` 표준화, `restart`/자원 제한 보강
@@ -120,42 +130,45 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 
 #### 03-security
 
-- [openbao](../../../infra/03-security/openbao/README.md): 현재 HOME secret authority의 single-node Raft 복구, auto-unseal(KMS/HSM), remote audit와 최소 권한 운영을 단계적으로 검토
+- [openbao](../../../infra/03-security/openbao/README.md): 현재 HOME secret authority의 single-node Raft 복구, remote audit와 최소 권한 운영을 단계적으로 검토. 과거 auto-unseal(KMS/HSM) 후보는 현재 채택 사항이 아니며 [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)의 수동 unseal 결정을 유지한다. 변경에는 별도 결정 검토가 필요
   ([OPER](../guides/0085-openbao.md), [RUN](../runbooks/0085-openbao.md))
 
 #### 04-data
 
 - Analytics
-  - [influxdb](../../../infra/04-data/analytics/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
+  - [influxdb](../../../infra/04-data/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
     ([OPER](../guides/0017-influxdb.md), [RUN](../runbooks/0017-influxdb.md))
-  - [opensearch](../../../infra/04-data/analytics/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
+  - [opensearch](../../../infra/04-data/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../guides/0019-opensearch.md), [RUN](../runbooks/0019-opensearch.md))
 - Cache & KV
-  - [valkey-cluster](../../../infra/04-data/cache-and-kv/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
+  - [valkey-cluster](../../../infra/04-data/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
     ([OPER](../guides/0022-valkey-cluster.md), [RUN](../runbooks/0022-valkey-cluster.md))
 - Lake & Object
-  - [seaweedfs](../../../infra/04-data/lake-and-object/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
+  - [seaweedfs](../../../infra/04-data/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
     ([OPER](../guides/0024-seaweedfs.md), [RUN](../runbooks/0024-seaweedfs.md))
 - NoSQL
-  - [cassandra](../../../infra/04-data/nosql/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
+  - [cassandra](../../../infra/04-data/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
     ([OPER](../guides/0025-cassandra.md), [RUN](../runbooks/0025-cassandra.md))
-  - [couchdb](../../../infra/04-data/nosql/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
+  - [couchdb](../../../infra/04-data/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
     ([OPER](../guides/0026-couchdb.md), [RUN](../runbooks/0026-couchdb.md))
-  - [mongodb](../../../infra/04-data/nosql/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
+  - [mongodb](../../../infra/04-data/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
     ([OPER](../guides/0027-mongodb.md), [RUN](../runbooks/0027-mongodb.md))
 - Operational
-  - [mng-db](../../../infra/04-data/operational/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
+  - [mng-db](../../../infra/04-data/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
     ([OPER](../guides/0028-management-database.md), [RUN](../runbooks/0028-management-database.md))
-  - [supabase](../../../infra/04-data/operational/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
+  - [supabase](../../../infra/04-data/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
     ([OPER](../guides/0029-supabase.md), [RUN](../runbooks/0029-supabase.md))
 - Relational
-  - [postgresql-cluster](../../../infra/04-data/relational/postgresql-cluster/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
+  - [postgresql-cluster](../../../infra/04-data/postgresql-cluster/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
     ([OPER](../guides/0031-postgresql-cluster.md), [RUN](../runbooks/0031-postgresql-cluster.md))
 - Specialized
-  - [neo4j](../../../infra/04-data/specialized/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용
+  - [neo4j](../../../infra/04-data/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용
     ([OPER](../guides/0033-neo4j.md), [RUN](../runbooks/0033-neo4j.md))
-  - [qdrant](../../../infra/04-data/specialized/qdrant/README.md): 컬렉션별 HNSW/quantization 정책 표준화, 임베딩 재색인 운영 절차 추가
+  - [qdrant](../../../infra/04-data/qdrant/README.md): 컬렉션별 HNSW/quantization 정책 표준화, 임베딩 재색인 운영 절차 추가
     ([OPER](../guides/0034-qdrant.md), [RUN](../runbooks/0034-qdrant.md))
+
+- [redisinsight](../../../infra/04-data/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
+  ([OPER](../guides/0076-redisinsight.md), [RUN](../runbooks/0076-redisinsight.md))
 
 #### 05-messaging
 
@@ -181,6 +194,9 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [pyroscope](../../../infra/06-observability/pyroscope/README.md): 프로파일 수집 대상 우선순위화, CPU/heap 프로파일 보존정책 확정
   ([OPER](../guides/0047-pyroscope.md), [RUN](../runbooks/0047-pyroscope.md))
 
+- [dozzle](../../../infra/06-observability/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
+  ([OPER](../guides/0072-dozzle.md), [RUN](../runbooks/0072-dozzle.md))
+
 #### 07-workflow
 
 - [airflow](../../../infra/07-workflow/airflow/README.md): DAG 품질 게이트(파싱/스케줄/지연) CI 추가, 워커 오토스케일 기준 정의
@@ -195,20 +211,17 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [open-webui](../../../infra/08-ai/open-webui/README.md): SSO 강제, 모델 접근 권한 분리, 대화 로그 보존/마스킹 정책 강화
   ([OPER](../guides/0057-open-webui.md), [RUN](../runbooks/0057-open-webui.md))
 
-#### 09-tooling
+#### 09-platform-ops
 
-- [opentofu](../../../infra/09-tooling/opentofu/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
+- [opentofu](../../../infra/09-platform-ops/opentofu/README.md): plan/apply 승인 게이트, state 잠금/백업 정책 강화, drift 자동 탐지 추가
   ([OPER](../guides/0082-opentofu.md), [RUN](../runbooks/0082-opentofu.md)); 기존 Terraform workspace는 [migration handoff](../guides/0068-terraform.md)를 따른다.
-- [terrakube](../../../infra/09-tooling/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
+- [terrakube](../../../infra/09-platform-ops/terrakube/README.md): 워크스페이스 분리 전략, 실행 권한과 감사로그 연동 강화
   ([OPER](../guides/0069-terrakube.md), [RUN](../runbooks/0069-terrakube.md))
-- [registry](../../../infra/09-tooling/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
+- [registry](../../../infra/09-platform-ops/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
   ([OPER](../guides/0065-registry.md), [RUN](../runbooks/0065-registry.md))
-- [sonarqube](../../../infra/09-tooling/sonarqube/README.md): 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 관리
-  ([OPER](../guides/0066-sonarqube.md), [RUN](../runbooks/0066-sonarqube.md))
-- [k6](../../../infra/09-tooling/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
-  ([OPER](../guides/0061-k6.md), [RUN](../runbooks/0061-k6.md))
-- [locust](../../../infra/09-tooling/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
-  ([OPER](../guides/0062-locust.md), [RUN](../runbooks/0062-locust.md))
+
+
+
 - Syncthing runtime은 저장소에서 제거되었으며 현재 서비스 확장/하드닝 대상이 아니다. 기존 파일과 외부 동기화 상태는 제거된 Compose 서비스를 재기동하지 않고 소유자와 확인한다.
 
 #### 10-communication
@@ -216,16 +229,23 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - [mail](../../../infra/10-communication/stalwart/README.md): SPF/DKIM/DMARC 운영 기준 강화, 큐 적체 경보 및 재전송 정책 표준화
   ([OPER](../guides/0070-mail.md), [RUN](../runbooks/0070-mail.md))
 
-#### 11-laboratory
+#### 11-quality
 
-- [dozzle](../../../infra/11-laboratory/dozzle/README.md): 로그 열람 권한 제한, 프로덕션 로그 접근 차단 규칙 강화
-  ([OPER](../guides/0072-dozzle.md), [RUN](../runbooks/0072-dozzle.md))
-- [redisinsight](../../../infra/11-laboratory/redisinsight/README.md): 접근권한 최소화, 운영 캐시 직접 수정 금지 정책 및 감사로그 적용
-  ([OPER](../guides/0076-redisinsight.md), [RUN](../runbooks/0076-redisinsight.md))
+
+
+
+- [sonarqube](../../../infra/11-quality/sonarqube/README.md): 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 관리
+  ([OPER](../guides/0066-sonarqube.md), [RUN](../runbooks/0066-sonarqube.md))
+
+- [k6](../../../infra/11-quality/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
+  ([OPER](../guides/0061-k6.md), [RUN](../runbooks/0061-k6.md))
+
+- [locust](../../../infra/11-quality/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
+  ([OPER](../guides/0062-locust.md), [RUN](../runbooks/0062-locust.md))
 
 ## Exceptions
 
-- 실험성 서비스(`11-laboratory`)는 제한적 예외 허용 가능
+- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
   단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
 
 ## Verification
@@ -234,23 +254,29 @@ Quarterly 항목은 후속 Task 또는 replacement roadmap이 위 deliverable을
 - Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
 - 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
-- 단일 파일 config mount 점검(live apply 직후, read-only): `python3 scripts/operations/check-config-mount-hashes.py --root <checkout>`
+- 단일 파일 config mount는 RUN-0086의 coverage와 결과 분기로 검증한다. helper 사용은 container 실행이다.
 - 운영 갭 점검(예시):
   - `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무를 정기 스캔
 - 문서 추적성 점검:
   - 서비스별 `infra/*/README.md` ↔ `docs/05.operations/guides/` ↔ `docs/05.operations/runbooks/` 상호 링크 확인
 
+Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 수 있으므로
+[RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의
+공개/sanitized 입력 경계를 따른다. check PASS는 필수 통제의 전체 runtime 증명이 아니다.
+
 ## Review Cadence
+
+책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
 
 - 월 1회 정기 검토
 - 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
 
 ## Traceability
 
-- Subject peers: none — no Guide or Runbook shares number `0006`.
+- 같은 번호 `0006`의 Guide/Runbook은 없다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides Compose-image drift verification.
+- Compose/Dockerfile이 runtime pin을 소유하며 [파생 projection](../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
 
 - [Operations index](../README.md)

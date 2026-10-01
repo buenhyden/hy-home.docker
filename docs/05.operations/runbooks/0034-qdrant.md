@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.3.2"
+version: "1.3.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -31,11 +31,20 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 - REST route `qdrant.${DEFAULT_URL}`(SSO 뒤) 경계를 확인해야 할 때
 - Qdrant operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
+
+### Execution and stop boundary
+
+대상: `qdrant`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+
 ## Procedure
 
 ### Checklist
 
-- [ ] 루트 compose에서 `infra/04-data/specialized/qdrant/docker-compose.yml`가 active include인지 확인한다.
+- [ ] 루트 compose에서 `infra/04-data/qdrant/docker-compose.yml`가 active include인지 확인한다.
 - [ ] `secrets/data/qdrant_api_key.txt`와 `secrets/data/qdrant_read_only_api_key.txt`가 있고 비어 있지 않은지 값을 읽지 않고 확인한다(`test -s`).
 - [ ] collection delete, snapshot recovery, volume replacement, cluster repair가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 application data payload는 기록하지 않는다.
@@ -76,7 +85,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 6. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
 
    ```bash
-   docker compose --profile qdrant up -d qdrant
+   docker compose --profile qdrant up -d --no-deps qdrant
    ```
 
 ### Verification Steps
@@ -94,8 +103,8 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 
 ### Safe Rollback or Recovery Procedure
 
-1. Runtime recovery in this runbook is limited to compose `up -d qdrant` after evidence capture.
-2. 실패한 isolated target과 전용 volume을 폐기한다. source service, snapshot과 tracked volume은 변경하지 않는다.
+1. 이 Runbook의 runtime 복구는 evidence 수집 후 compose `up -d qdrant`를 실행하는 범위로 제한한다.
+2. 실패한 isolated target과 전용 volume을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. source service, snapshot과 tracked volume은 변경하지 않는다.
 
 ### Planned Isolated Restore Rehearsal
 
@@ -104,13 +113,13 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 3. production network/route/volume을 공유하지 않는 fresh target을 same minor 또는 upstream이 허용하는 next minor로 준비한다. snapshot 크기의 약 2배 free disk와 absent target collection을 확인한다.
 4. collection snapshot recovery API 또는 full-storage startup recovery 중 snapshot type에 맞는 upstream procedure 하나만 사용한다. `force`는 target collision이 명시적으로 검토된 경우에만 별도 승인한다.
 5. `/readyz`, collection status/config, aliases, point counts와 representative search invariants를 검증한다. version, checksum 또는 count mismatch면 승격하지 않는다.
-6. 실패하면 target을 폐기한다. production route switch, API key 교체, collection deletion과 volume replacement는 별도 승인 사항이다.
+6. 실패하면 target을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. production route switch, API key 교체, collection deletion과 volume replacement는 별도 승인 사항이다.
 
 ## Evidence
 
-- Capture command names, pass/fail status, service state, image tag, sanitized logs, route labels, and readiness summary.
-- Do not capture vector payloads, collection data, credentials, or mutation API bodies.
-- Record whether the issue involves container health, REST route, in-network gRPC, persistence, or snapshot-path symptoms.
+- 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log, route label과 readiness 요약을 기록한다.
+- vector payload, collection data, credential 또는 mutation API body는 기록하지 않는다.
+- 문제가 container health, REST route, network 내부 gRPC, 영속성 또는 snapshot-path 증상 중 어디와 관련되는지 기록한다.
 
 ## Rollback or Recovery
 
@@ -118,7 +127,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 
 ## Escalation
 
-Escalate to the owning operator when `/readyz` fails after restart, logs show storage corruption, route labels differ from expected compose, a client gets 401 because it lacks the API key, or any data operation is required. Include sanitized logs, rendered compose evidence, service states, and attempted steps.
+restart 후에도 `/readyz`가 실패하거나, log에 storage 손상이 나타나거나, route label이 예상한 compose와 다르거나, API key가 없어 client가 401을 받거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
 
 ## Traceability
 
@@ -128,7 +137,7 @@ Escalate to the owning operator when `/readyz` fails after restart, logs show st
 
 ## Related Documents
 
-- [Compose implementation: infra/04-data/specialized/qdrant/docker-compose.yml](../../../infra/04-data/specialized/qdrant/docker-compose.yml)
+- [Compose implementation: infra/04-data/qdrant/docker-compose.yml](../../../infra/04-data/qdrant/docker-compose.yml)
 
 - [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
 - [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
@@ -136,4 +145,4 @@ Escalate to the owning operator when `/readyz` fails after restart, logs show st
 - [Operations index](../README.md)
 - [Usage guide](../guides/0034-qdrant.md)
 - [Operations policy](../policies/0034-qdrant.md)
-- [Infra README](../../../infra/04-data/specialized/qdrant/README.md)
+- [Infra README](../../../infra/04-data/qdrant/README.md)

@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0095"
 parent_ids:
@@ -16,7 +16,7 @@ created: "2026-09-23"
 
 ## Overview
 
-`infra/09-tooling/conftest/policy/` 아래의 Rego 규칙은 저장소 컨테이너
+`infra/11-quality/conftest/policy/` 아래의 Rego 규칙은 저장소 컨테이너
 baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않으며 각 규칙은
 다른 정책이 이미 소유한 통제를 그대로 다시 적은 것이다.
 
@@ -53,6 +53,13 @@ baseline의 실행 가능한 부분집합이다. 새 규칙을 추가하지 않�
 컨테이너 baseline 통제가 바뀔 때, Conftest 또는 OPA major 업그레이드 시,
 allowlist 항목이 추가될 때마다 검토한다.
 
+### 적용 범위와 책임
+
+책임자는 `@buenhyden`이다. raw 파일 탐색으로 선택되지 않는 inline Dockerfile과
+최종 Compose·실행 상태의 통제도 여전히 요구된다. 이 도구의 PASS는 전체 인프라 보안
+준수 판정이 아니다. 새 규칙의 단계적 warn 도입 조건은 기존 강제 통제를 약화할
+허가가 아니며 정책 단위 테스트·검토된 예외 근거를 유지한다.
+
 ## Traceability
 
 - [가이드](../guides/0095-conftest.md) (`GDE-0095`)
@@ -61,5 +68,5 @@ allowlist 항목이 추가될 때마다 검토한다.
 
 ## Related Documents
 
-- [Conftest Compose source](../../../infra/09-tooling/conftest/docker-compose.yml)
+- [Conftest Compose source](../../../infra/11-quality/conftest/docker-compose.yml)
 - [Dependency version management](0086-dependency-version-management.md)

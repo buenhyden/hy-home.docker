@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0046"
 parent_ids:
@@ -39,7 +39,7 @@ Pushgateway의 역할과 동작 방식을 이해하고, 배치 작업에서 메�
 
 ### Prerequisites
 
-- `pushgateway` service가 `obs` profile에서 실행 중이어야 한다.
+- `pushgateway` service가 `obs` 또는 `batch-metrics` profile에서 실행 중이어야 한다.
 - 작업이 `obs_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
 - Prometheus에 의존하는 dashboard or alert를 만들기 전에는 `prometheus.yml`의 Pushgateway scrape job 존재를 확인해야 한다.
 
@@ -47,7 +47,7 @@ Pushgateway의 역할과 동작 방식을 이해하고, 배치 작업에서 메�
 
 #### 1. 서비스 도달성 확인
 
-작업 위치에서 Pushgateway ready endpoint에 도달할 수 있는지 확인한다.
+기존 승인된 `obs_net` client에서 ready endpoint를 확인한다. Compose DNS는 host shell에서 해석된다고 가정하지 않는다; gateway redirect는 backend readiness 성공이 아니다.
 
 ```bash
 curl -I http://pushgateway:9091/-/ready
@@ -81,7 +81,7 @@ rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observabi
 
 #### 4. 메트릭 삭제
 
-Pushgateway는 수신된 메트릭을 명시적으로 삭제하기 전까지 계속 보관한다. 작업이 완전히 종료되거나 더 이상 유효하지 않은 인스턴스의 메트릭은 삭제 API를 호출해야 한다.
+실행 중에는 metric TTL이 없어 마지막 값을 유지하지만 현재 persistence가 없어 process restart 시 사라진다. 종료된 group 정리는 [RUN-0046](../runbooks/0046-pushgateway.md)의 승인된 정확한 grouping-key 절차를 따른다. 아래는 job-only group 예시이며 instance 하위 group을 cascade 삭제하지 않는다.
 
 ```bash
 curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
@@ -96,12 +96,13 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 
 ### Source-backed operating contract
 
-- **Purpose/classification/source**: `pushgateway` is an `OPTIONAL` batch-metric bridge selected by `obs`/`batch-metrics`; [Compose](../../../infra/06-observability/docker-compose.yml) is authoritative.
-- **Flow/dependencies/security**: approved short-lived jobs push metrics; Prometheus scrapes them. Traefik protects the UI/API route, but producer authorization and metric-label discipline remain required. Prometheus, gateway/auth, and `obs_net` are dependencies.
-- **State**: current Compose declares no volume and no `--persistence.file`; metrics live in process memory and are lost on restart. There are no Docker Secrets. Never describe current Pushgateway contents as durable or exactly restorable.
-- **Resources/normal use**: source limits are not headroom. Render from root, start only for batch use, push a labeled test group, verify Prometheus scrape, and delete stale groups after producer completion.
-- **Lifecycle/recovery**: backup is producer definitions and metric contracts, not gateway memory. After restart/rebuild, producers repush only current valid metrics; do not replay stale observations. Upgrade with API/label compatibility checks.
-- **Upstream/license**: follow the official [Prometheus Pushgateway repository](https://github.com/prometheus/pushgateway). Pushgateway is Apache-2.0 licensed.
+- **목적·분류·구현 소유권**: `pushgateway`는 `OPTIONAL` batch metric 중계 서비스이며 `obs`/`batch-metrics`로 선택한다. [Compose](../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
+- **흐름·의존성·보안**: 승인된 단기 job이 metric을 push하고 Prometheus가 이를 scrape한다. Traefik이 UI/API route를 보호하지만 producer 인가와 metric-label 관리 규칙은 여전히 필요하다. Prometheus, gateway/auth와 `obs_net`이 의존성이다.
+- **상태**: 현재 Compose에는 volume과 `--persistence.file`이 선언되어 있지 않다. metric은 process memory에 있으며 restart하면 사라진다. Docker Secret은 없다. 현재 Pushgateway 내용을 영속적이거나 정확히 복구할 수 있다고 설명하지 않는다.
+- **자원·정상 사용**: source limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 렌더링하고 batch 용도로만 시작한다. label을 붙인 test group을 push하여 Prometheus scrape를 확인하고, producer가 완료되면 오래된 group을 삭제한다.
+- **수명 주기·복구**: backup 대상은 gateway memory가 아니라 producer 정의와 metric 계약이다. restart/rebuild 후 producer는 현재 유효한 metric만 다시 push한다. 오래된 관찰 결과를 재전송하지 않는다. upgrade할 때 API/label 호환성을 확인한다.
+- **공식 문서·license**: 공식 [Prometheus Pushgateway 저장소](https://github.com/prometheus/pushgateway)를 따른다. Pushgateway에는 Apache-2.0 license가 적용된다.
+
 
 ## Common Checks
 
@@ -123,7 +124,7 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0046-pushgateway.md)

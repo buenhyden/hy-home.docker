@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.0.1"
+version: "2.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 layer: "operations"
 ---
 
@@ -25,11 +25,11 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 
 ## Audience
 
-- Operators
-- Developers
+- 운영자
+- 개발자
 - SREs
-- Security Officers
-- AI Agents
+- 보안 담당자
+- AI 에이전트
 
 ## Scope
 
@@ -59,13 +59,22 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 | [Runbooks](./runbooks/README.md) | 실행할 명령 흐름, 검증, 복구, 에스컬레이션 |
 | [Incidents](./incidents/README.md) | 사건 사실 기록과 같은 묶음의 Postmortem |
 
-```text
-docs/05.operations/
-├── guides/####-<slug>.md
-├── policies/####-<slug>.md
-├── runbooks/####-<slug>.md
-└── incidents/<year>/inc-####-<slug>/{incident,postmortem}.md
-```
+### Find by operating scope
+
+| 탐색 범위 | 시작 경로 | 다음 선택 |
+| --- | --- | --- |
+| 전체 시스템 | [Guide 공통 분류](guides/README.md#cross-cutting-system-and-lifecycle) | 시스템 운영 설명, 백업·복구, 업데이트 이해 |
+| 공통 통제 | [Policy 공통 분류](policies/README.md#cross-cutting-system-and-lifecycle) | profile 선택, 자원·보안, 백업, 버전 변경의 허용 경계 |
+| 시스템 절차 | [Runbook 공통 분류](runbooks/README.md#cross-cutting-system-and-lifecycle) | 기동·재부팅, 여러 서비스 동시 장애 진단, 용량·복구·업데이트 |
+| 티어 | [Guide](guides/README.md), [Policy](policies/README.md), [Runbook](runbooks/README.md)의 01–12 분류 | 해당 티어 서비스 subject와 역할별 책임 |
+| 개별 서비스 | 각 역할 인덱스의 subject 행 | 구현 소유 Guide → 적용 Policy → 실행 Runbook |
+| 작업 공간·공통 연결 | 각 역할 인덱스의 번호 없는 공통 분류 | 개발·운영 도구, network·외부 연계 |
+
+시스템 Guide가 요청·인증·데이터 경로와 티어 의존성을 설명한다. 09는 플랫폼
+도구, 10은 운영 메일, 11은 Quality이며 관리·실험 도구는 기능별 tier에서 찾는다. 티어 번호는
+기동 순서가 아니며 공통 주제를 임의 티어에 넣지 않는다. 인증 장애는 시스템
+진단에서 앱 자체 로그인과 proxy 인증으로 나누고, 실제 복구는 해당 서비스
+절차로 넘긴다. 사건 기록은 [Incidents](incidents/README.md)를 사용한다.
 
 `####`는 문서 자신의 artifact 번호다(`GDE-####`, `POL-####`, `RUN-####`).
 같은 slug는 역할 디렉터리를 넘어 같은 subject를 가리킨다. 도메인은 경로가
@@ -104,8 +113,10 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 5. Guide의 `## Runbook Handoff`는 실제 Runbook이 있고 그 절차로 넘겨야 할
    때만 작성한다. Runbook의 `## Automation Handoff`도 실제 자동화 artifact와
    검증 가능한 link가 있을 때만 작성한다.
-6. 모든 subject가 세 역할을 모두 가질 필요는 없다. 현재 운영 책임에 필요한
-   역할만 등록된 Stage 99 프로필로 추가하고 빈 문서를 만들지 않는다.
+6. Compose 서비스가 연결된 subject는 Guide/Policy/Runbook 세 역할을 모두
+   유지한다. 서비스 연결이 없는 시스템·공통·작업 공간 subject는 필요한 역할만
+   등록하고 빈 문서를 만들지 않는다. 공통 내용은 소유 문서로 연결하고 각 서비스의
+   적용 조건·예외·차이는 해당 역할 문서에 남긴다.
 7. 사고는 `incidents/<year>/inc-####-<slug>/` 아래에 기록한다.
 8. 문서를 추가, 이동, 삭제하면 해당 역할 인덱스와 관련 inbound link를 함께
    갱신한다.

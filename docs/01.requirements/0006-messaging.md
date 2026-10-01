@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Product Requirements"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "requirements"
 artifact_id: "REQ-0006"
 parent_ids: []
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-This document defines the product requirements for the messaging tier (`05-messaging`) of the `hy-home.docker` architecture. It supports asynchronous communication across the system through high-performance event streaming (Kafka) and a lightweight task queue (RabbitMQ). Streaming SQL processing (Flink) is currently owned by the `04-data/lakehouse` implementation and its operations documentation.
+This document defines the product requirements for the messaging tier (`05-messaging`) of the `hy-home.docker` architecture. It supports asynchronous communication across the system through high-performance event streaming (Kafka) and a lightweight task queue (RabbitMQ). Streaming SQL processing (Flink) is currently owned by the `12-analytics` implementation and its operations documentation.
 
 ### Problem Statement
 
@@ -80,7 +80,7 @@ No separately numbered solution-independent external interface requirement was i
 ## Risks
 
 - **Risks**: Possible delayed partition rebalancing after a Kafka node failure. Risk of backward-compatibility violations on schema changes.
-- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary depends on `04-data/lakehouse/flink`.
+- **Dependencies**: Depends on the `02-auth` tier for authentication and authorization management. The Flink consumer/processing boundary depends on `12-analytics/flink`.
 - **Assumptions**: All nodes communicate within `kafka_net` and store data on dedicated volumes.
 
 ## Traceability

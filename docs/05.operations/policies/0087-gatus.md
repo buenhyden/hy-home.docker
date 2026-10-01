@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -51,6 +51,8 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 - 업그레이드/제거는 patch 호환성, endpoint-owner 조율, 보존된 history 결정, client/route
   폐기, 명시적 데이터 삭제 승인이 필요하다.
 
+Build 수용에는 source commit·checksum·local patch·생성 image digest가 필요하며 local tag만으로 패치를 증명하지 않는다. Zero-fuzz, 대소문자를 구분하는 정확한 subject, S256 PKCE, Secure/HttpOnly 임시 cookie, state/nonce 검사와 CA 검증을 유지한다. Public health/bootstrap/metrics와 보호 status API를 구분한다. Source/auth/storage 예외와 종료 시점은 @buenhyden이 승인하며 소스 문서 검사는 runtime 예외를 부여하지 않는다.
+
 ## Exceptions
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
@@ -59,6 +61,8 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
 probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 

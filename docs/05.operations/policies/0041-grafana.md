@@ -4,7 +4,7 @@ version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -27,7 +27,7 @@ provisioning, Keycloak role mapping, secret boundary, protected route를
 dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 - **Systems**: compose service `grafana`, container `infra-grafana`, image [grafana/grafana image declaration](../../../infra/06-observability/docker-compose.yml), volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
-- **Environments**: local, development, homelab operations
+- **Environments**: 로컬·개발·홈랩 운영
 
 ## Controls
 
@@ -81,10 +81,16 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 ### Lifecycle and data controls
 
-- Keep Grafana `HOME`; preserve native Keycloak OAuth, gateway routing, disabled anonymous access, group-only role mapping, verified OAuth TLS, and secret-file handling. Do not infer an external PostgreSQL database from other services.
-- Treat `grafana-data` SQLite/runtime state, provisioning, plugins, and matching OAuth/admin secrets as one recovery set. Stop writes before a copy or use an upstream SQLite-consistent method.
-- Rehearse on isolated storage/project with no production route. Verify schema startup, identities/teams, dashboards/alerts, datasource health, OAuth, and anonymous authorization boundaries.
-- Plugin/image upgrades need compatibility and rollback evidence. Removal requires dashboard/alert export, client revocation, route shutdown, retained audit evidence, and explicit state-deletion approval.
+- Grafana를 HOME으로 유지하고 native Keycloak OAuth, gateway, 익명 거부, 그룹별 역할, TLS 검증과 secret-file을 보존한다. 다른 서비스로 Grafana 외부 DB를 추정하지 않는다.
+- `grafana-data` SQLite/runtime, provisioning, plugin과 대응 OAuth/admin secret을 한 복구 집합으로 취급한다. 쓰기 중단 또는 SQLite 일관 backup이 필요하다.
+- Production route 없는 격리 환경에서 schema·identity/team·dashboard/alert·datasource·OAuth·익명 거부를 검증한다.
+- Plugin/image 변경에는 호환성·rollback 근거가 필요하다. 제거에는 dashboard/alert export, client 폐기, route 폐쇄, audit 보존과 데이터 삭제 승인이 필요하다.
+
+### Authentication and provisioning limits
+
+Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. 선언된 upstream은 Basic auth를 기본 활성화하고 Compose는 비활성화하지 않으므로 SSO-only 요구가 완전히 시행되지 않는다. 유효한 자격 증명은 여전히 필요하다. 임의 break-glass 예외를 만들지 않고 @buenhyden의 별도 수정 결정과 거부 검증을 요구한다. Strict group mapping은 지정 그룹에 organization Admin/Editor/Viewer만 부여한다. `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 선언 버전이 지원하지 않는 필드여서 server-admin 부여 증거가 아니다.
+
+`grafana-db-provision`은 DB 서버가 아닌 HOME 일회성 PostgreSQL 클라이언트다. 마운트된 script/SQL은 `mng-pg`를 기다린 뒤 제한된 읽기 전용 `grafana_reader`와 기존 Airflow/n8n 테이블 권한을 생성·갱신한다. HTTP health, 자체 상태 볼륨, 이 job에 대한 Grafana depends_on은 없다. 없는 테이블을 건너뛰어도 성공 종료하므로 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard를 확인한다. 재실행은 role/grant를 변경하므로 단순 조회 진단이 아니다. DB·자격 증명 복구는 관리 DB·시크릿 소유자가 맡고 helper의 복구 자산은 추적 SQL/script다.
 
 ## Exceptions
 
@@ -104,6 +110,8 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
 - Grafana image, provisioning YAML, dashboard tree, datasource UID, role
@@ -117,7 +125,7 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0041-grafana.md)

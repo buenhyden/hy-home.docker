@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -25,11 +25,12 @@ created: "2026-09-19"
 1. configuration commit, 정확한 workspace 디렉터리, 선택한 OpenTofu workspace, backend,
    account, 명령 클래스, rollback 담당자를 기록한다. 다른 writer가 활성 상태가 아님을
    확인한다.
-2. provider 권한 없이 정적 검사를 실행한다.
+2. 아래 첫 명령은 설정 검증이다. 두 번째는 cloud credential·workspace를 마운트한
+   컨테이너 생성이므로 해당 실행이 승인된 경우에만 수행한다.
 
    ```bash
    docker compose --profile iac config --quiet
-   docker compose --profile iac run --rm opentofu version
+   docker compose --profile iac run --rm --no-deps opentofu version
    ```
 
 3. 승인된 plan에서는 정확한 workspace를 초기화하고 의도한 OpenTofu workspace를 선택한 뒤,
@@ -61,6 +62,16 @@ created: "2026-09-19"
   호환성이 실패하면 이미지/빌드를 롤백한다. upgrade가 state를 변경한 경우에만 검증된
   backup에서 state를 롤백한다.
 
+### 상태 보존과 변경 전 검토
+
+upgrade나 state 작업 전에 backend를 확인한다. 로컬 state의 경우 모든 writer를
+멈추고 state와 backup 파일을 mode-0600으로 복사한다. 원격 backend의 경우
+atomic/versioned backup 기능이나 `tofu state pull`을 보호된 파일로 사용하며,
+그 출력을 터미널이나 채팅으로 보내지 않는다. 신뢰하기 전에 분리된/테스트용
+backend로 격리된 restore를 검증한다. 중간의 모든 OpenTofu upgrade 노트를
+검토하고 apply하지 않고 저장된 plan workflow를 테스트한다. 이 문서를 변경하면서
+plan, state backup, restore, provider 호출은 실행하지 않았다.
+
 ## Evidence
 
 exit, 버전, configuration/plan digest, backend/workspace 식별자, 정제된 action 개수, lock
@@ -75,6 +86,8 @@ Git이나 이미지를 되돌려도 remote resource는 되돌아가지 않는다
 
 ## Escalation
 
+책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
 알 수 없는 backend/workspace, 보호된 backup 부재, 활성 lock owner, lineage/serial 불일치,
 파괴적 plan, 또는 credential/account 모호성이 있으면 중단한다.
 
@@ -82,7 +95,7 @@ Git이나 이미지를 되돌려도 remote resource는 되돌아가지 않는다
 
 - [Guide](../guides/0082-opentofu.md) (`GDE-0082`)
 - [Policy](../policies/0082-opentofu.md) (`POL-0082`)
-- [OpenTofu Compose](../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [OpenTofu Compose](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 
 ## Related Documents
 

@@ -85,7 +85,7 @@ files:
   - .claude/hooks/stop.sh
   - .claude/hooks/user-prompt-submit.sh
   - .codex/hooks.json
-  - docs/05.operations/guides/0004-harness-agent-first-engineering.md
+  - docs/05.operations/runbooks/0004-harness-agent-first-engineering.md
   disposition: retain
   successor: null
   tests:
@@ -110,7 +110,7 @@ files:
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/05.operations/guides/0004-harness-agent-first-engineering.md
+  - docs/05.operations/runbooks/0004-harness-agent-first-engineering.md
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
@@ -602,7 +602,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - docs/05.operations/policies/0006-infrastructure-optimization-governance.md
+  - docs/05.operations/runbooks/0086-dependency-version-management.md
   disposition: retain
   successor: null
   tests:
@@ -613,8 +613,8 @@ files:
   lifecycle: active
   mutation: runtime
   consumers:
-  - docs/05.operations/guides/0012-edge-routing-stack.md
   - docs/05.operations/runbooks/0009-release-management.md
+  - docs/05.operations/runbooks/0096-k8s-integration.md
   disposition: retain
   successor: null
   tests:

@@ -4,7 +4,7 @@ version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -50,14 +50,14 @@ created: "2026-05-17"
    - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
    - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
-   - Airflow, Flower, n8n 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
+   - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower/n8n은 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용한다. 변경·복구는 RUN-0054로 넘긴다.
 3. Health 기반 의존성 강화
    - `dedicated-valkey` profile은 `airflow-valkey`를 기동한다. 실제 사용은 `AIRFLOW_VALKEY_HOST=airflow-valkey`와 matching secret selector를 함께 설정했는지 확인한다.
    - 선택하지 않은 경우 shared `mng-valkey` broker dependency를 사용한다는 경계를 문서화한다.
    - n8n worker/task-runner healthcheck와 task-runner dependency gating을 확인한다.
 4. n8n 이미지 하드닝 확인
    - compose가 custom image([hyhome/n8n image declaration](../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.
-   - Dockerfile non-root runtime(`USER 1000`)와 entrypoint secret guard를 확인한다.
+   - Compose가 선택한 dev.Dockerfile(`USER node`) 또는 Dockerfile(`USER 1000`)와 각각의 entrypoint guard를 확인한다. Guard의 고정 secret과 선택 broker secret은 다를 수 있다; [n8n Guide](0053-n8n.md#build-readiness-and-runner-boundary)를 따른다.
 5. 기준선 검증 실행
    - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
    - `bash scripts/validation/check-template-security-baseline.sh`
@@ -73,6 +73,10 @@ created: "2026-05-17"
 - worker/task-runner healthcheck 없이 startup 불안정을 방치하는 실수
 - n8n custom image를 compose에서 사용하지 않아 hardening drift가 생기는 실수
 - 카탈로그 확장 항목을 문서만 기록하고 task로 분해하지 않는 실수
+
+### Static gate boundary
+
+`check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
 
 ## Common Checks
 
@@ -94,7 +98,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0054-workflow-optimization-hardening.md)

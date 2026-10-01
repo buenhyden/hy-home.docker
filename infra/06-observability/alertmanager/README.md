@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2026-01-12"
 ---
 
@@ -58,7 +58,7 @@ alertmanager/
 
 6. **Silences**: 알림 피로를 막도록 계획된 인프라 점검 기간에는 사전에 무음을 생성합니다.
 7. **Grouping**: 정책과 설정을 함께 변경하지 않는 한 알림 그룹화는 `alertname`, `job`, `domain`, `severity` 기준을 유지합니다.
-8. **Secret Rotation**: `slack_webhook`, `smtp_username`, `smtp_password` Docker Secret이 교체될 때마다 서비스를 재시작합니다.
+8. **Secret Rotation**: `slack_webhook`, `smtp_username`, `smtp_password`의 값 교체와 Compose 참조 변경을 구분합니다. 기존 mount가 가리키는 값의 재렌더링과 승인된 재생성은 RUN-0039를 따르며, restart만으로 새 Compose·secret 참조가 적용된다고 가정하지 않습니다.
 9. **Evidence Hygiene**: 시크릿 ID와 명령 결과만 기록하고 렌더링된 webhook, SMTP 사용자명, SMTP 비밀번호 값은 절대 붙여넣지 않습니다.
 
 ## Tech Stack

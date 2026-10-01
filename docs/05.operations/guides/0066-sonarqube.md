@@ -4,13 +4,13 @@ version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
 - "POL-0066"
 implementation_services:
-  infra/09-tooling/sonarqube/docker-compose.yml:
+  infra/11-quality/sonarqube/docker-compose.yml:
   - sonarqube
 created: "2026-05-10"
 ---
@@ -28,7 +28,7 @@ SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTION
 
 ### 현재 구현과 흐름
 
-- [SonarQube Compose](../../../infra/09-tooling/sonarqube/docker-compose.yml)가
+- [SonarQube Compose](../../../infra/11-quality/sonarqube/docker-compose.yml)가
   런타임 이미지, profile, DB secret, JVM heap, 라우트, 볼륨, health를 정의한다.
 - 브라우저/스캐너 -> Traefik -> SonarQube 순으로 흐른다. 라우트는 OAuth2 Proxy
   ForwardAuth를 사용한다. 추적되는 SonarQube SAML/OIDC 설정이 없으므로 네이티브
@@ -58,35 +58,40 @@ SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTION
 
 ### 백업, 복원, 업그레이드
 
-데이터베이스가 백업 권한을 갖는다. 공식 가이드는 데이터베이스 네이티브 백업을
-사용하고 복원 후 Elasticsearch 인덱스를 재구축한다. 일관되게 복구하려면 추적되는 설정,
-DB secret 보관, 여기 표현되지 않은 외부 설치 plugin/config도 보존해야 한다.
-격리된 DB로 복원하고, 로컬 인덱스가 없는 상태로 SonarQube를 시작하여 재인덱싱을
-허용한 다음, 프로젝트/설정/사용자와 대표 스캔을 검증한다. 활성 인덱스 삭제는
-절대 1차 복구 방법으로 삼지 않는다.
-
-업그레이드 전에는 DB를 백업/검증하고, 모든 release/업그레이드 노트를 읽고, DB와
-호스트 전제 조건을 확인하고, plugin 인벤토리를 작성하고, 복원된 사본에서
-테스트한다. 롤백에는 이전 이미지와 업그레이드 이전 데이터베이스가 모두 필요하다.
-이미지 롤백만으로는 스키마 마이그레이션을 되돌릴 수 없다. 여기서는 백업/복원/
-업그레이드를 실행하지 않았다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0066-sonarqube.md)의 `보존 대상과 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `docker compose --profile sast config --quiet`
 - `docker compose --profile sast config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-tooling`
+- `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
 ## Runbook Handoff
 
 DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../runbooks/0066-sonarqube.md)을
 사용한다.
 
+### 준비 상태와 접근 제한
+
+Compose는 PostgreSQL의 기동·완료를 기다리는 의존성을 선언하지 않는다. DB 소유자와
+실제 database/role 준비를 별도로 확인한다. 공통 초기화 SQL의 고정 이름과 서비스의
+설정 변수를 바꾸는 작업은 같지 않다. `edge_net`과 `mng_data_net`의 직접 경로도
+점검해야 하며 gateway SSO가 모든 연결을 보호한다고 가정하지 않는다. 스캐너의
+Sonar 토큰만으로 cookie 기반 ForwardAuth를 통과할 수 있는 것은 아니다. 로그인
+경로를 우회하거나 인증을 제거하지 말고 승인된 클라이언트 경계를 먼저 확인한다.
+
+### 버전 적용 한계
+
+아래의 Server 9.8/9.9 링크는 과거 참고 자료이며 현재 Compose가 선택하는 Community
+Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 release·DB·plugin 지원
+근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
+현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
+
 ## Traceability
 
 - [Policy](../policies/0066-sonarqube.md) (`POL-0066`)
 - [Runbook](../runbooks/0066-sonarqube.md) (`RUN-0066`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 

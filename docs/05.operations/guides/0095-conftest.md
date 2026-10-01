@@ -4,13 +4,13 @@ version: "1.0.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
 - "POL-0095"
 implementation_services:
-  infra/09-tooling/conftest/docker-compose.yml:
+  infra/11-quality/conftest/docker-compose.yml:
   - conftest
 created: "2026-09-23"
 ---
@@ -27,7 +27,7 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 
 ### Current implementation
 
-- [Conftest Compose](../../../infra/09-tooling/conftest/docker-compose.yml)는
+- [Conftest Compose](../../../infra/11-quality/conftest/docker-compose.yml)는
   고정된 `openpolicyagent/conftest` 이미지를 UID 1000, 읽기 전용 루트,
   네트워크 없음, `infra/`만 읽기 전용으로 마운트해 실행한다. `secrets/`나
   `.env`는 전혀 보지 않는다.
@@ -42,16 +42,16 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 | `compose` | 허용목록(`cadvisor`) 밖의 privileged 서비스; 프로파일 없는 서비스; `:latest` 또는 태그 없는 이미지; 리터럴 값을 가진 password, secret, token, key 변수; 호스트 주소(리터럴 IP, `${VAR:-address}`, `[::1]`, long-syntax `host_ip`) 없이 게시된 호스트 포트, 또는 `0.0.0.0`/`::`에 게시된 호스트 포트 | — |
 | `dockerfile` | 태그 없거나 `:latest`인 `FROM`(빌드 스테이지와 `scratch`는 예외); `--checksum` 없이 URL에서 받는 `ADD` | — |
 
-리터럴이란 빈 값, `${…}` 보간, `/run/secrets/` 경로, 불리언, URL을
-제외한 모든 값을 뜻한다. `*_FILE`과 `*_CMD` 키는 시크릿 출처를 나타내므로
-예외다.
+정확한 키·값 판별과 예외는 [Rego 원본](../../../infra/11-quality/conftest/policy/compose.rego)을
+따른다. 일부 비밀 이름 패턴과 `$`로 시작하는 값 등의 휴리스틱이므로 모든 자격 증명을
+탐지하거나 모든 보간이 안전하다고 증명하지 않는다. `*_FILE`·`*_CMD`의 예외도
+비밀 값 노출 금지 정책을 면제하지 않는다.
 
 ### Commands
 
 | Command | Effect |
 | --- | --- |
-| `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 모든 Compose 파일과 Dockerfile을 테스트 |
-| `docker run --rm -v "$PWD/infra:/project/infra:ro" -w /project openpolicyagent/conftest:<tag> test --policy infra/09-tooling/conftest/policy --namespace compose <file>` | 파일 하나를 테스트 |
+| `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 run.sh가 선택한 raw Compose 파일과 Dockerfile을 테스트 |
 
 ## Common Checks
 
@@ -63,14 +63,22 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 
 job이 실패하면 [runbook](../runbooks/0095-conftest.md)을 사용한다.
 
+### 검사 범위와 실패 신호
+
+실행 script는 `infra/`의 파일을 직접 읽는다. include·override를 합친 최종 Compose,
+루트 파일, inline Dockerfile 및 실행 중 상태는 이 파일 탐색 검사의 범위가 아니다.
+별도 의존성·HTTP health·애플리케이션 데이터는 없으며 exit와 단계별 결과가 신호다.
+앞 단계가 실패하면 뒤 단계는 실행되지 않으므로 세 요약을 항상 기대하지 않는다.
+네트워크 없음·읽기 전용·사용자 제한을 갖춘 선언된 Compose 작업만 사용한다.
+
 ## Traceability
 
 - [Policy](../policies/0095-conftest.md) (`POL-0095`)
 - [Runbook](../runbooks/0095-conftest.md) (`RUN-0095`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [Conftest package README](../../../infra/09-tooling/conftest/README.md)
+- [Conftest package README](../../../infra/11-quality/conftest/README.md)
 - [Conftest documentation](https://www.conftest.dev/)
 - [Rego policy language](https://www.openpolicyagent.org/docs/latest/policy-language/)

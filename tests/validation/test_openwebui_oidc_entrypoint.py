@@ -72,6 +72,7 @@ class OpenWebUiOidcComposeTests(unittest.TestCase):
                 "scripts/lib/hardening-lib.sh",
                 "infra/08-ai/ollama/docker-compose.yml",
                 "infra/08-ai/open-webui/docker-compose.yml",
+                "infra/08-ai/open-notebook/docker-compose.yml",
             ):
                 target = root / name
                 target.parent.mkdir(parents=True, exist_ok=True)

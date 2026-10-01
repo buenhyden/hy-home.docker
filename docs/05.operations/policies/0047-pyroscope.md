@@ -4,7 +4,7 @@ version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -27,7 +27,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
 
 - **Systems**: compose service `pyroscope`, container `infra-pyroscope`, image [grafana/pyroscope image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
-- **Environments**: local, development, homelab operations
+- **Environments**: 로컬·개발·홈랩 운영
 
 ## Controls
 
@@ -45,10 +45,8 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
   - Analytics reporting은 `reporting_enabled: false`를 유지한다.
   - `self_profiling.disable_push: true`와 `multitenancy_enabled: false`를
     유지한다.
-  - Ingestion limits are `ingestion_rate_mb: 16`,
-    `ingestion_burst_size_mb: 32`, `max_label_name_length: 1024`,
-    `max_label_value_length: 2048`, and `max_label_names_per_series: 30`.
-  - Profile labels must avoid high-cardinality or secret-bearing values.
+  - 입력 제한은 `ingestion_rate_mb: 16`, `ingestion_burst_size_mb: 32`, `max_label_name_length: 1024`, `max_label_value_length: 2048`, `max_label_names_per_series: 30`을 유지한다.
+  - Profile label에 cardinality가 높은 값이나 secret이 포함된 값을 쓰지 않는다.
   - Pyroscope route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`
     middleware chain을 유지한다.
   - 고정 retention 기간은 현재 `pyroscope.yaml`에 선언되어 있지 않다. 보관
@@ -70,9 +68,13 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 ### Lifecycle and data controls
 
 - Pyroscope는 `HOME`이다. SPEC-0182 W6에서 소유자가 `profiling`을 HOME에 추가했다(POL-0078). `profiling`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Pyroscope를 명시적으로 중지한다.
-- Retain gateway auth and local filesystem boundaries. A configured write sink without a profile source is not collection evidence.
-- Back up only after stopping writes/service or using a validated consistent snapshot. Rehearse on isolated storage and verify historical/new queries plus producer labels.
-- Removal requires producer/Grafana cleanup, retention decision, route shutdown, and explicit approval before deleting `pyroscope-data`.
+- Gateway 인증과 로컬 filesystem 경계를 유지한다. Profile source 없이 쓰기 대상만 설정한 것은 수집 증거가 아니다.
+- 쓰기·서비스를 중지하거나 일관성을 검증한 snapshot으로만 백업한다. 격리 스토리지에서 rehearsal을 수행하며 과거·신규 조회와 producer label을 확인한다.
+- 제거 전 producer·Grafana 참조를 정리하고 보존 여부를 결정하며 경로를 닫는다. `pyroscope-data` 삭제에는 명시적 승인이 필요하다.
+
+### Profile storage and source limits
+
+두 Alloy 설정에는 Go와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. 고정 retention은 없고 기본값·disk pressure 정리가 무기한 보존을 보장하지 않는다. 기간 요구는 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
 
 ## Exceptions
 
@@ -90,6 +92,8 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Review Cadence
 
 - Pyroscope image, config, storage backend, ingestion limits, profile source,
@@ -103,7 +107,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0047-pyroscope.md)

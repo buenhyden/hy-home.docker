@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0066"
 parent_ids:
@@ -61,14 +61,20 @@ created: "2026-05-17"
 
 릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
 
+### 운영 책임
+
+승인·예외·데이터 복구 책임자는 `@buenhyden`이다. 스캐너 토큰과 gateway 인증은
+별개이며 인증 실패를 해결하기 위해 middleware를 완화할 수 없다. 공유 PostgreSQL
+전체를 복원하는 변경은 다른 데이터 소유자의 영향 검토와 별도 승인을 요구한다.
+
 ## Traceability
 
 - [가이드](../guides/0066-sonarqube.md) (`GDE-0066`)
 - [런북](../runbooks/0066-sonarqube.md) (`RUN-0066`)
-- [Tooling 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [SonarQube Compose 소스](../../../infra/09-tooling/sonarqube/docker-compose.yml)
+- [SonarQube Compose 소스](../../../infra/11-quality/sonarqube/docker-compose.yml)
 - [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
 - [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

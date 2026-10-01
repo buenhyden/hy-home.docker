@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 ---
 
 # ComfyUI
@@ -34,11 +34,16 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 ## Configuration
 
-| Service | Profiles | Networks | `edge_net` | Secret references |
+| Service | Profiles | Networks | Host publication | Secret references |
 | --- | --- | --- | --- | --- |
-| `comfyui` | `ai, ai-image` | `ai_net` | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
+| `comfyui` | `ai, ai-image` | `edge_net` | `127.0.0.1:${COMFYUI_HOST_PORT:-8188}:${COMFYUI_PORT:-8188}` | Compose Secret 부여 없음; 설정된 부트스트랩 파일 메타데이터를 확인합니다 |
 
-Persistence:
+선언된 영속 경로:
+
+현재 Compose는 `/opt/comfyui`에 상태를 bind하지만 선택된 mutable image의
+상위 소스는 `/root/ComfyUI`를 사용합니다. 경로 연결 override는 없습니다.
+아래 volume 선언만으로 실제 데이터 영속화를 보장하지 않습니다. image·mount
+관측과 백업 경계를 확인하기 전에는 재생성·복원·cache 및 volume 정리를 중단하고 RUN-0081을 따릅니다.
 
 - `comfyui-models`: `${DEFAULT_AI_MODEL_DIR}/comfyui/models`
 - `comfyui-custom-nodes`: `${DEFAULT_AI_MODEL_DIR}/comfyui/custom_nodes`

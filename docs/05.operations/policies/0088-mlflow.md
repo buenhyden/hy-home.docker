@@ -4,7 +4,7 @@ version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
@@ -44,20 +44,29 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 
 ## Exceptions
 
-`ai_net`, `object_net`에서의 내부 SDK 접근은 인증되지 않는다. MLflow 레벨 인증
+`edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는
+동등한 네이티브 사용자 인증이 선언되지 않았다. MLflow 레벨 인증
 경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
 SSO를 비활성화할 수 없다.
 
 ## Verification
 
 정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
-다음을 요구한다: 세션 없이 route가 401을 반환한다, artifact가 있는 run이 proxy를 통해
+다음을 요구한다: 세션 없는 gateway 요청이 인증 경계에서 거부·로그인 redirect되고
+인가 거부 403이 유지된다, artifact가 있는 run이 proxy를 통해
 round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
 수행된다.
 
 ## Review Cadence
 
 MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, credential 회전 시 검토한다.
+
+### 보존·삭제와 책임
+
+책임자는 `@buenhyden`이다. run 삭제는 metadata soft-delete이며 bucket의 저장
+공간 회수를 보장하지 않는다. artifact 정리는 참조·보존·복구본을 확인하고 별도로
+승인한다. `--allowed-hosts`나 gateway `/admins` 검사로 직접 peer 경로의 권한 통제가
+완료되었다고 주장하지 않는다. 기존 DB migration은 서버 재시작과 별도 변경이다.
 
 ## Traceability
 
@@ -67,7 +76,7 @@ MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, 
 
 ## Related Documents
 
-- [Image Dockerfile](../../../infra/11-laboratory/mlflow/Dockerfile) and [derived version projection](../../../infra/tech-stack.versions.json)
-- [MLflow Compose source](../../../infra/11-laboratory/mlflow/docker-compose.yml)
+- [Image Dockerfile](../../../infra/08-ai/mlflow/Dockerfile) and [derived version projection](../../../infra/tech-stack.versions.json)
+- [MLflow Compose source](../../../infra/08-ai/mlflow/docker-compose.yml)
 - [Management database policy](0028-management-database.md)
 - [SeaweedFS policy](0024-seaweedfs.md)

@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -92,11 +92,16 @@ created: "2026-05-10"
 
 ### Source-backed operating contract
 
-- **Purpose/classification/source**: `alertmanager` is a `HOME` alert-routing service selected by `obs`/`alerting`; [observability Compose](../../../infra/06-observability/docker-compose.yml), the mounted config template, and entrypoint are authoritative.
-- **Flow/dependencies/security**: Prometheus sends alerts over `obs_net`; Alertmanager groups, inhibits, and routes them to approved SMTP/Slack receivers. Traefik protects its UI. The entrypoint renders credentials from `smtp_username`, `smtp_password`, and `slack_webhook` Docker Secrets into a temporary runtime config; never render or archive that file as ordinary evidence.
-- **State/resources**: `alertmanager-data:/alertmanager` retains silences and the notification log. Its loss does not delete Prometheus alerts, but it can repeat notifications or lose silences. Compose limits are source configuration, not measured headroom.
-- **Normal use/lifecycle**: from root run `docker compose --profile obs config --quiet`, validate the source config without printing rendered secrets, then start/reload only after receiver tests. Back up the stopped data volume plus source template and secret references; upgrade one pinned image at a time and verify grouping, inhibition, silence retention, and a controlled notification.
-- **Upstream/license**: follow official [Alertmanager configuration](https://prometheus.io/docs/alerting/latest/configuration/). Alertmanager is Apache-2.0 licensed.
+- **목적·분류·구현 소유권**: `alertmanager`는 `HOME` 알림 라우팅 서비스이며 `obs`/`alerting`으로 선택한다. [observability Compose](../../../infra/06-observability/docker-compose.yml), mount된 config template과 entrypoint가 구현을 소유한다.
+- **흐름·의존성·보안**: Prometheus는 `obs_net`으로 alert를 보낸다. Alertmanager는 이를 grouping·inhibition하고, 승인되어 활성화된 Slack receiver로 라우팅한다(email_configs는 주석 처리되어 있다). Traefik이 UI를 보호한다. entrypoint는 `smtp_username`, `smtp_password`, `slack_webhook` Docker Secret의 credential을 임시 runtime config로 렌더링한다. 이 파일을 일반 evidence로 렌더링하거나 보관하지 않는다.
+- **상태·자원**: `alertmanager-data:/alertmanager`는 silence와 notification log를 보존한다. 이 data를 잃어도 Prometheus alert가 삭제되지는 않지만 알림이 반복되거나 silence가 사라질 수 있다. Compose limit은 source 설정이며 측정된 여유 용량이 아니다.
+- **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile obs config --quiet`를 실행하고, 렌더링된 secret을 출력하지 않은 채 source config를 검증한다. receiver test 이후에만 시작하거나 reload한다. 정지 상태의 data volume과 source template, secret 참조를 함께 backup한다. 고정된 image를 한 번에 하나씩 upgrade하고 grouping, inhibition, silence 보존과 통제된 알림 전송을 검증한다.
+- **공식 문서·license**: 공식 [Alertmanager 설정 문서](https://prometheus.io/docs/alerting/latest/configuration/)를 따른다. Alertmanager에는 Apache-2.0 license가 적용된다.
+
+
+### Renderer and delivery limitation
+
+Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수신자만 활성화되어 있다. SMTP 치환자가 이메일 전송을 활성화하지 않는다. Raw `sed` 치환은 임의 시크릿의 구분자·앰퍼샌드·역슬래시·줄바꿈을 안전하게 인코딩하지 못한다. 이는 렌더러 결함이며 원격 셸 실행의 관찰 증거는 아니다. 시크릿이나 렌더링된 YAML을 출력하거나 자격 증명을 약화·변형하지 않는다. 비노출 방식으로 호환성을 확인할 수 없으면 시작·회전을 중단하고 @buenhyden에게 별도 렌더러 수정을 요청한다. Readiness는 통지·grouping/inhibition 성공을 증명하지 않으므로 승인된 시험 수신자와 제한된 알림으로 따로 검증한다.
 
 ## Common Checks
 
@@ -119,7 +124,7 @@ created: "2026-05-10"
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0039-alertmanager.md)

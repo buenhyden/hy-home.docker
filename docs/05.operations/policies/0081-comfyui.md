@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -57,6 +57,12 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 - 제거하려면 마운트를 삭제하기 전에 사용자 데이터 처리, 아티팩트 출처 내보내기,
   경로 종료, 자격 증명 폐기, 명시적 승인이 있어야 한다.
 
+### Active-image persistence stop condition
+
+Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build는 주석 처리되어 있다. Image 소유자의 현재 소스는 `/root/ComfyUI`에서 시작하고 `/root` volume을 선언하지만 Compose는 `/opt/comfyui`에 상태를 bind한다. 두 경로를 연결하는 command override는 없다. 실제 image bytes와 실행 경로·mount를 관찰하지 않았으므로 영속성 위험을 기록하되 데이터 유실이나 안전을 단정하지 않는다.
+
+재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
+
 ## Exceptions
 
 예외에는 소유자, 범위, 위험, 만료, 복구 조건이 있어야 한다.
@@ -67,6 +73,8 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 워크플로 실행, GPU 활용, 복구에는 별도로 승인된 대상과 마스킹된 증거가
 필요하다. 누락된 백업/출처, 예상치 못한 포트 노출, 또는 검토되지 않은
 커스텀 노드는 에스컬레이션한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 

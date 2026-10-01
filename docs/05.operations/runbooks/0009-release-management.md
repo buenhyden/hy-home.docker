@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0009"
 parent_ids: []
@@ -17,7 +17,7 @@ created: "2026-06-04"
 
 이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 배포 자동화, GitHub branch protection, required check, Docker runtime, secret, `.env`, port, permission 동작을 변경하지 않는다.
 
-> Scope: Release Management Runbook operational execution
+> 범위: Release Management Runbook의 실행 절차
 
 ### Purpose
 
@@ -37,65 +37,67 @@ created: "2026-06-04"
 - [ ] 관련 policy, guide, runbook handoff를 확인한다.
 - [ ] 현재 상태와 변경 범위를 기록한다.
 
-1. Confirm the release candidate branch and intended base branch.
+1. release candidate branch와 비교할 base를 확인하고 정확한 두 commit SHA를 기록한다.
 
    ```bash
    git status --short --branch
    git branch --show-current
    ```
 
-2. Review the scoped branch diff before release/tag decisions.
+2. release/tag 판단 전에 기록한 base/candidate 사이의 전체 변경을 확인한다. 작업 트리 diff만으로 이미 commit된 변경을 누락하지 않는다.
 
    ```bash
-   git diff --stat
+   # RELEASE_BASE와 RELEASE_CANDIDATE에는 앞에서 확인한 commit SHA를 지정한다.
+   git diff --stat "$RELEASE_BASE" "$RELEASE_CANDIDATE"
+   git diff --check "$RELEASE_BASE" "$RELEASE_CANDIDATE"
    git diff --check
    ```
 
-3. Confirm local repository documentation and validation gates relevant to the release candidate. Inspect the selected commands first; a document-only request does not authorize environment or secret reads.
+3. candidate에 해당하는 문서·검증 gate를 선택한다. 먼저 명령이 읽는 입력과 side effect를 확인한다. 문서 작업 승인은 환경·secret 읽기 승인이 아니다.
 
    ```bash
    python3 scripts/validation/run-ci-gate.py --profile changed
    python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
-4. Confirm Compose readiness only when the operation-specific approval permits its inputs and temporary files. Preflight sources a real `.env`; normal validation may create dummy inputs. Neither command is part of a document-only validation scope.
+4. 해당 작업에서 입력과 임시 파일 생성까지 승인한 경우에만 Compose readiness를 점검한다. preflight는 실제 `.env`를 source하고 일반 검증도 dummy 입력을 만들 수 있다. [RUN-0086](0086-dependency-version-management.md#static-configuration-validation)의 범위를 먼저 확인한다.
 
    ```bash
    bash scripts/validation/validate-docker-compose.sh --preflight
    bash scripts/validation/validate-docker-compose.sh
    ```
 
-   The isolated five-service runtime harness is a separate operator action. Its
-   preflight is safe to run without starting services; scenarios require the
-   task-specific runtime approval and are never selected by a validation profile.
+   격리된 five-service runtime harness는 별도 operator 작업이다. preflight는
+   service를 시작하지 않지만 입력·도구 사용 범위는 확인한다. scenario는 Task별
+   runtime 승인이 필요하며 validation profile이 자동 선택하지 않는다.
 
    ```bash
    bash scripts/operations/check-compose-core-readiness.sh --preflight
    ```
 
-5. Confirm changelog and tag readiness from tracked release surfaces.
+5. 추적된 release 소스에서 changelog와 tag 준비 상태를 확인한다.
 
    ```bash
    git log --oneline --decorate -n 20
    git tag --list
    ```
 
-   Before pushing a `v*.*.*` tag, confirm `CHANGELOG.md` already contains the
-   exact release tag string. The repository tag workflow fails when the pushed
-   tag is missing from `CHANGELOG.md`.
+   `v*.*.*` tag를 push하기 전에 `CHANGELOG.md`에 정확한 tag 문자열이 있는지
+   확인한다. `.github/workflows/generate-changelog.yml`은 문자열이 없으면
+   실패한다. 아래 placeholder를 승인된 tag로 바꾸고 fixed-string으로 검사한다.
 
    ```bash
-   rg -n "vX.Y.Z" CHANGELOG.md
+   rg -n -F "vX.Y.Z" CHANGELOG.md
    ```
 
-6. Confirm release-readiness checklist items before any release or deploy claim.
+6. release 또는 deploy 준비 완료를 선언하기 전에 다음 항목을 확인한다.
 
-   - Backup evidence or an explicit N/A rationale for every affected stateful surface.
-   - Affected rollback or recovery runbook link for every changed service, workflow, or deployment surface.
-   - Incident record path or escalation channel for blocked, failed, or rolled-back release decisions.
-   - Remote gate verification evidence before claiming branch protection, required checks, or release workflow enforcement is current.
+   - 영향을 받는 각 stateful surface의 backup 증거 또는 명시적인 N/A 근거.
+   - 변경한 각 service·workflow·deployment의 rollback/recovery runbook 링크.
+   - 차단·실패·rollback한 release 판단의 incident 기록 경로 또는 escalation 채널.
+   - branch protection·required check·release workflow의 현재 강제를 주장할 때 remote gate 검증 증거.
 
-7. Capture release readiness evidence in the relevant execution task or PR description. Do not paste secret values, `.env` values, raw logs containing credentials, shell history, or deployment tokens.
+7. 실행 Task 또는 PR 설명에 준비 상태와 증거를 남긴다. secret·`.env` 값, credential이 있는 원문 로그, shell history, deployment token을 붙여넣지 않는다.
 
 8. `sample-web-service`의 local promotion/rollback 계약을 확인할 때는 먼저
    Docker를 시작하지 않는 fixture-only preflight를 실행한다.
@@ -108,9 +110,8 @@ created: "2026-06-04"
    `recovery_boundary=passed`, `compose=passed`, `ports=18080,18081`이 모두
    있어야 한다. Fixture verdict는 실제 실행 승인이 아니다.
 
-   Supply-chain preparation stays fail-closed: use fixture-only or preflight
-   checks by default, and run the networked Grype seed only under its tracked
-   approval surface.
+   supply-chain 준비는 fail-closed를 유지한다. 기본 점검은 fixture-only 또는
+   preflight이며 network를 쓰는 Grype seed는 추적된 별도 승인 범위에서만 실행한다.
 
    ```bash
    bash scripts/security/verify-sample-service-supply-chain.sh --fixture-only
@@ -118,8 +119,8 @@ created: "2026-06-04"
    bash scripts/security/seed-grype-db-cache.sh --preflight
    ```
 
-   Secret generation is likewise an explicit operator action. Use its read-only
-   check before any no-argument write mode.
+   secret 생성도 명시적인 operator 작업이다. 인자 없는 write 전에 `--check`의
+   입력·범위를 확인한다. 이 점검은 `--sync-metadata-check`와 다른 계약이다.
 
    ```bash
    bash scripts/operations/gen-secrets.sh --check
@@ -176,7 +177,7 @@ created: "2026-06-04"
 
 ### Observability and Evidence Sources
 
-- **Signals**: command output, validation logs, service health status, documentation diff
+- **Signals**: 명령 결과, 검증 로그, service 상태, 문서 diff
 - **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
 
 ### Safe Rollback or Recovery Procedure
@@ -186,12 +187,12 @@ created: "2026-06-04"
 
 ## Evidence
 
-- Current branch and clean/expected working-tree state.
-- Diff summary and `git diff --check` result.
-- Repo contract, doc traceability, LLM Wiki freshness, and Compose validation results.
-- Changelog tag-string evidence and commit-range evidence used for the release/tag decision.
-- Backup or N/A rationale, affected rollback/recovery links, incident path, and remote gate verification evidence when a release/deploy claim depends on those controls.
-- Explicit statement that no runtime deployment, secret value mutation, `.env` sync, port, permission, or remote branch-protection change was performed unless separately approved.
+- 현재 branch와 clean/예상된 작업 트리 상태.
+- 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
+- 선택한 저장소 계약·문서 traceability 검사와 승인 범위에 해당하는 Compose 검증 결과. 등록에서 폐기된 surface의 freshness를 현재 gate로 요구하지 않는다.
+- release/tag 판단에 사용한 changelog의 정확한 tag 문자열과 commit 범위 증거.
+- release/deploy 주장이 의존하는 backup/N/A, rollback/recovery 링크, incident 경로, remote gate 증거.
+- 별도 승인하여 실제 실행한 runtime 배포·secret 값·`.env` sync·port·permission·remote branch-protection 변경과 실행하지 않은 범위의 구분.
 - Local delivery evidence에는 revision, digest/verdict reference, project,
   full portable identity tuple의 concise fields, marker presence, decision,
   `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
@@ -201,9 +202,9 @@ created: "2026-06-04"
 
 ## Rollback or Recovery
 
-- Use only rollback or recovery steps that are already documented for the affected service, workflow, or deployment surface.
-- N/A for a generic release rollback command: this runbook does not validate a universal rollback procedure for every Compose service.
-- If a release/tag decision is blocked or rollback evidence is incomplete, stop the release decision and escalate with the evidence listed above.
+- 해당 service·workflow·deployment에 문서화된 rollback/recovery 절차만 사용한다.
+- 모든 Compose service에 적용되는 일반 rollback 명령은 N/A다. 서비스별 data migration과 backup 복구 경계를 따른다.
+- release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단하고 위 증거로 에스컬레이션한다.
 - Local delivery cleanup의 project/resource ownership query가 누락되거나
   ambiguous하면 broad cleanup을 시도하지 말고 class `60`으로 중단한다.
 - In-process cleanup은 exact all-versus-owned container/network ID, 단일
@@ -213,14 +214,14 @@ created: "2026-06-04"
 
 ## Escalation
 
-- Escalate to the repository owner or responsible operator before creating tags, pushing release branches, changing branch protection, changing required checks, deploying, or mutating runtime state.
-- Escalate immediately if validation output suggests secret exposure, `.env` drift requiring value-bearing changes, or rollback evidence that cannot be corroborated from tracked docs.
+- tag 생성, release branch push, branch protection/required check 변경, 배포, runtime 변경은 해당 승인을 확인하고 저장소 소유자 또는 담당 operator에게 handoff한다.
+- secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단·에스컬레이션한다.
 
 ## Traceability
 
-- Current policy: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md), including external-release-evidence ownership.
-- Historical implementation evidence only: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). This completed record is not current execution authority.
-- Subject peers: none — no Guide or Policy shares number `0009`.
+- 현재 정책: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
+- 과거 구현 증거: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
+- 같은 번호 `0009`의 Guide/Policy는 없다.
 
 ## Related Documents
 

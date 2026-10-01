@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -88,6 +88,11 @@ component compatibility와 license/edition terms, Kafbat release/security
 notes, client support를 검토한다. rollback과 현재 recovery artifact를
 보존한다. Cluster Linking이나 다른 commercial/edition-specific 기능이
 사용 가능하다고 가정하지 않는다.
+
+
+### Accountable lifecycle boundary
+
+적용 identity: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-2`, `kafka-3`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 

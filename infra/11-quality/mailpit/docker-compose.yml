@@ -1,0 +1,53 @@
+x-tier-label: &tier-label
+  hy-home.tier: quality
+
+volumes:
+  mailpit-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${DEFAULT_COMMUNICATION_DIR}/mailpit/data
+services:
+  mailpit:
+    profiles:
+      - dev
+      - local
+      - mail-dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-med
+    image: axllent/mailpit:v1.31.2
+    container_name: mailpit
+    restart: unless-stopped
+    user: '${MAILPIT_UID:-1000}:${MAILPIT_GID:-1000}'
+    volumes:
+      - mailpit-data:/data
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}:${MAILPIT_UI_PORT:-8025}"
+      - "127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}:${MAILPIT_SMTP_PORT:-1025}"
+    environment:
+      MP_UI_BIND_ADDR: "0.0.0.0:${MAILPIT_UI_PORT:-8025}"
+      MP_SMTP_BIND_ADDR: "0.0.0.0:${MAILPIT_SMTP_PORT:-1025}"
+      MP_MAX_MESSAGES: 5000
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    healthcheck:
+      test: [ "CMD", "/mailpit", "readyz" ]
+      interval: 15s
+      start_period: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      edge_net: {}
+      # SMTP capture for containers that should not reach Stalwart.
+      mail_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.mailpit-ui.rule: Host(`mailpit.${DEFAULT_URL}`)
+      traefik.http.routers.mailpit-ui.entrypoints: websecure
+      traefik.http.routers.mailpit-ui.tls: 'true'
+      traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
+      traefik.http.services.mailpit-ui.loadbalancer.server.port: ${MAILPIT_UI_PORT:-8025}

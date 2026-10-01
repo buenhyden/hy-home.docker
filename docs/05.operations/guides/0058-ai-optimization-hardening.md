@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -78,6 +78,10 @@ created: "2026-05-17"
 - Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
 - exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
 
+### Control evidence boundary
+
+AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
+
 ## Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -97,7 +101,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0058-ai-optimization-hardening.md)

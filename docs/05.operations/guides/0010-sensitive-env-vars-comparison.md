@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.2.1"
+version: "3.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0010"
 parent_ids: []
@@ -30,9 +30,15 @@ grant의 대응 관계를 함께 확인한다. 실제 점검 수치와 결과는
 저장소 루트에서 값이 출력되지 않는 기존 검사 경로를 사용한다.
 
 ```bash
-bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 bash scripts/operations/gen-secrets.sh --dry-run
+# private metadata 읽기가 승인된 경우에만 다음 비교를 실행한다.
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
 ```
+
+`--dry-run`은 공개 schema와 파일 존재 메타데이터를 사용한다. 반면 metadata
+check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
+검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
+`2`는 unsafe/ambiguous 입력이다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
 
 두 registry의 ID와 env-key 집합은 정확히 같아야 하며 공개 행마다 실제 소비자,
 초기화 입력 또는 파생값 생성 경로가 있어야 한다. 비활성 서비스도 지원되는
@@ -62,7 +68,7 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 
 ## Traceability
 
-- Subject peers: none — no Policy or Runbook shares number `0010`.
+- 같은 번호 `0010`의 Policy/Runbook은 없다.
 
 ## Related Documents
 

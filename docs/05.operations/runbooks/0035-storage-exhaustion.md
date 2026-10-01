@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0035"
 parent_ids: []
@@ -24,6 +24,15 @@ created: "2026-06-04"
 `docker system prune`, volume 제거, database compaction, retention 축소,
 log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다. 복구와 삭제는
 영향받은 owner, 검증된 백업, 별도 승인된 조치가 필요하다.
+
+
+### Execution and stop boundary
+
+대상: GDE-0017/0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034의 명명된 data identities 및 GDE-0021/0036/0090/0094/0097의 저장 상태. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
 
@@ -77,7 +86,7 @@ rollback 상태, 수정된 alert 임계값을 기록한다. 데이터 무결성�
 
 ## Traceability
 
-- Artifact: `RUN-0035`; parent guide: `GDE-0035`.
+- Artifact: `RUN-0035`; parent guide: `GDE-0021`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
 ## Related Documents

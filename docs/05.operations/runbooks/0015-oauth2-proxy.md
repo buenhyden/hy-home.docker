@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -39,11 +39,21 @@ created: "2026-05-17"
 
 ## Procedure
 
+### Target, approval and safe evidence
+
+저장소 루트의 승인된 Docker context에서 아래에 명시한 서비스만 다룬다.
+명령이 runtime을 변경하는 단계는 대상, 영향받는 사용자·소비자, 이전 image/config,
+중단 조건이 확인된 별도 승인 뒤에만 수행한다. 원문 로그나 전체 환경·inspect는
+출력하지 않는다. 필요한 오류 유형과 횟수는 승인된 운영자가 로컬에서 정제해 전달하며
+token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제외한다.
+여러 앱 공통 장애는 [RUN-0099](0099-system-operations.md), cold-start는
+[RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
+
 ### Checklist
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
-- [ ] `docker compose --profile auth logs oauth2-proxy --tail=200` 오류 패턴 확인
+- [ ] Proxy의 정제된 인증/backend 오류 요약 오류 패턴 확인
 
 ### Steps
 
@@ -51,7 +61,7 @@ created: "2026-05-17"
    - `/ping` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
    - `/ready` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ready`
    - OIDC issuer 확인: `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`
-   - 로그 확인: `docker compose --profile auth logs oauth2-proxy --tail=200`; 로컬 운영 화면 밖으로 공유하기 전에는 token, authorization code, session id, cookie, email, IP 등 식별자와 credential 후보를 redaction한다.
+   - 로그 확인: Proxy의 정제된 인증/backend 오류 요약; 로컬 운영 화면 밖으로 공유하기 전에는 token, authorization code, session id, cookie, email, IP 등 식별자와 credential 후보를 redaction한다.
 2. issuer/CA/JWKS 대응
    - tracked issuer는 `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`이다.
    - root CA mount는 `/etc/ssl/certs/rootCA.pem`, `SSL_CERT_FILE`과 `ssl_insecure_skip_verify=false`를 확인한다.
@@ -76,12 +86,54 @@ created: "2026-05-17"
    - 쓰기 대상 경로가 `/tmp`, `/run` 내인지 점검
    - 엔트리포인트/인증서 마운트 경로 권한 확인
 8. degraded-mode 절차(승인 필요)
-   - OIDC 장기 장애 시 운영 승인 후 제한적 degraded-mode 적용
+   - 현재 구현에는 자동 fail-open/degraded-mode 전환 명령이 없다. OIDC 장기 장애 시 대상별 대체 관리 경로·인가·rollback이 별도 승인되기 전에는 fail-closed를 유지한다
    - 적용 시간/범위/종료 조건을 티켓에 기록
    - Keycloak 정상화 즉시 기본 fail-closed로 복귀
 9. config lint 실패 롤백
    - 직전 정상 커밋으로 compose/config 복원
    - 재기동 후 `/ping`, `/ready`, 인증 플로우 재검증
+
+### Lifecycle, helpers and change acceptance
+
+Proxy의 issuer·CA와 선택 Valkey가 준비되어야 한다. 기본 공유 경로에서 `auth`
+선택이 DB/Valkey readiness를 기다린다고 가정하지 않는다. 기존 로컬 image를
+사용하는 승인된 대상 기동·중지는 다음과 같다.
+
+```bash
+docker compose --profile auth up -d --no-deps --no-build --pull never oauth2-proxy
+docker compose stop oauth2-proxy
+```
+
+기동 후 `/ping`과 `/ready`, 로그인 callback, 비허용 그룹 거부, logout 범위를
+각각 확인한다. Proxy 중지는 ForwardAuth 소비자에 영향을 준다. cfg/CA/secret
+파일 변경은 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)에
+따른 대상 재생성과 hash 검사로 반영한다. 코드/Dockerfile 변경은 restart로
+반영되지 않는다. image가 없거나 build 선택이 불명확하면 [RUN-0086](0086-dependency-version-management.md)의
+별도 검토·build 절차로 넘기고 여기서 임의 build/pull하지 않는다.
+
+전용 대안을 승인받은 경우 먼저 Valkey bind 경로의 존재·UID999 권한·용량,
+전용 Secret 참조, exporter 포트, Proxy Dockerfile/host/credential 일치를 확인한다.
+이미지와 volume 입력이 준비된 뒤에만 아래 순서로 수행한다.
+
+```bash
+docker compose --profile dedicated-valkey up -d --no-deps --no-build --pull never oauth2-proxy-valkey
+# Valkey healthy를 확인한 다음 실행한다.
+docker compose --profile dedicated-valkey up -d --no-deps --no-build --pull never oauth2-proxy-valkey-exporter
+docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
+```
+
+첫 서비스 healthy가 아니면 exporter로 진행하지 않는다. exporter에는 healthcheck가
+없으므로 실행 여부와 수집기의 target UP/`redis_up`을 별도로 확인한다. 값·세션
+본문·password 인자가 포함될 수 있는 원문 health/inspect/process 출력은 금지한다.
+접속 전환은 일치하는 Proxy image·설정·Secret을 별도 승인된 재생성으로 적용한
+뒤 `/ready`와 신규 login으로 확인한다. 재시작만으로 build 선택이 바뀌지 않는다.
+중지는 Proxy 소비자 영향 확인 → exporter → 전용 Valkey 순서로 대상만 정하며
+공유 `mng-valkey`는 이 절차로 중지/flush하지 않는다.
+
+전용 Valkey AOF 손실 시 세션 재로그인이 기본 복구다. exporter는 state가 없으므로
+동일 선언으로 재생성하며 DB backup/credential 발급 기능이 없다. 전용 volume
+삭제는 소비자 전환·재로그인 영향·보존 disposition이 승인되기 전에는 수행하지
+않는다. cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
 
 ### Verification Steps
 
@@ -95,8 +147,8 @@ created: "2026-05-17"
 
 - **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
 - **Evidence to Capture**:
-  - `docker compose --profile auth logs oauth2-proxy --tail=200`
-  - `docker compose --profile auth logs keycloak --tail=200`
+  - Proxy의 정제된 인증/backend 오류 요약
+  - Keycloak의 정제된 OIDC 오류 요약
   - check-all-hardening.sh 02-auth 출력
 
 ### Safe Rollback or Recovery Procedure
@@ -108,38 +160,57 @@ created: "2026-05-17"
   - `infra/02-auth/oauth2-proxy/Dockerfile`
   - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
   - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
-- [ ] `docker compose --profile auth up -d oauth2-proxy`
+- [ ] 위 Lifecycle의 승인된 대상 재생성과 hash 점검 수행
 - [ ] `/ping` + 로그인 시나리오 재검증
+
+전용 Valkey server/exporter와 인증 health probe는 현재 password를 process 인자로
+소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
+`docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
+`.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
+횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
+전달 방식 수정은 별도 구현 변경으로 검토한다.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
+- 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 
 ### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
 
-`mng-valkey` was stopped for 68 seconds and recreated. Probes every five seconds:
-unauthenticated SSO route 401, `/oauth2/start` 302 and `/ping` OK throughout;
-oauth2-proxy logged no errors and did not restart. The Airflow Celery worker
-logged connection errors and reconnected four seconds after Valkey returned
-without a restart; n8n and its worker restarted twice and were healthy 37 seconds
-after Valkey returned. Not measured: an existing authenticated session during
-the outage, because oauth2-proxy rejects an unsigned cookie before it reaches
-Valkey and no test credentials were used.
+> Historical evidence (not current authority; source: Git history):
+> Source: `c26bc8026254`, `docs/05.operations/runbooks/0015-oauth2-proxy.md`, 2026-09-22 owner-approved rehearsal.
+>
+> `mng-valkey` was stopped for 68 seconds and recreated. Probes every five seconds:
+> unauthenticated SSO route 401, `/oauth2/start` 302 and `/ping` OK throughout;
+> oauth2-proxy logged no errors and did not restart. The Airflow Celery worker
+> logged connection errors and reconnected four seconds after Valkey returned
+> without a restart; n8n and its worker restarted twice and were healthy 37 seconds
+> after Valkey returned. Not measured: an existing authenticated session during
+> the outage, because oauth2-proxy rejects an unsigned cookie before it reaches
+> Valkey and no test credentials were used.
+
+위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
+이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
 ## Rollback or Recovery
 
-If Valkey session state is lost or incompatible, keep ForwardAuth fail-closed,
-restore the reviewed endpoint and credential references, then require users to
-authenticate again. Do not restore stale sessions from an unknown point or expose
-cookie/client secrets to preserve logins. If the cookie secret changed, explicitly
-invalidate old cookies and test a fresh Keycloak login. The session-loss recovery
-and upgrade rollback paths are planned and were not executed during the 2026-09-20
-documentation correction.
+이미지 upgrade는 [RUN-0086](0086-dependency-version-management.md)을 따라 release와
+설정 변경을 검토한 뒤 격리된 issuer discovery, PKCE callback, ready, ForwardAuth
+identity headers, logout와 session 만료를 확인한다. 이전 image로 돌아갈 때
+cookie secret과 session-store endpoint를 동일하게 유지하거나 전 사용자 재로그인을
+선언한다. config 복구만으로 image/build 내용이 되돌아가지 않는다.
+
+
+Valkey session state를 잃었거나 호환되지 않으면 ForwardAuth를 fail-closed로 유지하고,
+검토된 endpoint와 credential 참조를 복구한 뒤 사용자에게 재인증을 요구한다.
+출처가 불명확한 시점의 오래된 session을 복구하거나 login을 유지하기 위해
+cookie/client secret을 노출하지 않는다. cookie secret이 바뀌었다면 이전 cookie를
+명시적으로 무효화하고 새 Keycloak login을 test한다. session-loss 복구와 upgrade
+rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하지 않았다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state. Redact credentials, authorization codes, tokens, cookies, session identifiers, private IPs where necessary, and personal account details before evidence leaves the local operator context.
+검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
 ## Traceability
 
@@ -154,7 +225,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 - [Official OAuth2 Proxy session storage](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/)
 - [Official OAuth2 Proxy endpoints](https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0015-oauth2-proxy.md)

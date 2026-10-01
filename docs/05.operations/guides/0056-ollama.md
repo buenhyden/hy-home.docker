@@ -4,7 +4,7 @@ version: "2.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-10"
 - 모델 영속 저장 경로 `${DEFAULT_AI_MODEL_DIR}/ollama`가 준비되어야 한다.
 - 기본 포트/엔드포인트:
   - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
-  - Exporter: `${OLLAMA_EXPORTER_PORT}` from `.env` / `.env.example` (`11435` in the repository baseline; compose fallback is `8000` when unset)
+  - Exporter: `OLLAMA_EXPORTER_PORT`는 연결한 Compose와 공개 `.env.example`이 소유한다. 내부 지표 listener이며 모델 추론을 중계하지 않는다.
 
 ### Step-by-step Instructions
 
@@ -124,13 +124,18 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 ### Source-backed operating contract
 
-- **Purpose/classification**: `ollama` and `ollama-exporter` are owner-confirmed `HOME` local inference and metrics services.
-- **Profiles/source**: `ai`/`ai-llm` select Ollama and `ollama` provides the service-specific selection; [Compose](../../../infra/08-ai/ollama/docker-compose.yml) and its selected image declaration are authoritative.
-- **Flow/dependencies**: Open WebUI and approved clients call Ollama over `ai_net`; exporter reads its API for Prometheus. NVIDIA runtime/driver, model storage, Traefik, gateway auth, and the root CA are prerequisites. The loopback host port is an operator endpoint, while the public route remains gateway protected.
-- **State/environment**: `ollama-data:/root/.ollama` holds model manifests/blobs. Preserve model name, source, digest, parameters, license, and compatibility evidence; cache presence alone is not provenance. Port/model/concurrency variables are non-secret; remote registry credentials, if used, follow the secret owner and never enter Compose output or logs.
-- **Resources/security**: Compose declares four CPUs, an 8 GiB limit, a 4 GiB reservation, and GPU access. These are source limits, not measured CPU/RAM/VRAM headroom. Do not expose an unauthenticated non-loopback API or run unreviewed model/tool content.
-- **Normal use/lifecycle**: render with `docker compose --profile ai config --quiet`, list/pull explicitly approved models, verify `/api/tags` and a representative inference, and monitor exporter/GPU signals. Before image or model migration, capture digests and model provenance, preserve the model volume or a reproducible manifest, upgrade one compatibility boundary at a time, then re-run inference and Open WebUI integration checks.
-- **Upstream/license**: use the official [Ollama repository](https://github.com/ollama/ollama) and release notes; Ollama is MIT licensed. Each model has separate terms that must be recorded and reviewed.
+- **목적·분류**: `ollama`와 `ollama-exporter`는 소유자가 확인한 `HOME` local inference 및 metric 서비스다.
+- **profile·구현 소유권**: `ai`/`ai-llm`은 Ollama를 선택하고 `ollama`는 해당 서비스만 선택하는 방법을 제공한다. [Compose](../../../infra/08-ai/ollama/docker-compose.yml)와 선택된 image 선언이 구현을 소유한다.
+- **흐름·의존성**: Open WebUI와 승인된 client는 `ai_net`으로 Ollama를 호출하며 exporter는 Prometheus에 제공할 metric을 위해 Ollama API를 읽는다. NVIDIA runtime/driver, model storage, Traefik, gateway auth와 root CA가 전제 조건이다. loopback host port는 운영자 endpoint이며 public route는 계속 gateway의 보호를 받는다.
+- **상태·환경 설정**: `ollama-data:/root/.ollama`는 model manifest/blob을 담는다. model 이름, source, digest, parameter, license와 호환성 evidence를 보존한다. cache에 있다는 사실만으로 출처가 입증되지는 않는다. port/model/concurrency 변수는 secret이 아니다. remote registry credential을 사용하는 경우 해당 secret 소유자의 규칙을 따르며 Compose 출력이나 log에 포함하지 않는다.
+- **자원·보안**: Compose는 CPU 4개, 8 GiB limit, 4 GiB reservation과 GPU 접근을 선언한다. 이는 source limit이며 측정된 CPU/RAM/VRAM 여유 용량이 아니다. 인증되지 않은 non-loopback API를 노출하거나 검토하지 않은 model/tool content를 실행하지 않는다.
+- **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 명시적으로 승인된 model을 list/pull한다. `/api/tags`와 대표 inference를 검증하며 exporter/GPU 신호를 관찰한다. image나 model migration 전에 digest와 model 출처를 기록하고, model volume 또는 재현 가능한 manifest를 보존한다. 호환성 경계를 한 번에 하나씩 변경한 뒤 inference와 Open WebUI 연동을 다시 확인한다.
+- **공식 문서·license**: 공식 [Ollama 저장소](https://github.com/ollama/ollama)와 release note를 따른다. Ollama에는 MIT license가 적용된다. 각 model의 별도 조건도 기록하고 검토해야 한다.
+
+
+### Model and exporter capacity boundary
+
+`ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.
 
 ## Common Checks
 
@@ -158,7 +163,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 - [Ollama release notes](https://github.com/ollama/ollama/releases), [tev1 model page](https://ollama.com/library/tev1), [nimble model page](https://ollama.com/library/nimble)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0056-ollama.md)

@@ -1,16 +1,16 @@
 ---
 title: "MongoDB Usage Guide"
-version: "1.0.2"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
 - "POL-0027"
 implementation_services:
-  infra/04-data/nosql/mongodb/docker-compose.yml:
+  infra/04-data/mongodb/docker-compose.yml:
   - 'mongo-express'
   - 'mongo-init'
   - 'mongo-key-generator'
@@ -27,22 +27,40 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 [MongoDB Compose 구현](../../../infra/04-data/nosql/mongodb/docker-compose.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
+이 문서는 [MongoDB Compose 구현](../../../infra/04-data/mongodb/docker-compose.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
 
 ### Current implementation
 
-| Field | Repository-specific decision |
+| 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
-| Consumer and data rationale | No confirmed HOME consumer; LAB replica-set and document-database evaluation. |
-| Source / updater | [Compose](../../../infra/04-data/nosql/mongodb/docker-compose.yml) owns image sources; dependency automation proposals require compatibility review. |
-| Services / profile | Key generator, two data members, arbiter, init, UI, exporter; exact `mongodb`. |
-| Flow / dependency | `mongo-init` creates `MyReplicaSet`; clients address both data members; arbiter votes without data. |
-| Exposure / persistence | Mongo Express via Traefik; members internal; data/key named volumes. |
-| Environment / secrets | Root/UI usernames are environment identifiers; root/UI passwords are Docker Secrets; keyfile is generated into `mongo-key`. |
-| Health / resources | member healthchecks, `rs.status()`, init/exporter logs; data members extend `template-stateful-high`. |
-| Security | internal keyfile authentication plus secret-backed root/UI passwords; same-host topology is not DR. |
-| Backup / upgrade | `mongodump --oplog` and isolated `--oplogReplay`; require tool/server compatibility and restore evidence before upgrade/removal. |
-| License / edition | MongoDB Community is governed by SSPL terms; this topology claims no Enterprise backup or management capability. |
+| Consumer와 data 근거 | 확인된 HOME consumer는 없음; LAB replica-set과 document-database 평가용. |
+| Source·update 책임 | [Compose](../../../infra/04-data/mongodb/docker-compose.yml)가 image source를 소유한다. dependency 자동화 제안은 호환성 검토가 필요하다. |
+| 서비스·profile | key generator, data member 2개, arbiter, init, UI, exporter; 정확한 profile은 `mongodb`. |
+| 흐름·의존성 | `mongo-init`이 `MyReplicaSet`을 생성한다. client는 두 data member에 접속하며 arbiter는 data 없이 투표한다. |
+| 노출·영속성 | Mongo Express는 Traefik을 통하고 member는 내부에 둔다. data/key는 named volume에 저장한다. |
+| 환경 설정·secret | root/UI username은 환경 식별자이고 root/UI password는 Docker Secret이다. keyfile은 `mongo-key`에 생성한다. |
+| Health·자원 | member healthcheck, `rs.status()`, init/exporter log; data member는 `template-stateful-high`를 확장한다. |
+| 보안 | 내부 keyfile 인증과 secret 기반 root/UI password를 사용한다. 같은 host의 topology는 DR이 아니다. |
+| Backup·upgrade | `mongodump --oplog`와 격리된 `--oplogReplay`를 사용한다. upgrade/제거 전에 tool/server 호환성과 restore evidence가 필요하다. |
+| License·edition | MongoDB Community에는 SSPL 조건이 적용된다. 이 topology는 Enterprise backup이나 관리 기능을 제공한다고 주장하지 않는다. |
+
+
+### Identity-specific behavior
+
+rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 아니다. mongo-key 는 Docker named volume 이며 key-generator 는 secret/key 와 permission 을 만들거나 변경하고 runtime openssl 설치 가능성이 있다. mongo-init 는 두 data node 만 기다리고 rs.status 예외에서 rs.initiate 를 호출하므로 자동 재시도 진단으로 쓰지 않는다. ping health 는 credential/replica readiness 가 아니다. express 와 exporter 는 별도 image/client 이고 자체 healthcheck 는 없다.선언 release tag 의 전체 integration 은 미검증이다. source 의 secret-derived argv 는 credential 비노출 통제의 충족 증거가 아니다.
+
+| 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
+| --- | --- | --- | --- |
+| `mongo-express` | 관리 UI; Basic Auth와 DB credential 경계 분리 | 자체 healthcheck 없음; process와 해당 기능/metrics 별도 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongo-init` | replica initialization job; data node만 대기, membership mutation | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongo-key-generator` | 내부 인증 key 생성/permission 변경 job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongodb-arbiter` | 투표용 arbiter; data backup member 아님 | 자체 healthcheck 없음; process와 해당 기능/metrics 별도 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongodb-exporter` | Mongo metrics; credential URI argv 잔여 미준수 | 자체 healthcheck 없음; process와 해당 기능/metrics 별도 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongodb-rep1` | data-bearing replica 1; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+| `mongodb-rep2` | data-bearing replica 2; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
+
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+
 
 ### Usage Type
 
@@ -66,7 +84,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 ### Step-by-step Instructions
 
-정상 운영 중 점검은 compose profile 렌더링, init job/replica member 상태, `mongodb-rep1` 내부 secret mount 기반 `rs.status()` 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [MongoDB runbook](../runbooks/0027-mongodb.md#steps)을 따른다.
+정상 운영 중 점검은 compose profile 렌더링, init job/replica member 상태, `mongodb-rep1` 내부 client의 native password prompt를 통한 `rs.status()` 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [MongoDB runbook](../runbooks/0027-mongodb.md#steps)을 따른다.
 
 1. 애플리케이션 연결 문자열은 내부 서비스명을 포함한다.
 
@@ -83,11 +101,12 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - `mongodb-rep1`과 `mongodb-rep2`에만 compose healthcheck가 있다. `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
 - replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
+
 ## Common Checks
 
 - `docker compose --profile mongodb config --quiet`
 - `docker compose logs mongo-init`
-- `docker exec mongodb-rep1 sh -lc 'MONGO_ROOT_PASSWORD=$(cat /run/secrets/mongodb_root_password | tr -d "\n"); mongosh -u "$MONGO_INITDB_ROOT_USERNAME" -p "$MONGO_ROOT_PASSWORD" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'`
+- `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../runbooks/0027-mongodb.md#steps)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
 
 ## Runbook Handoff
 
@@ -108,5 +127,5 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - [Operations index](../README.md)
 - [Operations policy](../policies/0027-mongodb.md)
 - [Recovery runbook](../runbooks/0027-mongodb.md)
-- [Infra README](../../../infra/04-data/nosql/mongodb/README.md)
-- [Compose implementation: infra/04-data/nosql/mongodb/docker-compose.yml](../../../infra/04-data/nosql/mongodb/docker-compose.yml)
+- [Infra README](../../../infra/04-data/mongodb/README.md)
+- [Compose implementation: infra/04-data/mongodb/docker-compose.yml](../../../infra/04-data/mongodb/docker-compose.yml)

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Unified Infrastructure Hardening Verification Script
-# Consolidates checks for all 11 tiers into a single execution and report.
+# Consolidates checks for all 12 tiers into a single execution and report.
 
 set -euo pipefail
 
@@ -260,8 +260,8 @@ requested tiers are checked.
 
 Supported tiers:
   01-gateway, 02-auth, 03-security, 04-data, 05-messaging,
-  06-observability, 07-workflow, 08-ai, 09-tooling,
-  10-communication, 11-laboratory
+  06-observability, 07-workflow, 08-ai, 09-platform-ops,
+  10-communication, 11-quality, 12-analytics
 EOF
 }
 
@@ -445,8 +445,8 @@ check_04_data() {
   local tier="04-data"
   start_tier "$tier"
 
-  local supabase_compose="infra/04-data/operational/supabase/docker-compose.yml"
-  local valkey_compose="infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml"
+  local supabase_compose="infra/04-data/supabase/docker-compose.yml"
+  local valkey_compose="infra/04-data/valkey-cluster/docker-compose.yml"
 
   check_file "$supabase_compose"
   check_file "$valkey_compose"
@@ -457,57 +457,22 @@ check_04_data() {
   check_service_healthcheck "$supabase_compose" "db"
   check_service_healthcheck "$supabase_compose" "auth"
 
-  # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
-  # time, and the table identity must never gain policy or bucket deletion.
-  local spark_wrapper="infra/04-data/lakehouse/spark/hyhome-spark.sh"
-  local table_bucket="infra/04-data/lake-and-object/seaweedfs/config/seaweedfs-table-bucket.sh"
-  check_file "$spark_wrapper"
+  local table_bucket="infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh"
   check_file "$table_bucket"
-  check_contains "$spark_wrapper" "rest.auth.type sigv4" "spark catalog must sign with SigV4"
-  check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
-  check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
-  check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
-  local trino_compose="infra/04-data/lakehouse/trino/docker-compose.yml"
-  local trino_catalog="infra/04-data/lakehouse/trino/catalog/lakehouse.properties"
-  check_file "$trino_compose"
-  check_file "$trino_catalog"
-  check_contains "$trino_compose" '127.0.0.1:${TRINO_HOST_PORT:-18090}:8080' "trino unauthenticated HTTP API must be loopback"
-  check_not_contains "$trino_compose" "traefik.enable" "trino must not have a gateway route"
-  check_contains "$trino_catalog" "iceberg.rest-catalog.security=SIGV4" "trino catalog must sign with SigV4"
-  check_contains "$trino_catalog" "iceberg.rest-catalog.signing-name=s3" "trino catalog signing name must be s3"
-  check_contains "$trino_catalog" 's3.aws-secret-key=${ENV:AWS_SECRET_ACCESS_KEY}' "trino S3 secret must come from the environment"
-  local flink_compose="infra/04-data/lakehouse/flink/docker-compose.yml"
-  local flink_wrapper="infra/04-data/lakehouse/flink/hyhome-flink.sh"
-  check_file "$flink_compose"
-  check_file "$flink_wrapper"
-  check_contains "$flink_compose" '127.0.0.1:${FLINK_HOST_PORT:-18091}:8081' "flink unauthenticated REST API must be loopback"
-  check_contains "$flink_compose" "web.submit.enable=false" "flink must refuse JAR upload through the REST API"
-  check_not_contains "$flink_compose" "traefik.enable" "flink must not have a gateway route"
-  check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
-  check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
-  check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
-  local gx_compose="infra/04-data/lakehouse/great-expectations/docker-compose.yml"
-  check_file "$gx_compose"
-  check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
-  check_contains "$gx_compose" "./suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
-  check_not_contains "$gx_compose" "ports:" "great-expectations must not publish a port"
-  check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
-  # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
-  local superset_compose="infra/04-data/analytics/superset/docker-compose.yml"
-  local superset_config="infra/04-data/analytics/superset/superset_config.py"
-  check_file "$superset_compose"
-  check_file "$superset_config"
-  check_contains "$superset_config" "AUTH_TYPE = AUTH_OAUTH" "superset must log in through Keycloak OIDC"
-  check_contains "$superset_config" 'AUTH_USER_REGISTRATION_ROLE = "Gamma"' "superset self-registration must grant no data access"
-  check_contains "$superset_config" '"code_challenge_method": "S256"' "superset OIDC must use PKCE"
-  check_contains "$superset_config" 'SECRET_KEY = _secret("superset_secret_key")' "superset signing key must come from a secret file"
-  check_not_contains "$superset_compose" "SUPERSET_SECRET_KEY" "superset signing key must not be an environment variable"
-  check_not_contains "$superset_compose" "ports:" "superset must be reached only through Traefik"
-  check_contains "$superset_compose" "traefik.http.routers.superset.middlewares: gateway-standard-chain@file" "superset native oidc gateway chain missing"
-  check_not_contains "$superset_compose" "sso-auth" "superset double-auth middleware must not be enabled"
   if grep -Eq 's3tables:(\*|PutTableBucketPolicy|DeleteTableBucket)' "$table_bucket"; then
     fail "lakehouse table bucket policy must not grant policy changes or bucket deletion"
   fi
+  local redisinsight_compose="infra/04-data/redisinsight/docker-compose.yml"
+  check_file "$redisinsight_compose"
+  if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
+    fail "redisinsight registry drift"
+  fi
+  check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
+  check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
+  check_service_network "$redisinsight_compose" "redisinsight" "mng_data_net"
+  check_service_network "$redisinsight_compose" "redisinsight" "lab_net"
+
+  check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }
 
 # --- Tier 05: Messaging ---
@@ -536,6 +501,22 @@ check_06_observability() {
   check_contains "$compose_file" 'traefik.http.routers.prometheus-api.rule: Host(`prometheus.${DEFAULT_URL}`) && PathPrefix(`/api/v1/`) && HeaderRegexp(`Authorization`, `^Basic `)' "prometheus API route must stay limited to Basic-authenticated /api/v1/ requests"
   check_contains "$compose_file" "traefik.http.routers.prometheus-api.middlewares: gateway-standard-chain@file,prometheus-api-auth@file" "prometheus API route auth missing"
   check_contains "infra/01-gateway/traefik/dynamic/middleware.yml" 'usersFile: "/run/secrets/traefik_prometheus_api_htpasswd"' "prometheus API basic auth middleware missing"
+  local dozzle_compose="infra/06-observability/dozzle/docker-compose.yml"
+  local dozzle_image dozzle_compose_image
+  check_file "$dozzle_compose"
+  dozzle_image="$(registry_component_image "Dozzle")"
+  dozzle_compose_image="$(compose_service_image "$dozzle_compose" "dozzle")"
+
+  check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
+  check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker" "dozzle gateway/IP boundary missing"
+  check_contains "$dozzle_compose" "DOZZLE_AUTH_PROVIDER: oidc" "dozzle native authentication missing"
+  check_contains "$dozzle_compose" "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret" "dozzle OIDC secret grant missing"
+  if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
+    fail "dozzle image tag mismatch"
+  fi
+  check_service_network "$dozzle_compose" "dozzle" "edge_net"
+
+  check_service_healthcheck "$dozzle_compose" "dozzle"
 }
 
 # --- Tier 07: Workflow ---
@@ -576,25 +557,30 @@ check_08_ai() {
   check_contains "$webui_compose" "ENABLE_OAUTH_SIGNUP: 'false'" "open-webui oauth signup must be disabled"
   check_contains "$webui_compose" "OAUTH_MERGE_ACCOUNTS_BY_EMAIL: 'false'" "open-webui temporary email merge must be disabled"
   check_contains "$webui_compose" "openwebui_oidc_client_secret" "open-webui oidc secret missing"
+  local open_notebook_compose="infra/08-ai/open-notebook/docker-compose.yml"
+  check_file "$open_notebook_compose"
+  # Owner decision b90b74837: Open Notebook relies on its own password plus the
+  # admin CIDR allowlist instead of shared SSO; see POL-0073.
+  check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file" "open-notebook middleware chain mismatch"
+  check_contains "$open_notebook_compose" "127.0.0.1:\${OPEN_NOTEBOOK_API_URL:-5055}:5055" "open-notebook API host port must stay loopback-bound"
+  check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
+  check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
+  check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"
+  check_service_network "$open_notebook_compose" "open_notebook" "ai_net"
+  check_service_network "$open_notebook_compose" "surrealdb" "ai_net"
+
+  check_service_healthcheck "$open_notebook_compose" "surrealdb"
+  check_service_healthcheck "$open_notebook_compose" "open_notebook"
 }
 
-# --- Tier 09: Tooling ---
-check_09_tooling() {
-  local tier="09-tooling"
+# --- Tier 09: Platform Operations ---
+check_09_platform_ops() {
+  local tier="09-platform-ops"
   start_tier "$tier"
-
-  local sonarqube_compose="infra/09-tooling/sonarqube/docker-compose.yml"
-  check_file "$sonarqube_compose"
-  check_contains "$sonarqube_compose" "sso-auth@file" "sonarqube sso missing"
-
-  local wiremock_compose="infra/09-tooling/wiremock/docker-compose.yml"
-  check_file "$wiremock_compose"
-  check_contains "$wiremock_compose" '127.0.0.1:${WIREMOCK_HOST_PORT:-18088}:8080' "wiremock admin API publication must be loopback"
-
-  local pact_compose="infra/09-tooling/pact-broker/docker-compose.yml"
-  check_file "$pact_compose"
-  check_contains "$pact_compose" '127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}:9292' "pact-broker publication must be loopback"
-  check_contains "$pact_compose" "PACT_BROKER_ALLOW_PUBLIC_READ: 'false'" "pact-broker public read must stay disabled"
+  local package
+  for package in opentofu terrakube registry renovate restic; do
+    check_file "infra/09-platform-ops/$package/docker-compose.yml"
+  done
 }
 
 # --- Tier 10: Communication ---
@@ -603,9 +589,7 @@ check_10_communication() {
   start_tier "$tier"
 
   local mail_compose="infra/10-communication/stalwart/docker-compose.yml"
-  local mailpit_compose="infra/10-communication/mailpit/docker-compose.yml"
   check_file "$mail_compose"
-  check_file "$mailpit_compose"
   check_contains "$mail_compose" "service: template-infra-readonly-med" "stalwart template inheritance missing"
   # SPEC-0180 S17: internal-only, no relaying, secret only through the wrapper.
   check_not_contains "$mail_compose" "ports:" "stalwart must not publish a host port"
@@ -615,6 +599,28 @@ check_10_communication() {
   check_contains "$mail_compose" "traefik.http.routers.stalwart-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "stalwart admin route sso middleware mismatch"
   check_service_network "$mail_compose" "stalwart" "edge_net"
   check_service_healthcheck "$mail_compose" "stalwart"
+}
+
+# --- Tier 11: Quality ---
+check_11_quality() {
+  local tier="11-quality"
+  start_tier "$tier"
+
+  local sonarqube_compose="infra/11-quality/sonarqube/docker-compose.yml"
+  check_file "$sonarqube_compose"
+  check_contains "$sonarqube_compose" "sso-auth@file" "sonarqube sso missing"
+
+  local wiremock_compose="infra/11-quality/wiremock/docker-compose.yml"
+  check_file "$wiremock_compose"
+  check_contains "$wiremock_compose" '127.0.0.1:${WIREMOCK_HOST_PORT:-18088}:8080' "wiremock admin API publication must be loopback"
+
+  local pact_compose="infra/11-quality/pact-broker/docker-compose.yml"
+  check_file "$pact_compose"
+  check_contains "$pact_compose" '127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}:9292' "pact-broker publication must be loopback"
+  check_contains "$pact_compose" "PACT_BROKER_ALLOW_PUBLIC_READ: 'false'" "pact-broker public read must stay disabled"
+
+  local mailpit_compose="infra/11-quality/mailpit/docker-compose.yml"
+  check_file "$mailpit_compose"
   check_contains "$mailpit_compose" "traefik.http.routers.mailpit-ui.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file" "mailpit UI auth missing"
   check_contains "$mailpit_compose" '127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}' "mailpit UI publication must be loopback"
   check_contains "$mailpit_compose" '127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}' "mailpit SMTP publication must be loopback"
@@ -637,54 +643,61 @@ MAILPIT_HEALTH
 
 }
 
-# --- Tier 11: Laboratory ---
-check_11_laboratory() {
-  local tier="11-laboratory"
+# --- Tier 12: Analytics ---
+check_12_analytics() {
+  local tier="12-analytics"
   start_tier "$tier"
-
-  local dozzle_compose="infra/11-laboratory/dozzle/docker-compose.yml"
-  local open_notebook_compose="infra/11-laboratory/open-notebook/docker-compose.yml"
-  local redisinsight_compose="infra/11-laboratory/redisinsight/docker-compose.yml"
-  local dozzle_image
-  local dozzle_compose_image
-
-  check_file "$dozzle_compose"
-  check_file "$open_notebook_compose"
-  check_file "$redisinsight_compose"
-  dozzle_image="$(registry_component_image "Dozzle")"
-  dozzle_compose_image="$(compose_service_image "$dozzle_compose" "dozzle")"
-
-  check_contains "$dozzle_compose" "/var/run/docker.sock:/var/run/docker.sock:ro" "dozzle socket must be read-only"
-  check_contains "$dozzle_compose" "traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker" "dozzle gateway/IP boundary missing"
-  check_contains "$dozzle_compose" "DOZZLE_AUTH_PROVIDER: oidc" "dozzle native authentication missing"
-  check_contains "$dozzle_compose" "DOZZLE_AUTH_OIDC_CLIENT_SECRET_FILE: /run/secrets/dozzle_client_secret" "dozzle OIDC secret grant missing"
-  if [[ "$dozzle_compose_image" != "$dozzle_image" ]]; then
-    fail "dozzle image tag mismatch"
-  fi
-  check_service_network "$dozzle_compose" "dozzle" "edge_net"
-
-  # Owner decision b90b74837: Open Notebook relies on its own password plus the
-  # admin CIDR allowlist instead of shared SSO; see POL-0073.
-  check_contains "$open_notebook_compose" "traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file" "open-notebook middleware chain mismatch"
-  check_contains "$open_notebook_compose" "127.0.0.1:\${OPEN_NOTEBOOK_API_URL:-5055}:5055" "open-notebook API host port must stay loopback-bound"
-  check_contains "$open_notebook_compose" "condition: service_healthy" "open-notebook health-gated dependency missing"
-  check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_PASSWORD_FILE=/run/secrets/open_notebook_password" "open-notebook password secret file missing"
-  check_contains "$open_notebook_compose" "OPEN_NOTEBOOK_ENCRYPTION_KEY_FILE=/run/secrets/open_notebook_encryption_key" "open-notebook encryption key secret file missing"
-  check_service_network "$open_notebook_compose" "open_notebook" "ai_net"
-  check_service_network "$open_notebook_compose" "surrealdb" "ai_net"
-
-  if [[ "$(compose_service_image "$redisinsight_compose" "redisinsight")" != "$(registry_component_image "RedisInsight")" ]]; then
-    fail "redisinsight registry drift"
-  fi
-  check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
-  check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
-  check_service_network "$redisinsight_compose" "redisinsight" "mng_data_net"
-  check_service_network "$redisinsight_compose" "redisinsight" "lab_net"
-
-  check_service_healthcheck "$dozzle_compose" "dozzle"
-  check_service_healthcheck "$open_notebook_compose" "surrealdb"
-  check_service_healthcheck "$open_notebook_compose" "open_notebook"
-  check_service_healthcheck "$redisinsight_compose" "redisinsight"
+  # Lakehouse (SPEC-0180 S12): an edited catalog key degrades silently at run
+  # time, and the table identity must never gain policy or bucket deletion.
+  local spark_wrapper="infra/12-analytics/spark/hyhome-spark.sh"
+  check_file "$spark_wrapper"
+  check_contains "$spark_wrapper" "rest.auth.type sigv4" "spark catalog must sign with SigV4"
+  check_contains "$spark_wrapper" "rest.signing-name s3" "spark catalog signing name must be s3"
+  check_contains "$spark_wrapper" "s3.path-style-access true" "spark S3 must use path-style access"
+  check_contains "$spark_wrapper" "io-impl org.apache.iceberg.aws.s3.S3FileIO" "spark must use S3FileIO"
+  local trino_compose="infra/12-analytics/trino/docker-compose.yml"
+  local trino_catalog="infra/12-analytics/trino/catalog/lakehouse.properties"
+  check_file "$trino_compose"
+  check_file "$trino_catalog"
+  check_contains "$trino_compose" '127.0.0.1:${TRINO_HOST_PORT:-18090}:8080' "trino unauthenticated HTTP API must be loopback"
+  check_not_contains "$trino_compose" "traefik.enable" "trino must not have a gateway route"
+  check_contains "$trino_catalog" "iceberg.rest-catalog.security=SIGV4" "trino catalog must sign with SigV4"
+  check_contains "$trino_catalog" "iceberg.rest-catalog.signing-name=s3" "trino catalog signing name must be s3"
+  check_contains "$trino_catalog" 's3.aws-secret-key=${ENV:AWS_SECRET_ACCESS_KEY}' "trino S3 secret must come from the environment"
+  local flink_compose="infra/12-analytics/flink/docker-compose.yml"
+  local flink_wrapper="infra/12-analytics/flink/hyhome-flink.sh"
+  check_file "$flink_compose"
+  check_file "$flink_wrapper"
+  check_contains "$flink_compose" '127.0.0.1:${FLINK_HOST_PORT:-18091}:8081' "flink unauthenticated REST API must be loopback"
+  check_contains "$flink_compose" "web.submit.enable=false" "flink must refuse JAR upload through the REST API"
+  check_not_contains "$flink_compose" "traefik.enable" "flink must not have a gateway route"
+  check_contains "$flink_wrapper" "'rest.auth.type' = 'sigv4'" "flink catalog must sign with SigV4"
+  check_contains "$flink_wrapper" "'rest.signing-name' = 's3'" "flink catalog signing name must be s3"
+  check_contains "$flink_wrapper" "'io-impl' = 'org.apache.iceberg.aws.s3.S3FileIO'" "flink must use S3FileIO"
+  local gx_compose="infra/12-analytics/great-expectations/docker-compose.yml"
+  check_file "$gx_compose"
+  check_contains "$gx_compose" "GX_ANALYTICS_ENABLED: 'false'" "great-expectations must not send usage events"
+  check_contains "$gx_compose" "./suites:/opt/hyhome/suites:ro" "great-expectations suites must be read-only"
+  check_not_contains "$gx_compose" "ports:" "great-expectations must not publish a port"
+  check_contains "$gx_compose" "service: template-job-med" "great-expectations must use the read-only job template"
+  # Superset (SPEC-0180 S16): native Keycloak OIDC, secrets from files only.
+  local superset_compose="infra/12-analytics/superset/docker-compose.yml"
+  local superset_config="infra/12-analytics/superset/superset_config.py"
+  check_file "$superset_compose"
+  check_file "$superset_config"
+  check_contains "$superset_config" "AUTH_TYPE = AUTH_OAUTH" "superset must log in through Keycloak OIDC"
+  check_contains "$superset_config" 'AUTH_USER_REGISTRATION_ROLE = "Gamma"' "superset self-registration must grant no data access"
+  check_contains "$superset_config" '"code_challenge_method": "S256"' "superset OIDC must use PKCE"
+  check_contains "$superset_config" 'SECRET_KEY = _secret("superset_secret_key")' "superset signing key must come from a secret file"
+  check_not_contains "$superset_compose" "SUPERSET_SECRET_KEY" "superset signing key must not be an environment variable"
+  check_not_contains "$superset_compose" "ports:" "superset must be reached only through Traefik"
+  check_contains "$superset_compose" "traefik.http.routers.superset.middlewares: gateway-standard-chain@file" "superset native oidc gateway chain missing"
+  check_not_contains "$superset_compose" "sso-auth" "superset double-auth middleware must not be enabled"
+  local dbt_compose="infra/12-analytics/dbt/docker-compose.yml"
+  check_file "$dbt_compose"
+  check_contains "$dbt_compose" "service: template-job-med" "dbt must use the read-only job template"
+  check_contains "$dbt_compose" "./projects:/workspace:ro" "dbt project must remain read-only"
+  check_contains "$dbt_compose" "./profiles:/config:ro" "dbt profiles must remain read-only"
 }
 
 run_tier() {
@@ -699,9 +712,10 @@ run_tier() {
   06-observability | observability | obs) check_06_observability ;;
   07-workflow | workflow) check_07_workflow ;;
   08-ai | ai) check_08_ai ;;
-  09-tooling | tooling) check_09_tooling ;;
+  09-platform-ops | platform-ops) check_09_platform_ops ;;
   10-communication | communication | comm) check_10_communication ;;
-  11-laboratory | laboratory | lab) check_11_laboratory ;;
+  11-quality | quality) check_11_quality ;;
+  12-analytics | analytics) check_12_analytics ;;
   -h | --help)
     usage
     exit 0
@@ -732,9 +746,10 @@ main() {
     run_tier 06-observability
     run_tier 07-workflow
     run_tier 08-ai
-    run_tier 09-tooling
+    run_tier 09-platform-ops
     run_tier 10-communication
-    run_tier 11-laboratory
+    run_tier 11-quality
+    run_tier 12-analytics
   else
     local tier
     for tier in "$@"; do

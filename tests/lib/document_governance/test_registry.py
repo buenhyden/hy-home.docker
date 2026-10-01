@@ -1511,7 +1511,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         valid = {
             "implementation_services": {
-                "infra/04-data/nosql/cassandra/docker-compose.yml": [
+                "infra/04-data/cassandra/docker-compose.yml": [
                     "cassandra-node1",
                     "cassandra-exporter",
                 ]

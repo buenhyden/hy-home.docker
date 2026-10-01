@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.4.1"
+version: "0.5.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -16,11 +16,11 @@ created: "2026-09-19"
 
 ## Overview
 
-HOME secret control plane이며, Vault는 별도의 마이그레이션 소스로 남는다.
+HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으므로 현재 마이그레이션·복구 소스로 취급하지 않는다.
 
 ## Policy Scope
 
-`infra/03-security/openbao`와 `core / security / secrets` 프로필 아래의 서비스
+`infra/03-security/openbao`와 `core / dev / local / security / secrets` 프로필 아래의 서비스
 `openbao openbao-agent`.
 
 ## Controls
@@ -54,19 +54,30 @@ policy 적용, 토큰 발급/폐기, 파일 작성, Prometheus 재생성은 별�
 
 hy-home.k8s 클러스터는 `kubernetes` auth method로 인증한다. External Secrets service
 account (`external-secrets`, namespace `external-secrets`, audience `vault`)만 role
-`eso-read-platform`을 통해 로그인할 수 있으며, 그 policy는 `secret/platform/argocd`,
-`postgres-app`, `notifications` 항목만 읽는다. 클러스터 부트스트랩 토큰은 오직
+`eso-read-platform`을 통해 로그인할 수 있으며, 그 policy는 `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`의
+정확한 KV v2 data/metadata 경로만 읽는다. wildcard, list, create/update/delete/sudo를
+부여하지 않는다. 클러스터 부트스트랩 토큰은 오직
 `k8s-bootstrap` 토큰 role에서 나온다: orphan, 2시간 TTL, policy `k8s-bootstrap`
 (`platform/argocd` 읽기). OIDC operator는 클러스터 재구축마다 `auth/kubernetes/config`를
 갱신하고 이 토큰을 발급할 수 있다. method 활성화, policy/role 작성, KV 항목 작성에는
 승인된 root 세션이 필요하다. 클러스터가 도달할 수 있도록 OpenBao Traefik route는 SSO나
 IP allowlist 없이 유지한다.
 
+이 다섯 경로는 [추적 ACL](../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl)의
+범위이며 사람이 쓰는 operator의 create/update 권한과 구분한다. 기존 세 경로 설명
+이후 owner-authored 변경 `e3d811870`과 `5fb725b2a`(2026-09-23)가 Prometheus와
+Kiali Grafana 읽기를 추가했고, [완료된 Task 0008](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0008-storage-security-lakehouse-convergence.md)의
+해당 경로·통합/merge 기록과 [2026-09-24 owner 완료 결정](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md#completion-basis-owner-decision-2026-09-24)이
+그 제한된 추가의 역사적 근거다. 이 교정은 임의 권한 확대를 허용하지 않는다.
+ESO 주체가 침해되면 이 다섯 항목에 대한 읽기가 함께 영향을 받으므로 exact
+service-account/namespace/audience 바인딩을 유지한다. 실제 설치된 정책·role과
+경로 밖 거부는 별도 검증하며 source나 문자열 하드닝 통과로 증명하지 않는다.
+
 Root 토큰은 bootstrap과 break-glass 용도로만 사용한다. 다음 사항이 모두 동일한 유지보수
 기록 안에서 검증되기 전에는 마지막으로 사용 가능한 root 토큰을 폐기하지 않는다: human
 OIDC 로그인이 성공한다, 결과로 나온 OpenBao 토큰이 기대한 non-root policy를 가진다,
 AppRole renderer 접근이 여전히 선언된 두 KV 경로만 읽는다, 배포된 OpenBao 버전의 root
-recovery 방법이 문서화되어 있다, root 토큰 폐기가 관찰되었다.
+recovery 방법이 문서화되어 있다. 그 뒤 root를 폐기하고 거부 결과를 같은 기록에 남긴다.
 
 Traceability에 문서화된 upstream OpenBao 릴리스 라인은 `operator generate-root`에
 대해 인증된 `/sys/generate-root-token` 엔드포인트를 사용한다. 권한 있는 사람이나 root
@@ -81,6 +92,20 @@ listener에서 명시적으로 승인된 break-glass 예외로만 다시 활성�
 [Implementation](../../../infra/03-security/openbao/docker-compose.yml)과
 [version projection](../../../infra/tech-stack.versions.json)이 런타임 고정값을 소유한다.
 
+### Persistence, limits and removal
+
+두 서비스의 공통 자원 상한·변경 적용은 [POL-0006](0006-infrastructure-optimization-governance.md),
+버전 변경은 [POL-0086](0086-dependency-version-management.md)을 적용한다.
+Raft 상태와 Agent bootstrap/output, offline custody는 서로 다른 보호 입력이며
+[POL-0021](0021-backup-and-restore.md)의 OpenBao state-owner retention·암호화·복구
+기준을 함께 적용한다. renderer는 선언된 두 KV data 경로만 read하며 unused template가
+있다는 이유로 권한을 넓히지 않는다. Agent 재생성은 secret authority 복원이 아니다.
+
+Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하다. 승인된
+격리 복원 없이 data rollback을 준비됐다고 표시하지 않는다. 마지막 관리 접근이나
+unseal/custody 자료를 검증 전에 폐기하지 않는다. 서비스·Agent 제거는 소비자 이관,
+credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `down -v`로 대체하지 않는다.
+
 ## Exceptions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
@@ -91,6 +116,18 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 `disable_unauthed_generate_root_endpoints = false`로 설정된 loopback 전용 listener다.
 이 설정은 public이나 gateway listener에서는 금지되며 steady-state 설정에 남아 있을 수
 없다.
+
+### Existing custody decision and missing closure
+
+기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao_unseal_keys.txt`
+한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
+private registry는 SEC-003 placeholder만 보관하고 이 파일이 유일한 사본이다.
+이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체가 unseal threshold를
+충족할 수 있고 파일 손실이 복구 자료 가용성을 잃게 할 수 있다. 이 문서는 기존
+결정을 이동해 보존할 뿐 새 credential 처리나 예외 확대를 승인하지 않는다.
+기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
+표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
+share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
 
 ## Verification
 

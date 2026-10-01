@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.9"
+version: "1.0.10"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -33,6 +33,7 @@ created: "2025-11-12"
 - cAdvisor (컨테이너 메트릭)
 - Pushgateway (배치 작업 메트릭 푸시)
 - Gatus (엔드포인트 가용성 모니터링)
+- Dozzle (선택적 컨테이너 로그 조회; 별도 leaf Compose)
 
 ### Out of Scope
 
@@ -46,6 +47,7 @@ created: "2025-11-12"
 06-observability/
 ├── alertmanager/    # Alert routing logic
 ├── alloy/          # Unified telemetry collection
+├── dozzle/         # 선택적 로그 조회와 별도 Compose
 ├── gatus/          # Endpoint availability monitoring
 ├── grafana/        # Dashboards & Visualization
 ├── loki/           # Log aggregation
@@ -53,7 +55,7 @@ created: "2025-11-12"
 ├── pushgateway/    # Batch job metric push endpoint
 ├── pyroscope/      # Continuous profiling
 ├── tempo/          # Distributed tracing
-├── docker-compose.yml      # Observability compose, selected by obs and dev
+├── docker-compose.yml      # 서비스별 profile을 가진 tier 공통 Compose
 └── README.md
 ```
 
@@ -61,9 +63,9 @@ created: "2025-11-12"
 
 | Field | Evidence |
 | --- | --- |
-| Purpose | Observability Tier (06-observability) 폴더 색인. 서비스: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`, `gatus`; 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨 |
+| Purpose | Observability Tier (06-observability) 폴더 색인. 서비스: `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `node-exporter`, `cadvisor`, `pyroscope`, `alertmanager`, `pushgateway`, `gatus`, `dcgm-exporter`; 보조 서비스는 Compose 원본 참조; 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨 |
 | Config files | `docker-compose.yml` |
-| Config values | 비밀이 아닌 S3 액세스 키 ID(`loki`, `tempo`), Grafana 서버/OAuth 설정, 서비스 포트를 사용함. 프로필: `obs`, `dev` |
+| Config values | 비밀이 아닌 S3 액세스 키 ID(`loki`, `tempo`), Grafana 서버/OAuth 설정, 서비스 포트를 사용함. 프로필: 아래 서비스별 선택 표 참조; `obs-gpu`는 별도 선택 |
 | Compose linkage | 루트 include는 [root docker-compose.yml](../../docker-compose.yml) -> `infra/06-observability/docker-compose.yml` 경로로 활성화됨. `PROMETHEUS_CONFIG_FILE`, `CADVISOR_CPUS`, `CADVISOR_MEM_LIMIT`가 과거에는 별도 파일이었던 토폴로지를 선택함. |
 | Networks | `edge_net`, `mng_data_net`, `object_net`, `obs_net` |
 | Volumes | Prometheus/Loki/Tempo/Alloy/Grafana/Pyroscope 설정 마운트와 `${DEFAULT_OBSERVABILITY_DIR}` 하위 바인드 기반 명명 데이터 볼륨 |
@@ -155,8 +157,14 @@ docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
 | `pyroscope` | HOME | `obs`, `profiling` |
 | `dcgm-exporter` | HOME | `obs-gpu` |
 | `pushgateway` | OPTIONAL | `obs`, `batch-metrics` |
+| `dozzle` | OPTIONAL | `admin`, `admin-logs` |
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/README.md` 하위의 `GDE/POL/RUN-0039`, `0040`, `0041`, `0043`, `0044`, `0045`, `0046`, `0047`, `0049`, `0087`입니다.
+
+Dozzle은 [별도 패키지](dozzle/README.md)의 native OIDC·gateway·admin CIDR을
+사용합니다. 읽기 전용 Docker socket도 광범위한 API 가시성을 줍니다. `/data`는
+설정이며 컨테이너 로그 사본 저장소가 아닙니다. 루트는 tier Compose와 Dozzle
+leaf를 각각 include하고, source hardening은 같은 Observability tier에서 검사합니다.
 
 ## Related Documents
 

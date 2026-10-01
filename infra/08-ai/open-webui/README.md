@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -90,7 +90,7 @@ open-webui/
 ## Related Documents
 
 - [Ollama Implementation](../ollama/README.md)
-- [Qdrant Implementation](../../04-data/specialized/qdrant/README.md) (참고용; 08-ai에서는 연결되어 사용되지 않음)
+- [Qdrant Implementation](../../04-data/qdrant/README.md) (참고용; 08-ai에서는 연결되어 사용되지 않음)
 - Open WebUI usage guide (`docs/05.operations/guides/0057-open-webui.md`)
 - Open WebUI operations policy (`docs/05.operations/policies/0057-open-webui.md`)
 - Open WebUI recovery runbook (`docs/05.operations/runbooks/0057-open-webui.md`)

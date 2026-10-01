@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -16,8 +16,7 @@ created: "2026-03-26"
 
 ## Context and Stakeholders
 
-The communication tier separates development message capture from an optional
-real mail server. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
+The mail requirements separate development message capture in `11-quality/mailpit` from the optional internal mail server in `10-communication/stalwart`. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
@@ -27,11 +26,8 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
   `/data/mailpit.db`, loopback-published SMTP/UI ports, and a Traefik UI route.
   It accepts arbitrary SMTP authentication by design and must not be internet
   exposed or described as a delivery MTA.
-- **Stalwart owns:** public SMTP/submission/SMTPS/IMAPS/ManageSieve listeners,
-  management UI, `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`, and certificate
-  mounts. UI ForwardAuth does not secure mail protocols.
-- **Unknown from Compose:** the configured Stalwart data/blob/directory backends,
-  relay policy, domains, users, DKIM keys, and DNS provider state. Operators must
+- **Stalwart owns:** internal SMTP25/submission587, implicit-TLS IMAP993 and HTTP8080 listeners, a management UI, and `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`. No host port is published. Its helper reconciles the complete listener set from `config/plan.ndjson`, including relay denial. Both `edge_net` and `mail_net` peers can reach listeners bound to `[::]`; UI ForwardAuth does not secure direct mail/API access.
+- **Declared versus observed:** tracked `config/plan.ndjson` supplies the domain, listeners and relay-denial intent. The actual datastore/backend state, successful plan application, users, DKIM keys and DNS provider state remain unverified. Operators must
   inspect the running configuration without exposing values before choosing a
   backend-specific export or snapshot.
 - **Non-goals:** Mailpit does not replace Stalwart, and Stalwart is not an
@@ -50,14 +46,14 @@ flowchart LR
   DevApp -->|SMTP test| Mailpit[(SQLite capture)]
   Browser -->|loopback/Traefik UI| Mailpit
   MailClient -->|authenticated mail protocols| Stalwart
-  Stalwart -->|SMTP after DNS/TLS/relay approval| Internet
+  Stalwart -.->|external delivery requires separate promotion approval| Internet
   Stalwart --> Store[(configured data/blob/directory backends)]
 ```
 
 ## Deployment View
 
 The root project includes both leaves. Profile choice determines activation:
-`mail-dev`/`dev`/`local` select Mailpit and `mail-server` selects Stalwart. A
+`mail-dev`/`dev`/`local` select Mailpit and `mail-server` selects Stalwart plus `stalwart-config`. The helper uses its selected `config/Dockerfile` and existing reconciliation wrapper. A
 currently running optional service may remain running when another profile is
 rendered; profile rendering is not a stop operation.
 
@@ -65,9 +61,7 @@ rendered; profile rendering is not a stop operation.
 
 - **Isolation:** applications choose Mailpit explicitly for tests; no captured
   development message may be relayed externally.
-- **Security:** Stalwart needs TLS and authenticated protocol evidence plus
-  SPF/DKIM/DMARC and relay-denial tests. The current public listeners increase the
-  exposure boundary beyond the web UI.
+- **Security:** current internal operation needs authenticated protocol and relay-denial evidence. Public delivery additionally requires DNS/SPF/DKIM/DMARC and TLS promotion acceptance. No public listener or internet-delivery success is inferred from current source; shared-network reachability remains broader than the browser route.
 - **Recoverability:** Mailpit recovery preserves SQLite with its WAL or uses the
   official dump/ingest path. Stalwart recovery captures configuration, all active
   storage backends, keys/certificates, and DNS dependencies at one consistency

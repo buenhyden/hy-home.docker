@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -18,6 +18,15 @@ created: "2026-05-17"
 
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
+
+### 작업 선택과 복구 전제
+
+변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](0021-backup-and-restore.md)를
+적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
+승격 승인 중 하나라도 불명확하면 중단한다. config·secret 교체는
+[공통 수명주기 정책](../policies/0006-infrastructure-optimization-governance.md)의
+단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
+폐기 검증을 대신하지 않는다.
 
 ## Procedure
 
@@ -57,6 +66,32 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
   push/pull과 digest 동등성을 확인하며, format이나 동작이 호환되지 않으면 image와
   storage snapshot을 함께 되돌린다.
 
+### 계획된 저장소 유지보수
+
+추적되는 설정에는 읽기 전용 유지보수 모드가 없다. 일관된 파일시스템 백업을 위해
+클라이언트를 차단하고 Registry를 중지한 다음, 전체 bind 디렉터리를 스냅샷/복사하고
+카탈로그/태그/digest 인벤토리를 기록한다. 격리된 Registry로 복원하고, 승격 전에
+`/v2/`, 카탈로그/태그, 선택된 digest의 pull을 검증한다. garbage collection을
+하려면 Registry가 읽기 전용이거나 중지된 상태여야 하고 파괴적 데이터 작업에 대한 별도
+승인도 받아야 한다. 업그레이드 전에는 일관된 백업을 확보하고 Distribution의 release/스토리지
+변경 사항을 검토하고 복원된 사본으로 새 이미지를 테스트하고 push/pull/digest를
+검증한다. 이 문서 작업에서는 백업, 복원, GC, 업그레이드를 실행하지 않았다.
+
+### 로컬 이미지 이관과 제거
+
+실행 중이 아닌 로컬 빌드 이미지는 Registry에 보관해 두고 `/`의 Docker 이미지 저장소에서는
+빼 둘 수 있다. `${DEFAULT_REGISTRY_DIR}`는 데이터 디스크에
+있다.
+
+1. 이미지를 `localhost:${REGISTRY_PORT:-5000}/<repository>:<tag>`로 태그하고
+   push한다.
+2. push된 참조를 digest로 pull하고 push 출력의 digest와 비교한다. repository,
+   tag, digest, 출처 Dockerfile을 Task에 기록한다.
+3. 2단계가 성공한 후에만 로컬 태그를 제거한다. 실행 중이든 중지되었든 컨테이너가
+   여전히 사용하는 이미지는 절대 제거하지 않는다.
+4. 다시 사용하려면 Registry 참조를 pull하여 Compose 파일이 기대하는 이름으로
+   재태깅하거나, 추적되는 Dockerfile에서 재빌드한다.
+
 ## Evidence
 
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
@@ -69,6 +104,8 @@ Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는�
 
 ## Escalation
 
+책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
 untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
 filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
 
@@ -76,7 +113,7 @@ filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한�
 
 - [Guide](../guides/0065-registry.md) (`GDE-0065`)
 - [Policy](../policies/0065-registry.md) (`POL-0065`)
-- [Registry Compose](../../../infra/09-tooling/registry/docker-compose.yml)
+- [Registry Compose](../../../infra/09-platform-ops/registry/docker-compose.yml)
 
 ## Related Documents
 

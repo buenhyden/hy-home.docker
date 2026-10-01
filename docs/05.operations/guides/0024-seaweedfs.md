@@ -1,16 +1,16 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.2"
+version: "1.5.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
 - "POL-0024"
 implementation_services:
-  infra/04-data/lake-and-object/seaweedfs/docker-compose.yml:
+  infra/04-data/seaweedfs/docker-compose.yml:
   - 'seaweedfs-buckets'
   - 'seaweedfs-filer'
   - 'seaweedfs-master'
@@ -30,11 +30,11 @@ FUSE mount는 S04에서 제거되었으며 master와 filer에는 route가 없다
 
 ### Current implementation
 
-[`infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`](../../../infra/04-data/lake-and-object/seaweedfs/docker-compose.yml)은
+[`infra/04-data/seaweedfs/docker-compose.yml`](../../../infra/04-data/seaweedfs/docker-compose.yml)은
 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를
 정의한다. profile `seaweedfs`와 `storage-seaweedfs`가 네 service를 모두
 선택한다. 각 service는 UID 1000으로
-[`config/hyhome-seaweedfs.sh`](../../../infra/04-data/lake-and-object/seaweedfs/config/hyhome-seaweedfs.sh)를
+[`config/hyhome-seaweedfs.sh`](../../../infra/04-data/seaweedfs/config/hyhome-seaweedfs.sh)를
 통해 시작한다. 이 script는 `security.toml`(volume과 filer JWT key, gRPC
 mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다.
 secret이나 certificate가 없으면 시작을 거부한다.
@@ -49,6 +49,22 @@ S3만 Prometheus metric(`-metricsPort=9327`)을 제공한다. Prometheus는
 master, volume, filer는 internal network에서 scrape되지 않는다. Alert:
 `SeaweedFSS3Down`(target down 2분)과 `SeaweedFSDataDiskLow`(node-exporter
 기준 data-disk filesystem free 15% 미만 10분).
+
+
+### Identity-specific behavior
+
+master 는 topology/volume 배정, volume 은 객체 bytes, filer 는 metadata/leveldb2 를 보존한다. s3 는 secret 에서 생성한 tmpfs config 와 gRPC mTLS 를 쓰며 네트워크 3 개에 참여한다.4.47 catalog8181 도 같은 s3 process 의 0.0.0.0 에 bind 되어 edge_net/seaweed_internal/object_net peer 가 접근 가능하다. host mapping/catalog router 는 없고 데이터 관리 route 는 인증 middleware 로 감싼다. object_net-only 요구는 미준수로 별도 구현 수정이 필요하다. buckets job 은 admin 으로 bucket 을 생성하며 table-bucket 은 GDE0094 소유다. 익명 CDN read 예외를 전체 anonymous 거부로 설명하지 않는다. 인증서 교체는 모든 peer 의 새 CA/leaf 수용을 검증한 승인 작업이다.
+
+| 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
+| --- | --- | --- | --- |
+| `seaweedfs-buckets` | admin bucket provisioning job; 기존 bucket 보존 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
+| `seaweedfs-filer` | filer metadata/leveldb2 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
+| `seaweedfs-master` | topology/volume 배정; master metadata 보존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
+| `seaweedfs-s3` | S3·Iceberg·metrics listener; 생성 config, 자체 durable data 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
+| `seaweedfs-volume` | object bytes 보존; 최소 여유 공간에서 write 거부 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
+
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+
 
 ### Consumers, buckets and migration
 
@@ -128,6 +144,7 @@ SeaweedFS의 license는 Apache-2.0이다.
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
+
 ## Common Checks
 
 정확한 root profile, service, health/resource control, writable-state
@@ -138,7 +155,7 @@ ownership, secret reference, exposure, engine별 recovery boundary를
 ## Traceability
 
 - Artifact: `GDE-0024`; governing policy: `POL-0024`.
-- Runtime authority: `infra/04-data/lake-and-object/seaweedfs/docker-compose.yml`.
+- Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
 
 ## Related Documents
 

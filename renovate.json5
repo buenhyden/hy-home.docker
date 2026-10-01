@@ -63,7 +63,7 @@
       "description": "OpenTofu inline Dockerfile images",
 
       "managerFilePatterns": [
-        "/^infra\\/09-tooling\\/opentofu\\/docker-compose\\.yml$/"
+        "/^infra\\/09-platform-ops\\/opentofu\\/docker-compose\\.yml$/"
       ],
 
       "matchStrings": [

@@ -346,54 +346,55 @@ include:
   # 03-security
   - infra/03-security/openbao/docker-compose.yml
   # 04-data
-  - infra/04-data/analytics/influxdb/docker-compose.yml
-  - infra/04-data/analytics/opensearch/docker-compose.yml
-  - infra/04-data/analytics/superset/docker-compose.yml
-  - infra/04-data/cache-and-kv/valkey-cluster/docker-compose.yml
-  - infra/04-data/lake-and-object/seaweedfs/docker-compose.yml
-  - infra/04-data/lakehouse/flink/docker-compose.yml
-  - infra/04-data/lakehouse/great-expectations/docker-compose.yml
-  - infra/04-data/lakehouse/spark/docker-compose.yml
-  - infra/04-data/lakehouse/trino/docker-compose.yml
-  - infra/04-data/nosql/cassandra/docker-compose.yml
-  - infra/04-data/nosql/couchdb/docker-compose.yml
-  - infra/04-data/nosql/mongodb/docker-compose.yml
-  - infra/04-data/operational/mng-db/docker-compose.yml
-  - infra/04-data/operational/supabase/docker-compose.yml
-  - infra/04-data/relational/postgresql-cluster/docker-compose.yml
-  - infra/04-data/specialized/neo4j/docker-compose.yml
-  - infra/04-data/specialized/qdrant/docker-compose.yml
+  - infra/04-data/cassandra/docker-compose.yml
+  - infra/04-data/couchdb/docker-compose.yml
+  - infra/04-data/influxdb/docker-compose.yml
+  - infra/04-data/mng-db/docker-compose.yml
+  - infra/04-data/mongodb/docker-compose.yml
+  - infra/04-data/neo4j/docker-compose.yml
+  - infra/04-data/opensearch/docker-compose.yml
+  - infra/04-data/postgresql-cluster/docker-compose.yml
+  - infra/04-data/qdrant/docker-compose.yml
+  - infra/04-data/redisinsight/docker-compose.yml
+  - infra/04-data/seaweedfs/docker-compose.yml
+  - infra/04-data/supabase/docker-compose.yml
+  - infra/04-data/valkey-cluster/docker-compose.yml
   # 05-messaging
   - infra/05-messaging/kafka/docker-compose.yml
   # 06-observability
   - infra/06-observability/docker-compose.yml
+  - infra/06-observability/dozzle/docker-compose.yml
   # 07-workflow
   - infra/07-workflow/airflow/docker-compose.yml
   - infra/07-workflow/n8n/docker-compose.yml
   # 08-ai
-  - infra/08-ai/ollama/docker-compose.yml
-  - infra/08-ai/open-webui/docker-compose.yml
   - infra/08-ai/comfyui/docker-compose.yml
   - infra/08-ai/crawl4ai/docker-compose.yml
-  # 09-tooling
-  - infra/09-tooling/k6/docker-compose.yml
-  - infra/09-tooling/locust/docker-compose.yml
-  - infra/09-tooling/registry/docker-compose.yml
-  - infra/09-tooling/sonarqube/docker-compose.yml
-  - infra/09-tooling/opentofu/docker-compose.yml
-  - infra/09-tooling/terrakube/docker-compose.yml
-  - infra/09-tooling/renovate/docker-compose.yml
-  - infra/09-tooling/dbt/docker-compose.yml
-  - infra/09-tooling/restic/docker-compose.yml
-  - infra/09-tooling/conftest/docker-compose.yml
-  - infra/09-tooling/wiremock/docker-compose.yml
-  - infra/09-tooling/pact-broker/docker-compose.yml
+  - infra/08-ai/mlflow/docker-compose.yml
+  - infra/08-ai/ollama/docker-compose.yml
+  - infra/08-ai/open-notebook/docker-compose.yml
+  - infra/08-ai/open-webui/docker-compose.yml
+  # 09-platform-ops
+  - infra/09-platform-ops/opentofu/docker-compose.yml
+  - infra/09-platform-ops/registry/docker-compose.yml
+  - infra/09-platform-ops/renovate/docker-compose.yml
+  - infra/09-platform-ops/restic/docker-compose.yml
+  - infra/09-platform-ops/terrakube/docker-compose.yml
   # 10-communication
-  - infra/10-communication/mailpit/docker-compose.yml
   - infra/10-communication/stalwart/docker-compose.yml
-  # 11-laboratory
-  - infra/11-laboratory/dozzle/docker-compose.yml
-  - infra/11-laboratory/open-notebook/docker-compose.yml
-  - infra/11-laboratory/redisinsight/docker-compose.yml
-  - infra/11-laboratory/mlflow/docker-compose.yml
-  - infra/11-laboratory/jupyterlab/docker-compose.yml
+  # 11-quality
+  - infra/11-quality/conftest/docker-compose.yml
+  - infra/11-quality/k6/docker-compose.yml
+  - infra/11-quality/locust/docker-compose.yml
+  - infra/11-quality/mailpit/docker-compose.yml
+  - infra/11-quality/pact-broker/docker-compose.yml
+  - infra/11-quality/sonarqube/docker-compose.yml
+  - infra/11-quality/wiremock/docker-compose.yml
+  # 12-analytics
+  - infra/12-analytics/dbt/docker-compose.yml
+  - infra/12-analytics/flink/docker-compose.yml
+  - infra/12-analytics/great-expectations/docker-compose.yml
+  - infra/12-analytics/jupyterlab/docker-compose.yml
+  - infra/12-analytics/spark/docker-compose.yml
+  - infra/12-analytics/superset/docker-compose.yml
+  - infra/12-analytics/trino/docker-compose.yml

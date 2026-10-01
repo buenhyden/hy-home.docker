@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -31,7 +31,7 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
 - PostgreSQL과 Valkey를 별도의 bind-backed volume에 유지하고 `mng_data_net`,
   health check, secret 파일, 공유 리소스 제한을 보존한다.
-- `mng_db_password`, `mng_valkey_password`와 서비스 database credential을
+- `mng_postgres_password`, `mng_valkey_password`와 서비스 database credential을
   Docker secret 보관에 유지한다. Dump와 evidence는 plaintext 값을 포함해서는
   안 된다.
 - `mng-pg-init`을 restore가 아니라 idempotent provisioning으로 취급한다. Rerun
@@ -47,6 +47,8 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
   queue를 복원하면 작업이 중복되거나 순서가 바뀔 수 있다.
 
 ### Backup and restore
+
+아래는 필수 보존 계약이다. 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와RDB만 제공하며 database별 logical/AOF capture 및 앱 quiescence는 별도 구현·승인 작업이다. Restic30일 archive가 broker7일 업무 replay 승인을 대신하지 않는다.
 
 PostgreSQL globals와 현재 각 database를 logical tool로 별도의 암호화된
 destination에 capture한다. Valkey의 완전한 AOF 세트와 manifest, 그리고
@@ -68,6 +70,11 @@ cutover나 data 교체는 별도 승인이 필요하다.
 검토한다. PostgreSQL major upgrade는 isolated logical restore/rehearsal을
 요구한다. `PGDATA`를 직접 재사용하는 것은 금지한다. Acceptance와 rollback
 만료 시점까지 이전 volume을 보존한다.
+
+
+### Accountable lifecycle boundary
+
+적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 

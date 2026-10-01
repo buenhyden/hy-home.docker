@@ -4,7 +4,7 @@ version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -42,18 +42,18 @@ created: "2026-05-17"
   - 운영 승격 전 `AIRFLOW__CORE__LOAD_EXAMPLES` 상태를 별도 변경/evidence로 검토함.
 - **Allowed**:
   - 워커 노드의 동적 확장 (부하에 따른 Replica 조정).
-  - 읽기 전용 UI 접근 (GUEST 권한).
+  - 읽기 전용 UI 접근 (native Keycloak `Viewer` 역할을 명시적으로 부여한 사용자).
 - **Disallowed**:
   - Scheduler 노드에서의 직접적인 대용량 외부 API 호출 또는 파일 입출력.
-  - 사용자 인증(FAB) 또는 gateway SSO가 비활성화된 상태에서의 UI 노출.
+  - Airflow native Keycloak 인증 또는 Flower proxy SSO가 비활성화된 상태에서의 UI 노출. Airflow에는 표준 gateway chain과 native SSO를 유지하며 추가 proxy SSO를 강제하지 않는다.
 
 ### Lifecycle and data controls
 
-- Core Airflow services remain `HOME`; the dedicated broker pair remains `OPTIONAL`. Selecting `dedicated-valkey` does not authorize or perform a broker cutover without the matching host/secret variables and a drained-queue change plan.
-- PostgreSQL metadata, the current `airflow_fernet_key`, DAGs, plugins, config, and required logs are one recovery unit. A database copy without the matching Fernet key cannot recover encrypted Connections.
-- Pause schedules and producers and reconcile running/queued tasks before backup, restore, broker migration, or schema upgrade. Do not treat Valkey queue contents as the authoritative task history.
-- Restore rehearsals must use an isolated project/network and restored copies, never overwrite production volumes. Verify DB migration level, DAG parsing, Connections decryption without printing values, worker/broker health, login, and a canary DAG.
-- Resource changes require before/after evidence; Compose limits are configuration, not proof of spare capacity. Removal requires exported evidence, a retained recovery set, revoked clients/secrets, and explicit deletion approval.
+- Airflow 코어는 HOME, 전용 broker pair는 OPTIONAL을 유지한다. `dedicated-valkey`만으로 broker 전환이 승인·수행되지 않으며 matching host/secret과 drain 계획이 필요하다.
+- PostgreSQL metadata, 현재 `airflow_fernet_key`, DAG/plugin/config와 필요한 log는 한 복구 단위다. 같은 Fernet key 없는 DB copy로 암호화 Connections를 복구하지 못한다.
+- Backup/restore/broker migration/schema upgrade 전에 schedule·producer를 멈추고 실행/대기 task를 조정한다. Valkey queue를 task 이력 원본으로 간주하지 않는다.
+- 격리 project/network와 복원 copy로 rehearsal하며 production volume을 덮어쓰지 않는다. Migration level, DAG parse, 값 비노출 복호화, worker/broker health, login과 canary를 검증한다.
+- 자원 변경에는 전후 측정이 필요하다. 한도는 여유 증거가 아니다. 제거에는 export, 복구 집합 보존, client/secret 폐기와 삭제 승인이 필요하다.
 
 ## Exceptions
 
@@ -64,6 +64,8 @@ created: "2026-05-17"
 - **Static Check**: `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - **Hardening Check**: `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 
@@ -77,7 +79,7 @@ created: "2026-05-17"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0050-airflow.md)

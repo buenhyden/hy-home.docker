@@ -4,7 +4,7 @@ version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -16,21 +16,21 @@ created: "2026-09-19"
 
 ## Overview
 
-이 정책은 `11-laboratory` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL`
+이 정책은 `08-ai` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL`
 단일 서비스 SurrealDB 배포를 다룬다.
 
 ## Policy Scope
 
-- [작성된 Compose 소스](../../../infra/11-laboratory/open-notebook/docker-compose.yml), Dockerfile, entrypoint
+- [작성된 Compose 소스](../../../infra/08-ai/open-notebook/docker-compose.yml), Dockerfile, entrypoint
 - 서비스 `surrealdb`. 정확한 프로필은 `surrealdb`, `notebook`
-- `surrealdb-data:/mydata`, loopback 호스트 매핑, `ai_net`
+- `surrealdb-data:/mydata`, 호스트 게시 없음, `ai_net`
 - `surreal_db_password`와 root/namespace/database 인증 범위
 - 연결된 가이드와 런북
 
 ## Controls
 
-- **Required**: 호스트 노출은 loopback만 유지하고 애플리케이션 트래픽은
-  `ai_net`에 남는다. 더 넓은 게시에는 승인된 gateway 변경이 필요하다.
+- **Required**: 현재 호스트 게시 없음과 `ai_net` 애플리케이션 경계를 유지한다.
+  새 호스트 게시나 더 넓은 접근은 별도 승인된 네트워크 변경이 필요하다.
 - **Required**: SurrealDB는 Open Notebook upstream 호환성을 위해 v2에
   고정된다. Open Notebook이 공식적으로 지원을 검증하기 전까지는 SurrealDB v3
   이상으로의 메이저 업그레이드가 금지된다.
@@ -40,10 +40,10 @@ created: "2026-09-19"
   스키마/데이터 범위, 내보내기 옵션, 체크섬/위치, 보존/만료, 격리된 복구
   결과를 식별한다.
 - **Required**: 복구는 새롭고 격리된 호환 대상과 승인된 root, namespace,
-  또는 database 자격 증명을 사용한다. import 전에 `OPTION IMPORT` 기대치를
-  확인한다.
-- **Required**: import는 부분적으로 성공할 수 있으므로 실패한 대상은 재시도
-  전에 폐기하고 비어 있는 상태로 다시 생성한다. namespace/database, 테이블,
+  또는 database 자격 증명을 사용한다. import 전에 선택한 v2 버전의 옵션·인증 범위·스키마 처리 근거를
+  확인한다. 최신 버전의 `OPTION IMPORT` 설명을 그대로 적용하지 않는다.
+- **Required**: import는 부분적으로 성공할 수 있으므로 실패한 대상은 진단용으로 격리 보존하고 재사용하지 않는다.
+  재시도는 별도의 빈 대상에서 하며 이전 대상의 삭제는 따로 승인받는다. namespace/database, 테이블,
   스키마, 권한, 레코드 수 불변조건, 대표 읽기를 검증한다.
 - **Required**: 업그레이드는 upstream 저장 형식 순서를 따르며 복구 테스트를
   거친 export, 용량 검토, 명시적 롤백 지점, 승인이 필요하다. 제거에는
@@ -85,4 +85,4 @@ created: "2026-09-19"
 - [SurrealDB 라이선스](https://surrealdb.com/license)
 - [런타임 버전 projection](../../../infra/tech-stack.versions.json)
 - [운영 인덱스](../README.md)
-- [Infrastructure README](../../../infra/11-laboratory/open-notebook/README.md)
+- [Infrastructure README](../../../infra/08-ai/open-notebook/README.md)

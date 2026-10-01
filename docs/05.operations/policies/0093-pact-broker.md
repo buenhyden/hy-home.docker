@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0093"
 parent_ids:
@@ -39,8 +39,9 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
   합성 예시를 담는다.
 - analytics ping은 비활성 상태를 유지한다.
 - `PACT_BROKER_BASE_URL`은 설정하지 않은 채로 둔다. 생성되는 링크는 요청의
-  `Host`를 따른다. 리스너가 loopback 하나뿐인 동안에는 이 방식이 안전하고
-  네트워크 안의 클라이언트도 동작한다. 라우트가 추가되면 설정한다.
+  `Host`를 따른다. 호스트 loopback과 management-data peer 경로가 함께 있으므로 Host 기반 링크가
+  안전한 접근 경계를 보장한다고 해석하지 않는다. 새 라우트 전에는 base URL·인증·TLS
+  경계를 검토한다.
 
 ## Exceptions
 
@@ -50,7 +51,7 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
 
 정적 렌더링과 프로비저닝 계약 테스트, 그리고 자격 증명 없이 401이 나오는지,
 heartbeat가 공개되는지, 자격 증명으로 publish와 read-back이 되는지, 컨테이너가
-non-root이고 읽기 전용인지, 환경 변수나 로그에 secret이 없는지를 증명하는
+non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값이 노출되지 않는지를 확인하는
 격리된 실행.
 
 ## Review Cadence
@@ -58,13 +59,20 @@ non-root이고 읽기 전용인지, 환경 변수나 로그에 secret이 없는�
 브로커 major 업그레이드, 새 publishing 파이프라인, loopback을 넘어서는 노출이
 제안될 때마다 검토한다.
 
+### 책임과 비밀 전달 경계
+
+책임자는 `@buenhyden`이다. wrapper의 프로세스 환경변수 전달은 허용된 입력 방식이나
+Compose literal·argv·로그·pact에 비밀 값을 남기는 것은 금지된다. 새 network consumer와
+DB 보존·복원·삭제는 영향을 받는 소유자를 확인하고 승인한다. raw 환경 조회를 검증
+방법으로 사용하지 않는다.
+
 ## Traceability
 
 - [가이드](../guides/0093-pact-broker.md) (`GDE-0093`)
 - [런북](../runbooks/0093-pact-broker.md) (`RUN-0093`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [Pact Broker Compose source](../../../infra/09-tooling/pact-broker/docker-compose.yml)
+- [Pact Broker Compose source](../../../infra/11-quality/pact-broker/docker-compose.yml)
 - [Management database policy](0028-management-database.md)

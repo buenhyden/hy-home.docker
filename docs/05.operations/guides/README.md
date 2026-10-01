@@ -1,10 +1,10 @@
 ---
 title: "Operations Guides"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 layer: "operations"
 ---
 
@@ -18,11 +18,11 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 
 ## Audience
 
-- Operators
-- Developers
+- 운영자
+- 개발자
 - SREs
-- Security Officers
-- AI Agents
+- 보안 담당자
+- AI 에이전트
 
 ## Scope
 
@@ -35,7 +35,21 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 도메인은 경로가 아니라 이 인덱스의 분류다. `관련 문서` 열은 같은 subject의
 다른 역할 문서를 가리킨다.
 
-### 00 Workspace
+시스템 전반의 기동·인증·복구·용량·업데이트는 아래 공통 분류에서 시작한다.
+티어별 서비스는 01–12 분류에서 찾고, 행의 관련 문서로 같은 subject의 다른 역할을
+확인한다. 작업 공간과 공통 연결은 번호 없는 분류이며 별도 인프라 티어가 아니다.
+서비스와 공통 문서의 연결은 적용 범위를 설명하며 서비스 소유권을 추가하지 않는다.
+
+### Cross-cutting system and lifecycle
+
+| Guide | ID | 상태 | 관련 문서 |
+| --- | --- | --- | --- |
+| [시스템 운영](0099-system-operations.md) | `GDE-0099` | draft | [Runbook](../runbooks/0099-system-operations.md); 공통 Policy는 Guide에서 연결 |
+| [Dependency version management](0086-dependency-version-management.md) | `GDE-0086` | draft | [Policy](../policies/0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md) |
+| [Backup and restore](0021-backup-and-restore.md) | `GDE-0021` | draft | [Policy](../policies/0021-backup-and-restore.md), [Runbook](../runbooks/0021-backup-and-restore.md) |
+| [Optimization hardening](0074-laboratory-optimization-hardening.md) | `GDE-0074` | active | [Policy](../policies/0074-laboratory-optimization-hardening.md), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) |
+
+### Cross-cutting workspace
 
 | Guide | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
@@ -44,7 +58,6 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [harness engineering](0004-harness-agent-first-engineering.md) | `GDE-0004` | active | [Policy](../policies/0004-harness-agent-first-engineering.md), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) |
 | [new-service onboarding](0008-new-service-onboarding.md) | `GDE-0008` | active | — |
 | [sensitive environment comparison](0010-sensitive-env-vars-comparison.md) | `GDE-0010` | active | — |
-| [Dependency version management](0086-dependency-version-management.md) | `GDE-0086` | draft | [Policy](../policies/0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md) |
 
 ### 01 Gateway
 
@@ -74,7 +87,6 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | --- | --- | --- | --- |
 | [Analytics — InfluxDB](0017-influxdb.md) | `GDE-0017` | active | [Policy](../policies/0017-influxdb.md), [Runbook](../runbooks/0017-influxdb.md) |
 | [Analytics — OpenSearch](0019-opensearch.md) | `GDE-0019` | active | [Policy](../policies/0019-opensearch.md), [Runbook](../runbooks/0019-opensearch.md) |
-| [Backup and restore](0021-backup-and-restore.md) | `GDE-0021` | draft | [Policy](../policies/0021-backup-and-restore.md), [Runbook](../runbooks/0021-backup-and-restore.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `GDE-0022` | active | [Policy](../policies/0022-valkey-cluster.md), [Runbook](../runbooks/0022-valkey-cluster.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `GDE-0024` | active | [Policy](../policies/0024-seaweedfs.md), [Runbook](../runbooks/0024-seaweedfs.md) |
 | [NoSQL — Cassandra](0025-cassandra.md) | `GDE-0025` | active | [Policy](../policies/0025-cassandra.md), [Runbook](../runbooks/0025-cassandra.md) |
@@ -86,8 +98,7 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [Relational — PostgreSQL Cluster](0031-postgresql-cluster.md) | `GDE-0031` | active | [Policy](../policies/0031-postgresql-cluster.md), [Runbook](../runbooks/0031-postgresql-cluster.md) |
 | [Specialized — Neo4j](0033-neo4j.md) | `GDE-0033` | active | [Policy](../policies/0033-neo4j.md), [Runbook](../runbooks/0033-neo4j.md) |
 | [Specialized — Qdrant](0034-qdrant.md) | `GDE-0034` | active | [Policy](../policies/0034-qdrant.md), [Runbook](../runbooks/0034-qdrant.md) |
-| [Lakehouse — Iceberg engines](0094-lakehouse.md) | `GDE-0094` | draft | [Policy](../policies/0094-lakehouse.md), [Runbook](../runbooks/0094-lakehouse.md) |
-| [Analytics — Superset](0097-superset.md) | `GDE-0097` | draft | [Policy](../policies/0097-superset.md), [Runbook](../runbooks/0097-superset.md) |
+| [RedisInsight](0076-redisinsight.md) | `GDE-0076` | active | [Policy](../policies/0076-redisinsight.md), [Runbook](../runbooks/0076-redisinsight.md) |
 
 ### 05 Messaging
 
@@ -111,6 +122,7 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [Pyroscope](0047-pyroscope.md) | `GDE-0047` | active | [Policy](../policies/0047-pyroscope.md), [Runbook](../runbooks/0047-pyroscope.md) |
 | [Tempo](0049-tempo.md) | `GDE-0049` | active | [Policy](../policies/0049-tempo.md), [Runbook](../runbooks/0049-tempo.md) |
 | [Gatus](0087-gatus.md) | `GDE-0087` | draft | [Policy](../policies/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md) |
+| [Dozzle](0072-dozzle.md) | `GDE-0072` | active | [Policy](../policies/0072-dozzle.md), [Runbook](../runbooks/0072-dozzle.md) |
 
 ### 07 Workflow
 
@@ -131,46 +143,50 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [RAG workflow](0059-rag-workflow.md) | `GDE-0059` | active | — |
 | [ComfyUI](0081-comfyui.md) | `GDE-0081` | draft | [Policy](../policies/0081-comfyui.md), [Runbook](../runbooks/0081-comfyui.md) |
 | [Crawl4AI](0091-crawl4ai.md) | `GDE-0091` | active | [Policy](../policies/0091-crawl4ai.md), [Runbook](../runbooks/0091-crawl4ai.md) |
+| [Open Notebook](0073-open-notebook.md) | `GDE-0073` | active | [Policy](../policies/0073-open-notebook.md), [Runbook](../runbooks/0073-open-notebook.md) |
+| [SurrealDB](0080-surrealdb.md) | `GDE-0080` | draft | [Policy](../policies/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md) |
+| [MLflow](0088-mlflow.md) | `GDE-0088` | active | [Policy](../policies/0088-mlflow.md), [Runbook](../runbooks/0088-mlflow.md) |
 
-### 09 Tooling
+### 09 Platform Operations
 
 | Guide | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
-| [k6](0061-k6.md) | `GDE-0061` | active | [Policy](../policies/0061-k6.md), [Runbook](../runbooks/0061-k6.md) |
-| [Locust](0062-locust.md) | `GDE-0062` | active | [Policy](../policies/0062-locust.md), [Runbook](../runbooks/0062-locust.md) |
 | [Optimization hardening](0063-tooling-optimization-hardening.md) | `GDE-0063` | active | [Policy](../policies/0063-tooling-optimization-hardening.md), [Runbook](../runbooks/0063-tooling-optimization-hardening.md) |
-| [Performance testing](0064-performance-testing.md) | `GDE-0064` | active | [Policy](../policies/0064-performance-testing.md), [Runbook](../runbooks/0064-performance-testing.md) |
 | [Registry](0065-registry.md) | `GDE-0065` | active | [Policy](../policies/0065-registry.md), [Runbook](../runbooks/0065-registry.md) |
-| [SonarQube](0066-sonarqube.md) | `GDE-0066` | active | [Policy](../policies/0066-sonarqube.md), [Runbook](../runbooks/0066-sonarqube.md) |
 | [Terraform](0068-terraform.md) | `GDE-0068` | active | [Policy](../policies/0068-terraform.md), [Runbook](../runbooks/0068-terraform.md) |
 | [Terrakube](0069-terrakube.md) | `GDE-0069` | active | [Policy](../policies/0069-terrakube.md), [Runbook](../runbooks/0069-terrakube.md) |
 | [OpenTofu](0082-opentofu.md) | `GDE-0082` | draft | [Policy](../policies/0082-opentofu.md), [Runbook](../runbooks/0082-opentofu.md) |
 | [Renovate](0083-renovate.md) | `GDE-0083` | draft | [Policy](../policies/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md) |
-| [dbt](0090-dbt.md) | `GDE-0090` | active | [Policy](../policies/0090-dbt.md), [Runbook](../runbooks/0090-dbt.md) |
-| [WireMock](0092-wiremock.md) | `GDE-0092` | active | [Policy](../policies/0092-wiremock.md), [Runbook](../runbooks/0092-wiremock.md) |
-| [Pact Broker](0093-pact-broker.md) | `GDE-0093` | active | [Policy](../policies/0093-pact-broker.md), [Runbook](../runbooks/0093-pact-broker.md) |
-| [Conftest](0095-conftest.md) | `GDE-0095` | draft | [Policy](../policies/0095-conftest.md), [Runbook](../runbooks/0095-conftest.md) |
 
 ### 10 Communication
 
 | Guide | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
 | [Stalwart mail](0070-mail.md) | `GDE-0070` | active | [Policy](../policies/0070-mail.md), [Runbook](../runbooks/0070-mail.md) |
-| [Mailpit](0084-mailpit.md) | `GDE-0084` | draft | [Policy](../policies/0084-mailpit.md), [Runbook](../runbooks/0084-mailpit.md) |
 
-### 11 Laboratory
+### 11 Quality
 
 | Guide | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
-| [Dozzle](0072-dozzle.md) | `GDE-0072` | active | [Policy](../policies/0072-dozzle.md), [Runbook](../runbooks/0072-dozzle.md) |
-| [Open Notebook](0073-open-notebook.md) | `GDE-0073` | active | [Policy](../policies/0073-open-notebook.md), [Runbook](../runbooks/0073-open-notebook.md) |
-| [Optimization hardening](0074-laboratory-optimization-hardening.md) | `GDE-0074` | active | [Policy](../policies/0074-laboratory-optimization-hardening.md), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) |
-| [RedisInsight](0076-redisinsight.md) | `GDE-0076` | active | [Policy](../policies/0076-redisinsight.md), [Runbook](../runbooks/0076-redisinsight.md) |
-| [SurrealDB](0080-surrealdb.md) | `GDE-0080` | draft | [Policy](../policies/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md) |
-| [MLflow](0088-mlflow.md) | `GDE-0088` | active | [Policy](../policies/0088-mlflow.md), [Runbook](../runbooks/0088-mlflow.md) |
+| [k6](0061-k6.md) | `GDE-0061` | active | [Policy](../policies/0061-k6.md), [Runbook](../runbooks/0061-k6.md) |
+| [Locust](0062-locust.md) | `GDE-0062` | active | [Policy](../policies/0062-locust.md), [Runbook](../runbooks/0062-locust.md) |
+| [Performance testing](0064-performance-testing.md) | `GDE-0064` | active | [Policy](../policies/0064-performance-testing.md), [Runbook](../runbooks/0064-performance-testing.md) |
+| [SonarQube](0066-sonarqube.md) | `GDE-0066` | active | [Policy](../policies/0066-sonarqube.md), [Runbook](../runbooks/0066-sonarqube.md) |
+| [WireMock](0092-wiremock.md) | `GDE-0092` | active | [Policy](../policies/0092-wiremock.md), [Runbook](../runbooks/0092-wiremock.md) |
+| [Pact Broker](0093-pact-broker.md) | `GDE-0093` | active | [Policy](../policies/0093-pact-broker.md), [Runbook](../runbooks/0093-pact-broker.md) |
+| [Conftest](0095-conftest.md) | `GDE-0095` | draft | [Policy](../policies/0095-conftest.md), [Runbook](../runbooks/0095-conftest.md) |
+| [Mailpit](0084-mailpit.md) | `GDE-0084` | draft | [Policy](../policies/0084-mailpit.md), [Runbook](../runbooks/0084-mailpit.md) |
+
+### 12 Analytics
+
+| Guide | ID | 상태 | 관련 문서 |
+| --- | --- | --- | --- |
+| [Lakehouse — Iceberg engines](0094-lakehouse.md) | `GDE-0094` | draft | [Policy](../policies/0094-lakehouse.md), [Runbook](../runbooks/0094-lakehouse.md) |
+| [Analytics — Superset](0097-superset.md) | `GDE-0097` | draft | [Policy](../policies/0097-superset.md), [Runbook](../runbooks/0097-superset.md) |
+| [dbt](0090-dbt.md) | `GDE-0090` | active | [Policy](../policies/0090-dbt.md), [Runbook](../runbooks/0090-dbt.md) |
 | [JupyterLab](0089-jupyterlab.md) | `GDE-0089` | active | [Policy](../policies/0089-jupyterlab.md), [Runbook](../runbooks/0089-jupyterlab.md) |
 
-### 12 Infra Net
+### Cross-cutting connectivity
 
 | Guide | ID | 상태 | 관련 문서 |
 | --- | --- | --- | --- |
@@ -182,7 +198,9 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 1. 새 Guide는 [Guide template](../../99.templates/templates/operations/guide.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.
 3. 문서를 추가, 이동, 삭제하면 이 인덱스에 한 줄로 반영한다. 검증기는 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
-4. 해당 역할이 필요 없는 subject에는 빈 문서를 만들지 않는다.
+4. Compose 서비스가 연결된 subject는 Guide/Policy/Runbook 세 역할을 모두 유지한다.
+   서비스 연결이 없는 공통·작업 공간 subject는 필요한 역할만 두고 빈 문서를 만들지 않는다.
+   공통 통제·절차는 소유 문서로 연결하고 서비스별 적용 조건과 차이를 각 역할에 남긴다.
 
 ## Related Documents
 

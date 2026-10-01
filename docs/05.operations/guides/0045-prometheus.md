@@ -4,7 +4,7 @@ version: "1.4.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -68,7 +68,7 @@ created: "2026-05-10"
    rg --files infra/06-observability/prometheus/config/alert_rules
    ```
 
-   현재 repository 기준 scrape job은 34개, alert/recording rule file은 12개다.
+   Scrape/rule inventory는 선택된 config와 rule_files가 가리키는 파일에서 확인한다. 아래 SPEC-0193 수치는 해당 시점의 근거이며 현재 목록을 복제하지 않는다.
 
 3. Config or rule 변경 전후로 Prometheus 내장 검증 도구를 사용한다.
 
@@ -233,6 +233,12 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 - **Resources/normal use**: source의 retention/resource flag는 headroom이 아니라 configuration이다. Root에서 render하고, `promtool` config/rules check을 실행하고, readiness, target, rule health, bounded query를 변경 전에 확인한다.
 - **Lifecycle**: `--web.enable-lifecycle`과 remote-write receiver는 활성화되어 있지만 `--web.enable-admin-api`는 아니다. 따라서 online snapshot endpoint를 처방하지 않는다. 승인된 stopped consistent copy/storage snapshot을 사용하거나 admin-API design을 별도로 승인하고 검증한다. TSDB 호환성을 검토하며 upgrade하고 WAL replay, query, rule, alert, remote-write를 검증한다.
 - **Upstream/license**: 공식 [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/) 가이드를 따른다. Prometheus는 Apache-2.0 라이선스다.
+
+### Host and GPU exporter boundary
+
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+
+`PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
 ## Common Checks
 

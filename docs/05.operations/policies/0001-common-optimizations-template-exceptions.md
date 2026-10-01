@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0001"
 parent_ids: []
@@ -43,17 +43,24 @@ created: "2026-06-04"
 
 ### AI Agent Policy
 
-- **Model / Prompt Change Process**: Governed by [agentic governance](../../../.agents/governance/agentic.md); not restated here.
+- **Model / Prompt Change Process**: [agentic governance](../../../.agents/governance/agentic.md)가 소유한다.
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
-- **Log / Trace Retention**: Governed by [task checklists](../../../.agents/governance/task-checklists.md).
+- **Log / Trace Retention**: [task checklists](../../../.agents/governance/task-checklists.md)를 따른다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
 ## Exceptions
 
 - 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.
-- 2026-03-28 기준 승인된 서비스 예외:
-  - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
-  - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
+현재 예외는 JSON registry의 template/job/dev/security 항목까지 적용되는 대상을
+확인한다. `mng-pg-init`, OpenBao와 Agent 등 후속 예외를 아래 과거 목록만으로
+누락시키지 않는다. 예외의 owner·risk·review·종료 조건을 확인하며, 원본에 없는
+예외를 문서로 새로 승인하지 않는다.
+
+> Historical evidence (not current authority; source: Git history):
+> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0001 Exceptions.
+> - 2026-03-28 기준 승인된 서비스 예외:
+>   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
+>   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
 
 ## Verification
 
@@ -62,17 +69,26 @@ created: "2026-06-04"
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 - `bash scripts/validation/validate-docker-compose.sh`
 
+검증기는 선택 범위를 각각 기록한다. 두 baseline script는 기본 `core`의
+선언을 검사하며 모든 OPTIONAL/LAB의 compliance나 runtime health를 증명하지
+않는다. template source 검사와 resolved service 검사도 구분한다. 공개 입력·임시
+파일 경계는 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)을
+따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
+
 ## Review Cadence
+
+책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
+새 승인을 만들지 않는다.
 
 - 월 1회 정기 검토
 - 신규 예외 추가/삭제 시 즉시 검토
 
 ## Traceability
 
-- Subject peers: none — no Guide or Runbook shares number `0001`.
+- 같은 번호 `0001`의 Guide/Runbook은 없다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides Compose-image drift verification.
+- Compose/Dockerfile이 runtime pin을 소유한다. [파생 projection](../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
 
 - [Operations index](../README.md)

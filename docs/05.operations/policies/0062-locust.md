@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -30,8 +30,8 @@ startup에는 절대 포함되지 않는다. 이 정책은 test target을 보호
 
 - **Activation:** `testing` profile만 선택하고 Locust service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
-  count, abort SLI, stop owner를 기록한다. repository에 정의된 generic
-  RPS threshold나 maintenance window는 없다.
+  count, abort SLI, stop owner를 기록한다. 각 테스트의 한도·시간대를 따로 승인한다. [공통 성능 정책](0064-performance-testing.md)의
+  초당 10,000 요청 이상 추가 협조 조건도 적용한다.
 - **Authorization:** target credential은 승인된 secret channel을
   사용하며 `locustfile.py`, Compose, log, 보관된 raw result에 내장할 수
   없다.
@@ -65,18 +65,23 @@ stopped state를 포함해야 한다.
 
 ## Review Cadence
 
-profile, Dockerfile dependency, scenario storage, target network, scaling
-동작이 변경될 때 검토한다.
+프로필·Dockerfile 의존성·시나리오 저장소·대상 네트워크·확장 동작이 바뀔 때 검토한다.
+
+### 현재 구현 제한
+
+현재 master와 worker는 `restart: unless-stopped`를 상속한다. 위의 승인 없는
+부하 재생 금지 기준은 유지한다. 운영자는 종료·재기동 상태를 확인해야 하며, 재시작
+정책 변경을 문서 수정만으로 완료했다고 기록해서는 안 된다. 책임자는 `@buenhyden`이다.
 
 ## Traceability
 
 - [Guide](../guides/0062-locust.md) (`GDE-0062`)
 - [Runbook](../runbooks/0062-locust.md) (`RUN-0062`)
-- [Tooling architecture](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 
 ## Related Documents
 
-- [Locust Compose source](../../../infra/09-tooling/locust/docker-compose.yml)
+- [Locust Compose source](../../../infra/11-quality/locust/docker-compose.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../README.md)

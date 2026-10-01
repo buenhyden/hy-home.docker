@@ -1,0 +1,450 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  db-config:
+
+services:
+  studio:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-studio
+    image: supabase/studio:2026.09.14-sha-4dd8a95
+    restart: unless-stopped
+    depends_on:
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+      - supabase_pg_meta_crypto_key
+      - supabase_openai_api_key
+      - supabase_logflare_private_token
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      AUTH_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      PG_META_CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
+      OPENAI_API_KEY_FILE: /run/secrets/supabase_openai_api_key
+      LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  kong:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-kong
+    image: kong:3.9.3
+    tmpfs:
+      - /tmp
+      - /var/run/kong
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp
+      - 127.0.0.1:${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro
+    secrets:
+      - supabase_anon_key
+      - supabase_service_key
+      - supabase_dashboard_password
+    environment:
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      DASHBOARD_USERNAME: ${SUPABASE_DASHBOARD_USERNAME:-supabase_admin}
+      DASHBOARD_PASSWORD_FILE: /run/secrets/supabase_dashboard_password
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  auth:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-auth
+    image: supabase/gotrue:v2.197.0
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_smtp_password
+    environment:
+      GOTRUE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      GOTRUE_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      GOTRUE_SMTP_PASS_FILE: /run/secrets/supabase_smtp_password
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  rest:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    container_name: supabase-rest
+    image: postgrest/postgrest:v16.3
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+    environment:
+      PGRST_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      PGRST_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  realtime:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: realtime-dev.supabase-realtime
+    image: supabase/realtime:v2.138.1
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_secret_key_base
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      API_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      METRICS_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  storage:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-storage
+    image: supabase/storage-api:v1.79.4
+    restart: unless-stopped
+    read_only: false
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      rest:
+        condition: service_started
+      imgproxy:
+        condition: service_started
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+    environment:
+      ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SERVICE_KEY_FILE: /run/secrets/supabase_service_key
+      AUTH_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      DATABASE_PASSWORD_FILE: /run/secrets/supabase_db_password
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  imgproxy:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    container_name: supabase-imgproxy
+    image: darthsim/imgproxy:v4.0.15
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  meta:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    container_name: supabase-meta
+    image: supabase/postgres-meta:v0.99.0
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_pg_meta_crypto_key
+    environment:
+      PG_META_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      CRYPTO_KEY_FILE: /run/secrets/supabase_pg_meta_crypto_key
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  functions:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    container_name: supabase-edge-functions
+    image: supabase/edge-runtime:v1.76.2
+    restart: unless-stopped
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions
+    depends_on:
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_anon_key
+      - supabase_service_key
+    environment:
+      JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SUPABASE_ANON_KEY_FILE: /run/secrets/supabase_anon_key
+      SUPABASE_SERVICE_ROLE_KEY_FILE: /run/secrets/supabase_service_key
+      SUPABASE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  analytics:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    container_name: supabase-analytics
+    image: supabase/logflare:1.50.15
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000
+    depends_on:
+      db:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_logflare_private_token
+    environment:
+      DB_PASSWORD_FILE: /run/secrets/supabase_db_password
+      LOGFLARE_PRIVATE_ACCESS_TOKEN_FILE: /run/secrets/supabase_logflare_private_token
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  db:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-high
+    container_name: supabase-db
+    image: supabase/postgres:17.6.1.173
+    restart: unless-stopped
+    read_only: false
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data
+      - ${DEFAULT_DATA_DIR}/supabase/db/_supabase.sql:/docker-entrypoint-initdb.d/migrations/97-_supabase.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/logs.sql:/docker-entrypoint-initdb.d/migrations/99-logs.sql
+      - ${DEFAULT_DATA_DIR}/supabase/db/pooler.sql:/docker-entrypoint-initdb.d/migrations/99-pooler.sql
+      - db-config:/etc/postgresql-custom
+    depends_on:
+      vector:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -p 5432 -U postgres || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  vector:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-vector
+    image: timberio/vector:0.58.0-alpine
+    restart: unless-stopped
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/logs/vector.yml:/etc/vector/vector.yml:ro
+      - ${DOCKER_SOCKET_LOCATION:-/var/run/docker.sock}:/var/run/docker.sock:ro
+    command: [ '--config', '/etc/vector/vector.yml' ]
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  supavisor:
+    profiles:
+      - supabase
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    container_name: supabase-pooler
+    image: supabase/supavisor:2.9.13
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432
+      - 127.0.0.1:${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543
+    volumes:
+      - ${DEFAULT_DATA_DIR}/supabase/pooler/pooler.exs:/etc/pooler/pooler.exs:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      analytics:
+        condition: service_healthy
+    secrets:
+      - supabase_db_password
+      - supabase_jwt_secret
+      - supabase_secret_key_base
+      - supabase_vault_enc_key
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/supabase_db_password
+      API_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      METRICS_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret
+      SECRET_KEY_BASE_FILE: /run/secrets/supabase_secret_key_base
+      VAULT_ENC_KEY_FILE: /run/secrets/supabase_vault_enc_key
+    networks:
+      supabase_net: {}
+    labels:
+      <<: *tier-label
+    healthcheck:
+      test: [ 'CMD-SHELL', 'kill -0 1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s

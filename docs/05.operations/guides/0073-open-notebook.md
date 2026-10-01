@@ -4,13 +4,13 @@ version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
 - "POL-0073"
 implementation_services:
-  infra/11-laboratory/open-notebook/docker-compose.yml:
+  infra/08-ai/open-notebook/docker-compose.yml:
   - open_notebook
 created: "2026-05-10"
 ---
@@ -24,17 +24,17 @@ created: "2026-05-10"
 Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_notebook` 서비스는
 오직 `notebook`에만 속한다. 소유자 커밋 `d5912ab03`가 이를 포괄 `admin` selector에서
 제거했으며 HOME에서도 제외된다. 이 서비스의 `surrealdb` 의존성은 같은
-[Open Notebook Compose](../../../infra/11-laboratory/open-notebook/docker-compose.yml)에
+[Open Notebook Compose](../../../infra/08-ai/open-notebook/docker-compose.yml)에
 함께 들어 있고 같은 selector를 공유하며 영속 데이터베이스를 제공한다.
 
 ### 현재 구현과 데이터
 
-- [Open Notebook Compose](../../../infra/11-laboratory/open-notebook/docker-compose.yml)가
+- [Open Notebook Compose](../../../infra/08-ai/open-notebook/docker-compose.yml)가
   app 서비스, 라우트, app-data 볼륨, secret, healthcheck를 정의한다.
 - `/app/data`는 애플리케이션 파일을 저장한다. SurrealDB `/mydata`는 노트북, 소스,
   모델/provider 설정, 암호화된 provider credential을 저장한다.
-- `open_notebook` 업스트림은 SurrealDB v2를 엄격히 요구한다. SurrealDB v3는
-  호환되지 않으며 지원 대상도 아니다.
+- 현재 운영 계약은 SurrealDB v2로 제한한다. 선택한 Open Notebook 이미지와의
+  v3 호환성은 검증되지 않았으므로 v3 전환을 지원한다고 추정하지 않는다.
 - `open_notebook_password`, `open_notebook_encryption_key`, `surreal_db_password`는
   Docker secret이다. 업스트림은 암호화 키를 잃어버리거나 변경하면 이전에 암호화된
   API 키를 읽을 수 없게 된다고 명시한다. 키는 데이터베이스 백업과 분리해서
@@ -48,30 +48,28 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 
 ### 일반적인 사용, 백업, 업그레이드
 
-`docker compose --profile notebook config --quiet`로 검증하고, 두 서비스를 모두
-확인한 다음 app보다 먼저 데이터베이스를 시작한다. 애플리케이션 비밀번호와
-게이트웨이 통제를 함께 사용한다. 승인된 모델/provider endpoint와 키만 구성한다.
-노트북 콘텐츠, 소스 문서, embedding, provider 키는 민감 정보이다. SurrealDB는
-v2로 유지하고 v3로 업그레이드하지 않는다.
-
-백업할 때는 app write를 멈추고 `surreal export`로 구성된 SurrealDB
-namespace/database를 export하고 `/app/data`를 복사하고 암호화 키와 DB
-credential을 보호된 방식으로 보관한다. provider/network egress를 비활성화한
-격리된 SurrealDB로 복원하고 export를 import하고 app data를 마운트하고 같은
-암호화 키를 비공개로 제공한 다음, 개수와 합성 노트북 하나를 검증한다. 업그레이드
-전에는 floating-tag/release 변경 사항을 검토하고 이 복원을 테스트한다. 여기서는
-백업, 복원, provider 호출, 업그레이드를 실행하지 않았다.
+실행 순서와 실패·복구 판단은 [런북](../runbooks/0073-open-notebook.md)의 `승인된 사용과 일관된 복구 세트` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
 ## Common Checks
 
 - `docker compose --profile notebook config --quiet`
 - `docker compose --profile notebook config --services`
-- `bash scripts/hardening/check-all-hardening.sh 11-laboratory`
+- `bash scripts/hardening/check-all-hardening.sh 08-ai`
 
 ## Runbook Handoff
 
 데이터베이스/키/provider 복구와 업그레이드에는
 [runbook](../runbooks/0073-open-notebook.md)을 사용한다.
+
+### 정상 사용과 이미지 한계
+
+승인된 비밀번호로 노트북·소스를 선택하고 허용된 모델/provider만 사용한다.
+`open_notebook`은 SurrealDB health를 기다리지만 선택적 Ollama URL에 readiness
+의존성은 없다. 앱은 `edge_net`·`ai_net`, DB는 `ai_net`에 연결된다. source의
+secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모든 FILE 옵션 지원·암호화
+동작을 증명하지 않는다. `v1-latest-single`과 DB의 `v2`는 변경 가능한 태그다.
+선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
+자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
 ## Traceability
 

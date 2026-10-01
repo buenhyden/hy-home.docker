@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0068"
 parent_ids:
@@ -41,14 +41,21 @@ state, plan 파일 내용, credential과 token은 출력하지 않는다.
 
 동시 lock, 미검증 provider 또는 복구본 부재는 @buenhyden에게 보고하고 중단한다.
 
+### 실행 도구의 적용 범위
+
+독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지
+OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을
+참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인한다. 일반 서비스의
+포트·HTTP health·daemon 재시작은 이 이관 주제에 적용되지 않는다.
+
 ## Traceability
 
-- Governing architecture: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
-- Retained migration subject: [Guide](../guides/0068-terraform.md), [Policy](../policies/0068-terraform.md), [Runbook](0068-terraform.md)
-- Current implementation owner: [OpenTofu](../guides/0082-opentofu.md)
+- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 유지되는 이관 주제: [Guide](../guides/0068-terraform.md), [Policy](../policies/0068-terraform.md), [Runbook](0068-terraform.md)
+- 현재 구현 소유자: [OpenTofu](../guides/0082-opentofu.md)
 
 ## Related Documents
 
 - [Operations index](../README.md)
-- [OpenTofu implementation](../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [OpenTofu implementation](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 - [Version projection](../../../infra/tech-stack.versions.json)

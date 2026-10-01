@@ -1248,10 +1248,10 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             root = pathlib.Path(directory)
             self.assertEqual(0, git(root, "init").returncode)
             sources = {
-                "infra/04-data/nosql/cassandra/docker-compose.yml": (
+                "infra/04-data/cassandra/docker-compose.yml": (
                     "services:\n  cassandra:\n    image: cassandra:5.0.9\n"
                 ),
-                "infra/04-data/nosql/mongodb/docker-compose.yml": (
+                "infra/04-data/mongodb/docker-compose.yml": (
                     "services:\n  mongodb:\n    image: mongo:8.3.11-noble\n"
                 ),
             }
@@ -1264,12 +1264,12 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             cases = (
                 (
                     "docs/05.operations/policies/0025-cassandra.md",
-                    "[Runtime](/infra/04-data/nosql/cassandra/docker-compose.yml)\n"
+                    "[Runtime](/infra/04-data/cassandra/docker-compose.yml)\n"
                     "Cassandra 5.0.8 compatibility boundary.\n",
                 ),
                 (
                     "docs/05.operations/guides/0001-auth.md",
-                    "[Runtime](/infra/04-data/nosql/mongodb/docker-compose.yml)\n"
+                    "[Runtime](/infra/04-data/mongodb/docker-compose.yml)\n"
                     "MongoDB 8.3.9 migration boundary.\n",
                 ),
             )
@@ -1334,14 +1334,14 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self.assertEqual(0, git(root, "init").returncode)
-            source = root / "infra/04-data/nosql/cassandra/docker-compose.yml"
+            source = root / "infra/04-data/cassandra/docker-compose.yml"
             source.parent.mkdir(parents=True)
             source.write_text(
                 "services:\n  cassandra:\n    image: ${PRIVATE_CASSANDRA_IMAGE}\n"
             )
             self.assertEqual(0, git(root, "add", ".").returncode)
             record = metadata.Record(
-                pathlib.Path("infra/04-data/nosql/cassandra/README.md"),
+                pathlib.Path("infra/04-data/cassandra/README.md"),
                 {},
                 "common/readme",
             )
@@ -1361,7 +1361,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self.assertEqual(0, git(root, "init").returncode)
-            source = root / "infra/09-tooling/opentofu/docker-compose.yml"
+            source = root / "infra/09-platform-ops/opentofu/docker-compose.yml"
             source.parent.mkdir(parents=True)
             source.write_text(
                 "x-runtime: &runtime\n"
@@ -1372,7 +1372,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             )
             self.assertEqual(0, git(root, "add", ".").returncode)
             record = metadata.Record(
-                pathlib.Path("infra/09-tooling/opentofu/README.md"),
+                pathlib.Path("infra/09-platform-ops/opentofu/README.md"),
                 {},
                 "common/readme",
             )
@@ -1394,7 +1394,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             self.assertEqual(0, git(root, "init").returncode)
-            source = root / "infra/09-tooling/opentofu/docker-compose.yml"
+            source = root / "infra/09-platform-ops/opentofu/docker-compose.yml"
             source.parent.mkdir(parents=True)
             source.write_text(
                 "services:\n"
@@ -1408,7 +1408,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             )
             self.assertEqual(0, git(root, "add", ".").returncode)
             record = metadata.Record(
-                pathlib.Path("infra/09-tooling/opentofu/README.md"),
+                pathlib.Path("infra/09-platform-ops/opentofu/README.md"),
                 {},
                 "common/readme",
             )

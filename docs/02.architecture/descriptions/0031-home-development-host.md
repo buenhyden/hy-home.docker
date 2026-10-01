@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.3"
+version: "0.2.5"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -33,6 +33,9 @@ boundary and share the same Docker daemon failure. The shared Compose network
 is an existing implementation's trust boundary, and this design does not
 prove complete network isolation.
 
+Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are under `12-analytics`. Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
+not change HOME selection or the root Compose project (ADR-0045).
+
 ## Components
 
 | Class | Retained capability | Activation and limitation |
@@ -42,9 +45,9 @@ prove complete network isolation.
 | HOME | Ollama, Open WebUI, ComfyUI, Qdrant | `ai`; shared GPU concurrency is bounded |
 | HOME | Airflow and n8n, workers and runners | `workflow`; initialization and daemon readiness differ |
 | HOME | Single-node object storage | `storage`; no single-host HA claim |
-| HOME | Metrics, host signals, availability, logs, alerts | narrow observability profiles from POL-0078 |
+| HOME | Metrics, host/GPU signals, availability, logs, alerts, tracing and profiling | narrow observability profiles from POL-0078 |
 | DEV | Mail capture and explicit update/IaC jobs | jobs run only for a named operation |
-| OPTIONAL | Additional application databases, analytics and tracing | enable only for a known consumer |
+| OPTIONAL | Additional application databases and analytics | enable only for a known consumer |
 | LAB | Multi-node database, broker and storage variants | rehearsal topology, not physical fault isolation |
 | MIGRATE | superseded tooling awaiting acceptance | preserve data and references until migration acceptance |
 

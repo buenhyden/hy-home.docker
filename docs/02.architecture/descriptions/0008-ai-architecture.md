@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -21,7 +21,7 @@ This document defines the reference architecture and quality attributes of the `
 
 Requirement owners, implementers, and operators share the concerns recorded in this section and the following views. Only concerns confirmed in the existing document are covered here.
 
-The `08-ai` layer is the core area responsible for the system's "intelligence" and owns the privacy-preserving local inference engine and the UI/RAG interface that uses it. It intensively uses NVIDIA GPU resources for inference computation and builds an independent AI ecosystem that does not depend on external model APIs.
+The `08-ai` layer is the core area responsible for the system's "intelligence" and owns the privacy-preserving local inference engine and the UI/RAG interface that uses it. Local inference uses NVIDIA GPU resources; optional provider/API egress requires separate authorization and is not ruled out by the tier name.
 
 ## System Boundaries
 
@@ -31,10 +31,14 @@ This section preserves the system boundaries, consumption relationships, non-goa
   - LLM inference engine (`Ollama`)
   - AI user interface and RAG orchestrator (`Open WebUI`)
   - Local model weight and configuration management
-  - ComfyUI image-workflow interface and its persistent workflow assets
+  - ComfyUI image-workflow interface and its declared workflow mounts
+  - Open Notebook and its nested SurrealDB knowledge-work state
+  - MLflow experiment tracking and feature-owned PostgreSQL provisioning
+  - Crawl4AI extraction interface and its separate egress boundary
 - **Consumes**:
   - GPU hardware resources (via NVIDIA Container Toolkit)
-  - Vector database (`04-data/qdrant`)
+  - Shared Qdrant for explicitly configured vector consumers; current Open WebUI uses local Chroma with `VECTOR_DB` unset
+  - Management PostgreSQL and SeaweedFS for MLflow metadata/artifacts
   - User authentication and SSO (`02-auth/keycloak`)
 - **Does Not Own**:
   - The vector processing server itself (the Qdrant instance is owned by the Data layer)
@@ -49,10 +53,10 @@ This section preserves the system boundaries, consumption relationships, non-goa
 
 Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
 
-- **Performance**: Achieves low-latency inference through NVIDIA CUDA acceleration. Recommends using FP16/INT8 quantized models.
-- **Security**: All data stays within the project's internal network (`ai_net`), with strict RBAC applied through Keycloak.
-- **Reliability**: Monitors inference engine status and performs automatic recovery through Healthcheck.
-- **Scalability**: Horizontal scaling through added Worker containers as needed (subject to compliance with the GPU allocation policy).
+- **Performance**: CUDA acceleration and model quantization are workload choices; source declarations do not establish measured latency or shared-GPU capacity.
+- **Security**: Authentication is service-specific. Open WebUI uses native OIDC, Open Notebook password-file authentication and gateway CIDR controls, and MLflow a browser ForwardAuth route. MLflow's direct SDK path on all four declared networks is not equivalently authenticated. Provider egress, Crawl4AI routes and loopback publications retain their explicit boundaries.
+- **Reliability**: Healthchecks provide process/application signals; an unhealthy status alone does not restart a container or prove application recovery.
+- **Scalability**: Additional worker/GPU capacity requires approved resource and topology changes; no automatic horizontal scaling is established.
 - **Observability**: Continuously monitors VRAM usage, model load status, and API call statistics through `ollama-exporter`.
 
 ## Components
@@ -80,11 +84,7 @@ Data and control flows include only the interactions specified in this section a
 
 - **Key Entities / Flows**: User Prompt → Open WebUI (RAG Context Enrich) → Ollama (Inference) → Response Streaming.
 - **Storage Strategy**: Large model files (`${DEFAULT_AI_MODEL_DIR}/ollama`) connect directly to the host's large-scale storage through a bind mount.
-- **Data Boundaries**: User/chat/upload state sits in Open WebUI's default SQLite
-  data volume, and vector state sits in Qdrant; the two stores are recovered
-  through coordination by separate owners. ComfyUI workflow/user/input/output/custom-node
-  state and model provenance sit in that service's mounts. Context is passed to
-  the inference engine only transiently.
+- **Data Boundaries**: Open WebUI SQLite, uploads and local Chroma belong to its data volume; Qdrant is not its configured vector backend. ComfyUI declares `/root`-based mounts, but active image `/opt` paths may differ; do not claim coverage until path reconciliation is verified. Open Notebook recovery coordinates app data, SurrealDB and its encryption key. MLflow coordinates PostgreSQL metadata with SeaweedFS artifacts; Jupyter notebooks remain owned by Analytics. Context storage/egress must be checked for the selected consumer.
 
 ## Deployment View
 
@@ -93,7 +93,7 @@ Data and control flows include only the interactions specified in this section a
   owner-confirmed `HOME` capabilities. `ai` selects the full target;
   `ai-llm` selects Ollama/Open WebUI, `ollama` selects Ollama/exporter, and
   `ai-image` selects ComfyUI. Compose resource declarations are source limits,
-  not measured shared-GPU headroom.
+  not measured shared-GPU headroom. `notebook`/`surrealdb`, `mlops`/`data-science` and Crawl4AI retain their existing optional profiles; `ai` does not select every package now located in this directory.
 - **Operational Evidence**: Real-time GPU status check through `nvidia-smi` and the `ollama-exporter` dashboard.
 
 ## Traceability

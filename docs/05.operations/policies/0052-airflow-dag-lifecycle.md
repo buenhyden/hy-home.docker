@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0052"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-03-25"
   - 특별히 필요한 경우가 아니면 `catchup=False`를 명시적으로 설정해야 한다.
 - **Allowed**:
   - TaskFlow API(`@dag`, `@task`) 사용.
-  - `AIRFLOW__CORE__FERNET_KEY`를 통한 secret mounting.
+  - `AIRFLOW__CORE__FERNET_KEY_CMD` (`cat /run/secrets/airflow_fernet_key`)를 통한 secret mounting.
 - **Disallowed**:
   - Hardcoded credential(대신 Airflow Connection을 사용한다).
   - task 밖의 top-level database connection.
@@ -40,6 +40,8 @@ created: "2026-03-25"
 ## Verification
 
 Compliance는 [Airflow Procedure](../runbooks/0050-airflow.md)에 문서화된 Airflow static/runtime check와 Airflow metadata DB의 monthly audit으로 확인한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 

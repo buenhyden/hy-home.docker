@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -63,15 +63,21 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
 접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
 
+### 책임과 도구 범위
+
+책임자는 `@buenhyden`이다. 버전 조회·format/validate라도 선언된 마운트와
+실행 영향을 확인한다. 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은
+완전히 고정된 빌드가 아니므로 복구 시 사용한 이미지·provider lock 식별자를 보존한다.
+
 ## Traceability
 
 - [가이드](../guides/0082-opentofu.md) (`GDE-0082`)
 - [런북](../runbooks/0082-opentofu.md) (`RUN-0082`)
-- [Tooling 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 ## Related Documents
 
-- [OpenTofu Compose 소스](../../../infra/09-tooling/opentofu/docker-compose.yml)
+- [OpenTofu Compose 소스](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 - [파생 Compose 이미지 projection](../../../infra/tech-stack.versions.json)
 - [OpenTofu 상태 저장소](https://opentofu.org/docs/language/state/backends/)
 - [OpenTofu state 명령 안전성](https://opentofu.org/docs/cli/commands/state/)

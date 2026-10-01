@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -32,17 +32,21 @@ created: "2025-11-12"
 - Open WebUI (사용자 인터페이스 및 RAG 오케스트레이션)
 - NVIDIA CUDA 통합
 - 로컬 모델 관리
+- Open Notebook과 함께 배치된 SurrealDB의 지식 작업
+- MLflow 실험·모델 메타데이터와 아티팩트 관리
 
 ### Out of Scope
 
 - 모델 학습 또는 미세 조정 (외부 전용 클러스터에서 처리)
-- 벡터 DB 호스팅 (`04-data/specialized/qdrant`에서 관리)
+- 벡터 DB 호스팅 (`04-data/qdrant`에서 관리)
 - 클라우드 기반 LLM API (OpenAI, Claude 등 - 프록시될 수는 있으나 호스팅되지 않음)
 
 ## Structure
 
 ```text
 08-ai/
+├── open-notebook/      # 선택적 지식 앱과 SurrealDB
+├── mlflow/             # 선택적 실험 추적과 DB provisioner
 ├── ollama/             # Inference engine (Go-based)
 ├── open-webui/         # Web interface and RAG logic
 ├── comfyui/            # Image workflow UI
@@ -110,6 +114,20 @@ docker compose exec ollama ollama list
 | `comfyui` | HOME | `ai`, `ai-image` |
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)입니다. 정확한 Stage 05 대상은 `docs/05.operations/guides/0056-ollama.md`의 `GDE/POL/RUN-0056`, `.../0057-open-webui/`의 `GDE/POL/RUN-0057`, `.../0081-comfyui/`의 `GDE/POL/RUN-0081`입니다.
+
+### 선택적 지식·실험 관리
+
+[Open Notebook](open-notebook/README.md)은 `notebook`, 함께 있는 SurrealDB는
+`notebook`·`surrealdb`로 선택합니다. `admin`이나 `dev`로 켜지지 않습니다.
+앱 비밀번호·admin CIDR을 쓰며 공유 SSO는 사용하지 않습니다. `/app/data`,
+SurrealDB `/mydata`와 암호화 키가 하나의 복구 세트이며 키 유실 시 저장한
+provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별도 승인 경계입니다.
+
+[MLflow](mlflow/README.md)와 DB provisioner는 `mlops`·`data-science`를 유지합니다.
+추적 DB는 mng-pg, 아티팩트는 전용 SeaweedFS bucket identity를 사용합니다.
+브라우저 SSO는 `edge_net`·`ai_net`·`mng_data_net`·`object_net`의 직접 SDK 접근을
+보호하지 않습니다. 이 이동은 인증·학습·서빙 기능을 새로 구현하지 않습니다.
+운영 subject0073,0080,0088이 해당 통제와 복구를 소유합니다.
 
 ## Related Documents
 

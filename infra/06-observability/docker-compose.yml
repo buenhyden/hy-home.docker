@@ -418,7 +418,7 @@ services:
       GRAFANA_N8N_DB_NAME: n8n
       GRAFANA_AIRFLOW_DB_NAME: airflow
     volumes:
-      - ../04-data/operational/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ../04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
       - ./grafana/provisioning/db/mng-pg.sql:/provision/mng-pg.sql:ro
     secrets:
       - mng_postgres_password

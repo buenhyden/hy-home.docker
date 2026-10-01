@@ -4,7 +4,7 @@ version: "0.1.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0083"
 parent_ids:
@@ -56,14 +56,21 @@ self-host 설정 검증을 반드시 통과해야 한다.
 매월, 그리고 이미지, 토큰 범위, 저장소 목록, manager, 허용 명령어, `POL-0086`이 변경될
 때마다 검토한다.
 
+### 예약 실행 책임
+
+timer가 시작한 실행과 수동 실행에는 같은 승인·근거 규칙이 적용된다.
+`Persistent=true`의 catch-up도 원격 변경 승인 범위에 포함해야 한다. 책임자는
+`@buenhyden`이며 host unit 설치·교체는 검토된 사본으로만 수행한다. 이미지 태그는
+resolved digest와 같지 않으므로 불변성 통제의 충족 여부를 따로 확인한다.
+
 ## Traceability
 
-- Governing architecture: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
-- Subject peers: [Guide](../guides/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md)
+- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 동일 주제 문서: [Guide](../guides/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md)
 
 ## Related Documents
 
-- [Renovate Compose source](../../../infra/09-tooling/renovate/docker-compose.yml)
+- [Renovate Compose source](../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Renovate security and permissions](https://docs.renovatebot.com/security-and-permissions/)
 - [Operations index](../README.md)

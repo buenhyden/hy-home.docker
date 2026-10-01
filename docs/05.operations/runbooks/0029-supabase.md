@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack Health Runbook"
-version: "1.1.2"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0029"
 parent_ids:
@@ -32,6 +32,15 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 - Kong HTTP/HTTPS 접근이 compose가 선언한 host port에서 응답하지 않는 경우.
 - JWT rotation, dashboard 비밀번호 재설정, storage 용량, 또는 DB restore를 검토 중이며 변경 전 evidence가 필요한 경우.
 - 연결된 Supabase 운영 문서나 compose 참조가 변경되어 로컬 검증 evidence가 필요한 경우.
+
+
+### Execution and stop boundary
+
+대상: `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
 
@@ -102,7 +111,7 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 3. JWT, anon/service-role keys, SMTP/provider credentials, database passwords, vault and crypto keys는 backup data와 분리된 approved secret store에서 동일 identifier/version으로 참조한다.
 4. production network, ports and volumes를 공유하지 않는 compatible empty stack을 별도 test credentials로 준비한다. roles/globals, schema, data 순서로 PostgreSQL을 복원하고 Storage objects와 metadata를 함께 배치한 후 mounted configuration을 적용한다.
 5. Kong API, Auth signup/login policy, REST read, Realtime subscription, Storage object read, Function invocation, Studio metadata, analytics ingestion과 Supavisor connection을 synthetic data로 확인한다. object-count/metadata mismatch나 missing key가 있으면 승격하지 않는다.
-6. 실패 시 isolated stack과 전용 volumes를 폐기한다. production cutover, DNS/route switch, secret rotation은 별도 승인 절차이며 source stack은 변경하지 않는다.
+6. 실패 시 isolated stack과 전용 volumes를 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. production cutover, DNS/route switch, secret rotation은 별도 승인 절차이며 source stack은 변경하지 않는다.
 
 ## Evidence
 
@@ -125,7 +134,7 @@ compose 렌더링이 실패하거나, 필요한 secret이나 mounted config가 �
 
 ## Related Documents
 
-- [Compose implementation: infra/04-data/operational/supabase/docker-compose.yml](../../../infra/04-data/operational/supabase/docker-compose.yml)
+- [Compose implementation: infra/04-data/supabase/docker-compose.yml](../../../infra/04-data/supabase/docker-compose.yml)
 
 - [Supabase self-hosted restore guidance](https://supabase.com/docs/guides/self-hosting/restore-from-platform)
 - [Supabase self-hosted update guidance](https://supabase.com/docs/guides/self-hosting/updating)
@@ -134,4 +143,4 @@ compose 렌더링이 실패하거나, 필요한 secret이나 mounted config가 �
 - [Operations index](../README.md)
 - [Usage guide](../guides/0029-supabase.md)
 - [Operations policy](../policies/0029-supabase.md)
-- [Infrastructure service README](../../../infra/04-data/operational/supabase/README.md)
+- [Infrastructure service README](../../../infra/04-data/supabase/README.md)

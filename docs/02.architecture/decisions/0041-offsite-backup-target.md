@@ -1,10 +1,10 @@
 ---
 title: "Offsite Backup Target"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "ADR-0041"
 parent_ids:
@@ -199,9 +199,9 @@ Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
   [Task 0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)
 - Policy: [POL-0021](../../05.operations/policies/0021-backup-and-restore.md)
   control 1–3; Runbook: [RUN-0021](../../05.operations/runbooks/0021-backup-and-restore.md)
-- Runtime sources: [Restic Compose](../../../infra/09-tooling/restic/docker-compose.yml),
-  [orchestrator](../../../infra/09-tooling/restic/bin/hyhome-backup.sh),
-  [pgBackRest configuration](../../../infra/04-data/operational/mng-db/pg/backup/pgbackrest.conf)
+- Runtime sources: [Restic Compose](https://github.com/buenhyden/hy-home.docker/blob/c26bc8026254dffd7d51fc45b4081a1f80f855f2/infra/09-tooling/restic/docker-compose.yml),
+  [orchestrator](https://github.com/buenhyden/hy-home.docker/blob/c26bc8026254dffd7d51fc45b4081a1f80f855f2/infra/09-tooling/restic/bin/hyhome-backup.sh),
+  [pgBackRest configuration](../../../infra/04-data/mng-db/pg/backup/pgbackrest.conf)
 - Size basis: the `repository sizes` line of `journalctl -u hyhome-backup.service`
   (2026-09-23 to 25).
 

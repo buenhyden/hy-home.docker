@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0058"
 parent_ids:
@@ -29,6 +29,12 @@ created: "2026-05-17"
 - Ollama/Open WebUI 경로 접근 정책이 비정상일 때
 - Ollama GPU 과부하/OOM 또는 queue 적체가 반복될 때
 - exporter metrics 수집이 실패할 때
+
+## Execution Boundary
+
+저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
+
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
 ## Procedure
 
@@ -72,7 +78,7 @@ created: "2026-05-17"
 
 ### Observability and Evidence Sources
 
-- **Signals**: CI `infrastructure-hardening`, Ollama exporter metrics, Open WebUI health, gateway access logs
+- **Signals**: CI `infrastructure-hardening`, Ollama exporter 지표, Open WebUI 상태, gateway 접근 로그
 - **Evidence to Capture**:
   - 변경 전후 hardening check 결과
   - compose config 결과
@@ -97,22 +103,26 @@ created: "2026-05-17"
   - `check-all-hardening.sh 08-ai`
   - `check-template-security-baseline`
   - `python3 scripts/validation/check-document-links.py --mode all`
-- **Trace Capture**: CI logs + exporter metrics + compose config
+- **Trace Capture**: CI 로그, exporter 지표, Compose 설정
+
+### Control evidence boundary
+
+AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
 ## Evidence
 
-- Capture command output, timestamps, and operator or agent actions for any execution of this runbook.
-- Record failed checks, observed symptoms, and the final recovery or escalation state in the related task or incident evidence.
+- 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
+- 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
 ## Rollback or Recovery
 
-- Use only recovery or rollback steps already documented in this runbook, including any `Safe Rollback or Recovery Procedure` subsection above.
-- Configuration rollback rehearsal is planned and not executed. Stateful recovery remains in `RUN-0056`, `RUN-0057`, and `RUN-0081`; do not infer model, SQLite, vector, or workflow recovery from this optimization runbook.
-- If the observed failure does not match the documented steps, stop changes, preserve evidence, and escalate under `## Escalation`.
+- 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
+- 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0056`, `RUN-0057`, `RUN-0081`이 소유한다. 이 최적화 Runbook으로 모델·SQLite·벡터·워크플로 복구를 입증하지 않는다.
+- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
 ## Escalation
 
-Stop and escalate to the owning operator when verification fails, secret exposure risk appears, destructive data changes are required, or observed state diverges from expected procedure results. Include captured evidence, attempted steps, and current rollback/recovery state.
+검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
 ## Traceability
 
@@ -122,7 +132,7 @@ Stop and escalate to the owning operator when verification fails, secret exposur
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0058-ai-optimization-hardening.md)

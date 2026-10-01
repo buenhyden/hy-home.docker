@@ -1,20 +1,20 @@
 ---
-title: "Tooling Tier (09-tooling) Product Requirements"
-version: "2.0.1"
+title: "Platform Operations and Software Verification Requirements"
+version: "2.0.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "requirements"
 artifact_id: "REQ-0010"
 parent_ids: []
 created: "2026-03-26"
 ---
-# Tooling Tier (09-tooling) Product Requirements
+# Platform Operations and Software Verification Requirements
 
 ## Problem and Goals
 
-This document defines the product requirements for the `09-tooling` tier. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
+This document retains the tooling requirements across `09-platform-ops` platform operations and `11-quality` software verification. IaC, Registry, Renovate and Restic remain in Platform Operations; SonarQube, k6, Locust, WireMock, Pact Broker, Conftest and Mailpit belong to Quality under SPEC-0197. Issued functional requirement identities remain unchanged. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
 
 ### Problem Statement
 

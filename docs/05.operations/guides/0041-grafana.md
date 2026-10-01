@@ -4,7 +4,7 @@ version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -97,7 +97,7 @@ created: "2026-05-10"
 ### Common Pitfalls
 
 - **Provisioning drift**: UI에서만 바꾼 dashboard나 datasource는 JSON/YAML로 export해 커밋하기 전까지 current truth가 되지 않는다.
-- **Datasource identity drift**: dashboard는 provisioned UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, `Pyroscope`, `n8n-db`, `airflow-db` 또는 datasource 변수를 참조해야 한다. 이미 있는 datasource의 UID는 Grafana가 제자리에서 바꾸지 못하므로 `deleteDatasources`로 지우고 다시 만든다(SPEC-0193에서 Pyroscope).
+- **Datasource identity drift**: dashboard는 provisioned UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, `Pyroscope`, `n8n-db`, `airflow-db` 또는 datasource 변수를 참조해야 한다. 기존 datasource의 UID migration은 [RUN-0041](../runbooks/0041-grafana.md)의 승인·backup 경계로 넘긴다. SPEC-0193 Pyroscope 사건에서 `deleteDatasources`를 사용한 이력은 일반 삭제 승인이 아니다.
 - **Dashboard identity**: 이미 provision된 dashboard의 `uid`를 바꾸거나, 지운 파일과 같은 경로에 다른 `uid`의 파일을 두면 Grafana 13이 `deprecatedInternalID ... is already in use`로 저장을 거부한다. 기존 dashboard는 `uid`를 유지하고, 교체하는 dashboard는 새 경로에 둔다.
 - **Secret evidence**: `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, 렌더링된 secret 값을 증거에 복사해서는 안 된다.
 - **Role mapping drift**: `/admins`와 `/editors` mapping은 `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`가 제어한다.
@@ -132,8 +132,8 @@ created: "2026-05-10"
 
 - **Metrics Drilldown**: Prometheus datasource의 `timeInterval`이 scrape 간격(30 s)과 같아 `$__rate_interval`이 샘플 네 개를 덮는다.
 - **Logs Drilldown**: Loki의 `volume_enabled`, `pattern_ingester`, `discover_log_levels`가 서비스별 볼륨, 패턴, 레벨 보기를 채운다.
-- **Traces Drilldown**: Tempo 3.0.3은 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana이며 샘플링은 10%다. Airflow tracing은 Airflow 3.3.1에서 fork하는 프로세스를 멈추게 해 껐다(RUN-0050).
-- **Profiles Drilldown**: Alloy `pyroscope.scrape "go_services"`가 `/debug/pprof`을 제공하는 Go 서비스 11개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, registry)에서 30초마다 가져온다. eBPF는 쓰지 않는다.
+- **Traces Drilldown**: Tempo 3.0.3은 TraceQL metrics를 기본으로 답한다. Tempo datasource가 검색과 metrics 결과를 streaming으로 받으므로 Tempo에 `stream_over_http_enabled: true`가 있어야 한다. 없으면 Drilldown이 "An error occurred in the query"를 띄운다(2026-09-30). trace를 보내는 서비스는 Traefik, Keycloak, Grafana이며 샘플링은 10%다. Airflow tracing은 Airflow 3.3.1에서 fork하는 프로세스를 멈추게 해 껐다(RUN-0050). <!-- runtime-version-exception: history — SPEC-0193의 2026-09-30 장애·인증 검증에 적용된 버전 근거를 보존한다. -->
+- **Profiles Drilldown**: Alloy `go_services` ten-target source와 별도 SeaweedFS source가 `/debug/pprof`을 제공하는 총 11개(Prometheus, Alertmanager, Loki, Tempo, Alloy, Pyroscope, Grafana:6060, node-exporter, SeaweedFS S3, `mng-pg-exporter`, registry)에서 30초마다 가져온다. eBPF는 쓰지 않는다.
 - **SQL datasources**: `n8n-db`, `airflow-db`는 `grafana-db-provision`이 만든 `grafana_reader`로 접속한다. 이 role은 n8n `execution_entity`·`workflow_entity`와 Airflow `dag`·`dag_run`·`task_instance`만 `SELECT`하며, 세션은 읽기 전용이고 statement timeout 30 s, 연결 4개로 제한된다.
 
 ### External dashboard survey (2026-09-29)
@@ -149,6 +149,12 @@ created: "2026-05-10"
 | 버림 | Keycloak 14390(Keycloak 26이 방출하지 않는 `base_*` 이름), Qdrant 공식 대시보드(Kubernetes·Cloud 전용), Neo4j 12046(Community 판에 메트릭 endpoint가 없다), vLLM 24756(vLLM 서비스가 없다) |
 
 Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데, 기존 statsd mapping은 DAG 파일 이름을 메트릭 이름에 넣었다. mapping을 DAG, task, pool, 파일 이름을 라벨로 옮기도록 바꾸고, 알 수 없는 긴 이름은 버린다.
+
+### Authentication and provisioning limits
+
+Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. 선언된 upstream은 Basic auth를 기본 활성화하고 Compose는 비활성화하지 않으므로 SSO-only 요구가 완전히 시행되지 않는다. 유효한 자격 증명은 여전히 필요하다. 임의 break-glass 예외를 만들지 않고 @buenhyden의 별도 수정 결정과 거부 검증을 요구한다. Strict group mapping은 지정 그룹에 organization Admin/Editor/Viewer만 부여한다. `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 선언 버전이 지원하지 않는 필드여서 server-admin 부여 증거가 아니다.
+
+`grafana-db-provision`은 DB 서버가 아닌 HOME 일회성 PostgreSQL 클라이언트다. 마운트된 script/SQL은 `mng-pg`를 기다린 뒤 제한된 읽기 전용 `grafana_reader`와 기존 Airflow/n8n 테이블 권한을 생성·갱신한다. HTTP health, 자체 상태 볼륨, 이 job에 대한 Grafana depends_on은 없다. 없는 테이블을 건너뛰어도 성공 종료하므로 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard를 확인한다. 재실행은 role/grant를 변경하므로 단순 조회 진단이 아니다. DB·자격 증명 복구는 관리 DB·시크릿 소유자가 맡고 helper의 복구 자산은 추적 SQL/script다.
 
 ## Common Checks
 

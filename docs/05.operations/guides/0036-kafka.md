@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -67,6 +67,27 @@ provider 파일을 참조하는 connector를 생성할 수 있으므로, 익명 
 여전히 인증 없이 포트 8083에 직접 접근할 수 있다. 이 내부 경로는 기록된
 gap이다.
 
+
+### Identity-specific behavior
+
+Kafka CP8.3.2 는 4.3 family 이며 broker1 은단일/cluster selector, broker2/3 은 cluster 전용이다. RF3 의 kafka-init 는 3healthy brokers 가 필요하여 단일 selector 의완료를 보장하지 않는다. KRaft combined role 와 PLAINTEXT client/controller/JMX 는 TLS/auth 제공이 아니다. exporter 는 lag 관측, Schema Registry 는 schema-ID history, Connect 는내부 offset/config/status, REST 는 HTTP 변환, Kafbat 는 nativeOIDC/RBAC 로 각각 다르다. Debezium helper 는 mng-pg feature grants 를 변경하고 connector JSON 은자동 등록되지 않는다. Connect built3.6.3 PG plugin 만 복사하며 CP8.3 family 정렬은커스텀 통합 인증이 아니다. JMX YAML 이 있어도 agent/JAR 경로와 scrape 성공은별도 확인한다.
+
+| 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
+| --- | --- | --- | --- |
+| `debezium-db-provision` | CDC source role/grant/publication provisioning job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafbat-ui` | native OIDC/RBAC UI; tmpfs config | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-1` | KRaft combined broker/controller 1; 일반/cluster selector | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-2` | KRaft combined broker/controller 2; cluster selector 전용 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-3` | KRaft combined broker/controller 3; cluster selector 전용 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-connect` | connector worker/internal state; PG Debezium만 copied build | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-exporter` | broker/consumer lag metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-init` | RF3 topic creation job; 세 broker 필요 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-rest-proxy` | HTTP→Kafka 변환; native auth 선언 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+
+
 ### Images, configuration and resource controls
 
 Compose 파일은 핀된 Confluent Kafka/Schema/Connect/REST, Kafbat, Kafka
@@ -124,11 +145,11 @@ connector는 여전히 `max_slot_wal_keep_size`까지 WAL을 고정한다.
 
 | State | Evidence |
 | --- | --- |
-| JSON file exists | Git only; nothing is registered |
-| Registered | `GET /connectors/<name>` returns the config |
-| Running | `GET /connectors/<name>/status` shows connector and task `RUNNING` |
-| Snapshot complete | Connector metrics or log show the initial snapshot finished |
-| Changes captured | A test change appears on the `hyhome.app.*` topic |
+| JSON 파일 존재 | Git에만 있으며 아직 등록된 것은 없음 |
+| 등록됨 | `GET /connectors/<name>`이 config를 반환함 |
+| 실행 중 | `GET /connectors/<name>/status`에서 connector와 task가 `RUNNING`으로 표시됨 |
+| Snapshot 완료 | connector metric이나 log에서 초기 snapshot 완료를 확인함 |
+| 변경 수집됨 | test 변경이 `hyhome.app.*` topic에 나타남 |
 
 `mng-pg`는 `wal_level=logical`, `max_replication_slots`, `max_wal_senders`,
 `max_slot_wal_keep_size`(기본값 2048 MB)를 선언한다. 실행 중인 인스턴스는
@@ -171,6 +192,7 @@ REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검
 - [Kafbat configuration](https://ui.docs.kafbat.io/configuration/configuration-file)
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
+
 
 ## Common Checks
 

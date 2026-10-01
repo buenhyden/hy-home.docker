@@ -1,22 +1,22 @@
 ---
-title: "09-Tooling Optimization Hardening Architecture Description"
-version: "2.0.4"
+title: "Platform Operations and Quality Optimization Hardening Architecture Description"
+version: "2.0.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
 - "REQ-0010"
 created: "2026-03-28"
 ---
-# 09-Tooling Optimization Hardening Architecture Description
+# Platform Operations and Quality Optimization Hardening Architecture Description
 
 ## Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
-the `09-tooling` layer. It organizes the gateway+SSO boundary of the
+the `09-platform-ops` and `11-quality` capabilities. It organizes the gateway+SSO boundary of the
 management path, tooling network isolation, test tool runtime stability, and
 catalog-based expansion policy from an architecture perspective.
 
@@ -47,7 +47,7 @@ non-goals, and constraints already recorded in the current document.
   - tooling network boundary contract
   - test tool (locust/k6) runtime stability contract
   - tooling hardening CI policy gate
-  - 09-tooling catalog expansion roadmap
+  - Tooling/Quality catalog expansion roadmap
 - **Consumes**:
   - `01-gateway` middleware chain
   - `02-auth` SSO middleware
@@ -112,12 +112,12 @@ section and the existing infrastructure/deployment descriptions.
 
 ## Deployment View
 
-- **Runtime / Platform**: Docker Compose (`infra/09-tooling/*`)
+- **Runtime / Platform**: Docker Compose (`infra/09-platform-ops/*` and `infra/11-quality/*`)
 - **Deployment Model**:
   - independent per-service compose + a common template (`common-optimizations.yml`)
 - **Operational Evidence**:
   - optional root-context compose rendering when runtime evidence is approved
-  - `scripts/hardening/check-all-hardening.sh 09-tooling`
+  - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
   - CI `infrastructure-hardening` job
 
 ## Evolution
@@ -144,8 +144,8 @@ The disposition of the parent requirement and the related decision/implementatio
 - **PRD**: [../01.requirements/0010-tooling.md](../../01.requirements/0010-tooling.md)
 - **Spec**: [../03.specs/010-tooling/spec.md](0009-tooling-architecture.md)
 - **ADR**: [../02.architecture/decisions/0024-tooling-hardening-and-ha-expansion-strategy.md](../decisions/0024-tooling-hardening-and-ha-expansion-strategy.md)
-- **Guide**: [../../05.operations/guides/09-tooling/optimization-hardening.md](../../05.operations/guides/0063-tooling-optimization-hardening.md)
-- **Operation**: [../../05.operations/policies/09-tooling/optimization-hardening.md](../../05.operations/policies/0063-tooling-optimization-hardening.md)
-- **Runbook**: [../../05.operations/runbooks/09-tooling/optimization-hardening.md](../../05.operations/runbooks/0063-tooling-optimization-hardening.md)
+- **Guide**: [../../05.operations/guides/09-platform-ops/optimization-hardening.md](../../05.operations/guides/0063-tooling-optimization-hardening.md)
+- **Operation**: [../../05.operations/policies/09-platform-ops/optimization-hardening.md](../../05.operations/policies/0063-tooling-optimization-hardening.md)
+- **Runbook**: [../../05.operations/runbooks/09-platform-ops/optimization-hardening.md](../../05.operations/runbooks/0063-tooling-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

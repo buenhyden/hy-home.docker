@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Product Requirements"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "requirements"
 artifact_id: "REQ-0011"
 parent_ids: []
@@ -14,7 +14,7 @@ created: "2026-03-26"
 
 ## Problem and Goals
 
-This document defines the product requirements for the `10-communication` tier. This tier owns the currently implemented mail communication infrastructure and aims to build a safe, reliable mail environment by integrating a development SMTP sandbox with the production mail server.
+This document retains mail requirements across Stalwart in `10-communication` and the development SMTP sandbox Mailpit in `11-quality`. Current Stalwart is optional and internal-only: no host ports are published, and the tracked configuration rejects relaying. Production delivery, public protocol exposure and DNS/TLS acceptance remain separate promotion requirements, not implemented runtime claims.
 
 ### Problem Statement
 
@@ -32,13 +32,13 @@ Provide an intelligent communication hub that handles all notification and commu
 
 ### Key Use Cases
 
-- **STORY-01**: A developer confirms via the MailHog UI that test mail is captured correctly instead of leaving the system.
+- **STORY-01**: A developer confirms via the Mailpit UI that test mail is captured correctly instead of leaving the system.
 - **STORY-02**: The system sends user sign-up welcome mail over an encrypted channel via Stalwart.
 - **STORY-03**: An admin applies SPF/DKIM settings on Stalwart so mail sent to external services is not classified as spam.
 
 ## Functional Requirements
 
-- **REQ-0011-FR-0001**: Provide a development SMTP trap service (MailHog).
+- **REQ-0011-FR-0001**: Provide a development SMTP trap service (Mailpit).
 - **REQ-0011-FR-0002**: Provide a high-performance production IMAP/SMTP/JMAP mail server (Stalwart).
 - **REQ-0011-FR-0003**: Support real-time UI monitoring and search of mail transmission data.
 - **REQ-0011-FR-0004**: Guarantee secure communication through TLS encryption.

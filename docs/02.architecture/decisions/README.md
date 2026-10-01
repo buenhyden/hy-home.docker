@@ -110,6 +110,11 @@ docs/02.architecture/decisions/
   README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로
   통합하는 proposed decision(SPEC-0184).
 
+- [`ADR-0045`](./0045-data-storage-and-analytics-tier-boundary.md):
+  Data 저장소와 Analytics 처리 패키지의 경계를 정한 proposed decision(SPEC-0197).
+- [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
+  Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
+
 ## How to Work in This Area
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:

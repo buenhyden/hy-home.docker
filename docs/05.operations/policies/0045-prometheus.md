@@ -4,7 +4,7 @@ version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -29,7 +29,7 @@ procedure는 해당 runbook에 있다.
 alert-rule surface에 적용된다.
 
 - **Systems**: compose service `prometheus`, container `infra-prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
-- **Environments**: local, development, homelab operations
+- **Environments**: 로컬·개발·홈랩 운영
 
 ## Controls
 
@@ -63,9 +63,10 @@ alert-rule surface에 적용된다.
     full `qdrant_api_key`를 절대 보유하지 않는다)는 Docker Secret file
     reference일 뿐이다; 그 값이 문서, 로그, task evidence에 나타나서는
     안 된다.
-    Active Prometheus는 이를 선언하거나 마운트하지 않는다; 별도로
-    승인된 migration closeout, revocation, file disposition 전까지 기존
-    private value를 그대로 유지한다.
+    Active Compose는 위 세 scrape secret을 선언하고 mount한다. 선언은
+    실제 credential 발급/target readiness를 증명하지 않는다. 별도 승인된
+    migration closeout, revocation, file disposition 전까지 기존 private value를
+    그대로 유지하며 문서 정리를 이유로 삭제하거나 폐기하지 않는다.
   - `SEC-002` / `openbao_token`은 수동 least-privilege OpenBao
     `prometheus`-policy credential contract다. Source declaration은
     token이 발급되었거나, 실행 중인 container가 로드했거나, UP scrape
@@ -116,6 +117,12 @@ alert-rule surface에 적용된다.
 - isolated TSDB storage에서 rehearse하며 production remote-write/alert는 사용하지 않는다. WAL replay, historical/current query, target label, rule evaluation, Alertmanager delivery, remote-write receiver client를 검증한다.
 - Resource/retention 변경에는 측정된 disk 증가, query/scrape pressure, rollback threshold가 필요하다. Removal에는 scraper/client migration과 명시적인 TSDB-retention/deletion 승인이 필요하다.
 
+### Host and GPU exporter boundary
+
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+
+`PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
+
 ## Exceptions
 
 - Scrape interval, retention, secret reference, route, rule-loading
@@ -131,6 +138,8 @@ alert-rule surface에 적용된다.
   `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
 - Repository contracts:
   `python3 scripts/validation/run-ci-gate.py --profile changed`
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 

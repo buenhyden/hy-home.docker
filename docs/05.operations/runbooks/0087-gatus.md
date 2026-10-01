@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -20,7 +20,18 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
+## Execution Boundary
+
+저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
+
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+
 ## Procedure
+
+### Service lifecycle prerequisites
+
+`gatus`는 승인된 source/patch build 결과, 선택 OIDC config, subject allowlist, client secret과 CA, sqlite volume 권한을 확인한 뒤 기동한다. Dockerfile의 test 선언은 실행 증거가 아니다. 교체·중지 전 sqlite 일관성을 확보하고 Keycloak·CA 유지보수는 공통 소유자에게 넘긴다.
+
 
 1. 렌더링된 환경을 출력하지 않고 공개 설정을 검증한다.
 
@@ -30,15 +41,15 @@ docker compose --profile availability ps gatus
 docker compose --profile availability exec -T gatus sh -ec 'wget -q -O /dev/null "http://127.0.0.1:${PORT}/health"'
 ```
 
-1. 상태 경로가 인증을 요구하는지 확인하고, 승인된 세션을 통해 프로브 상태를
+2. Public health/bootstrap와 protected status/history API를 구분해 인증을 확인하고, 승인된 세션을 통해 프로브 상태를
    검토한다. 응답 본문, 토큰, 엔드포인트 크리덴셜을 증거에 복사하지 않는다.
-2. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
+3. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
    컨테이너 헬스, UI 인증, 예상 프로브 이름을 별도로 검증한다. 예상치 못한
    마운트, 권한, 이미지 식별자를 발견하면 중단한다.
 
 ### Native OIDC operation
 
-실행 중인 서비스는 소유자 로그인 승인 이후 네이티브 OIDC와 함께
+기록된 owner 승인 rollout은 네이티브 OIDC로 전환되었고 현재 source는
 `config.oidc.yaml`을 사용한다. 라우터는 표준 게이트웨이 체인만 유지하며
 metrics 접두사는 제외한다. 설정 롤백에 대비해 원본 `config.yaml`을 보존한다.
 실행 중인 바인드 마운트 파일을 고치면 서비스에 즉시 영향을 줄 수
@@ -50,7 +61,7 @@ metrics 접두사는 제외한다. 설정 롤백에 대비해 원본 `config.yam
 클라이언트는 `home-gatus`이며, 정확한 콜백은
 `https://status.${DEFAULT_URL}/authorization-code/callback`, confidential
 code flow와 S256을 사용한다. 클라이언트 시크릿은 Docker Secret이며, 서비스는
-UID 1000으로 실행되고 UID-1000이 소유한 mode 0600 파일을 요구한다.
+Compose-selected non-root UID/GID (default 1000)로 실행된다. Mode 0600 secret의 소유자는 선택 UID여야 한다; 기본값을 실제 private 선택으로 단정하지 않는다.
 `GATUS_OIDC_ALLOWED_SUBJECT`는 이메일이나 표시 이름이 아닌 정확한 Keycloak
 사용자 `sub`이다. 빈 allowlist는 시작 단계에 도달해서는 안 된다. 로컬 CA는
 공개 루트와 결합될 뿐 이를 대체하지 않으며, TLS 검증은 계속 활성화되어 있다.
@@ -63,13 +74,16 @@ UID 1000으로 실행되고 UID-1000이 소유한 mode 0600 파일을 요구한�
 이후 승인된 롤아웃에서는 기존 이미지를 롤백용으로 보존하고, SQLite를 일관되게
 백업하며, 동일한 데이터 볼륨으로 Gatus만 교체한다. 향후 마이그레이션이나
 롤백에서 임시 게이트웨이가 필요한 경우, allowed-subject 로그인과
-denied/invalid-session 검사를 통과할 때까지 유지한다. 현재 승인된 런타임은 그
-임시 게이트웨이를 제거한 상태다. 쿠키 플래그와 네이티브 세션 만료는 컨테이너
+denied/invalid-session 검사를 통과할 때까지 유지한다. 인용된 rollout 기록에서는 그 임시 게이트웨이가 제거되었다. 현재 runtime 상태는
+별도 관찰 없이 재확인되었다고 주장하지 않는다. 쿠키 플래그와 네이티브 세션 만료는 컨테이너
 헬스와 별개로 검증한다. Gatus의 로컬 세션은 현재 설정에서 1시간 TTL을 가지며,
 Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하지 못한다. 별도의
 관찰 테스트 없이 애플리케이션 간 단일 로그아웃을 주장하지 않는다.
 
 ### Planned isolated restore rehearsal
+
+**Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
+
 
 상태: **계획됨, 미실행**. Gatus SQLite 복원에 성공했다고 주장하지 않는다.
 

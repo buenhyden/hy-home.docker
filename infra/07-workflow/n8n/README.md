@@ -1,10 +1,10 @@
 ---
 title: "n8n Low-code Automation"
-version: "1.2.2"
+version: "1.2.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -54,17 +54,17 @@ n8n/
 | --- | --- |
 | Purpose | n8n Low-code Automation 서비스 leaf. [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 루트 include가 활성화됨. 이 파일 하나가 이 디렉터리의 유일한 Compose 파일임 |
 | Config files | `docker-compose.yml` |
-| Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `dev` |
-| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `dev`)로 선택됨 |
+| Config values | env 키: `GENERIC_TIMEZONE`, `TZ`, `DB_TYPE`, `DB_POSTGRESDB_HOST`, `DB_POSTGRESDB_PORT`, `DB_POSTGRESDB_DATABASE`, `DB_POSTGRESDB_USER`, `DB_POSTGRESDB_PASSWORD_FILE` 외 다수; 프로필: `workflow`, `workflow-n8n` |
+| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/07-workflow/n8n/docker-compose.yml` 경로로 무조건 루트 include되며 프로필(`workflow`, `workflow-n8n`)로 선택됨 |
 | Networks | `edge_net`, `mng_data_net`, `n8n_net`, `obs_net` |
 | Volumes | `n8n-data:/home/node/.n8n:rw`, `./custom:/home/node/.n8n/custom:rw`, `n8n-task-runner-worker-data:/home/node/.n8n:rw`, `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `n8n-valkey-data:/data:rw`, `n8n-valkey-data` |
 | Ports | `${N8N_PORT:-5678}`, `${N8N_BROKER_PORT:-5679}`, `${N8N_TASK_RUNNER_PORT:-5680}`, `${VALKEY_PORT:-6379}`, `${VALKEY_BUS_PORT:-16379}`, `${VALKEY_EXPORTER_PORT:-9121}` |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.n8n.rule`, `traefik.http.routers.n8n.entrypoints`, `traefik.http.routers.n8n.middlewares`, `traefik.http.routers.n8n.tls`, `traefik.http.routers.n8n.service`, `traefik.http.services.n8n.loadbalancer.server.port` |
 | Secret refs | 이름: `mng_valkey_password`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_valkey_password`; 마운트: `/run/secrets/mng_valkey_password`, `/run/secrets/n8n_db_password`, `/run/secrets/n8n_encryption_key`, `/run/secrets/n8n_runner_auth_token`, `/run/secrets/n8n_valkey_password` |
-| Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨 |
+| Healthcheck | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker`, `dedicated-valkey` 프로필의 `n8n-valkey`에 Compose 헬스체크가 선언되어 있음. exporter는 의존성 기반으로 게이트됨. main은 `/healthz/readiness`, worker·runner는 각 선언된 `/healthz`를 사용하며 같은 신호가 아님; probe 통과가 작업 실행 성공이나 runner 호환성을 입증하지 않음 |
 | Operations | Guide (`docs/05.operations/guides/0053-n8n.md`), Policy (`docs/05.operations/policies/0053-n8n.md`), Runbook (`docs/05.operations/runbooks/0053-n8n.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`로 시작한 뒤 서비스 로그와 연결된 런북 근거를 확인합니다. |
+| Troubleshooting | `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`로 시작한 뒤 서비스 로그와 연결된 런북 근거를 확인합니다. |
 
 ## How to Work in This Area
 
@@ -84,8 +84,8 @@ n8n/
 | Component | Technology | Version | Note |
 | :--- | :--- | :--- | :--- |
 | Core Service | n8n | declared version | Node.js 기반 |
-| Metadata DB | PostgreSQL | Management PostgreSQL | `infra/04-data/operational/mng-db`를 통해 관리됨 |
-| Queue Broker | Valkey (Redis 호환) | declared version; 기본값은 `${N8N_VALKEY_HOST:-mng-valkey}`, `dedicated-valkey` 프로필에서는 `n8n-valkey` | Queue 오케스트레이션 |
+| Metadata DB | PostgreSQL | Management PostgreSQL | `infra/04-data/mng-db`를 통해 관리됨 |
+| Queue Broker | Valkey (Redis 호환) | 선택은 `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_password}`가 소유함; `dedicated-valkey`는 전용 broker를 활성화할 뿐 main/worker의 host·secret을 바꾸지 않음 | Queue 오케스트레이션 |
 | Task Runner | n8nio/runners | declared version | 격리된 실행 환경 |
 
 ## Architecture
@@ -106,7 +106,7 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 
 ## Validation
 
-- README나 n8n에 영향을 주는 Compose 참조 변경 후에는 `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
+- README나 n8n에 영향을 주는 Compose 참조 변경 후에는 `HYHOME_COMPOSE_PROFILES='workflow-n8n' bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - n8n 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
 ## Troubleshooting

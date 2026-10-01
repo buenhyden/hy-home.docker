@@ -1,10 +1,10 @@
 ---
-title: "11-laboratory Architecture Description"
-version: "1.1.0"
+title: "Administration and Experimentation Architecture Description"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-20"
+updated: "2026-10-01"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -12,11 +12,11 @@ parent_ids:
 created: "2026-03-26"
 ---
 
-# 11-laboratory Architecture Description
+# Administration and Experimentation Architecture Description
 
 ## Context and Stakeholders
 
-The laboratory tier contains optional operator and knowledge-work tools. It is
+The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers under SPEC-0197. This description preserves their optional operator and knowledge-work obligations. It is
 outside HOME and must not affect core traffic when absent. Its broad visibility
 into Docker, Redis/Valkey, provider APIs, and notebook content makes it an admin
 security boundary rather than a harmless dashboard layer.
@@ -29,12 +29,12 @@ security boundary rather than a harmless dashboard layer.
 - **RedisInsight:** `admin`/`admin-data`; stores local connections/settings under
   `/data` and manages external Redis/Valkey targets. Target data remains owned by
   each target service. Current Compose does not declare `RI_ENCRYPTION_KEY`.
-- **Open Notebook:** `admin`/`notebook`; stores local app data under `/app/data`,
-  connects to separately owned SurrealDB, and uses password/encryption-key Docker
+- **Open Notebook:** `notebook`; stores local app data under `/app/data`,
+  connects to SurrealDB within the same `08-ai/open-notebook` package, and uses password/encryption-key Docker
   Secrets. Provider/API egress is a distinct authorization boundary.
-- **SurrealDB:** owned by `infra/04-data/specialized/surrealdb`, selected by
-  `admin`, `notebook`, or `surrealdb`, and persists Open Notebook records under
-  `/mydata`.
+- **SurrealDB:** the nested build in `infra/08-ai/open-notebook/surrealdb`, selected by `notebook` or `surrealdb`, persists Open Notebook records under `/mydata`; its host-port block remains commented out.
+- **MLflow:** `08-ai/mlflow` retains tracking and feature-owned DB provisioning under `mlops`/`data-science`; PostgreSQL metadata and SeaweedFS artifacts recover together. The browser uses ForwardAuth, while direct SDK access on all four declared networks lacks equivalent authentication.
+- **JupyterLab:** `12-analytics/jupyterlab`, selected by `data-science`, retains its token-file startup guard and UID1000 notebook workspace. Browser SSO does not replace token protection on peer networks.
 - **Non-goals:** this tier does not own primary Redis/Valkey backups, copied Docker
   logs, production notebook workloads, or Metabase. No current Metabase service is
   declared in this tier.
@@ -60,9 +60,7 @@ narrow profile must not grant another tool's target or API access.
 
 ## Deployment View
 
-The root project includes the three laboratory leaves and the separate SurrealDB
-leaf. `admin` selects all four services; narrower profiles are `admin-logs`,
-`admin-data`, and `notebook`. There is no `dev` profile for these services.
+The root project includes five package leaves across four tiers and seven service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` selects MLflow and its provisioner; `data-science` also selects JupyterLab. Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file. Profiles, host paths and service identities remain unchanged.
 
 ## Quality Attributes
 

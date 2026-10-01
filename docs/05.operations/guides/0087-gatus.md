@@ -4,7 +4,7 @@ version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -36,6 +36,12 @@ UI가 아니라 내부 monitoring 경계이다. Gatus session은 local에서 1�
 SQLite history는 `gatus-data`를 통해 `/data/gatus.db`에 저장된다. probe
 결과는 운영 data이다. 설정과 database는 probe 대상 application이 완전히
 수용되었음을 증명하지 않으며, 선언된 endpoint check만 기록한다.
+
+### Selected source and readiness
+
+Linked Dockerfile은 고정 upstream commit archive와 checksum을 확인하고 로컬 OIDC patch를 zero-fuzz로 적용한 뒤 module 일치·API/security test와 binary build를 수행하도록 선언한다. 최종 Alpine stage는 binary와 secret/CA entrypoint를 COPY한다. Compose는 Gatus directory context를 쓰고 args/target은 없으며 config는 runtime bind다. Local tag는 checksum/test나 배포 bytes를 증명하지 않는다. 이 문서 감사에서는 build·runtime 검사를 실행하지 않았다.
+
+Health·bootstrap/auth는 의도적으로 공개되고 status/history API는 native OIDC로 보호한다. Metrics는 내부에 열려 있지만 public router에서 제외된다. Wrapper는 비어 있지 않은 정확한 subject와 읽을 수 있는 secret/CA를 요구하고 CA bundle을 만든 뒤 Gatus를 실행한다. 선택 non-root UID/GID가 secret/data 소유권과 맞아야 한다. Health로 OIDC·probe 전달을 증명하지 않는다. Keycloak·gateway·CA/state·probe 대상마다 readiness를 확인하며 설정 한도는 실측 여유가 아니다.
 
 ### Normal operation and lifecycle
 

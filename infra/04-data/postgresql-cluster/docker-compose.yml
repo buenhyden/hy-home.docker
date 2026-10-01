@@ -1,0 +1,515 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-pg-common-env: &pg-common-env
+  SCOPE: 'pg-ha'
+  PATRONI_NAMESPACE: /service/
+  ETCD3_HOSTS: >-
+    etcd-1:${ETCD_CLIENT_PORT:-2379}, etcd-2:${ETCD_CLIENT_PORT:-2379}, etcd-3:${ETCD_CLIENT_PORT:-2379}
+  PATRONI_SUPERUSER_USERNAME: ${PATRONI_SUPERUSER_USERNAME:-postgres}
+  PATRONI_REPLICATION_USERNAME: ${PATRONI_REPLICATION_USERNAME:-replicator}
+  PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+  PATRONI_RESTAPI_LISTEN: 0.0.0.0:${PATRONI_RESTAPI_PORT:-8008}
+  PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:${POSTGRES_PORT:-5432}
+
+volumes:
+  pg0-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/pg/pg0-data
+  pg1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/pg/pg1-data
+  pg2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/pg/pg2-data
+  etcd1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/etcd/etcd1-data
+  etcd2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/etcd/etcd2-data
+  etcd3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/etcd/etcd3-data
+
+services:
+  etcd-1:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: quay.io/coreos/etcd:v3.7.1
+    container_name: etcd-1
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd-1
+      - --data-dir=/etcd-data
+      - --initial-advertise-peer-urls=http://etcd-1:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-1:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
+      - --initial-cluster-state=new
+      - --initial-cluster-token=pg-ha-etcd
+    volumes:
+      - etcd1-data:/etcd-data:rw
+    healthcheck:
+      test:
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      lab_net: {}
+      obs_net: {}
+    labels:
+      <<: *tier-label
+
+  etcd-2:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: quay.io/coreos/etcd:v3.7.1
+    container_name: etcd-2
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd-2
+      - --data-dir=/etcd-data
+      - --initial-advertise-peer-urls=http://etcd-2:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-2:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
+      - --initial-cluster-state=new
+      - --initial-cluster-token=pg-ha-etcd
+    volumes:
+      - etcd2-data:/etcd-data:rw
+    healthcheck:
+      test:
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      lab_net: {}
+      obs_net: {}
+    labels:
+      <<: *tier-label
+
+  etcd-3:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: quay.io/coreos/etcd:v3.7.1
+    container_name: etcd-3
+    command:
+      - /usr/local/bin/etcd
+      - --name=etcd-3
+      - --data-dir=/etcd-data
+      - --initial-advertise-peer-urls=http://etcd-3:${ETCD_PEER_PORT:-2380}
+      - --listen-peer-urls=http://0.0.0.0:${ETCD_PEER_PORT:-2380}
+      - --listen-client-urls=http://0.0.0.0:${ETCD_CLIENT_PORT:-2379}
+      - --advertise-client-urls=http://etcd-3:${ETCD_CLIENT_PORT:-2379}
+      - --initial-cluster=etcd-1=http://etcd-1:${ETCD_PEER_PORT:-2380},etcd-2=http://etcd-2:${ETCD_PEER_PORT:-2380},etcd-3=http://etcd-3:${ETCD_PEER_PORT:-2380}
+      - --initial-cluster-state=new
+      - --initial-cluster-token=pg-ha-etcd
+    volumes:
+      - etcd3-data:/etcd-data:rw
+    healthcheck:
+      test:
+        - CMD
+        - etcdctl
+        - endpoint
+        - health
+        - --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+      obs_net: {}
+
+  pg-router:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-med
+    image: haproxy:3.4.4
+    container_name: pg-router
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - ./config/haproxy.cfg.tpl:/tmp/haproxy.cfg.tpl:ro
+    secrets:
+      - pg_haproxy_stats_password
+    ports:
+      - '${HOST_LAN_BIND_IP:-192.168.0.13}:${POSTGRES_WRITE_HOST_PORT:-15432}:${POSTGRES_WRITE_PORT:-15432}'
+      - '${HOST_LAN_BIND_IP:-192.168.0.13}:${POSTGRES_READ_HOST_PORT:-15433}:${POSTGRES_READ_PORT:-15433}'
+    expose:
+      - '${HAPROXY_METRICS_PORT:-8404}'
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        HAPROXY_STATS_PASSWORD="$(cat /run/secrets/pg_haproxy_stats_password | tr -d '\n')"
+        sed "s|\$${HAPROXY_STATS_PASSWORD}|$${HAPROXY_STATS_PASSWORD}|g" /tmp/haproxy.cfg.tpl > /tmp/haproxy.cfg
+        exec haproxy -W -db -f /tmp/haproxy.cfg
+    depends_on:
+      pg-0:
+        condition: service_healthy
+      pg-1:
+        condition: service_healthy
+      pg-2:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - haproxy
+        - -c
+        - -f
+        - /tmp/haproxy.cfg
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.haproxy-stats.rule: Host(`pg-haproxy.${DEFAULT_URL}`)
+      traefik.http.routers.haproxy-stats.entrypoints: websecure
+      traefik.http.routers.haproxy-stats.tls: 'true'
+      traefik.http.services.haproxy-stats.loadbalancer.server.port: ${HAPROXY_PORT:-7000}
+      traefik.http.routers.haproxy-stats.middlewares: gateway-standard-chain@file
+    networks:
+      edge_net: {}
+      lab_net: {}
+      obs_net: {}
+
+  pg-cluster-init:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: postgres:18.6-alpine
+    container_name: pg-cluster-init
+    environment:
+      POSTGRES_ROUTER_HOSTNAME: pg-router
+      POSTGRES_WRITE_PORT: ${POSTGRES_WRITE_PORT:-15432}
+      POSTGRES_READ_PORT: ${POSTGRES_READ_PORT:-15433}
+      POSTGRES_USER: ${PATRONI_SUPERUSER_USERNAME:-postgres}
+      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+      SERVICE_POSTGRES_USERNAME: ${SERVICE_POSTGRES_USERNAME:-app_user}
+      SERVICE_POSTGRES_DB: ${SERVICE_POSTGRES_DB:-app_db}
+    command:
+      - /bin/sh
+      - -ec
+      - |
+        until pg_isready -h "$$POSTGRES_ROUTER_HOSTNAME" -p "$$POSTGRES_WRITE_PORT" -U "$$POSTGRES_USER"; do
+          sleep 2
+        done
+        export PGPASSWORD="$(cat /run/secrets/patroni_superuser_password | tr -d '\n')"
+        psql \
+          -h "$$POSTGRES_ROUTER_HOSTNAME" \
+          -p "$$POSTGRES_WRITE_PORT" \
+          -U "$$POSTGRES_USER" \
+          -d "$$POSTGRES_DB" \
+          -v patroni_exporter_username="$$PATRONI_EXPORTER_USERNAME" \
+          -v patroni_exporter_password="$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')" \
+          -v service_postgres_username="$$SERVICE_POSTGRES_USERNAME" \
+          -v service_postgres_password="$$(cat /run/secrets/service_postgres_password | tr -d '\n')" \
+          -v service_postgres_db="$$SERVICE_POSTGRES_DB" \
+          -f /work/init_users_dbs.sql
+    volumes:
+      - ./init-scripts/init_users_dbs.sql:/work/init_users_dbs.sql:ro
+    depends_on:
+      pg-router:
+        condition: service_started
+    secrets:
+      - patroni_superuser_password
+      - patroni_exporter_password
+      - service_postgres_password
+    networks:
+      lab_net: {}
+    labels:
+      <<: *tier-label
+
+  pg-0:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-high
+    image: ghcr.io/zalando/spilo-17:4.0-p3
+    container_name: pg-0
+    hostname: pg-0
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
+    environment:
+      <<: *pg-common-env
+      PATRONI_NAME: pg-0
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-0:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-0:${POSTGRES_PORT:-5432}
+    volumes:
+      - pg0-data:/home/postgres/pgdata:rw
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
+      - patroni_exporter_password
+    depends_on:
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+
+  pg-1:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-high
+    image: ghcr.io/zalando/spilo-17:4.0-p3
+    container_name: pg-1
+    hostname: pg-1
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
+    environment:
+      <<: *pg-common-env
+      PATRONI_NAME: pg-1
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-1:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-1:${POSTGRES_PORT:-5432}
+    volumes:
+      - pg1-data:/home/postgres/pgdata:rw
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
+      - patroni_exporter_password
+    depends_on:
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+
+  pg-2:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-high
+    image: ghcr.io/zalando/spilo-17:4.0-p3
+    container_name: pg-2
+    hostname: pg-2
+    entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
+    environment:
+      <<: *pg-common-env
+      PATRONI_NAME: pg-2
+      PATRONI_RESTAPI_CONNECT_ADDRESS: pg-2:${PATRONI_RESTAPI_PORT:-8008}
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: pg-2:${POSTGRES_PORT:-5432}
+    volumes:
+      - pg2-data:/home/postgres/pgdata:rw
+      - ./scripts/spilo-entrypoint-with-secrets.sh:/usr/local/bin/spilo-entrypoint-with-secrets.sh:ro
+    secrets:
+      - patroni_superuser_password
+      - patroni_replication_password
+      - patroni_exporter_password
+    depends_on:
+      etcd-1:
+        condition: service_healthy
+      etcd-2:
+        condition: service_healthy
+      etcd-3:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'pg_isready -U $${PATRONI_SUPERUSER_USERNAME:-postgres} -h 127.0.0.1 -p $${POSTGRES_PORT:-5432}'
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+
+  pg-0-exporter:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    image: prometheuscommunity/postgres-exporter:v0.20.1
+    container_name: pg-0-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
+    expose:
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
+    secrets:
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+    entrypoint: [ /bin/sh, -c ]
+    command:
+      - |
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-0:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        exec /bin/postgres_exporter --collector.postmaster
+    depends_on:
+      pg-0:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+      obs_net: {}
+
+  pg-1-exporter:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    image: prometheuscommunity/postgres-exporter:v0.20.1
+    container_name: pg-1-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
+    expose:
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
+    secrets:
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+    entrypoint: [ /bin/sh, -c ]
+    command:
+      - |
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-1:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        exec /bin/postgres_exporter --collector.postmaster
+    depends_on:
+      pg-1:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+      obs_net: {}
+
+  pg-2-exporter:
+    profiles:
+      - postgres-ha
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-low
+    image: prometheuscommunity/postgres-exporter:v0.20.1
+    container_name: pg-2-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
+    expose:
+      - '${POSTGRES_EXPORTER_PORT:-9187}'
+    secrets:
+      - patroni_exporter_password
+    environment:
+      PATRONI_EXPORTER_USERNAME: ${PATRONI_EXPORTER_USERNAME:-exporter}
+    entrypoint: [ /bin/sh, -c ]
+    command:
+      - |
+        export PGPASSWORD=$$(cat /run/secrets/patroni_exporter_password | tr -d '\n')
+        export DATA_SOURCE_NAME="postgresql://$${PATRONI_EXPORTER_USERNAME:-exporter}:$$PGPASSWORD@pg-2:$${POSTGRES_PORT:-5432}/postgres?sslmode=require"
+        exec /bin/postgres_exporter --collector.postmaster
+    depends_on:
+      pg-2:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+    networks:
+      lab_net: {}
+      obs_net: {}

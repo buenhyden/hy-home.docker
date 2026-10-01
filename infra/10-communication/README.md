@@ -4,7 +4,7 @@ version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-01"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,7 @@ created: "2025-11-12"
 
 ## Overview
 
-실제 메일 서버 Stalwart와 개발용 SMTP 캡처 Mailpit을 별도 leaf·profile·운영 subject로 관리한다. Stalwart는 선택형 `mail-server`, Mailpit은 `dev`, `local`, `mail-dev`에서 선택된다.
+운영 메일 서버 Stalwart와 설정 helper를 소유한다. 개발용 SMTP 캡처 Mailpit은 [11 Quality](../11-quality/README.md)에서 별도 profile·운영 subject로 관리한다. Stalwart는 선택형 `mail-server`, Mailpit은 `dev`, `local`, `mail-dev`에서 선택된다.
 
 ## Audience
 
@@ -27,18 +27,18 @@ created: "2025-11-12"
 | Leaf | Profile | 운영 소유자 |
 | --- | --- | --- |
 | [stalwart/](stalwart/README.md) | `mail-server` | [0070-mail — 문서 인덱스](../../docs/README.md) (`GDE-0070`): 내부 전용 메일, host port·relay 없음 |
-| [mailpit/](mailpit/README.md) | `dev`, `local`, `mail-dev` | [0084-mailpit — 문서 인덱스](../../docs/README.md) (`GDE-0084`): 개발 캡처 |
+| [Mailpit — Quality](../11-quality/mailpit/README.md) | `dev`, `local`, `mail-dev` | [0084-mailpit — 문서 인덱스](../../docs/README.md) (`GDE-0084`): 개발 캡처 |
 
 ## How to Work in This Area
 
 1. 개발 SMTP는 Mailpit을 사용하고 외부 배달 경로와 분리한다.
-2. Stalwart는 `mail_net`의 내부 제출 전용이다. 외부 송수신은 DNS·평판을 포함한 새 요구사항이 필요하다.
+2. Stalwart의 허용 용도는 내부 메일 제출이다. 현재 `edge_net` peer 접근도 가능한 선언이므로 `mail_net` 전용 통제가 완성됐다고 보지 않는다. 외부 송수신은 DNS·평판을 포함한 새 요구사항이 필요하다.
 3. 루트 Compose의 network·secret·공통 template 맥락을 유지해 검증한다.
-4. 이미지와 포트 기본값은 각 leaf의 Compose 파일([Stalwart](stalwart/README.md), [Mailpit](mailpit/README.md))을 참조한다. [Derived Compose image projection](../tech-stack.versions.json)은 drift 검증 자료다.
+4. 이미지와 포트 기본값은 각 leaf의 Compose 파일([Stalwart](stalwart/README.md), [Mailpit](../11-quality/mailpit/README.md))을 참조한다. [Derived Compose image projection](../tech-stack.versions.json)은 drift 검증 자료다.
 
 ## Configuration
 
-Mailpit UI/SMTP 호스트 바인딩은 loopback이며 수신 데이터는 `/data/mailpit.db`에 영속화한다. 내부 애플리케이션은 `mailpit` 서비스 DNS를 사용한다. Stalwart는 호스트 포트 없이 `mail_net`에서만 SMTP·IMAP을 받고 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`를 보존한다. Mailpit도 `mail_net`에 있어 컨테이너가 캡처로 보낼 수 있다. 관리 UI SSO는 SMTP/IMAP의 별도 인증·TLS를 대신하지 않는다.
+Mailpit UI/SMTP 호스트 바인딩은 loopback이며 수신 데이터는 `/data/mailpit.db`에 영속화한다. 내부 애플리케이션은 `mailpit` 서비스 DNS를 사용한다. Stalwart는 호스트 포트를 게시하지 않지만 서버가 `mail_net`과 `edge_net`에 연결되고 listener가 wildcard 주소에 바인딩되어 peer 접근 범위 보완이 필요하다. 데이터는 `${DEFAULT_COMMUNICATION_DIR}/stalwart/data`에 보존한다. Mailpit도 `mail_net`에 있어 컨테이너가 캡처로 보낼 수 있다. 관리 UI SSO는 SMTP/IMAP의 별도 인증·TLS를 대신하지 않는다.
 
 ## Testing
 

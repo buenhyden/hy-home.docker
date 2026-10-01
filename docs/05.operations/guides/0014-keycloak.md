@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-19"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -25,7 +25,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 현재 실측으로 완료된 OIDC 로그인은 OpenBao native OIDC뿐이다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
+이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
 
 ### Usage Type
 
@@ -45,26 +45,61 @@ created: "2026-05-10"
 
 ### Tracked Configuration Snapshot
 
-| Item | Tracked value | Source |
+| 항목 | 추적된 값 | 출처 |
 | --- | --- | --- |
-| Public hostname | `keycloak.${DEFAULT_URL}`; public default domain is `hy.home.arpa` | `KC_HOSTNAME`, Traefik host rule |
+| 공개 hostname | `keycloak.${DEFAULT_URL}`; 공개 기본 domain은 `hy.home.arpa` | `KC_HOSTNAME`, Traefik host rule |
 | Realm | `hy-home.realm` | `.env.example`, OAuth2 Proxy issuer URL |
-| Frontend issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` | OAuth2 Proxy compose env |
-| Container listener | HTTP enabled on `${KEYCLOAK_PORT:-8080}` behind Traefik TLS | `KC_HTTP_ENABLED`, Keycloak compose |
-| Management health | `${KEYCLOAK_MANAGEMENT_PORT:-9000}` and `/health/ready` | Keycloak compose healthcheck |
-| Proxy headers | `KC_PROXY_HEADERS=xforwarded` | Keycloak compose |
-| Database | PostgreSQL at `jdbc:postgresql://mng-pg:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}` | Keycloak compose |
-| Bootstrap admin | username from `KEYCLOAK_ADMIN_USER`, password from Docker Secret file | Keycloak compose; do not print value |
+| Frontend issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` | OAuth2 Proxy compose 환경 설정 |
+| Container listener | `${KEYCLOAK_PORT:-8080}`에서 HTTP를 활성화하고 앞단에 Traefik TLS를 둠 | `KC_HTTP_ENABLED`, Keycloak compose |
+| 관리 health | `${KEYCLOAK_MANAGEMENT_PORT:-9000}`와 `/health/ready` | Keycloak compose healthcheck |
+| Proxy header | `KC_PROXY_HEADERS=xforwarded` | Keycloak compose |
+| Database | PostgreSQL 주소는 `jdbc:postgresql://mng-pg:${POSTGRES_PORT:-5432}/${KEYCLOAK_DBNAME}` | Keycloak compose |
+| 초기 관리자 | 사용자 이름은 `KEYCLOAK_ADMIN_USER`, password는 Docker Secret 파일에서 가져옴 | Keycloak compose; 값을 출력하지 않음 |
 
-Official Keycloak hostname docs state that hostname is security-sensitive because Keycloak publishes URLs through OIDC discovery and email/action links. Reverse-proxy docs require the proxy to overwrite forwarded headers, and warn not to expose management port `9000` externally. Verification date: 2026-09-19.
+공식 Keycloak hostname 문서는 Keycloak이 OIDC discovery와 email/action link에 URL을 게시하므로 hostname이 보안상 민감하다고 설명한다. reverse-proxy 문서는 proxy가 forwarded header를 덮어쓰도록 요구하며, 관리 port `9000`을 외부에 노출하지 말라고 경고한다. 확인 날짜: 2026-09-19.
 
 ### OIDC Concepts for This Host
 
-- `issuer`: the exact realm URL that clients use to discover authorization, token, JWKS and logout metadata. For this host it is `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`.
-- `client`: one application integration, such as `home-proxy-client` for OAuth2 Proxy or `home-openbao` for OpenBao native OIDC. Client secrets are secret material and are not document content.
-- `redirect URI`: the callback URL Keycloak allows after authentication. OAuth2 Proxy uses `https://auth.${DEFAULT_URL}/oauth2/callback`; OpenBao uses its own native OIDC callback and is not the OAuth2 Proxy callback.
-- `gateway SSO`: Traefik/OAuth2 Proxy protects HTTP entry to an app. It does not grant the app's native roles unless the app trusts forwarded headers or has its own OIDC integration.
-- `native OIDC`: the application validates tokens directly against Keycloak and maps claims to its own roles. OpenBao native OIDC has been verified separately; do not generalize that proof to every app.
+- `issuer`: client가 authorization, token, JWKS와 logout metadata를 탐색하는 정확한 realm URL이다. 이 host에서는 `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`이다.
+- `client`: OAuth2 Proxy의 `home-proxy-client`나 OpenBao native OIDC의 `home-openbao`처럼 하나의 application 연동을 나타낸다. client secret은 비밀 정보이며 문서에 담지 않는다.
+- `redirect URI`: 인증 후 Keycloak이 허용하는 callback URL이다. OAuth2 Proxy는 `https://auth.${DEFAULT_URL}/oauth2/callback`을 사용한다. OpenBao는 자체 native OIDC callback을 사용하며 OAuth2 Proxy callback과 다르다.
+- `gateway SSO`: Traefik/OAuth2 Proxy가 app의 HTTP 진입점을 보호한다. app이 forwarded header를 신뢰하거나 자체 OIDC 연동을 갖춘 경우가 아니라면 app의 native role까지 부여하지는 않는다.
+- `native OIDC`: application이 Keycloak에 대해 직접 token을 검증하고 claim을 자체 role에 연결한다. OpenBao native OIDC는 별도로 검증했으며, 그 증거를 모든 app에 일반화하지 않는다.
+
+### Implementation, readiness and resources
+
+`keycloak`은 `core`/`auth`/`dev`/`local`에서 선택하며 Compose는 upstream image를
+직접 사용한다. 같은 폴더의 [Dockerfile](../../../infra/02-auth/keycloak/Dockerfile)은
+현재 `build`로 선택되지 않아 그 optimized build나 데모 keystore가 실행된다고
+볼 수 없다. 실제 entrypoint는 `/bin/sh -ec`로 두 Secret의 개행을 제거해
+`KC_BOOTSTRAP_ADMIN_PASSWORD`와 `KC_DB_PASSWORD`에 넣고 `kc.sh start`를 실행한다.
+`KC_DB_PASSWORD_FILE` 선언만이 비밀 읽기를 보장하는 것은 아니다.
+
+관리 PostgreSQL 주소는 의존하지만 `depends_on`은 없다. 기동 순서와 DB 준비는
+[시스템 Guide](0099-system-operations.md#selection-and-readiness)와
+[관리 DB Runbook](../runbooks/0028-management-database.md)을 따른다. Bootstrap
+관리자 입력은 초기 관리자 생성용이며 기존 계정의 password 회전 수단으로 보지 않는다.
+realm/client를 자동 생성하는 init job이나 startup import도 현재 선언에 없다.
+
+필수 입력은 `KEYCLOAK_DATABASE`, `KEYCLOAK_DBNAME`, `KEYCLOAK_DB_USER`,
+`KEYCLOAK_ADMIN_USER`, `DEFAULT_URL`, `DEFAULT_AUTH_DIR`, DB/Admin Secret이다.
+`keycloak-{config,providers,themes}`는 각각 host의 conf/providers/themes를 읽기
+전용으로 mount한다. private customization도 PostgreSQL 복구 시점과 맞춰 보존해야 한다.
+컨테이너에 host port는 없으며 `edge_net`/`mng_data_net`/`obs_net`을 쓴다.
+`KEYCLOAK_PORT`/`KEYCLOAK_MANAGEMENT_PORT`는 expose·route·probe 참조이며
+현재 KC listener 설정 자체를 바꾸지 않는다. 기본 내부 8080/9000을 바꾸려면
+양쪽 계약을 별도 변경해야 한다.
+
+`template-infra-high`의 CPU 2, 메모리 2 GiB를 상속하고 DB pool 최대 연결은 10이다.
+health/metrics가 활성화되고 관리 listener에서 readiness/metrics를 관찰한다.
+HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되어 있지만
+수집 성공은 별도 증거다. readiness·DB 오류·로그인 거부·메모리/DB 연결 포화를
+구분한다. 로그 원문과 사용자·token·cookie 식별자는 증거에 넣지 않는다.
+
+선언 tag에 대응하는 [health 문서](https://raw.githubusercontent.com/keycloak/keycloak/26.7.4/docs/guides/observability/health.adoc)와 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+[export/import 문서](https://raw.githubusercontent.com/keycloak/keycloak/26.7.4/docs/guides/server/importExport.adoc)를 <!-- runtime-version-exception: compatibility — official evidence pinned to the declared release; not an installed runtime observation -->
+확인했다. release pin은 [Compose](../../../infra/02-auth/keycloak/docker-compose.yml)가
+소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
 ### Step-by-step Instructions
 
@@ -106,20 +141,12 @@ Official Keycloak hostname docs state that hostname is security-sensitive becaus
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0014-keycloak.md)을 따른다.
 
-### Data Protection and Upgrade
-
-Keycloak의 권위 상태는 외부 `mng-pg` PostgreSQL 데이터베이스에 있다. realm
-export는 검토 가능한 설정 이관 자료지만 트랜잭션 시점 복구를 대신하지 않는다.
-공식 export/import는 모든 노드를 중지한 상태를 권장하고, override import와
-startup import의 동작도 다르므로 실행 중인 단일 컨테이너 export를 일관된
-백업으로 기록하지 않는다. 복구 세트에는 PostgreSQL 백업, 동일 Keycloak 이미지
-선언, realm/export 보조 자료, secret owner가 별도 보관한 자격 증명이 포함된다.
-
-업그레이드는 공식 upgrading guide와 migration notes를 검토하고, 먼저 PostgreSQL
-백업을 검증한 뒤 격리 복제본에서 schema migration, readiness, 관리자 로그인,
-OAuth2 Proxy 및 대표 native OIDC client를 확인한다. rollback은 이전 이미지와
-업그레이드 전 데이터베이스를 함께 복원해야 하며 새 schema에 이전 이미지만
-연결하지 않는다. 이 백업·복구 rehearsal은 2026-09-20 문서 교정 중 실행되지 않았다.
+권위 상태는 `mng-pg`의 Keycloak DB와 외부 config/provider/theme 입력이다.
+realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하는 DB 백업이 아니다.
+업그레이드·격리 migration·이전 DB와 이미지의 짝 복구는
+[Runbook](../runbooks/0014-keycloak.md#rollback-or-recovery)이 소유한다.
+[POL-0021](../policies/0021-backup-and-restore.md)의 Keycloak 파일 보존과 DB
+백업 기준을 함께 적용하며 기존 2026-09-20 미실행 복구 한계는 그대로다.
 
 ## Traceability
 
@@ -137,7 +164,7 @@ OAuth2 Proxy 및 대표 native OIDC client를 확인한다. rollback은 이전 �
 - [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
 - [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Operations policy](../policies/0014-keycloak.md)

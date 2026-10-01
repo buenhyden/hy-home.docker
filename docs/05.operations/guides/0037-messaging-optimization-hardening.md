@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:

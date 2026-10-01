@@ -4,7 +4,7 @@ version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -80,11 +80,15 @@ created: "2026-05-10"
 ### Source-backed operating contract
 
 - **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `HOME` continuous-profile store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
-- **Flow/dependencies/security**: client 또는 Alloy profile source가 profile을 write하고 Grafana가 query한다. 현재 Alloy config에는 write sink만 있고 profile source가 없어 end-to-end collection이 증명되지 않았다. Traefik이 route를 보호하며, Grafana, producer, storage와 선언된 network가 dependency다.
+- **Flow/dependencies/security**: client 또는 Alloy profile source가 profile을 write하고 Grafana가 query한다. 두 Alloy config는 Go/SeaweedFS scrape sources와 write sink를 선언한다. 소스 선언만으로 실제 profile 수신이 증명되지는 않는다. Traefik이 route를 보호하며, Grafana, producer, storage와 선언된 network가 dependency다.
 - **State/resources**: single-node filesystem state는 `pyroscope-data:/var/lib/pyroscope` 아래에 있고, service Docker Secret은 없다. Source의 resource 값은 limit이지 측정된 headroom이 아니다.
 - **Normal use**: root에서 render하고, `profilecli ready`로 readiness를 확인하고, 승인된 client에서만 labeled test profile을 ingest해 Pyroscope/Grafana에서 query한다.
 - **Lifecycle**: write를 중지하고 consistent stopped filesystem snapshot을 만든다. Config와 producer label을 보존한다. Storage-format 가이드에 따라 upgrade한 뒤 historical/new profile query와 producer 호환성을 검증한다.
 - **Upstream/license**: 공식 [storage](https://grafana.com/docs/pyroscope/latest/configure-server/storage/)와 [deployment modes](https://grafana.com/docs/pyroscope/latest/reference-pyroscope-v2-architecture/deployment-modes/) 가이드를 따른다. Pyroscope는 AGPL-3.0 라이선스다.
+
+### Profile storage and source limits
+
+두 Alloy 설정에는 Go와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. 고정 retention은 없고 기본값·disk pressure 정리가 무기한 보존을 보장하지 않는다. 기간 요구는 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
 
 ## Common Checks
 

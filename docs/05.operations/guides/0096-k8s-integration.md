@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.3.2"
+version: "1.4.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -20,7 +20,7 @@ created: "2026-09-23"
 
 hy-home.k8s 저장소는 같은 호스트에서 k3d 클러스터(`hyhome`)를 실행한다.
 k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크를 공유하지
-않는다. 클러스터는 호스트 주소 `192.168.0.13`을 통해서만 이 스택에
+않는다. 클러스터는 승인된 호스트 LAN 주소(`HOST_LAN_BIND_IP`, 기본값 `192.168.0.13`)를 통해 이 스택에
 도달하며, OpenBao도 같은 방식으로 클러스터 API에 도달한다. 이 가이드는
 그 계약을 설명하고 [runbook](../runbooks/0096-k8s-integration.md)은 계약을 설정하고 클러스터를
 재구축할 때마다 반복하는 전체 절차다.
@@ -35,7 +35,7 @@ k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크�
 | Kiali 쿼리 | `https://prometheus.hy.home.arpa` (`/api/v1/`만 통과) | 동일 | Prometheus |
 | Kiali Grafana 링크 | `https://grafana.hy.home.arpa` | Viewer 서비스 계정 `k8s-kiali`의 bearer 토큰, OpenBao `secret/platform/grafana-api`에서 발급 | [Grafana](0041-grafana.md) |
 | Alloy 로그 | `http://192.168.0.13:3100` (Loki push) | 없음 | Loki |
-| 트레이스 | `http://192.168.0.13:3200` (Tempo) | 없음 | Tempo |
+| Tempo 조회/API (선택한 consumer) | `http://192.168.0.13:3200` (Tempo HTTP query/API, 수집 포트 아님) | 없음 | Tempo |
 | Argo CD 캐시 | `192.168.0.13:26379` (`mng-valkey`) | Valkey 비밀번호(`CACHE-007`, OpenBao `platform/argocd`를 통해 전달) | [Management database](0028-management-database.md) |
 | PostgreSQL이 필요한 앱(옵션) | `192.168.0.13:15432` 쓰기, `15433` 읽기 | OpenBao `platform/postgres-app`을 통한 데이터베이스 자격 증명 | `postgres-ha` 프로파일 |
 | Istio 트레이스 → Alloy OTLP | `192.168.0.13:4317`(gRPC), `4318`(HTTP) | 없음 | [Alloy](0040-alloy.md) |
@@ -55,12 +55,17 @@ Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`�
 | Gateway CA | `secrets/certs/rootCA.pem` (mkcert root, public) | 복사 |
 | Prometheus API 자격 증명 | OpenBao `secret/platform/prometheus-api` (`username`, `password`), `.env`의 `PROMETHEUS_API_USERNAME`과 `secrets/observability/prometheus_api_password.txt`에서 | ESO 동기화; 수동 복사 없음 |
 | Kiali Grafana 토큰 | OpenBao `secret/platform/grafana-api` (`token`), runbook이 90일로 발급 | ESO 동기화; 수동 복사 없음 |
-| 부트스트랩 토큰 | `/tmp/bao-k8s/k8s-bootstrap.token` (runbook이 생성) | 보호된 채널, 2시간 이내 사용 |
+| 부트스트랩 토큰 | `$K8S_WORK/k8s-bootstrap.token` (runbook의 owner 전용 임시 디렉터리) | 보호된 채널, 2시간 이내 사용 |
 | 이름 해석 | `openbao.hy.home.arpa`, `prometheus.hy.home.arpa`, `grafana.hy.home.arpa` → `192.168.0.13` | 클러스터 DNS 항목 |
 
 클러스터 쪽은 이 밖에도 ESO 서비스 계정을 위한 `system:auth-delegator`
-ClusterRoleBinding, `192.168.0.13`의 443, 3100, 3200, 26379 포트로의
-egress, remote write된 시리즈의 `cluster` 외부 레이블을 보유한다.
+ClusterRoleBinding, 선택한 consumer endpoint에 대한 egress와 remote write된
+시리즈의 `cluster` 외부 레이블을 보유한다. 기본 경로는 443, Loki3100,
+Valkey26379이며 trace 수집은 Alloy4317(gRPC) 또는4318(HTTP)을 별도로 선택한다.
+Tempo3200은 조회/API consumer가 있을 때의 경로다. PostgreSQL15432/15433은
+해당 앱을 선택한 경우다. contract의 주소·도메인·port는 선언의 기본값이며 실제
+`HOST_LAN_BIND_IP`, `DEFAULT_URL` 및 port 설정을 확인한다. 포트 연결 성공은
+인증·수집·조회 성공을 증명하지 않는다.
 
 ### Common Pitfalls
 
@@ -74,10 +79,28 @@ egress, remote write된 시리즈의 `cluster` 외부 레이블을 보유한다.
   풀어서 쓴다.
 - 새 Prometheus API 비밀번호는 OpenBao
   `secret/platform/prometheus-api`에도 반영해야 한다. 반영하지 않으면
-  클러스터의 remote write가 `401`을 받는다. runbook의 교체 섹션이 세
-  곳을 모두 함께 처리한다.
+  클러스터의 remote write가 `401`을 받는다. 현재 generator는 기존 registry 값을
+  복원할 수 있으므로 파일 이동 후 재실행은 회전이 아니다. RUN-0096의 교체 절차는
+  별도 승인된 새 값 생성·전달 방법을 확보할 때까지 `BLOCKED`이다.
+
+### Routine Usage
+
+ESO는 HCL에 열거된 `argocd`, `postgres-app`, `notifications`, `prometheus-api`,
+`grafana-api`의 data/metadata를 읽는다. wildcard 권한은 없다. bootstrap은
+`argocd` data만 읽으며 ESO 전체 권한을 대신하지 않는다. OIDC operator와
+임시 root의 권한 구분은 POL-0096을 따른다. 재구축한 클러스터 CA는 auth config에
+다시 기록하고 그 이후의 새 ESO 인증·동기화 증거로 확인한다.
+
+Prometheus API는 `/api/v1/`과 `Authorization: Basic …`이 함께 있을 때 Basic
+라우트를 선택한다. 잘못된 Basic은401, 유효한 Basic은200이며 header 없는 요청과
+UI는 현재 SSO redirect302 경로다. TLS·DNS 실패000을 인증 거절로 세지 않는다.
 
 ## Common Checks
+
+아래 점검은 실행 승인이 있는 환경에서만 수행한다. metadata check는 private
+registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을 만들 수 있다.
+정적 문서 검증은 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의 공개/sanitized 경계를 따른다.
+
 
 - `bash scripts/operations/gen-secrets.sh --sync-metadata-check` (종료 코드 0)
 - `bash scripts/hardening/check-all-hardening.sh` (라우트, 정책, 미들웨어 고정)

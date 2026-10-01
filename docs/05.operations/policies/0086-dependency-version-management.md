@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.1.1"
+version: "0.2.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -33,6 +33,7 @@ Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, Dep
 | GitHub Actions 및 활성화된 인프라 manager | Renovate | 인프라 automerge 비활성화 |
 | Storybook npm | Dependabot | 설정된 프로젝트 디렉터리에서만; Renovate npm과 중복 없음 |
 | OpenTofu provider/module 의존성 | operator가 검토하는 workspace owner | tooling 패키지에 현재 추적되는 provider/module manifest가 없음; 그런 manifest가 처음 생길 때 범위가 제한된 manager를 활성화 |
+| 이미지 내부 `infra/**/requirements.txt` | Renovate `pip_requirements` | 설정된 좁은 경로만; major Dashboard 승인, automerge 금지 |
 | Python 검증 도구와 pre-commit hook | maintainer 검토 | pin된 requirements/hook revision; 현재 활성화된 자동 manager 범위 밖 |
 | Derived Compose 이미지 registry | synchronization script | 추적되는 모든 인프라 Compose 저장소를 정확히 한 번씩, 명시적인 local/custom 분류와 파일별 정확한 소스 그룹으로 |
 | 설명형 문서 | human/agent 검토와 기존 metadata validator | authority 링크; 정당화된 정확 리터럴 예외만 |

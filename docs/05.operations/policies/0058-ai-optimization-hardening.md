@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-26"
+updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -25,7 +25,7 @@ created: "2026-05-10"
 - `scripts/hardening/check-all-hardening.sh 08-ai`
 
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
-- **Environments**: Local, Dev, Stage, Production-like
+- **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
 ## Controls
 
@@ -62,6 +62,10 @@ created: "2026-05-10"
   - 모델 접근 권한 분리 정책(역할/환경) 문서화
   - 대화 로그 보존 기간/마스킹 규칙/파기 절차 문서화
 
+### Control evidence boundary
+
+AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
+
 ## Exceptions
 
 - 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
@@ -73,6 +77,8 @@ created: "2026-05-10"
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ## Review Cadence
 
@@ -86,7 +92,7 @@ created: "2026-05-10"
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile declarations are authoritative; the [derived Compose image projection](../../../infra/tech-stack.versions.json) provides drift verification.
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 - [Operations index](../README.md)
 - [Usage guide](../guides/0058-ai-optimization-hardening.md)
