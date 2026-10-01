@@ -40,6 +40,8 @@ and retained native execution plus independent review.
 
 ### Authorized delivery and runtime reconciliation
 
+Hosted run `36844584749` passed Markdown validation but failed Ruff on two test files. Applied registered Ruff0.15.12 formatting, removed one unused import and made eight default `check=False` arguments and one default `strict=False` explicit. Normalized AST comparison proves no test behavior change; all135 tracked Python files pass Ruff check and format-check. No validator, failure assertion or production code is weakened. The next required hosted run must pass before merge. Independent code/security review ACCEPTED the three-file repair. Focused unittest result:104 discovered,83 passed and21 explicitly opt-in Docker PostgreSQL/backup/SeaweedFS/mail rehearsals skipped; no live recovery is inferred.
+
 PR325 hosted run `36840244725` passed the preceding validation suites but failed the registered Markdown formatter because it changed document bytes. Applied the registered formatter to all326 changed Markdown files and escaped the literal shell OR operator in the Task1980004 evidence table. Two subsequent lint passes report zero errors; no operational instruction, lifecycle state, validator or protection is changed. The required hosted gate will be rerun on the repair commit.
 
 PR325 first hosted attempt (`36838896437`) failed metadata comparison against

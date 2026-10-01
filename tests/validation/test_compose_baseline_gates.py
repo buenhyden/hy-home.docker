@@ -839,9 +839,7 @@ class OllamaPortContractTests(unittest.TestCase):
 
 MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
 PG_CLUSTER_COMPOSE = "infra/04-data/postgresql-cluster/docker-compose.yml"
-PROVISION_RUNNER = (
-    "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
-)
+PROVISION_RUNNER = "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
 # Feature-owned mng-pg provisioning jobs: (compose file, job, SQL file, profiles).
 FEATURE_JOBS = (
     (
