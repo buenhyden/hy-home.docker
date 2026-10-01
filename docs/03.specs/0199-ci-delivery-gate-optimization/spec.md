@@ -1,8 +1,8 @@
 ---
 title: "CI Delivery Gate Optimization"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -196,9 +196,9 @@ observed and reported separately from tracked YAML.
 
 ## Traceability
 
-- [REQ-0024 agent governance](../../01.requirements/0024-agent-governance-standardization.md): FR-0007, FR-0008, NFR-0011 through NFR-0013.
+- [REQ-0024 agent governance](../../01.requirements/0024-agent-governance-standardization.md): REQ-0024-FR-0007, REQ-0024-FR-0008, REQ-0024-NFR-0011, REQ-0024-NFR-0012, and REQ-0024-NFR-0013.
 - [AD-0027 canonical adapter](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md): one policy owner and provider-specific hook bindings.
-- [REQ-0027 host verifiability](../../01.requirements/0027-home-development-host.md): NFR-0004 requires actual revision-scoped evidence; this draft is context, not a claim of approval.
+- [REQ-0027 host verifiability](../../01.requirements/0027-home-development-host.md): REQ-0027-NFR-0004 requires actual revision-scoped evidence; this Spec is context, not an unverified result claim.
 - [GitHub workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax): required-check and permission boundaries.
 - [GitHub `GITHUB_TOKEN`](https://docs.github.com/en/actions/concepts/security/github_token): token-created tag pushes do not recursively run normal push workflows.
 - [CodeQL setup types](https://docs.github.com/en/code-security/concepts/code-scanning/setup-types): default setup owns PR and branch scanning outside this repository workflow.
