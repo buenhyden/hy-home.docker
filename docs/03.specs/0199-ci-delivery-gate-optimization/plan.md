@@ -110,7 +110,7 @@ Every script/test removal needs a consumer, replacement and regression record.
    and operations surfaces, run focused/integrated checks, obtain independent
    review and hosted evidence, then complete the Spec package.
 
-### W0: Stage 03 lifecycle bootstrap
+### Task 0: W0 — Stage 03 lifecycle bootstrap
 
 **Files:** Modify only this package's `spec.md` and `plan.md` lifecycle
 metadata/approval provenance; create `tasks/tsk-0001-delivery-gate-baseline.md`
@@ -133,7 +133,7 @@ W1-W5. It does not change CI execution behavior.
   record approval/lifecycle receipts there. Verify the package graph and
   begin W1 only when it is valid.
 
-### W1: Baseline and Task evidence
+### Task 1: W1 — Baseline and Task evidence
 
 **Files:** Modify `tasks/tsk-0001-delivery-gate-baseline.md`; inspect
 `.github/workflows/`, `.github/workflow-contract.yml`,
@@ -153,7 +153,7 @@ consumer/replacement matrix for W2-W5. The Task is the sole evidence ledger.
   save selected leaves and any environment limits. Expected: both exit 0.
   Commit the Task baseline separately from implementation.
 
-### W2: Local and agent boundary
+### Task 2: W2 — Local and agent boundary
 
 **Files:** Modify `.pre-commit-config.yaml`,
 `scripts/validation/run-ci-precommit.sh`,
@@ -186,7 +186,7 @@ hosted PR quality owner.
   --mode repository --section providers`. Expected: all exit 0. Commit;
   do not edit `/home/hyunyoun/.codex/git-hooks`.
 
-### W3: PR required context
+### Task 3: W3 — PR required context
 
 **Files:** Modify `.github/workflows/ci-quality.yml`,
 `scripts/validation/ci_gate_runner.py`,
@@ -223,7 +223,7 @@ arbitrary root list.
   Expected: all exit 0. Commit before W4, preserving the same required
   check name.
 
-### W4: Merged security and channel tag
+### Task 4: W4 — Merged security and channel tag
 
 **Files:** Modify `.github/workflows/ci-quality.yml`,
 `.github/workflow-contract.yml` and
@@ -261,7 +261,7 @@ it touches only lightweight `refs/tags/main-current`.
   all exit 0. If the manifest entrypoint differs, use the registered command
   from `scripts/manifest.yaml` rather than a parallel validator.
 
-### W5: Canonical governance and integrated delivery
+### Task 5: W5 — Canonical governance and integrated delivery
 
 **Files:** Modify `.agents/governance/quality-standards.md`,
 `.agents/governance/github-governance.md`,
