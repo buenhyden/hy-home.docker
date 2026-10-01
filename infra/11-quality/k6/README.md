@@ -2,7 +2,7 @@
 title: "k6 Performance Testing Infrastructure"
 version: "1.3.3"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2026-03-26"

@@ -2,7 +2,7 @@
 title: "WireMock"
 version: "1.0.1"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2026-09-23"

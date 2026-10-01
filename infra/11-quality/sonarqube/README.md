@@ -2,7 +2,7 @@
 title: "SonarQube Code Quality"
 version: "1.0.3"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2025-11-12"

@@ -2,7 +2,7 @@
 title: "09-platform-ops: Platform Operations Tier"
 version: "1.2.2"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2025-11-12"

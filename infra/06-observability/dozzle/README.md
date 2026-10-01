@@ -2,7 +2,7 @@
 title: "Dozzle"
 version: "1.0.4"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2026-03-27"

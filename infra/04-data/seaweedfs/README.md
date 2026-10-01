@@ -2,7 +2,7 @@
 title: "SeaweedFS"
 version: "1.2.3"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2025-12-06"

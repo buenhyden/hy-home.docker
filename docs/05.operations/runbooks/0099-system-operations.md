@@ -2,7 +2,7 @@
 title: "System Operations Diagnostic Runbook"
 version: "0.1.0"
 type: "operation/runbook"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
