@@ -2,7 +2,7 @@
 title: "Operations Documentation System and Service Coverage"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -321,8 +321,8 @@ in Stage 02. External research informs design and does not authorize commands.
 
 ## Traceability
 
-- [REQ-0027](../../01.requirements/0027-home-development-host.md): FR-0003,
-  FR-0004, FR-0007, FR-0008 and maintainability/verifiability requirements.
+- [REQ-0027](../../01.requirements/0027-home-development-host.md): REQ-0027-FR-0003,
+  REQ-0027-FR-0004, REQ-0027-FR-0007, REQ-0027-FR-0008 and maintainability/verifiability requirements.
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md):
   preserve document identity and current versus historical authority.
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md):

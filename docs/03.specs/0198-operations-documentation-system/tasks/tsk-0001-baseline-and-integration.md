@@ -2,7 +2,7 @@
 title: "Operations Audit Baseline and Integration"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"

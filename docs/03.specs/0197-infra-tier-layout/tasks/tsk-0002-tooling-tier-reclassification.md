@@ -2,7 +2,7 @@
 title: "Tooling Communication and Laboratory Tier Reclassification"
 version: "0.1.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -37,6 +37,85 @@ the concrete additional Plan. The user subsequently approved Plan W5.1–W5.4
 and retained native execution plus independent review.
 
 ## Work Log
+
+### Observed operational application on2026-10-01
+
+[PR326](https://github.com/buenhyden/hy-home.docker/pull/326) passed required
+`validation-changed` run `36849676246` and was normally merged as
+`ad6d1f7971ec707fa4113884e6ea7e4b7b448c59`. The agent verified the current head,
+required check and authenticated protection before merging without bypass.
+Local main was fast-forwarded to that exact commit. The four original planning
+files matched their bytes in `fcf079c87451cad8d79f4fd7188d24a947764752` before
+only their task-owned duplicate working copies were cleared.
+
+At11:09:38UTC, all seven approved service recreations passed. Each invocation
+used the existing `hy-home-infra` project and merged main root Compose file,
+`up -d --no-deps --no-build --pull never --force-recreate --wait`, one named
+service at a time in master/volume/filer/S3/registry/dozzle/redisinsight order.
+Preflight checked the exact merged HEAD, unchanged tracked deployment source,
+resolved image reference and its local image ID, existing healthy container and
+mount identities. Postflight checked a new target ID, healthy state, exact
+preserved image ID, intended tier and every mount's type/source/name/target/RW.
+Only the approved public SeaweedFS source prefix changed. No rollback was needed.
+
+| Service | Previous ID | New ID | Observed tier | Preserved image reference |
+| --- | --- | --- | --- | --- |
+| `seaweedfs-master` | `1edcc1763828` | `450210b769ff` | `data` | `chrislusf/seaweedfs:4.47` |
+| `seaweedfs-volume` | `f06eacaa0389` | `d6280b49414a` | `data` | `chrislusf/seaweedfs:4.47` |
+| `seaweedfs-filer` | `18a0e415af58` | `e21285617c81` | `data` | `chrislusf/seaweedfs:4.47` |
+| `seaweedfs-s3` | `0c0ffd2a7ecc` | `539f5c33ea62` | `data` | `chrislusf/seaweedfs:4.47` |
+| `registry` | `a82963c3709e` | `9e6629929747` | `platform-ops` | `registry:3` |
+| `dozzle` | `0c563060c87a` | `f420f386e466` | `observability` | `amir20/dozzle:v11.1.0` |
+| `redisinsight` | `2410d23def4f` | `52916a9f0ac1` | `data` | `redis/redisinsight:3.8.0` |
+
+The existing S3 anonymous `/data` volume remains
+`e07dd8673f077936038dc8dbc82640e86abc01022ef17db73bd753d6a9fe1b40`.
+All other persistent volume names and bind source/target/RW pairs are preserved,
+except the approved public SeaweedFS config path relocation. The other74
+containers retain their IDs and running/exited states; no unrelated container
+was created or removed. In particular, the five running management DB/cache,
+exporter and Qdrant identities were not recreated. This proves observed health
+and preservation boundaries, not an unperformed database restore or data audit.
+
+Dozzle retains its captured running `v11.1.0` image through the reviewed
+one-service temporary override. The pre-existing source declaration `v11.1.1`
+was not deployed; resolving that version gap remains a separately scoped upgrade.
+No pull, build, data movement, credential change, broad profile startup, volume
+renewal or prune was performed.
+
+The owner executed the reviewed root helper and reported PASS. Independent
+read-back verified installed unit SHA256
+`462c414628fa64ac423659f1ba4b4a5e255e4b0495f10518c3ba5d5fba4f38a5`, root:root0644,
+and loaded ExecStart resolving to
+`infra/09-platform-ops/restic/bin/hyhome-backup.sh`. The timer remains enabled,
+active and waiting; the backup service is inactive. The helper did not start a
+backup. The byte-identical old-path public script bridge and its empty parents
+were removed after that read-back; local main is clean. Required root
+authentication was supplied in the owner's host terminal, never in the chat.
+
+Independent read-only runtime review ACCEPTED these live observations on
+2026-10-01: all seven healthy targets, exact images and mounts, unchanged other
+container identities/states, installed unit hash/ownership/loaded path, preserved
+timer, absent temporary bridge and clean main. The independent acceptance audit
+also ACCEPTED the source and operational scope with no remaining implementation
+finding. Neither verdict claims an unperformed restore, data audit or cleanup.
+
+The first active-stage local changed profile failed one of628 regressions, log SHA256
+`46394d4fbdc1b4ca68688cf395ec6b13c1430d2a25fa2d4c2932fabe9e6fb18d`. Both newly active Specs contained retired unqualified requirement child IDs.
+Qualified them with their actual REQ parents; no requirement or validator was
+changed. A fresh changed-profile run is required before merge and final completion.
+The subsequent W7 checkbox/authentication wording repair records
+already observed outcomes; scoped Markdown, diff and lifecycle checks cover
+that documentary correction. Final protected completion publication and owned
+branch/worktree cleanup remain mandatory follow-through, not observed PASS.
+
+PR327 required run `36852983331` passed and the approval-stage PR merged normally
+as `180f733dac14e3a21ec5b2cf9d7f3a7fae2764e4`. The corrected requirement
+suite passed all21 tests; scoped Markdown reports zero errors. Independent
+lifecycle/evidence review accepted the13-file activation packet. Draft publication
+may overlap local and hosted validation, but merge requires both to pass.
+
+### Historical delivery checkpoints
 
 ### Authorized delivery and runtime reconciliation
 
@@ -202,6 +281,10 @@ three historical links are pinned to their actual original source commit.
 The user approved Plan W6.1–W6.4 and retained native implementation plus independent review. Baseline:23 tracked files,153 services and six HOME/affected selections; no ignored/untracked source names or destination collisions. RED:12 tests with exactly three intended new failures; existing nine passed. Comparator GREEN:5/5, then full naming module GREEN:12/12. The mapped23 files survive; full public model has zero unexpected differences. Installed units and runtime remain untouched.
 
 ## Verification Evidence
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 6 | W7 | PASS: required CI and normal PR326 source delivery, seven healthy target recreations with preserved images/mounts,74 other container identities/states preserved, and installed backup unit/timer independently read back; final publication and cleanup remain finishing checks | [Platform Operations](../../../../infra/09-platform-ops/README.md) |
 
 Initial design checkpoint: static inventory and role research only, before
 migration. No runtime claim was made. Initial
@@ -372,8 +455,7 @@ final-path handoff; it does not claim the combined gate or runtime acceptance.
 main planning files. `0d42c5edf584fcae7cd78a26fee263492e193885` records the
 reviewed source implementation and delivery preflight. The user-approved
 single-commit ECC false-positive exception was consumed by that implementation
-commit; all subsequent hooks run normally. Remote delivery and runtime results
-remain pending until recorded in the authorized follow-on receipt.
+commit; all subsequent hooks run normally. The observed operational application above supersedes that checkpoint's pending runtime state. `f61e4b270d582375a92a7ae5929f2b56cf124f3a` fixes the test lint findings; PR326 delivers the corrected tree and review-stage records. Final protected completion publication and branch/worktree cleanup are still finishing checks.
 
 ## Rulings
 
@@ -392,8 +474,4 @@ source-path correctness and persistence preservation remain mandatory.
 
 ## Deferred Items
 
-The user approved C and requested the additional implementation Plan. Concrete
-steps are now approved in Plan W5.1–W5.4; the previously selected
-native same-session method with independent review is preserved. Existing SPEC-0198 W5 body work may continue;
-W6 path and tier reconciliation must use the agreed final map. No new runtime
-operation or implementation remediation is authorized by the classification.
+Source implementation and the separately authorized runtime reconciliation are observed above. Final lifecycle publication, main/origin alignment and owned branch/worktree cleanup remain finishing checks; no future cleanup is recorded as PASS. The earlier classification approval alone did not authorize runtime changes. Existing implementation limitations documented by SPEC0198 do not authorize unrelated remediation, and SPEC0182 remains outside scope.

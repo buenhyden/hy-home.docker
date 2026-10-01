@@ -2,7 +2,7 @@
 title: "Infrastructure Tier Layout and Documentation Consistency"
 version: "0.1.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -482,9 +482,9 @@ private overrides or running containers use the new paths.
 ## Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md):
-  FR-0001, FR-0003, FR-0004, FR-0005; NFR-0001, NFR-0003, NFR-0004.
+  REQ-0027-FR-0001, REQ-0027-FR-0003, REQ-0027-FR-0004, REQ-0027-FR-0005; REQ-0027-NFR-0001, REQ-0027-NFR-0003, REQ-0027-NFR-0004.
 - [REQ-0005](../../01.requirements/0005-data-analytics.md): preserve
-  FR-0001, FR-0003, FR-0005, FR-0006 and opt-in activation.
+  REQ-0005-FR-0001, REQ-0005-FR-0003, REQ-0005-FR-0005, REQ-0005-FR-0006 and opt-in activation.
 - [AD-0004](../../02.architecture/descriptions/0004-data-architecture.md),
   [AD-0012](../../02.architecture/descriptions/0012-data-analytics-architecture.md),
   [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md):
