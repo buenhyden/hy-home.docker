@@ -2,7 +2,7 @@
 title: "Operations Audit Baseline and Integration"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -737,6 +737,8 @@ On2026-10-01 the third frozen `python3 scripts/validation/run-ci-gate.py --profi
 Independent final integration review: Spec PASS / quality APPROVED. All67 W6 bodies match their accepted hashes;20 W7 bodies match fix1 and RUN-0096 matches its accepted adjacent-fix hash; six navigation bodies remain unchanged. All225 baseline leaves plus two system leaves,153 identities and1377 service/topic cells are accounted for. Current source scope is complete. Registered Conftest used an isolated temporary policy container; application deployment, secret rotation, build/recovery rehearsal, installed-unit refresh and hosted CI remain NOT_RUN. Existing source nonconformances retain their controls and require separately scoped implementation.
 
 ## Commit Ledger
+
+Final source, independent review and bounded operational delivery receipts are recorded in [SPEC0197 Task0002](../../0197-infra-tier-layout/tasks/tsk-0002-tooling-tier-reclassification.md). Completed publication and its mandatory post-merge synchronization/cleanup follow the same protected process.
 
 Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
 The following worker receipt records the earlier authoring checkpoint.
