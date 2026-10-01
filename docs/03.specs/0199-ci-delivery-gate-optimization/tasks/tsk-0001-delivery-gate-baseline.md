@@ -1,8 +1,8 @@
 ---
 title: "CI Delivery Gate Execution"
-version: "0.1.2"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -71,19 +71,19 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 
 - W5 local integration: the first broad `changed` run reached the OIDC entrypoint tests and failed only because two unrelated checkout files had local mode `775` under umask `002`, although Git records both as `100755`. Resetting those two worktree permissions to `755` changed no tracked bytes or Git mode; both failing tests then passed. The second broad run exposed an existing gate-model test that assumed every workflow job calls the public gate; it now checks the two jobs that actually do, and the 91 focused gate/workflow tests pass. A third broad run reached the final manifest regressions and found that the new tag updater was omitted from the test support table of known runtime-mutating scripts. The table now identifies it as `runtime`, and the focused failing test passes. The final broad changed run passed (exit 0) on `b566c8f65`; the mode correction was local environment repair.
 
-- W5 protected delivery: PR [#334](https://github.com/buenhyden/hy-home.docker/pull/334) first failed its required check only because its title started with a lowercase word after `ci:`. The corrected title passed the local git-flow adapter and hosted `validation-changed` on head `b566c8f656f6f5e32f566917a4ef5b8af967bcb6` (run [36931132251](https://github.com/buenhyden/hy-home.docker/actions/runs/36931132251)). The protected merge produced `18c96231a0410ef1a605a664adf7621669ea6e0e` on main. Main-push run [36933310788](https://github.com/buenhyden/hy-home.docker/actions/runs/36933310788) passed `main-security`, including SARIF upload, then passed `update-main-current`. The tag receipt was `old=<absent> new=18c96231a0410ef1a605a664adf7621669ea6e0e`; remote main and `main-current` matched, and release tag `0.0.1` stayed at `cb1343c8cb9c4872c24f82a0963f163909abc524`. The Task lifecycle and final package closure remain pending.
+- W5 protected delivery: PR [#334](https://github.com/buenhyden/hy-home.docker/pull/334) first failed its required check only because its title started with a lowercase word after `ci:`. The corrected title passed the local git-flow adapter and hosted `validation-changed` on head `b566c8f656f6f5e32f566917a4ef5b8af967bcb6` (run [36931132251](https://github.com/buenhyden/hy-home.docker/actions/runs/36931132251)). The protected merge produced `18c96231a0410ef1a605a664adf7621669ea6e0e` on main. Main-push run [36933310788](https://github.com/buenhyden/hy-home.docker/actions/runs/36933310788) passed `main-security`, including SARIF upload, then passed `update-main-current`. The tag receipt was `old=<absent> new=18c96231a0410ef1a605a664adf7621669ea6e0e`; remote main and `main-current` matched, and release tag `0.0.1` stayed at `cb1343c8cb9c4872c24f82a0963f163909abc524`. Task ready and in-progress transitions then passed protected PRs [#335](https://github.com/buenhyden/hy-home.docker/pull/335) and [#336](https://github.com/buenhyden/hy-home.docker/pull/336), merged as `09b011a5080c51efe44fe2b812db82be676f9a06` and `5152dc3d50eced317b5b516834ce02af79ef3f5b`. Main-push security and channel-tag jobs succeeded after the ready transition; the terminal Spec, Plan and Task candidate is recorded below.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W0, W1, W5 | W1/W5 PASS: phase matrix, installed-hook path, required context and policy owner recorded | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 3 | W3, W5 | PASS: required PR name and triggers preserved; edited title reruns changed profile by regression; hosted #334 run 36931132251 passed | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 4 | W4, W5 | PASS: manual full and main-push security have distinct guarded jobs; merged-SHA run 36933310788 passed Zizmor and SARIF upload | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
-| 5 | W4, W5 | PASS: bare-remote safety cases; hosted tag moved from absent to merged SHA 18c96231a in run 36933310788 | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
-| 6 | W1, W4 | W1-W4 PASS: 76 baseline entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; tag updater registered with its shell test | [Script manifest](../../../../scripts/manifest.yaml) |
-| 7 | W5 | PASS: canonical policy, independent review, local changed gate, hosted PR and main-push delivery; terminal lifecycle pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 1 | W1 | PASS: phase matrix, installed-hook boundary, remote required context, workflow inventory and consumer evidence recorded | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 2 | W2 | PASS: declared public hooks and agent Stop duplicate removed; wrapper, provider and 131 routing regressions passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 3 | W3 | PASS: required PR identity and edited-event changed selection retained; PR #334 run 36931132251 passed on b566c8f65 | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 4 | W4 | PASS: manual full remains separate; merged-SHA run 36933310788 passed registered Zizmor audit and SARIF upload without full QA | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
+| 5 | W4 | PASS: bare-remote safety tests passed; main-current moved from absent to merge SHA 18c96231a after security success, release tag unchanged | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
+| 6 | W1 | PASS: 76 original active manifest entries reviewed, one obsolete selector test removed with replacement, no script deletion justified | [Script manifest](../../../../scripts/manifest.yaml) |
+| 7 | W5 | PASS: policies and operations guidance aligned; local changed gate, independent review, protected PR and merged-main checks passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 
@@ -101,4 +101,4 @@ The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53
 
 ## Deferred Items
 
-Credential values inherited by an initial failing W3 test were printed into a local tool transcript. The test harness no longer serializes the environment, and no recognized credential values were found in tracked changes; credential owners should rotate the exposed GitHub, Hugging Face and Vault/OpenBao credentials and review their audit logs. Transcript retention and rotation are external to this repository package. Hosted PR/main-push checks and remote tag read-back passed as recorded above; only terminal lifecycle remains.
+Credential values inherited by an initial failing W3 test were printed into a local tool transcript. The test harness no longer serializes the environment, and no recognized credential values were found in tracked changes; credential owners should rotate the exposed GitHub, Hugging Face and Vault/OpenBao credentials and review their audit logs. Transcript retention and rotation are external to this repository package. Hosted PR/main-push checks and remote tag read-back passed as recorded above.
