@@ -1,8 +1,8 @@
 ---
 title: "CI Delivery Gate Optimization Implementation Plan"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -95,19 +95,19 @@ Every script/test removal needs a consumer, replacement and regression record.
    the initial draft package and advance Spec/Plan status through each
    registered transition on a trusted main base before starting an active
    implementation Task.
-1. **W1 — Baseline and Task evidence.** Inventory exact invocation owners,
+1. W1: Baseline and Task evidence. Inventory exact invocation owners,
    remote required checks, hook installation, disabled workflow registrations,
    and script/test consumers. No deletion without evidence.
-2. **W2 — Local and agent boundary.** Remove expensive declared public
+2. W2: Local and agent boundary. Remove expensive declared public
    pre-commit/pre-push routes and Stop's mandatory changed-profile run while
    retaining cheap unique checks and CI pre-commit recursion safety.
-3. **W3 — PR required context.** Keep `validation-changed` for all PRs,
+3. W3: PR required context. Keep `validation-changed` for all PRs,
    running the existing changed selection for edited events as well as
    opened, synchronized and reopened revisions.
-4. **W4 — Merged security and channel tag.** Make `full` manual-only; run
+4. W4: Merged security and channel tag. Make `full` manual-only; run
    registered Zizmor/SARIF on main push and move the leased channel tag only
    after success.
-5. **W5 — Canonical governance and integration.** Update policy, knowledge
+5. W5: Canonical governance and integration. Update policy, knowledge
    and operations surfaces, run focused/integrated checks, obtain independent
    review and hosted evidence, then complete the Spec package.
 
@@ -120,17 +120,17 @@ only after both parents are active.
 **Interfaces:** Produces a validated active Spec/Plan and a current Task for
 W1-W5. It does not change CI execution behavior.
 
-- [ ] After the user approves this written Plan and an execution method,
+- [x] After the user approves this written Plan and an execution method,
   deliver the initial draft Spec/Plan package through a protected PR. Record
   exact merged SHA and hosted required check.
-- [ ] On a main base that contains the draft package, advance Spec
+- [x] On a main base that contains the draft package, advance Spec
   `draft → review → approved → active` and Plan
   `draft → approved → active` without skipping registered transitions.
   Run the changed metadata check and required hosted check at each transition.
   Because the validator compares a PR to its main base, merge each
   transition before authoring its successor when the base would otherwise
   show an invalid direct jump. Do not bypass protection to shorten this.
-- [ ] Create the current Task in `draft` after active parents exist and
+- [x] Create the current Task in `draft` after active parents exist and
   record approval/lifecycle receipts there. Verify the package graph and
   begin W1 only when it is valid.
 
@@ -143,13 +143,13 @@ W1-W5. It does not change CI execution behavior.
 **Interfaces:** Produces an exact phase → command → revision/environment →
 consumer/replacement matrix for W2-W5. The Task is the sole evidence ledger.
 
-- [ ] Record `git rev-parse HEAD`, `git config --get core.hooksPath`,
+- [x] Record `git rev-parse HEAD`, `git config --get core.hooksPath`,
   current branch/worktree state, required remote checks and active/disabled
   remote workflow IDs. Do not infer a hosted run from tracked YAML.
-- [ ] For each apparent one-off, legacy, deprecated or duplicate file, record
+- [x] For each apparent one-off, legacy, deprecated or duplicate file, record
   manifest lifecycle, callers, test reachability, replacement and disposition.
   Expected baseline: no justified file deletion; revise only with new evidence.
-- [ ] Run `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
+- [x] Run `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
   and `python3 scripts/validation/check-github-workflow-contract.py`;
   save selected leaves and any environment limits. Expected: both exit 0.
   Commit the Task baseline separately from implementation.
@@ -168,19 +168,19 @@ consumer/replacement matrix for W2-W5. The Task is the sole evidence ledger.
 and runs cheap hooks; Stop no longer starts `run-ci-gate.py`. W3 keeps the
 hosted PR quality owner.
 
-- [ ] Add failing tests proving no public profile is bound to declared
+- [x] Add failing tests proving no public profile is bound to declared
   pre-commit/pre-push or agent Stop, and proving cheap hooks/CI recursion
   guard remain. Run the focused tests and capture expected failures.
-- [ ] Remove only `public-validation-changed` and
+- [x] Remove only `public-validation-changed` and
   `public-validation-full` hook registrations. Reconcile the wrapper's
   skip list by removing the now-obsolete skip value while still rejecting
   caller-controlled `SKIP`; CI pre-commit cannot recurse through a public
   hook that no longer exists.
-- [ ] Replace Stop's mandatory full changed-profile execution with a cheap
+- [x] Replace Stop's mandatory full changed-profile execution with a cheap
   completion/status boundary; preserve explicit failure reporting and
   provider parity. Update the two tracked provider bindings only if their
   invoked command or timeout needs to change.
-- [ ] Run `bash tests/validation/test_run_ci_precommit.sh`,
+- [x] Run `bash tests/validation/test_run_ci_precommit.sh`,
   `python3 -m unittest tests.validation.test_hook_rules
   tests.validation.test_agent_governance_ci_routing -v`, and
   `python3 scripts/validation/check-agent-governance-contract.py
@@ -206,14 +206,14 @@ successful git-flow-only replacement would leave the candidate SHA without
 completed changed-profile evidence. The runner retains its existing
 changed-path selection and registered git-flow leaf for every PR event.
 
-- [ ] Add a focused regression that supplies a title-only `edited` payload but
+- [x] Add a focused regression that supplies a title-only `edited` payload but
   verifies changed-path collection and both git-flow and document gates still
   run. Assert all four PR actions and the absence of workflow path filters.
-- [ ] Keep the required `validation-changed` job and static command on every
+- [x] Keep the required `validation-changed` job and static command on every
   PR to main. The focused checker must retain checkout, SHA, permission,
   concurrency and event checks. Do not accept a narrower success under the
   required name.
-- [ ] Run `python3 -m unittest tests.validation.test_ci_gate_plan
+- [x] Run `python3 -m unittest tests.validation.test_ci_gate_plan
   tests.validation.test_ci_gate_execution_context
   tests.lib.gate.test_github_workflow_contract -v` and
   `python3 scripts/validation/check-github-workflow-contract.py`.
@@ -240,17 +240,17 @@ tag script with `GITHUB_SHA`, `GITHUB_REF=refs/heads/main` and the
 checkout's authenticated `origin`. The script accepts no tag name argument;
 it touches only lightweight `refs/tags/main-current`.
 
-- [ ] Add a failing bare-remote shell test for absent tag, already-current
+- [x] Add a failing bare-remote shell test for absent tag, already-current
   tag, stale main, concurrent tag movement, annotated-tag refusal and
   failed remote update. Assert unchanged release tag in every case.
-- [ ] Add failing workflow tests for main-push/manual separation, registered
+- [x] Add failing workflow tests for main-push/manual separation, registered
   Zizmor command and SARIF upload, tag `needs`/event guard, job-scoped token
   permissions, and a skipped/failed audit leaving the tag job ineligible.
-- [ ] Implement the script using `git ls-remote` plus a
+- [x] Implement the script using `git ls-remote` plus a
   `--force-with-lease=refs/tags/main-current:<expected>` update. Recheck
   remote main immediately before the push; refuse stale SHA, malformed
   inputs or annotated channel tag. Do not force-push main or a release tag.
-- [ ] Route push/manual jobs and their static commands in the existing
+- [x] Route push/manual jobs and their static commands in the existing
   workflow contract and checker. Run the focused tests, shell syntax,
   `python3 scripts/validation/check-github-workflow-contract.py`,
   `python3 scripts/validation/check-script-manifest.py` and
@@ -274,18 +274,18 @@ Stage 99 transitions.
 routes to it. The runbook explains channel-tag failure/retry separately from
 release-tag readiness. No new policy copy or second inventory.
 
-- [ ] Write policy and navigation changes in their required languages,
+- [x] Write policy and navigation changes in their required languages,
   including a conditional channel-tag exception, old/new SHA evidence,
   stale-run recovery and the global-hook limitation.
-- [ ] Run focused hook/gate/workflow tests, document metadata/link/language
+- [x] Run focused hook/gate/workflow tests, document metadata/link/language
   checks, `python3 scripts/validation/run-ci-gate.py --profile changed`,
   and an explicit `full` audit if the final approved Task calls for it.
   Record local-only and CI-only results separately.
-- [ ] Obtain independent read-only review of the exact diff; fix high
+- [x] Obtain independent read-only review of the exact diff; fix high
   findings. Deliver through the protected PR after required hosted
   `validation-changed` passes; observe main-push security and tag result.
   No direct main push or protection bypass.
-- [ ] In the current Task, map each SPEC-0199 acceptance criterion to W0-W5,
+- [x] In the current Task, map each SPEC-0199 acceptance criterion to W0-W5,
   actual check output, durable owner and any unverified result. Complete
   Plan, Task and Spec only after all required results pass; leave open
   otherwise. Sync local main to observed origin/main and clean only this
@@ -312,13 +312,12 @@ remote-state review.
 | 1. Phase matrix and installed-hook boundary | W0, W1, W5 | Task invocation/consumer matrix; `git config --get core.hooksPath`; governance diff review |
 | 2. No routine local public gate | W2 | `bash tests/validation/test_run_ci_precommit.sh`; hook-rule and routing unit tests |
 | 3. Required PR context and edited routing | W3, W5 | gate plan/execution-context/workflow unit tests; hosted `validation-changed` on exact PR SHA |
-| 4. Narrow main push and retained manual full | W4, W5 | workflow checker and tests; local `full` command; hosted manual dispatch only if separately authorized |
+| 4. Narrow main push and retained manual full | W4, W5 | workflow checker/tests prove manual dispatch still routes to `full`; main-push run 36933310788 passed Zizmor/SARIF without routine full QA |
 | 5. Safe `main-current` movement | W4, W5 | bare-remote tag test; successful main-push run; remote tag/main SHA read-back |
 | 6. Evidence-based script/test disposition | W1, W4 | Task consumer inventory; script manifest and test reachability checks |
 | 7. Policy, docs and actual delivery | W5 | metadata/link/language checks, independent review, hosted run URLs and Task receipt |
 
-Manual `full` proves the retained audit route but does not stand in for
-real GitHub events. The hosted PR and main-push run URLs, exact SHAs,
+The retained manual `full` route is verified statically; no manual full dispatch was run for this package. It does not stand in for real GitHub events. The hosted PR and main-push run URLs, exact SHAs,
 SARIF upload and tag read-back are required acceptance evidence; a local
 simulator cannot claim those outcomes. Do not repeat a passing full gate
 merely because another stage occurred unless source or environment
