@@ -1,8 +1,8 @@
 ---
 title: "CI Delivery Gate Execution"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -69,19 +69,21 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 
 - W5 independent-review correction: the first title-only optimization could let an `edited` run cancel a pending `synchronize` run and satisfy the same required status with only git-flow. The fast path and `PR_ACTION` projection were removed. A focused regression now proves even a title-only `edited` payload executes changed-path collection plus git-flow and document gates. The review also found a new runbook heading forbidden by the changed-body contract; the content was retained under the existing Overview and `check-changed --base-ref origin/main` passed with zero violations. The initial 85-test W3 result describes the superseded candidate, not the final route.
 
-- W5 local integration: the first broad `changed` run reached the OIDC entrypoint tests and failed only because two unrelated checkout files had local mode `775` under umask `002`, although Git records both as `100755`. Resetting those two worktree permissions to `755` changed no tracked bytes or Git mode; both failing tests then passed. The second broad run exposed an existing gate-model test that assumed every workflow job calls the public gate; it now checks the two jobs that actually do, and the 91 focused gate/workflow tests pass. A third broad run reached the final manifest regressions and found that the new tag updater was omitted from the test support table of known runtime-mutating scripts. The table now identifies it as `runtime`, and the focused failing test passes. A final broad changed run is pending. The mode correction is local environment repair.
+- W5 local integration: the first broad `changed` run reached the OIDC entrypoint tests and failed only because two unrelated checkout files had local mode `775` under umask `002`, although Git records both as `100755`. Resetting those two worktree permissions to `755` changed no tracked bytes or Git mode; both failing tests then passed. The second broad run exposed an existing gate-model test that assumed every workflow job calls the public gate; it now checks the two jobs that actually do, and the 91 focused gate/workflow tests pass. A third broad run reached the final manifest regressions and found that the new tag updater was omitted from the test support table of known runtime-mutating scripts. The table now identifies it as `runtime`, and the focused failing test passes. The final broad changed run passed (exit 0) on `b566c8f65`; the mode correction was local environment repair.
+
+- W5 protected delivery: PR [#334](https://github.com/buenhyden/hy-home.docker/pull/334) first failed its required check only because its title started with a lowercase word after `ci:`. The corrected title passed the local git-flow adapter and hosted `validation-changed` on head `b566c8f656f6f5e32f566917a4ef5b8af967bcb6` (run [36931132251](https://github.com/buenhyden/hy-home.docker/actions/runs/36931132251)). The protected merge produced `18c96231a0410ef1a605a664adf7621669ea6e0e` on main. Main-push run [36933310788](https://github.com/buenhyden/hy-home.docker/actions/runs/36933310788) passed `main-security`, including SARIF upload, then passed `update-main-current`. The tag receipt was `old=<absent> new=18c96231a0410ef1a605a664adf7621669ea6e0e`; remote main and `main-current` matched, and release tag `0.0.1` stayed at `cb1343c8cb9c4872c24f82a0963f163909abc524`. The Task lifecycle and final package closure remain pending.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W0, W1, W5 | W1 PASS: phase matrix, installed-hook path and remote required context recorded; W5 policy pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 1 | W0, W1, W5 | W1/W5 PASS: phase matrix, installed-hook path, required context and policy owner recorded | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 3 | W3, W5 | LOCAL PASS: required PR name and triggers preserved; edited title reruns changed profile by regression; hosted status pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 4 | W4, W5 | LOCAL PASS: manual full and main-push security have distinct guarded jobs; hosted main push pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
-| 5 | W4, W5 | LOCAL PASS: bare-remote creation, idempotence, stale/race/annotated/rejection cases; hosted tag update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
+| 3 | W3, W5 | PASS: required PR name and triggers preserved; edited title reruns changed profile by regression; hosted #334 run 36931132251 passed | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 4 | W4, W5 | PASS: manual full and main-push security have distinct guarded jobs; merged-SHA run 36933310788 passed Zizmor and SARIF upload | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
+| 5 | W4, W5 | PASS: bare-remote safety cases; hosted tag moved from absent to merged SHA 18c96231a in run 36933310788 | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
 | 6 | W1, W4 | W1-W4 PASS: 76 baseline entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; tag updater registered with its shell test | [Script manifest](../../../../scripts/manifest.yaml) |
-| 7 | W5 | NOT_RUN: canonical policy, review, and hosted delivery pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 7 | W5 | PASS: canonical policy, independent review, local changed gate, hosted PR and main-push delivery; terminal lifecycle pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 
@@ -89,7 +91,7 @@ Independent read-only review found two blocking issues: a forbidden runbook head
 
 ## Commit Ledger
 
-The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53`. W1 baseline started at `eabf04245c76010fd1bbfeff9790e3570100f7c0` and was committed separately as `7f267070b`. W2 implementation commit and hosted receipts will be recorded after review.
+The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53`. W1 baseline started at `eabf04245c76010fd1bbfeff9790e3570100f7c0` and was committed separately as `7f267070b`. W2 `e0d5186ea`, W3 `a84994405` (superseded title shortcut corrected in W5), W4 `371f9f3d5`, W5 `108b507f3` and `b566c8f65` were integrated by PR #334 as `18c96231a`.
 
 ## Rulings
 
@@ -99,4 +101,4 @@ The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53
 
 ## Deferred Items
 
-Credential values inherited by an initial failing W3 test were printed into a local tool transcript. The test harness no longer serializes the environment, and no recognized credential values were found in tracked changes; credential owners should rotate the exposed GitHub, Hugging Face and Vault/OpenBao credentials and review their audit logs. Transcript retention and rotation are external to this repository package. Hosted PR/main-push checks and remote tag read-back remain pending until protected delivery.
+Credential values inherited by an initial failing W3 test were printed into a local tool transcript. The test harness no longer serializes the environment, and no recognized credential values were found in tracked changes; credential owners should rotate the exposed GitHub, Hugging Face and Vault/OpenBao credentials and review their audit logs. Transcript retention and rotation are external to this repository package. Hosted PR/main-push checks and remote tag read-back passed as recorded above; only terminal lifecycle remains.
