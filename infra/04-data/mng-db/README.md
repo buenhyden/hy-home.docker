@@ -2,7 +2,7 @@
 title: "Management Database (mng-db)"
 version: "1.1.5"
 type: "common/package-readme"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2025-12-03"
