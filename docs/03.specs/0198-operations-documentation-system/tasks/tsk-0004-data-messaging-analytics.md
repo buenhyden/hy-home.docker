@@ -2,7 +2,7 @@
 title: "Data Messaging and Analytics Documentation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -433,7 +433,7 @@ Every original heading below maps to the **same file and same heading** unless a
 
 ## Verification Evidence
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | Exhaustive W4 service and topic audit | W4 | 87 identities /17 owning Guides /59 leaves; exact matrix and section map above | Existing G/P/R subject leaves and this Task |
 | Preserve controls and reconcile contradictions | W4 | Initial semantic review REQUEST_CHANGES (I1–I3, M1–M3); fix1 candidate recorded below; runtime NOT_RUN and implementation deficiencies explicit | Existing Policies/Runbooks; separate source remediation |
@@ -476,6 +476,9 @@ Official evidence rechecked for fix1: [Docker compose run](https://docs.docker.c
 Fix1 focused receipts (2026-10-01): metadata check-changed PASS,14 explicit paths/0 violations/0 legacy exceptions/0 transition overrides, same origin/main merge-base as above; operations-catalog PASS; document links all PASS,1020 documents/10514 links/39 catalog pairs/40 archive links/0 removed mentions/0 failures/1 pre-existing historical warning/56 historical documents (2870 unrecorded archived links). Scoped git diff --check PASS. Static I1–I3/M1–M3 command/prose assertions PASS;14 review-before and59 original-before hashes unchanged,46 unaffected W4 outputs unchanged, all60 files below800lines. The scratch receipt helper initially sought an original snapshot for this new Task; its Task exclusion was corrected and all assertions then passed. Exact changed paths, before/after hashes and scoped review-before diff are in `w4-fix1-paths.txt`, `w4-fix1-hashes.json` and `w4-fix1.diff` under the scratch directory above; full check outputs are appended to `w4-report.md`. No broad gate, staging, commit, runtime/build/recovery, credential read or subagent was used.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No staging or commits by this writer. Parent staged the initial Task for discovery; final byte staging and delivery remain parent-owned.
 

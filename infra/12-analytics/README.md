@@ -2,7 +2,7 @@
 title: "12 Analytics"
 version: "0.1.0"
 type: "common/package-readme"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-01"
 created: "2026-10-01"

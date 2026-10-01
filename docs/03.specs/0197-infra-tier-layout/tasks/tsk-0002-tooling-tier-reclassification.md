@@ -2,7 +2,7 @@
 title: "Tooling Communication and Laboratory Tier Reclassification"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -40,9 +40,23 @@ and retained native execution plus independent review.
 
 ### Authorized delivery and runtime reconciliation
 
+Remote reconciliation on2026-10-01: authenticated read-back shows PR325 merged by `buenhyden` at10:18:15UTC as `3e2c026d7f25850e826be850fce7da6acb036a5b`, with head `b9eeceee9aa6c7f55a22831134d87638a157cb27` and required run `36844584749` still FAILURE. The agent did not execute that merge or claim passing CI. The corrected Ruff commit `f61e4b270d582375a92a7ae5929f2b56cf124f3a` and this review-stage promotion proceed through a new ordinary PR; origin/main was merged without rewriting recovery objects.
+
+Review-stage local `changed` gate passed after an externally signalled attempt was retried: exit0, log SHA256 `e6406a1f127a060ec29d402f746e11e9c9ff180025672ed0b6c8667dc19b0646`. The earlier attempt received SIGTERM(-15) after passing tests and is incomplete, not a repository test failure or a pass. Subsequent test-only Ruff changes passed the focused tests and AST-preservation review above. Actual runtime and installed-unit application remain pending.
+
 Hosted run `36844584749` passed Markdown validation but failed Ruff on two test files. Applied registered Ruff0.15.12 formatting, removed one unused import and made eight default `check=False` arguments and one default `strict=False` explicit. Normalized AST comparison proves no test behavior change; all135 tracked Python files pass Ruff check and format-check. No validator, failure assertion or production code is weakened. The next required hosted run must pass before merge. Independent code/security review ACCEPTED the three-file repair. Focused unittest result:104 discovered,83 passed and21 explicitly opt-in Docker PostgreSQL/backup/SeaweedFS/mail rehearsals skipped; no live recovery is inferred.
 
 PR325 hosted run `36840244725` passed the preceding validation suites but failed the registered Markdown formatter because it changed document bytes. Applied the registered formatter to all326 changed Markdown files and escaped the literal shell OR operator in the Task1980004 evidence table. Two subsequent lint passes report zero errors; no operational instruction, lifecycle state, validator or protection is changed. The required hosted gate will be rerun on the repair commit.
+
+Delivery preparation: normal-hook commit `49de994ac0e1e0bda16214c6e657ca8f32e1601f`
+records the approved W7 plan. The frozen pre-push `full` gate passed (exit0),
+log SHA256 `d2986a64d5f9297c3f8e92b628a02cd26e114f40892fae16db39d516566a097a`.
+The branch was pushed and [PR325](https://github.com/buenhyden/hy-home.docker/pull/325)
+created; hosted acceptance remained pending at that publication checkpoint.
+Independent lifecycle review identifies30 task-owned living documents for
+review/active transitions and two approved decisions for acceptance. This restores
+26 previously active moved READMEs and promotes four new reviewed documents;
+eleven originally draft READMEs remain draft. No unrelated document is promoted.
 
 PR325 first hosted attempt (`36838896437`) failed metadata comparison against
 `c26bc8026254dffd7d51fc45b4081a1f80f855f2`: nineteen W5 Runbooks introduced an
@@ -76,6 +90,8 @@ Runtime scope is the existing Compose deployment affected by the approved35 pack
 Value-free runtime preflight found99 service identities in moved Compose files,12 currently running in project `hy-home-infra`. Independent operational review limits recreation to seven: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, then `registry`, `dozzle`, `redisinsight`. The other five (management PostgreSQL/Valkey, their exporters and Qdrant) have no relocated source mounts or changed tier labels and retain their containers. Existing image IDs and mount identities were captured without environment/command/secret output. SeaweedFS S3 has an anonymous `/data` volume; its exact identity must survive. Old bind sources are tracked, unchanged public files. Before execution compare old production service config hashes with live labels, confirm local image resolution equals recorded image IDs, and validate the new source. Use explicit targets with `--no-deps --no-build --pull never --force-recreate --wait`, one at a time, with existing healthchecks. No down/renew-anon-volumes or broad profile startup. Restore only a failed target using preserved pre-merge source and image; do not restore data or credentials.
 
 Installed `hyhome-backup.service` still names the old source token and the timer is enabled/active waiting. Its root-owned0644 file is not writable; noninteractive sudo currently requires authentication. Prepare the exact token-only unit change, preserve timer state, validate and daemon-reload without starting a backup. This host permission constraint is not permission to bypass host authorization.
+
+Main handoff preparation: while the root-owned unit awaits authenticated installation, retain only the byte-identical public backup script temporarily at its old source path. Its relative repository-root resolution is unchanged. Do not commit or ignore this bridge; remove the exact file and empty old directories only after the loaded unit points to the new executable. Independent runtime review accepted this bounded continuity measure. The prepared root helper verifies source/unit hashes, preserves timer state and runs daemon-reload without starting a backup; its error path restores the invocation-current unit. Runtime application and helper execution remain pending.
 
 Expanded source inventory: eighteen packages/twenty-seven Compose identities
 (Tooling11/17, Communication2/3, Laboratory5/7). Selected builds cover eight
@@ -200,7 +216,7 @@ All11 local Markdown file targets resolved, and package `git diff --check`
 passed. These are Plan-authoring checks, not migration acceptance. Public-model and source-content
 validation was pending at that checkpoint; implementation receipts follow below.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 7 | W5 | C migration implemented and independently accepted;12 packages/16 labels preserved | Spec, tier/package READMEs and this Task |
 | 2, 3, 4, 6 | W5, W6 | Scoped model/source, hardening, test and documentation checks PASS | Existing model comparison, hardening and document checks |

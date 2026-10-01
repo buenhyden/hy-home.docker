@@ -2,7 +2,7 @@
 title: "W5 Observability Workflow and AI Documentation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -308,7 +308,7 @@ Only existing catalog, metadata, links/language and scoped diff checks are used;
 - Runtime image/version/authentication/notification/GPU/load/build/restore acceptance: NOT_RUN.
 - Final exact61 metadata contracts: PASS, violations=0. Final links all: PASS, failures=0, the same single historical-link warning; focused language: PASS, failures=0. Scoped git diff --check: PASS. Catalog: PASS. Logs and SHA256 packet were generated for independent review; these are documentation checks only.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1, 4 | W5 | All60 leaves,34 identities and306 topic cells reconciled | W5 role leaves and matrix above |
 | 3, 5 | W5 | Source/version conflicts and original sections independently reviewed | Findings and section mapping above |
@@ -322,6 +322,9 @@ Only existing catalog, metadata, links/language and scoped diff checks are used;
 Documentation source work accepted after independent Spec/quality review. Implementation nonconformance remains separately authorized work; full SPEC-0198 acceptance and225-leaf integration belong to W8.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No author commit or publication. Parent owns final scoped staging and authorized
 future delivery; the reviewed content remains an uncommitted snapshot.

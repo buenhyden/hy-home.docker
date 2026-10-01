@@ -2,7 +2,7 @@
 title: "Capability Tiers and Quality Boundary"
 version: "0.1.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "architecture"

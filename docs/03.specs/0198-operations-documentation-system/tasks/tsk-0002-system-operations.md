@@ -2,7 +2,7 @@
 title: "System Operations Documentation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -160,7 +160,7 @@ No new executable implementation was added, so unit/integration/E2E tests and
 coverage are not applicable to this documentation-only work. The existing
 validators and explicit source review supply the relevant static evidence.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 2 | W2 | Navigation, identifier and exactly-once catalog checks PASS | Existing Operations/role READMEs, registry |
 | 3 | W2 | All six operating needs mapped; explicit capability limits and owner | GDE-0099, RUN-0099, existing common owners |
@@ -177,6 +177,9 @@ review and is not package completion. Source and official-document comparison
 is static evidence only.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No W2 commit or index mutation by this worker. Preserve all pre-existing staged
 SPEC-0197 and other shared work. Integrating owner controls any authorized

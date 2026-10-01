@@ -2,7 +2,7 @@
 title: "W6 Platform Operations Quality Communication and Administration Documentation"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -435,7 +435,7 @@ Author source/body audit: 67/67 leaves, 24/24 identities, 7/7 selected build def
 - Scope comparison: 67 leaves plus this Task changed against the pre-author snapshot; restic, infrastructure, shared indexes and private inputs were not authored by W6. Parent/source edits remain outside this author's diff packet.
 - Runtime/build/restore/secret/host/load/mail/provider tests: NOT_RUN. No broad changed CI gate or commit was executed. Parent owns integration-wide checks after independent review.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W6 exhaustive body and identity audit | 67 leaves and 24 identities mapped above; independent review accepted | This Task and existing role leaves |
 | 2 | W6 preserve paths/IDs and final source map | Role paths/IDs retained; parent owns shared navigation and migration | Existing role leaves; W1 integration |
@@ -470,6 +470,9 @@ The independent full-batch reviewer returned REQUEST CHANGES on 2026-10-01 after
 Scope was closed to RUN-0070, GDE-0080, RUN-0080 and this Task. Their pre-fix text/hashes were captured before editing; the other 64 role-leaf hashes and all four historical payloads are verified separately. No other author edits, source/config changes, runtime, private-input access, broad gate, staging or commit were made. Focused fix-round metadata passed with selected=4, violations=0, legacy_exceptions=0 and transition_overrides=0. Four-path local links, code fences and existing language checks passed; a direct Hangul-syllable scan found zero Task lines. All 64 unaffected role hashes, 67 original hashes, 683 source/final locators and four historical payloads passed preservation checks. Scoped `git diff --check` passed. Independent incremental acceptance was pending at this author checkpoint; the final approval above and W8 gate in Task0001 supersede that pending state. No runtime result is implied.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No staging or commit performed by this author. Parent owns scoped delivery after review and integration. Do not infer a commit from a diff or check receipt.
 

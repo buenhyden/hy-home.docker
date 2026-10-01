@@ -2,7 +2,7 @@
 title: "Tier Layout and Consistency Execution"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "specs"
@@ -46,11 +46,22 @@ this Task does not claim the expanded package or its final gate complete.
 
 ## Verification Evidence
 
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W2 | PASS: 12 Data and 6 Analytics packages relocated with tracked contents preserved | [Infrastructure layout](../../../../infra/README.md) |
+| 2 | W1 | PASS: full and selected public models preserve execution and storage settings within the approved allowlist | [Compose declaration](../../../../docker-compose.yml) |
+| 3 | W4 | PASS: hardening and regression checks pass with recorded changed-line coverage above 80% | [Hardening checks](../../../../scripts/hardening/check-all-hardening.sh) |
+| 4 | W3 | PASS: current documentation and navigation reflect the approved tier boundaries | [Data and analytics architecture](../../../02.architecture/descriptions/0012-data-analytics-architecture.md) |
+| 5 | W4 | PASS: final frozen changed gate and independent source review accepted the implementation | N/A: Verification commands and independent review receipts remain in the execution Tasks. |
+| 6 | W1 | PASS: baseline, allowed exceptions and source-only execution boundaries are recorded separately from later runtime work | N/A: Historical execution evidence remains in the execution Tasks. |
+| 7 | W5 | PASS: all reviewed packages have recorded placement decisions and the approved additional relocation passed comparison checks | [Infrastructure layout](../../../../infra/README.md) |
+| 8 | W6 | PASS: five Platform Operations packages and nine labels use the approved name with consumers reconciled | [Platform Operations](../../../../infra/09-platform-ops/README.md) |
+
 - Preparation changed gate: exit 0 before implementation. Repository metadata
   contract check after Plan authoring: violations=0. These do not prove the
   upcoming migration.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Source acceptance mapping | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W1, W2 | PASS: 12 Data + 6 Analytics; 89 tracked files preserved | infra tier and package READMEs |
 | 2 | W1, W2 | PASS: 153-service model and 32 selections preserved | root and package Compose |
@@ -68,6 +79,9 @@ CI routing, 54 passing focused tests and clean whitespace checks. Runtime and
 private configuration were excluded from review.
 
 ## Commit Ledger
+
+Integrated source commit: `0d42c5edf584fcae7cd78a26fee263492e193885`.
+The following worker receipt records the earlier authoring checkpoint.
 
 No implementation commit yet. Base commit is recorded in Inputs.
 
