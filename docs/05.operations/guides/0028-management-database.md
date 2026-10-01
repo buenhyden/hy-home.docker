@@ -60,7 +60,6 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `192.168.0.13`)에 게시해 k3d Argo CD 캐시가 도달한다. healthcheck와 리소스
 제한은 공유 템플릿에서 온다.
 
-
 ### Identity-specific behavior
 
 mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF state 와 backup orchestrator 의 RDB export 를 사용한다. mng-pg-init 는 base role/database DDL 이며 optional feature runner/SQL 은 해당 subject 가 소유한다(dbt,CDC,Superset 등). PG 는 loopback, Valkey 는 HOST_LAN_BIND_IP 에 host port 를 게시한다. 두 exporter 는 각각 PG/Valkey 한 target 이며 health 는 업무 정합성을 확인하지 않는다. feature profile 에는 bi/contract-testing 도 포함한다. 앱 quiescence 와 조정된 logical dump 요구는 여전히 필수이며 현재 daily physical/RDB automation 이 앱별 동시 복구를 보장하지 않는다.
@@ -74,7 +73,6 @@ mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF s
 | `mng-valkey-exporter` | 공유 Valkey metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Images, configuration and resource controls
 
@@ -121,7 +119,6 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL upgrading](https://www.postgresql.org/docs/current/upgrading.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
-
 
 ## Common Checks
 

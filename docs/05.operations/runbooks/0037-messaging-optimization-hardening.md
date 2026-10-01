@@ -19,7 +19,6 @@ created: "2026-05-17"
 현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다. runtime
 변경, restore, 정리, credential rotation은 별도 task가 필요하다.
 
-
 ### Execution and stop boundary
 
 대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-2`, `kafka-3`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

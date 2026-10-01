@@ -548,7 +548,6 @@ FROM tags and ARG defaults are declared inputs, not immutable bytes. Checksummed
 | infra/12-analytics/spark/Dockerfile | apache/spark:4.1.3-scala2.13-java21-python3-ubuntu | none | 2 | none |
 | infra/12-analytics/superset/Dockerfile | apache/superset:6.1.0 | none | 0 | infra/12-analytics/superset/requirements.txt: authlib==1.8.0, psycopg2-binary==2.9.13, trino[sqlalchemy]==0.340.0 |
 
-
 ### Build inputs beyond image labels (source observations; semantic audit PENDING)
 
 Compose build arguments take precedence over Dockerfile defaults for the

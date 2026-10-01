@@ -32,7 +32,6 @@ created: "2026-05-17"
 - Dashboards가 OpenSearch에 연결할 수 없을 때
 - `opensearch-cluster` topology에 unhealthy node나 shard allocation 문제가 있을 때
 
-
 ### Execution and stop boundary
 
 대상: `opensearch`, `opensearch-dashboards`, `opensearch-node1`, `opensearch-node2`, `opensearch-node3`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
@@ -46,7 +45,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ### Checklist
 
 현 Dockerfile3.8.0/exporter3.5.0.0 mismatch와 cluster mount/config 차이가 해결·검증되기 전 build/start/restore 정상성을 가정하지 않는다. 공식 exact-version plugin 계약은 GDE-0019와 W4 Task에 기록한다.
-
 
 - [ ] Primary `opensearch` profile인지 `opensearch-cluster`의 세 node인지 선택을 기록했다. Dashboards는 두 profile에 포함되며 서로 다른 topology의 준비 상태를 혼동하지 않는다.
 - [ ] admin password는 안전하게 읽고 저장하지 않는다.
@@ -81,8 +79,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    docker compose --profile opensearch-cluster config --quiet
    docker compose --profile opensearch-cluster logs --tail 100 opensearch-node1 opensearch-node2 opensearch-node3
    ```
-
-
 
 source health/init/exporter의 기존 password argv 노출은 이 문서 수정으로 고쳐지지 않았다. 별도 구현 변경과 검증이 필요하다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. cluster는 승인된 target/CA를 별도 지정하며 현재 exporter/build mismatch가 해결되지 않아 operational acceptance는 미검증이다.
 

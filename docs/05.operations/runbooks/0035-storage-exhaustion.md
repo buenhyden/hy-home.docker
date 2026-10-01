@@ -25,7 +25,6 @@ created: "2026-06-04"
 log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다. 복구와 삭제는
 영향받은 owner, 검증된 백업, 별도 승인된 조치가 필요하다.
 
-
 ### Execution and stop boundary
 
 대상: GDE-0017/0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034의 명명된 data identities 및 GDE-0021/0036/0090/0094/0097의 저장 상태. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

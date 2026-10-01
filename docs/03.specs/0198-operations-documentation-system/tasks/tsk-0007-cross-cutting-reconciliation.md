@@ -98,7 +98,6 @@ Cross-cutting subjects do not claim service image/runtime identities. The follow
 | 0096 integration | existing selected cross-repo consumer contracts | Docker-side pins; k3d/ESO/Kiali deployed versions not observed | exact allowlists, SSO/BasicAuth/Viewer/bootstrap roles | host endpoints, CA, protected KV/tokens and config | per-consumer status; ports/query presence not whole-cluster health | POL0096; @buenhyden and named cluster owner | corrected RUN0096 branches; cross-repo mutations delegated | TLS/network/auth/readiness separated; failed revocation unknown | protected snapshot/offline custody, scoped credential rollback/revoke; RUN0085 restore only |
 | 0098 reboot | preserved-state owner-run reboot, not disaster bootstrap | restart daemon vs one-shot, source-specific readiness | manual unseal, OIDC and SecretID constraints | existing Raft/Agent/data state preserved | expected selected daemon set plus canonical renderer tests | POL0006/0078/0021 and ADR0042 | RUN0098 parent handoff received; current body revised | S13–S20/A33, no broad up/restart or implicit restore | pre-reboot backups, failed-backup stop, no secret/role_id deletion; dated rehearsal retained |
 
-
 ### Heading preservation map
 
 This heading inventory records the complete original-to-final section surface, supplementing the semantic dispositions above. Common template filler is represented by the concrete owner sections; role moves are explicitly identified above. A changed heading does not waive its original substantive obligations.

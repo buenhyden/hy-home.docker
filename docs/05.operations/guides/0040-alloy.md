@@ -72,7 +72,6 @@ created: "2026-05-10"
 
    비공개 실행 환경의 선택값은 관찰하지 않았다. 두 파일 모두 Compose project가 `hy-home-infra`인 컨테이너만 유지하고 service/container/project/env/scope를 재표기해 Loki로 로그를 보낸다. 과거 network-name filter와는 다른 경계다. OTLP gRPC/HTTP는 Tempo로 전달한다. 자체 metric은 Prometheus job `alloy`가 한 번 scrape하며 내부 self remote-write는 없다. `pyroscope.scrape "go_services"`는 10개 대상을, 별도 SeaweedFS source는 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. 설정이나 collector health만으로 전달 성공을 판정하지 않는다. k3d OTLP 진입은 [POL-0096](../policies/0096-k8s-integration.md)이 관장한다.
 
-
 4. 애플리케이션 instrumentation은 가능한 OTLP endpoint를 사용한다.
 
    - gRPC: `alloy:4317`
@@ -108,7 +107,6 @@ created: "2026-05-10"
 - **자원·정상 사용**: source의 CPU/memory limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 `docker compose --profile obs config --quiet`로 렌더링하고 Alloy config를 검증한 뒤, downstream 쓰기와 범위를 제한한 retry/WAL 신호를 확인한다.
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인하며, source가 있을 때만 profiling이 이루어진다고 주장한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
-
 
 ## Common Checks
 

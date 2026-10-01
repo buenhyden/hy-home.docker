@@ -41,11 +41,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `prometheus`의 선택 config, rule 파일과 세 secret mount가 준비되어야 한다. `node-exporter`의 textfile host 경로는 자동 생성되지 않으며 `dcgm-exporter`는 호환되는 GPU runtime이 필요하다. DCGM에는 Compose healthcheck가 없으므로 수집 target과 지원 metric을 확인한다. 두 exporter는 자체 데이터 백업이나 별도 사용자 자격 증명 회전 대상이 아니다. exporter 교체·중지는 관측 공백과 label 연속성을 검토하고 Prometheus TSDB 복구와 구분한다.
-
 
 ### Checklist
 
@@ -138,14 +136,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. Prometheus TSDB 복구에 성공했다고 주장하지 않는다.
 
 1. image/config/rule digest, TSDB 시간 범위, target/rule 기준값, retention flag와 backup checksum을 기록한다. Prometheus를 정지시키고, 승인된 방식으로 정지 상태의 일관된 `prometheus-data` 복사본 또는 storage snapshot을 생성한다. 현재 source에서는 admin snapshot API를 사용할 수 없다.
 2. 알림 전송과 remote-write client를 비활성화하거나 test endpoint로 돌린 별도 project/network의 새 path에 복구한다.
 3. Prometheus를 시작하고 WAL replay/readiness, 범위를 제한한 과거·현재 조회, target label, rule health, 통제된 Alertmanager 전송과, 사용 중인 경우 remote-write receiver 동작을 검증한다.
 4. 불일치가 있으면 격리된 service를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 TSDB 교체는 별도로 승인받는다.
-
 
 ## Evidence
 

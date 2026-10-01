@@ -54,7 +54,6 @@ created: "2026-05-10"
 | Backup / upgrade | PostgreSQL + Storage + config/functions + Auth/secret reference가 하나의 recovery set을 이루며, upstream update config backup만으로는 부족하다. |
 | License / edition | self-hosted stack은 저장소에 문서화된 라이선스를 가진 구성 요소를 결합하므로, 재배포나 managed-service 사용 전에 정확한 구성 요소/이미지 집합을 검토해야 한다. |
 
-
 ### Identity-specific behavior
 
 13 개 image tag 는 독립 선택이며 upstream-tested bundle 로 확인되지 않았다. db 의 pg_isready 외 process `kill -0 1` health 는 API/auth/migration 성공을 뜻하지 않는다. Compose `_FILE` 선언은 image 가 이를 처리한다는 증거가 아니다. auth/rest/realtime/storage/meta/analytics/supavisor 의 DB/JWT/config wiring, Kong temp.yml 의 실제 loader, edge-runtime function serve command, pooler.exs 적용은 source 만으로 완결되지 않는다. private host files 는 미열람이며 secret-safe adapter/config 검증 전 operational acceptance 는 중단한다. host5432/6543 은 supavisor 이고 db 직접 게시가 아니다. storage files 와 DB metadata 는 같은 recovery point 로 보존한다. vector 의 ro Docker socket 도 Docker API 접근 권한이므로 read-only 파일 표기만으로 무해하지 않다.
@@ -77,7 +76,6 @@ created: "2026-05-10"
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-
 ### Usage Type
 
 `system-guide | operational-reference`
@@ -96,7 +94,6 @@ created: "2026-05-10"
 ### Prerequisites
 
 현재 source의 `_FILE`/DB URL/config loader/start command 수용은 image별로 미완결·미검증이다. named secret 파일이 있다는 이유만으로 정상 구성이라 판단하지 않는다. 별도 source 수정과13개 기능 경로의 격리 검증 전 운영 활성화/복구 승격은 중단한다.
-
 
 - 프로젝트 루트에 저장소가 checkout되어 있어야 한다.
 - 로컬 또는 승인된 인프라 host에서 Docker Compose에 접근할 수 있어야 한다.
@@ -142,7 +139,6 @@ created: "2026-05-10"
 - `supabase_anon_key`, `supabase_service_key`, JWT secret, dashboard credential, SMTP 비밀번호, 데이터베이스 비밀번호를 문서나 증거에 기록하는 것.
 - 생성된 Kong 또는 데이터베이스 config를 문서 전용 상태로 취급하는 것 — 이 config는 `${DEFAULT_DATA_DIR}`에서 마운트되는 runtime 구성이다.
 - self-hosted update config backup을 데이터베이스나 Storage backup으로 사용하는 것 — upstream 문서는 update backup을 구성 전용으로만 설명한다.
-
 
 ## Common Checks
 

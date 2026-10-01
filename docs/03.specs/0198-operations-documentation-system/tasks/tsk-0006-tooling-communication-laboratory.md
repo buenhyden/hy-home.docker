@@ -82,7 +82,6 @@ The seven definitions below were inspected body-by-body, including installed pac
 
 Do not manufacture a digest, full dependency lock, runtime version, proven secret-file support for a mutable upstream image, or selected Terraform engine version inside Terrakube. Record these uncertainties in Task and restrict operations claims accordingly.
 
-
 ### Official declared-version evidence
 
 This is dated execution evidence, not a second live service registry. MATCH means a corresponding official source/release was retrieved, not that the deployment or every feature works. Release identity evidence applies to each named service and all topic cells below; implementation-specific behavior comes from the audited source.
@@ -130,7 +129,6 @@ All sources below were retrieved. Release/metadata evidence confirms published s
 | JupyterLab | `optuna==4.6.0` | [v4.6.0](https://github.com/optuna/optuna/releases/tag/v4.6.0), release | Exact release; storage/driver integration untested. |
 | MLflow | `psycopg2-binary==2.9.10` | [release metadata](https://pypi.org/pypi/psycopg2-binary/2.9.10/json), info.version / requires_python / files | Exact Psycopg 2 package; separate from Jupyter Psycopg 3. GitHub release candidate URL failed; publisher metadata retrieved instead. |
 | MLflow | `boto3==1.36.26` | [release metadata](https://pypi.org/pypi/boto3/1.36.26/json), info.version / requires_dist | Older direct SDK than Jupyter's 1.43.75. Different containers are not automatically incompatible, but do not claim identical SDK behavior. |
-
 
 ### Contradictions and source nonconformance disposition
 
@@ -282,15 +280,13 @@ Subject scope is redistributed across 06-observability, 04-data, 08-ai and 12-an
 - Shell set-eu stops at first failed phase; three summaries are not guaranteed. CI wrapper exit 2 can indicate unavailable Docker, not just parse errors; xargs/wrapper exit can differ from Conftest's own status. Record phase and actual failure, not invented unique diagnosis.
 - Stateless no-network job has no daemon health, web endpoint or application backup; policy source/history and reports still have ownership/retention. Guide explains coverage/normal usage, Policy constrains reviewed exceptions and offline mounts, Runbook owns approved execution/upgrade/failure triage.
 
-
 ### Additional official behavior evidence
 
-- MLflow v3.16.1: https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/store/tracking/sqlalchemy_store.py — constructor initializes missing tables then verifies schema; delete_run invokes a lifecycle deletion routine rather than deleting artifact storage.
-- MLflow v3.16.1: https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/store/db/utils.py — `_verify_schema` rejects an existing revision mismatch and instructs an explicit backup/migration step. This supports correction of automatic-upgrade claims, not execution of a migration.
-- MLflow v3.16.1: https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/server/handlers.py — `_delete_run` delegates tracking-store deletion; no artifact removal in this request handler.
-- systemd v255: https://raw.githubusercontent.com/systemd/systemd/v255/man/systemd.timer.xml — Persistent timer activation catches a missed schedule, subject to configured randomized delay. This matches the documented historical host version; current installed host version was not inspected.
+- MLflow v3.16.1: <https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/store/tracking/sqlalchemy_store.py> — constructor initializes missing tables then verifies schema; delete_run invokes a lifecycle deletion routine rather than deleting artifact storage.
+- MLflow v3.16.1: <https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/store/db/utils.py> — `_verify_schema` rejects an existing revision mismatch and instructs an explicit backup/migration step. This supports correction of automatic-upgrade claims, not execution of a migration.
+- MLflow v3.16.1: <https://raw.githubusercontent.com/mlflow/mlflow/v3.16.1/mlflow/server/handlers.py> — `_delete_run` delegates tracking-store deletion; no artifact removal in this request handler.
+- systemd v255: <https://raw.githubusercontent.com/systemd/systemd/v255/man/systemd.timer.xml> — Persistent timer activation catches a missed schedule, subject to configured randomized delay. This matches the documented historical host version; current installed host version was not inspected.
 - Requests for a raw MLflow cli.py and live systemd man-page variants failed; no claim relies on those failed retrievals. Supplied version/Stalwart packets remain the authority for previously completed release/CLI research. Mutable images and unresolved exact base component versions remain explicitly uncertain.
-
 
 ### Nine-topic matrix and final content owners
 
@@ -458,7 +454,6 @@ final locator tuples verified, Task Hangul zero and historical payloads4/4 exact
 Reviewed Task SHA2173765a2e0b9869e14a1deecaf4b94ba26f18e151fdf122baf2c043a562ee73
 precedes this receipt-only integration update. Combined gate and runtime remain
 separate; no source/security implementation remediation is claimed.
-
 
 Independent source/security review by platform_ops_final_review corroborated Stalwart listener scope, Terrakube CLI/executor blockage, Dozzle socket authority/native OIDC, RedisInsight peer paths, MLflow gateway/direct SDK difference and Jupyter cookie uncertainty. This is factual source review, not final 67-leaf acceptance and not security remediation approval. The initial independent full-batch review requested corrections; final incremental acceptance was pending at that checkpoint and is recorded above. No finding is declared independently closed solely by author self-check.
 

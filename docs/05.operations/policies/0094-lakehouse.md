@@ -49,7 +49,6 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
   `remove_orphan_files` 테이블 프로시저도 동일하다.
 - 불변 build input과 호환성 검토를 요구한다. 현재 checksum은 Flink5개/Spark2개 JAR ADD만 고정하며 base image tag·OS/Python 의존성은 불변 lock이 아니다. Flink/Spark Iceberg를 함께 검토하고 Trino는 자체 내장 connector version과 상호 읽기/쓰기를 검증한다. 현 Flink Hadoop3.5.0은 Iceberg1.11 baseline3.4.3과 달라 통합 검증이 필요하다.
 
-
 ### Accountable lifecycle boundary
 
 적용 identity: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.

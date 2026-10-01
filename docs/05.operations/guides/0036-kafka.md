@@ -67,7 +67,6 @@ provider 파일을 참조하는 connector를 생성할 수 있으므로, 익명 
 여전히 인증 없이 포트 8083에 직접 접근할 수 있다. 이 내부 경로는 기록된
 gap이다.
 
-
 ### Identity-specific behavior
 
 Kafka CP8.3.2 는 4.3 family 이며 broker1 은단일/cluster selector, broker2/3 은 cluster 전용이다. RF3 의 kafka-init 는 3healthy brokers 가 필요하여 단일 selector 의완료를 보장하지 않는다. KRaft combined role 와 PLAINTEXT client/controller/JMX 는 TLS/auth 제공이 아니다. exporter 는 lag 관측, Schema Registry 는 schema-ID history, Connect 는내부 offset/config/status, REST 는 HTTP 변환, Kafbat 는 nativeOIDC/RBAC 로 각각 다르다. Debezium helper 는 mng-pg feature grants 를 변경하고 connector JSON 은자동 등록되지 않는다. Connect built3.6.3 PG plugin 만 복사하며 CP8.3 family 정렬은커스텀 통합 인증이 아니다. JMX YAML 이 있어도 agent/JAR 경로와 scrape 성공은별도 확인한다.
@@ -86,7 +85,6 @@ Kafka CP8.3.2 는 4.3 family 이며 broker1 은단일/cluster selector, broker2/
 | `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Images, configuration and resource controls
 
@@ -192,7 +190,6 @@ REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검
 - [Kafbat configuration](https://ui.docs.kafbat.io/configuration/configuration-file)
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
-
 
 ## Common Checks
 

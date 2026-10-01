@@ -103,7 +103,6 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 - **수명 주기·복구**: backup 대상은 gateway memory가 아니라 producer 정의와 metric 계약이다. restart/rebuild 후 producer는 현재 유효한 metric만 다시 push한다. 오래된 관찰 결과를 재전송하지 않는다. upgrade할 때 API/label 호환성을 확인한다.
 - **공식 문서·license**: 공식 [Prometheus Pushgateway 저장소](https://github.com/prometheus/pushgateway)를 따른다. Pushgateway에는 Apache-2.0 license가 적용된다.
 
-
 ## Common Checks
 
 - `docker compose --profile obs ps pushgateway`

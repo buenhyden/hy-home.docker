@@ -40,6 +40,8 @@ and retained native execution plus independent review.
 
 ### Authorized delivery and runtime reconciliation
 
+PR325 hosted run `36840244725` passed the preceding validation suites but failed the registered Markdown formatter because it changed document bytes. Applied the registered formatter to all326 changed Markdown files and escaped the literal shell OR operator in the Task1980004 evidence table. Two subsequent lint passes report zero errors; no operational instruction, lifecycle state, validator or protection is changed. The required hosted gate will be rerun on the repair commit.
+
 PR325 first hosted attempt (`36838896437`) failed metadata comparison against
 `c26bc8026254dffd7d51fc45b4081a1f80f855f2`: nineteen W5 Runbooks introduced an
 unregistered H2 `Execution Boundary`. Local full validation passed but did not
@@ -51,7 +53,6 @@ Independent integration review ACCEPTED the exact nineteen transformations.
 Explicit `check-document-metadata.py --mode check-changed --base-ref origin/main`
 then passed: selected332, violations0, no exceptions or transition overrides.
 
-
 W7 follow-on independent review: `/root/runtime_relocation_review` ACCEPTED the
 written Spec/Plan amendment and seven-target operation. Before mutation, two
 byte-identical public source files were preserved under
@@ -62,11 +63,9 @@ S3 rollback explicitly reuses its captured existing anonymous volume through
 an external-volume name. Secret bindings and other configuration remain inherited.
 These are prepared recovery inputs, not an executed rollback or deployment.
 
-
 Delivery exception: the user explicitly approved `ECC_SKIP_PRECOMMIT=1` for the single implementation commit after the global ECC hook misclassified four renamed-file public variable references. Independent security review proved unchanged psql/shell/environment references and no credential values; staged Gitleaks passed after rendering eight public secret IDs as individual backticked references. No scanner configuration or subsequent hook is bypassed. The ordinary first commit attempt remains a recorded hook-blocked attempt.
 
 Operational preflight: six of seven old-source Compose hashes exactly match the running containers. Dozzle differs only by an already-existing image version gap (declared v11.1.1, running v11.1.0): overriding that image reference alone restores the live config hash. Preserve the current v11.1.0 image for this label-only reconciliation; its local tag resolves to the captured live image ID. All seven existing image references resolve to their captured live IDs. This task does not authorize an unrelated Dozzle upgrade.
-
 
 On2026-10-01 the user explicitly approved operational application, commit/push/PR merge to `buenhyden/hy-home.docker` main, main/origin alignment, removal of the delivered development branch/worktree, and terminal completion of SPEC0197/0198 followed by verification of SPEC0194 completion. This supersedes the earlier source-only delivery boundary for this follow-on action. The remote required check is `validation-changed` (strict); zero approving reviews and no enforced CODEOWNER review were read back. No protection bypass or direct main push is authorized by the delivery procedure.
 
@@ -75,9 +74,6 @@ Runtime scope is the existing Compose deployment affected by the approved35 pack
 Value-free runtime preflight found99 service identities in moved Compose files,12 currently running in project `hy-home-infra`. Independent operational review limits recreation to seven: `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, then `registry`, `dozzle`, `redisinsight`. The other five (management PostgreSQL/Valkey, their exporters and Qdrant) have no relocated source mounts or changed tier labels and retain their containers. Existing image IDs and mount identities were captured without environment/command/secret output. SeaweedFS S3 has an anonymous `/data` volume; its exact identity must survive. Old bind sources are tracked, unchanged public files. Before execution compare old production service config hashes with live labels, confirm local image resolution equals recorded image IDs, and validate the new source. Use explicit targets with `--no-deps --no-build --pull never --force-recreate --wait`, one at a time, with existing healthchecks. No down/renew-anon-volumes or broad profile startup. Restore only a failed target using preserved pre-merge source and image; do not restore data or credentials.
 
 Installed `hyhome-backup.service` still names the old source token and the timer is enabled/active waiting. Its root-owned0644 file is not writable; noninteractive sudo currently requires authentication. Prepare the exact token-only unit change, preserve timer state, validate and daemon-reload without starting a backup. This host permission constraint is not permission to bypass host authorization.
-
-
-
 
 Expanded source inventory: eighteen packages/twenty-seven Compose identities
 (Tooling11/17, Communication2/3, Laboratory5/7). Selected builds cover eight
@@ -371,8 +367,6 @@ paths after the W6 README check reproduced six further violations. Original
 active records remain in Git; these new-path draft registrations do not claim
 runtime acceptance. No lifecycle bypass or validator change. Move the tier table into the existing Structure section to
 avoid introducing an unregistered top-level heading. Content remains intact.
-
-
 
 Capability ownership determines placement; dependencies, activation profiles and
 container counts alone do not establish a tier. Package and helper cohesion,

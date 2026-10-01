@@ -31,7 +31,6 @@ Cassandra 단일 노드 선택 서비스의 장애 증거를 빠르게 수집하
 - `cassandra-exporter`가 Cassandra health 이후에도 metrics endpoint를 제공하지 않을 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-
 ### Execution and stop boundary
 
 대상: `cassandra-exporter`, `cassandra-node1`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
@@ -105,7 +104,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ### Planned Isolated Restore Rehearsal
 
 아래 SSTable 계약은 보존 요구이며 현재 activation/restore는 BLOCKED다. 공식 image의auth와actualdata경로를 먼저 별도 source 변경으로 맞추고 기존 anonymous-volume 소유권을 승인된 방식으로 확정해야 한다. mounted Bitnami 경로의backup을현재data라고 가정하지 않는다.
-
 
 1. 사전 승인과 유지보수 창을 확보하고 source release, keyspace/schema/replication, `nodetool status`, token/topology, snapshot tag를 기록한다. `/run/secrets/cassandra_password` 값은 evidence에 남기지 않는다.
 2. 승인된 source에서 flush 후 `nodetool snapshot -t <backup-id>`를 수행한다. 각 keyspace/table snapshot SSTable, generated `schema.cql`, manifest/checksum을 하나의 immutable backup set으로 보존한다. running data directory를 `cp`하지 않는다.

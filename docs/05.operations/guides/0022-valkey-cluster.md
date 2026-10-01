@@ -49,7 +49,6 @@ node-local cluster identity이다. resource limit과 health check는 공유
 Compose template에서 오며 선택하기 전에 렌더링된 root configuration에서
 점검해야 한다.
 
-
 ### Identity-specific behavior
 
 노드 0/1/2/3/4/5 는 각 PORT·announce address·bind volume·client/bus port 가 다르고 같은 template/security 를 공유한다. init script 는 6379~6384 를 고정 사용하므로 변수로 port 를 바꿨다고 helper 가 자동 따라오지 않는다. 이미 비어 있지 않은 nodes 상태를 보면 exit0 할 수 있어 init 성공만으로 slot16384/replica 건강을 보장하지 않는다. exporter 는 node0 하나를 target 한다. engine9.1.2 와 exporter1.91.1 release 는 별개이며 AOF/RDB 와 fresh cluster identity 복원 계약은 유지한다.
@@ -66,7 +65,6 @@ Compose template에서 오며 선택하기 전에 렌더링된 root configuratio
 | `valkey-node-5` | cluster node 5; 고유 port/announce/node-local persistence | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/valkey-cluster/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Images, configuration and resource controls
 
@@ -122,7 +120,6 @@ BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유�
 - [Valkey Cluster tutorial and security boundary](https://valkey.io/topics/cluster-tutorial/)
 - [Valkey security](https://valkey.io/topics/security/)
 - [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
-
 
 ## Common Checks
 

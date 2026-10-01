@@ -40,11 +40,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `alertmanager`를 처음 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. 알림 대상은 현재 Slack이며 SMTP secret도 renderer 입력으로 필요하다. 상태 점검 뒤 별도 승인한 합성 알림의 실제 도착을 확인한다. 정지 전 silence·notification 상태를 보존하고 운영 알림의 중단 영향을 승인받는다.
-
 
 ### Checklist
 
@@ -145,14 +143,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. Alertmanager 상태 복구에 성공했다고 주장하지 않는다.
 
 1. 알림 전송을 비활성화하거나 test receiver로 돌린다. image/config digest와 silence 목록을 기록하고 Alertmanager를 중지한 뒤, 일관된 상태의 `alertmanager-data` snapshot을 생성한다. template과 secret 참조도 보존한다.
 2. test 전용 credential을 사용하고 운영 route가 없는 별도 project/network에 복구한다. config 검증 후 Alertmanager를 시작한다.
 3. secret 값을 노출하지 않고 readiness, source alert 수신, silence 보존, inhibition/grouping, notification-log 동작과 통제된 test 알림 전송 1회를 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 route/state 교체는 별도로 승인받는다.
-
 
 ## Evidence
 

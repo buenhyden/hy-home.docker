@@ -97,7 +97,6 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 - timeout·`proxy_next_upstream`·`max_fails/fail_timeout`을 확인하되 단일 upstream을
   다중 노드 failover로 보고하지 않는다. 실패 시 트래픽 전환을 멈춘다.
 
-
 ## Evidence
 
 시각, source revision, 승인 대상, lint 종료 상태, HTTP/HTTPS 구분, route별

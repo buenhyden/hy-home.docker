@@ -44,11 +44,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 처음 기동하거나 이미지를 바꾸기 전에 DB·실제 선택 broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하지만 HTTP healthcheck는 없고 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
-
 
 ### Checklist
 
@@ -84,7 +82,6 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 2. 선택된 host/secret pair가 shared인지 dedicated인지 확인하고 [Valkey Runbook](0028-management-database.md)의 값 비노출 인증 점검을 따른다. DB/broker가 준비되지 않으면 중단한다. Profile은 선택 증거가 아니다.
 3. Celery worker 응답 확인: `docker compose exec airflow-apiserver celery --app airflow.providers.celery.executors.celery_executor.app inspect ping`. Remote control이 허용된 worker의 응답이 없으면 실패로 기록하고 원인을 먼저 진단한다.
 4. 스케줄을 pause하고 실행/예약 태스크와 외부 부작용을 조정한 뒤 승인된 worker 재시작만 수행한다: `docker compose restart airflow-worker`. 자동 재실행이나 task clear를 복구 전제로 삼지 않는다.
-
 
 5. Flower(`flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
 
@@ -154,7 +151,6 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 ### Planned isolated restore rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
-
 
 상태: **계획됨·미실행**. 이 문서는 Airflow 복원 성공 증거를 주장하지 않는다.
 

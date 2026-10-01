@@ -41,7 +41,6 @@ created: "2026-05-10"
 | Health and resources | engine health는 yellow 이상이 필요하다. Dashboards는 `200` 또는 `401`을 수용한다. Primary는 2 CPU/2 GiB를 상속한다. 각 cluster node도 2 CPU/2 GiB를 상속하므로 선택 시 resource 부담이 크다. |
 | Backup and upgrade | 등록된 repository와 함께 snapshot API를 사용한다. security index는 제외하고 security configuration은 별도로 보존한다. 호환되는 격리 topology로 restore한 뒤 security config를 신중하게 적용한다. engine/Dashboards 버전을 변경하기 전에 문서화된 upgrade path를 검토한다. |
 
-
 ### Identity-specific behavior
 
 OpenSearch custom FROM3.8.0 에 exporter3.5.0.0 을 설치하므로 공식 exact patch 호환 규칙과 불일치한다. 네 built node 모두 source nonconformance 이며 현재 build/monitoring 을 정상으로 인정하지 않는다. 기본 opensearch 만 copied secret-rendering wrapper 를 사용한다. cluster node1/2/3 는 base entrypoint 와 별도 bash command 이며 node1 의 certificate mount 와 node2/3 의 부재가 다르다. cluster 의 `./config/userdict_ko.txt` 참조는 tracked `opensearch/config/userdict_ko.txt`와 불일치한다. cluster data 는 Docker named volume 이며 primary bind 와 다르다. Dashboards 의 기본 backend 는 primary opensearch 다; cluster profile 만 켜도 자동 전환되지 않는다. 같은 router 이름의 두 topology 를 동시에 활성화하지 않는다. private host security config 와 실제 certificate/readiness 는 미확인이다.
@@ -55,7 +54,6 @@ OpenSearch custom FROM3.8.0 에 exporter3.5.0.0 을 설치하므로 공식 exact
 | `opensearch-node3` | cluster 3; base entrypoint, 개별 named data; node1만 cert mount | 선언된 HTTP health; build/plugin/config 충족은 미검증 | [선택·의존·접속·입력·mount](../../../infra/04-data/opensearch/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Usage Type
 
@@ -101,7 +99,6 @@ OpenSearch custom FROM3.8.0 에 exporter3.5.0.0 을 설치하므로 공식 exact
 - admin password를 command line literal이나 문서에 남기는 경우
 
 - 인덱스는 도메인별 패턴을 따른다(예: `logs-*-*`).
-
 
 ## Common Checks
 

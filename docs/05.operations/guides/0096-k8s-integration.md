@@ -101,7 +101,6 @@ UI는 현재 SSO redirect302 경로다. TLS·DNS 실패000을 인증 거절로 �
 registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을 만들 수 있다.
 정적 문서 검증은 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의 공개/sanitized 경계를 따른다.
 
-
 - `bash scripts/operations/gen-secrets.sh --sync-metadata-check` (종료 코드 0)
 - `bash scripts/hardening/check-all-hardening.sh` (라우트, 정책, 미들웨어 고정)
 - `docker network inspect k3d-hyhome --format '{{range .Containers}}{{.Name}} {{end}}'`는 `k3d-hyhome-*` 컨테이너만 나열

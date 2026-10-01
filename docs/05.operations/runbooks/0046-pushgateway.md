@@ -40,11 +40,9 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `pushgateway`를 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. `batch-metrics`도 선택 경로지만 HOME 편입 근거가 아니다. 정지·재시작은 모든 메모리 지표를 잃으므로 producer 소유자가 손실을 승인하고 현재 관측만 제한적으로 다시 보낸다. 업무 배치를 재실행해 지표를 복구하지 않는다.
-
 
 ### Checklist
 
@@ -127,14 +125,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. Pushgateway에는 복구할 영속 service state가 없다.
 
 1. image/config identity, producer 목록, grouping-key/metric 계약, Prometheus target label과 현재 optional runtime 관찰을 기록한다. 메모리 내용을 신뢰할 backup으로 내보내지 않는다.
 2. test Prometheus가 있는 격리된 project/network에서 추적 중인 Compose를 사용해 다시 생성한다. 통제된 producer에서 합성한 현재 metric만 push한다.
 3. health, push/delete 의미, scrape label, 오래된 group 정리와 재시작 시 예상되는 손실을 검증한다. volume이나 `--persistence.file`이 추가되지 않았는지 확인한다.
 4. 불일치가 있으면 격리된 optional service를 중지하고 config/image를 되돌린다. 운영 환경에서의 활성화나 producer 변경은 별도로 승인받는다.
-
 
 ## Evidence
 

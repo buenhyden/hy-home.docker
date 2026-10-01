@@ -58,6 +58,7 @@ created: "2026-06-04"
 
 > Historical evidence (not current authority; source: Git history):
 > Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0001 Exceptions.
+>
 > - 2026-03-28 기준 승인된 서비스 예외:
 >   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
 >   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`

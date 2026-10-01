@@ -51,7 +51,6 @@ Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino
   tmpfs를 둔 읽기 전용 루트; 네트워크는 `edge_net`(Traefik, Keycloak
   별칭), `mng_data_net`(`mng-pg`), `object_net`(Trino)이다.
 
-
 ### Identity-specific behavior
 
 Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn command,init 는 db upgrade/init/Trino URI 등록을실행한다. provision 은 PG18.6 runner 로별도 metadataDB/role 을만든다. sharedPG 의복원은다른 consumer 에도영향을준다. KeycloakOIDC/PKCES256/Gamma 등록은유지하고 Admin identity 매칭은별도검증한다. Secret signing key 는 encrypted metadata 연결복원에도필요하다. Trino URI 의 superset user 는무인증 SQL 의표시값이며 DB 권한경계가아니다. 직접 packagepin 은 transitivelock 이아니며/health 는 OIDC/SQLquery 증거가아니다.
@@ -64,7 +63,6 @@ Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn co
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-
 ### Commands and side effects
 
 | Command | Effect |
@@ -73,7 +71,6 @@ Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn co
 | `docker compose --profile bi --profile lakehouse up -d superset trino` | 동일하되 레이크하우스 엔진도 쿼리에 쓸 수 있게 함 |
 | `docker compose --profile bi run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
 | `docker compose --profile bi exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
-
 
 ## Common Checks
 

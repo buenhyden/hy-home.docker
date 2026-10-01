@@ -50,7 +50,6 @@ master, volume, filer는 internal network에서 scrape되지 않는다. Alert:
 `SeaweedFSS3Down`(target down 2분)과 `SeaweedFSDataDiskLow`(node-exporter
 기준 data-disk filesystem free 15% 미만 10분).
 
-
 ### Identity-specific behavior
 
 master 는 topology/volume 배정, volume 은 객체 bytes, filer 는 metadata/leveldb2 를 보존한다. s3 는 secret 에서 생성한 tmpfs config 와 gRPC mTLS 를 쓰며 네트워크 3 개에 참여한다.4.47 catalog8181 도 같은 s3 process 의 0.0.0.0 에 bind 되어 edge_net/seaweed_internal/object_net peer 가 접근 가능하다. host mapping/catalog router 는 없고 데이터 관리 route 는 인증 middleware 로 감싼다. object_net-only 요구는 미준수로 별도 구현 수정이 필요하다. buckets job 은 admin 으로 bucket 을 생성하며 table-bucket 은 GDE0094 소유다. 익명 CDN read 예외를 전체 anonymous 거부로 설명하지 않는다. 인증서 교체는 모든 peer 의 새 CA/leaf 수용을 검증한 승인 작업이다.
@@ -64,7 +63,6 @@ master 는 topology/volume 배정, volume 은 객체 bytes, filer 는 metadata/l
 | `seaweedfs-volume` | object bytes 보존; 최소 여유 공간에서 write 거부 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/seaweedfs/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Consumers, buckets and migration
 
@@ -143,7 +141,6 @@ SeaweedFS의 license는 Apache-2.0이다.
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
-
 
 ## Common Checks
 

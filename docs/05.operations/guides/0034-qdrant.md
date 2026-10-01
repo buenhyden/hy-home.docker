@@ -37,7 +37,6 @@ created: "2026-05-10"
 | Backup·upgrade | 약 2x의 disk 용량으로 같은 minor 또는 다음 minor 대상에 snapshot을 복구한다. 승격 전에 collection/alias/count를 검증한다. |
 | License·edition | Qdrant source에는 Apache-2.0이 적용된다. managed-cloud 기능은 이 self-hosted single-node 계약에 포함되지 않는다. |
 
-
 ### Identity-specific behavior
 
 Qdrant1.19.1 unprivileged 는 API key/read-only key 파일 참조를 사용한다. `/readyz`는 health-only 이며 collection authorization/search correctness 가 아니다. snapshot 은 `/qdrant/storage`와 같은 data disk 에 있으므로 별도 암호화 사본이 필요하다. 같은/다음 minor 복원과약 2 배 여유라는 upstream 범위도 original collection/version/config/alias 검토를 대신하지 않는다. snapshot/force overwrite·key rotation·collection 삭제는 승인된 target 에만 수행한다.
@@ -47,7 +46,6 @@ Qdrant1.19.1 unprivileged 는 API key/read-only key 파일 참조를 사용한�
 | `qdrant` | vector collections; local snapshot은 off-disk backup 아님 | readyz; API key/collection query 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/qdrant/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Usage Type
 
@@ -79,7 +77,6 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 - 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
-
 
 ## Common Checks
 

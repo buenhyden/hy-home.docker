@@ -200,7 +200,6 @@ identity headers, logout와 session 만료를 확인한다. 이전 image로 돌�
 cookie secret과 session-store endpoint를 동일하게 유지하거나 전 사용자 재로그인을
 선언한다. config 복구만으로 image/build 내용이 되돌아가지 않는다.
 
-
 Valkey session state를 잃었거나 호환되지 않으면 ForwardAuth를 fail-closed로 유지하고,
 검토된 endpoint와 credential 참조를 복구한 뒤 사용자에게 재인증을 요구한다.
 출처가 불명확한 시점의 오래된 session을 복구하거나 login을 유지하기 위해

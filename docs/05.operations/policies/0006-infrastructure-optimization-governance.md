@@ -28,6 +28,7 @@ created: "2026-06-04"
 
 > Historical evidence (not current authority; source: Git history):
 > Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0006 Policy Scope.
+>
 > - **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
 
 ## Controls
@@ -220,8 +221,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [registry](../../../infra/09-platform-ops/registry/README.md): 이미지 서명/검증(cosign) 도입, 취약점 스캔 실패 차단 정책 적용
   ([OPER](../guides/0065-registry.md), [RUN](../runbooks/0065-registry.md))
 
-
-
 - Syncthing runtime은 저장소에서 제거되었으며 현재 서비스 확장/하드닝 대상이 아니다. 기존 파일과 외부 동기화 상태는 제거된 Compose 서비스를 재기동하지 않고 소유자와 확인한다.
 
 #### 10-communication
@@ -230,9 +229,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
   ([OPER](../guides/0070-mail.md), [RUN](../runbooks/0070-mail.md))
 
 #### 11-quality
-
-
-
 
 - [sonarqube](../../../infra/11-quality/sonarqube/README.md): 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 관리
   ([OPER](../guides/0066-sonarqube.md), [RUN](../runbooks/0066-sonarqube.md))

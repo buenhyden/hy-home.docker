@@ -32,7 +32,6 @@ created: "2026-05-17"
 - token provisioning이 승인/검증되지 않았거나 write/read request가 `401` 또는 service unavailable 상태를 보일 때
 - database 이름, port `8181`, 또는 `/api/v3/write_lp` 경로가 current contract와 다를 때
 
-
 ### Execution and stop boundary
 
 대상: `influxdb`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

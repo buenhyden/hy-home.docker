@@ -89,7 +89,6 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 실패하면 새 설정 적용을 중단하고 아래 rollback으로 전달한다.
 
-
 ## Evidence
 
 시각·revision·승인 대상, 명령 exit, chain 멤버십, 정제된 health/route/metrics

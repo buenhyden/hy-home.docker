@@ -20,7 +20,6 @@ Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패�
 카탈로그가 오류를 반환하거나, 접근이 거부되거나, 잘못된 쓰기 이후 테이블
 롤백이 필요할 때 사용한다.
 
-
 ### Execution and stop boundary
 
 대상: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

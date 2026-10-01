@@ -41,7 +41,6 @@ created: "2026-05-10"
 | Backup·upgrade | replication을 우선한다. file backup은 쓰기를 멈춘 일관된 상태에서 생성해야 한다. 격리된 restore evidence를 확보한 후에만 upstream upgrade 순서를 따른다. |
 | License·edition | Apache CouchDB source에는 Apache-2.0이 적용되며 상용 clustering 기능을 가정하지 않는다. |
 
-
 ### Identity-specific behavior
 
 couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin secret 을 읽는 startup command 를 공유한다. `_up`은 membership/quorum 확인이 아니다. curl8.22 init 는 일부 HTTP 오류/command 실패를 `|| true`로 무시하고 마지막 echo 로 종료하므로 exit0 을 bootstrap 성공으로 인정하지 않는다. `_membership`의 all_nodes/cluster_nodes 와 system DB 를 별도 검증한다. profile 의 3nodes 는 한 host 이며 host HA 가 아니다. 재실행은 cluster setup mutation 으로 사전 승인한다.
@@ -54,7 +53,6 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 | `couchdb-cluster-init` | HTTP cluster setup job; 오류 무시 때문에 exit0만으로 성공 판정 금지 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/couchdb/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Usage Type
 
@@ -86,7 +84,6 @@ CouchDB HTTP API, cluster-init job, Traefik sticky routing, Docker Secret 기반
 - Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
 - 클러스터 init은 [curlimages/curl image declaration](../../../infra/04-data/couchdb/docker-compose.yml) 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 - backup/restore는 database 단위 replication을 우선한다. file backup이 승인되면 config와 cluster metadata를 보존하고 upstream 순서대로 index files를 database files보다 먼저 복원한다.
-
 
 ## Common Checks
 

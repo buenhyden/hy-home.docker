@@ -31,7 +31,6 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 - etcd node, PostgreSQL node, exporter, or `pg-cluster-init` 상태가 unhealthy/stopped일 때
 - PostgreSQL cluster operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-
 ### Execution and stop boundary
 
 대상: `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`, `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-cluster-init`, `pg-router`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

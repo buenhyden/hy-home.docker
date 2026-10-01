@@ -31,7 +31,6 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 - `mongo-express` route 또는 `mongodb-exporter` readiness를 확인해야 할 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-
 ### Execution and stop boundary
 
 대상: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-exporter`, `mongodb-rep1`, `mongodb-rep2`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
@@ -88,8 +87,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    ```bash
    docker compose logs --tail=80 mongo-express
    ```
-
-
 
 source health/init/exporter의 기존 password argv 노출은 이 문서 수정으로 고쳐지지 않았다. 별도 구현 변경과 검증이 필요하다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. Mongo exporter의 long-lived credential URI argv도 잔여 위험이다. member name/state만 기록한다.
 

@@ -33,7 +33,6 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 - JWT rotation, dashboard 비밀번호 재설정, storage 용량, 또는 DB restore를 검토 중이며 변경 전 evidence가 필요한 경우.
 - 연결된 Supabase 운영 문서나 compose 참조가 변경되어 로컬 검증 evidence가 필요한 경우.
 
-
 ### Execution and stop boundary
 
 대상: `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

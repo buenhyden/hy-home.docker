@@ -33,7 +33,6 @@ created: "2026-07-22"
 
 Task 2의 local runtime handoff SHA-256 `7b95d095764ede50585e8aa267483539c39e652e94a911bdc84fabb416ee6edf`는 readiness semantics boundary를 설명하는 upstream evidence일 뿐 이 데이터 복구 rehearsal의 operational prerequisite가 아니다. 이 런북은 그 handoff의 존재 또는 내용에 의존하지 않는다.
 
-
 ### Scope separation from actual HA recovery
 
 이 harness는 `examples/`의 digest-pinned PostgreSQL17.11→18.4와 fixture 한 DB만 다룬다. `--no-owner --no-acl`이며 globals/전체 DB/extension inventory/Patroni/etcd/pg-router를 복원하지 않는다. [RUN-0031](0031-postgresql-cluster.md)의 실제 HA 계약을 만족시키거나 HOME restore를 승인하지 않는다. 아래2026-07-22 기록은 그 날짜의 synthetic evidence이며 현재 source pin에 대한 새 runtime 관측이 아니다. 이미 검증된 exact-owner cleanup만 wrapper가 소유하고, 일반 실패 target 자동 삭제로 범위를 확장하지 않는다.

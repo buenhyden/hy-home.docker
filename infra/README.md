@@ -135,7 +135,6 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 | **11** | **Quality** | [k6](./11-quality/k6), [Locust](./11-quality/locust), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
 | **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL / LAB |
 
-
 ```text
 infra/
 ├── 01-gateway/        # Edge Routing & SSL Ingress

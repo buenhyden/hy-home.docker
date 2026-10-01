@@ -22,7 +22,6 @@ backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 �
 R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사용한다. service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
-
 ### Execution and stop boundary
 
 대상: `restic`, `restic-offsite`, `backup-sqlite-export`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

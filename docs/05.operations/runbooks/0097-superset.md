@@ -18,7 +18,6 @@ created: "2026-09-23"
 
 최초 설정, 로그인 실패, 웹 서버가 healthy 상태가 되지 않을 때, 또는 업그레이드할 때 사용한다.
 
-
 ### Execution and stop boundary
 
 대상: `superset-db-provision`, `superset-init`, `superset`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.

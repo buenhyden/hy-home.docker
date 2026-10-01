@@ -83,7 +83,6 @@ repository를 암호화한다. 이 값들은 host repository 내부에도 backup
 repository를 열려면 같은 Restic password가 필요하므로 두 값의 offline
 복사본을 이 host 밖에 보관한다. 이를 잃으면 모든 backup을 읽을 수 없게 된다.
 
-
 ### Identity-specific behavior
 
 restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune 는 각각 다른 쓰기 효과다. SQLite helper 는 세 DB Online Backup API 와 integrity check 로 staging 을 만들며 원본 WAL/SHM 처리를 위해 source mount 가 rw 다. local restic 은 network none, offsite 만 전용 outbound network 다. 전체 성공은 unit exit0·모든 export 와 check·timestamp 로 판단하고 partial snapshot/copy 는 실패를 지우지 않는다. detailed recovery/capacity/custody 는 RUN/POL-0021 의 계약을 따른다.

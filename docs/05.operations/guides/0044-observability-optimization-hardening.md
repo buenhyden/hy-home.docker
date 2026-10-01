@@ -82,7 +82,6 @@ created: "2026-05-17"
 - **백업·복구**: 추적 중인 Compose로 다시 구성하며 service state 복구는 필요하지 않다. dashboard/rule은 해당 exporter 밖에서 보존하고 변경 전 target/series 기준값을 기록한다.
 - **공식 문서·license**: [node_exporter](https://github.com/prometheus/node_exporter)와 [cAdvisor](https://github.com/google/cadvisor)의 upstream release/security 지침을 따른다. 두 도구 모두 Apache-2.0 license가 적용된다.
 
-
 ### cAdvisor and static-check limits
 
 cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는 privileged 관측기다. 공통 template이 capability를 제거한다고 격리를 보장하지 않는다. Disk metric 등 제외 collector, container label/cardinality와 보호 route를 유지한다. Health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 자체 애플리케이션 데이터나 Docker Secret은 없고 복구 대상은 승인된 image/config와 telemetry 기준이다.

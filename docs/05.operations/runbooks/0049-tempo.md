@@ -40,11 +40,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `tempo` 최초 기동의 `seaweedfs-buckets` 완료 의존성은 bucket provision을 실행할 수 있다. Bucket·정책·secret 준비는 RUN-0024가 소유한다. Monolithic 구성에는 Kafka를 추가하지 않는다. 요구 retention 미선언 상태를 수용 완료로 표시하지 않고, 입력을 중지하고 WAL·object store 복구 시점이 일치하는지 확인한 뒤 변경을 승인한다.
-
 
 ### Checklist
 
@@ -145,14 +143,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. Tempo bucket/WAL 복구에 성공했다고 주장하지 않는다.
 
 1. image/config digest, block/WAL 시간 범위, tenant/trace 기준값, bucket 목록, local-state identity와 checksum을 기록한다. Alloy/producer의 trace 입력을 일시 중단하고, 일관된 `tempo-bucket` snapshot과 정지 상태의 `tempo-data` 복사본을 함께 확보하도록 조율한다.
 2. test credential을 사용하고 운영 route가 없는 별도 project/network의 새 bucket/prefix와 local path에 복구한다.
 3. Tempo를 시작하고 readiness/WAL replay를 검증한다. 과거 trace를 조회하고 격리된 Alloy를 통해 새 label을 붙인 trace를 전송·조회한 뒤 Grafana와 metrics-generator 동작을 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 object/local backup으로 돌아간다. 운영 bucket/path/route 교체는 별도로 승인받는다.
-
 
 ## Evidence
 

@@ -308,7 +308,6 @@ Only existing catalog, metadata, links/language and scoped diff checks are used;
 - Runtime image/version/authentication/notification/GPU/load/build/restore acceptance: NOT_RUN.
 - Final exact61 metadata contracts: PASS, violations=0. Final links all: PASS, failures=0, the same single historical-link warning; focused language: PASS, failures=0. Scoped git diff --check: PASS. Catalog: PASS. Logs and SHA256 packet were generated for independent review; these are documentation checks only.
 
-
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1, 4 | W5 | All60 leaves,34 identities and306 topic cells reconciled | W5 role leaves and matrix above |

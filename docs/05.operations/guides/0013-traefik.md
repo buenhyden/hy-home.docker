@@ -90,7 +90,6 @@ metrics는 host에 게시하지 않으며, OTLP는 `tempo:4317`로 전달한다.
 backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file watch 대상이고,
 정적 단일 파일 변경은 [POL-0006 적용 통제](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)를 따른다.
 
-
 ### Step-by-step Instructions
 
 1. 미들웨어 파일 확인

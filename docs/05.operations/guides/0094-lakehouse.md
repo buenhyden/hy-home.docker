@@ -90,7 +90,6 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
   목록을 표시하고, `validate`는 expectation 실패 시 `1`, 검사할 수 없을
   때 `2`로 종료한다.
 
-
 ### Identity-specific behavior
 
 table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table delete 권한도 scoped identity 에부여한다. Flink JM/TM 은같은 fiveJAR build 지만 command/heap/slot/health 가다르며 TM 에는 healthcheck 가없다;JM overview 와 TM registration/jobcheckpoint 를따로확인한다. Spark 는 localone-shot 이며 Trino 는 single-node/noauthSQL 이다. GX 는 ephemeralcontext/list 기본값,0pass/1expectationfail/2unable 이며 Trino username 은권한제한이아니다. build 의 7JAR 만 checksum 고정이고 Hadoop3.5 와 Iceberg1.11baseline 차이는미검증이다. Flink checkpoint 와 catalog/object 를재생가능증거없이삭제하지않는다.
@@ -105,7 +104,6 @@ table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table de
 | `trino` | single-node SQL; username은 인증/권한 경계 아님 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/12-analytics/trino/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Commands and side effects
 
@@ -130,7 +128,6 @@ table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table de
 | `SET 'execution.runtime-mode' = 'batch'; INSERT INTO dev.t …` | 테이블 메타데이터와 데이터 파일을 한 번 씀 |
 | `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지; 이전 체크포인트에서 커밋된 데이터는 유지 |
 | `docker compose --profile lakehouse run --rm --no-deps great-expectations validate [SUITE...]` | Trino를 통해 테이블을 읽음; expectation 실패 시 `1`로 종료 |
-
 
 ## Common Checks
 

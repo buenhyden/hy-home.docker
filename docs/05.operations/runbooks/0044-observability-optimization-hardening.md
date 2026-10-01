@@ -41,11 +41,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
-
 
 ### Checklist
 
@@ -133,7 +131,6 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 ### Planned isolated recovery rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
-
 
 상태: **계획됨·미실행**. 이 무상태 exporter들은 자체 데이터 복원 대상이 없다.
 

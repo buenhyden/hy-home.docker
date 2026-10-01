@@ -95,7 +95,6 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 정상 신호는 lint 성공, TLS 응답, 필요한 경로와 인증의 개별 수용 결과이며,
 운영 절차는 Runbook이 소유한다.
 
-
 ### Step-by-step Instructions
 
 1. Compose 하드닝 확인

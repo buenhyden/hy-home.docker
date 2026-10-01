@@ -34,11 +34,9 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 최초 기동·재생성·upgrade·삭제 전 활성 image 경로와 실제 데이터 mount 대응을 별도로 입증해야 한다. 현재 `/opt`와 upstream `/root` 불일치가 해결되지 않아 완전한 백업·복구를 인증할 수 없다. 이 조건이 충족되기 전에는 image 교체나 volume 정리를 중단한다.
-
 
 1. 비공개 환경 값을 렌더링하지 않고 source boundary를 확인한다.
 
@@ -68,7 +66,6 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 ### Planned isolated restore rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
-
 
 상태: **계획됨, 미실행**. 여기서는 ComfyUI restore 성공 증거를 주장하지 않는다.
 

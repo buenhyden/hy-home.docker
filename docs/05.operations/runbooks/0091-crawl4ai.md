@@ -26,11 +26,9 @@ created: "2026-09-21"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `crawl4ai`는 자체 profile만으로 선택하며 token 준비 실패 시 wrapper가 종료한다. 재생성하면 tmpfs cache가 사라지므로 필요한 산출물은 먼저 승인된 위치에 보존한다. 작업을 drain한 뒤 중지하며 token 파일 교체는 기존 컨테이너 restart만으로 새 bind가 반영된다고 가정하지 않는다.
-
 
 1. 점검한다.
 

@@ -107,7 +107,6 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 - **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 health, OIDC login, Ollama model 목록과 통제된 RAG query를 검증한다. 일관된 SQLite/data-volume backup 전에 Open WebUI를 중지한다. upgrade할 때는 volume과 이에 맞는 secret을 보존하고 upstream migration을 검토한 뒤 version 경계를 한 번에 하나씩 변경한다. 이후 identity/chat/upload/OIDC를 검증하고, RUN-0057을 통해 서로 대응하는 local Chroma index와 upload를 확인한다. Qdrant 의존성은 선언되어 있지 않다.
 - **공식 문서·license**: 공식 [환경 설정](https://docs.openwebui.com/reference/env-configuration/), [SSO](https://docs.openwebui.com/features/authentication-access/auth/sso/), [update/backup](https://docs.openwebui.com/getting-started/updating/), [database migration](https://docs.openwebui.com/troubleshooting/manual-database-migration/) 지침을 따른다. 재배포하거나 수정하여 배포하기 전에 고정된 Open WebUI release의 license 조건을 확인한다.
 
-
 ### Local data and authentication boundary
 
 선언 릴리스는 `DATA_DIR/vector_db`의 Chroma를 기본으로 쓰며 Compose에는 외부 vector-store나 Qdrant 연결이 없다. SQLite·vector·upload·identity와 embedding-model 출처를 함께 보존한다. CUDA image 이름만으로 GPU가 할당되지는 않으며 WebUI에는 GPU 예약이 없다. 로컬 entrypoint는 한 줄 OIDC secret과 검증된 CA bundle을 읽고 인자가 없으면 upstream `bash start.sh`로 시작한다.

@@ -28,11 +28,9 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `gatus`는 승인된 source/patch build 결과, 선택 OIDC config, subject allowlist, client secret과 CA, sqlite volume 권한을 확인한 뒤 기동한다. Dockerfile의 test 선언은 실행 증거가 아니다. 교체·중지 전 sqlite 일관성을 확보하고 Keycloak·CA 유지보수는 공통 소유자에게 넘긴다.
-
 
 1. 렌더링된 환경을 출력하지 않고 공개 설정을 검증한다.
 
@@ -42,9 +40,9 @@ docker compose --profile availability ps gatus
 docker compose --profile availability exec -T gatus sh -ec 'wget -q -O /dev/null "http://127.0.0.1:${PORT}/health"'
 ```
 
-2. Public health/bootstrap와 protected status/history API를 구분해 인증을 확인하고, 승인된 세션을 통해 프로브 상태를
+1. Public health/bootstrap와 protected status/history API를 구분해 인증을 확인하고, 승인된 세션을 통해 프로브 상태를
    검토한다. 응답 본문, 토큰, 엔드포인트 크리덴셜을 증거에 복사하지 않는다.
-3. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
+2. 승인된 배포의 경우, 검토된 Compose 선택으로 `gatus`만 빌드하고 교체한다.
    컨테이너 헬스, UI 인증, 예상 프로브 이름을 별도로 검증한다. 예상치 못한
    마운트, 권한, 이미지 식별자를 발견하면 중단한다.
 
@@ -84,7 +82,6 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 ### Planned isolated restore rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
-
 
 상태: **계획됨, 미실행**. Gatus SQLite 복원에 성공했다고 주장하지 않는다.
 

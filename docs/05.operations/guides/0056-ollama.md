@@ -132,7 +132,6 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 명시적으로 승인된 model을 list/pull한다. `/api/tags`와 대표 inference를 검증하며 exporter/GPU 신호를 관찰한다. image나 model migration 전에 digest와 model 출처를 기록하고, model volume 또는 재현 가능한 manifest를 보존한다. 호환성 경계를 한 번에 하나씩 변경한 뒤 inference와 Open WebUI 연동을 다시 확인한다.
 - **공식 문서·license**: 공식 [Ollama 저장소](https://github.com/ollama/ollama)와 release note를 따른다. Ollama에는 MIT license가 적용된다. 각 model의 별도 조건도 기록하고 검토해야 한다.
 
-
 ### Model and exporter capacity boundary
 
 `ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.

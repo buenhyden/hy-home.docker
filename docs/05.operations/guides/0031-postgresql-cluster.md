@@ -48,7 +48,6 @@ created: "2026-05-10"
 | Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구하고 `RUN-0032`를 사용한다(synthetic single-DB rehearsal만 해당하며 HA globals/ACL/router 복원은 미구현). |
 | License·edition | PostgreSQL에는 PostgreSQL License가 적용된다. Spilo, Patroni, etcd, HAProxy와 exporter는 각각 별도 license가 적용되는 의존성이다. |
 
-
 ### Identity-specific behavior
 
 etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 identity/data 가 다르다. helper postgres18.6 은 server major 를 뜻하지 않는다. router3.4.4 는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이며 RUN0032 의 synthetic17→18 와 분리한다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
@@ -68,7 +67,6 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 | `pg-router` | write/read router + stats; backend readiness 별도 | HAProxy config syntax; write/read routing 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
-
 
 ### Usage Type
 
@@ -113,7 +111,6 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 - Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/patroni_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
 - logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
-
 
 ## Common Checks
 

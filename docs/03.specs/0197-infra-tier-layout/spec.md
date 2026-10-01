@@ -521,7 +521,6 @@ SPEC0194's already-completed record is verified afterwards without reopening it.
 
 The following paragraph records the original source implementation boundary:
 
-
 This is a repository migration, not deployment. The root Compose project,
 opt-in selectors and persistent data remain intact. Running containers are not
 recreated by the implementation task. Repository rollback restores moved

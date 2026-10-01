@@ -151,7 +151,6 @@ Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한
 - **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile workflow config --quiet`를 사용한 뒤, 대상별 기동과 upgrade는 [RUN-0050](../runbooks/0050-airflow.md)을 따른다. workflow 전체를 시작하면 n8n과 migration을 수행할 수 있는 초기화도 실행될 수 있다. pause/drain, 일관된 DB/artifact/key backup, migration, canary와 재개 결정은 Runbook이 소유한다.
 - **공식 문서·license**: [Airflow database 설정](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet 지침](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), [권장 운영 방식](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)을 따른다. Apache Airflow에는 Apache-2.0 license가 적용된다.
 
-
 ## Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`

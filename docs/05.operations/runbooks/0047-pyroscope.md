@@ -40,11 +40,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 기간 미선언을 무기한 보존 계약으로 취급하지 않는다.
-
 
 ### Checklist
 
@@ -141,14 +139,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. Pyroscope 복구에 성공했다고 주장하지 않는다.
 
 1. image/config digest, storage 시간 범위, producer/label 목록과 backup checksum을 기록한다. profile 쓰기와 Pyroscope를 중지한 뒤, 일관된 상태의 `pyroscope-data` snapshot을 생성한다.
 2. 운영 route가 없고 통제된 test producer만 있는 별도 project/network의 새 path에 복구한다.
 3. Pyroscope를 시작하고 `profilecli ready`를 실행한다. 과거 기준값을 조회하고 label을 붙인 test profile 1개를 수집·조회한 뒤 Grafana 연동을 검증한다. Alloy가 수집한다고 주장하기 전에 실제 source를 확인한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 state/route 변경은 별도로 승인받는다.
-
 
 ## Evidence
 

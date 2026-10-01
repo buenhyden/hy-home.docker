@@ -40,11 +40,9 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-
 ### Service lifecycle prerequisites
 
 `alloy`의 `required: false` backend는 없어도 기동될 수 있다. 선택한 설정과 필요한 Loki·Tempo·Pyroscope endpoint를 확인한 뒤 신호별 수신을 검증한다. 중지·재생성 전 position/state와 로그 유실·중복 허용 범위를 기록한다. 설정 선택 변경에는 재생성이 필요하고 reload 지원 여부를 임의로 가정하지 않는다.
-
 
 ### Checklist
 
@@ -145,14 +143,12 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-
 상태: **계획됨, 미실행**. 전송 중이던 telemetry를 정확히 복구할 수 있다고 주장하지 않는다.
 
 1. image/config digest, 활성 component, downstream endpoint, queue/WAL metric과 `/var/lib/alloy`를 실제로 사용하는 component가 있는지 기록한다. 가능한 경우 test producer의 전송을 일시 중단한다.
 2. test Loki/Tempo/Prometheus/Pyroscope endpoint에 연결된 별도 project/network에 추적 중인 config와 검증된 component state만 복구한다. host/Docker 접근은 필요한 최소한의 읽기 전용으로 유지한다.
 3. config를 검증하고 Alloy를 시작한 뒤, label을 붙인 test log/trace/metric 입력을 주입한다. 구성된 각 downstream과 retry/WAL 동작을 검증한다. profile은 source component를 확인한 후에만 test한다.
 4. 불일치가 있으면 격리된 collector를 중지하고 log를 보존한다. config/image를 rollback하고, 운영 환경을 변경하기 전에 허용한 전송 중 data 손실을 기록한다.
-
 
 ## Evidence
 
