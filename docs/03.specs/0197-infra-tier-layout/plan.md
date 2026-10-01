@@ -87,7 +87,7 @@ PostgreSQL and SeaweedFS shared. Preserve frozen history.
    and implementation sequence, then verify the approved additional relocation
    (acceptance 7 plus the applicable preservation and validation criteria).
 6. W6: Rename the approved platform capability and reconcile all active consumers
-   (acceptance8 plus preservation/validation criteria2–6); written Plan review pending.
+   (acceptance8 plus preservation/validation criteria2–6); written Plan review approved.
 
 ### W1: Baseline and regression checks
 
@@ -532,6 +532,45 @@ all issued IDs, filenames and body corrections from SPEC0198.
   Commit boundaries remain coherent source/test relocation and documentation/
   projection alignment; actual commits/publication require delivery authority.
   Do not reset other work, clean worktrees, push or merge as part of this Plan.
+
+### W7: Authorized delivery and operational application
+
+The user's subsequent2026-10-01 instruction authorizes this follow-on work;
+it supersedes the original no-publication/no-runtime limits only here.
+Task0002 owns actual receipts. Existing source acceptance remains unchanged.
+
+- [x] Record independent source/security review, frozen changed-gate PASS,
+  remote protection, live identities/images/mounts and old-source config hashes.
+- [ ] Register legal lifecycle transitions, publish the reviewed branch through
+  a main PR, require hosted checks, and preserve the original planning drafts
+  through their exact recovery commit before synchronizing the main checkout.
+- [ ] Preserve public old bind-source bytes for target-only rollback. After
+  main integration, recreate master, volume, filer and S3 in that order, then
+  Registry, Dozzle and RedisInsight individually with no dependencies, build,
+  pull, volume renewal or optional-profile startup. Wait for existing health
+  checks and stop on failure. Match captured image IDs and every persistent
+  mount, including S3's anonymous data volume; verify the other five moved
+  running containers remain unchanged. Dozzle retains its observed v11.1.0
+  through an explicit temporary image override; its prior v11.1.1 source gap
+  is not an upgrade authorization. Independent runtime review accepted this
+  seven-target scope and preservation contract.
+- [ ] Apply only the installed Restic ExecStart source-prefix change after
+  confirming the new main target exists and the captured unit hash matches.
+  Preserve host-specific unit settings and timer state; validate the unit and
+  daemon-reload without starting backup. Root authentication is currently
+  unavailable; do not bypass it or claim this step passed without observation.
+- [ ] Record container health, exact image/mount preservation, installed-unit
+  verification and hosted delivery evidence. Complete SPEC0197/0198 only when
+  required work is actually done; verify SPEC0194 is already completed.
+  Commit final receipts through the same protected PR process, synchronize
+  main/origin/main, and remove only the fully delivered clean branch/worktree.
+
+Rollback is target-only: use the captured image, previous tier and preserved
+public source bindings if a recreation fails; retain all existing volumes and
+secret references. No data restore or broad stack restart. Before changing the
+installed unit preserve its original bytes; restore only that unit on validation
+failure, reload systemd and preserve the timer. Task0002 records exact prepared
+paths/hashes and outcomes. A missing host privilege blocks that step only.
 
 ## Risk and Rollback
 

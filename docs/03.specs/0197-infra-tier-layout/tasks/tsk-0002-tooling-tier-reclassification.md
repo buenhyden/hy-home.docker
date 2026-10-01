@@ -40,6 +40,17 @@ and retained native execution plus independent review.
 
 ### Authorized delivery and runtime reconciliation
 
+W7 follow-on independent review: `/root/runtime_relocation_review` ACCEPTED the
+written Spec/Plan amendment and seven-target operation. Before mutation, two
+byte-identical public source files were preserved under
+`/tmp/hyhome-delivery-jytn6d37/rollback-public`; seven target-only temporary
+Compose overrides retain captured image IDs and old tier labels. SeaweedFS
+rollback binds use those preserved public bytes at unchanged container targets;
+S3 rollback explicitly reuses its captured existing anonymous volume through
+an external-volume name. Secret bindings and other configuration remain inherited.
+These are prepared recovery inputs, not an executed rollback or deployment.
+
+
 Delivery exception: the user explicitly approved `ECC_SKIP_PRECOMMIT=1` for the single implementation commit after the global ECC hook misclassified four renamed-file public variable references. Independent security review proved unchanged psql/shell/environment references and no credential values; staged Gitleaks passed after rendering eight public secret IDs as individual backticked references. No scanner configuration or subsequent hook is bypassed. The ordinary first commit attempt remains a recorded hook-blocked attempt.
 
 Operational preflight: six of seven old-source Compose hashes exactly match the running containers. Dozzle differs only by an already-existing image version gap (declared v11.1.1, running v11.1.0): overriding that image reference alone restores the live config hash. Preserve the current v11.1.0 image for this label-only reconciliation; its local tag resolves to the captured live image ID. All seven existing image references resolve to their captured live IDs. This task does not authorize an unrelated Dozzle upgrade.
@@ -331,8 +342,12 @@ final-path handoff; it does not claim the combined gate or runtime acceptance.
 
 ## Commit Ledger
 
-No commit for this extension. Preserve reviewed and in-progress work in the
-shared worktree; no reset, branch cleanup or publishing is part of this action.
+`fcf079c87451cad8d79f4fd7188d24a947764752` preserves the four exact original
+main planning files. `0d42c5edf584fcae7cd78a26fee263492e193885` records the
+reviewed source implementation and delivery preflight. The user-approved
+single-commit ECC false-positive exception was consumed by that implementation
+commit; all subsequent hooks run normally. Remote delivery and runtime results
+remain pending until recorded in the authorized follow-on receipt.
 
 ## Rulings
 

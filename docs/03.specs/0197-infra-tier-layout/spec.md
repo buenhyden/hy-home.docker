@@ -508,6 +508,20 @@ and the final integrated receipts complete the expanded source package. Runtime 
 
 ## Operational Impact
 
+On2026-10-01 the user separately authorized delivery and operational application
+of the reviewed implementation. This follow-on authorization supersedes the
+source-only exclusions above for the bounded operation in Plan W7 and Task0002.
+Reconcile only seven running containers whose source mounts or tier labels
+changed, preserve their exact existing images and persistent mounts, and refresh
+the installed Restic unit's source-path token without starting a backup.
+Publication uses a protected-main PR and required checks; cleanup covers only
+the delivered branch and its clean worktree. Completion requires observed
+postflight results, not source checks alone. SPEC0198 shares delivery evidence;
+SPEC0194's already-completed record is verified afterwards without reopening it.
+
+The following paragraph records the original source implementation boundary:
+
+
 This is a repository migration, not deployment. The root Compose project,
 opt-in selectors and persistent data remain intact. Running containers are not
 recreated by the implementation task. Repository rollback restores moved
