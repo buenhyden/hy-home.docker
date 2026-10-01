@@ -43,38 +43,19 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         expected = "ghcr.io/hadolint/hadolint:{} hadolint".format(repository["rev"])
         self.assertEqual(expected, hooks[0].get("entry"))
 
-    def test_public_hooks_admit_every_tracked_path_and_root_tool_owner(self) -> None:
+    def test_public_hooks_are_absent_and_cheap_hooks_remain(self) -> None:
         document = yaml.safe_load(
             (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
         )
         hooks = {
             hook["id"]: hook
             for repository in document["repos"]
-            if repository["repo"] == "local"
             for hook in repository["hooks"]
-            if hook["id"] in {"public-validation-changed", "public-validation-full"}
         }
-        self.assertEqual(
-            {"public-validation-changed", "public-validation-full"}, set(hooks)
-        )
-        tracked = (
-            subprocess.run(
-                ["git", "ls-files", "-z"],
-                cwd=ROOT,
-                capture_output=True,
-                check=True,
-            )
-            .stdout.decode("utf-8")
-            .split("\0")
-        )
-        for hook_id, hook in hooks.items():
-            selector = re.compile(hook["files"])
-            omitted = [
-                path for path in tracked if path and not selector.fullmatch(path)
-            ]
-            with self.subTest(hook=hook_id):
-                self.assertEqual([], omitted)
-                self.assertTrue(hook.get("always_run"))
+        self.assertNotIn("public-validation-changed", hooks)
+        self.assertNotIn("public-validation-full", hooks)
+        for hook_id in ("gitleaks", "ruff-check", "check-merge-conflict", "commitizen"):
+            self.assertIn(hook_id, hooks)
 
         root_tool_paths = {
             ".cz.toml",
@@ -205,7 +186,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
         self.assertNotIn("run-ci-gate.py --profile changed", text)
         self.assertNotIn("check-agent-governance-contract.py", text)
 
-    def test_stop_runs_changed_profile_once_for_every_git_visible_state(self) -> None:
+    def test_stop_never_runs_changed_profile_for_git_visible_states(self) -> None:
         mutations = {
             "modified": lambda repo: (repo / "tracked.txt").write_text(
                 "after\n", encoding="utf-8"
@@ -229,10 +210,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     mutate(repo)
                     result = self._run_stop(repo, provider)
                     self.assertEqual(0, result.returncode, result.stderr)
-                    self.assertEqual(
-                        ["--profile changed"],
-                        (repo / ".gate-calls").read_text(encoding="utf-8").splitlines(),
-                    )
+                    self.assertIn("Session ending", result.stdout)
+                    self.assertFalse((repo / ".gate-calls").exists())
 
     def test_stop_clean_tree_skips_changed_profile(self) -> None:
         for provider in ("claude", "codex"):
@@ -242,39 +221,23 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertFalse((repo / ".gate-calls").exists())
 
-    def test_stop_retry_never_reruns_changed_profile_or_completes(self) -> None:
+    def test_stop_retry_never_runs_changed_profile_or_completes(self) -> None:
         for provider in ("claude", "codex"):
-            for state_changed in (False, True):
-                with (
-                    self.subTest(provider=provider, state_changed=state_changed),
-                    tempfile.TemporaryDirectory() as name,
-                ):
-                    repo = self._hook_repo(name)
-                    (repo / "tracked.txt").write_text("after\n", encoding="utf-8")
-                    (repo / ".gate-exit").write_text("9", encoding="utf-8")
-                    first = self._run_stop(repo, provider)
-                    self.assertEqual(0, first.returncode, first.stderr)
-                    self.assertNotIn("Session ending", first.stdout)
-                    self.assertEqual(
-                        1, len((repo / ".gate-calls").read_text().splitlines())
-                    )
-
-                    if state_changed:
-                        (repo / "tracked.txt").write_text(
-                            "changed again\n", encoding="utf-8"
-                        )
-                    retry = self._run_stop(
-                        repo, provider, payload={"stop_hook_active": True}
-                    )
-                    self.assertEqual(0, retry.returncode, retry.stderr)
-                    self.assertNotIn("Session ending", retry.stdout)
-                    self.assertIn("manual", retry.stdout.lower())
-                    response = json.loads(retry.stdout.splitlines()[-1])
-                    self.assertIs(response["continue"], False)
-                    self.assertIn("stopReason", response)
-                    self.assertEqual(
-                        1, len((repo / ".gate-calls").read_text().splitlines())
-                    )
+            with self.subTest(provider=provider), tempfile.TemporaryDirectory() as name:
+                repo = self._hook_repo(name)
+                (repo / "tracked.txt").write_text("after\n", encoding="utf-8")
+                first = self._run_stop(repo, provider)
+                self.assertEqual(0, first.returncode, first.stderr)
+                self.assertIn("Session ending", first.stdout)
+                retry = self._run_stop(
+                    repo, provider, payload={"stop_hook_active": True}
+                )
+                self.assertEqual(0, retry.returncode, retry.stderr)
+                self.assertNotIn("Session ending", retry.stdout)
+                response = json.loads(retry.stdout.splitlines()[-1])
+                self.assertIs(response["continue"], False)
+                self.assertIn("stopReason", response)
+                self.assertFalse((repo / ".gate-calls").exists())
 
     def test_logical_commit_blocked_retry_skips_changed_profile(self) -> None:
         for provider in ("claude", "codex"):
@@ -284,9 +247,6 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 first = self._run_stop(repo, provider, allow_uncommitted=False)
                 self.assertEqual(0, first.returncode, first.stderr)
                 self.assertIn("Uncommitted paths", first.stdout)
-                self.assertEqual(
-                    1, len((repo / ".gate-calls").read_text().splitlines())
-                )
                 retry = self._run_stop(
                     repo,
                     provider,
@@ -294,10 +254,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     allow_uncommitted=False,
                 )
                 self.assertEqual(0, retry.returncode, retry.stderr)
-                self.assertIn("manual", retry.stdout.lower())
-                self.assertEqual(
-                    1, len((repo / ".gate-calls").read_text().splitlines())
-                )
+                self.assertIn("Stop retry limit", retry.stdout)
+                self.assertFalse((repo / ".gate-calls").exists())
 
     def test_stop_git_status_failure_blocks_without_session_end(self) -> None:
         for provider in ("claude", "codex"):
@@ -364,9 +322,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                     displayed_paths = reason.split("Uncommitted paths:\n", 1)[1]
                     self.assertLessEqual(len(displayed_paths.encode("utf-8")), 6000)
                     self.assertLess(len(reason.encode("utf-8")), 8000)
-                    self.assertEqual(
-                        1, len((repo / ".gate-calls").read_text().splitlines())
-                    )
+                    self.assertFalse((repo / ".gate-calls").exists())
 
     def test_stop_malformed_git_status_blocks_as_parser_failure(self) -> None:
         for provider in ("claude", "codex"):
@@ -389,12 +345,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertNotIn("Session ending", result.stdout)
                 self.assertIn("could not be parsed", result.stdout.lower())
-                self.assertIn("manual", result.stdout.lower())
-                self.assertEqual(
-                    1, len((repo / ".gate-calls").read_text().splitlines())
-                )
+                self.assertFalse((repo / ".gate-calls").exists())
 
-    def test_stop_timeout_blocks_and_reserves_diagnostic_budget(self) -> None:
+    def test_stop_does_not_need_timeout_or_run_public_gate(self) -> None:
         with tempfile.TemporaryDirectory() as name:
             repo = self._hook_repo(name)
             (repo / "tracked.txt").write_text("after\n", encoding="utf-8")
@@ -406,20 +359,8 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             )
             result = self._run_stop(repo, path=f"{fake_bin}:/usr/bin:/bin")
             self.assertEqual(0, result.returncode, result.stderr)
-            self.assertNotIn("Session ending", result.stdout)
-            self.assertIn("timed out", result.stdout.lower())
-            self.assertIn("manual", result.stdout.lower())
-            self.assertEqual(
-                [
-                    "--kill-after=5s",
-                    "540s",
-                    "python3",
-                    "scripts/validation/run-ci-gate.py",
-                    "--profile",
-                    "changed",
-                ],
-                (repo / ".timeout-arguments").read_text().splitlines(),
-            )
+            self.assertIn("Session ending", result.stdout)
+            self.assertFalse((repo / ".timeout-arguments").exists())
             self.assertFalse((repo / ".gate-calls").exists())
 
     def test_active_workflows_route_provider_validation(self) -> None:

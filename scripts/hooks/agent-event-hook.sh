@@ -69,7 +69,7 @@ Infra layer:
 Key rules:
 - Use `AGENTS.md` and `.agents/` as governance entry points.
 - Treat Graphify as advisory when `scripts/knowledge/report-graphify-health.sh` reports contamination.
-- Run `python3 scripts/validation/run-ci-gate.py --profile changed` before completion.
+- Run the relevant focused checks at the planned delivery boundary.
 """
 
 print(json.dumps({"systemMessage": message.strip()}))
@@ -151,7 +151,7 @@ if not tool_name or tool_name in edit_tools:
             system_messages.append(
                 "Docker Compose file edit detected.\n\n"
                 f"Path: `{short_path}`\n\n"
-                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
+                "Run the relevant checks once for the PR candidate."
             )
             break
     for path in paths:
@@ -167,7 +167,7 @@ if not tool_name or tool_name in edit_tools:
                 "Load shared policy from `.agents/governance/`, role intent from `.agents/roles/`, "
                 "and callable procedures from `.agents/skills/`. Preserve canonical sources; "
                 "regenerate only registered native provider outputs. "
-                "After editing, run `python3 scripts/validation/run-ci-gate.py --profile changed`."
+                "Run the relevant checks once for the PR candidate."
             )
             break
     for path in paths:
@@ -182,9 +182,7 @@ if not tool_name or tool_name in edit_tools:
                 f"Path: `{short_path}`\n\n"
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
-                "target-relative links, and `## Related Documents` section. The Stop hook runs "
-                "`python3 scripts/validation/run-ci-gate.py --profile changed` to enforce the "
-                "changed-doc template gate."
+                "target-relative links, and `## Related Documents` section. The PR quality gate enforces the changed-document template contract."
             )
             break
     for path in paths:
@@ -343,34 +341,6 @@ else:
 PY
 }
 
-changed_profile_stop_gate() {
-  local output result
-  if ! command -v timeout >/dev/null 2>&1; then
-    emit_stop_block "The changed validation profile could not start because the bounded timeout command is unavailable. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\` and continue the task."
-    return 1
-  fi
-  if output="$(timeout --kill-after=5s 540s python3 scripts/validation/run-ci-gate.py --profile changed 2>&1)"; then
-    return 0
-  else
-    result=$?
-  fi
-
-  local reason
-  if [[ "$result" -eq 124 || "$result" -eq 137 ]]; then
-    reason="The changed validation profile timed out or was incomplete after its 540-second hook budget. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, inspect the complete result, and continue the task."
-  else
-    reason="Changed repository state does not satisfy the changed validation profile. Continue the task, fix the reported contract failure, and manually rerun \`python3 scripts/validation/run-ci-gate.py --profile changed\`."
-  fi
-  if [[ -n "$output" ]]; then
-    reason="$reason
-
-Validator output:
-${output: -6000}"
-  fi
-  emit_stop_block "$reason"
-  return 1
-}
-
 logical_commit_stop_gate() {
   if [[ "${AGENT_ALLOW_UNCOMMITTED_STOP:-}" == "1" ]]; then
     return 0
@@ -471,7 +441,7 @@ else:
 print(display)
 PY
   )"; then
-    emit_stop_block "Git status could not be parsed, so repository cleanliness and completion cannot be proven. Resolve the malformed status output, manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, and continue the task."
+    emit_stop_block "Git status could not be parsed, so repository cleanliness and completion cannot be proven. Resolve the malformed status output and continue the task."
     return 1
   fi
 
@@ -503,19 +473,16 @@ PY
 
 stop() {
   if stop_retry_active; then
-    emit_stop_block "Automatic Stop validation already ran for this stop interaction. Manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\` after any fix, record the result, and request a new stop interaction." 1
+    emit_stop_block "Stop already ran for this interaction. Resolve any reported issue and request a new stop interaction." 1
     return 0
   fi
 
   local git_status
   if ! git_status="$(git status --porcelain=v1 --untracked-files=normal 2>/dev/null)"; then
-    emit_stop_block "Git status could not be inspected, so repository cleanliness and completion cannot be proven. Resolve the Git error, manually run \`python3 scripts/validation/run-ci-gate.py --profile changed\`, and continue the task."
+    emit_stop_block "Git status could not be inspected, so repository cleanliness and completion cannot be proven. Resolve the Git error and continue the task."
     return 0
   fi
 
-  if [[ -n "$git_status" ]] && ! changed_profile_stop_gate; then
-    return 0
-  fi
   if logical_commit_stop_gate "$git_status"; then
     session_end
   fi

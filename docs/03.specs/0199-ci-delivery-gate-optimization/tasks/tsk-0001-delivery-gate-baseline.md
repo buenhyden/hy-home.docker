@@ -55,18 +55,23 @@ The script manifest has 76 entries, all `active`, `retain`, and without a succes
 | `test_agent_governance_ci_routing.py` and `test_hook_rules.py` | `leaf.repo-contracts-control-plane-regressions` and `leaf.local-hook-rule-tests` guard provider routing and rule evaluation | Retain; update obsolete Stop assertions in W2 |
 | Declared public hooks and Stop changed gate | Same profile repeats before the PR gate, with no distinct installed result | Invocation removal in W2; retained PR context is the replacement owner |
 
-W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and selected seven repository-integrity validators (`check-script-manifest.py`, `check-github-workflow-contract.py`, `check-quickwin-baseline.sh`, `check-storybook-contract.sh`, `check-supply-chain-policy.py`, `check-conftest-policy.sh`, and `check-template-security-baseline.sh`). This local snapshot selects the fallback suite because the branch has no uncommitted paths; it is not a hosted PR run. `check-github-workflow-contract.py` exited 0 (`workflows=5`, `jobs=7`, `actions=8`). W2-W5 remain pending.
+W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and selected seven repository-integrity validators (`check-script-manifest.py`, `check-github-workflow-contract.py`, `check-quickwin-baseline.sh`, `check-storybook-contract.sh`, `check-supply-chain-policy.py`, `check-conftest-policy.sh`, and `check-template-security-baseline.sh`). This local snapshot selects the fallback suite because the branch has no uncommitted paths; it is not a hosted PR run. `check-github-workflow-contract.py` exited 0 (`workflows=5`, `jobs=7`, `actions=8`). W2-W5 remain pending at the W1 baseline.
+
+- W2 RED: `test_run_ci_precommit.sh` failed because the wrapper still supplied obsolete public-hook `SKIP` values. Three focused routing tests failed because declared public hooks and Stop's changed-profile/timeout path still existed; these failures were observed before implementation.
+- W2 GREEN: removed only two declared `public-validation-*` hook registrations; the CI wrapper now rejects caller `SKIP` and invokes cheap pre-commit hooks without its own skip list. Both provider Stop paths still inspect Git status, report parse/status errors, enforce the logical-commit boundary, and honor deferred paths, but never start `run-ci-gate.py`. Provider commands and registered timeouts did not change, so no generated provider binding was edited.
+- W2 final checks: wrapper contract PASS; 131 hook, routing, deferred-path, and workflow regression tests PASS; provider contract PASS (`failures=0`); script manifest and workflow contract PASS; Bash syntax, cached pinned Ruff 0.15.12 check/format, and ShellCheck 0.11.0 PASS. The external `core.hooksPath` remained untouched. The tracked declaration affects future installations, not the observed global hook.
+- W2 test disposition: `test_precommit_selector_admits_every_contract_changed_prefix` was the only deleted test. Its precondition (two public pre-commit profile hooks) no longer exists after W2, so its selector parity assertion became false by design. `test_public_hooks_are_absent_and_cheap_hooks_remain`, the existing gate path-selection tests, and `test_public_gate_surfaces_do_not_copy_atomic_commands` provide the replacement assertions. No script file was deleted.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W0, W1, W5 | W1 PASS: phase matrix, installed-hook path and remote required context recorded; W5 policy pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 2 | W2 | NOT_RUN: local and Stop gate deduplication pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 3 | W3, W5 | NOT_RUN: required PR context and title edit routing pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
 | 4 | W4, W5 | NOT_RUN: main-push security and manual full separation pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
 | 5 | W4, W5 | NOT_RUN: `main-current` safety and hosted update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
-| 6 | W1, W4 | W1 PASS: 76 active manifest entries and candidate consumers reviewed; no file deletion justified; W4 registration pending | [Script manifest](../../../../scripts/manifest.yaml) |
+| 6 | W1, W4 | W1-W2 PASS: 76 active manifest entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; W4 registration pending | [Script manifest](../../../../scripts/manifest.yaml) |
 | 7 | W5 | NOT_RUN: canonical policy, review, and hosted delivery pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
@@ -75,7 +80,7 @@ Pending independent read-only review of the implementation candidate.
 
 ## Commit Ledger
 
-The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53`. W1 baseline is recorded at `eabf04245c76010fd1bbfeff9790e3570100f7c0` before implementation; subsequent commits and hosted receipts will be recorded here.
+The W0 parent package is integrated at `2d0d571ae276487810f071995c77ab8559e30a53`. W1 baseline started at `eabf04245c76010fd1bbfeff9790e3570100f7c0` and was committed separately as `7f267070b`. W2 implementation commit and hosted receipts will be recorded after review.
 
 ## Rulings
 

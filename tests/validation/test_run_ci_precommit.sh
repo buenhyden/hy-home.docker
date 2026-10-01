@@ -68,9 +68,8 @@ env \
   CI=true \
   "$WRAPPER"
 
-# The wrapper, not its caller, supplies the skip list, and it must name both
-# gate-owned hooks: either one left in would re-enter `run-ci-gate.py`.
-expected_call=$'SKIP=public-validation-changed,public-validation-full\nrun\n--all-files\n--show-diff-on-failure'
+# With no public gate hook registered, CI runs cheap pre-commit hooks without SKIP.
+expected_call=$'SKIP=\nrun\n--all-files\n--show-diff-on-failure'
 actual_call="$(<"$CALL_FILE")"
 [[ "$actual_call" == "$expected_call" ]] || fail "command or SKIP differs from the contract"
 

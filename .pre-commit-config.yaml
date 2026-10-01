@@ -95,29 +95,7 @@ repos:
       - id: gitleaks
         args: ['--config=.gitleaks.toml']
 
-  # --- 7. Local Project Specific ---
-  # Include the hidden canonical governance home in both byte-scope selectors.
-  - repo: local
-    hooks:
-      - id: public-validation-changed
-        name: Public validation suites (changed)
-        entry: python3 scripts/validation/run-ci-gate.py --profile changed
-        language: system
-        files: ^.*$
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit]
-
-      - id: public-validation-full
-        name: Public validation suites (full)
-        entry: python3 scripts/validation/run-ci-gate.py --profile full
-        language: system
-        files: ^.*$
-        pass_filenames: false
-        always_run: true
-        stages: [pre-push]
-
-  # --- 8. Commit & Message (Release) ---
+  # --- 7. Commit & Message (Release) ---
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.15.1
     hooks:
