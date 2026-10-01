@@ -119,6 +119,8 @@ _WORKFLOW_PERMISSION_BASELINES: Final = (
             jobs=(
                 ("validation-changed", _CONTENTS_READ),
                 ("validation-full", _FULL_GATE_PERMISSIONS),
+                ("main-security", (("contents", "read"), ("security-events", "write"))),
+                ("update-main-current", (("contents", "write"),)),
             ),
         ),
     ),
@@ -906,11 +908,16 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         for workflow in workflows
         if workflow.classification == "required-quality"
     ]
-    if len(required_workflows) != 1 or len(required_workflows[0].jobs) != 2:
+    if len(required_workflows) != 1 or set(required_workflows[0].jobs) != {
+        "validation-changed",
+        "validation-full",
+        "main-security",
+        "update-main-current",
+    }:
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "exactly one required-quality workflow with two public-profile jobs is required",
+            "exactly one required-quality workflow with the four owned jobs is required",
         )
     return WorkflowContract(
         schema_version=2,
@@ -993,7 +1000,7 @@ def _workflow_projection_findings(
                 "required workflow defaults.run is forbidden",
             )
         )
-    expected_jobs: dict[str, tuple[str, str, dict[str, str]]] = {
+    expected_jobs: dict[str, tuple[str, str, dict[str, str] | None]] = {
         "validation-changed": (
             "changed",
             "github.event_name == 'pull_request'",
@@ -1007,11 +1014,18 @@ def _workflow_projection_findings(
         ),
         "validation-full": (
             "full",
-            "github.event_name != 'pull_request'",
-            {
-                "EVENT_NAME": "${{ github.event_name }}",
-                "PUSH_BEFORE_SHA": "${{ github.event.before }}",
-            },
+            "github.event_name == 'workflow_dispatch'",
+            {"EVENT_NAME": "${{ github.event_name }}"},
+        ),
+        "main-security": (
+            "security",
+            "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+            None,
+        ),
+        "update-main-current": (
+            "channel",
+            "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
+            None,
         ),
     }
     checkout = next(
@@ -1068,6 +1082,67 @@ def _workflow_projection_findings(
                     f"job {raw_job_id} has no projected steps",
                 )
             )
+            continue
+        if raw_job_id in {"main-security", "update-main-current"}:
+            action_shas = {item.action: item.sha for item in contract.actions}
+            if raw_job_id == "main-security":
+                expected_steps = [
+                    expected_checkout,
+                    {
+                        "name": "Set up Python",
+                        "uses": f"actions/setup-python@{action_shas.get('actions/setup-python')}",
+                        "with": {"python-version": "3.14"},
+                    },
+                    {
+                        "name": "Install uv",
+                        "uses": f"astral-sh/setup-uv@{action_shas.get('astral-sh/setup-uv')}",
+                    },
+                    {
+                        "name": "Audit merged workflow revision",
+                        "run": "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
+                    },
+                    {
+                        "name": "Upload SARIF file",
+                        "uses": f"github/codeql-action/upload-sarif@{action_shas.get('github/codeql-action/upload-sarif')}",
+                        "with": {"sarif_file": "results.sarif", "category": "zizmor"},
+                    },
+                ]
+                if "needs" in raw_job:
+                    findings.append(
+                        _finding(
+                            "workflow-gate-dependency-invalid",
+                            path,
+                            "main-security must run independently",
+                        )
+                    )
+            else:
+                expected_steps = [
+                    {
+                        "name": "Checkout repository",
+                        "uses": f"actions/checkout@{action_shas.get('actions/checkout')}",
+                        "with": {"persist-credentials": True, "fetch-depth": 0},
+                    },
+                    {
+                        "name": "Move audited channel tag",
+                        "run": "bash scripts/operations/update-main-current-tag.sh",
+                    },
+                ]
+                if raw_job.get("needs") != "main-security":
+                    findings.append(
+                        _finding(
+                            "workflow-gate-dependency-invalid",
+                            path,
+                            "channel tag must depend on main-security",
+                        )
+                    )
+            if steps != expected_steps:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        f"job {raw_job_id} steps differ from its audited projection",
+                    )
+                )
             continue
         if not steps or steps[0] != expected_checkout:
             findings.append(
@@ -1216,7 +1291,7 @@ def _leaf_program_findings(
                 )
             )
             continue
-        for job_id in sorted(installed_by_job):
+        for job_id in ("validation-changed", "validation-full"):
             if provider not in installed_by_job[job_id]:
                 findings.append(
                     _finding(

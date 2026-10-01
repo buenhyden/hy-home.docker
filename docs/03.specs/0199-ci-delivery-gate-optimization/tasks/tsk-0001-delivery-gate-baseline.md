@@ -65,6 +65,8 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 - W3 RED: the title-only route and trusted `PR_ACTION` projection failed focused tests before implementation. W3 GREEN: the runner admits a bounded, regular, unambiguous GitHub `edited` event with only `changes.title` and selects the registered git-flow root; malformed or mixed edits take the existing changed route. The required `validation-changed` job name, PR triggers and static command remain unchanged. 85 gate-plan, execution-context and workflow-contract tests passed, and the workflow checker passed (`workflows=5`, `jobs=7`, `actions=8`).
 - W3 test-output incident: an initial failing mock assertion serialized the inherited process environment into a local tool transcript. The test now clears inherited environment values and uses nonserializing call-count assertions. No credential values were added to tracked files. GitHub, Hugging Face and Vault/OpenBao credentials present in that process environment should be rotated by their owners; transcript retention and rotation are external to this repository change.
 
+- W4 RED: the bare-remote tag test failed before the updater existed. W4 GREEN: `validation-full` is manual-only; the main-push `main-security` job runs the registered Zizmor adapter and uploads SARIF, and `update-main-current` depends on its success with job-scoped `contents: write`. A bare-remote test passed creation, idempotence, stale-main refusal, annotated-tag refusal, failed remote push, concurrent tag lease rejection, and release-tag preservation. 136 combined gate, routing and workflow tests passed; the workflow checker passed (`workflows=5`, `jobs=9`, `actions=8`); manifest, shell syntax, ShellCheck, Ruff and active-document metadata checks passed. Hosted main-push execution and remote tag movement remain unobserved until protected merge.
+
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -72,9 +74,9 @@ W1 command evidence: `run-ci-gate.py --profile changed --explain` exited 0 and s
 | 1 | W0, W1, W5 | W1 PASS: phase matrix, installed-hook path and remote required context recorded; W5 policy pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 2 | W2 | W2 PASS: declared public hooks and Stop changed-profile invocation removed; 131 regression tests, wrapper and provider contract passed | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 | 3 | W3, W5 | LOCAL PASS: required PR name and triggers preserved; title-only routing has focused regression coverage; hosted status pending | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 4 | W4, W5 | NOT_RUN: main-push security and manual full separation pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
-| 5 | W4, W5 | NOT_RUN: `main-current` safety and hosted update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
-| 6 | W1, W4 | W1-W3 PASS: 76 active manifest entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; W4 registration pending | [Script manifest](../../../../scripts/manifest.yaml) |
+| 4 | W4, W5 | LOCAL PASS: manual full and main-push security have distinct guarded jobs; hosted main push pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
+| 5 | W4, W5 | LOCAL PASS: bare-remote creation, idempotence, stale/race/annotated/rejection cases; hosted tag update pending | [Release runbook](../../../05.operations/runbooks/0009-release-management.md) |
+| 6 | W1, W4 | W1-W4 PASS: 76 baseline entries reviewed; one obsolete selector test removed with replacement coverage; no script deletion justified; tag updater registered with its shell test | [Script manifest](../../../../scripts/manifest.yaml) |
 | 7 | W5 | NOT_RUN: canonical policy, review, and hosted delivery pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence

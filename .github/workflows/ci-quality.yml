@@ -56,7 +56,7 @@ jobs:
         run: python3 scripts/validation/run-ci-gate.py --profile changed
 
   validation-full:
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch'
     permissions:
       actions: read
       contents: read
@@ -65,7 +65,6 @@ jobs:
     timeout-minutes: 30
     env:
       EVENT_NAME: ${{ github.event_name }}
-      PUSH_BEFORE_SHA: ${{ github.event.before }}
     steps:
       - *checkout
       - name: Set up Python
@@ -89,3 +88,42 @@ jobs:
         with:
           sarif_file: results.sarif
           category: zizmor
+
+  main-security:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      security-events: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - *checkout
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+      - name: Audit merged workflow revision
+        run: python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
+        with:
+          sarif_file: results.sarif
+          category: zizmor
+
+  update-main-current:
+    needs: main-security
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: true
+          fetch-depth: 0
+      - name: Move audited channel tag
+        run: bash scripts/operations/update-main-current-tag.sh

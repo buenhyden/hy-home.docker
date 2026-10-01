@@ -15,7 +15,7 @@ created: "2026-06-04"
 
 ## Overview
 
-이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 배포 자동화, GitHub branch protection, required check, Docker runtime, secret, `.env`, port, permission 동작을 변경하지 않는다.
+이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 release/tag 준비 절차와 `main-current` 채널 태그 운영을 설명한다. GitHub branch protection, Docker runtime, secret, `.env`, port의 변경 권한은 부여하지 않는다.
 
 > 범위: Release Management Runbook의 실행 절차
 
@@ -23,6 +23,12 @@ created: "2026-06-04"
 
 - Release Management Runbook 작업을 반복 가능하고 검증 가능한 절차로 수행한다.
 - 실행 전후 evidence, rollback 또는 escalation 기준을 명확히 남긴다.
+
+## `main-current` 채널 태그
+
+`main` push가 완료되면 `.github/workflows/ci-quality.yml`의 `main-security`가 병합된 SHA에서 Zizmor SARIF를 생성한다. 이 작업이 성공한 경우에만 종속 작업 `update-main-current`가 `bash scripts/operations/update-main-current-tag.sh`를 실행한다. 스크립트는 원격 `main`이 감사한 `GITHUB_SHA`와 일치하는지 확인하고, 기존 태그에 lease를 걸어 경량 `refs/tags/main-current`만 갱신한다. 원격 `main`이 앞서갔거나 태그가 주석 태그이거나 다른 실행이 먼저 태그를 바꿨다면 실패하며 태그를 강제로 덮어쓰지 않는다. 기존 릴리스 태그와 수동 릴리스 절차는 별도로 유지한다.
+
+실패 시에는 GitHub Actions의 `main-security`와 `update-main-current` 상태, 원격 `refs/heads/main` 및 `refs/tags/main-current`의 SHA를 확인한다. 재실행은 해당 SHA의 보안 검사가 성공했고 원격 `main`이 여전히 그 SHA일 때만 허용한다. 태그를 수동으로 이동하기 전에 실패 원인과 승인 범위를 Task에 기록한다.
 
 ## When to Use
 
