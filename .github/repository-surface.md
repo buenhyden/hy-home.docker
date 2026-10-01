@@ -55,7 +55,7 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 
 ## Navigation / Inventory
 
-- [CI 품질 워크플로](./workflows/ci-quality.yml)
+- [CI 품질 워크플로](./workflows/ci-quality.yml): 모든 PR의 필수 `validation-changed`, 수동 `validation-full`, main push 보안 검사와 성공 후 `main-current` 갱신
 - [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml)
 - [기여자 환영 워크플로](./workflows/greetings.yml)
 - [풀 리퀘스트 라벨러 워크플로](./workflows/pr-labeler.yml)
@@ -78,6 +78,7 @@ python3 scripts/validation/check-github-workflow-contract.py
   선택한 공개 스위트를 실행한다.
 - [전용 워크플로 검사기](../scripts/validation/check-github-workflow-contract.py)는
   `workflow-contract.yml`을 추적 대상 워크플로 정의 전체와 대조해 검증한다.
+  PR 필수 작업 이름, 이벤트 조건, main 보안 작업과 태그 작업의 종속성도 검사한다.
 - [타입 지정 로컬 QA 게이트](../scripts/validation/run-ci-gate.py)에
   `--explain`을 붙이면 선택된 스위트-검증기 매핑을 보여 준다.
 

@@ -71,6 +71,14 @@ Use Conventional Commits with explicit scopes where possible.
   and action. Follow the Stage 05
   [operations runbook index](../../docs/05.operations/runbooks/README.md) for
   executable release procedure details.
+  The `main-current` channel tag is the narrow automation exception: after a
+  protected PR merge, `.github/workflows/ci-quality.yml` moves that one tag
+  only after the merged-SHA security job passes. Its job uses a remote tag
+  lease and checks that `main` still points to the audited SHA. Record the
+  old/new SHA and hosted run in the Task; a stale or failed update requires
+  recovery through `docs/05.operations/runbooks/0009-release-management.md`.
+  This exception does not authorize manual release-tag changes or bypass main
+  protection.
 
 ## 5. Agent Completion Commit Discipline
 

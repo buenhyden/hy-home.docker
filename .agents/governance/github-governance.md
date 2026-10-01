@@ -85,8 +85,9 @@ ruleset file records the observed remote state and issues no rule of its own.
 
 - **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
 - **Local Responsibility**: Fail-fast static analysis (formatting, simple
-  linting, the public `changed` profile for pre-commit, and the public `full`
-  profile for pre-push). Agents must not invoke `pre-commit run` directly.
+  linting, and explicit focused public-gate runs when the change needs them).
+  Routine commit and push hooks do not invoke public profiles. Agents must not
+  invoke `pre-commit run` directly.
   An approved final QA all-files run uses only
   `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
   linked worktree with co-located Task evidence and minimal allowed prefixes.
@@ -94,8 +95,8 @@ ruleset file records the observed remote state and issues no rule of its own.
   not observe ignored/outside writes or provide process/filesystem sandboxing.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: The CI pre-commit runner owns its skip list. It skips
-  checks already owned by dedicated gate leaves and the public validation hooks
-  that would recursively invoke the gate runner. Callers must not supply
+  checks already owned by dedicated gate leaves. The public validation hooks
+  were removed, so no skip value for them remains. Callers must not supply
   `SKIP` or introduce a second orchestration path. See
   [the shared execution boundary](quality-standards.md#4-execution-boundary).
 
@@ -162,32 +163,33 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ## 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` defines two quality jobs:
-`validation-changed` for pull requests and `validation-full` for push/manual
-events. `.github/workflow-contract.yml` owns the six-suite composition,
-changed-path impact rules, gate DAG, admitted environment keys, and direct
-external Actions. Each quality job contains one static public profile command;
-the focused checker retains trigger, permission, timeout, Action, and
-workflow-shape checks.
-Archive/tombstone, metadata, lifecycle, runtime-version, and repository-contract
-checks remain atomic leaves behind the two public profiles. Their composition is
-owned by `.github/workflow-contract.yml`; none is a separate required GitHub status context.
+`ci-quality.yml` defines four jobs with distinct event and permission boundaries.
+The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
+owns when each check runs. `.github/workflow-contract.yml` owns the six-suite
+composition, changed-path impact rules, gate DAG, admitted environment keys,
+and pinned Actions; the focused checker enforces triggers, permissions, timeouts,
+steps and dependencies. Archive, metadata, lifecycle and repository-contract
+checks remain leaves behind the two public profiles, not separate required
+status contexts.
 
 ### Quality Jobs and Required Status
 
-| Job ID | Public profile | Event |
+| Job ID | Route | Event |
 | :--- | :--- | :--- |
-| `validation-changed` | `changed` | pull request |
-| `validation-full` | `full` | push or manual dispatch |
+| `validation-changed` | `changed`, including git-flow on title edits | opened, synchronized, reopened and edited PRs to main |
+| `validation-full` | `full` | manual dispatch |
+| `main-security` | registered Zizmor adapter and SARIF upload | main push |
+| `update-main-current` | leased channel tag update after successful `main-security` | main push |
 
-Only `validation-changed` is the desired PR required status context. The
-protection record owns that list; a quality job is not automatically a required
-status check. Push/manual `validation-full` provides independent validation of
-its own event and revision, not pre-merge enforcement.
-
-`zizmor` is intentionally GitHub-only because its gate uploads SARIF with
-GitHub security permissions. Do not duplicate it inside the local pre-commit
-runner.
+Only `validation-changed` is the PR required status. A title edit reruns the
+same changed profile: the edited run can cancel a synchronize run, so a
+narrower success would not prove the candidate revision. The protected-branch settings remain a remote
+fact that must be read back before merge. Main security observes the merged
+SHA; it does not replace pre-merge protection. The tag job alone receives
+`contents: write`; quality jobs remain read-only except the SARIF permission.
+Release tags remain governed by the release procedure. A failed main-security
+job must leave the tag job skipped, and a stale or rejected tag push must leave
+the existing pointer intact.
 
 ### Non-Gating GitHub Automation
 

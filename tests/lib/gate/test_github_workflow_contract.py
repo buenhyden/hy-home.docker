@@ -36,6 +36,8 @@ REQUIRED_CI_JOBS = frozenset(
     {
         "validation-changed",
         "validation-full",
+        "main-security",
+        "update-main-current",
     }
 )
 
@@ -98,54 +100,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual([], gate["allowed_env_keys"])
 
-    def test_precommit_selector_admits_every_contract_changed_prefix(self) -> None:
-        """A prefix the workflow contract routes must be able to reach the gate.
-
-        The workflow contract decides which suites a changed path needs. The
-        pre-commit `files` selector decides whether the public gate hook runs
-        at all. A prefix present in the first and absent from the second
-        produces a change that needs suites and runs none locally. The reverse
-        asymmetry is safe: a broader hook selector only runs the gate more
-        often.
-        """
-
-        sys.path.insert(0, str(ROOT))
-        try:
-            from scripts.lib.gate import ci_gate_contract
-        finally:
-            sys.path.remove(str(ROOT))
-
-        public_gate = ci_gate_contract.parse_public_gate_contract(
-            ci_gate_contract.load_contract_document(ROOT)
-        )
-        contract_prefixes = {
-            prefix for rule in public_gate.changed_rules for prefix in rule.prefixes
-        }
-        self.assertTrue(contract_prefixes)
-
-        pre_commit = self.module._read_bounded_yaml(
-            ROOT, pathlib.PurePosixPath(".pre-commit-config.yaml")
-        )[1]
-        selectors = tuple(
-            hook["files"]
-            for repository in pre_commit["repos"]
-            if repository["repo"] == "local"
-            for hook in repository["hooks"]
-            if hook["entry"].startswith("python3 scripts/validation/run-ci-gate.py")
-        )
-        self.assertEqual(2, len(selectors), "both public profiles need a selector")
-
-        for selector in selectors:
-            pattern = re.compile(selector)
-            for prefix in sorted(contract_prefixes):
-                probe = f"{prefix}probe.md" if prefix.endswith("/") else prefix
-                with self.subTest(selector=selector, prefix=prefix):
-                    self.assertIsNotNone(
-                        pattern.fullmatch(probe),
-                        f"{prefix} is routed by the workflow contract but the "
-                        f"pre-commit selector does not admit {probe}",
-                    )
-
     def setUp(self) -> None:
         self.module = load_contract_module()
 
@@ -158,7 +112,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         document = self.load_contract_document(ROOT)
 
-        self.assertEqual(expected, workflow.data["on"]["pull_request"]["types"])
+        trigger = workflow.data["on"]["pull_request"]
+        self.assertEqual(expected, trigger["types"])
+        self.assertEqual(["main"], trigger["branches"])
+        self.assertNotIn("paths", trigger)
+        self.assertNotIn("paths-ignore", trigger)
+        changed = workflow.data["jobs"]["validation-changed"]
+        self.assertEqual("github.event_name == 'pull_request'", changed["if"])
         self.assertEqual(
             expected,
             document["workflows"][".github/workflows/ci-quality.yml"]["triggers"][
@@ -384,6 +344,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.module.CI_DEPENDENCY_BOOTSTRAP,
                 "python3 scripts/validation/run-ci-gate.py --profile changed",
                 "python3 scripts/validation/run-ci-gate.py --profile full",
+                "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
+                "bash scripts/operations/update-main-current-tag.sh",
             },
             set(run_values),
         )
@@ -397,13 +359,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if repository["repo"] == "local"
             for hook in repository["hooks"]
         )
-        self.assertEqual(
-            {
-                "python3 scripts/validation/run-ci-gate.py --profile changed",
-                "python3 scripts/validation/run-ci-gate.py --profile full",
-            },
-            set(local_entries),
-        )
+        self.assertEqual(set(), set(local_entries))
 
         active_surfaces = "\n".join(
             (ROOT / path).read_text(encoding="utf-8")
@@ -519,7 +475,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 "EVENT_NAME": "${{ github.event_name }}",
-                "PUSH_BEFORE_SHA": "${{ github.event.before }}",
             },
             full_env,
         )
@@ -560,7 +515,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if workflow.path == ".github/workflows/ci-quality.yml"
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
-        self.assertEqual(2, len(ci.jobs))
+        self.assertEqual(4, len(ci.jobs))
         declared = self.load_contract_document(ROOT)["gate_nodes"]
         self.assertEqual(len(declared), len(contract.gate_registry.nodes))
         public = self.module.parse_public_gate_contract(
@@ -757,8 +712,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
         jobs = self._required_quality_jobs(self.module, ROOT)
         return tuple(
             step["run"]
-            for job in jobs.values()
-            for step in job.get("steps", [])
+            for job_id in ("validation-changed", "validation-full")
+            for step in jobs[job_id].get("steps", [])
             if isinstance(step, dict) and isinstance(step.get("run"), str)
         )
 
@@ -783,8 +738,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "validation-changed": "changed",
             "validation-full": "full",
         }
-        self.assertEqual(set(expected), set(jobs))
-        for job_id, job in jobs.items():
+        self.assertEqual(REQUIRED_CI_JOBS, set(jobs))
+        for job_id, profile in expected.items():
+            job = jobs[job_id]
             programs = tuple(
                 step["run"]
                 for step in job.get("steps", [])
@@ -792,7 +748,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             )
             with self.subTest(job_id=job_id):
                 self.assertEqual(
-                    ("bootstrap", expected[job_id]),
+                    ("bootstrap", profile),
                     tuple(map(self._static_gate_profile, programs)),
                 )
 
@@ -1066,7 +1022,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 "validation-changed": "github.event_name == 'pull_request'",
-                "validation-full": "github.event_name != 'pull_request'",
+                "validation-full": "github.event_name == 'workflow_dispatch'",
+                "main-security": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+                "update-main-current": "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
             },
             {job_id: job["if"] for job_id, job in jobs.items()},
         )
@@ -1091,7 +1049,53 @@ class GithubWorkflowContractTests(unittest.TestCase):
         }
         for job_id, job in jobs.items():
             with self.subTest(job_id=job_id):
-                self.assertEqual(expected_checkout, job["steps"][0])
+                checkout = dict(expected_checkout)
+                if job_id == "update-main-current":
+                    checkout["with"] = {"persist-credentials": True, "fetch-depth": 0}
+                self.assertEqual(checkout, job["steps"][0])
+
+    def test_main_security_precedes_leased_channel_update(self) -> None:
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        security = jobs["main-security"]
+        channel = jobs["update-main-current"]
+        self.assertEqual("main-security", channel["needs"])
+        self.assertEqual(
+            {"contents": "read", "security-events": "write"}, security["permissions"]
+        )
+        self.assertEqual({"contents": "write"}, channel["permissions"])
+        self.assertEqual(
+            ["python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif"],
+            [step["run"] for step in security["steps"] if "run" in step],
+        )
+        self.assertEqual(
+            ["bash scripts/operations/update-main-current-tag.sh"],
+            [step["run"] for step in channel["steps"] if "run" in step],
+        )
+        self.assertTrue(
+            any("upload-sarif@" in step.get("uses", "") for step in security["steps"])
+        )
+        document = next(
+            item
+            for item in self.module.load_workflows(ROOT)
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        contract = self.module.load_workflow_contract(ROOT)
+        for job_id, mutation in (
+            ("update-main-current", lambda job: job.pop("needs")),
+            ("main-security", lambda job: job["steps"].pop()),
+            ("main-security", lambda job: job.update({"continue-on-error": True})),
+            (
+                "update-main-current",
+                lambda job: job.update({"continue-on-error": True}),
+            ),
+        ):
+            with self.subTest(job=job_id):
+                data = copy.deepcopy(document.data)
+                mutation(data["jobs"][job_id])
+                findings = self.module._workflow_projection_findings(
+                    document.path, data, data["jobs"], contract
+                )
+                self.assertTrue(findings)
 
     def test_public_profiles_share_one_validator_definition(self) -> None:
         document = self.load_contract_document(ROOT)

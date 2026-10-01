@@ -1104,3 +1104,40 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 self.assertEqual(("--mode", "check-active"), metadata.argv)
                 self.assertEqual((), metadata.allowed_env_keys)
+
+
+class EditedPRRoutingTests(unittest.TestCase):
+    def test_title_only_edit_still_runs_required_changed_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            event = pathlib.Path(directory) / "event.json"
+            event.write_text(
+                '{"action":"edited","changes":{"title":{"from":"old"}}}',
+                encoding="utf-8",
+            )
+            environment = {
+                "HYHOME_CI_GATE_ROOT": str(ROOT),
+                "PATH": os.defpath,
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_ACTION": "edited",
+                "GITHUB_EVENT_PATH": str(event),
+                "PR_BASE_SHA": "a" * 40,
+                "PR_TITLE": "docs: Valid title",
+                "HEAD_REF": "codex/topic",
+            }
+            with (
+                mock.patch.dict(os.environ, environment, clear=True),
+                mock.patch.object(
+                    runner,
+                    "collect_changed_paths",
+                    return_value=("docs/03.specs/example.md",),
+                ) as changed,
+                mock.patch.object(
+                    runner, "execute_execution_plan", return_value=0
+                ) as execute,
+            ):
+                self.assertEqual(0, runner.main(["--profile", "changed"]))
+            self.assertEqual(1, changed.call_count)
+            gate_ids = {item.gate_id for item in execute.call_args.args[1]}
+            self.assertIn("leaf.git-flow-contract", gate_ids)
+            self.assertIn("leaf.repo-document-metadata", gate_ids)

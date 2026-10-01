@@ -55,6 +55,7 @@ MUTATION_OVERRIDES = {
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
     "scripts/validation/check-document-metadata.py": "check-write",
     "scripts/operations/rehearse-postgres-logical-upgrade.sh": "runtime",
+    "scripts/operations/update-main-current-tag.sh": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
     "scripts/validation/run-ci-precommit.sh": "check-write",
     "scripts/operations/check-compose-core-readiness.sh": "runtime",

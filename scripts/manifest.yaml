@@ -668,6 +668,18 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/operations/update-main-current-tag.sh
+  kind: operations
+  authority: docs/05.operations/runbooks/0009-release-management.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - .github/workflows/ci-quality.yml
+  - docs/05.operations/runbooks/0009-release-management.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_update_main_current_tag.sh
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
   authority: scripts/README.md
