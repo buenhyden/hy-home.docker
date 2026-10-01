@@ -40,6 +40,18 @@ and retained native execution plus independent review.
 
 ### Authorized delivery and runtime reconciliation
 
+PR325 first hosted attempt (`36838896437`) failed metadata comparison against
+`c26bc8026254dffd7d51fc45b4081a1f80f855f2`: nineteen W5 Runbooks introduced an
+unregistered H2 `Execution Boundary`. Local full validation passed but did not
+prove this PR-base delta. The boundary text is preserved verbatim under Procedure
+as an H3, with all non-heading content unchanged. The original CI failure is
+retained; explicit PR-base metadata and subsequent required CI must pass before
+merge. No schema, validator, protection or runtime rule is weakened.
+Independent integration review ACCEPTED the exact nineteen transformations.
+Explicit `check-document-metadata.py --mode check-changed --base-ref origin/main`
+then passed: selected332, violations0, no exceptions or transition overrides.
+
+
 W7 follow-on independent review: `/root/runtime_relocation_review` ACCEPTED the
 written Spec/Plan amendment and seven-target operation. Before mutation, two
 byte-identical public source files were preserved under
