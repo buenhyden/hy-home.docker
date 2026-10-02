@@ -65,7 +65,12 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
-        optional = {"ci.frontend-quality", "ci.storybook-coverage"}
+        frontend = {"ci.frontend-quality", "ci.storybook-coverage"}
+        document = {
+            "leaf.local-document-metadata-tests",
+            "leaf.document-governance-library-regressions",
+        }
+        optional = frontend | document
         self.assertEqual(
             optional,
             {
@@ -90,7 +95,11 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                         public, selected, changed_paths=(path,)
                     )
                 )
-                self.assertFalse(optional & roots)
+                self.assertFalse(frontend & roots)
+                self.assertEqual(
+                    document if path.startswith(".agents/") else set(),
+                    document & roots,
+                )
                 repository = next(
                     route
                     for route in public.suites
@@ -114,7 +123,13 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                         public, selected, changed_paths=(path,)
                     )
                 )
-                self.assertLessEqual(optional, roots)
+                self.assertLessEqual(frontend, roots)
+                if path.startswith(
+                    ("scripts/", "tests/", ".github/", ".pre-commit-config.yaml")
+                ):
+                    self.assertLessEqual(document, roots)
+                else:
+                    self.assertFalse(document & roots)
 
         selected = contract.select_public_suites(
             public, "changed", ("docs/03.specs/example.md", "unknown-root.txt")
@@ -128,6 +143,15 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     changed_paths=("docs/03.specs/example.md", "unknown-root.txt"),
                 )
             ),
+        )
+
+    def test_unknown_path_selects_all_public_suites(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        self.assertEqual(
+            public.suite_names,
+            contract.select_public_suites(public, "changed", ("unknown-root.txt",)),
         )
 
     def test_changed_root_rules_reject_mandatory_or_unknown_roots(self) -> None:
@@ -144,6 +168,19 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 with self.assertRaises(contract.GateContractError) as raised:
                     contract.parse_public_gate_contract(candidate)
                 self.assertEqual("ci-gate-changed-root-rules", raised.exception.code)
+
+        duplicate = json.loads(json.dumps(baseline))
+        duplicate["public_gate"]["changed_root_rules"].append(
+            {
+                "prefixes": [
+                    duplicate["public_gate"]["changed_root_rules"][0]["prefixes"][0]
+                ],
+                "root_gate_ids": ["ci.frontend-quality"],
+            }
+        )
+        with self.assertRaises(contract.GateContractError) as raised:
+            contract.parse_public_gate_contract(duplicate)
+        self.assertEqual("ci-gate-changed-root-rules", raised.exception.code)
 
     def test_public_validator_records_fail_closed_on_ownership_and_argv_drift(
         self,

@@ -80,15 +80,15 @@ _TOP_LEVEL_FIELDS = frozenset(
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "ci.frontend-quality",
     "ci.storybook-coverage",
+    "leaf.local-document-metadata-tests",
+    "leaf.document-governance-library-regressions",
 )
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
         "leaf.local-document-corpus-lifecycle-tests",
-        "leaf.local-document-metadata-tests",
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle",
         "leaf.document-lifecycle-regressions",
-        "leaf.document-governance-library-regressions",
     ),
     "local.workflow-harness": (
         "leaf.ci-gate-contract-regressions",
@@ -921,6 +921,8 @@ def select_public_suites(
             "changed_paths",
             "changed paths must be canonical repository-relative paths",
         )
+    if _has_unmapped_changed_path(contract, changed_paths):
+        return contract.suite_names
     selected = set(contract.changed_fallback_suites)
     for rule in contract.changed_rules:
         if any(
@@ -961,14 +963,7 @@ def public_root_gate_ids(
             "changed_paths",
             "changed paths must be canonical repository-relative paths",
         )
-    if any(
-        not any(
-            _matches_changed_prefix(path, prefix)
-            for rule in contract.changed_rules
-            for prefix in rule.prefixes
-        )
-        for path in changed_paths
-    ):
+    if _has_unmapped_changed_path(contract, changed_paths):
         return roots
     selected_optional_roots = {
         gate_id
@@ -985,6 +980,19 @@ def public_root_gate_ids(
         for gate_id in roots
         if gate_id not in _OPTIONAL_CHANGED_ROOT_GATE_IDS
         or gate_id in selected_optional_roots
+    )
+
+
+def _has_unmapped_changed_path(
+    contract: PublicGateContract, changed_paths: tuple[str, ...]
+) -> bool:
+    return any(
+        not any(
+            _matches_changed_prefix(path, prefix)
+            for rule in contract.changed_rules
+            for prefix in rule.prefixes
+        )
+        for path in changed_paths
     )
 
 
