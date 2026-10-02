@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware Pull Request Regressions Implementation Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
