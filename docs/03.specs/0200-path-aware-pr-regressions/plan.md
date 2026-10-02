@@ -1,6 +1,6 @@
 ---
 title: "Path-Aware Pull Request Regressions Implementation Plan"
-version: "0.1.2"
+version: "0.1.5"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -68,12 +68,15 @@ addition.
 | File | Responsibility |
 | --- | --- |
 | .github/workflow-contract.yml | Gate DAG and changed-root path data; retain one execution owner. |
-| scripts/lib/gate/ci_gate_contract.py | Bounded optional-root allowlist and exact aggregate-child contract. |
+| scripts/lib/gate/ci_gate_contract.py | Bounded optional-root allowlist, exact aggregate-child contract, and unknown-path fallback. |
+| scripts/lib/document_governance/metadata/reference.py | Preserve current-corpus repository contracts in the changed-document route. |
+| tests/lib/document_governance/metadata/test_reference.py | Changed-document repository-contract regression. |
 | tests/lib/gate/test_ci_gate_contract.py | Typed rule, known/unknown path and mutation tests. |
 | tests/validation/test_ci_gate_plan.py | Concrete selected invocation sets for docs, code, mixed and full. |
 | .agents/governance/quality-standards.md | Canonical phase matrix and corrected CI pre-commit wording. |
+| .agents/governance/github-governance.md | Correct the same stale CI pre-commit assertion. |
 | .agents/knowledge/verification-surface-map.md | Current gate ownership and verification navigation, only if its existing prose needs correction. |
-| .github/README.md or existing .github navigation owner | Explain path-aware regression routing only where current operator guidance exists. |
+| .github/repository-surface.md | Explain path-aware regression routing in the existing navigation owner. |
 | docs/03.specs/0200-path-aware-pr-regressions/tasks/tsk-0001-path-aware-pr-regressions.md | Sole acceptance and hosted-run evidence ledger after lifecycle activation. |
 
 The Plan does not pre-authorize an unrelated script deletion. W1 must inspect
@@ -114,14 +117,14 @@ metadata; create Task 0001 after both parents become active.
 **Interfaces:** Produces a trusted active package and a current Task ledger
 for W1–W4.
 
-- [ ] Review the written Plan and execution method with the user.
-- [ ] Push the draft package branch and merge its protected PR only after
+- [x] Review the written Plan and execution method with the user.
+- [x] Push the draft package branch and merge its protected PR only after
   hosted validation-changed succeeds. Record PR, candidate SHA, run and merge
   SHA.
-- [ ] On fresh main bases, advance each registered lifecycle edge with the
+- [x] On fresh main bases, advance each registered lifecycle edge with the
   changed-document checker and required hosted result. Do not compress
   transitions or edit main directly.
-- [ ] Create Task 0001 in draft under active parents; validate its identity
+- [x] Create Task 0001 in draft under active parents; validate its identity
   and lifecycle; advance draft → ready → in-progress on trusted main bases
   before W1 implementation begins.
 
@@ -133,14 +136,14 @@ manifest; write only Task 0001 evidence.
 **Interfaces:** Produces a path → affected regression leaf table and a
 baseline invocation set for Task 2.
 
-- [ ] Record main/origin-main SHA, the remote required status and one recent
+- [x] Record main/origin-main SHA, the remote required status and one recent
   successful PR timing. Confirm only main exists remotely.
-- [ ] Trace both named leaves' imported code, fixtures and registry reads.
+- [x] Trace both named leaves' imported code, fixtures and registry reads.
   List exact changed-root prefixes; include gate contract and tests.
-- [ ] Record the current changed plan for a Stage 03-only path, an operations
+- [x] Record the current changed plan for a Stage 03-only path, an operations
   doc, a document implementation path and full. Capture all non-target
   invocation IDs so Task 2 can prove parity.
-- [ ] Inspect each apparent one-off, duplicate, legacy or deprecated
+- [x] Inspect each apparent one-off, duplicate, legacy or deprecated
   script/test by manifest, caller and gate reachability. Record retain or
   evidence-backed removal; no quota.
 
@@ -154,30 +157,32 @@ tests/validation/test_ci_gate_plan.py.
 **Interfaces:** Consumes W1's path table. Produces unchanged public
 run-ci-gate.py CLI with typed optional document roots.
 
-- [ ] Add RED tests named
+- [x] Add RED tests named
   test_document_only_plan_keeps_validators_and_omits_implementation_regressions,
   test_operations_doc_plan_keeps_catalog,
   test_document_owner_changes_select_regressions,
   test_mixed_unknown_path_keeps_document_regressions and
   test_full_plan_keeps_document_regressions_once. Assert exact target
   leaf IDs and retained validator IDs, not just plan length.
-- [ ] Extend the existing changed-root mutation test to reject an
+- [x] Extend the existing changed-root mutation test to reject an
   unauthorized mandatory root, unknown root and duplicate prefix. Run
   python3 -m unittest tests.lib.gate.test_ci_gate_contract
   tests.validation.test_ci_gate_plan -v; confirm the new tests fail for
   the expected old routing.
-- [ ] Remove only leaf.local-document-metadata-tests and
+- [x] Remove only leaf.local-document-metadata-tests and
   leaf.document-governance-library-regressions from the
   local.document-corpus-lifecycle aggregate. Add both to the document-
   lifecycle suite roots and the exact aggregate-child model. Extend
   _OPTIONAL_CHANGED_ROOT_GATE_IDS with only these IDs and register W1's
-  owner prefixes in changed_root_rules.
-- [ ] Run the two focused unittest modules, the workflow-contract checker,
+  owner prefixes in changed_root_rules. Add repository-wide current-corpus
+  checks to the changed-document metadata entrypoint and make unknown paths
+  select all suites and roots through one shared predicate.
+- [x] Run the two focused unittest modules, the workflow-contract checker,
   and run-ci-gate.py --profile changed --explain for docs-only,
   implementation and mixed/unknown contexts using the focused plan tests;
   inspect actual changed and full CLI explanations. Confirm the intended
   leaves are selected or omitted and each full leaf appears once.
-- [ ] Commit this independently reviewable behavior change using a
+- [x] Commit this independently reviewable behavior change using a
   conventional ci: message.
 
 ### Task 3: W3 — Align governance and verify the candidate
@@ -188,14 +193,14 @@ necessary existing .github/ or verification-map guidance; update Task 0001.
 **Interfaces:** Produces the final tracked policy and evidence needed for
 acceptance criteria 1–6.
 
-- [ ] Replace the stale claim that run-ci-precommit.sh sets its own SKIP
+- [x] Replace the stale claim that run-ci-precommit.sh sets its own SKIP
   list with its actual rejection of caller SKIP and pinned CI command.
   Describe the document-only and code-change PR routes without a second
   quality matrix.
-- [ ] Run focused selector, workflow and document metadata checks. Run
+- [x] Run focused selector, workflow and document metadata checks. Run
   python3 scripts/validation/run-ci-gate.py --profile changed once on the
   final candidate; avoid rerunning full after a green PR result.
-- [ ] Obtain an independent read-only final diff review and resolve
+- [x] Obtain an independent read-only final diff review and resolve
   actionable findings. Record skipped environment-specific gates honestly.
 - [ ] Push the candidate PR, require hosted validation-changed success on
   the final SHA, merge through main protection and observe main-security

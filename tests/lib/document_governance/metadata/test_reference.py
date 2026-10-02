@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts.lib.document_governance import archive as archive_authority
 from scripts.lib.document_governance.lifecycle.recovery import (
@@ -128,6 +129,37 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         profiles: pathlib.Path,
     ) -> subprocess.CompletedProcess[str]:
         return run_checker(root, "check-contracts", profiles=profiles)
+
+    def test_changed_mode_retains_repository_contract_findings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, registry = self.fixture(directory)
+            finding = reference_module.Finding(
+                "docs/03.specs/README.md", "index-member-unlisted", "fixture"
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(
+                    reference_module,
+                    "validate_repository_contracts",
+                    return_value=[finding],
+                ) as contracts,
+                contextlib.redirect_stdout(output),
+            ):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--registry",
+                        str(registry),
+                        "--mode",
+                        "check-changed",
+                        "--base-ref",
+                        "HEAD",
+                    ]
+                )
+            contracts.assert_called_once()
+            self.assertEqual(1, result)
+            self.assertIn("index-member-unlisted", output.getvalue())
 
     def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
         profiles = current_profiles()

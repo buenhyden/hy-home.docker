@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.8.0"
+version: "0.8.1"
 type: "governance/knowledge"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-02"
 created: "2026-09-06"
-observed_at: "2026-09-29"
+observed_at: "2026-10-02"
 review_cycle: "on-gate-change"
 ---
 
@@ -46,7 +46,7 @@ surface. A leaf may need inputs the current authorization does not cover.
 | `agent-governance` | provider surface drift; agent-output eval fixture gate; agent governance contract; agent governance regressions; provider governance regressions |
 | `document-contract` | repository metadata base; repository document metadata |
 | `document-graph` | documentation traceability |
-| `document-lifecycle` | document corpus lifecycle; document lifecycle regressions |
+| `document-lifecycle` | document corpus lifecycle; document lifecycle regressions; document metadata implementation tests; document governance library regressions |
 | `operations` | operations catalog; supply chain; Compose validation; infrastructure hardening; template security baseline; quickwin baseline |
 | `repository-integrity` | diff hygiene; shell syntax; script manifest; tech stack version drift; workflow harness; dependency vulnerability audit; git-flow contract; frontend quality; Storybook coverage; `zizmor`; pre-commit; repository integrity regressions |
 
@@ -88,19 +88,21 @@ that fallback. Exact prefixes remain owned by the workflow contract.
 | `docker-compose.yml`, `docs/05.operations/`, `examples/`, `infra/`, `secrets/` | document-contract, document-graph, document-lifecycle, operations |
 | `.github/`, `.pre-commit-config.yaml`, `.agents/evaluations/`, `projects/`, `scripts/`, `tests/` | all six suites |
 | Root tool/commit paths declared in the contract, including `.cz.toml`, `.gitmessage`, and `ruff.toml` | repository-integrity |
-| any other tracked path | repository-integrity, by the declared fallback |
+| any path with no matching rule | all six suites and all roots; fail-closed fallback |
 
-A path with no matching rule still selects a suite. Silence is never the result
-of an unmatched path.
+A path with no matching rule selects all six suites and all roots. Silence is
+never the result of an unmatched path.
 
-For `changed`, the contract's `changed_root_rules` then selects the optional
-frontend-quality and Storybook roots within those suites. Their current inputs
-are `.github/`, `.pre-commit-config.yaml`, `projects/storybook/nextjs/`,
-`scripts/`, and `tests/`. Known paths outside those prefixes omit those optional
-roots; the dependency audit and other required roots remain selected. An
-unknown valid path retains every root of every selected suite. Unavailable or invalid
-changed-path evidence fails closed before planning. `full` retains all suite
-roots before the execution-context exclusions above apply.
+For `changed`, the contract's `changed_root_rules` selects optional
+frontend-quality, Storybook, document metadata implementation and document
+governance library roots within their suites. Frontend roots follow `.github/`,
+`.pre-commit-config.yaml`, `projects/storybook/nextjs/`, `scripts/`, and
+`tests/`. The two document regression roots follow their validator, gate,
+registry, governance and associated test owners; ordinary Stage 03 and Stage 05
+authored documents omit only these regression tests, not content validators.
+Known paths outside a root's prefixes omit that optional root. Unavailable or
+invalid changed-path evidence fails closed before planning. `full` retains
+all suite roots before the execution-context exclusions above apply.
 
 ## Changed Route and PR Title Edits
 
@@ -152,7 +154,12 @@ The previous claim that the path rules were unchanged is superseded by the
 explicit root-tool rules and optional-root selection now described above.
 The workflow contract remains the execution authority; a disagreement between
 this navigation map and that source is a defect in this map. On 2026-10-02,
-SPEC-0199 re-read the changed-route owner, tracked hooks and quality workflow
+SPEC-0200 re-read the document root rules and selector in the active worktree.
+It moved the two document implementation regression leaves to optional roots
+and made an unknown path select all suites and roots. This dated observation
+supersedes the earlier fallback and root-selection prose above.
+
+On 2026-10-02, SPEC-0199 re-read the changed-route owner, tracked hooks and quality workflow
 at implementation commit `371f9f3d5`; the prior public-hook admission claim
 was superseded by the PR-owned route above. Dated execution
 and staging-recovery receipts belong to the current Spec Package Task.

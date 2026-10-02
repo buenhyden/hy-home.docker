@@ -29,8 +29,26 @@ settings by itself.
   still required before merge and nothing was widened beyond the two approved
   fields. The prior full protection payload is retained outside the repository
   as the rollback source.
-- Environment, deployment, release, and later control-plane state remain
-  `unverified` unless a newer approved observation records them.
+- On 2026-10-02, an authenticated read-only API check confirmed the current
+  `main` protection still has strict `validation-changed` from Actions app
+  15368, zero required approvals, no CODEOWNERS review, conversation
+  resolution, and disabled force pushes and deletion. Repository rulesets were
+  empty. Environments `qa-control` and `qa-tag-publish` existed with secret
+  names `QA_VERIFIER_PRIVATE_KEY` and `QA_PUBLISHER_PRIVATE_KEY`, respectively;
+  secret values were not read. Both environments admitted **protected branches**
+  (`protected_branches=true`, `custom_branch_policies=false`), not a custom
+  branch pattern restricted to `main`. The workflow did not reference either
+  environment or secret. User-supplied App IDs 5156980 and 5156975 are not
+  independently mapped to installed Apps by this read-back.
+- Those two App credentials and environments are prepared but not activated by
+  the tracked workflow. The existing `update-main-current` job already updates
+  the channel tag with `GITHUB_TOKEN` after `main-security`. Activating a
+  Publisher App in parallel would create a second tag writer. A Verifier App
+  would need its own distinct provenance purpose and trusted event boundary;
+  it is not required to remove duplicate QA. Before any future activation,
+  confirm installation and permissions, decide whether it replaces an existing
+  writer, and bind environment access to the intended branch rule. Such a
+  control-plane change requires separate approval and read-back.
 
 ## Target Ruleset
 

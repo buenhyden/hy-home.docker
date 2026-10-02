@@ -1438,23 +1438,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     native_findings: list[Finding] = []
     if registry is not None:
         try:
-            native_findings.extend(_reference_delegation_findings(root, profiles))
             if args.mode == "check-changed":
                 native_findings.extend(
-                    _allocation_findings(root, profiles, records, args.base_ref)
-                )
-                stage = root / "docs/03.specs"
-                packages = (
-                    load_spec_packages(stage, registry=registry)
-                    if stage.exists() or stage.is_symlink()
-                    else ()
-                )
-                native_findings.extend(
-                    Finding(item.path, item.code, item.message)
-                    for item in validate_repository_spec_package_lifecycle(
-                        root, packages, base_ref=args.base_ref
+                    validate_repository_contracts(
+                        root, profiles, base_ref=args.base_ref
                     )
                 )
+            else:
+                native_findings.extend(_reference_delegation_findings(root, profiles))
         except (ProfileError, SpecPackageError) as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2

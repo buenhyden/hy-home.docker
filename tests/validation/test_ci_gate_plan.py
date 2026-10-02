@@ -61,16 +61,22 @@ def _real_public_plan(
 
 
 def build_public_plan(
-    profile: str, context: runner.ExecutionContext
+    profile: str,
+    context: runner.ExecutionContext,
+    changed_paths: tuple[str, ...] = (),
 ) -> tuple[runner.GateInvocation, ...]:
     root = pathlib.Path(__file__).resolve().parents[2]
     document = contract.load_contract_document(root)
     gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
     public = contract.parse_public_gate_contract(document)
-    selected = contract.select_public_suites(public, profile, ())
+    selected = contract.select_public_suites(public, profile, changed_paths)
     return runner.build_public_validation_plan(
         gates,
-        contract.public_root_gate_ids(public, selected),
+        contract.public_root_gate_ids(
+            public,
+            selected,
+            changed_paths=changed_paths if profile == "changed" else None,
+        ),
         public,
         selected,
         context,
@@ -399,6 +405,97 @@ class CiGateRunnerContractTests(unittest.TestCase):
             }
             & gate_ids
         )
+
+    def test_document_only_plan_keeps_validators_and_omits_implementation_regressions(
+        self,
+    ) -> None:
+        plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.PULL_REQUEST,
+            ("docs/03.specs/0200-path-aware-pr-regressions/spec.md",),
+        )
+        ids = {item.gate_id for item in plan}
+        self.assertLessEqual(
+            {
+                "leaf.repo-document-metadata",
+                "leaf.local-document-corpus-lifecycle",
+                "leaf.docs-traceability",
+                "leaf.local-document-corpus-lifecycle-tests",
+            },
+            ids,
+        )
+        self.assertFalse(
+            {
+                "leaf.local-document-metadata-tests",
+                "leaf.document-governance-library-regressions",
+            }
+            & ids
+        )
+
+    def test_operations_doc_plan_keeps_catalog(self) -> None:
+        plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.PULL_REQUEST,
+            ("docs/05.operations/guides/0001-example.md",),
+        )
+        ids = {item.gate_id for item in plan}
+        self.assertLessEqual(
+            {
+                "leaf.repo-document-metadata",
+                "leaf.local-document-corpus-lifecycle",
+                "leaf.docs-traceability",
+                "leaf.operations-catalog",
+            },
+            ids,
+        )
+        self.assertNotIn("leaf.local-document-metadata-tests", ids)
+        self.assertNotIn("leaf.document-governance-library-regressions", ids)
+
+    def test_document_owner_changes_select_regressions(self) -> None:
+        owners = (
+            ".github/workflow-contract.yml",
+            ".agents/governance/quality-standards.md",
+            "docs/99.templates/registry.json",
+            "scripts/lib/document_governance/metadata/reference.py",
+            "scripts/lib/gate/ci_gate_contract.py",
+            "scripts/validation/check-document-metadata.py",
+            "tests/lib/document_governance/metadata/test_reference.py",
+            "tests/validation/test_ci_gate_plan.py",
+        )
+        targets = {
+            "leaf.local-document-metadata-tests",
+            "leaf.document-governance-library-regressions",
+        }
+        for path in owners:
+            with self.subTest(path=path):
+                plan = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                self.assertLessEqual(targets, {item.gate_id for item in plan})
+
+    def test_mixed_unknown_path_keeps_document_regressions(self) -> None:
+        targets = {
+            "leaf.local-document-metadata-tests",
+            "leaf.document-governance-library-regressions",
+        }
+        for paths in (
+            (
+                "docs/03.specs/0200-path-aware-pr-regressions/spec.md",
+                "unknown-root.txt",
+            ),
+            ("unknown-root.txt",),
+        ):
+            with self.subTest(paths=paths):
+                plan = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, paths
+                )
+                self.assertLessEqual(targets, {item.gate_id for item in plan})
+
+    def test_full_plan_keeps_document_regressions_once(self) -> None:
+        plan = build_public_plan("full", runner.ExecutionContext.PULL_REQUEST)
+        ids = [item.gate_id for item in plan]
+        self.assertEqual(1, ids.count("leaf.local-document-metadata-tests"))
+        self.assertEqual(1, ids.count("leaf.document-governance-library-regressions"))
 
     def test_relevant_frontend_failure_propagates(self) -> None:
         document = contract.load_contract_document(ROOT)

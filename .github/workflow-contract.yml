@@ -965,11 +965,9 @@
       "opaque": false,
       "children": [
         "leaf.local-document-corpus-lifecycle-tests",
-        "leaf.local-document-metadata-tests",
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions",
-        "leaf.document-governance-library-regressions"
+        "leaf.document-lifecycle-regressions"
       ]
     },
     {
@@ -1071,7 +1069,9 @@
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions"
+        "leaf.document-lifecycle-regressions",
+        "leaf.local-document-metadata-tests",
+        "leaf.document-governance-library-regressions"
       ],
       "operations": [
         "leaf.operations-catalog",
@@ -1374,7 +1374,17 @@
       {
         "prefixes": [
           ".github/",
-          ".pre-commit-config.yaml",
+          ".pre-commit-config.yaml"
+        ],
+        "root_gate_ids": [
+          "ci.frontend-quality",
+          "ci.storybook-coverage",
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-library-regressions"
+        ]
+      },
+      {
+        "prefixes": [
           "projects/storybook/nextjs/",
           "scripts/",
           "tests/"
@@ -1382,6 +1392,37 @@
         "root_gate_ids": [
           "ci.frontend-quality",
           "ci.storybook-coverage"
+        ]
+      },
+      {
+        "prefixes": [
+          ".agents/",
+          ".claude/",
+          ".codex/",
+          "AGENTS.md",
+          "CLAUDE.md",
+          "README.md",
+          ".gitattributes",
+          ".markdownlint-cli2.yaml",
+          "docs/99.templates/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-library-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/",
+          "scripts/lib/gate/",
+          "scripts/validation/",
+          "tests/lib/document_governance/",
+          "tests/lib/gate/",
+          "tests/validation/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-metadata-tests",
+          "leaf.document-governance-library-regressions"
         ]
       }
     ],
