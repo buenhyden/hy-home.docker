@@ -1,6 +1,6 @@
 ---
 title: "Path-Aware Pull Request Regressions Implementation Plan"
-version: "0.1.3"
+version: "0.1.5"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -197,10 +197,10 @@ acceptance criteria 1–6.
   list with its actual rejection of caller SKIP and pinned CI command.
   Describe the document-only and code-change PR routes without a second
   quality matrix.
-- [ ] Run focused selector, workflow and document metadata checks. Run
+- [x] Run focused selector, workflow and document metadata checks. Run
   python3 scripts/validation/run-ci-gate.py --profile changed once on the
   final candidate; avoid rerunning full after a green PR result.
-- [ ] Obtain an independent read-only final diff review and resolve
+- [x] Obtain an independent read-only final diff review and resolve
   actionable findings. Record skipped environment-specific gates honestly.
 - [ ] Push the candidate PR, require hosted validation-changed success on
   the final SHA, merge through main protection and observe main-security

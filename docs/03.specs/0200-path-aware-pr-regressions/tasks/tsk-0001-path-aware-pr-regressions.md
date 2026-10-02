@@ -1,6 +1,6 @@
 ---
 title: "Path-Aware PR Regression Execution"
-version: "0.1.4"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -42,7 +42,8 @@ The user approved the written Spec, the Plan, and same-session implementation wi
 - W2 RED/GREEN: The initial focused tests failed on unknown-only fallback, ordinary Stage 03/05 document selection, and the changed-document content contract. Commit `8a29a1c38` moved only the two measured regression leaves to optional document roots, shared one unknown-path predicate across suite/root selection, and routed current-corpus repository contracts through `check-changed`. The changed-document route reuses `validate_repository_contracts` with the same base ref, so allocation and package lifecycle are not run twice. All 50 gate selector/plan tests, the focused metadata integration test, and the workflow-contract checker passed; the actual changed-document metadata check passed with 0 violations. Manual `full` retains each target leaf once.
 - W3 policy alignment: The canonical phase matrix, GitHub governance, verification navigation, and `.github` navigation were updated for local/hosted ownership and path-aware PR depth. The stale claim that CI pre-commit sets a skip list was corrected: it rejects caller `SKIP` and runs its pinned all-files command without a skip list. The implementation has no new job, required status, workflow trigger, dependency, or secret.
 - W3 remote configuration read-back: `main` still required strict `validation-changed` from Actions app 15368, zero approvals, no CODEOWNERS requirement, conversation resolution, and no force pushes/deletion; repository rulesets were empty. Environments `qa-control` and `qa-tag-publish` existed with the expected secret **names** only and protected-branch admission, not a custom `main`-only branch pattern. No tracked workflow referenced either environment, so both Apps remain unactivated here; parallel tag publishing would duplicate the existing writer. No secret value was read. The user-supplied App IDs 5156980/5156975 were not independently mapped to installations.
-- W3-W4: Final changed-profile gate, independent review, hosted PR timing, lifecycle closure, and branch cleanup remain pending.
+- W3 final local gate: `python3 scripts/validation/run-ci-gate.py --profile changed` exited 0 on implementation head `873905c06`; the worktree was clean after execution. Focused gate tests (50), the changed-document repository-contract test (1), workflow contract checker, document metadata check (0 violations), corpus lifecycle check (0 violations), Ruff lint and format, and diff hygiene also passed. CI-only pre-commit, hosted dependencies, GitHub event identity, security upload and tag mutation remain remote-only evidence.
+- W3-W4: Hosted PR timing, lifecycle closure, and branch cleanup remain pending.
 
 ## Verification Evidence
 
@@ -53,11 +54,11 @@ The user approved the written Spec, the Plan, and same-session implementation wi
 | 3 | W2 | Owner, unknown, mixed, and invalid optional-root tests pass (50 gate tests) | [Gate contract](../../../../scripts/lib/gate/ci_gate_contract.py) |
 | 4 | W2, W3 | Full-plan exact-count test passes; hosted route receipts pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
 | 5 | W1 | 77 active/retain manifest entries; no removal without successor evidence | [Script manifest](../../../../scripts/manifest.yaml) |
-| 6 | W3 | Governance aligned; independent review and protected PR result pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 6 | W3 | Governance aligned, local changed gate passed, independent review clean; protected PR result pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 
-Independent final diff review is pending after the implementation candidate passes focused and changed-profile validation.
+Independent read-only reviewer examined `origin/main...873905c06` after the local changed gate and reported no actionable findings. The reviewer traced PR base propagation, ordinary Stage 03/05 and operations routes, document owner paths, unrelated script paths, unknown-only and mixed unknown paths, and the changed-document current-corpus contract call. The later Task/Plan evidence-only edit does not change the reviewed implementation.
 
 ## Commit Ledger
 
