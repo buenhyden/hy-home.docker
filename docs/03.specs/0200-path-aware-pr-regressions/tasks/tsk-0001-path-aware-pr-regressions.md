@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware PR Regression Execution"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
