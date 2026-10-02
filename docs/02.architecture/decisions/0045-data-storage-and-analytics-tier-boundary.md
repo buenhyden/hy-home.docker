@@ -62,7 +62,7 @@ ADR-0039's engine selection and storage/processing separation remain valid.
 - [AD-0004](../descriptions/0004-data-architecture.md)
 - [AD-0012](../descriptions/0012-data-analytics-architecture.md)
 - [REQ-0005](../../01.requirements/0005-data-analytics.md)
-- [SPEC-0197](../../03.specs/0197-infra-tier-layout/spec.md)
+- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
 ## Compliance
 

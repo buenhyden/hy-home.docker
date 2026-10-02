@@ -58,7 +58,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 | `mongodb-rep1` | data-bearing replica 1; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
 | `mongodb-rep2` | data-bearing replica 2; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mongodb/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Usage Type
 
