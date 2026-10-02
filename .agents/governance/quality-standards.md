@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-02"
 ---
 
 # Agent Quality and Security Standards
@@ -75,14 +75,16 @@ Quality dimensions:
   E2E, Zizmor SARIF upload, and SonarQube belongs here.
 - **CI-only pre-commit**: `scripts/validation/run-ci-precommit.sh` accepts no
   arguments, no Agent-wrapper variables, and no caller-supplied `SKIP`. It
-  requires `GITHUB_ACTIONS=true` and `CI=true`, sets its own skip list, and
-  executes the exact pinned CI command. It is not a local or Agent
-  authorization path. The public gate reaches it as the `leaf.pre-commit`
+  requires `GITHUB_ACTIONS=true` and `CI=true`, rejects caller `SKIP`, and
+  executes `pre-commit run --all-files --show-diff-on-failure` with no skip
+  list. It is not a local or Agent authorization path. The public gate reaches it as the `leaf.pre-commit`
   root of the `repository-integrity` suite for every PR event, including
   title edits, so an edited run cannot replace a cancelled revision check
   with narrower evidence.
-- **Anti-duplication**: do not execute the same heavy workloads redundantly. A
-  task with a dedicated gate leaf is skipped in the CI `pre-commit` runner.
+- **Anti-duplication**: do not execute the same heavy workloads redundantly. The
+  tracked pre-commit declaration contains only cheap checks; dedicated public
+  gate leaves are absent from that declaration, so the CI runner needs no
+  skip list.
   The removed `public-validation-changed` and `public-validation-full` hook
   registrations must not be reintroduced: the PR job owns the public changed
   gate and manual dispatch owns the full audit.
@@ -94,10 +96,21 @@ Quality dimensions:
 | Commit | Installed local cheap secret, format, lint and message checks; tracked `.pre-commit-config.yaml` declares cheap checks only | Staged bytes; the installed `core.hooksPath` must be observed separately |
 | Feature push | No automatic public gate in this repository | Explicit focused local checks remain available |
 | Agent Stop | Status and completion diagnostics only | Current working-tree state; no second changed-profile run |
-| PR to main | Required `validation-changed` for opened, synchronized, reopened and edited PRs; title edits still run changed selection | Candidate revision and PR identity; all PR actions use changed-path selection |
+| PR to main | One required `validation-changed` for opened, synchronized, reopened and edited PRs; title edits still run changed selection | Candidate revision and PR identity; document content validators run for document changes, document implementation regressions run when their owners change, and unknown paths select all roots |
 | Main push | `main-security` runs the registered Zizmor adapter and uploads SARIF | Merged SHA in the hosted security context; no routine six-suite full rerun |
 | Successful main-push audit | `update-main-current` with `contents: write` only | Leased channel tag old/new SHA, after rechecking current remote main |
 | Manual dispatch | `validation-full` | Intentional all-suite audit of the selected ref |
+
+The path-to-root rule in `.github/workflow-contract.yml` owns the precise PR
+selection: ordinary authored documentation retains metadata, lifecycle, links,
+repository contracts and applicable operations catalog checks while omitting
+only the two document implementation regression leaves. Validator, gate,
+registry, governance, and associated test changes select those regressions.
+Unknown paths fail closed to all suites and roots; manual `full` runs every
+registered leaf once. The changed-document metadata route includes current
+repository contracts, so omitting regression tests never omits current-corpus
+content validation. Local changed-profile runs are focused feedback; the hosted
+PR run on the candidate revision remains the merge gate.
 
 CodeQL and external security integrations remain separate hosted observations. An absent, cancelled or failed required PR status does not authorize a merge. A failed `main-security` or tag update remains a visible post-merge failure; recovery follows `docs/05.operations/runbooks/0009-release-management.md`. The out-of-repository installed Git hook is not changed by editing the tracked declaration.
 

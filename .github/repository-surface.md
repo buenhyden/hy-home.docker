@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-02"
 created: "2026-02-14"
 ---
 
@@ -56,7 +56,7 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 ## Navigation / Inventory
 
 - [CI 품질 워크플로](./workflows/ci-quality.yml): 모든 PR의 필수 `validation-changed`, 수동 `validation-full`, main push 보안 검사와 성공 후 `main-current` 갱신
-- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml)
+- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 변경 경로별 PR 검사와 수동 전체 검사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
 - [기여자 환영 워크플로](./workflows/greetings.yml)
 - [풀 리퀘스트 라벨러 워크플로](./workflows/pr-labeler.yml)
 - [스테일 스레드 워크플로](./workflows/stale.yml)

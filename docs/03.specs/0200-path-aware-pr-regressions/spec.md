@@ -1,6 +1,6 @@
 ---
 title: "Path-Aware Pull Request Regressions"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -22,7 +22,11 @@ Keep the single required pull-request `validation-changed` check introduced by
 SPEC-0199, but run expensive document-governance *regression tests* only when
 their implementation or contract changes. Document-only pull requests must
 still run the current document metadata, lifecycle, link, and repository
-contract validators. The manual `full` profile retains every regression test.
+contract validators. The changed-document metadata entrypoint must execute
+repository-wide current-corpus contracts before its selected-document checks;
+otherwise index membership and other content assertions would be lost when
+implementation regressions are omitted. The manual `full` profile retains
+every regression test.
 No new `dev` branch or second required status is introduced.
 
 The user reviewed and approved the written Spec on 2026-10-02. Repository
@@ -90,8 +94,9 @@ The Plan must enumerate the exact dependency prefixes from imports, fixture
 readers, registry use, and current test coverage before fixing the rule list.
 At minimum consider `scripts/lib/document_governance/`, document validation
 entrypoints, their tests, `docs/99.templates/registry.json`, and
-`.github/workflow-contract.yml`. Preserve the present fail-closed fallback
-when a path does not match any known suite rule. Avoid a new workflow, new
+`.github/workflow-contract.yml`. Strengthen the fail-closed fallback
+so a path that does not match any known suite rule selects all suites and all
+roots, alone or mixed with recognized paths. Avoid a new workflow, new
 status context, or second selector framework.
 
 ## Interfaces and Data

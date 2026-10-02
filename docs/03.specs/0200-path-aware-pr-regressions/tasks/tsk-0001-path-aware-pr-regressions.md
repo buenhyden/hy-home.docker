@@ -1,6 +1,6 @@
 ---
 title: "Path-Aware PR Regression Execution"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -39,18 +39,21 @@ The user approved the written Spec, the Plan, and same-session implementation wi
 | Manual `full` | Keep every registered leaf exactly once. |
 
 - W1 script/test disposition: The current manifest has 77 registered files, all `active`/`retain` with no successor. SPEC-0199 already recorded live consumers of apparent one-off, legacy, and duplicate scripts/tests. This audit found no new unreachable file with a tested replacement, so W2 deletes none.
-- W2-W4: Pending implementation, hosted acceptance, lifecycle closure, and branch cleanup.
+- W2 RED/GREEN: The initial focused tests failed on unknown-only fallback, ordinary Stage 03/05 document selection, and the changed-document content contract. Commit `8a29a1c38` moved only the two measured regression leaves to optional document roots, shared one unknown-path predicate across suite/root selection, and routed current-corpus repository contracts through `check-changed`. The changed-document route reuses `validate_repository_contracts` with the same base ref, so allocation and package lifecycle are not run twice. All 50 gate selector/plan tests, the focused metadata integration test, and the workflow-contract checker passed; the actual changed-document metadata check passed with 0 violations. Manual `full` retains each target leaf once.
+- W3 policy alignment: The canonical phase matrix, GitHub governance, verification navigation, and `.github` navigation were updated for local/hosted ownership and path-aware PR depth. The stale claim that CI pre-commit sets a skip list was corrected: it rejects caller `SKIP` and runs its pinned all-files command without a skip list. The implementation has no new job, required status, workflow trigger, dependency, or secret.
+- W3 remote configuration read-back: `main` still required strict `validation-changed` from Actions app 15368, zero approvals, no CODEOWNERS requirement, conversation resolution, and no force pushes/deletion; repository rulesets were empty. Environments `qa-control` and `qa-tag-publish` existed with the expected secret **names** only and protected-branch admission, not a custom `main`-only branch pattern. No tracked workflow referenced either environment, so both Apps remain unactivated here; parallel tag publishing would duplicate the existing writer. No secret value was read. The user-supplied App IDs 5156980/5156975 were not independently mapped to installations.
+- W3-W4: Final changed-profile gate, independent review, hosted PR timing, lifecycle closure, and branch cleanup remain pending.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1, W3 | Pending phase-matrix and hosted timing comparison | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 2 | W2, W3 | Pending document-only validator parity proof | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 3 | W2 | Pending owner-path, unknown-path, and bounded-root tests | [Gate contract](../../../../scripts/lib/gate/ci_gate_contract.py) |
-| 4 | W2, W3 | Pending full-plan exact-count and hosted route receipts | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
-| 5 | W1 | Pending consumer/replacement disposition for any removal | [Script manifest](../../../../scripts/manifest.yaml) |
-| 6 | W3 | Pending governance alignment, independent review, and protected PR result | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 1 | W1, W3 | Phase matrix updated; hosted timing comparison pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 2 | W2, W3 | Focused Stage 03/05 plans retain content validators and operations catalog; changed-document repository contracts pass | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 3 | W2 | Owner, unknown, mixed, and invalid optional-root tests pass (50 gate tests) | [Gate contract](../../../../scripts/lib/gate/ci_gate_contract.py) |
+| 4 | W2, W3 | Full-plan exact-count test passes; hosted route receipts pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
+| 5 | W1 | 77 active/retain manifest entries; no removal without successor evidence | [Script manifest](../../../../scripts/manifest.yaml) |
+| 6 | W3 | Governance aligned; independent review and protected PR result pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 
@@ -58,7 +61,7 @@ Independent final diff review is pending after the implementation candidate pass
 
 ## Commit Ledger
 
-W0 parent activation merged as `d46d892380d1d2faad234df6d9b872b928a61c6a` through PR #341; Task in-progress merged as `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d` through PR #344. Implementation commits and merge receipts are pending.
+W0 parent activation merged as `d46d892380d1d2faad234df6d9b872b928a61c6a` through PR #341; Task in-progress merged as `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d` through PR #344. W2 implementation commit `8a29a1c38` is local; W3 commit and merge receipts are pending.
 
 ## Rulings
 

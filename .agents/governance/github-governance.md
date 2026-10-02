@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-02"
 ---
 
 # GitHub Governance Policy
@@ -94,10 +94,10 @@ ruleset file records the observed remote state and issues no rule of its own.
   Its evidence covers only Git-visible, non-ignored repository paths; it does
   not observe ignored/outside writes or provide process/filesystem sandboxing.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
-- **Implementation**: The CI pre-commit runner owns its skip list. It skips
-  checks already owned by dedicated gate leaves. The public validation hooks
-  were removed, so no skip value for them remains. Callers must not supply
-  `SKIP` or introduce a second orchestration path. See
+- **Implementation**: The CI pre-commit runner rejects caller `SKIP` and runs
+  the pinned all-files command without a skip list. The tracked declaration
+  contains only cheap hooks; dedicated public gate leaves are separate.
+  Callers must not supply `SKIP` or introduce a second orchestration path. See
   [the shared execution boundary](quality-standards.md#4-execution-boundary).
 
 ### 5.0 Approved Remote Mutation Protocol

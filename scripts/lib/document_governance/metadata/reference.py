@@ -1440,7 +1440,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         try:
             if args.mode == "check-changed":
                 native_findings.extend(
-                    validate_repository_contracts(root, profiles, base_ref=args.base_ref)
+                    validate_repository_contracts(
+                        root, profiles, base_ref=args.base_ref
+                    )
                 )
             else:
                 native_findings.extend(_reference_delegation_findings(root, profiles))
