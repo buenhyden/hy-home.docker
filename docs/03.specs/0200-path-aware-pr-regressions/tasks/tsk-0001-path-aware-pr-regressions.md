@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware PR Regression Execution"
-version: "0.1.6"
+version: "0.1.8"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -21,7 +21,7 @@ Execute [SPEC-0200](../spec.md) and its [Plan](../plan.md) through W0-W4. Preser
 
 ## Inputs
 
-The user approved the written Spec, the Plan, and same-session implementation with independent final review on 2026-10-02. The user selected a main-only delivery flow and change-path-specific required PR regressions with manual full coverage. The worktree branch is `codex/spec-0200-pr-gate-latency`. The trusted parent package was activated through protected PRs [#338](https://github.com/buenhyden/hy-home.docker/pull/338), [#339](https://github.com/buenhyden/hy-home.docker/pull/339), [#340](https://github.com/buenhyden/hy-home.docker/pull/340), and [#341](https://github.com/buenhyden/hy-home.docker/pull/341), each after the required `validation-changed` result passed. The implementation baseline is protected main `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d`, after Task draft, ready, and in-progress transitions passed PRs #342-#344.
+The user approved the written Spec, the Plan, and same-session implementation with independent final review on 2026-10-02. The user selected a main-only delivery flow and change-path-specific required PR regressions with manual full coverage. The implementation used worktree branch `codex/spec-0200-pr-gate-latency`. The trusted parent package was activated through protected PRs [#338](https://github.com/buenhyden/hy-home.docker/pull/338), [#339](https://github.com/buenhyden/hy-home.docker/pull/339), [#340](https://github.com/buenhyden/hy-home.docker/pull/340), and [#341](https://github.com/buenhyden/hy-home.docker/pull/341), each after the required `validation-changed` result passed. The implementation baseline is protected main `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d`, after Task draft, ready, and in-progress transitions passed PRs #342-#344.
 
 ## Work Log
 
@@ -43,18 +43,21 @@ The user approved the written Spec, the Plan, and same-session implementation wi
 - W3 policy alignment: The canonical phase matrix, GitHub governance, verification navigation, and `.github` navigation were updated for local/hosted ownership and path-aware PR depth. The stale claim that CI pre-commit sets a skip list was corrected: it rejects caller `SKIP` and runs its pinned all-files command without a skip list. The implementation has no new job, required status, workflow trigger, dependency, or secret.
 - W3 remote configuration read-back: `main` still required strict `validation-changed` from Actions app 15368, zero approvals, no CODEOWNERS requirement, conversation resolution, and no force pushes/deletion; repository rulesets were empty. Environments `qa-control` and `qa-tag-publish` existed with the expected secret **names** only and protected-branch admission, not a custom `main`-only branch pattern. No tracked workflow referenced either environment, so both Apps remain unactivated here; parallel tag publishing would duplicate the existing writer. No secret value was read. The user-supplied App IDs 5156980/5156975 were not independently mapped to installations.
 - W3 final local gate: `python3 scripts/validation/run-ci-gate.py --profile changed` exited 0 on implementation head `873905c06`; the worktree was clean after execution. Focused gate tests (50), the changed-document repository-contract test (1), workflow contract checker, document metadata check (0 violations), corpus lifecycle check (0 violations), Ruff lint and format, and diff hygiene also passed. CI-only pre-commit, hosted dependencies, GitHub event identity, security upload and tag mutation remain remote-only evidence.
-- W3-W4: Hosted PR timing, lifecycle closure, and branch cleanup remain pending.
+- W3 protected delivery: PR [#345](https://github.com/buenhyden/hy-home.docker/pull/345) passed the strict required `validation-changed` on final head `a793c0ec5c0185fa992ee492fb26490a6fa05097` (run [36964262593](https://github.com/buenhyden/hy-home.docker/actions/runs/36964262593)), then merged as `0f46f38e96fab176932a40f959b13d0c3602efb1`. The job took 27m32s, 10m27s longer than baseline run 36939016845 (17m05s). This candidate changed validator code, so both document regression groups ran: 130 tests in 199.218s and 628 tests in 389.381s. The all-profile Compose validation also occupied about seven minutes. This is not a documentation-only latency measurement; the focused plan tests prove the narrower document-only selection. No guaranteed wall-clock improvement is claimed.
+- W3 main-push observation: run [36966605820](https://github.com/buenhyden/hy-home.docker/actions/runs/36966605820) passed `main-security` on merge SHA `0f46f38e9`, including the hosted security route, then passed `update-main-current`. Authenticated read-back found remote main and `main-current` both at `0f46f38e96fab176932a40f959b13d0c3602efb1`. `validation-full` was skipped on main push by design; manual dispatch remains registered.
+- W4 documentation-only local observation: the closure candidate changed only Stage 03 Markdown. `python3 scripts/validation/run-ci-gate.py --profile changed` exited 0 in 326.5 seconds. The output contained no 130-test or 628-test implementation regression group; current-document, lifecycle, link, and repository checks passed. This is local evidence, not a hosted wall-clock comparison.
+- W4 closure: All six acceptance criteria below have evidence. The Stage 03 inventory leaves SPEC-0182 and SPEC-0193 active because their separate runtime observations remain open; SPEC-0194, 0197, 0198, and 0199 are terminal. The terminal Task, Plan and Spec are prepared together on the fresh merge base. Branch/worktree removal and final local-main synchronization follow the terminal PR and are not preclaimed here.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1, W3 | Phase matrix updated; hosted timing comparison pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
-| 2 | W2, W3 | Focused Stage 03/05 plans retain content validators and operations catalog; changed-document repository contracts pass | [Workflow contract](../../../../.github/workflow-contract.yml) |
-| 3 | W2 | Owner, unknown, mixed, and invalid optional-root tests pass (50 gate tests) | [Gate contract](../../../../scripts/lib/gate/ci_gate_contract.py) |
-| 4 | W2, W3 | Full-plan exact-count test passes; hosted route receipts pending | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
-| 5 | W1 | 77 active/retain manifest entries; no removal without successor evidence | [Script manifest](../../../../scripts/manifest.yaml) |
-| 6 | W3 | Governance aligned, local changed gate passed, independent review clean; protected PR result pending | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 1 | W1 | PASS: phase matrix, strict required status and hosted timing comparison recorded; candidate +10m27s versus baseline without a speed guarantee | [Quality standards](../../../../.agents/governance/quality-standards.md) |
+| 2 | W2 | PASS: Stage 03/05 plan tests retain content validators and operations catalog; changed-document current-corpus contracts and hosted candidate gate pass | [Workflow contract](../../../../.github/workflow-contract.yml) |
+| 3 | W2 | PASS: owner, unknown, mixed, and invalid optional-root tests pass (50 gate tests); workflow contract checker passes | [Gate contract](../../../../scripts/lib/gate/ci_gate_contract.py) |
+| 4 | W3 | PASS: full-plan exact-count test passes; PR run 36964262593, main run 36966605820 and tag read-back prove distinct routes | [Quality workflow](../../../../.github/workflows/ci-quality.yml) |
+| 5 | W1 | PASS: 77 active/retain manifest entries, no verified replacement for a removal; no script or test removed | [Script manifest](../../../../scripts/manifest.yaml) |
+| 6 | W4 | PASS: governance aligned, local changed gate passed, independent review clean, protected PR #345 passed and merged | [Quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 
@@ -62,7 +65,7 @@ Independent read-only reviewer examined `origin/main...873905c06` after the loca
 
 ## Commit Ledger
 
-W0 parent activation merged as `d46d892380d1d2faad234df6d9b872b928a61c6a` through PR #341; Task in-progress merged as `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d` through PR #344. W2 implementation commit `8a29a1c38` is local; W3 commit and merge receipts are pending.
+W0 parent activation merged as `d46d892380d1d2faad234df6d9b872b928a61c6a` through PR #341; Task in-progress merged as `7b6ffb1bded0371696dcb0fd1e01ff1a1ec74e7d` through PR #344. W1 commit `3bbad5b13`, W2 `8a29a1c38`, W3 `873905c06` and review receipt `a793c0ec5` were delivered by PR #345 as `0f46f38e9`. The terminal lifecycle PR receipt follows this frozen evidence.
 
 ## Rulings
 
@@ -72,4 +75,4 @@ W0 parent activation merged as `d46d892380d1d2faad234df6d9b872b928a61c6a` throug
 
 ## Deferred Items
 
-None at Task creation. Any failed, skipped, or unobserved acceptance evidence will be recorded before terminal status.
+No SPEC-0200 acceptance criterion remains open. The prepared GitHub Apps were not activated: the current workflow has no use for a second tag writer, and App installation/permissions were not independently verified. SPEC-0182 and SPEC-0193 retain their separate runtime acceptance work.

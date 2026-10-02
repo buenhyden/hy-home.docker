@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware Pull Request Regressions Implementation Plan"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -92,21 +92,21 @@ removal. If there is no justified candidate, record retention.
    draft → ready → in-progress transitions before implementation. The user has
    approved the written Spec; that approval does not itself assert repository
    status transitions.
-1. **W1 — Baseline and dependency closure.** Reconfirm required status,
+1. W1: Baseline and dependency closure. Reconfirm required status,
    remote branches, current timing, two target leaves, source imports,
    fixture readers, registry dependencies and every path prefix. Record
    phase ownership and script/test disposition in Task 0001.
-2. **W2 — Routing with RED/GREEN proof.** Add focused failing selection and
+2. W2: Routing with RED/GREEN proof. Add focused failing selection and
    mutation tests. Change only the contract DAG, typed optional-root list
    and path rules needed to make them pass. Preserve all non-target leaves.
-3. **W3 — Governance and delivery.** Correct stale skip-list prose, update
+3. W3: Governance and delivery. Correct stale skip-list prose, update
    existing navigation only where needed, run focused tests and one changed
    gate on the final candidate, obtain independent review, then deliver via
    protected PR. Compare hosted elapsed time with run 36939016845 and record
    main-push/tag results without replaying full QA.
-4. **W4 — Lifecycle closure.** Advance Task and then Plan/Spec through their
-   allowed terminal transitions with acceptance receipts and complete
-   repository cleanup. Reconcile completed-package navigation separately;
+4. W4: Lifecycle closure. Advance Task and then Plan/Spec through their
+   allowed terminal transitions with acceptance receipts. Reconcile
+   completed-package navigation; perform repository cleanup after merge;
    do not falsify SPEC-0182 or SPEC-0193 closure.
 
 ### Task 0: W0 — Register and activate the package
@@ -202,7 +202,7 @@ acceptance criteria 1–6.
   final candidate; avoid rerunning full after a green PR result.
 - [x] Obtain an independent read-only final diff review and resolve
   actionable findings. Record skipped environment-specific gates honestly.
-- [ ] Push the candidate PR, require hosted validation-changed success on
+- [x] Push the candidate PR, require hosted validation-changed success on
   the final SHA, merge through main protection and observe main-security
   then update-main-current. Compare hosted PR elapsed time with baseline,
   recording variance rather than promising a fixed speed.
@@ -212,21 +212,22 @@ acceptance criteria 1–6.
 **Files:** Modify only this package's Task, Plan, Spec and existing
 Stage 03 navigation as required by their lifecycle states.
 
-**Interfaces:** Produces terminal acceptance receipts and equal local,
-origin and remote main refs.
+**Interfaces:** Produces terminal acceptance receipts; post-merge housekeeping
+then synchronizes local and remote main refs.
 
-- [ ] Map each Spec criterion 1–6 to exact Task evidence and permanent
+- [x] Map each Spec criterion 1–6 to exact Task evidence and permanent
   policy owner. Preserve any unresolved evidence as an explicit deferred
   item, not a completed assertion.
-- [ ] Advance Task and Plan/Spec only through allowed transitions on
-  protected PR bases, validating each candidate. Do not mark terminal
-  status until all criteria are proved.
-- [ ] Recheck all Stage 03 package statuses against Task evidence; correct
+- [x] Prepare the Task and Plan/Spec terminal transition on a fresh protected
+  main base, after acceptance evidence is complete; validate the candidate and
+  merge only after the required hosted result passes.
+- [x] Recheck all Stage 03 package statuses against Task evidence; correct
   stale navigation or contradictory completed-package receipt text without
   changing genuinely active SPEC-0182/SPEC-0193.
-- [ ] Delete merged development branches and worktrees after comparing
-  patch equivalence. Fetch and fast-forward local main; verify equality
-  with origin/main and remote main plus main-current read-back.
+After the terminal PR merges, remove the merged development branches and
+worktree, then fast-forward local main and compare it with origin/main, remote
+main, and main-current. This post-merge housekeeping is reported in the final
+delivery result because the completed Task becomes frozen before it runs.
 
 ## Risk and Rollback
 
