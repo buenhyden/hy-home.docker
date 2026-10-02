@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.10"
+version: "1.1.11"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,11 @@ reads this table.
 
 | Record | Class | Names | Source |
 | --- | --- | --- | --- |
+| `completed/03.specs/0194-agent-contract-integration/` | completed | POL-0004 / agent contract governance | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0194-agent-contract-integration` |
+| `completed/03.specs/0197-infra-tier-layout/` | completed | ADR-0045 / ADR-0046 / infrastructure layout | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0197-infra-tier-layout` |
+| `completed/03.specs/0198-operations-documentation-system/` | completed | GDE-0099 / RUN-0099 / service role documents | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0198-operations-documentation-system` |
+| `completed/03.specs/0199-ci-delivery-gate-optimization/` | completed | POL-0004 / workflow contract | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0199-ci-delivery-gate-optimization` |
+| `completed/03.specs/0200-path-aware-pr-regressions/` | completed | POL-0004 / workflow contract | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0200-path-aware-pr-regressions` |
 | `superseded/03.specs/0190-agent-contract-hardening/` | superseded | SPEC-0194 | `c86f55518b8a9a156e10e38fbd52d1a883063d6a:docs/03.specs/0190-agent-contract-hardening` |
 | `completed/03.specs/0196-ollama-0-35-decision-model/` | completed | GDE-0056 / RUN-0056 | `0cf685435c9fd1c0c6801937b180b60e04ed32ab:docs/03.specs/0196-ollama-0-35-decision-model` |
 | `completed/03.specs/0192-backup-and-host-alerting/` | completed | RUN-0021 | `dbb2413c8166e3d7cd1d9c4bd9e4680e0e03ea20:docs/03.specs/0192-backup-and-host-alerting` |

@@ -72,7 +72,7 @@ mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF s
 | `mng-valkey` | 공유 workflow/session AOF state; queue replay 별도 승인 | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-valkey-exporter` | 공유 Valkey metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Images, configuration and resource controls
 

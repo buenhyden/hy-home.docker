@@ -69,7 +69,7 @@ Running-container reconciliation is a separate operational action.
 - [REQ-0005](../../01.requirements/0005-data-analytics.md)
 - [ADR-0039](../decisions/0039-analytics-engines-after-lakehouse-convergence.md)
 - [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
-- [SPEC-0197](../../03.specs/0197-infra-tier-layout/spec.md)
+- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
 ## Related Documents
 
