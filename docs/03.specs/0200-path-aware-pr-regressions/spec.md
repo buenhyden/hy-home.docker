@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware Pull Request Regressions"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -24,6 +24,9 @@ their implementation or contract changes. Document-only pull requests must
 still run the current document metadata, lifecycle, link, and repository
 contract validators. The manual `full` profile retains every regression test.
 No new `dev` branch or second required status is introduced.
+
+The user reviewed and approved the written Spec on 2026-10-02. Repository
+lifecycle publication proceeds through each registered state on trusted main.
 
 The observed successful PR run
 [`36939016845`](https://github.com/buenhyden/hy-home.docker/actions/runs/36939016845)
