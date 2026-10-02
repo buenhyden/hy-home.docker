@@ -1,8 +1,8 @@
 ---
 title: "Path-Aware Pull Request Regressions"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
