@@ -4,6 +4,7 @@ import os
 import posixpath
 import re
 import shlex
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -992,6 +993,20 @@ class PublicSecretSchemaTests(unittest.TestCase):
                     self.assertNotIn("secrets", str(volume), (name, volume))
         self.assertEqual(SOURCE_ANALYSIS_SERVICES, found)
 
+    def test_secret_directory_markers_are_empty_regular_files(self):
+        markers = list((ROOT / "secrets").rglob(".gitkeep"))
+        for relative in (
+            "communication/.gitkeep",
+            "db/surrealdb/.gitkeep",
+            "security/.gitkeep",
+            "backup/openbao/.gitkeep",
+        ):
+            self.assertIn(ROOT / "secrets" / relative, markers)
+        for path in markers:
+            info = path.lstat()
+            self.assertTrue(stat.S_ISREG(info.st_mode), path)
+            self.assertEqual(0, info.st_size, path)
+
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
         self.assertEqual(101, len(contract["declarations"]))
@@ -1006,7 +1021,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 "auth": 14,
                 "automation": 4,
                 "backup": 6,
-                "common": 5,
+                "communication": 5,
                 "data": 15,
                 "db": 26,
                 "labs": 14,
@@ -1018,6 +1033,12 @@ class PublicSecretSchemaTests(unittest.TestCase):
             dict(areas),
         )
         self.assertEqual(33, len(contract["rows"]) - sum(areas.values()))
+        self.assertEqual(
+            "secrets/db/surrealdb/surreal_db_password.txt", contract["rows"]["AI-003"]["path"]
+        )
+        self.assertEqual(
+            "secrets/communication/smtp_password.txt", contract["rows"]["COMM-002"]["path"]
+        )
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
