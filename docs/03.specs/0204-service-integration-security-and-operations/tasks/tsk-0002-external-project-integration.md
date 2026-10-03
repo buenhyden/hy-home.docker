@@ -1,8 +1,8 @@
 ---
 title: "External Project Integration Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -17,7 +17,7 @@ created: "2026-10-03"
 
 ## Objective
 
-Define and, after approval, implement an infra-owned metadata schema and
+Define and implement an approved infra-owned metadata schema and
 validator for external Project-Template-derived applications. Inspect current
 ingress, identity, network and telemetry boundaries without changing their
 source until a named project and exact follow-up Task exist. Prompt 06 owns
@@ -34,8 +34,8 @@ approved. The proposed source write scope is limited to new
 `infra/09-platform-ops/project-registration/{README.md,schema.json}`,
 `scripts/validation/check-project-registration.py`,
 `scripts/manifest.yaml`, and
-`tests/validation/test_project_registration.py` after Task approval; no
-resource provision or service change is authorized by this draft alone.
+`tests/validation/test_project_registration.py` under the user's
+2026-10-03 approval; no resource provision or service change is authorized.
 
 ## Work Log
 
@@ -83,7 +83,7 @@ project approval; SPEC-0203's merged source is not runtime proof.
 | Check | Result | Limit |
 | --- | --- | --- |
 | Current Traefik, root, Alloy and dev-pg declaration inspection | READ_ONLY | No external project consumer or approved project label found |
-| Registration schema/validator synthetic fixtures | NOT_RUN | Await Task approval; route, collector and disconnect runtime remain excluded |
+| Registration schema/validator synthetic fixtures | NOT_RUN | Source scope approved; route, collector and disconnect runtime remain excluded |
 | External project network, OIDC/S3/search/DB provision and HOME restart | NOT_RUN | Named project and separate operation approval absent |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -101,7 +101,7 @@ inspection alone is not an authorization test.
 
 ## Commit Ledger
 
-No Prompt 04 commit. Baseline only: `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending.
 
 ## Rulings
 

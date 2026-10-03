@@ -1,8 +1,8 @@
 ---
 title: "Backup and Cross-tier Operations Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -17,9 +17,8 @@ created: "2026-10-03"
 
 ## Objective
 
-After SPEC-0202 transfers backup/Kafka ownership and the owner approves this
-Task, include the development PostgreSQL repository in the existing backup
-source chain. Close confirmed cross-tier service contracts only where a real
+After SPEC-0202 transfers backup/Kafka ownership, include the development
+PostgreSQL repository in the existing backup source chain. Close confirmed cross-tier service contracts only where a real
 consumer and bounded fixture exist. Source changes cannot prove HOME recovery
 or authorize data migration.
 
@@ -27,17 +26,17 @@ or authorize data migration.
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`, SPEC-0202 synthetic
 dev-pg restore receipt, current POL/RUN-0021, SPEC-0201 W5 service ledger,
-and the current Restic/pgBackRest source. SPEC-0202 lifecycle remains draft at
-this baseline; Kafka connector and backup policy writer handoff is not closed.
+and the current Restic/pgBackRest source. SPEC-0202 lifecycle remains draft at this baseline. The user approved this
+Task source scope on 2026-10-03, but backup/Kafka writer handoff is not closed.
 No backup repository contents, key values, HOME logs or production rows are
-read by this draft.
+read by this Task.
 
 ## Work Log
 
 | Service and source evidence | Exact writer or read-only source | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
-| dev-pg has a separate `dev-pgbackrest` repository; Restic state set mounts/lists only management `pgbackrest`; host scheduler backs up only mng-pg | WRITE AFTER APPROVAL: `infra/09-platform-ops/restic/docker-compose.yml`, `backup.sh`, `infra/09-platform-ops/restic/bin/hyhome-backup.sh`; `sets/state-include.txt` is read-only unless a later exact amendment proves it necessary; source variable `BACKUP_STATE_REPO_DIR`, `dev-pg`/Restic consumers | Synthetic missing/present repository, backup failure, disk budget, globals and offsite set identity; revert scoped source before live scheduler deployment, never delete a repository | SPEC-0202 handoff plus Task source approval; live backup/offsite/restore separately approved |
-| Management PITR and dev-pg isolated synthetic restore are distinct evidence | WRITE AFTER APPROVAL: existing `docs/05.operations/policies/0021-backup-and-restore.md`, `docs/05.operations/runbooks/0021-backup-and-restore.md`, `docs/05.operations/guides/0021-backup-and-restore.md`; development DB owner docs are read-only; selected stanza, image digest, extension/role/migration revision, backup/WAL range | Separate-volume restore, application reader denial/success, no `latest` selection; source rollback cannot undo data mutation | HOME and actual repository verify/restore need exact preflight and permission |
+| dev-pg has a separate `dev-pgbackrest` repository; Restic state set mounts/lists only management `pgbackrest`; host scheduler backs up only mng-pg | WRITE AFTER SPEC-0202 HANDOFF: `infra/09-platform-ops/restic/docker-compose.yml`, `backup.sh`, `infra/09-platform-ops/restic/bin/hyhome-backup.sh`; `sets/state-include.txt` is read-only unless a later exact amendment proves it necessary; source variable `BACKUP_STATE_REPO_DIR`, `dev-pg`/Restic consumers | Synthetic missing/present repository, backup failure, disk budget, globals and offsite set identity; revert scoped source before live scheduler deployment, never delete a repository | SPEC-0202 handoff under the approved Task scope; live backup/offsite/restore separately approved |
+| Management PITR and dev-pg isolated synthetic restore are distinct evidence | WRITE AFTER SPEC-0202 HANDOFF: existing `docs/05.operations/policies/0021-backup-and-restore.md`, `docs/05.operations/runbooks/0021-backup-and-restore.md`, `docs/05.operations/guides/0021-backup-and-restore.md`; development DB owner docs are read-only; selected stanza, image digest, extension/role/migration revision, backup/WAL range | Separate-volume restore, application reader denial/success, no `latest` selection; source rollback cannot undo data mutation | HOME and actual repository verify/restore need exact preflight and permission |
 | Debezium source changed in SPEC-0202; Avro consumers retain Schema Registry | READ_ONLY: `infra/05-messaging/kafka/connect/debezium/postgres-connector.json` and Kafka service docs; any source edit needs a later exact Task after SPEC-0202 handoff | Synthetic restart/duplicate/replay/schema evolution and lag measurement; do not reuse old LSN on a new DB; revert fixture/source, preserve offsets | No live connector registration, slot deletion or broker restart |
 | Airflow and n8n have separate batch/integration purposes | READ_ONLY: current Airflow/n8n Compose and GDE/POL/RUN-0050/0053; no workflow source write in this Task | Inventory worker DB/S3/mail reachability and payload/retention ownership; fixture and rollback belong to a later exact Task | Workflow data or service restart separately approved |
 | Open WebUI/Ollama/ComfyUI and Qdrant have current optional paths | READ_ONLY: current Open WebUI/Ollama/ComfyUI/Qdrant source and AI operations owners; no AI source write in this Task | Inventory permission/embedding-version and GPU budget gaps; fixture belongs to a later exact Task; no speech activation | Real documents, user voice, GPU reservation and product scope separately approved |
@@ -46,8 +45,8 @@ read by this draft.
 
 Only the three exact Restic source files, the three named Stage 05 backup
 documents and `tests/validation/test_compose_baseline_gates.py` may be
-writers after SPEC-0202 handoff and Task approval. The Debezium connector and
-consumer-dependent workflow, AI,
+writers after SPEC-0202 handoff under the 2026-10-03 Task approval. The
+Debezium connector and consumer-dependent workflow, AI,
 mail and analytics changes require a later Task with exact files and approvals.
 The source fix must use the existing backup state set and offsite copy path;
 it must not copy live PGDATA or lower retention. Account for backup growth in
@@ -61,7 +60,7 @@ Any additional test file or parser requires an exact Task amendment.
 | Check | Result | Limit |
 | --- | --- | --- |
 | Current Restic/dev-pg declaration comparison | READ_ONLY | Separate dev repository is omitted from Restic mount/list and scheduler |
-| Synthetic backup failure/capacity/restore fixture | NOT_RUN | Await handoff, Task approval and exact fixture preflight; other tiers are read-only |
+| Synthetic backup failure/capacity/restore fixture | NOT_RUN | Await SPEC-0202 handoff and exact fixture preflight; other tiers are read-only |
 | HOME backup, offsite copy, PITR, credential rotation, data migration | NOT_RUN | Separate exact operational approval required |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
@@ -78,7 +77,7 @@ The synthetic SPEC-0202 restore is not a current HOME or offsite receipt.
 
 ## Commit Ledger
 
-No Prompt 04 commit. Baseline only: `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Backup source commit blocked pending SPEC-0202 handoff.
 
 ## Rulings
 

@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -27,15 +27,15 @@ contract without moving data or creating LAB credentials again.
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03;
 SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The user-supplied
 Prompt 04 requests source implementation but requires an approved Task. This
-Task is an approval draft: no source edits, image pull, HOME deployment or
-credential action has been authorized by its existence.
+Task source scope was approved by the user on 2026-10-03. Image pull, HOME
+deployment and credential action remain separate.
 
 ## Work Log
 
 | Service and source evidence | Proposed exact writer path and variable/consumer | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
-| n8n main/worker use one older build pin while both runners use a newer image; official n8n documentation requires matching versions. Proposed target is the 2026-10-02 stable `2.41.6`, subject to a fresh release/digest/compatibility check | `infra/07-workflow/n8n/docker-compose.yml`, `Dockerfile`, `dev.Dockerfile`, `renovate.json5`; `N8N_VERSION`, four image declarations; main, worker and two runners | Same-version/render assertion, queue/manual/scheduled/webhook/Code smoke on synthetic metadata; revert version declarations before HOME rollout. A live DB upgrade needs metadata plus encryption-key backup and its own operation approval | Source Task approval; HOME start/restart separately |
-| n8n instance has singular timeout key; runner image `_FILE` support is not documented | `infra/07-workflow/n8n/docker-compose.yml`, `docker-entrypoint.sh`, `docker-entrypoint.dev.sh`; `N8N_RUNNERS_TASK_TIMEOUT`, broker token reference `n8n_runner_auth_token`, selected `N8N_VALKEY_SECRET` file; n8n and both runners. A new runner wrapper is excluded until an exact Task amendment | Empty/mismatched file rejection, supported variable render, no secret in argv/log/layer or JS/Python Code-task environment, bounded worker restart; revert scoped wrapper/Compose | Secret **reference** edits in approved source scope; no token reading/rotation |
+| n8n main/worker use one older build pin while both runners use a newer image; official n8n documentation requires matching versions. Proposed target is the 2026-10-02 stable `2.41.6`, subject to a fresh release/digest/compatibility check | `infra/07-workflow/n8n/docker-compose.yml`, `Dockerfile`, `dev.Dockerfile`, `renovate.json5`; `N8N_VERSION`, four image declarations; main, worker and two runners | Same-version/render assertion, queue/manual/scheduled/webhook/Code smoke on synthetic metadata; revert version declarations before HOME rollout. A live DB upgrade needs metadata plus encryption-key backup and its own operation approval | Task source approved 2026-10-03; HOME start/restart separately |
+| n8n instance has singular timeout key; runner image `_FILE` support is explicitly absent | `infra/07-workflow/n8n/docker-compose.yml`, `docker-entrypoint.sh`, `docker-entrypoint.dev.sh`; `N8N_RUNNERS_TASK_TIMEOUT`, broker token reference `n8n_runner_auth_token`, selected `N8N_VALKEY_SECRET` file; n8n and both runners. Use only a bounded inline Compose launcher entrypoint in this existing file; no new runner image or wrapper file is authorized | Empty/mismatched file rejection, supported variable render, no secret in argv/log/layer or JS/Python Code-task environment, bounded worker restart; revert scoped wrapper/Compose | Secret **reference** edits in approved source scope; no token reading/rotation |
 | Crawl4AI is pinned before the official `0.9.4` security fixes, is opt-in and has no confirmed consumer | `infra/08-ai/crawl4ai/docker-compose.yml`, `renovate.json5` only if matching update rule, existing `docs/05.operations/{guides,policies,runbooks}/0091-crawl4ai.md`; URL/redirect/robots/link preview input | Official advisory and image digest/architecture review, synthetic DNS/redirect/private-destination denial, preserve separate bridge and verify real egress enforcement separately; revert image pin if behavior differs | No new consumer network, HOME activation or crawler payload collection |
 | OpenBao health accepts sealed status as healthy | `infra/03-security/openbao/docker-compose.yml`, existing `docs/05.operations/{guides,policies,runbooks}/0085-openbao.md`; `bao status` result | Synthetic sealed/unsealed/Agent-template-current probes and dependency render; revert health semantics if dependency contract fails | No unseal, credential rotation or HOME restart |
 | Cassandra official image move already lives in LAB | `labs/cassandra.yml`, `labs/cassandra.md`, existing GDE/POL/RUN-0025 read-only unless a confirmed defect appears; `/var/lib/cassandra` | LAB render, data/auth/UID limits recorded; no duplicate migration or fabricated auth | No old Bitnami data move, LAB up or secret issue |
@@ -80,22 +80,23 @@ none of these links is a tested HOME deployment.
 ## Review Evidence
 
 Independent source/security review is pending the approved implementation diff.
-No generated projection or runtime condition is marked PASS from this draft.
+No generated projection or runtime condition is marked PASS from the initial draft.
 
 ## Commit Ledger
 
-No Prompt 04 commit. Baseline only: `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending.
 
 ## Rulings
 
-Do not shrink main runners without path evidence. Do not use a generic `_FILE`
-assumption for `n8nio/runners`; verify its entrypoint first. If the pinned
-runner lacks a safe supported file-consumption path, stop and amend this Task
-with the exact wrapper/Dockerfile path before writing one. Existing LAB
+Do not shrink main runners without path evidence. Official documentation
+says `n8nio/runners` does not support `_FILE`. The approved inline Compose
+entrypoint must read the mounted secret, reject empty input without printing
+it, export only the launcher variable, and retain official tini/launcher
+behavior. A separate wrapper or image requires another exact Task amendment. Existing LAB
 Cassandra work is a verification item, not a repeat implementation.
 
 ## Deferred Items
 
-Task source approval, image/digest acceptance, synthetic container preflight,
+Image/digest acceptance, synthetic container preflight,
 HOME version upgrade, management DB/encryption-key backup, real credential
 handling and all service operations remain separate.

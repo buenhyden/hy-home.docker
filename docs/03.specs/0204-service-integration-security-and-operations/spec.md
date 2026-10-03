@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
-status: "review"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -225,5 +225,5 @@ verified dev-pg recovery target and capacity budget are still absent.
 
 Source changes may alter n8n workflow execution, crawler rejection, OpenBao
 health dependency and future backup scheduling when deployed. Each requires
-its own staged rollback and HOME change window; the draft does not exercise
+its own staged rollback and HOME change window; this package does not exercise
 those effects.

@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -16,10 +16,9 @@ created: "2026-10-03"
 
 ## Objective
 
-Prepare Prompt 04 for source implementation in reversible, reviewable Tasks.
-The user requested implementation based on an approved Task; no SPEC-0204
-Task existed at the baseline. This draft establishes file ownership and
-acceptance gates before any service declaration is changed.
+Implement Prompt 04 in reversible, reviewable Tasks. The user approved the
+listed source scopes on 2026-10-03. The package established file ownership
+and acceptance gates before any service declaration was changed.
 
 ## Dependencies
 
@@ -27,8 +26,8 @@ acceptance gates before any service declaration is changed.
   when drafting; fetch/recompare before source implementation.
 - SPEC-0201 W5 exact handoff, SPEC-0202's dev data/backup contract, SPEC-0203's
   source-only quality/Alloy contract and current Requirement/Architecture.
-- Owner approval of this Plan and each Task's source scope. Kafka connector and
-  backup-policy ownership transfer waits for SPEC-0202's lifecycle closure;
+- User approval of this Plan and the listed Task source scopes on 2026-10-03.
+- Kafka connector and backup-policy ownership transfer waits for SPEC-0202's lifecycle closure;
   an already merged source commit alone is not that closure.
 - Official n8n, Crawl4AI, Cassandra, backup and security references rechecked
   at implementation; image architecture/digest and secret consumer behavior
@@ -42,7 +41,7 @@ acceptance gates before any service declaration is changed.
 1. **W1: freeze source and authority.** Recheck main, root include, current
    service consumers, lifecycle IDs and protected paths. Confirm the exact
    changed-file ledger and separate confirmed defects from runtime questions.
-   Update this draft if a concurrent change has closed a finding. Maps
+   Update the Task if a concurrent change has closed a finding. Maps
    acceptance 1 and 8.
 2. **W2: repair priority compatibility and security source.** TSK-0001 owns
    n8n server/worker/runner version, timeout and secret-file consumption,
@@ -88,7 +87,7 @@ and scoped static validation. A container run requires exact Docker context,
 project, ports, networks, volumes, resource budget and cleanup review before
 execution. Generated version projection uses its registered generator, not
 manual JSON edits. Stage 03 metadata/link checks and `git diff --check` apply
-to draft documents. Protected PR checks are required for remote integration;
+to changed documents. Protected PR checks are required for remote integration;
 local success is not a merge receipt. HOME activation, backup, restore, data
 migration and real external-project connection remain `NOT_RUN` here.
 
