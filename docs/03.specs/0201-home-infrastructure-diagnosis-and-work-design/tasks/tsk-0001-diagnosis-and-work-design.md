@@ -391,8 +391,11 @@ Independent read-only review of the W1-W5 draft found stale NOT_RUN status and m
 
 ## Commit Ledger
 
-No commit exists for Task execution. This draft has no implementation commit,
-no remote push, no pull request, and no merge.
+The W1–W6 diagnosis was committed with the approved Prompt 02 source in
+`b867eb7d466000ed8d49f6a8eb6410f1db646268` and reached local `main` at
+`5f99e0e51b41b912f128daafb4a3d41539b77560`. No remote push or PR had
+occurred at this recorded source checkpoint; current remote delivery is a
+separate approved action.
 
 ## Rulings
 

@@ -323,8 +323,11 @@ owner's revised criterion 10; this is not an operational recovery receipt.
 
 ## Commit Ledger
 
-No commit, push, PR, merge, or operational change is authorized by this draft.
-The existing TSK-0001 receipt and its files are preserved.
+W7.1–W7.3 evidence and the W7.4 deferral were committed in
+`b867eb7d466000ed8d49f6a8eb6410f1db646268` and reached local `main` at
+`5f99e0e51b41b912f128daafb4a3d41539b77560`. The original observation
+approval did not authorize remote or operational changes; remote delivery is
+now a separately approved action. The TSK-0001 receipt remains preserved.
 
 ## Rulings
 
