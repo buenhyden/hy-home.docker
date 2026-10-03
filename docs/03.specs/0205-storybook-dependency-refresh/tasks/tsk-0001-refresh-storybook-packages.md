@@ -1,6 +1,6 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -60,7 +60,9 @@ and generated build output are task-local ignored artifacts, not deliverables.
 
 ## Review Evidence
 
-Independent source and security review follows the exact implementation diff.
+Independent docs-only review found no blocking issue after SPEC-0204 and
+SPEC-0205 were serialized in the branch. Source/security review follows the
+exact npm implementation diff; this docs review is not source acceptance.
 
 ## Commit Ledger
 
