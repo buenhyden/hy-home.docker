@@ -1,6 +1,6 @@
 ---
 title: "Storybook Dependency Refresh Specification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -48,6 +48,10 @@ its infrastructure scope.
 3. TypeScript stays at `6.0.3`: the existing Dependabot exclusion records a
    TypeScript 7 / typescript-eslint incompatibility. A new compatibility
    result and separate scoped Task are required before changing it.
+   The baseline graph also has an optional TypeScript ^5 peer through
+   vite-tsconfig-paths and tsconfck. Lock-only npm ls exits 1 on that existing
+   mismatch even though clean npm ci succeeds; do not add an extraneous nested
+   TypeScript 5 lock entry merely to make that listing appear clean.
 4. `npm ci`, lint, typecheck, Next build, Storybook build and Storybook Vitest
    browser coverage use this repository's existing scripts and pass, or record
    a specific blocked/failing reason. Do not weaken the 90% coverage threshold.
@@ -62,7 +66,8 @@ Read official Storybook and npm registry stable tags and peer ranges; update
 the two npm files together using the installed npm version. Use current
 Dependabot ownership rather than adding a second npm updater. Run existing
 path-aware and frontend checks. Recheck the resolved graph, then record exact
-commands and exits in TSK-0001. Make no generated tech-stack version edit:
+commands and exits in TSK-0001, including the known optional-peer listing
+failure. Make no generated tech-stack version edit:
 that projection covers infrastructure image declarations, not Storybook npm.
 
 ## Interfaces and Data
@@ -78,7 +83,8 @@ Reject mismatched Storybook train packages, peer-resolution overrides, an
 unplanned major upgrade, install scripts with unreviewed effects, and a lockfile
 that differs from the manifest. Stop on failed build, browser coverage, or new
 security finding; diagnose the exact dependency path without `npm audit fix
---force`, a blanket override, or lowering the audit gate. Keep npm cache and
+--force`, a blanket override, or lowering the audit gate. Compare peer listing failures
+with baseline before classifying one as a regression. Keep npm cache and
 installed modules inside task-owned scratch/worktree scope.
 
 ## Acceptance Contract
@@ -100,9 +106,10 @@ installed modules inside task-owned scratch/worktree scope.
 
 ## Open Questions
 
-No package selection value is missing. Real browser execution depends on a
-bounded Playwright install and local tool availability. A patched `braces`
-release or validated replacement is needed before the held remote merge.
+No package selection value is missing. The scoped browser tests ran with a
+task-local Playwright headless shell. The baseline optional TypeScript peer
+listing remains unresolved. A patched `braces` release or validated
+replacement is needed before the held remote merge.
 
 ## Operational Impact
 

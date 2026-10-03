@@ -1,6 +1,6 @@
 ---
 title: "Storybook Dependency Refresh Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -37,7 +37,8 @@ isolated branch after this Spec Package and exact Task are approved.
    Covers acceptance 1.
 2. **W2: update graph.** Change only Task-owned npm files; refresh lockfile
    with a task-local cache and install without unreviewed lifecycle scripts.
-   Confirm exact resolved train and peers. Covers acceptance 2.
+   Confirm the exact resolved train and compare peer listing failures with
+   baseline. Covers acceptance 2.
 3. **W3: verify and review.** Run scoped install, lint, typecheck, Next build,
    Storybook build, Vitest browser coverage, Storybook contract checker, npm
    audit and diff review. Record failures and advisory path without bypass.
@@ -48,6 +49,7 @@ isolated branch after this Spec Package and exact Task are approved.
 | Risk | Control |
 | --- | --- |
 | Peer mismatch or Next/Vite behavior change | Fail on npm resolution and build; revert only Task-owned manifest/lock. |
+| Existing optional tsconfck TypeScript ^5 peer versus root TypeScript 6 | Record lock-only npm ls exit 1 against baseline; require clean npm ci and builds; avoid an extraneous nested TypeScript 5 lock entry. |
 | Browser test cannot run locally | Mark that check NOT_RUN/BLOCKED, retain static results; do not claim full acceptance. |
 | `braces` high advisory remains | Preserve failed security gate and user's held-merge decision; no exception or override. |
 | Concurrent SPEC-0204 ID allocation | Keep this package at SPEC-0205 and reconcile registry serially before any integration. |
