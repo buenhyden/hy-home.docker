@@ -1,10 +1,10 @@
 ---
 title: "Retention Catalog"
-version: "1.1.11"
+version: "1.1.12"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 ---
 
 # Retention Catalog
@@ -33,6 +33,8 @@ reads this table.
 | `completed/03.specs/0198-operations-documentation-system/` | completed | GDE-0099 / RUN-0099 / service role documents | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0198-operations-documentation-system` |
 | `completed/03.specs/0199-ci-delivery-gate-optimization/` | completed | POL-0004 / workflow contract | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0199-ci-delivery-gate-optimization` |
 | `completed/03.specs/0200-path-aware-pr-regressions/` | completed | POL-0004 / workflow contract | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0200-path-aware-pr-regressions` |
+| `completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/` | completed | AD-0004 / AD-0031 / POL-0021 / RUN-0021 | `ce001be7af93aebe6430f586b56a5c443fa9f386:docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design` |
+| `completed/03.specs/0202-development-data-and-lab-isolation/` | completed | AD-0004 / AD-0031 / POL-0021 / RUN-0021 | `ce001be7af93aebe6430f586b56a5c443fa9f386:docs/03.specs/0202-development-data-and-lab-isolation` |
 | `superseded/03.specs/0190-agent-contract-hardening/` | superseded | SPEC-0194 | `c86f55518b8a9a156e10e38fbd52d1a883063d6a:docs/03.specs/0190-agent-contract-hardening` |
 | `completed/03.specs/0196-ollama-0-35-decision-model/` | completed | GDE-0056 / RUN-0056 | `0cf685435c9fd1c0c6801937b180b60e04ed32ab:docs/03.specs/0196-ollama-0-35-decision-model` |
 | `completed/03.specs/0192-backup-and-host-alerting/` | completed | RUN-0021 | `dbb2413c8166e3d7cd1d9c4bd9e4680e0e03ea20:docs/03.specs/0192-backup-and-host-alerting` |

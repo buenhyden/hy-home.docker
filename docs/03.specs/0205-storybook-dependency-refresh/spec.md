@@ -1,10 +1,10 @@
 ---
 title: "Storybook Dependency Refresh Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0205"
 parent_ids:
@@ -102,7 +102,7 @@ installed modules inside task-owned scratch/worktree scope.
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- [SPEC-0201](../0201-home-infrastructure-diagnosis-and-work-design/spec.md)
+- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 
 ## Open Questions
 

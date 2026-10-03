@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -210,8 +210,8 @@ without its separate exact approval.
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
-- [SPEC-0201](../0201-home-infrastructure-diagnosis-and-work-design/spec.md)
-- [SPEC-0202](../0202-development-data-and-lab-isolation/spec.md)
+- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
+- [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 - [SPEC-0203](../0203-quality-results-and-isolated-load-testing/spec.md)
 
 ## Open Questions

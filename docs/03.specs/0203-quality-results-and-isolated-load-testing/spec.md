@@ -1,10 +1,10 @@
 ---
 title: "Quality Results and Isolated Load Testing Specification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0203"
 parent_ids:
@@ -175,8 +175,8 @@ project credential issuance, live traffic and restoration.
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [ADR-0045](../../02.architecture/decisions/0045-data-storage-and-analytics-tier-boundary.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
-- [SPEC-0201](../0201-home-infrastructure-diagnosis-and-work-design/spec.md)
-- [SPEC-0202](../0202-development-data-and-lab-isolation/spec.md)
+- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
+- [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 
 ## Open Questions
 
