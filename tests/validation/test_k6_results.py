@@ -28,6 +28,7 @@ EXECUTOR_SPEC = importlib.util.spec_from_file_location(
 )
 container_executor = importlib.util.module_from_spec(EXECUTOR_SPEC)
 assert EXECUTOR_SPEC.loader is not None
+sys.modules["container_executor"] = container_executor
 EXECUTOR_SPEC.loader.exec_module(container_executor)
 
 
@@ -161,6 +162,43 @@ class K6ResultContractTests(unittest.TestCase):
         with self.assertRaisesRegex(quality_run.ContractError, "public target"):
             quality_run.validate_manifest(invalid)
 
+    def test_manifest_rejects_wiremock_admin_and_noncanonical_paths(self) -> None:
+        for path in (
+            "/__admin",
+            "/__admin/requests",
+            "/%61dmin",
+            "/v1/../admin",
+            "/v1//items",
+            "/v1\\items",
+            "/v1/\nitems",
+        ):
+            with self.subTest(path=path):
+                invalid = json.loads(json.dumps(self.manifest))
+                invalid["target"]["paths"] = [path]
+                with self.assertRaises(quality_run.ContractError):
+                    quality_run.validate_manifest(invalid)
+
+    def test_rehearsal_checks_still_reject_failure_when_python_is_optimized(
+        self,
+    ) -> None:
+        import subprocess
+
+        controller = ROOT / "examples/operations/quality-path-guard/acceptance.py"
+        program = (
+            "import runpy; "
+            f"module = runpy.run_path({str(controller)!r}); "
+            "module['require_result'](0, {'verdict': 'failed_threshold', "
+            "'evidence_state': 'complete'}, 0, 'passed')"
+        )
+        result = subprocess.run(
+            [sys.executable, "-O", "-c", program],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("synthetic quality acceptance failed", result.stderr)
+
     def test_prepare_binds_scenario_and_refuses_existing_attempt(self) -> None:
         attempt = self.prepare()
         self.assertEqual(
@@ -243,6 +281,163 @@ class K6ResultContractTests(unittest.TestCase):
                 },
             }
         ]
+
+    def test_guarded_executor_runs_only_exact_two_network_fixture(self) -> None:
+        from http_guard import COMMAND, configuration
+
+        self.manifest["mock_mode"] = "load"
+        config_path = self.root / "routes.json"
+        config_path.write_bytes(canonical(configuration(self.manifest)))
+        gateway = self.peer_record()[0]
+        gateway["Config"].update(
+            {
+                "Image": "traefik@sha256:" + "c" * 64,
+                "Cmd": COMMAND,
+                "Env": ["PATH=/usr/bin"],
+                "Labels": {
+                    "hyhome.quality.run_id": self.manifest["run_id"],
+                    "hyhome.quality.role": "http-guard",
+                },
+            }
+        )
+        gateway["HostConfig"].update(
+            {
+                "ReadonlyRootfs": True,
+                "Privileged": False,
+                "CapDrop": ["ALL"],
+                "CapAdd": [],
+            }
+        )
+        gateway["Mounts"] = [
+            {
+                "Type": "bind",
+                "Source": str(config_path),
+                "Destination": "/guard/routes.yml",
+                "RW": False,
+            }
+        ]
+        gateway["NetworkSettings"]["Networks"]["backend-test"] = {"Aliases": ["guard"]}
+        backend = self.peer_record()[0]
+        backend["Id"] = "backend-id"
+        backend["Config"]["Cmd"] += ["--no-request-journal"]
+        backend["Config"]["ExposedPorts"]["8443/tcp"] = {}
+        backend["Name"] = "/backend"
+        backend["NetworkSettings"]["Networks"] = {
+            "backend-test": {"Aliases": ["wiremock", "quality-backend"]}
+        }
+        network = self.network_record()[0]
+        backend_network = dict(
+            network,
+            Name="backend-test",
+            Containers={
+                gateway["Id"]: {"Name": "wiremock"},
+                backend["Id"]: {"Name": "backend"},
+            },
+        )
+        calls = []
+
+        def fake_run(command, **kwargs):
+            calls.append(command)
+            if command[3:5] == ["network", "inspect"]:
+                record = backend_network if command[-1] == "backend-test" else network
+            elif command[3:5] == ["container", "inspect"]:
+                record = backend if command[-1] == "backend" else gateway
+            else:
+                self.assertIn("--max-redirects", command)
+                self.assertIn("network-123", command)
+                return types.SimpleNamespace(returncode=99)
+            return types.SimpleNamespace(
+                returncode=0, stdout=json.dumps([record]), stderr=""
+            )
+
+        for mutation in (
+            "none",
+            "bad-config",
+            "extra-peer",
+            "extra-provider",
+            "published-port",
+            "malformed-gateway",
+            "missing-journal-policy",
+            "function-mode",
+        ):
+            with self.subTest(mutation=mutation):
+                attempt = self.root / mutation
+                quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
+                original_config = config_path.read_bytes()
+                if mutation == "bad-config":
+                    config_path.write_bytes(b"{}")
+                if mutation == "extra-peer":
+                    backend_network["Containers"]["unexpected"] = {"Name": "HOME"}
+                if mutation == "extra-provider":
+                    gateway["Config"]["Cmd"] = [*COMMAND, "--providers.docker=true"]
+                if mutation == "published-port":
+                    gateway["HostConfig"]["PortBindings"] = {
+                        "8080/tcp": [{"HostPort": "8080"}]
+                    }
+                if mutation == "missing-journal-policy":
+                    backend["Config"]["Cmd"] = ["--admin-api-require-https"]
+                if mutation == "function-mode":
+                    self.manifest["mock_mode"] = "function"
+                if mutation == "malformed-gateway":
+                    gateway["HostConfig"] = None
+                before = len(calls)
+                with mock.patch.object(
+                    container_executor.subprocess, "run", side_effect=fake_run
+                ):
+                    if mutation == "none":
+                        result = container_executor.execute(
+                            self.manifest,
+                            self.scenarios,
+                            attempt,
+                            network["Name"],
+                            "wiremock",
+                            "/synthetic/docker",
+                            "default",
+                            config_path,
+                            "backend-test",
+                            "backend",
+                        )
+                        self.assertEqual(result, 99)
+                        self.assertEqual(
+                            json.loads((attempt / "exit.json").read_bytes())[
+                                "exit_code"
+                            ],
+                            99,
+                        )
+                        self.assertEqual(len(calls) - before, 5)
+                    else:
+                        with self.assertRaises(container_executor.ExecutorError):
+                            container_executor.execute(
+                                self.manifest,
+                                self.scenarios,
+                                attempt,
+                                network["Name"],
+                                "wiremock",
+                                "/synthetic/docker",
+                                "default",
+                                config_path,
+                                "backend-test",
+                                "backend",
+                            )
+                        self.assertFalse(
+                            any("run" in command for command in calls[before:])
+                        )
+                self.manifest["mock_mode"] = "load"
+                config_path.write_bytes(original_config)
+                backend_network["Containers"].pop("unexpected", None)
+                gateway["Config"]["Cmd"] = COMMAND
+                backend["Config"]["Cmd"] = [
+                    "--admin-api-require-https",
+                    "--no-request-journal",
+                ]
+                gateway["HostConfig"] = {
+                    "PortBindings": {},
+                    "ExtraHosts": [],
+                    "ReadonlyRootfs": True,
+                    "Privileged": False,
+                    "CapDrop": ["ALL"],
+                    "CapAdd": [],
+                }
 
     def test_container_executor_prepares_limits_but_blocks_without_path_guard(
         self,
@@ -589,7 +784,14 @@ class K6ResultContractTests(unittest.TestCase):
         )
         self.assertEqual(
             set(command_action.choices),
-            {"prepare", "run", "finalize", "prepare-import", "import-db"},
+            {
+                "prepare",
+                "prepare-guard",
+                "run",
+                "finalize",
+                "prepare-import",
+                "import-db",
+            },
         )
 
 

@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -42,7 +42,7 @@ UI 앞의 Gateway SSO는 HTTP 접근 제어일 뿐이며 OpenBao native OIDC 인
 Prometheus는 전용 service token으로 `sys/metrics`에 인증해야 하며, 그 유일한 service
 policy는 추적되는 `infra/03-security/openbao/config/policies/prometheus.hcl`이다. 이
 policy는 `sys/metrics`에 대한 `read`만 부여한다. 토큰은 수동으로 발급해
-`secrets/security/openbao_token.txt`에 저장하고 Prometheus만 마운트하며 유한한 만료
+`secrets/security/openbao/openbao_token.txt`에 저장하고 Prometheus만 마운트하며 유한한 만료
 전에 회전한다. 인증 없는 metrics를 활성화하거나 root, human operator, renderer AppRole,
 renderer sink 토큰을 재사용하지 않는다.
 
@@ -119,7 +119,7 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 
 ### Existing custody decision and missing closure
 
-기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao_unseal_keys.txt`
+기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao/openbao_unseal_keys.txt`
 한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
 private registry는 SEC-003 placeholder만 보관하고 이 파일이 유일한 사본이다.
 이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체가 unseal threshold를

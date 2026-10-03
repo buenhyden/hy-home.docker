@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.3"
+version: "1.4.5"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -220,8 +220,8 @@ host의 repository root에서, 값을 출력하지 않고:
 umask 077
 bash scripts/operations/gen-secrets.sh --sync-metadata   # .env에 BACKUP_OFFSITE_R2_* 키 추가
 bash scripts/operations/gen-secrets.sh                   # BKP-003 restic_offsite_password.txt 생성
-IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_access_key_id.txt; unset r2       # BKP-004
-IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/r2_secret_access_key.txt; unset r2   # BKP-005
+IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/restic/r2_access_key_id.txt; unset r2       # BKP-004
+IFS= read -rs r2 && printf '%s' "$r2" > secrets/backup/restic/r2_secret_access_key.txt; unset r2   # BKP-005
 ```
 
 `.env`에 `BACKUP_OFFSITE_R2_ACCOUNT_ID`(16진수 32자)와
@@ -320,6 +320,35 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    멈추지 않는다. Pay-as-you-go 계정에서만 쓸 수 있다.
 4. 한 달에 한 번 bucket의 **Metrics** 탭에서 storage와 operation 수를 보고, 8.5의
    Evidence 옆에 적는다.
+
+### 개발 PostgreSQL 편입 및 복구 전제
+
+1. 승인된 Docker context/프로젝트·정확한 image ID·새 PGDATA·별도
+   `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` identity와 용량을 확인합니다.
+   source bind의 `create_host_path: false` 때문에 디렉터리를 미리 승인된 범위로
+   준비해야 하며, 관리 repository를 개발 경로에 다시 연결하지 않습니다.
+2. `dev_pgbackrest_cipher_pass`의 읽기 전용 secret mount와 보관 책임자를
+   확인합니다. 운영 stanza-create/check·최초 full backup·WAL 활성화·retention·
+   재시작·예약 백업은 각각 구체적 승인 후 수행합니다. 현재 archive_mode=off
+   상태에서 online check 실패를 우회하거나 synthetic offline 결과로 대체하지 않습니다.
+3. 기존 scheduler는 개발 check 후 backup, globals/schema export와 image/infra
+   revision metadata를 생성합니다. globals는 자격 증명 hash를 포함할 수 있으므로
+   출력하지 않으며 기존0700 staging·종료 cleanup과 encrypted Restic에만 둡니다.
+   첫 differential은 기존 full이 필요하므로 최초 full 준비 없이 일정을 켜지 않습니다.
+4. 복구 대상 backup label과 WAL 범위를 고정하고 별도 project/volume·network none,
+   정확히 호환되는 개발 이미지 및 `dev_pgbackrest_cipher_pass` read-only mount를
+   검토합니다. dev entrypoint의 기본 credential 소비 경로를 유지하며 명령은
+   `pgbackrest --stanza=dev --set=<approved-label> restore` 형태로 승인된 빈 target에만
+   실행합니다. `latest`, management stanza, 기존 PGDATA 재사용은 금지합니다.
+   archive_mode가 승인되어 연속 WAL을 검증하기 전에는 PITR를 주장하지 않습니다.
+5. physical catalog의 extension version과 migration 이력, 별도 globals/schema,
+   외부 앱 migration source revision을 대조하고 runtime/reader 권한 거절·업무
+   기능을 검증합니다. 성공 label/WAL 범위·image·시간·종료 코드만 기록합니다.
+   rollback은 source revert와 운영 중단/cutover 승인을 구분하며 실패 scratch와
+   원본 repository는 보존합니다. cleanup·데이터 삭제는 별도 승인입니다.
+
+이 절차의 HOME 실행·offsite/실복구는 NOT_RUN입니다. 합성 scheduler shim은
+분기와 실패 전달만 검증하며 실제 Restic/pgBackRest 실행 증거가 아닙니다.
 
 ## Evidence
 

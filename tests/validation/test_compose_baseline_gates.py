@@ -2056,6 +2056,51 @@ class BackupContractTests(unittest.TestCase):
         mng_pg = _compose_service(MNG_DB_COMPOSE, "mng-pg")
         self.assertNotIn("repo2", " ".join(_compose_command(mng_pg)))
 
+    def test_dev_repository_mount_and_scheduler_failure_contract(self) -> None:
+        service = _compose_service(RESTIC_COMPOSE, "restic")
+        mount = next(v for v in service["volumes"] if isinstance(v, dict)
+                     and v["target"] == "/src/state/dev-pgbackrest")
+        self.assertTrue(mount["source"].endswith("/dev-pgbackrest"))
+        self.assertIs(True, mount["read_only"])
+        self.assertIs(False, mount["bind"]["create_host_path"])
+        script = (ROOT / RESTIC_DIR / "bin/hyhome-backup.sh").read_text()
+        block = script[script.index("# Development backup contract."):
+                       script.index("if running mng-valkey; then")]
+        with tempfile.TemporaryDirectory() as directory:
+            staging = Path(directory)
+            for failure in ("none", "check", "backup", "globals", "schema", "stopped"):
+                with self.subTest(failure=failure):
+                    harness = """set -euo pipefail
+status=0
+running() { [[ "$FAILURE" != stopped ]]; }
+docker() {
+  printf '%s\n' "$*" >>"$staging/calls"
+  case "$*" in
+    *pgbackrest*check*) [[ "$FAILURE" != check ]] ;;
+    *pgbackrest*backup*) [[ "$FAILURE" != backup ]] ;;
+    *globals-only*) echo synthetic; [[ "$FAILURE" != globals ]] ;;
+    *schema-only*) echo synthetic; [[ "$FAILURE" != schema ]] ;;
+    *) echo synthetic ;;
+  esac
+}
+"""
+                    (staging / "dev-pg-globals.sql").write_text("stale synthetic export")
+                    result = subprocess.run(["bash", "-c", harness + block + "exit $status"],
+                        env={**os.environ, "staging": str(staging), "FAILURE": failure},
+                        capture_output=True, text=True)
+                    self.assertEqual(0 if failure == "none" else 1, result.returncode)
+                    if failure in ("check", "backup"):
+                        self.assertFalse((staging / "dev-pg-globals.sql").exists())
+                    if failure in ("globals", "schema"):
+                        self.assertFalse((staging / f"dev-pg-{failure}.sql").exists())
+                    for artifact in staging.iterdir():
+                        artifact.unlink()
+        self.assertIn("timeout 1800 pgbackrest --stanza=dev", block)
+        self.assertIn("timeout 300 pg_dumpall", block)
+        self.assertLess(script.index("# Development backup contract."), script.index("state_kib="))
+        self.assertIn('echo /src/state/dev-pgbackrest >>"$list"',
+                      (ROOT / RESTIC_DIR / "backup.sh").read_text())
+
     def test_offsite_script_copies_without_deleting_and_samples_remote_data(
         self,
     ) -> None:
@@ -2331,6 +2376,8 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         for sub in (
             "repo-state",
             "repo-host",
+            "pgbackrest",
+            "dev-pgbackrest",
             "vol/ai/comfyui/input",
             "vol/management/pg",
             "staging",
@@ -2342,6 +2389,7 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         (base / "vol/ai/comfyui/input/a.txt").write_text("payload", encoding="utf-8")
         (base / "vol/management/pg/PG_VERSION").write_text("18", encoding="utf-8")
         (base / "secrets/x.txt").write_text("synthetic-secret", encoding="utf-8")
+        (base / "dev-pgbackrest/backup.info").write_text("synthetic-backup", encoding="utf-8")
         (base / "env").write_text("K=v\n", encoding="utf-8")
         (base / "pw").write_text("synthetic-restic-pw", encoding="utf-8")
         (base / "pw").chmod(0o644)
@@ -2383,6 +2431,10 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
                 "-v",
                 f"{base}/staging:/src/state/exports:ro",
                 "-v",
+                f"{base}/pgbackrest:/src/state/pgbackrest:ro",
+                "-v",
+                f"{base}/dev-pgbackrest:/src/state/dev-pgbackrest:ro",
+                "-v",
                 f"{base}/secrets:/src/host/secrets:ro",
                 "-v",
                 f"{base}/env:/src/host/env/.env:ro",
@@ -2404,6 +2456,7 @@ class BackupRestoreRehearsalTests(unittest.TestCase):
         listing = run("cmd", "state", "ls", "latest").stdout
         self.assertIn("/src/state/volumes/ai/comfyui/input/a.txt", listing)
         self.assertNotIn("PG_VERSION", listing)
+        self.assertIn("/src/state/dev-pgbackrest/backup.info", listing)
         # Restore runs in a plain container (RUN-0021): the hardened job has no
         # CHOWN/FOWNER to reapply ownership and must never write a source.
         self.docker(

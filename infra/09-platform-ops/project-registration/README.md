@@ -1,6 +1,6 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
@@ -97,5 +97,6 @@ Valkey, S3, 검색, 관측의 접근 권한이나 실제 연결을 증명하지 
 
 ## Related Documents
 
-[문서 진입점](../../../docs/README.md)에서 SPEC-0201과 SPEC-0204의 외부 프로젝트
-계약을 확인하십시오.
+[문서 진입점](../../../docs/README.md)에서 현재 소유 경계의 AD-0031과
+DB 권한의 POL-0100을 참조하십시오. 등록 필드의 기계 계약은
+이 패키지의 [schema](schema.json)가 소유합니다.

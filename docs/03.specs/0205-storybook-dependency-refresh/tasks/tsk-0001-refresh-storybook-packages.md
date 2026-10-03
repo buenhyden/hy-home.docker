@@ -59,10 +59,10 @@ and generated build output are task-local ignored artifacts, not deliverables.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1 | PASS: verified stable targets and preserved TypeScript 6 | This Task and Dependabot/Stage 05 policy |
-| 2 | W2 | PASS: manifest, lock and clean install; baseline optional peer exception recorded | npm manifest and lock |
-| 3 | W3 | PASS with known audit failure: lint, typecheck, builds, browser coverage and contract checker pass | This Task; existing Storybook contract checker |
-| 4 | W3 | PASS: independent source and security reviews approved local commit; deployment and merge remain separate | This Task |
+| 1 | W1 | PASS: verified stable targets and preserved TypeScript 6 | [manifest](../../../../projects/storybook/nextjs/package.json) |
+| 2 | W2 | PASS: manifest, lock and clean install; baseline optional peer exception recorded | [lock](../../../../projects/storybook/nextjs/package-lock.json) |
+| 3 | W3 | PASS: checks executed with known audit failure; lint, typecheck, builds, browser coverage and contract checker pass | [Storybook contract checker](../../../../scripts/validation/check-storybook-contract.sh) |
+| 4 | W3 | PASS: independent source and security reviews approved local commit; deployment and merge remain separate | [quality standards](../../../../.agents/governance/quality-standards.md) |
 
 ## Review Evidence
 

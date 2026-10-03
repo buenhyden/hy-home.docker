@@ -94,6 +94,11 @@ projects/storybook/react-ts/node_modules
 # Even directory markers in custody areas must stay private.
 /secrets/.backup-*/
 /secrets/.retired/
+# Compatibility aliases are private; canonical service directories own markers.
+/secrets/common/
+/secrets/db/surreal_db/
+/secrets/db/postgres/
+/secrets/db/valkey/
 # Standalone LAB private inputs; examples and README remain tracked.
 labs/.env
 labs/.env.*

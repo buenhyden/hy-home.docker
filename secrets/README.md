@@ -1,6 +1,6 @@
 ---
 title: "비밀 파일 관리"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
@@ -42,13 +42,20 @@ created: "2026-02-23"
 | `tools/` | 선택형 도구 인증 |
 | `.backup-<date>/`, `.retired/<date>/` | Git과 Compose에서 제외된 보호 백업·퇴역 보관 |
 
-`common/`과 `db/surreal_db/`의 기존 값 파일은 각각 `communication/`과 `db/surrealdb/`로 재배치한다. HOME 전환 전에는 옛 경로에 동일 inode의 호환 하드링크를 유지한다. 이는 값의 별도 사본이 아니며, 한 경로를 원자적으로 교체하는 회전 방식은 다른 경로와 분리될 수 있다. 따라서 credential 회전·HOME 재시작·호환 경로 제거는 새 Compose 경로 반영 뒤 별도 운영 검증을 거친다. `certs/`의 인증서, `backup/openbao/`의 스냅샷, `security/`의 보관 정보는 등록표의 Docker Secret 행과 별도 소유권을 가진다.
+값 파일은 `영역/서비스/파일`로 배치한다. `auth/`는 Traefik·Keycloak·OAuth2 Proxy와 각 OIDC 소비자, `automation/`은 Airflow·n8n, `data/`는 OpenSearch·Qdrant·Supabase, `storage/`는 SeaweedFS, `tools/`는 도구별 디렉터리로 나눈다. `communication/`은 공용 SMTP·Slack·Stalwart·Supabase 전달 자격 증명을 구분한다. 기존 `common/`과 `communication/`, `db/surreal_db/`와 `db/surrealdb/`의 동일 파일은 각각 새 서비스별 경로와 `db/surrealdb/`의 단일 원본으로 통합한다.
+
+`db/mng-pg/`는 관리 metadata와 Grafana 관리 reader, `db/dev-pg/`는 개발 관리자·fixture 역할·dbt·Debezium을 소유한다. `db/legacy-app/`는 사용하지 않는 기존 app_db의 전환·롤백 보관이며 신규 프로젝트에 재사용하지 않는다. Valkey는 `db/mng-valkey/`, `db/dev-valkey/`, 선택형 n8n 전용 `db/n8n-valkey/`로 분리한다. `backup/mng-pg/`와 `backup/dev-pg/`는 각 pgBackRest 키, `backup/restic/`는 로컬·원격 저장소 자격 증명, `backup/openbao/`는 스냅샷을 소유한다.
+
+`certs/`와 `labs/`의 기존 서비스별 배치는 유지한다. `security/openbao/`의 token·unseal·custody 정보, 인증서와 OpenBao 스냅샷은 각각 Docker Secret 등록 행 또는 별도 운영 소유권으로 관리한다. 비밀값 ID는 경로 이동에도 유지하고 등록표 갱신일은 메타데이터 검토일로 기록한다.
+
+HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 inode의 호환 하드링크를 보존한다. 이는 값의 별도 사본이 아니다. 한 경로를 원자적으로 교체하면 다른 경로와 분리될 수 있으므로 credential 회전·HOME 재시작·호환 경로 제거는 새 Compose 반영 후 승인된 운영 검증을 거친다. 백업·퇴역 자료는 활성 서비스 디렉터리와 합치지 않는다.
 
 ## Getting Started
 
 1. [공개 등록표](SENSITIVE_ENV_VARS.md.example)의 ID·경로·날짜·용도를 확인하고 [루트 Compose](../docker-compose.yml) 또는 해당 `labs/*.yml`의 실제 소비자를 대조한다.
 2. 개인 파일을 다루는 작업은 대상·승인·백업·복구 범위를 Task에 기록한다. 값 파일이나 개인 등록표의 원문을 채팅·문서·Git 출력에 넣지 않는다.
-3. 값 없이 공개 계약을 확인할 때 `bash scripts/operations/gen-secrets.sh --dry-run`을 사용한다. 개인 메타데이터 비교는 승인된 범위에서 `--sync-metadata-prune-check`를 사용한다.
+3. 다른 승인된 작업 트리의 공개 예제를 소비해야 하면, 개인 파일이 있는 원본 체크아웃에서 해당 작업 트리의 스크립트를 `--sync-metadata-prune --metadata-source-root <승인된-공개-작업트리>`로 실행한다. 이 옵션은 메타데이터 모드에만 적용되며 개인 값은 원본 체크아웃에 남고 다른 작업 트리에 복제하지 않는다. 먼저 `--sync-metadata-prune-check`로 변경 여부를 확인한다.
+4. 값 없이 공개 계약을 확인할 때 `bash scripts/operations/gen-secrets.sh --dry-run`을 사용한다. 개인 메타데이터 비교는 승인된 범위에서 `--sync-metadata-prune-check`를 사용한다.
 
 ## How to Work in This Area
 

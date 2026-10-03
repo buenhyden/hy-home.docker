@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -27,8 +27,8 @@ and acceptance gates before any service declaration was changed.
 - SPEC-0201 W5 exact handoff, SPEC-0202's dev data/backup contract, SPEC-0203's
   source-only quality/Alloy contract and current Requirement/Architecture.
 - User approval of this Plan and the listed Task source scopes on 2026-10-03.
-- Kafka connector and backup-policy ownership transfer waits for SPEC-0202's lifecycle closure;
-  an already merged source commit alone is not that closure.
+- Kafka connector and backup-policy ownership transfer follows SPEC-0202 lifecycle
+  closure, integrated locally before TSK-0003 source writing.
 - Official n8n, Crawl4AI, Cassandra, backup and security references rechecked
   at implementation; image architecture/digest and secret consumer behavior
   remain runtime-unverified until bounded acceptance.
@@ -61,7 +61,10 @@ and acceptance gates before any service declaration was changed.
    mail delivery and analytics reader/checkpoint paths. Source modifications
    require confirmed consumers and contract fixtures; otherwise mark them
    `BLOCKED` with a named follow-up owner. Maps 6 and 7.
-5. **W5: verify, document and hand off.** Run focused tests, scoped Compose
+5. **W5: verify, document and hand off.** TSK-0004 serially owns the later
+   whole-tree secret path, metadata and actual/public environment parity
+   request. It preserves values and IDs, writes only its exact consumer
+   ledger, and keeps credential rotation/HOME recreation separately approved. Run focused tests, scoped Compose
    render, registered projection generators/checks, relevant document and
    path-aware gates. Obtain independent code and security review. Record each
    command, exit, revision and unsupported environment separately; stage
@@ -94,8 +97,8 @@ migration and real external-project connection remain `NOT_RUN` here.
 ## Rulings
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
-bounded external discovery after review. SPEC-0202 still owns development DB
-and Kafka/backup handoff until lifecycle closure. Prompt 05 owns Storybook;
+bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
+closure branch before the backup source change. Prompt 05 owns Storybook;
 Prompt 06 owns the external application's consumed manifest and deployment.
 Cassandra's current official-image LAB move is already implemented; no
 Bitnami-wide replacement is planned. Crawl4AI has no confirmed consumer and

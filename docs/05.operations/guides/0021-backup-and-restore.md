@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.2"
+version: "1.1.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -27,7 +27,7 @@ created: "2026-09-22"
 | --- | --- | --- |
 | `mng-pg` 내부 pgBackRest | management PostgreSQL cluster의 physical backup, 연속적인 WAL archive, point-in-time recovery | 다른 모든 engine; database별 logical export |
 | Restic (`restic` job) | `sets/state-include.txt`에 allowlist된 file-safe tree의 encrypted, deduplicated snapshot, consistent export, `secrets/`와 `.env` | allowlist되지 않은 모든 것, 특히 live engine directory(PostgreSQL, Valkey, Kafka, OpenBao Raft, TSDB, log, search, LAB store)와 ComfyUI model |
-| `restic-offsite` job | 로컬 Restic repository 두 개(state set의 `pgbackrest/` 포함)를 Cloudflare R2 repository 하나로 `restic copy`, 원격 `check` | 로컬 쓰기, 자동 원격 snapshot 삭제(owner-run 승인 prune는 RUN-0021) |
+| `restic-offsite` job | 로컬 Restic repository 두 개(state set의 `pgbackrest/`와 `dev-pgbackrest/` 포함)를 Cloudflare R2 repository 하나로 `restic copy`, 원격 `check` | 로컬 쓰기, 자동 원격 snapshot 삭제(owner-run 승인 prune는 RUN-0021) |
 | `backup-sqlite-export` job | Online Backup API를 통한 Grafana, Gatus, Open WebUI SQLite database의 consistent copy | 다른 SQLite 파일 |
 | Host orchestrator `hyhome-backup.sh` | 순서, single-run lock, cross-disk preflight, PostgreSQL globals와 Valkey RDB export | retention delete (`forget-prune`) |
 
@@ -38,7 +38,7 @@ created: "2026-09-22"
 
 두 repository는 서로 다른 physical disk에 두어야 한다. source의 `st_dev` 비교는 filesystem 구분만 확인하며 별도 partition/LVM이 같은 physical disk일 가능성을 배제하지 못한다. 실제 disk mapping은 owner 확인이 필요하다.
 
-- `BACKUP_STATE_REPO_DIR` (system SSD): pgBackRest repository `pgbackrest/`,
+- `BACKUP_STATE_REPO_DIR` (system SSD): 관리 pgBackRest repository `pgbackrest/`, 개발 repository `dev-pgbackrest/`,
   data-disk state용 Restic repository `restic/`, export staging `staging/`.
   `BACKUP_STATE_MAX_GIB`(5)는 pgBackRest/export 후, Restic 전 검사 기준이다. quota나 실행 중 크기 제한이 아니며 이후 Restic 쓰기로 초과할 수 있다.
 - `BACKUP_HOST_REPO_DIR` (data disk): SSD에 있는 `secrets/`와 `.env`용 Restic
@@ -46,7 +46,7 @@ created: "2026-09-22"
 
 orchestrator는 자신이 보호하는 데이터와 같은 filesystem이나 그 내부에 있는
 repository를 거부한다. 오프사이트로는 로컬 Restic backup/check가 성공하면(앞선 export 실패 여부와 별개로)
-`restic-offsite`가 두 Restic repository(state set에 `pgbackrest/` 포함)를
+`restic-offsite`가 두 Restic repository(state set에 `pgbackrest/`와 `dev-pgbackrest/` 포함)를
 Cloudflare R2 repository 하나로 복사한다(ADR-0041). owner가
 [RUN-0021](../runbooks/0021-backup-and-restore.md) 8단계의 R2 설정을 마치기
 전까지는 모든 복사본이 한 host에 있어 offsite recovery를 할 수 없다.
@@ -75,10 +75,28 @@ log(175 MB, 약 64 MB/day)와 cache는 의도적으로 allowlist에서 제외한
 `BACKUP_STATE_MAX_GIB` 이상이면 아무것도 삭제하지 않고 Restic 단계를
 건너뛰며 실행을 실패시킨다. 위 3 GB 미만 합계는 당시 추정이며 현재 보장이 아니다. 2026-09-23 429 MiB → 09-30 1679 MiB(약 180 MiB/day) 기록으로 대체한다. 20 GiB free-space floor는 state repository filesystem의 실행 전 검사이며 host repository·scratch·실행 중 여유를 보장하지 않는다.
 
+### Development database handoff
+
+개발 repository는 별도 stanza `dev`와 `dev_pgbackrest_cipher_pass`를 사용하며
+관리 repository·PGDATA와 공유하지 않습니다. Restic은 이 경로를 읽기 전용으로
+state set에 포함하여 기존 offsite copy와 전체 state 예산에 함께 계산합니다.
+배포 전 두 repository 디렉터리와 용량·키 보관·일정 승인이 필요합니다.
+개발 stanza `check`(300초), physical backup(1800초), globals/schema export(각
+300초)는 제한 시간 내 종료해야 합니다. 개발 서버 중단·check 실패·부분 export는
+unit 실패를 유지하고 성공 timestamp를 갱신하지 않습니다. 기존 동작대로 partial
+Restic snapshot/offsite copy는 남을 수 있으므로 전체 성공 실행과 구분합니다.
+
+schema export는 DB별 extension 선언과 권한을, physical backup의 catalog는
+설치된 extension version과 적용 migration 이력을 보존합니다. 별도 image ID와
+infra revision도 staging에 기록합니다. 외부 앱의 정확한 migration source revision과
+restore 후 역할/extension/migration 대조는 앱 소유자가 제공합니다. infra revision이
+앱 revision을 대신하지 않습니다. 현재 `archive_mode=off`이므로 online backup/PITR
+활성화와 실제 복구는 아직 검증되지 않았습니다.
+
 ### Keys
 
-`secrets/backup/pgbackrest_cipher_pass.txt`(BKP-001)는 pgBackRest repository를
-암호화하고, `secrets/backup/restic_password.txt`(BKP-002)는 두 Restic
+`secrets/backup/mng-pg/pgbackrest_cipher_pass.txt`(BKP-001)는 pgBackRest repository를
+암호화하고, `secrets/backup/restic/restic_password.txt`(BKP-002)는 두 Restic
 repository를 암호화한다. 이 값들은 host repository 내부에도 backup되는데, 그
 repository를 열려면 같은 Restic password가 필요하므로 두 값의 offline
 복사본을 이 host 밖에 보관한다. 이를 잃으면 모든 backup을 읽을 수 없게 된다.

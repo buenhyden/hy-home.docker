@@ -139,9 +139,11 @@ files, authentication files, raw HOME logs, or user data.
 
 ## Technical Approach
 
-Use three serial Tasks: confirmed compatibility/security corrections; an
-external-project integration contract and bounded discovery; then backup and
-cross-tier operations. Each Task owns exact files and focused regressions in
+Use four serial Tasks: confirmed compatibility/security corrections; an
+external-project integration contract and bounded discovery; backup and
+cross-tier operations; then whole-tree secret path and environment parity.
+TSK-0004 records the user's subsequent explicit 2026-10-03 authorization,
+including value-preserving path moves and incident disposition. Each Task owns exact files and focused regressions in
 its Task ledger before source mutation. Shared root, Alloy, environment,
 Registry and backup files have one writer at a time. If a named project or
 consumer is missing, record a versioned contract and `BLOCKED` runtime result

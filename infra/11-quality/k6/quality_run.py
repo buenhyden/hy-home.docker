@@ -19,7 +19,7 @@ import uuid
 from typing import Any
 
 MANIFEST_SCHEMA = "hyhome.quality-run/v1"
-EXIT_SCHEMA = "hyhome.quality-exit/v1"
+EXIT_SCHEMA = "hyhome.quality-exit/v2"
 FINAL_SCHEMA = "hyhome.quality-final/v1"
 IMPORT_SCHEMA = "hyhome.quality-import/v1"
 MAX_JSON_BYTES = 1024 * 1024
@@ -28,7 +28,14 @@ SLUG = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 IMAGE = re.compile(r"[a-z0-9./_-]+@sha256:[0-9a-f]{64}")
 REVISION = re.compile(r"[0-9a-f]{40}")
-MANAGEMENT_PATHS = ("/admin", "/manage", "/management", "/metrics", "/debug")
+MANAGEMENT_PATHS = (
+    "/__admin",
+    "/admin",
+    "/manage",
+    "/management",
+    "/metrics",
+    "/debug",
+)
 PRIVATE_SUPERNETS = (
     ipaddress.ip_network("10.0.0.0/8"),
     ipaddress.ip_network("172.16.0.0/12"),
@@ -258,6 +265,14 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
             or "?" in request_path
             or "#" in request_path
             or len(request_path) > 512
+            or "%" in request_path
+            or "\\" in request_path
+            or "//" in request_path
+            or any(part in {".", ".."} for part in request_path.split("/"))
+            or any(
+                character.isspace() or ord(character) < 32 or ord(character) == 127
+                for character in request_path
+            )
         ):
             raise ContractError("target path is invalid")
         lowered = request_path.lower().rstrip("/")
@@ -393,12 +408,17 @@ def _parse_timestamp(value: object) -> dt.datetime:
 
 
 def finalize(attempt_dir: pathlib.Path) -> dict[str, Any]:
-    from result_inspection import inspect_exit, inspect_summary
+    from result_inspection import inspect_exit, inspect_raw_points, inspect_summary
 
     manifest = validate_manifest(_load_json(attempt_dir / "manifest.json"))
     _summary, samples, thresholds_ok, issues = inspect_summary(attempt_dir, manifest)
     exit_record, exit_issues = inspect_exit(attempt_dir)
     issues.extend(exit_issues)
+    raw_required = bool(exit_record and exit_record.get("raw_points_required"))
+    raw_issues: list[str] = []
+    if raw_required or (attempt_dir / "raw-points.json").exists():
+        _, raw_issues = inspect_raw_points(attempt_dir, manifest)
+        issues.extend(raw_issues)
     execution_state = (
         exit_record["execution_state"] if exit_record is not None else "interrupted"
     )
@@ -407,7 +427,9 @@ def finalize(attempt_dir: pathlib.Path) -> dict[str, Any]:
         if not issues and execution_state == "completed" and samples > 0
         else "incomplete"
     )
-    import_allowed = "summary contains prohibited tags or strings" not in issues
+    import_allowed = (
+        not raw_issues and "summary contains prohibited tags or strings" not in issues
+    )
     exit_code = exit_record["exit_code"] if exit_record is not None else None
     if evidence_state == "incomplete":
         verdict = "incomplete"
@@ -418,6 +440,8 @@ def finalize(attempt_dir: pathlib.Path) -> dict[str, Any]:
     else:
         verdict = "passed"
     artifact_names = ["manifest.json", "scenario.js", "raw-summary.json", "exit.json"]
+    if raw_required or (attempt_dir / "raw-points.json").exists():
+        artifact_names.append("raw-points.json")
     artifacts = []
     for name in artifact_names:
         path = attempt_dir / name
@@ -463,7 +487,11 @@ def finalize(attempt_dir: pathlib.Path) -> dict[str, Any]:
 
 
 def prepare_import(
-    attempt_dir: pathlib.Path, output_path: pathlib.Path
+    attempt_dir: pathlib.Path,
+    output_path: pathlib.Path,
+    object_receipt_path: pathlib.Path | None = None,
+    object_contract_path: pathlib.Path | None = None,
+    approved_endpoints: tuple[str, ...] = (),
 ) -> dict[str, Any]:
     from result_inspection import inspect_summary
 
@@ -524,6 +552,51 @@ def prepare_import(
             or path.stat().st_size != artifact["bytes"]
         ):
             raise ContractError(f"checksum mismatch: {artifact.get('name', 'unknown')}")
+    bound_artifacts = [dict(artifact, object_ref=None) for artifact in artifacts]
+    if object_receipt_path is not None:
+        from object_store import validate_object_binding, validate_receipt
+
+        if object_contract_path is None:
+            raise ContractError(
+                "object references require an independently approved storage contract"
+            )
+        object_contract = _load_json(object_contract_path)
+        try:
+            receipt = validate_receipt(_load_json(object_receipt_path))
+            if receipt["contract"] != object_contract:
+                raise ContractError(
+                    "object receipt differs from approved storage contract"
+                )
+            for item in receipt["artifacts"]:
+                validate_object_binding(
+                    item["object_ref"],
+                    receipt["identity"],
+                    item,
+                    object_contract,
+                    approved_endpoints,
+                )
+        except ValueError as exc:
+            raise ContractError("object receipt is invalid") from exc
+        identity = {
+            name: manifest[name] for name in ("project_id", "run_id", "attempt")
+        }
+        if receipt["identity"] != identity or receipt["final_sha256"] != _sha256(
+            attempt_dir / "final.json"
+        ):
+            raise ContractError("object receipt identity or final checksum mismatch")
+        uploaded = {item["name"]: item for item in receipt["artifacts"]}
+        if set(uploaded) != {item["name"] for item in artifacts}:
+            raise ContractError("object receipt artifact set mismatch")
+        for artifact in artifacts:
+            if any(
+                uploaded[artifact["name"]][key] != artifact[key]
+                for key in ("name", "sha256", "bytes")
+            ):
+                raise ContractError("object receipt artifact checksum mismatch")
+        bound_artifacts = [
+            dict(artifact, object_ref=uploaded[artifact["name"]]["object_ref"])
+            for artifact in artifacts
+        ]
     summary, _, _, _ = inspect_summary(attempt_dir, manifest)
     metrics = []
     if isinstance(summary, dict) and isinstance(summary.get("metrics"), dict):
@@ -555,7 +628,7 @@ def prepare_import(
         "ended_at": final.get("ended_at"),
         "samples": final.get("samples"),
         "metrics": metrics,
-        "artifacts": [dict(artifact, object_ref=None) for artifact in artifacts],
+        "artifacts": bound_artifacts,
     }
     payload["payload_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
     _write_once(output_path, payload)
@@ -577,15 +650,27 @@ def _parser() -> argparse.ArgumentParser:
     runner.add_argument("--network", required=True)
     runner.add_argument("--wiremock-container", required=True)
     runner.add_argument("--docker-binary", default="docker")
+    runner.add_argument("--guard-config", type=pathlib.Path)
+    runner.add_argument("--backend-network")
+    runner.add_argument("--backend-container")
+    guard = subparsers.add_parser("prepare-guard")
+    guard.add_argument("--manifest", required=True, type=pathlib.Path)
+    guard.add_argument("--output", required=True, type=pathlib.Path)
     finalizer = subparsers.add_parser("finalize")
     finalizer.add_argument("--attempt-dir", required=True, type=pathlib.Path)
     importer = subparsers.add_parser("prepare-import")
     importer.add_argument("--attempt-dir", required=True, type=pathlib.Path)
     importer.add_argument("--output", required=True, type=pathlib.Path)
+    importer.add_argument("--object-receipt", type=pathlib.Path)
     database_importer = subparsers.add_parser("import-db")
     database_importer.add_argument("--envelope", required=True, type=pathlib.Path)
     database_importer.add_argument("--receipt", required=True, type=pathlib.Path)
     database_importer.add_argument("--psql-binary", default="psql")
+    for operation in (importer, database_importer):
+        operation.add_argument("--object-contract", type=pathlib.Path)
+        operation.add_argument(
+            "--approved-object-endpoint", action="append", default=[]
+        )
     return parser
 
 
@@ -594,6 +679,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "prepare":
             prepare(args.manifest, args.scenario_root, args.attempt_dir)
+        elif args.command == "prepare-guard":
+            from http_guard import configuration
+
+            manifest = validate_manifest(_load_json(args.manifest))
+            _write_once(args.output, configuration(manifest))
         elif args.command == "run":
             from container_executor import ExecutorError, execute
 
@@ -607,18 +697,33 @@ def main(argv: list[str] | None = None) -> int:
                     args.wiremock_container,
                     args.docker_binary,
                     args.docker_context,
+                    args.guard_config,
+                    args.backend_network,
+                    args.backend_container,
                 )
             except ExecutorError as exc:
                 raise ContractError(str(exc)) from exc
         elif args.command == "finalize":
             finalize(args.attempt_dir)
         elif args.command == "prepare-import":
-            prepare_import(args.attempt_dir, args.output)
+            prepare_import(
+                args.attempt_dir,
+                args.output,
+                args.object_receipt,
+                args.object_contract,
+                tuple(args.approved_object_endpoint),
+            )
         else:
             from result_import import ImportContractError, import_db
 
             try:
-                _, exit_code = import_db(args.envelope, args.receipt, args.psql_binary)
+                _, exit_code = import_db(
+                    args.envelope,
+                    args.receipt,
+                    args.psql_binary,
+                    args.object_contract,
+                    tuple(args.approved_object_endpoint),
+                )
             except ImportContractError as exc:
                 raise ContractError(str(exc)) from exc
             return exit_code

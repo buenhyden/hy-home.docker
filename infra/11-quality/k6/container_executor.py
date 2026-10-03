@@ -14,7 +14,7 @@ import stat
 import subprocess
 from typing import Any
 
-EXIT_SCHEMA = "hyhome.quality-exit/v1"
+EXIT_SCHEMA = "hyhome.quality-exit/v2"
 SHA256 = re.compile(r"[0-9a-f]{64}")
 NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}")
 IMAGE = re.compile(r"[a-z0-9./_-]+@sha256:[0-9a-f]{64}")
@@ -58,6 +58,7 @@ def _write_exit(
 ) -> None:
     record: dict[str, Any] = {
         "schema_version": EXIT_SCHEMA,
+        "raw_points_required": True,
         "execution_state": state,
         "exit_code": exit_code,
         "started_at": started_at,
@@ -189,8 +190,11 @@ def _peer_contract(
         or labels.get("hyhome.quality.mock_mode") != manifest["mock_mode"]
         or not isinstance(command, list)
         or "--admin-api-require-https" not in command
+        or (manifest["mock_mode"] == "load" and "--no-request-journal" not in command)
         or not isinstance(exposed, dict)
-        or set(exposed) != {"8080/tcp"}
+        or "8080/tcp" not in exposed
+        or not set(exposed) <= {"8080/tcp", "8443/tcp"}
+        or any(str(item).startswith("--https-port") for item in command)
         or not isinstance(host, dict)
         or host.get("PortBindings") not in ({}, None)
         or host.get("ExtraHosts") not in ([], None)
@@ -226,8 +230,30 @@ def _snapshot_scenario(
     return snapshot
 
 
-def _prepare_result_file(attempt_dir: pathlib.Path) -> pathlib.Path:
-    result = attempt_dir / "raw-summary.json"
+def _summary_wrapper(
+    manifest: dict[str, Any], attempt_dir: pathlib.Path
+) -> pathlib.Path:
+    # Preserve the external scenario exports; infra owns thresholds and summary.
+    thresholds = json.dumps(manifest["thresholds"], sort_keys=True, allow_nan=False)
+    payload = (
+        "import * as scenario from '/scripts/scenario.js';\n"
+        "export * from '/scripts/scenario.js';\n"
+        "export default scenario.default;\n"
+        f"export const options = {{...scenario.options, thresholds: {thresholds}}};\n"
+        "export function handleSummary(data) { return {\n"
+        "  '/results/raw-summary.json': JSON.stringify(data)\n"
+        "}; }\n"
+    ).encode()
+    wrapper = attempt_dir / "runner.js"
+    _write_once(wrapper, payload, 0o440)
+    wrapper.chmod(0o440)
+    return wrapper
+
+
+def _prepare_result_file(
+    attempt_dir: pathlib.Path, name: str = "raw-summary.json"
+) -> pathlib.Path:
+    result = attempt_dir / name
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
     try:
         descriptor = os.open(result, flags, 0o640)
@@ -245,6 +271,9 @@ def execute(
     peer_name: str,
     docker_binary: str = "docker",
     docker_context: str = "default",
+    guard_config: pathlib.Path | None = None,
+    backend_network: str | None = None,
+    backend_peer: str | None = None,
 ) -> int:
     if (
         not NAME.fullmatch(network_name)
@@ -278,9 +307,45 @@ def execute(
             manifest, network, network_name, peer_name
         )
         peer = _inspect(docker_binary, docker_context, "container", peer_name)
-        _peer_contract(manifest, peer, network_name, peer_name, peer_id)
+        if guard_config is None:
+            _peer_contract(manifest, peer, network_name, peer_name, peer_id)
+        else:
+            from http_guard import validate
+
+            if (
+                manifest["mock_mode"] != "load"
+                or not backend_network
+                or not backend_peer
+                or not NAME.fullmatch(backend_network)
+                or not NAME.fullmatch(backend_peer)
+                or backend_network == network_name
+                or not isinstance(peer.get("Id"), str)
+                or not peer["Id"].startswith(peer_id)
+                or peer.get("Name") != f"/{peer_name}"
+                or peer.get("State", {}).get("Running") is not True
+            ):
+                raise ExecutorError("HTTP guard peer identity is invalid")
+            validate(
+                manifest,
+                peer,
+                network_name,
+                backend_network,
+                backend_peer,
+                guard_config,
+                lambda kind, name: _inspect(docker_binary, docker_context, kind, name),
+                _canonical,
+            )
+        wrapper = _summary_wrapper(manifest, attempt_dir)
         result = _prepare_result_file(attempt_dir)
-    except (ExecutorError, OSError) as exc:
+        points = _prepare_result_file(attempt_dir, "raw-points.json")
+    except (
+        ExecutorError,
+        OSError,
+        TypeError,
+        KeyError,
+        AttributeError,
+        ValueError,
+    ) as exc:
         _write_exit(
             attempt_dir,
             "interrupted",
@@ -335,17 +400,25 @@ def execute(
         "/tmp:rw,noexec,nosuid,nodev,size=64m",
         "--ulimit",
         "nofile=1024:1024",
+        "--ulimit",
+        "fsize=67108864:67108864",
+        "--mount",
+        f"type=bind,src={points},dst=/results/raw-points.json,bind-propagation=rprivate",
         "--mount",
         scenario_mount,
         "--mount",
         result_mount,
+        "--mount",
+        f"type=bind,src={wrapper},dst=/scripts/runner.js,readonly,bind-propagation=rprivate",
         "--env",
         "HYHOME_TARGET_ORIGIN=http://wiremock:8080",
         manifest["tool_image"],
         "run",
         "--no-color",
-        "--summary-export",
-        "/results/raw-summary.json",
+        "--out",
+        "json=/results/raw-points.json",
+        "--summary-trend-stats",
+        "avg,min,med,max,p(90),p(95),p(99),count",
         "--max-redirects",
         "0",
         "--system-tags",
@@ -361,12 +434,60 @@ def execute(
     ]
     for name in ("project_id", "environment", "run_id", "attempt"):
         command.extend(("--tag", f"{name}={manifest[name]}"))
-    command.extend(("--tag", f"testid={manifest['run_id']}", "/scripts/scenario.js"))
+    command.extend(("--tag", f"testid={manifest['run_id']}", "/scripts/runner.js"))
+    if guard_config is None:
+        _write_exit(
+            attempt_dir, "interrupted", 125, started_at, "path_confinement_unavailable"
+        )
+        raise ExecutorError("approved HTTP path enforcement proxy is not configured")
+    command[command.index("--name") : command.index("--name")] = [
+        "--label",
+        f"hyhome.quality.run_id={manifest['run_id']}",
+        "--label",
+        "hyhome.quality.role=k6-runner",
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=budget["duration_seconds"] + 30,
+            env=_docker_environment(),
+        )
+    except subprocess.TimeoutExpired:
+        _write_exit(attempt_dir, "interrupted", 124, started_at, "runner_timeout")
+        owned = _inspect(docker_binary, docker_context, "container", container_name)
+        labels = owned.get("Config", {}).get("Labels", {})
+        if (
+            labels.get("hyhome.quality.run_id") == manifest["run_id"]
+            and labels.get("hyhome.quality.role") == "k6-runner"
+            and owned.get("Config", {}).get("Image") == manifest["tool_image"]
+        ):
+            subprocess.run(
+                [
+                    docker_binary,
+                    "--context",
+                    docker_context,
+                    "rm",
+                    "--force",
+                    owned["Id"],
+                ],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                timeout=10,
+                check=False,
+                env=_docker_environment(),
+            )
+        return 124
+    except OSError:
+        _write_exit(attempt_dir, "interrupted", 127, started_at, "runner_unavailable")
+        return 127
+    exit_code = completed.returncode
     _write_exit(
         attempt_dir,
-        "interrupted",
-        125,
+        "completed" if exit_code >= 0 else "interrupted",
+        exit_code if exit_code >= 0 else 128 - exit_code,
         started_at,
-        "path_confinement_unavailable",
     )
-    raise ExecutorError("approved HTTP path enforcement proxy is not configured")
+    return exit_code if exit_code >= 0 else 128 - exit_code

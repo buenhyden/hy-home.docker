@@ -1,10 +1,10 @@
 ---
 title: "Home Infrastructure Runtime Evidence Closure Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 layer: "specs"
 artifact_id: "SPEC-0201-TSK-0002"
 parent_ids:
@@ -316,6 +316,18 @@ repaired and rerun under the same approved scope.
 | 9 | W6 | PASS: baseline/work SHA and five execution states reported; deferred checks were not called PASS | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
 | 10 | W7 | PASS: scoped W7.1-W7.3 owner, consumer, traffic and capacity evidence; W7.4 remains owner-deferred NOT_RUN | [runtime evidence Task](tsk-0002-runtime-evidence-closure.md) |
 | 11 | W7 | PASS: Prompt 02 implementation-time image, platform, license and compatibility review recorded; deployment recheck remains required | [development data Task](../../0202-development-data-and-lab-isolation/tasks/tsk-0001-source-integration.md) |
+
+### Promotion receipt before disposition
+
+AD-0031 owns the current engine selection, management/development split,
+shared-service reuse and external application ownership. AD-0004 owns normal
+data fragments versus isolated LAB entrypoints. GDE/POL/RUN-0100 and
+POL/RUN-0021 own development provision and deferred recovery procedures;
+the project-registration schema/README owns current integration fields.
+This package retains the dated diagnosis and evidence, not runtime authority.
+Before source capture, update Stage 03 navigation and inbound references in
+SPEC-0202/0203/0204/0205 to their final historical routes. No archived blob
+may be rewritten to repair a later link.
 
 ## Review Evidence
 

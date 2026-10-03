@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -53,7 +53,7 @@ Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`�
 | Item | Where it lives | How it is handed over |
 | --- | --- | --- |
 | Gateway CA | `secrets/certs/rootCA.pem` (mkcert root, public) | 복사 |
-| Prometheus API 자격 증명 | OpenBao `secret/platform/prometheus-api` (`username`, `password`), `.env`의 `PROMETHEUS_API_USERNAME`과 `secrets/observability/prometheus_api_password.txt`에서 | ESO 동기화; 수동 복사 없음 |
+| Prometheus API 자격 증명 | OpenBao `secret/platform/prometheus-api` (`username`, `password`), `.env`의 `PROMETHEUS_API_USERNAME`과 `secrets/observability/prometheus/prometheus_api_password.txt`에서 | ESO 동기화; 수동 복사 없음 |
 | Kiali Grafana 토큰 | OpenBao `secret/platform/grafana-api` (`token`), runbook이 90일로 발급 | ESO 동기화; 수동 복사 없음 |
 | 부트스트랩 토큰 | `$K8S_WORK/k8s-bootstrap.token` (runbook의 owner 전용 임시 디렉터리) | 보호된 채널, 2시간 이내 사용 |
 | 이름 해석 | `openbao.hy.home.arpa`, `prometheus.hy.home.arpa`, `grafana.hy.home.arpa` → `192.168.0.13` | 클러스터 DNS 항목 |

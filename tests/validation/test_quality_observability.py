@@ -130,6 +130,68 @@ class QualityObservabilityContractTest(unittest.TestCase):
         self.assertEqual("p95", renames["Value #D (lastNotNull)"])
         self.assertEqual("p99", renames["Value #E (lastNotNull)"])
 
+    def test_perf_results_use_rls_view_and_sql_literal_filters(self) -> None:
+        dashboard = json.loads((K6_DASHBOARD.parent / "perf-results.json").read_text())
+        variables = {v["name"]: v for v in dashboard["templating"]["list"]}
+        self.assertEqual("datasource", variables["DS_PERF_DB"]["type"])
+        self.assertEqual({}, variables["DS_PERF_DB"]["current"])
+        self.assertEqual("", variables["project_id"]["current"]["value"])
+        for panel in dashboard["panels"]:
+            sql = panel["targets"][0]["rawSql"]
+            self.assertIn("quality.run_results", sql)
+            self.assertIn("LIMIT 500", sql)
+            self.assertNotIn("*' IN (${project_id", sql)
+            for name in ("project_id", "run_id", "attempt"):
+                self.assertIn("${" + name + ":sqlstring}", sql)
+            self.assertNotIn("${project_id:raw}", sql)
+        queries = "\n".join(p["targets"][0]["rawSql"] for p in dashboard["panels"])
+        for required in (
+            "evidence_state", "official_verdict", "object_ref",
+            "baseline_values", "baseline_run_id:sqlstring",
+        ):
+            self.assertIn(required, queries)
+
+    def test_perf_datasource_example_is_not_automatically_provisioned(self) -> None:
+        import yaml
+        contract = (
+            ROOT / "infra/06-observability/grafana/provisioning/contracts"
+            / "perf-db.datasource.yml.example"
+        )
+        datasource = yaml.safe_load(contract.read_text())["datasources"][0]
+        self.assertEqual("perf_db", datasource["jsonData"]["database"])
+        self.assertEqual(2, datasource["jsonData"]["maxOpenConns"])
+        self.assertNotEqual("datasources", contract.parent.name)
+        self.assertTrue(contract.name.endswith(".example"))
+        self.assertIn("PERF_DB_READER_LOGIN", datasource["user"])
+        self.assertNotIn("perf_owner", contract.read_text())
+        active = (contract.parent.parent / "datasources/datasource.yml").read_text()
+        self.assertNotIn("perf_db", active)
+
+    def test_synthetic_metrics_fixture_reuses_exact_bounded_source(self) -> None:
+        import importlib.util
+        fixture = ROOT / "examples/operations/quality-metrics"
+        spec = importlib.util.spec_from_file_location("metrics_acceptance", fixture / "acceptance.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        extracted = module.metrics_config(self.config)
+        start = self.config.index('otelcol.processor.transform "quality_metrics" {')
+        end = self.config.index('/*****************************************************************', start)
+        self.assertTrue(extracted.startswith(self.config[start:end]))
+        self.assertNotIn("discovery.docker", extracted)
+        self.assertNotIn("tempo", extracted)
+        import yaml
+        model = yaml.safe_load((fixture / "docker-compose.yml").read_text())
+        self.assertTrue(model["networks"]["metrics"]["internal"])
+        self.assertNotIn("volumes", model)
+        self.assertNotIn("secrets", model)
+        for service in model["services"].values():
+            self.assertNotIn("ports", service)
+            self.assertNotIn("container_name", service)
+            self.assertTrue(service["read_only"])
+            self.assertEqual(["ALL"], service["cap_drop"])
+            self.assertIn("mem_limit", service)
+            self.assertIn("cpus", service)
+
     def test_locust_lab_is_not_claimed_as_root_observability_coverage(self) -> None:
         readme = GRAFANA_README.read_text(encoding="utf-8")
         self.assertNotIn("| 11-quality | `locust-master` |", readme)

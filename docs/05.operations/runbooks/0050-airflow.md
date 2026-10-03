@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -116,7 +116,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
    않음)까지 유효하다. 모두 끊으려면 `airflow_api_jwt_secret`을 교체한다.
    - 실행 중인 task를 먼저 멈추거나 끝낸다. task execution token도 같은
      key로 서명되므로, 교체하면 실행 중인 task의 API 호출이 실패한다.
-   - `secrets/automation/airflow_api_jwt_secret.txt`를 값 출력 없이 새 난수로
+   - `secrets/automation/airflow/airflow_api_jwt_secret.txt`를 값 출력 없이 새 난수로
      교체하고 기존 소유자와 mode(`0640`)를 유지한다.
    - 이 secret을 읽는 `airflow-apiserver`, `airflow-scheduler`,
      `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`를 함께

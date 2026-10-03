@@ -69,6 +69,13 @@ services:
         read_only: true
         bind:
           create_host_path: false
+      # Separate development repository; never mount live dev PGDATA here.
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/dev-pgbackrest
+        target: /src/state/dev-pgbackrest
+        read_only: true
+        bind:
+          create_host_path: false
       - type: bind
         source: ../../../secrets
         target: /src/host/secrets

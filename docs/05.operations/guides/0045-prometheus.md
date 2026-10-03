@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -210,7 +210,7 @@ hy-home.k8s cluster처럼 SSO를 통과할 수 없는 machine client는 Traefik�
 Alloy는 `/api/v1/write`로 remote write하고, Kiali는 `/api/v1/query*`로 query한다.
 `prometheus-api` router는 Basic `Authorization` header를 가진 `/api/v1/` request만
 허용하고, `prometheus-api-auth`는 `gen-secrets.sh`가 `PROMETHEUS_API_USERNAME`
-(`OBS-012`)과 `secrets/observability/prometheus_api_password.txt`(`OBS-013`)에서
+(`OBS-012`)과 `secrets/observability/prometheus/prometheus_api_password.txt`(`OBS-013`)에서
 유도한 `INFRA-007`에 대해 Basic Auth를 확인한다. Client는 해당 username과 password,
 Traefik bind address로 resolve된 Prometheus host name, gateway certificate에 대한
 신뢰가 필요하다. Cluster series에는 `cluster` 같은 구분되는 external label을 부여한다.

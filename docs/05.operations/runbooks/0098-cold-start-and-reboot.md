@@ -1,6 +1,6 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.0"
+version: "0.3.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -25,7 +25,7 @@ KV 값을 출력하거나 요청하지 않는다; 실제 재부팅 실행은 own
 
 Unseal 방식은 [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)의
 결정을 따른다: 수동 Shamir unseal 유지, share 3개 threshold 2개,
-`secrets/security/openbao_unseal_keys.txt`(SEC-003)에 보관. auto-unseal은
+`secrets/security/openbao/openbao_unseal_keys.txt`(SEC-003)에 보관. auto-unseal은
 채택되지 않았으므로 이 런북의 모든 단계는 owner가 직접 unseal과 SecretID 전달을
 수행한다고 전제한다.
 

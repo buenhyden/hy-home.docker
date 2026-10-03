@@ -1,0 +1,87 @@
+# Separate synthetic fixture; never included by the HOME root.
+services:
+  path-guard:
+    image: ${QUALITY_GUARD_IMAGE:?approved Traefik sha256 image required}
+    user: '1000:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 64
+    mem_limit: 128m
+    cpus: '0.25'
+    restart: 'no'
+    tmpfs: ['/tmp:rw,noexec,nosuid,nodev,size=16m']
+    expose: ['8080']
+    command:
+      - --entrypoints.quality.address=:8080
+      - --providers.file.filename=/guard/routes.yml
+      - --providers.file.watch=false
+      - --api=false
+      - --ping=false
+      - --log.level=ERROR
+    volumes:
+      - type: bind
+        source: ${QUALITY_GUARD_CONFIG:?immutable generated routes.json required}
+        target: /guard/routes.yml
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      runner:
+        aliases: [wiremock]
+      backend: {}
+    labels:
+      hyhome.quality.run_id: ${QUALITY_RUN_ID:?run identity required}
+      hyhome.quality.role: http-guard
+  mock-backend:
+    image: ${QUALITY_MOCK_IMAGE:?approved WireMock sha256 image required}
+    user: '1000:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: '0.50'
+    restart: 'no'
+    tmpfs:
+      - '/tmp:rw,noexec,nosuid,nodev,size=64m'
+      - '/home/wiremock/__files:rw,noexec,nosuid,nodev,size=16m,uid=1000,gid=1000'
+    environment:
+      JAVA_OPTS: '-Duser.home=/tmp'
+    expose: ['8080']
+    command: [--disable-banner, --admin-api-require-https, --no-request-journal]
+    volumes:
+      - type: bind
+        source: ${QUALITY_MOCK_MAPPINGS:?approved synthetic read-only mappings required}
+        target: /home/wiremock/mappings
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      backend:
+        aliases: [wiremock, quality-backend]
+    labels:
+      hyhome.quality.run_id: ${QUALITY_RUN_ID:?run identity required}
+      hyhome.quality.role: wiremock
+      hyhome.quality.mock_mode: load
+networks:
+  runner:
+    name: ${QUALITY_RUNNER_NETWORK:?dedicated runner network required}
+    internal: true
+    attachable: false
+    ipam:
+      config:
+        - subnet: ${QUALITY_RUNNER_SUBNET:?approved private manifest subnet required}
+    labels:
+      hyhome.quality.run_id: ${QUALITY_RUN_ID:?run identity required}
+      hyhome.quality.purpose: k6-wiremock
+  backend:
+    name: ${QUALITY_BACKEND_NETWORK:?dedicated backend network required}
+    internal: true
+    attachable: false
+    ipam:
+      config:
+        - subnet: ${QUALITY_BACKEND_SUBNET:?approved private backend subnet required}
+    labels:
+      hyhome.quality.run_id: ${QUALITY_RUN_ID:?run identity required}
+      hyhome.quality.purpose: k6-wiremock-backend

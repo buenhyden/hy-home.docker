@@ -1,6 +1,6 @@
 ---
 title: "AI Crawl4AI Crawler"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -65,7 +65,7 @@ Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 
 
 ## How to Work in This Area
 
-1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai_api_token.txt`를 생성합니다.
+1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai`.
 3. Open Notebook을 연결하려면 해당 서비스에 `crawl4ai_net`을 추가하고 `CRAWL4AI_API_URL`과
    토큰을 하나의 검토된 변경으로 설정합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.

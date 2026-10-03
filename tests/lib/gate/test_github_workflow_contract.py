@@ -93,6 +93,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_mng_pg_init_sql",
                 "tests.validation.test_config_mount_hashes",
                 "tests.validation.test_service_wiring_contracts",
+                "tests.validation.test_service_runtime_compatibility",
+                "tests.validation.test_perf_db_contract",
+                "tests.validation.test_k6_results",
+                "tests.validation.test_quality_mock_lab",
+                "tests.validation.test_quality_observability",
+                "tests.validation.test_quality_object_store",
+                "tests.validation.test_quality_raw_points",
             ],
             arguments[1:boundary],
         )

@@ -1,6 +1,6 @@
 ---
 title: "Development Data Secret Issuance and Isolated Acceptance Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
@@ -201,6 +201,19 @@ substitute for post-merge alignment.
 | `bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check` in feature worktree and current main | 0, 0 | Each private registry matches its own public paths; root/LAB env key sets aligned; values suppressed |
 | `python3 scripts/validation/run-ci-gate.py --profile changed` | 143 | Operator terminated after 15 minutes when path-aware selection expanded into an unrelated full document regression suite; earlier selected suites passed, but this gate is incomplete, not PASS |
 
+### Promotion receipt before disposition
+
+AD-0031/AD-0004 own the current management/development and root/LAB
+boundaries. GDE/POL/RUN-0100 own development provision, permissions and
+source preflight; POL/RUN-0021 own deferred recovery. LAB package documents
+and POL-0078 own isolated entrypoints. `secrets/README.md`, the registry
+projection and metadata-sync tool own current credential-path/env contracts.
+The root and PostgreSQL READMEs now route to these current Stage 05 owners.
+The secret-layout follow-up still requires its completed path-aware gate and
+post-merge private metadata alignment before a final landing claim. These
+checks remain explicit pending integration work, not historical PASS evidence.
+Prepare consumer cutover and a source commit before any archive capture.
+
 ## Review Evidence
 
 Independent review found one forbidden Spec heading, one stale README main count, one Task tense mismatch, and missing durable command evidence. Each was corrected. `check-document-metadata.py --mode check-changed --base-ref 0a2de6c3758f4805c2be31cb6bd3976f60b8eb43` returned 0 with 20 selected documents and zero violations; README language/navigation and public secret schema checks returned 0. Static checks do not prove operational deployment or real-data migration.
@@ -211,8 +224,11 @@ The source integration commit is `b867eb7d4`; the first Task ledger commit is `a
 
 ## Rulings
 
-The user selected HOME start/restart **hold**. Existing HOME secret paths and
-credentials remain untouched. The 20 new paths are new issuance, not rotation.
+The user selected HOME start/restart **hold**. At the initial 20-file issuance
+checkpoint, existing HOME secret paths and credentials were untouched. The
+2026-10-03 follow-up later relocated six credential paths with compatibility
+hardlinks while preserving values and running mounts. The 20 new paths are
+new issuance, not rotation.
 A local `main` merge is recorded separately from hosted PR checks and runtime
 activation. A no-data migration route does not delete InfluxDB or `app_db`.
 

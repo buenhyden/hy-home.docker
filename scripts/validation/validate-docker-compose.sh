@@ -89,7 +89,7 @@ is_optional_secret() {
   local path="$1"
   case "$path" in
   ./secrets/db/neo4j/neo4j_password.txt | \
-    ./secrets/db/valkey/airflow_password.txt)
+    ./secrets/db/mng-valkey/airflow_password.txt)
     return 0
     ;;
   *)

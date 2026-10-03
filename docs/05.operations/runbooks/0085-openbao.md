@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Runbook"
-version: "0.7.0"
+version: "0.7.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -224,7 +224,7 @@ docker exec openbao-agent sh -c 'test -s /openbao/agent/role_id && echo role_id-
    token, human operator token, root token을 사용하지 않는다.
 2. policy를 적용하고 default policy가 없는 새 orphan service token을 발급한다. 유효 시스템
    최댓값 이내의 유한한 TTL을 부여하고, 만료 시각과 accessor를 보호된 custody에 기록하고,
-   token 값만 mode `0640`, group `SECRETS_GID`로 `secrets/security/openbao_token.txt`에
+   token 값만 mode `0640`, group `SECRETS_GID`로 `secrets/security/openbao/openbao_token.txt`에
    전달한다(Prometheus는 `group_add`를 통해 `nobody`로 이를 읽는다). 출력하거나 인자로
    전달하지 않는다. 아래 명령의 owner-only 세션 디렉터리만 스테이징으로 허용되며 이후
    삭제한다.
@@ -264,8 +264,8 @@ BAO_TOKEN="$(cat /s/k8s/metrics.token)" bao policy list >/dev/null 2>&1 && echo 
 mode와 group으로 파일을 교체하고, Prometheus만 재생성하고 target을 기다린다.
 
 ```bash
-install -m 640 -g "$(stat -c %g secrets/security/openbao_token.txt)" /tmp/bao-k8s/metrics.token secrets/security/.openbao_token.new
-mv secrets/security/.openbao_token.new secrets/security/openbao_token.txt
+install -m 640 -g "$(stat -c %g secrets/security/openbao/openbao_token.txt)" /tmp/bao-k8s/metrics.token secrets/security/.openbao_token.new
+mv secrets/security/.openbao_token.new secrets/security/openbao/openbao_token.txt
 rm -f /tmp/bao-k8s/metrics.token
 docker compose --profile obs up -d --no-deps --force-recreate --wait prometheus
 sleep 45   # one scrape interval after the recreate
@@ -278,7 +278,7 @@ docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query
 파일을 작성한다.
 
 ```bash
-install -m 600 secrets/security/openbao_metrics_token.custody /tmp/bao-k8s/old.custody
+install -m 600 secrets/security/openbao/openbao_metrics_token.custody /tmp/bao-k8s/old.custody
 ```
 
 다음은 한 줄씩 실행하고 결과를 확인한다. 처음 두 검사는 accessor가 정확히 한 개이고
@@ -311,8 +311,8 @@ umask 077
 A=$(sed -n 's/.*"accessor": *"\([^"]*\)".*/\1/p' /tmp/bao-k8s/metrics.custody)
 E=$(sed -n 's/.*"expire_time": *"\([^"]*\)".*/\1/p' /tmp/bao-k8s/metrics.custody)
 [ -n "$A" ] && [ -n "$E" ] && printf 'accessor=%s\nexpires=%s\nissued=%s\npolicy=prometheus\n' "$A" "$E" "$(date -u +%FT%TZ)" >secrets/security/.openbao_metrics_token.custody.new
-test -s secrets/security/.openbao_metrics_token.custody.new && mv secrets/security/.openbao_metrics_token.custody.new secrets/security/openbao_metrics_token.custody
-unset A E; sed -n 's/^expires=//p' secrets/security/openbao_metrics_token.custody
+test -s secrets/security/.openbao_metrics_token.custody.new && mv secrets/security/.openbao_metrics_token.custody.new secrets/security/openbao/openbao_metrics_token.custody
+unset A E; sed -n 's/^expires=//p' secrets/security/openbao/openbao_metrics_token.custody
 rm -f /tmp/bao-k8s/old.custody /tmp/bao-k8s/metrics.custody
 ```
 

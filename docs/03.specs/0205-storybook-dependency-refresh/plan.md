@@ -32,14 +32,14 @@ isolated branch after this Spec Package and exact Task are approved.
 
 ## Execution Sequence
 
-1. **W1: freeze targets.** Compare current main, package manifest/lock, npm
+1. W1: freeze targets. Compare current main, package manifest/lock, npm
    latest stable dist-tags, peer dependencies and the existing CI owner.
    Covers acceptance 1.
-2. **W2: update graph.** Change only Task-owned npm files; refresh lockfile
+2. W2: update graph. Change only Task-owned npm files; refresh lockfile
    with a task-local cache and install without unreviewed lifecycle scripts.
    Confirm the exact resolved train and compare peer listing failures with
    baseline. Covers acceptance 2.
-3. **W3: verify and review.** Run scoped install, lint, typecheck, Next build,
+3. W3: verify and review. Run scoped install, lint, typecheck, Next build,
    Storybook build, Vitest browser coverage, Storybook contract checker, npm
    audit and diff review. Record failures and advisory path without bypass.
    Covers acceptance 3-4.
