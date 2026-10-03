@@ -1,8 +1,8 @@
 ---
 title: "External Project Integration Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -112,7 +112,7 @@ this metadata as an authorization decision today.
 
 ## Commit Ledger
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending; no external project or resource action.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit `d302f54cb` (full SHA recorded by Git); Task objective completed with a generic metadata validator and read-only integration inventory. No external project or resource action.
 
 ## Rulings
 
