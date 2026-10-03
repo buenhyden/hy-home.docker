@@ -14,7 +14,6 @@ import stat
 import subprocess
 from typing import Any
 
-
 EXIT_SCHEMA = "hyhome.quality-exit/v1"
 SHA256 = re.compile(r"[0-9a-f]{64}")
 NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}")
@@ -32,8 +31,7 @@ def _timestamp() -> str:
 
 def _canonical(value: object) -> bytes:
     return (
-        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
-        + "\n"
+        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False) + "\n"
     ).encode()
 
 
@@ -92,10 +90,7 @@ def _inspect(
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise ExecutorError(f"Docker {kind} inspect failed") from exc
-    if (
-        completed.returncode != 0
-        or len(completed.stdout.encode()) > MAX_INSPECT_BYTES
-    ):
+    if completed.returncode != 0 or len(completed.stdout.encode()) > MAX_INSPECT_BYTES:
         raise ExecutorError(f"Docker {kind} inspect failed")
     try:
         records = json.loads(completed.stdout)
@@ -278,18 +273,12 @@ def execute(
     started_at = _timestamp()
     try:
         snapshot = _snapshot_scenario(manifest, scenario_root, attempt_dir)
-        network = _inspect(
-            docker_binary, docker_context, "network", network_name
-        )
+        network = _inspect(docker_binary, docker_context, "network", network_name)
         network_id, peer_id = _network_contract(
             manifest, network, network_name, peer_name
         )
-        peer = _inspect(
-            docker_binary, docker_context, "container", peer_name
-        )
-        _peer_contract(
-            manifest, peer, network_name, peer_name, peer_id
-        )
+        peer = _inspect(docker_binary, docker_context, "container", peer_name)
+        _peer_contract(manifest, peer, network_name, peer_name, peer_id)
         result = _prepare_result_file(attempt_dir)
     except (ExecutorError, OSError) as exc:
         _write_exit(
@@ -380,6 +369,4 @@ def execute(
         started_at,
         "path_confinement_unavailable",
     )
-    raise ExecutorError(
-        "approved HTTP path enforcement proxy is not configured"
-    )
+    raise ExecutorError("approved HTTP path enforcement proxy is not configured")

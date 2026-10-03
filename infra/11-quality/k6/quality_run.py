@@ -18,7 +18,6 @@ import urllib.parse
 import uuid
 from typing import Any
 
-
 MANIFEST_SCHEMA = "hyhome.quality-run/v1"
 EXIT_SCHEMA = "hyhome.quality-exit/v1"
 FINAL_SCHEMA = "hyhome.quality-final/v1"
@@ -135,11 +134,9 @@ def _validate_origin(origin: object) -> str:
     host = parsed.hostname
     try:
         address = ipaddress.ip_address(host)
-    except ValueError:
-        if host == "localhost" or (
-            "." in host and not host.endswith(".internal")
-        ):
-            raise ContractError("public target origins are prohibited")
+    except ValueError as exc:
+        if host == "localhost" or ("." in host and not host.endswith(".internal")):
+            raise ContractError("public target origins are prohibited") from exc
     else:
         if (
             address.is_unspecified
@@ -237,10 +234,9 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
             raise ContractError("allowed_networks contains invalid CIDR") from exc
         if network.is_global:
             raise ContractError("allowed_networks must be private")
-        if (
-            not any(network.subnet_of(private) for private in PRIVATE_SUPERNETS)
-            or network.prefixlen < (24 if network.version == 4 else 64)
-        ):
+        if not any(
+            network.subnet_of(private) for private in PRIVATE_SUPERNETS
+        ) or network.prefixlen < (24 if network.version == 4 else 64):
             raise ContractError("allowed_networks must be bounded private CIDRs")
         parsed_networks.append(network)
     try:
@@ -326,7 +322,7 @@ def _write_once(path: pathlib.Path, value: object) -> None:
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW | os.O_CLOEXEC
     try:
         descriptor = os.open(path, flags, 0o640)
-    except FileExistsError:
+    except FileExistsError as already_exists:
         try:
             info = path.lstat()
             if not stat.S_ISREG(info.st_mode) or path.is_symlink():
@@ -339,7 +335,9 @@ def _write_once(path: pathlib.Path, value: object) -> None:
                 f"cannot verify existing artifact: {path.name}"
             ) from exc
         if existing != payload:
-            raise ContractError(f"immutable artifact conflict: {path.name}")
+            raise ContractError(
+                f"immutable artifact conflict: {path.name}"
+            ) from already_exists
         return
     with os.fdopen(descriptor, "wb") as stream:
         stream.write(payload)
@@ -398,7 +396,7 @@ def finalize(attempt_dir: pathlib.Path) -> dict[str, Any]:
     from result_inspection import inspect_exit, inspect_summary
 
     manifest = validate_manifest(_load_json(attempt_dir / "manifest.json"))
-    summary, samples, thresholds_ok, issues = inspect_summary(attempt_dir, manifest)
+    _summary, samples, thresholds_ok, issues = inspect_summary(attempt_dir, manifest)
     exit_record, exit_issues = inspect_exit(attempt_dir)
     issues.extend(exit_issues)
     execution_state = (
@@ -599,9 +597,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "run":
             from container_executor import ExecutorError, execute
 
-            manifest = prepare(
-                args.manifest, args.scenario_root, args.attempt_dir
-            )
+            manifest = prepare(args.manifest, args.scenario_root, args.attempt_dir)
             try:
                 return execute(
                     manifest,
@@ -622,9 +618,7 @@ def main(argv: list[str] | None = None) -> int:
             from result_import import ImportContractError, import_db
 
             try:
-                _, exit_code = import_db(
-                    args.envelope, args.receipt, args.psql_binary
-                )
+                _, exit_code = import_db(args.envelope, args.receipt, args.psql_binary)
             except ImportContractError as exc:
                 raise ContractError(str(exc)) from exc
             return exit_code

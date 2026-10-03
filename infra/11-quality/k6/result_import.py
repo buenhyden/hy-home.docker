@@ -15,7 +15,6 @@ import subprocess
 import uuid
 from typing import Any
 
-
 IMPORT_SCHEMA = "hyhome.quality-import/v1"
 RECEIPT_SCHEMA = "hyhome.quality-import-receipt/v1"
 MAX_JSON_BYTES = 1024 * 1024
@@ -146,12 +145,9 @@ def _validate(envelope: dict[str, Any]) -> None:
         or envelope["ingestion_state"] != "pending"
     ):
         raise ImportContractError("import states are invalid")
-    if (
-        envelope["execution_state"] == "interrupted"
-        and (
-            envelope["evidence_state"] != "incomplete"
-            or envelope["reported_verdict"] != "incomplete"
-        )
+    if envelope["execution_state"] == "interrupted" and (
+        envelope["evidence_state"] != "incomplete"
+        or envelope["reported_verdict"] != "incomplete"
     ):
         raise ImportContractError("interrupted import state is inconsistent")
     if (

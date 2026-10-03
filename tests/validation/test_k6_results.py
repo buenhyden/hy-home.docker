@@ -8,7 +8,6 @@ import types
 import unittest
 from unittest import mock
 
-
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MODULE_PATH = ROOT / "infra/11-quality/k6/quality_run.py"
 sys.path.insert(0, str(MODULE_PATH.parent))
@@ -283,13 +282,9 @@ class K6ResultContractTests(unittest.TestCase):
                     "/synthetic/docker",
                 )
         self.assertEqual(len(calls), 2)
-        exit_record = json.loads(
-            (attempt / "exit.json").read_text(encoding="utf-8")
-        )
+        exit_record = json.loads((attempt / "exit.json").read_text(encoding="utf-8"))
         self.assertEqual(exit_record["execution_state"], "interrupted")
-        self.assertEqual(
-            exit_record["error_class"], "path_confinement_unavailable"
-        )
+        self.assertEqual(exit_record["error_class"], "path_confinement_unavailable")
         self.assertTrue((attempt / "scenario.js").is_file())
         self.assertTrue((attempt / "raw-summary.json").is_file())
 
@@ -354,12 +349,8 @@ class K6ResultContractTests(unittest.TestCase):
                     "wiremock",
                     "/synthetic/docker",
                 )
-        exit_record = json.loads(
-            (attempt / "exit.json").read_text(encoding="utf-8")
-        )
-        self.assertEqual(
-            exit_record["error_class"], "isolation_preflight_failed"
-        )
+        exit_record = json.loads((attempt / "exit.json").read_text(encoding="utf-8"))
+        self.assertEqual(exit_record["error_class"], "isolation_preflight_failed")
 
     def test_container_executor_records_malformed_peer_inspect(self) -> None:
         attempt = self.root / "malformed-wiremock"
@@ -531,9 +522,7 @@ class K6ResultContractTests(unittest.TestCase):
         self.assertEqual(receipt["ingestion_state"], "failed")
         self.assertEqual(receipt["error_class"], "database_import_timeout")
         self.assertEqual(run.call_args.kwargs["timeout"], 30)
-        self.assertEqual(
-            run.call_args.kwargs["env"]["PGCONNECT_TIMEOUT"], "10"
-        )
+        self.assertEqual(run.call_args.kwargs["env"]["PGCONNECT_TIMEOUT"], "10")
 
     def test_database_import_uses_one_function_without_secret_args(self) -> None:
         attempt = self.prepare()
@@ -586,9 +575,9 @@ class K6ResultContractTests(unittest.TestCase):
             result_import._validate(envelope)
 
     def test_root_compose_is_inventory_only(self) -> None:
-        compose = (
-            ROOT / "infra/11-quality/k6/docker-compose.yml"
-        ).read_text(encoding="utf-8")
+        compose = (ROOT / "infra/11-quality/k6/docker-compose.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn("command:\n      - version", compose)
         self.assertNotIn("command:\n      - run", compose)
         self.assertNotIn("host-gateway", compose)

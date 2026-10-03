@@ -1,10 +1,9 @@
 """WireMock mode and standalone Locust LAB contracts."""
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 import yaml
-
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -48,9 +47,7 @@ class QualityMockLabContractTest(unittest.TestCase):
         root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
         includes = root["include"]
         self.assertNotIn("infra/11-quality/locust/docker-compose.yml", includes)
-        self.assertFalse(
-            (ROOT / "infra/11-quality/locust/docker-compose.yml").exists()
-        )
+        self.assertFalse((ROOT / "infra/11-quality/locust/docker-compose.yml").exists())
 
         lab = yaml.safe_load((ROOT / "labs/locust.yml").read_text())
         self.assertEqual(lab["name"], "hy-home-lab-locust")

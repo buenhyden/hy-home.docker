@@ -4,13 +4,9 @@ import json
 import unittest
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[2]
 ALLOY = ROOT / "infra/06-observability/alloy/config/config.home.alloy"
-K6_DASHBOARD = (
-    ROOT
-    / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
-)
+K6_DASHBOARD = ROOT / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
 GRAFANA_README = ROOT / "infra/06-observability/grafana/README.md"
 
 
@@ -25,12 +21,8 @@ class QualityObservabilityContractTest(unittest.TestCase):
             "metrics = [otelcol.processor.transform.quality_metrics.input]",
             self.config,
         )
-        self.assertIn(
-            "traces  = [otelcol.processor.batch.default.input]", self.config
-        )
-        self.assertIn(
-            "traces = [otelcol.exporter.otlp.tempo.input]", self.config
-        )
+        self.assertIn("traces  = [otelcol.processor.batch.default.input]", self.config)
+        self.assertIn("traces = [otelcol.exporter.otlp.tempo.input]", self.config)
 
     def test_metric_labels_are_allowlisted_and_required(self) -> None:
         self.assertIn(
@@ -58,14 +50,12 @@ class QualityObservabilityContractTest(unittest.TestCase):
             'sample_age_limit     = "5m"',
         ):
             self.assertIn(setting, self.config)
-        self.assertIn(
-            'url = "http://prometheus:9090/api/v1/write"', self.config
-        )
+        self.assertIn('url = "http://prometheus:9090/api/v1/write"', self.config)
 
     def test_delta_temporality_conversion_is_explicitly_enabled(self) -> None:
-        compose = (
-            ROOT / "infra/06-observability/docker-compose.yml"
-        ).read_text(encoding="utf-8")
+        compose = (ROOT / "infra/06-observability/docker-compose.yml").read_text(
+            encoding="utf-8"
+        )
         self.assertIn(
             "metrics = [otelcol.processor.deltatocumulative.quality_metrics.input]",
             self.config,
