@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -160,7 +160,44 @@ clean task-owned worktrees and branches whose commits are reachable from main.
 If checks fail, preserve the feature branch/worktree and report BLOCKED.
 Rollback before merge closes the delivery PR only with owner approval; it
 never removes the protected main history or private runtime state.
-Push/PR/hosted after-state is pending at this preparation receipt.
+Delivery after-state: `git push -u origin codex/spec-0201-0205-closure`
+exited 0 and Draft [PR351](https://github.com/buenhyden/hy-home.docker/pull/351)
+was created for source `df2705c193456ea459a6b4e8b70516935914208e`.
+Hosted [CI run 37138415020](https://github.com/buenhyden/hy-home.docker/actions/runs/37138415020)
+failed required `validation-changed`: six `invalid-initial-status` findings
+for this package's new Spec, Plan and Tasks 1-4. This is the actual hosted
+failure; the separate unpatched braces advisory remains a security hold.
+CodeQL and GitGuardian passed but do not replace the required gate.
+
+Independent lifecycle review confirmed that the changed-document validator
+uses the protected merge-base state, not intermediate feature commits.
+Registered initial `draft` delivery and one permitted edge per subsequent
+protected delivery are required for these six documents. No validator change,
+transition override, false rewind of completed work, or archive of incomplete
+SPEC-0204 is applied. Staged registration is deferred while the independent
+security merge hold persists; this receipt does not approve a waiver.
+
+Merge result: BLOCKED, no merge or direct main push. Owner local main and
+fetched origin/main remain `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
+The closure branch and its clean worktree remain available for review and
+subsequent compliant delivery. Cleanup is restricted to clean obsolete
+worktrees with preserved branch references and feature branches already
+reachable from protected main. No runtime state or private files are removed.
+
+Cleanup receipt: `git worktree remove /tmp/hyhome-spec-0204-integration`
+exited 0 after checking clean status, absence of private environment/registry
+and untracked secret files, and source reachability from the preserved closure
+branch. Its `feat/0204-common-integration-ops` reference remains. `git branch -d`
+removed only `feat/0202-development-data-lab`,
+`feat/spec-0201-home-infra-diagnosis`, and `feat/spec-0203-quality-results`,
+each with confirmed ancestry to origin/main. The exact unchanged remote 0203
+head was also reachable from main and had no open PR; its deletion exited 0.
+The already-absent remote 0202 branch's stale tracking reference was removed.
+Fetch and `git merge --ff-only origin/main` exited 0; owner main and origin/main
+both remain at the baseline SHA above. The main owner worktree and closure
+worktree are retained. Receipt metadata validation selected one document,
+zero violations/overrides, exit 0; independent read-only review confirmed the
+hosted failure and absence of a false success claim.
 
 ## Review Evidence
 
