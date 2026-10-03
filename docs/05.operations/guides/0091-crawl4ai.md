@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -29,8 +29,8 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 ### Current implementation
 
 - [Crawl4AI Compose](../../../infra/08-ai/crawl4ai/docker-compose.yml)는
-  업스트림 이미지를 고정하고 `template-infra-high`를 4 GiB 메모리와 512
-  PID 제한으로 확장하며 tmpfs 작업 경로와 함께 읽기 전용으로 실행한다.
+  2026-10-03 확인한 [공식 보안 릴리스](https://github.com/unclecode/crawl4ai/releases)에 맞춰 이미지를 고정하고 `template-infra-high`를 4 GiB 메모리와 512
+  PID 제한으로 확장하며 tmpfs 작업 경로와 함께 읽기 전용으로 실행한다. 릴리스의 URL·redirect·robots·link preview 수정은 HOME egress 차단이나 실제 요청 검증의 증거가 아니다.
 - 서버는 `crawl4ai_api_token`이 필요하다. 토큰이 있으면 업스트림은
   protected data/admin API에 Bearer/JWT 인증을 적용한다. Health, root,
   monitor, token route 및 UI/static shell에는 버전별 예외가 있다. `/token`은

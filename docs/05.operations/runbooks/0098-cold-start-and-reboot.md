@@ -4,7 +4,7 @@ version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -98,24 +98,22 @@ docker inspect --format '{{.State.Health.Status}}' mng-valkey traefik keycloak
 `/health/ready`를 확인한다. 이 단계가 안정되지 않으면 이후의 OIDC 로그인
 단계(4)가 실패한다.
 
-### 3. OpenBao: sealed 상태로 시작, Agent는 즉시 시작
+### 3. OpenBao: sealed 상태와 Agent 재시작 상태 확인
 
 `infra/03-security/openbao/docker-compose.yml`의 `openbao` healthcheck는
-`bao status`의 종료 코드 0(unsealed)과 2(sealed)를 모두 healthy로 본다
-(`interval 15s`, `timeout 10s`, `retries 10`, `start_period 20s`). 그래서
-`openbao-agent`는 `depends_on: condition: service_healthy`를 곧바로 통과해
-sealed 상태의 OpenBao 옆에서 시작한다.
+`bao status`의 종료 코드 0(unsealed)만 healthy로 본다
+(`interval 15s`, `timeout 10s`, `retries 10`, `start_period 20s`).
+sealed(2) 상태에서는 새 `docker compose up`의 `openbao-agent`가 `service_healthy` 의존성을 통과하지 못한다. Docker daemon의 기존 컨테이너 자동 재시작은 이 의존성을 재평가하지 않아 Agent가 먼저 시작할 수 있다.
 
 ```bash
-docker inspect --format '{{.State.Health.Status}}' openbao openbao-agent
+docker inspect --format '{{.State.Health.Status}}' openbao
 docker compose exec -T openbao bao status
 ```
 
 예상 결과: OpenBao가 시작한 뒤 `bao status`로 sealed/unsealed를 구분한다.
-sealed의 종료2는 daemon health가 허용하는 상태이며 앱 사용 준비 완료가 아니다.
-Agent는 남은 token 파일로 health를 통과하거나 파일이 없어서 unhealthy일 수 있다.
-`healthy`만으로 현재 인증·renewal·렌더링을 증명하지 않는다. 재부팅 뒤 새 SecretID가
-필요한지는 RUN-0085의 현재 인증 상태와 renderer 검증으로 판단한다.
+sealed의 종료2는 서버가 살아 있어도 `unhealthy`인 상태다. 4단계의 owner unseal 뒤
+서버 health가 회복되어야 새 Compose 기동의 Agent가 시작된다. 기존 Agent의 daemon 자동 재시작은 먼저 일어날 수 있고, 남은 token 파일로 health를 통과할 수 있으므로
+현재 인증·renewal·렌더링을 별도로 검증한다. 재부팅 뒤 새 SecretID 필요 여부는 RUN-0085로 판단한다.
 
 ### 4. Owner unseal (대화형, hidden input)
 
@@ -201,7 +199,7 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 | 단계 | 근거 | 예상 소요 |
 | --- | --- | --- |
 | 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
-| 3. OpenBao sealed 시작, Agent 시작 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
+| 3. OpenBao sealed 및 Agent 상태 확인 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
 | 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
 | 6. SecretID 발급과 전달 | SecretID 유효기간 10분, 1회용 | 10분 이내에 끝나야 함 |
 | 7. hy-home.k8s 확인 | k3d 컨테이너 자체 기동 시간 문서화 안 됨 | **owner 확인 필요** |

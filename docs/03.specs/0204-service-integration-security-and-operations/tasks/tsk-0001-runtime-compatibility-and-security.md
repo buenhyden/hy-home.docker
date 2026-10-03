@@ -62,29 +62,46 @@ none of these links is a tested HOME deployment.
 
 | Check | Result | Limit |
 | --- | --- | --- |
-| Current tracked-source and official-doc comparison | READ_ONLY | n8n version/timeout mismatch and Crawl4AI later advisory confirmed; no image execution |
-| Draft package: `check-document-metadata.py --mode check-changed --base-ref main` | PASS (exit 0, selected 6, violations 0) | Documents only; no service validation |
-| Draft package: `check-document-links.py --mode all` | PASS (exit 0, failures 0) | One pre-existing archive provenance warning |
-| Draft package: `check-document-corpus-lifecycle.py --base-ref main`; registry JSON parse; `git diff --cached --check` | PASS (each exit 0) | Draft lifecycle and syntax only |
-| Scoped Compose, secret consumer, URL allow/deny, OpenBao and LAB checks | NOT_RUN | Await approved source diff and synthetic fixture preflight |
-| HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
+| Official n8n runner/release, Crawl4AI security release, OpenBao status and amd64 image manifest inspection on 2026-10-03 | PASS read-only | n8n image index digests `sha256:87e0bab2c93192e8dd885ff7b0697c22a1bd97489568a8c67cc140fd7dbb342d` and `sha256:443eaee69319997627e2129ed8d512c4f4ea2418a744393cf26e843237399299`; Crawl4AI `sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b`. No image pull or execution. |
+| `python3 -m unittest tests.validation.test_service_runtime_compatibility tests.validation.test_tech_stack_version_contract -q` | PASS, exit 0, 58 tests | Includes synthetic missing/empty/valid runner token and broker guard shell execution, plus sealed rc0/1/2; no Code-node process or image execution. |
+| `docker compose --env-file .env.example --profile workflow-n8n config --quiet`; default/dedicated broker secret render; `--profile crawl4ai config --quiet` | PASS, each exit 0 | Only static root model; selected n8n main/worker receive one Valkey secret. |
+| `LAB_DATA_DIR=/tmp/hyhome-lab-cassandra-synthetic docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet` | PASS, exit 0 | Initial render without required `LAB_DATA_DIR` exited 1; corrected with a synthetic path. No LAB service or volume created. |
+| `bash scripts/operations/sync-tech-stack-versions.sh --write` then `--check`; `git diff --check`; shell syntax | PASS, each exit 0 | Generated projection and source syntax only. |
+| `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD` | PASS, exit 0 | Current Stage 05 prose; not runtime proof. |
+| JS/Python Code-node token isolation, private/redirect URL denial, OpenBao Agent fresh render, n8n DB migration, Cassandra data/auth | NOT_RUN | Isolated image execution requires full Docker preflight and source controls; HOME and credentials remain out of scope. |
+| HOME service start/restart, crawler request, OpenBao unseal or secret rotation | NOT_RUN | Separate exact operational approval required. |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1/W5 | DRAFT ledger; no source change | This Task and existing service READMEs |
-| 2 | W2/W5 | NOT_RUN | GDE/POL/RUN-0053 and n8n source |
-| 3 | W2/W5 | NOT_RUN | GDE/POL/RUN-0091 and LAB Cassandra documents |
-| 4 | W2/W5 | PARTIAL design; auth routes belong also to TSK-0002 | GDE/POL/RUN-0085 and POL-0079 |
-| 8 | W5 | NOT_RUN | This Task verification receipts |
+| 1 | W1/W5 | Source defects corrected; runtime inventory remains unobserved | This Task and service READMEs |
+| 2 | W2/W5 | Static PASS; Code-node and upgrade NOT_RUN | GDE/POL/RUN-0053 and n8n source |
+| 3 | W2/W5 | Security pin/LAB render PASS; URL/egress and LAB runtime NOT_RUN | GDE/POL/RUN-0091 and LAB Cassandra documents |
+| 4 | W2/W5 | Sealed synthetic PASS; Agent freshness NOT_RUN | GDE/POL/RUN-0085 and POL-0079 |
+| 8 | W5 | Focused regression PASS; isolated execution NOT_RUN | This Task verification receipts |
 
 ## Review Evidence
 
-Independent source/security review is pending the approved implementation diff.
-No generated projection or runtime condition is marked PASS from the initial draft.
+Independent code and security review found three actionable gaps. The
+unused Valkey secret mount was removed; default/dedicated render now exposes
+only the selected password reference to main and worker. n8n Renovate image
+updates were disabled because automatic Dockerfile/runner updates would leave
+Compose build arguments and local tags stale; matching pins now require one
+manual reviewed change. RUN-0098 and OpenBao guides distinguish Compose
+`depends_on` gating from Docker daemon auto-restart, which can start an existing
+Agent while the server is sealed.
+
+The runner launcher still needs its auth token in a process environment. A
+same-container Code task may read `/proc/*/environ` or the mounted secret
+without an effective isolation control. Crawl4AI's dedicated bridge limits
+Compose DNS discovery but does not deny host/LAN/link-local egress. Both are
+HOME acceptance blockers; no Code-task `/proc` denial or synthetic URL/redirect
+policy test is claimed. Official runner `_FILE` support descriptions differ
+between the general n8n environment documentation and launcher setup text;
+the approved inline secret-file adapter remains the reviewed source path.
 
 ## Commit Ledger
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending; no remote merge or HOME execution.
 
 ## Rulings
 
