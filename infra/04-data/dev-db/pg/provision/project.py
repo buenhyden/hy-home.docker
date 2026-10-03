@@ -22,7 +22,15 @@ PROJECT_ID = re.compile(r"[a-z][a-z0-9-]{0,62}\Z")
 SECRET = re.compile(r"[a-z][a-z0-9_]{0,90}\Z")
 KINDS = ("owner", "migrator", "runtime", "reader")
 LOGIN_KINDS = KINDS[1:]
-FIELDS = {"schema_version", "project_id", "environment", "database", "schema", "roles", "password_secrets"}
+FIELDS = {
+    "schema_version",
+    "project_id",
+    "environment",
+    "database",
+    "schema",
+    "roles",
+    "password_secrets",
+}
 
 
 def _keys(value, required, label):
@@ -31,7 +39,11 @@ def _keys(value, required, label):
 
 
 def _name(value, pattern, label):
-    if not isinstance(value, str) or not pattern.fullmatch(value) or value.startswith("pg_"):
+    if (
+        not isinstance(value, str)
+        or not pattern.fullmatch(value)
+        or value.startswith("pg_")
+    ):
         raise ValueError(f"invalid {label}")
     return value
 
@@ -46,17 +58,35 @@ def validate(value):
     project = _name(value["project_id"], PROJECT_ID, "project_id")
     database = _name(value["database"], IDENT, "database")
     schema = _name(value["schema"], IDENT, "schema")
-    if database in {"postgres", "template0", "template1", "app_db"} or schema in {"public", "pg_catalog", "information_schema"}:
+    if database in {"postgres", "template0", "template1", "app_db"} or schema in {
+        "public",
+        "pg_catalog",
+        "information_schema",
+    }:
         raise ValueError("reserved database or schema")
     _keys(value["roles"], KINDS, "roles")
     roles = {kind: _name(value["roles"][kind], IDENT, kind) for kind in KINDS}
-    if len(set(roles.values())) != len(KINDS) or set(roles.values()) & {database, schema, "postgres"}:
+    if len(set(roles.values())) != len(KINDS) or set(roles.values()) & {
+        database,
+        schema,
+        "postgres",
+    }:
         raise ValueError("roles must be distinct from each other and reserved names")
     _keys(value["password_secrets"], LOGIN_KINDS, "password_secrets")
-    secrets = {kind: _name(value["password_secrets"][kind], SECRET, kind + " secret") for kind in LOGIN_KINDS}
+    secrets = {
+        kind: _name(value["password_secrets"][kind], SECRET, kind + " secret")
+        for kind in LOGIN_KINDS
+    }
     if len(set(secrets.values())) != len(LOGIN_KINDS):
         raise ValueError("login roles need distinct secret references")
-    return {"project_id": project, "environment": "development", "database": database, "schema": schema, "roles": roles, "password_secrets": secrets}
+    return {
+        "project_id": project,
+        "environment": "development",
+        "database": database,
+        "schema": schema,
+        "roles": roles,
+        "password_secrets": secrets,
+    }
 
 
 def sql_for(project):
@@ -95,10 +125,7 @@ def sql_for(project):
                 f"SELECT CASE WHEN rolcanlogin THEN 'false' ELSE 'true' END AS activate_{kind} FROM pg_roles WHERE rolname = '{role}' \\gset",
                 f"\\if :activate_{kind}",
                 f"\\getenv {kind}_password DEV_{kind.upper()}_PASSWORD",
-                (
-                    f"ALTER ROLE {role} WITH PASSWORD "
-                    f":'{kind}_password' LOGIN;"
-                ),
+                (f"ALTER ROLE {role} WITH PASSWORD :'{kind}_password' LOGIN;"),
                 f"\\unset {kind}_password",
                 "\\endif",
             ]
@@ -170,7 +197,11 @@ def sql_for(project):
 
 
 def read_secret(path):
-    if path.is_symlink() or not path.is_file() or not str(path).startswith("/run/secrets/"):
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or not str(path).startswith("/run/secrets/")
+    ):
         raise ValueError("secret reference is unavailable")
     if not stat.S_ISREG(path.stat().st_mode):
         raise ValueError("secret reference is not a regular file")
@@ -196,11 +227,30 @@ def main():
         env = os.environ.copy()
         env["PGPASSWORD"] = read_secret(Path("/run/secrets/dev_pg_admin_password"))
         for kind in LOGIN_KINDS:
-            env[f"DEV_{kind.upper()}_PASSWORD"] = read_secret(Path("/run/secrets") / project["password_secrets"][kind])
-        command = ["psql", "-X", "-q", "-v", "ON_ERROR_STOP=1", "-h", "dev-pg", "-U", env.get("DEV_PG_ADMIN_USER", "postgres"), "-d", "postgres"]
-        result = subprocess.run(command, input=sql, text=True, env=env, capture_output=True, check=False)
+            env[f"DEV_{kind.upper()}_PASSWORD"] = read_secret(
+                Path("/run/secrets") / project["password_secrets"][kind]
+            )
+        command = [
+            "psql",
+            "-X",
+            "-q",
+            "-v",
+            "ON_ERROR_STOP=1",
+            "-h",
+            "dev-pg",
+            "-U",
+            env.get("DEV_PG_ADMIN_USER", "postgres"),
+            "-d",
+            "postgres",
+        ]
+        result = subprocess.run(
+            command, input=sql, text=True, env=env, capture_output=True, check=False
+        )
         if result.returncode:
-            print("project provisioning failed; inspect approved isolated logs", file=sys.stderr)
+            print(
+                "project provisioning failed; inspect approved isolated logs",
+                file=sys.stderr,
+            )
         return result.returncode
     except (ValueError, OSError, UnicodeError, json.JSONDecodeError):
         print("invalid project manifest or secret reference", file=sys.stderr)

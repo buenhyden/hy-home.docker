@@ -4,7 +4,10 @@ import importlib.util
 import unittest
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parents[2] / "infra/04-data/influxdb/migration/validate_mapping.py"
+SOURCE = (
+    Path(__file__).resolve().parents[2]
+    / "infra/04-data/influxdb/migration/validate_mapping.py"
+)
 SPEC = importlib.util.spec_from_file_location("influx_mapping", SOURCE)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)

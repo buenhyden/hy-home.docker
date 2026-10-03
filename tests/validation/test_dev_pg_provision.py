@@ -5,7 +5,9 @@ import json
 import unittest
 from pathlib import Path
 
-SOURCE = Path(__file__).resolve().parents[2] / "infra/04-data/dev-db/pg/provision/project.py"
+SOURCE = (
+    Path(__file__).resolve().parents[2] / "infra/04-data/dev-db/pg/provision/project.py"
+)
 SPEC = importlib.util.spec_from_file_location("dev_pg_project", SOURCE)
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
@@ -40,7 +42,9 @@ class ProjectProvisionTests(unittest.TestCase):
         self.assertIn("CREATE ROLE platform_owner NOLOGIN", sql)
         self.assertIn("REVOKE ALL ON DATABASE platform_dev FROM PUBLIC", sql)
         self.assertIn("REVOKE ALL ON SCHEMA public FROM PUBLIC", sql)
-        self.assertIn("GRANT SELECT ON ALL TABLES IN SCHEMA app TO platform_reader", sql)
+        self.assertIn(
+            "GRANT SELECT ON ALL TABLES IN SCHEMA app TO platform_reader", sql
+        )
         self.assertIn("REVOKE ALL ON ALL FUNCTIONS IN SCHEMA app FROM PUBLIC", sql)
         self.assertIn("REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC", sql)
         self.assertNotIn("GRANT CREATE ON SCHEMA app TO platform_runtime", sql)
@@ -53,7 +57,12 @@ class ProjectProvisionTests(unittest.TestCase):
             {"project_id": "../outside"},
             {"extra": "ignored"},
             {"roles": {**manifest()["roles"], "reader": "platform_runtime"}},
-            {"password_secrets": {**manifest()["password_secrets"], "reader": "../key"}},
+            {
+                "password_secrets": {
+                    **manifest()["password_secrets"],
+                    "reader": "../key",
+                }
+            },
         ):
             with self.subTest(changed=changed), self.assertRaises(ValueError):
                 MODULE.validate({**manifest(), **changed})
@@ -75,12 +84,20 @@ class ProjectProvisionTests(unittest.TestCase):
 
     def test_tracked_fixture_matches_validated_contract(self):
         fixture = SOURCE.parent / "platform.json"
-        self.assertEqual(MODULE.validate(json.loads(fixture.read_text())), MODULE.validate(manifest()))
+        self.assertEqual(
+            MODULE.validate(json.loads(fixture.read_text())),
+            MODULE.validate(manifest()),
+        )
 
     def test_other_environment_and_secret_reuse_fail(self):
         for changed in (
             {"environment": "production"},
-            {"password_secrets": {**manifest()["password_secrets"], "reader": "dev_pg_platform_runtime_password"}},
+            {
+                "password_secrets": {
+                    **manifest()["password_secrets"],
+                    "reader": "dev_pg_platform_runtime_password",
+                }
+            },
         ):
             with self.subTest(changed=changed), self.assertRaises(ValueError):
                 MODULE.validate({**manifest(), **changed})
@@ -94,7 +111,10 @@ class ProjectProvisionTests(unittest.TestCase):
                 checked = sql.index("RAISE EXCEPTION 'role ownership mismatch'", marked)
                 self.assertLess(created, marked)
                 self.assertLess(marked, checked)
-                self.assertIn(f"shobj_description(r.oid, 'pg_authid') = 'dev-pg:development:hyhome-platform:{kind}'", sql[marked:checked])
+                self.assertIn(
+                    f"shobj_description(r.oid, 'pg_authid') = 'dev-pg:development:hyhome-platform:{kind}'",
+                    sql[marked:checked],
+                )
         created = sql.index("CREATE DATABASE platform_dev OWNER platform_owner")
         marked = sql.index("COMMENT ON DATABASE platform_dev IS")
         checked = sql.index("RAISE EXCEPTION 'database ownership mismatch'")
@@ -108,10 +128,12 @@ class ProjectProvisionTests(unittest.TestCase):
         self.assertIn("manual review required", sql)
         for kind, role in manifest()["roles"].items():
             with self.subTest(kind=kind):
-                before = sql[:sql.index(f"CREATE ROLE {role} NOLOGIN")]
-                after = sql[sql.index(f"CREATE ROLE {role} NOLOGIN"):]
+                before = sql[: sql.index(f"CREATE ROLE {role} NOLOGIN")]
+                after = sql[sql.index(f"CREATE ROLE {role} NOLOGIN") :]
                 self.assertGreater(before.rindex("BEGIN;"), before.rfind("COMMIT;"))
-                self.assertLess(after.index(f"COMMENT ON ROLE {role}"), after.index("COMMIT;"))
+                self.assertLess(
+                    after.index(f"COMMENT ON ROLE {role}"), after.index("COMMIT;")
+                )
 
     def test_both_connections_take_database_scoped_advisory_lock(self):
         sql = MODULE.sql_for(MODULE.validate(manifest()))
@@ -127,13 +149,21 @@ class ProjectProvisionTests(unittest.TestCase):
         sql = MODULE.sql_for(MODULE.validate(manifest()))
         self.assertIn("pg_advisory_lock", sql)
         self.assertEqual(2, sql.count("pg_advisory_lock"))
-        self.assertLess(sql.index("\\connect platform_dev"), sql.rindex("pg_advisory_lock"))
+        self.assertLess(
+            sql.index("\\connect platform_dev"), sql.rindex("pg_advisory_lock")
+        )
         self.assertIn("role ownership mismatch", sql)
         self.assertIn("\\if :create_owner", sql)
         self.assertIn("\\gexec", sql)
         self.assertIn("ALTER ROLE platform_runtime WITH PASSWORD", sql)
-        self.assertLess(sql.index("SET log_statement = 'none'"), sql.index("ALTER ROLE platform_runtime WITH PASSWORD"))
-        self.assertLess(sql.index("SET log_min_error_statement = 'panic'"), sql.index("ALTER ROLE platform_runtime WITH PASSWORD"))
+        self.assertLess(
+            sql.index("SET log_statement = 'none'"),
+            sql.index("ALTER ROLE platform_runtime WITH PASSWORD"),
+        )
+        self.assertLess(
+            sql.index("SET log_min_error_statement = 'panic'"),
+            sql.index("ALTER ROLE platform_runtime WITH PASSWORD"),
+        )
         self.assertIn("activate_runtime", sql)
         self.assertIn("default privileges", sql.lower())
         self.assertIn("shobj_description", sql)

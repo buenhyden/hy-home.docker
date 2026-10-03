@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import hashlib
 import os
-from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
-
-SCRIPT = Path(__file__).resolve().parents[2] / "infra/04-data/dev-db/valkey/scripts/render-acl.sh"
+SCRIPT = (
+    Path(__file__).resolve().parents[2]
+    / "infra/04-data/dev-db/valkey/scripts/render-acl.sh"
+)
 
 
 class DevValkeyAclTests(unittest.TestCase):
@@ -48,15 +50,20 @@ class DevValkeyAclTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         acl = (self.root / "users.acl").read_text(encoding="utf-8")
         digest = hashlib.sha256(b"synthetic-admin").hexdigest()
-        self.assertEqual(acl, f"user default off\nuser devadmin on #{digest} ~* &* +@all\n")
+        self.assertEqual(
+            acl, f"user default off\nuser devadmin on #{digest} ~* &* +@all\n"
+        )
         self.assertNotIn("synthetic-admin", acl)
         self.assertEqual((self.root / "users.acl").stat().st_mode & 0o777, 0o600)
 
     def test_project_user_is_limited_to_declared_prefix(self) -> None:
         (self.root / "projects.tsv").write_text(
-            "project_a|project_a_runtime|project_a|project_a_password\n", encoding="utf-8"
+            "project_a|project_a_runtime|project_a|project_a_password\n",
+            encoding="utf-8",
         )
-        (self.secret_dir / "project_a_password").write_text("synthetic-project\n", encoding="utf-8")
+        (self.secret_dir / "project_a_password").write_text(
+            "synthetic-project\n", encoding="utf-8"
+        )
         result = self.render()
         self.assertEqual(result.returncode, 0, result.stderr)
         acl = (self.root / "users.acl").read_text(encoding="utf-8")
