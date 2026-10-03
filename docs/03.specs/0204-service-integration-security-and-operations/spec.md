@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -30,10 +30,9 @@ SPEC-0203 owns performance results and its Alloy metrics path; Prompt 05 owns
 Storybook; Prompt 06 owns an external application's consumed manifest and
 application Compose. This package must not reimplement those owners.
 
-This is a draft behavior contract. No SPEC-0204 Task had approval when the
-package was opened. Drafting this package does not authorize infrastructure
-source edits, HOME changes, credential actions, external publication, or a
-protected-branch merge.
+The user approved Prompt 04 on 2026-10-03. This review transition records the
+source contract before activation. HOME changes, credential actions, external
+publication, and protected-branch merge remain separate approvals.
 
 ## Boundaries and Inputs
 
@@ -215,7 +214,8 @@ without its separate exact approval.
 
 ## Open Questions
 
-The owner must approve the exact Task source scopes and later any HOME upgrade,
+The user approved the listed Task source scopes on 2026-10-03; a new path
+requires an exact Task amendment. Any HOME upgrade,
 backup execution, restore, credential issuance or network publication. A real
 external project must separately identify its project ID, endpoint topology,
 OIDC/S3/search scopes and operator before a live connection can pass. A
