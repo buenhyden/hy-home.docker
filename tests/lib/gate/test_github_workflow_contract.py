@@ -279,10 +279,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 )
                 project = root / "projects/storybook/nextjs"
                 project.mkdir(parents=True)
-                for name in ("package.json", "vitest.config.ts"):
-                    shutil.copy2(
-                        ROOT / "projects/storybook/nextjs" / name, project / name
-                    )
+                for name in (
+                    "package.json",
+                    "vitest.config.ts",
+                    ".storybook/main.ts",
+                    "packages/ui/package.json",
+                ):
+                    target = project / name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(ROOT / "projects/storybook/nextjs" / name, target)
                 command = [
                     "bash",
                     str(root / "scripts/validation/check-storybook-contract.sh"),
