@@ -4,7 +4,7 @@ version: "0.5.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -26,8 +26,8 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 ## Controls
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
-파일을 절대 로깅하지 않는다. 현재 상태 health는 sealed 상태를 허용한다. 컨테이너
-health만으로는 secret 전달을 증명할 수 없다. 기존 애플리케이션 Docker Secret은 Agent
+파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
+health만으로는 새 인증·출력 갱신과 secret 전달을 증명할 수 없다. 기존 애플리케이션 Docker Secret은 Agent
 출력으로 자동 대체되지 않는다.
 
 사람이 하는 일반 관리 작업은 Keycloak을 backend로 하는 OpenBao native OIDC를 통해

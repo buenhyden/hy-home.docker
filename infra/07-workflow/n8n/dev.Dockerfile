@@ -1,4 +1,4 @@
-ARG N8N_VERSION=2.41.3
+ARG N8N_VERSION=2.41.6
 
 FROM alpine:3.24.2 AS font-builder
 RUN apk add --no-cache \

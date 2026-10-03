@@ -4,7 +4,7 @@ version: "0.7.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -52,7 +52,8 @@ docker compose --profile security up -d --no-deps --no-build --pull never openba
 ```
 
 `bao status`의 exit0은 unsealed, exit2는 sealed, 그 밖은 오류다. 현재 Compose
-health는0/2를 모두 허용한다. 이미 initialize된 저장소를 다시 initialize하지 않는다.
+health는 0만 허용하며 sealed(2)는 `unhealthy`다. 새 Compose 기동의 Agent health 의존성은
+unseal 이후에 통과한다. Docker daemon의 기존 Agent 자동 재시작에는 이 의존성이 적용되지 않는다. 이미 initialize된 저장소를 다시 initialize하지 않는다.
 위 initial/bootstrap 또는 승인된 unseal 뒤 실제 `Sealed false`를 확인하고, 새로
 필요한 SecretID를 아래 절차로 전달한 후 Agent만 시작한다.
 

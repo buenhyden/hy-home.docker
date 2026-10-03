@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -87,9 +87,9 @@ loopback, 관리 Valkey는 설정된 LAN 주소에 게시된다. 직접 접속�
   재시작하지 말고 Keycloak과 관리 DB, proxy 경로라면 Valkey까지 영향 범위를 좁힌다.
 
 [OpenBao 선언](../../../infra/03-security/openbao/docker-compose.yml)의 healthcheck는
-`bao status` 종료 코드 0과 2를 모두 허용한다. 공식 [status 설명](https://openbao.org/docs/2.6.x/commands/status/)에서
-2는 sealed 상태다. Agent 검사는 token 파일의 비어 있지 않음만 확인한다.
-따라서 두 컨테이너가 healthy여도 unseal·Agent 재인증·출력 갱신이 별도로 필요하다.
+`bao status` 종료 코드 0(unsealed)만 허용한다. 공식 [status 설명](https://openbao.org/docs/2.6.x/commands/status/)에서
+2는 sealed 상태이며 Agent의 시작은 서버 health를 기다린다. Agent 검사는 token 파일의 비어 있지 않음만 확인한다.
+따라서 두 컨테이너가 healthy여도 Agent 재인증·출력 갱신은 별도로 검증해야 한다.
 [Agent 설정](../../../infra/03-security/openbao/config/agent.hcl)의 출력 mount와
 root Docker Secret 파일 소비 경로도 별개다. 자동 전달이나 모든 credential의
 자동 회전을 추론하지 않는다. bootstrap·사람 로그인·SecretID 전달은
