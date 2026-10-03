@@ -1,5 +1,5 @@
 ---
-title: "Secret Handling Surface"
+title: "비밀 파일 관리"
 version: "1.0.5"
 type: "common/repository-readme"
 status: "active"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 created: "2026-02-23"
 ---
 
-# Secrets Management
+# 비밀 파일 관리
 
 > Docker Secrets 포맷의 민감 정보 파일 경로와 운영 규칙을 관리하는 보안 진입 문서
 
@@ -22,10 +22,10 @@ created: "2026-02-23"
 
 이 README의 주요 독자:
 
-- Operators
-- Security Maintainers
-- Developers
-- AI Agents
+- 운영자
+- 보안 관리자
+- 개발자
+- AI 에이전트
 
 ## Scope
 
@@ -49,19 +49,23 @@ created: "2026-02-23"
 secrets/
 ├── auth/                 # Traefik, Keycloak, proxy 관련 인증 secret
 ├── automation/           # Airflow, n8n 등 자동화 서비스 secret
-├── backup/               # HOME 백업 키와 미발급 dev-pg 전용 키 경로
+├── backup/               # HOME 백업 키와 dev-pg 전용 키 경로
 ├── certs/                # 로컬 TLS 인증서 파일 경로
 ├── common/               # SMTP, webhook 등 공통 secret
 ├── data/                 # OpenSearch, Supabase, AI 도구 관련 secret
-├── db/                   # HOME DB secret; dev-pg/·dev-valkey/는 미발급 개발 전용
-├── labs/                 # 독립 LAB별 새 credential 참조 자리(현재 미발급)
+├── db/                   # HOME DB secret; dev-pg/·dev-valkey/는 개발 전용
+├── labs/                 # 독립 LAB별 credential 경로
 ├── observability/        # Grafana와 monitoring stack secret
 ├── security/             # OpenBao 서비스 자격 증명
 ├── storage/              # SeaweedFS object storage secret
 ├── tools/                # SonarQube 등 선택 도구 secret
 ├── SENSITIVE_ENV_VARS.md.example  # registry 예시
-└── README.md             # This file
+└── README.md             # 이 문서
 ```
+
+## Getting Started
+
+먼저 [공개 등록표](SENSITIVE_ENV_VARS.md.example)에서 ID·경로·용도를 확인하고, 해당 Compose 선언에서 실제 소비 여부를 확인합니다. 파일 값과 개인 등록표는 문서 검토에 사용하지 않습니다.
 
 ## How to Work in This Area
 
@@ -73,60 +77,33 @@ secrets/
 
 ## Navigation / Inventory
 
-The 2026-10-03 path-only inventory covers every active child of `secrets/`.
-The public registry has 138 IDs: 105 file paths and 33 environment-only IDs.
-The owner checkout has 102 active files outside the registry/README and ignored
-retirement or backup areas: 85 registered credential files and 17 artifacts
-with separate ownership. The 20 registered but absent paths are six unissued
-`dev-pg`/`dev-valkey`/backup credentials and 14 unissued LAB credentials.
-Counts describe paths, never file contents or service readiness.
+2026-10-03 경로 인벤토리는 `secrets/`의 활성 하위 영역 전체를 다룹니다. 공개 등록표의 ID는 138개이며, 파일 경로 105개와 환경 변수 전용 ID 33개로 나뉩니다. 소유자 작업 트리에는 등록표·README·무시된 퇴역/백업 영역을 제외한 활성 파일이 122개 있습니다. 등록된 자격 증명 파일 105개와 별도 책임의 산출물 17개입니다. 개발/LAB 파일 20개는 SPEC-0202-TSK-0002에 따라 2026-10-03 발급했습니다. 이 경로 집계는 서비스 준비 상태나 자격 증명의 유효성을 증명하지 않습니다.
 
-| Area | Registry paths | Declared and granted | Present | Unissued | Role and separate artifacts |
+| 영역 | 등록 경로 | 선언·권한 부여 | 존재 | 미발급 | 역할과 별도 산출물 |
 | --- | ---: | ---: | ---: | ---: | --- |
-| `auth/` | 14 | 13 | 14 | 0 | Gateway, identity and OIDC; one derived input |
-| `automation/` | 4 | 4 | 4 | 0 | Airflow and n8n |
-| `backup/` | 6 | 6 | 5 | 1 | pgBackRest and Restic; one protected OpenBao snapshot outside the registry |
-| `certs/` | 0 | 0 | 0 | 0 | 15 separate TLS/CA artifacts: 14 bind consumed, `rootCA-key.pem` host-only signing key (0400) |
-| `common/` | 5 | 5 | 5 | 0 | Delivery and integrations |
-| `data/` | 15 | 15 | 15 | 0 | OpenSearch, Supabase and data/AI |
-| `db/` | 26 | 25 | 21 | 5 | HOME databases plus unissued dev-pg/dev-valkey; one cutover hold |
-| `labs/` | 14 | 14 | 0 | 14 | Standalone LAB only |
-| `observability/` | 2 | 1 | 2 | 0 | Grafana and metrics; one derived input |
-| `security/` | 2 | 1 | 2 | 0 | OpenBao; one host-only recovery input and one custody artifact outside the registry |
+| `auth/` | 14 | 13 | 14 | 0 | 게이트웨이·인증·OIDC, 파생 입력 1개 |
+| `automation/` | 4 | 4 | 4 | 0 | Airflow·n8n |
+| `backup/` | 6 | 6 | 6 | 0 | pgBackRest·Restic, 등록표 밖 보호된 OpenBao 스냅샷 1개 |
+| `certs/` | 0 | 0 | 0 | 0 | 별도 TLS/CA 산출물 15개: bind 소비 14개, 호스트 전용 서명 키 `rootCA-key.pem` 1개(0400) |
+| `common/` | 5 | 5 | 5 | 0 | 전달·공통 연동 |
+| `data/` | 15 | 15 | 15 | 0 | OpenSearch·Supabase·데이터/AI |
+| `db/` | 26 | 25 | 26 | 0 | HOME·개발 DB, 전환 보류 1개 |
+| `labs/` | 14 | 14 | 14 | 0 | 독립 LAB 전용 |
+| `observability/` | 2 | 1 | 2 | 0 | Grafana·메트릭, 파생 입력 1개 |
+| `security/` | 2 | 1 | 2 | 0 | OpenBao, 호스트 전용 복구 입력 1개와 등록표 밖 보관 산출물 1개 |
 | `storage/` | 8 | 8 | 8 | 0 | SeaweedFS/S3 |
-| `tools/` | 9 | 9 | 9 | 0 | Optional engineering tools |
-| **Total** | **105** | **101** | **85** | **20** | **17 separate cert/snapshot/custody artifacts** |
+| `tools/` | 9 | 9 | 9 | 0 | 선택형 엔지니어링 도구 |
+| **합계** | **105** | **101** | **105** | **0** | **별도 인증서·스냅샷·보관 산출물 17개** |
 
-`SENSITIVE_ENV_VARS.md.example` owns public ID/path/date/purpose metadata.
-`SENSITIVE_ENV_VARS.md` is its ignored value-preserving projection. Ignored
-`.backup-<date>/` and `.retired/<date>/` are custody areas, excluded from the
-active counts and from Compose mounts. Empty markers exist only for current
-or approved unissued path contracts; obsolete NoSQL and messaging markers
-were removed without deleting ignored files.
+공개 ID·경로·날짜·용도 메타데이터의 원본은 `SENSITIVE_ENV_VARS.md.example`입니다. `SENSITIVE_ENV_VARS.md`는 값을 보존하는 Git 무시 대상 투영본입니다. `.backup-<date>/`와 `.retired/<date>/`는 보관 영역이며 활성 파일 수와 Compose 마운트에서 제외합니다. 빈 디렉터리 표식은 현재 또는 승인된 발급 경로에만 둡니다. 폐기된 NoSQL·메시징 표식을 제거할 때 무시된 실제 파일은 삭제하지 않았습니다.
 
 ## Root and LAB ownership
 
-Root `.env.example` has 219 names consumed by the root include graph; standalone
-`labs/.env.example` has 39 `LAB_` names. The public sets and their private
-counterparts are disjoint. Root Compose declares 87 secrets outside
-`secrets/labs/`; the seven standalone LAB entrypoints declare 14 secrets only
-under `secrets/labs/`. A root administrator UI CIDR input was renamed from
-`LAB_ALLOWED_CIDRS` to `ADMIN_UI_ALLOWED_CIDRS` in candidate source because it
-controls RedisInsight, Dozzle and Open Notebook in the root graph. Two identity
-inputs were clarified as `OPENSEARCH_ADMIN_USERNAME` and
-`GRAFANA_OIDC_CLIENT_ID`; their former names described different products or
-a proxy that is no longer the Grafana auth owner. The main private `.env`
-retains all three old keys only for current main compatibility until source
-landing; each new alias has the same value. None is a LAB resource. The ten
-private-only compatibility names are `DBT_DB_NAME`, `DBT_SOURCE_SCHEMA`,
-`ES_PERFORMANCE_ANALYZER_HOST_PORT`, `ES_PERFORMANCE_ANALYZER_PORT`,
-`LAB_ALLOWED_CIDRS`, `OPENSEARCH_CLUSTER_NAME`, `SERVICE_POSTGRES_DB`,
-`SERVICE_POSTGRES_USERNAME`, `ELASTIC_USERNAME` and
-`GRAFANA_PROXY_CLIENT_ID`. Current main still consumes them; review removal
-after source landing and rollback closure. The upstream Supabase `.env.example` inside
-`infra/04-data/supabase/` uses product-defined key names; the sample web
-service `.env.example` uses its own `WEB_HOST_PORT`. Neither is the root or
-standalone LAB environment contract.
+루트 include 그래프가 소비하는 `.env.example` 변수는 219개이고, 독립 `labs/.env.example`에는 `LAB_` 변수 39개가 있습니다. 공개 집합과 대응 개인 집합은 서로 겹치지 않습니다. 루트 Compose는 `secrets/labs/` 밖의 secret 87개를 선언하고, 독립 LAB 진입점 7개는 `secrets/labs/` 아래 secret 14개만 선언합니다.
+
+루트 관리자 UI의 CIDR 입력은 RedisInsight·Dozzle·Open Notebook을 제어하므로 후보 소스에서 `LAB_ALLOWED_CIDRS`를 `ADMIN_UI_ALLOWED_CIDRS`로 바꿨습니다. 인증 입력 두 개도 실제 소비자에 맞춰 `OPENSEARCH_ADMIN_USERNAME`과 `GRAFANA_OIDC_CLIENT_ID`로 명확히 했습니다. main의 개인 `.env`에는 소스 반영 전 호환성을 위해 이전 세 이름도 같은 값으로 남겨 두었습니다. 이 세 입력은 LAB 자원이 아닙니다.
+
+개인 환경 파일에만 있는 호환 변수 10개는 `DBT_DB_NAME`, `DBT_SOURCE_SCHEMA`, `ES_PERFORMANCE_ANALYZER_HOST_PORT`, `ES_PERFORMANCE_ANALYZER_PORT`, `LAB_ALLOWED_CIDRS`, `OPENSEARCH_CLUSTER_NAME`, `SERVICE_POSTGRES_DB`, `SERVICE_POSTGRES_USERNAME`, `ELASTIC_USERNAME`, `GRAFANA_PROXY_CLIENT_ID`입니다. 현재 main 소비자가 있으므로 소스 반영과 롤백 기간 종료 뒤 제거 여부를 검토합니다. `infra/04-data/supabase/`의 상위 제품 `.env.example`은 제품 정의 변수명을 쓰고, 예제 웹 서비스의 `.env.example`은 자체 `WEB_HOST_PORT`를 씁니다. 둘 다 루트 또는 독립 LAB 환경 계약이 아닙니다.
 
 ## LAB Credential Boundary
 
@@ -134,7 +111,8 @@ standalone LAB environment contract.
 `secrets/labs/<topology>/`에 토폴로지별로 새로 발급한 뒤 해당 독립 Compose에만
 읽기 전용으로 연결합니다. 현재 추적된 `.gitkeep`은 디렉터리 계약이며 비밀값이
 아닙니다. `postgresql-ha`, `valkey-cluster`, `couchdb`, `mongodb`,
-`opensearch-cluster`의 실제 새 credential 파일은 아직 발급되지 않았습니다.
+`opensearch-cluster`의 14개 새 credential 파일은 2026-10-03에 발급했으며,
+서비스 기동·인증 성공은 별도 검증입니다.
 Cassandra LAB는 현재 인증 secret을 선언하지 않으며 내부망 단일 노드로만 분류합니다. Kafka LAB은
 현재 secret file을 선언하지 않지만 전용 KRaft ID와 새 상태 경로가 필요합니다.
 
@@ -150,9 +128,9 @@ Cassandra LAB는 현재 인증 secret을 선언하지 않으며 내부망 단일
 개발 엔진의 새 참조는 `secrets/db/dev-pg/` (관리자·fixture 역할별),
 `secrets/db/dev-valkey/admin_password.txt`,
 `secrets/backup/dev-pg/pgbackrest_cipher_pass.txt`입니다. 경로가 Compose에 선언되어
-있어도 현재 파일 발급이나 역할 비밀번호 동기화가 완료됐다는 뜻은 아닙니다.
+있다는 사실만으로 역할 비밀번호 동기화나 서비스 기동이 증명되지는 않습니다.
 `secrets/db/dev-pg/`, `secrets/db/dev-valkey/`, `secrets/backup/dev-pg/`는
-기존 HOME secret과 분리된 미발급 경로입니다. OpenSearch LAB credential은
+기존 HOME secret과 분리된 새 발급 경로입니다. OpenSearch LAB credential은
 `secrets/labs/opensearch-cluster/`에 두며 인증서는 이 트리가 아니라
 `LAB_OPENSEARCH_CERT_DIR`의 별도 읽기 전용 경로가 소유합니다.
 
@@ -160,7 +138,7 @@ Cassandra LAB는 현재 인증 secret을 선언하지 않으며 내부망 단일
 
 현재 인벤토리는 secret 값이나 인증서 원문을 열람하지 않고 파일명, 디렉터리, 루트·LAB Compose 선언, registry 예시만 기준으로 분류합니다. 기존 HOME secret 경로는 실행 중 소비자와 재시작 경계가 있어 이 소스 변경에서 이동하지 않습니다.
 
-| Classification | Current Evidence | Handling Rule |
+| 분류 | 현재 근거 | 관리 기준 |
 | --- | --- | --- |
 | `compose-declared` | 루트 87개와 LAB 14개의 분리된 `secrets:` 선언; 파일 존재 검사는 별도 실행 증거 | 각 Compose 영역의 Docker Secret mount 계약으로 관리 |
 | `bind-mounted-cert` | `certs/`의 CA·서버·SeaweedFS gRPC 인증서 14개 bind 소비와 host 전용 `rootCA-key.pem` 1개 | canonical certificate path는 `secrets/certs/`; 값/원문은 문서화하지 않음 |
@@ -173,36 +151,13 @@ Cassandra LAB는 현재 인증 secret을 선언하지 않으며 내부망 단일
 
 `infra/secrets/certs/` 같은 비표준 local-only 경로가 보이더라도 문서 진입점이나 인증서 절차의 기준으로 사용하지 않습니다. 인증서 기준 경로는 항상 `secrets/certs/`입니다.
 
-Root declarations without a service grant are retired from Compose. Unused
-registry rows are removed from both schema copies after owner-approved review;
-retained values and individual credential files remain unchanged. `PG-020` is
-held for the existing `app_db` cutover and has no current candidate Compose
-consumer; review retirement only after approved HOME cutover and rollback-window
-closure. Removed IDs
-remain reserved by history and must not be reused.
+서비스에 부여되지 않은 루트 선언은 Compose에서 제외합니다. 사용하지 않는 등록표 행은 소유자 검토 뒤 공개·개인 사본에서 함께 제거하며, 보존 대상 값과 개별 자격 증명 파일은 그대로 둡니다. `PG-020`은 기존 `app_db` 전환에 대비해 보존 중이고 현재 후보 Compose 소비자는 없습니다. 승인된 HOME 전환과 롤백 기간 종료 뒤 퇴역을 검토합니다. 제거한 ID는 이력에 예약되어 재사용하지 않습니다.
 
-`SEC-001` / `secrets/security/vault_token.txt` left the public schema with the
-Vault source in SPEC-0180 S08. On 2026-09-23 the owner-requested cleanup pruned
-the private `SEC-001` and MinIO `STRG-001`–`STRG-006` rows (the local registry
-backup keeps them) and moved the unused files to the quarantine below. On
-2026-09-25 SPEC-0182 W5 disposed of the quarantined MinIO and Vault files in
-`secrets/.retired/2026-09-23/` (the four `storage/minio_*` files,
-`storage/mlflow_s3_password.txt`, `tools/terrakube_minio_secret_key.txt`,
-`security/vault_token.txt` and `security/vault_unseal_keys.legacy.txt`) and
-`secrets/.backup-20260923/`, together with the MinIO data and the Vault tree.
-The legacy Vault root token is moot.
+`SEC-001`/`secrets/security/vault_token.txt`는 SPEC-0180 S08에서 Vault 소스와 함께 공개 스키마에서 제외됐습니다. 2026-09-23 소유자 요청으로 개인 등록표의 `SEC-001`과 MinIO `STRG-001`–`STRG-006` 행을 정리하고 백업을 남겼습니다. 미사용 파일은 검역 영역으로 옮겼습니다. 2026-09-25 SPEC-0182 W5에서 `secrets/.retired/2026-09-23/`의 MinIO·Vault 파일과 `secrets/.backup-20260923/`을 MinIO 데이터·Vault 트리와 함께 폐기했습니다. 이전 Vault root 토큰은 더 이상 효력이 없습니다.
 
-Unused credential files are not deleted in place. They move to
-`secrets/.retired/<date>/<original subdirectory>/` (`0700`, Git-ignored) until
-an approved disposal. Before a private registry or `.env` rewrite, keep a copy
-in `secrets/.backup-<date>/` (`0700`/`0600`, Git-ignored) and remove it once
-the result is verified. Both directories are outside every Compose mount.
+미사용 자격 증명 파일은 제자리에서 삭제하지 않고 승인된 폐기 전까지 `secrets/.retired/<date>/<original subdirectory>/`(`0700`, Git 무시)에 보관합니다. 개인 등록표나 `.env`를 수정하기 전에는 `secrets/.backup-<date>/`(`0700`/`0600`, Git 무시)에 사본을 두고 결과 검증 뒤 정리합니다. 두 디렉터리는 모든 Compose 마운트 밖에 있습니다.
 
-`SEC-002` / `secrets/security/openbao_token.txt` is the manually issued
-Prometheus credential for authenticated OpenBao metrics. It is not generated by
-metadata synchronization and must carry only the dedicated `prometheus` policy.
-Never substitute an OpenBao root token, human operator token or renderer Agent
-token.
+`SEC-002`/`secrets/security/openbao_token.txt`는 인증된 OpenBao 메트릭에 사용하는 수동 발급 Prometheus 자격 증명입니다. 메타데이터 동기화로 생성되지 않으며 전용 `prometheus` 정책만 가져야 합니다. OpenBao root 토큰, 운영자 토큰, renderer Agent 토큰으로 대체하지 않습니다.
 
 ## Secret Management System
 
@@ -250,17 +205,15 @@ registry와 루트·LAB 환경 파일의 세 쌍을 공개 계약에 일치시�
 
 특정 secret을 교체해야 할 때는 값을 문서에 쓰지 말고, 승인된 운영 절차에 따라 secure input 또는 스크립트 기반 생성 방식으로 처리합니다. 교체 후에는 해당 서비스의 runbook에 따라 재시작과 검증을 수행합니다.
 
-현재 동기화 스크립트는 같은 checkout의 공개 스키마와 private projection을
-세 쌍(등록표, root env, LAB env)으로 처리합니다. 후보 소스가 main에 반영되기
-전에는 main의 기존 소비자가 쓰는 환경 키를 보존합니다. 2026-10-03의 한 차례
-개인 등록표 메타데이터 정리는 138개 ID의 값 칸을 그대로 둔 채 후보 공개판의
-경로·날짜·용도만 반영했으며, 보호된 ignored 백업을 남겼습니다. 현재 main checkout의 공개 등록표는 아직 126 ID이고 main의 개인 등록표는
-후보 공개 계약 138 ID에 정렬되어 있습니다. 후보 소스가 반영되기 전 main의
-옛 `gen-secrets.sh --sync-metadata*`를 실행하면 이전 ID를 다시 추가하거나
-후보 메타데이터를 되돌릴 수 있으므로 사용하지 않습니다. 소스 반영 뒤
-같은 checkout에서 `--sync-metadata-check`를 실행하고, legacy root 키의
-퇴역을 별도 소비자 검토로 결정합니다. `--sync-metadata-prune`는 그 전환
-승인이 없으면 사용하지 않습니다.
+동기화 스크립트는 같은 작업 트리의 공개 등록표·루트 환경 파일·LAB 환경 파일과
+각 개인 투영본을 한 쌍씩 처리합니다. 이 소스의 공개 등록표는 138개 ID이고,
+소유자 작업 트리의 개인 등록표도 값 칸을 보존한 채 138개 ID에 정렬되어 있습니다.
+2026-10-03 개인 등록표 메타데이터 정리 전에는 Git 무시 백업을 남겼습니다.
+로컬 main에 소스를 반영한 뒤 같은 작업 트리에서 `--sync-metadata-check`로
+경로·날짜·용도 정렬을 확인하고 필요한 경우 `--sync-metadata`를 실행합니다.
+개인 환경 파일의 이전 루트 변수는 현재 HOME 롤백 경계가 끝날 때까지 보존하고,
+실제 소비자 검토 뒤 퇴역을 결정합니다. `--sync-metadata-prune`는 별도 승인된
+전환 전에는 사용하지 않습니다.
 
 ## Security Policy
 
@@ -297,4 +250,4 @@ registry와 루트·LAB 환경 파일의 세 쌍을 공개 계약에 일치시�
 - `docs/05.operations/README.md`
 - `docs/99.templates/templates/common/readme-repository.template.md`
 - [SENSITIVE_ENV_VARS.md.example](./SENSITIVE_ENV_VARS.md.example)
-- [Documentation index](../docs/README.md)
+- [문서 인덱스](../docs/README.md)

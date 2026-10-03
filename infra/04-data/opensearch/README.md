@@ -4,7 +4,7 @@ version: "1.0.8"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2025-11-12"
 ---
 
@@ -48,6 +48,18 @@ Dockerfile은 OpenSearch를 기반으로 하지만 prometheus-exporter plugin의
 - `Dockerfile`: 커스텀 엔진 이미지와 plugin 설치.
 - `opensearch/`: 엔진 보안 설정, 사전, secret 기반 사용자 렌더러.
 - `opensearch-dashboards/`: 정상 Dashboard의 HTTPS/OIDC 설정.
+
+## Tech Stack
+
+[Dockerfile](Dockerfile)과 [Compose](docker-compose.yml)가 단일 OpenSearch, Dashboards, exporter plugin을 선언합니다.
+
+## Configuration
+
+`opensearch` profile, `edge_net`·`obs_net`, 기존 영속 경로와 secret·인증서 bind를 사용합니다. 서비스별 실제 참조는 Compose가 소유합니다.
+
+## Validation
+
+아래 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
 
 ## How to Work in This Area
 

@@ -1,14 +1,14 @@
 ---
-title: "Analytics dbt Transformation Job"
+title: "분석 dbt 변환 작업"
 version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2026-09-21"
 ---
 
-# Analytics dbt Transformation Job
+# 분석 dbt 변환 작업
 
 > PostgreSQL 어댑터를 사용하는 커맨드라인 dbt Core로, 애플리케이션 데이터베이스를 전용 스키마로 변환합니다.
 

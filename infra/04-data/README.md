@@ -1,14 +1,14 @@
 ---
-title: "Data Tier (04-data)"
+title: "데이터 계층 (04-data)"
 version: "1.3.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2025-11-12"
 ---
 
-# 04 Data
+# 04 데이터
 
 ## Overview
 
@@ -50,6 +50,18 @@ SurrealDB는 단일 소비자인 [Open Notebook](../08-ai/open-notebook/) 패키
 RedisInsight `/data`는 민감한 연결·설정 메타데이터를 보관합니다. 현재 추적된
 `RI_ENCRYPTION_KEY`는 없으며 대상 데이터 백업과 별도로 복구합니다. Gateway·
 admin CIDR·SSO 경계를 유지하고 내부 네트워크 접근도 별도로 검토합니다.
+
+## Tech Stack
+
+PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은 각 패키지 Compose 및 Dockerfile이 소유합니다.
+
+## Configuration
+
+[루트 Compose](../../docker-compose.yml)의 include와 각 패키지의 profile·network·secret 선언을 함께 확인합니다. LAB의 독립 진입점과 환경 파일은 [`labs/`](../../labs/)가 소유합니다.
+
+## Validation
+
+`python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로에 맞는 검증을 선택합니다. 실행 여부와 종료 코드는 해당 Task에 기록합니다.
 
 ## How to Work in This Area
 

@@ -1,5 +1,5 @@
 ---
-title: "Operations Runbooks"
+title: "운영 런북"
 version: "0.2.1"
 type: "common/readme"
 status: "draft"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 layer: "operations"
 ---
 
-# Operations Runbooks
+# 운영 런북
 
 > 사용 조건, 명령 순서, 검증, 복구, 에스컬레이션을 소유하는 Runbook 인덱스
 

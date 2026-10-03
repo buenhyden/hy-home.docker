@@ -1,5 +1,5 @@
 ---
-title: "Operations Policies"
+title: "운영 정책"
 version: "0.2.1"
 type: "common/readme"
 status: "draft"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 layer: "operations"
 ---
 
-# Operations Policies
+# 운영 정책
 
 > 허용·금지, 승인, 보안, 예외, 검토 주기를 소유하는 Policy 인덱스
 

@@ -1,5 +1,5 @@
 ---
-title: "Operations Guides"
+title: "운영 가이드"
 version: "0.2.1"
 type: "common/readme"
 status: "draft"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 layer: "operations"
 ---
 
-# Operations Guides
+# 운영 가이드
 
 > 정상 운영 맥락, 전제, 공통 점검을 소유하는 Guide 인덱스
 

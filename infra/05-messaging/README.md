@@ -1,14 +1,14 @@
 ---
-title: "Messaging Tier (05-messaging)"
+title: "메시징 계층 (05-messaging)"
 version: "1.1.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-03"
 created: "2025-11-12"
 ---
 
-# 05 Messaging
+# 05 메시징
 
 ## Overview
 
@@ -26,6 +26,18 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 ## Structure
 
 이 tier의 leaf 패키지는 [`kafka`](kafka/README.md) 하나입니다.
+
+## Tech Stack
+
+정상 Kafka와 주변 서비스의 이미지 선언은 [`kafka/`](kafka/README.md)가 소유합니다.
+
+## Configuration
+
+루트 include는 정상 선택형 구성만 포함합니다. 다중 브로커 LAB의 독립 환경·상태는 [`labs/kafka-cluster.yml`](../../labs/kafka-cluster.yml)이 소유합니다.
+
+## Validation
+
+정상 선택자와 LAB 진입점을 각각 Compose 렌더로 확인하고, 실제 기동 결과는 별도로 기록합니다.
 
 ## How to Work in This Area
 

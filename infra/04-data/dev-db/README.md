@@ -1,10 +1,10 @@
 ---
-title: "Development Database (dev-db)"
+title: "개발 데이터베이스 (dev-db)"
 version: "0.1.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2026-10-02"
 ---
 
@@ -30,6 +30,18 @@ created: "2026-10-02"
 [`pg/`](pg/)는 TimescaleDB 이미지, 백업 설정, 명시적 프로젝트 provision을
 소유합니다. [`valkey/`](valkey/)는 설정, ACL 생성, 시작 스크립트를 소유합니다.
 엔진별 입력·출력·검증 상태는 각 하위 README에서 확인합니다.
+
+## Tech Stack
+
+TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스를 정의합니다. 이미지와 확장 선언은 [`pg/`](pg/) 및 [`valkey/`](valkey/)가 소유합니다.
+
+## Configuration
+
+[`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`, 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
+
+## Validation
+
+아래 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
 
 ## How to Work in This Area
 

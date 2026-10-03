@@ -4,7 +4,7 @@ version: "1.0.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 created: "2026-05-09"
 ---
 

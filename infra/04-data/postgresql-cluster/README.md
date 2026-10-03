@@ -1,5 +1,5 @@
 ---
-title: "PostgreSQL HA LAB support"
+title: "PostgreSQL HA LAB 지원"
 version: "0.1.0"
 type: "common/package-readme"
 status: "active"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 created: "2026-10-03"
 ---
 
-# PostgreSQL HA LAB support
+# PostgreSQL HA LAB 지원
 
 ## Overview
 
@@ -25,6 +25,18 @@ LAB 소스 관리자와 검토자를 대상으로 합니다.
 ## Structure
 
 LAB Compose가 이 디렉터리의 스크립트·설정을 참조합니다. 실제 진입점은 `labs/postgresql-ha.yml`입니다.
+
+## Tech Stack
+
+Patroni·etcd·HAProxy의 LAB 소스이며 이미지 선언은 독립 [LAB Compose](../../../labs/postgresql-ha.yml)가 소유합니다.
+
+## Configuration
+
+이 디렉터리의 스크립트·설정은 LAB Compose에만 연결됩니다. 환경·secret·network·volume은 [LAB 문서](../../../labs/postgresql-ha.md)를 따릅니다.
+
+## Validation
+
+정적 렌더와 격리 실행 절차는 [LAB 문서](../../../labs/postgresql-ha.md)에 기록합니다.
 
 ## How to Work in This Area
 

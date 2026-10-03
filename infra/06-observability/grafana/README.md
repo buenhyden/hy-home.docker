@@ -1,14 +1,14 @@
 ---
-title: "Grafana Visualization and Dashboards"
+title: "Grafana 시각화와 대시보드"
 version: "1.1.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 created: "2026-01-12"
 ---
 
-# Grafana Visualization and Dashboards
+# Grafana 시각화와 대시보드
 
 ## Overview
 
@@ -77,6 +77,10 @@ grafana/
 | `docker compose --profile obs up -d grafana` | 저장소 루트에서 Grafana 시작 |
 | `docker compose --profile obs restart grafana` | 이미 연결된 provisioning·dashboard 파일 내용의 승인된 재적용; Compose 환경·시크릿 참조·이미지 변경에는 RUN-0041의 재생성 절차 사용 |
 | `docker compose --profile obs logs -f grafana` | 저장소 루트에서 Grafana 로그 확인 |
+
+## Tech Stack
+
+Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
 
 ## Configuration
 

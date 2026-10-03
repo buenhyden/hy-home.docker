@@ -1,5 +1,5 @@
 ---
-title: "Valkey cluster LAB support"
+title: "Valkey 클러스터 LAB 지원"
 version: "0.1.0"
 type: "common/package-readme"
 status: "active"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 created: "2026-10-03"
 ---
 
-# Valkey cluster LAB support
+# Valkey 클러스터 LAB 지원
 
 ## Overview
 
@@ -25,6 +25,18 @@ LAB 소스 관리자와 검토자를 대상으로 합니다.
 ## Structure
 
 LAB Compose가 이 디렉터리의 스크립트·설정을 참조합니다. 실제 진입점은 `labs/valkey-cluster.yml`입니다.
+
+## Tech Stack
+
+Valkey 클러스터의 LAB 보조 소스이며 이미지 선언은 독립 [LAB Compose](../../../labs/valkey-cluster.yml)가 소유합니다.
+
+## Configuration
+
+이 디렉터리의 설정·스크립트는 LAB Compose에만 연결됩니다. 환경·secret·network·volume은 [LAB 문서](../../../labs/valkey-cluster.md)를 따릅니다.
+
+## Validation
+
+정적 렌더와 격리 실행 절차는 [LAB 문서](../../../labs/valkey-cluster.md)에 기록합니다.
 
 ## How to Work in This Area
 

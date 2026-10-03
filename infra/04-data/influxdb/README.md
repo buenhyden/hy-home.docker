@@ -47,6 +47,14 @@ influxdb/
 └── README.md                # 이 파일
 ```
 
+## Tech Stack
+
+InfluxDB 3 Core 단일 인스턴스이며 이미지 선언은 [Compose](docker-compose.yml)가 소유합니다.
+
+## Configuration
+
+`influxdb` profile과 `edge_net`, 별도 data/plugin volume을 사용합니다. 토큰 생성과 인증 쓰기는 소스 선언만으로 완료되지 않습니다.
+
 ## Service Readiness
 
 | Field | Evidence |

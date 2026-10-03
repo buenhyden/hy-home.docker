@@ -47,6 +47,16 @@ of source cleanup. Prompts 07 and 08 remain planning-only, with no DB, schema,
 account, GPU, network or application provisioning here. External business app
 source belongs to Project-Template-derived workspaces, never this repository.
 
+**Subsequent scoped authorization (2026-10-03).**
+
+After the source commits, the owner requested issuance of the 20 newly declared
+dev/LAB secret files, isolated execution checks, and integration into the local
+`main` branch before Prompt 03. The owner selected **no HOME service start or
+restart**. SPEC-0202-TSK-0002 owns this later execution, its exact preflight,
+results, recovery and local merge evidence. This authorization does not cover
+existing credential rotation, HOME deployment, real data movement or deletion,
+remote push/PR/merge, or the deferred SPEC-0201 W7.4 management restore.
+
 ## Behavior Contract
 
 1. `mng-pg` and `mng-valkey` retain management metadata, sessions and queues;

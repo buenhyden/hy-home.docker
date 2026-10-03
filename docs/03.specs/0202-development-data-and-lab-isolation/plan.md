@@ -63,6 +63,18 @@ operational work. Each runtime-dependent acceptance remains NOT_RUN.
    focused static checks and independent correctness/security review. Mark
    Docker/restore/HOME/data tests NOT_RUN where authorization is absent.
 
+7. **W7: scoped issuance and isolated acceptance (TSK-0002).** Under the
+   owner's 2026-10-03 follow-up, issue only the 20 previously absent dev/LAB
+   secret paths with fresh independent values and no rotation. Record path-only
+   inventory, mode, ownership and custody. Preflight Docker context, unique
+   project, ports, networks, volumes, source image, resources and exact cleanup
+   before isolated execution. Exercise bounded dev engine and LAB contracts
+   without touching HOME services; distinguish every unrun runtime criterion.
+   Reconcile public/private metadata without exposing values, run selected
+   path-aware checks, then fast-forward local `main` only from a clean verified
+   branch. Remote publication, HOME start/restart and real data operations remain
+   outside this work unit.
+
 ## Risk and Rollback
 
 A source rollback reverts only Task-owned files before deployment; it cannot

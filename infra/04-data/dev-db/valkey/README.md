@@ -1,14 +1,14 @@
 ---
-title: "Development Valkey"
+title: "개발 Valkey"
 version: "0.1.0"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2026-10-02"
 ---
 
-# Development Valkey
+# 개발 Valkey
 
 ## Overview
 
@@ -43,7 +43,7 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 프로젝트 계정은 명시된 `key_prefix:*`의 key/channel과 DB 0에만 접근합니다.
 관리, 스크립트, pubsub, 전역 key 열거 명령은 허용하지 않습니다. DB 0 제한은
 보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
-실제 엔진 동작은 격리 실행 전까지 `NOT_RUN`입니다.
+2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
 ## Structure
 
@@ -62,6 +62,18 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 않습니다. 메모리 한도에 도달하면 쓰기를 거절합니다. 큐의 `noeviction`과
 캐시의 LRU가 동시에 필요하면 별도 크기의 캐시 인스턴스를 승인받아야 합니다.
 
+## Tech Stack
+
+[상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
+
+## Configuration
+
+`dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.
+
+## Validation
+
+아래 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
+
 ## How to Work in This Area
 
 합성 비밀값을 쓰는 집중 검사는 저장소 루트에서 다음과 같이 실행합니다.
@@ -71,10 +83,9 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 ```
 
 실행 전 Docker context, 프로젝트, 포트, 네트워크, 새 볼륨, 비밀 참조,
-정확한 정리 범위와 호스트 용량을 재확인합니다. 상위 Compose는 명시적으로
-`999:999`로 실행하므로 새 bind 경로의 소유권을 맞춰야 합니다. 현재 upstream
-Valkey 이미지의 선언된 UID/GID는 `999:1000`이며 이 override와 다릅니다.
-실제 기동·ACL 동작·백업·복구는 이 소스 검사로 증명되지 않습니다.
+정확한 정리 범위와 호스트 용량을 재확인합니다. 상위 Compose는 명시적으로 `999:999`로 실행하므로 새 bind 경로의
+소유권을 맞춰야 합니다. 이미지 기본 UID/GID는 실제 이미지 검사로 확인해야 합니다.
+격리 기동과 ACL 동작은 별도 Task에서 확인했고, HOME 기동·백업·복구는 `NOT_RUN`입니다.
 
 ## Related Documents
 

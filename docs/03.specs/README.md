@@ -4,7 +4,7 @@ version: "1.2.15"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 layer: "specs"
 ---
 
@@ -19,6 +19,10 @@ package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 �
 
 이 README는 현재 package로 가는 길만 안내합니다. package 안의 Spec, Plan,
 Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않습니다.
+
+## Audience
+
+현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
 
 ## Scope
 

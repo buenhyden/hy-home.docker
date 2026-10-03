@@ -1,10 +1,10 @@
 ---
-title: "Kafka Messaging"
+title: "Kafka 메시징"
 version: "1.2.2"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 created: "2025-11-12"
 ---
 
@@ -58,6 +58,18 @@ tmpfs로 렌더링하고 `kafbat_client_secret`을 읽으며 로컬 CA를 신뢰
 네이티브 Keycloak OIDC와 `/admins`, `/users` RBAC을 사용합니다. 이 서비스의
 Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-auth
 체인은 이 라우트에 속하지 않습니다.
+
+## Tech Stack
+
+정상 Kafka 단일 브로커와 Connect·Schema Registry 등의 이미지 선언은 [Compose](docker-compose.yml) 및 [Connect Dockerfile](Dockerfile.connect)이 소유합니다.
+
+## Configuration
+
+정상 `kafka_net`과 별도 LAB network·cluster ID·상태 경로를 구분합니다. secret, 라우트, 포트 및 healthcheck 계약은 위 구조와 각 Compose에 따릅니다.
+
+## Validation
+
+아래 명령으로 정상 구성과 LAB 구성을 각각 렌더합니다. 렌더 성공은 브로커 복구나 CDC 재처리 성공을 증명하지 않습니다.
 
 ## How to Work in This Area
 
