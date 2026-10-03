@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -62,6 +62,26 @@ none of these links is a tested HOME deployment.
 
 ### Protected registration repair — 2026-10-04
 
+### Hosted fixture validation and document formatting — 2026-10-04
+
+PR352 head `042b9db6d6e86025fc94af8105a18c63440ba071`, required
+run `37154950211`, job `111296335212`, finished failure/exit1. Hosted
+metadata selected2/violations0/legacy0/overrides0; corpus and archive recovery
+violations0. The existing Storybook fixture test passed, retaining all five
+negative mutations. The later pinned markdownlint-cli2 hook modified files
+and stopped the required job; no later leaf is claimed PASS.
+
+The exact approved Task1 document contained two redundant blank lines.
+Direct invocation of cached, pinned markdownlint-cli2 0.22.1 on this one
+approved document removed only those two blank lines and returned exit0.
+This formatter reconciliation changes no source, fixture assertions,
+threshold, workflow, lifecycle edge or frozen archive. Recheck formatting
+idempotence, metadata and exact diff before the normal hosted retry. The
+fixture implementation itself needs no second correction. Runtime holds
+remain unchanged. Raw CI output was not copied into this record; an automatic
+approval rejection of raw log printing was honored with bounded diagnostic
+extraction of checker results and hook identity.
+
 ### Additional fixture scope proposal — 2026-10-04
 
 PR352 head `b240f6150` hosted run `37154044478` returned failure, but
@@ -98,7 +118,6 @@ response. Push the scoped fixture and record to PR352, observe the normal
 hosted gate, then resume the reviewed document sequence only after green.
 Rollback is a scoped revert of the fixture addition, which returns the known
 missing-input failure; it is not a gate bypass or an operational rollback.
-
 
 The user requested resolution of PR351's six initial-status findings after
 explicitly authorizing push, PR merge and cleanup. Original implementation
@@ -145,7 +164,6 @@ normal green protection. PR351's independent security hold remains unchanged;
 this registration does not approve HOME, image pulls or service execution.
 Rollback is a scoped PR revert with original sources preserved, never archive
 rewriting or cancellation of already-completed work.
-
 
 | Check | Result | Limit |
 | --- | --- | --- |
