@@ -51,6 +51,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0203 | [품질 결과·격리 부하 시험](./0203-quality-results-and-isolated-load-testing/) | k6 실행·perf_db 결과·WireMock 모드·Locust LAB·관측 계약 |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
 | SPEC-0205 | [Storybook 의존성 갱신](./0205-storybook-dependency-refresh/) | 공유 Storybook의 최신 호환 패키지와 npm 검증 계약 |
+| SPEC-0206 | [공유 Storybook·문서 MCP](./0206-shared-storybook-and-docs-mcp/) | 정적 Docker, 관리자 경로, 재사용 패키지, 로컬 문서 MCP 계약 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
