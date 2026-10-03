@@ -4,7 +4,7 @@ version: "0.1.3"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -103,3 +103,12 @@ Prompt 06 owns the external application's consumed manifest and deployment.
 Cassandra's current official-image LAB move is already implemented; no
 Bitnami-wide replacement is planned. Crawl4AI has no confirmed consumer and
 gets a security fix, not automatic HOME activation.
+
+### Completion recheck — 2026-10-04
+
+W4's current Restic/dev-pg source chain and freshly approved synthetic restore
+passed; TSK-0003 is completed with its exact selected-set/snapshot receipt.
+TSK-0002 and TSK-0004 remain completed. W2's exact-image n8n/Crawl4AI runtime
+and secret/egress security acceptance remain BLOCKED in TSK-0001, so this Plan
+and Spec remain active. Image pulls and the reviewed isolated security fixture
+require the pending scope approval; HOME and host policy changes remain held.

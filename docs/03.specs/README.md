@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.2.20"
+version: "1.2.21"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -46,7 +46,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | --- | --- | --- |
 | SPEC-0182 | [HOME 잔여 작업](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0193 | [관측 대시보드·신호·경보](./0193-observability-dashboards-signals-and-alerting/) | 모든 서비스를 대시보드 하나씩으로 보이게 하고, metrics·logs·traces·profiles를 서로 연결하며, 실제로 발화할 수 있는 알림만 남김 |
-| SPEC-0203 | [품질 결과·격리 부하 시험](./0203-quality-results-and-isolated-load-testing/) | k6 실행·perf_db 결과·WireMock 모드·Locust LAB·관측 계약 |
+| SPEC-0203 | [품질 결과·격리 부하 시험](./0203-quality-results-and-isolated-load-testing/) | 보관 승인 대기 · k6 실행·perf_db 결과·WireMock 모드·Locust LAB·관측 계약 |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.

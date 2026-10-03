@@ -100,6 +100,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_quality_observability",
                 "tests.validation.test_quality_object_store",
                 "tests.validation.test_quality_raw_points",
+                "tests.validation.test_locust_telemetry",
             ],
             arguments[1:boundary],
         )

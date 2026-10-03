@@ -769,6 +769,7 @@
         "tests.validation.test_quality_observability",
         "tests.validation.test_quality_object_store",
         "tests.validation.test_quality_raw_points",
+        "tests.validation.test_locust_telemetry",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",

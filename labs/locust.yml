@@ -65,7 +65,11 @@ services:
       - /mnt/locust/results/locust
       - --csv-full-history
     healthcheck:
-      test: ['CMD-SHELL', 'pgrep -f "locust.*--master" >/dev/null || exit 1']
+      test:
+        - CMD
+        - python
+        - -c
+        - "import socket; socket.create_connection(('127.0.0.1', 5557), timeout=1).close()"
       interval: 5s
       timeout: 3s
       retries: 6
@@ -83,7 +87,11 @@ services:
       lab-locust-master:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', 'pgrep -f "locust.*--worker" >/dev/null || exit 1']
+      test:
+        - CMD
+        - python
+        - -c
+        - "import pathlib,sys; sys.exit(not any(b'--worker' in p.read_bytes().split(b'\\0') for p in pathlib.Path('/proc').glob('[0-9]*/cmdline')))"
       interval: 5s
       timeout: 3s
       retries: 6

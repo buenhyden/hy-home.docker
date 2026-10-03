@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -79,6 +79,61 @@ none of these links is a tested HOME deployment.
 | 3 | W2/W5 | Security pin/LAB render PASS; URL/egress and LAB runtime NOT_RUN | GDE/POL/RUN-0091 and LAB Cassandra documents |
 | 4 | W2/W5 | Sealed synthetic PASS; Agent freshness NOT_RUN | GDE/POL/RUN-0085 and POL-0079 |
 | 8 | W5 | Focused regression PASS; isolated execution NOT_RUN | This Task verification receipts |
+
+### Completion recheck on 2026-10-04
+
+Source baseline `ce001be7af93aebe6430f586b56a5c443fa9f386`. The focused
+runtime/version contract command above was rerun: 58 tests, exit 0. Both
+`workflow-n8n` and `crawl4ai` public-example Compose renders exited 0;
+Cassandra LAB render with the synthetic path
+`/tmp/hyhome-cassandra-0204-synthetic` also exited 0. These are static/synthetic
+checks and do not replace the acceptance contract's isolated functional proof.
+
+Read-only Docker preflight returned context `default`. Exact target images
+`n8nio/n8n:2.41.6`, `n8nio/runners:2.41.6`, and `unclecode/crawl4ai:0.9.4`
+were not available locally. The older cached versions cannot prove target
+behavior. `BLOCKED_IMAGE_NOT_AVAILABLE` names the exact-image n8n Code,
+queue, scheduled/webhook and crawler request tests. No images were pulled and
+no containers, networks, mounts or volumes were created in this recheck.
+
+Current official sources were reviewed on 2026-10-04. The Crawl4AI
+[link-preview advisory](https://github.com/unclecode/crawl4ai/security/advisories/GHSA-wh5w-hmj3-vgg7),
+[robots advisory](https://github.com/unclecode/crawl4ai/security/advisories/GHSA-f77g-77vp-r96v), and
+[untrusted-wrapper advisory](https://github.com/unclecode/crawl4ai/security/advisories/GHSA-5w5p-vcv6-mm3f)
+identify 0.9.4 as patched. The official tagged
+[egress broker source](https://github.com/unclecode/crawl4ai/blob/v0.9.4/deploy/docker/egress_broker.py)
+rejects non-global resolution answers and pins the approved address while
+revalidating redirects. This source inspection is not execution evidence.
+
+`BLOCKED_EGRESS_ENFORCEMENT` remains: the repository's dedicated bridge has
+no demonstrated host/LAN/link-local egress enforcement. Setting a Docker
+network `internal` would also require proving host bridge-gateway denial;
+that single property alone cannot satisfy private-destination acceptance.
+No consumer, proxy, firewall rule or crawler activation was inferred.
+
+`BLOCKED_CODE_SECRET_ISOLATION` remains: mounted runner authentication and
+launcher process environment have not been proven unreadable to Code tasks.
+The current official
+[n8n hardening guide](https://docs.n8n.io/deploy/host-n8n/configure-n8n/security/harden-task-runners/)
+recommends denying sensitive per-process `/proc` reads through AppArmor.
+No host AppArmor policy was installed or presumed available here.
+`BLOCKED_OPENBAO_AGENT_FRESHNESS` and `BLOCKED_CASSANDRA_AUTH_DATA` remain
+named runtime gaps; sealed-status synthetic checks and LAB render do not
+establish renewal/freshness, old-data migration, authentication, or safe UID.
+
+The next approval must name the image pulls for the exact n8n server/runner
+and Crawl4AI targets and authorize their unique synthetic test project. The
+existing image digests above must be rechecked before pull. The runtime
+fixture must be reviewed before execution: no published host ports, no HOME
+networks/volumes, no actual credentials, explicit aggregate CPU/memory/disk
+limits alongside concurrent rehearsals, and cleanup limited to the created
+container/network/volume identities. n8n needs the matching broker/runner
+Code path, synthetic metadata/queue, and both JavaScript/Python token-read
+denial; a launcher shell probe is insufficient. Crawl4AI needs its actual
+DNS/redirect/robots/link-preview/untrusted-config paths plus a reviewed egress
+boundary, including host bridge-gateway and metadata denial. Installing host
+AppArmor or firewall rules is a separate operation and is not authorized by
+image-pull approval. HOME rollout and real metadata migration remain separate.
 
 ## Review Evidence
 

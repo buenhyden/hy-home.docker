@@ -1,10 +1,10 @@
 ---
 title: "Quality Results and Isolated Load Testing Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0203-PLAN-0001"
 parent_ids:
@@ -35,35 +35,38 @@ records or synthetic Prompt 02 checks as live deployment evidence.
 
 ## Execution Sequence
 
-1. **W1: source inventory and contract.** Recheck root services, existing
+1. W1: source inventory and contract. Recheck root services, existing
    k6 remote write/dashboard, WireMock journal, Locust root graph, dev-pg
    provisioner and active document IDs. Register this Spec/Plan/Task and
    stable manifest/result/schema versions.
-2. **W2: perf_db authority.** Add quality-owned database schema/migrations
+2. W2: perf_db authority. Add quality-owned database schema/migrations
    and project-scoped reader/writer/verdict grants without changing
    management metadata or reimplementing dev-pg engine provisioning. Test
    project A/B, reader write, verdict change, replay and future grants.
-3. **W3: bounded runner.** Validate target origin, redirect policy, approved
+3. W3: bounded runner. Validate target origin, redirect policy, approved
    scenario path, quota and output ownership before k6. Capture immutable
    manifest, raw/summary/exit metadata and checksum; separate finalization
    from import. Test failed thresholds, interruption and invalid samples.
-4. **W4: import and artifact handoff.** Add one transactional normalized
+4. W4: import and artifact handoff. Add one transactional normalized
    import and explicit replay/conflict policy. Record restricted SeaweedFS
    object reference without granting a public bucket or issuing credentials.
-5. **W5: WireMock and Locust.** Model function/load mock modes with distinct
+5. W5: WireMock and Locust. Model function/load mock modes with distinct
    journal behavior, read-only synthetic XML/JSON fixtures and admin limits;
    reserve Toxiproxy for non-HTTP dependencies. Move Locust's complete
    master/worker closure to an independent LAB entrypoint and environment
    boundary; verify client-specific OTel support or request-event/timeout
-   instrumentation. Update root/static test expectations and Korean
+   instrumentation. The bounded HttpUser.requests distributed rehearsal uses
+   request-event counters and millisecond histograms, explicit read timeout,
+   stable group/status tags and master CSV reconciliation; no unverified SDK
+   auto-instrumentation is claimed. Update root/static test expectations and Korean
    README/operations guidance.
-6. **W6: shared observability.** Keep k6 Prometheus remote write; add only
+6. W6: shared observability. Keep k6 Prometheus remote write; add only
    bounded Alloy metrics receive, batch/resource control, necessary
    temporality conversion, Prometheus export/remote write and read-only
    Grafana result views. This Task alone writes Alloy; Prompt 04 reads the
    result. Check trace/log/profile preservation, cardinality and synthetic
    counter/histogram delta/cumulative, duplicate/drop/retry/restart behavior.
-7. **W7: validation and handoff.** Run focused tests and path-aware static
+7. W7: validation and handoff. Run focused tests and path-aware static
    checks, then bounded synthetic Docker checks after preflight. Independently
    review security and correctness. Record precise exits and NOT_RUN HOME,
    live target, real bucket and data-migration boundaries in TSK-0001.

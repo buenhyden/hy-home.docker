@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.5"
+version: "1.4.6"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -347,8 +347,12 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    rollback은 source revert와 운영 중단/cutover 승인을 구분하며 실패 scratch와
    원본 repository는 보존합니다. cleanup·데이터 삭제는 별도 승인입니다.
 
-이 절차의 HOME 실행·offsite/실복구는 NOT_RUN입니다. 합성 scheduler shim은
-분기와 실패 전달만 검증하며 실제 Restic/pgBackRest 실행 증거가 아닙니다.
+이 절차의 HOME 실행·offsite/운영 실복구는 NOT_RUN입니다. 합성 scheduler shim은
+분기와 실패 전달만 검증합니다. 별도로 2026-10-04 새 합성 DB를 정지해 offline
+full backup하고 현재 Restic state chain으로 snapshot/복원한 repository에서
+선택 label을 새 빈 볼륨에 복구했습니다. row·extension·migration·role 비교와
+reader 읽기 허용/쓰기·DDL 거절이 통과했으며 missing source exit3·unknown label
+exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO가 아닙니다.
 
 ## Evidence
 

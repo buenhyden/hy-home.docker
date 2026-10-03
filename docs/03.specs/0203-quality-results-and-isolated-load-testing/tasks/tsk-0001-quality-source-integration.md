@@ -1,8 +1,8 @@
 ---
 title: "Quality Source Integration and Synthetic Acceptance"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -50,7 +50,15 @@ updated files:
 - `examples/operations/quality-metrics/acceptance.py`, `docker-compose.yml`,
   and `README.md`;
 - `tests/validation/test_quality_observability.py` and
-  `tests/validation/test_quality_object_store.py`.
+  `tests/validation/test_quality_object_store.py`;
+- `labs/locust.yml`, `labs/locust.md`;
+- `examples/operations/locust-telemetry/acceptance.py`, `locustfile.py`,
+  `compose.override.yml`, `README.md`, and `tests/validation/test_locust_telemetry.py`.
+
+Following SPEC-0204 TSK-0004 completed handoff, this Task owns the serial
+root writer amendment of `.github/workflow-contract.yml` and
+`tests/lib/gate/test_github_workflow_contract.py` for the new exact Locust
+validation module. Only the root serial writer edits those shared files.
 
 Guard inputs remain synthetic `test`/mock-only. Its separate project, two
 internal networks, pinned images, port 0, volume 0 and secret 0 are checked
@@ -67,9 +75,9 @@ and controller-created temporary directory, without volume deletion or prune.
 | W2 | `dev-perf-provision`, `perf_db.quality`, project RLS, role grants, exact replay/conflict import and v2 upgrade | SOURCE_DONE; isolated PostgreSQL acceptance passed |
 | W3 | Manifest/path validation, immutable artifacts, two-network exact-Path Traefik guard, manifest threshold/structured summary wrapper | SOURCE_DONE; mock-only isolated HTTP acceptance passed; real app target remains NOT_RUN |
 | W4 | Transactional normalized import, approved storage contract, bounded immutable upload/restore receipt and exact object-ref binding | SOURCE_DONE; synthetic client/integration checks passed; actual SeaweedFS conditional/checksum compatibility and bucket/writer remain NOT_RUN |
-| W5 | WireMock function/load override and independent Locust LAB; root no longer includes Locust | SOURCE_DONE; bounded synthetic WireMock checks passed; Locust request-event/OTel runtime unverified |
+| W5 | WireMock function/load override and independent Locust LAB; root no longer includes Locust | SOURCE_DONE; bounded synthetic WireMock checks passed; actual bounded HttpUser.requests request-event/timeout and CSV reconciliation PASS; OTel SDK exporter not claimed |
 | W6 | Bounded Alloy OTLP metrics, k6 dashboard filters, opt-in read-only perf_db datasource contract and result dashboard | SOURCE_DONE; isolated metrics delivery passed; live Grafana datasource issuance remains NOT_RUN |
-| W7 | Korean package README, operations docs, catalog projection, focused checks and independent review | PARTIAL: changed gate rerun found one stale projection after the perf mount was narrowed; catalog and exact assertion now pass, but the aggregate gate was not repeated again; infra-validate remains BLOCKED |
+| W7 | Korean package README, operations docs, catalog projection, focused checks and independent review | PASS: registered changed-gate stages and corrected tail, focused follow-up checks and final independent review complete; original aggregate exit 1 and unsupported infra-validate BLOCKED remain visible |
 
 The user approved two historical Locust link corrections and the seven current
 service inventory projections in the Stage 90 research document. Historical
@@ -114,7 +122,7 @@ result is evidence of real target traffic, HOME health or k6 remote write.
 | 2–4 | SOURCE/ISOLATED_PASS; LIVE_NOT_RUN | Mock-only HTTP path/threshold/finalization passed; approved object upload/restore/import contract has synthetic checks; real target/store input remains absent |
 | 5 | ISOLATED_PASS | Dedicated `perf_db` synthetic PostgreSQL and negative authority checks |
 | 6 | ISOLATED_PASS | Function/load render, journal/reset and HTTP admin 403 checks |
-| 7 | STATIC_PASS; RUNTIME_NOT_RUN | Root/LAB graph separation and bounded LAB declarations; Locust telemetry runtime not proven |
+| 7 | STATIC_PASS; ISOLATED_PASS | Root/LAB graph separation, actual standalone LAB render/headless output; HttpUser.requests worker request-event counter/histogram/ReadTimeout and master CSV reconciliation; no SDK exporter claim |
 | 8 | SOURCE/ISOLATED_PASS; LIVE_NOT_RUN | Alloy actual metrics delivery passed; perf_db read-only views/datasource have source contracts; live Grafana reader connection remains unproven |
 | 9 | SOURCE_DONE | Operation contracts and explicit evidence boundaries |
 
@@ -235,15 +243,159 @@ returned 1 and remains recorded; the existing runner resumed its registered
 tail and returned 0. Document regressions 629, integrated regressions 239,
 67 Compose selections and final repository regressions 175 passed at their
 respective stages. The required-selector expectation was updated with the
-new seven modules, preserving all runtime skip boundaries. The root writer
-TSK-0004 alone owns the shared workflow contract. Real store, datasource and
-perf_db runtime acceptance remain NOT_RUN. The final independent follow-up
+new seven modules, preserving all runtime skip boundaries.
+The original SPEC-0204 TSK-0004 handoff owned the shared workflow contract.
+The follow-up exact-selector amendment above is now assigned to this Task
+and the root serial writer. Real store and live datasource acceptance remain
+NOT_RUN; the separate actual perf_db importer proof below supersedes its
+earlier runtime NOT_RUN entry. The final independent follow-up
 review passed as recorded below.
+
+**2026-10-04 Locust criterion 7 follow-up:**
+
+The selected standard is client-specific request-event instrumentation, one of
+criterion 7's permitted OTel-or-event alternatives. No new SDK dependency or
+permanent HTTP mock is added. Two collector tests first failed with missing
+source (exit 1); a third readiness regression failed against the old pgrep
+healthcheck (exit 1). Python process/readiness probes fixed the actual official
+image incompatibility, and all three focused tests passed (exit 0).
+
+Actual command:
+
+```bash
+python3 examples/operations/locust-telemetry/acceptance.py --locust-image locustio/locust@sha256:2350a2f91daa78a4008f35ac4a394f773a205aa4a07e03dcef1205b142a6df6e --mock-image wiremock/wiremock@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147
+```
+
+It exited 0 in project `locust-telemetry-5e9df10bc192`: master 1, worker 1,
+synthetic backend 1, user 1, spawn rate 1/s, headless 4s, stop timeout 1s.
+The empty synthetic env file explicitly excludes real root/LAB env files.
+Default local Unix Docker context and linux/amd64 cached digests were checked.
+CPU sum 1.5, memory sum 1024 MiB, ports/secrets/named volumes 0; only new scratch
+scenario/mapping/result binds and one internal network were used. The original
+LAB Compose was rendered with the isolated override, not replaced by a separate
+Locust stack. Master exit 1 was expected only because of deliberate 50ms read
+timeouts against a 250ms synthetic response delay. It reconciled worker counter
+31 requests, 15 actual requests ReadTimeout failures, histogram count/sum/ms
+buckets and allowed health:200/timeout:timeout series against master CSV.
+No event URL/query/context/header/body/exception text was consumed. The exact
+project cleanup passed, with no remaining project-labelled containers or
+networks, followed by scratch removal. An earlier successful rehearsal recorded
+30 requests/15 timeouts, likewise reconciled rather than asserted as a fixed
+request count. First two startup failures
+also cleaned up their exact projects; no HOME service or real target was touched.
+SDK exporter delivery remains NOT_RUN and is not required by the selected
+request-event alternative. Actual external project client/scenario telemetry
+still requires its own approval and compatibility test.
+
+The final Locust security amendment witnessed two new RED errors for missing
+trusted-client/bounded-reader helpers, then GREEN. Early relative/missing
+Docker and invalid-image preflight cases first failed because scratch remained;
+outer try/finally cleanup made all three GREEN. Six Locust module tests plus
+two existing mock/LAB tests passed (exit 0). Duplicate/extra-sensitive JSON,
+symlink/FIFO/oversized artifacts and ambient client environment are rejected.
+The final runtime above used the sanitized client and strict JSON/CSV schema;
+raw container logs and Docker stderr are not exported as failure diagnostics.
+Only generic artifact presence/count is reported. Final independent review is
+pending, not inferred from the earlier source review.
+
+**2026-10-04 actual PostgreSQL importer follow-up:**
+
+```bash
+python3 /tmp/hyhome-quality-import-rehearsal/acceptance.py
+```
+
+Final sanitized rehearsal exited 0 in project `quality-import-ca0726d2c698`,
+internal network `quality-import-ca0726d2c698-net`, new named volume
+`quality-import-ca0726d2c698-pg`. It reused the cached linux/amd64 image
+`sha256:19ffce2ca8d8eb820b0ea784c869ea20afe24e526594e7d4267b18ea22ca43f2`.
+Default local Unix Docker was checked through a trusted absolute client with
+an empty scratch HOME/DOCKER_CONFIG and fixed PATH; the psql fixture wrapper
+used that same client boundary, not ambient user settings. PostgreSQL was
+limited to 2 CPU/2 GiB/shm256MiB and each disposable psql client to 0.5 CPU/
+128 MiB (at most 2 concurrent clients); ports 0, one owned new PG volume,
+read-only source mounts and synthetic credential files only. No backup
+repository, real secret, real datasource, S3 or HOME database was mounted.
+
+Existing bootstrap/register/schema SQL provisioned a NOLOGIN project writer
+role and a separate synthetic login with no superuser/create/replication/
+bypassRLS authority. Actual `quality_run` native-v2 finalization and
+`prepare_import` produced envelopes passed through the real Python
+`result_import.import_db` to real PostgreSQL/psql, with no fake SQL client.
+Inserted and exact replay passed. Two simultaneous transactions against a
+fresh identity returned exactly one inserted and one exact_replay; a
+fixture-only one-second trigger made overlap observable. A recomputed-hash
+conflicting envelope produced a failed receipt and left exactly two stored
+run attempts. Stopping the PG container produced an actual database-failed
+receipt; both attempts' raw/manifest/checksum/final bytes remained unchanged.
+Restarting the same new PG volume returned exact_replay and retained count 2.
+All raw digests remained unchanged across concurrency/conflict/outage/restart.
+The final receipt records container/volume/network absent and scratch removed,
+all true. Exact owned volume rm was used, without down-v/prune.
+
+The final harness SHA256 is
+`c2198401710d5be265527f30c97034decd38be2e11f8c0bb23ca83ffa3b2206b`;
+the final receipt SHA256 is
+`f0f2f0849e24b8a458eb74005ba1b2317528b0d55cd04c0e379e9f724696d973`.
+Its source
+baseline was `ce001be7af93aebe6430f586b56a5c443fa9f386`; relevant unchanged source
+SHA256 values are:
+
+- quality_run.py: `e72015e1b0231e403bc4f23e7de3d02c1227ff4491ba1e27a1721c5003c11fe5`;
+- result_import.py: `cac5dc97c1a296b11dbaf121eeb5810acb967080b3c6d7e9fd3fe1fe80c1be08`;
+- result_inspection.py: `964b214dcf59b44371fee3b800c1016de77d14a6e9a5d6afb2c3c5f885ccedaa`;
+- bootstrap.sql: `42f103186a006ace43ed24bf1c2219ab7e7a67dafd539af4c09018ebea95d2dc`;
+- schema.sql: `a31a5e80f362f60befa16b4e77d19f51e470b154cd488945c3fc1e8e3dd58bb6`;
+- register.py: `53621bb2a662d464fde320891513e9fc985da3c5bc0e0d0db096fb72fade968b`;
+- provision.py: `f75d93c4530c3a4f6078b7026bd1e05b831ee5e1246bc4e224f387db9b58ae95`.
+
+Earlier runs proved the importer but inherited Docker client settings and
+are not the final client-isolation evidence. An initial harness envelope/
+receipt filename collision was corrected without changing production source;
+that run also cleaned up its exact owned resources. Real API load, real
+store compatibility, live Grafana datasource and HOME activation remain
+NOT_RUN under the owner's source-contract-only/live-target-held decision.
+
+### Final completion and promotion receipt — 2026-10-04
+
+Final closure checks: `python3 scripts/validation/check-document-metadata.py
+--mode check-changed --base-ref HEAD` exited 0 (11 selected, 0 violations);
+`check-document-links.py --mode all` exited 0 (0 failures, one pre-existing
+unverified historical-link warning); `check-document-corpus-lifecycle.py
+--base-ref HEAD` exited 0. Active package loader and `git diff --cached --check`
+passed. Locust/mock/workflow unit command exited 0 with 56 tests, and existing
+`BackupContractTests` exited 0 with 11 tests. These do not replace the earlier
+failed aggregate gate with an invented successful full run.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: official tool roles, load models and licenses compared; k6 remains default | [Quality guide](../../../05.operations/guides/0064-performance-testing.md) |
+| 2 | W3 | PASS: immutable manifest and exact-path/resource boundary reject unauthorized input | [Runner contract](../../../../infra/11-quality/k6/README.md) |
+| 3 | W3 | PASS: native threshold exit, expected errors and incomplete evidence have separate states | [Runner contract](../../../../infra/11-quality/k6/README.md) |
+| 4 | W4 | PASS: bounded raw validation and actual SQL replay, concurrency, conflict, outage and restart preserve evidence | [Result authority](../../../../infra/04-data/dev-db/pg/perf/README.md) |
+| 5 | W2 | PASS: fresh/rerun/upgrade and actual project A/B, reader/writer/verdict authority denial checked | [Result authority](../../../../infra/04-data/dev-db/pg/perf/README.md) |
+| 6 | W5 | PASS: separate mock modes, journal/reset and admin refusal checked in isolation | [WireMock contract](../../../../infra/11-quality/wiremock/README.md) |
+| 7 | W5 | PASS: root excludes LAB; actual distributed headless client events, timeout, CSV and bounded histogram reconcile | [Locust LAB](../../../../labs/locust.md) |
+| 8 | W6 | PASS: existing k6 path retained; actual Alloy temporality, retry, drop and restart checked with opt-in reader view contract | [Grafana contract](../../../../infra/06-observability/grafana/README.md) |
+| 9 | W7 | PASS: handoff, scoped checks and independent review distinguish source, static, isolated and deferred operational states | [Quality guide](../../../05.operations/guides/0064-performance-testing.md) |
+
+The owner's explicit source-contract-only decision holds real API load, result
+bucket/writer, actual SeaweedFS compatibility and live Grafana datasource.
+HOME, operational recovery and data migration remain NOT_RUN. These are not
+cancelled acceptance criteria or deployment proof. The initial changed gate
+exit 1 and unavailable infra-validate checks remain recorded; the registered
+corrected tail and focused subsequent changes passed without lowering gates.
+
+Current obligations are promoted to POL/GDE/RUN-0064 and their linked runner,
+perf_db, WireMock, Locust and Grafana source contracts. This Task's final
+source boundary is committed before capture. On approved completed-package
+archival, Stage03 navigation and the active SPEC-0204/GDE-0064 provenance
+links move to the preserved record; no runtime consumer depends on this Spec
+path. The frozen Task keeps all historical receipts and Commit Ledger.
 
 ## Review Evidence
 
-Independent code review found no open CRITICAL/HIGH/MEDIUM implementation
-defect in the current source diff; security and approval boundary review passed.
+The 2026-10-03 independent code review found no open CRITICAL/HIGH/MEDIUM implementation
+defect in the then-current pre-Locust source diff; security and approval boundary review passed.
 The original review required partial/BLOCKED status for path confinement,
 SeaweedFS handoff, Grafana perf_db views and Alloy end-to-end metrics.
 Follow-up source adds the exact-path guard and opt-in read-only views;
@@ -254,8 +406,17 @@ the runner, native inspector, finalizer, importer and object handoff. It
 reran 15 raw-point/object tests and 36 combined runner/object/raw-point
 tests, both exit 0. It confirmed total-byte bounds, EOF file identity,
 external object approval and fail-closed native input. No private input,
-HOME endpoint or real store was used. Actual perf_db import and store
-compatibility remain NOT_RUN.
+HOME endpoint or real store was used. At that review actual perf_db import
+and store compatibility remained NOT_RUN; the isolated importer proof below
+now covers perf_db without converting real store compatibility to PASS.
+The 2026-10-04 Locust follow-up review found client/config trust, unbounded
+container-artifact reads and raw diagnostics concerns. Those were corrected,
+including later early-preflight scratch cleanup. Final independent re-review
+approved the source and sanitized execution receipts with no open CRITICAL,
+HIGH or MEDIUM findings: Locust plus workflow tests 54, exit 0; py_compile
+exit 0. Root independently ran Locust, mock and workflow regressions: 56 tests,
+exit 0. SQL importer and selected client event/timeout receipts were reviewed
+without claiming actual store, datasource or HOME acceptance.
 
 ## Commit Ledger
 
