@@ -2,7 +2,7 @@
 title: "Shared Experience Integration Task"
 version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -54,7 +54,7 @@ TSK-0001 source handoff is `e811e159afa2dc7245bb2d6b562a91cf931283fe`; its exact
 | --- | --- | --- | --- |
 | 3 | W3 | STATIC PASS for Compose/profile/network/router; HOME TLS, real `/admins` claim, unauthenticated asset response and session expiration NOT_RUN | Compose and POL-0078 |
 | 6 | W4 | PASS for official-source Codex/Claude guide and local config examples; installed Codex/Claude account connection NOT_RUN | GDE-0101 |
-| 7 | W3-W4 | STATIC PASS for operations subject, Registry, Grafana service row, version/inventory projections and focused gates; independent review passed, document lifecycle transitions pending | Stage 05 subject, README, this Task |
+| 7 | W3-W4 | STATIC PASS for operations subject, Registry, Grafana service row, version/inventory projections and focused gates; independent review passed and new document lifecycles reached active | Stage 05 subject, README, this Task |
 
 ## Review Evidence
 
@@ -62,7 +62,7 @@ Independent integration code, security and rules-engineer reviews found no Criti
 
 ## Commit Ledger
 
-Baseline main/origin-main `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; dependent source base `fbbea9123751c13588022cdb76213fd8b5a14b6e`; Storybook source `e811e159afa2dc7245bb2d6b562a91cf931283fe`; source evidence `d208109d38371d41f6888bd1b76538754396d4b5`; TSK-0001-owned README entrypoint link correction `90452d6484e7528caa2bc661baa1b8c3bc13971c`. Integration draft and operations lifecycle commits pending.
+Baseline main/origin-main `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; dependent source base `fbbea9123751c13588022cdb76213fd8b5a14b6e`; Storybook source `e811e159afa2dc7245bb2d6b562a91cf931283fe`; source evidence `d208109d38371d41f6888bd1b76538754396d4b5`; TSK-0001-owned README entrypoint link correction `90452d6484e7528caa2bc661baa1b8c3bc13971c`. Integration source `519b2fd40e9ad98b429e05a1c932ceec10893e81`; operations draft-to-review `4019dd1f314f137a550f08489fbe74469ed04186`, review-to-active/approved `ecd4dd89a47a359ff2c9e2e6617ca4e8b04ba46e`, and policy approved-to-active `a4e1723523928011365f76cb7fcf46a2e930d6f0`. This Task closure commit records the source-only outcome; the parent Spec and Plan stay active pending separately authorized HOME TLS/OIDC observation.
 
 ## Rulings
 
