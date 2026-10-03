@@ -815,6 +815,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-project-registration.py
+  kind: validator
+  authority: infra/09-platform-ops/project-registration/README.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - infra/09-platform-ops/project-registration/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_project_registration.py
 - path: scripts/validation/check-quickwin-baseline.sh
   kind: validator
   authority: .github/workflow-contract.yml
