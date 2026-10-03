@@ -1,8 +1,8 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.5"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -71,6 +71,19 @@ SPEC-0205 were serialized in the branch. Independent security review found no
 new high/critical advisory or new registry source and accepted a local commit;
 it retained the user's remote-merge hold for braces. Independent source
 review approved the corrected specification and source diff.
+
+### Source completion and disposition receipt
+
+The 2026-10-03 completion review confirms all four source acceptance
+criteria from the recorded immutable package update `fbbea9123751c13588022cdb76213fd8b5a14b6e`.
+The source is integrated locally into `codex/spec-0201-0205-closure`; it has
+not landed on protected main. A fresh npm audit still reports five high
+findings and exit 1, and the official GHSA-vfj7-8cjw-p6xm advisory still
+lists no patched braces version. This receipt does not waive that gate.
+The completed package waits in Stage 03 until protected delivery succeeds;
+it is not eligible for completed archive capture yet. Current update and
+audit obligations remain with the npm manifest/lock, Dependabot and the
+existing Storybook quality gate. HOME and publication remain NOT_RUN.
 
 ## Commit Ledger
 

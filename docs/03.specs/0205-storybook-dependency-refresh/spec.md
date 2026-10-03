@@ -1,8 +1,8 @@
 ---
 title: "Storybook Dependency Refresh Specification"
-version: "0.1.4"
+version: "1.0.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
