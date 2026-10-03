@@ -14,7 +14,7 @@ esac
 node_name=${NODE_NAME:-$(hostname)}
 port=${PORT:-6379}
 case "$node_name:$port" in
-  *[!A-Za-z0-9:-]*|'') echo "Invalid LAB Valkey node or port" >&2; exit 1 ;;
+  *[!A-Za-z0-9:-]*) echo "Invalid LAB Valkey node or port" >&2; exit 1 ;;
 esac
 case "$port" in ''|*[!0-9]*) echo "Invalid LAB Valkey port" >&2; exit 1 ;; esac
 [ "$port" -ge 1024 ] && [ "$port" -le 55535 ] || { echo "Invalid LAB Valkey port" >&2; exit 1; }

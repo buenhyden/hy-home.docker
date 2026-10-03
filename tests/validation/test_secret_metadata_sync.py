@@ -412,19 +412,19 @@ def service_secret_contract(root, compose_texts):
 def secret_contract(root, compose_texts, registry_text, consumed_env):
     declarations = {}
     declaration_paths = {}
-    lab_secret_dir = env_assignments(
-        (root / "labs/.env.example").read_text()
-    )["LAB_SECRET_DIR"].strip('"')
+    lab_secret_dir = env_assignments((root / "labs/.env.example").read_text())[
+        "LAB_SECRET_DIR"
+    ].strip('"')
     dangling = set()
     missing_grants = set()
     granted_sources = set()
     root_domain = {
-        name: text for name, text in compose_texts.items()
+        name: text
+        for name, text in compose_texts.items()
         if not name.startswith("labs/")
     }
     lab_domains = [
-        {name: text} for name, text in compose_texts.items()
-        if name.startswith("labs/")
+        {name: text} for name, text in compose_texts.items() if name.startswith("labs/")
     ]
     for domain in (root_domain, *lab_domains):
         domain_declarations = {}
@@ -451,9 +451,13 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
                 )
                 if path.startswith("../") or path == "..":
                     raise AssertionError(f"secret escaped repository: {name}")
-                if relative.startswith("labs/") and not path.startswith("secrets/labs/"):
+                if relative.startswith("labs/") and not path.startswith(
+                    "secrets/labs/"
+                ):
                     raise AssertionError(f"LAB secret escaped isolated path: {name}")
-                if not relative.startswith("labs/") and path.startswith("secrets/labs/"):
+                if not relative.startswith("labs/") and path.startswith(
+                    "secrets/labs/"
+                ):
                     raise AssertionError(f"root secret entered LAB path: {name}")
                 declaration_paths[name] = path
         for service_name, contract in service_secret_contract(root, domain).items():
@@ -917,7 +921,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
         cls.env_text = (ROOT / ".env.example").read_text()
         cls.environment = environment_contract(cls.compose_texts, cls.env_text)
         cls.lab_environment = environment_contract(
-            cls.lab_compose_texts, (ROOT / "labs/.env.example").read_text(),
+            cls.lab_compose_texts,
+            (ROOT / "labs/.env.example").read_text(),
             supplemental_ids=set(),
         )
         cls.registry_text = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
@@ -988,9 +993,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertEqual(SOURCE_ANALYSIS_SERVICES, found)
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
-        contract = self.scoped_secret_contract(
-            self.compose_texts, self.registry_text
-        )
+        contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
         self.assertEqual(101, len(contract["declarations"]))
         self.assertEqual(138, len(contract["rows"]))
         areas = Counter(
@@ -999,9 +1002,19 @@ class PublicSecretSchemaTests(unittest.TestCase):
             if row["path"].startswith("secrets/")
         )
         self.assertEqual(
-            {"auth": 14, "automation": 4, "backup": 6, "common": 5,
-             "data": 15, "db": 26, "labs": 14, "observability": 2,
-             "security": 2, "storage": 8, "tools": 9},
+            {
+                "auth": 14,
+                "automation": 4,
+                "backup": 6,
+                "common": 5,
+                "data": 15,
+                "db": 26,
+                "labs": 14,
+                "observability": 2,
+                "security": 2,
+                "storage": 8,
+                "tools": 9,
+            },
             dict(areas),
         )
         self.assertEqual(33, len(contract["rows"]) - sum(areas.values()))
@@ -1020,7 +1033,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
             set((REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS).items()),
             {
                 (identity, contract["rows"][identity]["path"])
-                for identity in REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS
+                for identity in REGISTRY_PATH_EXCEPTIONS
+                | CUTOVER_REGISTRY_PATH_EXCEPTIONS
             },
         )
 
@@ -1067,7 +1081,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
         lab = dict(self.lab_compose_texts)
         lab[path] = yaml.safe_dump(couchdb)
         contract = secret_contract(
-            ROOT, self.compose_texts | lab, self.registry_text,
+            ROOT,
+            self.compose_texts | lab,
+            self.registry_text,
             self.environment["consumed"] | self.lab_environment["consumed"],
         )
         self.assertIn(name, contract["granted_sources"])
@@ -1078,7 +1094,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
         lab[path] = yaml.safe_dump(couchdb)
         with self.assertRaisesRegex(AssertionError, "escaped isolated path"):
             secret_contract(
-                ROOT, self.compose_texts | lab, self.registry_text,
+                ROOT,
+                self.compose_texts | lab,
+                self.registry_text,
                 self.environment["consumed"] | self.lab_environment["consumed"],
             )
 
@@ -1279,7 +1297,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
             r"^([A-Za-z_][A-Za-z0-9_]*)=", (root / ".env.example").read_text(), re.M
         )
         keys += re.findall(
-            r"^([A-Za-z_][A-Za-z0-9_]*)=", (root / "labs/.env.example").read_text(), re.M
+            r"^([A-Za-z_][A-Za-z0-9_]*)=",
+            (root / "labs/.env.example").read_text(),
+            re.M,
         )
         self.assertEqual(len(keys), len(set(keys)))
         self.assertFalse(

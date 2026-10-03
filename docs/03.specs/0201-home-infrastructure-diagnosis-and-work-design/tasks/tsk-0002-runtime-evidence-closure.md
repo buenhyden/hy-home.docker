@@ -47,7 +47,6 @@ proceed using W7.1-W7.3's accepted evidence under its own Spec, Plan, and Task.
 | W7.4 restore measurement | DEFERRED / NOT_RUN by owner | Verify backup integrity, restore the approved backup into a new isolated disposable target, start only that isolated target if needed, check database/extension/role inventory and count consistency, and record duration, recovery point and failure behavior. Distinguish backup verification from successful restore and PITR. Preserve any failed target; exact scratch cleanup requires separate approval after review. No HOME stop/restart, data deletion, or real migration. |
 | W7.5 Prompt 02 start gate | DRAFT CONTRACT | Record a binding handoff: at actual Prompt 02 source implementation, recheck registry digest by platform, PostgreSQL/Timescale/pgBackRest compatibility, extension package and license revision against official sources. Prompt 02 Task owns the dated result; a present lookup cannot preapprove a future image. |
 
-
 ### Approved read-only observation, 2026-10-02
 
 The observed baseline remained `e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`;
@@ -323,8 +322,11 @@ owner's revised criterion 10; this is not an operational recovery receipt.
 
 ## Commit Ledger
 
-No commit, push, PR, merge, or operational change is authorized by this draft.
-The existing TSK-0001 receipt and its files are preserved.
+W7.1–W7.3 evidence and the W7.4 deferral were committed in
+`b867eb7d466000ed8d49f6a8eb6410f1db646268` and reached local `main` at
+`5f99e0e51b41b912f128daafb4a3d41539b77560`. The original observation
+approval did not authorize remote or operational changes; remote delivery is
+now a separately approved action. The TSK-0001 receipt remains preserved.
 
 ## Rulings
 

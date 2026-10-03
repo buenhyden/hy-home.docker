@@ -1,12 +1,12 @@
 """Guard LAB credential paths against regressions into process arguments."""
 
-from pathlib import Path
 import os
 import re
 import shutil
 import subprocess
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
 
@@ -17,7 +17,7 @@ class LabCredentialArgvTest(unittest.TestCase):
     def test_haproxy_password_is_not_passed_to_sed_argv(self):
         compose = yaml.safe_load((ROOT / "labs/postgresql-ha.yml").read_text())
         command = compose["services"]["pg-router"]["command"][2]
-        password = "HAp9+#%"
+        fixture_value = "HAp9+#%"
 
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
@@ -27,13 +27,13 @@ class LabCredentialArgvTest(unittest.TestCase):
             sed_script = work / "haproxy-secret.sed"
             args_log = work / "sed.argv"
             fake_sed = work / "sed"
-            secret.write_text(password)
+            secret.write_text(fixture_value)
             template.write_text("stats auth admin:${HAPROXY_STATS_PASSWORD}\n")
             real_sed = shutil.which("sed")
             self.assertIsNotNone(real_sed)
             fake_sed.write_text(
-                "#!/bin/sh\nprintf '%s\\n' \"$@\" > \"$SED_ARGS_LOG\"\n"
-                f"exec {real_sed} \"$@\"\n"
+                '#!/bin/sh\nprintf \'%s\\n\' "$@" > "$SED_ARGS_LOG"\n'
+                f'exec {real_sed} "$@"\n'
             )
             fake_sed.chmod(0o700)
             command = (
@@ -52,12 +52,16 @@ class LabCredentialArgvTest(unittest.TestCase):
                 "SED_ARGS_LOG": str(args_log),
             }
             result = subprocess.run(
-                ["sh", "-ec", command], env=env, capture_output=True, text=True
+                ["sh", "-ec", command],
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertNotIn(password, args_log.read_text())
-            self.assertEqual(output.read_text(), f"stats auth admin:{password}\n")
+            self.assertNotIn(fixture_value, args_log.read_text())
+            self.assertEqual(output.read_text(), f"stats auth admin:{fixture_value}\n")
             self.assertEqual(output.stat().st_mode & 0o777, 0o600)
             self.assertFalse(sed_script.exists())
 
@@ -81,8 +85,7 @@ class LabCredentialArgvTest(unittest.TestCase):
 
     def test_opensearch_hashing_uses_supported_environment_input(self):
         entrypoint = (
-            ROOT
-            / "infra/04-data/opensearch/opensearch/opensearch-entrypoint.sh"
+            ROOT / "infra/04-data/opensearch/opensearch/opensearch-entrypoint.sh"
         ).read_text()
 
         self.assertNotIn('hash.sh" -p', entrypoint)
@@ -94,12 +97,16 @@ class LabCredentialArgvTest(unittest.TestCase):
         pg = (ROOT / "labs/postgresql-ha.yml").read_text()
         couch = (ROOT / "labs/couchdb.yml").read_text()
         opensearch = (ROOT / "labs/opensearch-cluster.yml").read_text()
-        valkey_start = (ROOT / "infra/04-data/valkey-cluster/scripts/valkey-start.sh").read_text()
-        valkey_init = (ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh").read_text()
+        valkey_start = (
+            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-start.sh"
+        ).read_text()
+        valkey_init = (
+            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh"
+        ).read_text()
         couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
 
         self.assertNotIn("valkey-cli -a", valkey + valkey_init)
-        self.assertNotIn("--requirepass \"$password\"", valkey_start)
+        self.assertNotIn('--requirepass "$password"', valkey_start)
         self.assertIn('exec valkey-server "$config"', valkey_start)
         self.assertNotIn("-redis.password=", valkey)
         self.assertNotIn(" -p $$MONGO_ROOT_PASSWORD", mongo)
@@ -115,26 +122,48 @@ class LabCredentialArgvTest(unittest.TestCase):
 
     def test_couch_system_database_replay_accepts_existing_and_fails_other_errors(self):
         source = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
-        function = "ensure_system_databases() {" + source.split(
-            "ensure_system_databases() {", 1
-        )[1].split("\n}\n", 1)[0] + "\n}\n"
+        function = (
+            "ensure_system_databases() {"
+            + source.split("ensure_system_databases() {", 1)[1].split("\n}\n", 1)[0]
+            + "\n}\n"
+        )
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fake_curl = root / "curl"
             fake_curl.write_text(
-                "#!/bin/sh\nprintf '%s\\n' \"$*\" >> \"$CALLS_FILE\"\n"
+                '#!/bin/sh\nprintf \'%s\\n\' "$*" >> "$CALLS_FILE"\n'
                 "case \"$*\" in *'_replicator'*) "
                 "printf '%s' \"${REPLICATOR_STATUS:-412}\" ;; "
                 "*) printf '%s' 201 ;; esac\n"
             )
             fake_curl.chmod(0o700)
-            program = "set -eu\nbase=http://example.invalid\n" + function + "ensure_system_databases\n"
-            env = {**os.environ, "PATH": f"{root}:{os.environ['PATH']}", "CALLS_FILE": str(root / "calls")}
-            result = subprocess.run(["sh", "-c", program], env=env, capture_output=True, text=True)
+            program = (
+                "set -eu\nbase=http://example.invalid\n"
+                + function
+                + "ensure_system_databases\n"
+            )
+            env = {
+                **os.environ,
+                "PATH": f"{root}:{os.environ['PATH']}",
+                "CALLS_FILE": str(root / "calls"),
+            }
+            result = subprocess.run(
+                ["sh", "-c", program],
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(len((root / "calls").read_text().splitlines()), 3)
             env["REPLICATOR_STATUS"] = "500"
-            result = subprocess.run(["sh", "-c", program], env=env, capture_output=True, text=True)
+            result = subprocess.run(
+                ["sh", "-c", program],
+                env=env,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("_replicator (HTTP 500)", result.stderr)
 
@@ -142,7 +171,9 @@ class LabCredentialArgvTest(unittest.TestCase):
         cassandra = (ROOT / "labs/cassandra.yml").read_text()
         mongo = (ROOT / "labs/mongodb.yml").read_text()
         couch_init = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
-        valkey_init = (ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh").read_text()
+        valkey_init = (
+            ROOT / "infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh"
+        ).read_text()
 
         self.assertIn("cassandra-node1-volume:/var/lib/cassandra:rw", cassandra)
         self.assertNotIn("/bitnami/cassandra", cassandra)
@@ -152,7 +183,10 @@ class LabCredentialArgvTest(unittest.TestCase):
         self.assertNotIn("apk add", mongo)
         self.assertIn("require('crypto').randomBytes", mongo)
         self.assertIn("mongodb-arbiter:\n        condition: service_healthy", mongo)
-        self.assertIn("ensure_system_databases\n  echo 'LAB CouchDB cluster is already configured'", couch_init)
+        self.assertIn(
+            "ensure_system_databases\n  echo 'LAB CouchDB cluster is already configured'",
+            couch_init,
+        )
         self.assertIn("ensure_system_databases\nrm -f", couch_init)
         self.assertIn("cluster state is not healthy", valkey_init)
         self.assertNotIn("Skipping destructive re-init.\n  exit 0", valkey_init)
