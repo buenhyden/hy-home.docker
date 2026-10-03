@@ -1,6 +1,6 @@
 ---
 title: "Shared Experience Integration Task"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
@@ -62,7 +62,7 @@ Independent integration code, security and rules-engineer reviews found no Criti
 
 ## Commit Ledger
 
-Baseline main/origin-main `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; dependent source base `fbbea9123751c13588022cdb76213fd8b5a14b6e`; Storybook source `e811e159afa2dc7245bb2d6b562a91cf931283fe`; source evidence `d208109d38371d41f6888bd1b76538754396d4b5`; TSK-0001-owned README entrypoint link correction `90452d6484e7528caa2bc661baa1b8c3bc13971c`. Integration source `519b2fd40e9ad98b429e05a1c932ceec10893e81`; operations draft-to-review `4019dd1f314f137a550f08489fbe74469ed04186`, review-to-active/approved `ecd4dd89a47a359ff2c9e2e6617ca4e8b04ba46e`, and policy approved-to-active `a4e1723523928011365f76cb7fcf46a2e930d6f0`. This Task closure commit records the source-only outcome; the parent Spec and Plan stay active pending separately authorized HOME TLS/OIDC observation.
+Baseline main/origin-main `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; dependent source base `fbbea9123751c13588022cdb76213fd8b5a14b6e`; Storybook source `e811e159afa2dc7245bb2d6b562a91cf931283fe`; source evidence `d208109d38371d41f6888bd1b76538754396d4b5`; TSK-0001-owned README entrypoint link correction `90452d6484e7528caa2bc661baa1b8c3bc13971c`. Integration source `519b2fd40e9ad98b429e05a1c932ceec10893e81`; operations draft-to-review `4019dd1f314f137a550f08489fbe74469ed04186`, review-to-active/approved `ecd4dd89a47a359ff2c9e2e6617ca4e8b04ba46e`, and policy approved-to-active `a4e1723523928011365f76cb7fcf46a2e930d6f0`. This Task closure commit records the source-only outcome; the parent Spec and Plan stay active pending separately authorized HOME TLS/OIDC observation. On 2026-10-03 the user separately requested commit, push, merge, branch/worktree cleanup and main synchronization. The clean feature tip `890c54fbad49dfd77008bcb48953d7ccf5ac56df` was pushed to `origin/feat/0206-storybook-sharing`, and Draft PR #350 was opened against `main`. Authenticated main protection requires `validation-changed` and zero approvals; CODEOWNERS review is not enforced. Hosted run `37121382053` failed `validation-changed` with 12 `invalid-initial-status` findings on new documents that were introduced at draft and transitioned in separate commits. The official GHSA-vfj7-8cjw-p6xm still lists no patched `braces` release, and local `npm audit --json` exits 1 with five high findings from the dev ESLint chain. PR merge and branch deletion are blocked; no required check is bypassed. Recovery is a follow-up validated PR or patched dependency, then a fresh required run and protected merge. Local `main` and `origin/main` both remain `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
 
 ## Rulings
 
@@ -70,4 +70,4 @@ Use existing `/admins` ForwardAuth for browser traffic with `sso-auth@file` and 
 
 ## Deferred Items
 
-Reviewer group, remote MCP OIDC, HOME activation, DNS/TLS observations, external design account use, push/PR/merge and data migration.
+Reviewer group, remote MCP OIDC, HOME activation, DNS/TLS observations, external design account use and data migration. Push and Draft PR are complete; merge and branch deletion remain blocked by the required check and unpatched advisory.
