@@ -2111,6 +2111,28 @@
           ]
         }
       ]
+    },
+    {
+      "component": "Compose image: hy-home/storybook",
+      "tier": "13-experience",
+      "classification": "local-custom",
+      "repository_classifications": {
+        "hy-home/storybook": "local-custom"
+      },
+      "images": [
+        "hy-home/storybook:e811e159afa2dc7245bb2d6b562a91cf931283fe"
+      ],
+      "compose_files": [
+        "infra/13-experience/storybook/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/13-experience/storybook/docker-compose.yml",
+          "images": [
+            "hy-home/storybook:e811e159afa2dc7245bb2d6b562a91cf931283fe"
+          ]
+        }
+      ]
     }
   ]
 }

@@ -36,7 +36,7 @@ Runbook은 언제 쓰는지, 어디서 무엇을 입력해 어떤 순서로 실�
 다른 역할 문서를 가리킨다.
 
 시스템 전반의 기동·인증·복구·용량·업데이트는 아래 공통 분류에서 시작한다.
-티어별 서비스는 01–12 분류에서 찾고, 행의 관련 문서로 같은 subject의 다른 역할을
+티어별 서비스는 01–13 분류에서 찾고, 행의 관련 문서로 같은 subject의 다른 역할을
 확인한다. 작업 공간과 공통 연결은 번호 없는 분류이며 별도 인프라 티어가 아니다.
 서비스와 공통 문서의 연결은 적용 범위를 설명하며 서비스 소유권을 추가하지 않는다.
 
@@ -182,6 +182,12 @@ Runbook은 언제 쓰는지, 어디서 무엇을 입력해 어떤 순서로 실�
 | [Analytics — Superset](0097-superset.md) | `RUN-0097` | draft | [Guide](../guides/0097-superset.md), [Policy](../policies/0097-superset.md) |
 | [dbt](0090-dbt.md) | `RUN-0090` | active | [Guide](../guides/0090-dbt.md), [Policy](../policies/0090-dbt.md) |
 | [JupyterLab](0089-jupyterlab.md) | `RUN-0089` | active | [Guide](../guides/0089-jupyterlab.md), [Policy](../policies/0089-jupyterlab.md) |
+
+### 13 Experience
+
+| Runbook | ID | 상태 | 관련 문서 |
+| --- | --- | --- | --- |
+| [Shared Storybook](0101-storybook.md) | `RUN-0101` | draft | [Guide](../guides/0101-storybook.md), [Policy](../policies/0101-storybook.md) |
 
 ### Cross-cutting connectivity
 

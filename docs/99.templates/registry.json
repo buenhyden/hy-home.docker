@@ -4387,8 +4387,8 @@
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 99,
-      "next_number": 100,
+      "high_water": 101,
+      "next_number": 102,
       "child_spaces": {}
     },
     "incident": {
