@@ -22,20 +22,22 @@ provision, 그리고 승인 전 실행 금지 경계를 정한다.
 
 ## Policy Scope
 
-적용 대상은 `dev-pg`, `dev-platform-provision`, `dev-valkey`와 그 선언된 state,
+적용 대상은 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-valkey`와 그 선언된 state,
 network, secret reference다. `mng-pg`와 `mng-valkey`의 metadata, session, management
 queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다. LAB entrypoint와
 외부 업무 앱도 범위 밖이다.
 
 ## Controls
 
-- `dev-data`와 목적별 `analytics-engineering`/`cdc` profile만 새 개발 엔진을 선택한다.
+- `dev-data`와 목적별 `analytics-engineering`/`cdc`/`quality-results` profile만 새 개발 엔진을 선택한다.
   HOME root profile 또는 기존 `dev` selector를 확대하지 않는다.
 - 프로젝트 provision은 승인된 manifest의 명시적 DB·role·ACL 이름만 수용한다. shell
   문자열 조합, DB-number 격리, 공유 runtime password, PUBLIC privilege 확대를 허용하지 않는다.
 - 프로젝트마다 NOLOGIN owner, migrator, runtime, reader를 분리한다. runtime은 DDL/소유권을
   가지지 않고 reader는 write/DDL을 가지지 않는다. default privilege, sequence, future object와
   `search_path` 검증을 함께 유지한다.
+- `quality-results`의 `dev-perf-provision`은 공용 `perf_db` schema만 준비한다.
+  시험의 `testing` profile과 분리하고 프로젝트별 LOGIN·실트래픽은 별도 승인한다.
 - `dev-valkey`는 project ACL과 key prefix를 보안 경계로 사용한다. TTL, persistence,
   maxmemory와 eviction의 업무 의미는 프로젝트 계약에서 명시한다. queue의 `noeviction`과
   cache LRU를 같은 instance에 혼합하는 변경은 별도 sizing decision을 요구한다.

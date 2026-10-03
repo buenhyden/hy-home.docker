@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -12,24 +12,24 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-# Performance Testing Incident Runbook
+# 성능 시험 중단·복구 런북
 
 ## Overview
 
-> 범위: 공유 서비스에 영향을 주는 Locust/k6 성능 테스트의 중단과 진단.
+> 범위: 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험의 중단과 진단.
 
 이 런북은 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 발생했을 때 사용하는 공통 절차다.
 
 ### Purpose
 
-테스트 부하를 우선 중단하고, 어떤 leaf(`locust` 또는 `k6`)가 실행 중인지 확인한 뒤, target 회복과 evidence capture를 완료한다.
+테스트 부하를 우선 중단하고 root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤 대상 회복과 증거 완전성을 판정한다.
 
 ## When to Use
 
 - 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
 - Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
-- Locust 요청 통계가 누락되거나 일관되지 않아 테스트 결과 신뢰도가 떨어진다.
-- 실행 leaf가 `locust`인지 `k6` wrapper인지 불명확하다.
+- 결과 원본·checksum·summary·exit metadata가 누락되거나 바뀌어 판정 신뢰도가 떨어진다.
+- 실행 주체가 root `k6`인지 별도 Locust LAB인지 불명확하다.
 
 ## Procedure
 
@@ -37,19 +37,24 @@ created: "2026-05-17"
 
 - [ ] 테스트 owner, target service owner, platform operator에게 중단 결정을 알린다.
 - [ ] 실행 중인 leaf와 service name을 확인한다.
-- [ ] users, spawn rate, target, scenario file, 시작 시각을 기록한다.
+- [ ] 승인된 run_id·attempt·project_id, target origin, 사용자/요청률·시간 상한, 시나리오 hash와 시작 시각을 기록한다.
+- [ ] Docker context, root 또는 LAB 프로젝트, 포트·네트워크·볼륨·자원과 정확한 중단·정리 범위를 확인한다.
 
 ### Steps
 
 1. 실행 중인 performance service를 확인한다.
 
    ```bash
-   docker compose --profile testing ps k6 locust-master locust-worker
+   docker compose --profile testing ps k6
    ```
 
-2. Locust leaf가 실행 중이면 Locust runbook의 stop 절차를 따른다.
+2. Locust LAB가 선택된 경우 승인된 고유 프로젝트명과 `labs/.env`를
+   사용해 `labs/locust.yml`의 master/worker 상태를 따로 확인하고
+   [Locust 런북](0062-locust.md)의 중단 절차를 따른다. root의 `testing`
+   프로필은 Locust를 포함하지 않는다.
 
-3. k6 wrapper leaf가 실행 중이면 k6 runbook의 stop 절차를 따른다.
+3. k6 작업이면 [k6 런북](0061-k6.md)의 중단 절차를 따른다.
+   WireMock 기능·부하 모드의 동시 기동 여부와 mock 포화도도 확인한다.
 
 4. 대상 서비스 런북의 SLI·오류율·지연·포화도와 공유 계층의 상태로 회복을 확인한다.
    다음 정적 검사는 문서·설정 회귀만 검증하며 대상 회복을 증명하지 않는다.
@@ -59,13 +64,18 @@ created: "2026-05-17"
    python3 scripts/validation/run-ci-gate.py --profile changed
    ```
 
-5. target SLI, error rate, latency, affected time window를 evidence에 기록한다.
+5. 대상 SLI, 오류율, 지연, 영향 시간과 발생기 포화·dropped iteration·
+   수집기 drop을 분리해 기록한다. 원본/summary/exit metadata의 checksum을
+   확인하고 증거가 불완전하면 시험 판정을 통과로 확정하지 않는다.
+   `perf_db` 적재 실패는 원본을 보존하고 동일 checksum 재적재만 시도한다;
+   같은 run_id/attempt의 다른 파일은 충돌로 격리한다.
 
 ### Verification Steps
 
 - 실행 중이던 부하 생성 서비스가 중지되었다. UI의 idle 표시만으로 중단 완료를 판정하지 않는다.
 - target SLI와 shared tier health가 정상 범위로 회복됐다.
-- 관련 guide/policy/runbook이 현재 service names와 root compose와 profile 선택 경계를 유지한다.
+- 관련 guide/policy/runbook이 root k6와 독립 Locust LAB의 서비스명·경계를 유지한다.
+- 실행 상태, 시험 판정, 증거 완전성, 적재 상태가 서로 구분돼 있다.
 
 ### Observability and Evidence Sources
 
@@ -86,7 +96,9 @@ created: "2026-05-17"
 
 ## Rollback or Recovery
 
-부하 생성기별 중단 절차와 대상별 복구 런북을 사용한다. 이 문서는 대상 서비스를 재시작하는 검증된 절차를 제공하지 않는다.
+부하 생성기별 중단 절차와 대상별 복구 런북을 사용한다. 중단 후에도 원본 파일과
+격리 결과 디렉터리를 보존하고 승인된 checksum과 대상 프로젝트만 재적재한다.
+이 문서는 대상 서비스를 재시작하거나 결과 볼륨을 삭제하는 승인이 아니다.
 
 ## Escalation
 

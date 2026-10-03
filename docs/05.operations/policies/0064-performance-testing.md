@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -14,7 +14,7 @@ created: "2026-05-17"
 
 # Performance Testing Operations Policy
 
-> `hy-home.docker` 환경에서 Locust/k6 기반 성능 테스트를 실행하기 위한 운영 지침 및 거버넌스입니다.
+> `hy-home.docker`의 k6 기본 부하 검증, WireMock 모의 의존성, Locust LAB와 결과 보존 정책입니다.
 
 ---
 
@@ -30,9 +30,10 @@ created: "2026-05-17"
 
 ## Policy Scope
 
-- `infra/11-quality/locust/docker-compose.yml`
-- `infra/11-quality/k6/docker-compose.yml`
-- Locust 요청 통계와 테스트 근거
+- `infra/11-quality/k6/`와 실행별 원본·판정·적재 계약
+- `infra/11-quality/wiremock/`의 기능/부하 모의 모드
+- `labs/locust.yml`의 독립 실습 실행
+- 개발 `perf_db`의 프로젝트별 조회·적재·판정 권한
 - 승인된 local·development·homelab 성능 테스트 시간대
 
 ### Target Audience
@@ -51,23 +52,23 @@ created: "2026-05-17"
 
 #### 1. 테스트 예약 및 사전 공지 (Pre-testing)
 
-- **부하 규모**: 초당 10,000 요청 이상의 대규모 테스트 시 사전에 플랫폼 책임자 `@buenhyden` 및 대상 서비스 소유자와 협조해야 함.
+- **대상 승인**: 규모와 무관하게 실제 트래픽을 만들기 전에 대상 서비스 소유자와 플랫폼 책임자 `@buenhyden`이 정확한 origin·네트워크, 사용자/요청률·지속 시간·자원 상한·중단 조건을 승인해야 함. 공개 API와 관리 endpoint는 대상에서 제외한다.
 - **영향 범위**: 테스트 대상 서비스뿐만 아니라 공유 자원(데이터베이스, 네트워크 대역폭)에 대한 부하를 고려해야 함.
 
 #### 2. 환경 격리 (Environment Isolation)
 
-- **네트워크**: Locust는 기본 네트워크, k6는 `obs_net`에서 실행된다. 별도 네트워크나 워커 배치는 영향 범위 검토와 승인을 거친다. 프로필 선택만으로 물리적으로 격리되지 않는다.
+- **네트워크**: k6의 기존 Prometheus remote write는 `obs_net`을 사용한다. Locust는 별도 LAB Compose 프로젝트와 네트워크에서만 실행한다. 프로필·네트워크 구분만으로 호스트 자원이나 물리 장애가 격리되지는 않는다.
 - **데이터베이스**: 가능한 경우 실제 운영 DB가 아닌 복제본 또는 테스트 전용 환경을 대상으로 테스트를 수행해야 함.
 
 #### 3. 지표 관리 및 보존 (Retention)
 
-- **이력 관리**: 공식 테스트 결과는 실행 시간, target, users, spawn rate, 시나리오, Locust 요청 통계, 결과 요약을 evidence로 남긴다.
-- **보존 경계**: 결과 보존은 관련 Task/Incident 정책을 따른다. 이 정책에서 별도 백업 주기를 단정하지 않는다.
+- **이력 관리**: 공식 결과는 run_id·attempt·project_id·시나리오/fixture revision·도구 이미지·target origin·부하 모델·종료 코드·원본 checksum을 연결한다. 실행 상태, 시험 판정, 증거 완전성, 적재 상태는 각각 기록한다. 0표본·중단·부분 flush를 통과로 바꾸지 않는다.
+- **보존 경계**: 원본과 보고서는 제한된 객체 범위에 두고 `perf_db`에는 정규화 결과·권한·객체 참조만 둔다. 보존/삭제 기간과 백업은 승인된 프로젝트 계약을 따른다. 결과 파일의 URL query, Authorization, cookie, 개인정보는 생성 단계부터 제외한다. 이 정책에서 별도 백업 주기를 단정하지 않는다.
 
 ### Security Controls
 
-- **UI 접근 제어**: 현재 Locust/k6 leaf에는 Traefik route가 없다. UI 접근은 승인된 host port 경계에서만 수행한다.
-- **데이터 무결성**: 테스트 중 주입되는 가상 데이터가 실제 사용자 데이터와 혼용되지 않도록 프리픽스(e.g., `test_user_`)를 사용해야 함.
+- **접근 제어**: k6에는 Traefik route가 없다. Locust LAB는 headless 기본 계약이며 UI를 공개하지 않는다. WireMock admin API는 인증이 없으므로 공용 경로로 노출하지 않고 내부 peer 접근도 통제한다. `perf_db`의 프로젝트별 reader/writer/verdict 권한은 SQL에서 검사한다.
+- **데이터 무결성**: 테스트 자료는 합성·비식별 fixture로 분리한다. 같은 artifact checksum의 재적재만 멱등적으로 허용하며 같은 run_id·attempt에 다른 내용이 오면 충돌로 거절한다. 성공 적재는 성능 시험 통과를 뜻하지 않는다.
 
 ### Governance & Compliance
 

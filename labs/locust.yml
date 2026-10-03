@@ -1,0 +1,92 @@
+# Independent Locust LAB entrypoint; never included by the normal root.
+name: hy-home-lab-locust
+
+x-tier-label: &tier-label
+  hy-home.tier: lab
+
+x-locust: &locust
+  profiles: [lab-locust]
+  extends:
+    file: ../infra/common-optimizations.yml
+    service: template-job-med
+  build:
+    context: ../infra/11-quality/locust
+  read_only: true
+  volumes:
+    - lab-locust-scenario:/mnt/locust/scenario:ro
+  networks:
+    lab_locust_net: {}
+  labels:
+    <<: *tier-label
+    traefik.enable: 'false'
+
+volumes:
+  lab-locust-scenario:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_LOCUST_SCENARIO_DIR:?set an approved Locust scenario directory}
+  lab-locust-results:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_LOCUST_RESULT_DIR:?set a fresh Locust result directory}
+
+networks:
+  lab_locust_net:
+    name: ${LAB_LOCUST_NETWORK_NAME:-hy-home-lab-locust}
+
+services:
+  lab-locust-master:
+    <<: *locust
+    volumes:
+      - lab-locust-scenario:/mnt/locust/scenario:ro
+      - lab-locust-results:/mnt/locust/results:rw
+    command:
+      - -f
+      - /mnt/locust/scenario/locustfile.py
+      - --master
+      - --headless
+      - --expect-workers
+      - '${LAB_LOCUST_EXPECT_WORKERS:-2}'
+      - --users
+      - '${LAB_LOCUST_USERS:-10}'
+      - --spawn-rate
+      - '${LAB_LOCUST_SPAWN_RATE:-1}'
+      - --run-time
+      - '${LAB_LOCUST_RUN_TIME:-30s}'
+      - --stop-timeout
+      - '${LAB_LOCUST_STOP_TIMEOUT:-5}'
+      - --exit-code-on-error
+      - '${LAB_LOCUST_EXIT_CODE_ON_ERROR:-1}'
+      - --csv
+      - /mnt/locust/results/locust
+      - --csv-full-history
+    healthcheck:
+      test: ['CMD-SHELL', 'pgrep -f "locust.*--master" >/dev/null || exit 1']
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+
+  lab-locust-worker:
+    <<: *locust
+    command:
+      - -f
+      - /mnt/locust/scenario/locustfile.py
+      - --worker
+      - --master-host
+      - lab-locust-master
+    depends_on:
+      lab-locust-master:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'pgrep -f "locust.*--worker" >/dev/null || exit 1']
+      interval: 5s
+      timeout: 3s
+      retries: 6
+      start_period: 5s
+    deploy:
+      replicas: 2

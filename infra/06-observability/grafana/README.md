@@ -152,6 +152,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-pg` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
+| 04-data | `dev-perf-provision` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
 | 04-data | `dev-platform-provision` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 04-data | `dev-valkey` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -201,8 +202,6 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `dbt` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `dbt-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `k6` | k6 remote write | `Infrastructure/k6`, `Infrastructure/containers` |  |
-| 11-quality | `locust-master` | none | `Infrastructure/containers` | container metrics and logs only |
-| 11-quality | `locust-worker` | none | `Infrastructure/containers` | container metrics and logs only |
 | 09-platform-ops | `opentofu` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `pact-broker` | none | `Infrastructure/containers` | container metrics and logs only |
 | 11-quality | `pact-broker-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -234,6 +233,12 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 `Infrastructure/haproxy-overview`, `Infrastructure/mongodb`,
 `Infrastructure/valkey-cluster`.
 
+`hy-home-lab-locust` 프로젝트의 `lab-locust-master`와
+`lab-locust-worker`도 정상 root 서비스 표에서 제외합니다. HOME Alloy
+Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 LAB의
+컨테이너 메트릭과 로그를 수집하지 않습니다. Locust LAB 관측 연결은 별도 계약과
+검증 전까지 대시보드에 연결하지 않습니다.
+
 ### Dashboard Sources
 
 프로비저닝된 대시보드마다 출처와 revision을 기록합니다. 방출되는 메트릭과 맞는 벤더·mixin·grafana.com 대시보드가 있으면 그것을 쓰고, 없을 때만 로컬 대시보드를 둡니다.
@@ -254,7 +259,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | `Infrastructure/docker-registry` | `infrastructure-docker-registry` | grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry |
 | `Infrastructure/etcd-cluster` | `hyhome-etcd` | monitoring-mixins etcd/etcd.json (2026-09-24) |
 | `Infrastructure/haproxy-overview` | `hyhome-haproxy` | grafana.com dashboard 12693 revision 14 (2026-04-11) |
-| `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30) |
+| `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30); SPEC-0203에서 `project_id`/`run_id`/`attempt` 필터와 기존 `testid` 계열을 유지하는 명시적 `All=.*` 호환값을 로컬 적용 |
 | `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
 | `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |
 | `Infrastructure/kafka-consumer-lag` | `hyhome-kafka-consumer-lag` | grafana.com dashboard 7589 revision 5 (2018-08-21) |

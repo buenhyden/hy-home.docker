@@ -291,7 +291,6 @@ class TierLayoutTests(unittest.TestCase):
         placements = {
             "11-quality": (
                 "k6",
-                "locust",
                 "wiremock",
                 "pact-broker",
                 "sonarqube",
@@ -321,9 +320,14 @@ class TierLayoutTests(unittest.TestCase):
         quality = ROOT / "infra/11-quality"
         self.assertTrue(quality.is_dir())
         self.assertEqual(
-            set(placements["11-quality"]),
+            set(placements["11-quality"]) | {"locust"},
             {p.name for p in quality.iterdir() if p.is_dir()},
         )
+        locust = quality / "locust"
+        self.assertTrue((locust / "Dockerfile").is_file())
+        self.assertTrue((locust / "README.md").is_file())
+        self.assertFalse((locust / "docker-compose.yml").exists())
+        self.assertTrue((ROOT / "labs/locust.yml").is_file())
         for package in ("opentofu", "terrakube", "registry", "renovate", "restic"):
             self.assertTrue(
                 (

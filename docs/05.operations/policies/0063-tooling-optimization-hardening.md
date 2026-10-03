@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -23,7 +23,7 @@ created: "2026-05-10"
 - `infra/09-platform-ops/*/docker-compose.yml` 및 `infra/11-quality/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 
-- **Systems**: opentofu, terrakube, registry, sonarqube, k6, locust, renovate
+- **Systems**: opentofu, terrakube, registry, sonarqube, k6, Locust LAB, renovate
 - **Environments**: local·DEV·stage 및 production-like 환경
 
 ## Controls
@@ -31,7 +31,7 @@ created: "2026-05-10"
 - **Required**:
   - SonarQube/Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
   - tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다.
-  - locust-worker healthcheck를 유지한다.
+  - `labs/locust.yml`의 Locust LAB worker healthcheck를 유지한다.
   - k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다.
   - tooling 변경은 `check-all-hardening.sh 09-platform-ops 11-quality` 및 CI `infrastructure-hardening`을 통과해야 한다.
   - optimization-hardening 문서(PRD~Procedure) 링크를 유지해야 한다.
@@ -57,7 +57,7 @@ created: "2026-05-10"
 - **sonarqube 승인 조건**:
   - 품질게이트 임계값 재정의
   - 브랜치 정책과 보안 룰셋 분리 운영
-- **k6/locust 승인 조건**:
+- **k6/Locust LAB 승인 조건**:
   - 회귀 baseline 저장/비교 및 시나리오 태그 표준화
   - 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화
 - **renovate 승인 조건**:

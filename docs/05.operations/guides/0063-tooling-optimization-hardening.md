@@ -1,6 +1,6 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -34,7 +34,7 @@ created: "2026-05-17"
 
 - SonarQube/Terrakube 경로를 gateway+SSO 정책에 정렬한다.
 - tooling compose 네트워크 경계를 일관화한다.
-- locust/k6 테스트 런타임 계약을 안정화한다.
+- root k6와 독립 Locust LAB 테스트 런타임 계약을 안정화한다.
 - tooling 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목을 운영 실행 가능한 로드맵으로 반영한다.
 
@@ -52,7 +52,7 @@ created: "2026-05-17"
 
 - 공개 라우터에 SSO 체인을 누락하는 실수
 - service-local compose 단독 config 실패를 root compose context와 구분하지 못하는 실수
-- locust worker health 상태를 확인하지 않는 실수
+- 독립 LAB Locust worker health 상태를 root profile 검사로 오인하는 실수
 - k6 leaf에 존재하지 않는 worker 또는 Traefik route를 문서화하는 실수
 
 ## Common Checks

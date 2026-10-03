@@ -1,6 +1,6 @@
 ---
-title: "03.specs"
-version: "1.2.15"
+title: "명세 패키지"
+version: "1.2.16"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 layer: "specs"
 ---
 
-# 03.specs
+# 명세 패키지
 
 ## Overview
 
@@ -44,10 +44,11 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 
 | ID | Package | 목적 |
 | --- | --- | --- |
-| SPEC-0182 | [HOME Residual Backlog](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
-| SPEC-0193 | [Observability Dashboards, Signals and Alerting](./0193-observability-dashboards-signals-and-alerting/) | 모든 서비스를 대시보드 하나씩으로 보이게 하고, metrics·logs·traces·profiles를 서로 연결하며, 실제로 발화할 수 있는 알림만 남김 |
-| SPEC-0201 | [Home Infrastructure Diagnosis and Work Design](./0201-home-infrastructure-diagnosis-and-work-design/) | 최신 인프라 인벤토리, 역할 선정, 통합 계약, 후속 승인 작업 설계 |
-| SPEC-0202 | [Development Data and LAB Isolation](./0202-development-data-and-lab-isolation/) | 개발 DB·Valkey·소비자 전환·이관 도구·LAB 격리 소스 구현 |
+| SPEC-0182 | [HOME 잔여 작업](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
+| SPEC-0193 | [관측 대시보드·신호·경보](./0193-observability-dashboards-signals-and-alerting/) | 모든 서비스를 대시보드 하나씩으로 보이게 하고, metrics·logs·traces·profiles를 서로 연결하며, 실제로 발화할 수 있는 알림만 남김 |
+| SPEC-0201 | [HOME 인프라 진단·작업 설계](./0201-home-infrastructure-diagnosis-and-work-design/) | 최신 인프라 인벤토리, 역할 선정, 통합 계약, 후속 승인 작업 설계 |
+| SPEC-0202 | [개발 데이터·LAB 격리](./0202-development-data-and-lab-isolation/) | 개발 DB·Valkey·소비자 전환·이관 도구·LAB 격리 소스 구현 |
+| SPEC-0203 | [품질 결과·격리 부하 시험](./0203-quality-results-and-isolated-load-testing/) | k6 실행·perf_db 결과·WireMock 모드·Locust LAB·관측 계약 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면

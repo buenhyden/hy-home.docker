@@ -42,6 +42,10 @@ volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback 
 읽기 전용으로 재확인한다. `down -v`, volume prune, 기존 management state 재연결, retention
 축소, credential rotation은 이 runbook의 source-only 단계에서 금지한다.
 
+`perf_db` source는 `quality-results` profile의 `dev-perf-provision`과
+[`perf` 계약](../../../infra/04-data/dev-db/pg/perf/README.md)이 소유한다.
+`testing` 선택만으로 개발 DB와 provision job을 시작하지 않는다.
+
 외부 project provision은 manifest의 `project_id`, explicit DB/role, Valkey ACL prefix,
 secret reference, quota와 approval state가 승인된 뒤에만 별도 task에서 실행한다. 앱 migration은
 외부 workspace가 소유한다.

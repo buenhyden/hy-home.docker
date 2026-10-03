@@ -13,6 +13,7 @@ implementation_services:
   infra/04-data/dev-db/docker-compose.yml:
   - "dev-pg"
   - "dev-platform-provision"
+  - "dev-perf-provision"
   - "dev-valkey"
 created: "2026-10-03"
 ---
@@ -28,8 +29,8 @@ created: "2026-10-03"
 
 [`infra/04-data/dev-db/docker-compose.yml`](../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
-`dev-platform-provision`, project ACL을 적용하는 `dev-valkey`를 소유한다. 세 서비스는
-`dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
+`dev-valkey`를 소유한다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 
@@ -37,6 +38,10 @@ image, profile, host exposure, resource limit, mount 및 secret reference는 Com
 명시적 `project_id`, DB 이름, owner/migrator/runtime/reader, Valkey user/prefix를 제공할
 때만 infra provision을 확장한다. 앱 migration, 업무 schema, fixture와 E2E는 외부
 Project-Template-derived workspace의 소유다.
+
+`dev-perf-provision`은 명시적 `quality-results` profile에서 `perf_db`와 `quality`
+schema를 준비한다. 해당 job의 실행과 프로젝트별 결과 writer/reader/verdict LOGIN
+발급은 별도 운영 승인 범위다. `quality-results`를 `testing`에 암묵적으로 포함하지 않는다.
 
 `dev-platform-provision`은 `analytics-engineering` 또는 `cdc` profile에서만 내부
 `platform_dev` fixture를 만들 수 있다. 이는 dbt/CDC source contract 확인용이며 외부

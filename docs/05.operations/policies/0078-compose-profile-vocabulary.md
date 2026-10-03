@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.10.1"
+version: "1.10.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -42,7 +42,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `ai-llm` | capability | 언어 모델 추론·채팅·검색 저장소 | `qdrant`, `ollama`, `ollama-exporter`, `open-webui` | No | normal service startup | current |
 | `alerting` | capability | 메트릭 경보 전달 | `prometheus`, `grafana`, `alertmanager` | No | normal service startup | current |
 | `analytics-engineering` | capability | dbt 업무 원천은 dev-pg; 다른 관리 도구 metadata는 mng-pg에 유지 | `dev-pg`, `dev-platform-provision`, `dbt-db-provision`, `dbt` | No | initialization: dbt-db-provision (role·grant·target schema); `dbt run`/`build`는 target schema 쓰기 | current |
-| `api-mock` | capability | 개발·테스트용 HTTP stub 서버; tracked mapping만 제공 | `wiremock` | No | normal service startup; host 게시만 loopback 전용이며 project default network peer는 인증 없는 admin API에 접근 가능 | current |
+| `api-mock` | capability | 개발·기능 테스트용 HTTP stub 서버; bounded journal과 tracked mapping 제공 | `wiremock` | No | normal service startup; host 게시만 loopback 전용이며 project default network peer는 인증 없는 admin API에 접근 가능 | current |
 | `auth` | domain | 접근 인증과 SSO | `keycloak`, `oauth2-proxy` | No | normal service startup | current |
 | `availability` | capability | HTTP 가용성 점검 | `gatus` | No | normal service startup | current |
 | `backup` | automation | Restic 백업·SQLite export·R2 offsite copy 작업; host timer와 명시적 명령만 실행 | `restic`, `restic-offsite`, `backup-sqlite-export` | No | backup repository and export staging writes when run; `restic-offsite`는 R2 원격 저장소에 추가만 함 | current |
@@ -63,6 +63,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
+| `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
 | `lakehouse` | capability | Iceberg 테이블 batch·유지보수 작업, SQL 조회, streaming 적재, 데이터 품질 검사와 SeaweedFS REST catalog 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-buckets, seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만, 쓰기는 명시적 `run` | current |
 | `local` | baseline | 로컬 접근·인증·관리 DB와 메일 캡처 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init`, `mailpit` | No | initialization: mng-pg-init | current |
 | `logs` | capability | 로그 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `loki`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
@@ -89,6 +90,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `postgres-ha` | topology | 독립 LAB Patroni·etcd PostgreSQL 실험 구성 | `etcd-1`, `etcd-2`, `etcd-3`, `pg-router`, `pg-cluster-init`, `pg-0`, `pg-1`, `pg-2`, `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter` | No | initialization: pg-cluster-init | current |
 | `policy-check` | capability | Conftest Rego 정책 테스트; `infra/` read-only, network 없음 | `conftest` | No | 읽기 전용 검사; 쓰기 없음 | current |
 | `profiling` | capability | 연속 프로파일 수집·조회 | `alloy`, `grafana`, `pyroscope` | No | normal service startup | current |
+| `quality-results` | capability | 공용 시험 결과 `perf_db`와 명시적 one-shot provision | `dev-pg`, `dev-perf-provision` | No | initialization: dev-perf-provision; HOME 실행·프로젝트 로그인 발급은 별도 승인 | current |
 | `qdrant` | capability | vector 검색 저장소 | `qdrant` | No | normal service startup | current |
 | `registry` | role | 개발 컨테이너 registry | `registry` | No | normal service startup | current |
 | `sast` | role | 소스 정적 분석 | `sonarqube` | No | normal service startup | current |
@@ -99,7 +101,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `storage-seaweedfs` | role | SeaweedFS object/file 저장 역할 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `supabase` | capability | 자체 호스팅 앱 backend 전체 구성 | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor` | No | normal service startup | current |
 | `surrealdb` | capability | 독립 multi-model 데이터 저장소 | `surrealdb` | No | normal service startup | current |
-| `testing` | automation | 명시적 부하 생성; 대상·제한 확인 후 실행 | `k6`, `locust-master`, `locust-worker` | No | load or synthetic data generation | current |
+| `testing` | automation | k6 이미지 확인용 단발 job; root 기본 명령은 `version` | `k6` | No | 비트래픽 version job; 부하는 승인된 격리 runner에서만 실행 | current |
 | `tooling` | domain | 일반 개발 도구 묶음 | `registry`, `sonarqube` | No | normal service startup | current |
 | `tracing` | capability | 분산 trace 수집·조회와 object 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `tempo`, `alloy`, `grafana` | No | initialization: seaweedfs-buckets | current |
 | `valkey-cluster` | topology | 독립 LAB Valkey sharding 실험 구성 | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` | No | initialization: valkey-cluster-init | current |
@@ -160,9 +162,10 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
 | dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
 | lab-kafka | `labs/kafka-cluster.yml`의 별도 project·cluster ID·data directory가 필요하며 물리 HA가 아님 |
+| lab-locust | `labs/locust.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
-| testing | 부하·샘플 데이터 생성 대상과 실행량을 명시 |
+| testing | root는 k6 버전만 확인; 격리 runner의 부하·샘플 데이터 생성은 대상과 실행량을 별도 승인 |
 | iac | OpenTofu/Terrakube 명령·대상·credential·apply 승인 확인 |
 | tooling | registry와 SonarQube 일반 개발 도구만 선택; update/IaC/load 작업 제외 |
 | supabase with surrealdb/notebook/admin | 현재 SurrealDB host8000 게시 선언은 주석이고 Open Notebook host API는5055이므로 기본 충돌을 단정하지 않는다. SurrealDB host8000을 별도 활성화하면 Supabase Kong과 충돌 여부를 확인한 뒤 binding을 조정한다. |
@@ -174,6 +177,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | lakehouse | `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Kafka는 별도 profile로 선택. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
 | bi | native OIDC 서비스이므로 router는 `gateway-standard-chain@file`만 사용하고 host port 없음; 가입 사용자는 `Gamma`(데이터 접근 없음) |
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
+| api-mock load mode | root Compose와 `infra/11-quality/wiremock/wiremock.load.yml`을 같은 model로 결합해 같은 `api-mock` profile의 `wiremock` 설정을 대체; host port와 request journal이 없으며 mock performance만 판정 |
 
 ## Exceptions
 
