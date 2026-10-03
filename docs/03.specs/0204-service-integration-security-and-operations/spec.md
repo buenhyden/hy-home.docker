@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -212,7 +212,7 @@ without its separate exact approval.
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
 - [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 - [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
-- [SPEC-0203](../0203-quality-results-and-isolated-load-testing/spec.md)
+- [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
 
 ## Open Questions
 

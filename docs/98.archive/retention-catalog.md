@@ -1,6 +1,6 @@
 ---
 title: "Retention Catalog"
-version: "1.1.13"
+version: "1.1.14"
 type: "archive/retention-catalog"
 status: "draft"
 owner: "@buenhyden"
@@ -35,6 +35,7 @@ reads this table.
 | `completed/03.specs/0200-path-aware-pr-regressions/` | completed | POL-0004 / workflow contract | `814ac20e4da848e37475757ce1707ceece546ae5:docs/03.specs/0200-path-aware-pr-regressions` |
 | `completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/` | completed | AD-0004 / AD-0031 / POL-0021 / RUN-0021 | `ce001be7af93aebe6430f586b56a5c443fa9f386:docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design` |
 | `completed/03.specs/0202-development-data-and-lab-isolation/` | completed | AD-0004 / AD-0031 / POL-0021 / RUN-0021 | `ce001be7af93aebe6430f586b56a5c443fa9f386:docs/03.specs/0202-development-data-and-lab-isolation` |
+| `completed/03.specs/0203-quality-results-and-isolated-load-testing/` | completed | POL-0064 / GDE-0064 / RUN-0064 | `686b71773b8a7cf7be27673b9e81a71fce3f1b26:docs/03.specs/0203-quality-results-and-isolated-load-testing` |
 | `completed/03.specs/0205-storybook-dependency-refresh/` | completed | AD-0031 / existing Storybook npm and quality owners | `9f89d0a241a41cfd278217683043d98a0cccc97a:docs/03.specs/0205-storybook-dependency-refresh` |
 | `superseded/03.specs/0190-agent-contract-hardening/` | superseded | SPEC-0194 | `c86f55518b8a9a156e10e38fbd52d1a883063d6a:docs/03.specs/0190-agent-contract-hardening` |
 | `completed/03.specs/0196-ollama-0-35-decision-model/` | completed | GDE-0056 / RUN-0056 | `0cf685435c9fd1c0c6801937b180b60e04ed32ab:docs/03.specs/0196-ollama-0-35-decision-model` |

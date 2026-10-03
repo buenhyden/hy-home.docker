@@ -1,6 +1,6 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -108,7 +108,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 
 - [POL-0064](../policies/0064-performance-testing.md)
 - [RUN-0064](../runbooks/0064-performance-testing.md)
-- [SPEC-0203](../../03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
+- [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
 
 ## Related Documents
