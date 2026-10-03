@@ -124,6 +124,8 @@ concatenation.
 | Main ignored registry metadata projection | 0 | 138 IDs and non-value cells equal to candidate public registry; every private value cell preserved, mode 0600 |
 | `git check-ignore -v` for ignored root/LAB env, private registry and protected backups | 0 | All private paths ignored; no private values printed |
 | Complete path-only `secrets/` and env domain audit | 0 | Registry 138 IDs = 105 file paths + 33 env-only IDs; current owner checkout 85 matching credential files, 20 declared-unissued dev/LAB paths, 17 certificate/snapshot/custody artifacts (14 bind certificates, one host-only CA key, snapshot, custody); root/LAB public and private key sets disjoint |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | 0 | Final rerun: document governance 629 tests, repository integrity 163 tests, 66 Compose selections; initial run found five unregistered new test modules, fixed in the existing Compose suite and its contract test |
+| `python3 -m unittest -q tests.validation.test_dev_pg_provision tests.validation.test_lab_credential_argv` | 0 | 15 tests after the two commit-hook false-positive source-string adjustments |
 | `graphify update .` | NOT_RUN | CLI unavailable; ignored graph projection not refreshed |
 
 Private state handling: current ignored `labs/.env` and its candidate example now
@@ -169,8 +171,13 @@ entry; it did not approve HOME recovery or data migration.
 
 ## Commit Ledger
 
-No commit, push, PR or merge in this Task yet. Remote mutation is outside the
-current approval.
+Source commit `b867eb7d466000ed8d49f6a8eb6410f1db646268` on local branch
+`feat/spec-0201-home-infra-diagnosis` contains 154 changed paths, based on
+`e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`. The ECC pre-commit secret
+scanner passed after two synthetic/SQL-string false positives were rewritten;
+no hook was bypassed. This ledger update is a separate local documentation
+commit. No push, PR or merge occurred. HOME activation, real restore and data
+migration remain separate approval gates.
 
 ## Rulings
 
