@@ -2,7 +2,7 @@
 title: "Home Infrastructure Runtime Evidence Closure Task"
 version: "0.1.1"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
