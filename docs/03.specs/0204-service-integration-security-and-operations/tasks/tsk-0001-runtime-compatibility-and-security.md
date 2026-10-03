@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"

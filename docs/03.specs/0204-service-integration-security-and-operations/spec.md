@@ -1,8 +1,8 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
