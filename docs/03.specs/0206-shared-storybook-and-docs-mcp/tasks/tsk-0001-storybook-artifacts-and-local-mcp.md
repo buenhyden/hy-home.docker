@@ -2,7 +2,7 @@
 title: "Storybook Artifacts and Local MCP Task"
 version: "1.0.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"

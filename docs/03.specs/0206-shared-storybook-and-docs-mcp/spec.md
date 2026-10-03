@@ -2,7 +2,7 @@
 title: "Shared Storybook and Documentation MCP Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
