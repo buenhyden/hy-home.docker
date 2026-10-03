@@ -19,8 +19,9 @@ created: "2026-10-03"
 
 Implement W1–W7 of SPEC-0203-PLAN-0001 under the user's Prompt 03 source
 request, after Prompt 02 landed locally. Source and synthetic tests are in
-scope; HOME service changes, real target traffic, project credentials,
-real-data migration and remote actions are not.
+scope; HOME service changes, real target traffic, project credentials and
+real-data migration are not. Source review publication is separately authorized
+by the owner's 2026-10-03 main-integration request.
 
 ## Inputs
 
@@ -100,10 +101,10 @@ metrics. These are not acceptance PASS claims.
 
 ## Commit Ledger
 
-The reviewed source is committed on `feat/spec-0203-quality-results`; the exact
-feature SHA is recorded in the final report. No local main merge, push or PR
-has been made. The branch and worktree remain available for the deferred
-SPEC-0203 requirements.
+The reviewed source is committed on `feat/spec-0203-quality-results`; its
+exact feature SHA and review PR are recorded in the final report. It is not
+merged to local or remote `main`: the branch and worktree remain available for
+the deferred SPEC-0203 requirements.
 
 ## Rulings
 
