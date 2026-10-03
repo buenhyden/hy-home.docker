@@ -58,4 +58,3 @@ Button 구현은 `packages/ui/`에서 변경합니다. Button story는 Storybook
 
 - [상위 Storybook 작업공간](../README.md)
 - [문서 인덱스](../../../docs/README.md)
-- [README 형식](../../../docs/99.templates/templates/common/readme-package.template.md)
