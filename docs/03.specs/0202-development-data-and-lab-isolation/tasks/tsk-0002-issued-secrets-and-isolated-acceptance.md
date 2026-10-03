@@ -40,15 +40,15 @@ delete real data, perform the deferred management restore, or mutate a remote.
 | Unit | State | Evidence and remaining boundary |
 | --- | --- | --- |
 | W7.1 | PASS | The 20 exact new manual IDs (PG-032–035, CACHE-021, BKP-006, LAB-001–006, LAB-008–015) were exclusively issued in the owner checkout on 2026-10-03. Path-only postflight: 20 files, zero mode/ownership/ignore failures; mode `0640`, UID/GID `1000:1000`. Existing credentials were neither read nor rotated. |
-| W7.2 | PARTIAL | The public registry records the issuance dates and purposes; the private 138-ID projection was previously aligned without changing value cells. Recheck private metadata and root/LAB env pairs after local main landing. Rollback compatibility keys remain until consumer and rollback review. |
+| W7.2 | PASS | The public registry records issued dates and purposes. After the first local main fast-forward, `--sync-metadata-check` returned 1 for one private metadata file, `--sync-metadata` returned 0 and preserved values, then the check returned 0 with zero changed files. Three private files were backed up under an ignored `0700` scratch directory; all 138 private Value cells and both private env files matched their pre-sync copies, then that temporary copy was removed. Rollback compatibility env keys remain until consumer and rollback review. |
 | W7.3 | PASS (selected) | Docker context `default`, project `hyhome-p02-p8gkg7zv`, internal network `hyhome-p02-net-p8gkg7zv`, zero host ports, synthetic secrets, no HOME mount. Image build and both service healthchecks passed. Platform provision and rerun returned 0; Timescale `2.30.2` loaded. Role/reader DDL and write denials passed; Valkey A/B prefix and admin/DB1 denials passed. pgBackRest stanza-create returned 0; online backup correctly refused with 87 while `archive_mode=off`; stopped offline full backup with stale-PID `--force` returned 0; separate-volume restore returned 0 and returned one probe row, extension `2.30.2`, DB owner `platform_owner`. Timescale late/null/duplicate/unique-partition checks passed. Other LAB topologies were not started. |
-| W7.4 | PENDING | Path-aware checks, independent review, source commit, private projection reconciliation, and clean local `main` fast-forward remain. Remote and HOME operations remain excluded. |
+| W7.4 | PASS (static) | Independent review findings were corrected; Spec metadata recheck returned 0 violations. The first path-aware gate returned 1 only for two group-writable scripts in the temporary worktree; chmod to Git mode `100755` and 19 focused tests returned 0. The complete changed gate retry returned 0, including 163 final unit tests. The source and first Task commit were fast-forwarded into local `main` at `ae40cb4ff`; final documentation commit/fast-forward remains to be verified. Remote and HOME operations remain excluded. |
 
 ## Verification Evidence
 
 The isolated dev image ID was `sha256:19ffce2ca8d8eb820b0ea784c869ea20afe24e526594e7d4267b18ea22ca43f2`; Valkey image ID was `sha256:a0dbf4c1d5708782907c10e2c72deff317518518b5288a58416981d9db95d30b`. The build used the pinned linux/amd64 Timescale child digest from the Dockerfile. The isolated host had 12 CPUs, 31 GiB RAM, about 32 GiB root free and 2.5 TiB Docker storage free at preflight. These are capacity observations, not benchmarks.
 
-The exact test volumes were `hyhome-p02-p8gkg7zv_dev-pg-data`, `hyhome-p02-p8gkg7zv_dev-valkey-data`, and `hyhome-p02-p8gkg7zv_restore-pg-data`; all were removed after the test. The two isolated service containers, restore checker and internal network were removed. A first cleanup invocation omitted the selected profiles and left the service containers; the corrected `--profile '*' down` plus explicit volume removal passed, and container/network/volume absence was checked. The private scratch directory under `/tmp/hyhome-p02-iso-p8gkg7zv` remains until evidence review; it contains only synthetic test material and sanitized local output.
+The exact test volumes were `hyhome-p02-p8gkg7zv_dev-pg-data`, `hyhome-p02-p8gkg7zv_dev-valkey-data`, and `hyhome-p02-p8gkg7zv_restore-pg-data`; all were removed after the test. The two isolated service containers, restore checker and internal network were removed. A first cleanup invocation omitted the selected profiles and left the service containers; the corrected `--profile '*' down` plus explicit volume removal passed, and container/network/volume absence was checked. The private scratch directory under `/tmp/hyhome-p02-iso-p8gkg7zv` was removed after the final gate evidence was recorded; it contained only synthetic test material and local output.
 
 The first SQL denial harness expected `psql -c` to return 3, but it returned 1 for permission errors. The corrected harness required exit 1 and `permission denied` and passed all four cases. The first Valkey Compose preflight omitted `dev-data` and excluded the service; the corrected profile-aware render returned 0 with two isolated bind sources and zero host ports. Neither harness error was a source defect.
 
@@ -101,25 +101,25 @@ docker run --rm --name hyhome-p02-p8gkg7zv-restore-job --network none --cpus 2 -
 | fresh-volume `pgbackrest --stanza=dev restore`; isolated restored PostgreSQL `SELECT` | 0, 0 | one row, Timescale `2.30.2`, `platform_owner` |
 | isolated Timescale SQL: late/NULL insert, duplicate insert, invalid partition key | 0 | accepted late/NULL; duplicate and invalid unique key rejected |
 | `docker compose ... --profile '*' down`; `docker volume rm` for the three exact test volumes; absence checks | 0, 0, 0 | isolated containers, network and volumes absent |
-| `python3 scripts/validation/run-ci-gate.py --profile changed` | 1 | only two temporary worktree script modes were `775` while Git mode was `100755`; source checks before those cases passed |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` (first) | 1 | only two temporary worktree script modes were `775` while Git mode was `100755`; source checks before those cases passed |
+| `bash scripts/operations/gen-secrets.sh --sync-metadata-check`; `--sync-metadata`; `--sync-metadata-check` in merged main | 1, 0, 0 | one metadata file reconciled, values preserved, secret files untouched |
 | `chmod 755` on the two temporary worktree scripts; `python3 -m unittest tests.validation.test_openwebui_oidc_entrypoint tests.validation.test_gatus_oidc -q` | 0, 0 | 19 focused tests passed; Git tree has no mode change |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` (retry) | 0 | path-aware gate passed; last selected unit suite ran 163 tests, all OK |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 2–4, 7 | W7.1–W7.3 | PASS in synthetic isolation for issuance, dev engines, role ACL, backup and restore; HOME `NOT_RUN` | GDE/POL/RUN-0100 and POL/RUN-0021 |
 | 6 | W7.3 | Owner-attested empty Influx source; live inventory and data migration `NOT_RUN` | GDE/POL/RUN-0100 |
 | 8–9 | W7.2–W7.4 | Source and static LAB isolation complete; LAB runtime topologies `NOT_RUN` | POL-0078 and LAB package documents |
-| 10 | W7.4 | Pending Prompt 03/04/06 handoff and local main SHA | SPEC-0202 TSK-0001 handoff |
+| 10 | W7.4 | Prompt 03/04/06 handoff is in TSK-0001; first local main SHA is `ae40cb4ff`. Final documentation fast-forward remains pending. | SPEC-0202 TSK-0001 handoff |
 
 ## Review Evidence
 
-Independent review and any failures or waivers will be recorded after execution.
-Static checks do not prove operational deployment or real-data migration.
+Independent review found one forbidden Spec heading, one stale README main count, one Task tense mismatch, and missing durable command evidence. Each was corrected. `check-document-metadata.py --mode check-changed --base-ref 0a2de6c3758f4805c2be31cb6bd3976f60b8eb43` returned 0 with 20 selected documents and zero violations; README language/navigation and public secret schema checks returned 0. Static checks do not prove operational deployment or real-data migration.
 
 ## Commit Ledger
 
-PENDING. The owner requested a local main merge. No remote publication is
-within this Task.
+The source integration commit is `b867eb7d4`; the first Task ledger commit is `ae40cb4ff6a3aa7127dd55b5e185ad5455a3b679`. Both reached local `main` by fast-forward from baseline `e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`. The final documentation commit and its local fast-forward are pending at this ledger entry; the final report records their actual SHA. No remote publication is within this Task.
 
 ## Rulings
 

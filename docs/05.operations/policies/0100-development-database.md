@@ -55,7 +55,8 @@ rollback 보존 기간과 검증 결과를 기록할 때만 종료한다.
 source change는 Compose render와 permission regression test를 통과해야 한다. fresh PGDATA,
 repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
 backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
-정적 통과를 deployment, recovery 또는 data migration 증거로 사용하지 않는다.
+SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
+정적 통과나 격리 시험을 HOME deployment, 운영 recovery 또는 data migration 증거로 사용하지 않는다.
 
 ## Review Cadence
 

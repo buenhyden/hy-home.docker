@@ -17,9 +17,10 @@ created: "2026-10-03"
 ## When to Use
 
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
-현재 승인 범위는 source integration과 static validation이다. HOME deployment,
-container start/stop/restart, project credential issuance, real data migration,
-backup verification/restore는 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
+현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
+합성 격리 엔진의 기동·권한·오프라인 백업·별도 볼륨 복원이다(SPEC-0202-TSK-0002).
+HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실데이터 이관,
+운영 백업 검증·복원은 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
 
 ## Procedure
 
@@ -32,8 +33,9 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 ```
 
 두 명령이 exit 0이면 source profile, secret reference, static project grant/ACL contract가
-일관됨을 기록한다. 이는 image pull/build, container health, PostgreSQL extension loading,
-network reachability, backup archive 또는 restore 성공을 의미하지 않는다.
+일관됨을 기록한다. 이미지 빌드·컨테이너 health·확장 로드·격리 복원은 별도
+SPEC-0202-TSK-0002 증거를 따른다. 이 정적 명령만으로 HOME 도달성, WAL archive,
+운영 복원 성공을 주장하지 않는다.
 
 runtime request가 있으면 실행 전에 승인된 Docker context, project name, ports, networks,
 volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback target을
@@ -46,8 +48,8 @@ secret reference, quota와 approval state가 승인된 뒤에만 별도 task에�
 
 ## Evidence
 
-Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, static findings와
-`NOT_RUN` runtime boundaries만 기록한다. secret 값, private file 내용, raw log, DB row,
+Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
+운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
 resolved mount path는 기록하지 않는다.
 
 ## Rollback or Recovery

@@ -52,9 +52,11 @@ Project-Template-derived workspace의 소유다.
 - hypertable을 승인하는 경우 시간 partition column을 모든 unique/primary key에 포함하고, chunk interval·인덱스·compression·continuous aggregate refresh window를 함께 시험한다. raw retention은 refresh window보다 짧게 줄이지 않으며 데이터 삭제 정책 활성화는 별도 승인한다.
 - 실제 표본량·쿼리·디스크·WAL을 관측해 chunk와 retention을 조정한다. 현재 수치는 실측 성능 순위나 보존 승인으로 사용하지 않는다.
 
-pgBackRest repository mount와 secret reference는 source에 선언되어 있지만 archive, backup,
-restore의 runtime evidence는 없다. current management backup의 검증·복구, HOME service
-start/stop/restart, data migration, credential rotation은 별도 승인 범위다.
+pgBackRest repository mount와 secret reference는 소스에 선언되어 있다.
+SPEC-0202-TSK-0002의 합성 격리 환경에서는 오프라인 전체 백업과 별도 볼륨 복원을
+확인했고, `archive_mode=off` 상태의 온라인 백업은 의도대로 거절됐다. HOME 백업,
+WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
+기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
 
 ## Common Checks
 
@@ -72,9 +74,9 @@ project grant, 백업 또는 application readiness를 증명하지 않는다.
 
 ## Runbook Handoff
 
-정적 source preflight와 실행 금지 경계는 [RUN-0100](../runbooks/0100-development-database.md)이
-소유한다. 실행, provision, backup/restore, migration 또는 cutover는 해당 runbook의 별도
-승인 조건을 충족할 때까지 `NOT_RUN`이다.
+정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../runbooks/0100-development-database.md)이
+소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002에 있다. HOME 기동·실제 프로젝트
+provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
 
 ## Traceability
 

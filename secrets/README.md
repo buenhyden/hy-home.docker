@@ -101,9 +101,9 @@ secrets/
 
 루트 include 그래프가 소비하는 `.env.example` 변수는 219개이고, 독립 `labs/.env.example`에는 `LAB_` 변수 39개가 있습니다. 공개 집합과 대응 개인 집합은 서로 겹치지 않습니다. 루트 Compose는 `secrets/labs/` 밖의 secret 87개를 선언하고, 독립 LAB 진입점 7개는 `secrets/labs/` 아래 secret 14개만 선언합니다.
 
-루트 관리자 UI의 CIDR 입력은 RedisInsight·Dozzle·Open Notebook을 제어하므로 후보 소스에서 `LAB_ALLOWED_CIDRS`를 `ADMIN_UI_ALLOWED_CIDRS`로 바꿨습니다. 인증 입력 두 개도 실제 소비자에 맞춰 `OPENSEARCH_ADMIN_USERNAME`과 `GRAFANA_OIDC_CLIENT_ID`로 명확히 했습니다. main의 개인 `.env`에는 소스 반영 전 호환성을 위해 이전 세 이름도 같은 값으로 남겨 두었습니다. 이 세 입력은 LAB 자원이 아닙니다.
+루트 관리자 UI의 CIDR 입력은 RedisInsight·Dozzle·Open Notebook을 제어하므로 현재 소스에서 `LAB_ALLOWED_CIDRS`를 `ADMIN_UI_ALLOWED_CIDRS`로 바꿨습니다. 인증 입력 두 개도 실제 소비자에 맞춰 `OPENSEARCH_ADMIN_USERNAME`과 `GRAFANA_OIDC_CLIENT_ID`로 명확히 했습니다. main의 개인 `.env`에는 이전 소스 롤백 호환성을 위해 이전 세 이름도 같은 값으로 남겨 두었습니다. 이 세 입력은 LAB 자원이 아닙니다.
 
-개인 환경 파일에만 있는 호환 변수 10개는 `DBT_DB_NAME`, `DBT_SOURCE_SCHEMA`, `ES_PERFORMANCE_ANALYZER_HOST_PORT`, `ES_PERFORMANCE_ANALYZER_PORT`, `LAB_ALLOWED_CIDRS`, `OPENSEARCH_CLUSTER_NAME`, `SERVICE_POSTGRES_DB`, `SERVICE_POSTGRES_USERNAME`, `ELASTIC_USERNAME`, `GRAFANA_PROXY_CLIENT_ID`입니다. 현재 main 소비자가 있으므로 소스 반영과 롤백 기간 종료 뒤 제거 여부를 검토합니다. `infra/04-data/supabase/`의 상위 제품 `.env.example`은 제품 정의 변수명을 쓰고, 예제 웹 서비스의 `.env.example`은 자체 `WEB_HOST_PORT`를 씁니다. 둘 다 루트 또는 독립 LAB 환경 계약이 아닙니다.
+개인 환경 파일에만 있는 호환 변수 10개는 `DBT_DB_NAME`, `DBT_SOURCE_SCHEMA`, `ES_PERFORMANCE_ANALYZER_HOST_PORT`, `ES_PERFORMANCE_ANALYZER_PORT`, `LAB_ALLOWED_CIDRS`, `OPENSEARCH_CLUSTER_NAME`, `SERVICE_POSTGRES_DB`, `SERVICE_POSTGRES_USERNAME`, `ELASTIC_USERNAME`, `GRAFANA_PROXY_CLIENT_ID`입니다. 이전 소스와 실행 중 HOME 소비자의 롤백 가능성을 보존하므로 운영 전환과 롤백 기간 종료 뒤 제거 여부를 검토합니다. `infra/04-data/supabase/`의 상위 제품 `.env.example`은 제품 정의 변수명을 쓰고, 예제 웹 서비스의 `.env.example`은 자체 `WEB_HOST_PORT`를 씁니다. 둘 다 루트 또는 독립 LAB 환경 계약이 아닙니다.
 
 ## LAB Credential Boundary
 
@@ -121,9 +121,8 @@ Cassandra LAB는 현재 인증 secret을 선언하지 않으며 내부망 단일
 `secrets/.retired/<date>/<original subdirectory>/`로 보존합니다. 정상 HOME이
 계속 소비하는 관리 PostgreSQL·OpenSearch·Traefik secret은 이 경계에 포함하지
 않습니다. 이전 LAB 자격 증명 10개는 `.retired/2026-10-02/`에 보존되어
-있어 현재 main의 오래된 LAB profile을 그대로 재시작하면 필요한 파일이 없을 수
-있습니다. 후보 LAB 소스 반영 또는 승인된 복원 전에는 이전 profile을 실행하지
-않습니다. 비밀값 발급·회전, 컨테이너 재생성·실행, 복구는 각각 별도의 실행 계약입니다.
+있어 이전 main 소스의 LAB profile로 롤백하여 재시작하면 필요한 파일이 없을 수
+있습니다. 승인된 복원 전에는 이전 profile을 실행하지 않습니다. 비밀값 발급·회전, 컨테이너 재생성·실행, 복구는 각각 별도의 실행 계약입니다.
 
 개발 엔진의 새 참조는 `secrets/db/dev-pg/` (관리자·fixture 역할별),
 `secrets/db/dev-valkey/admin_password.txt`,
@@ -209,8 +208,10 @@ registry와 루트·LAB 환경 파일의 세 쌍을 공개 계약에 일치시�
 각 개인 투영본을 한 쌍씩 처리합니다. 이 소스의 공개 등록표는 138개 ID이고,
 소유자 작업 트리의 개인 등록표도 값 칸을 보존한 채 138개 ID에 정렬되어 있습니다.
 2026-10-03 개인 등록표 메타데이터 정리 전에는 Git 무시 백업을 남겼습니다.
-로컬 main에 소스를 반영한 뒤 같은 작업 트리에서 `--sync-metadata-check`로
-경로·날짜·용도 정렬을 확인하고 필요한 경우 `--sync-metadata`를 실행합니다.
+로컬 main 반영 뒤 같은 작업 트리에서 `--sync-metadata-check`가 1개 파일의
+메타데이터 차이를 보고했습니다. 개인 파일 세 개를 무시된 보호 경로에 백업한 뒤
+`--sync-metadata`로 값은 보존하며 1개 파일을 정렬했고, 재검사에서는 변경 필요
+파일이 0개였습니다. 실제 secret 파일은 변경하지 않았습니다.
 개인 환경 파일의 이전 루트 변수는 현재 HOME 롤백 경계가 끝날 때까지 보존하고,
 실제 소비자 검토 뒤 퇴역을 결정합니다. `--sync-metadata-prune`는 별도 승인된
 전환 전에는 사용하지 않습니다.
