@@ -2,7 +2,7 @@
 title: "Shared Experience Integration Task"
 version: "1.0.0"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -28,12 +28,12 @@ Approved SPEC-0206 and Plan W3-W4; TSK-0001 artifacts are required before integr
 | Current -> target | Exact writer files | Regression / rollback |
 | --- | --- | --- |
 | No shared experience tier -> optional Storybook static origin | NEW `infra/13-experience/README.md`, `infra/13-experience/storybook/README.md`, `infra/13-experience/storybook/docker-compose.yml`; `docker-compose.yml`, `infra/README.md` | Root/profile render, no host 80/443, network/health/resource checks; revert only new tier and root include. |
-| Browser route unavailable -> admin-only Traefik HTTPS | New leaf Compose labels; read-only existing `infra/01-gateway/traefik/dynamic/middleware.yml` and `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg` | RouteAuth, asset auth, TLS/render and deny checks; no OAuth2 Proxy group widening. |
+| Browser route unavailable -> admin-only Traefik HTTPS on dedicated ingress | New leaf Compose labels; `infra/01-gateway/traefik/docker-compose.yml` joins the new internal `experience_ingress_net` declared in root `docker-compose.yml`; read-only existing `infra/01-gateway/traefik/dynamic/middleware.yml` and `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg` | RouteAuth, asset auth, TLS/render and deny checks; assert only Traefik and Storybook join this network and Storybook is absent from shared `edge_net`; no OAuth2 Proxy group widening. |
 | Profile/public metadata absent -> registered optional profile and source projection | `docs/05.operations/policies/0078-compose-profile-vocabulary.md`; generated `infra/tech-stack.versions.json`; `docs/99.templates/registry.json`; `docs/03.specs/README.md` | Profile vocabulary, image projection generator/check, registry and document contracts; revert logical metadata commit. No new public or secret environment key is required for the static origin; existing `DEFAULT_URL` is consumed without reading its value. The real `.env` is untouched. |
 | No current operating contract -> Storybook subject 0101 | NEW `docs/05.operations/guides/0101-storybook.md`, `docs/05.operations/policies/0101-storybook.md`, `docs/05.operations/runbooks/0101-storybook.md`; `docs/05.operations/README.md`, `docs/05.operations/guides/README.md`, `docs/05.operations/policies/README.md`, `docs/05.operations/runbooks/README.md` | Operations catalog, links, metadata, exact service binding; revert only this subject/index rows. |
 | Codex/Claude Design usage -> verified instructions | `projects/storybook/nextjs/README.md` is TSK-0001 writer; this Task writes the new GDE-0101 usage section and reads that README | Official-source URL and installed-client availability review; revert guide section. |
 
-The root Compose, profile policy, Stage 99 Registry and image projection have exactly one writer: this Task. TSK-0001 consumes their planned contracts and does not edit them. If the current research inventory projection requires an update, amend this Task with the exact generated path and preserve historical prose before writing.
+The root Compose, Traefik Compose network attachment, profile policy, Stage 99 Registry and image projection have exactly one writer: this Task. The user approved the Traefik writer addition on 2026-10-03 after independent security review identified direct origin access from shared `edge_net` as High risk. TSK-0001 consumes their planned contracts and does not edit them. If the current research inventory projection requires an update, amend this Task with the exact generated path and preserve historical prose before writing.
 
 ## Verification Evidence
 

@@ -27,7 +27,7 @@ The shared UI stays in `projects/storybook/nextjs`; no business app is added her
 ## Behavior Contract
 
 1. A lockfile-based multi-stage image builds Storybook static output. Context excludes `.env`, secrets, caches and unrelated paths. A non-root read-only origin uses an internal port, bounded resources, tmpfs and healthcheck; it opens no host 80/443.
-2. An optional static Storybook service is root-included under a registered profile. Traefik terminates HTTPS and protects index, iframe, assets, manifests and deep links with the existing admin-only browser path. Cache, 404, CSP/frame and logout behavior are verified.
+2. An optional static Storybook service is root-included under a registered profile. Traefik terminates HTTPS and protects index, iframe, assets, manifests and deep links with the existing admin-only browser path. A dedicated internal ingress network joins only Traefik and Storybook so shared-network peers cannot bypass that path. Cache, 404, CSP/frame and logout behavior are verified.
 3. A component artifact declares exports, TypeScript types, CSS/tokens, React peers, license, version and upgrade rules. A synthetic external consumer imports it; static URL and manifest are documentation, not code distribution.
 4. Storybook's preview components/docs manifests are built from the same source revision as static output and checked against source exports and revision.
 5. A separate task-local MCP process, absent from root Compose, serves only documentation tools from the manifests. Protocol tests cover initialize, tools/list, component/docs reads, unsupported and forbidden tools, reconnect and stale manifests. The static origin is not an MCP server.

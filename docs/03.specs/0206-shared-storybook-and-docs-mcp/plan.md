@@ -30,7 +30,7 @@ Implement Prompt 05 on the isolated Storybook dependency branch after written Sp
 
 1. **W1: source and package contract.** TSK-0001 reviews existing demo components, adds only an exportable shared subset, CSS/types/peer/license contract and synthetic consumer test. Enable and build components/docs manifests, then implement a local docs-only MCP with negative protocol tests. Scope only Storybook-owned files and focused validator.
 2. **W2: static origin.** TSK-0001 creates a confined multi-stage image and static-server configuration. Verify lockfile, source revision, build context, static routes and browser behavior in a task-owned isolated environment after Docker preflight.
-3. **W3: root integration.** TSK-0002 is sole writer of new experience Compose, root include, profile policy, version projection, Stage 99 registry and Stage 05 subject. Use existing admin-only SSO. No MCP service, port or remote route enters root Compose. Recheck exact gateway/identity contracts before writing.
+3. **W3: root integration.** TSK-0002 is sole writer of new experience Compose, root include, profile policy, version projection, Stage 99 registry and Stage 05 subject. Use existing admin-only SSO and an internal ingress network joining only Traefik and Storybook; do not attach Storybook to shared edge_net. No MCP service, port or remote route enters root Compose. Recheck exact gateway/identity contracts before writing.
 4. **W4: documentation and review.** TSK-0002 updates Korean template-shaped READMEs, Guide/Policy/Runbook and Codex/Claude instructions. Run scoped Compose, hardening, operations catalog, doc and path-aware checks; inspect rendered delta. Independent reviewers judge source/security/docs. Record all exits and unsupported runtime claims.
 
 ## Risk and Rollback
@@ -40,7 +40,7 @@ Implement Prompt 05 on the isolated Storybook dependency branch after written Sp
 | Baseline high advisory | Keep audit failure and remote merge hold; no blanket override or forced update. |
 | Manifest/MCP preview API drift | Lock exact compatible versions; test protocol and rebuild from source; revert only TSK-0001 files. |
 | Static asset or package data leak | Narrow Docker context, inspect built assets, use synthetic fixtures; stop and discard only task-owned outputs. |
-| Browser/MCP auth confusion | Browser uses current admin SSO; remote machine MCP stays disabled pending approved issuer/audience/client. |
+| Browser/MCP auth confusion | Browser uses current admin SSO on a dedicated ingress network; remote machine MCP stays disabled pending approved issuer/audience/client. |
 | Root profile or route conflict | Render scoped root profiles and service graph; revert only TSK-0002 configuration, not HOME containers/data. |
 | Operations ID collision | Reconcile existing 0100 before allocating 0101; do not reuse an issued ID. |
 
