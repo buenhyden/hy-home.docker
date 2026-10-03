@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -86,6 +86,11 @@ Independent review approved the narrowed two-document diff; README and Registry
 match the new main exactly. A check before finishing the main merge exited2:
 allocation predecessor 0460795 did not yet precede branch HEAD. The normal
 merge commit establishes that ancestry; validation must rerun afterward.
+After normal main merge `21bf46fdd`, changed metadata against origin/main
+0460795 selected2/violations0/overrides0, exit0. Refreshed links mode all
+returned failures0/one pre-existing historical warning, exit0; corpus and
+archive recovery returned violations0, exit0. `git diff --cached --check`
+passed and independent review approved the exact two-document diff.
 Current authorized writer scope is these two package documents. No runtime,
 private values, validator, lifecycle registry rule or transition override changes.
 
