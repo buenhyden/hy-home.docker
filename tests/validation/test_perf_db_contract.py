@@ -167,7 +167,7 @@ class PerfDatabaseContractTests(unittest.TestCase):
         self.assertEqual("no", job["restart"])
         self.assertEqual(["python3", "/work/perf/provision.py"], job["entrypoint"])
         self.assertEqual("1", job["environment"]["PYTHONDONTWRITEBYTECODE"])
-        self.assertEqual(["./pg:/work:ro"], job["volumes"])
+        self.assertEqual(["./pg/perf:/work/perf:ro"], job["volumes"])
         self.assertEqual(["dev_pg_admin_password"], job["secrets"])
         self.assertEqual("service_healthy", job["depends_on"]["dev-pg"]["condition"])
         self.assertEqual({"dev_data_net": {}}, job["networks"])

@@ -138,7 +138,7 @@ services:
       DEV_PG_ADMIN_USER: ${DEV_PG_ADMIN_USER:-postgres}
       PYTHONDONTWRITEBYTECODE: '1'
     volumes:
-      - ./pg:/work:ro
+      - ./pg/perf:/work/perf:ro
     secrets:
       - dev_pg_admin_password
     depends_on:

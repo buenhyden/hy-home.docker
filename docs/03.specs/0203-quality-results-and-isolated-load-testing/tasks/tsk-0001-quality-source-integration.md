@@ -41,7 +41,7 @@ real-data migration and remote actions are not.
 | W4 | Transactional normalized import, SHA256 identity, bounded input and failure receipts | PARTIAL: SeaweedFS upload/restore and non-null `object_ref` await an approved bucket, writer scope and runnable path boundary |
 | W5 | WireMock function/load override and independent Locust LAB; root no longer includes Locust | SOURCE_DONE; bounded synthetic WireMock checks passed; Locust request-event/OTel runtime unverified |
 | W6 | Bounded Alloy OTLP metrics source and existing k6 dashboard filters | PARTIAL: perf_db read-only Grafana datasource/views and metrics end-to-end delivery remain unimplemented/unverified |
-| W7 | Korean package README, operations docs, catalog projection, focused checks and independent review | PARTIAL: changed gate exposed three failures; each corrected and targeted retest passed, but the aggregate gate was not repeated; infra-validate remains BLOCKED |
+| W7 | Korean package README, operations docs, catalog projection, focused checks and independent review | PARTIAL: changed gate rerun found one stale projection after the perf mount was narrowed; catalog and exact assertion now pass, but the aggregate gate was not repeated again; infra-validate remains BLOCKED |
 
 The user approved two historical Locust link corrections and the seven current
 service inventory projections in the Stage 90 research document. Historical
@@ -58,7 +58,10 @@ Alloy, environment, registry and projection files had one serial writer.
 | `python3 scripts/validation/check-document-links.py --mode all` | 0; 1054 documents, 10735 links, 0 failures, 1 historical archive warning | Link graph |
 | `git diff --cached --check` | 0 | Staged whitespace |
 | `bash .agents/skills/infra-validate/scripts/static-checks.sh` | 2; PASS 9, BLOCKED 6, NOT_RUN 2 | Unsupported input graph; `yamllint`/`shellcheck` unavailable; dependent Compose checks blocked. No runtime or secret access. |
-| `python3 scripts/validation/run-ci-gate.py --profile changed` | 1; 67 Compose selections passed, then 3 assertions failed | Repository path-aware gate. Missing Grafana service row and two local file modes were corrected. Aggregate was not repeated. |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` (first) | 1; 67 Compose selections passed, then 3 assertions failed | Missing Grafana service row and two local file modes were corrected. |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` (rerun) | 1; document-governance 629 tests with one failure | `dev-perf-provision` mount projection remained stale after its secret-minimizing change; generated row was refreshed. The aggregate was not repeated after that exact correction. |
+| `python3 -m unittest tests.validation.test_perf_db_contract tests.validation.test_secret_metadata_sync -q` | 0; 48 tests | Narrow perf-only mount, no unnecessary backup-key grant, root/LAB public key counts and secret metadata. |
+| `python3 scripts/validation/check-operations-catalog.py` and exact `test_operations_checker_is_executable_and_has_one_complete_route` | 0; PASS and 1 test | Current generated service inventory matches the perf-only mount. |
 | `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests.test_readme_covers_every_service_every_job_and_every_dashboard tests.validation.test_openwebui_oidc_entrypoint.OpenWebUiOidcEntrypointTests.test_script_is_executable_and_not_group_or_world_writable tests.validation.test_gatus_oidc.GatusOidcEntrypointTests.test_script_is_not_group_or_world_writable -q` | 0; 3 tests | Exact failing assertions after correction |
 | `bash scripts/operations/sync-tech-stack-versions.sh --check` | 0; 91 tracked image repositories in sync | Version projection |
 
