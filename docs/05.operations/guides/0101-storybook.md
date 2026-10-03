@@ -2,7 +2,7 @@
 title: "Shared Storybook Usage Guide"
 version: "0.1.0"
 type: "operation/guide"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "operations"

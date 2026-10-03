@@ -2,7 +2,7 @@
 title: "13 경험 자산"
 version: "0.1.0"
 type: "common/package-readme"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-03"
 created: "2026-10-03"
