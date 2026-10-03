@@ -2,7 +2,7 @@
 title: "Home Infrastructure Diagnosis and Work Design Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -35,9 +35,9 @@ handoffs. It does not implement any infrastructure or application feature.
 ## Work Log
 
 The user approved this Plan and W1-W6 read-only execution on 2026-10-02.
-This approval does not include Prompt 02 implementation or an operational
-action. The initial `draft` frontmatter is retained until Stage 99 lifecycle
-history permits a status transition; the explicit approval is recorded here.
+That approval did not include Prompt 02 implementation or an operational
+action. The initial `draft` frontmatter recorded the package's registration
+state; later recorded lifecycle transitions brought this Task to completed.
 
 | Work unit | State | Evidence |
 | --- | --- | --- |
@@ -373,7 +373,7 @@ source implementation NOT_RUN; static validation PASS; isolated execution
 Conftest policy PASS, app/LAB NOT_RUN; HOME rollout NOT_RUN; data migration
 NOT_RUN.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Criterion reference | Plan work unit | Historical result | Follow-up owner |
 | --- | --- | --- | --- |
 | 1 | W1 | DONE: W1 SHA/delta and lifecycle ledger; active/archive sources. | This Task; current Stage 01/02/03 owners retain lifecycle authority. |
 | 2 | W2 | DONE: W2 root include and 153-row TSV; 28 jobs/125 services. | This Task; Compose and service sources retain configuration authority. |

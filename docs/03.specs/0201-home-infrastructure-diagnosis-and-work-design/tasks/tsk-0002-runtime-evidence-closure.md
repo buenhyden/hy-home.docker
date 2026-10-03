@@ -2,7 +2,7 @@
 title: "Home Infrastructure Runtime Evidence Closure Task"
 version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-02"
 layer: "specs"
@@ -296,10 +296,26 @@ repaired and rerun under the same approved scope.
 | `git diff --check`; targeted new-SPEC trailing-whitespace scan | 0; 0 | No whitespace error across tracked diff or four new SPEC documents |
 | Isolated restore command | NOT_RUN | Requires separate source, target, isolation, and recovery approval; current-set `verify` is also NOT_RUN |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Criterion reference | Plan work unit | Evidence status | Follow-up owner |
 | --- | --- | --- | --- |
 | 10, revised by owner | W7.1-W7.3 source gate; W7.4 later recovery | ACCEPTED for Prompt 02 source: W7.1 no-app ownership, W7.2 consumer inventory/aggregate traffic, W7.3 capacity snapshot scoped PASS. W7.4 deferred/NOT_RUN; no current-backup recovery claim | TSK-0002; later Stage 05 recovery Task and Prompt 02 runtime/migration gate |
 | 11 | W7.5 | DRAFT contract; PASS requires reviewed handoff, not a future digest lookup | Prompt 02 Spec/Task and image/version owner |
+
+### Completion receipt for the approved source scope
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: baseline, branch, cross-surface delta and active/archive authority recorded without reusing archived IDs | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 2 | W2 | PASS: 153 source service/job rows and complete 23-column inventory recorded with explicit unverified fields | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 3 | W2 | PASS: source defects, contextual risks and unverified runtime states separated; projection ownership recorded | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 4 | W3 | PASS: dated five-engine, seven-axis matrix selects TimescaleDB Community without a performance ranking | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 5 | W3 | PASS: required overlap pairs have consumer, cost, recovery, license and alternative dispositions | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 6 | W4 | PASS: external project manifest and infra/app ownership recorded; 07/08 remain planning-only | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 7 | W5 | PASS: Prompt 01 requests, twelve tiers, environment, learning and duplication trace recorded | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 8 | W5 | PASS: file, regression, rollback and approval ledger assigns 02-06 and separate 07/08 scopes | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 9 | W6 | PASS: baseline/work SHA and five execution states reported; deferred checks were not called PASS | [diagnosis Task](tsk-0001-diagnosis-and-work-design.md) |
+| 10 | W7 | PASS: scoped W7.1-W7.3 owner, consumer, traffic and capacity evidence; W7.4 remains owner-deferred NOT_RUN | [runtime evidence Task](tsk-0002-runtime-evidence-closure.md) |
+| 11 | W7 | PASS: Prompt 02 implementation-time image, platform, license and compatibility review recorded; deployment recheck remains required | [development data Task](../../0202-development-data-and-lab-isolation/tasks/tsk-0001-source-integration.md) |
 
 ## Review Evidence
 

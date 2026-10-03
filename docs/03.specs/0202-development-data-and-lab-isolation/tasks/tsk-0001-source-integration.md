@@ -2,7 +2,7 @@
 title: "Development Data and LAB Source Integration Task"
 version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"

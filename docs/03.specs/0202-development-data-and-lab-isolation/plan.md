@@ -1,8 +1,8 @@
 ---
 title: "Development Data and LAB Isolation Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -34,36 +34,36 @@ operational work. Each runtime-dependent acceptance remains NOT_RUN.
 
 ## Execution Sequence
 
-1. **W1: baseline and source contract.** Recheck main/branch, registered
+1. W1: **baseline and source contract.** Recheck main/branch, registered
    IDs, current root graph and consumers; fix exact ownership of root/env,
    projection, DB, CDC, LAB and migration files in TSK-0001. Bind current
    image digest/platform/PGDATA/license to official evidence.
-2. **W2: dev engines and role boundary.** Add dev-pg Timescale and dev-valkey
+2. W2: **dev engines and role boundary.** Add dev-pg Timescale and dev-valkey
    source, explicit resource/health/persistence/backup interfaces and a
    fail-closed project provisioner. Keep mng metadata/queues and existing
    state intact. Add focused privilege tests before provisioning code.
-3. **W3: consumer transition.** Move future business `SERVICE_POSTGRES_*`
+3. W3: **consumer transition.** Move future business `SERVICE_POSTGRES_*`
    responsibility from mng init and retarget dbt/CDC source, preserving
    management metadata and Avro Schema Registry. Record current `app_db`
    technical objects and the future cutover/LSN/rollback steps as NOT_RUN.
-4. **W4: migration and backup source.** Add strict Influx mapping
+4. W4: **migration and backup source.** Add strict Influx mapping
    validation and no-data handling. Defer actual export/import adapters until
    source measurement/writer inventory and precision are known. Define
    separate dev-pg WAL/pgBackRest repository/stanza/key references, globals,
    role/extension/migration revision and separate-volume restore steps;
    key issuance, real migration and recovery stay deferred.
-5. **W5: LAB isolation.** Move complete HA/cluster/replica closures behind
+5. W5: **LAB isolation.** Move complete HA/cluster/replica closures behind
    separate LAB entrypoints and distinct state; keep a normal single Kafka
    broker and approved management/development pair in root. Revise the
    operations catalog's all-infra-in-root rule, its focused tests, and
    POL-0078 profile guidance to model separate LAB entrypoints. Check render
    without starting all profiles.
-6. **W6: source verification and handoff.** Update `.env.example`, image
+6. W6: **source verification and handoff.** Update `.env.example`, image
    projection/Renovate, path-aware tests, docs and 03/04/06 contracts. Run
    focused static checks and independent correctness/security review. Mark
    Docker/restore/HOME/data tests NOT_RUN where authorization is absent.
 
-7. **W7: scoped issuance and isolated acceptance (TSK-0002).** Under the
+7. W7: **scoped issuance and isolated acceptance (TSK-0002).** Under the
    owner's 2026-10-03 follow-up, issue only the 20 previously absent dev/LAB
    secret paths with fresh independent values and no rotation. Record path-only
    inventory, mode, ownership and custody. Preflight Docker context, unique
