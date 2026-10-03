@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -61,6 +61,33 @@ none of these links is a tested HOME deployment.
 ## Verification Evidence
 
 ### Protected registration repair — 2026-10-04
+
+### Required gate result and existing security hold — 2026-10-04
+
+PR352 head `0ef17a4a58d0d53f7249f3b0eef7939457e5cb72`, hosted
+run `37158568358`, finished failure/exit1. Metadata selected2/violations0/
+legacy0/overrides0; the approved fixture and both pinned formatters passed.
+The later npm audit reported five high findings in the dependency graph,
+including `GHSA-vfj7-8cjw-p6xm`. This is an independent security block,
+not a recurrence of the missing fixture or document registration finding.
+
+Authenticated GitHub advisory readback on 2026-10-04 confirms braces
+`<= 3.0.3`, severity high, first_patched_version null; official source:
+[GitHub Advisory Database](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+The owner previously chose to wait for a patch rather than grant a security
+exception. That decision remains binding. No security exception, dependency
+substitution, threshold reduction, manual workflow rerun or protected merge
+is authorized by this receipt. No further hosted execution is dispatched.
+
+The registration candidate's metadata has zero findings, but PR352 is not
+merged. The original closure PR351 has not received the three protected
+prerequisites and is not claimed repaired or merge-ready. The reviewed next
+six-document edge remains uncommitted in its owned review worktree. Existing
+source and recovery objects remain on their named branches; do not delete
+those branches or dirty pending worktrees. Local main and origin/main were
+last observed equal at `0460795abf6da9203e38f30291a8f20118c6ab88`.
+Resume normal protected delivery only after the approved security hold clears.
+HOME/isolated execution/data migration remain NOT_RUN for this repair.
 
 ### Pinned Python formatter scope amendment — 2026-10-04
 
