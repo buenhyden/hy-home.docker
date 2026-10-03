@@ -1,8 +1,8 @@
 ---
 title: "Development Data and LAB Isolation Plan"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"

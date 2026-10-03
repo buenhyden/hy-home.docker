@@ -1,8 +1,8 @@
 ---
 title: "Home Infrastructure Diagnosis and Work Design Plan"
-version: "0.1.1"
+version: "1.0.0"
 type: "sdlc/plan"
-status: "draft"
+status: "approved"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"

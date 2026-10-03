@@ -2,7 +2,7 @@
 title: "Home Infrastructure Diagnosis and Work Design Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
