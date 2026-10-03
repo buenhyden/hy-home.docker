@@ -1,73 +1,50 @@
 ---
 title: "Storybook Workspace"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-10-03"
 created: "2025-11-24"
 ---
 
 # Storybook Workspace
 
-> Next.js와 Storybook 기반 UI 실험 및 디자인 시스템 템플릿 작업 공간
-
 ## Overview
 
-`projects/storybook/`는 parent repo가 직접 관리하는 Storybook 관련 작업 공간입니다. 현재 직접 추적되는 구현 표면은 [`nextjs/`](nextjs/README.md)이며, Next.js 16, React 19, Storybook 10, Vitest, Playwright 기반 UI 개발과 검증을 다룹니다.
+`projects/storybook/nextjs/`는 저장소가 직접 관리하는 공유 UI 자산 작업공간입니다. 정적 Storybook, 내부 UI 패키지와 로컬 문서 MCP를 함께 소유합니다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Frontend Developers
-- Design System Maintainers
-- Documentation Writers
-- AI Agents
+내부 UI 개발자, 디자인 검토자와 운영 담당자입니다.
 
 ## Scope
 
-### In Scope
-
-- parent repo가 직접 추적하는 Storybook/Next.js 예제 작업 공간
-- npm lockfile 기반 설치, 개발, 빌드, Storybook 실행 명령
-- 하위 `nextjs/` README와 루트 프로젝트 문서 사이의 연결
-
-### Out of Scope
-
-- Docker Compose 서비스 정의와 Traefik production exposure
-- Storybook 정적 산출물, coverage 결과, `node_modules/`
-- 공식 제품 요구사항, 운영 정책, runbook 본문
+공유 컴포넌트와 문서만 포함합니다. 신규 공공데이터·공무원·언어 학습 앱은 외부 프로젝트가 소유합니다.
 
 ## Structure
 
-```text
-storybook/
-├── nextjs/    # Next.js 16 + React 19 + Storybook 10 workspace
-└── README.md  # This file
-```
+`nextjs/`에 npm lockfile, Storybook 설정, `packages/ui/`, 로컬 `mcp/`, 정적 origin Dockerfile이 있습니다.
+
+## Tech Stack
+
+버전과 peer dependency는 [하위 패키지](nextjs/README.md)의 npm manifest와 lockfile이 소유합니다.
+
+## Configuration
+
+정적 origin은 별도 Compose fragment로 선택형 root profile에 연결됩니다. Traefik이 HTTPS를 종료하고 기존 관리자 인증을 적용합니다. 문서 MCP는 Compose 밖의 로컬 프로세스이며 원격 접속은 비활성입니다.
+
+## Validation
+
+`npm ci --prefix projects/storybook/nextjs` 후 하위 README의 빌드·검사 명령을 사용합니다. Docker 실행 검사는 격리 범위를 확인한 뒤 수행합니다.
 
 ## How to Work in This Area
 
-1. Node 작업은 `projects/storybook/nextjs/`의 `package.json`과 lockfile을 기준으로 수행합니다.
-2. parent repo에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>` 형태를 사용합니다.
-3. UI 템플릿이나 package script가 바뀌면 이 README와 [`nextjs/README.md`](nextjs/README.md)를 함께 갱신합니다.
-
-## Available Scripts
-
-| Command | Description |
-| --- | --- |
-| `npm ci --prefix projects/storybook/nextjs` | lockfile 기반 의존성 설치 |
-| `npm --prefix projects/storybook/nextjs run dev` | Next.js 개발 서버 실행 |
-| `npm --prefix projects/storybook/nextjs run storybook` | Storybook 개발 서버 실행 |
-| `npm --prefix projects/storybook/nextjs run build` | Next.js production build |
-| `npm --prefix projects/storybook/nextjs run build-storybook` | Storybook 정적 산출물 빌드 |
-| `npm --prefix projects/storybook/nextjs run lint` | ESLint 실행 |
+UI 변경은 `nextjs/`에서 진행합니다. 외부 프로젝트는 검토된 패키지 계약을 소비하며 Storybook 소스 파일을 무관리 복사하지 않습니다.
 
 ## Related Documents
 
-- [Projects README](../README.md)
-- [Next.js Storybook workspace](nextjs/README.md)
-- [Root README](../../README.md)
-- README template (`docs/99.templates/templates/common/readme-package.template.md`)
-- [Documentation index](../../docs/README.md)
+- [하위 Storybook 작업공간](nextjs/README.md)
+- [프로젝트 인덱스](../README.md)
+- [문서 인덱스](../../docs/README.md)
+- [README 형식](../../docs/99.templates/templates/common/readme-package.template.md)

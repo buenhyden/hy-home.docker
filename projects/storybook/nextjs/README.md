@@ -1,89 +1,61 @@
 ---
 title: "Storybook Next.js Workspace"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-10-03"
 created: "2026-02-01"
 ---
 
 # Storybook Next.js Workspace
 
-> Next.js 16, React 19, Storybook 10 기반 UI 개발 및 검증 package
-
 ## Overview
 
-`projects/storybook/nextjs/`는 Storybook UI 템플릿을 검증하는 Next.js workspace입니다. npm lockfile을 기준으로 의존성을 고정하고, Next.js pages router, Storybook stories, Vitest/Playwright 기반 브라우저 테스트 설정을 함께 보유합니다.
-
-이 README는 초기 scaffold 안내가 아니라 현재 package manifest와 repository contract에 맞춘 작업 진입점입니다.
+이 작업공간은 공유 Storybook 정적 자산, 내부 UI 패키지와 로컬 문서 MCP의 소스입니다. Next.js 예제 앱은 Storybook 정적 origin과 별도이며 운영 배포 대상이 아닙니다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- Frontend Developers
-- QA Engineers
-- Documentation Writers
-- AI Agents
+내부 UI 개발자, 운영자, 검증 담당자가 사용합니다.
 
 ## Scope
 
-### In Scope
-
-- `package.json` scripts와 npm lockfile 기반 작업 절차
-- Next.js pages, Storybook stories, Storybook/Vitest 설정 위치
-- 로컬 개발, lint, build, Storybook build 검증 명령
-
-### Out of Scope
-
-- Vercel 배포 절차
-- `node_modules/`, `.next/`, Storybook 정적 build output
-- 루트 Docker Compose 서비스 운영 절차
+Storybook story, 검토된 Button 패키지, 정적 빌드와 로컬 문서 MCP를 포함합니다. 신규 업무 앱, 원격 MCP 서비스, 사용자 전역 클라이언트 설정은 포함하지 않습니다.
 
 ## Structure
 
-```text
-nextjs/
-├── .storybook/        # Storybook framework and test setup
-├── public/            # Static public assets
-├── src/
-│   ├── pages/         # Next.js pages router and API route sample
-│   ├── stories/       # Storybook example components and stories
-│   └── styles/        # Global CSS
-├── package.json       # npm scripts and dependency contract
-├── package-lock.json  # npm lockfile
-├── vitest.config.ts   # Vitest browser test configuration
-└── README.md          # This file
+`src/stories/`는 예제와 검증, `packages/ui/`는 코드 소비 계약, `.storybook/`은 manifest 설정, `mcp/`는 로컬 문서 서버와 revision 기록, `Dockerfile`과 `nginx.conf`는 정적 origin을 소유합니다.
+
+## Tech Stack
+
+npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을 소유합니다. Node 빌더와 비특권 NGINX 이미지 참조는 `Dockerfile`이 소유합니다.
+
+## Configuration
+
+`npm ci` 후 `npm run build-storybook`은 `storybook-static/`과 `manifests/components.json`, `manifests/docs.json`, `revision.json`을 생성합니다. `STORYBOOK_SOURCE_REVISION`을 전달하면 revision 파일이 소스 커밋을 기록합니다. 전달하지 않으면 `uncommitted`로 표시합니다. revision 파일은 두 manifest의 SHA-256을 기록하며 로컬 MCP가 읽기 전 대조합니다.
+
+`npm run mcp:docs`는 정적 빌드 후 `127.0.0.1:7613/mcp`에서 문서 도구만 제공합니다. 선택형 `STORYBOOK_MCP_PORT`는 1024~65535 범위입니다. 이 서버는 루트 Compose에 포함되지 않으며 원격 클라이언트에 공개하지 않습니다. `@storybook/mcp`가 제공하는 `docs-list`, `docs-show`, `docs-show-story`만 등록합니다. 브라우저 로그인 쿠키를 MCP 인증으로 사용하지 않습니다.
+
+Docker build context는 이 폴더입니다. `.dockerignore`가 환경 파일, secret, 의존성 캐시와 산출물을 제외합니다. origin은 내부 8080 포트에서 정적 파일만 제공하며 host 80/443을 열지 않습니다. 실제 자원 한도, 읽기 전용 root filesystem과 tmpfs는 Compose 서비스 정의가 소유합니다.
+
+## Validation
+
+```sh
+npm ci
+npm run lint
+npm run typecheck
+npm run build-storybook
+npm run test:artifacts
 ```
 
-## Available Scripts
-
-| Command | Description |
-| --- | --- |
-| `npm ci` | lockfile 기반 의존성 설치 |
-| `npm run dev` | Next.js 개발 서버 실행 |
-| `npm run storybook` | Storybook 개발 서버 실행 |
-| `npm run build` | Next.js production build |
-| `npm run build-storybook` | Storybook 정적 산출물 빌드 |
-| `npm run lint` | ESLint 실행 |
-| `npm run typecheck` | TypeScript typecheck 실행 |
-| `npm run test` | Storybook Vitest 테스트 실행 |
-| `npm run coverage` | Storybook Vitest coverage 실행; statements/branches/functions/lines 90% threshold 적용 |
-
-Parent repo 루트에서 실행할 때는 `npm --prefix projects/storybook/nextjs <command>`를 사용합니다.
+정적 origin 브라우저와 MCP 프로토콜 검사는 Docker 격리 사전 점검 후 실행합니다. `revision.json`의 `uncommitted`는 배포 승인이 아닙니다.
 
 ## How to Work in This Area
 
-1. 의존성을 바꾸면 `package.json`과 `package-lock.json`을 함께 갱신합니다.
-2. UI component 예제는 `src/stories/`에 두고 Storybook story와 함께 검증합니다.
-3. Next.js app shell이나 API route 예시는 `src/pages/` 아래에서 관리합니다.
-4. README 또는 package script를 바꾼 뒤에는 최소 `npm --prefix projects/storybook/nextjs run lint`와 관련 build/test 명령을 검토합니다.
+Button 구현은 `packages/ui/`에서 변경합니다. Button story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. Header와 Page는 예제로 유지합니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
 
 ## Related Documents
 
-- [Storybook workspace](../README.md)
-- [Projects README](../../README.md)
-- [Root README](../../../README.md)
-- README template (`docs/99.templates/templates/common/readme-package.template.md`)
-- [Documentation index](../../../docs/README.md)
+- [상위 Storybook 작업공간](../README.md)
+- [문서 인덱스](../../../docs/README.md)
+- [README 형식](../../../docs/99.templates/templates/common/readme-package.template.md)
