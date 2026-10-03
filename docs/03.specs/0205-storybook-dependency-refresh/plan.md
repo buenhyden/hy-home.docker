@@ -1,8 +1,8 @@
 ---
 title: "Storybook Dependency Refresh Plan"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/plan"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
