@@ -238,6 +238,7 @@ services:
       service: template-stateful-low
     <<: *airflow-common
     container_name: airflow-triggerer
+    mem_limit: 384m
     read_only: false
     command: triggerer
     networks:
@@ -377,6 +378,7 @@ services:
       service: template-stateful-low
     <<: *airflow-common
     container_name: flower
+    mem_limit: 384m
     read_only: false
     command: celery flower
     networks:
