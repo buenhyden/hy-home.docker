@@ -1,8 +1,8 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "0.1.0"
+version: "1.0.0"
 type: "operation/runbook"
-status: "review"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "operations"
