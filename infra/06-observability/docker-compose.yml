@@ -223,6 +223,9 @@ services:
       - /run
     command:
       - 'run'
+      # Required by the bounded delta-to-cumulative metrics processor in the
+      # HOME Alloy config (SPEC-0203); recheck before every image update.
+      - '--stability.level=experimental'
       - '--server.http.listen-addr=0.0.0.0:${ALLOY_PORT:-12345}'
       # Overriding the image command drops its default storage path; keep
       # positions and remote-write WAL on the alloy-data volume.

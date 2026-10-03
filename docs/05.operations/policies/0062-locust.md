@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.1.1"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -16,26 +16,27 @@ created: "2026-05-17"
 
 ## Overview
 
-Locust는 명시적인 `testing` capability다. HOME이나 broad tooling
-startup에는 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지
+Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
+절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지
 않은 load, credential capture, 오해를 부르는 performance evidence를
 막는다.
 
 ## Policy Scope
 
-`locust-master`와 `locust-worker` service, bind-backed scenario
-디렉터리, target authorization, result handling, scaling, image upgrade.
+`labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker` service,
+bind-backed scenario/result 디렉터리, target authorization, result handling,
+scaling, image upgrade.
 
 ## Controls
 
-- **Activation:** `testing` profile만 선택하고 Locust service를
+- **Activation:** `labs/locust.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
-  count, abort SLI, stop owner를 기록한다. 각 테스트의 한도·시간대를 따로 승인한다. [공통 성능 정책](0064-performance-testing.md)의
-  초당 10,000 요청 이상 추가 협조 조건도 적용한다.
+  count, abort SLI, stop owner를 기록한다. 규모와 무관하게 각 테스트의 정확한
+  대상·부하 한도·시간대를 [공통 성능 정책](0064-performance-testing.md)에 따라 승인한다.
 - **Authorization:** target credential은 승인된 secret channel을
   사용하며 `locustfile.py`, Compose, log, 보관된 raw result에 내장할 수
   없다.
-- **Data:** scenario와 result는 `locust-data` host path에 남는다.
+- **Data:** scenario는 `LAB_LOCUST_SCENARIO_DIR`, result는 fresh `LAB_LOCUST_RESULT_DIR` host path에 남는다.
   sanitized된 집계는 소유 Task/incident 아래에 보관한다; 명시적인
   evidence 필요가 없으면 payload나 identifier를 보관하지 않는다.
 - **Resources:** worker scaling은 명시적이며 승인된 test로 제한된다.
@@ -69,9 +70,8 @@ stopped state를 포함해야 한다.
 
 ### 현재 구현 제한
 
-현재 master와 worker는 `restart: unless-stopped`를 상속한다. 위의 승인 없는
-부하 재생 금지 기준은 유지한다. 운영자는 종료·재기동 상태를 확인해야 하며, 재시작
-정책 변경을 문서 수정만으로 완료했다고 기록해서는 안 된다. 책임자는 `@buenhyden`이다.
+현재 master와 worker는 독립 LAB entrypoint에 있으며 정상 root service가 아니다. 승인 없는
+부하 재생 금지 기준은 유지한다. 운영자는 종료 상태와 result path를 확인해야 한다. 책임자는 `@buenhyden`이다.
 
 ## Traceability
 
@@ -81,7 +81,7 @@ stopped state를 포함해야 한다.
 
 ## Related Documents
 
-- [Locust Compose source](../../../infra/11-quality/locust/docker-compose.yml)
+- [Locust LAB Compose](../../../labs/locust.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../README.md)

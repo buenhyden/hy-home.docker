@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -229,7 +229,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [k6](../../../infra/11-quality/k6/README.md): 성능 회귀 기준선 저장/비교 자동화, 시나리오 태그 표준화
   ([OPER](../guides/0061-k6.md), [RUN](../runbooks/0061-k6.md))
 
-- [locust](../../../infra/11-quality/locust/README.md): 분산 실행 토폴로지 표준화, 테스트 데이터 초기화/정리 루틴 추가
+- [Locust LAB](../../../labs/locust.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
   ([OPER](../guides/0062-locust.md), [RUN](../runbooks/0062-locust.md))
 
 ## Exceptions

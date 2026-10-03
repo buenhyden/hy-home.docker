@@ -1,20 +1,20 @@
 ---
-title: "Quality Tier (11-quality)"
-version: "0.1.0"
+title: "품질 계층 (11-quality)"
+version: "0.2.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 created: "2026-10-01"
 ---
 
-# Quality Tier (11-quality)
+# 품질 계층 (11-quality)
 
 ## Overview
 
-소프트웨어·설정·계약·성능과 테스트 메일을 검증하는 기존 패키지를 모았습니다.
+소프트웨어·설정·계약·성능과 테스트 메일을 검증하는 패키지를 모았습니다.
 데이터 품질 검증인 Great Expectations는 [12 Analytics](../12-analytics/README.md)에
-남습니다. 폴더 이름은 프로필·기동 순서·네트워크 격리를 대신하지 않습니다.
+남습니다. 폴더 이름은 profile·기동 순서·network 격리를 대신하지 않습니다.
 
 ## Audience
 
@@ -22,50 +22,67 @@ created: "2026-10-01"
 
 ## Scope
 
-- [k6](k6/README.md)와 [Locust](locust/README.md)는 대상 소유자의 승인을 받은
-  후에만 트래픽을 생성합니다. k6는 1회성이며 Locust는 master/worker 서비스로
-  구성됩니다.
-- [SonarQube](sonarqube/README.md)는 권한 정보를 PostgreSQL과 선언된
-  데이터/로그 볼륨에 영속화합니다. 검색 인덱스는 파생 값이지만 데이터베이스와
-  확장/설정은 일관되게 복구해야 합니다.
-- [WireMock](wiremock/README.md)은 추적되는 합성 HTTP 스텁을 제공합니다.
-  관리 API는 인증이 없으므로 호스트 포트는 loopback에만 바인딩됩니다.
-- [Pact Broker](pact-broker/README.md)는 pact와 검증 결과를 기능 전용
-  `mng-pg` 데이터베이스에 basic auth와 loopback 포트로 보호하여 저장합니다.
-- [Conftest](conftest/README.md)는 `infra/` 아래의 Compose 파일과
-  Dockerfile에 대해 읽기 전용, 네트워크 없이 Rego 정책 테스트를 실행합니다.
-
-- [Mailpit](mailpit/README.md)은 개발 SMTP를 캡처합니다. UI/SMTP host 바인딩은
-  loopback이며 `/data/mailpit.db`에 저장합니다. 컨테이너는 `mail_net`의 서비스
-  DNS로 전송할 수 있습니다. UI SSO가 SMTP 인증을 대신하지 않으며 외부 배달용
-  Stalwart와 구분합니다.
+- [k6](k6/README.md)는 root의 1회성 기본 부하 작업입니다.
+- [Locust](locust/README.md)는 [독립 LAB](../../labs/locust.md)가 사용할 image
+  source만 소유하며 root와 HOME 상태를 공유하지 않습니다.
+- [WireMock](wiremock/README.md)은 추적 합성 HTTP stub을 제공합니다. 기능 모드는
+  loopback에만 게시하고 부하 모드는 같은 서비스를 override하여 host port와 요청
+  journal을 제거합니다.
+- [Pact Broker](pact-broker/README.md)는 pact와 검증 결과를 기능 전용 management
+  DB에 저장합니다.
+- [SonarQube](sonarqube/README.md), [Conftest](conftest/README.md),
+  [Mailpit](mailpit/README.md)은 각 package 문서의 권한·상태 경계를 따릅니다.
 
 ## Structure
 
-| Package | 기존 선택 프로필 | 실행·상태 경계 |
+~~~text
+11-quality/
+├── k6/
+├── locust/
+├── wiremock/
+├── pact-broker/
+├── sonarqube/
+├── conftest/
+└── mailpit/
+~~~
+
+## Tech Stack
+
+| Package | 선택 profile 또는 진입점 | 실행·상태 경계 |
 | --- | --- | --- |
-| [k6](k6/) | `testing` | 승인된 대상에만 부하를 보내는 1회성 작업 |
-| [locust](locust/) | `testing` | master/worker와 같은 시나리오·빌드 소스 |
-| [wiremock](wiremock/) | `api-mock` | 추적된 스텁만 소유; 메모리 변경은 재시작 시 사라짐 |
-| [pact-broker](pact-broker/) | `contract-testing` | 기능 전용 DB provisioner와 Broker를 함께 보존 |
-| [sonarqube](sonarqube/) | `tooling`, `sast` | management DB와 데이터·로그 볼륨 |
-| [conftest](conftest/) | `policy-check` | 읽기 전용 infra 검증, 네트워크 없음 |
-| [mailpit](mailpit/) | `dev`, `local`, `mail-dev` | 테스트 메시지 SQLite 캡처 |
+| [k6](k6/) | **testing** | root는 비트래픽 버전 확인; 승인된 격리 runner가 부하 실행 |
+| [locust](locust/) | **labs/locust.yml** | 독립 LAB 진입점; root include와 HOME 상태를 공유하지 않음 |
+| [wiremock](wiremock/) | **api-mock**, load override | 한 Compose model에 기능·부하 중 한 모드만 존재 |
+| [pact-broker](pact-broker/) | **contract-testing** | 기능 전용 DB provisioner와 Broker |
+| [sonarqube](sonarqube/) | **tooling**, **sast** | management DB와 data·log volume |
+| [conftest](conftest/) | **policy-check** | 읽기 전용 infra 검증, network 없음 |
+| [mailpit](mailpit/) | **dev**, **local**, **mail-dev** | 테스트 메시지 SQLite capture |
+
+## Configuration
+
+각 package의 Compose/Dockerfile이 image, profile, network, volume과 health
+계약을 소유합니다. Locust 전용 공개 입력은 **labs/.env.example**의
+**LAB_LOCUST_***를 사용합니다. WireMock load 모드는 root Compose와
+**wiremock/wiremock.load.yml**을 같은 명령에서 결합합니다.
+
+## Validation
+
+- **bash scripts/hardening/check-all-hardening.sh 11-quality**
+- **bash scripts/validation/validate-docker-compose.sh**
+- **python3 -m unittest tests.validation.test_quality_mock_lab -v**
+
+정적 통과는 실제 부하 생성, image build, target 승인 또는 결과 완전성의 증거가
+아닙니다.
 
 ## How to Work in This Area
 
-- 모든 Compose 검증은 저장소 루트에서 합니다. `quality`라는 새 Compose
-  프로필은 없습니다. `tooling`은 Platform Operations의 Registry와 Quality의 SonarQube를
-  함께 선택하며 IaC나 부하 테스트를 시작하지 않습니다.
-- 정적 검사는 `bash scripts/hardening/check-all-hardening.sh 11-quality`와
-  기존 `scripts/validation/validate-docker-compose.sh`를 사용합니다.
-  설정 통과는 실제 부하 생성, 이미지 빌드, 메일 수신·복원 성공의 증거가 아닙니다.
-- image/build pin, host 경로, volume·secret·network 계약은 각 패키지 원본을
-  따릅니다. 재분류를 이유로 `DEFAULT_TOOLING_DIR` 또는
-  `DEFAULT_COMMUNICATION_DIR` 아래 데이터를 옮기지 않습니다.
-- 운영 문서는 [문서 진입점](../../docs/README.md)의 Stage05 subject0061,
-  0062,0064,0066,0084,0092,0093,0095에서 찾습니다. Platform Operations와 Quality의 공통 하드닝0063은
-  두 tier에 걸친 지침을 유지합니다.
+1. 대상 소유자, network, 자원과 종료 조건을 승인받은 뒤에만 트래픽을 생성합니다.
+2. WireMock fixture에는 합성 데이터만 사용하고 admin API를 공용 route에 연결하지
+   않습니다.
+3. Locust는 독립 LAB entrypoint로만 render하며 root profile에 다시 추가하지
+   않습니다.
+4. 운영 문서는 [문서 진입점](../../docs/README.md)의 해당 Guide, Policy,
+   Runbook을 따릅니다.
 
 ## Related Documents
 

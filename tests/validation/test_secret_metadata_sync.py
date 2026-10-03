@@ -937,20 +937,20 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(219, len(contract["public"]))
+        self.assertEqual(212, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
         self.assertEqual(48, len(contract["required"]))
-        self.assertEqual(171, len(contract["optional"]))
+        self.assertEqual(164, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],
         )
         lab = self.lab_environment
-        self.assertEqual(39, len(lab["public"]))
-        self.assertEqual(9, len(lab["required"]))
-        self.assertEqual(30, len(lab["optional"]))
+        self.assertEqual(48, len(lab["public"]))
+        self.assertEqual(11, len(lab["required"]))
+        self.assertEqual(37, len(lab["optional"]))
         self.assertEqual(set(), lab["missing"] | lab["orphan"])
         self.assertEqual(set(), contract["public"] & lab["public"])
         self.assertFalse(any(name.startswith("LAB_") for name in contract["public"]))

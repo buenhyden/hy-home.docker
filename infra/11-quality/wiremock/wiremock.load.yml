@@ -1,0 +1,14 @@
+# Load mode overrides the root-included function service in the same project.
+# It is intentionally incomplete by itself; always combine it with root Compose.
+services:
+  wiremock:
+    ports: !reset []
+    expose: !override [8080]
+    # Admin HTTP is denied; readiness uses the tracked synthetic stub.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/hyhome/ping || exit 1"]
+    command: !override
+      - --disable-banner
+      # Request verification and journal queries are unavailable in this mode.
+      - --no-request-journal
+      - --admin-api-require-https

@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "project_id": "example-quality",
+  "roles": {
+    "reader": "example_quality_reader",
+    "writer": "example_quality_writer",
+    "verdict": "example_quality_verdict"
+  }
+}

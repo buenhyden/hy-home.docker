@@ -376,7 +376,6 @@ include:
   # 11-quality
   - infra/11-quality/conftest/docker-compose.yml
   - infra/11-quality/k6/docker-compose.yml
-  - infra/11-quality/locust/docker-compose.yml
   - infra/11-quality/mailpit/docker-compose.yml
   - infra/11-quality/pact-broker/docker-compose.yml
   - infra/11-quality/sonarqube/docker-compose.yml

@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.1.1"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -18,7 +18,9 @@ created: "2026-05-17"
 
 test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
-사용한다. 모든 command는 저장소 루트에서 실행한다.
+사용한다. 모든 command는 저장소 루트에서 독립 LAB Compose file을 지정한다.
+아래 공개 명령은 `labs/.env.example`와 명시한 합성 경로만 사용한다. 실제 승인된
+실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
 
 ## Procedure
 
@@ -27,24 +29,29 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 2. 진단 전에 load를 중지한다.
 
    ```bash
-   docker compose --profile testing stop locust-worker locust-master
+   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
+   docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust stop lab-locust-worker lab-locust-master
    ```
 
 3. bounded status와 로그를 캡처한다.
 
    ```bash
-   docker compose --profile testing ps locust-master locust-worker
-   docker compose --profile testing logs --tail=200 locust-master locust-worker
+   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
+   docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust ps lab-locust-master lab-locust-worker
+   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
+   docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust logs --tail=200 lab-locust-master lab-locust-worker
    ```
 
-4. `docker compose --profile testing config --quiet`로 확인한다. worker를 재생성하기
+4. `docker compose -f labs/locust.yml --env-file labs/.env.example config --quiet`로 확인한다. worker를 재생성하기
    전에 master health failure를 점검한다. target SLI가 회복되지 않았으면 Locust를
    중지 상태로 두고 target owner에게 escalation한다.
 5. master가 healthy이고 재시작이 승인되면 master를 먼저 시작하고 worker를 시작한다.
 
    ```bash
-   docker compose --profile testing up -d locust-master
-   docker compose --profile testing up -d locust-worker
+   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
+   docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust up -d lab-locust-master
+   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
+   docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust up -d lab-locust-worker
    ```
 
 6. scenario 복구 시에는 두 service를 모두 중지한 상태로 두고, 현재 bind-backed scenario
@@ -97,11 +104,11 @@ load 중지 후에도 target health가 회복되지 않거나, worker가 healthy
 
 - [Guide](../guides/0062-locust.md) (`GDE-0062`)
 - [Policy](../policies/0062-locust.md) (`POL-0062`)
-- [Locust Compose](../../../infra/11-quality/locust/docker-compose.yml)
+- [Locust LAB Compose](../../../labs/locust.yml)
 
 ## Related Documents
 
-- [Locust Compose source](../../../infra/11-quality/locust/docker-compose.yml)
+- [Locust LAB Compose source](../../../labs/locust.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 - [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
 - [Operations index](../README.md)

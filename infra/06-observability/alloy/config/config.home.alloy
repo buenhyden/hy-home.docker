@@ -91,6 +91,93 @@ loki.write "local_loki" {
 // remote-write here sent the same series a second time as job
 // "integrations/self", so it was removed (SPEC-0193).
 
+// OTLP application metrics use a separate path. Only stable ownership labels
+// survive; request paths, user IDs and arbitrary producer attributes do not
+// become Prometheus labels (SPEC-0203).
+otelcol.processor.transform "quality_metrics" {
+  error_mode = "ignore"
+
+  metric_statements {
+    context = "resource"
+    statements = [
+      `keep_keys(attributes, ["project.id", "deployment.environment.name", "service.name"])`,
+    ]
+  }
+
+  metric_statements {
+    context = "datapoint"
+    statements = [
+      `set(attributes["project_id"], resource.attributes["project.id"])`,
+      `set(attributes["environment"], resource.attributes["deployment.environment.name"])`,
+      `set(attributes["service_name"], resource.attributes["service.name"])`,
+      `keep_keys(attributes, ["project_id", "environment", "service_name"])`,
+    ]
+  }
+
+  output {
+    metrics = [otelcol.processor.deltatocumulative.quality_metrics.input]
+  }
+}
+
+// Prometheus drops delta sums and histograms. This bounded experimental
+// processor converts them after the label identity has been constrained.
+otelcol.processor.deltatocumulative "quality_metrics" {
+  max_stale   = "5m"
+  max_streams = 10000
+
+  output {
+    metrics = [otelcol.processor.batch.quality_metrics.input]
+  }
+}
+
+otelcol.processor.batch "quality_metrics" {
+  timeout             = "1s"
+  send_batch_size     = 512
+  send_batch_max_size = 1024
+
+  output {
+    metrics = [otelcol.exporter.prometheus.quality_metrics.input]
+  }
+}
+
+otelcol.exporter.prometheus "quality_metrics" {
+  include_scope_info   = false
+  include_scope_labels = false
+  include_target_info  = false
+  forward_to           = [prometheus.relabel.quality_metrics.receiver]
+}
+
+prometheus.relabel "quality_metrics" {
+  max_cache_size = 2048
+  forward_to     = [prometheus.remote_write.local_prometheus.receiver]
+
+  rule {
+    action        = "keep"
+    source_labels = ["project_id", "environment", "service_name"]
+    separator     = ";"
+    regex         = "[^;]+;[^;]+;[^;]+"
+  }
+
+  rule {
+    action = "labelkeep"
+    regex  = "__name__|project_id|environment|service_name|le|quantile"
+  }
+}
+
+prometheus.remote_write "local_prometheus" {
+  endpoint {
+    url = "http://prometheus:9090/api/v1/write"
+
+    queue_config {
+      capacity             = 5000
+      max_shards           = 2
+      max_samples_per_send = 500
+      batch_send_deadline  = "5s"
+      sample_age_limit     = "5m"
+    }
+  }
+}
+
 /*****************************************************************
  * 3. TRACING PIPELINE (Tempo)
  *****************************************************************/
@@ -105,7 +192,8 @@ otelcol.receiver.otlp "default" {
   }
 
   output {
-    traces = [otelcol.processor.batch.default.input]
+    metrics = [otelcol.processor.transform.quality_metrics.input]
+    traces  = [otelcol.processor.batch.default.input]
   }
 }
 
