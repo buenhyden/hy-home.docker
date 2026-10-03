@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.2.16"
+version: "1.2.17"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 ---
 
@@ -49,6 +49,8 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0201 | [HOME 인프라 진단·작업 설계](./0201-home-infrastructure-diagnosis-and-work-design/) | 최신 인프라 인벤토리, 역할 선정, 통합 계약, 후속 승인 작업 설계 |
 | SPEC-0202 | [개발 데이터·LAB 격리](./0202-development-data-and-lab-isolation/) | 개발 DB·Valkey·소비자 전환·이관 도구·LAB 격리 소스 구현 |
 | SPEC-0203 | [품질 결과·격리 부하 시험](./0203-quality-results-and-isolated-load-testing/) | k6 실행·perf_db 결과·WireMock 모드·Locust LAB·관측 계약 |
+
+| SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 서비스 호환성·보안·외부 연결 계약·백업·비밀 경로 정리 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
