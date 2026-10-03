@@ -14,18 +14,6 @@ volumes:
       o: bind
       type: none
       device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-kafka-connect
-  kafka-2-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka2-data
-  kafka-3-data:
-    driver: local
-    driver_opts:
-      o: bind
-      type: none
-      device: ${DEFAULT_MESSAGE_BROKER_DIR}/kafka/kafka3-data
 
 services:
   kafka-1:
@@ -33,7 +21,6 @@ services:
     profiles:
       - messaging
       - messaging-broker
-      - messaging-cluster
       - messaging-schema
       - messaging-connect
       - messaging-rest
@@ -63,7 +50,7 @@ services:
       # 자동 토픽 생성 방지 (권장: kafka-init에서 통제)
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
       KAFKA_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '${KAFKA_QUORUM_VOTERS:-1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093}}'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093}'
       KAFKA_LISTENERS: 'PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}'
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
@@ -133,12 +120,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
     healthcheck:
       test:
         - CMD-SHELL
@@ -179,12 +160,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
       schema-registry:
         condition: service_healthy
     environment:
@@ -271,9 +246,9 @@ services:
       edge_net: {}
       obs_net: {}
       kafka_net: {}
-      mng_data_net: {}
+      dev_data_net: {}
 
-  # Feature-owned CDC source provisioning: dedicated replication role, read
+  # Feature-owned development CDC provisioning: dedicated replication role, read
   # grants and the publication the connector consumes. Names must match
   # connect/debezium/postgres-connector.json.
   debezium-db-provision:
@@ -288,34 +263,34 @@ services:
       - /bin/sh
       - /provision/run-feature-provision.sh
     environment:
-      PGHOST: mng-pg
+      PGHOST: dev-pg
       PGPORT: '${POSTGRES_PORT:-5432}'
-      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGUSER: '${DEV_PG_ADMIN_USER:-postgres}'
       PGDATABASE: '${POSTGRES_DEFAULT_DB}'
-      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
-      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
+      PROVISION_SQL: /provision/dev-pg.sql
       PROVISION_IDENTIFIERS: DEBEZIUM_DB_USER DEBEZIUM_DB_NAME DEBEZIUM_SCHEMA DEBEZIUM_HEARTBEAT_SCHEMA DEBEZIUM_PUBLICATION DEBEZIUM_SOURCE_OWNER
       PROVISION_SECRETS: DEBEZIUM_DB_PASSWORD=/run/secrets/debezium_postgres_password
       DEBEZIUM_DB_USER: debezium
       # Must equal database.dbname in postgres-connector.json (contract test).
-      DEBEZIUM_DB_NAME: '${SERVICE_POSTGRES_DB:-app_db}'
-      DEBEZIUM_SCHEMA: public
+      DEBEZIUM_DB_NAME: platform_dev
+      DEBEZIUM_SCHEMA: app
       DEBEZIUM_HEARTBEAT_SCHEMA: debezium_heartbeat
-      DEBEZIUM_PUBLICATION: hyhome_app_publication
-      DEBEZIUM_SOURCE_OWNER: '${SERVICE_POSTGRES_USERNAME:-app_user}'
+      DEBEZIUM_PUBLICATION: hyhome_platform_publication
+      DEBEZIUM_SOURCE_OWNER: platform_owner
     volumes:
       - ../../04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
-      - ./connect/debezium/provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+      - ./connect/debezium/provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
     secrets:
-      - mng_postgres_password
+      - dev_pg_admin_password
       - debezium_postgres_password
     depends_on:
-      mng-pg:
+      dev-pg:
         condition: service_healthy
-      mng-pg-init:
+      dev-platform-provision:
         condition: service_completed_successfully
     networks:
-      mng_data_net: {}
+      dev_data_net: {}
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -351,12 +326,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
       schema-registry:
         condition: service_healthy
     healthcheck:
@@ -459,12 +428,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
       schema-registry:
         condition: service_healthy
       kafka-connect:
@@ -485,7 +448,6 @@ services:
     profiles:
       - messaging
       - messaging-broker
-      - messaging-cluster
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-low
@@ -500,12 +462,6 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
     healthcheck:
       test: [ 'CMD-SHELL', 'wget --quiet --tries=1 --spider http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1' ]
       interval: 15s
@@ -520,7 +476,6 @@ services:
     profiles:
       - messaging
       - messaging-broker
-      - messaging-cluster
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -533,116 +488,14 @@ services:
     depends_on:
       kafka-1:
         condition: service_healthy
-      kafka-2:
-        condition: service_healthy
-        required: false
-      kafka-3:
-        condition: service_healthy
-        required: false
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: [ '/bin/sh', '-ec' ]
     command:
       - |
         echo "Creating internal topics..."
-        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic infra-events --partitions 3 --replication-factor 3
-        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic application-logs --partitions 6 --replication-factor 3
+        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic infra-events --partitions 3 --replication-factor 1
+        kafka-topics --bootstrap-server kafka-1:19092 --create --if-not-exists --topic application-logs --partitions 6 --replication-factor 1
         echo "Kafka initialization complete."
     labels:
       <<: *tier-label
     networks:
       kafka_net: {}
-
-  kafka-2:
-    profiles:
-      - messaging-cluster
-    image: confluentinc/cp-kafka:8.3.2
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-high
-    read_only: false
-    restart: unless-stopped
-    environment:
-      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-      KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
-      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
-      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
-      KAFKA_NODE_ID: 2
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}
-      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
-      KAFKA_JMX_HOSTNAME: kafka-2
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1
-      interval: 15s
-      timeout: 30s
-      retries: 10
-      start_period: 45s
-    labels:
-      hy-home.tier: messaging
-    container_name: kafka-2
-    hostname: kafka-2
-    volumes:
-      - kafka-2-data:/var/lib/kafka/data:rw
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    ports:
-      - 127.0.0.1:${KAFKA_EXTERNAL_2_HOST_PORT:-9094}:${KAFKA_EXTERNAL_PORT:-9092}
-      - 127.0.0.1:${KAFKA_JMX_2_HOST_PORT:-29101}:${KAFKA_JMX_PORT:-9101}
-      - 127.0.0.1:${KAFKA_JMX_EXPORTER_2_HOST_PORT:-29404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
-    networks:
-      kafka_net: {}
-      obs_net: {}
-
-  kafka-3:
-    profiles:
-      - messaging-cluster
-    image: confluentinc/cp-kafka:8.3.2
-    extends:
-      file: ../../common-optimizations.yml
-      service: template-stateful-high
-    read_only: false
-    restart: unless-stopped
-    environment:
-      CLUSTER_ID: ${KAFKA_CLUSTER_ID}
-      KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka-1:${KAFKA_CONTROLLER_PORT:-9093},2@kafka-2:${KAFKA_CONTROLLER_PORT:-9093},3@kafka-3:${KAFKA_CONTROLLER_PORT:-9093}
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_INTERNAL_PORT:-19092},CONTROLLER://0.0.0.0:${KAFKA_CONTROLLER_PORT:-9093},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT:-9092}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LOG_DIRS: /var/lib/kafka/data
-      KAFKA_HEAP_OPTS: -Xms1G -Xmx1G
-      KAFKA_JMX_OPTS: -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=${KAFKA_JMX_HOSTNAME:-localhost} -Dcom.sun.management.jmxremote.port=${KAFKA_JMX_PORT:-9101} -Dcom.sun.management.jmxremote.rmi.port=${KAFKA_JMX_PORT:-9101}
-      KAFKA_OPTS: -javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.5.0.jar=${KAFKA_JMX_EXPORTER_PORT:-9404}:/usr/share/jmx_exporter/kafka_broker.yml
-      KAFKA_NODE_ID: 3
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:${KAFKA_INTERNAL_PORT:-19092},EXTERNAL://localhost:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}
-      KAFKA_JMX_PORT: ${KAFKA_JMX_PORT:-9101}
-      KAFKA_JMX_HOSTNAME: kafka-3
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - unset KAFKA_JMX_OPTS KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1
-      interval: 15s
-      timeout: 30s
-      retries: 10
-      start_period: 45s
-    labels:
-      hy-home.tier: messaging
-    container_name: kafka-3
-    hostname: kafka-3
-    volumes:
-      - kafka-3-data:/var/lib/kafka/data:rw
-      - ./jmx-exporter:/usr/share/jmx_exporter:ro
-    ports:
-      - 127.0.0.1:${KAFKA_EXTERNAL_3_HOST_PORT:-9096}:${KAFKA_EXTERNAL_PORT:-9092}
-      - 127.0.0.1:${KAFKA_JMX_3_HOST_PORT:-39101}:${KAFKA_JMX_PORT:-9101}
-      - 127.0.0.1:${KAFKA_JMX_EXPORTER_3_HOST_PORT:-39404}:${KAFKA_JMX_EXPORTER_PORT:-9404}
-    networks:
-      kafka_net: {}
-      obs_net: {}

@@ -1,0 +1,205 @@
+name: hy-home-lab-couchdb
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-couch-start: &couch-start
+  - /bin/sh
+  - -ec
+  - |
+    COUCHDB_PASSWORD=$$(cat /run/secrets/lab_couchdb_password)
+    COUCHDB_ERLANG_COOKIE=$$(cat /run/secrets/lab_couchdb_cookie)
+    case "$$COUCHDB_PASSWORD:$$COUCHDB_ERLANG_COOKIE" in
+      *[!A-Za-z0-9_+./=:@#%-]*) echo "Unsupported LAB CouchDB credential characters" >&2; exit 1 ;;
+    esac
+    [ -n "$$COUCHDB_PASSWORD" ] && [ -n "$$COUCHDB_ERLANG_COOKIE" ] || exit 1
+    export COUCHDB_PASSWORD COUCHDB_ERLANG_COOKIE
+    exec /docker-entrypoint.sh couchdb
+
+x-couch-health: &couch-health
+  test:
+    - CMD-SHELL
+    - >-
+      bash -ec 'exec 3<>/dev/tcp/127.0.0.1/5984;
+      printf "GET /_up HTTP/1.0\r\nHost: localhost\r\n\r\n" >&3;
+      IFS= read -r line <&3;
+      case "$$line" in *" 200 "*) exit 0 ;; *) exit 1 ;; esac'
+  interval: 15s
+  timeout: 30s
+  retries: 5
+  start_period: 15s
+
+volumes:
+  couchdb1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/couchdb/data-1
+  couchdb2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/couchdb/data-2
+  couchdb3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/couchdb/data-3
+
+services:
+  couchdb-1:
+    profiles:
+      - couchdb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.2
+    container_name: lab-couchdb-couchdb-1
+    read_only: false
+    environment:
+      - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
+      - NODENAME=couchdb-1.infra_net
+    command: *couch-start
+    secrets:
+      - lab_couchdb_password
+      - lab_couchdb_cookie
+    volumes:
+      - couchdb1-data:/opt/couchdb/data:rw
+    expose:
+      - 5984
+      - 4369
+      - 9100
+    networks:
+      lab_couchdb_edge_net: {}
+      # The Erlang node name keeps its original host; the alias moves with the cluster.
+      lab_couchdb_core_net:
+        aliases:
+          - couchdb-1.infra_net
+    healthcheck: *couch-health
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.couchdb.rule: Host(`couchdb.${LAB_BASE_DOMAIN}`)
+      traefik.http.routers.couchdb.entrypoints: websecure
+      traefik.http.routers.couchdb.tls: 'true'
+      traefik.http.routers.couchdb.service: couchdb-cluster
+      traefik.http.routers.couchdb.middlewares: gateway-standard-chain@file
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-2:
+    profiles:
+      - couchdb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.2
+    container_name: lab-couchdb-couchdb-2
+    read_only: false
+    environment:
+      - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
+      - NODENAME=couchdb-2.infra_net
+    command: *couch-start
+    secrets:
+      - lab_couchdb_password
+      - lab_couchdb_cookie
+    volumes:
+      - couchdb2-data:/opt/couchdb/data:rw
+    expose:
+      - 5984
+      - 4369
+      - 9100
+    networks:
+      lab_couchdb_edge_net: {}
+      # The Erlang node name keeps its original host; the alias moves with the cluster.
+      lab_couchdb_core_net:
+        aliases:
+          - couchdb-2.infra_net
+    healthcheck: *couch-health
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-3:
+    profiles:
+      - couchdb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-med
+    image: couchdb:3.5.2
+    container_name: lab-couchdb-couchdb-3
+    read_only: false
+    environment:
+      - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
+      - NODENAME=couchdb-3.infra_net
+    command: *couch-start
+    secrets:
+      - lab_couchdb_password
+      - lab_couchdb_cookie
+    volumes:
+      - couchdb3-data:/opt/couchdb/data:rw
+    expose:
+      - 5984
+      - 4369
+      - 9100
+    networks:
+      lab_couchdb_edge_net: {}
+      # The Erlang node name keeps its original host; the alias moves with the cluster.
+      lab_couchdb_core_net:
+        aliases:
+          - couchdb-3.infra_net
+    healthcheck: *couch-health
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
+      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+
+  couchdb-cluster-init:
+    profiles:
+      - couchdb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: curlimages/curl:8.22.0
+    container_name: lab-couchdb-couchdb-cluster-init
+    read_only: true
+    tmpfs:
+      - /tmp
+    depends_on:
+      couchdb-1:
+        condition: service_healthy
+      couchdb-2:
+        condition: service_healthy
+      couchdb-3:
+        condition: service_healthy
+    networks:
+      lab_couchdb_core_net: {}
+    secrets:
+      - lab_couchdb_password
+    environment:
+      LAB_COUCHDB_USERNAME: ${LAB_COUCHDB_USERNAME}
+      COUCHDB_PORT: 5984
+    entrypoint: [ /bin/sh, /usr/local/bin/couchdb-cluster-init.sh ]
+    volumes:
+      - ./couchdb-cluster-init.sh:/usr/local/bin/couchdb-cluster-init.sh:ro
+
+networks:
+  lab_couchdb_core_net:
+    name: ${LAB_COUCHDB_CORE_NETWORK_NAME:-hy-home-lab-couchdb-core}
+    internal: true
+  lab_couchdb_edge_net:
+    name: ${LAB_COUCHDB_EDGE_NETWORK_NAME:-hy-home-lab-couchdb-edge}
+secrets:
+  lab_couchdb_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/couchdb/password.txt
+  lab_couchdb_cookie:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/couchdb/cookie.txt

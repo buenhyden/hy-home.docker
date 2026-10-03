@@ -446,7 +446,7 @@ check_04_data() {
   start_tier "$tier"
 
   local supabase_compose="infra/04-data/supabase/docker-compose.yml"
-  local valkey_compose="infra/04-data/valkey-cluster/docker-compose.yml"
+  local valkey_compose="infra/04-data/dev-db/docker-compose.yml"
 
   check_file "$supabase_compose"
   check_file "$valkey_compose"
@@ -456,6 +456,7 @@ check_04_data() {
 
   check_service_healthcheck "$supabase_compose" "db"
   check_service_healthcheck "$supabase_compose" "auth"
+  check_service_healthcheck "$valkey_compose" "dev-valkey"
 
   local table_bucket="infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh"
   check_file "$table_bucket"

@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data)"
-version: "1.2.3"
+version: "1.3.0"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 created: "2025-11-12"
 ---
 
@@ -13,8 +13,7 @@ created: "2025-11-12"
 ## Overview
 
 데이터 저장·접근 기반 패키지를 서비스 이름으로 바로 배치합니다. 처리·변환·품질
-검증·BI는 [12 Analytics](../12-analytics/README.md)가 담당합니다. 루트 Compose가
-각 패키지를 include하며, 실행 여부는 기존 profile이 결정합니다.
+검증·BI는 [12 Analytics](../12-analytics/README.md)가 담당합니다. 루트 Compose는 정상 HOME 패키지만 include합니다. LAB은 `labs/`의 독립 Compose로 실행합니다.
 
 ## Audience
 
@@ -22,23 +21,25 @@ created: "2025-11-12"
 
 ## Scope
 
-HOME 공유 상태와 오브젝트·벡터 저장소, OPTIONAL 데이터 플랫폼, LAB 토폴로지를
+HOME 공유 상태와 개발 DB, 오브젝트·벡터 저장소, OPTIONAL 데이터 플랫폼, LAB 토폴로지를
 다룹니다. 애플리케이션 업무 로직과 분석 처리의 소유권은 포함하지 않습니다.
 
 ## Structure
 
 | Package | 역할 | 분류 | 선택·소비 경계 |
 | --- | --- | --- | --- |
-| [mng-db](mng-db/) | 공유 PostgreSQL·Valkey | HOME | 인증·Workflow·Tooling·Analytics 의존성; 패키지의 profile 참조 |
+| [mng-db](mng-db/) | 공유 PostgreSQL·Valkey | HOME | 관리 metadata·세션·큐; 패키지의 profile 참조 |
+| [dev-db](dev-db/) | 개발 PostgreSQL·Valkey | OPTIONAL | `dev-data`; 프로젝트별 업무 데이터 provision |
 | [supabase](supabase/) | 별도 데이터 플랫폼 | OPTIONAL | `supabase`; 공유 mng-db와 스키마·볼륨을 합치지 않음 |
-| [postgresql-cluster](postgresql-cluster/) | Patroni·etcd·HAProxy 토폴로지 | LAB | `postgres-ha`; HOME mng-pg와 별개 |
-| [valkey-cluster](valkey-cluster/) | 6노드 캐시·KV 토폴로지 | LAB | `valkey-cluster`; HOME mng-valkey와 별개 |
-| [cassandra](cassandra/) | wide-column 저장소 | LAB | `cassandra` |
-| [couchdb](couchdb/) | 문서 동기화 저장소 | LAB | `couchdb` |
-| [mongodb](mongodb/) | 문서 저장소·replica set | LAB | `mongodb` |
+| [postgresql-cluster](../../labs/postgresql-ha.md) | Patroni·etcd·HAProxy 토폴로지 | LAB | `postgres-ha`; HOME mng-pg와 별개 |
+| [valkey-cluster](../../labs/valkey-cluster.md) | 6노드 캐시·KV 토폴로지 | LAB | `valkey-cluster`; HOME mng-valkey와 별개 |
+| [cassandra](../../labs/cassandra.md) | wide-column 저장소 | LAB | `cassandra` |
+| [couchdb](../../labs/couchdb.md) | 문서 동기화 저장소 | LAB | `couchdb` |
+| [mongodb](../../labs/mongodb.md) | 문서 저장소·replica set | LAB | `mongodb` |
 | [seaweedfs](seaweedfs/) | 공유 S3·Iceberg REST catalog | HOME | `storage`; 관측·AI·Analytics가 함께 사용 |
 | [influxdb](influxdb/) | 시계열 저장소 | OPTIONAL | `influxdb` |
-| [opensearch](opensearch/) | 검색·인덱스 저장소 | OPTIONAL / LAB | `opensearch` / `opensearch-cluster` |
+| [opensearch](opensearch/) | 단일 검색·인덱스 저장소 | OPTIONAL | `opensearch` |
+| [opensearch-cluster](../../labs/opensearch-cluster.md) | 세 노드 검색 토폴로지 | LAB | `opensearch-cluster`; HOME 단일 노드와 별개 |
 | [neo4j](neo4j/) | 그래프 저장소 | OPTIONAL | `graph` |
 | [redisinsight](redisinsight/) | Redis/Valkey 관리 UI | OPTIONAL | `admin`, `admin-data`; 대상 데이터는 각 엔진 소유 |
 | [qdrant](qdrant/) | 벡터 저장소 | HOME | `ai`, `ai-llm`, `qdrant` |
@@ -63,7 +64,7 @@ admin CIDR·SSO 경계를 유지하고 내부 네트워크 접근도 별도로 �
 - SeaweedFS는 소비자별 bucket identity를 사용합니다. 이전 MinIO 데이터는 기존
   복구 절차에 따라 보존하며 폴더 정리 때문에 제거하지 않습니다.
 - runtime 버전은 각 Compose/Dockerfile 선언을 따릅니다. 서비스별 설정·secret
-  참조·운영 문서는 해당 패키지 README에서 찾습니다.
+  참조·운영 문서는 정상 패키지 README와 `labs/<topology>.md`에서 찾습니다.
 
 ## Related Documents
 

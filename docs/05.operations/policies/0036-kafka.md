@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "1.2.4"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -28,8 +28,9 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 
 ## Controls
 
-- exact root profile만 선택한다. leaf file을 별도의 Compose project로
-  운영하지 않는다. `messaging-cluster`는 same-host LAB topology로 취급한다.
+- 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
+  topology는 root에 include하지 않는 `labs/kafka-cluster.yml`의 독립 LAB이며,
+  별도 project, cluster ID, data directory만 사용한다.
 - broker와 Connect volume을 구분하고, `kafka_net`, health check, shared
   resource limit을 유지한다.
 - 현재 broker, controller, host listener는 PLAINTEXT다. transport
@@ -42,9 +43,10 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
   authentication으로 대체하지 않는다.
 - Topic 생성/삭제, partition 증가, retention 축소, consumer offset 이동,
   connector 변경에는 명시적인 change scope와 rollback이 필요하다.
-- bootstrap topic은 replication factor 3을 요청하므로 healthy broker 3개가
-  필요하다. broker 1개 선택으로 이 initialization을 유효한 것처럼 실행해서는
-  안 된다.
+- 정상 `kafka-init`의 bootstrap topic과 Connect internal topic은 replication
+  factor 1이다. LAB의 `lab-kafka-init` topic은 replication factor 3이며 healthy
+  LAB broker 3개가 필요하다. 두 초기화를 서로의 cluster ID·offset·data
+  directory에 적용해서는 안 된다.
 
 ### Change data capture
 
@@ -57,6 +59,7 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
   authorization control이 아니라 기록된 gap으로 취급한다.
 - connector를 등록, 재구성, 새 snapshot mode로 재시작, 삭제하려면
   connector와 source database를 명시한 승인이 필요하다.
+- `platform_dev`의 현재 `app,debezium_heartbeat` schema publication은 일반 테이블·outbox fixture용이다. Timescale hypertable과 내부 chunk의 CDC는 지원이 검증되지 않았다. 해당 schema에 hypertable을 추가하거나 업무 writer를 연결하기 전에 별도 publication·connector 계약과 격리된 재처리 검증을 승인받는다.
 - Replication slot과 connector offset은 recovery state다. slot 삭제나
   offset reset은 routine fix가 아니라 destructive resynchronization이며,
   승인, downstream duplicate/gap 계획, 새 snapshot이 필요하다.
@@ -91,7 +94,7 @@ notes, client support를 검토한다. rollback과 현재 recovery artifact를
 
 ### Accountable lifecycle boundary
 
-적용 identity: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-2`, `kafka-3`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+적용 identity: 정상 `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`; LAB `lab-kafka-1..3`, `lab-kafka-exporter`, `lab-kafka-init`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ## Exceptions
 
@@ -112,8 +115,9 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 
 ## Traceability
 
-- Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
-  와 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
+- Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml),
+  [LAB Compose](../../../labs/kafka-cluster.yml), [LAB 설명](../../../labs/kafka-cluster.md),
+  [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `POL-0036`; parent: `AD-0005`.
 - Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
   그곳에 유지된다.

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Health and Recovery Triage Runbook"
-version: "1.1.4"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0031"
 parent_ids:
@@ -41,9 +41,11 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
+정적 검사는 `labs/.env.example`과 `labs/postgresql-ha.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+
 ### Checklist
 
-- [ ] 루트 compose의 `include:` 목록과 exact `postgres-ha` profile을 기록한다.
+- [ ] `labs/postgresql-ha.yml`의 독립 project와 `postgres-ha` profile을 확인하고 root include에서 제외됐는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, database mutation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 credential, SQL payload, application data는 기록하지 않는다.
@@ -53,58 +55,58 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile postgres-ha config --quiet
+   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile postgres-ha config --quiet
    ```
 
 2. 전체 서비스 상태를 확인한다.
 
    ```bash
-   docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-cluster-init pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml ps etcd-1 etcd-2 etcd-3 pg-router pg-cluster-init pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
    ```
 
 3. etcd endpoint health를 각 etcd container에서 확인한다.
 
    ```bash
-   docker exec etcd-1 etcdctl endpoint health --endpoints=http://127.0.0.1:${ETCD_CLIENT_PORT:-2379}
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml exec etcd-1 etcdctl endpoint health --endpoints=http://127.0.0.1:${LAB_PG_ETCD_CLIENT_PORT:-2379}
    ```
 
 4. Patroni leadership을 확인한다.
 
    ```bash
-   docker exec pg-0 patronictl -c /home/postgres/postgres.yml list
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml exec pg-0 patronictl -c /home/postgres/postgres.yml list
    ```
 
 5. HAProxy와 init job 로그를 확인한다.
 
    ```bash
-   docker compose logs --tail=120 pg-router pg-cluster-init
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml logs --tail=120 pg-router pg-cluster-init
    ```
 
 6. PostgreSQL node와 exporter 로그를 확인한다.
 
    ```bash
-   docker compose logs --tail=120 pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml logs --tail=120 pg-0 pg-1 pg-2 pg-0-exporter pg-1-exporter pg-2-exporter
    ```
 
 7. `pg-router`만 stopped이고 etcd/Patroni 의존성이 이미 정상이며 owner가 해당 router 재기동을 승인한 경우에만 아래를 사용한다. init, DCS, PostgreSQL member는 이 예시의 대체 대상이 아니다. 의존성 불명·leader 부재면 중단한다.
 
    ```bash
-   docker compose --profile postgres-ha up -d --no-deps pg-router
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml --profile postgres-ha up -d --no-deps pg-router
    ```
 
 ### Verification Steps
 
-- `docker compose ps ...`에서 intended services가 running 또는 healthy 상태인지 확인한다.
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml ps ...`에서 intended services가 running 또는 healthy 상태인지 확인한다.
 - `patronictl list`에서 leader와 members가 표시되는지 확인한다.
 - `pg-router` 로그와 HAProxy config validation healthcheck가 정상인지 확인한다.
 - exporter logs 또는 `/metrics` checks가 secret 값을 출력하지 않고 정상 evidence를 제공하는지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose logs --tail=120 pg-router pg-cluster-init pg-0 pg-1 pg-2`
+- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml logs --tail=120 pg-router pg-cluster-init pg-0 pg-1 pg-2`
 - **Cluster state**: `patronictl list`
 - **DCS state**: `etcdctl endpoint health`
-- **Routing**: HAProxy stats route `pg-haproxy.${DEFAULT_URL}` and HAProxy healthcheck
+- **Routing**: HAProxy healthcheck; 이전 stats label은 HOME gateway와 연결되지 않음
 - **Metrics**: `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`
 
 ### Safe Rollback or Recovery Procedure
@@ -125,7 +127,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 leadership/routing 요약을 기록한다.
 - secret 값, SQL payload, database row 내용 또는 credential을 담은 connection string은 기록하지 않는다.
-- `postgres-ha`를 선택했음을 기록한다. root 파일은 cluster compose 파일을 조건 없이 포함한다.
+- `postgres-ha`를 선택했음을 기록한다. root는 `labs/postgresql-ha.yml`을 include하지 않는다.
 
 ## Rollback or Recovery
 
@@ -143,7 +145,7 @@ leader를 확인할 수 없거나, etcd quorum 관련 증상이 나타나거나,
 
 ## Related Documents
 
-- [Compose implementation: infra/04-data/postgresql-cluster/docker-compose.yml](../../../infra/04-data/postgresql-cluster/docker-compose.yml)
+- [Compose implementation: labs/postgresql-ha.yml](../../../labs/postgresql-ha.yml)
 
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
@@ -152,4 +154,4 @@ leader를 확인할 수 없거나, etcd quorum 관련 증상이 나타나거나,
 - [Operations index](../README.md)
 - [Usage guide](../guides/0031-postgresql-cluster.md)
 - [Operations policy](../policies/0031-postgresql-cluster.md)
-- [Infra README](../../../infra/04-data/postgresql-cluster/README.md)
+- [Infra README](../../../labs/postgresql-ha.md)

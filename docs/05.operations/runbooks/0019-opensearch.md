@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "1.1.5"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -16,14 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
-> Scope: OpenSearch primary stack readiness, HTTPS health check, `opensearch-cluster` topology evidence.
+> Scope: 정상 단일 OpenSearch의 준비 상태와 별도 standalone LAB의 정적·운영 경계.
 
-이 런북은 OpenSearch primary stack(`opensearch` profile) 또는 three-node topology(`opensearch-cluster` profile)의 health/readiness 문제가 있을 때 사용한다. Primary stack은 `opensearch`를, three-node topology는 `opensearch-node1..3` service names를 사용한다.
+정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택합니다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster.yml`의 별도 project입니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록합니다.
 
 ### Purpose
 
 - HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
-- primary stack과 cluster variant를 혼동하지 않는다.
+- 정상 root와 별도 LAB project를 혼동하지 않는다.
 - index/shard 작업 전 snapshot이나 escalation evidence를 확보한다.
 
 ## When to Use
@@ -34,7 +34,7 @@ created: "2026-05-17"
 
 ### Execution and stop boundary
 
-대상: `opensearch`, `opensearch-dashboards`, `opensearch-node1`, `opensearch-node2`, `opensearch-node3`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: 정상 `opensearch`, `opensearch-dashboards`; LAB `opensearch-node1..3`, `lab-opensearch-dashboards`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -44,9 +44,9 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Checklist
 
-현 Dockerfile3.8.0/exporter3.5.0.0 mismatch와 cluster mount/config 차이가 해결·검증되기 전 build/start/restore 정상성을 가정하지 않는다. 공식 exact-version plugin 계약은 GDE-0019와 W4 Task에 기록한다.
+현재 Dockerfile의 OpenSearch 기본 이미지와 exporter plugin의 선언 버전 불일치가 해결되기 전 정상과 LAB의 build/start/restore 성공을 가정하지 않습니다. LAB 인증서의 node/관리자 DN·SAN·신뢰와 Dashboards 연결도 별도 검증 전입니다.
 
-- [ ] Primary `opensearch` profile인지 `opensearch-cluster`의 세 node인지 선택을 기록했다. Dashboards는 두 profile에 포함되며 서로 다른 topology의 준비 상태를 혼동하지 않는다.
+- [ ] 정상 root `opensearch`인지 standalone LAB `opensearch-cluster`인지 Compose 파일과 project 이름까지 기록했습니다. 각 project의 Dashboard는 별개입니다.
 - [ ] admin password는 안전하게 읽고 저장하지 않는다.
 - [ ] index나 shard 변경에는 owner 승인이 필요하다.
 
@@ -56,6 +56,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
    ```bash
    test -f infra/04-data/opensearch/docker-compose.yml
+   test -f labs/opensearch-cluster.yml
    python3 scripts/validation/check-document-links.py --mode all
    ```
 
@@ -73,20 +74,22 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    docker compose --profile opensearch logs --tail 100 opensearch opensearch-dashboards
    ```
 
-4. cluster 구성은 같은 compose 파일의 `opensearch-cluster` profile로 확인한다.
+4. LAB 구성은 별도 파일로 정적 확인합니다. LAB 기동이나 로그 조회는
+   명시적 LAB 실행 승인 후에만 합니다.
 
    ```bash
-   docker compose --profile opensearch-cluster config --quiet
-   docker compose --profile opensearch-cluster logs --tail 100 opensearch-node1 opensearch-node2 opensearch-node3
+   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet
    ```
 
-source health/init/exporter의 기존 password argv 노출은 이 문서 수정으로 고쳐지지 않았다. 별도 구현 변경과 검증이 필요하다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. cluster는 승인된 target/CA를 별도 지정하며 현재 exporter/build mismatch가 해결되지 않아 operational acceptance는 미검증이다.
+   `${LAB_SECRET_DIR}`과 `${LAB_OPENSEARCH_CERT_DIR}`는 승인된 LAB 전용 경로여야 합니다. 정적 render에는 합성 경로를 사용할 수 있지만 비밀 파일 원문을 출력하지 않습니다.
+
+현재 healthcheck와 시작 스크립트는 비밀값을 command argv에 싣지 않도록 수정했습니다. 실제 이미지 빌드·인증·health는 격리 실행 전까지 NOT_RUN입니다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. LAB는 승인된 별도 target/CA/project를 지정하며 현재 custom 이미지의 기본 엔진·plugin 빌드 호환성과 인증서 신뢰가 미검증이므로 operational acceptance는 보류합니다.
 
 ### Verification Steps
 
 - [ ] health endpoint가 primary stack에 대해 최소 yellow 상태를 반환한다.
 - [ ] Dashboards health endpoint가 compose healthcheck가 허용하는 `200` 또는 `401`을 반환한다.
-- [ ] 최종 evidence에 primary 또는 cluster variant 중 어느 것을 점검했는지 명시한다.
+- [ ] 최종 evidence에 정상 또는 LAB의 Compose 파일·project·service를 명시합니다. 관측하지 않은 runtime 결과는 `NOT_RUN`으로 기록합니다.
 
 ### Observability and Evidence Sources
 
@@ -96,7 +99,7 @@ source health/init/exporter의 기존 password argv 노출은 이 문서 수정�
 
 ### Planned isolated snapshot restore
 
-이 절차는 upstream guidance를 바탕으로 문서화했으며 **이 task에서 실행되지 않았다**.
+이 절차는 실행 결과가 아닌 계획이며 실제 snapshot·복구 증거는 해당 실행 Task에 기록합니다.
 
 1. 선택한 topology, cluster UUID/version, index inventory, shard health, repository plugin/configuration, encryption과 credential owner, 가용 disk, 승인된 restore 목적지를 기록한다. tracked security configuration과 certificate는 별도로 보존한다.
 2. least-privilege credential로 live data volume 밖의 repository를 등록하거나 검증한다. `.opendistro_security`를 제외한 named snapshot을 만들고 `SUCCESS`를 기다린 뒤 포함된 index와 실패 내역을 기록한다. live data-directory copy에 의존하지 않는다.
@@ -128,11 +131,10 @@ health가 계속 red/unavailable이거나, shard 변경이 필요하거나, secr
 ## Related Documents
 
 - [Compose implementation: infra/04-data/opensearch/docker-compose.yml](../../../infra/04-data/opensearch/docker-compose.yml)
+- [Standalone LAB Compose](../../../labs/opensearch-cluster.yml) 및 [LAB 설명](../../../labs/opensearch-cluster.md)
 - [Custom image source: infra/04-data/opensearch/Dockerfile](../../../infra/04-data/opensearch/Dockerfile)
 
 - [OpenSearch snapshot and restore](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
-- [Compose implementation](../../../infra/04-data/opensearch/docker-compose.yml)
-
 - [Operations runbooks index](../README.md)
 - [Usage guide](../guides/0019-opensearch.md)
 - [Operations policy](../policies/0019-opensearch.md)

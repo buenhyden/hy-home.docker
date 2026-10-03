@@ -2011,6 +2011,7 @@ _NON_DOCS_ROOTS = (
     ".agents/",
     "examples/",
     "infra/",
+    "labs/",
     "projects/",
 )
 _NON_DOCS_FILES = frozenset(

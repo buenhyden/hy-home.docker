@@ -1,0 +1,224 @@
+name: hy-home-lab-opensearch
+
+networks:
+  lab_opensearch_core_net:
+    name: hy-home-lab-opensearch-core
+    internal: true
+
+secrets:
+  lab_opensearch_admin_password:
+    file: ${LAB_SECRET_DIR:?set isolated LAB secret root}/opensearch-cluster/admin_password.txt
+  lab_opensearch_dashboard_password:
+    file: ${LAB_SECRET_DIR:?set isolated LAB secret root}/opensearch-cluster/dashboard_password.txt
+  lab_opensearch_exporter_password:
+    file: ${LAB_SECRET_DIR:?set isolated LAB secret root}/opensearch-cluster/exporter_password.txt
+  lab_opensearch_security_cookie:
+    file: ${LAB_SECRET_DIR:?set isolated LAB secret root}/opensearch-cluster/security_cookie.txt
+
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-lab-node-environment: &lab-node-environment
+  cluster.name: ${LAB_OPENSEARCH_CLUSTER_NAME:-hyhome-lab-opensearch}
+  discovery.seed_hosts: opensearch-node1,opensearch-node2,opensearch-node3
+  cluster.initial_cluster_manager_nodes: opensearch-node1,opensearch-node2,opensearch-node3
+  bootstrap.memory_lock: 'true'
+  network.host: 0.0.0.0
+  OPENSEARCH_JAVA_OPTS: '-Xms1g -Xmx1g'
+  DISABLE_INSTALL_DEMO_CONFIG: 'true'
+  plugins.security.disabled: 'false'
+  plugins.security.ssl.transport.pemcert_filepath: /usr/share/opensearch/config/certs/cert.pem
+  plugins.security.ssl.transport.pemkey_filepath: /usr/share/opensearch/config/certs/key.pem
+  plugins.security.ssl.transport.pemtrustedcas_filepath: /usr/share/opensearch/config/certs/rootCA.pem
+  plugins.security.ssl.http.enabled: 'true'
+  plugins.security.ssl.http.pemcert_filepath: /usr/share/opensearch/config/certs/cert.pem
+  plugins.security.ssl.http.pemkey_filepath: /usr/share/opensearch/config/certs/key.pem
+  plugins.security.ssl.http.pemtrustedcas_filepath: /usr/share/opensearch/config/certs/rootCA.pem
+  plugins.security.allow_default_init_securityindex: 'true'
+  plugins.security.allow_unsafe_democertificates: 'false'
+
+x-lab-node: &lab-node
+  profiles: [opensearch-cluster]
+  extends:
+    file: ../infra/common-optimizations.yml
+    service: template-stateful-db-high
+  build:
+    context: ../infra/04-data/opensearch
+    dockerfile: Dockerfile
+  entrypoint: [ /bin/bash, -ec ]
+  command:
+    - |
+      cat > /usr/share/opensearch/config/opensearch-security/config.yml <<'CONFIG'
+      _meta:
+        type: config
+        config_version: 2
+      config:
+        dynamic:
+          http:
+            anonymous_auth_enabled: false
+          authc:
+            basic_internal_auth_domain:
+              http_enabled: true
+              transport_enabled: true
+              order: 0
+              http_authenticator:
+                type: basic
+                challenge: true
+              authentication_backend:
+                type: internal
+          authz: {}
+      CONFIG
+      exec /usr/local/bin/opensearch-entrypoint.sh
+  environment: *lab-node-environment
+  ulimits:
+    memlock:
+      soft: -1
+      hard: -1
+    nofile:
+      soft: 65536
+      hard: 65536
+  shm_size: 1g
+  cap_add: [ IPC_LOCK ]
+  secrets:
+    - source: lab_opensearch_admin_password
+      target: opensearch_admin_password
+    - source: lab_opensearch_dashboard_password
+      target: opensearch_dashboard_password
+    - source: lab_opensearch_exporter_password
+      target: opensearch_exporter_password
+  expose: [ '9200', '9600' ]
+  healthcheck:
+    test:
+      - CMD-SHELL
+      - >-
+        PASS=$$(cat /run/secrets/opensearch_admin_password);
+        case "$$PASS" in ''|*[!A-Za-z0-9_+./=:@#%-]*) exit 1 ;; esac;
+        printf 'user = "admin:%s"\n' "$$PASS" |
+        curl -fsSk --config - 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' >/dev/null
+    interval: 15s
+    timeout: 10s
+    retries: 10
+    start_period: 60s
+  networks:
+    lab_opensearch_core_net: {}
+  labels:
+    <<: *tier-label
+    traefik.enable: 'false'
+
+volumes:
+  lab-opensearch-node1-data:
+  lab-opensearch-node2-data:
+  lab-opensearch-node3-data:
+  lab-opensearch-dashboards-data:
+
+services:
+  opensearch-node1:
+    <<: *lab-node
+    hostname: opensearch-node1
+    environment:
+      <<: *lab-node-environment
+      node.name: opensearch-node1
+    volumes:
+      - lab-opensearch-node1-data:/usr/share/opensearch/data:rw
+      - type: bind
+        source: ${LAB_OPENSEARCH_CERT_DIR:?set isolated LAB certificate directory}
+        target: /usr/share/opensearch/config/certs
+        read_only: true
+        bind:
+          create_host_path: false
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+
+  opensearch-node2:
+    <<: *lab-node
+    hostname: opensearch-node2
+    environment:
+      <<: *lab-node-environment
+      node.name: opensearch-node2
+    volumes:
+      - lab-opensearch-node2-data:/usr/share/opensearch/data:rw
+      - type: bind
+        source: ${LAB_OPENSEARCH_CERT_DIR:?set isolated LAB certificate directory}
+        target: /usr/share/opensearch/config/certs
+        read_only: true
+        bind:
+          create_host_path: false
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+
+  opensearch-node3:
+    <<: *lab-node
+    hostname: opensearch-node3
+    environment:
+      <<: *lab-node-environment
+      node.name: opensearch-node3
+    volumes:
+      - lab-opensearch-node3-data:/usr/share/opensearch/data:rw
+      - type: bind
+        source: ${LAB_OPENSEARCH_CERT_DIR:?set isolated LAB certificate directory}
+        target: /usr/share/opensearch/config/certs
+        read_only: true
+        bind:
+          create_host_path: false
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/internal_users.template.yml:/usr/share/opensearch/config/opensearch-security/internal_users.template.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles_mapping.yml:/usr/share/opensearch/config/opensearch-security/roles_mapping.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/roles.yml:/usr/share/opensearch/config/opensearch-security/roles.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/action_groups.yml:/usr/share/opensearch/config/opensearch-security/action_groups.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/opensearch-security/tenants.yml:/usr/share/opensearch/config/opensearch-security/tenants.yml:ro
+      - ../infra/04-data/opensearch/opensearch/config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro
+
+  lab-opensearch-dashboards:
+    profiles: [opensearch-cluster]
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-med
+    image: opensearchproject/opensearch-dashboards:3.8.0
+    environment:
+      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
+      OPENSEARCH_USERNAME: kibanaserver
+      OPENSEARCH_SSL_VERIFICATIONMODE: certificate
+      OPENSEARCH_SSL_CERTIFICATEAUTHORITIES: '["/usr/share/opensearch-dashboards/config/certs/rootCA.pem"]'
+      OPENSEARCH_SECURITY_AUTH_TYPE: basicauth
+      SERVER_SSL_ENABLED: 'false'
+    command:
+      - /bin/bash
+      - -ec
+      - |
+        export OPENSEARCH_PASSWORD="$$(tr -d '\r\n' </run/secrets/lab_opensearch_dashboard_password)"
+        export OPENSEARCH_SECURITY_COOKIE_PASSWORD="$$(tr -d '\r\n' </run/secrets/lab_opensearch_security_cookie)"
+        exec /usr/share/opensearch-dashboards/bin/opensearch-dashboards
+    secrets:
+      - lab_opensearch_dashboard_password
+      - lab_opensearch_security_cookie
+    volumes:
+      - lab-opensearch-dashboards-data:/usr/share/opensearch-dashboards/data:rw
+      - type: bind
+        source: ${LAB_OPENSEARCH_CERT_DIR:?set isolated LAB certificate directory}/rootCA.pem
+        target: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
+        read_only: true
+        bind:
+          create_host_path: false
+    expose: [ '5601' ]
+    depends_on:
+      opensearch-node1: { condition: service_healthy }
+      opensearch-node2: { condition: service_healthy }
+      opensearch-node3: { condition: service_healthy }
+    healthcheck:
+      test: [ CMD-SHELL, "code=$$(curl -s -o /dev/null -w '%{http_code}' http://localhost:5601/api/status); [ \"$$code\" = 200 ] || [ \"$$code\" = 401 ]" ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 60s
+    networks:
+      lab_opensearch_core_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'

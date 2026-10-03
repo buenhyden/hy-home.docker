@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "1.0.6"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -26,20 +26,19 @@ lifecycle, 독립적으로 검증 가능한 operator control에 묶는다.
 
 ## Controls
 
-- root Compose project와 정확한 `valkey-cluster` profile을 통해서만 stack을
-  선택한다. Leaf rendering은 지원되지 않는다.
+- `labs/valkey-cluster.yml` 독립 Compose project와 정확한 `valkey-cluster` profile로만 stack을 선택한다. root include에는 넣지 않는다.
 - 여섯 개 data volume을 모두 분리해서 유지한다. 두 node가 한 디렉터리를
   가리키게 하거나 recovery target에서 live `nodes.conf` identity를 재사용하지
   않는다.
-- `service_valkey_password`를 Docker secret custody에 유지한다. 그 값을
+- `lab_valkey_password`를 Docker secret custody에 유지한다. 그 값을
   Compose, Markdown, shell history, evidence에 두지 않는다.
-- client port(`6379`-`6384`)는 `127.0.0.1`에만 게시한다. cluster-bus port는
+- LAB host client port(기본 17379–17384)는 `127.0.0.1`에만 게시한다. cluster-bus port는
   host에 게시하지 않는다. 현재 source는 authentication을 선언하지만 TLS는
   선언하지 않는다.
 - 활성화 전에 client, dataset, retention, capacity hypothesis를 기록한다.
   한 host 위의 세 replica는 topology exercise이지 host availability가
   아니다.
-- 공유 health check, resource limit, `lab_net` boundary를 보존한다.
+- 공유 health check, resource limit, `lab_valkey_core_net`/`lab_valkey_obs_net` boundary를 보존한다.
 
 ### Data protection
 
@@ -76,7 +75,7 @@ same-host availability 주장을 승인하지 않는다.
 
 ## Verification
 
-root configuration과 scoped static policy check를 검증한 다음, promotion
+독립 LAB configuration과 scoped static policy check를 검증한 다음, promotion
 또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
 
@@ -87,7 +86,7 @@ lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한
 
 ## Traceability
 
-- Runtime source: [Valkey Cluster Compose](../../../infra/04-data/valkey-cluster/docker-compose.yml).
+- Runtime source: [Valkey Cluster Compose](../../../labs/valkey-cluster.yml).
 - Artifact: `POL-0022`; parent: `AD-0004`.
 - Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
 

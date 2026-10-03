@@ -44,7 +44,7 @@ services:
       traefik.http.routers.dozzle.rule: Host(`dozzle.${DEFAULT_URL}`)
       traefik.http.routers.dozzle.entrypoints: websecure
       traefik.http.routers.dozzle.tls: 'true'
-      traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.middlewares.dozzle-admin-ip.ipallowlist.sourcerange: ${ADMIN_UI_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       traefik.http.routers.dozzle.middlewares: gateway-standard-chain@file,dozzle-admin-ip@docker
       traefik.http.services.dozzle.loadbalancer.server.port: ${DOZZLE_PORT:-8080}
     networks:

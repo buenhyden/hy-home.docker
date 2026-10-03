@@ -13,6 +13,10 @@
     "pip_requirements"
   ],
 
+  "docker-compose": {
+    "managerFilePatterns": ["/^labs\\/[^/]+\\.ya?ml$/"]
+  },
+
   "pip_requirements": {
     "description": "Only image-local Python pins under infra/ belong to Renovate; the scripts/ CI requirements and tests/requirements-integration.txt keep their existing manual ownership",
     "managerFilePatterns": [

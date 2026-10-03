@@ -1,4 +1,6 @@
 \set ON_ERROR_STOP on
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 -- PostgreSQL 초기화 스크립트
 -- psql -v 로 전달된 변수를 사용한다.
 
@@ -25,6 +27,8 @@ ALTER SCHEMA public OWNER TO n8n;
 -- 2. keycloak 설정
 ---------------------------------------------------------
 \connect postgres
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 
 SELECT 'CREATE ROLE keycloak LOGIN PASSWORD ' || quote_literal(:'keycloak_db_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'keycloak')
@@ -46,6 +50,8 @@ ALTER SCHEMA public OWNER TO keycloak;
 -- 3. airflow 설정
 ---------------------------------------------------------
 \connect postgres
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 
 SELECT 'CREATE ROLE airflow LOGIN PASSWORD ' || quote_literal(:'airflow_db_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'airflow')
@@ -67,6 +73,8 @@ ALTER SCHEMA public OWNER TO airflow;
 -- 4. terrakube 설정
 ---------------------------------------------------------
 \connect postgres
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 
 SELECT 'CREATE ROLE terrakube LOGIN PASSWORD ' || quote_literal(:'terrakube_db_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'terrakube')
@@ -88,6 +96,8 @@ ALTER SCHEMA public OWNER TO terrakube;
 -- 5. sonarqube 설정
 ---------------------------------------------------------
 \connect postgres
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 
 SELECT 'CREATE ROLE sonarqube LOGIN PASSWORD ' || quote_literal(:'sonarqube_db_password')
 WHERE NOT EXISTS (SELECT 1 FROM pg_catalog.pg_roles WHERE rolname = 'sonarqube')
@@ -104,79 +114,3 @@ GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonarqube;
 \connect sonarqube
 GRANT ALL ON SCHEMA public TO sonarqube;
 ALTER SCHEMA public OWNER TO sonarqube;
-
------------------------------------------------------------------------
--- 2. app/service role 생성 / 비밀번호 동기화
------------------------------------------------------------------------
-SELECT format(
-  'CREATE ROLE %I WITH LOGIN PASSWORD %L',
-  :'service_postgres_username',
-  :'service_postgres_password'
-)
-WHERE NOT EXISTS (
-  SELECT 1
-  FROM pg_catalog.pg_roles
-  WHERE rolname = :'service_postgres_username'
-)
-\gexec
-
-SELECT format(
-  'ALTER ROLE %I WITH LOGIN PASSWORD %L',
-  :'service_postgres_username',
-  :'service_postgres_password'
-)
-\gexec
-
------------------------------------------------------------------------
--- 3. app/service database 생성
------------------------------------------------------------------------
-SELECT format(
-  'CREATE DATABASE %I OWNER %I',
-  :'service_postgres_db',
-  :'service_postgres_username'
-)
-WHERE NOT EXISTS (
-  SELECT 1
-  FROM pg_database
-  WHERE datname = :'service_postgres_db'
-)
-\gexec
-
-SELECT format(
-  'ALTER DATABASE %I OWNER TO %I',
-  :'service_postgres_db',
-  :'service_postgres_username'
-)
-\gexec
-
-SELECT format(
-  'GRANT ALL PRIVILEGES ON DATABASE %I TO %I',
-  :'service_postgres_db',
-  :'service_postgres_username'
-)
-\gexec
-
------------------------------------------------------------------------
--- 4. app/service database 내부 schema 권한 정리
------------------------------------------------------------------------
--- gexec sends SQL to the server; connect must be executed by psql itself.
--- Quote a libpq dbname value, including literal quotes/backslashes, so names
--- containing '=' or URI prefixes cannot override the existing connection.
-SELECT 'dbname=''' || replace(
-  replace(:'service_postgres_db', chr(92), chr(92) || chr(92)),
-  '''', chr(92) || ''''
-) || '''' AS service_postgres_conninfo
-\gset
-\connect -reuse-previous=on :service_postgres_conninfo
-
-SELECT format(
-  'ALTER SCHEMA public OWNER TO %I',
-  :'service_postgres_username'
-)
-\gexec
-
-SELECT format(
-  'GRANT ALL ON SCHEMA public TO %I',
-  :'service_postgres_username'
-)
-\gexec

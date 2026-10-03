@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -14,8 +14,6 @@ implementation_services:
   - 'debezium-db-provision'
   - 'kafbat-ui'
   - 'kafka-1'
-  - 'kafka-2'
-  - 'kafka-3'
   - 'kafka-connect'
   - 'kafka-exporter'
   - 'kafka-init'
@@ -28,33 +26,34 @@ created: "2026-05-10"
 
 ## Usage
 
-Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. Kafka를 지속적으로 실행해야 한다는
-근거를 제시한 HOME consumer는 현재 없다. 세 브로커가 하나의 Docker host를
-공유하므로 `messaging-cluster` profile은 host 가용성은 제공하지 못하고
-KRaft/replication 동작을 테스트한다. 현재 구현에는 두 번째 broker family가
-없다.
+Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
+`kafka-1`만 있고, 다중 broker 학습은 독립 LAB 진입점의 `lab-kafka`
+프로파일로 분리했다. 세 LAB broker도 한 Docker host를 공유하므로 host
+가용성을 증명하지 않는다. 정상 서비스를 지속 실행해야 한다는 HOME consumer는
+현재 확인되지 않았다.
 
 ### Current implementation
 
 [`infra/05-messaging/kafka/docker-compose.yml`](../../../infra/05-messaging/kafka/docker-compose.yml)은
-10개 서비스를 정의한다.
+정상 서비스 8개를 정의한다. [`Kafka LAB 안내`](../../../labs/kafka-cluster.md)와 [`labs/kafka-cluster.yml`](../../../labs/kafka-cluster.yml)은
+LAB 전용 브로커 3개·exporter·init 5개를 독립 Compose project로 정의하며 정상 root가 include하지 않는다.
 
-| Service | Role | Current selectors |
+| Service | Role | Selector |
 | --- | --- | --- |
-| `kafka-1` | KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-cluster`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
-| `kafka-2`, `kafka-3` | 추가 동일 host broker/controller | `messaging-cluster` |
-| `schema-registry` | 스키마 저장소/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
-| `kafka-connect` | Debezium PostgreSQL plugin을 갖춘 connector runtime | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
-| `debezium-db-provision` | CDC source role, `mng-pg`에 대한 grant와 publication | `cdc` |
+| `kafka-1` | 단일 KRaft broker/controller | `messaging`, `messaging-broker`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
+| `schema-registry` | Avro schema 저장소/API | `messaging`, `messaging-schema`, `messaging-connect`, `messaging-rest`, `messaging-admin`, `cdc` |
+| `kafka-connect` | Debezium connector runtime | `messaging`, `messaging-connect`, `messaging-admin`, `cdc` |
+| `debezium-db-provision` | `dev-pg/platform_dev` 일반 테이블·outbox source role·publication; hypertable CDC 미검증 | `cdc` |
 | `kafka-rest-proxy` | REST producer/consumer API | `messaging`, `messaging-rest` |
-| `kafbat-ui` | native OIDC/RBAC를 갖춘 관리 UI | `messaging`, `messaging-admin` |
-| `kafka-exporter`, `kafka-init` | 메트릭과 topic bootstrap | `messaging`, `messaging-broker`, `messaging-cluster` |
+| `kafbat-ui` | native OIDC/RBAC 관리 UI | `messaging`, `messaging-admin` |
+| `kafka-exporter`, `kafka-init` | 메트릭과 RF1 topic bootstrap | `messaging`, `messaging-broker` |
+| `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 독립 RF3 실습 closure | `lab-kafka` |
 
-`kafka-1-data`, `kafka-2-data`, `kafka-3-data`, `kafka-connect-data`는
-`${DEFAULT_MESSAGE_BROKER_DIR}/kafka` 아래의 bind-backed named volume이다.
-broker listener는 현재 게시된 host listener를 포함해 `PLAINTEXT`이며, broker
-인증이나 TLS가 없다. 모든 서비스는 `kafka_net`과 공유 리소스/health
-템플릿을 사용한다.
+정상 `kafka-1-data`와 `kafka-connect-data`는
+`${DEFAULT_MESSAGE_BROKER_DIR}/kafka`의 별도 volume이다. LAB 상태는
+`${LAB_DATA_DIR}/kafka/{1,2,3}`에 있고 별도 cluster ID, network, topic·offset을
+사용하며 host port를 게시하지 않는다. broker PLAINTEXT는 내부 network에서만
+사용한다. 정상 broker의 기존 localhost host listener는 별도로 존재한다.
 
 Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 `kafbat_client_secret`을 읽고, local CA를 신뢰하며, group 기반 RBAC를
@@ -69,20 +68,25 @@ gap이다.
 
 ### Identity-specific behavior
 
-Kafka CP8.3.2 는 4.3 family 이며 broker1 은단일/cluster selector, broker2/3 은 cluster 전용이다. RF3 의 kafka-init 는 3healthy brokers 가 필요하여 단일 selector 의완료를 보장하지 않는다. KRaft combined role 와 PLAINTEXT client/controller/JMX 는 TLS/auth 제공이 아니다. exporter 는 lag 관측, Schema Registry 는 schema-ID history, Connect 는내부 offset/config/status, REST 는 HTTP 변환, Kafbat 는 nativeOIDC/RBAC 로 각각 다르다. Debezium helper 는 mng-pg feature grants 를 변경하고 connector JSON 은자동 등록되지 않는다. Connect built3.6.3 PG plugin 만 복사하며 CP8.3 family 정렬은커스텀 통합 인증이 아니다. JMX YAML 이 있어도 agent/JAR 경로와 scrape 성공은별도 확인한다.
+Compose에 선언된 Confluent CP 이미지가 정상 단일 broker와 LAB 다중 broker에 쓰인다.
+정상 `kafka-init`은 RF1, LAB `lab-kafka-init`은 RF3이며 서로 다른
+KRaft identity와 저장소를 사용한다. broker/client/controller 경로의
+PLAINTEXT는 TLS·인증을 제공하지 않는다. Schema Registry는 실제 Avro
+connector의 schema ID 이력을, Connect는 connector config/offset/status를
+소유한다. Debezium source는 `dev-pg/platform_dev`이며 connector JSON은
+자동 등록되지 않는다. JMX 설정·exporter 선언만으로 scrape 성공은 증명되지 않는다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
 | `debezium-db-provision` | CDC source role/grant/publication provisioning job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafbat-ui` | native OIDC/RBAC UI; tmpfs config | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `kafka-1` | KRaft combined broker/controller 1; 일반/cluster selector | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `kafka-2` | KRaft combined broker/controller 2; cluster selector 전용 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `kafka-3` | KRaft combined broker/controller 3; cluster selector 전용 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-1` | KRaft combined broker/controller 1; 정상 단일 selector | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-connect` | connector worker/internal state; PG Debezium만 copied build | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-exporter` | broker/consumer lag metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
-| `kafka-init` | RF3 topic creation job; 세 broker 필요 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `kafka-init` | RF1 topic creation job; 단일 broker 필요 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `kafka-rest-proxy` | HTTP→Kafka 변환; native auth 선언 없음 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
 | `schema-registry` | schema-ID/history; Kafka state에 의존 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/05-messaging/kafka/docker-compose.yml) |
+| `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init` | 격리 KRaft RF3 실습 | 실제 quorum·topic 상태 미검증 | [LAB 선택·상태](../../../labs/kafka-cluster.md) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
@@ -103,41 +107,32 @@ job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
-docker compose --env-file .env.example --profile messaging-cluster config --quiet
+docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
 ```
 
-저장소 루트에서 실행한다. init job은 replication factor 3으로 `infra-events`와
-`application-logs`를 생성하므로, 건강한 broker 3개가 있어야만 bootstrap이
-유효하다. 별도로 승인된 fix 없이는 단일 broker `messaging` 선택을 topic
-초기화 성공으로 보지 않는다. 서비스 시작, topic 생성, 테스트 레코드 생성은
-runtime 작업이다.
+저장소 루트에서 정적 render만 수행한다. 정상 `kafka-init`은 RF1,
+LAB `lab-kafka-init`은 RF3이다. LAB의 `LAB_KAFKA_CLUSTER_ID`는 정상
+`KAFKA_CLUSTER_ID`와 달라야 한다. 서비스 시작과 topic 생성은 별도 runtime
+승인 대상이다.
 
 ### Change data capture (`cdc`)
 
-`cdc`는 broker, Schema Registry, Connect, `mng-pg`, `debezium-db-provision`을
-선택한다. 이 job은
-[`connect/debezium/provisioning/mng-pg.sql`](../../../infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql)의
-feature SQL을 실행한다: superuser는 아니지만 `REPLICATION` 권한을 가진
-`debezium` login, 게시된 schema에 대한 `CONNECT`, `USAGE`, `SELECT`(이후
-테이블에 대한 default privilege 포함), 하나의 `heartbeat` 테이블을 가진 자체
-소유 `debezium_heartbeat` schema, 그리고 정확히 이 두 schema에 대한
-`hyhome_app_publication` publication. 이 job은 replication slot을 생성하거나
-삭제하지 않으며, 자신이 생성하지 않은 role을 변경하지 않는다(role은
-`hy-home:feature:debezium` 주석 마커를 가진다).
+`cdc`는 정상 broker·Schema Registry·Connect와 `dev-pg`,
+`dev-platform-provision`, `debezium-db-provision`을 선택한다. 기능 SQL
+[`dev-pg.sql`](../../../infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql)은
+`platform_dev`의 `app` schema 읽기, 별도 `debezium_heartbeat` 쓰기와
+`hyhome_platform_publication`을 선언한다. Connector는 독립
+`hyhome_platform_slot`, topic prefix `hyhome.platform`을 사용하고 Avro
+변환 때문에 Schema Registry를 유지한다. 기존 mng-pg slot·publication·topic과
+LSN을 재사용하지 않는다. connector JSON은 자동 등록되지 않으며 등록, snapshot,
+writer/reader 전환은 별도 승인이 필요하다.
 
-Connect는 시작할 때마다 `debezium_postgres_password` secret에서
-`/tmp/connect-secrets/debezium.properties`를 렌더링하고(Java-properties
-escaping, mode 0600, tmpfs), `FileConfigProvider`를 `allowed.paths`로 해당
-디렉터리에 제한한다. connector 정의
+Connect는 시작할 때 `debezium_postgres_password` secret에서
+`/tmp/connect-secrets/debezium.properties`를 tmpfs에 렌더링한다. connector
 [`postgres-connector.json`](../../../infra/05-messaging/kafka/connect/debezium/postgres-connector.json)은
-`${file:/tmp/connect-secrets/debezium.properties:password}`를 참조하고
-`pgoutput`, slot `hyhome_app_slot`, `publication.autocreate.mode=disabled`를
-사용한다. `mng-pg`는 여러 데이터베이스를 호스팅하므로, Keycloak, n8n,
-Airflow가 기록하는 WAL은 조용한 `app_db`의 slot을 진행시키지 않는다. 60초마다
-connector의 `heartbeat.action.query`가 `debezium_heartbeat.heartbeat`를
-upsert한다. 이 변경 덕분에 더 새로운 LSN을 확인할 수 있다. 이 방식은
-connector가 실행되는 동안에만 보존된 WAL을 제한한다. 중지되거나 일시정지된
-connector는 여전히 `max_slot_wal_keep_size`까지 WAL을 고정한다.
+`FileConfigProvider`, `pgoutput`, `publication.autocreate.mode=disabled`,
+60초 heartbeat action을 선언한다. 중단된 slot은 WAL을 고정할 수 있으므로
+실제 lag·WAL 용량은 별도로 관측해야 한다.
 
 다음 상태는 서로 구분되며 상태마다 자체 증거가 필요하다.
 
@@ -147,16 +142,12 @@ connector는 여전히 `max_slot_wal_keep_size`까지 WAL을 고정한다.
 | 등록됨 | `GET /connectors/<name>`이 config를 반환함 |
 | 실행 중 | `GET /connectors/<name>/status`에서 connector와 task가 `RUNNING`으로 표시됨 |
 | Snapshot 완료 | connector metric이나 log에서 초기 snapshot 완료를 확인함 |
-| 변경 수집됨 | test 변경이 `hyhome.app.*` topic에 나타남 |
+| 변경 수집됨 | test 변경이 `hyhome.platform.*` topic에 나타남 |
 
-`mng-pg`는 `wal_level=logical`, `max_replication_slots`, `max_wal_senders`,
-`max_slot_wal_keep_size`(기본값 2048 MB)를 선언한다. 실행 중인 인스턴스는
-승인된 recreate 전까지 이전 command를 그대로 사용한다. recreate하면 Keycloak,
-n8n, Airflow 등을 위한 management database가 재시작된다. slot이 존재하면
-connector가 확인할 때까지 WAL이 보존되고 그 양은 `max_slot_wal_keep_size`로
-제한된다. 이 한도를 넘으면 slot이 무효화되고 새 snapshot이 강제된다. connector
-등록, 변경, snapshot 트리거는 connector와 데이터베이스를 명시한 승인이
-필요한 runtime 변경이다.
+`dev-pg` 소스는 `wal_level=logical`, slot·sender·WAL 보존 한도를
+선언한다. 실제 신규 DB provision, replication role, publication, slot,
+connector 등록·snapshot·offset 재설정은 아직 실행하지 않았다. 기존 HOME
+`mng-pg/app_db` 기술 객체와 이전 topic은 별도 승인 전까지 보존한다.
 
 ## Runbook Handoff
 

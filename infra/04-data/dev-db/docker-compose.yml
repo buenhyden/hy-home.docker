@@ -1,0 +1,170 @@
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  dev-pg-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/dev-pg
+  dev-valkey-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${DEFAULT_DATA_DIR}/dev-valkey/data
+
+
+services:
+  dev-pg:
+    profiles: [dev-data, analytics-engineering, cdc]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-db-med
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    platform: linux/amd64
+    build:
+      context: ./pg
+      dockerfile: Dockerfile
+    container_name: dev-pg
+    hostname: dev-pg
+    cap_drop: [ALL]
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
+    cpus: '2.00'
+    mem_limit: 2g
+    shm_size: 256mb
+    pids_limit: 256
+    environment:
+      POSTGRES_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
+      POSTGRES_USER: ${DEV_PG_ADMIN_USER:-postgres}
+      POSTGRES_DB: postgres
+      PGDATA: /var/lib/postgresql/18/docker
+      PGBACKREST_PG1_USER: ${DEV_PG_ADMIN_USER:-postgres}
+      PGBACKREST_CONFIG_INCLUDE_PATH: /tmp/pgbackrest/conf.d
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=timescaledb
+      - -c
+      - wal_level=logical
+      - -c
+      # WAL archiving stays off until stanza/key/repository/schedule verification
+      # and a separately approved restart.
+      - archive_mode=off
+      - -c
+      - archive_command=pgbackrest --stanza=dev archive-push %p
+      - -c
+      - archive_timeout=300
+      - -c
+      - max_connections=100
+      - -c
+      - max_wal_size=2GB
+      - -c
+      - max_replication_slots=4
+      - -c
+      - max_wal_senders=4
+      - -c
+      - max_slot_wal_keep_size=2048MB
+      - -c
+      - shared_buffers=512MB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=128MB
+      - -c
+      - statement_timeout=30s
+    ports:
+      - '127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432'
+    volumes:
+      - dev-pg-data:/var/lib/postgresql:rw
+      - type: bind
+        source: ${BACKUP_STATE_REPO_DIR:-/missing-BACKUP_STATE_REPO_DIR}/dev-pgbackrest
+        target: /var/lib/pgbackrest
+        bind:
+          create_host_path: false
+    secrets:
+      - dev_pg_admin_password
+      - dev_pgbackrest_cipher_pass
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    networks:
+      dev_data_net: {}
+
+  dev-platform-provision:
+    profiles: [analytics-engineering, cdc]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-med
+    restart: 'no'
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    platform: linux/amd64
+    entrypoint: ['python3', '/work/project.py', '/work/platform.json']
+    environment:
+      DEV_PG_ADMIN_USER: ${DEV_PG_ADMIN_USER:-postgres}
+    volumes:
+      - ./pg/provision:/work:ro
+    secrets:
+      - dev_pg_admin_password
+      - dev_pg_platform_migrator_password
+      - dev_pg_platform_runtime_password
+      - dev_pg_platform_reader_password
+    depends_on:
+      dev-pg:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      dev_data_net: {}
+  dev-valkey:
+    profiles:
+      - dev-data
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-stateful-low
+    image: valkey/valkey:9.1.2-alpine
+    user: '999:999'
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /run/valkey:uid=999,gid=999,mode=0700
+    entrypoint: [ '/bin/sh', '/usr/local/libexec/dev-valkey/start.sh' ]
+    volumes:
+      - dev-valkey-data:/data:rw
+      - ./valkey/config/valkey.conf:/etc/dev-valkey/valkey.conf:ro
+      - ./valkey/scripts:/usr/local/libexec/dev-valkey:ro
+      - type: bind
+        source: ${DEV_VALKEY_PROJECTS_FILE:-./valkey/config/projects.tsv}
+        target: /etc/dev-valkey/projects.tsv
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${DEV_VALKEY_PROJECT_SECRETS_DIR:-./valkey/config/empty-project-secrets}
+        target: /run/valkey-project-secrets
+        read_only: true
+        bind:
+          create_host_path: false
+    secrets:
+      - dev_valkey_admin_password
+    expose:
+      - '6379'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG' ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      dev_data_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'

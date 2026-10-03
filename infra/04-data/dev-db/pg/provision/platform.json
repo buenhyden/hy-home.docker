@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "project_id": "hyhome-platform",
+  "environment": "development",
+  "database": "platform_dev",
+  "schema": "app",
+  "roles": {
+    "owner": "platform_owner",
+    "migrator": "platform_migrator",
+    "runtime": "platform_runtime",
+    "reader": "platform_reader"
+  },
+  "password_secrets": {
+    "migrator": "dev_pg_platform_migrator_password",
+    "runtime": "dev_pg_platform_runtime_password",
+    "reader": "dev_pg_platform_reader_password"
+  }
+}

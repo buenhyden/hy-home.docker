@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "1.4.0"
+version: "2.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "POL-0006"
 parent_ids: []
@@ -14,7 +14,7 @@ created: "2026-06-04"
 
 ## Overview
 
-이 정책은 root Compose가 include하는 모든 tracked infra service의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
+이 정책은 root Compose가 include하는 정상 서비스와 `labs/*.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
 ## Policy Scope
@@ -23,7 +23,7 @@ created: "2026-06-04"
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
-- **Systems**: root에 include된 tracked Compose의 모든 service identity. 현재 명단은 Guide binding과 operations catalog가 소유한다.
+- **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
 
 > Historical evidence (not current authority; source: Git history):
@@ -49,15 +49,8 @@ created: "2026-06-04"
 - Compose/Dockerfile declarations own runtime pins. `infra/tech-stack.versions.json`은
   Compose image declaration에서 파생한 projection이며 Dockerfile build pin 전체를
   대체하지 않는다.
-- 새 service는 root include, POL-0078 canonical profile membership, public
-  environment/secret schema, image projection/update owner, service README와
-  Guide/Policy/Runbook을 함께 갱신한다. service를 소유한 Guide에는
-  `implementation_services` mapping이 필수이며 exact Compose path/service binding을
-  소유한다. service를 소유하지 않는 공통 subject에서는 생략할 수 있다.
-  existing operations-catalog validator가 같은 mapping의 global join을 검증하며
-  별도 registry를 만들지 않는다.
-- HOME profile membership과 full profile vocabulary table은
-  [POL-0078](0078-compose-profile-vocabulary.md)에서만 관리한다.
+- 정상 서비스 추가는 root include, POL-0078 profile membership, 공용 환경·secret 계약, image projection/update owner, package README와 Guide/Policy/Runbook을 함께 갱신한다. 정상 service를 소유한 Guide의 `implementation_services`는 root가 include하는 `infra/` Compose path와 정확한 service identity만 매핑한다. LAB 서비스는 root에서 제외한 독립 `labs/<topology>.yml`, 함께 둔 `labs/<topology>.md`, `labs/.env.example`/비공개 `labs/.env` 및 `secrets/labs/` 경로를 갱신하고 Guide 본문에서 직접 연결한다. LAB를 정상 service 매핑에 허위 등록하지 않는다. operations-catalog validator의 현재 graph 검증을 사용하며 별도 registry는 만들지 않는다.
+- HOME profile membership과 LAB 분리 vocabulary는 [POL-0078](0078-compose-profile-vocabulary.md)에서 관리한다. root의 전체 profile render도 LAB를 선택할 수 없다. root include 제외는 실행 중 container의 정지·재시작 정책 변경이나 데이터 삭제가 아니다.
 - **Recreate on edit**: 단일 파일 bind configuration을 수정해 inode가 교체되면
   기존 container가 이전 byte를 유지할 수 있다. 승인된 해당 service 재생성이
   필요하며 `restart`로 대신하지 않는다. mount를 directory로 바꾸지 않는다.
@@ -142,17 +135,17 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
   - [opensearch](../../../infra/04-data/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../guides/0019-opensearch.md), [RUN](../runbooks/0019-opensearch.md))
 - Cache & KV
-  - [valkey-cluster](../../../infra/04-data/valkey-cluster/README.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
+  - [valkey-cluster](../../../labs/valkey-cluster.md): failover 리허설 주기화, eviction 정책 워크로드별 분리, exporter 표준화
     ([OPER](../guides/0022-valkey-cluster.md), [RUN](../runbooks/0022-valkey-cluster.md))
 - Lake & Object
   - [seaweedfs](../../../infra/04-data/seaweedfs/README.md): 볼륨 성장 정책, 마스터 quorum/복구 점검 자동화
     ([OPER](../guides/0024-seaweedfs.md), [RUN](../runbooks/0024-seaweedfs.md))
 - NoSQL
-  - [cassandra](../../../infra/04-data/cassandra/README.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
+  - [cassandra](../../../labs/cassandra.md): compaction/repair 윈도우 자동화, consistency level 기준(읽기/쓰기) 문서화
     ([OPER](../guides/0025-cassandra.md), [RUN](../runbooks/0025-cassandra.md))
-  - [couchdb](../../../infra/04-data/couchdb/README.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
+  - [couchdb](../../../labs/couchdb.md): shard/replica 균형 점검, 디자인문서 배포 절차 표준화
     ([OPER](../guides/0026-couchdb.md), [RUN](../runbooks/0026-couchdb.md))
-  - [mongodb](../../../infra/04-data/mongodb/README.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
+  - [mongodb](../../../labs/mongodb.md): replicaset 선출 안정성(heartbeat/timeout) 튜닝, 백업 복구 드릴 정례화
     ([OPER](../guides/0027-mongodb.md), [RUN](../runbooks/0027-mongodb.md))
 - Operational
   - [mng-db](../../../infra/04-data/mng-db/README.md): 운영 DB 파라미터 baseline 확정, 슬로우쿼리 게이트와 회귀 점검 추가
@@ -160,7 +153,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
   - [supabase](../../../infra/04-data/supabase/README.md): 현재 헬스체크 갭 보강, 내부 서비스별 최소 자원 상한 지정, 핵심 컴포넌트 외부노출 재검토
     ([OPER](../guides/0029-supabase.md), [RUN](../runbooks/0029-supabase.md))
 - Relational
-  - [postgresql-cluster](../../../infra/04-data/postgresql-cluster/README.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
+  - [postgresql-cluster](../../../labs/postgresql-ha.md): Patroni failover SLA 수립, VACUUM/Autovacuum 지표 기반 튜닝, PITR 리허설 자동화
     ([OPER](../guides/0031-postgresql-cluster.md), [RUN](../runbooks/0031-postgresql-cluster.md))
 - Specialized
   - [neo4j](../../../infra/04-data/neo4j/README.md): graph 백업(online/offline) 정책, 대형 질의 timeout/메모리 가드레일 적용

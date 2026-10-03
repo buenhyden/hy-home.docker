@@ -39,7 +39,7 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 
 ## Functional Requirements
 
-- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). A single file, `infra/05-messaging/kafka/docker-compose.yml`, holds both topologies. The root `docker-compose.yml` includes it unconditionally; the `messaging`/`dev` profiles select the single `kafka-1` broker, and the `messaging-cluster` profile selects `kafka-2` and `kafka-3`. A 3-broker configuration requires selecting `messaging` and `messaging-cluster` together.
+- **REQ-0006-FR-0001**: Provide Apache Kafka (KRaft mode). The root `docker-compose.yml` includes the single-broker `infra/05-messaging/kafka/docker-compose.yml` definition. Three-broker training uses the separate `labs/kafka-cluster.yml` Compose project, cluster ID, data directory and network.
 - **REQ-0006-FR-0002**: Support the standard AMQP 0-9-1 protocol via RabbitMQ.
 - **REQ-0006-FR-0003**: Provide Schema Registry for Avro/JSON schema management.
 - **REQ-0006-FR-0004**: Provide web-based management UIs (Kafbat, RabbitMQ Management).

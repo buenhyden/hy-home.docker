@@ -98,7 +98,7 @@ grafana/
 
 ### Service Coverage
 
-모든 Compose 서비스가 한 번씩 나옵니다. 컨테이너 대시보드와 Logs Drilldown은 전체를 다루고, 메트릭 소스가 있는 서비스는 자기 대시보드를 따로 가집니다. Metrics source가 `none`이면 이 스택이 수집하는 메트릭이 없다는 뜻입니다(SPEC-0193).
+정상 root에 포함되는 모든 infra Compose 서비스가 한 번씩 나옵니다. LAB 서비스는 독립 Compose와 LAB 문서에서 확인합니다. 컨테이너 대시보드와 Logs Drilldown은 전체를 다루고, 메트릭 소스가 있는 서비스는 자기 대시보드를 따로 가집니다. Metrics source가 `none`이면 이 스택이 수집하는 메트릭이 없다는 뜻입니다(SPEC-0193).
 
 | Layer | Service | Metrics source | Dashboards | Note |
 | --- | --- | --- | --- | --- |
@@ -112,16 +112,7 @@ grafana/
 | 03-security | `openbao-agent` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `analytics` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `auth` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `cassandra-exporter` | `cassandra-exporter` | `Infrastructure/cassandra`, `Infrastructure/containers` |  |
-| 04-data | `cassandra-node1` | `cassandra-exporter` | `Infrastructure/cassandra`, `Infrastructure/containers` |  |
-| 04-data | `couchdb-1` | none | `Infrastructure/containers` | Prometheus endpoint needs admin credentials or its own port; not scraped |
-| 04-data | `couchdb-2` | none | `Infrastructure/containers` | as couchdb-1 |
-| 04-data | `couchdb-3` | none | `Infrastructure/containers` | as couchdb-1 |
-| 04-data | `couchdb-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `db` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `etcd-1` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
-| 04-data | `etcd-2` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
-| 04-data | `etcd-3` | `etcd` | `Infrastructure/etcd-cluster`, `Infrastructure/containers` |  |
 | 12-analytics | `flink-jobmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `flink-taskmanager` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -135,27 +126,9 @@ grafana/
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-valkey` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `mng-valkey-exporter` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
-| 04-data | `mongo-express` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `mongo-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `mongo-key-generator` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `mongodb-arbiter` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
-| 04-data | `mongodb-exporter` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
-| 04-data | `mongodb-rep1` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
-| 04-data | `mongodb-rep2` | `mongodb-exporter` | `Infrastructure/mongodb`, `Infrastructure/containers` |  |
 | 04-data | `neo4j` | none | `Infrastructure/containers` | Community edition has no metrics endpoint |
 | 04-data | `opensearch` | `opensearch` | `Infrastructure/opensearch-cluster`, `Infrastructure/opensearch-node`, `Infrastructure/opensearch-search-and-index`, `Infrastructure/containers` |  |
 | 04-data | `opensearch-dashboards` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `opensearch-node1` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `opensearch-node2` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `opensearch-node3` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `pg-0` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-0-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-1` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-1-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-2` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-2-exporter` | `postgres-cluster` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
-| 04-data | `pg-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `pg-router` | `haproxy` | `Infrastructure/haproxy-overview`, `Infrastructure/containers` |  |
 | 04-data | `qdrant` | `qdrant` | `Infrastructure/qdrant-overview`, `Infrastructure/containers` |  |
 | 04-data | `realtime` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `rest` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -173,20 +146,13 @@ grafana/
 | 12-analytics | `superset-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `valkey-cluster-exporter` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-cluster-init` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `valkey-node-0` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-node-1` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-node-2` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-node-3` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-node-4` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
-| 04-data | `valkey-node-5` | `valkey-cluster` | `Infrastructure/valkey-cluster`, `Infrastructure/containers` |  |
 | 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `dev-pg` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
+| 04-data | `dev-platform-provision` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
+| 04-data | `dev-valkey` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafbat-ui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafka-1` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
-| 05-messaging | `kafka-2` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
-| 05-messaging | `kafka-3` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-connect` | `kafka-connect` | `Infrastructure/kafka-connect`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-exporter` | `kafka-exporter` | `Infrastructure/kafka-consumer-lag`, `Infrastructure/containers` |  |
 | 05-messaging | `kafka-init` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -255,6 +221,14 @@ grafana/
 | 08-ai | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
+
+### LAB Dashboard Coverage
+
+독립 LAB Compose에 속한 다음 대시보드는 파일을 보존하지만 정상 root의 Prometheus는
+해당 LAB 서비스들을 수집하지 않습니다. LAB 관측 연결과 실행 검증은 별도 계약입니다:
+`Infrastructure/cassandra`, `Infrastructure/etcd-cluster`,
+`Infrastructure/haproxy-overview`, `Infrastructure/mongodb`,
+`Infrastructure/valkey-cluster`.
 
 ### Dashboard Sources
 

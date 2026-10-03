@@ -17,7 +17,7 @@ created: "2026-03-26"
 ## Context and Stakeholders
 
 `05-messaging` is the optional Kafka event-streaming boundary. The current
-implementation contains Kafka KRaft brokers, Schema Registry, Kafka Connect,
+HOME implementation contains one Kafka KRaft broker, Schema Registry, Kafka Connect,
 Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second broker family is part of the current architecture.
 
 ## System Boundaries
@@ -32,7 +32,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 ## Quality Attributes
 
 - **Reliability:** health checks, explicit persistent broker/Connect volumes and
-  complete topic/offset/schema/connector recovery. Three brokers on one host do
+  complete topic/offset/schema/connector recovery. The separate three-broker LAB on one host does
   not provide host availability.
 - **Security:** services remain on `kafka_net`; Kafbat uses native OIDC/RBAC.
   Current broker/controller/host listeners are PLAINTEXT, a known boundary that
@@ -44,13 +44,12 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 
 ## Components
 
-- `kafka-1` participates in `messaging`, role-specific selectors and
-  `messaging-cluster`.
-- `kafka-2` and `kafka-3` participate only in `messaging-cluster`.
+- `kafka-1` participates in `messaging` and role-specific HOME selectors.
+- `lab-kafka-1/2/3` participate only in the separate `labs/kafka-cluster.yml` project.
 - Schema Registry, Connect, REST, Kafbat, exporter and init have the current
   selectors documented in [GDE-0036](../../05.operations/guides/0036-kafka.md).
-- The init job declares replication factor 3 for its two bootstrap topics, so a
-  valid initialization requires the three-broker topology.
+- The HOME init job declares replication factor 1; the LAB init job declares
+  replication factor 3 and requires three healthy LAB brokers.
 
 ## Data Flow
 

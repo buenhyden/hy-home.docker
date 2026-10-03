@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB (TSDB)"
-version: "1.0.6"
+version: "1.0.7"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 created: "2025-11-21"
 ---
 
@@ -67,6 +67,13 @@ influxdb/
 | Troubleshooting | 연결된 저장소 validator와 서비스 로그부터 시작함; service-local compose parsing에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요함 |
 
 ## How to Work in This Area
+
+소유자는 2026-10-02 현재 InfluxDB에 저장된 데이터가 없다고 확인했습니다.
+실행 중인 volume의 row count, writer 트래픽, 보존 설정은 이 소스 변경에서
+조회하지 않았습니다. 새 데이터가 생기면 `migration/validate_mapping.py`에
+명시적 측정값·자료형·정밀도·writer 목록을 입력한 뒤 별도 이관 계약을
+승인받아야 합니다. 무자료 확인은 volume 삭제 승인이 아닙니다.
+
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 

@@ -29,12 +29,12 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 
 ## How to Work in This Area
 
-정확한 루트 selector는 `messaging`, `messaging-broker`, `messaging-cluster`,
+정확한 루트 selector는 `messaging`, `messaging-broker`,
 `messaging-schema`, `messaging-connect`, `messaging-rest`,
 `messaging-admin`입니다. 각 selector가 선택하는 서비스는 패키지 맵을
 참고하십시오. 활성화 전에는 named producer/consumer, retention/capacity
 계획, plaintext-listener 위험 수용, 완전한 복구 계획이 필요합니다. 한
-호스트의 broker 3개는 host availability가 아닙니다.
+별도 `labs/kafka-cluster.yml`의 세 broker도 한 호스트에서는 host availability가 아닙니다.
 
 ## Related Documents
 

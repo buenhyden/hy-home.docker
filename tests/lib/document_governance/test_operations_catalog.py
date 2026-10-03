@@ -1028,6 +1028,37 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
     def test_current_repository_tables_and_include_list_match_compose(self) -> None:
         self.assertEqual((), validate_compose_profile_vocabulary(ROOT))
 
+    def test_standalone_lab_profile_is_catalogued_but_excluded_from_root(self) -> None:
+        root = self._repo()
+        lab = root / "labs/cluster.yml"
+        lab.parent.mkdir()
+        lab.write_text(
+            "name: isolated-lab\nservices:\n  lab-node:\n    profiles: [lab-cluster]\n",
+            encoding="utf-8",
+        )
+        policy = root / self.POLICY
+        policy.write_text(
+            policy.read_text(encoding="utf-8").replace(
+                "| `beta` | domain | b | `z` | 1 |",
+                "| `beta` | domain | b | `z` | 1 |\n"
+                "| `lab-cluster` | topology | isolated LAB | `lab-node` | 1 |",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        self.assertEqual([], self._findings(root))
+        compose = root / "docker-compose.yml"
+        compose.write_text(
+            compose.read_text(encoding="utf-8") + "  - labs/cluster.yml\n",
+            encoding="utf-8",
+        )
+        self.assertTrue(
+            any(
+                code == "compose-include-drift" and "labs/cluster.yml" in message
+                for code, _, message in self._findings(root)
+            )
+        )
+
     def test_semantic_table_has_no_manual_counts(self) -> None:
         root = self._repo(
             header="| Profile | Category | Purpose | Selected services |",

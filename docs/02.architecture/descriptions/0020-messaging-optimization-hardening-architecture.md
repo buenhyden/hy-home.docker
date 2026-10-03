@@ -83,7 +83,7 @@ as the view for that concern.
 
 - Kafka:
   - `messaging` profile: `kafka-1`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-  - When `messaging-cluster` is added to this: `kafka-1/2/3`, `schema-registry`, `kafka-connect`, `kafka-rest-proxy`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
+  - Separate `labs/kafka-cluster.yml`: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`; no HOME state is shared
 - Gateway Path:
   - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
 - Internal Path:
@@ -120,7 +120,7 @@ section and the existing infrastructure/deployment descriptions.
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
   - `messaging` profile: Kafka `kafka-1` single broker with the selected schema/connect/rest/admin configuration
-  - When `messaging-cluster` is added: the same file's Kafka 3-broker model. Standalone file validation needs the root network/secret context
+  - `labs/kafka-cluster.yml`: a separate three-broker LAB project with its own data, network and cluster ID
   - Traefik TLS termination + middleware policy
 - **Operational Evidence**:
   - `scripts/hardening/check-all-hardening.sh 05-messaging`

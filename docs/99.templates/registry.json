@@ -1777,6 +1777,13 @@
       "path_pattern": "infra/{subpath}/README.md",
       "additional_paths": [
         "examples/sample-web-service/README.md",
+        "labs/cassandra.md",
+        "labs/couchdb.md",
+        "labs/kafka-cluster.md",
+        "labs/mongodb.md",
+        "labs/opensearch-cluster.md",
+        "labs/postgresql-ha.md",
+        "labs/valkey-cluster.md",
         "projects/storybook/README.md",
         "projects/storybook/nextjs/README.md"
       ],
@@ -4373,8 +4380,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 200,
-      "next_number": 201,
+      "high_water": 202,
+      "next_number": 203,
       "child_spaces": {}
     },
     "operations-subject": {

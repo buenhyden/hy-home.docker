@@ -112,7 +112,7 @@ open-notebook/
 | `DEFAULT_MANAGEMENT_DIR` | Yes | Global | 영속 바인드 마운트용 기본 호스트 디렉터리 |
 | `OPEN_NOTEBOOK_API_URL` | No | `open_notebook` | API용 loopback 호스트 포트 (기본값: 5055) |
 | `OPEN_NOTEBOOK_WEB_URL` | No | `open_notebook` | Web UI 내부 포트 (기본값: 8502) |
-| `LAB_ALLOWED_CIDRS` | No | Traefik | admin 엔드포인트용 IP allowlist |
+| `ADMIN_UI_ALLOWED_CIDRS` | No | Traefik | admin 엔드포인트용 IP allowlist |
 
 ### Traefik Routing
 

@@ -95,6 +95,13 @@ secrets/**/*.snap
 # SeaweedFS gRPC CA and component keys (bin/gen-grpc-certs.sh)
 secrets/certs/seaweedfs/
 secrets/SENSITIVE_ENV_VARS.md
+# Standalone LAB private inputs; only examples, README and empty directory markers are tracked.
+labs/.env
+labs/.env.*
+!labs/.env.example
+secrets/labs/**
+!secrets/labs/**/
+!secrets/labs/**/.gitkeep
 # Operator-local registry/.env backups and quarantined retired credential files
 secrets/.backup-*/
 secrets/.retired/

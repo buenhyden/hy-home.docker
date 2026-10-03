@@ -1,0 +1,260 @@
+name: hy-home-lab-valkey-cluster
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+x-valkey-node-base: &valkey-node-base
+  profiles:
+    - valkey-cluster
+  extends:
+    file: ../infra/common-optimizations.yml
+    service: template-stateful-med
+  image: valkey/valkey:9.1.2-alpine
+  read_only: false
+  tmpfs:
+    - /tmp
+    - /run
+  secrets:
+    - lab_valkey_password
+  entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-start.sh' ]
+  healthcheck:
+    test:
+      - CMD-SHELL
+      - "REDISCLI_AUTH=$$(cat /run/secrets/lab_valkey_password) valkey-cli -p $$PORT ping | grep -q PONG"
+    interval: 15s
+    timeout: 10s
+    retries: 5
+    start_period: 20s
+  labels:
+    <<: *tier-label
+
+volumes:
+  valkey0-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-0
+  valkey1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-1
+  valkey2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-2
+  valkey3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-3
+  valkey4-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-4
+  valkey5-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-5
+
+services:
+  valkey-node-0:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-0
+    environment:
+      PORT: 6379
+      NODE_NAME: valkey-node-0
+    ports:
+      - '127.0.0.1:${LAB_VALKEY0_HOST_PORT:-17379}:6379'
+    expose:
+      - 16379
+    volumes:
+      - valkey0-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-node-1:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-1
+    environment:
+      PORT: 6380
+      NODE_NAME: valkey-node-1
+    ports:
+      - '127.0.0.1:${LAB_VALKEY1_HOST_PORT:-17380}:6380'
+    expose:
+      - 16380
+    volumes:
+      - valkey1-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-node-2:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-2
+    environment:
+      PORT: 6381
+      NODE_NAME: valkey-node-2
+    ports:
+      - '127.0.0.1:${LAB_VALKEY2_HOST_PORT:-17381}:6381'
+    expose:
+      - 16381
+    volumes:
+      - valkey2-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-node-3:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-3
+    environment:
+      PORT: 6382
+      NODE_NAME: valkey-node-3
+    ports:
+      - '127.0.0.1:${LAB_VALKEY3_HOST_PORT:-17382}:6382'
+    expose:
+      - 16382
+    volumes:
+      - valkey3-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-node-4:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-4
+    environment:
+      PORT: 6383
+      NODE_NAME: valkey-node-4
+    ports:
+      - '127.0.0.1:${LAB_VALKEY4_HOST_PORT:-17383}:6383'
+    expose:
+      - 16383
+    volumes:
+      - valkey4-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-node-5:
+    <<: *valkey-node-base
+    container_name: lab-valkey-valkey-node-5
+    environment:
+      PORT: 6384
+      NODE_NAME: valkey-node-5
+    ports:
+      - '127.0.0.1:${LAB_VALKEY5_HOST_PORT:-17384}:6384'
+    expose:
+      - 16384
+    volumes:
+      - valkey5-data:/data:rw
+      - ../infra/04-data/valkey-cluster/config/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ../infra/04-data/valkey-cluster/scripts/valkey-start.sh:/usr/local/bin/valkey-start.sh:ro
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+
+  valkey-cluster-init:
+    profiles:
+      - valkey-cluster
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: valkey/valkey:9.1.2-alpine
+    container_name: lab-valkey-valkey-cluster-init
+    entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-cluster-init.sh' ]
+    volumes:
+      - ../infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
+    secrets:
+      - lab_valkey_password
+    depends_on:
+      valkey-node-0:
+        condition: service_healthy
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
+      valkey-node-4:
+        condition: service_healthy
+      valkey-node-5:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+    networks:
+      lab_valkey_core_net: {}
+  valkey-cluster-exporter:
+    profiles:
+      - valkey-cluster
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.91.1-alpine
+    container_name: lab-valkey-valkey-cluster-exporter
+    expose:
+      - '${LAB_VALKEY_EXPORTER_PORT:-9121}'
+    entrypoint: [ /bin/sh, -ec ]
+    command:
+      - |
+        export REDIS_ADDR=redis://valkey-node-0:6379
+        export REDIS_PASSWORD=$$(cat /run/secrets/lab_valkey_password)
+        [ -n "$$REDIS_PASSWORD" ] || exit 1
+        exec /redis_exporter -web.listen-address=:${LAB_VALKEY_EXPORTER_PORT:-9121}
+    secrets:
+      - lab_valkey_password
+    healthcheck:
+      test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${LAB_VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      valkey-node-0:
+        condition: service_healthy
+      valkey-node-1:
+        condition: service_healthy
+      valkey-node-2:
+        condition: service_healthy
+      valkey-node-3:
+        condition: service_healthy
+      valkey-node-4:
+        condition: service_healthy
+      valkey-node-5:
+        condition: service_healthy
+    networks:
+      lab_valkey_core_net: {}
+      lab_valkey_obs_net: {}
+    labels:
+      <<: *tier-label
+
+networks:
+  lab_valkey_core_net:
+    name: ${LAB_VALKEY_CORE_NETWORK_NAME:-hy-home-lab-valkey-core}
+    internal: true
+  lab_valkey_obs_net:
+    name: ${LAB_VALKEY_OBS_NETWORK_NAME:-hy-home-lab-valkey-obs}
+    internal: true
+secrets:
+  lab_valkey_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/valkey-cluster/password.txt

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster Runbook"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-05-17"
 
 ### Execution and stop boundary
 
-대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-2`, `kafka-3`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+정상 대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 독립 LAB 대상: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`(실행 계약은 [Kafka LAB 안내](../../../labs/kafka-cluster.md)). 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -34,40 +34,22 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
-docker compose --env-file .env.example --profile messaging-cluster config --quiet
+LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
 ```
 
-10개 예상 서비스, 별도의 broker/Connect volume, `kafka_net`, health check,
-Kafbat native OIDC secret/config, 표준 gateway chain, PLAINTEXT listener를
-확인한다. runtime을 사용하기 전에는 항상 `kafka-init`의 replication factor 3이
-three-broker selector와 짝을 이루는지 확인한다.
+정상 서비스 8개와 LAB 서비스 5개의 분리, 별도 cluster ID·broker volume·network,
+정상 `kafka_net`과 LAB `lab_kafka_net`, health check, Kafbat native OIDC
+secret/config, PLAINTEXT 경계를 확인한다. 정상 `kafka-init`은 RF1이며
+LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 상태를
+증명하지 않는다.
 
 ### CDC connector lifecycle
 
-1. 전제조건: `debezium-db-provision`이 `0`으로 종료됨; `mng-pg`가
-   `SHOW wal_level` = `logical`을 보고함; Connect 로그에
-   `debezium.properties rendered`가 남음; `GET /connector-plugins`에 plugin
-   class가 나열됨.
-2. 등록은 승인된 runtime 변경이다. `kafka_net`에 있는 컨테이너에서
-   추적되는 JSON body로 `PUT /connectors/hyhome-app-postgres/config`를
-   실행한다.
-3. 각 상태를 개별적으로 검증한다: `GET .../status`가 connector와 task의
-   `RUNNING`을 보여준다; 로그가 snapshot 완료를 보고한다; 승인된 table의
-   테스트 변경이 해당 `hyhome.app.*` topic에 나타난다.
-4. Lag: `hyhome_app_slot`에 대해 `pg_replication_slots`를 조회한다
-   (`active`, `wal_status`,
-   `pg_wal_lsn_diff(pg_current_wal_lsn(), confirmed_flush_lsn)`).
-   `wal_status = lost`는 slot이 무효화되었다는 뜻이다.
-5. 유지보수를 위해 `PUT .../pause`로 일시 중지한다. 일시 중지 중에도 slot이
-   WAL을 유지하므로 여유 디스크와 `max_slot_wal_keep_size`로 일시 중지 기간을
-   제한한다.
-6. 재동기화(승인된 경우에만): connector를 중지하고, downstream boundary를
-   기록하고, slot 삭제와 offset 재설정을 함께 수행하고, 새 snapshot으로
-   재등록하고, downstream 중복을 조정한다. 간단한 조치로 slot만 삭제하지
-   않는다.
-7. 비밀번호 rotation: secret을 교체하고, `debezium-db-provision`을 다시
-   실행하고, Connect를 재시작한 뒤(properties 파일이 다시 렌더링됨),
-   connector를 재시작한다.
+1. 전제조건: `dev-platform-provision`과 `debezium-db-provision`이 각각 `0`으로 종료되고, `dev-pg/platform_dev`의 `wal_level=logical`, 권한·publication·heartbeat 범위를 별도 검증한다. Connect의 secret provider와 PostgreSQL plugin 준비 상태도 확인한다.
+2. 새 connector JSON은 `dev-pg/platform_dev`, `hyhome_platform_publication`, `hyhome_platform_slot`, topic prefix `hyhome.platform`을 선언한다. 기존 `mng-pg/app_db`의 slot·publication·topic·offset을 재사용하지 않는다. 등록과 snapshot은 승인된 runtime 변경이며 현재 NOT_RUN이다.
+3. 승인된 등록 이후 `GET /connectors/<approved-name>/status`에서 connector/task `RUNNING`, snapshot 완료, 승인된 테스트 변경의 `hyhome.platform.*` topic 도착을 각각 확인한다. JSON 파일 존재나 등록 성공만으로 CDC PASS라고 기록하지 않는다.
+4. `dev-pg`의 `pg_replication_slots`에서 `hyhome_platform_slot`의 `active`, `wal_status`, `confirmed_flush_lsn` 지연과 WAL 디스크 여유를 확인한다. `wal_status=lost`이면 snapshot/offset 복구 계획 없이 slot만 재생성하지 않는다.
+5. maintenance pause 중에도 slot이 WAL을 유지한다. 재동기화에는 downstream 경계, 새 snapshot, 중복 처리와 rollback을 함께 승인받는다. secret rotation도 별도 승인과 소비자 재시작 검증이 필요하다.
 
 ### Planned backup or replication capture
 

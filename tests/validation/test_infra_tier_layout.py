@@ -13,12 +13,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 DATA = (
     "mng-db",
+    "dev-db",
     "supabase",
-    "postgresql-cluster",
-    "valkey-cluster",
-    "cassandra",
-    "couchdb",
-    "mongodb",
     "seaweedfs",
     "influxdb",
     "opensearch",
@@ -350,7 +346,7 @@ class TierLayoutTests(unittest.TestCase):
             "scripts/lib/hardening-lib.sh",
             "infra/tech-stack.versions.json",
             "infra/04-data/supabase/docker-compose.yml",
-            "infra/04-data/valkey-cluster/docker-compose.yml",
+            "infra/04-data/dev-db/docker-compose.yml",
             "infra/04-data/seaweedfs/config/seaweedfs-table-bucket.sh",
             "infra/06-observability/docker-compose.yml",
             "infra/01-gateway/traefik/dynamic/middleware.yml",

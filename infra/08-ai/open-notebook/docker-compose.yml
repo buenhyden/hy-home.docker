@@ -89,7 +89,7 @@ services:
       traefik.http.routers.open-notebook.rule: Host(`open-notebook.${DEFAULT_URL}`)
       traefik.http.routers.open-notebook.entrypoints: websecure
       traefik.http.routers.open-notebook.tls: 'true'
-      traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.middlewares.open-notebook-admin-ip.ipallowlist.sourcerange: ${ADMIN_UI_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       traefik.http.routers.open-notebook.middlewares: gateway-standard-chain@file,open-notebook-admin-ip@docker,large-body@file
       traefik.http.services.open-notebook.loadbalancer.server.port: ${OPEN_NOTEBOOK_WEB_URL:-8502}
 

@@ -1,10 +1,10 @@
 ---
 title: "Operations Policies"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 ---
 
@@ -90,6 +90,7 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 | [NoSQL — CouchDB](0026-couchdb.md) | `POL-0026` | active | [Guide](../guides/0026-couchdb.md), [Runbook](../runbooks/0026-couchdb.md) |
 | [NoSQL — MongoDB](0027-mongodb.md) | `POL-0027` | active | [Guide](../guides/0027-mongodb.md), [Runbook](../runbooks/0027-mongodb.md) |
 | [Operational — MNG-DB](0028-management-database.md) | `POL-0028` | active | [Guide](../guides/0028-management-database.md), [Runbook](../runbooks/0028-management-database.md) |
+| [Operational — Development database](0100-development-database.md) | `POL-0100` | draft | [Guide](../guides/0100-development-database.md), [Runbook](../runbooks/0100-development-database.md) |
 | [Operational — Supabase](0029-supabase.md) | `POL-0029` | active | [Guide](../guides/0029-supabase.md), [Runbook](../runbooks/0029-supabase.md) |
 | [Optimization hardening](0030-data-optimization-hardening.md) | `POL-0030` | active | [Guide](../guides/0030-data-optimization-hardening.md), [Runbook](../runbooks/0030-data-optimization-hardening.md) |
 | [Relational — PostgreSQL Cluster](0031-postgresql-cluster.md) | `POL-0031` | active | [Guide](../guides/0031-postgresql-cluster.md), [Runbook](../runbooks/0031-postgresql-cluster.md) |

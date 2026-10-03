@@ -605,7 +605,6 @@ class PostgresInitializationContractTests(unittest.TestCase):
         return [
             (ROOT / path).read_text(encoding="utf-8")
             for path in (
-                "infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql",
                 "infra/04-data/postgresql-cluster/init-scripts/init_users_dbs.sql",
             )
         ]
@@ -838,7 +837,7 @@ class OllamaPortContractTests(unittest.TestCase):
 
 
 MNG_DB_COMPOSE = "infra/04-data/mng-db/docker-compose.yml"
-PG_CLUSTER_COMPOSE = "infra/04-data/postgresql-cluster/docker-compose.yml"
+PG_CLUSTER_COMPOSE = "labs/postgresql-ha.yml"
 PROVISION_RUNNER = "infra/04-data/mng-db/pg/provision/run-feature-provision.sh"
 # Feature-owned mng-pg provisioning jobs: (compose file, job, SQL file, profiles).
 FEATURE_JOBS = (
@@ -851,13 +850,13 @@ FEATURE_JOBS = (
     (
         "infra/12-analytics/dbt/docker-compose.yml",
         "dbt-db-provision",
-        "infra/12-analytics/dbt/provisioning/mng-pg.sql",
+        "infra/12-analytics/dbt/provisioning/dev-pg.sql",
         {"analytics-engineering"},
     ),
     (
         "infra/05-messaging/kafka/docker-compose.yml",
         "debezium-db-provision",
-        "infra/05-messaging/kafka/connect/debezium/provisioning/mng-pg.sql",
+        "infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql",
         {"cdc"},
     ),
     (
@@ -931,6 +930,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
             with self.subTest(job=job):
                 runner = _runner_text(_compose_service(compose, job))
                 passed = set(re.findall(r"-v ([a-z_][a-z0-9_]*)=", runner))
+                passed.update(re.findall(r"\\set ([a-z_][a-z0-9_]*)", runner))
                 used = _psql_variables((ROOT / sql).read_text(encoding="utf-8"))
                 used -= {"service_postgres_conninfo"}  # produced by \gset
                 self.assertEqual(set(), used - passed)
@@ -969,7 +969,8 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                     self.assertIn(
                         file.removeprefix("/run/secrets/"), service["secrets"]
                     )
-                self.assertIn("mng_postgres_password", service["secrets"])
+                admin_secret = Path(env["PROVISION_ADMIN_PASSWORD_FILE"]).name
+                self.assertIn(admin_secret, service["secrets"])
                 for name in env["PROVISION_IDENTIFIERS"].split():
                     self.assertIn(name, env)
                 sql = (ROOT / sql_path).read_text(encoding="utf-8")
@@ -984,12 +985,16 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual(
                     (ROOT / sql_path).resolve(),
                     (
-                        (ROOT / compose).parent / mounts["/provision/mng-pg.sql"]
+                        (ROOT / compose).parent / mounts[env["PROVISION_SQL"]]
                     ).resolve(),
                 )
                 self.assertEqual(
                     "service_completed_successfully",
-                    service["depends_on"]["mng-pg-init"]["condition"],
+                    service["depends_on"][
+                        "dev-platform-provision"
+                        if job in {"dbt-db-provision", "debezium-db-provision"}
+                        else "mng-pg-init"
+                    ]["condition"],
                 )
 
     def test_debezium_connector_matches_provisioned_names_and_allowed_path(
@@ -1019,7 +1024,8 @@ class FeatureProvisioningContractTests(unittest.TestCase):
         self.assertEqual(env["DEBEZIUM_PUBLICATION"], connector["publication.name"])
         self.assertEqual("disabled", connector["publication.autocreate.mode"])
         example = (ROOT / ".env.example").read_text(encoding="utf-8")
-        self.assertIn(f'SERVICE_POSTGRES_DB="{connector["database.dbname"]}"', example)
+        self.assertIn("DEV_PG_ADMIN_USER=", example)
+        self.assertEqual("platform_dev", connector["database.dbname"])
         worker = _compose_service(
             "infra/05-messaging/kafka/docker-compose.yml", "kafka-connect"
         )
@@ -1095,13 +1101,18 @@ class FeatureProvisioningContractTests(unittest.TestCase):
     "set HYHOME_PG_REHEARSAL=1 to run the disposable PostgreSQL rehearsal (needs Docker)",
 )
 class FeatureProvisioningRehearsalTests(unittest.TestCase):
-    """Run base init and feature SQL against a throwaway PostgreSQL 18 server.
+    """Rehearse mng metadata and dev source grants on disposable PG18 servers.
 
-    The server has no published port, joins an internal network created for
-    this test, receives synthetic credentials only and is removed afterwards.
+    Neither server publishes a port. Both join one temporary internal network,
+    receive synthetic credentials only, and are removed afterwards.
     """
 
     IMAGE = "postgres:18.6-alpine"
+    DEV_IMAGE = re.search(
+        r"^FROM (\S+)",
+        (ROOT / "infra/04-data/dev-db/pg/Dockerfile").read_text(encoding="utf-8"),
+        re.MULTILINE,
+    ).group(1)
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1119,6 +1130,9 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
         cls.addClassCleanup(
             subprocess.run, ["docker", "rm", "-f", f"{cls.tag}-db"], capture_output=True
+        )
+        cls.addClassCleanup(
+            subprocess.run, ["docker", "rm", "-f", f"{cls.tag}-dev"], capture_output=True
         )
         subprocess.run(
             [
@@ -1143,32 +1157,43 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             check=True,
             capture_output=True,
         )
-        for _ in range(60):
-            ready = subprocess.run(
-                [
-                    "docker",
-                    "exec",
-                    f"{cls.tag}-db",
-                    "pg_isready",
-                    "-h",
-                    "127.0.0.1",
-                    "-U",
-                    "admin",
-                ],
-                capture_output=True,
-                check=False,
-            )
-            if ready.returncode == 0:
-                break
-            subprocess.run(["sleep", "1"], check=True)
+        subprocess.run(
+            [
+                "docker", "run", "-d", "--name", f"{cls.tag}-dev",
+                "--network", cls.tag,
+                "-e", "POSTGRES_USER=admin",
+                "-e", "POSTGRES_PASSWORD=synthetic-dev-admin",
+                "-e", "POSTGRES_DB=postgres",
+                cls.DEV_IMAGE, "postgres", "-c", "wal_level=logical",
+                "-c", "shared_preload_libraries=timescaledb",
+            ],
+            check=True,
+            capture_output=True,
+        )
+        for server in ("db", "dev"):
+            for _ in range(60):
+                ready = subprocess.run(
+                    ["docker", "exec", f"{cls.tag}-{server}", "pg_isready",
+                     "-h", "127.0.0.1", "-U", "admin"],
+                    capture_output=True,
+                    check=False,
+                )
+                if ready.returncode == 0:
+                    break
+                subprocess.run(["sleep", "1"], check=True)
+            else:
+                raise AssertionError(f"disposable {server} server did not become ready")
         cls.write_secret("mng_postgres_password", "synthetic-admin")
+        cls.write_secret("dev_pg_admin_password", "synthetic-dev-admin")
         for name, value in {
             "n8n_db_password": "a",
             "keycloak_db_password": "b",
             "airflow_db_password": "c",
             "terrakube_db_password": "d",
             "sonarqube_db_password": "e",
-            "service_postgres_password": "f",
+            "dev_pg_platform_migrator_password": "platform-migrator-synthetic",
+            "dev_pg_platform_runtime_password": "platform-runtime-synthetic",
+            "dev_pg_platform_reader_password": "platform-reader-synthetic",
             "mlflow_db_password": "ml'quote\\slash pw",
             "dbt_db_password": "dbt-synthetic",
             "debezium_postgres_password": "dbz-synthetic",
@@ -1179,12 +1204,13 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         }.items():
             cls.write_secret(name, value)
         cls.base_init()
+        cls.platform_init()
 
     @classmethod
     def write_secret(cls, name: str, value: str) -> None:
         path = cls.secrets / name
         path.write_text(value, encoding="utf-8")
-        path.chmod(0o644)
+        path.chmod(0o600)
 
     @classmethod
     def base_init(cls) -> None:
@@ -1196,9 +1222,6 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             "AIRFLOW_DB_PASSWORD": "c",
             "TERRAKUBE_DB_PASSWORD": "d",
             "SONARQUBE_DB_PASSWORD": "e",
-            "SERVICE_POSTGRES_USERNAME": "app_user",
-            "SERVICE_DB_PASSWORD": "f",
-            "SERVICE_POSTGRES_DB": "app_db",
         }
         command = [
             "psql",
@@ -1222,6 +1245,32 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                 "-v",
                 f"{ROOT / 'infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql'}:/work/init.sql:ro",
             ],
+        )
+        assert result.returncode == 0, result.stderr
+
+    @classmethod
+    def platform_init(cls) -> None:
+        manifest = json.loads(
+            (ROOT / "infra/04-data/dev-db/pg/provision/platform.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        project = __import__("runpy").run_path(
+            str(ROOT / "infra/04-data/dev-db/pg/provision/project.py")
+        )
+        sql_path = cls.secrets / "platform.sql"
+        sql_path.write_text(project["sql_for"](manifest), encoding="utf-8")
+        sql_path.chmod(0o600)
+        result = cls.docker_run(
+            ["psql", "-X", "-h", f"{cls.tag}-dev", "-U", "admin", "-d", "postgres",
+             "-v", "ON_ERROR_STOP=1", "-f", "/work/platform.sql"],
+            {
+                "PGPASSWORD": "synthetic-dev-admin",
+                "DEV_MIGRATOR_PASSWORD": "platform-migrator-synthetic",
+                "DEV_RUNTIME_PASSWORD": "platform-runtime-synthetic",
+                "DEV_READER_PASSWORD": "platform-reader-synthetic",
+            },
+            extra=["-v", f"{sql_path}:/work/platform.sql:ro"],
         )
         assert result.returncode == 0, result.stderr
 
@@ -1251,11 +1300,16 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         env = {
             key: _default(str(value)) for key, value in service["environment"].items()
         }
+        dev_job = job in {"dbt-db-provision", "debezium-db-provision"}
         env.update(
-            PGHOST=f"{self.tag}-db",
+            PGHOST=f"{self.tag}-{'dev' if dev_job else 'db'}",
             PGPORT="5432",
             PGUSER="admin",
             PGDATABASE="postgres",
+            PROVISION_ADMIN_PASSWORD_FILE=(
+                "/run/secrets/dev_pg_admin_password" if dev_job
+                else "/run/secrets/mng_postgres_password"
+            ),
         )
         env.update(overrides)
         return self.docker_run(
@@ -1265,7 +1319,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                 "-v",
                 f"{ROOT / PROVISION_RUNNER}:/provision/run-feature-provision.sh:ro",
                 "-v",
-                f"{ROOT / sql_path}:/provision/mng-pg.sql:ro",
+                f"{ROOT / sql_path}:/provision/{'dev-pg' if dev_job else 'mng-pg'}.sql:ro",
             ],
         )
 
@@ -1274,15 +1328,21 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         query: str,
         database: str = "postgres",
         user: str = "admin",
-        password: str = "synthetic-admin",
+        password: str | None = None,
+        host: str = "mng",
     ) -> subprocess.CompletedProcess:
+        if database == "platform_dev":
+            host = "dev"
+        password = password or (
+            "synthetic-dev-admin" if host == "dev" else "synthetic-admin"
+        )
         return self.docker_run(
             [
                 "psql",
                 "-X",
                 "-At",
                 "-h",
-                f"{self.tag}-db",
+                f"{self.tag}-{'dev' if host == 'dev' else 'db'}",
                 "-U",
                 user,
                 "-d",
@@ -1296,9 +1356,11 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
 
     def test_1_fresh_provisioning_and_idempotent_rerun(self) -> None:
-        self.sql(
-            "CREATE TABLE public.orders(id int primary key)", "app_db", "app_user", "f"
+        created = self.sql(
+            "SET ROLE platform_owner; CREATE TABLE app.orders(id int primary key)",
+            "platform_dev",
         )
+        self.assertEqual(0, created.returncode, created.stderr)
         for _ in range(2):
             for job in (
                 "mlflow-db-provision",
@@ -1308,13 +1370,17 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
                 with self.subTest(job=job):
                     result = self.provision(job)
                     self.assertEqual(0, result.returncode, result.stderr)
-        roles = self.sql(
+        mng_roles = self.sql(
             "SELECT string_agg(rolname||':'||rolsuper||rolreplication||rolcreatedb, ',' ORDER BY rolname)"
-            " FROM pg_roles WHERE rolname IN ('mlflow','dbt','debezium')"
+            " FROM pg_roles WHERE rolname='mlflow'"
         ).stdout.strip()
-        self.assertEqual(
-            "dbt:falsefalsefalse,debezium:falsetruefalse,mlflow:falsefalsefalse", roles
-        )
+        dev_roles = self.sql(
+            "SELECT string_agg(rolname||':'||rolsuper||rolreplication||rolcreatedb, ',' ORDER BY rolname)"
+            " FROM pg_roles WHERE rolname IN ('dbt','debezium')",
+            host="dev",
+        ).stdout.strip()
+        self.assertEqual("mlflow:falsefalsefalse", mng_roles)
+        self.assertEqual("dbt:falsefalsefalse,debezium:falsetruefalse", dev_roles)
         # The feature role logs in with a password containing quote/backslash.
         self.assertEqual(
             "mlflow",
@@ -1330,20 +1396,41 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
         # Other logins lost PUBLIC CONNECT on the MLflow database.
         self.assertNotEqual(
-            0, self.sql("SELECT 1", "mlflow", "app_user", "f").returncode
+            0, self.sql("SELECT 1", "mlflow", "n8n", "a").returncode
         )
-        # dbt reads the source, writes only its target schema.
+        # The platform roles have distinct data and DDL rights.
+        self.assertEqual(
+            0, self.sql("SELECT count(*) FROM app.orders", "platform_dev",
+                        "platform_reader", "platform-reader-synthetic").returncode
+        )
+        self.assertNotEqual(
+            0, self.sql("INSERT INTO app.orders VALUES (1)", "platform_dev",
+                        "platform_reader", "platform-reader-synthetic").returncode
+        )
+        self.assertNotEqual(
+            0, self.sql("CREATE TABLE app.reader_x(i int)", "platform_dev",
+                        "platform_reader", "platform-reader-synthetic").returncode
+        )
+        self.assertEqual(
+            0, self.sql("INSERT INTO app.orders VALUES (1)", "platform_dev",
+                        "platform_runtime", "platform-runtime-synthetic").returncode
+        )
+        self.assertNotEqual(
+            0, self.sql("CREATE TABLE app.runtime_x(i int)", "platform_dev",
+                        "platform_runtime", "platform-runtime-synthetic").returncode
+        )
+        # dbt reads the source and writes only its target schema.
         self.assertEqual(
             0,
             self.sql(
-                "SELECT count(*) FROM public.orders", "app_db", "dbt", "dbt-synthetic"
+                "SELECT count(*) FROM app.orders", "platform_dev", "dbt", "dbt-synthetic"
             ).returncode,
         )
         self.assertEqual(
             0,
             self.sql(
                 "CREATE VIEW analytics.v AS SELECT 1 AS x",
-                "app_db",
+                "platform_dev",
                 "dbt",
                 "dbt-synthetic",
             ).returncode,
@@ -1351,18 +1438,20 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         self.assertNotEqual(
             0,
             self.sql(
-                "CREATE TABLE public.x(i int)", "app_db", "dbt", "dbt-synthetic"
+                "CREATE TABLE app.x(i int)", "platform_dev", "dbt", "dbt-synthetic"
             ).returncode,
         )
         # Tables created later by the owner are readable through default privileges.
-        self.sql(
-            "CREATE TABLE public.later(id int primary key)", "app_db", "app_user", "f"
+        later = self.sql(
+            "SET ROLE platform_owner; CREATE TABLE app.later(id int primary key)",
+            "platform_dev",
         )
+        self.assertEqual(0, later.returncode, later.stderr)
         self.assertEqual(
             0,
             self.sql(
-                "SELECT count(*) FROM public.later",
-                "app_db",
+                "SELECT count(*) FROM app.later",
+                "platform_dev",
                 "debezium",
                 "dbz-synthetic",
             ).returncode,
@@ -1370,16 +1459,16 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         self.assertNotEqual(
             0,
             self.sql(
-                "INSERT INTO public.orders VALUES (1)",
-                "app_db",
+                "INSERT INTO app.orders VALUES (2)",
+                "platform_dev",
                 "debezium",
                 "dbz-synthetic",
             ).returncode,
         )
         publication = self.sql(
-            "SELECT count(*) FROM pg_publication_tables WHERE pubname='hyhome_app_publication'"
+            "SELECT count(*) FROM pg_publication_tables WHERE pubname='hyhome_platform_publication'"
             " AND tablename IN ('orders','later','heartbeat')",
-            "app_db",
+            "platform_dev",
         ).stdout.strip()
         self.assertEqual("3", publication)
         # The heartbeat action query succeeds; other schemas stay read-only.
@@ -1390,13 +1479,14 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             ).read_text()
         )["heartbeat.action.query"]
         self.assertEqual(
-            0, self.sql(heartbeat, "app_db", "debezium", "dbz-synthetic").returncode
+            0, self.sql(heartbeat, "platform_dev", "debezium", "dbz-synthetic").returncode
         )
         # A service role this job did not create is never altered.
-        result = self.provision("dbt-db-provision", DBT_DB_USER="app_user")
+        result = self.provision("dbt-db-provision", DBT_DB_USER="platform_runtime")
         self.assertNotEqual(0, result.returncode)
         self.assertEqual(
-            "1", self.sql("SELECT 1", "app_db", "app_user", "f").stdout.strip()
+            "1", self.sql("SELECT 1", "platform_dev", "platform_runtime",
+                          "platform-runtime-synthetic").stdout.strip()
         )
 
     def test_6_superset_migrates_and_serves_on_its_own_database(self) -> None:
@@ -1566,7 +1656,7 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             ).stdout.strip(),
         )
         # An existing database owned by someone else is never taken over.
-        self.sql("CREATE DATABASE foreign_ml OWNER app_user")
+        self.sql("CREATE DATABASE foreign_ml OWNER n8n")
         result = self.provision(
             "mlflow-db-provision", MLFLOW_DB_USER="ml_y", MLFLOW_DB_NAME="foreign_ml"
         )
@@ -1599,10 +1689,14 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         self.assertEqual(
             "1",
             self.sql(
-                "SELECT count(*) FROM pg_roles WHERE rolname='dbt_mid'"
+                "SELECT count(*) FROM pg_roles WHERE rolname='dbt_mid'",
+                host="dev",
             ).stdout.strip(),
         )
-        self.sql("CREATE SCHEMA missing_src AUTHORIZATION app_user", "app_db")
+        schema = self.sql(
+            "CREATE SCHEMA missing_src AUTHORIZATION platform_owner", "platform_dev"
+        )
+        self.assertEqual(0, schema.returncode, schema.stderr)
         result = self.provision(
             "dbt-db-provision",
             DBT_DB_USER="dbt_mid",
@@ -3368,12 +3462,15 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             for bind in re.findall(r"-ip\.bind=(\S+?)'?(?:\s|$)", command):
                 self.assertEqual("0.0.0.0", bind, name)
 
-    def test_opensearch_nodes_announce_their_lab_net_address(self) -> None:
-        services = self._services()
+    def test_opensearch_nodes_use_only_the_standalone_lab_network(self) -> None:
+        import yaml
+
+        normal = self._services()
+        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
         for index in (1, 2, 3):
-            node = services[f"opensearch-node{index}"]
-            address = node["networks"]["lab_net"]["ipv4_address"]
-            self.assertIn(f"network.publish_host={address}", node["environment"])
+            name = f"opensearch-node{index}"
+            self.assertNotIn(name, normal)
+            self.assertEqual({"lab_opensearch_core_net"}, set(lab["services"][name]["networks"]))
 
 
 class ConftestPolicyGateTests(unittest.TestCase):
@@ -3598,11 +3695,8 @@ ROUTES_WITHOUT_SSO = {
     "keycloak": "identity-provider",
     "oauth2-proxy": "identity-provider",
     # Application or gateway credentials
-    "couchdb": "app-credentials",
     "dashboard": "gateway-basic-auth",
-    "haproxy-stats": "app-credentials",
     "influxdb": "app-token",
-    "mongo-express": "app-basic-auth",
     "neo4j": "app-credentials",
     "open-notebook": "app-password-and-ip-allowlist",
     "opensearch": "security-plugin",
@@ -3914,7 +4008,11 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
         referenced = {
             d for row in rows for d in re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", row[3])
         }
-        self.assertEqual(set(self._dashboards()), referenced)
+        lab_section = readme[
+            readme.index("### LAB Dashboard Coverage") : readme.index("### Dashboard Sources")
+        ]
+        lab_referenced = set(re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", lab_section))
+        self.assertEqual(set(self._dashboards()), referenced | lab_referenced)
 
     def test_both_prometheus_files_hold_one_labelled_scrape_set(self) -> None:
         import yaml

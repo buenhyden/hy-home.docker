@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -25,7 +25,8 @@ created: "2026-05-10"
 
 management database는 인증, 워크플로, 도구를 위한 5개 서비스로 구성된 HOME
 의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
-`postgres`, 그리고 구성된 애플리케이션 데이터베이스를 저장한다. `mng-valkey`는
+`postgres`를 저장한다. 기존 `app_db`는 소유자 진술상 자료·앱 소비자가 없는
+기술적 이관 대상으로 보존하며 새 업무 앱의 공용 DB로 사용하지 않는다. `mng-valkey`는
 Airflow/n8n이 공유하는 broker/cache다. Grafana는 현재 Compose에서 management
 PostgreSQL에 연결되지 않는다. 자체 `grafana-data`를 소유하고 기본 데이터베이스
 구성을 그대로 사용한다.
@@ -40,11 +41,10 @@ exporter는 `mng`와 `dev`에서 선택된다.
 PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `mng_postgres_password` secret을 사용한다. 기본 init job은 base 서비스별 데이터베이스
 비밀번호 secret만 읽어 해당 role/database를 idempotent하게 생성한다. 선택적
-기능은 자체 객체를 별도 feature job(`mlflow-db-provision`, `dbt-db-provision`,
-`debezium-db-provision`, `superset-db-provision`, `pact-broker-db-provision`)에서 provision한다. 이 job들은 입력을 검증하는
+기능은 자체 객체를 별도 feature job(`mlflow-db-provision`, `superset-db-provision`, `pact-broker-db-provision`)에서 provision한다. 이 job들은 입력을 검증하는
 [runner](../../../infra/04-data/mng-db/pg/provision/run-feature-provision.sh)를
 공유하지만 SQL과 grant는 각자의 패키지에 둔다. `mlops`, `data-science`,
-`analytics-engineering`, `cdc`, `bi`, `contract-testing`도 의존성 closure를 위해 `mng-pg`와 `mng-pg-init`을
+`bi`, `contract-testing`도 의존성 closure를 위해 `mng-pg`와 `mng-pg-init`을
 선택하지만, base job은 이들의 credential을 읽지 않으므로 `core`, `mng`, `dev`,
 `local`은 이들 없이 기동한다.
 
@@ -62,7 +62,7 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 
 ### Identity-specific behavior
 
-mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF state 와 backup orchestrator 의 RDB export 를 사용한다. mng-pg-init 는 base role/database DDL 이며 optional feature runner/SQL 은 해당 subject 가 소유한다(dbt,CDC,Superset 등). PG 는 loopback, Valkey 는 HOST_LAN_BIND_IP 에 host port 를 게시한다. 두 exporter 는 각각 PG/Valkey 한 target 이며 health 는 업무 정합성을 확인하지 않는다. feature profile 에는 bi/contract-testing 도 포함한다. 앱 quiescence 와 조정된 logical dump 요구는 여전히 필수이며 현재 daily physical/RDB automation 이 앱별 동시 복구를 보장하지 않는다.
+mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF state 와 backup orchestrator 의 RDB export 를 사용한다. mng-pg-init 는 base role/database DDL 이며 optional feature runner/SQL 은 해당 subject 가 소유한다(MLflow,Superset,Pact 등). PG 는 loopback, Valkey 는 HOST_LAN_BIND_IP 에 host port 를 게시한다. 두 exporter 는 각각 PG/Valkey 한 target 이며 health 는 업무 정합성을 확인하지 않는다. feature profile 에는 bi/contract-testing 도 포함한다. 앱 quiescence 와 조정된 logical dump 요구는 여전히 필수이며 현재 daily physical/RDB automation 이 앱별 동시 복구를 보장하지 않는다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -80,7 +80,7 @@ Compose 파일은 핀된 upstream PostgreSQL, Valkey, 두 exporter 이미지 계
 권위 있는 정의다. 저장소 Renovate가 업데이트를 제안하면 버전 projection은
 파생된다. PostgreSQL은 `POSTGRES_PASSWORD_FILE`, `POSTGRES_USER`,
 `POSTGRES_DB`, `PGDATA`, `POSTGRES_HOSTNAME`, `POSTGRES_PORT`를 사용하며, init은
-`SERVICE_POSTGRES_USERNAME`과 `SERVICE_POSTGRES_DB`를 추가한다. root 포트 키가
+관리 서비스의 계정·DB 이름만 추가한다. root 포트 키가
 host binding을 제어한다. `mng-pg`는 `template-stateful-db-med`를,
 `mng-valkey`는 `template-stateful-low`를, init은 `template-job-low`를,
 exporter는 `template-infra-readonly-low`를 extend하며, 엔진/exporter

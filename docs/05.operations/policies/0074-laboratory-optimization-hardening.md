@@ -21,7 +21,7 @@ created: "2026-05-10"
 ## Policy Scope
 
 - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`, `infra/12-analytics/jupyterlab/`
-- `.env.example` (`LAB_ALLOWED_CIDRS`)
+- `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
 - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 
 - **Systems**: dozzle, redisinsight, open-notebook, surrealdb

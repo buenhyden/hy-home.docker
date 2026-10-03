@@ -253,24 +253,25 @@ check_layout() {
 }
 
 load_env_values() {
-    local line stripped key value
-    [[ -f "$ENV_FILE" ]] || return 0
+    local line stripped key value env_file
+    for env_file in "$ENV_FILE" "${REPO_ROOT}/labs/.env"; do
+        [[ -f "$env_file" ]] || continue
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            stripped="$(trim "$line")"
+            [[ -z "$stripped" || "$stripped" == \#* ]] && continue
+            [[ "$stripped" == *=* ]] || continue
 
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        stripped="$(trim "$line")"
-        [[ -z "$stripped" || "$stripped" == \#* ]] && continue
-        [[ "$stripped" == *=* ]] || continue
+            key="$(trim "${stripped%%=*}")"
+            value="$(trim "${stripped#*=}")"
+            value="${value%%[[:space:]]#*}"
+            value="$(strip_surrounding_quotes "$(trim "$value")")"
 
-        key="$(trim "${stripped%%=*}")"
-        value="$(trim "${stripped#*=}")"
-        value="${value%%[[:space:]]#*}"
-        value="$(trim "$value")"
-        value="$(strip_surrounding_quotes "$value")"
-
-        if [[ -n "$key" ]]; then
-            ENV_VALUES["$key"]="$value"
-        fi
-    done < "$ENV_FILE"
+            if [[ -n "$key" ]]; then
+                [[ ! -v "ENV_VALUES[$key]" ]] || die "duplicate environment key across metadata domains: $key"
+                ENV_VALUES["$key"]="$value"
+            fi
+        done < "$env_file"
+    done
 }
 
 get_env_val() {
@@ -710,8 +711,10 @@ def replace(path, payload, mode):
 
 
 def main():
-    specifications = (("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
-                      (".env.example", ".env", env_plan))
+    specifications = [("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
+                      (".env.example", ".env", env_plan)]
+    if (root / "labs/.env.example").exists():
+        specifications.append(("labs/.env.example", "labs/.env", env_plan))
     plans = []
     for source_name, target_name, planner in specifications:
         source, target = safe_path(source_name), safe_path(target_name)

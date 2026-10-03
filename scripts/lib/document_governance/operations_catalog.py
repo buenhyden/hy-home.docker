@@ -713,9 +713,10 @@ _FIXED_PROFILE_CATEGORIES = {
     "testing": "automation",
     "iac": "automation",
     "legacy-vault": "lifecycle",
+    "cassandra": "topology",
     "couchdb": "topology",
     "dedicated-valkey": "topology",
-    "messaging-cluster": "topology",
+    "lab-kafka": "topology",
     "mongodb": "topology",
     "nginx": "topology",
     "opensearch": "topology",
@@ -831,7 +832,17 @@ def validate_compose_profile_vocabulary(
     compose_files = tuple(
         path
         for path in _tracked_paths(root, MAX_TRACKED_FILES)
-        if _is_infra_compose_file(path)
+        if _is_infra_compose_file(path) and (root / path).is_file()
+    )
+    lab_root = pathlib.PurePosixPath("labs")
+    lab_files = (
+        tuple(
+            lab_root / entry.name
+            for entry in _directory_entries_bounded(root, lab_root, max_entries=64)
+            if entry.name.endswith(".yml") and entry.is_regular
+        )
+        if (root / lab_root).is_dir()
+        else ()
     )
     tracked = {path.as_posix() for path in compose_files}
     included = _include_paths(_compose_mapping(root, COMPOSE_ROOT).get("include"))
@@ -852,8 +863,10 @@ def validate_compose_profile_vocabulary(
     ]
 
     declared: dict[str, frozenset[str]] = {}
+    normal_declared: dict[str, frozenset[str]] = {}
+    lab_profiles: frozenset[str] = frozenset()
     service_definitions: dict[str, object] = {}
-    for path in compose_files:
+    for path in (*compose_files, *lab_files):
         services = _compose_mapping(root, path).get("services")
         items = services.items() if isinstance(services, Mapping) else ()
         for name, service in items:
@@ -872,12 +885,36 @@ def validate_compose_profile_vocabulary(
                         "so it starts when none is selected",
                     )
                 )
+            if path in lab_files and service_name in service_definitions:
+                findings.append(
+                    _finding(
+                        "compose-lab-service-overlap",
+                        path,
+                        f"service {service_name} also exists in the normal root or another LAB",
+                    )
+                )
             service_definitions = {**service_definitions, service_name: service}
             for profile in profiles:
                 declared = {
                     **declared,
                     profile: declared.get(profile, frozenset()) | {service_name},
                 }
+                if path in lab_files:
+                    lab_profiles = lab_profiles | {profile}
+                else:
+                    normal_declared = {
+                        **normal_declared,
+                        profile: normal_declared.get(profile, frozenset())
+                        | {service_name},
+                    }
+    for profile in sorted(lab_profiles & normal_declared.keys()):
+        findings.append(
+            _finding(
+                "compose-lab-profile-overlap",
+                PROFILE_VOCABULARY_POLICY,
+                f"LAB profile {profile} is also declared by the normal root",
+            )
+        )
 
     rows: dict[str, _ProfilePolicyRow] = {}
     policy_text = _read_text(root, PROFILE_VOCABULARY_POLICY)
@@ -1051,6 +1088,16 @@ def validate_compose_profile_vocabulary(
                     )
                 )
 
+    for name in sorted(lab_profiles):
+        row = rows.get(name)
+        if row is not None and row.category != "topology":
+            findings.append(
+                _finding(
+                    "compose-profile-vocabulary-drift",
+                    f"{PROFILE_VOCABULARY_POLICY}:{row.line_number}",
+                    f"LAB profile {name} must use safety category topology",
+                )
+            )
     for name, expected in _FIXED_PROFILE_CATEGORIES.items():
         row = rows.get(name)
         if row is not None and row.category != expected:
@@ -1105,7 +1152,7 @@ def validate_compose_profile_vocabulary(
                 + ", ".join(sorted(missing_required)),
             )
         )
-    unknown_home = frozenset(home_profiles) - declared.keys()
+    unknown_home = frozenset(home_profiles) - normal_declared.keys()
     if unknown_home:
         findings.append(
             _finding(
@@ -1117,7 +1164,8 @@ def validate_compose_profile_vocabulary(
     forbidden_profiles = frozenset(
         name
         for name in home_profiles
-        if name in rows and rows[name].category in _HOME_FORBIDDEN_CATEGORIES
+        if name in lab_profiles
+        or (name in rows and rows[name].category in _HOME_FORBIDDEN_CATEGORIES)
     )
     if forbidden_profiles:
         findings.append(
@@ -1129,7 +1177,7 @@ def validate_compose_profile_vocabulary(
             )
         )
     home_services = frozenset().union(
-        *(declared.get(name, frozenset()) for name in home_profiles)
+        *(normal_declared.get(name, frozenset()) for name in home_profiles)
     )
     forbidden_services = frozenset().union(
         *(

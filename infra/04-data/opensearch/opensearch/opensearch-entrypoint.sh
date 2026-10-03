@@ -21,7 +21,8 @@ read_secret() {
 
 hash_password() {
   local plain="$1"
-  "${TOOLS_DIR}/hash.sh" -p "${plain}" | tail -n 1
+  OPENSEARCH_HASH_PASSWORD="${plain}" \
+    "${TOOLS_DIR}/hash.sh" -env OPENSEARCH_HASH_PASSWORD | tail -n 1
 }
 
 harden_file_if_writable() {

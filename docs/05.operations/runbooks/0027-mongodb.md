@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set Triage Runbook"
-version: "1.1.4"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0027"
 parent_ids:
@@ -41,9 +41,11 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
+정적 검사는 `labs/.env.example`과 `labs/mongodb.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+
 ### Checklist
 
-- [ ] 루트 compose의 `include:` 목록과 정확한 `mongodb` profile을 기록한다.
+- [ ] `labs/mongodb.yml`의 독립 project와 `mongodb` profile을 확인하고 root include에서 제외됐는지 기록한다.
 - [ ] secret 값을 출력하지 않는 명령만 사용한다.
 - [ ] destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] replica set name은 compose-declared `MyReplicaSet`으로만 기록한다.
@@ -53,19 +55,19 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 1. compose 렌더링을 확인한다.
 
    ```bash
-   docker compose --profile mongodb config --quiet
+   LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet
    ```
 
 2. key generator, replica member, init job, UI, exporter 상태를 확인한다.
 
    ```bash
-   docker compose ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
    ```
 
 3. init job과 replica nodes 로그를 확인한다.
 
    ```bash
-   docker compose logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter
    ```
 
 4. replica set 상태를 승인된 custody와 client native password prompt로 확인한다.
@@ -73,7 +75,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    실제 TTY를 가진 비공개 운영 terminal에서만 client 자체 password prompt를 사용한다. tracing/verbose/terminal recording과 redirected stdin, `exec -T`를 금지한다. 승인된 custody에서 받은 credential을 prompt에만 입력하며 shell 변수·환경·argv·URL로 전달하지 않는다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. root/Docker 관리자의 메모리 관찰까지 차단한다고 주장하지 않는다.
 
    ```bash
-   docker compose exec mongodb-rep1 sh -c 'exec mongosh --username "$MONGO_INITDB_ROOT_USERNAME" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml exec mongodb-rep1 sh -c 'exec mongosh --username "$MONGO_INITDB_ROOT_USERNAME" --authenticationDatabase admin --eval "rs.status().members.map(m => ({name:m.name,state:m.stateStr}))"'
    ```
 
 5. 컨테이너가 stopped 상태이고 데이터 작업이 필요하지 않은 경우 compose로 재기동한다.
@@ -82,26 +84,26 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    # STOP: approve one daemon target; do not rerun mongo-key-generator or mongo-init during triage
    ```
 
-6. Mongo Express route는 Traefik label 기준으로 확인하고, password 값은 출력하지 않는다.
+6. Mongo Express의 label은 선언값으로만 확인한다. 현재 독립 LAB network에 HOME Traefik route가 없으므로 접속 성공을 기대하지 않는다. Password 값은 출력하지 않는다.
 
    ```bash
-   docker compose logs --tail=80 mongo-express
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=80 mongo-express
    ```
 
-source health/init/exporter의 기존 password argv 노출은 이 문서 수정으로 고쳐지지 않았다. 별도 구현 변경과 검증이 필요하다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. Mongo exporter의 long-lived credential URI argv도 잔여 위험이다. member name/state만 기록한다.
+현재 key/init/exporter 경로는 비밀값을 argv에 싣지 않도록 수정했다. 실제 key 생성·replica 결성·exporter 인증은 격리 실행 전까지 NOT_RUN이다. member name/state만 기록한다.
 
 ### Verification Steps
 
-- `docker compose ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
 - `rs.status()` member summary가 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`를 포함하는지 확인한다.
 - `mongo-init`가 completed 상태인지, `mongodb-exporter`가 running 상태인지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter mongodb-exporter`
+- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter mongodb-exporter`
 - **Replica evidence**: sanitized `rs.status()` member summary
-- **Route**: Traefik labels on `mongo-express`
-- **Metrics**: `mongodb-exporter` exposed port `${MONGO_EXPORTER_PORT:-9216}`
+- **Route**: 이전 Traefik label은 선언값이며 HOME gateway 경로는 없음
+- **Metrics**: `mongodb-exporter` exposed port `${LAB_MONGO_EXPORTER_PORT:-9216}`
 
 ### Safe Rollback or Recovery Procedure
 
@@ -121,7 +123,7 @@ source health/init/exporter의 기존 password argv 노출은 이 문서 수정�
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 replica member 상태 요약을 기록한다.
 - secret 값, MongoDB document 전체 또는 password를 담은 credential 기반 URI 문자열은 기록하지 않는다.
-- `mongodb`를 선택했음을 기록한다. root 파일은 MongoDB compose 파일을 조건 없이 포함한다.
+- `mongodb`를 선택했음을 기록한다. root는 `labs/mongodb.yml`을 include하지 않는다.
 
 ## Rollback or Recovery
 
@@ -139,7 +141,7 @@ primary를 확인할 수 없거나, `mongo-init`이 반복 실패하거나, repl
 
 ## Related Documents
 
-- [Compose implementation: infra/04-data/mongodb/docker-compose.yml](../../../infra/04-data/mongodb/docker-compose.yml)
+- [Compose implementation: labs/mongodb.yml](../../../labs/mongodb.yml)
 
 - [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
 - [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
@@ -148,4 +150,4 @@ primary를 확인할 수 없거나, `mongo-init`이 반복 실패하거나, repl
 - [Operations index](../README.md)
 - [Usage guide](../guides/0027-mongodb.md)
 - [Operations policy](../policies/0027-mongodb.md)
-- [Infra README](../../../infra/04-data/mongodb/README.md)
+- [Infra README](../../../labs/mongodb.md)

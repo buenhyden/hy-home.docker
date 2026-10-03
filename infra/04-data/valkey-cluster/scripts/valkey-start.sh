@@ -1,26 +1,28 @@
 #!/bin/sh
 set -eu
 
-# 시크릿 읽기
-VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password)
-NODE_NAME="${NODE_NAME:-$(hostname)}"
+secret=/run/secrets/lab_valkey_password
+[ -s "$secret" ] || { echo "LAB Valkey password is missing" >&2; exit 1; }
+password=$(cat "$secret")
+case "$password" in
+  ''|*[!A-Za-z0-9_+./=:@#%-]*)
+    echo "LAB Valkey password contains unsupported config characters" >&2
+    exit 1
+    ;;
+esac
 
-# [중요] 외부에서 주입받은 포트로 실행 (기본값 6379)
-PORT="${PORT:-6379}"
+node_name=${NODE_NAME:-$(hostname)}
+port=${PORT:-6379}
+case "$node_name:$port" in
+  *[!A-Za-z0-9:-]*|'') echo "Invalid LAB Valkey node or port" >&2; exit 1 ;;
+esac
+case "$port" in ''|*[!0-9]*) echo "Invalid LAB Valkey port" >&2; exit 1 ;; esac
+[ "$port" -ge 1024 ] && [ "$port" -le 55535 ] || { echo "Invalid LAB Valkey port" >&2; exit 1; }
 
-echo "🚀 Starting $NODE_NAME on Port $PORT..."
-
-# [핵심 설정]
-# 1. --port: 내부 리스닝 포트를 변경
-# 2. --cluster-announce-ip: IP 대신 '호스트명(redis-node-0)'을 알림
-#    -> Docker 안에서는 내부 IP로 해석됨 (OK)
-#    -> Windows 밖에서는 127.0.0.1로 해석됨 (Hosts 파일 덕분, OK)
-
-exec valkey-server /usr/local/etc/valkey/valkey.conf \
-  --port "$PORT" \
-  --requirepass "$VALKEY_PASSWORD" \
-  --masterauth "$VALKEY_PASSWORD" \
-  --cluster-announce-ip "$NODE_NAME" \
-  --cluster-announce-port "$PORT" \
-  --cluster-announce-bus-port $(($PORT + 10000)) \
-  --appendonly yes
+umask 077
+config=/run/valkey-lab.conf
+cat /usr/local/etc/valkey/valkey.conf > "$config"
+printf '\nport %s\nrequirepass "%s"\nmasterauth "%s"\ncluster-announce-ip %s\ncluster-announce-port %s\ncluster-announce-bus-port %s\nappendonly yes\n' \
+  "$port" "$password" "$password" "$node_name" "$port" "$((port + 10000))" >> "$config"
+unset password
+exec valkey-server "$config"

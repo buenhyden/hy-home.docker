@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -159,6 +159,12 @@ timestamp was not written"을 남기고 exit 1로 끝난다.
 6. 실패 시 target을 중지하고 scratch/evidence를 보존한다. cleanup은 기록한 identity와 label을 재검증한 **정확한 소유 artifact만** 별도 승인 후 삭제한다. source·backup은 보존한다. live cutover는 별도 승인된 절차다.
 
 기존 synthetic test의 network/entrypoint 예시는 이 강화된 계약의 충족 증거가 아니다. source test 수정과 새 격리 검증은 별도 구현 작업이다.
+
+#### 5a. Selected-backup immediate consistency rehearsal
+
+SPEC-0201-TSK-0002의 제안 경로는 step 5의 time-target PITR와 별개다. 실행은 별도 소유자 승인 전 **BLOCKED**이고, 백업 종료 뒤의 WAL 시점·5분 RPO·관리 앱 복구를 증명하지 않는다. 승인된 현재 backup set에 대해 `pgbackrest verify --set=<label>`가 exit 0인 후에만 같은 set을 `--type=immediate --target-action=promote --archive-mode=off`로 새 격리 target에 복원한다. 원본 repository와 BKP-001 secret은 기존 bind를 read-only로 소비한다. backup scheduler의 host lock, 정확한 scratch identity, image/PG major/pgBackRest 호환성, Docker context, 자원·시간 상한, 실패 보존을 먼저 검토한다.
+
+Clone은 `--network none`, host port 없음, 원본 PGDATA와 분리된 scratch만 사용하고 archive를 끈다. 선택 set의 DB 목록과 원본 cluster system ID는 clone과 정확히 같아야 하며 `app_db`, `mlflow`, 추적된 heartbeat·dbt 객체는 존재해야 한다. 복구된 local socket 관리 연결은 `docker exec --user 70`과 복원된 관리자 role을 사용하고 실패하면 중단한다. Clone 안에 직접 grant와 membership이 `CONNECT,TEMP`뿐인 일회성 LOGIN을 만들고, `app_db`·`public` schema·시험 객체의 유효 `PUBLIC` 권한이 영속 객체 변경을 허용하면 중단한다. 내부 loopback `127.0.0.1:5432` TCP로 실제 인증한다. 이 role은 `app_db`의 임시 테이블 생성·합성 행 insert·count 1·rollback을 확인한 뒤 임시 객체와 LOGIN 모두 부재를 확인한다. 비밀번호 평문은 프로세스 밖에 보존하지 않는다. 실제 행·비밀값·원문 로그는 증거에 남기지 않는다. 지정된 관리 테이블 count는 동일 snapshot에서 두 번 동일한 비음수 값을 반환해야 하며 원본의 다른 시점 count와 같다고 가정하지 않는다. Extension과 sequence inventory는 관측값으로 기록하고 backup 시점 비교 자료가 없으면 같음을 주장하지 않는다. Clone이 일관성 상태에 도달하면 host lock을 해제하고, 성공과 실패 모두 정확히 소유한 임시 container 이름과 생성 ID를 대조해 멈추고 제거한다. 실패 경로에서는 아직 보유한 lock도 해제한다. scratch PGDATA는 mode 0700으로 보존하고 증거 수집 시점부터 7일 안에 @buenhyden이 검토한다. 기한을 넘기면 owner에게 상향 보고하며 삭제는 별도 identity·owner 승인이 필요하다. HOME cutover·서비스 중단·time-target PITR는 이 분기의 범위 밖이다.
 
 ### 6. Restore files from Restic
 

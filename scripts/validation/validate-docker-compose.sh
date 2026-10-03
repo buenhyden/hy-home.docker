@@ -88,10 +88,7 @@ check_dir() {
 is_optional_secret() {
   local path="$1"
   case "$path" in
-  ./secrets/db/cassandra/cassandra_password.txt | \
-    ./secrets/db/mongodb/mongodb_root_password.txt | \
-    ./secrets/db/mongodb/mongo_express_basicauth_password.txt | \
-    ./secrets/db/neo4j/neo4j_password.txt | \
+  ./secrets/db/neo4j/neo4j_password.txt | \
     ./secrets/db/valkey/airflow_password.txt)
     return 0
     ;;
@@ -262,9 +259,6 @@ run_preflight() {
   fi
 
   profile_args_from "$PREFLIGHT_PROFILES"
-
-  check_file "./secrets/db/postgres/patroni_superuser_password.txt"
-  check_file "./secrets/db/postgres/patroni_replication_password.txt"
 
   check_file "secrets/certs/rootCA.pem"
   check_file "secrets/certs/cert.pem"

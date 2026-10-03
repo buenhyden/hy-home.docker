@@ -1,0 +1,271 @@
+name: hy-home-lab-mongodb
+x-tier-label: &tier-label
+  hy-home.tier: data
+
+volumes:
+  mongo-key:
+  mongodb1-data:
+  mongodb2-data:
+  mongodb3-data:
+
+services:
+  mongo-key-generator:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    image: mongo:8.3.11-noble
+    container_name: lab-mongodb-mongo-key-generator
+    read_only: false
+    restart: 'no'
+    network_mode: none
+    volumes:
+      - mongo-key:/data/configdb:rw
+    command:
+      - mongosh
+      - --nodb
+      - --quiet
+      - --norc
+      - --eval
+      - |
+        const fs = require('fs');
+        const path = '/data/configdb/mongodb.key';
+        if (!fs.existsSync(path)) {
+          fs.writeFileSync(path, require('crypto').randomBytes(384).toString('base64'), {mode: 0o400, flag: 'wx'});
+        }
+        const stat = fs.lstatSync(path);
+        const content = fs.readFileSync(path, 'utf8');
+        const key = content.replace(/\s/g, '');
+        if (!stat.isFile() || process.getuid() !== 999 || stat.uid !== 999 ||
+            (stat.mode & 0o400) === 0 || (stat.mode & 0o077) !== 0 ||
+            !/^[A-Za-z0-9+/=]+$/.test(key) || key.length < 6 || key.length > 1024) {
+          throw new Error('Invalid LAB MongoDB key file ownership, mode or format');
+        }
+
+  mongodb-rep1:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-high
+    image: mongo:8.3.11-noble
+    restart: unless-stopped
+    container_name: lab-mongodb-mongodb-rep1
+    hostname: mongodb-rep1
+    read_only: false
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/lab_mongodb_root_password
+    volumes:
+      - mongodb1-data:/data/db:rw
+      - mongo-key:/data/configdb:ro
+    secrets:
+      - lab_mongodb_root_password
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
+    healthcheck:
+      test: [ 'CMD', 'mongosh', '--eval', "db.adminCommand('ping')" ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    networks:
+      lab_mongodb_core_net: {}
+    depends_on:
+      mongo-key-generator:
+        condition: service_completed_successfully
+    labels:
+      <<: *tier-label
+
+  mongodb-rep2:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-high
+    image: mongo:8.3.11-noble
+    restart: unless-stopped
+    container_name: lab-mongodb-mongodb-rep2
+    hostname: mongodb-rep2
+    read_only: false
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/lab_mongodb_root_password
+    volumes:
+      - mongodb2-data:/data/db:rw
+      - mongo-key:/data/configdb:ro
+    secrets:
+      - lab_mongodb_root_password
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
+    healthcheck:
+      test: [ 'CMD', 'mongosh', '--eval', "db.adminCommand('ping')" ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    networks:
+      lab_mongodb_core_net: {}
+    depends_on:
+      mongo-key-generator:
+        condition: service_completed_successfully
+    labels:
+      <<: *tier-label
+
+  mongodb-arbiter:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-stateful-low
+    image: mongo:8.3.11-noble
+    container_name: lab-mongodb-mongodb-arbiter
+    hostname: mongodb-arbiter
+    restart: unless-stopped
+    read_only: false
+    volumes:
+      - mongodb3-data:/data/db:rw
+      - mongo-key:/data/configdb:ro
+    command: [ '--replSet', 'MyReplicaSet', '--keyFile', '/data/configdb/mongodb.key', '--bind_ip_all' ]
+    networks:
+      lab_mongodb_core_net: {}
+    healthcheck:
+      test: [ 'CMD', 'mongosh', '--eval', "db.adminCommand('ping')" ]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      mongo-key-generator:
+        condition: service_completed_successfully
+    labels:
+      <<: *tier-label
+
+  mongo-init:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: mongo:8.3.11-noble
+    container_name: lab-mongodb-mongo-init
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      lab_mongodb_core_net: {}
+    depends_on:
+      mongodb-rep1:
+        condition: service_healthy
+      mongodb-rep2:
+        condition: service_healthy
+      mongodb-arbiter:
+        condition: service_healthy
+    environment:
+      LAB_MONGODB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+    entrypoint: [ /bin/bash, -ec ]
+    command:
+      - |
+        export MONGO_ROOT_PASSWORD=$$(cat /run/secrets/lab_mongodb_root_password)
+        [ -n "$$MONGO_ROOT_PASSWORD" ] || exit 1
+        mongosh --host mongodb-rep1 --quiet --eval '
+          const admin = db.getSiblingDB("admin");
+          if (admin.auth(process.env.LAB_MONGODB_ROOT_USERNAME, process.env.MONGO_ROOT_PASSWORD) !== 1) {
+            throw new Error("LAB MongoDB authentication failed");
+          }
+          try { rs.status(); } catch (e) {
+            if (e.codeName !== "NotYetInitialized" && e.code !== 94) throw e;
+            rs.initiate({_id:"MyReplicaSet",members:[{_id:0,host:"mongodb-rep1:27017",priority:2},{_id:1,host:"mongodb-rep2:27017",priority:1},{_id:2,host:"mongodb-arbiter:27017",arbiterOnly:true}]});
+          }
+        '
+    secrets:
+      - lab_mongodb_root_password
+
+  mongo-express:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-low
+    image: mongo-express:1-18-alpine3.19
+    container_name: lab-mongodb-mongo-express
+    hostname: mongo-express
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD_FILE: /run/secrets/lab_mongodb_root_password
+      ME_CONFIG_MONGODB_SERVER: mongodb-rep1,mongodb-rep2,mongodb-arbiter
+      ME_CONFIG_MONGODB_REPLICA_SET: MyReplicaSet
+      # mongo-express 1.x ignores the credentials below unless this is true.
+      ME_CONFIG_BASICAUTH: 'true'
+      ME_CONFIG_BASICAUTH_USERNAME: ${LAB_MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD_FILE: /run/secrets/lab_mongo_express_basicauth_password
+    expose:
+      - 8081
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.http.routers.mongo-express.rule: Host(`mongo-express.${LAB_BASE_DOMAIN}`)
+      traefik.http.routers.mongo-express.entrypoints: websecure
+      traefik.http.routers.mongo-express.tls: 'true'
+      traefik.http.services.mongo-express.loadbalancer.server.port: 8081
+      traefik.http.routers.mongo-express.middlewares: gateway-standard-chain@file
+    networks:
+      lab_mongodb_edge_net: {}
+      lab_mongodb_core_net: {}
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    secrets:
+      - lab_mongodb_root_password
+      - lab_mongo_express_basicauth_password
+
+  mongodb-exporter:
+    profiles:
+      - mongodb
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-low
+    image: percona/mongodb_exporter:2.37
+    container_name: lab-mongodb-mongodb-exporter
+    read_only: true
+    tmpfs:
+      - /tmp
+    expose:
+      - ${LAB_MONGO_EXPORTER_PORT:-9216}
+    entrypoint: [ '/bin/sh', '-c' ]
+    environment:
+      MONGODB_USER: ${LAB_MONGODB_ROOT_USERNAME}
+    command:
+      - |
+        export MONGODB_PASSWORD=$$(cat /run/secrets/lab_mongodb_root_password)
+        [ -n "$$MONGODB_PASSWORD" ] || exit 1
+        exec mongodb_exporter --mongodb.uri="mongodb://mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
+    depends_on:
+      mongo-init:
+        condition: service_completed_successfully
+    secrets:
+      - lab_mongodb_root_password
+    networks:
+      lab_mongodb_core_net: {}
+      lab_mongodb_obs_net: {}
+
+networks:
+  lab_mongodb_core_net:
+    name: ${LAB_MONGODB_CORE_NETWORK_NAME:-hy-home-lab-mongodb-core}
+    internal: true
+  lab_mongodb_edge_net:
+    name: ${LAB_MONGODB_EDGE_NETWORK_NAME:-hy-home-lab-mongodb-edge}
+  lab_mongodb_obs_net:
+    name: ${LAB_MONGODB_OBS_NETWORK_NAME:-hy-home-lab-mongodb-obs}
+    internal: true
+secrets:
+  lab_mongodb_root_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/root_password.txt
+  lab_mongo_express_basicauth_password:
+    file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/express_basicauth_password.txt

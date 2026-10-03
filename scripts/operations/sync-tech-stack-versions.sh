@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Derive the tech-stack registry from tracked infrastructure Compose images.
+# Derive the tech-stack registry from tracked HOME and standalone LAB Compose images.
 #
-# infra/tech-stack.versions.json is downstream of Git-tracked infrastructure
+# infra/tech-stack.versions.json is downstream of Git-tracked infra and labs
 # Compose service image declarations, the sole authority for this projection.
 # Existing component labels remain stable where possible, while repository,
 # image, source-file and local/custom classifications are regenerated.
@@ -115,8 +115,8 @@ IMAGE = re.compile(
 )
 COMPOSE_NAME = re.compile(r"(?:docker-)?compose[^/]*\.ya?ml\Z")
 SOURCE_OF_TRUTH = (
-    "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} "
-    "service image declarations"
+    "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and "
+    "labs/*.{yml,yaml} service image declarations"
 )
 LOCAL_REPOSITORY_PREFIXES = ("hy/", "hyhome/", "hy-home/")
 
@@ -164,7 +164,7 @@ def declared_images(relative):
 def tracked_compose_files():
     try:
         result = subprocess.run(
-            ["git", "ls-files", "-z", "--", "infra"],
+            ["git", "ls-files", "-z", "--", "infra", "labs"],
             check=True,
             capture_output=True,
         )
@@ -179,7 +179,11 @@ def tracked_compose_files():
         except UnicodeError as exc:
             raise ContractError("invalid tracked compose path") from exc
         path = pathlib.PurePosixPath(relative)
-        if COMPOSE_NAME.fullmatch(path.name):
+        if (path.parts[0] == "infra" and COMPOSE_NAME.fullmatch(path.name)) or (
+            len(path.parts) == 2
+            and path.parts[0] == "labs"
+            and path.suffix in (".yml", ".yaml")
+        ):
             paths.append(relative)
     return sorted(paths)
 
@@ -275,7 +279,7 @@ def expected_entries(registry, discovered):
             first_path = sorted(discovered[repositories[0]])[0]
             parts = pathlib.PurePosixPath(first_path).parts
             if len(parts) > 1:
-                entry["tier"] = parts[1]
+                entry["tier"] = "lab" if parts[0] == "labs" else parts[1]
         classifications = {
             repository: repository_classification(repository)
             for repository in repositories

@@ -3,8 +3,7 @@
 # one through PROMETHEUS_CONFIG_FILE. Every target carries cluster="hy-home"
 # and namespace="hy-home" so upstream mixin dashboards select it unchanged.
 # Each source is scraped by exactly one job. Jobs marked on-demand belong to
-# OPTIONAL or LAB services; their targets are down while the service is
-# stopped, and PrometheusInfraTargetsMissing does not watch them.
+# OPTIONAL services; independent LAB projects are not joined to this network.
 global:
   scrape_interval: 30s
   evaluation_interval: 30s
@@ -256,12 +255,12 @@ scrape_configs:
           domain: "ai"
 
   # ============================================================================
-  # ON-DEMAND (OPTIONAL and LAB services; down while stopped)
+  # ON-DEMAND (OPTIONAL services; down while stopped)
   # ============================================================================
   # Job names kafka-broker, kafka-connect and schema-registry match the Confluent dashboards.
   - job_name: "kafka-broker"
     static_configs:
-      - targets: ["kafka-1:9404", "kafka-2:9404", "kafka-3:9404"]
+      - targets: ["kafka-1:9404"]
         labels:
           cluster: "hy-home"
           namespace: "hy-home"
@@ -319,49 +318,6 @@ scrape_configs:
           namespace: "hy-home"
           domain: "datastores"
 
-  - job_name: "valkey-cluster"
-    metrics_path: /scrape
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: __param_target
-      - source_labels: [__address__]
-        target_label: instance
-      - source_labels: [__address__]
-        target_label: addr
-      - target_label: __address__
-        replacement: valkey-cluster-exporter:9121
-    static_configs:
-      - targets: ["redis://valkey-node-0:6379", "redis://valkey-node-1:6380", "redis://valkey-node-2:6381", "redis://valkey-node-3:6382", "redis://valkey-node-4:6383", "redis://valkey-node-5:6384"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-
-  - job_name: "postgres-cluster"
-    static_configs:
-      - targets: ["pg-0-exporter:9187", "pg-1-exporter:9187", "pg-2-exporter:9187"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-          pg_cluster: "pg-ha-cluster"
-
-  - job_name: "haproxy"
-    static_configs:
-      - targets: ["pg-router:8404"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-
-  - job_name: "etcd"
-    static_configs:
-      - targets: ["etcd-1:2379", "etcd-2:2379", "etcd-3:2379"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-
   - job_name: "opensearch"
     metrics_path: "/_prometheus/metrics"
     scheme: https
@@ -372,22 +328,6 @@ scrape_configs:
       insecure_skip_verify: true
     static_configs:
       - targets: ["opensearch:9200"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-
-  - job_name: "mongodb-exporter"
-    static_configs:
-      - targets: ["mongodb-exporter:9216"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
-
-  - job_name: "cassandra-exporter"
-    static_configs:
-      - targets: ["cassandra-exporter:8080"]
         labels:
           cluster: "hy-home"
           namespace: "hy-home"

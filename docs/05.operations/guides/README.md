@@ -1,10 +1,10 @@
 ---
 title: "Operations Guides"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 ---
 
@@ -93,6 +93,7 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [NoSQL — CouchDB](0026-couchdb.md) | `GDE-0026` | active | [Policy](../policies/0026-couchdb.md), [Runbook](../runbooks/0026-couchdb.md) |
 | [NoSQL — MongoDB](0027-mongodb.md) | `GDE-0027` | active | [Policy](../policies/0027-mongodb.md), [Runbook](../runbooks/0027-mongodb.md) |
 | [Operational — MNG-DB](0028-management-database.md) | `GDE-0028` | active | [Policy](../policies/0028-management-database.md), [Runbook](../runbooks/0028-management-database.md) |
+| [Operational — Development database](0100-development-database.md) | `GDE-0100` | draft | [Policy](../policies/0100-development-database.md), [Runbook](../runbooks/0100-development-database.md) |
 | [Operational — Supabase](0029-supabase.md) | `GDE-0029` | active | [Policy](../policies/0029-supabase.md), [Runbook](../runbooks/0029-supabase.md) |
 | [Optimization hardening](0030-data-optimization-hardening.md) | `GDE-0030` | active | [Policy](../policies/0030-data-optimization-hardening.md), [Runbook](../runbooks/0030-data-optimization-hardening.md) |
 | [Relational — PostgreSQL Cluster](0031-postgresql-cluster.md) | `GDE-0031` | active | [Policy](../policies/0031-postgresql-cluster.md), [Runbook](../runbooks/0031-postgresql-cluster.md) |

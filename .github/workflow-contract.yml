@@ -751,6 +751,11 @@
       "argv": [
         "run-unittest",
         "tests.validation.test_compose_baseline_gates",
+        "tests.validation.test_dev_data_boundary",
+        "tests.validation.test_dev_pg_provision",
+        "tests.validation.test_dev_valkey_acl",
+        "tests.validation.test_influx_mapping",
+        "tests.validation.test_lab_credential_argv",
         "tests.validation.test_infra_tier_layout",
         "tests.validation.test_openwebui_oidc_entrypoint",
         "tests.validation.test_gatus_oidc",

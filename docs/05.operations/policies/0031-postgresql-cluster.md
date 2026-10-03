@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "1.0.4"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -16,31 +16,29 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../infra/04-data/postgresql-cluster/docker-compose.yml) tag, HAProxy [haproxy image declaration](../../../infra/04-data/postgresql-cluster/docker-compose.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../infra/04-data/postgresql-cluster/docker-compose.yml), init job [postgres image declaration](../../../infra/04-data/postgresql-cluster/docker-compose.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../infra/04-data/postgresql-cluster/docker-compose.yml), Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
 
 ## Policy Scope
 
-- `infra/04-data/postgresql-cluster/docker-compose.yml`
+- `labs/postgresql-ha.yml`
 - `etcd-1`, `etcd-2`, `etcd-3`
 - `pg-router`, `pg-cluster-init`
 - `pg-0`, `pg-1`, `pg-2`
 - `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`
 - `haproxy.cfg.tpl`, `init_users_dbs.sql`, `spilo-entrypoint-with-secrets.sh`
-- `pg_haproxy_stats_password`, `patroni_superuser_password`, `patroni_replication_password`, `patroni_exporter_password`, `service_postgres_password`
+- `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_replication_password`, `lab_pg_exporter_password`, `lab_pg_service_password`
 - Linked guide and runbook under `docs/05.operations`
 
 ## Controls
 
 - **Required**: 문서는 cluster를 정확한 `postgres-ha` profile 아래에서만
-  서비스가 해석되는 unconditional root include로 식별해야 하며, `core`
-  surface의 일부로 기술해서는 안 된다.
+  서비스가 해석되는 독립 `labs/postgresql-ha.yml` Compose로 식별해야 하며 root include 또는 `core` surface의 일부로 기술해서는 안 된다.
 - **Required**: Application 연결 가이드는 `pg-0`, `pg-1`, `pg-2`에 직접 쓰지
   않고 `pg-router`의 write/read endpoint를 사용해야 한다.
 - **Required**: Credential 가이드는 Docker Secret mount와 secret-aware
   entrypoint를 참조해야 한다. Secret 값은 문서나 evidence에 절대 복사해서는
   안 된다.
-- **Required**: HAProxy stats 가이드는 선언된 Traefik route
-  `pg-haproxy.${DEFAULT_URL}`와 `pg_haproxy_stats_password`를 사용해야 한다.
+- **Required**: HAProxy stats label `pg-haproxy.${LAB_BASE_DOMAIN}`는 HOME Traefik과 network가 분리되어 현재 외부 route가 아니다. 내부 stats port와 `lab_pg_haproxy_stats_password`를 구분한다.
 - **Required**: 서비스/init 가이드는 `pg-cluster-init`을 `init_users_dbs.sql`을
   통해 exporter role, service role, service database를 동기화하는 compose
   job으로 기술해야 한다.
@@ -79,10 +77,10 @@ N/A - 현재 승인된 예외 없음.
 - Compose 변경 후 이 정책을
   [PostgreSQL cluster guide](../guides/0031-postgresql-cluster.md),
   [PostgreSQL cluster runbook](../runbooks/0031-postgresql-cluster.md),
-  [infra README](../../../infra/04-data/postgresql-cluster/README.md)와
+  [LAB 설명](../../../labs/postgresql-ha.md)와
   비교한다.
 - 서비스 이름, image, route, secret, port, volume 문서 갱신을 승인하기 전에
-  `docker compose --profile postgres-ha config --quiet`를 실행한다.
+  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile postgres-ha config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Review Cadence
@@ -105,4 +103,4 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../README.md)
 - [Usage guide](../guides/0031-postgresql-cluster.md)
 - [Recovery runbook](../runbooks/0031-postgresql-cluster.md)
-- [Infra README](../../../infra/04-data/postgresql-cluster/README.md)
+- [LAB 설명](../../../labs/postgresql-ha.md)

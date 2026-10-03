@@ -1,0 +1,156 @@
+# Independent KRaft LAB entrypoint; never included by the normal root.
+name: hy-home-lab-kafka
+x-tier-label: &tier-label
+  hy-home.tier: lab
+
+x-lab-kafka-env: &lab-kafka-env
+  CLUSTER_ID: ${LAB_KAFKA_CLUSTER_ID:?set a unique LAB KRaft cluster ID}
+  KAFKA_PROCESS_ROLES: broker,controller
+  KAFKA_CONTROLLER_QUORUM_VOTERS: 1@lab-kafka-1:9093,2@lab-kafka-2:9093,3@lab-kafka-3:9093
+  KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:19092,CONTROLLER://0.0.0.0:9093
+  KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+  KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+  KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  KAFKA_LOG_DIRS: /var/lib/kafka/data
+  KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+  KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 3
+  KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 2
+  KAFKA_OFFSETS_TOPIC_NUM_PARTITIONS: 3
+  KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+  KAFKA_HEAP_OPTS: '-Xms512M -Xmx512M'
+
+x-lab-kafka-broker: &lab-kafka-broker
+  image: confluentinc/cp-kafka:8.3.2
+  extends:
+    file: ../infra/common-optimizations.yml
+    service: template-stateful-high
+  cpus: '0.75'
+  mem_limit: 1536m
+  read_only: false
+  restart: unless-stopped
+  healthcheck:
+    test: ['CMD-SHELL', 'kafka-broker-api-versions --bootstrap-server localhost:19092 >/dev/null || exit 1']
+    interval: 15s
+    timeout: 30s
+    retries: 10
+    start_period: 60s
+  labels:
+    <<: *tier-label
+    traefik.enable: 'false'
+  networks:
+    lab_kafka_net: {}
+
+volumes:
+  lab-kafka-1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/kafka/1
+  lab-kafka-2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/kafka/2
+  lab-kafka-3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/kafka/3
+
+networks:
+  lab_kafka_net:
+    internal: true
+
+services:
+  lab-kafka-1:
+    <<: *lab-kafka-broker
+    hostname: lab-kafka-1
+    profiles: [lab-kafka]
+    environment:
+      <<: *lab-kafka-env
+      KAFKA_NODE_ID: 1
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://lab-kafka-1:19092
+    volumes:
+      - lab-kafka-1-data:/var/lib/kafka/data:rw
+
+  lab-kafka-2:
+    <<: *lab-kafka-broker
+    hostname: lab-kafka-2
+    profiles: [lab-kafka]
+    environment:
+      <<: *lab-kafka-env
+      KAFKA_NODE_ID: 2
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://lab-kafka-2:19092
+    volumes:
+      - lab-kafka-2-data:/var/lib/kafka/data:rw
+
+  lab-kafka-3:
+    <<: *lab-kafka-broker
+    hostname: lab-kafka-3
+    profiles: [lab-kafka]
+    environment:
+      <<: *lab-kafka-env
+      KAFKA_NODE_ID: 3
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://lab-kafka-3:19092
+    volumes:
+      - lab-kafka-3-data:/var/lib/kafka/data:rw
+
+  lab-kafka-exporter:
+    profiles: [lab-kafka]
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-infra-low
+    image: danielqsj/kafka-exporter:v1.10.0
+    read_only: true
+    tmpfs: [/tmp]
+    command:
+      - --kafka.server=lab-kafka-1:19092
+      - --web.listen-address=:9308
+    depends_on:
+      lab-kafka-1:
+        condition: service_healthy
+      lab-kafka-2:
+        condition: service_healthy
+      lab-kafka-3:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget --quiet --tries=1 --spider http://localhost:9308/metrics || exit 1']
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      lab_kafka_net: {}
+
+  lab-kafka-init:
+    profiles: [lab-kafka]
+    extends:
+      file: ../infra/common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: confluentinc/cp-kafka:8.3.2
+    read_only: true
+    tmpfs: [/tmp]
+    depends_on:
+      lab-kafka-1:
+        condition: service_healthy
+      lab-kafka-2:
+        condition: service_healthy
+      lab-kafka-3:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-ec']
+    command:
+      - |
+        kafka-topics --bootstrap-server lab-kafka-1:19092 --create --if-not-exists --topic lab-events --partitions 3 --replication-factor 3
+        kafka-topics --bootstrap-server lab-kafka-1:19092 --create --if-not-exists --topic lab-logs --partitions 6 --replication-factor 3
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      lab_kafka_net: {}

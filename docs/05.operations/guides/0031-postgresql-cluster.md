@@ -1,27 +1,14 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "1.0.4"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
 - "POL-0031"
-implementation_services:
-  infra/04-data/postgresql-cluster/docker-compose.yml:
-  - 'etcd-1'
-  - 'etcd-2'
-  - 'etcd-3'
-  - 'pg-0'
-  - 'pg-0-exporter'
-  - 'pg-1'
-  - 'pg-1-exporter'
-  - 'pg-2'
-  - 'pg-2-exporter'
-  - 'pg-cluster-init'
-  - 'pg-router'
 created: "2026-05-10"
 ---
 
@@ -31,14 +18,14 @@ created: "2026-05-10"
 
 ### Overview
 
-이 문서는 [PostgreSQL cluster Compose 구현](../../../infra/04-data/postgresql-cluster/docker-compose.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
+이 문서는 [PostgreSQL cluster Compose 구현](../../../labs/postgresql-ha.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
 
 ### Current implementation
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
 | Consumer와 data 근거 | PostgreSQL leadership/routing과 logical upgrade 복구를 위한 LAB rehearsal용이며 확인된 HOME database가 아니다. |
-| Source·update 책임 | [Compose](../../../infra/04-data/postgresql-cluster/docker-compose.yml), entrypoint, HAProxy template과 init SQL이 runtime source를 소유한다. 관련 변경을 함께 검토하여 upgrade한다. |
+| Source·update 책임 | [Compose](../../../labs/postgresql-ha.yml), entrypoint, HAProxy template과 init SQL이 runtime source를 소유한다. 관련 변경을 함께 검토하여 upgrade한다. |
 | 서비스·profile | etcd 3개, router, init, PostgreSQL 3개, exporter 3개; 정확한 profile은 `postgres-ha`. |
 | 흐름·의존성 | etcd가 Patroni DCS state를 보관한다. HAProxy는 primary 쓰기/replica 읽기를 라우팅하며 init은 service/exporter role과 database를 생성한다. |
 | 노출·영속성 | write/read port와 stats route는 source에 선언되어 있다. etcd/PGDATA에는 별도의 bind 기반 volume을 둔다. |
@@ -54,17 +41,17 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
-| `etcd-1` | DCS member 1; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `etcd-2` | DCS member 2; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `etcd-3` | DCS member 3; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-0` | Spilo/Patroni member 0; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-0-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-1` | Spilo/Patroni member 1; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-1-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-2` | Spilo/Patroni member 2; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-2-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-cluster-init` | role/database mutation job; HA restore 아님 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
-| `pg-router` | write/read router + stats; backend readiness 별도 | HAProxy config syntax; write/read routing 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/postgresql-cluster/docker-compose.yml) |
+| `etcd-1` | DCS member 1; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `etcd-2` | DCS member 2; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `etcd-3` | DCS member 3; 고유 URL/identity/data | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-0` | Spilo/Patroni member 0; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-0-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-1` | Spilo/Patroni member 1; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-1-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-2` | Spilo/Patroni member 2; 고유 identity/data, secret wrapper | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-2-exporter` | 해당 PG member만 수집하는 exporter | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-cluster-init` | role/database mutation job; HA restore 아님 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
+| `pg-router` | write/read router + stats; backend readiness 별도 | HAProxy config syntax; write/read routing 별도 | [선택·의존·접속·입력·mount](../../../labs/postgresql-ha.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
@@ -84,8 +71,10 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 
 ### Prerequisites
 
-- 루트 [docker-compose.yml](../../../docker-compose.yml)는 cluster 파일을 include하며, 열한 서비스의 exact profile은 `postgres-ha`다.
-- `DEFAULT_DATA_DIR`, `POSTGRES_DEFAULT_DB`, Patroni usernames, service DB/user variables, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
+이 LAB의 입력은 [예시 환경 파일](../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../labs/postgresql-ha.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
+
+- [독립 LAB Compose](../../../labs/postgresql-ha.yml)는 root에 include되지 않으며 열한 서비스는 `postgres-ha` profile에 속한다.
+- `LAB_DATA_DIR`, `LAB_PG_DEFAULT_DB`, `LAB_PG_SUPERUSER_USERNAME`, `LAB_PG_REPLICATION_USERNAME`, `LAB_PG_EXPORTER_USERNAME`, `LAB_PG_FIXTURE_DB`, `LAB_PG_FIXTURE_USERNAME`, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
 ### Step-by-step Instructions
@@ -96,28 +85,28 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 
    | Endpoint | Host | Port | Purpose |
    | --- | --- | --- | --- |
-   | Write | `pg-router` (`${HOST_LAN_BIND_IP:-192.168.0.13}`) | `${POSTGRES_WRITE_PORT:-15432}` | Patroni primary backend |
-   | Read | `pg-router` (`${HOST_LAN_BIND_IP:-192.168.0.13}`) | `${POSTGRES_READ_PORT:-15433}` | Patroni replica backends |
-   | Stats | `pg-haproxy.${DEFAULT_URL}` | `${HAPROXY_PORT:-7000}` via Traefik | HAProxy stats route |
+   | Write | `${LAB_HOST_BIND_IP:-127.0.0.1}` | `${LAB_PG_WRITE_HOST_PORT:-35432}` → 내부 `15432` | Patroni primary backend |
+   | Read | `${LAB_HOST_BIND_IP:-127.0.0.1}` | `${LAB_PG_READ_HOST_PORT:-35433}` → 내부 `15433` | Patroni replica backends |
+   | Stats | `pg-router`의 LAB network | 내부 `7000`; host 미게시 | Traefik label은 남았으나 HOME gateway 경로 없음 |
 
 2. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
 
-3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `patroni_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
+3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `lab_pg_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
 
 ### Common Pitfalls
 
-- 루트 compose는 이 클러스터 파일을 무조건 include하지만 어떤 서비스도 `core` profile에 속하지 않는다. 기본 `core` validation에 이 클러스터가 포함된 것처럼 설명하지 않는다.
+- root의 `core` 또는 전체 profile render에는 `labs/postgresql-ha.yml`이 포함되지 않는다.
 - 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
-- Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/patroni_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
+- Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/lab_pg_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
 - logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
 ## Common Checks
 
-- `docker compose --profile postgres-ha config --quiet`
-- `docker compose ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
-- `docker exec pg-0 patronictl -c /home/postgres/postgres.yml list`
-- `docker compose logs --tail=120 pg-router pg-cluster-init`
+- `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile postgres-ha config --quiet`
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml exec pg-0 patronictl -c /home/postgres/postgres.yml list`
+- `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml logs --tail=120 pg-router pg-cluster-init`
 
 ## Runbook Handoff
 
@@ -138,5 +127,5 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 - [Operations index](../README.md)
 - [Operations policy](../policies/0031-postgresql-cluster.md)
 - [Recovery runbook](../runbooks/0031-postgresql-cluster.md)
-- [Infra README](../../../infra/04-data/postgresql-cluster/README.md)
-- [Compose implementation: infra/04-data/postgresql-cluster/docker-compose.yml](../../../infra/04-data/postgresql-cluster/docker-compose.yml)
+- [LAB 설명](../../../labs/postgresql-ha.md)
+- [Compose implementation: labs/postgresql-ha.yml](../../../labs/postgresql-ha.yml)

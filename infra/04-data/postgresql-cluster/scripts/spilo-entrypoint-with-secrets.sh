@@ -9,11 +9,22 @@ read_secret() {
     exit 1
   fi
 
-  value="$(tr -d '\n' < "$1")"
-  if [ -z "$value" ]; then
-    echo "ERROR: empty secret file: $1" >&2
+  size=$(wc -c < "$1")
+  if [ "$size" -lt 1 ] || [ "$size" -gt 4096 ]; then
+    echo "ERROR: invalid secret size: $1" >&2
     exit 1
   fi
+  if ! LC_ALL=C tr -cd '[:print:]\n' < "$1" | cmp -s "$1" -; then
+    echo "ERROR: control-character secret: $1" >&2
+    exit 1
+  fi
+  value="$(cat "$1")"
+  case "$value" in
+    ''|*[![:print:]]*)
+      echo "ERROR: empty or control-character secret: $1" >&2
+      exit 1
+      ;;
+  esac
 
   printf '%s' "$value"
 }
@@ -43,9 +54,9 @@ require_env PATRONI_EXPORTER_USERNAME
 # -------------------------------------------------------------------
 # Read secrets
 # -------------------------------------------------------------------
-PATRONI_SUPERUSER_PASSWORD="$(read_secret /run/secrets/patroni_superuser_password)"
-PATRONI_REPLICATION_PASSWORD="$(read_secret /run/secrets/patroni_replication_password)"
-PATRONI_EXPORTER_PASSWORD="$(read_secret /run/secrets/patroni_exporter_password)"
+PATRONI_SUPERUSER_PASSWORD="$(read_secret /run/secrets/lab_pg_superuser_password)"
+PATRONI_REPLICATION_PASSWORD="$(read_secret /run/secrets/lab_pg_replication_password)"
+PATRONI_EXPORTER_PASSWORD="$(read_secret /run/secrets/lab_pg_exporter_password)"
 
 export PATRONI_SUPERUSER_PASSWORD
 export PATRONI_REPLICATION_PASSWORD

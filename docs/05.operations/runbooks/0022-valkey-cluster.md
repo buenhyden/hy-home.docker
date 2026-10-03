@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "1.0.4"
+version: "2.0.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -36,16 +36,18 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-repository root에서 실행한다.
+정적 검사는 `labs/.env.example`과 `labs/valkey-cluster.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
+
+repository root에서 독립 LAB 파일을 지정해 정적 렌더링한다. `labs/.env.example`은 합성 입력만 담고 실제 `labs/.env`와 secret은 실행 승인 후 별도 준비한다.
 
 ```bash
-docker compose --env-file .env.example --profile valkey-cluster config --quiet
-docker compose --env-file .env.example --profile valkey-cluster config --services
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --quiet
+LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/valkey-cluster.yml --profile valkey-cluster config --services
 ```
 
-6개 node service, init job, exporter; 6개의 서로 다른 data volume; `lab_net`;
-password secret; node health check; 6379–6384 client와 16379–16384 bus
-mapping을 확인한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
+6개 node service, init job, exporter; 6개의 서로 다른 data volume; `lab_valkey_core_net`/`lab_valkey_obs_net`;
+password secret; node health check; 기본 loopback host 17379–17384 → 내부 6379–6384 client와 16379–16384 bus
+exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
 
 ### Planned backup procedure
 
@@ -102,7 +104,7 @@ slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 
 ## Traceability
 
-- Runtime source: [Valkey Cluster Compose](../../../infra/04-data/valkey-cluster/docker-compose.yml).
+- Runtime source: [Valkey Cluster Compose](../../../labs/valkey-cluster.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
 - dated verification record가 실행 사실을 명시하지 않는 한, 이 절차는 계획 단계다.
 

@@ -2,7 +2,7 @@ x-tier-label: &tier-label
   hy-home.tier: analytics
 
 services:
-  # Feature-owned role, grants and target schema on the application database.
+  # Feature-owned analytics role on the explicit internal development fixture.
   dbt-db-provision:
     profiles:
       - analytics-engineering
@@ -15,32 +15,32 @@ services:
       - /bin/sh
       - /provision/run-feature-provision.sh
     environment:
-      PGHOST: mng-pg
+      PGHOST: dev-pg
       PGPORT: '${POSTGRES_PORT:-5432}'
-      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGUSER: '${DEV_PG_ADMIN_USER:-postgres}'
       PGDATABASE: '${POSTGRES_DEFAULT_DB}'
-      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
-      PROVISION_SQL: /provision/mng-pg.sql
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
+      PROVISION_SQL: /provision/dev-pg.sql
       PROVISION_IDENTIFIERS: DBT_DB_USER DBT_DB_NAME DBT_SCHEMA DBT_SOURCE_SCHEMA DBT_SOURCE_OWNER
       PROVISION_SECRETS: DBT_DB_PASSWORD=/run/secrets/dbt_db_password
       DBT_DB_USER: '${DBT_DB_USER:-dbt}'
-      DBT_DB_NAME: '${DBT_DB_NAME:-${SERVICE_POSTGRES_DB:-app_db}}'
+      DBT_DB_NAME: platform_dev
       DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'
-      DBT_SOURCE_SCHEMA: '${DBT_SOURCE_SCHEMA:-public}'
-      DBT_SOURCE_OWNER: '${SERVICE_POSTGRES_USERNAME:-app_user}'
+      DBT_SOURCE_SCHEMA: app
+      DBT_SOURCE_OWNER: platform_owner
     volumes:
       - ../../04-data/mng-db/pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
-      - ./provisioning/mng-pg.sql:/provision/mng-pg.sql:ro
+      - ./provisioning/dev-pg.sql:/provision/dev-pg.sql:ro
     secrets:
-      - mng_postgres_password
+      - dev_pg_admin_password
       - dbt_db_password
     depends_on:
-      mng-pg:
+      dev-pg:
         condition: service_healthy
-      mng-pg-init:
+      dev-platform-provision:
         condition: service_completed_successfully
     networks:
-      mng_data_net: {}
+      dev_data_net: {}
     labels:
       <<: *tier-label
       traefik.enable: 'false'
@@ -61,12 +61,12 @@ services:
     container_name: dbt
     environment:
       DBT_PROFILES_DIR: /config
-      DBT_DB_HOST: mng-pg
+      DBT_DB_HOST: dev-pg
       DBT_DB_PORT: '${POSTGRES_PORT:-5432}'
       DBT_DB_USER: '${DBT_DB_USER:-dbt}'
-      DBT_DB_NAME: '${DBT_DB_NAME:-${SERVICE_POSTGRES_DB:-app_db}}'
+      DBT_DB_NAME: platform_dev
       DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'
-      DBT_SOURCE_SCHEMA: '${DBT_SOURCE_SCHEMA:-public}'
+      DBT_SOURCE_SCHEMA: app
       DBT_THREADS: '${DBT_THREADS:-4}'
     secrets:
       - dbt_db_password
@@ -78,11 +78,11 @@ services:
     command:
       - debug
     depends_on:
-      mng-pg:
+      dev-pg:
         condition: service_healthy
       dbt-db-provision:
         condition: service_completed_successfully
     networks:
-      mng_data_net: {}
+      dev_data_net: {}
     labels:
       <<: *tier-label

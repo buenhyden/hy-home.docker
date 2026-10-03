@@ -1,106 +1,71 @@
 ---
 title: "OpenSearch"
-version: "1.0.6"
+version: "1.0.8"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-02"
 created: "2025-11-12"
 ---
 
 # OpenSearch
 
-> Dashboards를 갖춘 분산 검색 및 분석 엔진입니다.
-
 ## Overview
 
-`opensearch` 스택은 로그 집계, 풀텍스트 검색 및 실시간 시각화를 위한 확장 가능한 검색 백엔드를 제공한다. 고가용성 관측성 및 분석 워크로드를 위해 설계되었다.
+이 패키지는 정상 root Compose의 선택형 단일 OpenSearch와 해당
+OpenSearch Dashboards를 소유합니다. 검색 API와 Dashboard는 기존 Traefik
+라우트를 사용합니다. 소스 변경만으로 실행 중인 서비스가 바뀌지는 않습니다.
 
 ## Audience
 
-이 README의 주요 독자:
-
-- **Developers**: 검색 쿼리 및 데이터 인덱싱 설계
-- **Operators**: 노드 상태 관리 및 보안 설정
-- **AI Agents**: 인프라 탐색 및 검색 효율 분석
+검색 서비스의 developer, operator, 보안 검토자를 대상으로 합니다.
 
 ## Scope
 
-### In Scope
+`docker-compose.yml`의 `opensearch` profile은 `opensearch`와
+`opensearch-dashboards`만 선택합니다. API는 HTTPS와 관리자 secret 기반
+healthcheck를 사용하고 Dashboard는 `200` 또는 `401` 상태를 준비 신호로
+받습니다. 두 서비스는 `edge_net`을 공유하고 OpenSearch는 관측 연결을
+위해 `obs_net`도 사용합니다. 호스트 포트는 게시하지 않습니다.
 
-- OpenSearch 3.x custom build와 OpenSearch Dashboards를 위한 Docker 인프라(정확한 버전은 `Dockerfile`/`docker-compose.yml` 참조)
-- 자원 할당(JVM Heap) 및 볼륨 영속성 관리
-- 보안 설정 (Docker Secrets, HTTPS 적용)
-- 커스텀 빌드 이미지를 통한 플러그인 관리
+관리자, Dashboard, exporter, cookie, OAuth client secret은 기존 root의
+Docker secret 이름을 사용합니다. `${DEFAULT_CERT_DIR}`의 인증서와 보안
+설정은 읽기 전용으로 mount합니다. 정상 영속 경로 `opensearch-data`와
+`opensearch-dashboards-data`는 변경하지 않습니다. API와 Dashboard는
+`opensearch.${DEFAULT_URL}` 및 `opensearch-dashboard.${DEFAULT_URL}`의
+기존 gateway route를 유지합니다. 인증서와 실제 접근 권한은 소스 선언만으로
+확인되지 않습니다.
 
-### Out of Scope
-
-- 상세 검색 쿼리 로직 개발 (-> 시스템 가이드 참조)
-- 인덱스 보존 정책 설계 (-> 운영 정책 참조)
-- 개별 노드 장애 복구 절차 (-> 런북 참조)
+Dockerfile은 OpenSearch를 기반으로 하지만 prometheus-exporter plugin의 선언 버전과
+호환되는지 확인되지 않았습니다.
+이미지 빌드, plugin 로드, 실제 readiness와 백업·복구는 확인 전이며 이
+소스 변경으로 통과했다고 보지 않습니다.
 
 ## Structure
 
-```text
-opensearch/
-├── opensearch/             # 엔진 설정
-├── opensearch-dashboards/  # 시각화 설정
-├── Dockerfile              # 보안을 위한 custom build
-├── docker-compose.yml      # 표준 스택
-└── README.md               # 이 파일
-```
-
-## Service Readiness
-
-| Field | Evidence |
-| --- | --- |
-| Purpose | `04-data`의 OpenSearch 서비스 leaf; primary services: `opensearch`, `opensearch-dashboards`; `opensearch-cluster` profile services: `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards` |
-| Config files | `docker-compose.yml` |
-| Config values | env keys: `node.name`, `cluster.name`, `discovery.seed_hosts`, `cluster.initial_cluster_manager_nodes`, `OPENSEARCH_JAVA_OPTS`, `bootstrap.memory_lock`, `node.roles`, `plugins.security.ssl.http.enabled` 등 8개 더; profiles: `opensearch`, `opensearch-cluster` |
-| Compose linkage | [root docker-compose.yml](../../../docker-compose.yml)에서 무조건 root include, profile로 선택됨 -> `infra/04-data/opensearch/docker-compose.yml`; single-node 토폴로지는 `opensearch` profile이고 3노드 토폴로지는 `opensearch-cluster`이며 둘 다 이 한 파일에 있음 |
-| Networks | `edge_net`, `lab_net`, `obs_net` |
-| Volumes | `opensearch-data1:/usr/share/opensearch/data`, `${DEFAULT_CERT_DIR}:/usr/share/opensearch/config/certs:ro`, `./config/userdict_ko.txt:/usr/share/opensearch/config/userdict_ko.txt:ro`, `opensearch-data2:/usr/share/opensearch/data`, `opensearch-data3:/usr/share/opensearch/data`, `../../../../secrets/certs/rootCA.pem:/usr/share/opensearch-dashboards/config/rootCA.pem:ro`, `opensearch-data1`, `opensearch-data2` 등 15개 더 |
-| Ports | `${ES_PERFORMANCE_ANALYZER_HOST_PORT:-9600}:${ES_PERFORMANCE_ANALYZER_PORT:-9600}`, `9200`, `9600`, `5601`, `${KIBANA_PORT:-5601}` |
-| Labels | `traefik.enable`, `traefik.http.routers.opensearch.rule`, `traefik.http.routers.opensearch.entrypoints`, `traefik.http.routers.opensearch.tls`, `traefik.http.services.opensearch.loadbalancer.serversTransport`, `traefik.http.services.opensearch.loadbalancer.server.port`, `traefik.http.services.opensearch.loadbalancer.server.scheme`, `traefik.http.routers.opensearch-dashboards.rule` 등 8개 더 |
-| Secret refs | names: `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`, `oauth2_proxy_client_secret`; mounts: `/run/secrets/opensearch_admin_password`, `/run/secrets/opensearch_dashboard_password`, `/run/secrets/opensearch_exporter_password`, `/run/secrets/opensearch_security_cookie`, `/run/secrets/oauth2_proxy_client_secret` |
-| Healthcheck | `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `opensearch-dashboards`, `opensearch`, `opensearch-dashboards`에 Compose healthcheck 선언됨 |
-| Operations | Guide (`docs/05.operations/guides/0019-opensearch.md`), Policy (`docs/05.operations/policies/0019-opensearch.md`), Runbook (`docs/05.operations/runbooks/0019-opensearch.md`) |
-| Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
-| Troubleshooting | 연결된 저장소 validator와 서비스 로그부터 시작함; service-local compose parsing에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요함 |
+- `docker-compose.yml`: 정상 단일 엔진, Dashboard, 네트워크, 인증,
+  영속 경로와 healthcheck.
+- `Dockerfile`: 커스텀 엔진 이미지와 plugin 설치.
+- `opensearch/`: 엔진 보안 설정, 사전, secret 기반 사용자 렌더러.
+- `opensearch-dashboards/`: 정상 Dashboard의 HTTPS/OIDC 설정.
 
 ## How to Work in This Area
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+저장소 루트에서 정상 구성만 정적으로 확인합니다.
 
-1. 아키텍처 컨텍스트는 시스템 가이드 (`docs/05.operations/guides/0019-opensearch.md`)를 참조한다.
-2. 자원 거버넌스는 운영 정책 (`docs/05.operations/policies/0019-opensearch.md`)을 확인한다.
-3. 유지보수 및 복구 절차는 복구 런북 (`docs/05.operations/runbooks/0019-opensearch.md`)을 사용한다.
+```bash
+docker compose --profile opensearch config --quiet
+docker compose --profile opensearch config --services
+```
 
-4. OpenSearch 설정 변경 시 JVM Heap 메모리 설정을 신중히 확인한다.
-5. HTTPS 및 보안 플러그인 설정을 수정할 때 인증서 경로를 누락하지 않도록 주의한다.
-6. 인덱스 생성 및 삭제 작업을 자동화하기 전에 운영 정책의 데이터 보존 주기를 먼저 읽는다.
-
-## Validation
-
-`opensearch` single-node 토폴로지는 `OPTIONAL`이며 동일 호스트의 `opensearch-cluster` 토폴로지는 `LAB`입니다. Snapshot 복구는 구성된 repository와 새로운 호환 토폴로지를 사용하며 security index는 제외하고 보호된 보안 설정은 별도로 보존/재적용합니다. 소유 artifact는 `GDE-0019`, `POL-0019`, `RUN-0019`입니다.
-
-- OpenSearch에 영향을 주는 README나 Compose 참조 변경 후에는 `python3 scripts/validation/check-document-links.py --mode all`을 실행합니다.
-- OpenSearch 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `opensearch-cluster` profile은 node와 dashboard healthcheck를 포함합니다. 저장소 루트에서 `docker compose --profile opensearch-cluster config --quiet`를 사용한 뒤 선언된 서비스를 이 Compose 소스와 비교하십시오.
-
-## Troubleshooting
-
-- runtime 증거를 위해 저장소 validator와 Docker 로그부터 시작합니다. service-local compose config에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요합니다.
-- 기본 스택이 형성되지 않거나 Dashboards가 연결되지 않으면, JVM/OIDC/인증서 설정을 변경하기 전에 `docker compose logs opensearch`와 `docker compose logs opensearch-dashboards`를 확인하십시오. cluster variant는 `opensearch-node1`, `opensearch-node2`, `opensearch-node3` 로그를 확인하십시오.
+기동·재기동·인덱스 변경·백업·복구에는 별도의 구체적 승인이 필요합니다.
+빌드 호환성, 비밀·인증서, 실제 consumer, host 용량, 복구 지점을 먼저
+확인합니다. runtime 검사를 수행하지 않았다면 `NOT_RUN`으로 기록합니다.
 
 ## Related Documents
 
-- **System Guide**: `docs/05.operations/guides/0019-opensearch.md`
-- **Policy**: `docs/05.operations/policies/0019-opensearch.md`
-- **Runbook**: `docs/05.operations/runbooks/0019-opensearch.md`
-- **Monitoring**: `opensearch-exporter:9114/metrics`
-- [문서 인덱스](../../../docs/README.md)
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 검증에 쓰입니다.
-
-빌드 소스 권한: [Dockerfile](Dockerfile).
+[문서 진입점](../../../docs/README.md)에서 OpenSearch 운영 정책·가이드·런북을
+찾습니다. 공식 [Docker 설치](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)와
+[스냅샷 복구](https://docs.opensearch.org/latest/tuning-your-cluster/availability-and-recovery/snapshots/snapshot-restore/)
+문서를 참고합니다. 빌드 선언은 [Dockerfile](Dockerfile)이 소유하며 이미지
+투영은 [tech-stack.versions.json](../../tech-stack.versions.json)에서 확인합니다.

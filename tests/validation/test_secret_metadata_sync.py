@@ -19,7 +19,7 @@ INDIRECT_DERIVED_INPUTS = {
     "DEFAULT_DOCKER_PROJECT_PATH",
 }
 HTPASSWD_ID_INPUTS = {
-    "ELASTIC_USERNAME",
+    "OPENSEARCH_ADMIN_USERNAME",
     "PROMETHEUS_API_USERNAME",
     "TRAEFIK_ADMIN_USERNAME",
 }
@@ -27,6 +27,9 @@ REGISTRY_PATH_EXCEPTIONS = {
     "INFRA-002": "secrets/auth/traefik_admin_password.txt",
     "OBS-013": "secrets/observability/prometheus_api_password.txt",
     "SEC-003": "secrets/security/openbao_unseal_keys.txt",
+}
+CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
+    "PG-020": "secrets/db/postgres/service_password.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
 CONFIG_SUFFIXES = {
@@ -73,6 +76,13 @@ def compose_sources(root=ROOT):
     return sources
 
 
+def lab_compose_sources(root=ROOT):
+    return {
+        str(path.relative_to(root)): path.read_text()
+        for path in sorted((root / "labs").glob("*.yml"))
+    }
+
+
 def env_assignments(text):
     result = {}
     for line in text.splitlines():
@@ -88,7 +98,7 @@ def interpolation_references(text):
     ]
 
 
-def environment_contract(compose_texts, env_text):
+def environment_contract(compose_texts, env_text, supplemental_ids=HTPASSWD_ID_INPUTS):
     public = set(env_assignments(env_text))
     references = defaultdict(list)
     for relative, text in compose_texts.items():
@@ -105,14 +115,14 @@ def environment_contract(compose_texts, env_text):
         for name, _ in interpolation_references(value)
     }
     derived_only = env_derived - compose_keys
-    consumed = (compose_keys & public) | derived_only | HTPASSWD_ID_INPUTS
+    consumed = (compose_keys & public) | derived_only | supplemental_ids
     orphan = public - consumed
     required = {
         name
         for name, uses in references.items()
         if name in public and any(operator in (None, "?", ":?") for _, operator in uses)
     }
-    required |= derived_only | HTPASSWD_ID_INPUTS
+    required |= derived_only | supplemental_ids
     optional = public - required - orphan
     return {
         "public": public,
@@ -400,34 +410,71 @@ def service_secret_contract(root, compose_texts):
 
 
 def secret_contract(root, compose_texts, registry_text, consumed_env):
-    root_document = yaml.safe_load(compose_texts["docker-compose.yml"])
-    declarations = root_document["secrets"]
-    declaration_paths = {
-        name: value["file"].removeprefix("./")
-        for name, value in declarations.items()
-        if "file" in value
-    }
-    services = service_secret_contract(root, compose_texts)
+    declarations = {}
+    declaration_paths = {}
+    lab_secret_dir = env_assignments(
+        (root / "labs/.env.example").read_text()
+    )["LAB_SECRET_DIR"].strip('"')
     dangling = set()
     missing_grants = set()
     granted_sources = set()
-    for service_name, contract in services.items():
-        grants = contract["grants"]
-        granted_sources.update(grants.values())
-        for reference in contract["references"]:
-            source = grants.get(reference)
-            if source is None:
-                missing_grants.add((service_name, reference))
-                if reference not in declarations:
+    root_domain = {
+        name: text for name, text in compose_texts.items()
+        if not name.startswith("labs/")
+    }
+    lab_domains = [
+        {name: text} for name, text in compose_texts.items()
+        if name.startswith("labs/")
+    ]
+    for domain in (root_domain, *lab_domains):
+        domain_declarations = {}
+        for relative, text in domain.items():
+            document = yaml.safe_load(text) or {}
+            for name, value in (document.get("secrets") or {}).items():
+                if name in declarations:
+                    raise AssertionError(f"duplicate secret declaration: {name}")
+                declarations[name] = value
+                domain_declarations[name] = value
+                if "file" not in value:
+                    continue
+                source = value["file"]
+                if relative.startswith("labs/"):
+                    source = re.sub(
+                        r"^\$\{LAB_SECRET_DIR(?::[-?][^}]*)?\}",
+                        lab_secret_dir,
+                        source,
+                    )
+                if "${" in source or posixpath.isabs(source):
+                    raise AssertionError(f"unresolved or absolute secret path: {name}")
+                path = posixpath.normpath(
+                    posixpath.join(posixpath.dirname(relative), source)
+                )
+                if path.startswith("../") or path == "..":
+                    raise AssertionError(f"secret escaped repository: {name}")
+                if relative.startswith("labs/") and not path.startswith("secrets/labs/"):
+                    raise AssertionError(f"LAB secret escaped isolated path: {name}")
+                if not relative.startswith("labs/") and path.startswith("secrets/labs/"):
+                    raise AssertionError(f"root secret entered LAB path: {name}")
+                declaration_paths[name] = path
+        for service_name, contract in service_secret_contract(root, domain).items():
+            grants = contract["grants"]
+            granted_sources.update(grants.values())
+            for reference in contract["references"]:
+                source = grants.get(reference)
+                if source is None:
+                    missing_grants.add((service_name, reference))
+                    if reference not in domain_declarations:
+                        dangling.add((service_name, reference))
+                elif source not in domain_declarations:
                     dangling.add((service_name, reference))
-            elif source not in declarations:
-                dangling.add((service_name, reference))
 
     rows = registry_rows(registry_text)
     registered_paths = {
         row["path"] for row in rows.values() if row["path"] not in ("", "-")
     }
-    expected_exceptions = set(REGISTRY_PATH_EXCEPTIONS.items())
+    expected_exceptions = set(
+        (REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS).items()
+    )
     registry_orphans = {
         (identity, row["path"])
         for identity, row in rows.items()
@@ -526,6 +573,22 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(0, second.returncode, second.stderr)
         self.assertNotIn("Updating htpasswd hash", second.stdout + second.stderr)
         self.assertEqual(before, htpasswd.read_bytes())
+
+    def test_generation_reads_lab_identity_and_rejects_cross_domain_key(self):
+        lab = self.root / "labs"
+        lab.mkdir()
+        (lab / ".env").write_text("LAB_ID=synthetic-lab-id\n")
+        row = "| **LAB-999** | `X` | `ID` | `(empty)` | `LAB_ID` |  | 2026-01-01 | LAB identity |\n"
+        self.example.write_text(row)
+        self.target.write_text(row)
+        self.target.chmod(0o600)
+        self.assertEqual(0, self.run_mode("").returncode)
+        self.assertIn("`synthetic-lab-id`", self.target.read_text())
+
+        before = self.target.read_bytes()
+        (lab / ".env").write_text("EXISTING=collision\nLAB_ID=synthetic-lab-id\n")
+        self.assertEqual(1, self.run_mode("").returncode)
+        self.assertEqual(before, self.target.read_bytes())
 
     def test_generation_writes_only_the_value_cell(self):
         text = (
@@ -743,6 +806,38 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertEqual(env_before, (self.root / ".env").read_bytes())
         self.assertEqual(registry_before, self.target.read_bytes())
 
+    def test_lab_environment_sync_preserves_values_and_prunes_stale_keys(self):
+        lab = self.root / "labs"
+        lab.mkdir()
+        (lab / ".env.example").write_text("LAB_KEEP=public\nLAB_NEW=default\n")
+        private = lab / ".env"
+        private.write_text("LAB_KEEP=synthetic-private-lab\nLAB_STALE=remove\n")
+        private.chmod(0o644)
+        registry_before = self.target.read_bytes()
+
+        self.assertEqual(1, self.run_mode("--sync-metadata-prune-check").returncode)
+        self.assertEqual(registry_before, self.target.read_bytes())
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune").returncode)
+        self.assertEqual(
+            "LAB_KEEP=synthetic-private-lab\nLAB_NEW=default\n",
+            private.read_text(),
+        )
+        self.assertEqual(0o600, private.stat().st_mode & 0o777)
+        self.assertEqual(0, self.run_mode("--sync-metadata-prune-check").returncode)
+
+    def test_bad_lab_environment_rejects_all_metadata_writes(self):
+        lab = self.root / "labs"
+        lab.mkdir()
+        (lab / ".env.example").write_text("LAB_KEY=public\n")
+        private = lab / ".env"
+        private.write_text("LAB_KEY=one\nLAB_KEY=two\n")
+        before = self.target.read_bytes()
+        root_before = (self.root / ".env").read_bytes()
+        self.assertEqual(2, self.run_mode("--sync-metadata-prune").returncode)
+        self.assertEqual(before, self.target.read_bytes())
+        self.assertEqual(root_before, (self.root / ".env").read_bytes())
+        self.assertEqual("LAB_KEY=one\nLAB_KEY=two\n", private.read_text())
+
     def test_prune_check_reports_exact_set_drift_without_writes(self):
         registry_before = self.target.read_bytes()
         env_before = (self.root / ".env").read_bytes()
@@ -818,22 +913,45 @@ class PublicSecretSchemaTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.compose_texts = compose_sources()
+        cls.lab_compose_texts = lab_compose_sources()
         cls.env_text = (ROOT / ".env.example").read_text()
         cls.environment = environment_contract(cls.compose_texts, cls.env_text)
+        cls.lab_environment = environment_contract(
+            cls.lab_compose_texts, (ROOT / "labs/.env.example").read_text(),
+            supplemental_ids=set(),
+        )
         cls.registry_text = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
+
+    def scoped_secret_contract(self, compose_texts, registry_text):
+        return secret_contract(
+            ROOT,
+            compose_texts | self.lab_compose_texts,
+            registry_text,
+            self.environment["consumed"] | self.lab_environment["consumed"],
+        )
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(266, len(contract["public"]))
+        self.assertEqual(219, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
-        self.assertEqual(59, len(contract["required"]))
-        self.assertEqual(207, len(contract["optional"]))
+        self.assertEqual(48, len(contract["required"]))
+        self.assertEqual(171, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],
         )
+        lab = self.lab_environment
+        self.assertEqual(39, len(lab["public"]))
+        self.assertEqual(9, len(lab["required"]))
+        self.assertEqual(30, len(lab["optional"]))
+        self.assertEqual(set(), lab["missing"] | lab["orphan"])
+        self.assertEqual(set(), contract["public"] & lab["public"])
+        self.assertFalse(any(name.startswith("LAB_") for name in contract["public"]))
+        self.assertTrue(all(name.startswith("LAB_") for name in lab["public"]))
+        self.assertIn("ADMIN_UI_ALLOWED_CIDRS", contract["public"])
+        self.assertEqual(lab["public"], lab["required"] | lab["optional"])
 
     def test_environment_scanner_mutations_fail_closed_without_shell_false_positives(
         self,
@@ -870,14 +988,23 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertEqual(SOURCE_ANALYSIS_SERVICES, found)
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
-        contract = secret_contract(
-            ROOT,
-            self.compose_texts,
-            self.registry_text,
-            self.environment["consumed"],
+        contract = self.scoped_secret_contract(
+            self.compose_texts, self.registry_text
         )
-        self.assertEqual(92, len(contract["declarations"]))
-        self.assertEqual(126, len(contract["rows"]))
+        self.assertEqual(101, len(contract["declarations"]))
+        self.assertEqual(138, len(contract["rows"]))
+        areas = Counter(
+            row["path"].split("/")[1]
+            for row in contract["rows"].values()
+            if row["path"].startswith("secrets/")
+        )
+        self.assertEqual(
+            {"auth": 14, "automation": 4, "backup": 6, "common": 5,
+             "data": 15, "db": 26, "labs": 14, "observability": 2,
+             "security": 2, "storage": 8, "tools": 9},
+            dict(areas),
+        )
+        self.assertEqual(33, len(contract["rows"]) - sum(areas.values()))
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
@@ -885,15 +1012,15 @@ class PublicSecretSchemaTests(unittest.TestCase):
             set(), contract["declaration_paths"] - contract["registered_paths"]
         )
         self.assertEqual(
-            set(REGISTRY_PATH_EXCEPTIONS.values()),
+            set((REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS).values()),
             contract["registered_paths"] - contract["declaration_paths"],
         )
         self.assertEqual(set(), contract["registry_orphans"])
         self.assertEqual(
-            set(REGISTRY_PATH_EXCEPTIONS.items()),
+            set((REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS).items()),
             {
                 (identity, contract["rows"][identity]["path"])
-                for identity in REGISTRY_PATH_EXCEPTIONS
+                for identity in REGISTRY_PATH_EXCEPTIONS | CUTOVER_REGISTRY_PATH_EXCEPTIONS
             },
         )
 
@@ -905,25 +1032,19 @@ class PublicSecretSchemaTests(unittest.TestCase):
         ] = "/run/secrets/missing_literal"
         mutated = dict(self.compose_texts)
         mutated[observability_path] = yaml.safe_dump(observability)
-        contract = secret_contract(
-            ROOT, mutated, self.registry_text, self.environment["consumed"]
-        )
+        contract = self.scoped_secret_contract(mutated, self.registry_text)
         self.assertIn(("prometheus", "missing_literal"), contract["dangling"])
 
         observability = yaml.safe_load(self.compose_texts[observability_path])
         observability["services"]["prometheus"]["secrets"].remove("openbao_token")
         mutated[observability_path] = yaml.safe_dump(observability)
-        contract = secret_contract(
-            ROOT, mutated, self.registry_text, self.environment["consumed"]
-        )
+        contract = self.scoped_secret_contract(mutated, self.registry_text)
         self.assertIn(("prometheus", "openbao_token"), contract["missing_grants"])
 
         observability = yaml.safe_load(self.compose_texts[observability_path])
         observability["services"]["loki"]["secrets"] = ["grafana_admin_password"]
         mutated[observability_path] = yaml.safe_dump(observability)
-        contract = secret_contract(
-            ROOT, mutated, self.registry_text, self.environment["consumed"]
-        )
+        contract = self.scoped_secret_contract(mutated, self.registry_text)
         self.assertIn(
             ("loki", "seaweedfs_s3_loki_secret_key"), contract["missing_grants"]
         )
@@ -932,13 +1053,42 @@ class PublicSecretSchemaTests(unittest.TestCase):
             self.registry_text + "\n| **TEST-999** | X | Token | (empty) | - | "
             "secrets/security/unmapped.txt | 2026-09-20 | Mutation probe |\n"
         )
-        contract = secret_contract(
-            ROOT, self.compose_texts, registry, self.environment["consumed"]
-        )
+        contract = self.scoped_secret_contract(self.compose_texts, registry)
         self.assertIn(
             ("TEST-999", "secrets/security/unmapped.txt"),
             contract["registry_orphans"],
         )
+
+    def test_lab_secret_must_be_declared_in_its_own_entrypoint(self):
+        path = "labs/couchdb.yml"
+        couchdb = yaml.safe_load(self.lab_compose_texts[path])
+        name = next(iter(couchdb["secrets"]))
+        couchdb["secrets"].pop(name)
+        lab = dict(self.lab_compose_texts)
+        lab[path] = yaml.safe_dump(couchdb)
+        contract = secret_contract(
+            ROOT, self.compose_texts | lab, self.registry_text,
+            self.environment["consumed"] | self.lab_environment["consumed"],
+        )
+        self.assertIn(name, contract["granted_sources"])
+        self.assertTrue(any(reference == name for _, reference in contract["dangling"]))
+
+        couchdb = yaml.safe_load(self.lab_compose_texts[path])
+        couchdb["secrets"][name]["file"] = "${LAB_SECRET_DIR}/../../escape"
+        lab[path] = yaml.safe_dump(couchdb)
+        with self.assertRaisesRegex(AssertionError, "escaped isolated path"):
+            secret_contract(
+                ROOT, self.compose_texts | lab, self.registry_text,
+                self.environment["consumed"] | self.lab_environment["consumed"],
+            )
+
+    def test_root_secret_cannot_use_lab_credential_tree(self):
+        root = yaml.safe_load(self.compose_texts["docker-compose.yml"])
+        root["secrets"]["mng_postgres_password"]["file"] = "./secrets/labs/wrong.txt"
+        changed = dict(self.compose_texts)
+        changed["docker-compose.yml"] = yaml.safe_dump(root)
+        with self.assertRaisesRegex(AssertionError, "root secret entered LAB path"):
+            self.scoped_secret_contract(changed, self.registry_text)
 
     def test_secret_scanner_detects_n8n_workdir_entrypoint_grant_swap(self):
         n8n_path = "infra/07-workflow/n8n/docker-compose.yml"
@@ -950,9 +1100,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         mutated = dict(self.compose_texts)
         mutated[n8n_path] = yaml.safe_dump(n8n)
 
-        contract = secret_contract(
-            ROOT, mutated, self.registry_text, self.environment["consumed"]
-        )
+        contract = self.scoped_secret_contract(mutated, self.registry_text)
 
         self.assertIn(("n8n", "mng_valkey_password"), contract["missing_grants"])
 
@@ -1129,6 +1277,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertFalse(expected - {row[6] for row in rows})
         keys = re.findall(
             r"^([A-Za-z_][A-Za-z0-9_]*)=", (root / ".env.example").read_text(), re.M
+        )
+        keys += re.findall(
+            r"^([A-Za-z_][A-Za-z0-9_]*)=", (root / "labs/.env.example").read_text(), re.M
         )
         self.assertEqual(len(keys), len(set(keys)))
         self.assertFalse(

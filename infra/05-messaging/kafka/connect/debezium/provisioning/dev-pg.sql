@@ -1,4 +1,4 @@
--- Debezium CDC source provisioning on mng-pg (feature-owned).
+-- Debezium CDC source provisioning on dev-pg (feature-owned).
 --
 -- Creates a dedicated replication login that can snapshot and stream only the
 -- published schema plus its own heartbeat table, and the publication the connector consumes with
@@ -48,13 +48,13 @@ SELECT NOT EXISTS (
        current_setting('wal_level') = 'logical' AS wal_logical
 \gset
 \if :role_ok \else \echo 'debezium provisioning: DEBEZIUM_DB_USER names an administrator or a role this job did not create' \\ SELECT 'refusing administrator role'::int; \endif
-\if :db_exists \else \echo 'debezium provisioning: DEBEZIUM_DB_NAME does not exist; run the base mng-pg-init job first' \\ SELECT 'missing source database'::int; \endif
+\if :db_exists \else \echo 'debezium provisioning: DEBEZIUM_DB_NAME does not exist; run dev-platform-provision first' \\ SELECT 'missing source database'::int; \endif
 \if :source_owner_exists \else \echo 'debezium provisioning: DEBEZIUM_SOURCE_OWNER role does not exist' \\ SELECT 'missing source owner'::int; \endif
 \if :wal_logical
 \else
-  -- Grants remain valid, but streaming needs mng-pg restarted with the
+  -- Grants remain valid, but streaming needs dev-pg restarted with the
   -- declared wal_level=logical; report instead of silently succeeding.
-  \echo 'debezium provisioning: WARNING wal_level is not logical; restart of mng-pg with the declared command is required before the connector can stream'
+  \echo 'debezium provisioning: WARNING wal_level is not logical; restart of dev-pg with the declared command is required before the connector can stream'
 \endif
 
 BEGIN;
@@ -89,10 +89,17 @@ SELECT EXISTS (
        NOT EXISTS (
          SELECT 1 FROM pg_catalog.pg_publication p
          WHERE p.pubname = :'debezium_publication'
-           AND (SELECT count(*) FROM pg_catalog.pg_publication_namespace pn
-                JOIN pg_catalog.pg_namespace n ON n.oid = pn.pnnspid
-                WHERE pn.pnpubid = p.oid
-                  AND n.nspname IN (:'debezium_schema', :'debezium_heartbeat_schema')) <> 2
+           AND (
+             p.puballtables
+             OR (SELECT count(*) FROM pg_catalog.pg_publication_namespace pn
+                 WHERE pn.pnpubid = p.oid) <> 2
+             OR (SELECT count(*) FROM pg_catalog.pg_publication_namespace pn
+                 JOIN pg_catalog.pg_namespace n ON n.oid = pn.pnnspid
+                 WHERE pn.pnpubid = p.oid
+                   AND n.nspname IN (:'debezium_schema', :'debezium_heartbeat_schema')) <> 2
+             OR EXISTS (SELECT 1 FROM pg_catalog.pg_publication_rel pr
+                        WHERE pr.prpubid = p.oid)
+           )
        ) AS publication_scope_ok
 \gset
 \if :schema_exists \else \echo 'debezium provisioning: DEBEZIUM_SCHEMA does not exist' \\ SELECT 'missing source schema'::int; \endif
@@ -114,7 +121,7 @@ SELECT format(
   :'debezium_db_user'
 )
 \gexec
--- Heartbeat: mng-pg hosts several databases, so WAL from other databases can
+-- Heartbeat: dev-pg may host several databases, so WAL from other databases can
 -- grow while this one is quiet. The connector's heartbeat.action.query writes
 -- one row here; the change travels through the slot and lets the connector
 -- confirm a newer LSN. This is the only table the role can write.
@@ -128,7 +135,10 @@ SELECT format(
 SELECT format('ALTER TABLE %I.heartbeat OWNER TO %I', :'debezium_heartbeat_schema', :'debezium_db_user')
 \gexec
 -- A schema-scoped publication (PostgreSQL 15+) also covers tables created
--- later; it matches the connector's schema.include.list.
+-- later; it matches the connector's schema.include.list. This fixture is for
+-- ordinary app tables/outbox only. Timescale hypertable internal chunks are
+-- unsupported until a separate source/connector contract and isolated CDC
+-- replay test approves them. Do not enroll hypertables in this schema.
 SELECT format(
   'CREATE PUBLICATION %I FOR TABLES IN SCHEMA %I, %I',
   :'debezium_publication', :'debezium_schema', :'debezium_heartbeat_schema'

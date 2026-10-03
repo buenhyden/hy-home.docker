@@ -30,8 +30,6 @@ INIT_SQL = Path("infra/04-data/mng-db/pg/init-scripts/init_users_dbs.sql")
 
 BOOTSTRAP_USER = "hyhome_admin"
 BOOTSTRAP_DB = "postgres"
-SERVICE_USERNAME = "app_user"
-SERVICE_DB = "app_db"
 
 # Not a credential. PostgreSQL rejects an empty password, so every role in this
 # throwaway container gets the same visible placeholder.
@@ -97,12 +95,6 @@ class MngPgInitSqlTests(unittest.TestCase):
                 for role in FEATURE_ROLES
                 for argument in ("-v", f"{role}_db_password={PLACEHOLDER}")
             ],
-            "-v",
-            f"service_postgres_username={SERVICE_USERNAME}",
-            "-v",
-            f"service_postgres_password={PLACEHOLDER}",
-            "-v",
-            f"service_postgres_db={SERVICE_DB}",
             "-f",
             f"/work/{INIT_SQL.name}",
         )
@@ -118,7 +110,7 @@ class MngPgInitSqlTests(unittest.TestCase):
                 exit_code, output = self.run_init_sql()
                 self.assertEqual(exit_code, 0, output)
 
-        expected = sorted((*FEATURE_ROLES, SERVICE_USERNAME))
+        expected = sorted(FEATURE_ROLES)
         self.assertEqual(
             sorted(
                 self.query(
@@ -129,7 +121,7 @@ class MngPgInitSqlTests(unittest.TestCase):
             expected,
         )
 
-        expected_databases = sorted((*FEATURE_ROLES, SERVICE_DB))
+        expected_databases = sorted(FEATURE_ROLES)
         self.assertEqual(
             sorted(
                 self.query(
@@ -152,7 +144,7 @@ class MngPgInitSqlTests(unittest.TestCase):
         )
         for role in FEATURE_ROLES:
             self.assertEqual(owners.get(role), role)
-        self.assertEqual(owners.get(SERVICE_DB), SERVICE_USERNAME)
+        self.assertNotIn("app_db", owners)
 
 
 if __name__ == "__main__":

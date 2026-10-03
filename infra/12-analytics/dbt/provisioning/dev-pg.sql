@@ -1,7 +1,7 @@
--- dbt transformation role provisioning on mng-pg (feature-owned).
+-- dbt transformation role provisioning on dev-pg (feature-owned).
 --
 -- dbt reads the application source schema and writes only its own target
--- schema in the application database created by the base mng-pg-init job.
+-- schema in the internal platform_dev database created by dev-platform-provision.
 -- Run only through run-feature-provision.sh. ON_ERROR_STOP does not roll back
 -- earlier statements; every statement is idempotent and re-runnable.
 \set ON_ERROR_STOP on
@@ -43,7 +43,7 @@ SELECT NOT EXISTS (
        :'dbt_schema' <> :'dbt_source_schema' AS schemas_distinct
 \gset
 \if :role_ok \else \echo 'dbt provisioning: DBT_DB_USER names an administrator or a role this job did not create' \\ SELECT 'refusing administrator role'::int; \endif
-\if :db_exists \else \echo 'dbt provisioning: DBT_DB_NAME does not exist; run the base mng-pg-init job first' \\ SELECT 'missing target database'::int; \endif
+\if :db_exists \else \echo 'dbt provisioning: DBT_DB_NAME does not exist; run dev-platform-provision first' \\ SELECT 'missing target database'::int; \endif
 \if :source_owner_exists \else \echo 'dbt provisioning: DBT_SOURCE_OWNER role does not exist' \\ SELECT 'missing source owner'::int; \endif
 \if :schemas_distinct \else \echo 'dbt provisioning: DBT_SCHEMA must differ from DBT_SOURCE_SCHEMA' \\ SELECT 'target equals source'::int; \endif
 

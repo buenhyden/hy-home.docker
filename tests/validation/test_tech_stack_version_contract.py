@@ -885,8 +885,8 @@ class TechStackSynchronizationTests(unittest.TestCase):
             json.dumps(
                 {
                     "source_of_truth": (
-                        "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} "
-                        "service image declarations"
+                        "Git-tracked infra/**/{compose,docker-compose}*.{yml,yaml} and "
+                        "labs/*.{yml,yaml} service image declarations"
                     ),
                     "local_repository_prefixes": ["hy/", "hyhome/", "hy-home/"],
                     "entries": [
@@ -983,6 +983,21 @@ class TechStackSynchronizationTests(unittest.TestCase):
         self.assertEqual(
             ["infra/new/docker-compose.yaml"], added_entry["compose_files"]
         )
+        self.assertEqual(0, self.run_sync("--check").returncode)
+
+    def test_standalone_lab_image_is_projected(self) -> None:
+        baseline = self.run_sync("--write")
+        self.assertEqual(0, baseline.returncode, baseline.stderr)
+        lab = self.root / "labs/example.yml"
+        lab.parent.mkdir()
+        lab.write_text("services:\n  experiment:\n    image: example/lab:1\n")
+        subprocess.run(["git", "add", "labs/example.yml"], cwd=self.root, check=True)
+        self.assertEqual(1, self.run_sync("--check").returncode)
+        self.assertEqual(0, self.run_sync("--write").returncode)
+        entries = json.loads(self.registry.read_text())["entries"]
+        entry = next(item for item in entries if item["images"] == ["example/lab:1"])
+        self.assertEqual("lab", entry["tier"])
+        self.assertEqual(["labs/example.yml"], entry["compose_files"])
         self.assertEqual(0, self.run_sync("--check").returncode)
 
     def test_hyphenated_compose_filename_is_in_source_universe(self) -> None:

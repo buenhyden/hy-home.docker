@@ -5,12 +5,15 @@
 set -eu
 
 # Docker Secrets에서 비밀번호 로드
-VALKEY_PASSWORD=$(cat /run/secrets/service_valkey_password)
+[ -s /run/secrets/lab_valkey_password ] || { echo "LAB Valkey password is missing" >&2; exit 1; }
+REDISCLI_AUTH=$(cat /run/secrets/lab_valkey_password)
+[ -n "$REDISCLI_AUTH" ] || { echo "LAB Valkey password is empty" >&2; exit 1; }
+export REDISCLI_AUTH
 echo "Waiting for Cluster nodes..."
 sleep 5
 
 # Node 0(6379)을 기준으로 상태 확인
-if valkey-cli -a "$VALKEY_PASSWORD" -h valkey-node-0 -p 6379 cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
+if valkey-cli -h valkey-node-0 -p 6379 cluster info 2>/dev/null | grep -q "cluster_state:ok"; then
   echo "✅ Cluster already configured."
   exit 0
 fi
@@ -19,7 +22,7 @@ echo "🚧 Creating Valkey Cluster..."
 
 # 실제 포트(6379~6384)로 클러스터 생성 시도
 if output=$(
-  valkey-cli -a "$VALKEY_PASSWORD" --cluster create \
+  valkey-cli --cluster create \
     valkey-node-0:6379 \
     valkey-node-1:6380 \
     valkey-node-2:6381 \
@@ -36,8 +39,8 @@ fi
 
 echo "$output"
 if echo "$output" | grep -qi "is not empty"; then
-  echo "ℹ️  Nodes already contain data/cluster metadata. Skipping destructive re-init."
-  exit 0
+  echo "ERROR: nodes contain data or cluster metadata but cluster state is not healthy; manual LAB review required" >&2
+  exit 1
 fi
 
 echo "❌ Cluster creation failed with an unexpected error."

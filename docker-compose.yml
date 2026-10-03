@@ -79,6 +79,11 @@ networks:
     ipam:
       config:
         - subnet: 10.250.14.0/24
+  dev_data_net:
+    name: dev_data_net
+    ipam:
+      config:
+        - subnet: 10.250.15.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}
@@ -125,8 +130,6 @@ secrets:
     file: ./secrets/auth/gatus_oidc_client_secret.txt
   grafana_client_secret:
     file: ./secrets/auth/grafana_client_secret.txt
-  pg_haproxy_stats_password:
-    file: ./secrets/auth/pg_haproxy_stats_password.txt
   airflow_keycloak_client_secret:
     file: ./secrets/auth/airflow_client_secret.txt
   dozzle_client_secret:
@@ -140,10 +143,16 @@ secrets:
     file: ./secrets/observability/grafana_admin_password.txt
 
   # ── PostgreSQL ─────────────────────────────────────
-  service_postgres_password:
-    file: ./secrets/db/postgres/service_password.txt
   mng_postgres_password:
     file: ./secrets/db/postgres/mng_password.txt
+  dev_pg_admin_password:
+    file: ./secrets/db/dev-pg/admin_password.txt
+  dev_pg_platform_migrator_password:
+    file: ./secrets/db/dev-pg/platform_migrator_password.txt
+  dev_pg_platform_runtime_password:
+    file: ./secrets/db/dev-pg/platform_runtime_password.txt
+  dev_pg_platform_reader_password:
+    file: ./secrets/db/dev-pg/platform_reader_password.txt
   keycloak_db_password:
     file: ./secrets/db/postgres/keycloak_password.txt
   airflow_db_password:
@@ -158,30 +167,18 @@ secrets:
     file: ./secrets/db/postgres/supabase_password.txt
 
   # ── PostgreSQL (Patroni / Spilo) ───────────────────────
-  patroni_superuser_password:
-    file: ./secrets/db/postgres/patroni_superuser_password.txt
-  patroni_replication_password:
-    file: ./secrets/db/postgres/patroni_replication_password.txt
-  patroni_exporter_password:
-    file: ./secrets/db/postgres/patroni_exporter_password.txt
   # ── Cassandra ───────────────────────────────────────────
-  cassandra_password:
-    file: ./secrets/db/cassandra/cassandra_password.txt
   # ── MongoDB ─────────────────────────────────────────────
-  mongodb_root_password:
-    file: ./secrets/db/mongodb/mongodb_root_password.txt
-  mongo_express_basicauth_password:
-    file: ./secrets/db/mongodb/mongo_express_basicauth_password.txt
   # ── Neo4j ───────────────────────────────────────────────
   neo4j_password:
     file: ./secrets/db/neo4j/neo4j_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
   n8n_valkey_password:
     file: ./secrets/db/valkey/n8n_password.txt
-  service_valkey_password:
-    file: ./secrets/db/valkey/service_password.txt
   mng_valkey_password:
     file: ./secrets/db/valkey/mng_password.txt
+  dev_valkey_admin_password:
+    file: ./secrets/db/dev-valkey/admin_password.txt
   oauth2_valkey_password:
     file: ./secrets/db/valkey/oauth2_password.txt
   terrakube_valkey_password:
@@ -263,10 +260,6 @@ secrets:
   # ── InfluxDB ─────────────────────────────────────────────
 
   # ── CouchDB ──────────────────────────────────────────────
-  couchdb_password:
-    file: ./secrets/db/couchdb/couchdb_password.txt
-  couchdb_cookie:
-    file: ./secrets/db/couchdb/couchdb_cookie.txt
   # ── Open Notebook ──────────────────────────────────────────────
   open_notebook_password:
     file: ./secrets/tools/open_notebook_password.txt
@@ -318,6 +311,8 @@ secrets:
   # ── Backup ─────────────────────────────────────────────────────
   pgbackrest_cipher_pass:
     file: ./secrets/backup/pgbackrest_cipher_pass.txt
+  dev_pgbackrest_cipher_pass:
+    file: ./secrets/backup/dev-pg/pgbackrest_cipher_pass.txt
   restic_password:
     file: ./secrets/backup/restic_password.txt
   # Offsite (Cloudflare R2, ADR-0041): files plus offline custody, never OpenBao.
@@ -346,19 +341,15 @@ include:
   # 03-security
   - infra/03-security/openbao/docker-compose.yml
   # 04-data
-  - infra/04-data/cassandra/docker-compose.yml
-  - infra/04-data/couchdb/docker-compose.yml
+  - infra/04-data/dev-db/docker-compose.yml
   - infra/04-data/influxdb/docker-compose.yml
   - infra/04-data/mng-db/docker-compose.yml
-  - infra/04-data/mongodb/docker-compose.yml
   - infra/04-data/neo4j/docker-compose.yml
   - infra/04-data/opensearch/docker-compose.yml
-  - infra/04-data/postgresql-cluster/docker-compose.yml
   - infra/04-data/qdrant/docker-compose.yml
   - infra/04-data/redisinsight/docker-compose.yml
   - infra/04-data/seaweedfs/docker-compose.yml
   - infra/04-data/supabase/docker-compose.yml
-  - infra/04-data/valkey-cluster/docker-compose.yml
   # 05-messaging
   - infra/05-messaging/kafka/docker-compose.yml
   # 06-observability

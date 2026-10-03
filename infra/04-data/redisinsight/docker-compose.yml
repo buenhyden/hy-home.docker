@@ -42,7 +42,7 @@ services:
       traefik.http.routers.redisinsight.entrypoints: websecure
       traefik.http.routers.redisinsight.tls: 'true'
       traefik.http.routers.redisinsight.priority: 100
-      traefik.http.middlewares.redisinsight-admin-ip.ipallowlist.sourcerange: ${LAB_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
+      traefik.http.middlewares.redisinsight-admin-ip.ipallowlist.sourcerange: ${ADMIN_UI_ALLOWED_CIDRS:-127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16}
       traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
       traefik.http.routers.redisinsight.service: redisinsight-svc
       # 3) 공통 서비스 포트

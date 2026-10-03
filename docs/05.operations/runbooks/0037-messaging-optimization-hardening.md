@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -21,7 +21,7 @@ created: "2026-05-17"
 
 ### Execution and stop boundary
 
-대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-2`, `kafka-3`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+HOME 대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `kafka-rest-proxy`, `schema-registry`. LAB 대상은 별도 `labs/kafka-cluster.yml`의 `lab-kafka-1/2/3`, exporter, init이다. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -33,7 +33,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
    ```bash
    docker compose --env-file .env.example --profile messaging config --quiet
-   docker compose --env-file .env.example --profile messaging-cluster config --quiet
+   LAB_DATA_DIR=/tmp/hy-home-lab-kafka-static LAB_KAFKA_CLUSTER_ID=static-contract-id docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
    bash scripts/hardening/check-all-hardening.sh 05-messaging
    ```
 
@@ -42,8 +42,8 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 3. broker listener protocol이 명시적으로 계속 문서화되는지, Kafbat가 native
    OIDC template와 secret을 사용하는지, 모든 Kafbat route가
    `gateway-standard-chain@file`만 사용하는지 확인한다.
-4. replication factor 3의 topic initialization이 three-broker-capable
-   계획으로 제한되는지 확인한다.
+4. HOME RF1와 별도 LAB RF3 topic initialization의 cluster ID·data directory·offset이
+   서로 분리되는지 확인한다.
 5. 정확한 diff와 운영 문서를 검토한다. 컨테이너를 시작하지 않고 명령, 종료
    상태, 미해결 gap을 기록한다.
 

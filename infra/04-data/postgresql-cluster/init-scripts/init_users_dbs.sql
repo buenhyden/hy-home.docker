@@ -1,4 +1,6 @@
 \set ON_ERROR_STOP on
+SET log_statement = 'none';
+SET log_min_error_statement = 'panic';
 
 -- Required psql variables:
 --   patroni_exporter_username

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "1.0.4"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -16,30 +16,29 @@ created: "2026-05-17"
 
 ## Overview
 
-이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../infra/04-data/couchdb/docker-compose.yml), [curlimages/curl image declaration](../../../infra/04-data/couchdb/docker-compose.yml), `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
+이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../labs/couchdb.yml), [curlimages/curl image declaration](../../../labs/couchdb.yml), `couchdb-cluster-init`, Traefik sticky route, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
 ## Policy Scope
 
-- `infra/04-data/couchdb/docker-compose.yml`
+- `labs/couchdb.yml`
 - `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`
 - `couchdb1-data`, `couchdb2-data`, `couchdb3-data`
-- `couchdb_password`, `couchdb_cookie`, `COUCHDB_USERNAME`
-- Traefik route `couchdb.${DEFAULT_URL}` and `couchdb_sticky` load-balancer cookie
+- `lab_couchdb_password`, `lab_couchdb_cookie`, `LAB_COUCHDB_USERNAME`
+- 기존 Traefik label은 남지만 독립 LAB network에 HOME gateway 연결은 없음
 - Linked guide and runbook under `docs/05.operations`
 
 ## Controls
 
 - **Required**: 문서는 현재 서비스 이름인 `couchdb-1`, `couchdb-2`, `couchdb-3`,
   `couchdb-cluster-init`을 사용해야 한다.
-- **Required**: Cluster cookie 가이드는 `/run/secrets/couchdb_cookie`를 참조해야
+- **Required**: Cluster cookie 가이드는 `/run/secrets/lab_couchdb_cookie`를 참조해야
   한다. 레거시 shared-secret 환경 변수는 현재 compose 통제가 아니다.
 - **Required**: Health와 membership 확인은 CouchDB HTTP API를 사용하는
   container-local client의 native password prompt와 비공개 실제 TTY를 사용해야 한다.
   승인된 credential custody에서 입력하며 password를 URL·argv·환경 변수·history·로그에
   넣거나 화면에 출력해서는 안 된다. Custody/TTY 또는 native prompt를 확보하지 못하면
   중단한다. 보호된 secret 파일과 기존 접근 통제 요구사항은 유지한다.
-- **Required**: 외부 접근 가이드는 Traefik `websecure` routing 뒤에 머물러야
-  한다. Compose에는 direct host port 노출이 선언되어 있지 않다.
+- **Required**: LAB 외부 접근을 현재 route로 주장해서는 안 된다. Compose에는 direct host port가 없고 HOME Traefik network에도 연결되지 않는다.
 - **Required**: 모든 서비스는 정확한 `couchdb` profile을 사용하며, 동일 host의
   세 node를 host-level HA로 표현해서는 안 된다.
 - **Required**: 복구 가능한 세트는 database/shard 파일 또는 replication target,
@@ -73,9 +72,9 @@ N/A - 현재 승인된 예외 없음.
 
 - Compose 변경 후 이 정책을 [CouchDB guide](../guides/0026-couchdb.md),
   [CouchDB runbook](../runbooks/0026-couchdb.md),
-  [infra README](../../../infra/04-data/couchdb/README.md)와 비교한다.
+  [LAB 설명](../../../labs/couchdb.md)와 비교한다.
 - 서비스 이름, port, Traefik, secret, cluster-init 문서 갱신을 승인하기 전에
-  `docker compose --profile couchdb config --quiet`를 실행한다.
+  `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile couchdb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
 ## Review Cadence
@@ -97,4 +96,4 @@ N/A - 현재 승인된 예외 없음.
 - [Operations index](../README.md)
 - [Usage guide](../guides/0026-couchdb.md)
 - [Recovery runbook](../runbooks/0026-couchdb.md)
-- [Infra README](../../../infra/04-data/couchdb/README.md)
+- [LAB 설명](../../../labs/couchdb.md)
