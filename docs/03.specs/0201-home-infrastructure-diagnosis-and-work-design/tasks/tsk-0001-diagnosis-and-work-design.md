@@ -2,7 +2,7 @@
 title: "Home Infrastructure Diagnosis and Work Design Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -373,7 +373,7 @@ source implementation NOT_RUN; static validation PASS; isolated execution
 Conftest policy PASS, app/LAB NOT_RUN; HOME rollout NOT_RUN; data migration
 NOT_RUN.
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Criterion reference | Plan work unit | Historical result | Follow-up owner |
 | --- | --- | --- | --- |
 | 1 | W1 | DONE: W1 SHA/delta and lifecycle ledger; active/archive sources. | This Task; current Stage 01/02/03 owners retain lifecycle authority. |
 | 2 | W2 | DONE: W2 root include and 153-row TSV; 28 jobs/125 services. | This Task; Compose and service sources retain configuration authority. |

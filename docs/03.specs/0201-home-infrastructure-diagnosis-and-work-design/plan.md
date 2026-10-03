@@ -2,7 +2,7 @@
 title: "Home Infrastructure Diagnosis and Work Design Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -39,13 +39,13 @@ its own exact preflight and execution approval.
 
 ## Execution Sequence
 
-1. **W1: establish baseline and document authority.** Record main and work
+1. W1: **establish baseline and document authority.** Record main and work
    SHA, compare the baseline across infra/, policies, .github/, scripts,
    tests, and docs, and classify Requirement, Architecture, Spec, Plan, Task,
    and registered IDs as active, draft, or archive. Do not reuse archived
    SPEC-0199 or SPEC-0200 as authority. Maps acceptance criterion 1.
 
-2. **W2: derive the source inventory.** Enumerate the current root Compose
+2. W2: **derive the source inventory.** Enumerate the current root Compose
    include graph, services, and one-shot jobs. Trace each inventory field
    through declared Compose, Dockerfiles, entrypoints, tracked mount
    configuration, environment-variable consumers, policy, backup/runbook, and
@@ -53,7 +53,7 @@ its own exact preflight and execution approval.
    projections, their authored source, generator, and the limit of any
    semantic check. Maps criteria 2 and 3.
 
-3. **W3: make role and engine rulings.** Establish actual source consumers
+3. W3: **make role and engine rulings.** Establish actual source consumers
    before deciding each required overlap. Record unique function, learning
    purpose, resident and recovery cost, license, alternative, disposition, and
    residual uncertainty. Compare TimescaleDB Community, InfluxDB Core, QuestDB
@@ -62,14 +62,14 @@ its own exact preflight and execution approval.
    no unmeasured performance conclusion. Retain the gateway, quality-tool, and
    shared-stack choices in SPEC-0201. Maps criteria 4 and 5.
 
-4. **W4: draft the external-project boundary.** Define the manifest fields,
+4. W4: **draft the external-project boundary.** Define the manifest fields,
    connection locations, ownership division, approval state, and metadata-only
    resource registration. Keep external application Compose and business source
    in Project-Template-derived workspaces. Keep 07 and 08 separate
    planning-only tracks; do not derive speech, crawler, GPU, network, secret,
    or runtime authority from either. Maps criterion 6.
 
-5. **W5: prepare the change and approval ledger.** Trace Prompt 01 requests
+5. W5: **prepare the change and approval ledger.** Trace Prompt 01 requests
    1-12, named environment-variable contracts, learning domains, and duplicate
    conditions to source evidence and a later implementation Task or
    planning-only track. Define exact file ownership, current and target state,
@@ -77,14 +77,14 @@ its own exact preflight and execution approval.
    future writer for shared root, Alloy, environment-variable, and Registry
    surfaces. Maps criteria 7 and 8.
 
-6. **W6: verify the documentation package and report boundaries.** Run the
+6. W6: **verify the documentation package and report boundaries.** Run the
    smallest Stage 03 documentation gates, perform an independent read-only
    review of the exact revision, and record commands, exit codes, evidence,
    skipped checks, and residual uncertainty in the Task. Report source
    implementation, static validation, isolated execution, HOME rollout, and
    data migration separately. Maps criterion 9.
 
-7. **W7: close the approved runtime evidence gaps.** TSK-0002 owns this
+7. W7: **close the approved runtime evidence gaps.** TSK-0002 owns this
    proposed unit. W7.1 maps live `app_db` existence and project ownership;
    W7.2 maps external consumers and bounded aggregate traffic; W7.3 measures
    host capacity against existing policy floors and hands off the snapshot for

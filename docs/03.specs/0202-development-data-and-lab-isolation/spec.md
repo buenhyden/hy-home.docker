@@ -2,7 +2,7 @@
 title: "Development Data and LAB Isolation Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -199,11 +199,12 @@ source mapping with a blocked handoff rather than claim migration complete.
 2. Static Compose/root/env defines one normal dev-pg and dev-valkey without
    altering mng state; no 07/08 resource is created.
 3. Static tests cover explicit project provision, first/repeated/partial
-   failure and concurrency logic. Actual cross-project, read/write/DDL
-   privilege denial remains isolated execution `NOT_RUN` until approved.
+   failure and concurrency logic. Approved synthetic isolation demonstrates
+   cross-project and reader write/DDL denial; HOME enforcement remains `NOT_RUN`.
 4. Timestamp/hypertable/index/retention and Valkey ACL/TTL/eviction contracts
-   have source fixtures and bounded assumptions; extension load and live ACL
-   behavior remain isolated execution `NOT_RUN`.
+   have source fixtures and bounded assumptions; approved synthetic isolation
+   demonstrates extension load and bounded Valkey ACL behavior. HOME behavior
+   and destructive retention changes remain `NOT_RUN`.
 5. dbt, CDC, mng init, Schema Registry and management metadata transition as
    one validated source contract; live connector or data cutover is NOT_RUN.
 6. The owner-reported Influx no-data route is recorded without claiming a

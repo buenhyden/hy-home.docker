@@ -2,7 +2,7 @@
 title: "Development Data Secret Issuance and Isolated Acceptance Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -106,12 +106,27 @@ docker run --rm --name hyhome-p02-p8gkg7zv-restore-job --network none --cpus 2 -
 | `chmod 755` on the two temporary worktree scripts; `python3 -m unittest tests.validation.test_openwebui_oidc_entrypoint tests.validation.test_gatus_oidc -q` | 0, 0 | 19 focused tests passed; Git tree has no mode change |
 | `python3 scripts/validation/run-ci-gate.py --profile changed` (retry) | 0 | path-aware gate passed; last selected unit suite ran 163 tests, all OK |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Criterion reference | Plan work unit | Evidence status | Follow-up owner |
 | --- | --- | --- | --- |
 | 2–4, 7 | W7.1–W7.3 | PASS in synthetic isolation for issuance, dev engines, role ACL, backup and restore; HOME `NOT_RUN` | GDE/POL/RUN-0100 and POL/RUN-0021 |
 | 6 | W7.3 | Owner-attested empty Influx source; live inventory and data migration `NOT_RUN` | GDE/POL/RUN-0100 |
 | 8–9 | W7.2–W7.4 | Source and static LAB isolation complete; LAB runtime topologies `NOT_RUN` | POL-0078 and LAB package documents |
 | 10 | W7.4 | Prompt 03/04/06 handoff is in TSK-0001; final local main SHA is `5f99e0e51`. Remote delivery and operational handoff remain separate. | SPEC-0202 TSK-0001 handoff |
+
+### Completion receipt for the approved source and synthetic scope
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: dated image, license, platform and PG/pgBackRest compatibility assumptions recorded | [source Task](tsk-0001-source-integration.md) |
+| 2 | W2 | PASS: normal opt-in dev-pg/dev-valkey declarations preserve mng state and create no 07/08 resources | [source Task](tsk-0001-source-integration.md) |
+| 3 | W2 | PASS: project provision checks and isolated A/B SQL denial, rerun and concurrency evidence recorded | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
+| 4 | W2 | PASS: time-series and Valkey ACL source fixtures plus bounded isolated behavior checks recorded; retention remains inert | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
+| 5 | W3 | PASS: dbt, CDC, mng init and Schema Registry source contract validated; live connector cutover is NOT_RUN | [source Task](tsk-0001-source-integration.md) |
+| 6 | W4 | PASS: owner-attested empty Influx route and strict mapping validation recorded; real export remains NOT_RUN | [source Task](tsk-0001-source-integration.md) |
+| 7 | W4 | PASS: dev backup/key source and separate-volume synthetic restore recorded; HOME PITR and offsite remain NOT_RUN | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
+| 8 | W5 | PASS: normal and LAB dependency, port, network, volume, name and secret graphs statically separated | [source Task](tsk-0001-source-integration.md) |
+| 9 | W6 | PASS: path-aware gate, version projection, metadata, links and focused checks recorded with exact limits | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
+| 10 | W7 | PASS: scoped secret issuance, isolated acceptance and 03/04/06 handoff recorded; HOME and migration remain deferred | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
 
 ## Review Evidence
 
