@@ -1,10 +1,10 @@
 ---
 title: "Observability Dashboards, Signals and Alerting Plan"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0193-PLAN-0001"
 parent_ids:
@@ -49,8 +49,9 @@ describes.
    datasource health, dashboard data, the Drilldown apps and `ALERTS`
    (criteria 4, 5, 6, 7).
 7. W7 Resources, after 2026-10-03: take the final W8 figures from SPEC-0182,
-   set the named limits and the container-resource alert thresholds, and
-   record the figures (criterion 9).
+   set the named limits and container-resource alert thresholds where evidence
+   and approval are complete, record the figures, and keep HOME service
+   recreation or live retuning as NOT_RUN until separately approved (criterion 9).
 8. W8 Gates: full gate and both suites (criterion 11).
 
 ## Risk and Rollback

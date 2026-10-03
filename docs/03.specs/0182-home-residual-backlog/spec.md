@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Specification"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0182"
 parent_ids:
@@ -167,9 +167,14 @@ up to twelve months; that is the accepted cost of not rewriting snapshots.
 
 None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
 target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
-2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. The keep or
-stop decision for the six containers kept until W7 is still the owner's
-(Task 0002).
+2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. Task 0002
+records the six-container re-decision and subsequent CDC retirement on
+2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
+cover criteria 3–6, with dated results and the disclosed Pyroscope hash
+limitation. Task 0003 now records W8/criterion 8 observations, including
+sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
+recovery evidence; criterion 10 still needs the R2 scratch restore and offline
+key custody. Those operational holds prevent package completion.
 
 ## Operational Impact
 

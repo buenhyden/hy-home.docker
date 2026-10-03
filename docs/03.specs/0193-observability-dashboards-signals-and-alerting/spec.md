@@ -1,10 +1,10 @@
 ---
 title: "Observability Dashboards, Signals and Alerting Specification"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0193"
 parent_ids:
@@ -18,9 +18,10 @@ created: "2026-09-30"
 
 On 2026-09-29 and 09-30 the 39 provisioned Grafana dashboards, the five
 Grafana datasources, the Prometheus scrape and rule files, and the Loki,
-Tempo, Pyroscope and Alloy settings were compared with the 151 Compose
-services (HOME, OPTIONAL, LAB and DEV, running or stopped) and with the
-series Prometheus holds. Findings:
+Tempo, Pyroscope and Alloy settings were compared with the root Compose
+services then present and with the series Prometheus holds. LAB services are
+separate from current root coverage and stay under their own LAB entrypoints
+and documents. Findings:
 
 - **Dashboards without data by design error.** Of 39 dashboards, 12 query
   metric names that no service in this repository emits: `vllm-monitoring`
@@ -96,11 +97,13 @@ emits) and the owner's rulings below.
 
 ## Behavior Contract
 
-1. **Coverage.** Every Compose service is visualized: by the container
-   dashboard (resource use by Compose service and project) and Logs
-   Drilldown for all, and by one service dashboard for each service with a
-   metrics source. The Grafana README lists every service with its metrics
-   source and dashboard, or states that it has none and why.
+1. **Coverage.** Every current root infra Compose service is visualized: by
+   the container dashboard (resource use by Compose service and project) and
+   Logs Drilldown for all, and by one service dashboard for each service with
+   a metrics source. The Grafana README lists each root service with its
+   metrics source and dashboard, or states that it has none and why. LAB
+   services are documented separately and are not required in the root
+   coverage table.
 2. **One role per dashboard.** No two provisioned dashboards chart the same
    source for the same purpose; the dispositions below apply.
 3. **External first.** A service dashboard is the vendor's or a grafana.com
@@ -192,9 +195,9 @@ emits) and the owner's rulings below.
 
 ## Acceptance Contract
 
-1. The Grafana README table covers all 151 Compose services, and the
-   contract test fails if a scrape job has no dashboard or a dashboard names
-   no service.
+1. The Grafana README table covers the current root infra Compose services
+   and separates LAB coverage; the contract test fails if a root scrape job
+   has no dashboard or a dashboard names no service.
 2. The dispositions are applied: no removed file remains, and no two
    dashboards share more than half their metric names.
 3. Every external dashboard records its source and revision, and every
@@ -210,9 +213,10 @@ emits) and the owner's rulings below.
    scrape interval.
 8. No alert rule queries a metric its source cannot emit; every rule links an
    existing runbook; `promtool check rules` passes.
-9. After 2026-10-03, the limits for Grafana, `airflow-triggerer` and OpenBao
-   and the container-resource alert thresholds are set from the final W8
-   figures, with the figures recorded.
+9. After 2026-10-03, the limits for Grafana, `airflow-triggerer`,
+   Flower and OpenBao and the container-resource alert thresholds are set
+   from the final W8 figures, with the figures recorded. HOME runtime
+   retuning or service recreation remains separately approved work.
 10. GDE, POL and RUN-0041, RUN-0045 and the Grafana README describe the new
     state.
 11. `run-ci-gate.py --profile full`, `tests/lib` and `tests/validation` pass.

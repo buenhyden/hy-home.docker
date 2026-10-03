@@ -57,7 +57,7 @@ groups:
           severity: warning
           domain: infrastructure
         annotations:
-          summary: '컨테이너 CPU 쓰로틀링: {{ $labels.container }}'
+          summary: '컨테이너 CPU 쓰로틀링: {{ $labels.name }}'
           description: "컨테이너가 25% 이상 CPU 쓰로틀링되고 있습니다.\n  VALUE = {{ $value }}"
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0044-observability-optimization-hardening.md'
 
