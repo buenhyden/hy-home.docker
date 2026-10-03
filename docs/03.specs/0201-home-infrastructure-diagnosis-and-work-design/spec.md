@@ -2,7 +2,7 @@
 title: "Home Infrastructure Diagnosis and Work Design Specification"
 version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
