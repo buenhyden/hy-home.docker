@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -61,6 +61,27 @@ none of these links is a tested HOME deployment.
 ## Verification Evidence
 
 ### Protected registration repair — 2026-10-04
+
+### Pinned Python formatter scope amendment — 2026-10-04
+
+PR352 head `a959826519c77402133bb197c7335747faa3e9bf`, required
+run `37156755186`, finished failure/exit1. Metadata selected2/violations0/
+legacy0/overrides0 and the markdownlint hook passed. The next ruff-format
+hook modified one file and stopped the job; later leaves remain unverified.
+Local Ruff 0.16.10 had accepted the approved fixture, but the CI hook pins
+0.15.12. The pinned formatter accepts the approved fixture unchanged. Its
+read-only check of 152 tracked Python files identifies only the existing
+`tests/validation/test_compose_baseline_gates.py` from protected main PR350.
+
+The four-hunk proposal changes only line wrapping, has identical Python AST,
+and is idempotent under pinned Ruff 0.15.12. Independent read-only review
+returned PASS on neutrality and required exact-path scope approval. The owner
+explicitly approved those four formatting hunks and this Task1 record on
+2026-10-04. The amended writer ledger adds only that one test file. Applying
+pinned formatting modifies those same four hunks; no assertion, validation
+condition, threshold, workflow or runtime behavior changes. Revert this
+format-only commit for recovery, preserving all prior objects. Required
+hosted CI must still pass before protected registration and later edges.
 
 ### Hosted fixture validation and document formatting — 2026-10-04
 
