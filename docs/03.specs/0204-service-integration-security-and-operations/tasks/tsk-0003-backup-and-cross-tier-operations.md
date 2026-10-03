@@ -59,7 +59,8 @@ Any additional test file or parser requires an exact Task amendment.
 
 | Check | Result | Limit |
 | --- | --- | --- |
-| Current Restic/dev-pg declaration comparison | READ_ONLY | Separate dev repository is omitted from Restic mount/list and scheduler |
+| Current Restic/dev-pg declaration comparison on `d2a5dfc79` | READ_ONLY | `restic/docker-compose.yml` mounts only `/pgbackrest`, `backup.sh` lists only that repository, and `hyhome-backup.sh` invokes only mng-pg stanza. `dev-pgbackrest` is declared separately; SPEC-0202 remains `draft`, so no writer handoff. |
+| Current Kafka/analytics/mail source inspection | READ_ONLY | Debezium connector uses Avro with Schema Registry and has a named slot/publication/heartbeat; no live connector registration or lag evidence. Flink wrapper sets a 60s checkpoint interval but no restore result. Stalwart relay is disabled while Mailpit remains development capture; no real send result. |
 | Synthetic backup failure/capacity/restore fixture | NOT_RUN | Await SPEC-0202 handoff and exact fixture preflight; other tiers are read-only |
 | HOME backup, offsite copy, PITR, credential rotation, data migration | NOT_RUN | Separate exact operational approval required |
 

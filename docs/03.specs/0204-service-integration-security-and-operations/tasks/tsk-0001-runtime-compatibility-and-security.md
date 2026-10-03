@@ -67,6 +67,7 @@ none of these links is a tested HOME deployment.
 | `docker compose --env-file .env.example --profile workflow-n8n config --quiet`; default/dedicated broker secret render; `--profile crawl4ai config --quiet` | PASS, each exit 0 | Only static root model; selected n8n main/worker receive one Valkey secret. |
 | `LAB_DATA_DIR=/tmp/hyhome-lab-cassandra-synthetic docker compose --env-file labs/.env.example -f labs/cassandra.yml --profile cassandra config --quiet` | PASS, exit 0 | Initial render without required `LAB_DATA_DIR` exited 1; corrected with a synthetic path. No LAB service or volume created. |
 | `bash scripts/operations/sync-tech-stack-versions.sh --write` then `--check`; `git diff --check`; shell syntax | PASS, each exit 0 | Generated projection and source syntax only. |
+| `python3 scripts/validation/check-operations-catalog.py` after approved `render_service_inventory` refresh | PASS, exit 0 | Only eight n8n current-service projection cells changed; historical rationale retained. First run identified those eight stale cells (exit 1). |
 | `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD` | PASS, exit 0 | Current Stage 05 prose; not runtime proof. |
 | JS/Python Code-node token isolation, private/redirect URL denial, OpenBao Agent fresh render, n8n DB migration, Cassandra data/auth | NOT_RUN | Isolated image execution requires full Docker preflight and source controls; HOME and credentials remain out of scope. |
 | HOME service start/restart, crawler request, OpenBao unseal or secret rotation | NOT_RUN | Separate exact operational approval required. |
@@ -101,7 +102,7 @@ the approved inline secret-file adapter remains the reviewed source path.
 
 ## Commit Ledger
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit pending; no remote merge or HOME execution.
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft `0f67cb297`, review transition `2157e62c5`. Source commit `a51014aab597cd95bf5db19f00348e1d487ce642`; approved current-service projection eight-cell refresh is included in the follow-up documentation commit. No remote merge or HOME execution.
 
 ## Rulings
 
