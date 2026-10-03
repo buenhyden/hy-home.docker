@@ -2,7 +2,7 @@
 title: "Shared Storybook Operations Policy"
 version: "1.0.0"
 type: "operation/policy"
-status: "approved"
+status: "active"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "operations"
