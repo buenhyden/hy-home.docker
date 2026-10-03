@@ -48,7 +48,6 @@ history permits a status transition; the explicit approval is recorded here.
 | W5 trace/change/approval ledger and handoffs | DONE | W5 requests 01-12, env/learning/duplicates and 02-08 handoffs with exclusive writers. |
 | W6 documentation verification and final report | DONE | Changed gate exit 0, Conftest 66/66, independent re-review clear; final focused metadata/link checks exit 0. |
 
-
 ### W1 Baseline and document authority
 
 The worktree and remote main were both e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d at execution. The original main checkout was clean; this isolated branch contains only the five SPEC-0201 documentation paths in the Commit Ledger. A name/status comparison from the user supplied baseline e2c841e to current main returned no paths across infra, .agents, .codex, .github, scripts, tests, and docs. The older dated RES-0085 comparison point is 4c6d211129615eab372d720ebd209b6c27618c86. That record is historical evidence, not current approval. Its source delta to main contains 447 infra files (192 added, 118 deleted, 80 modified, 57 renamed), plus 137 .agents, 16 .codex, 10 .github, 86 scripts, 134 tests, and 842 docs paths. The changed infra domains include gateway/auth/OpenBao, flattened data, Kafka/CDC, observability, workflow, AI, platform operations, communication, quality, and analytics. This explains why the old service inventory cannot be reused. See docs/90.references/research/0085-workspace-engineering-main-baseline-assessment/m0001-request-scope.md and the current Git diff; no conclusion is inferred from the historical record alone.
@@ -69,10 +68,11 @@ Projection ownership: .codex/README.md and .codex/agents/*.toml are generated fr
 
 Service-level backup, runbook, and regression owners are explicit where traced: mng-pg/app_db uses docs/05.operations/policies/0021-backup-and-restore.md and runbooks/0021-backup-and-restore.md plus tests/validation/test_mng_pg_init_sql.py; restic uses infra/09-platform-ops/restic/README.md and the same backup runbook; gateway uses infra/01-gateway/{traefik,nginx}/README.md and the Compose validation route; quality tools use docs/05.operations/runbooks/{0061-k6,0062-locust,0092-wiremock}.md; dbt uses runbooks/0090-dbt.md; Kafka uses runbooks/0036-kafka.md. Each row below inherits its source file as configuration owner. A service with no named backup/runbook/regression association in these source owners is UNVERIFIED for that field and must be resolved in its implementation Task; the existence of a generic global validator does not prove a service's restore or application contract.
 
-
 #### Source-declared service and job rows
 
 Each row is keyed by source file, line and service. The file is the image/version declaration owner and the tier/role source. Declared consumers are reverse depends_on edges only; UNVERIFIED means no such edge, not no real client. An unlisted backup/runbook owner is UNVERIFIED. The generic Compose regression only checks source shape; application readiness and restores are unverified. Auth markers, inherited UID/resources and health flags need semantic review before a source change.
+
+<!-- markdownlint-disable MD010 -->
 
 ```tsv
 file	line	service	kind	image_or_build	profiles	depends_on	networks	ports	auth_markers	secret_names	user	volume_mounts	resources	healthcheck	restart	entrypoint	command	env_keys	declared_consumers	backup_owner	runbook_owner	regression_owner
@@ -231,9 +231,11 @@ infra/12-analytics/superset/docker-compose.yml	98	superset	service	hy-home/super
 infra/12-analytics/trino/docker-compose.yml	7	trino	service	trinodb/trino:483	lakehouse	seaweedfs-s3|seaweedfs-table-bucket	object_net	127.0.0.1:${TRINO_HOST_PORT:-18090}:8080	secret	seaweedfs_s3_lakehouse_secret_key		./hyhome-trino.sh:/opt/hyhome/hyhome-trino.sh:ro|./catalog/lakehouse.properties:/etc/trino/catalog/lakehouse.properties:ro		yes		yes	yes	AWS_ACCESS_KEY_ID|AWS_REGION|LAKEHOUSE_CATALOG_URI|LAKEHOUSE_S3_ENDPOINT	great-expectations	UNVERIFIED	UNVERIFIED	scripts/validation/validate-docker-compose.sh (shape only)
 ```
 
+<!-- markdownlint-enable MD010 -->
+
 ### W3 Engine selection and role rulings
 
-The development business time-series default is one TimescaleDB Community dev-pg, with a project-specific database and role per approved project. It combines PostgreSQL SQL, transactions, roles, and recovery tooling with hypertables while preserving the application SQL contract. Community is free to self-host under the Timescale License for its TSL portion; it is not wholly Apache-licensed open source. No measured performance order is claimed. Management metadata and queues remain on mng-pg and mng-valkey; no management TimescaleDB is proposed without a named current consumer. InfluxDB Core, QuestDB OSS, and ClickHouse remain optional workload/LAB candidates when a project's measured data and access contract supports them. Ordinary PostgreSQL is the fallback when no Timescale feature is needed. Official material checked on 2026-10-02: https://github.com/timescale/timescaledb/blob/main/LICENSE , https://docs.timescale.com/about/latest/timescaledb-editions/ , https://docs.influxdata.com/platform/ , https://docs.influxdata.com/influxdb3/core/admin/backup-restore/ , https://questdb.com/docs/ , https://questdb.com/docs/operations/backup , https://questdb.com/docs/security/rbac/ , https://www.postgresql.org/docs/current/backup.html , https://www.postgresql.org/docs/current/database-roles.html , https://github.com/ClickHouse/clickhouse-docs/blob/main/docs/operations_/backup_restore/00_overview.md . Direct license owners checked: https://github.com/influxdata/influxdb , https://github.com/questdb/questdb/blob/master/LICENSE.txt , https://www.postgresql.org/about/licence/ , and https://github.com/ClickHouse/ClickHouse/blob/master/LICENSE . Recheck exact image/digest, PostgreSQL compatibility, license revision, and restore procedure in 02 before a pin is accepted.
+The development business time-series default is one TimescaleDB Community dev-pg, with a project-specific database and role per approved project. It combines PostgreSQL SQL, transactions, roles, and recovery tooling with hypertables while preserving the application SQL contract. Community is free to self-host under the Timescale License for its TSL portion; it is not wholly Apache-licensed open source. No measured performance order is claimed. Management metadata and queues remain on mng-pg and mng-valkey; no management TimescaleDB is proposed without a named current consumer. InfluxDB Core, QuestDB OSS, and ClickHouse remain optional workload/LAB candidates when a project's measured data and access contract supports them. Ordinary PostgreSQL is the fallback when no Timescale feature is needed. Official material checked on 2026-10-02: <https://github.com/timescale/timescaledb/blob/main/LICENSE> , <https://docs.timescale.com/about/latest/timescaledb-editions/> , <https://docs.influxdata.com/platform/> , <https://docs.influxdata.com/influxdb3/core/admin/backup-restore/> , <https://questdb.com/docs/> , <https://questdb.com/docs/operations/backup> , <https://questdb.com/docs/security/rbac/> , <https://www.postgresql.org/docs/current/backup.html> , <https://www.postgresql.org/docs/current/database-roles.html> , <https://github.com/ClickHouse/clickhouse-docs/blob/main/docs/operations_/backup_restore/00_overview.md> . Direct license owners checked: <https://github.com/influxdata/influxdb> , <https://github.com/questdb/questdb/blob/master/LICENSE.txt> , <https://www.postgresql.org/about/licence/> , and <https://github.com/ClickHouse/ClickHouse/blob/master/LICENSE> . Recheck exact image/digest, PostgreSQL compatibility, license revision, and restore procedure in 02 before a pin is accepted.
 
 | Engine | SQL and transactions | Access and project isolation | Resource/recovery/terms | Decision |
 | --- | --- | --- | --- | --- |
@@ -261,7 +263,6 @@ Disposition labels apply to current source declarations, not running containers.
 | OpenTofu / Terrakube | OpenTofu one-shot CLI; Terrakube API/UI/executor state | Terrakube resident auth/metadata/recovery; terms recheck | OpenTofu default, Terrakube optional orchestration with named user |
 | Mailpit / Stalwart | Mailpit captures development SMTP; Stalwart internal real delivery | Stalwart identity, relay, mailbox recovery; terms recheck | Keep distinct; unknown send state must be surfaced in 10 |
 | Supabase / direct API | Supabase optional integrated stack; no named approved external business app API | Many stateful subservices and product coupling; terms recheck | Optional LAB/platform; external project owns direct business API unless separately approved |
-
 
 ### W4 External project input/output contract
 
@@ -323,7 +324,6 @@ The following are approval-ready *future Task scopes*, not authorization to exec
 
 Exclusive shared-file queue: 02 is the sole writer of docker-compose.yml and .env.example for the initial DB wave; 03/04/05/06 consume the resulting contract and cannot modify those files concurrently. Any later root/env amendment needs a new serialized approved Task and review of the preceding diff. 04 alone writes Alloy config.alloy and infra/09-platform-ops/registry in this wave; 02/03/05/06 consume their contracts. Stage 99 registry.json for this SPEC-0201 package was written once by this package; later packages allocate their own IDs serially under the registry lock, never from archived SPEC-0199/0200. The Kafka connector and backup policy are 02-owned during DB migration; 04 may take them only after 02 closes and a new exclusive handoff is recorded. No worker edits these shared surfaces during this read-only Task.
 
-
 ### Command and approval evidence for W1-W5
 
 | Operation (read only unless noted) | Exit/result | Evidence and limit |
@@ -333,7 +333,7 @@ Exclusive shared-file queue: 02 is the sole writer of docker-compose.yml and .en
 | git diff --name-status 4c6d211 HEAD -- infra .agents .codex .github scripts tests docs | 0 | Historical RES-0085 comparison counts in W1; not current runtime evidence |
 | Python/PyYAML read of 49 root includes and services, plus TSV uniqueness/width check | 0 | 153 unique declarations, 153 complete 23-column rows; file/line evidence in W2 |
 | Python/PyYAML read of inherited template-job declarations | 0 | 27 template-job services plus k6 with explicit restart no: 28 job candidates, 125 other services |
-| git ls-remote https://github.com/buenhyden/Project-Template.git refs/heads/main | 0 | 9bd26dd2806e85a2129217481164c78c5ed62fc9; read-only ref, no workspace created |
+| git ls-remote <https://github.com/buenhyden/Project-Template.git> refs/heads/main | 0 | 9bd26dd2806e85a2129217481164c78c5ed62fc9; read-only ref, no workspace created |
 | Official vendor documentation lookups through web search/open | completed | URLs next to W3 matrix; source date 2026-10-02; no image digest/benchmark validated |
 | Key-only Python extraction of .env.example names | 0 | W5 field names only; no value output |
 | Attempted matching .env.example lines | REJECTED by automatic approval review | Reviewer said line output could expose sensitive values. No values were returned; key-only extraction above completed the need. |

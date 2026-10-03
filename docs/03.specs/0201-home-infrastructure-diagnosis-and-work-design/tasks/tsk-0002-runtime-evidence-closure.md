@@ -47,7 +47,6 @@ proceed using W7.1-W7.3's accepted evidence under its own Spec, Plan, and Task.
 | W7.4 restore measurement | DEFERRED / NOT_RUN by owner | Verify backup integrity, restore the approved backup into a new isolated disposable target, start only that isolated target if needed, check database/extension/role inventory and count consistency, and record duration, recovery point and failure behavior. Distinguish backup verification from successful restore and PITR. Preserve any failed target; exact scratch cleanup requires separate approval after review. No HOME stop/restart, data deletion, or real migration. |
 | W7.5 Prompt 02 start gate | DRAFT CONTRACT | Record a binding handoff: at actual Prompt 02 source implementation, recheck registry digest by platform, PostgreSQL/Timescale/pgBackRest compatibility, extension package and license revision against official sources. Prompt 02 Task owns the dated result; a present lookup cannot preapprove a future image. |
 
-
 ### Approved read-only observation, 2026-10-02
 
 The observed baseline remained `e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`;
