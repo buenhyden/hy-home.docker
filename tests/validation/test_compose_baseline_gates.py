@@ -887,7 +887,9 @@ FEATURE_SECRETS = {
 def _compose_service(path: str, name: str) -> dict:
     import yaml
 
-    return yaml.load((ROOT / path).read_text(encoding="utf-8"), Loader=_ComposeLoader)["services"][name]
+    return yaml.load((ROOT / path).read_text(encoding="utf-8"), Loader=_ComposeLoader)[
+        "services"
+    ][name]
 
 
 def _runner_text(service: dict) -> str:
@@ -3452,7 +3454,9 @@ class NetworkSegmentationContractTests(unittest.TestCase):
 
         services: dict[str, dict] = {}
         for path in sorted((ROOT / "infra").rglob("docker-compose*.y*ml")):
-            document = yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
+            document = (
+                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
+            )
             for name, service in (document.get("services") or {}).items():
                 if name in services:
                     raise AssertionError(f"service {name} is declared twice")
@@ -3822,7 +3826,9 @@ class RouteAuthContractTests(unittest.TestCase):
 
         found: list[tuple[str, str, set[str] | None]] = []
         for path in sorted((ROOT / "infra").rglob("docker-compose.yml")):
-            data = yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
+            data = (
+                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
+            )
             for service_name, service in (data.get("services") or {}).items():
                 labels = service.get("labels") or {}
                 if isinstance(labels, list):
@@ -4089,8 +4095,7 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
             name
             for path in (ROOT / "infra").rglob("docker-compose*.yml")
             for name in (
-                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader)
-                or {}
+                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
             ).get("services", {})
             or {}
         }

@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.0"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -59,6 +59,159 @@ Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
 ## Verification Evidence
+
+### Protected registration repair — 2026-10-04
+
+### Required gate result and existing security hold — 2026-10-04
+
+PR352 head `0ef17a4a58d0d53f7249f3b0eef7939457e5cb72`, hosted
+run `37158568358`, finished failure/exit1. Metadata selected2/violations0/
+legacy0/overrides0; the approved fixture and both pinned formatters passed.
+The later npm audit reported five high findings in the dependency graph,
+including `GHSA-vfj7-8cjw-p6xm`. This is an independent security block,
+not a recurrence of the missing fixture or document registration finding.
+
+Authenticated GitHub advisory readback on 2026-10-04 confirms braces
+`<= 3.0.3`, severity high, first_patched_version null; official source:
+[GitHub Advisory Database](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+The owner previously chose to wait for a patch rather than grant a security
+exception. That decision remains binding. No security exception, dependency
+substitution, threshold reduction, manual workflow rerun or protected merge
+is authorized by this receipt. No further hosted execution is dispatched.
+
+The registration candidate's metadata has zero findings, but PR352 is not
+merged. The original closure PR351 has not received the three protected
+prerequisites and is not claimed repaired or merge-ready. The reviewed next
+six-document edge remains uncommitted in its owned review worktree. Existing
+source and recovery objects remain on their named branches; do not delete
+those branches or dirty pending worktrees. Local main and origin/main were
+last observed equal at `0460795abf6da9203e38f30291a8f20118c6ab88`.
+Resume normal protected delivery only after the approved security hold clears.
+HOME/isolated execution/data migration remain NOT_RUN for this repair.
+
+### Pinned Python formatter scope amendment — 2026-10-04
+
+PR352 head `a959826519c77402133bb197c7335747faa3e9bf`, required
+run `37156755186`, finished failure/exit1. Metadata selected2/violations0/
+legacy0/overrides0 and the markdownlint hook passed. The next ruff-format
+hook modified one file and stopped the job; later leaves remain unverified.
+Local Ruff 0.16.10 had accepted the approved fixture, but the CI hook pins
+0.15.12. The pinned formatter accepts the approved fixture unchanged. Its
+read-only check of 152 tracked Python files identifies only the existing
+`tests/validation/test_compose_baseline_gates.py` from protected main PR350.
+
+The four-hunk proposal changes only line wrapping, has identical Python AST,
+and is idempotent under pinned Ruff 0.15.12. Independent read-only review
+returned PASS on neutrality and required exact-path scope approval. The owner
+explicitly approved those four formatting hunks and this Task1 record on
+2026-10-04. The amended writer ledger adds only that one test file. Applying
+pinned formatting modifies those same four hunks; no assertion, validation
+condition, threshold, workflow or runtime behavior changes. Revert this
+format-only commit for recovery, preserving all prior objects. Required
+hosted CI must still pass before protected registration and later edges.
+
+### Hosted fixture validation and document formatting — 2026-10-04
+
+PR352 head `042b9db6d6e86025fc94af8105a18c63440ba071`, required
+run `37154950211`, job `111296335212`, finished failure/exit1. Hosted
+metadata selected2/violations0/legacy0/overrides0; corpus and archive recovery
+violations0. The existing Storybook fixture test passed, retaining all five
+negative mutations. The later pinned markdownlint-cli2 hook modified files
+and stopped the required job; no later leaf is claimed PASS.
+
+The exact approved Task1 document contained two redundant blank lines.
+Direct invocation of cached, pinned markdownlint-cli2 0.22.1 on this one
+approved document removed only those two blank lines and returned exit0.
+This formatter reconciliation changes no source, fixture assertions,
+threshold, workflow, lifecycle edge or frozen archive. Recheck formatting
+idempotence, metadata and exact diff before the normal hosted retry. The
+fixture implementation itself needs no second correction. Runtime holds
+remain unchanged. Raw CI output was not copied into this record; an automatic
+approval rejection of raw log printing was honored with bounded diagnostic
+extraction of checker results and hook identity.
+
+### Additional fixture scope proposal — 2026-10-04
+
+PR352 head `b240f6150` hosted run `37154044478` returned failure, but
+metadata selected2/violations0/overrides0 and links/corpus/recovery passed.
+The five failures are the existing Storybook shell regression's baseline
+fixture: main0460795's checker also reads `.storybook/main.ts` and the private
+UI `package.json`, while the test copied only package.json/vitest.config.ts.
+No initial-state finding remains in this registration candidate.
+
+Proposed additional writer is only
+`tests/lib/gate/test_github_workflow_contract.py`'s existing Storybook fixture
+copy loop: add those two tracked configuration files and create their parent
+directories before copying. Preserve all five mutation assertions, thresholds,
+checker code, workflow routing and required protection. Exact proposed patch
+is staged outside the repository as `/tmp/hyhome-storybook-fixture-proposed.patch`;
+the tracked test was unchanged during scope review.
+Existing targeted unittest reproduced RED exit1/five failed subcases. Loading
+the proposed test source from scratch with the original repository ROOT
+returned GREEN exit0/one test covering all five subcases. An initial scratch
+loader exited1 because its temporary file depth could not resolve ROOT;
+keeping the real repository `__file__` fixes the loader without altering the
+proposed test or its assertions. The exact targeted regression and normal
+hosted checks must run after approved application. Independent read-only
+patch review returned PASS: only fixture completeness changes, all original
+negative assertions and checker semantics remain intact. The user approved the exact fixture minimum and Task1 record on 2026-10-04.
+`git apply` of the reviewed patch exited0. The same targeted existing unittest
+then passed exit0/one test with all five original mutation cases; Ruff check,
+Ruff format --check and git diff --check each exited0. No checker or threshold
+changed. The scope now includes that single fixture loop in
+`tests/lib/gate/test_github_workflow_contract.py` in addition to this Task record.
+
+The package's exact-file approval rule was satisfied by that explicit owner
+response. Push the scoped fixture and record to PR352, observe the normal
+hosted gate, then resume the reviewed document sequence only after green.
+Rollback is a scoped revert of the fixture addition, which returns the known
+missing-input failure; it is not a gate bypass or an operational rollback.
+
+The user requested resolution of PR351's six initial-status findings after
+explicitly authorizing push, PR merge and cleanup. Original implementation
+and completed evidence remain on `codex/spec-0201-0205-closure` at
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; no final body or frozen
+archive is rewound by this document registration.
+
+Initial preparation used `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
+and six original draft bodies (five from `0f67cb297`, Task4 from `d666b6f42`).
+Local metadata selected7/violations0/overrides0, links failures0 with one
+pre-existing historical warning, and corpus/recovery violations0, each exit0;
+independent review approved. The first counter relationship check failed
+before correcting high_water and next_number together. Draft commit
+`86f65973a6a762952e004994fb5e860d2b7dca8c` remains recoverable.
+
+Authenticated PR readback then exposed concurrent protected main
+`0460795abf6da9203e38f30291a8f20118c6ab88` from PR350, which already
+registers Spec, Plan and Tasks1-3 as draft. No obsolete registration was
+merged. The registration branch merges this latest main and preserves its
+Storybook changes, navigation and SPEC high-water206/next207 exactly.
+PR352 now adds only the missing original Task4 draft and this Task1 receipt.
+Independent review approved the narrowed two-document diff; README and Registry
+match the new main exactly. A check before finishing the main merge exited2:
+allocation predecessor 0460795 did not yet precede branch HEAD. The normal
+merge commit establishes that ancestry; validation must rerun afterward.
+After normal main merge `21bf46fdd`, changed metadata against origin/main
+0460795 selected2/violations0/overrides0, exit0. Refreshed links mode all
+returned failures0/one pre-existing historical warning, exit0; corpus and
+archive recovery returned violations0, exit0. `git diff --cached --check`
+passed and independent review approved the exact two-document diff.
+Registration document scope covers these two package documents; the approved
+fixture-loop extension is recorded above. Final independent review approved
+this exact three-file PR diff with zero standards/spec findings; normal hosted
+checks still decide merge readiness. No runtime,
+private values, validator, lifecycle registry rule or transition override changes.
+
+Use three preliminary docs-only protected merges: finish Task4 draft
+registration; Spec draft→review, Plan draft→approved and all Tasks draft→ready;
+then Spec review→approved, Plan approved→active and Tasks ready→in-progress.
+Merge that main into the closure branch without rewriting recovery objects.
+PR351 then supplies the fourth edge and final reviewed bodies: Spec active,
+Task1 blocked, Tasks2-4 completed, Plan stays active. Every merge requires
+normal green protection. PR351's independent security hold remains unchanged;
+this registration does not approve HOME, image pulls or service execution.
+Rollback is a scoped PR revert with original sources preserved, never archive
+rewriting or cancellation of already-completed work.
 
 | Check | Result | Limit |
 | --- | --- | --- |
