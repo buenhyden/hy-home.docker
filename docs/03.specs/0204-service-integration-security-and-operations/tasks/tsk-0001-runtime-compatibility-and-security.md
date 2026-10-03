@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
-status: "in-progress"
+status: "blocked"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -198,6 +198,70 @@ both remain at the baseline SHA above. The main owner worktree and closure
 worktree are retained. Receipt metadata validation selected one document,
 zero violations/overrides, exit 0; independent read-only review confirmed the
 hosted failure and absence of a false success claim.
+
+### Package reassessment — 2026-10-04
+
+The renewed completion request does not grant the separately scoped image
+pulls, host isolation policy or HOME actions. This Task transitions from
+`in-progress` to `blocked` because its existing acceptance criteria 2 and 3
+still require exact-image functional execution and demonstrated secret/egress
+boundaries. Criteria 1/8 have source and focused static evidence; criterion 4
+retains named runtime blockers. Completed Tasks 2-4 stay within the active
+package under the registered package occupancy rule; neither this Plan nor
+Spec can transition to completed while these acceptance gaps remain.
+
+Reassessment corrected active Spec/Plan descriptions that still called
+SPEC-0203 source-only, all metrics unverified and dev-pg recovery absent.
+The current evidence is synthetic importer/metrics and selected-set Restic
+recovery PASS, with real target/store/Grafana, HOME/offsite/PITR and measured
+operational capacity still NOT_RUN. Frozen SPEC-0201/0202/0203/0205 bodies
+are preserved. Their completion does not satisfy this Task's service-specific
+security criteria or the independent protected delivery gates.
+
+Reassessment verification against `b1c325cc0d256d30b1cef8325fe336f8b7679ca0`:
+`python3 scripts/validation/check-document-metadata.py --mode check-changed
+--base-ref HEAD` exited 0, selected 3 documents, zero violations/overrides.
+`python3 scripts/validation/check-document-corpus-lifecycle.py --base-ref HEAD`
+exited 0, zero corpus/recovery violations, 327 preserved units. Independent
+archive review matched SPEC-0201/0202/0203/0205 to their catalog source objects:
+4/4, 4/4, 3/3 and 3/3 members respectively, exact modes/types/blobs; navigation
+and scoped completion receipts passed. No frozen body was changed. The new
+[hosted run 37140139679](https://github.com/buenhyden/hy-home.docker/actions/runs/37140139679)
+for that source completed with failure; it is not a local-validation PASS.
+This three-document correction changes no runtime code, interface, source
+links or resource state, so previous implementation tests were not rerun.
+Recovery is a scoped revert of this document correction; it must not rewrite
+frozen records or imply a runtime rollback. Two independent read-only
+reviewers approved the final three-document diff with no blocking findings;
+they confirmed the registered blocked transition, evidence limits and pending
+Phase A/B approval boundary. Neither reviewer ran runtime actions or changed
+source/private state.
+
+### Prepared next execution boundary
+
+Phase A proposal is limited to read-only Docker context/daemon architecture,
+image-cache and aggregate host-capacity preflight, followed by separately
+approved pulls of `n8nio/n8n:2.41.6`, `n8nio/runners:2.41.6`, and
+`unclecode/crawl4ai:0.9.4`. Resolve the current official manifest before each
+pull, compare it to this Task's recorded digest and stop on mismatch until
+reconciled. Record digest/platform and image compatibility metadata only;
+never dump image/container environment, private Docker config or secrets.
+No service starts, mounts, networks or volumes are authorized by Phase A.
+Image-cache removal also needs its own exact disposition.
+
+Phase B remains unapproved until the actual synthetic controller and security
+boundary have independent review. Prepare it within the already approved
+runtime test file or this Task; a new fixture, proxy or host-policy file needs
+an exact writer amendment. The proposed serial fixture ceiling is 4 CPU,
+6 GiB memory, 8 GiB writable scratch and 20 minutes per service phase, subject
+to verified spare capacity before execution; these are proposed caps, not
+measurements. Use a unique Task-labeled project, no published host ports,
+no HOME networks/volumes, no real credentials and explicit created-resource
+identities for cleanup. A network name or `internal` flag alone is insufficient.
+If effective Code-token denial or host/LAN/metadata egress denial cannot be
+proven without a new host policy, stop before the corresponding request and
+seek that specific scope. Do not substitute shell stubs or cached older images
+for the required actual broker/Code and crawler behavior.
 
 ## Review Evidence
 

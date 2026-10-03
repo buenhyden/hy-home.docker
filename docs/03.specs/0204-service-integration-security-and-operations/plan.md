@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -25,7 +25,9 @@ and acceptance gates before any service declaration was changed.
 - Local and remote `main` at `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
   when drafting; fetch/recompare before source implementation.
 - SPEC-0201 W5 exact handoff, SPEC-0202's dev data/backup contract, SPEC-0203's
-  source-only quality/Alloy contract and current Requirement/Architecture.
+  completed source and isolated synthetic quality/Alloy contract and current
+  Requirement/Architecture. Real external-project/store/reader connections
+  remain outside that completion receipt.
 - User approval of this Plan and the listed Task source scopes on 2026-10-03.
 - Kafka connector and backup-policy ownership transfer follows SPEC-0202 lifecycle
   closure, integrated locally before TSK-0003 source writing.
@@ -91,8 +93,10 @@ project, ports, networks, volumes, resource budget and cleanup review before
 execution. Generated version projection uses its registered generator, not
 manual JSON edits. Stage 03 metadata/link checks and `git diff --check` apply
 to changed documents. Protected PR checks are required for remote integration;
-local success is not a merge receipt. HOME activation, backup, restore, data
-migration and real external-project connection remain `NOT_RUN` here.
+local success is not a merge receipt. HOME activation, real backup/restore,
+data migration and real external-project
+connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
+Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 
 ## Rulings
 

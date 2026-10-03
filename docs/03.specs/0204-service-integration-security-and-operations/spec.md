@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -41,9 +41,13 @@ tracked configuration and key-only environment contracts, current Stage 01/02/03
 and Stage 05 owners, and official vendor documentation at implementation time.
 SPEC-0201 supplies the source inventory and exclusive-writer handoff. SPEC-0202
 supplies the dev-pg/dev-valkey source contract, synthetic restore result, and
-operational exclusions. SPEC-0203 supplies a source-only quality/Alloy contract;
-its live target, object handoff, Grafana result reader, and end-to-end metrics
-remain unverified. Archived SPEC-0199/0200 provide no current approval.
+operational exclusions. SPEC-0203 supplies the completed source and isolated
+synthetic quality/Alloy
+contract, including actual importer replay/concurrency/outage and metrics
+temporality/retry/restart evidence. Its real application target, SeaweedFS
+object handoff and live Grafana result reader remain unverified; synthetic
+metrics acceptance is not a live external-project receipt. Archived
+SPEC-0199/0200 provide no current approval.
 
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
@@ -220,8 +224,11 @@ The user approved the listed Task source scopes on 2026-10-03; a new path
 requires an exact Task amendment. Any HOME upgrade,
 backup execution, restore, credential issuance or network publication. A real
 external project must separately identify its project ID, endpoint topology,
-OIDC/S3/search scopes and operator before a live connection can pass. A
-verified dev-pg recovery target and capacity budget are still absent.
+OIDC/S3/search scopes and operator before a live connection can pass. The
+selected synthetic dev-pg recovery target passed TSK-0003; a HOME recovery
+target, offsite/PITR evidence and measured operational capacity budget remain
+absent. TSK-0001 exact-image runtime and security acceptance still require
+the separately pending execution approval.
 
 ## Operational Impact
 
