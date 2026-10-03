@@ -1,10 +1,10 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0205-TSK-0001"
 parent_ids:
@@ -80,10 +80,14 @@ The source is integrated locally into `codex/spec-0201-0205-closure`; it has
 not landed on protected main. A fresh npm audit still reports five high
 findings and exit 1, and the official GHSA-vfj7-8cjw-p6xm advisory still
 lists no patched braces version. This receipt does not waive that gate.
-The completed package waits in Stage 03 until protected delivery succeeds;
-it is not eligible for completed archive capture yet. Current update and
-audit obligations remain with the npm manifest/lock, Dependabot and the
-existing Storybook quality gate. HOME and publication remain NOT_RUN.
+The user approved completed-package archival on 2026-10-04. Independent
+policy review confirmed that local source capture does not require protected
+main delivery. Preserve this package from its prepared local commit and exact
+source path; archive capture is not an audit waiver, remote merge or deployment
+evidence. Current update and audit obligations remain with the npm
+manifest/lock, Dependabot and the existing Storybook quality gate. The official
+advisory was rechecked on 2026-10-04 and still has no patched release. Remote
+merge stays held by the user; HOME and publication remain NOT_RUN.
 
 ## Commit Ledger
 
