@@ -4380,15 +4380,15 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 203,
-      "next_number": 204,
+      "high_water": 206,
+      "next_number": 207,
       "child_spaces": {}
     },
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 99,
-      "next_number": 100,
+      "high_water": 101,
+      "next_number": 102,
       "child_spaces": {}
     },
     "incident": {

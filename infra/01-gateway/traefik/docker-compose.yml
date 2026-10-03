@@ -47,6 +47,7 @@ services:
           - keycloak.${DEFAULT_URL}
           - auth.${DEFAULT_URL}
       obs_net: {}
+      experience_ingress_net: {}
       # openclaw_default:
       #   ipv4_address: 172.20.0.5
     secrets:

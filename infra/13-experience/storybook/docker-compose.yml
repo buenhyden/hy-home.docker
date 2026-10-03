@@ -1,0 +1,33 @@
+x-tier-label: &tier-label
+  hy-home.tier: experience
+
+services:
+  storybook:
+    profiles:
+      - experience
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: hy-home/storybook:e811e159afa2dc7245bb2d6b562a91cf931283fe
+    pull_policy: never
+    user: '101:101'
+    group_add: !override [] # Static origin consumes no Docker secrets.
+    expose:
+      - '8080'
+    networks:
+      experience_ingress_net: {}
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.docker.network: experience_ingress_net
+      traefik.http.routers.storybook.rule: Host(`storybook.${DEFAULT_URL}`)
+      traefik.http.routers.storybook.entrypoints: websecure
+      traefik.http.routers.storybook.tls: 'true'
+      traefik.http.routers.storybook.middlewares: req-rate-limit@file,gateway-standard-chain@file,sso-auth@file
+      traefik.http.services.storybook.loadbalancer.server.port: '8080'

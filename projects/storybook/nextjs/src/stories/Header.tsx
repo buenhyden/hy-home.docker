@@ -1,4 +1,4 @@
-import { Button } from './Button';
+import { Button } from '@hy-home/storybook-ui';
 import './header.css';
 
 type User = {

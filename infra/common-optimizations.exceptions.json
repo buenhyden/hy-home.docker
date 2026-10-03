@@ -85,6 +85,14 @@
         "risk": "Mounted bootstrap credentials and rendered output require restrictive filesystem permissions.",
         "exit_condition": "Remove when bootstrap credentials are delivered through Compose Secret grants.",
         "review_cadence": "monthly"
+      },
+      {
+        "service": "storybook",
+        "reason": "The approved static UI documentation origin consumes no application credentials or Docker Secrets.",
+        "owner": "@buenhyden",
+        "risk": "A future dynamic feature could require a secret, and Docker daemon operators can join the dedicated ingress network.",
+        "exit_condition": "Remove or replace this exception before Storybook begins consuming credentials or serving dynamic data.",
+        "review_cadence": "monthly"
       }
     ]
   },
