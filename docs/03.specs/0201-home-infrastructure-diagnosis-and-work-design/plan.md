@@ -143,9 +143,11 @@ its own path-aware checks and revalidates image compatibility at execution.
 
 ## Rulings
 
-SPEC-0201's body was approved by the user on 2026-10-02. Its frontmatter
-remains draft because the Registry requires the initial status for a new Stage
-03 document; this does not approve this Plan or its Task for execution.
+SPEC-0201's body was approved by the user on 2026-10-02. Its initial
+frontmatter was draft under the Registry; the recorded lifecycle transitions
+subsequently brought this Spec, Plan, and its Tasks to completed. The scoped
+approvals covered the documented source and read-only work, not operational
+execution beyond those bounds.
 
 - The earlier Plan approval covered W1-W6. The user subsequently approved
   W7.1-W7.3 read-only observation. The owner subsequently approved W7.4
