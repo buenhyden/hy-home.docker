@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -62,6 +62,44 @@ none of these links is a tested HOME deployment.
 
 ### Protected registration repair — 2026-10-04
 
+### Additional fixture scope proposal — 2026-10-04
+
+PR352 head `b240f6150` hosted run `37154044478` returned failure, but
+metadata selected2/violations0/overrides0 and links/corpus/recovery passed.
+The five failures are the existing Storybook shell regression's baseline
+fixture: main0460795's checker also reads `.storybook/main.ts` and the private
+UI `package.json`, while the test copied only package.json/vitest.config.ts.
+No initial-state finding remains in this registration candidate.
+
+Proposed additional writer is only
+`tests/lib/gate/test_github_workflow_contract.py`'s existing Storybook fixture
+copy loop: add those two tracked configuration files and create their parent
+directories before copying. Preserve all five mutation assertions, thresholds,
+checker code, workflow routing and required protection. Exact proposed patch
+is staged outside the repository as `/tmp/hyhome-storybook-fixture-proposed.patch`;
+the tracked test was unchanged during scope review.
+Existing targeted unittest reproduced RED exit1/five failed subcases. Loading
+the proposed test source from scratch with the original repository ROOT
+returned GREEN exit0/one test covering all five subcases. An initial scratch
+loader exited1 because its temporary file depth could not resolve ROOT;
+keeping the real repository `__file__` fixes the loader without altering the
+proposed test or its assertions. The exact targeted regression and normal
+hosted checks must run after approved application. Independent read-only
+patch review returned PASS: only fixture completeness changes, all original
+negative assertions and checker semantics remain intact. The user approved the exact fixture minimum and Task1 record on 2026-10-04.
+`git apply` of the reviewed patch exited0. The same targeted existing unittest
+then passed exit0/one test with all five original mutation cases; Ruff check,
+Ruff format --check and git diff --check each exited0. No checker or threshold
+changed. The scope now includes that single fixture loop in
+`tests/lib/gate/test_github_workflow_contract.py` in addition to this Task record.
+
+The package's exact-file approval rule was satisfied by that explicit owner
+response. Push the scoped fixture and record to PR352, observe the normal
+hosted gate, then resume the reviewed document sequence only after green.
+Rollback is a scoped revert of the fixture addition, which returns the known
+missing-input failure; it is not a gate bypass or an operational rollback.
+
+
 The user requested resolution of PR351's six initial-status findings after
 explicitly authorizing push, PR merge and cleanup. Original implementation
 and completed evidence remain on `codex/spec-0201-0205-closure` at
@@ -91,7 +129,10 @@ After normal main merge `21bf46fdd`, changed metadata against origin/main
 returned failures0/one pre-existing historical warning, exit0; corpus and
 archive recovery returned violations0, exit0. `git diff --cached --check`
 passed and independent review approved the exact two-document diff.
-Current authorized writer scope is these two package documents. No runtime,
+Registration document scope covers these two package documents; the approved
+fixture-loop extension is recorded above. Final independent review approved
+this exact three-file PR diff with zero standards/spec findings; normal hosted
+checks still decide merge readiness. No runtime,
 private values, validator, lifecycle registry rule or transition override changes.
 
 Use three preliminary docs-only protected merges: finish Task4 draft
