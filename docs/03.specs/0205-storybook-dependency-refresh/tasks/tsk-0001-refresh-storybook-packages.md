@@ -1,8 +1,8 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "specs"
@@ -25,8 +25,9 @@ packages with a reproducible lockfile and scoped verification.
 User's 2026-10-03 request for latest Storybook-related packages; baseline
 `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; SPEC-0201 05 handoff;
 current package manifest/lock and official release/registry facts.
-This is the exact source approval draft. Its existence does not grant source
-write, HOME, remote or credential authority.
+The user's explicit request authorizes the two named npm source files; the
+Spec review and Task readiness are recorded here before source modification.
+HOME, remote and credential actions remain separately gated.
 
 ## Work Log
 
