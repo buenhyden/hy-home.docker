@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,6 +134,33 @@ DNS/redirect/robots/link-preview/untrusted-config paths plus a reviewed egress
 boundary, including host bridge-gateway and metadata denial. Installing host
 AppArmor or firewall rules is a separate operation and is not authorized by
 image-pull approval. HOME rollout and real metadata migration remain separate.
+
+### Protected delivery attempt — 2026-10-04
+
+The user explicitly requested Commit, Push, Merge and cleanup after the local
+closure report. This authorizes delivery of the reviewed source to
+`buenhyden/hy-home.docker`, source branch `codex/spec-0201-0205-closure`, base
+`main`, through a pull request and merge commit if required checks pass.
+It does not authorize an audit exception, bypass, direct main push, force push,
+HOME operation or deletion of another worker's state.
+
+Before-state: fetched `origin/main` and owner local `main` both point to
+`d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; reviewed local closure source is
+`68a461c18e548a835a3abc37ecf27c12489c39b4`, clean worktree. Authenticated
+branch-protection readback requires strict `validation-changed`, zero approving
+reviews, and no required CODEOWNER review. Existing draft PR350 belongs to
+SPEC-0206 and is not this delivery target. The official braces advisory was
+rechecked: no patched version; no security waiver is applied.
+
+Command classes: push this feature branch with upstream, create a Draft PR
+with exact scope/evidence, inspect its hosted checks, and merge only after all
+required checks pass. Merge must preserve the archive source objects and named
+recovery commits. After merge, fetch and fast-forward owner main; remove only
+clean task-owned worktrees and branches whose commits are reachable from main.
+If checks fail, preserve the feature branch/worktree and report BLOCKED.
+Rollback before merge closes the delivery PR only with owner approval; it
+never removes the protected main history or private runtime state.
+Push/PR/hosted after-state is pending at this preparation receipt.
 
 ## Review Evidence
 
