@@ -18,6 +18,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+
 ROOT = Path(__file__).resolve().parents[2]
 QUICKWIN = ROOT / "scripts/validation/check-quickwin-baseline.sh"
 TEMPLATE_SECURITY = ROOT / "scripts/validation/check-template-security-baseline.sh"
@@ -885,7 +887,7 @@ FEATURE_SECRETS = {
 def _compose_service(path: str, name: str) -> dict:
     import yaml
 
-    return yaml.safe_load((ROOT / path).read_text(encoding="utf-8"))["services"][name]
+    return yaml.load((ROOT / path).read_text(encoding="utf-8"), Loader=_ComposeLoader)["services"][name]
 
 
 def _runner_text(service: dict) -> str:
@@ -3450,7 +3452,7 @@ class NetworkSegmentationContractTests(unittest.TestCase):
 
         services: dict[str, dict] = {}
         for path in sorted((ROOT / "infra").rglob("docker-compose*.y*ml")):
-            document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            document = yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
             for name, service in (document.get("services") or {}).items():
                 if name in services:
                     raise AssertionError(f"service {name} is declared twice")
@@ -3462,9 +3464,40 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             name
             for name, service in self._services().items()
             if "traefik.enable=true" in _labels(service)
+            and name != "storybook"
             and "edge_net" not in (service.get("networks") or {})
         ]
         self.assertEqual([], missing)
+
+    def test_storybook_uses_only_dedicated_internal_ingress(self) -> None:
+        import yaml
+
+        services = self._services()
+        storybook = services["storybook"]
+        self.assertEqual({"experience_ingress_net"}, set(storybook["networks"]))
+        self.assertIn("experience_ingress_net", services["traefik"]["networks"])
+        self.assertEqual(
+            {"storybook", "traefik"},
+            {
+                name
+                for name, service in services.items()
+                if "experience_ingress_net" in (service.get("networks") or {})
+            },
+        )
+        root = yaml.load(
+            (ROOT / "docker-compose.yml").read_text(encoding="utf-8"),
+            Loader=_ComposeLoader,
+        )
+        self.assertTrue(root["networks"]["experience_ingress_net"]["internal"])
+        self.assertFalse(storybook.get("ports"))
+        self.assertEqual(
+            "experience_ingress_net",
+            storybook["labels"]["traefik.docker.network"],
+        )
+        self.assertEqual(
+            "req-rate-limit@file,gateway-standard-chain@file,sso-auth@file",
+            storybook["labels"]["traefik.http.routers.storybook.middlewares"],
+        )
 
     def test_prometheus_scrape_targets_are_services_on_obs_net(self) -> None:
         services = self._services()
@@ -3789,7 +3822,7 @@ class RouteAuthContractTests(unittest.TestCase):
 
         found: list[tuple[str, str, set[str] | None]] = []
         for path in sorted((ROOT / "infra").rglob("docker-compose.yml")):
-            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            data = yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader) or {}
             for service_name, service in (data.get("services") or {}).items():
                 labels = service.get("labels") or {}
                 if isinstance(labels, list):
@@ -4055,9 +4088,10 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
         services = {
             name
             for path in (ROOT / "infra").rglob("docker-compose*.yml")
-            for name in (yaml.safe_load(path.read_text(encoding="utf-8")) or {}).get(
-                "services", {}
-            )
+            for name in (
+                yaml.load(path.read_text(encoding="utf-8"), Loader=_ComposeLoader)
+                or {}
+            ).get("services", {})
             or {}
         }
         listed = [row[1].strip("`") for row in rows]

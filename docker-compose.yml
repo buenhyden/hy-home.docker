@@ -84,6 +84,12 @@ networks:
     ipam:
       config:
         - subnet: 10.250.15.0/24
+  experience_ingress_net:
+    name: experience_ingress_net
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.16.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}
@@ -388,3 +394,5 @@ include:
   - infra/12-analytics/spark/docker-compose.yml
   - infra/12-analytics/superset/docker-compose.yml
   - infra/12-analytics/trino/docker-compose.yml
+  # 13-experience
+  - infra/13-experience/storybook/docker-compose.yml

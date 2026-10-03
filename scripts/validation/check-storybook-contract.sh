@@ -43,6 +43,26 @@ else:
         failures.append(f"{package_path}: coverage script must enable coverage")
     if scripts.get("typecheck") != "tsc --noEmit":
         failures.append(f"{package_path}: script 'typecheck' must run TypeScript without emitting files")
+    if "npm run test:artifacts" not in str(scripts.get("build-storybook", "")):
+        failures.append(f"{package_path}: Storybook build must verify generated artifacts")
+    if data.get("workspaces") != ["packages/*"]:
+        failures.append(f"{package_path}: UI package must use the existing lockfile workspace")
+    if data.get("devDependencies", {}).get("@storybook/mcp") != data.get("devDependencies", {}).get("storybook"):
+        failures.append(f"{package_path}: MCP package must match Storybook version")
+
+ui_path = pathlib.Path("projects/storybook/nextjs/packages/ui/package.json")
+if not ui_path.is_file():
+    failures.append(f"missing UI package: {ui_path}")
+else:
+    ui = json.loads(ui_path.read_text())
+    if not ui.get("private") or ui.get("license") != "UNLICENSED":
+        failures.append(f"{ui_path}: package must remain private without public license")
+    if set(ui.get("exports", {})) != {".", "./styles.css"}:
+        failures.append(f"{ui_path}: only code and CSS entry points may be exported")
+
+main_path = pathlib.Path("projects/storybook/nextjs/.storybook/main.ts")
+if not re.search(r"[\"\']?componentsManifest[\"\']?\s*:\s*true", main_path.read_text()):
+    failures.append(f"{main_path}: built manifests must be enabled")
 
 # The npm invocations moved out of inline workflow shell into typed gate argv
 # declarations executed through scripts/lib/gate/ci_gate_adapters.py. Assert

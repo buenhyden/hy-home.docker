@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
-version: "1.3.4"
+version: "1.4.0"
 type: "common/repository-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 created: "2025-11-24"
 ---
 
@@ -28,7 +28,7 @@ created: "2025-11-24"
 
 ### In Scope
 
-- 12개 기능 티어에 걸친 서비스 정의.
+- 13개 기능 티어에 걸친 서비스 정의.
 - 루트 `docker-compose.yml`을 통한 전역 오케스트레이션.
 - Compose 파일 목록과 각 서비스를 선택하는 프로필.
 - **Docker Profiles**(`core`, `mng`, `obs` 등)를 사용한 표준화된 실행 모델.
@@ -93,6 +93,7 @@ AI 및 워크플로우, 기본 관측을 상시 제공한다. 사용자는 AI와
 | `testing` | k6와 Locust master/worker 쌍; HOME에서 제외됨 |
 | `iac` | OpenTofu와 Terrakube API/UI/executor; HOME에서 제외됨 |
 | `dependency-update` | Renovate 업데이트 작업만; `tooling`과 HOME에서 제외됨 |
+| `experience` | 공유 Storybook 정적 origin; HOME에서 제외되고 관리자 로그인 필요 |
 
 HOME은 `core mng ai workflow storage obs-core obs-host availability logs alerting tracing profiling obs-gpu registry`의
 profile 조합이다. 현재 서비스 목록은 공개 예제 환경의 `docker compose config --services`로 조회한다. 위 조합은 검토 대상 HOME 선택이며 배포 승인이 아니다. OpenBao 초기화·unseal·
@@ -134,6 +135,7 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 | **10** | **Communication** | [Stalwart](./10-communication/stalwart) | 선택적 내부 메일 |
 | **11** | **Quality** | [k6](./11-quality/k6), [Locust](./11-quality/locust), [SonarQube](./11-quality/sonarqube), [WireMock](./11-quality/wiremock), [Pact Broker](./11-quality/pact-broker), [Conftest](./11-quality/conftest), [Mailpit](./11-quality/mailpit) | DEV / 명시적 검증 |
 | **12** | **Analytics** | [Flink](./12-analytics/flink), [Trino](./12-analytics/trino), [Superset](./12-analytics/superset), [dbt](./12-analytics/dbt), [JupyterLab](./12-analytics/jupyterlab) | OPTIONAL / LAB |
+| **13** | **Experience** | [Storybook](./13-experience/storybook) | OPTIONAL / `experience`; HOME 제외 |
 
 ```text
 infra/
@@ -149,6 +151,7 @@ infra/
 ├── 10-communication/  # 운영 메일
 ├── 11-quality/        # 소프트웨어·설정·성능·계약 검증과 테스트 메일
 ├── 12-analytics/      # Processing, SQL, quality, BI and transformation
+├── 13-experience/     # 공유 Storybook 정적 UI 검토
 ├── common-optimizations.yml # Shared Docker templates
 └── README.md          # This file
 ```

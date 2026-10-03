@@ -62,44 +62,43 @@ none of these links is a tested HOME deployment.
 
 ### Protected registration repair — 2026-10-04
 
-The user explicitly requested resolution of PR351's six initial-status
-findings. This docs-only delivery is based on protected main
-`d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`, on branch
-`codex/spec-0204-registration`. It registers the original draft bodies of
-Spec, Plan and Tasks 1-3 from `0f67cb297`, and Task4 from `d666b6f42`,
-plus this receipt, the Stage 03 navigation row and the Registry spec counter.
-Current implementation, approvals and completed evidence remain unchanged on
-`codex/spec-0201-0205-closure` at
-`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`. This first registration is
-not a reversal of that work or a runtime acceptance claim.
+The user requested resolution of PR351's six initial-status findings after
+explicitly authorizing push, PR merge and cleanup. Original implementation
+and completed evidence remain on `codex/spec-0201-0205-closure` at
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; no final body or frozen
+archive is rewound by this document registration.
 
-The validator correctly compares the PR's protected merge-base state.
-Intermediate commits on a feature branch cannot register a document on main.
-Use three preliminary docs-only protected PR merges: draft registration;
-Spec review with Plan approved and Tasks ready; then Spec approved with
-Plan active and Tasks in-progress. Merge that protected main into the closure
-branch without rewriting named recovery/archive objects. PR351 supplies the
-fourth lifecycle edge and the final reviewed bodies: Spec active, Task1
-blocked, Tasks 2-4 completed, Plan remains active. Every round must pass the
-normal required gate and keep actual execution approvals separate. No
-transition override, validator edit or gate waiver is authorized. PR351's
-independent security merge hold remains unchanged.
+Initial preparation used `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
+and six original draft bodies (five from `0f67cb297`, Task4 from `d666b6f42`).
+Local metadata selected7/violations0/overrides0, links failures0 with one
+pre-existing historical warning, and corpus/recovery violations0, each exit0;
+independent review approved. The first counter relationship check failed
+before correcting high_water and next_number together. Draft commit
+`86f65973a6a762952e004994fb5e860d2b7dca8c` remains recoverable.
 
-Registration verification: changed metadata against origin/main selected 7
-Markdown documents, zero violations and zero transition overrides, exit 0.
-The initial counter preparation failed its high-water/next-number relationship;
-both were then updated together and validation passed. Document links mode all
-exited 0 with zero failures and one pre-existing historical-source warning.
-Corpus and archive recovery exited 0 with zero violations. Independent
-read-only review approved the eight-file registration and the three-stage
-route; `git diff --cached --check` exited 0. No runtime tests are needed for
-this document-only registration.
+Authenticated PR readback then exposed concurrent protected main
+`0460795abf6da9203e38f30291a8f20118c6ab88` from PR350, which already
+registers Spec, Plan and Tasks1-3 as draft. No obsolete registration was
+merged. The registration branch merges this latest main and preserves its
+Storybook changes, navigation and SPEC high-water206/next207 exactly.
+PR352 now adds only the missing original Task4 draft and this Task1 receipt.
+Independent review approved the narrowed two-document diff; README and Registry
+match the new main exactly. A check before finishing the main merge exited2:
+allocation predecessor 0460795 did not yet precede branch HEAD. The normal
+merge commit establishes that ancestry; validation must rerun afterward.
+Current authorized writer scope is these two package documents. No runtime,
+private values, validator, lifecycle registry rule or transition override changes.
 
-Approved writer scope: these six package documents,
-`docs/03.specs/README.md`, and the existing spec counter in
-`docs/99.templates/registry.json`; no runtime or private inputs. Rollback is
-a scoped revert of the registration delivery, with original source objects
-retained; do not cancel a completed Task or delete archived bodies.
+Use three preliminary docs-only protected merges: finish Task4 draft
+registration; Spec draft→review, Plan draft→approved and all Tasks draft→ready;
+then Spec review→approved, Plan approved→active and Tasks ready→in-progress.
+Merge that main into the closure branch without rewriting recovery objects.
+PR351 then supplies the fourth edge and final reviewed bodies: Spec active,
+Task1 blocked, Tasks2-4 completed, Plan stays active. Every merge requires
+normal green protection. PR351's independent security hold remains unchanged;
+this registration does not approve HOME, image pulls or service execution.
+Rollback is a scoped PR revert with original sources preserved, never archive
+rewriting or cancellation of already-completed work.
 
 
 | Check | Result | Limit |
