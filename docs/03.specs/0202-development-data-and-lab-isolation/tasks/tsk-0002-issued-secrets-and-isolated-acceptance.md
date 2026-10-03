@@ -42,7 +42,7 @@ delete real data, perform the deferred management restore, or mutate a remote.
 | W7.1 | PASS | The 20 exact new manual IDs (PG-032–035, CACHE-021, BKP-006, LAB-001–006, LAB-008–015) were exclusively issued in the owner checkout on 2026-10-03. Path-only postflight: 20 files, zero mode/ownership/ignore failures; mode `0640`, UID/GID `1000:1000`. Existing credentials were neither read nor rotated. |
 | W7.2 | PASS | The public registry records issued dates and purposes. After the first local main fast-forward, `--sync-metadata-check` returned 1 for one private metadata file, `--sync-metadata` returned 0 and preserved values, then the check returned 0 with zero changed files. Three private files were backed up under an ignored `0700` scratch directory; all 138 private Value cells and both private env files matched their pre-sync copies, then that temporary copy was removed. Rollback compatibility env keys remain until consumer and rollback review. |
 | W7.3 | PASS (selected) | Docker context `default`, project `hyhome-p02-p8gkg7zv`, internal network `hyhome-p02-net-p8gkg7zv`, zero host ports, synthetic secrets, no HOME mount. Image build and both service healthchecks passed. Platform provision and rerun returned 0; Timescale `2.30.2` loaded. Role/reader DDL and write denials passed; Valkey A/B prefix and admin/DB1 denials passed. pgBackRest stanza-create returned 0; online backup correctly refused with 87 while `archive_mode=off`; stopped offline full backup with stale-PID `--force` returned 0; separate-volume restore returned 0 and returned one probe row, extension `2.30.2`, DB owner `platform_owner`. Timescale late/null/duplicate/unique-partition checks passed. Other LAB topologies were not started. |
-| W7.4 | PASS (static) | Independent review findings were corrected; Spec metadata recheck returned 0 violations. The first path-aware gate returned 1 only for two group-writable scripts in the temporary worktree; chmod to Git mode `100755` and 19 focused tests returned 0. The complete changed gate retry returned 0, including 163 final unit tests. The source and first Task commit were fast-forwarded into local `main` at `ae40cb4ff`; final documentation commit/fast-forward remains to be verified. Remote and HOME operations remain excluded. |
+| W7.4 | PASS (static) | Independent review findings were corrected; Spec metadata recheck returned 0 violations. The first path-aware gate returned 1 only for two group-writable scripts in the temporary worktree; chmod to Git mode `100755` and 19 focused tests returned 0. The complete changed gate retry returned 0, including 163 final unit tests. The source and both Task documentation commits reached local `main` at `5f99e0e51`; remote delivery remains separate. HOME operations remain excluded. |
 
 ## Verification Evidence
 
@@ -111,7 +111,7 @@ docker run --rm --name hyhome-p02-p8gkg7zv-restore-job --network none --cpus 2 -
 | 2–4, 7 | W7.1–W7.3 | PASS in synthetic isolation for issuance, dev engines, role ACL, backup and restore; HOME `NOT_RUN` | GDE/POL/RUN-0100 and POL/RUN-0021 |
 | 6 | W7.3 | Owner-attested empty Influx source; live inventory and data migration `NOT_RUN` | GDE/POL/RUN-0100 |
 | 8–9 | W7.2–W7.4 | Source and static LAB isolation complete; LAB runtime topologies `NOT_RUN` | POL-0078 and LAB package documents |
-| 10 | W7.4 | Prompt 03/04/06 handoff is in TSK-0001; first local main SHA is `ae40cb4ff`. Final documentation fast-forward remains pending. | SPEC-0202 TSK-0001 handoff |
+| 10 | W7.4 | Prompt 03/04/06 handoff is in TSK-0001; final local main SHA is `5f99e0e51`. Remote delivery and operational handoff remain separate. | SPEC-0202 TSK-0001 handoff |
 
 ## Review Evidence
 
@@ -119,7 +119,7 @@ Independent review found one forbidden Spec heading, one stale README main count
 
 ## Commit Ledger
 
-The source integration commit is `b867eb7d4`; the first Task ledger commit is `ae40cb4ff6a3aa7127dd55b5e185ad5455a3b679`. Both reached local `main` by fast-forward from baseline `e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`. The final documentation commit and its local fast-forward are pending at this ledger entry; the final report records their actual SHA. No remote publication is within this Task.
+The source integration commit is `b867eb7d4`; the first Task ledger commit is `ae40cb4ff6a3aa7127dd55b5e185ad5455a3b679`. Both reached local `main` by fast-forward from baseline `e2c841eb9ef5086d0fbd6cc2ccd43ea35d89e26d`. The final documentation commit `5f99e0e51b41b912f128daafb4a3d41539b77560` also reached local `main` by fast-forward. The source-only Task did not authorize remote publication; the owner approved it separately on 2026-10-03.
 
 ## Rulings
 

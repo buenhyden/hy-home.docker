@@ -49,7 +49,6 @@ created: "2026-10-02"
 
 정적 확인: `python3 -m unittest tests.validation.test_dev_pg_provision` 및 `python3 infra/04-data/dev-db/pg/provision/project.py infra/04-data/dev-db/pg/provision/platform.json --validate-only`. 백업 운영 절차는 Stage 05의 기존 백업 정책·런북 소유자가 별도로 갱신합니다.
 
-
 ## Related Documents
 
 [문서 진입점](../../../../docs/README.md)에서 현재 SPEC-0202와 Stage 05 백업 정책·런북을 찾으십시오.

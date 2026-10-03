@@ -984,9 +984,7 @@ class FeatureProvisioningContractTests(unittest.TestCase):
                 self.assertEqual((ROOT / PROVISION_RUNNER).resolve(), runner.resolve())
                 self.assertEqual(
                     (ROOT / sql_path).resolve(),
-                    (
-                        (ROOT / compose).parent / mounts[env["PROVISION_SQL"]]
-                    ).resolve(),
+                    ((ROOT / compose).parent / mounts[env["PROVISION_SQL"]]).resolve(),
                 )
                 self.assertEqual(
                     "service_completed_successfully",
@@ -1132,7 +1130,9 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             subprocess.run, ["docker", "rm", "-f", f"{cls.tag}-db"], capture_output=True
         )
         cls.addClassCleanup(
-            subprocess.run, ["docker", "rm", "-f", f"{cls.tag}-dev"], capture_output=True
+            subprocess.run,
+            ["docker", "rm", "-f", f"{cls.tag}-dev"],
+            capture_output=True,
         )
         subprocess.run(
             [
@@ -1159,13 +1159,25 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         )
         subprocess.run(
             [
-                "docker", "run", "-d", "--name", f"{cls.tag}-dev",
-                "--network", cls.tag,
-                "-e", "POSTGRES_USER=admin",
-                "-e", "POSTGRES_PASSWORD=synthetic-dev-admin",
-                "-e", "POSTGRES_DB=postgres",
-                cls.DEV_IMAGE, "postgres", "-c", "wal_level=logical",
-                "-c", "shared_preload_libraries=timescaledb",
+                "docker",
+                "run",
+                "-d",
+                "--name",
+                f"{cls.tag}-dev",
+                "--network",
+                cls.tag,
+                "-e",
+                "POSTGRES_USER=admin",
+                "-e",
+                "POSTGRES_PASSWORD=synthetic-dev-admin",
+                "-e",
+                "POSTGRES_DB=postgres",
+                cls.DEV_IMAGE,
+                "postgres",
+                "-c",
+                "wal_level=logical",
+                "-c",
+                "shared_preload_libraries=timescaledb",
             ],
             check=True,
             capture_output=True,
@@ -1173,8 +1185,16 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         for server in ("db", "dev"):
             for _ in range(60):
                 ready = subprocess.run(
-                    ["docker", "exec", f"{cls.tag}-{server}", "pg_isready",
-                     "-h", "127.0.0.1", "-U", "admin"],
+                    [
+                        "docker",
+                        "exec",
+                        f"{cls.tag}-{server}",
+                        "pg_isready",
+                        "-h",
+                        "127.0.0.1",
+                        "-U",
+                        "admin",
+                    ],
                     capture_output=True,
                     check=False,
                 )
@@ -1262,8 +1282,20 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
         sql_path.write_text(project["sql_for"](manifest), encoding="utf-8")
         sql_path.chmod(0o600)
         result = cls.docker_run(
-            ["psql", "-X", "-h", f"{cls.tag}-dev", "-U", "admin", "-d", "postgres",
-             "-v", "ON_ERROR_STOP=1", "-f", "/work/platform.sql"],
+            [
+                "psql",
+                "-X",
+                "-h",
+                f"{cls.tag}-dev",
+                "-U",
+                "admin",
+                "-d",
+                "postgres",
+                "-v",
+                "ON_ERROR_STOP=1",
+                "-f",
+                "/work/platform.sql",
+            ],
             {
                 "PGPASSWORD": "synthetic-dev-admin",
                 "DEV_MIGRATOR_PASSWORD": "platform-migrator-synthetic",
@@ -1307,7 +1339,8 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             PGUSER="admin",
             PGDATABASE="postgres",
             PROVISION_ADMIN_PASSWORD_FILE=(
-                "/run/secrets/dev_pg_admin_password" if dev_job
+                "/run/secrets/dev_pg_admin_password"
+                if dev_job
                 else "/run/secrets/mng_postgres_password"
             ),
         )
@@ -1395,35 +1428,61 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             ).returncode,
         )
         # Other logins lost PUBLIC CONNECT on the MLflow database.
-        self.assertNotEqual(
-            0, self.sql("SELECT 1", "mlflow", "n8n", "a").returncode
-        )
+        self.assertNotEqual(0, self.sql("SELECT 1", "mlflow", "n8n", "a").returncode)
         # The platform roles have distinct data and DDL rights.
         self.assertEqual(
-            0, self.sql("SELECT count(*) FROM app.orders", "platform_dev",
-                        "platform_reader", "platform-reader-synthetic").returncode
+            0,
+            self.sql(
+                "SELECT count(*) FROM app.orders",
+                "platform_dev",
+                "platform_reader",
+                "platform-reader-synthetic",
+            ).returncode,
         )
         self.assertNotEqual(
-            0, self.sql("INSERT INTO app.orders VALUES (1)", "platform_dev",
-                        "platform_reader", "platform-reader-synthetic").returncode
+            0,
+            self.sql(
+                "INSERT INTO app.orders VALUES (1)",
+                "platform_dev",
+                "platform_reader",
+                "platform-reader-synthetic",
+            ).returncode,
         )
         self.assertNotEqual(
-            0, self.sql("CREATE TABLE app.reader_x(i int)", "platform_dev",
-                        "platform_reader", "platform-reader-synthetic").returncode
+            0,
+            self.sql(
+                "CREATE TABLE app.reader_x(i int)",
+                "platform_dev",
+                "platform_reader",
+                "platform-reader-synthetic",
+            ).returncode,
         )
         self.assertEqual(
-            0, self.sql("INSERT INTO app.orders VALUES (1)", "platform_dev",
-                        "platform_runtime", "platform-runtime-synthetic").returncode
+            0,
+            self.sql(
+                "INSERT INTO app.orders VALUES (1)",
+                "platform_dev",
+                "platform_runtime",
+                "platform-runtime-synthetic",
+            ).returncode,
         )
         self.assertNotEqual(
-            0, self.sql("CREATE TABLE app.runtime_x(i int)", "platform_dev",
-                        "platform_runtime", "platform-runtime-synthetic").returncode
+            0,
+            self.sql(
+                "CREATE TABLE app.runtime_x(i int)",
+                "platform_dev",
+                "platform_runtime",
+                "platform-runtime-synthetic",
+            ).returncode,
         )
         # dbt reads the source and writes only its target schema.
         self.assertEqual(
             0,
             self.sql(
-                "SELECT count(*) FROM app.orders", "platform_dev", "dbt", "dbt-synthetic"
+                "SELECT count(*) FROM app.orders",
+                "platform_dev",
+                "dbt",
+                "dbt-synthetic",
             ).returncode,
         )
         self.assertEqual(
@@ -1479,14 +1538,20 @@ class FeatureProvisioningRehearsalTests(unittest.TestCase):
             ).read_text()
         )["heartbeat.action.query"]
         self.assertEqual(
-            0, self.sql(heartbeat, "platform_dev", "debezium", "dbz-synthetic").returncode
+            0,
+            self.sql(heartbeat, "platform_dev", "debezium", "dbz-synthetic").returncode,
         )
         # A service role this job did not create is never altered.
         result = self.provision("dbt-db-provision", DBT_DB_USER="platform_runtime")
         self.assertNotEqual(0, result.returncode)
         self.assertEqual(
-            "1", self.sql("SELECT 1", "platform_dev", "platform_runtime",
-                          "platform-runtime-synthetic").stdout.strip()
+            "1",
+            self.sql(
+                "SELECT 1",
+                "platform_dev",
+                "platform_runtime",
+                "platform-runtime-synthetic",
+            ).stdout.strip(),
         )
 
     def test_6_superset_migrates_and_serves_on_its_own_database(self) -> None:
@@ -3470,7 +3535,9 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         for index in (1, 2, 3):
             name = f"opensearch-node{index}"
             self.assertNotIn(name, normal)
-            self.assertEqual({"lab_opensearch_core_net"}, set(lab["services"][name]["networks"]))
+            self.assertEqual(
+                {"lab_opensearch_core_net"}, set(lab["services"][name]["networks"])
+            )
 
 
 class ConftestPolicyGateTests(unittest.TestCase):
@@ -4009,7 +4076,9 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
             d for row in rows for d in re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", row[3])
         }
         lab_section = readme[
-            readme.index("### LAB Dashboard Coverage") : readme.index("### Dashboard Sources")
+            readme.index("### LAB Dashboard Coverage") : readme.index(
+                "### Dashboard Sources"
+            )
         ]
         lab_referenced = set(re.findall(r"`([A-Z]\w+/[a-z0-9-]+)`", lab_section))
         self.assertEqual(set(self._dashboards()), referenced | lab_referenced)

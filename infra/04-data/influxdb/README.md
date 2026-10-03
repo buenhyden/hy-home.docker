@@ -82,7 +82,6 @@ InfluxDB 3 Core 단일 인스턴스이며 이미지 선언은 [Compose](docker-c
 명시적 측정값·자료형·정밀도·writer 목록을 입력한 뒤 별도 이관 계약을
 승인받아야 합니다. 무자료 확인은 volume 삭제 승인이 아닙니다.
 
-
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. 아키텍처 세부 사항은 InfluxDB 시스템 가이드 (`docs/05.operations/guides/0017-influxdb.md`)를 참조한다.
