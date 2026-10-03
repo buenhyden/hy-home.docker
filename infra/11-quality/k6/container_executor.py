@@ -203,6 +203,7 @@ def _peer_contract(
         or set(networks) != {network_name}
         or not isinstance(aliases, list)
         or "wiremock" not in aliases
+        or (ports is not None and not isinstance(ports, dict))
         or any(value not in (None, []) for value in (ports or {}).values())
     ):
         raise ExecutorError("WireMock peer isolation contract is invalid")

@@ -361,6 +361,40 @@ class K6ResultContractTests(unittest.TestCase):
             exit_record["error_class"], "isolation_preflight_failed"
         )
 
+    def test_container_executor_records_malformed_peer_inspect(self) -> None:
+        attempt = self.root / "malformed-wiremock"
+        quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
+        peer = self.peer_record()
+        peer[0]["NetworkSettings"]["Ports"] = ["unexpected"]
+
+        def fake_run(command: list[str], **kwargs: object) -> object:
+            record = (
+                self.network_record()
+                if command[3:5] == ["network", "inspect"]
+                else peer
+            )
+            return types.SimpleNamespace(
+                returncode=0, stdout=json.dumps(record), stderr=""
+            )
+
+        with mock.patch.object(
+            container_executor.subprocess, "run", side_effect=fake_run
+        ):
+            with self.assertRaisesRegex(
+                container_executor.ExecutorError, "peer isolation"
+            ):
+                container_executor.execute(
+                    self.manifest,
+                    self.scenarios,
+                    attempt,
+                    "hyhome-quality-12345678-a1",
+                    "wiremock",
+                    "/synthetic/docker",
+                )
+        exit_record = json.loads((attempt / "exit.json").read_text(encoding="utf-8"))
+        self.assertEqual(exit_record["execution_state"], "interrupted")
+        self.assertEqual(exit_record["error_class"], "isolation_preflight_failed")
+
     def test_zero_truncated_and_nan_summary_are_incomplete(self) -> None:
         for name, raw in (
             ("zero", canonical(self.summary(samples=0))),
