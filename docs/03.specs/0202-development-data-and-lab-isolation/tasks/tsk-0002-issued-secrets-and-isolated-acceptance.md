@@ -1,6 +1,6 @@
 ---
 title: "Development Data Secret Issuance and Isolated Acceptance Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
@@ -127,6 +127,79 @@ docker run --rm --name hyhome-p02-p8gkg7zv-restore-job --network none --cpus 2 -
 | 8 | W5 | PASS: normal and LAB dependency, port, network, volume, name and secret graphs statically separated | [source Task](tsk-0001-source-integration.md) |
 | 9 | W6 | PASS: path-aware gate, version projection, metadata, links and focused checks recorded with exact limits | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
 | 10 | W7 | PASS: scoped secret issuance, isolated acceptance and 03/04/06 handoff recorded; HOME and migration remain deferred | [isolated acceptance Task](tsk-0002-issued-secrets-and-isolated-acceptance.md) |
+
+### 2026-10-03 Follow-up: Secret Layout and Environment Parity
+
+The owner separately approved inspection and reorganization of the entire
+`secrets/` tree, actual ignored credential-file moves, private/public registry
+alignment and exact root/LAB env-key parity. This follow-up uses the current
+main baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` and isolated
+source branch `codex/secrets-layout`. It does not authorize HOME restart,
+credential rotation, remote publication or data movement. Before mutation,
+path-only checks found 138 stable registry IDs (105 file paths, 33 env-only),
+all 105 canonical files issued, and six legacy paths for five communication
+credentials and one SurrealDB credential. All six were regular files with
+mode `0640` and UID/GID `1000:1000`; the running Alertmanager had one old
+`common/` bind source. The other top-level secret areas have distinct consumers
+or artifact ownership, so their values and names were preserved.
+
+Concrete target: move `secrets/common/{smtp_password,slack_webhook,smtp_username,stalwart_password,supabase_smtp_password}.txt`
+to `secrets/communication/` and
+`secrets/db/surreal_db/surreal_db_password.txt` to
+`secrets/db/surrealdb/`. Six old paths remain as same-inode compatibility
+hardlinks until a separately approved HOME cutover and rollback review. This is a path relocation, not a credential rotation. A
+protected, Git-ignored `secrets/.backup-20261003-layout/` directory holds
+mode `0600` copies of the six originals and the three private metadata/env
+files; its directory mode is `0700`. Actual values and original file bodies
+were never logged or committed. Hash equality and inode/alias equality were
+checked without outputting hashes or contents.
+Independent security review identified group-writable path directories. All 24
+`0775` secret directories were tightened to `0750` for active credential paths
+or `0700` inside protected backup/retired areas. The feature worktree's 27
+group-writable secret directories were also tightened to `0750`. An ignored mode-only rollback
+manifest is in the protected backup; value files and running mounts were not
+changed. Group read/execute needed by the secret-file group remains available.
+
+The value-preserving `gen-secrets.sh --sync-metadata-prune` operation on the
+feature worktree aligned all 138 private rows and removed 17 legacy-only root
+keys. The 212 retained root assignments have their original values; the only
+intentionally empty root key is `_PIP_ADDITIONAL_REQUIREMENTS` (no extra pip
+packages). `labs/.env` now has the same 48 keys as its example; nine Locust
+keys were added. Five LAB inputs remain intentionally unset because no
+isolated data root, Kafka cluster ID, OpenSearch certificate root or approved
+Locust scenario/result directory has been selected. Such blanks are not
+runtime readiness. The owner checkout's ignored private files were atomically
+updated after comparing them with the protected backups. Public/private
+registry metadata now differs only in Value cells; all 138 former private
+Value cells were preserved. Private file modes remain `0600`.
+
+Rollback before source cutover: verify each old hardlink and canonical path
+share an inode, unlink the old hardlink, then rename the canonical file back
+to its original path. Restore the ignored private files from the protected
+copies only if they still match this Task's projection; otherwise stop for
+operator review. After a HOME cutover, service restart and hardlink removal
+require a separate service-specific operating plan. A rotation that replaces
+only one hardlink path can split the two names; freeze credential rotation
+until that plan. The source branch is separate from local `main`: the owner
+checkout's private registry matches current-main public paths, while the
+feature worktree's private registry matches candidate paths. Both
+`--sync-metadata-prune-check` invocations returned 0. Existing main Compose
+resolves through the hardlinks. No container was started, stopped or restarted.
+After the tracked source branch is integrated into main, the main private
+registry must be synchronized once with `--sync-metadata-prune` and verified
+with `--sync-metadata-prune-check` before this follow-up is considered fully
+landed. Keep the protected backup and hardlinks until that post-merge check
+and the separately approved HOME cutover review. Pre-merge checks do not
+substitute for post-merge alignment.
+
+| Follow-up check | Exit | Evidence and limit |
+| --- | ---: | --- |
+| `python3 -m unittest -q tests.validation.test_secret_metadata_sync tests.validation.test_compose_baseline_gates` | 0 | 131 tests OK, 21 existing skips; source contract only |
+| `bash scripts/validation/validate-docker-compose.sh` | 0 | 67 static selections, 321 summed service selections, HOME 45; no container start |
+| `python3 scripts/validation/check-operations-catalog.py` | 0 | Current service projection in sync |
+| `python3 scripts/validation/check-document-links.py --mode all` | 0 | 0 failures, one pre-existing historical archive warning |
+| `bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check` in feature worktree and current main | 0, 0 | Each private registry matches its own public paths; root/LAB env key sets aligned; values suppressed |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | 143 | Operator terminated after 15 minutes when path-aware selection expanded into an unrelated full document regression suite; earlier selected suites passed, but this gate is incomplete, not PASS |
 
 ## Review Evidence
 
