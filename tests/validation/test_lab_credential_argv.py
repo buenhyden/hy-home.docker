@@ -17,7 +17,7 @@ class LabCredentialArgvTest(unittest.TestCase):
     def test_haproxy_password_is_not_passed_to_sed_argv(self):
         compose = yaml.safe_load((ROOT / "labs/postgresql-ha.yml").read_text())
         command = compose["services"]["pg-router"]["command"][2]
-        password = "HAp9+#%"
+        fixture_value = "HAp9+#%"
 
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
@@ -27,7 +27,7 @@ class LabCredentialArgvTest(unittest.TestCase):
             sed_script = work / "haproxy-secret.sed"
             args_log = work / "sed.argv"
             fake_sed = work / "sed"
-            secret.write_text(password)
+            secret.write_text(fixture_value)
             template.write_text("stats auth admin:${HAPROXY_STATS_PASSWORD}\n")
             real_sed = shutil.which("sed")
             self.assertIsNotNone(real_sed)
@@ -56,8 +56,8 @@ class LabCredentialArgvTest(unittest.TestCase):
             )
 
             self.assertEqual(result.returncode, 0, result.stderr)
-            self.assertNotIn(password, args_log.read_text())
-            self.assertEqual(output.read_text(), f"stats auth admin:{password}\n")
+            self.assertNotIn(fixture_value, args_log.read_text())
+            self.assertEqual(output.read_text(), f"stats auth admin:{fixture_value}\n")
             self.assertEqual(output.stat().st_mode & 0o777, 0o600)
             self.assertFalse(sed_script.exists())
 
