@@ -7,6 +7,7 @@ import re
 import tempfile
 import unittest
 
+from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
     _declares_provider_binding,
@@ -16,6 +17,7 @@ from scripts.lib.document_governance.registry import (
 from tests.lib.document_governance.metadata._support import (
     REGISTRY,
     ROOT,
+    body_with_headings,
     current_profiles,
     metadata,
     run_checker,
@@ -256,12 +258,36 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
         self.assertEqual(("Related Documents",), profile["required_sections"])
-        text = (ROOT / ".agents/governance/approval-boundaries.md").read_text(
-            encoding="utf-8"
+        self.assertTrue(profile["free_form_sections"])
+        path = pathlib.Path(".agents/governance/approval-boundaries.md")
+        record = metadata.Record(
+            path,
+            {"artifact_type": "governance-policy", "status": "active"},
+            "governance-policy",
+            frontmatter_present=True,
         )
+
+        def section_codes(body: str) -> list[str]:
+            return [
+                finding.code
+                for finding in heading_module._registered_section_findings(
+                    record, body, profile
+                )
+            ]
+
+        text = (ROOT / path).read_text(encoding="utf-8")
+        self.assertEqual([], section_codes(text))
         self.assertEqual(
-            ["## Related Documents"],
-            [line for line in text.splitlines() if line.startswith("## ")],
+            [],
+            section_codes(
+                body_with_headings(
+                    "## Authorization Source and Records", "## Related Documents"
+                )
+            ),
+        )
+        self.assertIn(
+            "body-heading-missing",
+            section_codes(body_with_headings("## Authorization Source and Records")),
         )
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)

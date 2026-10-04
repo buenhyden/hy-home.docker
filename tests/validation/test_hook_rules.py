@@ -326,6 +326,62 @@ class DispatcherTests(unittest.TestCase):
         self.assertNotIn("permissionDecision", output.get("hookSpecificOutput", {}))
         self.assertNotIn("systemMessage", output)
 
+    def test_authoring_content_does_not_execute_its_protected_example(self) -> None:
+        document = (
+            "---\n"
+            "approved: true\n"
+            "actor: '@fixture-writer'\n"
+            "operation: 'git push origin main'\n"
+            "subject: 'redacted-example'\n"
+            "revision: 'fixture-only'\n"
+            "---\n\n"
+            "```bash\n"
+            "git push origin main\n"
+            "API_TOKEN='<redacted>'\n"
+            "```\n"
+        )
+        path = "docs/05.operations/guides/0001-safe-authoring-example.md"
+        payloads = (
+            {
+                "tool_name": "Write",
+                "tool_input": {"file_path": path, "content": document},
+            },
+            {
+                "tool_name": "Edit",
+                "tool_input": {"file_path": path, "new_string": document},
+            },
+            {
+                "tool_name": "apply_patch",
+                "tool_input": {
+                    "command": "*** Begin Patch\n"
+                    f"*** Add File: {path}\n"
+                    + "".join(f"+{line}\n" for line in document.splitlines())
+                    + "*** End Patch"
+                },
+            },
+        )
+        for payload in payloads:
+            with self.subTest(tool=payload["tool_name"]):
+                output = self.run_hook(payload)
+                self.assertNotIn(
+                    "permissionDecision", output.get("hookSpecificOutput", {})
+                )
+
+        output = self.run_hook(
+            {
+                "tool_name": "Bash",
+                "tool_input": {
+                    "command": "git push origin main",
+                    "approved": True,
+                    "actor": "@fixture-writer",
+                    "subject": "redacted-example",
+                    "revision": "fixture-only",
+                },
+            }
+        )
+        decision = output.get("hookSpecificOutput", {})
+        self.assertEqual("deny", decision.get("permissionDecision"))
+
 
 class DispatcherFailureTests(unittest.TestCase):
     """PreToolUse must fail closed at the actual provider dispatcher boundary."""

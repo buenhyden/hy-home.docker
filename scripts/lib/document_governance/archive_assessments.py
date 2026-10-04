@@ -374,12 +374,16 @@ def _historical_units(root: pathlib.Path) -> set[str]:
     }
 
 
-def _approval(
+def _approval_record_matches(
     root: pathlib.Path,
     row: ArchiveAssessment,
     actions: set[str],
     context_revision: str = "HEAD",
 ) -> bool:
+    """Match pinned record structure and ancestry without authenticating its actor.
+
+    This read-only consistency check does not authorize archive removal.
+    """
     from scripts.lib.document_governance.archive import _catalog_registry
 
     revision, path = _source(row.decision)
@@ -586,10 +590,10 @@ def _assessment_change(
         if prior.availability == "git-history-only" and row.availability == "retained":
             codes.append("assessment-payload-resurrection")
     try:
-        approved = _approval(root, row, actions, context_revision)
+        record_matches = _approval_record_matches(root, row, actions, context_revision)
     except (OSError, ValueError, UnicodeError):
-        approved = False
-    if not approved:
+        record_matches = False
+    if not record_matches:
         codes.append("assessment-approval-invalid")
     return codes
 

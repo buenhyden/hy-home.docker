@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.2.19"
+version: "1.2.20"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -46,6 +46,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | --- | --- | --- |
 | SPEC-0182 | [HOME 잔여 작업](./0182-home-residual-backlog/) | SPEC-0180 잔여 작업: 저장소 후속, 런타임과 legacy data, 복구·인증 acceptance |
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
+| SPEC-0207 | [공통 권한·안전한 저술](./0207-common-authorization-and-safe-authoring/) | 권한 원본·검토·안전한 문서 저술 경계의 수렴 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
