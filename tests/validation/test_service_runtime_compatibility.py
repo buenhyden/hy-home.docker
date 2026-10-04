@@ -178,6 +178,58 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         self.assertEqual(["crawl4ai_net"], crawler["networks"])
         self.assertEqual("false", crawler["labels"]["traefik.enable"])
 
+    def test_crawl4ai_launcher_rejects_short_tokens_without_disclosing_them(self):
+        command = compose("infra/08-ai/crawl4ai/docker-compose.yml")["services"][
+            "crawl4ai"
+        ]["command"]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            secret = directory / "token"
+            arguments = directory / "launcher-argv"
+            stub = directory / "launcher"
+            stub.write_text(
+                '#!/bin/sh\nprintf "%s\\n" "$0" "$@" > "$SYNTHETIC_ARGV_FILE"\n',
+                encoding="utf-8",
+            )
+            simulated = (
+                command[2]
+                .replace("$$", "$")
+                .replace("/run/secrets/crawl4ai_api_token", str(secret))
+                .replace("entrypoint.sh", str(stub))
+            )
+            for value, allowed in (
+                (None, False),
+                ("", False),
+                ("synthetic-12345", False),
+                ("synthetic-123456", True),
+            ):
+                with self.subTest(token_length=None if value is None else len(value)):
+                    arguments.unlink(missing_ok=True)
+                    secret.unlink(missing_ok=True)
+                    if value is not None:
+                        secret.write_text(value, encoding="utf-8")
+                    result = subprocess.run(
+                        [*command[:2], simulated],
+                        env={
+                            "PATH": "/usr/bin:/bin",
+                            "SYNTHETIC_ARGV_FILE": str(arguments),
+                        },
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    self.assertEqual(allowed, result.returncode == 0)
+                    self.assertEqual(allowed, arguments.exists())
+                    launcher_arguments = (
+                        arguments.read_text(encoding="utf-8")
+                        if arguments.exists()
+                        else ""
+                    )
+                    if value:
+                        self.assertNotIn(
+                            value, result.stdout + result.stderr + launcher_arguments
+                        )
+
     def test_cassandra_remains_an_independent_official_image_lab(self):
         lab = compose("labs/cassandra.yml")
         service = lab["services"]["cassandra-node1"]

@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.11"
+version: "1.0.12"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -30,10 +30,7 @@ contract without moving data or creating LAB credentials again.
 ## Inputs
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03;
-SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The user-supplied
-Prompt 04 requests source implementation but requires an approved Task. This
-Task is an approval draft: no source edits, image pull, HOME deployment or
-credential action has been authorized by its existence.
+SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The original approval-draft boundary below is historical for pre-PR359 planning. Later owner approval authorized the recorded source/document reconciliation only; it still does not authorize image pulls, HOME deployment, secret issuance, credential rotation, data restore or service operations.
 
 ## Work Log
 
@@ -657,29 +654,28 @@ rewriting or cancellation of already-completed work.
 
 | Check | Result | Limit |
 | --- | --- | --- |
-| Current tracked-source and official-doc comparison | READ_ONLY | n8n version/timeout mismatch and Crawl4AI later advisory confirmed; no image execution |
+| Historical tracked-source and official-doc comparison | READ_ONLY | n8n version/timeout mismatch and Crawl4AI later advisory confirmed at draft time; no image execution |
 | Draft package: `check-document-metadata.py --mode check-changed --base-ref main` | PASS (exit 0, selected 6, violations 0) | Documents only; no service validation |
 | Draft package: `check-document-links.py --mode all` | PASS (exit 0, failures 0) | One pre-existing archive provenance warning |
 | Draft package: `check-document-corpus-lifecycle.py --base-ref main`; registry JSON parse; `git diff --cached --check` | PASS (each exit 0) | Draft lifecycle and syntax only |
-| Scoped Compose, secret consumer, URL allow/deny, OpenBao and LAB checks | NOT_RUN | Await approved source diff and synthetic fixture preflight |
+| Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1/W5 | DRAFT ledger; no source change | This Task and existing service READMEs |
-| 2 | W2/W5 | NOT_RUN | GDE/POL/RUN-0053 and n8n source |
-| 3 | W2/W5 | NOT_RUN | GDE/POL/RUN-0091 and LAB Cassandra documents |
-| 4 | W2/W5 | PARTIAL design; auth routes belong also to TSK-0002 | GDE/POL/RUN-0085 and POL-0079 |
-| 8 | W5 | NOT_RUN | This Task verification receipts |
+| 1 | W1/W5 | SOURCE_STATIC PASS; runtime still pending | This Task and existing service READMEs |
+| 2 | W2/W5 | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED; Code-task runtime blocked | GDE/POL/RUN-0053 and n8n source |
+| 3 | W2/W5 | SOURCE_STATIC PARTIAL; Crawl4AI egress deny runtime blocked and Cassandra auth absent by contract | GDE/POL/RUN-0091 and LAB Cassandra documents |
+| 4 | W2/W5 | SOURCE_STATIC PARTIAL; Agent renewal freshness runtime blocked; auth routes also belong to TSK-0002 | GDE/POL/RUN-0085 and POL-0079 |
+| 8 | W5 | SOURCE_STATIC PASS; HOME/runtime/migration NOT_RUN | This Task verification receipts |
 
 ## Review Evidence
 
-Independent source/security review is pending the approved implementation diff.
-No generated projection or runtime condition is marked PASS from this draft.
+Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 
 ## Commit Ledger
 
-No Prompt 04 commit. Baseline only: `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`.
+Prompt 04 source reconciliation merged through PR359 at `467bd644b071f9dfa02ca1af2d622502c3445d28`; completion receipts merged through PR360 at `ebeb83521c768fedc620380b0c2e92db10a6fcdc`. Earlier “No Prompt 04 commit” wording is historical for the draft phase. This receipt authorizes no HOME operation, restore, image pull, authentication change or private read.
 
 ## Rulings
 
@@ -788,13 +784,13 @@ the exact GHSA path, expiry and fail-closed checks. Frozen completed0205 proves
 dependency refresh only. The four current packets are preserved raw through
 typed receipts; superseded records are historical input, not runtime authority.
 
-Fresh QA: workflow/secret/gate153 PASS; runtime/project/quality/version118 PASS;
-DB/Valkey/Influx/LAB35 PASS; baseline94 PASS (21 optional Docker skips);
-SurfaceOwnership11 PASS; exact backup failure harness1 PASS after check=False.
-All commands used `python3 -m unittest` with the named registered modules; exit0.
-Ruff0.15.12 changed21 lint/format (AST-equal formatting/import cleanup; loop
-binding fixture11 PASS), shell/root render, workflow/version/catalog exited0. Inventory's first
-boundary-wrapper failure was corrected; capture's first POSIX-mode preflight
-rejected harmless umask, Git mode/blob/member check corrected and reviewed.
-Authored Markdown52, corpus/archive341 and changed metadata77 passed:0 violations, exit0.
-Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`/`required CI run37180461557 PASS`; parity `exit0, files_changed=0, values=preserved, secret_files=untouched`; HOME/data/runtime NOT_RUN.
+Historical protected QA remains: workflow/secret/gate153 PASS; runtime/project/quality/version118 PASS; DB/Valkey/Influx/LAB35 PASS; baseline94 PASS (21 optional Docker skips); SurfaceOwnership11 PASS; exact backup failure harness1 PASS after check=False. All commands used `python3 -m unittest` with named registered modules; exit0.
+Ruff0.15.12 changed21 lint/format (AST-equal formatting/import cleanup), loop binding fixture11 PASS, shell/root render and workflow/version/catalog exited0. Inventory boundary-wrapper failure was corrected; capture POSIX-mode preflight rejected harmless umask, then Git mode/blob/member check was corrected and reviewed. Authored Markdown52, corpus/archive341 and changed metadata77 passed:0 violations, exit0.
+Latest fresh source check: 24 tests across four unittest modules/classes passed for RuntimeCompatibility, ObservabilityDashboard, BackupContract and RouteAuth; n8n/Crawl4AI root public render, LAB Cassandra render and version92 check each exited0; no Docker exec/run occurred. Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28` required CI run37180461557 PASS; parity `exit0, files_changed=0, values=preserved, secret_files=untouched`. PR360 completion receipts merged as `ebeb83521c768fedc620380b0c2e92db10a6fcdc`.
+Final current preflight reconciliation, 2026-10-04: default local Unix socket inspection found only cached `openbao/openbao:2.6.2` image ID `11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641`; exact declared `hyhome/n8n:2.41.6-local`, `n8nio/runners:2.41.6`, `unclecode/crawl4ai:0.9.4` and `cassandra:5.0.9` were missing from cache. No image pull, container run, HOME start, restore, authentication change, private read or secret issue was performed.
+Remaining genuine source/runtime gaps are crawler private/link-local/metadata egress-deny runtime enforcement, OpenBao Agent renewal and rendered secret freshness, and Cassandra authentication absent by explicit LAB contract, not merely unobserved.
+
+### Approved current source reconciliation — 2026-10-04
+
+The owner approved the four-package plan, commit/push/protected merge and eligible branch cleanup. Exact writers are this Task, this package Plan, and existing `tests/validation/test_service_runtime_compatibility.py`; the latter tests Crawl4AI missing/empty/15-character rejection, 16-character acceptance and output/argv non-disclosure using the actual Compose command with synthetic files and a stub launcher. No production command, image or secret reference changes. A minimum-length-guard mutation must be rejected; existing n8n/OpenBao/LAB guards are reused. Baseline runtime module 6 PASS/exit0; minimum-length-guard mutation RED rejected 2 invalid inputs/exit1; current module 7 PASS/exit0 and combined runtime/observability/backup/route suite 25 PASS/exit0. Pinned Ruff0.15.12 lint/format and diff checks exit0. Independent test/security and source/lifecycle reviews PASS. Changed metadata14/corpus/archive recovery/links (one legacy provenance warning)/Markdown14/diff gates exited0; final receipt/parent checks are repeated before commit. Container/HOME/restore/migration remain NOT_RUN.
+SPEC-0206 source/static completion and archival are separately approved; its HOME TLS/OIDC/session and remote-MCP follow-ups remain with POL/RUN-0101. This replaces the earlier current package-blocker interpretation, not historical failures or execution receipts. Rollback is a scoped source/doc revert, never frozen-archive rewriting.

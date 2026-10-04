@@ -1,8 +1,8 @@
 ---
 title: "Shared Storybook and Documentation MCP Specification"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -45,7 +45,7 @@ Inputs: tracked npm manifest/lock, reviewed components/stories/MDX, public envir
 
 ## Failure Modes and Guardrails
 
-Reject context leakage, authentication HTML in assets/MCP, stale manifests, exposed development/testing tools, missing audience validation, absent package CSS/types, insecure runtime, second gateway and unregistered profile. Missing Docker or resource allowance blocks only isolated runtime evidence. The `braces` finding remains a merge blocker.
+Reject context leakage, authentication HTML in assets/MCP, stale manifests, exposed development/testing tools, missing audience validation, absent package CSS/types, insecure runtime, second gateway and unregistered profile. Missing Docker or resource allowance blocks only isolated runtime evidence. Dependency-audit handling belongs to the canonical quality policy and gate contract; this Spec changes no exception.
 
 ## Acceptance Contract
 
@@ -56,6 +56,20 @@ Reject context leakage, authentication HTML in assets/MCP, stale manifests, expo
 5. Manifests match source revision and local docs-only MCP passes positive/negative protocol checks; remote MCP stays disabled.
 6. Codex/Claude instructions distinguish official support, installed-client evidence and unexecuted external actions.
 7. README, Guide/Policy/Runbook, derived projection, inventory, focused gates, review and rollback agree with source.
+
+Completion evidence summary:
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1: source and package contract | PASS: tracked package/lock/source, Storybook 10.6 manifest/MCP API, image base digests/platforms, private package license and bounded quality-policy audit handling are recorded in TSK-0001 and the canonical quality gate. | UI package, TSK-0001, quality policy |
+| 2 | W2: static origin | PASS: exact-SHA isolated image build, runtime hardening, static HTTP/browser/a11y checks and cleanup evidence are recorded in TSK-0001. No fresh image or HOME run is claimed here. | Dockerfile, Storybook README, TSK-0001 |
+| 3 | W3: root integration | PASS for source/static: optional profile, root include, dedicated internal ingress, admin-only browser route, no host 80/443 and generated projection evidence are recorded in TSK-0002 and Stage 05. HOME TLS/OIDC/session observation is an operations follow-up, not a completion blocker for this source/static package. | Compose, POL-0101, RUN-0101 |
+| 4 | W1: source and package contract | PASS: synthetic external consumer imports the package with exports, types, CSS, peers, version and private-license contract. | UI package README, TSK-0001 |
+| 5 | W1: source and package contract | PASS: revision-matched manifests and local docs-only MCP positive/negative protocol checks are recorded; remote MCP remains disabled. | MCP source, GDE-0101, POL-0101 |
+| 6 | W4: documentation and review | PASS: Codex/Claude guidance distinguishes official support, installed-client evidence and unexecuted external actions; no user-global config is written. | GDE-0101, Storybook README |
+| 7 | W4: documentation and review | PASS: Korean README/Guide/Policy/Runbook, derived projection, operations catalog, focused gates, independent reviews and rollback boundaries agree with source. | Stage 05 subject 0101, TSK-0002 |
+
+This completion is source/static and documentation scoped. It does not deploy HOME, widen `/admins`, create a reviewer group, issue secrets, create a remote MCP audience/client, observe DNS/TLS/OIDC sessions or run external design accounts. Those triggers are owned by GDE/POL/RUN-0101. Fresh source/static batch evidence from 2026-10-04 reports Storybook contract, core/experience render, version92 and combined 25 unittests PASS; no Docker/HOME run is added here. No archive is created by this change; archival waits for a later protected SHA.
 
 ## Traceability
 
@@ -68,7 +82,7 @@ Reject context leakage, authentication HTML in assets/MCP, stale manifests, expo
 
 ## Open Questions
 
-A reviewer group needs a separate owner decision; none is approved. No remote MCP OIDC audience/client is approved. Exact image pins/digests and package compatibility need implementation-time official verification. Stage 99 operations-subject allocation is stale at next 0100 while GDE/POL/RUN-0100 are already issued; reconcile it before allocating Storybook subject 0101. REQ-0027 and AD-0031 remain drafts and are not treated as approval.
+A reviewer group needs a separate owner decision; none is approved. No remote MCP OIDC audience/client is approved. Exact HOME image and browser-route acceptance need a separately approved operation if the optional service is activated. The Stage 05 Storybook subject is now GDE/POL/RUN-0101. REQ-0027 and AD-0031 remain drafts and are not treated as approval.
 
 ## Operational Impact
 

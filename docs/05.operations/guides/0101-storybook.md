@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -107,17 +107,19 @@ python3 scripts/validation/check-operations-catalog.py
 
 이 검사는 브라우저 TLS/SSO, 실제 이미지 health, package 소비, MCP protocol,
 Claude Design 계정 연동을 증명하지 않는다. 해당 증거와 승인 경계는
-[RUN-0101](../runbooks/0101-storybook.md)과 SPEC-0206의 Task에서 구분한다.
+[RUN-0101](../runbooks/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
 
 ## Runbook Handoff
 
 이미지 빌드·격리 HTTP 검사·HOME 실행 사전 점검과 rollback 순서는
-[RUN-0101](../runbooks/0101-storybook.md)을 따른다.
+[RUN-0101](../runbooks/0101-storybook.md)을 따른다. 운영 follow-up 소유자는
+GDE/POL/RUN-0101이며 trigger는 HOME route 활성화, 검토자 그룹 승인, 원격 MCP
+OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청이다.
 
 ## Traceability
 
 - Artifact: `GDE-0101`; governing policy: `POL-0101`.
-- Source contract: `SPEC-0206`; architecture context: `AD-0031`.
+- Historical source/static completion: `SPEC-0206`; architecture context: `AD-0031` remains draft and is not promoted by this guide.
 - Runtime declaration: `infra/13-experience/storybook/docker-compose.yml`.
 
 ## Related Documents

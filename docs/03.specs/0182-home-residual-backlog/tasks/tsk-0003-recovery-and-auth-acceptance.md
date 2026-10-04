@@ -1,6 +1,6 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.13"
+version: "0.7.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -378,8 +378,9 @@ W7/criterion 7 is not closed by the historical PostgreSQL PASS row above.
 That row is preserved as the 2026-09-25 report, but the current
 [POL-0021](../../../05.operations/policies/0021-backup-and-restore.md) and
 [RUN-0021](../../../05.operations/runbooks/0021-backup-and-restore.md)
-supersede its time-target/RPO claim. SPEC-0201 W7.4 Phase A repository
-verification is not an actual restore or PITR rehearsal. A new isolated
+supersede its time-target/RPO claim. SPEC-0201 W7.4 Phase A was held before
+repository verification or scratch creation; the later owner hold superseded
+the earlier verification approval. Verify, restore and PITR remain NOT_RUN. A new isolated
 recovery, consistency checks and measured recovery time remain NOT_RUN and
 require the separately scoped operational approval. The bounded MLflow,
 synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
@@ -439,3 +440,45 @@ See the Plan.
 | R2 restore rehearsal into scratch (RUN-0021 8.3) with elapsed time, before offsite recovery is claimed as verified; copy BKP-003 to offline custody | @buenhyden | Before criterion 10 is closed |
 | Monthly remote `forget-prune` (RUN-0021 8.5) and the Metrics tab reading (8.6) | @buenhyden | Monthly, or when `HyhomeOffsiteRepoNearFreeTier` fires |
 | W7 management PostgreSQL restore evidence | @buenhyden | Current POL-0021/RUN-0021: actual isolated recovery remains NOT_RUN; approve the exact recovery phase separately |
+
+### Current prerequisite review — 2026-10-04
+
+The owner approved the implementation plan for immediately solvable prerequisite
+work in SPEC-0182/0193/0204/0206 on 2026-10-04. This Task is the sole writer of this recovery review;
+its Spec/Plan and existing POL/RUN-0021 recovery contract remain unchanged.
+Baseline main/origin-main is `ebeb83521c768fedc620380b0c2e92db10a6fcdc`.
+
+Read-only host counters: `/` and `/home/hyunyoun/data` each reported
+266918543360 total bytes and 79943307264 free bytes; MemTotal was
+33575424000 bytes, MemAvailable 14069882880 bytes, and 12 logical CPUs were
+reported. These point-in-time counters reserve no resources and do not prove
+physical redundancy, selected scratch capacity, repository size, or recovery
+fit. The exact approved data-disk target must be rechecked before execution.
+
+The Docker context is default with the local Unix socket. No image was pulled
+and no container, backup lock, scratch, network or volume was created. The
+existing BKP-001 owner and read-only bind approval remain usable inputs; their
+values were not read by this review. Phase A never ran: the owner held it before
+verify or scratch creation, superseding its earlier execution approval. Future
+verify, step 5 time-target PITR and step 5a immediate restore each need their
+exact execution scope approved. The step 5a
+`app_db` temporary-table probe tests restored ACL/consistency only; the owner's
+no-business-data statement does not make it an application cutover test.
+
+The next actual recovery contract still requires a named selected backup,
+recovery time/timezone and continuous WAL for PITR, original-compatible image,
+owned empty target/device/inode, capacity budget, bounded lock/time window,
+application invariants and separately approved cleanup. R2 additionally needs
+an exact host/state snapshot pair, limited remote access and offline BKP-003
+custody. Do not substitute `latest`, current Compose pins, synthetic recovery,
+capacity counters or historical Phase A for these inputs. W7/W10 remain open;
+Task, Plan and Spec stay active/in-progress, so the package is not archivable.
+
+The prerequisite source checks passed 24 tests; the approved implementation
+then passed 25 focused backup/auth/observability/runtime tests, exit 0, using the
+four named modules recorded in the SPEC-0193 completion receipt.
+No real repository restore, HOME mutation, secret issuance/rotation, private
+log inspection, data deletion or remote snapshot operation ran. This receipt
+closes prerequisite inspection only. Changed metadata14, corpus/archive recovery,
+links (one legacy warning), Markdown14 and diff checks exited 0; independent
+source/lifecycle review returned PASS. Recovery is a scoped documentation correction.

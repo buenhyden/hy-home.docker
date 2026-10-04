@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -18,7 +18,8 @@ created: "2026-10-03"
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
-구체적 승인이 필요하다.
+구체적 승인이 필요하다. SPEC-0206은 source/static completion의 역사적 근거이며,
+이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
 
 ## Procedure
 
@@ -58,8 +59,9 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 
 ## Evidence
 
-Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
-기록한다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
+운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
+기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
+issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
 
 ## Rollback or Recovery
@@ -79,7 +81,7 @@ revision 불일치가 확인되면 배포를 중단하고 @buenhyden에게 SHA�
 ## Traceability
 
 - Artifact: `RUN-0101`; parent guide: `GDE-0101`.
-- Source contract: `SPEC-0206`; runtime declaration:
+- Historical source/static completion: `SPEC-0206`; runtime declaration:
   [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
 
 ## Related Documents
