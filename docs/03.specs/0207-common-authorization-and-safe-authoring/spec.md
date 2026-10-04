@@ -21,9 +21,10 @@ created: "2026-10-04"
 Converge current governance on one authorization owner while preserving the
 native provider sandbox and the distinct roles of approval, review, and Task
 evidence. The current user request authorizes reversible local P01 policy and
-documentation edits, the bounded archive-record consumer/helper/test change,
-and one local logical commit only. SPEC-0182 and SPEC-0204 remain unrelated
-active packages; archived SPEC-0193 and SPEC-0206 are not reopened.
+documentation edits, bounded archive-record consumer/helper/test work, safe
+hook diagnostic clarification, and local logical commits only. SPEC-0182 and
+SPEC-0204 remain unrelated active packages; archived SPEC-0193 and SPEC-0206
+are not reopened.
 
 ## Boundaries and Inputs
 
@@ -32,8 +33,9 @@ sources, provider registry, tracked hooks, and the current Task. The baseline
 observed before implementation is `830ab0583f65e1252badb6be34b79c92bcb3c293`.
 No secret value, auth file, raw log, live command, provider/model call, remote
 write, push, PR, merge, or provider sandbox change is in scope. The bounded
-consumer work is limited to the archive approval-record helper, its direct
-consumer, and focused structural-integrity test source.
+consumer work covers the archive approval-record helper and direct consumer,
+plus the existing pre-tool hook consumer and their focused tests; the shared
+`tool_payload.py` parser remains unchanged.
 
 ## Behavior Contract
 
@@ -54,10 +56,10 @@ consumer, and focused structural-integrity test source.
 
 ## Technical Approach
 
-Use this one Task to inventory policy-to-consumer paths, amend only canonical
-owners and their routing references, and validate the policy/document surface.
-The hook implementation may clarify that archive approval-record matching is
-read-only structural validation; it does not implement authentication.
+Task 0001 inventories and converges the authorization boundary. Task 0002
+converges execution-boundary references and may make pre-tool payload denials
+diagnosable without disclosing input. Both use canonical owners and their real
+consumer routes; neither implements authentication or changes native limits.
 
 ## Interfaces and Data
 
@@ -102,6 +104,7 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
 - [ADR-0032](../../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - [Plan](plan.md)
 - [Task 0001](tasks/tsk-0001-policy-convergence.md)
+- [Task 0002](tasks/tsk-0002-execution-boundary-and-safe-diagnostics.md)
 
 ## Open Questions
 

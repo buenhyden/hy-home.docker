@@ -157,3 +157,55 @@ class NativeHookRoutingTests(unittest.TestCase):
             "deny",
             json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"],
         )
+
+    def test_invalid_edit_targets_report_fixed_reasons_without_input(self) -> None:
+        sensitive_marker = "fixture-sensitive-input"
+        (self.root / "target").write_text("target\n")
+        os.link(self.root / "target", self.root / "hardlink")
+        (self.root / "symlink").symlink_to(self.root / "target")
+        cases = (
+            (
+                {"tool_name": "Edit", "tool_input": sensitive_marker},
+                "edit input must be an object",
+            ),
+            (
+                {
+                    "tool_name": "Edit",
+                    "tool_input": {
+                        "file_path": f"/tmp/{sensitive_marker}",
+                        "new_string": "value",
+                    },
+                },
+                "unsafe changed path: outside project root",
+            ),
+            (
+                {
+                    "tool_name": "Edit",
+                    "tool_input": {
+                        "file_path": "symlink",
+                        "new_string": sensitive_marker,
+                    },
+                },
+                "unsafe changed path: symlink component",
+            ),
+            (
+                {
+                    "tool_name": "Edit",
+                    "tool_input": {
+                        "file_path": "hardlink",
+                        "new_string": sensitive_marker,
+                    },
+                },
+                "unsafe changed path: non-regular or hardlinked target",
+            ),
+        )
+
+        for payload, expected in cases:
+            with self.subTest(reason=expected):
+                result = self.run_hook(payload)
+                self.assertEqual(0, result.returncode, result.stderr)
+                output = json.loads(result.stdout)
+                hook_output = output["hookSpecificOutput"]
+                self.assertEqual("deny", hook_output["permissionDecision"])
+                self.assertEqual(expected, hook_output["permissionDecisionReason"])
+                self.assertNotIn(sensitive_marker, result.stdout + result.stderr)

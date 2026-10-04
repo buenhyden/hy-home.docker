@@ -91,15 +91,10 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all` and link/stale-reference checks for edited files.
-- Direct `pre-commit run` execution by agents is prohibited. At an approved
-  final QA gate, use only
-  `scripts/validation/run-agent-precommit-all-files.sh` from an initially clean
-  linked worktree with a tracked co-located Task and reviewed allowed prefixes.
-  Record its concise result and review hook-managed edits; never auto-reset,
-  checkout, clean, or write task evidence from the wrapper.
-- Wrapper evidence covers only Git-visible, non-ignored repository paths.
-  Ignored or outside-repository writes are not observed, and the wrapper is not
-  a process or filesystem sandbox.
+- The [execution boundary](quality-standards.md#4-execution-boundary) owns the
+  local, CI-only, and approved all-files pre-commit route. Its wrapper limits
+  remain Git-visible repository evidence only; this environment policy does not
+  authorize direct invocation, ignored/outside writes, or a sandbox bypass.
 - Run the completion checklist in `.agents/governance/task-checklists.md` before declaring done.
 - Provider surface `--write` is allowed once only after an approved canonical
   agent governance or Provider Registry change. Ordinary postflight and CI use

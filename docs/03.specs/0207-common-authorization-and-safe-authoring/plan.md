@@ -16,8 +16,9 @@ created: "2026-10-04"
 
 ## Objective
 
-Implement the bounded P01 policy convergence through one active Task, preserving
-one current authority per rule and recording only observed local evidence.
+Implement bounded P01 policy convergence through Task 0001's authorization
+work and Task 0002's execution-boundary follow-up, preserving one current
+authority per rule and recording only observed local evidence.
 
 ## Dependencies
 
@@ -36,10 +37,14 @@ one current authority per rule and recording only observed local evidence.
    constraints, workflows, and agentic policy so authorization, record
    validation, review, safe authoring, safety denial, and budget preflight have
    distinct owners.
-3. W3: verify and review. Clarify the archive-record helper/direct consumer
-   and focused structural-integrity test without claiming authentication; run
-   focused document/policy checks, record actual results and independent review,
-   then prepare one logical local commit. Remote
+3. W3: complete the execution-boundary follow-up. Route duplicate local
+   pre-commit wording to quality standards, preserve the warning/block hook
+   actions, and make fixed input-free payload denial reasons observable without
+   changing authoring, authorization, or native sandbox semantics.
+4. W4: verify and review the final exact diff. Run focused document/policy and
+   hook checks, record actual results and independent review, then prepare one
+   logical local commit. The prior local merge `2bba11baa1009e673a763a727b0a9e3d7e0bb5a7`
+   is preserved; this follow-up creates no additional local main merge. Remote
    push, PR, merge, and hosted checks remain `NOT_RUN` without separate approval.
 
 ## Risk and Rollback
@@ -62,3 +67,8 @@ surface changes. Record missing tools, sandbox limits, and hosted checks as
 - Task/schema/CLI/archive fields are structural records, never authentication.
 - Historical evidence preserves provenance and cannot authorize a current action.
 - Review stays independent and read-only; doc-writer remains the policy writer.
+
+## Task Routing
+
+- [Task 0001: policy convergence](tasks/tsk-0001-policy-convergence.md)
+- [Task 0002: execution boundary and safe diagnostics](tasks/tsk-0002-execution-boundary-and-safe-diagnostics.md)

@@ -87,9 +87,10 @@ and lifecycle values, and `scripts/` owns executable validation.
 - Incident: response record -> corrective Task routed to its canonical stage.
 - Governance: source change -> validation -> regeneration -> independent review.
 
-Agents run all-files pre-commit only through
-`scripts/validation/run-agent-precommit-all-files.sh` and only after the
-task-owned state is a Git-visible, non-ignored repository change.
+The [execution boundary](quality-standards.md#4-execution-boundary) owns the
+only approved all-files pre-commit route and its clean linked-worktree,
+Task, prefix, and Git-visible-state conditions. Workflows does not create a
+second local invocation path.
 
 ## Skill Lifecycle
 

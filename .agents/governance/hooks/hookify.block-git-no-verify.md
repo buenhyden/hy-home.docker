@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/hook-policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-04"
 action: "block"
 enabled: true
 event: "bash"
@@ -20,9 +20,9 @@ pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 
 > "Changes that bypass checks or violate secret safety must not be merged."
 
-`.agents/governance/task-checklists.md` owns completion checks and prohibits
-direct `pre-commit run`; only its explicitly approved controlled wrapper is an
-agent all-files route.
+The [execution boundary](../quality-standards.md#4-execution-boundary) owns the
+direct pre-commit prohibition and the sole approved all-files route. This hook
+retains the separate block on bypassing configured commit checks.
 
 **Project pre-commit hooks perform:**
 
@@ -40,16 +40,17 @@ agent all-files route.
 
 ```bash
 # BLOCKED: git commit --no-verify
-git commit --no-verify -m "fix: something"
-git commit -n -m "fix: something"
+git commit --no-verify -m "fix: Something"
+git commit -n -m "fix: Something"
 
 # If hooks fail, fix the root cause.
 # Lint error: edit the affected file directly.
 # Format error: apply the formatter, then stage the result.
 git add -p
-git commit -m "fix(scope): actual fix"
+git commit -m "fix(scope): Actual fix"
 ```
 
 ## Related Documents
 
-- `.agents/README.md`
+- `.agents/governance/git-workflow.md`
+- `.agents/governance/quality-standards.md#4-execution-boundary`

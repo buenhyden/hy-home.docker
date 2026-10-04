@@ -96,9 +96,15 @@ def deny_policy_failure(reason):
 
 try:
     sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
-    from scripts.lib.hooks.tool_payload import decode_payload, edit_targets
+    from scripts.lib.hooks.tool_payload import PayloadError, decode_payload, edit_targets
+except Exception:
+    deny_policy_failure("PreToolUse input is invalid; policy evaluation could not run.")
+
+try:
     data = decode_payload(raw)
     edits = edit_targets(project, data)
+except PayloadError as error:
+    deny_policy_failure(str(error))
 except Exception:
     deny_policy_failure("PreToolUse input is invalid; policy evaluation could not run.")
 

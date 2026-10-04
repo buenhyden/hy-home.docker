@@ -78,7 +78,7 @@ Registry.
 | Profile, gate sense | `changed` or `full`; the two public validation profiles | `.github/workflow-contract.yml` |
 | Canonical invocation identity | Resolved path, normalized argv, profile, and execution context; unique per plan | `scripts/validation/ci_gate_runner.py` |
 | Changed-path rule | The prefix-to-suite mapping that selects suites for a changed file | `.github/workflow-contract.yml` |
-| Controlled wrapper | The single approved all-files pre-commit route; direct `pre-commit run` is prohibited | [environment constraints](../governance/environment-constraints.md) |
+| Controlled wrapper | The single approved all-files pre-commit route; direct `pre-commit run` is prohibited | [quality standards](../governance/quality-standards.md#4-execution-boundary) |
 | Generated-artifact freshness | A generated output must be reproduced by its generator, never hand-edited to pass | [quality standards](../governance/quality-standards.md) |
 
 ## Evidence Classes

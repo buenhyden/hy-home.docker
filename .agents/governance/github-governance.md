@@ -83,22 +83,16 @@ ruleset file records the observed remote state and issues no rule of its own.
 
 ## 5. Execution Boundary (Local vs Remote)
 
-- **Anti-Duplication**: Do not execute heavy workloads (e.g., Zizmor, Storybook ESLint) redundantly across both local `pre-commit` and dedicated GitHub Action jobs.
-- **Local Responsibility**: Fail-fast static analysis (formatting, simple
-  linting, and explicit focused public-gate runs when the change needs them).
-  Routine commit and push hooks do not invoke public profiles. Agents must not
-  invoke `pre-commit run` directly.
-  An approved final QA all-files run uses only
-  `scripts/validation/run-agent-precommit-all-files.sh` in an initially clean
-  linked worktree with co-located Task evidence and minimal allowed prefixes.
-  Its evidence covers only Git-visible, non-ignored repository paths; it does
-  not observe ignored/outside writes or provide process/filesystem sandboxing.
+- **Local Responsibility**: Follow the shared
+  [execution boundary](quality-standards.md#4-execution-boundary) for focused
+  local validation, direct pre-commit prohibition, anti-duplication, and the
+  only approved all-files route. Routine commit and push hooks do not invoke
+  public profiles.
 - **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
 - **Implementation**: The CI pre-commit runner rejects caller `SKIP` and runs
   the pinned all-files command without a skip list. The tracked declaration
-  contains only cheap hooks; dedicated public gate leaves are separate.
-  Callers must not supply `SKIP` or introduce a second orchestration path. See
-  [the shared execution boundary](quality-standards.md#4-execution-boundary).
+  contains only cheap hooks; dedicated public gate leaves are separate. Callers
+  must not introduce a second orchestration path.
 
 ### 5.0 Approved Remote Mutation Protocol
 

@@ -28,9 +28,8 @@ updated: "2026-10-04"
 
 ## Before Completion
 
-- [ ] Never run `pre-commit run` directly; use
-      `scripts/validation/run-agent-precommit-all-files.sh` only when the
-      all-files gate is approved and the work is Git-visible, non-ignored repository state.
+- [ ] Follow the [execution boundary](quality-standards.md#4-execution-boundary)
+      for direct pre-commit prohibition and the sole approved all-files route.
 - [ ] Run focused tests and validators for each changed authority surface.
 - [ ] Regenerate registered projections and prove byte-for-byte freshness.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.
