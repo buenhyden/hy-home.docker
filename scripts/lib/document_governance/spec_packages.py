@@ -98,6 +98,7 @@ class SpecDocument:
     body: str = ""
     branch_integration_receipts: tuple[BranchIntegrationReceipt, ...] = ()
     cancellation: object = None
+    source_text: str = ""
 
 
 @dataclasses.dataclass(frozen=True)
@@ -120,6 +121,23 @@ class SpecPackageFinding:
     code: str
     path: str
     message: str
+
+
+@dataclasses.dataclass(frozen=True)
+class SpecPackageLifecycleValidation:
+    """Repository findings plus exact transitions proved by current Task rows."""
+
+    findings: tuple[SpecPackageFinding, ...]
+    actual_transitions: frozenset[tuple[str, str, str]]
+
+
+@dataclasses.dataclass(frozen=True)
+class _LifecycleEvent:
+    artifact_id: str
+    source: str
+    target: str
+    evidence: str
+    host_path: pathlib.PurePosixPath
 
 
 @dataclasses.dataclass(frozen=True)
@@ -546,6 +564,7 @@ def _parse_document(
             body=record.body,
             branch_integration_receipts=receipts,
             cancellation=record.metadata.get("cancellation"),
+            source_text=text,
         ),
         current,
     )
@@ -723,6 +742,205 @@ def task_cancellation_findings(
     return ()
 
 
+def _registered_table_rows(
+    lines: Sequence[str],
+    headers: tuple[str, ...],
+    *,
+    allowed_headers: frozenset[tuple[str, ...]] = frozenset(),
+) -> tuple[tuple[str, ...], ...]:
+    matches: list[int] = []
+    for index, line in enumerate(lines):
+        if not line.startswith("|"):
+            continue
+        cells = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+        if cells == headers:
+            matches.append(index)
+        elif cells and cells[0] == headers[0] and cells not in allowed_headers:
+            raise SpecPackageError("registered evidence table has malformed headers")
+    if not matches:
+        return ()
+    if len(matches) != 1:
+        raise SpecPackageError("registered evidence table must occur only once")
+    index = matches[0]
+    if (
+        index + 1 >= len(lines)
+        or re.fullmatch(rf"\|(?: *:?-+:? *\|){{{len(headers)}}}", lines[index + 1])
+        is None
+    ):
+        raise SpecPackageError(
+            f"registered evidence requires a {len(headers)}-column table"
+        )
+    rows: list[tuple[str, ...]] = []
+    for line in lines[index + 2 :]:
+        if not line.startswith("|"):
+            break
+        values = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+        if len(values) != len(headers) or any(not value for value in values):
+            raise SpecPackageError("registered evidence table has malformed columns")
+        rows.append(values)
+    if not rows:
+        raise SpecPackageError("registered evidence table requires at least one row")
+    return tuple(rows)
+
+
+def _completion_rows(
+    task: SpecDocument,
+    contract: Mapping[str, object],
+) -> tuple[tuple[str, tuple[tuple[str, ...], ...]], ...]:
+    lines = _contract_section(task.body, str(contract["task_section"]))
+    registered: list[tuple[str, tuple[str, ...]]] = []
+    for key in ("table_headers", "item_table_headers"):
+        raw_headers = contract.get(key)
+        if key == "item_table_headers" and raw_headers is None:
+            continue
+        if not isinstance(raw_headers, (list, tuple)) or not all(
+            isinstance(header, str) and header for header in raw_headers
+        ):
+            raise SpecPackageError(f"completion evidence {key} is malformed")
+        registered.append((key, tuple(raw_headers)))
+    allowed = frozenset(headers for _, headers in registered)
+    tables: list[tuple[str, tuple[tuple[str, ...], ...]]] = []
+    for key, headers in registered:
+        try:
+            rows = _registered_table_rows(
+                lines,
+                headers,
+                allowed_headers=allowed,
+            )
+        except SpecPackageError as error:
+            raise SpecPackageError(f"completion evidence: {error}") from error
+        if rows:
+            tables.append((key, rows))
+    if len(tables) > 1:
+        raise SpecPackageError("Task must use one registered completion table shape")
+    return tuple(tables)
+
+
+def _item_status_summary(
+    statuses: Sequence[str], terminal_statuses: frozenset[str]
+) -> str:
+    if "blocked" in statuses:
+        return "blocked"
+    terminal = [status in terminal_statuses for status in statuses]
+    if "in-progress" in statuses or (any(terminal) and not all(terminal)):
+        return "in-progress"
+    if "ready" in statuses:
+        return "ready"
+    if "draft" in statuses:
+        return "draft"
+    if all(status == "cancelled" for status in statuses):
+        return "cancelled"
+    return "completed"
+
+
+def _validate_task_item_evidence(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+    registry: DocumentRegistry,
+) -> None:
+    contract = registry.common.get("spec_completion_evidence")
+    if not isinstance(contract, Mapping):
+        raise SpecPackageError("completion evidence contract is missing from Registry")
+    tables = tuple((task, _completion_rows(task, contract)) for task in tasks)
+    terminal_statuses = frozenset(registry.lifecycle_terminal_statuses["task"])
+    legacy_tables = tuple(
+        (task, rows)
+        for task, task_tables in tables
+        for key, rows in task_tables
+        if key == "table_headers"
+    )
+    if any(
+        len(rows) > 1 and task.status not in terminal_statuses
+        for task, rows in legacy_tables
+    ):
+        raise SpecPackageError("multi-row completion evidence requires item statuses")
+    item_tables = tuple(
+        (task, rows)
+        for task, task_tables in tables
+        for key, rows in task_tables
+        if key == "item_table_headers"
+    )
+    if not item_tables:
+        return
+    if plan is None:
+        raise SpecPackageError("item evidence requires a Plan")
+    criteria = frozenset(
+        str(number)
+        for number in acceptance_criterion_numbers(
+            spec.body, str(contract["spec_section"])
+        )
+    )
+    work = frozenset(
+        re.findall(
+            r"^[1-9][0-9]*\. (?:\*\*)?(W[1-9][0-9]*)(?:\*\*)?: \S",
+            "\n".join(_contract_section(plan.body, str(contract["plan_section"]))),
+            re.M,
+        )
+    )
+    if not criteria or not work:
+        raise SpecPackageError(
+            "item evidence requires criterion and Plan work identities"
+        )
+    allowed_statuses = frozenset(registry.lifecycles["task"])
+    task_statuses = {task.artifact_id: task.status for task in tasks}
+    pairs = {
+        (criterion, unit) for _, rows in legacy_tables for criterion, unit, _, _ in rows
+    }
+    for task, rows in item_tables:
+        statuses: list[str] = []
+        cancelled_criteria: frozenset[int] = frozenset()
+        if any(row[2] == "cancelled" for row in rows):
+            findings = task_cancellation_findings(
+                task.artifact_id,
+                task.cancellation,
+                frozenset(int(criterion) for criterion in criteria),
+                task_statuses,
+            )
+            if findings:
+                raise SpecPackageError(f"{task.path}: {findings[0]}")
+            assert isinstance(task.cancellation, Mapping)
+            cancelled_criteria = frozenset(
+                entry["criterion"]
+                for entry in task.cancellation["criteria"]
+                if isinstance(entry, Mapping)
+            )
+        for criterion, unit, status, result, owner in rows:
+            if criterion not in criteria or unit not in work:
+                raise SpecPackageError(
+                    "item evidence has an unknown criterion or Plan work unit"
+                )
+            pair = (criterion, unit)
+            if pair in pairs:
+                raise SpecPackageError(
+                    f"{task.path}: item evidence duplicates a criterion/work pair: "
+                    f"{criterion}/{unit}"
+                )
+            pairs.add(pair)
+            if status not in allowed_statuses:
+                raise SpecPackageError(
+                    "item evidence status is outside the Task lifecycle"
+                )
+            if status == "cancelled" and int(criterion) not in cancelled_criteria:
+                raise SpecPackageError(
+                    "cancelled item requires its acceptance criterion disposition"
+                )
+            if status == "completed":
+                if re.fullmatch(r"PASS: \S.*", result) is None:
+                    raise SpecPackageError(
+                        "completed item needs PASS evidence; FAIL, BLOCKED, NOT_RUN, and SKIP do not satisfy acceptance"
+                    )
+                if re.fullmatch(r"N/A: \S.*|\[[^]\n]+\]\([^()\s]+\)", owner) is None:
+                    raise SpecPackageError(
+                        "completed item needs a durable owner link or N/A reason"
+                    )
+            statuses.append(status)
+        if task.status != _item_status_summary(statuses, terminal_statuses):
+            raise SpecPackageError(
+                f"{task.path} frontmatter does not match its item status summary"
+            )
+
+
 def _validate_completion_evidence(
     spec: SpecDocument,
     plan: SpecDocument | None,
@@ -756,7 +974,7 @@ def _validate_completion_evidence(
         )
     )
     work = re.findall(
-        r"^[1-9][0-9]*\. (W[1-9][0-9]*): \S",
+        r"^[1-9][0-9]*\. (?:\*\*)?(W[1-9][0-9]*)(?:\*\*)?: \S",
         "\n".join(section(plan, "plan_section")),
         re.M,
     )
@@ -769,33 +987,19 @@ def _validate_completion_evidence(
         raise SpecPackageError(
             "completion requires unique numbered criteria and Plan work units"
         )
-    headers = tuple(contract["table_headers"])
     covered: set[str] = set()
     pairs: set[tuple[str, str]] = set()
+    completed_pairs: set[tuple[str, str]] = set()
     for task in tasks:
-        lines = section(task, "task_section")
-        for index, line in enumerate(lines):
-            cells = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-            if not line.startswith("|") or cells != headers:
-                continue
-            if task.status != "completed":
+        for key, rows in _completion_rows(task, contract):
+            if key == "table_headers" and task.status != "completed":
                 raise SpecPackageError("completion receipt Task must be completed")
-            if (
-                index + 1 >= len(lines)
-                or re.fullmatch(r"\|(?: *:?-+:? *\|){4}", lines[index + 1]) is None
-            ):
-                raise SpecPackageError(
-                    "completion receipt requires a four-column table"
-                )
-            for row in lines[index + 2 :]:
-                if not row.startswith("|"):
-                    break
-                values = tuple(
-                    cell.strip() for cell in row.strip().strip("|").split("|")
-                )
-                if len(values) != 4:
-                    raise SpecPackageError("completion receipt has malformed columns")
-                criterion, unit, result, owner = values
+            for values in rows:
+                if key == "table_headers":
+                    criterion, unit, result, owner = values
+                    row_status = task.status
+                else:
+                    criterion, unit, row_status, result, owner = values
                 if criterion not in criteria or unit not in work:
                     raise SpecPackageError(
                         "completion receipt has an unknown criterion or Plan work unit"
@@ -804,6 +1008,9 @@ def _validate_completion_evidence(
                     raise SpecPackageError(
                         "completion receipt duplicates a criterion/work pair"
                     )
+                pairs.add((criterion, unit))
+                if row_status != "completed":
+                    continue
                 if re.fullmatch(r"PASS: \S.*", result) is None:
                     raise SpecPackageError(
                         "completion result needs PASS evidence; SKIP does not satisfy acceptance"
@@ -812,9 +1019,9 @@ def _validate_completion_evidence(
                     raise SpecPackageError(
                         "completion needs a durable owner link or N/A reason"
                     )
-                pairs.add((criterion, unit))
+                completed_pairs.add((criterion, unit))
                 covered.add(criterion)
-    if covered != set(criteria) or {unit for _, unit in pairs} != set(work):
+    if covered != set(criteria) or {unit for _, unit in completed_pairs} != set(work):
         raise SpecPackageError(
             "completion evidence must cover every acceptance criterion and Plan work unit"
         )
@@ -1021,6 +1228,7 @@ def _load_package(
                 )
                 if findings:
                     raise SpecPackageError(f"{task.path}: {findings[0]}")
+            _validate_task_item_evidence(spec, plan, tasks, registry)
             _validate_completion_evidence(spec, plan, tasks, registry)
         contracts: tuple[pathlib.PurePosixPath, ...] = ()
         if "contracts" in entries:
@@ -1621,6 +1829,8 @@ def _snapshot_document(
         parent_ids,
         body=record.body,
         branch_integration_receipts=receipts,
+        cancellation=record.metadata.get("cancellation"),
+        source_text=text,
     )
 
 
@@ -1738,6 +1948,231 @@ def _load_base_spec_packages(
             )
         )
     return tuple(packages)
+
+
+def _heading_anchor(heading: str) -> str:
+    normalized = re.sub(r"[^a-z0-9 -]", "", heading.lower()).strip()
+    return re.sub(r"-+", "-", re.sub(r"[ ]+", "-", normalized))
+
+
+def _lifecycle_event_rows(
+    task: SpecDocument,
+    registry: DocumentRegistry,
+) -> tuple[_LifecycleEvent, ...]:
+    contract = registry.common.get("task_lifecycle_events")
+    if contract is None:
+        return ()
+    if not isinstance(contract, Mapping):
+        raise SpecPackageError("Task lifecycle event contract is malformed")
+    section_name = contract.get("section")
+    subsection_name = contract.get("subsection")
+    raw_headers = contract.get("table_headers")
+    if (
+        not isinstance(section_name, str)
+        or not isinstance(subsection_name, str)
+        or not isinstance(raw_headers, (list, tuple))
+        or not all(isinstance(header, str) and header for header in raw_headers)
+    ):
+        raise SpecPackageError("Task lifecycle event contract is malformed")
+    section = _contract_section(task.body, section_name)
+    marker = "### " + subsection_name
+    starts = [index for index, line in enumerate(section) if line == marker]
+    if not starts:
+        return ()
+    if len(starts) != 1:
+        raise SpecPackageError(f"Task lifecycle evidence requires one {marker}")
+    start = starts[0] + 1
+    end = next(
+        (
+            index
+            for index in range(start, len(section))
+            if section[index].startswith("### ")
+        ),
+        len(section),
+    )
+    rows = _registered_table_rows(section[start:end], tuple(raw_headers))
+    if not rows:
+        return ()
+    anchor_counts: dict[str, int] = {}
+    for line in _completion_visible_lines(task.body):
+        match = re.fullmatch(r"#{1,6} +(.+?) *#*", line)
+        if match is None:
+            continue
+        anchor = _heading_anchor(match.group(1))
+        anchor_counts[anchor] = anchor_counts.get(anchor, 0) + 1
+    events: list[_LifecycleEvent] = []
+    for artifact_id, source, target, evidence in rows:
+        if (
+            re.fullmatch(r"#[a-z0-9][a-z0-9-]*", evidence) is None
+            or evidence == "#" + _heading_anchor(subsection_name)
+            or anchor_counts.get(evidence[1:]) != 1
+        ):
+            raise SpecPackageError(
+                "Task lifecycle event evidence must be one unique same-Task heading anchor"
+            )
+        events.append(
+            _LifecycleEvent(
+                artifact_id,
+                source,
+                target,
+                evidence,
+                task.path,
+            )
+        )
+    return tuple(events)
+
+
+def _event_finding(path: pathlib.PurePosixPath, message: str) -> SpecPackageFinding:
+    return SpecPackageFinding(
+        "task-lifecycle-events-invalid",
+        path.as_posix(),
+        message,
+    )
+
+
+def _validate_task_lifecycle_events(
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    registry: DocumentRegistry,
+) -> tuple[tuple[SpecPackageFinding, ...], frozenset[tuple[str, str, str]]]:
+    previous_by_name = {package.spec.path.parts[2]: package for package in previous}
+    findings: list[SpecPackageFinding] = []
+    actual: set[tuple[str, str, str]] = set()
+    for package in current:
+        prior = previous_by_name.get(package.spec.path.parts[2])
+        prior_tasks = {task.path: task for task in prior.tasks} if prior else {}
+        suffix: list[_LifecycleEvent] = []
+        for task in package.tasks:
+            try:
+                current_rows = _lifecycle_event_rows(task, registry)
+                previous_rows = (
+                    _lifecycle_event_rows(prior_tasks[task.path], registry)
+                    if task.path in prior_tasks
+                    else ()
+                )
+            except SpecPackageError as error:
+                findings.append(_event_finding(task.path, str(error)))
+                continue
+            if current_rows[: len(previous_rows)] != previous_rows:
+                findings.append(
+                    _event_finding(
+                        task.path,
+                        "existing lifecycle event rows must remain an exact prefix",
+                    )
+                )
+                continue
+            suffix.extend(current_rows[len(previous_rows) :])
+
+        members = [package.spec, *package.tasks]
+        if package.plan is not None:
+            members.append(package.plan)
+        by_artifact = {member.artifact_id: member for member in members}
+        previous_members = _documents((prior,)) if prior is not None else {}
+        grouped: dict[str, list[_LifecycleEvent]] = {}
+        for event in suffix:
+            document = by_artifact.get(event.artifact_id)
+            if document is None:
+                findings.append(
+                    _event_finding(
+                        event.host_path,
+                        "lifecycle event Artifact must name a current member of the same package",
+                    )
+                )
+                continue
+            transitions = registry.transitions.get(document.profile_id, {})
+            if event.target not in transitions.get(event.source, ()):
+                findings.append(
+                    _event_finding(
+                        event.host_path,
+                        f"lifecycle event is not a registered direct edge: {event.source} -> {event.target}",
+                    )
+                )
+                continue
+            grouped.setdefault(event.artifact_id, []).append(event)
+
+        for document in members:
+            previous_document = previous_members.get(document.path)
+            baseline = (
+                previous_document.status
+                if previous_document is not None
+                else registry.lifecycle_initial_statuses[document.profile_id]
+            )
+            events = grouped.get(document.artifact_id, [])
+            transitions = registry.transitions.get(document.profile_id, {})
+            direct = document.status in transitions.get(baseline, ())
+            if not events:
+                if baseline != document.status and not direct:
+                    findings.append(
+                        _event_finding(
+                            document.path,
+                            f"lifecycle event chain is required for {baseline} -> {document.status}",
+                        )
+                    )
+                continue
+            expected = baseline
+            for event in events:
+                if event.source != expected:
+                    findings.append(
+                        _event_finding(
+                            event.host_path,
+                            f"lifecycle event chain expected {expected}, found {event.source}",
+                        )
+                    )
+                    break
+                expected = event.target
+            else:
+                if expected != document.status:
+                    findings.append(
+                        _event_finding(
+                            events[-1].host_path,
+                            f"lifecycle event chain ends at {expected}, not {document.status}",
+                        )
+                    )
+                else:
+                    actual.add((document.path.as_posix(), baseline, document.status))
+    if findings:
+        return tuple(sorted(set(findings))), frozenset()
+    return (), frozenset(actual)
+
+
+def _validate_legacy_multirow_receipts(
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    registry: DocumentRegistry,
+) -> tuple[SpecPackageFinding, ...]:
+    contract = registry.common.get("spec_completion_evidence")
+    if not isinstance(contract, Mapping):
+        return ()
+    previous_documents = _documents(previous)
+    findings: list[SpecPackageFinding] = []
+    for package in current:
+        for task in package.tasks:
+            legacy_rows = next(
+                (
+                    rows
+                    for key, rows in _completion_rows(task, contract)
+                    if key == "table_headers"
+                ),
+                (),
+            )
+            if len(legacy_rows) <= 1:
+                continue
+            before = previous_documents.get(task.path)
+            if (
+                before is not None
+                and before.status == task.status == "completed"
+                and bool(before.source_text)
+                and before.source_text == task.source_text
+            ):
+                continue
+            findings.append(
+                SpecPackageFinding(
+                    "task-completion-items-invalid",
+                    task.path.as_posix(),
+                    "new or changed multi-row completion evidence requires item statuses",
+                )
+            )
+    return tuple(findings)
 
 
 def _standard_preserved_package_path(
@@ -1949,13 +2384,13 @@ def _validate_receipt_carrier(
             carrier, "target_artifact_id does not match its package"
         )
     if not carrier.completed_archive:
-        if (
-            carrier.package.spec.status != "active"
-            or carrier.task.status != "in-progress"
-        ):
+        if carrier.package.spec.status != "active" or carrier.task.status not in {
+            "in-progress",
+            "blocked",
+        }:
             return _invalid_receipt(
                 carrier,
-                "current carrier requires an active target Spec and in-progress Task",
+                "current carrier requires an active target Spec and in-progress or blocked Task",
             )
     else:
         members = [carrier.package.spec, *carrier.package.tasks]
@@ -2138,13 +2573,13 @@ def _validate_branch_integration_receipts(
     return frozenset(accepted), tuple(findings)
 
 
-def validate_repository_spec_package_lifecycle(
+def validate_repository_spec_package_lifecycle_details(
     root: pathlib.Path,
     current: Sequence[SpecPackage],
     *,
     base_ref: str | None = None,
-) -> tuple[SpecPackageFinding, ...]:
-    """Validate current removals against a bounded Git snapshot."""
+) -> SpecPackageLifecycleValidation:
+    """Validate current package lifecycle and return exact observed transitions."""
 
     root = pathlib.Path(root)
     base_commit = resolve_lifecycle_base(root, base_ref)
@@ -2153,6 +2588,16 @@ def validate_repository_spec_package_lifecycle(
         base_ref=base_commit,
     )
     registry = load_registry()
+    event_findings, actual_transitions = _validate_task_lifecycle_events(
+        previous,
+        current,
+        registry,
+    )
+    receipt_shape_findings = _validate_legacy_multirow_receipts(
+        previous,
+        current,
+        registry,
+    )
     completed = _load_preserved_spec_packages(root, "completed", registry)
     ordinary_preserved = _ordinary_preserved_paths(
         root,
@@ -2177,7 +2622,34 @@ def validate_repository_spec_package_lifecycle(
         preserved_paths=ordinary_preserved | branch_preserved,
         registry=registry,
     )
-    return tuple(sorted((*receipt_findings, *lifecycle_findings)))
+    return SpecPackageLifecycleValidation(
+        tuple(
+            sorted(
+                (
+                    *event_findings,
+                    *receipt_shape_findings,
+                    *receipt_findings,
+                    *lifecycle_findings,
+                )
+            )
+        ),
+        actual_transitions,
+    )
+
+
+def validate_repository_spec_package_lifecycle(
+    root: pathlib.Path,
+    current: Sequence[SpecPackage],
+    *,
+    base_ref: str | None = None,
+) -> tuple[SpecPackageFinding, ...]:
+    """Validate current removals and lifecycle events against bounded Git."""
+
+    return validate_repository_spec_package_lifecycle_details(
+        root,
+        current,
+        base_ref=base_ref,
+    ).findings
 
 
 def _recorded_retirements(root: pathlib.Path) -> frozenset[pathlib.PurePosixPath]:

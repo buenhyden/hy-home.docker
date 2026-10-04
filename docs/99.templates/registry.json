@@ -196,6 +196,23 @@
         "Plan work unit",
         "Task result",
         "Durable owner"
+      ],
+      "item_table_headers": [
+        "Acceptance criterion",
+        "Plan work unit",
+        "Status",
+        "Task result",
+        "Durable owner"
+      ]
+    },
+    "task_lifecycle_events": {
+      "section": "Work Log",
+      "subsection": "Lifecycle Events",
+      "table_headers": [
+        "Artifact",
+        "From",
+        "To",
+        "Evidence"
       ]
     },
     "archive_retention": {
@@ -4380,8 +4397,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 207,
-      "next_number": 208,
+      "high_water": 208,
+      "next_number": 209,
       "child_spaces": {}
     },
     "operations-subject": {

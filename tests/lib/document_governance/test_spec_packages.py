@@ -173,6 +173,67 @@ def _set_status(path: pathlib.Path, before: str, after: str) -> None:
     path.write_text(text.replace(marker, f"status: {after}\n", 1), encoding="utf-8")
 
 
+def _set_item_rows(
+    package: pathlib.Path,
+    rows: tuple[tuple[str, str, str, str, str], ...],
+) -> pathlib.Path:
+    spec = package / "spec.md"
+    plan = package / "plan.md"
+    task = package / "tasks/tsk-0001-implement.md"
+    if len(rows) > 1:
+        spec.write_text(
+            spec.read_text(encoding="utf-8")
+            + "\n2. Validate the second fixture item.\n",
+            encoding="utf-8",
+        )
+        plan.write_text(
+            plan.read_text(encoding="utf-8")
+            + "\n2. W2: Validate the second fixture item.\n",
+            encoding="utf-8",
+        )
+    old = (
+        "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
+        "| --- | --- | --- | --- |\n"
+        "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |"
+    )
+    rendered = [
+        "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |",
+        "| --- | --- | --- | --- | --- |",
+        *("| " + " | ".join(row) + " |" for row in rows),
+    ]
+    task.write_text(
+        task.read_text(encoding="utf-8").replace(old, "\n".join(rendered), 1),
+        encoding="utf-8",
+    )
+    return task
+
+
+def _add_lifecycle_events(
+    task: pathlib.Path,
+    rows: tuple[tuple[str, str, str, str], ...],
+) -> None:
+    anchors = "\n\n".join(
+        f"### {evidence.removeprefix('#').replace('-', ' ').title()}\n\nObserved."
+        for *_, evidence in rows
+    )
+    table = "\n".join(
+        (
+            "### Lifecycle Events",
+            "",
+            "| Artifact | From | To | Evidence |",
+            "| --- | --- | --- | --- |",
+            *("| " + " | ".join(row) + " |" for row in rows),
+        )
+    )
+    text = task.read_text(encoding="utf-8")
+    task.write_text(
+        text.replace(
+            "Fixture work log.", f"Fixture work log.\n\n{anchors}\n\n{table}", 1
+        ),
+        encoding="utf-8",
+    )
+
+
 def _branch_handoff_fixture(
     root: pathlib.Path,
     *,
@@ -292,6 +353,615 @@ class SpecPackageTests(unittest.TestCase):
         ROOT / ".github/ISSUE_TEMPLATE/bug_report.yml",
         ROOT / "scripts/validation/run-agent-precommit-all-files.sh",
     )
+
+    def test_multi_item_task_status_is_derived_from_registered_rows(self) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            (
+                "blocked",
+                (
+                    ("1", "W1", "completed", "PASS: focused", "N/A: local"),
+                    ("2", "W2", "blocked", "BLOCKED: runtime", "Task owner"),
+                ),
+            ),
+            (
+                "in-progress",
+                (
+                    ("1", "W1", "completed", "PASS: focused", "N/A: local"),
+                    ("2", "W2", "ready", "NOT_RUN: queued", "Task owner"),
+                ),
+            ),
+        )
+        for expected, rows in cases:
+            with (
+                self.subTest(expected=expected),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    task_status=expected,
+                )
+                _set_item_rows(package, rows)
+                self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                plan=True,
+                task=True,
+                task_status="in-progress",
+            )
+            _set_item_rows(
+                package,
+                (("1", "W1", "blocked", "BLOCKED: runtime", "Task owner"),),
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError,
+                "item status summary",
+            ):
+                spec_packages.load_spec_packages(stage)
+
+    def test_multi_item_rows_reject_invalid_status_result_and_cancellation(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            (
+                "invalid-status",
+                "in-progress",
+                (("1", "W1", "queued", "NOT_RUN: queued", "Task owner"),),
+                "outside the Task lifecycle",
+            ),
+            (
+                "missing-cancellation",
+                "in-progress",
+                (
+                    ("1", "W1", "cancelled", "CANCELLED: withdrawn", "Owner"),
+                    ("2", "W2", "in-progress", "PARTIAL: active", "Owner"),
+                ),
+                "cancellation",
+            ),
+        )
+        for label, task_status, rows, message in cases:
+            with (
+                self.subTest(case=label),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    task_status=task_status,
+                )
+                _set_item_rows(package, rows)
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages.load_spec_packages(stage)
+
+    def test_current_multi_row_receipt_requires_item_statuses(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            root.joinpath("baseline.txt").write_text("baseline\n", encoding="utf-8")
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            stage = root / "docs/03.specs"
+            package = _write_package(
+                stage,
+                plan=True,
+                task=True,
+                task_status="completed",
+            )
+            spec = package / "spec.md"
+            spec.write_text(
+                spec.read_text(encoding="utf-8")
+                + "\n2. Validate the blocked fixture item.\n",
+                encoding="utf-8",
+            )
+            plan = package / "plan.md"
+            plan.write_text(
+                plan.read_text(encoding="utf-8")
+                + "\n2. W2: Validate the blocked fixture item.\n",
+                encoding="utf-8",
+            )
+            task = package / "tasks/tsk-0001-implement.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                    "| 2 | W2 | BLOCKED: runtime | Task owner |",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            current = spec_packages.load_spec_packages(stage)
+            result = spec_packages.validate_repository_spec_package_lifecycle_details(
+                root,
+                current,
+                base_ref="HEAD",
+            )
+            self.assertIn(
+                "task-completion-items-invalid",
+                {finding.code for finding in result.findings},
+            )
+
+    def test_nonterminal_multi_row_receipt_requires_item_statuses_at_load(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(stage, plan=True, task=True)
+            task = package / "tasks/tsk-0001-implement.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                    "| 2 | W2 | BLOCKED: runtime | Task owner |",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError,
+                "multi-row completion evidence requires item statuses",
+            ):
+                spec_packages.load_spec_packages(stage)
+
+    def test_unchanged_terminal_multi_row_receipt_is_grandfathered(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            stage = root / "docs/03.specs"
+            package = _write_package(
+                stage,
+                plan=True,
+                task=True,
+                task_status="completed",
+            )
+            task = package / "tasks/tsk-0001-implement.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
+                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                    "| 2 | W2 | PARTIAL: historical | Task owner |",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            result = spec_packages.validate_repository_spec_package_lifecycle_details(
+                root,
+                spec_packages.load_spec_packages(stage),
+                base_ref="HEAD",
+            )
+            self.assertNotIn(
+                "task-completion-items-invalid",
+                {finding.code for finding in result.findings},
+            )
+
+    def test_item_pairs_cannot_duplicate_legacy_receipt_pairs(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                plan=True,
+                task=True,
+                task_status="blocked",
+            )
+            _set_item_rows(
+                package,
+                (("1", "W1", "blocked", "BLOCKED: runtime", "Task owner"),),
+            )
+            second = package / "tasks/tsk-0002-legacy.md"
+            second.write_text(
+                _document_text(
+                    "task",
+                    "SPEC-0001-TSK-0002",
+                    ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                    status="completed",
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError,
+                "duplicates a criterion/work pair",
+            ):
+                spec_packages.load_spec_packages(stage)
+        for result in (
+            "FAIL: focused",
+            "BLOCKED: runtime",
+            "NOT_RUN: pending",
+            "SKIP: waived",
+        ):
+            with (
+                self.subTest(result=result),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    task_status="completed",
+                )
+                _set_item_rows(
+                    package,
+                    (("1", "W1", "completed", result, "N/A: local"),),
+                )
+                with self.assertRaisesRegex(
+                    spec_packages.SpecPackageError,
+                    "completed item needs PASS",
+                ):
+                    spec_packages.load_spec_packages(stage)
+
+    def test_completed_spec_counts_only_completed_pass_item_rows(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            _set_item_rows(
+                package,
+                (("1", "W1", "completed", "PASS: focused", "N/A: local"),),
+            )
+            self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="cancelled",
+            )
+            task = _set_item_rows(
+                package,
+                (("1", "W1", "cancelled", "CANCELLED: withdrawn", "Owner"),),
+            )
+            _set_frontmatter_value(
+                task,
+                "cancellation",
+                {
+                    "reason": "withdrawn",
+                    "approved_by": "@owner",
+                    "approved_at": "2026-10-04",
+                    "criteria": [{"criterion": 1, "withdrawn": "obsolete"}],
+                },
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError,
+                "must cover every acceptance criterion",
+            ):
+                spec_packages.load_spec_packages(stage)
+
+    def test_old_registry_and_preserved_load_do_not_require_new_tables(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_registry()
+        common = dict(registry.common)
+        completion = dict(common["spec_completion_evidence"])
+        completion.pop("item_table_headers", None)
+        common["spec_completion_evidence"] = completion
+        common.pop("task_lifecycle_events", None)
+        legacy = dataclasses.replace(registry, common=common)
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(stage, plan=True, task=True)
+            task = package / "tasks/tsk-0001-implement.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| Acceptance criterion | Plan work unit | Task result | Durable owner |",
+                    "| Acceptance criterion | Plan work unit | Status | Broken |",
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                1,
+                len(
+                    spec_packages.load_spec_packages(
+                        stage,
+                        registry=legacy,
+                        _completion_evidence=False,
+                    )
+                ),
+            )
+
+    def test_package_lifecycle_events_validate_the_actual_transition_chain(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            root.joinpath("baseline.txt").write_text("baseline\n", encoding="utf-8")
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            stage = root / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="active",
+                plan=True,
+                plan_status="active",
+                task=True,
+                task_status="in-progress",
+            )
+            task = package / "tasks/tsk-0001-implement.md"
+            _add_lifecycle_events(
+                task,
+                (
+                    ("SPEC-0001", "draft", "review", "#spec-review"),
+                    ("SPEC-0001", "review", "approved", "#spec-approved"),
+                    ("SPEC-0001", "approved", "active", "#spec-active"),
+                    ("SPEC-0001-PLAN-0001", "draft", "approved", "#plan-approved"),
+                    ("SPEC-0001-PLAN-0001", "approved", "active", "#plan-active"),
+                    ("SPEC-0001-TSK-0001", "draft", "ready", "#task-ready"),
+                    (
+                        "SPEC-0001-TSK-0001",
+                        "ready",
+                        "in-progress",
+                        "#task-started",
+                    ),
+                    (
+                        "SPEC-0001-TSK-0001",
+                        "in-progress",
+                        "blocked",
+                        "#task-blocked-first",
+                    ),
+                    (
+                        "SPEC-0001-TSK-0001",
+                        "blocked",
+                        "in-progress",
+                        "#task-resumed-first",
+                    ),
+                    (
+                        "SPEC-0001-TSK-0001",
+                        "in-progress",
+                        "blocked",
+                        "#task-blocked-second",
+                    ),
+                    (
+                        "SPEC-0001-TSK-0001",
+                        "blocked",
+                        "in-progress",
+                        "#task-resumed-second",
+                    ),
+                ),
+            )
+            current = spec_packages.load_spec_packages(stage)
+            result = spec_packages.validate_repository_spec_package_lifecycle_details(
+                root,
+                current,
+                base_ref="HEAD",
+            )
+            self.assertEqual((), result.findings)
+            self.assertEqual(
+                frozenset(
+                    {
+                        ("docs/03.specs/0001-example/spec.md", "draft", "active"),
+                        (
+                            "docs/03.specs/0001-example/plan.md",
+                            "draft",
+                            "active",
+                        ),
+                        (
+                            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
+                            "draft",
+                            "in-progress",
+                        ),
+                    }
+                ),
+                result.actual_transitions,
+            )
+
+    def test_package_lifecycle_events_reject_unbound_or_broken_chains(self) -> None:
+        spec_packages = _spec_packages_module()
+        valid = (
+            ("SPEC-0001", "draft", "review", "#spec-review"),
+            ("SPEC-0001", "review", "approved", "#spec-approved"),
+            ("SPEC-0001", "approved", "active", "#spec-active"),
+            ("SPEC-0001-PLAN-0001", "draft", "approved", "#plan-approved"),
+            ("SPEC-0001-PLAN-0001", "approved", "active", "#plan-active"),
+            ("SPEC-0001-TSK-0001", "draft", "ready", "#task-ready"),
+            (
+                "SPEC-0001-TSK-0001",
+                "ready",
+                "in-progress",
+                "#task-started",
+            ),
+        )
+        cases = {
+            "missing-step": (*valid[:1], *valid[2:]),
+            "wrong-base": (
+                ("SPEC-0001", "review", "approved", "#spec-approved"),
+                *valid[2:],
+            ),
+            "wrong-end": (
+                *valid[:-1],
+                ("SPEC-0001-TSK-0001", "ready", "blocked", "#task-started"),
+            ),
+            "cross-package": (
+                ("SPEC-9999", "draft", "review", "#spec-review"),
+                *valid[1:],
+            ),
+            "missing-anchor": (
+                *valid[:-1],
+                ("SPEC-0001-TSK-0001", "ready", "in-progress", "#missing"),
+            ),
+            "outside-anchor": (
+                *valid[:-1],
+                (
+                    "SPEC-0001-TSK-0001",
+                    "ready",
+                    "in-progress",
+                    "other.md#task-started",
+                ),
+            ),
+            "duplicate": (*valid, valid[-1]),
+        }
+        for label, rows in cases.items():
+            with (
+                self.subTest(case=label),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+                root.joinpath("baseline.txt").write_text("baseline\n", encoding="utf-8")
+                subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+                subprocess.run(
+                    (
+                        "git",
+                        "-c",
+                        "user.name=Spec Fixture",
+                        "-c",
+                        "user.email=spec@example.invalid",
+                        "commit",
+                        "-qm",
+                        "baseline",
+                    ),
+                    cwd=root,
+                    check=True,
+                )
+                stage = root / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    spec_status="active",
+                    plan=True,
+                    plan_status="active",
+                    task=True,
+                    task_status="in-progress",
+                )
+                task = package / "tasks/tsk-0001-implement.md"
+                _add_lifecycle_events(task, rows)
+                if label == "missing-anchor":
+                    task.write_text(
+                        task.read_text(encoding="utf-8").replace(
+                            "### Missing\n\nObserved.\n\n",
+                            "",
+                            1,
+                        ),
+                        encoding="utf-8",
+                    )
+                result = (
+                    spec_packages.validate_repository_spec_package_lifecycle_details(
+                        root,
+                        spec_packages.load_spec_packages(stage),
+                        base_ref="HEAD",
+                    )
+                )
+                self.assertIn(
+                    "task-lifecycle-events-invalid",
+                    {finding.code for finding in result.findings},
+                )
+                self.assertEqual(frozenset(), result.actual_transitions)
+
+    def test_lifecycle_event_table_errors_use_registered_evidence_context(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            root.joinpath("baseline.txt").write_text("baseline\n", encoding="utf-8")
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            stage = root / "docs/03.specs"
+            package = _write_package(
+                stage,
+                spec_status="active",
+                plan=True,
+                plan_status="active",
+                task=True,
+                task_status="in-progress",
+            )
+            task = package / "tasks/tsk-0001-implement.md"
+            _add_lifecycle_events(
+                task,
+                (("SPEC-0001", "draft", "review", "#spec-review"),),
+            )
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| Artifact | From | To | Evidence |",
+                    "| Artifact | Before | To | Evidence |",
+                    1,
+                ),
+                encoding="utf-8",
+            )
+
+            result = spec_packages.validate_repository_spec_package_lifecycle_details(
+                root,
+                spec_packages.load_spec_packages(stage),
+                base_ref="HEAD",
+            )
+
+            self.assertIn(
+                "registered evidence table has malformed headers",
+                {finding.message for finding in result.findings},
+            )
 
     def test_completed_coverage_accepts_pass_and_ignores_examples(
         self,
@@ -1315,6 +1985,32 @@ class SpecPackageTests(unittest.TestCase):
                         base_ref=commit,
                     ),
                 )
+
+    def test_current_receipt_carrier_accepts_blocked_but_not_ready(self) -> None:
+        spec_packages = _spec_packages_module()
+        for status, valid in (("blocked", True), ("ready", False)):
+            with (
+                self.subTest(status=status),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                stage, commit, _ = _branch_handoff_fixture(root)
+                task = stage / "0002-target/tasks/tsk-0001-implement.md"
+                _set_status(task, "in-progress", status)
+                findings = spec_packages.validate_repository_spec_package_lifecycle(
+                    root,
+                    spec_packages.load_spec_packages(stage),
+                    base_ref=commit,
+                )
+                receipt_codes = {
+                    finding.code
+                    for finding in findings
+                    if finding.code.startswith("branch-integration-receipt")
+                }
+                if valid:
+                    self.assertEqual(set(), receipt_codes)
+                else:
+                    self.assertIn("branch-integration-receipt-invalid", receipt_codes)
 
     def test_divergent_branch_handoff_matches_completed_identity_across_slugs(
         self,

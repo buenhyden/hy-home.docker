@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.1.2"
+version: "1.2.0"
 type: "governance/sdlc"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-10-04"
 ---
 
 # Software Development Lifecycle
@@ -42,6 +42,20 @@ evidence rather than copying it into a second ledger. Failed acceptance returns
 to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
 
+An ordinary four-column Task receipt uses frontmatter as its status source.
+Where one Task records multiple criterion/work-unit items, the optional
+five-column receipt's Status cells are the source and share the existing
+criterion/work-unit identity; frontmatter stores the validated derived summary.
+It does not receive a second counter or progress ledger. A multi-item Task
+summary derives in this order:
+`blocked`; mixed terminal/nonterminal or any `in-progress`; `ready`; `draft`;
+all `cancelled`; then remaining terminal members as `completed`. The Registry
+supplies exact table shapes and status vocabulary, and `spec_packages.py`
+implements this SDLC meaning. A Task event records only an observed
+direct registered transition with same-Task evidence. Structural event
+validation does not authenticate approval; current authorization remains manual
+under the approval boundary.
+
 Stage 90 supplies evidence and Stage 98 supplies historical path lookup; neither
 overrides current lifecycle authority. Stage 99 defines document shapes and
 identities. Registered scripts implement gates. Terminal package completion requires observed
@@ -49,6 +63,8 @@ PASS evidence for every numbered acceptance criterion and its Plan work unit.
 FAIL, BLOCKED, NOT_RUN and skipped checks remain valid in-progress evidence;
 they do not satisfy terminal acceptance. Stage 99 and its validator own the
 receipt's machine shape, so templates refer here for completion meaning.
+Spec and Plan closure require their registered terminal conditions; Task
+completion evidence alone does not close a package with nonterminal members.
 
 ## Authority Boundaries
 

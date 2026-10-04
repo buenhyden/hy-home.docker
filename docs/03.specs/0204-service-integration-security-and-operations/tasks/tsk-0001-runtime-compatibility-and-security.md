@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.13"
+version: "1.0.14"
 type: "sdlc/task"
-status: "in-progress"
+status: "blocked"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -33,6 +33,18 @@ Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03;
 SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The original approval-draft boundary below is historical for pre-PR359 planning. Later owner approval authorized the recorded source/document reconciliation only; it still does not authorize image pulls, HOME deployment, secret issuance, credential rotation, data restore or service operations.
 
 ## Work Log
+
+### Current Lifecycle Reconciliation
+
+The present Stage 99 reconciliation derives `blocked` from the recorded
+exact-image, egress, Agent-renewal, and operational-approval blockers. Earlier
+transition anchors are not observed and are not backfilled.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0001 | in-progress | blocked | #current-lifecycle-reconciliation |
 
 ### Protected source and archive integration writer ledger — approved reintegration
 
@@ -661,13 +673,17 @@ rewriting or cancellation of already-completed work.
 | Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
-| --- | --- | --- | --- |
-| 1 | W1/W5 | SOURCE_STATIC PASS; runtime still pending | This Task and existing service READMEs |
-| 2 | W2/W5 | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED; Code-task runtime blocked | GDE/POL/RUN-0053 and n8n source |
-| 3 | W2/W5 | SOURCE_STATIC PARTIAL; Crawl4AI egress deny runtime blocked and Cassandra auth absent by contract | GDE/POL/RUN-0091 and LAB Cassandra documents |
-| 4 | W2/W5 | SOURCE_STATIC PARTIAL; Agent renewal freshness runtime blocked; auth routes also belong to TSK-0002 | GDE/POL/RUN-0085 and POL-0079 |
-| 8 | W5 | SOURCE_STATIC PASS; HOME/runtime/migration NOT_RUN | This Task verification receipts |
+| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
+| --- | --- | --- | --- | --- |
+| 1 | W1 | in-progress | SOURCE_STATIC PASS; runtime evidence remains pending. | [Task receipt](#verification-evidence) |
+| 1 | W5 | blocked | Runtime evidence remains pending. | [Task receipt](#verification-evidence) |
+| 2 | W2 | blocked | SOURCE_STATIC PASS and synthetic shell guard PASS; exact-image and Code-task runtime are BLOCKED. | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
+| 2 | W5 | blocked | Exact-image and Code-task runtime are BLOCKED. | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
+| 3 | W2 | blocked | Crawl4AI egress-deny runtime is blocked and Cassandra authentication is absent by contract. | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
+| 3 | W5 | blocked | Crawl4AI egress-deny runtime remains blocked. | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
+| 4 | W2 | blocked | Agent-renewal freshness runtime remains blocked. | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) |
+| 4 | W5 | blocked | Agent-renewal freshness and route acceptance remain blocked. | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) |
+| 8 | W1 | in-progress | Current W1 source checks and review are pending. This avoids duplicating completed Task 0002's criterion 8/W5 receipt; its HOME, runtime, and migration limits remain historical Task 0002 facts. | [Plan W1](../plan.md#execution-sequence); [Task 0002 receipt](tsk-0002-external-project-integration.md#verification-evidence) |
 
 ## Review Evidence
 

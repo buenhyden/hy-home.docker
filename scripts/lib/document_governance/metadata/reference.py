@@ -112,7 +112,7 @@ from scripts.lib.document_governance.spec_packages import (
     SpecPackageError,
     load_spec_packages,
     resolve_lifecycle_base,
-    validate_repository_spec_package_lifecycle,
+    validate_repository_spec_package_lifecycle_details,
 )
 
 _MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)\s]+)\)")
@@ -199,13 +199,13 @@ def _is_registered_readme_form(path: pathlib.Path, registry: DocumentRegistry) -
     )
 
 
-def validate_repository_contracts(
+def _validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
     *,
     base_ref: str | None = None,
     transition_ref: str | None = None,
-) -> list[Finding]:
+) -> tuple[list[Finding], frozenset[tuple[str, str, str]]]:
     """Validate tracked repository surfaces backed by the canonical registry.
 
     `transition_ref` names the committed state the working tree is compared
@@ -216,6 +216,7 @@ def validate_repository_contracts(
 
     _require_git_worktree(root)
     findings: list[Finding] = []
+    actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
     tracked_markdown = _tracked_repository_markdown(root)
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
 
@@ -243,17 +244,6 @@ def validate_repository_contracts(
         )
         manifest = build_current_manifest(root, records)
         findings.extend(_index_membership_findings(root, active_registry, records))
-        for record in records:
-            # Gating on `status == "active"` made `invalid-status` unreachable:
-            # a document with a status outside its lifecycle is by definition
-            # not active, so the check that would catch it never ran. Template
-            # sources keep their own route, because a template's placeholders
-            # are correct for a template and invalid for an authored document.
-            findings.extend(
-                finding
-                for finding in validate_record(record, profiles, manifest)
-                if finding.severity == "error"
-            )
         findings.extend(_allocation_findings(root, profiles, records, base_ref))
         requirement_root = root / "docs/01.requirements"
         if requirement_root.exists() or requirement_root.is_symlink():
@@ -279,7 +269,7 @@ def validate_repository_contracts(
                     if spec_root.exists() or spec_root.is_symlink()
                     else ()
                 )
-                spec_lifecycle_findings = validate_repository_spec_package_lifecycle(
+                spec_lifecycle = validate_repository_spec_package_lifecycle_details(
                     root,
                     spec_packages,
                     base_ref=base_ref,
@@ -293,10 +283,25 @@ def validate_repository_contracts(
                     )
                 )
             else:
+                actual_lifecycle_transitions = spec_lifecycle.actual_transitions
                 findings.extend(
                     Finding(finding.path, finding.code, finding.message)
-                    for finding in spec_lifecycle_findings
+                    for finding in spec_lifecycle.findings
                 )
+        for record in records:
+            # Template sources keep their own route because their placeholders
+            # are correct for a template and invalid for an authored document.
+            findings.extend(
+                finding
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    manifest,
+                    actual_lifecycle_transitions=actual_lifecycle_transitions,
+                    enforce_initial_status=transition_ref is not None,
+                )
+                if finding.severity == "error"
+            )
 
     if (
         any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
@@ -518,7 +523,25 @@ def validate_repository_contracts(
                 )
             )
 
-    return sorted(set(findings))
+    return sorted(set(findings)), actual_lifecycle_transitions
+
+
+def validate_repository_contracts(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    *,
+    base_ref: str | None = None,
+    transition_ref: str | None = None,
+) -> list[Finding]:
+    """Validate repository contracts while keeping transition details internal."""
+
+    findings, _ = _validate_repository_contracts(
+        root,
+        profiles,
+        base_ref=base_ref,
+        transition_ref=transition_ref,
+    )
+    return findings
 
 
 def _relation_impact_findings(
@@ -1436,14 +1459,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     native_findings: list[Finding] = []
+    actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
     if registry is not None:
         try:
             if args.mode == "check-changed":
-                native_findings.extend(
-                    validate_repository_contracts(
-                        root, profiles, base_ref=args.base_ref
+                contract_findings, actual_lifecycle_transitions = (
+                    _validate_repository_contracts(
+                        root,
+                        profiles,
+                        base_ref=base.merge_base,
+                        transition_ref=base.merge_base,
                     )
                 )
+                native_findings.extend(contract_findings)
             else:
                 native_findings.extend(_reference_delegation_findings(root, profiles))
         except (ProfileError, SpecPackageError) as error:
@@ -1467,6 +1495,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 else None
             ),
             enforce_initial_status=args.mode == "check-changed",
+            actual_lifecycle_transitions=actual_lifecycle_transitions,
         )
         for record in records
     }

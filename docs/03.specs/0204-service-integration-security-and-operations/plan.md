@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -117,7 +117,7 @@ and secret/egress security acceptance remain BLOCKED in TSK-0001, so this Plan
 and Spec remain active. Image pulls and the reviewed isolated security fixture
 require the pending scope approval; HOME and host policy changes remain held.
 
-Protected PR358 activated the current Plan and Tasks; Task1 now owns the
+Protected PR358 activated the current Plan and Tasks; SPEC-0204-TSK-0001 now owns the
 exclusive reintegration ledger and fresh validation. The historical Task
 completion statements above are closure-branch receipts, not new execution
 or current lifecycle transitions. Runtime gaps keep this Plan active.
@@ -125,25 +125,16 @@ or current lifecycle transitions. Runtime gaps keep this Plan active.
 ### Current prerequisite routing — 2026-10-04
 
 The owner requested prerequisite reconciliation; exact writers for this pass
-are this Plan and Task 0001. Protected baseline is
+are this Plan and [SPEC-0204-TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md).
+Protected baseline is
 `ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 completed source and
 private parity receipts are already delivered. This pass neither reopens them
-nor duplicates their implementation. Task1 records current source, synthetic
-checks, image-cache preflight and the remaining runtime/security blockers.
+nor duplicates their implementation. The current Task owns source, synthetic,
+image-cache, runtime, and security evidence; its derived status is `blocked`.
 
-Current read-only Docker cache lookup finds OpenBao's declared image, but not
-the declared n8n local image, runner, Crawl4AI or Cassandra images. Image pulls,
-local image builds and an exact isolated execution fixture remain separately
-pending. Missing cache alone is not an implementation or license defect.
-Crawl4AI's bridge and inbound token gate do not deny private egress; Cassandra
-LAB has no configured password authentication; Agent renewal/freshness and
-n8n Code-secret rejection lack exact-image acceptance. These are named blockers,
-not static PASS. W2 remains open and this Plan/Spec remain active.
-
-Before runtime, review exact image digest/architecture and compatible
-entrypoint, local context, isolated project, no host port, bounded network,
-fresh non-HOME state and synthetic secrets, resource/time limits, evidence
-redaction, failure preservation and identity-bound cleanup. No image pull,
-container run, HOME change, live secret use or host/DNS/firewall mutation is
-approved by this source prerequisite receipt. Rollback is a scoped document
-correction; source owners and historical execution results are preserved.
+Before separately authorized runtime work, the Task's recorded prerequisites
+remain exact image digest and entrypoint review, isolated non-HOME context,
+bounded network and resources, synthetic secrets, redaction, failure
+preservation, and identity-bound cleanup. This Plan does not duplicate those
+findings or authorize an image pull, container run, HOME change, live secret
+use, or host/DNS/firewall mutation.

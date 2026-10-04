@@ -14,6 +14,7 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
+<!-- Author prompt: Contract observable behavior only. Approval, review, and execution are separate facts and must not be inferred from document structure. -->
 
 # {{TITLE}}
 
@@ -44,6 +45,7 @@ created: "{{CREATED}}"
 ## Acceptance Contract
 
 <!-- Author prompt: Use a numbered list of observable criteria; keep those numbers stable while Plan and Task evidence refers to them. -->
+<!-- Author prompt: A completed criterion needs observed PASS evidence in its Task. Cancellation disposition never waives Spec completion evidence. -->
 
 {{ACCEPTANCE_CONTRACT}}
 

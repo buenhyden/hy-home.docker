@@ -1,8 +1,8 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.14"
+version: "0.7.15"
 type: "sdlc/task"
-status: "in-progress"
+status: "blocked"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -46,6 +46,19 @@ Read-only investigation of 2026-09-25:
   `infra/09-tooling/renovate/systemd/`, timer enabled.
 
 ## Work Log
+
+### Current Lifecycle Reconciliation
+
+The present Stage 99 reconciliation derives `blocked` from criterion 7's
+current isolated-recovery requirement and criterion 10's open R2 scratch
+restore/offline-key custody. Historical transition anchors were not observed
+and are not backfilled.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0182-TSK-0003 | in-progress | blocked | #current-lifecycle-reconciliation |
 
 - 2026-09-25 W12: the retired and entry-closed items were re-checked
   against the live host and `main`; results are under Verification Evidence.
@@ -384,8 +397,17 @@ the earlier verification approval. Verify, restore and PITR remain NOT_RUN. A ne
 recovery, consistency checks and measured recovery time remain NOT_RUN and
 require the separately scoped operational approval. The bounded MLflow,
 synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
-receipts. W10 R2 scratch restore/offline key custody also remain open; the
-Task and Spec package remain in progress/active.
+receipts. W10 R2 scratch restore/offline key custody also remain open; this
+Task is blocked while the Spec package remains active.
+
+| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
+| --- | --- | --- | --- | --- |
+| 7 | W7 | blocked | Current isolated recovery, consistency checks, and measured recovery time are NOT_RUN pending separately scoped operational approval. | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) |
+| 8 | W8 | completed | PASS: approved-window CPU, memory, GPU, and disk observations are recorded above. | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) |
+| 9 | W9 | completed | PASS: every recorded SSO behavior row has an observed result. | [Task receipt](#verification-evidence) |
+| 10 | W10 | blocked | R2 scratch restore and offline-key custody remain open. | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) |
+| 11 | W11 | completed | PASS: supervised reboot rehearsal and SecretID delivery are recorded above. | [RUN-0098](../../../05.operations/runbooks/0098-cold-start-and-reboot.md) |
+| 12 | W12 | completed | PASS: recorded retired and entry-closed dispositions are preserved above. | [Task receipt](#verification-evidence) |
 
 ## Review Evidence
 

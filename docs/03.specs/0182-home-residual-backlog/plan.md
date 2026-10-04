@@ -1,6 +1,6 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -18,8 +18,8 @@ created: "2026-09-25"
 
 Close the twelve [Spec](spec.md) criteria through three Tasks, each work unit
 ending in a merged change or a recorded live result.
-[Task 0003](tasks/tsk-0003-recovery-and-auth-acceptance.md) holds the
-completion receipt.
+[SPEC-0182-TSK-0003](tasks/tsk-0003-recovery-and-auth-acceptance.md) holds the
+completion receipt and its current Task status.
 
 ## Dependencies
 
@@ -83,7 +83,7 @@ Task 0002, runtime and legacy data:
    record the owner's decision for each; stop what the owner stops; amend
    POL-0078 if HOME changes.
 
-Task 0003, recovery and authentication acceptance:
+SPEC-0182-TSK-0003, recovery and authentication acceptance:
 
 1. W7: RUN-0021 step 5 against the real pgBackRest repository; MLflow
    (RUN-0088) on a named isolated network with no route to production
@@ -137,8 +137,8 @@ The W3 post-rebuild CDC check passed before the owner's later retirement of
 the unused connector/slot/publication. W5's planned 2026-09-26 snapshot
 failed before Restic; the actual 2026-09-29 and 2026-09-30 receipts close
 that condition. These are historical execution results, not a new runtime
-apply or today's recovery proof. Remaining Task 0003 work keeps this Plan
-and Spec active.
+apply or today's recovery proof. The current Task status and its item evidence
+own remaining-work progress; this Plan remains the execution sequence.
 
 ## Verification
 

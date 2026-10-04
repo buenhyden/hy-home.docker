@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.2.0"
+version: "3.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -122,6 +122,11 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     that owns the implementation.
 13. Update cross-links in the same logical change.
 14. Record execution evidence in the co-located Stage 03 Task.
+    A single Task status belongs in frontmatter. A multi-item receipt keeps its
+    existing acceptance-criterion/work-unit identity and uses the Registry's
+    optional Status column; it does not create a second progress ledger. Record
+    an optional lifecycle event only for an observed direct registered edge and
+    same-Task evidence. Structural records do not authenticate approval.
 15. Validate metadata, links, and stage-specific contracts before completion.
 16. Keep a fenced command block runnable: every repository path it names must be
     a path a reader can open. Where a block's paths illustrate a rule or a shape

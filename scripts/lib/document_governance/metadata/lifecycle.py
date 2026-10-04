@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import pathlib
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, Sequence, Set
 
 import yaml
 
@@ -107,6 +107,7 @@ def validate_record(
     | None = None,
     migration_compaction_witness: Record | None = None,
     enforce_initial_status: bool = False,
+    actual_lifecycle_transitions: Set[tuple[str, str, str]] | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -337,6 +338,12 @@ def validate_record(
         if isinstance(initial_status, str) and isinstance(status, str)
         else False
     )
+    initial_actual_transition = (
+        (record.path.as_posix(), initial_status, status)
+        in (actual_lifecycle_transitions or ())
+        if isinstance(initial_status, str) and isinstance(status, str)
+        else False
+    )
     if (
         enforce_initial_status
         and isinstance(status, str)
@@ -344,6 +351,7 @@ def validate_record(
         and isinstance(initial_status, str)
         and status != initial_status
         and not initial_transition_evidence
+        and not initial_actual_transition
     ):
         findings.append(
             _finding(
@@ -372,6 +380,7 @@ def validate_record(
             status not in allowed_next
             and not repairs_undefined_previous
             and override_key not in (transition_overrides or {})
+            and override_key not in (actual_lifecycle_transitions or ())
             and record != migration_compaction_witness
         ):
             findings.append(

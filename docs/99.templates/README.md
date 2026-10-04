@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-04"
 layer: "templates"
 ---
 
@@ -97,6 +97,18 @@ fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작
 대상이 아닙니다.
 
 ### Identity and Lifecycle Rules
+
+#### Stage 03 Evidence
+
+Task 하나의 요약 상태는 frontmatter에 둡니다. 여러 acceptance criterion과
+Plan work unit을 기록할 때는 Registry가 등록한 item table의 Status 열과 기존
+두 식별자 쌍을 사용하며, 별도 progress table이나 item ID를 만들지 않습니다.
+Lifecycle Events는 관측한 직접 전이와 같은 Task 안의 evidence anchor가 있을
+때만 선택적으로 기록합니다. 이 구조 검증은 승인 source를 인증하지 않으며,
+승인·검토·실행의 의미는 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
+정확한 table header와 status vocabulary는 Registry가, summary 의미는
+[SDLC](../../.agents/governance/sdlc.md)가, aggregation 구현은 validator가
+소유합니다.
 
 #### Registered Identity Shapes
 

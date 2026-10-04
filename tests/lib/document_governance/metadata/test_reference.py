@@ -136,13 +136,27 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             finding = reference_module.Finding(
                 "docs/03.specs/README.md", "index-member-unlisted", "fixture"
             )
+            transitions = frozenset(
+                {
+                    (
+                        "docs/03.specs/0001-fixture/tasks/tsk-0001-work.md",
+                        "draft",
+                        "in-progress",
+                    )
+                }
+            )
             output = io.StringIO()
             with (
                 mock.patch.object(
                     reference_module,
-                    "validate_repository_contracts",
-                    return_value=[finding],
+                    "_validate_repository_contracts",
+                    return_value=([finding], transitions),
                 ) as contracts,
+                mock.patch.object(
+                    reference_module,
+                    "validate_record",
+                    return_value=[],
+                ) as validate_record,
                 contextlib.redirect_stdout(output),
             ):
                 result = reference_module.main(
@@ -158,6 +172,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     ]
                 )
             contracts.assert_called_once()
+            self.assertTrue(
+                any(
+                    call.kwargs.get("actual_lifecycle_transitions") == transitions
+                    for call in validate_record.call_args_list
+                )
+            )
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 

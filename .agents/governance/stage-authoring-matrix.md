@@ -1,10 +1,10 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.2.2"
+version: "1.2.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-04"
 ---
 
 # Stage Authoring Matrix
@@ -14,7 +14,7 @@ updated: "2026-09-29"
 | Agent governance | — | shared policies, roles, skills, and provider translations | `.agents/` plus authored native adapters | contract, renderer parity, Task |
 | 01 | `requirements` | solution-independent requirements | Requirement Package | acceptance and traceability |
 | 02 | `architecture` | current structure and durable decisions | Description or ADR | architecture traceability |
-| 03 | `specs` | implementable change contract and execution | Spec Package | focused tests, Task, review |
+| 03 | `specs` | implementable change contract and execution | Spec Package: Spec contracts behavior, Plan sequences work, Task records execution and item evidence | focused tests, Task, review |
 | 05 | `operations` | operational knowledge and incidents | Operations Guide, Policy, Runbook, or Incident | safe procedure and observed result |
 | 90 | `references` | non-normative evidence | Research, Audit, or Data | provenance and observation date |
 | 98 | `archive` | retention classes for frozen bodies and route dispositions for outside routes | preserved records, Migration, or Tombstone | source-byte evidence; Git history recovers frozen content |
@@ -58,6 +58,11 @@ Discovery, instruction loading, invocation, and runtime acceptance are separate.
 No generated provider surface becomes a shared authority.
 
 `knowledge/` and `prompts/` are canonical categories, not stages. They route to owners and declare contracts; the owning policy, stage document, or Task keeps its authority.
+
+For Stage 03, approval enables the registered transition but review remains
+read-only and execution is recorded separately in the current Task. Task
+summary and optional lifecycle-event shape belong to Stage 99; the Task carries
+observed evidence and never authenticates an approval source.
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not

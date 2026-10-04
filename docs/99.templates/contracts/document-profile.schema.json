@@ -192,6 +192,45 @@
               "minItems": 4,
               "maxItems": 4,
               "uniqueItems": true
+            },
+            "item_table_headers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 5,
+              "maxItems": 5,
+              "uniqueItems": true
+            }
+          }
+        },
+        "task_lifecycle_events": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "section",
+            "subsection",
+            "table_headers"
+          ],
+          "properties": {
+            "section": {
+              "type": "string",
+              "minLength": 1
+            },
+            "subsection": {
+              "type": "string",
+              "minLength": 1
+            },
+            "table_headers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true
             }
           }
         }

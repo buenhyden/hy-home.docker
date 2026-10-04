@@ -2972,6 +2972,49 @@ class InvalidPreviousStatusTests(unittest.TestCase):
         self.assertIn("invalid-transition", self._codes("archived", "archived-too"))
 
 
+class ActualTaskLifecycleTransitionTests(unittest.TestCase):
+    def test_exact_validated_current_event_path_satisfies_initial_guard(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/9998-fixture/tasks/tsk-0001-implement.md")
+        record = Record(
+            path=path,
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/task",
+                "status": "in-progress",
+                "owner": "@owner",
+                "updated": "2026-10-04",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998-TSK-0001",
+                "parent_ids": ["SPEC-9998", "SPEC-9998-PLAN-0001"],
+                "created": "2026-10-04",
+            },
+            artifact_type="task",
+            frontmatter_present=True,
+        )
+
+        def codes(actual=frozenset()):
+            return {
+                finding.code
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    {},
+                    enforce_initial_status=True,
+                    actual_lifecycle_transitions=actual,
+                )
+            }
+
+        self.assertIn("invalid-initial-status", codes())
+        transition = (path.as_posix(), "draft", "in-progress")
+        self.assertNotIn("invalid-initial-status", codes(frozenset({transition})))
+        self.assertIn(
+            "invalid-initial-status",
+            codes(frozenset({("docs/03.specs/9998-other/spec.md", *transition[1:])})),
+        )
+
+
 class ResurrectedMigrationContractTests(unittest.TestCase):
     """A completed migration's contract is not resurrected on every load.
 
