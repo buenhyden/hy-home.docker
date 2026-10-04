@@ -1,10 +1,10 @@
 ---
 title: "Kafka 메시징"
 version: "1.2.2"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -71,7 +71,7 @@ Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-au
 
 아래 명령으로 정상 구성과 LAB 구성을 각각 렌더합니다. 렌더 성공은 브로커 복구나 CDC 재처리 성공을 증명하지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet

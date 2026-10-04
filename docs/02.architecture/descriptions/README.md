@@ -4,7 +4,7 @@ version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "architecture"
 ---
 
@@ -67,7 +67,7 @@ docs/02.architecture/descriptions/
 - [`AD-0031`](./0031-home-development-host.md):
   home and development host 아키텍처.
 
-## How to Work in This Area
+## Usage
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.

@@ -2,9 +2,9 @@
 title: "HOME Residual Backlog Specification"
 version: "0.5.2"
 type: "sdlc/spec"
-status: "active"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0182"
 parent_ids:

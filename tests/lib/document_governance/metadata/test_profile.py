@@ -393,7 +393,7 @@ class TemplateMetadataTests(unittest.TestCase):
                 "title": "{{TITLE}}",
                 "version": "0.1.0",
                 "type": "common/readme",
-                "status": "draft",
+                "status": "active",
                 "owner": "{{OWNER}}",
                 "updated": "{{UPDATED}}",
                 "layer": "{{LAYER}}",

@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Workspace"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-21"
 ---
 
@@ -71,7 +71,7 @@ JupyterLab은 한 명의 운영자를 위해 하나의 Jupyter Server를 실행�
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 - 이미지 빌드는 저장소 검사 대상이 아니므로, 승인된 환경에서만 빌드합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/jupyterlab/jupyter_token.txt`를 만들고 작업 디렉터리를
    UID 1000 소유로 생성합니다.

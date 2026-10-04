@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
 version: "1.0.7"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -54,7 +54,7 @@ created: "2025-11-12"
 └── README.md           # This file
 ```
 
-## How to Work in This Area
+## Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -37,7 +37,7 @@ created: "2026-10-03"
 - `lab_kafka_net`은 이 project 내부 network입니다. 호스트 port, 정상 `kafka_net`, secret, Schema Registry, Connect는 연결하지 않습니다. PLAINTEXT 접근은 LAB network 내부에 한정합니다.
 - `lab-kafka-init`은 세 broker가 healthy일 때 LAB topic `lab-events`, `lab-logs`를 replication factor 3으로 생성합니다. 생성 job의 성공과 실제 topic 상태는 별개로 확인해야 합니다.
 
-## How to Work in This Area
+## Usage
 
 저장소 루트에서 합성된 LAB 경로와 정상 cluster와 다른 LAB ID를 공급하여 다음 명령을 실행합니다. 이 명령은 서비스를 시작하지 않습니다.
 

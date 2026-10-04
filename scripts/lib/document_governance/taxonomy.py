@@ -310,13 +310,15 @@ def validate_stable_identity(
     path: PurePosixPath,
     metadata: Mapping[str, object],
     profiles: Mapping[str, Mapping[str, object]],
+    *,
+    profile_id: str | None = None,
 ) -> list[TaxonomyFinding]:
     """Validate the metadata ID and stable identity represented by ``path``."""
 
     findings: list[TaxonomyFinding] = []
     artifact_type = str(metadata.get("type", ""))
     artifact_id = str(metadata.get("artifact_id", ""))
-    profile = profiles.get(artifact_type)
+    profile = profiles.get(profile_id or artifact_type)
     if profile is None:
         # Documents declare the family/kind type; profiles are keyed by id.
         profile = next(
@@ -363,10 +365,18 @@ def validate_stable_identity(
     )
     if not path_matches:
         findings.append(TaxonomyFinding("path-id-mismatch", str(path), artifact_id))
-    incident_role = artifact_type in {"operation/incident", "operation/postmortem"}
+    role = profile_id or artifact_type
+    incident_role = role in {
+        "incident",
+        "postmortem",
+        "operation/incident",
+        "operation/postmortem",
+    }
     role_filename_valid = (
-        artifact_type == "operation/incident" and path.name == "incident.md"
-    ) or (artifact_type == "operation/postmortem" and path.name == "postmortem.md")
+        role in {"incident", "operation/incident"} and path.name == "incident.md"
+    ) or (
+        role in {"postmortem", "operation/postmortem"} and path.name == "postmortem.md"
+    )
     valid_incident_route = (
         incident_role and role_filename_valid and is_valid_incident_path(path)
     )
@@ -380,7 +390,10 @@ def validate_stable_identity(
             )
         )
     # The incident year folder's own README routes that year's records.
-    valid_year_readme = artifact_type == "operation/incident-year-readme" and (
+    valid_year_readme = role in {
+        "incident-year-readme",
+        "operation/incident-year-readme",
+    } and (
         re.fullmatch(r"docs/05\.operations/incidents/\d{4}/README\.md", str(path))
         is not None
     )

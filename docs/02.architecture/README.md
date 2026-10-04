@@ -4,7 +4,7 @@ version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "architecture"
 ---
 
@@ -47,7 +47,7 @@ docs/02.architecture/
 - [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
 
-## How to Work in This Area
+## Usage
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은

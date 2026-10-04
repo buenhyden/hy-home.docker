@@ -1,10 +1,10 @@
 ---
 title: "sample-web-service"
 version: "1.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 <!-- Target: examples/sample-web-service/README.md -->
@@ -60,7 +60,7 @@ sample-web-service/
 └── site/index.html    # 서비스가 서빙하는 정적 콘텐츠
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 새 컨테이너 서비스 예시를 시작할 때 이 폴더를 복사합니다.
 2. 새 서비스에 맞게 이름, 이미지 태그, 포트, healthcheck, secret이 아닌 환경

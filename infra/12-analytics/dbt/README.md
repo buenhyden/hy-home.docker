@@ -1,10 +1,10 @@
 ---
 title: "분석 dbt 변환 작업"
 version: "1.1.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-09-21"
 ---
 
@@ -77,7 +77,7 @@ HOME에는 포함되지 않습니다.
 
 `dbt --version`이나 `debug` 성공은 어떤 모델이 실행되었다는 근거가 되지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/db/dev-pg/dbt_password.txt`를 프로비저닝합니다.
 2. 승인된 환경에서 `docker compose --profile core --profile analytics-engineering run --rm dbt debug`를

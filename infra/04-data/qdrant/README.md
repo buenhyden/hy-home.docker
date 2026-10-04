@@ -1,10 +1,10 @@
 ---
 title: "Qdrant"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -67,7 +67,7 @@ qdrant/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
-## How to Work in This Area
+## Usage
 
 1. RAG 통합 패턴을 위해 시스템 가이드 (`docs/05.operations/guides/0034-qdrant.md`)를 검토합니다.
 2. 배포 시 `ai`나 `qdrant` profile이 활성화되어 있는지 확인합니다.

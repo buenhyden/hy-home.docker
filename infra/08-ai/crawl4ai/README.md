@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI 웹 크롤러"
 version: "1.0.5"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 created: "2026-09-21"
 ---
 
@@ -69,7 +69,7 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 - `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 
-## How to Work in This Area
+## Usage
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai`.

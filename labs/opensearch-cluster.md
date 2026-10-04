@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -56,7 +56,7 @@ LAB node healthcheck는 Docker secret을 curl 설정 stdin으로 전달하며, �
 runtime 승인은 막혀 있습니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
 데이터와 별도로 승인받아야 합니다.
 
-## How to Work in This Area
+## Usage
 
 정적 검사는 저장소 루트에서 별도 LAB entrypoint를 대상으로 합니다. 아래
 절대 경로는 **정적 render용 합성 참조**이며 실제 비밀·인증서를 뜻하지 않습니다.

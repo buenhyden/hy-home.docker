@@ -4,6 +4,7 @@
     "allowed_statuses": [
       "draft",
       "review",
+      "in-review",
       "approved",
       "active",
       "proposed",
@@ -21,6 +22,7 @@
       "cancelled",
       "superseded",
       "retired",
+      "deprecated",
       "sealed"
     ],
     "archive_disposition_model": "adopted",
@@ -203,8 +205,30 @@
         "Status",
         "Task result",
         "Durable owner"
+      ],
+      "task_result_values": [
+        "NOT_RUN",
+        "PASS",
+        "FAIL",
+        "DEFER",
+        "NOT_APPLICABLE"
       ]
     },
+    "review_evidence": {
+      "section": "Review Evidence",
+      "table_headers": [
+        "Acceptance criterion",
+        "Acceptance",
+        "Evidence"
+      ],
+      "acceptance_values": [
+        "pending",
+        "accepted",
+        "rejected",
+        "not-required"
+      ]
+    },
+    "lifecycle_generation": 4,
     "task_lifecycle_events": {
       "section": "Work Log",
       "subsection": "Lifecycle Events",
@@ -213,7 +237,27 @@
         "From",
         "To",
         "Evidence"
-      ]
+      ],
+      "migration": {
+        "subsection": "Contract Migration",
+        "table_headers": [
+          "Date",
+          "Source revision",
+          "Evidence"
+        ],
+        "normalizations": [
+          {
+            "lifecycle_id": "navigation",
+            "from_status": "draft",
+            "to_status": "active"
+          },
+          {
+            "lifecycle_id": "publication",
+            "from_status": "review",
+            "to_status": "in-review"
+          }
+        ]
+      }
     },
     "archive_retention": {
       "standard_version": "3.0.0",
@@ -879,7 +923,8 @@
       "traceability": {
         "allowed_parent_profiles": [
           "spec"
-        ]
+        ],
+        "parent_count": 1
       },
       "exceptions": [],
       "frontmatter_values": {
@@ -931,10 +976,9 @@
       "lifecycle_id": "task",
       "traceability": {
         "allowed_parent_profiles": [
-          "spec",
-          "plan",
-          "task"
-        ]
+          "plan"
+        ],
+        "parent_count": 1
       },
       "exceptions": [],
       "frontmatter_values": {
@@ -985,7 +1029,7 @@
         "Troubleshooting",
         "Runbook Handoff"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -1093,7 +1137,7 @@
         "Automation Handoff",
         "Verification Record"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
           "spec",
@@ -1229,7 +1273,7 @@
     },
     {
       "id": "reference-category-readme",
-      "type": "reference/category-readme",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/90.references/{category}/README.md",
@@ -1251,8 +1295,9 @@
       ],
       "required_sections": [
         "Overview",
-        "Packages",
-        "Authoring",
+        "Scope",
+        "Structure",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [
@@ -1260,7 +1305,7 @@
         "Dated Historical Snapshots",
         "Supersession Ledgers"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "frontmatter_values": {
@@ -1681,13 +1726,13 @@
       "optional_sections": [
         "Current Assessments"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
     {
       "id": "documentation-readme",
-      "type": "common/documentation-readme",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/README.md",
@@ -1708,13 +1753,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Audience",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [
+        "Audience",
         "AI Agent Guidance",
         "Cross-link Rules",
         "Current Inventory",
@@ -1727,13 +1772,13 @@
         "Routing",
         "Template Usage"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
     {
       "id": "repository-readme",
-      "type": "common/repository-readme",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "README.md",
@@ -1768,13 +1813,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Audience",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [
+        "Audience",
         "Documentation Standards",
         "Getting Started",
         "Navigation / Inventory",
@@ -1782,13 +1827,13 @@
         "Utilities & Automation",
         "Verification and Quality Gates"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
     {
       "id": "package-readme",
-      "type": "common/package-readme",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "infra/{subpath}/README.md",
@@ -1821,13 +1866,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Audience",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [
+        "Audience",
         "Architecture",
         "Available Scripts",
         "Change Impact",
@@ -1861,13 +1906,13 @@
         "Usage Instructions",
         "Validation"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
     {
       "id": "runtime-governance-readme",
-      "type": "common/runtime-governance-readme",
+      "type": "common/readme",
       "frontmatter_policy": "required",
       "path_pattern": ".claude/README.md",
       "additional_paths": [
@@ -1888,9 +1933,15 @@
         "created",
         "generated_by"
       ],
-      "required_sections": [],
+      "required_sections": [
+        "Overview",
+        "Scope",
+        "Structure",
+        "Usage",
+        "Related Documents"
+      ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
@@ -1937,13 +1988,13 @@
         "Overview",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [
         "Audience"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [
         {
@@ -2001,7 +2052,7 @@
     },
     {
       "id": "incident-year-readme",
-      "type": "operation/incident-year-readme",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": "docs/05.operations/incidents/{year:4}/README.md",
@@ -2023,11 +2074,13 @@
       ],
       "required_sections": [
         "Overview",
+        "Scope",
         "Structure",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "frontmatter_values": {
@@ -2065,7 +2118,7 @@
         "Rules",
         "Scope"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [],
       "additional_paths": [
@@ -2120,7 +2173,7 @@
         "Remediation",
         "Trigger"
       ],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": []
     },
@@ -2199,7 +2252,7 @@
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [
         {
@@ -2246,7 +2299,7 @@
     },
     {
       "id": "governance-provider-index",
-      "type": "governance/provider-index",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/governance/providers/README.md",
@@ -2266,11 +2319,11 @@
         "Overview",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
@@ -2301,7 +2354,7 @@
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": []
     },
@@ -2343,7 +2396,7 @@
     },
     {
       "id": "governance-knowledge-index",
-      "type": "governance/knowledge-index",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/knowledge/README.md",
@@ -2365,11 +2418,11 @@
         "Overview",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
@@ -2409,7 +2462,7 @@
     },
     {
       "id": "governance-prompt-index",
-      "type": "governance/prompt-index",
+      "type": "common/readme",
       "language": "ko",
       "frontmatter_policy": "required",
       "path_pattern": ".agents/prompts/README.md",
@@ -2431,11 +2484,11 @@
         "Overview",
         "Scope",
         "Structure",
-        "How to Work in This Area",
+        "Usage",
         "Related Documents"
       ],
       "optional_sections": [],
-      "lifecycle_id": "living",
+      "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": []
     },
@@ -2914,7 +2967,7 @@
       ],
       "transitions": {
         "draft": [
-          "review"
+        "review"
         ],
         "review": [
           "active"
@@ -2927,6 +2980,18 @@
         "retired": []
       }
     },
+    "navigation": {
+      "initial_status": "active",
+      "terminal_statuses": [
+        "active"
+      ],
+      "statuses": [
+        "active"
+      ],
+      "transitions": {
+        "active": []
+      }
+    },
     "requirement": {
       "initial_status": "draft",
       "terminal_statuses": [
@@ -2935,16 +3000,16 @@
       ],
       "statuses": [
         "draft",
-        "review",
+        "in-review",
         "approved",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "review"
+        "in-review"
         ],
-        "review": [
+        "in-review": [
           "approved"
         ],
         "approved": [
@@ -2963,20 +3028,25 @@
       ],
       "statuses": [
         "draft",
-        "review",
+        "in-review",
         "active",
+        "deprecated",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "review"
+        "in-review"
         ],
-        "review": [
+        "in-review": [
           "active"
         ],
         "active": [
+          "deprecated",
           "superseded",
+          "retired"
+        ],
+        "deprecated": [
           "retired"
         ],
         "superseded": [],
@@ -3020,28 +3090,37 @@
       ],
       "statuses": [
         "draft",
-        "review",
+        "in-review",
         "approved",
-        "active",
+        "in-progress",
+        "blocked",
         "completed",
         "cancelled",
         "superseded"
       ],
       "transitions": {
         "draft": [
-          "review"
+          "in-review"
         ],
-        "review": [
+        "in-review": [
           "approved",
           "cancelled",
           "superseded"
         ],
         "approved": [
-          "active",
+          "in-progress",
+          "blocked",
           "cancelled",
           "superseded"
         ],
-        "active": [
+        "in-progress": [
+          "blocked",
+          "completed",
+          "cancelled",
+          "superseded"
+        ],
+        "blocked": [
+          "in-progress",
           "completed",
           "cancelled",
           "superseded"
@@ -3055,28 +3134,48 @@
       "initial_status": "draft",
       "terminal_statuses": [
         "completed",
-        "cancelled"
+        "cancelled",
+        "superseded"
       ],
       "statuses": [
         "draft",
+        "in-review",
         "approved",
-        "active",
+        "in-progress",
+        "blocked",
         "completed",
-        "cancelled"
+        "cancelled",
+        "superseded"
       ],
       "transitions": {
         "draft": [
-          "approved"
+          "in-review"
+        ],
+        "in-review": [
+          "approved",
+          "cancelled",
+          "superseded"
         ],
         "approved": [
-          "active"
+          "in-progress",
+          "blocked",
+          "cancelled",
+          "superseded"
         ],
-        "active": [
+        "in-progress": [
+          "blocked",
+          "completed",
+          "cancelled",
+          "superseded"
+        ],
+        "blocked": [
+          "in-progress",
           "completed",
           "cancelled"
         ],
         "completed": [],
-        "cancelled": []
+        "cancelled": [],
+        "superseded": []
       }
     },
     "task": {
@@ -3121,24 +3220,25 @@
       ],
       "statuses": [
         "draft",
-        "review",
-        "approved",
         "active",
+        "in-review",
+        "deprecated",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "review"
+        "in-review"
         ],
-        "review": [
-          "approved"
-        ],
-        "approved": [
+        "in-review": [
           "active"
         ],
         "active": [
+          "deprecated",
           "superseded",
+          "retired"
+        ],
+        "deprecated": [
           "retired"
         ],
         "superseded": [],
@@ -3176,14 +3276,14 @@
       ],
       "statuses": [
         "draft",
-        "review",
+        "in-review",
         "published"
       ],
       "transitions": {
         "draft": [
-          "review"
+        "in-review"
         ],
-        "review": [
+        "in-review": [
           "published"
         ],
         "published": []
@@ -3197,16 +3297,16 @@
       ],
       "statuses": [
         "draft",
-        "review",
+        "in-review",
         "published",
         "superseded",
         "retired"
       ],
       "transitions": {
         "draft": [
-          "review"
+        "in-review"
         ],
-        "review": [
+        "in-review": [
           "published"
         ],
         "published": [
@@ -4454,40 +4554,40 @@
   "transitions": {
     "adr": "architecture-decision",
     "architecture-description": "architecture-description",
-    "archive-retention-catalog": "living",
+    "archive-retention-catalog": "navigation",
     "audit": "publication",
     "audit-member": "publication",
     "data": "publication",
     "data-model-contract": "contract",
-    "documentation-readme": "living",
+    "documentation-readme": "navigation",
     "generated": "publication",
-    "governance-hook-policy": "living",
+    "governance-hook-policy": "operational-policy",
     "governance-knowledge": "living",
-    "governance-knowledge-index": "living",
-    "governance-policy": "living",
+    "governance-knowledge-index": "navigation",
+    "governance-policy": "operational-policy",
     "governance-prompt": "living",
-    "governance-prompt-index": "living",
+    "governance-prompt-index": "navigation",
     "governance-provider": "living",
-    "governance-provider-index": "living",
+    "governance-provider-index": "navigation",
     "governance-role": "living",
-    "governance-sdlc": "living",
-    "governance-skill": "living",
-    "guide": "living",
+    "governance-sdlc": "operational-policy",
+    "governance-skill": "operational-policy",
+    "guide": "operational-policy",
     "incident": "incident",
-    "incident-year-readme": "living",
+    "incident-year-readme": "navigation",
     "migration": "sealed-record",
-    "package-readme": "living",
+    "package-readme": "navigation",
     "plan": "plan",
     "policy": "operational-policy",
     "postmortem": "postmortem",
-    "readme": "living",
-    "reference-category-readme": "living",
-    "repository-readme": "living",
+    "readme": "navigation",
+    "reference-category-readme": "navigation",
+    "repository-readme": "navigation",
     "requirements-package": "requirement",
     "research": "publication",
     "research-member": "publication",
-    "runbook": "living",
-    "runtime-governance-readme": "living",
+    "runbook": "operational-policy",
+    "runtime-governance-readme": "navigation",
     "spec": "spec",
     "task": "task",
     "template-source": "template",

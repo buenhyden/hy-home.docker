@@ -1,10 +1,10 @@
 ---
 title: "Repository Support Staging"
 version: "1.0.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-27"
 ---
 
@@ -47,7 +47,7 @@ created: "2026-09-27"
 `README.md`만 추적됩니다. 작업별 하위 디렉터리는 무시되는 임시 공간이므로
 이 README가 목록을 관리하지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 작업을 마치기 전에 오래 남길 비밀 아닌 결과를 정본 owner로 옮깁니다.
 

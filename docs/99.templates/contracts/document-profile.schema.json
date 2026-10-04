@@ -161,6 +161,10 @@
           "type": "string",
           "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
         },
+        "lifecycle_generation": {
+          "type": "integer",
+          "minimum": 1
+        },
         "spec_completion_evidence": {
           "type": "object",
           "additionalProperties": false,
@@ -202,6 +206,13 @@
               "minItems": 5,
               "maxItems": 5,
               "uniqueItems": true
+            },
+            "task_result_values": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1},
+              "minItems": 5,
+              "maxItems": 5,
+              "uniqueItems": true
             }
           }
         },
@@ -228,6 +239,61 @@
                 "type": "string",
                 "minLength": 1
               },
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true
+            },
+            "migration": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["subsection", "table_headers"],
+              "properties": {
+                "subsection": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "table_headers": {
+                  "type": "array",
+                  "items": {"type": "string", "minLength": 1},
+                  "minItems": 3,
+                  "maxItems": 3,
+                  "uniqueItems": true
+                },
+                "normalizations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["lifecycle_id", "from_status", "to_status"],
+                    "properties": {
+                      "lifecycle_id": {"type": "string", "minLength": 1},
+                      "from_status": {"type": "string", "minLength": 1},
+                      "to_status": {"type": "string", "minLength": 1}
+                    }
+                  },
+                  "minItems": 1,
+                  "uniqueItems": true
+                }
+              }
+            }
+          }
+        },
+        "review_evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["section", "table_headers", "acceptance_values"],
+          "properties": {
+            "section": {"type": "string", "minLength": 1},
+            "table_headers": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1},
+              "minItems": 3,
+              "maxItems": 3,
+              "uniqueItems": true
+            },
+            "acceptance_values": {
+              "type": "array",
+              "items": {"type": "string", "minLength": 1},
               "minItems": 4,
               "maxItems": 4,
               "uniqueItems": true
@@ -485,6 +551,10 @@
         },
         "internal_id_spaces": {
           "$ref": "#/$defs/stringList"
+        },
+        "parent_count": {
+          "type": "integer",
+          "minimum": 0
         }
       }
     },

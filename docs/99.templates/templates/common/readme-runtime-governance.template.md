@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "common/runtime-governance-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 ---
@@ -13,4 +13,22 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
+## Overview
+
 {{ROUTE_STATEMENT}}
+
+## Scope
+
+{{SCOPE}}
+
+## Structure
+
+{{STRUCTURE}}
+
+## Usage
+
+{{USAGE}}
+
+## Related Documents
+
+{{RELATED_DOCUMENTS}}

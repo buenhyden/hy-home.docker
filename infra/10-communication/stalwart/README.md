@@ -1,10 +1,10 @@
 ---
 title: "Stalwart Mail Server"
 version: "2.0.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-12-03"
 ---
 
@@ -41,7 +41,7 @@ stalwart/
 
 루트 [docker-compose.yml](../../../docker-compose.yml)이 leaf를 include한다.
 
-## How to Work in This Area
+## Usage
 
 [가이드 — 문서 인덱스](../../../docs/README.md) (`GDE-0070`), [정책 — 문서 인덱스](../../../docs/README.md) (`POL-0070`), [런북 — 문서 인덱스](../../../docs/README.md) (`RUN-0070`)을 따른다. 운영 시작 전 DNS, TLS, 인증, host 포트와 데이터 복구 증거를 확보한다.
 

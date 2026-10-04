@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
 version: "1.2.6"
-type: "common/documentation-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 # docs
@@ -82,7 +82,7 @@ docs/
 통해 historical Migration에서 찾습니다. 그 기록은 과거 이동의 근거이며
 현재 경로나 작성 계약은 Stage 99 Registry가 소유합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
 2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.

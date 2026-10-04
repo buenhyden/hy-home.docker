@@ -975,7 +975,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             runtime_readme = root / "infra/04-data/exampledb/README.md"
             runtime_readme.parent.mkdir(parents=True, exist_ok=True)
             readme_metadata = frontmatter.replace(
-                'type: "operation/policy"', 'type: "common/package-readme"'
+                'type: "operation/policy"', 'type: "common/readme"'
             )
             readme_metadata = readme_metadata.replace(
                 'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n', ""

@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
 version: "1.1.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -112,7 +112,7 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 - `/admins`
 - `/users`
 
-## How to Work in This Area
+## Usage
 
 1. Keycloak 운영 guide/policy/runbook을 확인합니다.
 2. secret은 Docker Secret을 사용합니다.

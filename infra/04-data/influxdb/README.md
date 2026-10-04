@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB (TSDB)"
 version: "1.0.7"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-21"
 ---
 
@@ -74,7 +74,7 @@ InfluxDB 3 Core 단일 인스턴스이며 이미지 선언은 [Compose](docker-c
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 연결된 저장소 validator와 서비스 로그부터 시작함; service-local compose parsing에는 root 네트워크/secret 컨텍스트 또는 local validation overlay가 필요함 |
 
-## How to Work in This Area
+## Usage
 
 소유자는 2026-10-02 현재 InfluxDB에 저장된 데이터가 없다고 확인했습니다.
 실행 중인 volume의 row count, writer 트래픽, 보존 설정은 이 소스 변경에서

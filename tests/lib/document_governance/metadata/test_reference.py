@@ -119,6 +119,30 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
+    def test_generation_normalization_accepts_only_registered_named_edges(self) -> None:
+        registered = frozenset(
+            {
+                ("navigation", "draft", "active"),
+                ("publication", "review", "in-review"),
+            }
+        )
+        self.assertTrue(
+            reference_module._registered_generation_normalization(
+                {"lifecycle_id": "navigation", "identity_relation": "none"},
+                "draft",
+                "active",
+                registered,
+            )
+        )
+        self.assertFalse(
+            reference_module._registered_generation_normalization(
+                {"lifecycle_id": "adr", "identity_relation": "direct"},
+                "accepted",
+                "rejected",
+                registered,
+            )
+        )
+
     def fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
         root = pathlib.Path(directory)
         return root, copy_registry_contract_fixture(root)
@@ -145,12 +169,21 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     )
                 }
             )
+            normalizations = frozenset(
+                {
+                    (
+                        "docs/03.specs/0001-fixture/spec.md",
+                        "active",
+                        "in-progress",
+                    )
+                }
+            )
             output = io.StringIO()
             with (
                 mock.patch.object(
                     reference_module,
                     "_validate_repository_contracts",
-                    return_value=([finding], transitions),
+                    return_value=([finding], transitions, normalizations),
                 ) as contracts,
                 mock.patch.object(
                     reference_module,
@@ -175,6 +208,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertTrue(
                 any(
                     call.kwargs.get("actual_lifecycle_transitions") == transitions
+                    for call in validate_record.call_args_list
+                )
+            )
+            self.assertTrue(
+                any(
+                    call.kwargs.get("actual_lifecycle_normalizations") == normalizations
                     for call in validate_record.call_args_list
                 )
             )

@@ -4,7 +4,7 @@ version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "references"
 ---
 
@@ -68,7 +68,7 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 - [Audit packages](./audits/README.md)
 - [Data packages](./data/README.md)
 
-## How to Work in This Area
+## Usage
 
 1. 파일 형식이 아니라 목적으로 증거 범주를 선택합니다.
 2. 매핑된 Stage 99 템플릿을 복사하고 다음 등록 안정 ID를 발급합니다.

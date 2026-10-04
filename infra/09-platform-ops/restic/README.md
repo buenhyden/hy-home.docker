@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
 version: "1.2.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 ---
 
 # Restic Backup Jobs
@@ -95,7 +95,7 @@ HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_base
 systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.service infra/09-platform-ops/restic/systemd/hyhome-backup.timer
 ```
 
-## How to Work in This Area
+## Usage
 
 새 소스를 추가할 때는 먼저 일관된 방식을 결정합니다. 파일 안전 트리는
 allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내보내기

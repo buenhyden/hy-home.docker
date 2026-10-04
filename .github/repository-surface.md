@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
 version: "1.0.4"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-05"
 created: "2026-02-14"
 ---
 
@@ -82,7 +82,7 @@ python3 scripts/validation/check-github-workflow-contract.py
 - [타입 지정 로컬 QA 게이트](../scripts/validation/run-ci-gate.py)에
   `--explain`을 붙이면 선택된 스위트-검증기 매핑을 보여 준다.
 
-## How to Work in This Area
+## Usage
 
 1. 정본 소유자부터 바꾼다. 동작 자체가 바뀔 때는
    [github-governance.md](../.agents/governance/github-governance.md)를

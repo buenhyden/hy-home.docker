@@ -1,10 +1,10 @@
 ---
 title: "공유 Storybook 정적 origin"
 version: "1.0.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -78,7 +78,7 @@ python3 scripts/validation/check-operations-catalog.py
 정적 검증과 격리 image 검사는 HOME 배포의 증거가 아니다. 실행 전 Docker context,
 project, port, network, volume, resource와 정리 범위를 확인한다.
 
-## How to Work in This Area
+## Usage
 
 1. 소스와 image SHA, OCI label, 정적 manifest revision을 먼저 대조한다.
 2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.

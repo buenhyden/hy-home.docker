@@ -8,7 +8,6 @@ updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
-- "SPEC-0204"
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-03"
 branch_integration_receipts:
@@ -675,17 +674,25 @@ rewriting or cancellation of already-completed work.
 
 | Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
 | --- | --- | --- | --- | --- |
-| 1 | W1 | in-progress | SOURCE_STATIC PASS; runtime evidence remains pending. | [Task receipt](#verification-evidence) |
-| 1 | W5 | blocked | Runtime evidence remains pending. | [Task receipt](#verification-evidence) |
-| 2 | W2 | blocked | SOURCE_STATIC PASS and synthetic shell guard PASS; exact-image and Code-task runtime are BLOCKED. | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
-| 2 | W5 | blocked | Exact-image and Code-task runtime are BLOCKED. | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
-| 3 | W2 | blocked | Crawl4AI egress-deny runtime is blocked and Cassandra authentication is absent by contract. | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
-| 3 | W5 | blocked | Crawl4AI egress-deny runtime remains blocked. | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
-| 4 | W2 | blocked | Agent-renewal freshness runtime remains blocked. | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) |
-| 4 | W5 | blocked | Agent-renewal freshness and route acceptance remain blocked. | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) |
-| 8 | W1 | in-progress | Current W1 source checks and review are pending. This avoids duplicating completed Task 0002's criterion 8/W5 receipt; its HOME, runtime, and migration limits remain historical Task 0002 facts. | [Plan W1](../plan.md#execution-sequence); [Task 0002 receipt](tsk-0002-external-project-integration.md#verification-evidence) |
+| 1 | W1 | in-progress | PASS | [Task receipt](#verification-evidence) |
+| 1 | W5 | blocked | NOT_RUN | [Task receipt](#verification-evidence) |
+| 2 | W2 | blocked | PASS | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
+| 2 | W5 | blocked | NOT_RUN | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
+| 3 | W2 | blocked | NOT_RUN | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
+| 3 | W5 | blocked | NOT_RUN | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
+| 4 | W2 | blocked | NOT_RUN | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) |
+| 4 | W5 | blocked | NOT_RUN | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) |
+| 8 | W1 | in-progress | NOT_RUN | [Plan W1](../plan.md#execution-sequence); [Task 0002 receipt](tsk-0002-external-project-integration.md#verification-evidence) |
 
 ## Review Evidence
+
+| Acceptance criterion | Acceptance | Evidence |
+| --- | --- | --- |
+| 1 | pending | The runtime evidence remains unavailable. |
+| 2 | pending | Exact-image and Code-task runtime evidence remains unavailable. |
+| 3 | pending | Crawl4AI egress-deny runtime evidence remains unavailable. |
+| 4 | pending | Agent-renewal freshness and route acceptance remain unavailable. |
+| 8 | pending | W1 source checks and review remain pending; Task 0002 retains its historical W5 receipt. |
 
 Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 

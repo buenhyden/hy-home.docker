@@ -1,10 +1,10 @@
 ---
 title: "Storybook Workspace"
 version: "1.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-24"
 ---
 
@@ -38,7 +38,7 @@ created: "2025-11-24"
 
 `npm ci --prefix projects/storybook/nextjs` 후 하위 README의 빌드·검사 명령을 사용합니다. Docker 실행 검사는 격리 범위를 확인한 뒤 수행합니다.
 
-## How to Work in This Area
+## Usage
 
 UI 변경은 `nextjs/`에서 진행합니다. 외부 프로젝트는 검토된 패키지 계약을 소비하며 Storybook 소스 파일을 무관리 복사하지 않습니다.
 

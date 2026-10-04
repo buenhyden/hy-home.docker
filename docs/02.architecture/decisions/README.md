@@ -4,7 +4,7 @@ version: "1.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 layer: "architecture"
 ---
 
@@ -115,7 +115,7 @@ docs/02.architecture/decisions/
 - [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
   Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
 
-## How to Work in This Area
+## Usage
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.

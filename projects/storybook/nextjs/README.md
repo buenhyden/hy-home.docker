@@ -1,10 +1,10 @@
 ---
 title: "Storybook Next.js Workspace"
 version: "1.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-02-01"
 ---
 
@@ -50,7 +50,7 @@ npm run test:artifacts
 
 정적 origin 브라우저와 MCP 프로토콜 검사는 Docker 격리 사전 점검 후 실행합니다. `revision.json`의 `uncommitted`는 배포 승인이 아닙니다.
 
-## How to Work in This Area
+## Usage
 
 Button 구현은 `packages/ui/`에서 변경합니다. Button story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. Header와 Page는 예제로 유지합니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
 

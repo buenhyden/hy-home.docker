@@ -4,7 +4,7 @@ version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-05"
 layer: "agent-governance"
 ---
 
@@ -76,7 +76,7 @@ entry만 허용됩니다. 알 수 없는 entry는 보존되며 검토용으로 �
 않습니다. 여기에는 공통 runtime, progress ledger, installer, 생성된 role
 surface가 도입되지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 1. 루트 `AGENTS.md` 또는 `CLAUDE.md`로 진입하여 `governance/bootstrap.md`
    (Bootstrap)를 따릅니다.

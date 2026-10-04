@@ -1,10 +1,10 @@
 ---
 title: "Flink (Iceberg)"
 version: "1.0.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -128,7 +128,7 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `flink list -a`를 실행한 뒤 runbook을 따름 |
 
-## How to Work in This Area
+## Usage
 
 1. Flink와 Spark Dockerfile의 Iceberg 버전을 함께 올리십시오. Flink runtime jar 이름에는 Flink minor 버전이 들어갑니다.
 2. Renovate는 `FROM` 이미지만 갱신하며 jar는 새 checksum으로 수동 갱신합니다. Flink minor 버전이 오르면 대응하는 `iceberg-flink-runtime-<minor>`와 Kafka connector jar도 필요합니다.

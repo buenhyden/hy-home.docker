@@ -1,10 +1,10 @@
 ---
 title: "비밀 파일 관리"
 version: "1.2.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-02-23"
 ---
 
@@ -57,7 +57,7 @@ HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 
 3. 다른 승인된 작업 트리의 공개 예제를 소비해야 하면, 개인 파일이 있는 원본 체크아웃에서 해당 작업 트리의 스크립트를 `--sync-metadata-prune --metadata-source-root <승인된-공개-작업트리>`로 실행한다. 이 옵션은 메타데이터 모드에만 적용되며 개인 값은 원본 체크아웃에 남고 다른 작업 트리에 복제하지 않는다. 먼저 `--sync-metadata-prune-check`로 변경 여부를 확인한다.
 4. 값 없이 공개 계약을 확인할 때 `bash scripts/operations/gen-secrets.sh --dry-run`을 사용한다. 개인 메타데이터 비교는 승인된 범위에서 `--sync-metadata-prune-check`를 사용한다.
 
-## How to Work in This Area
+## Usage
 
 - 새 ID는 기존 번호를 재사용하지 않는다. 공개 등록표의 구분·경로·생성/갱신일·용도를 실제 소비자에 맞추고, 개인 등록표는 값 칸만 보존하여 [기존 동기화 스크립트](../scripts/operations/gen-secrets.sh)로 정렬한다.
 - 값 파일은 Git에서 기본 제외한다. 자격 증명 디렉터리는 최대 `0750`(새 경로·호스트 전용은 `0700`도 허용), 보호 백업·퇴역 영역은 `0700`으로 유지한다. 그룹 쓰기 권한을 주지 않는다. 호스트 백업·호환 참조와 새 경로의 접근 권한을 확인하고, 서비스의 UID/GID 읽기 검사는 승인된 격리 환경에서 수행한다.

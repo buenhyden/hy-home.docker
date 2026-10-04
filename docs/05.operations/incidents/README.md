@@ -4,7 +4,7 @@ version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "operations"
 ---
 
@@ -71,7 +71,7 @@ environment variables는 원형을 유지합니다.
 - [incident.template.md](../../99.templates/templates/operations/incident.template.md)
 - [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
 
-## How to Work in This Area
+## Usage
 
 1. 새 사고는 `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`
    경로에서 시작합니다.

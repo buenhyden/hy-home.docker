@@ -8,7 +8,6 @@ updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0208-TSK-0001"
 parent_ids:
-- "SPEC-0208"
 - "SPEC-0208-PLAN-0001"
 created: "2026-10-04"
 ---
@@ -75,8 +74,8 @@ Focused GREEN then ran eight tests in 9.361 seconds with `OK`; the metadata
 caller-wiring test ran one test with `OK`. Current corpus loading against
 `2bba11...` reported four packages, zero findings, and five actual records.
 Scoped Ruff check passed, format-check reported six files already formatted,
-and diff-check passed. These are focused QA receipts; final gate and review
-remain unrecorded.
+and diff-check passed. These are focused QA receipts; at that point, final-gate
+and independent-review outcomes remained unrecorded.
 
 The read-only policy review found that the default Task template must retain
 its four-column receipt, with the five-column form shown only as an opt-in
@@ -99,7 +98,9 @@ W3 reconciled the two current nonterminal Tasks from their recorded evidence.
 SPEC-0182-TSK-0003 is blocked by the current recovery and R2-custody inputs;
 SPEC-0204-TSK-0001 is blocked by exact-image, egress, Agent-renewal, and
 operational-approval inputs. Each records only its present `in-progress` to
-`blocked` event. Completed Tasks remain unchanged.
+`blocked` event. At the v3 checkpoint, completed Tasks remained unchanged. The
+v4 migration permits only `parent_ids` and actual `updated` metadata
+normalization; their bodies, Commit Ledgers, and status facts remain immutable.
 
 ### Lifecycle Events
 
@@ -113,6 +114,102 @@ operational-approval inputs. Each records only its present `in-progress` to
 | SPEC-0208-TSK-0001 | draft | ready | #preflight-and-readiness |
 | SPEC-0208-TSK-0001 | ready | in-progress | #execution-start |
 
+### Contract Migration
+
+#### V4 Contract Migration
+
+| Date | Source revision | Evidence |
+| --- | --- | --- |
+| 2026-10-05 | 0d1874bb3571e92d5ff5128b4fdfeb3409f92338 | #v4-contract-migration: approved v4 lifecycle-contract migration starts from the successful v3 checkpoint. |
+
+A native temporary-path `apply_patch` attempt was denied before execution with
+an invalid-payload error; it created no file and no path exception or bypass was
+used. Narrow metadata after the receipt correction selected one document with
+zero violations, legacy findings, or overrides.
+
+### V4 Pre-correction Receipts
+
+The frozen v4 source digest was `02deccfd...` across 171 staged files. Focused
+QA first reported 17 tests `OK`, then four tests `OK`. Its full current-class
+run reported 60 tests with 16 failures and five errors before targeted fixture
+correction; it was not rerun at that point. Renderer check reported two
+providers with zero drift; scoped Ruff check and format checks passed for ten
+files. The bounded policy review passed.
+
+The unstaged gate preflight failed at entrypoint identity with no selected roots;
+its log is `/tmp/hy-home-p02-v4-changed-gate-20261005.log`. After the controller
+explicitly staged all 171 files, the public changed-stage gate exited 1 at the
+agent-governance root: 53 tests ran and two knowledge/prompt-index expectations
+failed. Downstream roots were not run. Independent code review at `02deccfd...`
+was blocked by three Important findings: overbroad endpoint normalization, a
+default four-column result/review/coverage gap, and unreachable pre-execution
+or terminal states. One narrower QA correction is in progress; no v4 gate,
+independent code-review approval, acceptance, native result, hosted result, or
+live result was recorded at that point.
+
+The public changed-gate retry logged at
+`/tmp/hy-home-p02-v4-changed-gate-retry-20261005.log` exited 1 because the
+document-links root could not resolve `#v4-contract-migration` in this Task.
+The historical 2870 warning is separate. Downstream roots and implementation
+results were not run; this is not a final PASS.
+
+### V4 Corrected-Gate Receipts
+
+The earlier final changed gate at
+`/tmp/hy-home-p02-v4-changed-gate-final-20261005.log` exited 1 in metadata
+implementation: 131 tests ran with 10 failures. Downstream roots were not run.
+The Audience contract correction and six affected fixture methods then passed
+in 102.168 seconds.
+
+The corrected public changed gate at
+`/tmp/hy-home-p02-v4-corrected-gate-20261005.log` reached a partial pass:
+metadata implementation ran 131 tests with `OK` in 368.100 seconds. Its
+library root then ran 656 tests and failed with 11 failures and 7 errors in
+622.716 seconds; downstream roots were not run. This is an actual failure,
+not a final gate PASS. At that failed-gate point, full-source fixture
+corrections remained with QA.
+
+The staged source at `c9c0e49...` was independently reviewed as a bounded
+PASS conditional on AC5's final public-gate and local-commit evidence; it is
+not acceptance or closure. The staged set classified 175 paths: 156 Markdown,
+14 Python, 2 JSON, and 3 generated files. `markdownlint-cli2` 0.23.3 linted
+159 Markdown files with zero issues
+(`/tmp/hy-home-p02-v4-markdownlint-20261005.log`); the repository's 0.22.1
+pin difference is an observed tool-version fact, not native-hook evidence.
+Staged-patch gitleaks scanned 432,528 bytes with no leaks. `core.hooksPath`
+was observed as `/home/hyunyoun/.codex/git-hooks`; its contents and execution
+remain unobserved. Numeric budget, native writer authentication, hosted
+checks, and live behavior remain unknown or unobserved.
+
+### V4 Verified-Gate Receipts
+
+The supported verified changed gate at
+`/tmp/hy-home-p02-v4-verified-gate-20261005.log` exited 0 against reviewed
+digest `7049e560...`. Metadata implementation ran 131 tests with `OK` in
+368.810 seconds; the library root ran 656 with `OK` in 627.221 seconds;
+supply-chain ran 239 with `OK` in 78.927 seconds; and the final root ran 176
+with `OK` in 48.527 seconds. Metadata active reported 479 documents and zero
+violations; document links reported 10,939 links across 1,097 documents with
+zero errors and one separate historical 2870 warning; lifecycle and archive
+checks reported zero findings. Static Compose validation ran; no live service
+operation occurred.
+
+`changed --explain` selected the supported 13 validators. The final metadata
+command, `rtk proxy /tmp/hy-home-p01-qa-uv-u0r02jaa/bin/python
+scripts/validation/check-document-metadata.py --mode check-changed --base-ref
+main`, exited 0 with 132 selected documents, zero violations, zero legacy
+findings, and zero overrides against merge-base
+`2bba11baa1009e673a763a727b0a9e3d7e0bb5a7`; its log is
+`/tmp/hy-home-p02-v4-metadata-final-20261005.log`.
+
+The independent code review at `7049e560...` passed source, specification,
+quality, and security review. Together with the verified gate, this accepts
+AC1--AC4 evidence only; AC5 remains pending the actual v4 source commit. The
+final staged source classifies 176 paths: 156 authored Markdown files, 15
+Python files (six consumer sources and nine test modules), two JSON files, and
+three generated files. No native writer authentication, hosted result, live
+result, hook execution, or numeric budget result is observed.
+
 ### Inventory
 
 | Work unit | Owner | Surface or consumer | Disposition |
@@ -122,6 +219,7 @@ operational-approval inputs. Each records only its present `in-progress` to
 | W2 | Stage 99 templates | `templates/specs/{spec,plan,task}.template.md`; Stage 03 authors consume them | Align prompts and receipt/event tables. |
 | W3 | Stage 03 navigation | `docs/03.specs/README.md`; human package discovery consumes it | Add SPEC-0208 route and describe derived summary semantics. |
 | W3 | Current package records | SPEC-0182 and SPEC-0204 nonterminal Plan/Task prose; authors and reviewers consume it | Migrate recorded terminology only; do not reopen completed or terminal records. |
+| W3 | Lifecycle families and navigation | Requirements, AD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Postmortem, Research, Audit, Data, current archive catalog, and pure-navigation README profiles; Registry and profile consumers consume them | Apply the approved named lifecycle map, direct Plan/Task parents, common/readme navigation shape, and active navigation state. Retain roles, providers, knowledge, prompts, runtime projections, contracts, and unsupported/frozen profiles unless separately named or pure navigation. |
 | W4 | Validation, review, and integration | Existing validator scripts, independent reviewer, and local Git | Run and record owner-selected checks and review; make the approved local commit only after receipts exist. |
 
 The observed Registry has 50 profiles, 39 template roles, and 40 files under
@@ -173,6 +271,19 @@ and fallback/archive-record profiles intentionally have no dedicated template.
 No dedicated profile is created for a lifecycle event, completion item, role,
 or machine input because these are capacity within existing contracts.
 
+For the v4 scope, `requirements-package` maps to Requirement;
+`architecture-description` to AD; `adr` to ADR; `spec`, `plan`, and `task` to
+the Stage 03 family; `guide`, `policy`, and `runbook` to operational living
+documents; `postmortem` to publication; and `research`, `audit`, `data`, and
+their pack members to reference publication. `migration` and `tombstone` are
+route records. `documentation-readme`, `repository-readme`, `package-readme`,
+`runtime-governance-readme`, `readme`, and `incident-year-readme` retain their
+path-specific profile IDs while using `common/readme` only when they are pure
+navigation. Governance policies, hook policies, SDLC, and skills use the
+operational living lifecycle; roles, providers, knowledge, prompts, runtime
+projections, contracts, template sources, generated records, and unsupported
+or frozen profiles retain their existing mappings.
+
 All Stage 99 source files observed are `README.md`, `registry.json`,
 `contracts/document-frontmatter.schema.json`,
 `contracts/document-profile.schema.json`, `templates/README.md`, and the 39
@@ -186,12 +297,19 @@ role sources: `architecture/{decision,description}.template.md`,
 `specs/{plan,spec,task}.template.md` plus
 `specs/contracts/{data-model.template.md,openapi.template.yaml,schema.template.graphql,service.template.proto}`.
 The Registry owner reaches consumers through `registry.py:27-32` and
-`registry.py:2248`; profile classification reaches `metadata/profile.py:55`
-and `metadata/profile.py:2140`; template-section enforcement reaches
-`metadata/heading.py:735`; role-source and Markdown-template checks reach
-`metadata/reference.py:1151-1176`; Spec receipt and lifecycle consumers reach
-`spec_packages.py:1054-1152` and `metadata/reference.py`. These paths consume
-contracts and do not become policy owners.
+current loader/classifier and validator functions in
+`scripts/lib/document_governance/registry.py`
+(`load_registry`, `validate_registry`, `classify_path`),
+`metadata/lifecycle.py` (`validate_record`), `metadata/reference.py`
+(`validate_repository_contracts`), `spec_packages.py`
+(`validate_spec_package_lifecycle` and
+`validate_repository_spec_package_lifecycle_details`), and `taxonomy.py`
+(`classify_path` and `validate_stable_identity`).
+`scripts/operations/provider_surface_renderer.py` (`render_all`) consumes the
+navigation surface. These verified file/function relationships identify
+consumers, not policy owners; earlier line positions are v3 baseline facts,
+not current anchors. The actual v4 source commit's `git show --name-status`
+will provide the complete 176-path manifest.
 
 ## Verification Evidence
 
@@ -243,26 +361,41 @@ supported changed retry passed without a custom filtered wrapper.
 
 | Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
 | --- | --- | --- | --- | --- |
-| 1 | W1 | in-progress | Draft inventory recorded; implementation and review evidence pending. | SPEC-0208 Task 0001 |
-| 2 | W2 | in-progress | Contract fields and validator implementation are in place; focused and compatibility tests passed in v3. | Stage 99 Registry and profile schema |
-| 3 | W2 | in-progress | Spec, Plan, and Task templates express the bounded authoring contract; focused and compatibility tests passed in v3. | Stage 99 templates |
-| 4 | W2 | in-progress | Earlier RED is preserved above; v3 implementation and focused/compatibility tests passed. The same-package v4 contract amendment remains pending. | W2 validator owner |
-| 5 | W3 | in-progress | Current nonterminal Task summaries, evidence rows, and Plan references migrated from recorded facts. | SPEC-0208 Task 0001 |
-| 5 | W4 | draft | Checkpoint complete: final evidence commit and the same-package v4 amendment remain pending. | SPEC-0208 Task 0001 |
+| 1 | W1 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
+| 2 | W2 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
+| 3 | W2 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
+| 4 | W2 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
+| 5 | W3 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
+| 5 | W4 | in-progress | NOT_RUN | [Commit Ledger](#commit-ledger) |
 
 ## Review Evidence
 
+| Acceptance criterion | Acceptance | Evidence |
+| --- | --- | --- |
+| 1 | accepted | Source review and the verified changed gate at `7049e560...`. |
+| 2 | accepted | Focused corrections, source review, and the verified changed gate at `7049e560...`. |
+| 3 | accepted | Source review and the verified changed gate at `7049e560...`. |
+| 4 | accepted | Independent source/specification/quality/security review and the verified changed gate at `7049e560...`. |
+| 5 | pending | The actual v4 source commit remains required. |
+
 Rules-engineer policy review passed for the corrected contract at reviewed
-digest `a5378c82...`. Code-reviewer re-review passed and approved the corrected
-source at `5f84f235accacad65d3bbeb326763ff8954fa8dc3f5f8c97f3e3d7f194704d2d`.
-Both are read-only and cannot approve, execute, or authenticate an operation.
-The evidence commit and same-package v4 amendment remain pending.
+digest `a5378c82...`. Earlier code-review receipts at `5f84f235...` and
+`c9c0e49...` remain dated evidence; the current independent review at
+`7049e560...` passed source, specification, quality, and security. These
+read-only reviews do not execute or authenticate an operation. The evidence
+commit and same-package v4 amendment remain pending. The v3 checkpoint
+`0d1874...` is actual local history; P01 at `68e0bfd...` remains a separate
+local, completed, unmerged branch and is not imported here.
 
 ## Commit Ledger
 
-Prepared subject: `fix(governance): Normalize Task lifecycle evidence`.
+Prepared v4 subject: `fix(governance): Align v4 lifecycle contracts and consumers`.
 
-No commit SHA exists. Local commit, push, PR, merge, and remote checks are not
+The prior v3 checkpoint commit is
+`0d1874bb3571e92d5ff5128b4fdfeb3409f92338`, created by
+`rtk proxy git commit -m 'fix(governance): Normalize Task lifecycle evidence'`
+with exit 0 for 24 files. No installed-hook execution output was observed.
+The v4 commit has no SHA yet; push, PR, merge, and remote checks are not
 recorded as performed.
 
 ## Rulings
@@ -274,5 +407,6 @@ structural fields introduced by this package.
 ## Deferred Items
 
 W2 owns validator implementation and tests under this package; this Task
-records their evidence. Any future lifecycle enum or stored package state
-requires a separate approved contract change.
+records their evidence. The approved v4 amendment now owns the current
+lifecycle-family, direct-parent, result, review, and generation contract;
+later value-grammar changes still require their own approved contract.

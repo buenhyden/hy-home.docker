@@ -1,10 +1,10 @@
 ---
 title: "Management Database (mng-db)"
 version: "1.1.5"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-12-03"
 ---
 
@@ -65,7 +65,7 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.
 
-## How to Work in This Area
+## Usage
 
 ```bash
 docker compose --env-file .env.example --profile mng config --quiet

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB 지원"
 version: "0.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -38,7 +38,7 @@ Patroni·etcd·HAProxy의 LAB 소스이며 이미지 선언은 독립 [LAB Compo
 
 정적 렌더와 격리 실행 절차는 [LAB 문서](../../../labs/postgresql-ha.md)에 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 LAB의 독립 프로젝트·환경·secret·network·volume 계약과 정적 검증은 co-located LAB 문서를 따릅니다. HOME root Compose로 실행하지 않습니다.
 

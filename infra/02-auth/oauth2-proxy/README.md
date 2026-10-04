@@ -1,10 +1,10 @@
 ---
 title: "OAuth2 Proxy"
 version: "1.1.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-29"
 ---
 
@@ -82,7 +82,7 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 | OIDC client | `home-proxy-client` |
 | Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
 
-## How to Work in This Area
+## Usage
 
 1. Auth Operations와 integration guide를 먼저 확인.
 2. new service onboarding 시 ForwardAuth vs Native OIDC를 먼저 분류.

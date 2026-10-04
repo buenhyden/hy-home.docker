@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
 version: "1.2.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -121,7 +121,7 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
 ```
 
-## How to Work in This Area
+## Usage
 
 1. Airflow guide/policy/runbook 확인.
 2. DAG lifecycle guide 확인.

@@ -96,6 +96,7 @@ from scripts.lib.document_governance.registry import (
     _declares_provider_binding,
     document_type,
     load_registry,
+    load_registry_document_at_revision,
     load_trusted_requirement_allocation_baseline,
     normalize_profile_frontmatter,
     resolve_template_placeholders,
@@ -199,13 +200,35 @@ def _is_registered_readme_form(path: pathlib.Path, registry: DocumentRegistry) -
     )
 
 
+def _registered_generation_normalization(
+    profile: Mapping[str, object] | None,
+    source_status: object,
+    current_status: object,
+    registered: frozenset[tuple[object, object, object]],
+) -> bool:
+    if not isinstance(profile, Mapping):
+        return False
+    lifecycle_id = profile.get("lifecycle_id")
+    return (
+        (lifecycle_id, source_status, current_status) in registered
+        and (
+            lifecycle_id != "navigation"
+            or profile.get("identity_relation") == "none"
+        )
+    )
+
+
 def _validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
     *,
     base_ref: str | None = None,
     transition_ref: str | None = None,
-) -> tuple[list[Finding], frozenset[tuple[str, str, str]]]:
+) -> tuple[
+    list[Finding],
+    frozenset[tuple[str, str, str]],
+    frozenset[tuple[str, str, str]],
+]:
     """Validate tracked repository surfaces backed by the canonical registry.
 
     `transition_ref` names the committed state the working tree is compared
@@ -217,6 +240,8 @@ def _validate_repository_contracts(
     _require_git_worktree(root)
     findings: list[Finding] = []
     actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalizations: set[tuple[str, str, str]] = set()
+    actual_lifecycle_normalization_sources: dict[str, str] = {}
     tracked_markdown = _tracked_repository_markdown(root)
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
 
@@ -273,6 +298,7 @@ def _validate_repository_contracts(
                     root,
                     spec_packages,
                     base_ref=base_ref,
+                    registry=active_registry,
                 )
             except SpecPackageError as error:
                 findings.append(
@@ -284,6 +310,105 @@ def _validate_repository_contracts(
                 )
             else:
                 actual_lifecycle_transitions = spec_lifecycle.actual_transitions
+                actual_lifecycle_normalizations.update(
+                    spec_lifecycle.actual_normalizations
+                )
+                if spec_lifecycle.generation_source is not None:
+                    migration_contract = active_registry.common.get(
+                        "task_lifecycle_events", {}
+                    )
+                    migration = (
+                        migration_contract.get("migration", {})
+                        if isinstance(migration_contract, Mapping)
+                        else {}
+                    )
+                    registered_normalizations = frozenset(
+                        (
+                            item.get("lifecycle_id"),
+                            item.get("from_status"),
+                            item.get("to_status"),
+                        )
+                        for item in migration.get("normalizations", ())
+                        if isinstance(item, Mapping)
+                    )
+                    source_registry = load_registry_document_at_revision(
+                        spec_lifecycle.generation_source,
+                        root=root,
+                    )
+                    source_profiles = source_registry.get("profiles")
+                    source_lifecycles = source_registry.get("lifecycles")
+                    source_profiles_by_id = (
+                        {
+                            profile.get("id"): profile
+                            for profile in source_profiles
+                            if isinstance(profile, Mapping)
+                        }
+                        if isinstance(source_profiles, list)
+                        else {}
+                    )
+                    source_records = collect_selected_records_at_ref(
+                        root,
+                        profiles,
+                        [record.path.as_posix() for record in records],
+                        spec_lifecycle.generation_source,
+                    )
+                    for record in records:
+                        source = source_records.get(record.path.as_posix())
+                        if source is None:
+                            continue
+                        source_status = source.metadata.get("status")
+                        current_status = record.metadata.get("status")
+                        source_profile = source_profiles_by_id.get(record.artifact_type)
+                        source_lifecycle_id = (
+                            source_profile.get("lifecycle_id")
+                            if isinstance(source_profile, Mapping)
+                            else None
+                        )
+                        source_lifecycle = (
+                            source_lifecycles.get(source_lifecycle_id)
+                            if isinstance(source_lifecycles, Mapping)
+                            and isinstance(source_lifecycle_id, str)
+                            else None
+                        )
+                        current_profile = active_registry.profiles.get(
+                            record.artifact_type
+                        )
+                        current_lifecycle_id = (
+                            current_profile.get("lifecycle_id")
+                            if isinstance(current_profile, Mapping)
+                            else None
+                        )
+                        current_statuses = active_registry.lifecycles.get(
+                            str(current_lifecycle_id), ()
+                        )
+                        normalization = (
+                            record.path.as_posix(),
+                            source_status,
+                            current_status,
+                        )
+                        if normalization in actual_lifecycle_normalizations:
+                            actual_lifecycle_normalization_sources[
+                                record.path.as_posix()
+                            ] = source_status
+                        if (
+                            source.artifact_type == record.artifact_type
+                            and source.metadata.get("artifact_id")
+                            == record.metadata.get("artifact_id")
+                            and source_status != current_status
+                            and isinstance(source_lifecycle, Mapping)
+                            and source_status in source_lifecycle.get("statuses", ())
+                            and current_status in current_statuses
+                            and _registered_generation_normalization(
+                                current_profile,
+                                source_status,
+                                current_status,
+                                registered_normalizations,
+                            )
+                        ):
+                            actual_lifecycle_normalization_sources[
+                                record.path.as_posix()
+                            ] = source_status
+                            actual_lifecycle_normalizations.add(normalization)
                 findings.extend(
                     Finding(finding.path, finding.code, finding.message)
                     for finding in spec_lifecycle.findings
@@ -298,6 +423,12 @@ def _validate_repository_contracts(
                     profiles,
                     manifest,
                     actual_lifecycle_transitions=actual_lifecycle_transitions,
+                    actual_lifecycle_normalizations=frozenset(
+                        actual_lifecycle_normalizations
+                    ),
+                    actual_lifecycle_normalization_sources=(
+                        actual_lifecycle_normalization_sources
+                    ),
                     enforce_initial_status=transition_ref is not None,
                 )
                 if finding.severity == "error"
@@ -523,7 +654,11 @@ def _validate_repository_contracts(
                 )
             )
 
-    return sorted(set(findings)), actual_lifecycle_transitions
+    return (
+        sorted(set(findings)),
+        actual_lifecycle_transitions,
+        frozenset(actual_lifecycle_normalizations),
+    )
 
 
 def validate_repository_contracts(
@@ -535,7 +670,7 @@ def validate_repository_contracts(
 ) -> list[Finding]:
     """Validate repository contracts while keeping transition details internal."""
 
-    findings, _ = _validate_repository_contracts(
+    findings, _, _ = _validate_repository_contracts(
         root,
         profiles,
         base_ref=base_ref,
@@ -1460,17 +1595,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     native_findings: list[Finding] = []
     actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalizations: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalization_sources: dict[str, str] = {}
     if registry is not None:
         try:
             if args.mode == "check-changed":
-                contract_findings, actual_lifecycle_transitions = (
-                    _validate_repository_contracts(
-                        root,
-                        profiles,
-                        base_ref=base.merge_base,
-                        transition_ref=base.merge_base,
-                    )
+                (
+                    contract_findings,
+                    actual_lifecycle_transitions,
+                    actual_lifecycle_normalizations,
+                ) = _validate_repository_contracts(
+                    root,
+                    profiles,
+                    base_ref=base.merge_base,
+                    transition_ref=base.merge_base,
                 )
+                actual_lifecycle_normalization_sources = {
+                    path: source
+                    for path, source, _ in actual_lifecycle_normalizations
+                }
                 native_findings.extend(contract_findings)
             else:
                 native_findings.extend(_reference_delegation_findings(root, profiles))
@@ -1496,6 +1639,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             ),
             enforce_initial_status=args.mode == "check-changed",
             actual_lifecycle_transitions=actual_lifecycle_transitions,
+            actual_lifecycle_normalizations=actual_lifecycle_normalizations,
+            actual_lifecycle_normalization_sources=(
+                actual_lifecycle_normalization_sources
+            ),
         )
         for record in records
     }

@@ -1,10 +1,10 @@
 ---
 title: "Conftest"
 version: "1.0.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -109,7 +109,7 @@ conftest/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 작업을 실행하고 처음 실패한 선언을 수정합니다. 런북을 참고합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. 새 규칙에는 같은 디렉터리에 통과·실패 테스트를 함께 추가한다.
 2. 현재 소스가 통과하지 못하는 규칙은 `warn`으로 시작한다.

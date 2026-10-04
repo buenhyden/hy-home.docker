@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 ---
@@ -44,7 +44,7 @@ updated: "{{UPDATED}}"
 
 {{VALIDATION}}
 
-## How to Work in This Area
+## Usage
 
 {{WORK_INSTRUCTIONS}}
 

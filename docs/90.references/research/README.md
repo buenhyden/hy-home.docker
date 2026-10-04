@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
 version: "1.5.0"
-type: "reference/category-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -19,15 +19,20 @@ created: "2026-07-02"
 Stage 90 authority boundary와 package lifecycle 규칙은
 [References index](../README.md)와 Stage 99 Registry가 정의합니다.
 
-## Packages
+## Scope
 
-| Stable ID | Package | Status |
-| :--- | :--- | :--- |
-| RES-0001 | Agentic Engineering Research Pack | 은퇴; 본문은 `docs/98.archive/retired/` 아래에 보존되며 tombstone으로 기록됨 |
-| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical 외부 연구·역사 증거 hub | active |
-| [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics; RES-0002 routing 아래 전문 증거 | active |
-| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment; RES-0002를 위한 보존된 날짜 증거 | review — 날짜가 있는 증거; 이후 전이는 별도 승인 필요 |
-| [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment; RES-0002에서 링크되는 별도 archive-domain 증거 | draft — SPEC-0177, SPEC-0178을 위한 날짜 증거 |
+이 README는 현재 research package 경로를 안내합니다. research claim, 관찰 날짜,
+인용과 provenance는 각각의 package가 소유합니다.
+
+## Structure
+
+| Stable ID | Package |
+| :--- | :--- |
+| RES-0001 | Agentic Engineering Research Pack |
+| [RES-0002](./0002-agentic-engineering-research-pack/README.md) | Agentic Engineering Research Pack; canonical 외부 연구·역사 증거 hub |
+| [RES-0084](./0084-github-actions-platform/README.md) | Reference: GitHub Actions Platform Mechanics; RES-0002 routing 아래 전문 증거 |
+| [RES-0085](./0085-workspace-engineering-main-baseline-assessment/README.md) | Workspace Engineering Main Baseline Assessment; RES-0002를 위한 보존된 날짜 증거 |
+| [RES-0096](./0096-archive-disposition-consistency/README.md) | Archive Disposition Consistency Assessment; RES-0002에서 링크되는 별도 archive-domain 증거 |
 
 ### Consolidated Package Routing
 
@@ -160,7 +165,7 @@ README에서 찾습니다.
 index는 routing과 설계만 기록하며, runtime, remote, provider, secret,
 infrastructure 변경을 승인하지 않습니다.
 
-## Authoring
+## Usage
 
 package는 `research/####-<slug>/` 아래에만 만들고, 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner

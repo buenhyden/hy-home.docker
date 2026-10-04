@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook"
 version: "1.0.2"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-05-09"
 ---
 
@@ -75,7 +75,7 @@ open-notebook/
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `08-ai` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `notebook` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 laboratory 프로필을 검증합니다.
 2. `notebook` 프로필이 의도적으로 선택된 경우에만 시작합니다. `admin`은 더 이상 Open Notebook이나 SurrealDB를 선택하지 않습니다.

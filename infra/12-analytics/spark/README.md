@@ -1,10 +1,10 @@
 ---
 title: "Spark (Iceberg)"
 version: "1.0.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -116,7 +116,7 @@ job 시작에는 runtime 승인이 필요합니다.
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | catalog 접근을 증명하기 위해 기본 명령을 실행한 뒤 runbook을 따름 |
 
-## How to Work in This Area
+## Usage
 
 1. Iceberg 버전을 올릴 때는 Spark·Trino·Flink의 jar를 함께 올리고 checksum을 다시 계산한다.
 2. Renovate는 `FROM` 이미지만 갱신하며 Iceberg jar는 수동 소유이다.

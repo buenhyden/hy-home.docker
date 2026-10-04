@@ -64,7 +64,7 @@ docs/99.templates/
     └── common/
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 등록된 profile과 template 역할을 선택합니다.
 2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
@@ -134,7 +134,8 @@ profile과 공통 값 schema를 통해 투영합니다. 이름, 폴더, `functio
 서로 일치해야 합니다. 이 직렬화 계약은 runtime 권한을 부여하지 않습니다.
 다른 작성 문서는 공통 frontmatter envelope를 유지합니다.
 
-`parent_ids`는 Registry가 선언한 구조적 관계를 담습니다. 더 넓은 증거와
+`parent_ids`는 Registry가 선언한 구조적 관계를 담습니다. Plan은 정확히 하나의
+Spec parent를, Task는 정확히 하나의 Plan parent를 둡니다. 더 넓은 증거와
 consumer 관계는 `Traceability`나 `Related Documents`에 둡니다. 소유권은
 `.github/CODEOWNERS` 또는 해당 canonical role에서 옵니다. 짧은 Registry
 profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추가 작성용
@@ -171,12 +172,13 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - lifecycle 전이는 그 profile의 lifecycle에 등록된 경우에만 유효합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
-의미적 흐름은 profile마다 다릅니다: Requirement는 승인하고, ADR은
-수락하거나 거부하고, Spec은 활성화 전에 검토·승인하고, Plan은 활성화
-전에 승인하고, Task는 준비 상태를 거쳐 진행 중이 되고, Incident는 감지에서
-해결로 진행하고, Postmortem과 reference는 게시되고, Migration과 Tombstone
-기록은 봉인됩니다. `registry.json`이 모든 진입 상태, edge, terminal 상태의
-정확한 권위로 남습니다.
+의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
+수락하거나 거부하며, Spec과 Plan은 승인 후 진행·차단·완료될 수 있고, Task는
+준비 상태를 거쳐 진행 중이 됩니다. Guide·Policy·Runbook과 common rule·Skill은
+검토 후 active가 되며, Postmortem과 reference는 게시되고, Navigation README와
+current archive catalog는 active로 유지되며 Migration과 Tombstone 기록은
+draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, terminal
+상태의 정확한 권위로 남습니다.
 전체 Git history 발급 검증은 전체 문서 계약 profile이 소유합니다. 변경
 검증은 저장된 Registry 발급 상태를 사용합니다.
 

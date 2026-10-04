@@ -126,7 +126,10 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     existing acceptance-criterion/work-unit identity and uses the Registry's
     optional Status column; it does not create a second progress ledger. Record
     an optional lifecycle event only for an observed direct registered edge and
-    same-Task evidence. Structural records do not authenticate approval.
+    same-Task evidence. A Plan has one Spec parent and a Task has one Plan
+    parent where their Registry profiles require it. Task results and Review
+    Evidence use the Registry vocabulary; structural records do not authenticate
+    approval, review, or execution.
 15. Validate metadata, links, and stage-specific contracts before completion.
 16. Keep a fenced command block runnable: every repository path it names must be
     a path a reader can open. Where a block's paths illustrate a rule or a shape
@@ -439,7 +442,10 @@ Stage 03 may be empty when no package remains, including no waiting package.
 
 Retire a package or a standalone document only when all of these hold.
 
-1. Its status is terminal: `completed`, `cancelled`, `superseded`, or `retired`.
+1. Its profile/status pair is eligible for the relevant Stage 98 disposition in
+   the Registry's `archive_retention.disposition_entry_statuses` map. Lifecycle
+   terminality and disposition eligibility are separate: neither one grants an
+   automatic archive action.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical agent governance, 01, 02, or 05 owner.
 3. Every inbound consumer is updated in the same logical change.

@@ -1,10 +1,10 @@
 ---
 title: "Great Expectations (lakehouse data quality)"
 version: "1.0.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -135,7 +135,7 @@ job 실행에는 runtime 승인이 필요합니다. job은 필요할 때 Trino�
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `validate <suite>`를 실행한 뒤 runbook을 따름 |
 
-## How to Work in This Area
+## Usage
 
 1. `suites/` 아래에 JSON 파일 하나로 suite를 추가하십시오. rehearsal용 `test.gx_rehearsal`은 유지합니다.
 2. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. GX 버전이 오르면 `docker-compose.yml`의 `image:` tag와 버전 투영(`scripts/operations/sync-tech-stack-versions.sh`)도 바뀝니다. 어느 쪽이든 변경 후 재빌드하고 rehearsal을 다시 실행하십시오.

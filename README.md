@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
 version: "1.3.1"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -250,7 +250,7 @@ release visibility gate이며, remote required-check enforcement 증거로
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 
-## How to Work in This Area
+## Usage
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.

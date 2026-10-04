@@ -1,10 +1,10 @@
 ---
 title: "Projects Surface"
 version: "1.0.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-10-05"
 created: "2026-01-12"
 ---
 
@@ -49,7 +49,7 @@ projects/
 └── README.md   # This file
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 하위 프로젝트를 수정하기 전에 해당 프로젝트의 `README.md`와 package manifest를 먼저 확인합니다.
 2. parent repo가 직접 추적하지 않는 gitlink/submodule 내부 파일은 별도 저장소 작업으로 분리합니다.

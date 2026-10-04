@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack"
 version: "1.0.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -65,7 +65,7 @@ supabase/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
-## How to Work in This Area
+## Usage
 
 1. **환경 로드**: `.env.example`을 기준으로 non-secret key surface를 확인합니다.
 2. **Secret 준비**: 위 `Secret refs`의 Docker Secret 파일 경로가 준비되었는지 확인합니다. 값은 문서, 로그, commit에 기록하지 않습니다.

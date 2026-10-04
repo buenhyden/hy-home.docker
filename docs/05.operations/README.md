@@ -4,7 +4,7 @@ version: "2.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 layer: "operations"
 ---
 
@@ -101,7 +101,7 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
 
-## How to Work in This Area
+## Usage
 
 1. 필요한 역할의 인덱스([Guides](./guides/README.md),
    [Policies](./policies/README.md), [Runbooks](./runbooks/README.md))에서

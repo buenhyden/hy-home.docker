@@ -1,10 +1,10 @@
 ---
 title: "Agent Prompts"
 version: "0.2.0"
-type: "governance/prompt-index"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-06"
 ---
 
@@ -52,7 +52,7 @@ prompt를 읽는 것은 어떤 role도 선택하지 않으며 어떤 permission�
 Prompt slug는 skill id와 구분되게 유지되어 하나의 이름이 두 가지 다른
 것으로 resolve되지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 1. 필요한 것이 절차가 아니라 input/output contract인지 확인합니다. 절차는
    skill에 속합니다.

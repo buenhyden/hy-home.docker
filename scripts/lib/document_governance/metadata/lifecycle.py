@@ -108,6 +108,8 @@ def validate_record(
     migration_compaction_witness: Record | None = None,
     enforce_initial_status: bool = False,
     actual_lifecycle_transitions: Set[tuple[str, str, str]] | None = None,
+    actual_lifecycle_normalizations: Set[tuple[str, str, str]] | None = None,
+    actual_lifecycle_normalization_sources: Mapping[str, str] | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -344,6 +346,29 @@ def validate_record(
         if isinstance(initial_status, str) and isinstance(status, str)
         else False
     )
+    normalization_source = (actual_lifecycle_normalization_sources or {}).get(
+        record.path.as_posix()
+    )
+    initial_actual_normalization = (
+        isinstance(normalization_source, str)
+        and (
+            record.path.as_posix(),
+            normalization_source,
+            status,
+        )
+        in (actual_lifecycle_normalizations or ())
+    )
+    actual_normalization_transition = any(
+        path == record.path.as_posix()
+        and source == normalization_source
+        and transition_path == path
+        and transition_source == bridge
+        and target == status
+        for path, source, bridge in (actual_lifecycle_normalizations or ())
+        for transition_path, transition_source, target in (
+            actual_lifecycle_transitions or ()
+        )
+    )
     if (
         enforce_initial_status
         and isinstance(status, str)
@@ -352,6 +377,8 @@ def validate_record(
         and status != initial_status
         and not initial_transition_evidence
         and not initial_actual_transition
+        and not initial_actual_normalization
+        and not actual_normalization_transition
     ):
         findings.append(
             _finding(
@@ -366,21 +393,13 @@ def validate_record(
             if isinstance(transitions, dict)
             else []
         )
-        # A previous status the lifecycle never defined is not a state this
-        # document can transition out of, so moving to a defined status repairs
-        # it rather than transitioning. Demanding an override for a repair
-        # makes an invalid status cheaper to keep than to correct, and the
-        # override is not reachable in this repository anyway.
-        defined_statuses = set(transitions) if isinstance(transitions, dict) else set()
-        repairs_undefined_previous = bool(defined_statuses) and (
-            previous_status not in defined_statuses and status in defined_statuses
-        )
         override_key = (record.path.as_posix(), previous_status, status)
         if (
             status not in allowed_next
-            and not repairs_undefined_previous
             and override_key not in (transition_overrides or {})
             and override_key not in (actual_lifecycle_transitions or ())
+            and override_key not in (actual_lifecycle_normalizations or ())
+            and not actual_normalization_transition
             and record != migration_compaction_witness
         ):
             findings.append(
@@ -449,6 +468,7 @@ def validate_record(
             pathlib.PurePosixPath(record.path.as_posix()),
             record.metadata,
             identity_profiles,
+            profile_id=record.artifact_type,
         ):
             findings.append(
                 _finding(
@@ -473,6 +493,24 @@ def validate_record(
             findings.append(
                 _finding(
                     record, "duplicate-parent", "parent_ids contains duplicate IDs"
+                )
+            )
+        parent_count = None
+        if isinstance(registry, DocumentRegistry):
+            registered_profile = registry.profiles.get(record.artifact_type)
+            traceability = (
+                registered_profile.get("traceability")
+                if isinstance(registered_profile, Mapping)
+                else None
+            )
+            if isinstance(traceability, Mapping):
+                parent_count = traceability.get("parent_count")
+        if isinstance(parent_count, int) and len(parent_ids) != parent_count:
+            findings.append(
+                _finding(
+                    record,
+                    "parent-cardinality",
+                    f"parent_ids must contain exactly {parent_count} entries",
                 )
             )
         root_exceptions = common.get("root_exceptions", {})

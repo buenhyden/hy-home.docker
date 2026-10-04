@@ -2,9 +2,9 @@
 title: "Stage 99 Frontmatter and Task Lifecycle Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0208-PLAN-0001"
 parent_ids:
@@ -17,8 +17,8 @@ created: "2026-10-04"
 ## Objective
 
 Deliver the minimum Stage 99 contract, validator implementation and tests,
-current-document migration, and one local logical commit for truthful Task
-lifecycle evidence and completion-item receipts.
+current-document migration, the v3 checkpoint, and the v4 evidence amendment
+for truthful Task lifecycle evidence and completion-item receipts.
 
 ## Dependencies
 
@@ -30,24 +30,29 @@ lifecycle evidence and completion-item receipts.
 
 ## Execution Sequence
 
-1. W1: inventory Stage 99 profiles, templates, schemas, roles, consumers, and
-   current Stage 03 records; record every file's disposition in the Task.
+1. W1: inventory Stage 99 profiles, templates, schemas, roles, consumers,
+   named lifecycle families, pure-navigation READMEs, and current Stage 03
+   records; record every file's disposition in the Task.
 2. W2: add the minimal Registry and profile-schema contract, implement and test
-   its validator consumers, and align the Spec, Plan, and Task templates.
+   its validator consumers, align the Spec, Plan, and Task templates, and add
+   result/review/generation and direct-parent contracts.
    Preserve frontmatter value grammar and existing completion-receipt headers.
-3. W3: migrate actual terminology in current nonterminal SPEC-0182 and
-   SPEC-0204 Plan/Task records and route SPEC-0208 from the Stage 03 README.
-4. W4: run owner-selected validation and review, record observed results and
-   limitations, then create one local conventional commit when the required
-   receipts exist. Push, PR, merge, and remote checks remain separately
-   authorized.
+3. W3: migrate actual terminology, direct Task parents, and derived states in
+   current SPEC-0182, SPEC-0204, SPEC-0207, and SPEC-0208 records; align
+   pure-navigation README profiles and route SPEC-0208 from the Stage 03 README.
+4. W4: record the v3 checkpoint, run owner-selected validation and review for
+   the v4 amendment, record observed results and limitations, then create the
+   v4 local conventional commit when its required receipts exist. Push, PR,
+   merge, and remote checks remain separately authorized.
 
 ## Risk and Rollback
 
 An over-broad schema or template can turn descriptive prose into a parallel
 machine contract. Roll back the bounded working-tree changes before integration
 if validation or review finds that risk. Do not alter frozen records, terminal
-Tasks, or unobserved lifecycle facts.
+Task bodies, Commit Ledgers, or status facts; approved parent-ID and actual
+updated-date normalization remains allowed. Do not invent unobserved lifecycle
+facts.
 
 ## Verification
 

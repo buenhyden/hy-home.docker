@@ -2,9 +2,9 @@
 title: "Workspace Engineering Main Baseline Assessment"
 version: "0.4.1"
 type: "reference/research-pack"
-status: "review"
+status: "in-review"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "references"
 artifact_id: "RES-0085"
 parent_ids: []

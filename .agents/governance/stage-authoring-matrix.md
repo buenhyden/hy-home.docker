@@ -62,7 +62,9 @@ No generated provider surface becomes a shared authority.
 For Stage 03, approval enables the registered transition but review remains
 read-only and execution is recorded separately in the current Task. Task
 summary and optional lifecycle-event shape belong to Stage 99; the Task carries
-observed evidence and never authenticates an approval source.
+observed evidence and never authenticates an approval source. The Registry owns
+document-family state vocabulary, direct parent cardinality, result and review
+table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not

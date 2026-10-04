@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -70,7 +70,7 @@ terrakube/
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. Terrakube를 변경하기 전에 상위 [`../README.md`](../README.md)와 이 서비스의 Compose 파일을 읽습니다.
 2. 시크릿 자료는 Docker secrets에 유지하고 시크릿 이름과 용도만 문서화합니다.

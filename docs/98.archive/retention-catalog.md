@@ -2,9 +2,9 @@
 title: "Retention Catalog"
 version: "1.1.16"
 type: "archive/retention-catalog"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Retention Catalog

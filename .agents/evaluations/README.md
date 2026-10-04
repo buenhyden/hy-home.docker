@@ -1,10 +1,10 @@
 ---
 title: "Agent Evaluation Harness"
 version: "1.2.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2026-09-03"
 ---
 
@@ -68,7 +68,7 @@ bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --ch
 `0`을 반환합니다. 공개 게이트는 같은 실행을 `leaf.agent-output-eval-fixture-gate`
 노드에서 어댑터를 통해 호출합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 픽스처를 추가하거나 임계값을 바꾸기 전에 [`fixture-catalog.md`](fixture-catalog.md)를 먼저 갱신합니다 → 하니스가 그 문서를 카탈로그 근거로 읽습니다.
 2. `agent_output_eval.py`의 `FIXTURES` 항목을 참조 문서와 일치시킵니다 → `--check-fixtures`가 `pass`.

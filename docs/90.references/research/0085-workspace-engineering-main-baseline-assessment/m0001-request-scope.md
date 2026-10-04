@@ -2,9 +2,9 @@
 title: "Workspace Engineering Main Baseline Request Scope"
 version: "0.3.2"
 type: "reference/research"
-status: "review"
+status: "in-review"
 owner: "@buenhyden"
-updated: "2026-09-15"
+updated: "2026-10-05"
 layer: "references"
 artifact_id: "RES-0085-m0001"
 parent_ids:

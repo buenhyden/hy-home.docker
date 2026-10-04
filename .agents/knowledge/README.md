@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
 version: "0.3.0"
-type: "governance/knowledge-index"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2026-09-06"
 ---
 
@@ -48,7 +48,7 @@ route하고 link를 남깁니다.
 섹션을 갖습니다. source 변경·삭제·정정 또는 review expiry가 발생하면 다시
 읽기 전까지 해당 fact는 invalid입니다.
 
-## How to Work in This Area
+## Usage
 
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.

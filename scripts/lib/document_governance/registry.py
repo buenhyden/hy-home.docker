@@ -309,6 +309,54 @@ def load_registry_document(
     return raw
 
 
+def load_registry_document_at_revision(
+    revision: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> Mapping[str, object]:
+    """Load the exact regular Registry blob owned by one committed revision."""
+
+    if (
+        not revision
+        or revision.startswith("-")
+        or any(ord(character) < 32 for character in revision)
+    ):
+        raise RegistryError("trusted Registry revision is invalid")
+    resolved = _git_read(
+        ["rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}"],
+        root=root,
+    ).strip()
+    if _GIT_OID.fullmatch(resolved) is None:
+        raise RegistryError("trusted Registry revision did not resolve to a commit")
+    listing = _git_read(
+        ["ls-tree", "-z", resolved, "--", "docs/99.templates/registry.json"],
+        root=root,
+    )
+    entries = [entry for entry in listing.split("\0") if entry]
+    if len(entries) != 1:
+        raise RegistryError("trusted Registry revision must contain one Registry blob")
+    match = re.fullmatch(
+        r"(?P<mode>[0-7]{6}) (?P<type>[a-z]+) "
+        r"(?P<oid>[0-9a-f]{40,64})\tdocs/99\.templates/registry\.json",
+        entries[0],
+    )
+    if (
+        match is None
+        or match.group("mode") not in {"100644", "100755"}
+        or match.group("type") != "blob"
+    ):
+        raise RegistryError("trusted Registry revision contains a non-regular object")
+    source = _git_read(["cat-file", "blob", match.group("oid")], root=root)
+    try:
+        raw = json.loads(source, object_pairs_hook=_unique_object)
+    except (json.JSONDecodeError, RecursionError, RegistryError) as error:
+        raise RegistryError(f"invalid historical Registry JSON: {error}") from error
+    _require_bounded_depth(raw)
+    if not isinstance(raw, Mapping):
+        raise RegistryError("historical Registry document must be a mapping")
+    return raw
+
+
 def _require_bounded_depth(value: object, depth: int = 0) -> None:
     if depth > MAX_JSON_DEPTH:
         raise RegistryError("registry JSON exceeds the depth limit")
@@ -460,6 +508,16 @@ def validate_registry(
         {name for name in profile_types if profile_types.count(name) > 1}
     )
     for name in duplicate_types:
+        owners = [
+            profile for _, profile in profile_entries if profile.get("type") == name
+        ]
+        if name == "common/readme" and all(
+            profile.get("lifecycle_id") == "navigation"
+            and profile.get("identity_relation") == "none"
+            and profile.get("artifact_id_pattern") is None
+            for profile in owners
+        ):
+            continue
         findings.append(RegistryFinding("profile-type-duplicate", "profiles", name))
     for left_offset, (left_index, left) in enumerate(profile_entries):
         left_id = left.get("id")

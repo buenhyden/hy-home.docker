@@ -2,9 +2,9 @@
 title: "Common Authorization and Safe Authoring Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0207-PLAN-0001"
 parent_ids:

@@ -1,10 +1,10 @@
 ---
 title: "성능 시험 결과 데이터베이스"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 ---
 
 # 성능 시험 결과 데이터베이스
@@ -78,7 +78,7 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 실제 SQL 권한 검사는 고유 project, network, volume과 합성 비밀값을 사용하는
 승인된 격리 PostgreSQL에서 수행해야 합니다. HOME 적용 결과로 해석하지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 schema 변경은 새 migration version과 replay/conflict 검사를 함께 갱신합니다.
 project 등록 SQL은 admin이 `perf_db` migration 적용 후 실행하며 출력에

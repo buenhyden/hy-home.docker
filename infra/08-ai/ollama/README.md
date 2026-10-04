@@ -1,10 +1,10 @@
 ---
 title: "Ollama Inference Engine"
 version: "1.0.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -62,7 +62,7 @@ ollama/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/guides/0056-ollama.md`)를 먼저 읽는다.
 2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/policies/0056-ollama.md`)를 따른다.

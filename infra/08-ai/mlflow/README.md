@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-21"
 ---
 
@@ -83,7 +83,7 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests` (별도 실행 승인 및 일회용 PostgreSQL·Docker 필요)
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## How to Work in This Area
+## Usage
 
 1. 프로필을 선택하기 전에 등록된 시크릿 워크플로우를 통해 `secrets/db/mng-pg/mlflow_password.txt`와
    `secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt`가 존재하는지 확인합니다.

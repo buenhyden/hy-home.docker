@@ -1,10 +1,10 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
 version: "1.2.2"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -72,7 +72,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 └── README.md
 ```
 
-## How to Work in This Area
+## Usage
 
 [documentation index](../../docs/README.md)를 사용한 뒤, `docs/05.operations/README.md`
 아래의 정확한 Stage 05 대상(`0021`, `0065`, `0069`, `0082`, `0083`)을 확인합니다. 저장소 루트에서 실행합니다.

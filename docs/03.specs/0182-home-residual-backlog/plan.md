@@ -2,9 +2,9 @@
 title: "HOME Residual Backlog Plan"
 version: "0.4.2"
 type: "sdlc/plan"
-status: "active"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0182-PLAN-0001"
 parent_ids:

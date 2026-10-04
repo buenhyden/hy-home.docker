@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/sdlc"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Software Development Lifecycle
@@ -42,6 +42,32 @@ evidence rather than copying it into a second ledger. Failed acceptance returns
 to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
 
+Stage 99 assigns document-family states and legal transitions. Requirements use
+`draft`, `in-review`, `approved`, `superseded`, and `retired`; architecture
+descriptions and operational guidance use `draft`, `in-review`, `active`,
+`deprecated`, `superseded`, and `retired`; ADRs use `proposed`, `accepted`,
+`rejected`, `superseded`, and `retired`. Specs and Plans use `draft`,
+`in-review`, `approved`, `in-progress`, `blocked`, `completed`, `cancelled`,
+and `superseded`; Tasks retain `draft`, `ready`, `in-progress`, `blocked`,
+`completed`, and `cancelled`. Navigation READMEs and the current archive
+catalog remain `active`; route records use `draft` or `sealed`.
+
+A Plan has one Spec parent and a Task has one Plan parent. A multi-item Task
+uses its registered Status cells as its execution source: blocked first, then
+mixed terminal/nonterminal or any in-progress as in-progress, then ready,
+draft, all-cancelled as cancelled, and remaining terminal items as completed.
+The frontmatter stores that derived summary. Over validated nonterminal Task
+summaries, any in-progress summary makes the Spec and Plan in-progress; a
+nonempty set of all blocked summaries makes both blocked. A mixed ready/blocked
+set, or a zero/terminal-only set, retains the actual contract status and never
+auto-closes it. A completed execution item can record `PASS` while Review
+Evidence remains pending in a blocked or otherwise nonterminal Task. At Task
+and Spec closure, every numbered criterion requires `PASS` and accepted Review
+Evidence; `not-required` does not waive that requirement. Task-result vocabulary
+is exactly `NOT_RUN`, `PASS`, `FAIL`, `DEFER`, and `NOT_APPLICABLE`. Lifecycle
+events and generation-migration proof rows record observed structure only; they
+do not authenticate approval, review, or execution.
+
 An ordinary four-column Task receipt uses frontmatter as its status source.
 Where one Task records multiple criterion/work-unit items, the optional
 five-column receipt's Status cells are the source and share the existing
@@ -60,8 +86,8 @@ Stage 90 supplies evidence and Stage 98 supplies historical path lookup; neither
 overrides current lifecycle authority. Stage 99 defines document shapes and
 identities. Registered scripts implement gates. Terminal package completion requires observed
 PASS evidence for every numbered acceptance criterion and its Plan work unit.
-FAIL, BLOCKED, NOT_RUN and skipped checks remain valid in-progress evidence;
-they do not satisfy terminal acceptance. Stage 99 and its validator own the
+FAIL, NOT_RUN, DEFER, and NOT_APPLICABLE results remain valid non-completion
+evidence; they do not satisfy terminal acceptance. Stage 99 and its validator own the
 receipt's machine shape, so templates refer here for completion meaning.
 Spec and Plan closure require their registered terminal conditions; Task
 completion evidence alone does not close a package with nonterminal members.

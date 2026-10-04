@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
 version: "1.0.2"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 # Traefik Dynamic Configuration
@@ -52,7 +52,7 @@ infra/01-gateway/traefik/dynamic/
 └── tls.yaml  # 구성 파일
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.

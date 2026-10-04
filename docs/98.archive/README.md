@@ -4,7 +4,7 @@ version: "2.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-05"
 layer: "archive"
 ---
 
@@ -139,7 +139,7 @@ Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착
 운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"와 "그 문서는 무엇이라
 말했는가"를 조회할 때 사용합니다.
 
-## How to Work in This Area
+## Usage
 
 1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 이동 당시 값 그대로이며
    처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는

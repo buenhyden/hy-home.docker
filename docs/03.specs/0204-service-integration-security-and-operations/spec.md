@@ -2,9 +2,9 @@
 title: "Service Integration, Security, and Operations Specification"
 version: "1.0.3"
 type: "sdlc/spec"
-status: "active"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:

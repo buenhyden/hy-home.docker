@@ -17,7 +17,7 @@ import unittest
 from unittest import mock
 
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
-from scripts.lib.document_governance.registry import load_registry
+from scripts.lib.document_governance.registry import DEFAULT_REGISTRY, load_registry
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
@@ -43,7 +43,7 @@ def _document_text(
     artifact_id: str,
     parent_ids: tuple[str, ...],
     *,
-    status: str = "active",
+    status: str = "in-progress",
 ) -> str:
     parents = "\n".join(f"  - {parent}" for parent in parent_ids)
     text = f"""---
@@ -95,7 +95,7 @@ Fixture commit ledger.
             "Fixture verification evidence.",
             "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
             "| --- | --- | --- | --- |\n"
-            "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
+            "| 1 | W1 | PASS | N/A: local validation only |",
         )
     return text
 
@@ -106,13 +106,17 @@ def _write_package(
     number: str = "0001",
     slug: str = "example",
     spec_id: str | None = None,
-    spec_status: str = "active",
+    spec_status: str = "in-progress",
     plan: bool = False,
-    plan_status: str = "active",
+    plan_status: str = "in-progress",
     task: bool = False,
     task_status: str = "in-progress",
     task_parent_ids: tuple[str, ...] | None = None,
 ) -> pathlib.Path:
+    fixture_registry = stage.parent / "99.templates/registry.json"
+    if not fixture_registry.exists():
+        fixture_registry.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(DEFAULT_REGISTRY, fixture_registry)
     package = stage / f"{number}-{slug}"
     package.mkdir(parents=True)
     package.joinpath("spec.md").write_text(
@@ -138,9 +142,7 @@ def _write_package(
         tasks = package / "tasks"
         tasks.mkdir()
         parents = task_parent_ids or (
-            (f"SPEC-{number}", f"SPEC-{number}-PLAN-0001")
-            if plan
-            else (f"SPEC-{number}",)
+            (f"SPEC-{number}-PLAN-0001",) if plan else (f"SPEC-{number}",)
         )
         tasks.joinpath("tsk-0001-implement.md").write_text(
             _document_text(
@@ -151,6 +153,17 @@ def _write_package(
             ),
             encoding="utf-8",
         )
+        if task_status == "completed":
+            task_path = _set_item_rows(
+                package,
+                (("1", "W1", "completed", "PASS", "N/A: local validation only"),),
+            )
+            _set_review_rows(task_path, (("1", "accepted", "Fixture review."),))
+        else:
+            _set_review_rows(
+                tasks / "tsk-0001-implement.md",
+                (("1", "pending", "Fixture review."),),
+            )
     return package
 
 
@@ -176,6 +189,8 @@ def _set_status(path: pathlib.Path, before: str, after: str) -> None:
 def _set_item_rows(
     package: pathlib.Path,
     rows: tuple[tuple[str, str, str, str, str], ...],
+    *,
+    add_reviews: bool = True,
 ) -> pathlib.Path:
     spec = package / "spec.md"
     plan = package / "plan.md"
@@ -194,18 +209,59 @@ def _set_item_rows(
     old = (
         "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
         "| --- | --- | --- | --- |\n"
-        "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |"
+        "| 1 | W1 | PASS | N/A: local validation only |"
+    )
+    current = (
+        "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        "| 1 | W1 | completed | PASS | N/A: local validation only |"
     )
     rendered = [
         "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |",
         "| --- | --- | --- | --- | --- |",
         *("| " + " | ".join(row) + " |" for row in rows),
     ]
-    task.write_text(
-        task.read_text(encoding="utf-8").replace(old, "\n".join(rendered), 1),
-        encoding="utf-8",
-    )
+    text = task.read_text(encoding="utf-8")
+    source = old if old in text else current
+    if source not in text:
+        raise AssertionError("missing Task receipt fixture")
+    task.write_text(text.replace(source, "\n".join(rendered), 1), encoding="utf-8")
+    if add_reviews:
+        reviews = tuple(
+            (
+                criterion,
+                "accepted"
+                if status == "completed" and result.startswith("PASS")
+                else "pending",
+                "Fixture review record.",
+            )
+            for criterion, _, status, result, _ in rows
+        )
+        _set_review_rows(task, tuple(dict.fromkeys(reviews)))
     return task
+
+
+def _set_review_rows(
+    task: pathlib.Path,
+    rows: tuple[tuple[str, str, str], ...],
+) -> None:
+    rendered = [
+        "| Acceptance criterion | Acceptance | Evidence |",
+        "| --- | --- | --- |",
+        *("| " + " | ".join(row) + " |" for row in rows),
+    ]
+    text = task.read_text(encoding="utf-8")
+    if "Fixture review evidence." in text:
+        text = text.replace("Fixture review evidence.", "\n".join(rendered), 1)
+    else:
+        text = re.sub(
+            r"(?m)^\| Acceptance criterion \| Acceptance \| Evidence \|\n"
+            r"^\| --- \| --- \| --- \|\n(?:^\|.*\|\n?)+",
+            "\n".join(rendered) + "\n",
+            text,
+            count=1,
+        )
+    task.write_text(text, encoding="utf-8")
 
 
 def _add_lifecycle_events(
@@ -330,10 +386,19 @@ def _branch_handoff_fixture(
         archived_target = root / "docs/98.archive/completed/03.specs/0002-target"
         archived_target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(target, archived_target)
-        _set_status(archived_target / "spec.md", "active", "completed")
-        _set_status(archived_target / "plan.md", "active", "completed")
+        _set_status(archived_target / "spec.md", "in-progress", "completed")
+        _set_status(archived_target / "plan.md", "in-progress", "completed")
         task = archived_target / "tasks/tsk-0001-implement.md"
         _set_status(task, "in-progress", "completed")
+        task.write_text(
+            task.read_text(encoding="utf-8").replace(
+                "| 1 | W1 | PASS | N/A: local validation only |",
+                "| 1 | W1 | PASS: focused check | N/A: local validation only |",
+                1,
+            ),
+            encoding="utf-8",
+        )
+        _set_review_rows(task, (("1", "accepted", "Fixture review."),))
         shutil.rmtree(target)
     elif carrier == "missing":
         return stage, commit, receipt
@@ -344,6 +409,280 @@ def _branch_handoff_fixture(
 
 
 class SpecPackageTests(unittest.TestCase):
+    def test_v4_four_column_completion_requires_registered_result_and_review(self) -> None:
+        spec_packages = _spec_packages_module()
+        for result, acceptance, valid in (
+            ("PASS", "accepted", True),
+            ("BLOCKED", "accepted", False),
+            ("PASS", "not-required", False),
+        ):
+            with (
+                self.subTest(result=result, acceptance=acceptance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    spec_status="completed",
+                    plan_status="completed",
+                    task_status="completed",
+                )
+                task = package / "tasks/tsk-0001-implement.md"
+                text = task.read_text(encoding="utf-8")
+                current = (
+                    "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |\n"
+                    "| --- | --- | --- | --- | --- |\n"
+                    "| 1 | W1 | completed | PASS | N/A: local validation only |"
+                )
+                legacy = (
+                    "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
+                    "| --- | --- | --- | --- |\n"
+                    f"| 1 | W1 | {result} | N/A: local validation only |"
+                )
+                if current not in text:
+                    raise AssertionError("missing current receipt fixture")
+                text = text.replace(current, legacy, 1)
+                task.write_text(text, encoding="utf-8")
+                _set_review_rows(task, (("1", acceptance, "Fixture review."),))
+                if valid:
+                    self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+                else:
+                    with self.assertRaises(spec_packages.SpecPackageError):
+                        spec_packages.load_spec_packages(stage)
+
+    def test_v4_task_results_and_review_evidence_are_closed_contracts(self) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            ("invalid-result", "BLOCKED", (("1", "pending", "Pending."),), "result"),
+            (
+                "result-suffix",
+                "PASS: arbitrary detail",
+                (("1", "pending", "Pending."),),
+                "result",
+            ),
+            ("missing-review", "NOT_RUN", (), "review evidence"),
+            (
+                "invalid-acceptance",
+                "NOT_RUN",
+                (("1", "approved", "Not a registered value."),),
+                "acceptance",
+            ),
+            (
+                "wrong-criterion",
+                "NOT_RUN",
+                (("2", "pending", "Wrong criterion."),),
+                "criteria",
+            ),
+        )
+        for label, result, reviews, message in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    spec_status="in-progress",
+                    plan_status="in-progress",
+                    task_parent_ids=("SPEC-0001-PLAN-0001",),
+                )
+                task = _set_item_rows(
+                    package,
+                    (("1", "W1", "in-progress", result, "Task owner"),),
+                    add_reviews=bool(reviews),
+                )
+                if reviews:
+                    _set_review_rows(task, reviews)
+                else:
+                    _set_review_rows(task, ())
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages.load_spec_packages(stage)
+
+    def test_v4_completed_task_requires_pass_and_accepted_review(self) -> None:
+        spec_packages = _spec_packages_module()
+        for acceptance, accepted in (
+            ("pending", False),
+            ("not-required", False),
+            ("accepted", True),
+        ):
+            with (
+                self.subTest(acceptance=acceptance),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                package = _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    spec_status="in-progress",
+                    plan_status="in-progress",
+                    task_status="completed",
+                    task_parent_ids=("SPEC-0001-PLAN-0001",),
+                )
+                task = _set_item_rows(
+                    package,
+                    (("1", "W1", "completed", "PASS", "N/A: fixture"),),
+                )
+                _set_review_rows(task, (("1", acceptance, "Review record."),))
+                if accepted:
+                    self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+                else:
+                    with self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "accepted review"
+                    ):
+                        spec_packages.load_spec_packages(stage)
+
+    def test_v4_parent_status_projection_matches_remaining_tasks(self) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            ("in-progress", "in-progress", True),
+            ("blocked", "blocked", True),
+            ("ready", "approved", True),
+            ("completed", "in-progress", True),
+            ("blocked", "in-progress", False),
+        )
+        for task_status, parent_status, valid in cases:
+            with (
+                self.subTest(states=(task_status, parent_status)),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    spec_status=parent_status,
+                    plan_status=parent_status,
+                    task_status=task_status,
+                    task_parent_ids=("SPEC-0001-PLAN-0001",),
+                )
+                if valid:
+                    self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
+                else:
+                    with self.assertRaisesRegex(
+                        spec_packages.SpecPackageError, "status projection"
+                    ):
+                        spec_packages.load_spec_packages(stage)
+
+        spec = spec_packages.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-fixture/spec.md"),
+            "spec",
+            "SPEC-0001",
+            "approved",
+            (),
+        )
+        plan = spec_packages.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-fixture/plan.md"),
+            "plan",
+            "SPEC-0001-PLAN-0001",
+            "approved",
+            ("SPEC-0001",),
+        )
+        mixed = (
+            spec_packages.SpecDocument(
+                pathlib.PurePosixPath(
+                    "docs/03.specs/0001-fixture/tasks/tsk-0001-ready.md"
+                ),
+                "task",
+                "SPEC-0001-TSK-0001",
+                "ready",
+                ("SPEC-0001-PLAN-0001",),
+            ),
+            spec_packages.SpecDocument(
+                pathlib.PurePosixPath(
+                    "docs/03.specs/0001-fixture/tasks/tsk-0002-blocked.md"
+                ),
+                "task",
+                "SPEC-0001-TSK-0002",
+                "blocked",
+                ("SPEC-0001-PLAN-0001",),
+            ),
+        )
+        spec_packages._validate_execution_states(spec, plan, mixed)
+        for retained in ("in-progress", "blocked"):
+            spec_packages._validate_execution_states(
+                dataclasses.replace(spec, status=retained),
+                dataclasses.replace(plan, status=retained),
+                mixed,
+            )
+        spec_packages._validate_execution_states(spec, plan, ())
+        spec_packages._validate_execution_states(
+            dataclasses.replace(spec, status="blocked"),
+            dataclasses.replace(plan, status="blocked"),
+            (),
+        )
+
+    def test_v4_preexecution_and_terminal_package_occupancy(self) -> None:
+        spec_packages = _spec_packages_module()
+        spec = spec_packages.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-fixture/spec.md"),
+            "spec",
+            "SPEC-0001",
+            "draft",
+            (),
+        )
+        plan = spec_packages.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-fixture/plan.md"),
+            "plan",
+            "SPEC-0001-PLAN-0001",
+            "draft",
+            ("SPEC-0001",),
+        )
+        task = spec_packages.SpecDocument(
+            pathlib.PurePosixPath(
+                "docs/03.specs/0001-fixture/tasks/tsk-0001-fixture.md"
+            ),
+            "task",
+            "SPEC-0001-TSK-0001",
+            "draft",
+            ("SPEC-0001-PLAN-0001",),
+        )
+        spec_packages._validate_execution_states(spec, plan, ())
+        spec_packages._validate_execution_states(spec, plan, (task,))
+        spec_packages._validate_execution_states(
+            dataclasses.replace(spec, status="in-review"),
+            dataclasses.replace(plan, status="in-review"),
+            (task,),
+        )
+        for terminal in ("cancelled", "superseded"):
+            spec_packages._validate_execution_states(
+                dataclasses.replace(spec, status=terminal),
+                dataclasses.replace(plan, status=terminal),
+                (dataclasses.replace(task, status="cancelled"),),
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError, "active Plan or Task"
+            ):
+                spec_packages._validate_execution_states(
+                    dataclasses.replace(spec, status=terminal), plan, (task,)
+                )
+
+    def test_v4_rejects_previous_status_aliases_and_dual_task_parents(self) -> None:
+        spec_packages = _spec_packages_module()
+        cases = (
+            ("active-spec", "active", ("SPEC-0001-PLAN-0001",), "lifecycle"),
+            (
+                "dual-task-parent",
+                "in-progress",
+                ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                "owning Plan",
+            ),
+        )
+        for label, spec_status, parents, message in cases:
+            with self.subTest(case=label), tempfile.TemporaryDirectory() as directory:
+                stage = pathlib.Path(directory) / "docs/03.specs"
+                _write_package(
+                    stage,
+                    plan=True,
+                    task=True,
+                    spec_status=spec_status,
+                    plan_status="in-progress",
+                    task_parent_ids=parents,
+                )
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages.load_spec_packages(stage)
+
     ACTIVE_ROUTE_FILES = (
         ROOT / ".agents/governance/documentation-protocol.md",
         ROOT / ".agents/governance/quality-standards.md",
@@ -360,15 +699,15 @@ class SpecPackageTests(unittest.TestCase):
             (
                 "blocked",
                 (
-                    ("1", "W1", "completed", "PASS: focused", "N/A: local"),
-                    ("2", "W2", "blocked", "BLOCKED: runtime", "Task owner"),
+                    ("1", "W1", "completed", "PASS", "N/A: local"),
+                    ("2", "W2", "blocked", "DEFER", "Task owner"),
                 ),
             ),
             (
                 "in-progress",
                 (
-                    ("1", "W1", "completed", "PASS: focused", "N/A: local"),
-                    ("2", "W2", "ready", "NOT_RUN: queued", "Task owner"),
+                    ("1", "W1", "completed", "PASS", "N/A: local"),
+                    ("2", "W2", "ready", "NOT_RUN", "Task owner"),
                 ),
             ),
         )
@@ -383,6 +722,8 @@ class SpecPackageTests(unittest.TestCase):
                     plan=True,
                     task=True,
                     task_status=expected,
+                    spec_status="blocked" if expected == "blocked" else "in-progress",
+                    plan_status="blocked" if expected == "blocked" else "in-progress",
                 )
                 _set_item_rows(package, rows)
                 self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
@@ -397,7 +738,7 @@ class SpecPackageTests(unittest.TestCase):
             )
             _set_item_rows(
                 package,
-                (("1", "W1", "blocked", "BLOCKED: runtime", "Task owner"),),
+                (("1", "W1", "blocked", "DEFER", "Task owner"),),
             )
             with self.assertRaisesRegex(
                 spec_packages.SpecPackageError,
@@ -420,8 +761,8 @@ class SpecPackageTests(unittest.TestCase):
                 "missing-cancellation",
                 "in-progress",
                 (
-                    ("1", "W1", "cancelled", "CANCELLED: withdrawn", "Owner"),
-                    ("2", "W2", "in-progress", "PARTIAL: active", "Owner"),
+                    ("1", "W1", "cancelled", "NOT_APPLICABLE: withdrawn", "Owner"),
+                    ("2", "W2", "in-progress", "NOT_RUN: active", "Owner"),
                 ),
                 "cancellation",
             ),
@@ -483,24 +824,37 @@ class SpecPackageTests(unittest.TestCase):
                 encoding="utf-8",
             )
             task = package / "tasks/tsk-0001-implement.md"
+            item_table = (
+                "| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |\n"
+                "| --- | --- | --- | --- | --- |\n"
+                "| 1 | W1 | completed | PASS | N/A: local validation only |"
+            )
+            legacy_table = (
+                "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
+                "| --- | --- | --- | --- |\n"
+                "| 1 | W1 | PASS | N/A: local validation only |\n"
+                "| 2 | W2 | PASS | N/A: historical completion |"
+            )
             task.write_text(
-                task.read_text(encoding="utf-8").replace(
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
-                    "| 2 | W2 | BLOCKED: runtime | Task owner |",
-                    1,
-                ),
+                task.read_text(encoding="utf-8").replace(item_table, legacy_table, 1),
                 encoding="utf-8",
             )
+            _set_review_rows(
+                task,
+                (
+                    ("1", "accepted", "Fixture review."),
+                    ("2", "accepted", "Fixture review."),
+                ),
+            )
             current = spec_packages.load_spec_packages(stage)
-            result = spec_packages.validate_repository_spec_package_lifecycle_details(
-                root,
+            result = spec_packages._validate_legacy_multirow_receipts(
+                (),
                 current,
-                base_ref="HEAD",
+                load_registry(),
             )
             self.assertIn(
                 "task-completion-items-invalid",
-                {finding.code for finding in result.findings},
+                {finding.code for finding in result},
             )
 
     def test_nonterminal_multi_row_receipt_requires_item_statuses_at_load(self) -> None:
@@ -511,8 +865,8 @@ class SpecPackageTests(unittest.TestCase):
             task = package / "tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                    "| 1 | W1 | PASS | N/A: local validation only |",
+                    "| 1 | W1 | PASS | N/A: local validation only |\n"
                     "| 2 | W2 | BLOCKED: runtime | Task owner |",
                     1,
                 ),
@@ -539,8 +893,8 @@ class SpecPackageTests(unittest.TestCase):
             task = package / "tasks/tsk-0001-implement.md"
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |",
-                    "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                    "| 1 | W1 | PASS | N/A: local validation only |",
+                    "| 1 | W1 | PASS | N/A: local validation only |\n"
                     "| 2 | W2 | PARTIAL: historical | Task owner |",
                     1,
                 ),
@@ -580,17 +934,19 @@ class SpecPackageTests(unittest.TestCase):
                 plan=True,
                 task=True,
                 task_status="blocked",
+                spec_status="blocked",
+                plan_status="blocked",
             )
             _set_item_rows(
                 package,
-                (("1", "W1", "blocked", "BLOCKED: runtime", "Task owner"),),
+                (("1", "W1", "blocked", "DEFER", "Task owner"),),
             )
             second = package / "tasks/tsk-0002-legacy.md"
             second.write_text(
                 _document_text(
                     "task",
                     "SPEC-0001-TSK-0002",
-                    ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                    ("SPEC-0001-PLAN-0001",),
                     status="completed",
                 ),
                 encoding="utf-8",
@@ -617,13 +973,14 @@ class SpecPackageTests(unittest.TestCase):
                     task=True,
                     task_status="completed",
                 )
-                _set_item_rows(
+                task = _set_item_rows(
                     package,
                     (("1", "W1", "completed", result, "N/A: local"),),
                 )
+                _set_review_rows(task, (("1", "accepted", "Fixture review."),))
                 with self.assertRaisesRegex(
                     spec_packages.SpecPackageError,
-                    "completed item needs PASS",
+                    "registered result values|completed item needs PASS",
                 ):
                     spec_packages.load_spec_packages(stage)
 
@@ -641,7 +998,7 @@ class SpecPackageTests(unittest.TestCase):
             )
             _set_item_rows(
                 package,
-                (("1", "W1", "completed", "PASS: focused", "N/A: local"),),
+                (("1", "W1", "completed", "PASS", "N/A: local"),),
             )
             self.assertEqual(1, len(spec_packages.load_spec_packages(stage)))
         with tempfile.TemporaryDirectory() as directory:
@@ -656,7 +1013,7 @@ class SpecPackageTests(unittest.TestCase):
             )
             task = _set_item_rows(
                 package,
-                (("1", "W1", "cancelled", "CANCELLED: withdrawn", "Owner"),),
+                (("1", "W1", "cancelled", "NOT_APPLICABLE", "Owner"),),
             )
             _set_frontmatter_value(
                 task,
@@ -731,9 +1088,9 @@ class SpecPackageTests(unittest.TestCase):
             stage = root / "docs/03.specs"
             package = _write_package(
                 stage,
-                spec_status="active",
+                spec_status="in-progress",
                 plan=True,
-                plan_status="active",
+                plan_status="in-progress",
                 task=True,
                 task_status="in-progress",
             )
@@ -741,11 +1098,12 @@ class SpecPackageTests(unittest.TestCase):
             _add_lifecycle_events(
                 task,
                 (
-                    ("SPEC-0001", "draft", "review", "#spec-review"),
-                    ("SPEC-0001", "review", "approved", "#spec-approved"),
-                    ("SPEC-0001", "approved", "active", "#spec-active"),
-                    ("SPEC-0001-PLAN-0001", "draft", "approved", "#plan-approved"),
-                    ("SPEC-0001-PLAN-0001", "approved", "active", "#plan-active"),
+                    ("SPEC-0001", "draft", "in-review", "#spec-review"),
+                    ("SPEC-0001", "in-review", "approved", "#spec-approved"),
+                    ("SPEC-0001", "approved", "in-progress", "#spec-active"),
+                    ("SPEC-0001-PLAN-0001", "draft", "in-review", "#plan-review"),
+                    ("SPEC-0001-PLAN-0001", "in-review", "approved", "#plan-approved"),
+                    ("SPEC-0001-PLAN-0001", "approved", "in-progress", "#plan-active"),
                     ("SPEC-0001-TSK-0001", "draft", "ready", "#task-ready"),
                     (
                         "SPEC-0001-TSK-0001",
@@ -789,11 +1147,11 @@ class SpecPackageTests(unittest.TestCase):
             self.assertEqual(
                 frozenset(
                     {
-                        ("docs/03.specs/0001-example/spec.md", "draft", "active"),
+                        ("docs/03.specs/0001-example/spec.md", "draft", "in-progress"),
                         (
                             "docs/03.specs/0001-example/plan.md",
                             "draft",
-                            "active",
+                            "in-progress",
                         ),
                         (
                             "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
@@ -808,11 +1166,12 @@ class SpecPackageTests(unittest.TestCase):
     def test_package_lifecycle_events_reject_unbound_or_broken_chains(self) -> None:
         spec_packages = _spec_packages_module()
         valid = (
-            ("SPEC-0001", "draft", "review", "#spec-review"),
-            ("SPEC-0001", "review", "approved", "#spec-approved"),
-            ("SPEC-0001", "approved", "active", "#spec-active"),
-            ("SPEC-0001-PLAN-0001", "draft", "approved", "#plan-approved"),
-            ("SPEC-0001-PLAN-0001", "approved", "active", "#plan-active"),
+            ("SPEC-0001", "draft", "in-review", "#spec-review"),
+            ("SPEC-0001", "in-review", "approved", "#spec-approved"),
+            ("SPEC-0001", "approved", "in-progress", "#spec-active"),
+            ("SPEC-0001-PLAN-0001", "draft", "in-review", "#plan-review"),
+            ("SPEC-0001-PLAN-0001", "in-review", "approved", "#plan-approved"),
+            ("SPEC-0001-PLAN-0001", "approved", "in-progress", "#plan-active"),
             ("SPEC-0001-TSK-0001", "draft", "ready", "#task-ready"),
             (
                 "SPEC-0001-TSK-0001",
@@ -824,7 +1183,7 @@ class SpecPackageTests(unittest.TestCase):
         cases = {
             "missing-step": (*valid[:1], *valid[2:]),
             "wrong-base": (
-                ("SPEC-0001", "review", "approved", "#spec-approved"),
+                ("SPEC-0001", "in-review", "approved", "#spec-approved"),
                 *valid[2:],
             ),
             "wrong-end": (
@@ -876,9 +1235,9 @@ class SpecPackageTests(unittest.TestCase):
                 stage = root / "docs/03.specs"
                 package = _write_package(
                     stage,
-                    spec_status="active",
+                    spec_status="in-progress",
                     plan=True,
-                    plan_status="active",
+                    plan_status="in-progress",
                     task=True,
                     task_status="in-progress",
                 )
@@ -932,16 +1291,16 @@ class SpecPackageTests(unittest.TestCase):
             stage = root / "docs/03.specs"
             package = _write_package(
                 stage,
-                spec_status="active",
+                spec_status="in-progress",
                 plan=True,
-                plan_status="active",
+                plan_status="in-progress",
                 task=True,
                 task_status="in-progress",
             )
             task = package / "tasks/tsk-0001-implement.md"
             _add_lifecycle_events(
                 task,
-                (("SPEC-0001", "draft", "review", "#spec-review"),),
+                (("SPEC-0001", "draft", "in-review", "#spec-review"),),
             )
             task.write_text(
                 task.read_text(encoding="utf-8").replace(
@@ -967,7 +1326,7 @@ class SpecPackageTests(unittest.TestCase):
         self,
     ) -> None:
         spec_packages = _spec_packages_module()
-        for result in ("PASS: focused check exit 0",):
+        for result in ("PASS",):
             with (
                 self.subTest(result=result),
                 tempfile.TemporaryDirectory() as directory,
@@ -984,7 +1343,7 @@ class SpecPackageTests(unittest.TestCase):
                 task = package / "tasks/tsk-0001-implement.md"
                 task.write_text(
                     task.read_text()
-                    .replace("PASS: focused check exit 0", result)
+                    .replace("PASS", result)
                     .replace(
                         "N/A: local validation only",
                         "[Current policy](../../../../.agents/governance/bootstrap.md)",
@@ -1146,7 +1505,7 @@ class SpecPackageTests(unittest.TestCase):
                     "reason": "Withdrawn",
                     "approved_by": "@owner",
                     "approved_at": "2026-09-28",
-                    "criteria": [],
+                    "criteria": [{"criterion": 1, "withdrawn": "obsolete"}],
                 },
             )
             self.assertEqual(1, len(module.load_spec_packages(stage)))
@@ -1184,7 +1543,7 @@ class SpecPackageTests(unittest.TestCase):
                     _document_text(
                         "task",
                         "SPEC-0001-TSK-0002",
-                        ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                        ("SPEC-0001-PLAN-0001",),
                         status="cancelled",
                     ),
                 )
@@ -1217,7 +1576,7 @@ class SpecPackageTests(unittest.TestCase):
             cancelled = _document_text(
                 "task",
                 "SPEC-0001-TSK-0002",
-                ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                ("SPEC-0001-PLAN-0001",),
                 status="cancelled",
             )
             (package / "tasks/tsk-0002-cancelled.md").write_text(
@@ -1237,13 +1596,13 @@ class SpecPackageTests(unittest.TestCase):
 
     def test_completed_package_requires_structural_acceptance_evidence(self) -> None:
         spec_packages = _spec_packages_module()
-        rows = "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |"
+        rows = "| 1 | W1 | completed | PASS | N/A: local validation only |"
         cases = {
             "missing-criterion": ("spec.md", "2. Another criterion.\n"),
             "uncovered-work": ("plan.md", "2. W2: Additional planned work.\n"),
             "skipped-criterion": (
                 "row",
-                rows.replace("PASS: focused check exit 0", "SKIP: runtime unavailable"),
+                rows.replace("PASS", "SKIP: runtime unavailable"),
             ),
             "draft-unreceipted-task": ("extra-task", "draft"),
             "commented-task": ("comment", "tasks/tsk-0001-implement.md"),
@@ -1251,8 +1610,7 @@ class SpecPackageTests(unittest.TestCase):
             "commented-plan": ("comment", "plan.md"),
             "unknown-work": ("row", rows.replace("W1", "W9")),
             "unknown-criterion": ("row", rows.replace("| 1 |", "| 9 |")),
-            "empty-result": ("row", rows.replace("PASS: focused check exit 0", "")),
-            "bare-pass": ("row", rows.replace("PASS: focused check exit 0", "PASS")),
+            "empty-result": ("row", rows.replace("PASS", "")),
             "empty-owner": ("row", rows.replace("N/A: local validation only", "")),
             "bare-na": ("row", rows.replace("N/A: local validation only", "N/A")),
             "unlinked-owner": (
@@ -1287,7 +1645,7 @@ class SpecPackageTests(unittest.TestCase):
                             _document_text(
                                 "task",
                                 "SPEC-0001-TSK-0002",
-                                ("SPEC-0001", "SPEC-0001-PLAN-0001"),
+                                ("SPEC-0001-PLAN-0001",),
                                 status=value,
                             ),
                         )
@@ -1306,7 +1664,8 @@ class SpecPackageTests(unittest.TestCase):
                     path = package / surface
                     path.write_text(path.read_text() + value)
                 with self.assertRaisesRegex(
-                    spec_packages.SpecPackageError, "completion"
+                    spec_packages.SpecPackageError,
+                    "completion|item evidence|Task result|status projection|completed item",
                 ):
                     spec_packages.load_spec_packages(stage)
 
@@ -1593,10 +1952,10 @@ class SpecPackageTests(unittest.TestCase):
     def test_current_execution_states_require_consistent_parents(self) -> None:
         spec_packages = _spec_packages_module()
         cases = (
-            ("approved", "active", "ready", "active Plan requires active Spec"),
-            ("completed", "active", "in-progress", "current Task requires active Spec"),
-            ("active", "completed", "blocked", "current Task requires active Plan"),
-            ("completed", "active", "completed", "active Plan requires active Spec"),
+            ("approved", "in-progress", "ready", "share one status"),
+            ("completed", "in-progress", "in-progress", "share one status"),
+            ("in-progress", "completed", "blocked", "share one status"),
+            ("completed", "in-progress", "completed", "share one status"),
         )
         for spec_status, plan_status, task_status, message in cases:
             with (
@@ -1616,9 +1975,9 @@ class SpecPackageTests(unittest.TestCase):
                     spec_packages.load_spec_packages(stage)
 
         for spec_status, plan_status, task_status in (
-            ("review", "approved", "ready"),
             ("approved", "approved", "ready"),
-            ("active", "active", "in-progress"),
+            ("in-progress", "in-progress", "in-progress"),
+            ("blocked", "blocked", "blocked"),
         ):
             with (
                 self.subTest(states=(spec_status, plan_status, task_status)),
@@ -1655,7 +2014,11 @@ class SpecPackageTests(unittest.TestCase):
                 (),
                 spec_packages.validate_spec_package_lifecycle(
                     spec_packages.load_spec_packages(before_stage),
-                    spec_packages.load_spec_packages(after_stage),
+                    spec_packages.load_spec_packages(
+                        after_stage,
+                        _current_contracts=False,
+                        _completion_evidence=False,
+                    ),
                     retired_paths=frozenset(
                         {pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")}
                     ),
@@ -1685,9 +2048,9 @@ class SpecPackageTests(unittest.TestCase):
     def test_retained_package_keeps_non_terminal_execution_evidence(self) -> None:
         spec_packages = _spec_packages_module()
         for plan_status, task_status, removed in (
-            ("active", "in-progress", "docs/03.specs/0001-example/plan.md"),
+            ("in-progress", "in-progress", "docs/03.specs/0001-example/plan.md"),
             (
-                "active",
+                "in-progress",
                 "in-progress",
                 "docs/03.specs/0001-example/tasks/tsk-0001-implement.md",
             ),
@@ -1713,7 +2076,11 @@ class SpecPackageTests(unittest.TestCase):
                 )
                 findings = spec_packages.validate_spec_package_lifecycle(
                     spec_packages.load_spec_packages(before_stage),
-                    spec_packages.load_spec_packages(after_stage),
+                    spec_packages.load_spec_packages(
+                        after_stage,
+                        _current_contracts=False,
+                        _completion_evidence=False,
+                    ),
                 )
                 self.assertEqual(
                     {("execution-evidence-deletion-forbidden", removed)},
@@ -1997,6 +2364,9 @@ class SpecPackageTests(unittest.TestCase):
                 stage, commit, _ = _branch_handoff_fixture(root)
                 task = stage / "0002-target/tasks/tsk-0001-implement.md"
                 _set_status(task, "in-progress", status)
+                if status == "blocked":
+                    _set_status(stage / "0002-target/spec.md", "in-progress", "blocked")
+                    _set_status(stage / "0002-target/plan.md", "in-progress", "blocked")
                 findings = spec_packages.validate_repository_spec_package_lifecycle(
                     root,
                     spec_packages.load_spec_packages(stage),
@@ -2189,12 +2559,16 @@ class SpecPackageTests(unittest.TestCase):
                         file.write("\nmodified\n")
                 elif mutation == "inactive-target":
                     target = stage / "0002-target"
-                    _set_status(target / "spec.md", "active", "draft")
-                    _set_status(target / "plan.md", "active", "completed")
+                    _set_status(target / "spec.md", "in-progress", "approved")
+                    _set_status(target / "plan.md", "in-progress", "approved")
                     _set_status(
                         target / "tasks/tsk-0001-implement.md",
                         "in-progress",
                         "completed",
+                    )
+                    _set_review_rows(
+                        target / "tasks/tsk-0001-implement.md",
+                        (("1", "accepted", "Fixture review."),),
                     )
                 elif mutation == "archived-target-missing-evidence":
                     task = (
@@ -2204,7 +2578,7 @@ class SpecPackageTests(unittest.TestCase):
                     text = task.read_text(encoding="utf-8")
                     task.write_text(
                         text.replace(
-                            "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n",
+                            "| 1 | W1 | PASS: focused check | N/A: local validation only |\n",
                             "",
                         ),
                         encoding="utf-8",
@@ -2301,16 +2675,25 @@ class SpecPackageTests(unittest.TestCase):
                 "package-retirement-unrecorded",
                 {finding.code for finding in findings},
             )
-            _set_status(mirror / "spec.md", "active", "completed")
-            _set_status(mirror / "plan.md", "active", "completed")
+            _set_status(mirror / "spec.md", "in-progress", "completed")
+            _set_status(mirror / "plan.md", "in-progress", "completed")
             _set_status(
                 mirror / "tasks/tsk-0001-implement.md",
                 "in-progress",
                 "completed",
             )
             task = mirror / "tasks/tsk-0001-implement.md"
+            _set_review_rows(task, (("1", "accepted", "Fixture review."),))
+            task.write_text(
+                task.read_text(encoding="utf-8").replace(
+                    "| 1 | W1 | PASS | N/A: local validation only |",
+                    "| 1 | W1 | PASS: focused check | N/A: local validation only |",
+                    1,
+                ),
+                encoding="utf-8",
+            )
             receipt = (
-                "| 1 | W1 | PASS: focused check exit 0 | N/A: local validation only |\n"
+                "| 1 | W1 | PASS: focused check | N/A: local validation only |\n"
             )
             task_body = task.read_text(encoding="utf-8")
             task.write_text(task_body.replace(receipt, ""), encoding="utf-8")
@@ -2471,7 +2854,10 @@ class SpecPackageTests(unittest.TestCase):
 
     def test_current_repository_spec_packages_cover_spec_directories(self) -> None:
         spec_packages = _spec_packages_module()
-        packages = spec_packages.load_spec_packages(ROOT / "docs/03.specs")
+        registry = load_registry()
+        packages = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=registry
+        )
         expected_paths = {
             path
             for path in (ROOT / "docs/03.specs").iterdir()
@@ -2486,6 +2872,410 @@ class SpecPackageTests(unittest.TestCase):
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/tests.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
         self.assertFalse((ROOT / "DESIGN.md").exists())
+        lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
+            ROOT,
+            packages,
+            base_ref="main",
+            registry=registry,
+        )
+        self.assertEqual((), lifecycle.findings)
+        self.assertRegex(lifecycle.generation_source or "", r"^[0-9a-f]{40,64}$")
+        self.assertTrue(lifecycle.actual_normalizations)
+
+        proof_task = next(
+            task
+            for package in packages
+            for task in package.tasks
+            if "### Contract Migration" in task.body
+        )
+        missing = dataclasses.replace(
+            proof_task,
+            body=proof_task.body.split("### Contract Migration", 1)[0],
+        )
+        altered_packages = tuple(
+            dataclasses.replace(
+                package,
+                tasks=tuple(
+                    missing if task.path == missing.path else task
+                    for task in package.tasks
+                ),
+            )
+            for package in packages
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "migration proof"):
+            spec_packages._migration_proof(altered_packages, registry)
+
+        malformed_task = dataclasses.replace(
+            proof_task,
+            body=proof_task.body.replace(
+                lifecycle.generation_source or "missing-source",
+                "not-a-full-object-id",
+                1,
+            ),
+        )
+        malformed_packages = tuple(
+            dataclasses.replace(
+                package,
+                tasks=tuple(
+                    malformed_task if task.path == malformed_task.path else task
+                    for task in package.tasks
+                ),
+            )
+            for package in packages
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "full object ID"):
+            spec_packages._migration_proof(malformed_packages, registry)
+
+        source_registry = json.loads(
+            json.dumps(
+                spec_packages.load_registry_document_at_revision(
+                    lifecycle.generation_source,
+                    root=ROOT,
+                )
+            )
+        )
+        source_registry["common"]["lifecycle_generation"] = 4
+        with self.assertRaisesRegex(
+            spec_packages.SpecPackageError, "original lifecycle generation"
+        ):
+            spec_packages._validate_source_registry(source_registry)
+
+        real_bounded_git = spec_packages._bounded_git
+
+        def nonancestor(root, *arguments, byte_limit):
+            if arguments and arguments[0] == "merge-base":
+                return ("f" * 40 + "\n").encode()
+            return real_bounded_git(root, *arguments, byte_limit=byte_limit)
+
+        with (
+            mock.patch.object(spec_packages, "_bounded_git", side_effect=nonancestor),
+            self.assertRaisesRegex(
+                spec_packages.SpecPackageError, "not a current ancestor"
+            ),
+        ):
+            spec_packages.validate_repository_spec_package_lifecycle_details(
+                ROOT,
+                packages,
+                base_ref="main",
+                registry=registry,
+            )
+
+        source = spec_packages._load_base_spec_packages(
+            ROOT, base_ref=lifecycle.generation_source
+        )
+        completed_package = next(
+            package
+            for package in packages
+            if any(task.status == "completed" for task in package.tasks)
+        )
+        completed_task = next(
+            task for task in completed_package.tasks if task.status == "completed"
+        )
+        changed_task = dataclasses.replace(
+            completed_task,
+            body=completed_task.body + "\nChanged terminal body.\n",
+            source_text=completed_task.source_text + "\nChanged terminal body.\n",
+        )
+        changed_packages = tuple(
+            dataclasses.replace(
+                package,
+                tasks=tuple(
+                    changed_task if task.path == changed_task.path else task
+                    for task in package.tasks
+                ),
+            )
+            if package.path == completed_package.path
+            else package
+            for package in packages
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "body or identity"):
+            spec_packages._validate_terminal_task_migration(source, changed_packages)
+
+    def test_postcutover_v4_baseline_needs_no_migration_proof(self) -> None:
+        spec_packages = _spec_packages_module()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            stage = root / "docs/03.specs"
+            _write_package(stage, plan=True, task=True)
+            terminal_package = _write_package(
+                stage,
+                number="0002",
+                slug="terminal",
+                spec_status="completed",
+                plan=True,
+                plan_status="completed",
+                task=True,
+                task_status="completed",
+            )
+            subprocess.run(("git", "init", "--quiet"), cwd=root, check=True)
+            subprocess.run(("git", "add", "-A"), cwd=root, check=True)
+            subprocess.run(
+                (
+                    "git",
+                    "-c",
+                    "user.name=Spec Fixture",
+                    "-c",
+                    "user.email=spec@example.invalid",
+                    "commit",
+                    "-qm",
+                    "v4 baseline",
+                ),
+                cwd=root,
+                check=True,
+            )
+            registry = load_registry()
+            current = spec_packages.load_spec_packages(stage, registry=registry)
+            result = spec_packages.validate_repository_spec_package_lifecycle_details(
+                root,
+                current,
+                base_ref="HEAD",
+                registry=registry,
+            )
+            self.assertEqual((), result.findings)
+            self.assertIsNone(result.generation_source)
+            self.assertEqual(frozenset(), result.actual_normalizations)
+
+            terminal_task = terminal_package / "tasks/tsk-0001-implement.md"
+            terminal_task.write_text(
+                terminal_task.read_text(encoding="utf-8") + "\nChanged body.\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                spec_packages.SpecPackageError, "body or identity"
+            ):
+                spec_packages.validate_repository_spec_package_lifecycle_details(
+                    root,
+                    spec_packages.load_spec_packages(stage, registry=registry),
+                    base_ref="HEAD",
+                    registry=registry,
+                )
+
+    def test_cross_generation_completion_composes_migration_and_v4_events(
+        self,
+    ) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_registry()
+        spec_path = pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")
+        plan_path = pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md")
+        task_path = pathlib.PurePosixPath(
+            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+        )
+        prefix = (
+            ("SPEC-0001", "draft", "review", "#spec-review"),
+            ("SPEC-0001", "review", "approved", "#spec-approved"),
+            ("SPEC-0001", "approved", "active", "#spec-active"),
+            ("SPEC-0001-PLAN-0001", "draft", "approved", "#plan-approved"),
+            ("SPEC-0001-PLAN-0001", "approved", "active", "#plan-active"),
+            ("SPEC-0001-TSK-0001", "draft", "ready", "#task-ready"),
+            (
+                "SPEC-0001-TSK-0001",
+                "ready",
+                "in-progress",
+                "#task-started",
+            ),
+        )
+        appended = (
+            ("SPEC-0001", "in-progress", "completed", "#spec-completed"),
+            (
+                "SPEC-0001-PLAN-0001",
+                "in-progress",
+                "completed",
+                "#plan-completed",
+            ),
+            (
+                "SPEC-0001-TSK-0001",
+                "in-progress",
+                "completed",
+                "#task-completed",
+            ),
+        )
+
+        def task_body(rows):
+            anchors = "\n\n".join(
+                f"### {evidence[1:].replace('-', ' ').title()}\n\nObserved."
+                for *_, evidence in rows
+            )
+            table = "\n".join(
+                (
+                    "### Lifecycle Events",
+                    "",
+                    "| Artifact | From | To | Evidence |",
+                    "| --- | --- | --- | --- |",
+                    *("| " + " | ".join(row) + " |" for row in rows),
+                )
+            )
+            return f"## Work Log\n\n{anchors}\n\n{table}\n"
+
+        def document(path, profile, artifact, status, body=""):
+            return spec_packages.SpecDocument(
+                path, profile, artifact, status, (), body=body, source_text=body
+            )
+
+        source = spec_packages.SpecPackage(
+            pathlib.Path("docs/03.specs/0001-example"),
+            "0001",
+            "example",
+            document(spec_path, "spec", "SPEC-0001", "active"),
+            document(plan_path, "plan", "SPEC-0001-PLAN-0001", "active"),
+            (
+                document(
+                    task_path,
+                    "task",
+                    "SPEC-0001-TSK-0001",
+                    "in-progress",
+                    task_body(prefix),
+                ),
+            ),
+            (),
+        )
+        current = dataclasses.replace(
+            source,
+            spec=dataclasses.replace(source.spec, status="completed"),
+            plan=dataclasses.replace(source.plan, status="completed"),
+            tasks=(
+                dataclasses.replace(
+                    source.tasks[0],
+                    status="completed",
+                    body=task_body((*prefix, *appended)),
+                    source_text=task_body((*prefix, *appended)),
+                ),
+            ),
+        )
+        source_registry = {
+            "lifecycles": {
+                "spec": {
+                    "initial_status": "draft",
+                    "transitions": {
+                        "draft": ["review"],
+                        "review": ["approved"],
+                        "approved": ["active"],
+                    },
+                },
+                "plan": {
+                    "initial_status": "draft",
+                    "transitions": {
+                        "draft": ["approved"],
+                        "approved": ["active"],
+                    },
+                },
+                "task": {
+                    "initial_status": "draft",
+                    "transitions": {
+                        "draft": ["ready"],
+                        "ready": ["in-progress"],
+                    },
+                },
+            }
+        }
+        normalizations = spec_packages._generation_normalizations(
+            (source,), (current,), registry
+        )
+        self.assertEqual(
+            frozenset(
+                {
+                    (spec_path.as_posix(), "active", "in-progress"),
+                    (plan_path.as_posix(), "active", "in-progress"),
+                }
+            ),
+            normalizations,
+        )
+        spec_packages._validate_terminal_task_migration((source,), (current,))
+        findings, transitions = spec_packages._validate_task_lifecycle_events(
+            (source,),
+            (current,),
+            registry,
+            prefix_previous=(source,),
+            normalizations=normalizations,
+            source_registry=source_registry,
+        )
+        self.assertEqual((), findings)
+        self.assertEqual(
+            frozenset(
+                {
+                    (spec_path.as_posix(), "active", "completed"),
+                    (plan_path.as_posix(), "active", "completed"),
+                    (task_path.as_posix(), "in-progress", "completed"),
+                }
+            ),
+            transitions,
+        )
+        missing = dataclasses.replace(
+            current,
+            tasks=(
+                dataclasses.replace(
+                    current.tasks[0],
+                    body=task_body(prefix),
+                    source_text=task_body(prefix),
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(
+            spec_packages.SpecPackageError, "unsupported lifecycle generation"
+        ):
+            spec_packages._generation_normalizations((source,), (missing,), registry)
+
+        wrong_rows = (
+            *prefix,
+            ("SPEC-0001", "approved", "completed", "#spec-completed"),
+            *appended[1:],
+        )
+        wrong = dataclasses.replace(
+            current,
+            tasks=(
+                dataclasses.replace(
+                    current.tasks[0],
+                    body=task_body(wrong_rows),
+                    source_text=task_body(wrong_rows),
+                ),
+            ),
+        )
+        wrong_normalizations = spec_packages._generation_normalizations(
+            (source,), (wrong,), registry
+        )
+        wrong_findings, _ = spec_packages._validate_task_lifecycle_events(
+            (),
+            (wrong,),
+            registry,
+            prefix_previous=(source,),
+            normalizations=wrong_normalizations,
+            source_registry=source_registry,
+        )
+        self.assertIn(
+            "lifecycle event is not a registered direct edge: approved -> completed",
+            {finding.message for finding in wrong_findings},
+        )
+
+        source_terminal = dataclasses.replace(
+            source,
+            tasks=(dataclasses.replace(source.tasks[0], status="completed"),),
+        )
+        changed_status = dataclasses.replace(
+            source_terminal,
+            tasks=(dataclasses.replace(source_terminal.tasks[0], status="cancelled"),),
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "changed"):
+            spec_packages._validate_terminal_task_migration(
+                (source_terminal,), (changed_status,)
+            )
+        changed_body = dataclasses.replace(
+            source_terminal,
+            tasks=(
+                dataclasses.replace(
+                    source_terminal.tasks[0],
+                    body=source_terminal.tasks[0].body + "\nChanged.\n",
+                    source_text=source_terminal.tasks[0].source_text
+                    + "\nChanged.\n",
+                ),
+            ),
+        )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "body or identity"):
+            spec_packages._validate_terminal_task_migration(
+                (source_terminal,), (changed_body,)
+            )
+        with self.assertRaisesRegex(spec_packages.SpecPackageError, "removed"):
+            spec_packages._validate_terminal_task_migration(
+                (source_terminal,), (dataclasses.replace(current, tasks=()),)
+            )
 
     def test_current_index_routes_each_current_package_by_directory(self) -> None:
         """SPEC-0184 rule 6: one directory-link row per package, no status copy."""

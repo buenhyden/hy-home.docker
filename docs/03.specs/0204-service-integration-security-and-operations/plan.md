@@ -2,9 +2,9 @@
 title: "Service Integration, Security, and Operations Plan"
 version: "1.0.4"
 type: "sdlc/plan"
-status: "active"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:

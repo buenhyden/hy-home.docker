@@ -1,10 +1,10 @@
 ---
 title: "Data Packages"
 version: "2.0.1"
-type: "reference/category-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -19,13 +19,18 @@ created: "2026-07-02"
 Stage 90 authority boundary와 package lifecycle 규칙은
 [References index](../README.md)와 Stage 99 Registry가 정의합니다.
 
+## Scope
+
+이 README는 현재 data package 경로와 보존된 data route를 안내합니다. dataset의
+사실과 consumer 관계는 해당 package와 canonical consumer가 소유합니다.
+
 현재 tree가 package 집합을 정의합니다: package는 README가 존재하고 자신의
 Stage 99 profile을 만족할 때 존재합니다. 필요한 의미를 canonical owner로
 옮기고 모든 inbound consumer를 갱신하고 아래 표의 행을 제거하고
 Tombstone을 기록하는 같은 변경에서 제거되어 은퇴합니다. 은퇴한
 `DATA-` 번호는 다시 발급하지 않습니다.
 
-## Packages
+## Structure
 
 이 범주는 package를 보유하지 않습니다.
 
@@ -46,7 +51,7 @@ lifecycle gate가 그 `data.yaml`을 Migration 0003 복구 blob과 byte 단위�
 이곳의 새 package는 만들기 전에 현재 consumer가 먼저 지정되어야 하며,
 만든 뒤에 지정해서는 안 됩니다.
 
-## Authoring
+## Usage
 
 package는 `data/####-<slug>/` 아래에만 만들고, 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner

@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Implementation"
 version: "0.3.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 ---
 
 # SurrealDB Implementation
@@ -75,7 +75,7 @@ v3 호환성 및 데이터 이전을 검증하고 별도 변경 승인을 받기
 - 사용자: `${SURREALDB_USERNAME}`
 - 저장소 엔진: `rocksdb:/mydata/db.db`
 
-## How to Work in This Area
+## Usage
 
 1. 이미지 변경을 제안하기 전에 [Dockerfile](Dockerfile)과 [docker-entrypoint.sh](docker-entrypoint.sh)를 검토합니다.
 2. 빌드가 별도로 승인되면 저장소 루트에서 `docker compose --profile notebook build surrealdb`를 실행합니다.

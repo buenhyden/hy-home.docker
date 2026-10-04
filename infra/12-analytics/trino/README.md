@@ -1,10 +1,10 @@
 ---
 title: "Trino (Iceberg)"
 version: "1.0.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -118,7 +118,7 @@ Secret은 `seaweedfs_s3_lakehouse_secret_key`(STRG-015)이며 access key ID는
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `SHOW SCHEMAS FROM lakehouse`를 실행한 뒤 runbook을 따름 |
 
-## How to Work in This Area
+## Usage
 
 1. Trino는 자체 Iceberg 라이브러리를 포함합니다. 둘 중 하나를 업그레이드한 뒤에는 Spark가 쓴 table을 읽는지 확인하십시오.
 2. Renovate가 이미지 tag를 갱신합니다.

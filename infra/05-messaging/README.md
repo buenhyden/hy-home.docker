@@ -1,10 +1,10 @@
 ---
 title: "메시징 계층 (05-messaging)"
 version: "1.1.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -39,7 +39,7 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 
 정상 선택자와 LAB 진입점을 각각 Compose 렌더로 확인하고, 실제 기동 결과는 별도로 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 정확한 루트 selector는 `messaging`, `messaging-broker`,
 `messaging-schema`, `messaging-connect`, `messaging-rest`,

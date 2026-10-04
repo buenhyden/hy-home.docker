@@ -1,10 +1,10 @@
 ---
 title: "Locust LAB 실행 이미지"
 version: "1.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-24"
 ---
 
@@ -67,7 +67,7 @@ python3 -m unittest tests.validation.test_quality_mock_lab -v
 
 이미지 build와 Locust 실행은 이번 source-only 검증에 포함되지 않는다.
 
-## How to Work in This Area
+## Usage
 
 1. 이미지 tag 변경 전에 공식 release와 Python 호환성을 확인한다.
 2. master/worker 옵션은 **labs/locust.yml**에서 함께 변경한다.

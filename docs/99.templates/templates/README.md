@@ -4,7 +4,7 @@ version: "3.0.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "templates"
 ---
 
@@ -45,7 +45,7 @@ layer: "templates"
 | [archive/](./archive/) | Migration, Tombstone |
 | [common/](./common/) | Stage, domain, package README 양식 |
 
-## How to Work in This Area
+## Usage
 
 1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾고
    등록된 `source`를 복사합니다. 디렉터리를 훑어서 template을 고르지

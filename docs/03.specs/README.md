@@ -4,7 +4,7 @@ version: "1.2.21"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 ---
 
@@ -64,7 +64,7 @@ Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelle
 | Task | 실제 작업 기록, 명령 결과, 검토, commit, 이연 증거 |
 | Contract | Spec이 소유하는 등록된 실행 가능 인터페이스 |
 
-## How to Work in This Area
+## Usage
 
 1. 관련 Requirement, Architecture Description, ADR을 먼저 읽습니다.
 2. 등록된 Spec template으로 `spec.md`를 만들거나 고칩니다.
