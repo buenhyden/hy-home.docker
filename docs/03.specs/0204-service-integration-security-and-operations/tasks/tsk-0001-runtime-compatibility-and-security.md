@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -132,6 +132,55 @@ exit0; the existing body, lifecycle and acceptance entries are preserved.
 Independent review requested precise CI-failure evidence wording, corrected
 above; final independent policy/document review returned PASS. Candidate install,
 consumer/build/audit, HOME changes and data migration are NOT_RUN.
+
+### OpenDesign assessment — 2026-10-04
+
+The user's named candidate is assessed as [nexu-io/open-design](https://github.com/nexu-io/open-design),
+not the separate opendesign.cc design-system catalog or similarly named forks.
+Authenticated public-source readback exited0 at main revision
+`53231d40b778d88eba23f35547bf99485d3ae9fc`; latest release is
+`open-design-v0.24.1` while that source manifest declares0.23.1. These are
+separate artifacts, not a verified runtime pin. Upstream Apache-2.0 permits
+self-hosting; BYOK/provider or cloud usage is not thereby free, and imported
+brand assets keep their own rights.
+
+Official source describes design/prototype generation, design-system files,
+export and Codex/Claude adapters. It is a Claude Design workflow candidate,
+not a demonstrated replacement for existing Storybook component interaction,
+accessibility/coverage, package consumer and revision-manifest acceptance.
+The inspected [live-artifacts MCP source](https://github.com/nexu-io/open-design/blob/53231d40b778d88eba23f35547bf99485d3ae9fc/apps/daemon/src/mcp-live-artifacts-server.ts)
+exposes create/update/refresh as well as list and connector tools; this is not
+the currently approved shared read-only documentation toolset. A supported
+read-only subset with audience/reader authorization is not established here.
+
+[Deployment documentation](https://github.com/nexu-io/open-design/blob/53231d40b778d88eba23f35547bf99485d3ae9fc/deploy/README.md)
+explicitly distinguishes its single-tenant bearer token from per-user access
+control. [Adapter documentation](https://github.com/nexu-io/open-design/blob/53231d40b778d88eba23f35547bf99485d3ae9fc/docs/agent-adapters.md)
+uses non-interactive permission modes, including Claude bypassPermissions;
+therefore a preview sandbox is not proof that the agent cannot write or run
+code. [Privacy documentation](https://github.com/nexu-io/open-design/blob/53231d40b778d88eba23f35547bf99485d3ae9fc/PRIVACY.md)
+describes product analytics enabled by default and separately configured
+safety/reliability telemetry not disabled by the general toggle. Local-first
+must not be reported as offline or zero outbound data.
+
+Recommendation: keep Storybook's approved package/testing/docs contract;
+evaluate OpenDesign only as a separate design-workflow companion using
+approved UI tokens and synthetic screens in an isolated external workspace.
+Before any trial, review exact release/dependency audit, model destinations,
+telemetry configuration, file-write/command authority and the client config
+changes. No installer, agent credential import, global MCP registration,
+Docker service, model request, repo upload or HOME activation was performed.
+Replacing the design tool does not remove the current Next ESLint/braces
+path. Main integration and whole-package archival still require the earlier
+protected prerequisites and terminal completion evidence; they are not
+unblocked by this candidate research. This Task's focused metadata check
+exited0, selected1/violations0/legacy0/overrides0; Markdownlint-cli2 0.22.1,
+`git diff --check` and exact prior-body preservation comparison exited0.
+Independent read-only source/policy review returned PASS. The preceding PR354
+head `ed2600286e12d16349345f080244c6966321f273` run37165579521 failed:
+metadata selected6/violations0 and corpus violations0, followed by five high
+braces findings in sanitized diagnostics. This does not prove the new head's
+hosted result. Actual candidate execution remains NOT_RUN.
 
 ### Protected review edge — 2026-10-04
 
