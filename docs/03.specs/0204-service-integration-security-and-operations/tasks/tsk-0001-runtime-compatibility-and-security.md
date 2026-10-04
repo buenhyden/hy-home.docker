@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -59,6 +59,79 @@ Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
 ## Verification Evidence
+
+### Storybook blocker and alternative assessment — 2026-10-04
+
+The user requested investigation and alternatives if no immediate fix exists,
+then prioritized main integration and eligible package preservation. This is
+read-only research recorded by this Task's protected-delivery owner; npm
+implementation remains owned by SPEC-0205 and shared UI/MCP by SPEC-0206.
+No package, lint configuration, audit threshold, workflow or archive body is
+changed. The earlier braces hold is not withdrawn by a request to integrate.
+
+At protected main `7f939ae802afc1d23f96b8eca4100abfcc2bf629`, the tracked
+lockfile contains the dev-only path `eslint-config-next@16.3.8 →
+@next/eslint-plugin-next@16.3.8 → fast-glob@3.3.1 → micromatch@4.0.8 →
+braces@3.0.3`. Only micromatch directly declares braces in this lockfile.
+The ESLint configuration imports both Next core-web-vitals and TypeScript
+presets. Removing Storybook alone leaves that Next lint dependency in place.
+This is a source-graph finding, not a claim that static assets expose braces.
+
+Read-only official registry JSON queries exited 0 on 2026-10-04: stable
+`storybook` is 10.6.1, `eslint-config-next` and `@next/eslint-plugin-next` are
+16.3.8, and braces is 3.0.3. The latest Next plugin still declares fast-glob
+3.3.1. The [official advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm)
+reports affected braces through 3.0.3 with no patched release. Therefore a
+supported stable upgrade that removes this path was not found. A handwritten
+fork, package alias, lint-rule removal or production-only audit would require
+new validation and would not satisfy the existing complete high/critical
+check. None is applied or reported as an immediate solution.
+
+| Candidate | Official functional basis and current registry tag | Replacement limits and security finding | Disposition |
+| --- | --- | --- | --- |
+| Keep Storybook | Existing 10.6.1 source, package exports, isolated static/browser receipts, revision manifests and local documentation MCP | Keep failed audit visible; wait for a patched braces release or upstream Next lint dependency replacement proven with the current rules | Preferred current architecture; merge remains blocked |
+| Ladle | [React/Vite workshop](https://ladle.dev/docs/), [static build CLI](https://ladle.dev/docs/cli/) and [meta.json](https://ladle.dev/docs/meta/); @ladle/react latest 5.1.1, MIT, React peer >=18, Vite ^6.0.5 | Declares globby ^14.0.2; compatible globby14.1.0 declares fast-glob ^3.3.3, which declares micromatch ^4.0.8 and hence braces ^3.0.3. meta.json is not the current components/docs manifest contract. React19/Vite8, Next mocks, stories/addons, coverage and MCP need a separate consumer trial | First functional alternative to evaluate after product/contract approval; not a demonstrated audit fix |
+| React Styleguidist | [React component documentation/playground](https://react-styleguidist.js.org/); latest13.1.4, MIT, React peer >=18 | Different Markdown/webpack contract; declares react-dev-utils ^12.0.0, whose compatible12.0.1 declares globby ^11.0.4; globby11.1.0 declares fast-glob ^3.2.9. Current story/MCP/test contracts require migration | Secondary documentation alternative; no security-clean graph claimed |
+| Histoire | [Official Vite playground](https://histoire.dev/) lists Vue/Svelte; npm latest is1.0.0-beta.1, MIT | No official current React replacement was established; that beta directly declares micromatch ^4.0.8 and is not a stable candidate | Reject for this React workspace |
+
+Candidate dependency paths are declared-range evidence from official registry
+metadata, not installed lockfiles or complete security audits. No replacement
+was installed, built, benchmarked or connected to HOME. Free self-hosting and
+MIT upstream licenses do not grant a distribution license to the existing
+private UNLICENSED UI package. Existing Traefik origin/auth/network contracts
+would be preserved by an approved alternative; no second gateway is proposed.
+
+Main integration must pass the required protected check before disposition.
+PR353 run37162825263 and PR354 run37163965061 have failed required
+validation-changed checks while the independent braces hold remains unresolved.
+Sanitized `gh run view --log-failed` readbacks report the braces advisory and
+five high findings; PR354 metadata selected6/violations0 and corpus/archive
+recovery violations0. PR355 run37164906030 also failed, with metadata
+selected1/violations0 and corpus/archive recovery violations0 before the same
+five-high audit result. These observed failures are not converted into PASS.
+PR352 is already merged; PR351 was closed without merge. Closed PR351's
+recovery commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` preserves14
+completed members for SPEC-0201/0202/0203/0205. Their frozen bodies are not
+rewritten or presented as completed current-main packages. Once the security
+hold clears, deliver the remaining registered protected lifecycle edges,
+reconcile the divergent current SPEC-0205 through the existing immutable
+handoff contract, integrate source, then prioritize those four whole-package
+archives. SPEC-0182 recovery/offline custody, SPEC-0193 live resource/alert
+acceptance, SPEC-0204 exact-image synthetic acceptance and SPEC-0206 HOME
+TLS/OIDC remain separate uncompleted conditions; never archive individual
+completed Tasks from their unfinished packages.
+
+The inspected source inputs were only tracked JSON/ESLint/gate declarations
+and public vendor metadata. Output is this assessment and a prioritized
+handoff; no runtime, secret or data operation occurred. Rollback is a scoped
+documentation revert preserving source recovery commits. Focused metadata `check-document-metadata.py --mode check-changed --base-ref
+origin/main --changed-path` on this Task exited0, selected1/violations0/legacy0/
+overrides0. Markdownlint-cli2 0.22.1 and `git diff --check` exited0. A Python
+comparison proved only the dated research receipt and patch version changed,
+exit0; the existing body, lifecycle and acceptance entries are preserved.
+Independent review requested precise CI-failure evidence wording, corrected
+above; final independent policy/document review returned PASS. Candidate install,
+consumer/build/audit, HOME changes and data migration are NOT_RUN.
 
 ### Protected review edge — 2026-10-04
 
