@@ -1,10 +1,10 @@
 ---
 title: "Runtime and Legacy Data"
-version: "0.4.5"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0002"
 parent_ids:
@@ -169,8 +169,9 @@ Read-only investigation of 2026-09-25:
   `security/vault` absent (only `openbao` remains under `security/`); 0 of the
   8 targeted files remain and the other 6 quarantined files are kept;
   `secrets/.backup-20260923/` absent; neither image listed. The first Restic
-  snapshot without the Vault tree is taken by `hyhome-backup.timer` on
-  2026-09-26 03:45 KST and is checked then.
+  snapshot without the Vault tree was originally scheduled for
+  2026-09-26 03:45 KST, but that run timed out before Restic. The actual
+  2026-09-29 and 2026-09-30 snapshot receipts below close this condition.
 - W3: `pgbackrest --stanza=mng check` completed successfully;
   `archive_mode` on; after a forced WAL switch `pg_stat_archiver` shows
   `00000001000000030000005F` archived with 0 failures and no `archive-push`
@@ -203,7 +204,36 @@ Read-only investigation of 2026-09-25:
 
 ## Review Evidence
 
-Pending.
+- 2026-10-04 source/document review under the owner's request to review,
+  progress and complete SPEC-0182 and preserve completed packages. The
+  review maps existing dated receipts below; it authorizes this bounded
+  documentation correction, not new runtime actions. Independent read-only
+  review returned PASS, including the disclosed Pyroscope verification
+  limit. Selected metadata (seven documents, violations 0), traceability,
+  alignment and corpus lifecycle checks returned exit 0; the existing
+  historical-link warning remains. Task 0003 records the exact commands.
+
+### Completion receipt
+
+| Spec criterion / Plan work unit | Evidence and outcome | Promotion owner / recovery boundary |
+| --- | --- | --- |
+| 3 / W3 | PASS on 2026-09-25: rebuilt `mng-pg`, successful pgBackRest check and WAL archive, CDC connector/task RUNNING and slot active. The later n8n readiness defect was recovered under owner approval on 2026-09-29. The owner then retired the unused CDC connector/slot/publication; the original post-rebuild PASS is historical, not a claim that CDC still runs. | RUN-0021 owns rebuild/rollback; the recorded `pre-0182` image was the original rollback reference. RUN-0036 owns CDC re-registration with a newly provisioned slot/publication, never reuse of a dropped slot or prior LSN. |
+| 4 / W4 | PASS for the approved kept-service apply on 2026-09-25: recreate-on-edit rule and hash checker landed in #270, hashes match 18 / diff 0. Pyroscope had no shell and was verified fresh by its recorded recreation time; no direct hash equality is claimed for that container. | POL-0006 and `scripts/operations/check-config-mount-hashes.py` own the rule/check. Subsequent configuration edits need the current recreate and hash-check procedure; this dated result does not certify today's mounts. |
+| 5 / W5 | PASS: #271/#273 and the final inventory/disposal receipt cover every approved target and end the old rollback path. The first actual post-disposal Restic snapshot is `bfeca109` on 2026-09-29; both repository checks succeeded. The 2026-09-30 timer succeeded again. Failed 2026-09-26–29 scheduled runs are retained as failures. | RUN-0024, RUN-0085, POL-0021 and `secrets/README.md` own the promoted disposal/custody guidance. Disposal is irreversible; existing snapshots retain history until their retention expires, without rewriting snapshots or resurrecting retired credentials. |
+| 6 / W6 | PASS: #268 records and applies the outside-HOME owner decisions. The six temporarily kept W7 subjects received the 2026-09-29 delegated re-decision; JupyterLab/MLflow stopped, Kafka retained, and the later explicit owner CDC retirement eliminated its unused slot/publication. | POL-0078 owns current selection; RUN-0036 owns the separate CDC retirement/re-registration path. A future source profile change is not an approval to stop/restart runtime services. |
+
+The original W3–W6 execution approvals are recorded beside their dated work
+units: owner approval for recreates and exact W5 disposal commands; owner
+W6 decisions, delegated six-container reassessment and explicit CDC
+retirement. Today's receipt preserves those decisions and promotes the
+already completed bounded Task contract to its first stable version.
+
+Source implementation and runtime results above occurred in September and
+are not new deployment evidence. This review executes no container, backup,
+restore, deletion, credential change or measurement. Task 0003 still owns
+criteria 7–12 and remaining recovery/capacity/authentication acceptance;
+Spec and Plan stay active. Task 0002 stays in this unfinished package under
+the registered package lifecycle, rather than being archived on its own.
 
 ## Commit Ledger
 

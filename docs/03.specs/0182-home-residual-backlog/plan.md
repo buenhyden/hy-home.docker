@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-25"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0182-PLAN-0001"
 parent_ids:
@@ -91,8 +91,13 @@ Task 0003, recovery and authentication acceptance:
    RUN-0036's planned isolated restore, steps 4–6, against a disposable
    source. Scratch on the data disk, root-level cleanup. Record recovery
    points, counts and elapsed times against the POL-0021 RPO and RTO.
+   Current review (2026-10-04): the historical PostgreSQL PASS is superseded
+   by current POL-0021/RUN-0021 evidence requirements; actual isolated
+   recovery remains NOT_RUN. No operational approval is expanded here.
 2. W8: Prometheus queries over the owner's window for p95 and maximum CPU,
    memory, GPU and disk growth per service and host; record them with AD-0031.
+   Completed observations are recorded in Task 0003 on 2026-10-04; available
+   samples, identity deduplication and disk endpoint joining are explicit.
 3. W9: Document the SSO behavioural matrix in GDE-0079; run the no-cookie
    probes (agent) and the non-allowed user, logout and role removal checks
    (owner); for Valkey unreachable, disconnect only OAuth2 Proxy from the
@@ -126,6 +131,14 @@ Task 0003, recovery and authentication acceptance:
   stall n8n and Airflow.
 - The reboot rehearsal needs the owner present for the unseal and SecretID,
   and fresh backups first.
+
+W3–W6 are completed by Task 0002's dated receipt, reviewed on 2026-10-04.
+The W3 post-rebuild CDC check passed before the owner's later retirement of
+the unused connector/slot/publication. W5's planned 2026-09-26 snapshot
+failed before Restic; the actual 2026-09-29 and 2026-09-30 receipts close
+that condition. These are historical execution results, not a new runtime
+apply or today's recovery proof. Remaining Task 0003 work keeps this Plan
+and Spec active.
 
 ## Verification
 
