@@ -1,10 +1,10 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.15"
+version: "0.3.16"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0193-TSK-0001"
 parent_ids:
@@ -23,7 +23,9 @@ acceptance criterion of [SPEC-0193](../spec.md).
 ## Inputs
 
 - 2026-09-29 inventory: 151 Compose services (44 HOME, 55 OPTIONAL, 41 LAB,
-  11 DEV); 39 dashboards; live Prometheus reads `prometheus.dev.yml`.
+  11 DEV); 39 dashboards; live Prometheus reads `prometheus.dev.yml`. This
+  dated inventory is historical input. Current root coverage is dynamic and
+  excludes services moved to independent LAB Compose entrypoints.
 - Dashboard metric check: per dashboard, the share of queried metric names
   present in Prometheus (for example `haproxy` 0%, `vllm-monitoring` 4%,
   `node-exporter` 83%, `traefik` 100%).
@@ -152,7 +154,9 @@ acceptance criterion of [SPEC-0193](../spec.md).
   UIDs, datasource placeholders, source notes, query overlap (under half
   for every pair; the largest is 12%), table-to-file and table-to-job
   agreement, identical scrape sets with the two static labels, and
-  runbook links. The Patroni dashboard was removed: the Spilo Patroni API
+  runbook links. Current root coverage is now dynamic and excludes services
+  moved to independent LAB Compose entrypoints; LAB coverage is documented
+  separately. The Patroni dashboard was removed: the Spilo Patroni API
   sits on `lab_net`, which Prometheus does not reach. `docs/05.operations`:
   GDE-0041 (catalog rules, signal-correlation table, Drilldown backends, the
   external-dashboard survey with adopted and rejected candidates), POL-0041
@@ -190,12 +194,29 @@ acceptance criterion of [SPEC-0193](../spec.md).
     fire (its numerator series never existed) and was removed (65 alerts).
   - Traces Drilldown showed "An error occurred in the query": the datasource
     streams results, and Tempo lacked `stream_over_http_enabled`. Added.
+- 2026-10-04 W7 source budget update: final SPEC-0182 W8 memory aggregates
+  from SPEC-0182 Task 0003 W8 showed
+  `airflow-triggerer` p95 227.7 MiB and max 233.7 MiB, and Flower
+  p95 241.5 MiB and max 242.6 MiB, against the previous 256 MiB
+  source budget. Source defaults for both services are raised to 384 MiB.
+  Grafana max memory was 732 MiB, so the 1 GiB source budget stays; OpenBao max memory
+  was 116 MiB, so the 512 MiB source budget stays. OpenBao CPU max was
+  0.9972 and p95 was 0.0205, so CPU quota and alert thresholds remain
+  measurement-only pending a per-quota time-window decision. HOME recreation
+  and live retuning are NOT_RUN.
+
+- 2026-10-04 owner scope extension: the registered `render_service_inventory`
+  projection in `docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md`
+  may update only the `Resources` cells for `airflow-triggerer` and Flower
+  from `256m` to `384m`. CPU values and historical judgment prose are preserved.
+  The initial operations catalog check failed with exactly two stale Resources
+  cells; the generated correction closes that source drift, not runtime rollout.
 
 ## Verification Evidence
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W5 | PASS: the README table lists all 152 Compose services (151 when the Spec was written, plus `grafana-db-provision`); `ObservabilityDashboardContractTests` fails on a job without a dashboard or a dashboard without a service (`f8c2c6f98`) | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
+| 1 | W5 | PASS: the dated `f8c2c6f98` receipt covered 152 Compose services and 49 dashboards; current root coverage is dynamic, excludes independent LAB Compose services, and the contract still fails on a root job without a dashboard or a dashboard without a service | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
 | 2 | W3 | PASS: the 30 disposed files are gone, 49 dashboards remain, and the largest metric-name overlap of any pair is 12% (`8ad894202`, `f8c2c6f98`) | [contract tests](../../../../tests/validation/test_compose_baseline_gates.py) |
 | 3 | W3 | PASS: every external dashboard names its source and revision in its description; no `${DS_*}` placeholder or unknown datasource UID remains (`8ad894202`) | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
 | 4 | W6 | PASS with recorded gaps: on 2026-09-30, against the live metric names, every dashboard of a running service resolves its queries except panels for features not in use (Loki and Tempo cloud stores, memcache, envoy, Kafka tiered storage, Confluent Server stray partitions, hardware fans, SeaweedFS admin, DCGM profiling, Grafana-managed alerts), series that need traffic (Airflow DAG runs, Flower events, Keycloak user events, OAuth2 Proxy requests, consumer lag, loaded Ollama models, connectors) and the pre-1.0 JMX name `jvm_memory_bytes_max` (one panel each in three Confluent dashboards); stopped on-demand services (HAProxy, etcd, OpenSearch, MongoDB, Cassandra, k6) have no series | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
@@ -206,13 +227,29 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | 4 | W6 | PASS: after the owner's Prometheus and Flower sign-ins on 2026-09-30, `oauth2_proxy_requests_total` and `oauth2_proxy_response_duration_seconds` report 35 requests (code 202), and the OAuth2 Proxy dashboard resolves both queries | [OAuth2 Proxy dashboard](../../../../infra/06-observability/grafana/dashboards/Gateway/oauth2-proxy.json) |
 | 4 | W6 | PASS: after two example DAG runs on 2026-09-30, Airflow (mixin) resolves 15 of 21 queries (missing only failure, schedule-delay and SLA series: the runs were manual and succeeded, and Airflow 3 has no SLA) and Flower 6 of 6 | [statsd mapping](../../../../infra/07-workflow/airflow/config/statsd_mapping.yml) |
 | 8 | W4 | PASS: `promtool check rules` (v3.14.0) on 13 files: SUCCESS, 90 rules (66 alerting; 65 after `ContainerVolumeUsage` was removed); every alert links an existing runbook, checked by the contract test (`33f1c6f69`, `f8c2c6f98`) | [alert rules](../../../../infra/06-observability/prometheus/config/alert_rules) |
-| 9 | W7 | DEFERRED: needs the final SPEC-0182 W8 figures after 2026-10-03 | N/A: deferred to W7 |
+| 9 | W7 | PARTIAL: final W8 memory figures support retaining Grafana at 1 GiB, retaining OpenBao memory at 512 MiB, and raising `airflow-triggerer` and Flower source budgets to 384 MiB. CPU, alert thresholds, HOME recreation and live retuning remain NOT_RUN or pending separate evidence | [Airflow Compose](../../../../infra/07-workflow/airflow/docker-compose.yml) |
 | 10 | W5 | PASS: GDE, POL and RUN-0041, GDE and POL-0045, GDE-0040, RUN-0047, RUN-0050 and the Grafana README describe the new state (`22475253c`) | [GDE-0041](../../../05.operations/guides/0041-grafana.md) |
 | 11 | W8 | PASS: at `19889efe6` (after the follow-ups), `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped); one earlier gate run there failed only on the runner's `/proc` process-group scan, which parsed every process cleanly when rerun. Before that, at `687d97213`, `run-ci-gate.py --profile full` rc 0; `tests/lib` 945 OK; `tests/validation` 684 OK (23 skipped). The earlier run at `854dad511` failed once on the stale `airflow-scheduler` inventory row, fixed in `687d97213` | N/A: run evidence for this change |
 
+2026-10-04 focused source checks:
+
+| Command | Result / evidence | Limit |
+| --- | --- | --- |
+| `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests -q` | PASS, exit 0, 5 tests | Existing root/LAB coverage and dashboard contracts |
+| `bash scripts/validation/validate-docker-compose.sh` | PASS, exit 0, selections 68, services_total 322 | Structural render with synthetic inputs; no profile was started |
+| `docker exec -i infra-prometheus promtool check rules /dev/stdin` with the changed tracked `alert_rules.local.infra.yml` on stdin | PASS, exit 0, 8 rules | Validates this worktree's source, not just the existing mounted HOME rules |
+| Existing container `promtool check rules /etc/prometheus/alert_rules/*.yml` | PASS, exit 0, 13 files | Running mounted rules only; not proof of deploying this diff |
+| `python3 scripts/validation/check-operations-catalog.py` after the approved two-cell projection | PASS, exit 0 | Initial two stale Resources findings resolved; historical prose preserved |
+| Final selected 0193 Spec/Plan/Task plus research projection: `check-document-metadata.py --mode check-changed --base-ref origin/main` | PASS, exit 0, selected 4, violations 0 | Baseline `0460795abf6da9203e38f30291a8f20118c6ab88`; no transition override |
+| Selected three current 0193 documents: `check-document-metadata.py --mode check-changed --base-ref HEAD` | PASS, exit 0, violations 0 | Document metadata only |
+
 ## Review Evidence
 
-None yet.
+2026-10-04 independent read-only source review returned PASS after correcting
+one broken W5 sentence. The source budget overrides and alert annotation
+match the tracked contracts; acceptance 9 keeps its original Grafana/OpenBao
+and threshold scope plus Flower, with runtime work still open. The approved
+projection correction is limited to two Resources cells.
 
 ## Commit Ledger
 
@@ -253,10 +290,15 @@ None yet.
   default, recreate one service at a time with owner approval, retune the
   `ContainerHigh*` thresholds in `alert_rules.local.infra.yml`, record the
   figures as criterion 9, run W8 again, then move the package to completed.
+- 2026-10-04 W7 scope update: current approved work is source-only memory
+  budget progress for `airflow-triggerer` and Flower plus the `name` label
+  annotation correction. HOME recreation, live retuning, CPU quota changes,
+  alert-threshold retuning and package completion remain separate evidence
+  and approval boundaries.
 
 ## Deferred Items
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
-| W7 from the final SPEC-0182 W8 figures: Grafana limit (interim 1 GiB; peak 97% of 512 MiB), `airflow-triggerer` memory (91% of 256 MiB) and CPU throttling (`ContainerHighThrottleRate` firing), `node-exporter` and `seaweedfs-s3` CPU throttling (firing), `mng-valkey-exporter` CPU throttling (pending), Flower memory (`ContainerHighMemoryUsage` firing), OpenBao CPU quota (p95 92% during the 09-26 21:15–09-27 01:50 spike), and the limits used under 15% (ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers); set the container-resource alert thresholds from the same figures | agent | 2026-10-03 |
+| W7 remaining runtime retune from the final SPEC-0182 W8 figures: HOME recreation for the 384 MiB `airflow-triggerer` and Flower source budgets; CPU quota decisions for OpenBao, node-exporter, SeaweedFS S3 and `mng-valkey-exporter`; `ContainerHigh*` threshold retuning; and low-use group disposition for ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers. CPU remains measurement-only in this source change | agent | separate approval |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |

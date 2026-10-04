@@ -1,10 +1,10 @@
 ---
 title: "Backup and Cross-tier Operations Task"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0003"
 parent_ids:

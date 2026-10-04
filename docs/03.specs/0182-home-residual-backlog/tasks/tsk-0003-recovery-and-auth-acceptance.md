@@ -1,10 +1,10 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.12"
+version: "0.7.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
@@ -102,8 +102,9 @@ Read-only investigation of 2026-09-25:
   has no samples 2026-09-26 11:05–18:10 and 2026-09-27 11:55–13:25 KST; state
   the gaps with the figures. Run each query with
   `docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?time=1790953200&query=<urlencoded>'`,
-  where `C` is `sum by (name)(rate(container_cpu_usage_seconds_total{name!=""}[5m]))`
-  and `M` is `sum by (name)(container_memory_working_set_bytes{name!=""})`:
+  where `C` is `max by (name)(rate(container_cpu_usage_seconds_total{name!=""}[5m]))`
+  and `M` is `max by (name)(container_memory_working_set_bytes{name!=""})`
+  (2026-10-04 correction: deduplicate overlapping container/target identities before aggregating):
   - containers: `quantile_over_time(0.95, (C)[168h:5m])`,
     `max_over_time((C)[168h:5m])`, and the same two for `M`;
   - host: `1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))` and
@@ -254,7 +255,143 @@ Registry; lifecycle, pause/resume and idempotency do not depend on the
 converter. The live `hyhome-app-postgres` connector and `hyhome_app_slot`
 were not touched.
 
+2026-10-04 source review validation against
+`origin/main=0460795abf6da9203e38f30291a8f20118c6ab88`:
+
+| Command | Exit / evidence | Scope |
+| --- | --- | --- |
+| Pinned `markdownlint-cli2 --fix` on selected current Spec/Plan/Task files | 0, errors 0 | Document formatting only |
+| `check-document-metadata.py --mode check-changed --base-ref origin/main` with seven explicit changed document paths | 0, selected 7, violations 0 | Current 0182/0193 document lifecycle; no transition override |
+| `check-document-links.py --mode traceability` | 0, failures 0, warnings 0 | Registered traceability |
+| `check-document-links.py --mode alignment` | 0, failures 0, warning 1 | Existing 2870 legacy archive links without capture source remain unverified |
+| `check-document-corpus-lifecycle.py --base-ref origin/main` | 0, lifecycle and archive recovery violations 0 | Existing frozen packages unchanged |
+| `git diff --check` | 0 | Task-owned working-tree diff |
+
+The attempted profile name `validation-changed` was not registered (exit 1);
+its registered name is `changed`, whose selection was inspected with
+`run-ci-gate.py --profile changed --explain` (exit 0). No full gate result is
+claimed from that explanation or from historical test counts.
+
+### 2026-10-04 W8 measurement and W7 evidence correction
+
+W8/criterion 8 measurement completed for the approved 168-hour window above.
+Read-only preflight: Docker context `default`, server `29.8.1`, existing
+`infra-prometheus` healthy. No container, volume, network, credential or HOME
+configuration was changed. Queries used the existing container's `wget` and
+Prometheus instant API at `time=1790953200`; all executed queries returned
+process exit 0 and API `status=success`. This is observation, not a deployment
+or recovery test. The two previously recorded sample gaps remain; percentiles
+cover available 5-minute observations, not uninterrupted 168-hour coverage.
+
+This table preserves the observed literal infra container names from the tracked
+Compose files (including services later moved to LAB). It is a historical
+window receipt, not a current root inventory. Disposable test/job identities
+and unnamed container IDs are excluded; no sample means no observed value,
+not zero utilization.
+
+| Container | CPU p95 / max (cores, 5-minute rate) | Working set p95 / max (MiB) |
+| --- | --- | --- |
+| airflow-apiserver | 0.0050 / 0.5474 | 258.2799 / 347.1094 |
+| airflow-dag-processor | 0.8419 / 0.9429 | 426.4439 / 628.9297 |
+| airflow-scheduler | 0.0502 / 0.1313 | 256.3164 / 353.1250 |
+| airflow-statsd-exporter | 0.0073 / 0.0075 | 21.9791 / 22.5898 |
+| airflow-triggerer | 0.2150 / 0.2293 | 227.7289 / 233.6641 |
+| airflow-worker | 0.2433 / 0.2973 | 648.0881 / 771.5820 |
+| cadvisor | 0.0870 / 0.0960 | 271.2119 / 313.6836 |
+| comfyui | 0.0027 / 0.0030 | 33.2266 / 41.7891 |
+| dcgm-exporter | 0.0089 / 0.0093 | 37.3736 / 38.2578 |
+| dozzle | 0.0340 / 0.0444 | 50.0664 / 57.3320 |
+| flower | 0.0042 / 0.0052 | 241.4855 / 242.6445 |
+| gatus | 0.0025 / 0.0026 | 22.2639 / 25.4766 |
+| infra-alertmanager | 0.0047 / 0.0052 | 35.8982 / 38.8398 |
+| infra-alloy | 0.0297 / 0.0331 | 284.8814 / 295.6172 |
+| infra-grafana | 0.0211 / 0.0418 | 380.5064 / 732.2070 |
+| infra-loki | 0.0171 / 0.0223 | 164.0912 / 208.3164 |
+| infra-prometheus | 0.0599 / 0.0779 | 1052.2773 / 1474.5547 |
+| infra-pyroscope | 0.0304 / 0.0346 | 155.1396 / 250.4883 |
+| infra-tempo | 0.0170 / 0.0315 | 289.3248 / 369.4648 |
+| jupyterlab | 0.0015 / 0.0017 | 15.5742 / 19.3672 |
+| kafbat-ui | 0.0039 / 0.0102 | 350.9848 / 352.2070 |
+| kafka-1 | 0.2488 / 0.3285 | 770.1762 / 833.8906 |
+| kafka-connect | 0.0131 / 0.3067 | 998.5508 / 1404.4336 |
+| kafka-exporter | 0.0045 / 0.0050 | 10.8213 / 14.8906 |
+| kafka-rest-proxy | 0.0035 / 0.0101 | 227.6250 / 231.6367 |
+| keycloak | 0.0068 / 0.3900 | 551.3477 / 783.8516 |
+| mlflow | 0.0086 / 0.0142 | 327.1133 / 335.2070 |
+| mng-pg | 0.0969 / 0.1479 | 131.1945 / 174.9062 |
+| mng-pg-exporter | 0.0056 / 0.0061 | 11.4400 / 15.8086 |
+| mng-valkey | 0.0073 / 0.0076 | 19.9883 / 24.2070 |
+| mng-valkey-exporter | 0.0047 / 0.0053 | 10.1613 / 10.7695 |
+| n8n | 0.0068 / 0.0138 | 239.9555 / 282.3320 |
+| n8n-task-runner | 0.0017 / 0.0018 | 4.6002 / 8.2734 |
+| n8n-task-runner-worker | 0.0014 / 0.0015 | 3.9375 / 8.1875 |
+| n8n-worker | 0.0017 / 0.0071 | 146.5469 / 146.5820 |
+| node-exporter | 0.0152 / 0.0176 | 16.2564 / 17.8281 |
+| oauth2-proxy | 0.0014 / 0.0021 | 18.5977 / 23.9023 |
+| ollama | 0.0100 / 0.0201 | 196.0898 / 330.1484 |
+| ollama-exporter | 0.0016 / 0.0018 | 34.9219 / 36.9648 |
+| open-webui | 0.0065 / 0.0230 | 1377.1016 / 1377.3398 |
+| openbao | 0.0205 / 0.9972 | 104.1859 / 116.1523 |
+| openbao-agent | 0.0017 / 0.1971 | 16.0945 / 22.1758 |
+| qdrant | 0.0029 / 0.0032 | 38.6041 / 38.6875 |
+| redisinsight | 0.0012 / 0.0024 | 75.4205 / 77.1602 |
+| registry | 0.0022 / 0.0027 | 27.2760 / 52.6016 |
+| schema-registry | 0.0065 / 0.0779 | 265.4357 / 266.9023 |
+| seaweedfs-filer | 0.0098 / 0.0143 | 193.0127 / 208.3477 |
+| seaweedfs-master | 0.0045 / 0.0109 | 99.8828 / 101.6172 |
+| seaweedfs-s3 | 0.6144 / 0.9427 | 136.8732 / 227.4688 |
+| seaweedfs-volume | 0.0054 / 0.0086 | 60.2258 / 88.9531 |
+| traefik | 0.0127 / 0.0253 | 89.0404 / 119.0039 |
+
+Container queries are the four p95/max expressions in the corrected W8
+contract. Original `sum by(name)` counted overlapping old/new identities:
+the triggerer's 354.16 MiB apparent peak exceeded its 256 MiB limit. Pointwise
+`max by(name)` removes that overlap; it represents one observed instance, not
+a sum of replicas. This HOME measurement is not a multi-replica capacity plan.
+
+Host CPU p95/max: 58.6823%/93.0787%. Host memory p95/max:
+67.6499%/73.5278%, using `max(1-node_memory_MemAvailable_bytes/
+node_memory_MemTotal_bytes)` before temporal aggregation to deduplicate target
+labels. GPU utilization observed p95/max 0%; this does not prove absence of
+GPU workloads during missing samples. Framebuffer counter maximum was 2508 MiB, following the
+[NVIDIA exporter counter contract](https://github.com/NVIDIA/dcgm-exporter/blob/main/etc/default-counters.csv)
+checked on 2026-10-04.
+
+Disk endpoint subtraction joined start/end samples by the same mountpoint and
+filesystem type. `/` used bytes changed 179310456832 -> 175795908608
+(-3514548224); `/home/hyunyoun/storage` changed 182384209920 -> 189968408576
+(+7584198656); `/boot` grew 4096 bytes and `/boot/efi` stayed unchanged. The
+original `offset 168h` expression produced no matched series after target
+labels changed; an empty result was not interpreted as zero growth. Neither
+logical filesystem identity nor growth proves physical disk redundancy.
+
+Supplemental throttling queries used the pointwise per-name maximum of
+5-minute CFS throttled-period increases divided by CFS period increases, then
+p95/max over the same window. Fractions: OpenBao 0.006559/0.978041,
+management Valkey exporter 0.244898/0.324324, node exporter 0.650000/0.703704,
+Airflow triggerer 0.673094/0.873326, SeaweedFS S3 0.003959/0.594921. These are
+throttled-period fractions, not CPU utilization or proof of a required CPU
+limit. The window spans historical budget changes; SPEC-0193 owns source
+budget decisions and a separately approved rollout/re-measurement.
+
+W7/criterion 7 is not closed by the historical PostgreSQL PASS row above.
+That row is preserved as the 2026-09-25 report, but the current
+[POL-0021](../../../05.operations/policies/0021-backup-and-restore.md) and
+[RUN-0021](../../../05.operations/runbooks/0021-backup-and-restore.md)
+supersede its time-target/RPO claim. SPEC-0201 W7.4 Phase A repository
+verification is not an actual restore or PITR rehearsal. A new isolated
+recovery, consistency checks and measured recovery time remain NOT_RUN and
+require the separately scoped operational approval. The bounded MLflow,
+synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
+receipts. W10 R2 scratch restore/offline key custody also remain open; the
+Task and Spec package remain in progress/active.
+
 ## Review Evidence
+
+2026-10-04 independent read-only review: Task 0002 completion receipts PASS;
+Task 0003 W8 aggregates and current W7/W10 holds PASS with the scope of
+observed service rows made explicit. No current recovery or rollout was
+accepted from historical tests.
 
 Two independent read-only reviews ran on 2026-09-25, one on specification,
 plan and traceability, one on operational safety and feasibility. Both
@@ -301,4 +438,4 @@ See the Plan.
 | --- | --- | --- |
 | R2 restore rehearsal into scratch (RUN-0021 8.3) with elapsed time, before offsite recovery is claimed as verified; copy BKP-003 to offline custody | @buenhyden | Before criterion 10 is closed |
 | Monthly remote `forget-prune` (RUN-0021 8.5) and the Metrics tab reading (8.6) | @buenhyden | Monthly, or when `HyhomeOffsiteRepoNearFreeTier` fires |
-| W8 queries over 2026-09-26 to 10-02 | agent | 2026-10-03 |
+| W7 management PostgreSQL restore evidence | @buenhyden | Current POL-0021/RUN-0021: actual isolated recovery remains NOT_RUN; approve the exact recovery phase separately |
