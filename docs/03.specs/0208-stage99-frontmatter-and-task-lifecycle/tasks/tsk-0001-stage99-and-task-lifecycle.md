@@ -2,7 +2,7 @@
 title: "Stage 99 and Task Lifecycle Task"
 version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"
@@ -113,6 +113,9 @@ normalization; their bodies, Commit Ledgers, and status facts remain immutable.
 | SPEC-0208-PLAN-0001 | approved | active | #execution-start |
 | SPEC-0208-TSK-0001 | draft | ready | #preflight-and-readiness |
 | SPEC-0208-TSK-0001 | ready | in-progress | #execution-start |
+| SPEC-0208 | in-progress | completed | #v4-local-completion |
+| SPEC-0208-PLAN-0001 | in-progress | completed | #v4-local-completion |
+| SPEC-0208-TSK-0001 | in-progress | completed | #v4-local-completion |
 
 ### Contract Migration
 
@@ -203,12 +206,45 @@ findings, and zero overrides against merge-base
 `/tmp/hy-home-p02-v4-metadata-final-20261005.log`.
 
 The independent code review at `7049e560...` passed source, specification,
-quality, and security review. Together with the verified gate, this accepts
-AC1--AC4 evidence only; AC5 remains pending the actual v4 source commit. The
-final staged source classifies 176 paths: 156 authored Markdown files, 15
-Python files (six consumer sources and nine test modules), two JSON files, and
-three generated files. No native writer authentication, hosted result, live
-result, hook execution, or numeric budget result is observed.
+quality, and security review. At that pre-source-commit point, together with
+the verified gate, this accepted AC1--AC4 evidence only and left AC5 pending
+the actual v4 source commit. The final staged source classifies 176 paths: 156
+authored Markdown files, 15 Python files (six consumer sources and nine test
+modules), two JSON files, and three generated files. No native writer
+authentication, hosted result, live result, hook execution, or numeric budget
+result is observed.
+
+### V4 Local Completion
+
+The observed v4 source commit
+`a36f83a1255ff22fbd80c91e27ee90b58480e3e4` was created on 2026-10-05 by
+`rtk proxy git commit -m 'fix(governance): Align v4 lifecycle contracts and consumers'`
+with exit 0. It contains 176 files, 3,675 insertions, and 1,226 deletions; the
+worktree was clean after the commit. The pre-commit Task-only metadata check
+selected one document with zero violations, legacy findings, or overrides;
+Task-only markdownlint reported one file with zero issues; staged gitleaks
+scanned 445,937 bytes with no leaks; and Commitizen's 75-character message
+check succeeded. No installed-hook execution output was observed.
+
+This local source-commit receipt, the verified gate, and independent review
+complete W4 and AC5. It does not prove native writer authentication, hosted
+checks, or live behavior; those remain unknown or unobserved.
+
+Closure-candidate digest
+`d11d5c6e571b7e7946e9410674c62d8e7de8ab6e5a3fe75e77f157a4eb705851`
+received independent Specification, quality, and security review reported as
+PASS; review is not authorization. Its narrow metadata command with
+`--mode check-changed --base-ref main --changed-path` for the Spec, Plan, and
+Task exited 0 with three selected documents and zero violations, legacy
+findings, or overrides. Corpus lifecycle against `main` exited 0 with zero
+violations; archive recovery reported 5 migrations, 140 tombstones, 348
+preserved records, 286 decisions, and 374 rows with zero violations. Links
+alignment exited 0 for 1,097 documents and 10,940 links with zero failures and
+one separate historical 2870 warning. Package-record lint reported three files with
+zero issues; staged gitleaks scanned 11,306 bytes with no leaks; and the
+75-character Commitizen receipt-message check succeeded. These are
+closure-candidate facts only: the ensuing Task-only narrow check and any finite
+receipt commit are not claimed here, and no future receipt SHA is recorded.
 
 ### Inventory
 
@@ -220,7 +256,7 @@ result, hook execution, or numeric budget result is observed.
 | W3 | Stage 03 navigation | `docs/03.specs/README.md`; human package discovery consumes it | Add SPEC-0208 route and describe derived summary semantics. |
 | W3 | Current package records | SPEC-0182 and SPEC-0204 nonterminal Plan/Task prose; authors and reviewers consume it | Migrate recorded terminology only; do not reopen completed or terminal records. |
 | W3 | Lifecycle families and navigation | Requirements, AD, ADR, Spec, Plan, Task, Guide, Policy, Runbook, Postmortem, Research, Audit, Data, current archive catalog, and pure-navigation README profiles; Registry and profile consumers consume them | Apply the approved named lifecycle map, direct Plan/Task parents, common/readme navigation shape, and active navigation state. Retain roles, providers, knowledge, prompts, runtime projections, contracts, and unsupported/frozen profiles unless separately named or pure navigation. |
-| W4 | Validation, review, and integration | Existing validator scripts, independent reviewer, and local Git | Run and record owner-selected checks and review; make the approved local commit only after receipts exist. |
+| W4 | Validation, review, and integration | Existing validator scripts, independent reviewer, and local Git | Recorded owner-selected checks, review, and the approved local source commit. |
 
 The observed Registry has 50 profiles, 39 template roles, and 40 files under
 `docs/99.templates/templates/`. The complete profile inventory is:
@@ -308,8 +344,12 @@ current loader/classifier and validator functions in
 `scripts/operations/provider_surface_renderer.py` (`render_all`) consumes the
 navigation surface. These verified file/function relationships identify
 consumers, not policy owners; earlier line positions are v3 baseline facts,
-not current anchors. The actual v4 source commit's `git show --name-status`
-will provide the complete 176-path manifest.
+not current anchors. `git show --name-status
+a36f83a1255ff22fbd80c91e27ee90b58480e3e4` is the complete 176-path manifest:
+156 authored Markdown migrations, two Registry/profile JSON contracts, three
+generated outputs, six consumer sources (`metadata/lifecycle.py`,
+`metadata/reference.py`, `registry.py`, `spec_packages.py`, `taxonomy.py`, and
+`operations/provider_surface_renderer.py`), and nine test modules.
 
 ## Verification Evidence
 
@@ -366,7 +406,7 @@ supported changed retry passed without a custom filtered wrapper.
 | 3 | W2 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
 | 4 | W2 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
 | 5 | W3 | completed | PASS | [V4 verified-gate receipts](#v4-verified-gate-receipts) |
-| 5 | W4 | in-progress | NOT_RUN | [Commit Ledger](#commit-ledger) |
+| 5 | W4 | completed | PASS | [V4 local completion](#v4-local-completion) |
 
 ## Review Evidence
 
@@ -376,14 +416,14 @@ supported changed retry passed without a custom filtered wrapper.
 | 2 | accepted | Focused corrections, source review, and the verified changed gate at `7049e560...`. |
 | 3 | accepted | Source review and the verified changed gate at `7049e560...`. |
 | 4 | accepted | Independent source/specification/quality/security review and the verified changed gate at `7049e560...`. |
-| 5 | pending | The actual v4 source commit remains required. |
+| 5 | accepted | [V4 local completion](#v4-local-completion), verified gate, and independent review. |
 
 Rules-engineer policy review passed for the corrected contract at reviewed
 digest `a5378c82...`. Earlier code-review receipts at `5f84f235...` and
 `c9c0e49...` remain dated evidence; the current independent review at
 `7049e560...` passed source, specification, quality, and security. These
 read-only reviews do not execute or authenticate an operation. The evidence
-commit and same-package v4 amendment remain pending. The v3 checkpoint
+commit and same-package v4 amendment are recorded below. The v3 checkpoint
 `0d1874...` is actual local history; P01 at `68e0bfd...` remains a separate
 local, completed, unmerged branch and is not imported here.
 
@@ -395,8 +435,17 @@ The prior v3 checkpoint commit is
 `0d1874bb3571e92d5ff5128b4fdfeb3409f92338`, created by
 `rtk proxy git commit -m 'fix(governance): Normalize Task lifecycle evidence'`
 with exit 0 for 24 files. No installed-hook execution output was observed.
-The v4 commit has no SHA yet; push, PR, merge, and remote checks are not
-recorded as performed.
+
+The v4 source commit is
+`a36f83a1255ff22fbd80c91e27ee90b58480e3e4`, created by
+`rtk proxy git commit -m 'fix(governance): Align v4 lifecycle contracts and consumers'`
+with exit 0 for 176 files (3,675 insertions and 1,226 deletions). Its worktree
+was clean. Push, PR, merge, remote checks, installed-hook execution, native
+writer authentication, hosted checks, and live behavior are not recorded as
+performed. Any later finite receipt-commit OID belongs in the external final
+report; this Task does not claim its own future SHA. Rollback reverses the
+source and any receipt commits with `git revert`, never reset or history
+rewriting.
 
 ## Rulings
 

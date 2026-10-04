@@ -2,7 +2,7 @@
 title: "Stage 99 Frontmatter and Task Lifecycle Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"
@@ -103,8 +103,10 @@ limitation, not a reason to reopen it.
    PASS, acceptance, cancellation, or transition combinations.
 5. Current SPEC-0182 and SPEC-0204 packages derive blocked Spec/Plan states;
    SPEC-0207 retains in-progress while its sole Task is terminal; SPEC-0208
-   remains in-progress. Focused validation, review, and both local-commit
-   boundaries are recorded without a self-referential Task SHA.
+   remained in-progress at the v4 migration point and is completed after its
+   verified gate, review, and actual v4 local source-commit receipt. Focused
+   validation, review, and both local-commit boundaries are recorded without a
+   self-referential Task SHA.
 
 ## Traceability
 
@@ -126,3 +128,9 @@ receipts without duplicating implementation ownership.
 
 This changes documentation contracts and their validators. It does not operate
 services or alter deployment, credential, or archive state.
+
+This Specification completed on 2026-10-05 after Task 0001 recorded PASS and
+accepted Review Evidence for every numbered criterion, the verified local gate,
+independent review, and the past v4 source commit. Push, PR, merge, archive,
+hosted, native-authentication, and live-operation receipts are outside this
+closure.
