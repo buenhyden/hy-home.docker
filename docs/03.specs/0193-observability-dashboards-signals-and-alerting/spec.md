@@ -1,8 +1,8 @@
 ---
 title: "Observability Dashboards, Signals and Alerting Specification"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/spec"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -230,7 +230,12 @@ emits) and the owner's rulings below.
 
 ## Open Questions
 
-None; the owner's rulings above settle the design choices.
+The owner approved W7 source acceptance and whole-package preservation on
+2026-10-04: retain the measured source budgets and existing CPU/diagnostic
+thresholds as recorded in Task 0001. This closes the source/settings decision
+in criterion 9. HOME rollout, quota-stable remeasurement and resulting
+performance remain NOT_RUN and separately approved operational work. Earlier
+runtime receipts remain historical; no new service execution is claimed.
 
 ## Operational Impact
 

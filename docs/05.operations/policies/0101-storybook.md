@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -8,7 +8,7 @@ updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
-- "SPEC-0206"
+- "AD-0031"
 created: "2026-10-03"
 ---
 
@@ -23,7 +23,7 @@ created: "2026-10-03"
 
 `infra/13-experience/storybook/docker-compose.yml`의 선택형 `storybook` 서비스,
 Traefik 브라우저 경로, 공개 정적 자산, 코드 revision 및 운영 검증에 적용한다.
-프로젝트 업무 앱과 원격 MCP 배포는 포함하지 않는다.
+프로젝트 업무 앱과 원격 MCP 배포는 포함하지 않는다. SPEC-0206은 source/static completion의 역사적 근거이며, 운영 승인과 반복 절차는 이 Stage 05 subject가 소유한다.
 
 ## Controls
 
@@ -57,8 +57,10 @@ Traefik 브라우저 경로, 공개 정적 자산, 코드 revision 및 운영 �
 ## Exceptions
 
 현재 검토자 그룹과 원격 MCP 클라이언트가 없다. 담당자 @buenhyden이 접근 대상,
-OIDC issuer/audience/client, 권한, 만료·철회 및 검증 결과를 승인할 때 별도 Task에서
-해제한다. 정적 origin의 관리자 제한을 완화하는 예외는 이 정책에 포함되지 않는다.
+OIDC issuer/audience/client, 권한, 만료·철회 및 검증 결과를 승인할 때 별도 운영 Task에서
+해제한다. HOME route 활성화, DNS/TLS 관찰, reviewer group 추가, remote MCP 공개,
+외부 design account 사용은 이 정책의 follow-up trigger다. 정적 origin의 관리자 제한을
+완화하는 예외는 이 정책에 포함되지 않는다.
 
 ## Verification
 
@@ -76,7 +78,7 @@ MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
 
 ## Traceability
 
-- Artifact: `POL-0101`; source contract: `SPEC-0206`.
+- Artifact: `POL-0101`; historical source/static completion: `SPEC-0206`; architecture context `AD-0031` remains draft.
 - Runtime declaration: [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
 
 ## Related Documents

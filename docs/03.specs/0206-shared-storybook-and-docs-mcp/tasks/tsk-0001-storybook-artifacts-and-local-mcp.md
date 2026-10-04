@@ -1,6 +1,6 @@
 ---
 title: "Storybook Artifacts and Local MCP Task"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
@@ -46,18 +46,18 @@ Source commit `e811e159afa2dc7245bb2d6b562a91cf931283fe` was reviewed and rebuil
 | `docker build --build-arg STORYBOOK_SOURCE_REVISION=e811e159afa2dc7245bb2d6b562a91cf931283fe -t hy-home/storybook:e811e159afa2dc7245bb2d6b562a91cf931283fe -f Dockerfile .` | 0; OCI revision label and `/revision.json` equal source SHA. |
 | Isolated `p05-storybook-final` on `p05-storybook-final-net`, localhost 18967, no volumes, 128 MiB, 0.5 CPU, read-only root, UID/GID 101:101 | Health `healthy`; index/iframe/manifests/revision 200; unknown path 404; manifest hashes, CSP, no-store and nosniff pass. Playwright Button/CSS/assets/404 exit 0. Exact trial container and network removed; tagged image retained for Task 2. HOME service untouched. |
 | One-off Playwright + installed axe-core on Button/Header/Page iframe stories | 0 violations; Button has one `bypass` incomplete because isolated canvas lacks page heading/landmark/skip link. Browser test exit 0; full HOME auth/TLS browser flow remains Task 2/operation evidence. |
-| `npm audit --json` | 1; five high reports from one existing dev-only `eslint-config-next → fast-glob → micromatch → braces@3.0.3` chain. No patched release at check time; user chose main merge hold until patch. |
+| `npm audit --json` | Historical result: exit 1 with five high reports from one existing dev-only `eslint-config-next → fast-glob → micromatch → braces@3.0.3` chain. Official GHSA readback was refreshed on 2026-10-04 with no patched release; current dependency-audit handling belongs to the canonical quality policy and gate contract. This Task changes no exception. |
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1 | PASS: package/license/version and image digests/platform checked; advisory remains merge blocker | Package manifest, this Task |
-| 2 | W2 | PASS: exact-SHA isolated image, hardening, static HTTP/browser checks | Dockerfile and Storybook README |
-| 4 | W1 | PASS: synthetic external package consumer | UI package README |
-| 5 | W1 | PASS: revision/hashes, docs-only MCP positive/negative and transport checks | MCP source and this Task |
+| 1 | W1 | PASS: package/license/version and image digests/platform checked; dependency-audit handling delegated to canonical quality policy | [Package manifest](../../../../projects/storybook/nextjs/package.json) |
+| 2 | W2 | PASS: exact-SHA isolated image, hardening, static HTTP/browser checks | [Dockerfile](../../../../projects/storybook/nextjs/Dockerfile) |
+| 4 | W1 | PASS: synthetic external package consumer | [UI package README](../../../../projects/storybook/nextjs/packages/ui/README.md) |
+| 5 | W1 | PASS: revision/hashes, docs-only MCP positive/negative and transport checks | [MCP source](../../../../projects/storybook/nextjs/mcp/server.ts) |
 
 ## Review Evidence
 
-Independent source reviewer initially found missing Button docgen definition and unbundled CSS. Both were corrected; second review approved the manifest props, emitted CSS and regression assertions. A minor README import explanation mismatch was corrected before source commit. Independent security review found no new Critical/High source issue; real loopback tests now assert forged Host 403 and oversized request 413. The shared-network Traefik bypass is assigned to Task 2's user-approved dedicated ingress topology. The existing `braces` advisory blocks main merge.
+Independent source reviewer initially found missing Button docgen definition and unbundled CSS. Both were corrected; second review approved the manifest props, emitted CSS and regression assertions. A minor README import explanation mismatch was corrected before source commit. Independent security review found no new Critical/High source issue; real loopback tests now assert forged Host 403 and oversized request 413. The shared-network Traefik bypass is assigned to Task 2's user-approved dedicated ingress topology. Dependency-audit handling is historical here and current in the canonical quality policy.
 
 ## Commit Ledger
 
@@ -69,4 +69,4 @@ Local MCP process only, outside root Compose; remote machine route disabled. Thi
 
 ## Deferred Items
 
-Reviewer group, remote audience/client, HOME and external design execution.
+Reviewer group, remote audience/client, HOME and external design execution are handed off to GDE/POL/RUN-0101. Triggers: approved reviewer access, approved remote MCP issuer/audience/client, approved HOME route activation, or approved external design-account use.

@@ -82,7 +82,7 @@ project, port, network, volume, resource와 정리 범위를 확인한다.
 
 1. 소스와 image SHA, OCI label, 정적 manifest revision을 먼저 대조한다.
 2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.
-3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 SPEC-0206 Task에 기록한다.
+3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 승인된 운영 Task와 RUN-0101 evidence handoff에 기록한다.
 
 ## Related Documents
 

@@ -1,8 +1,8 @@
 ---
 title: "Observability Dashboards, Signals and Alerting Plan"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/plan"
-status: "active"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -28,31 +28,31 @@ describes.
 
 ## Execution Sequence
 
-1. W1 Collection and datasources: scrape jobs (merge, add, static labels,
+1. W1: Collection and datasources: scrape jobs (merge, add, static labels,
    recording rules) in both Prometheus files; service metrics settings
    (Airflow statsd mapping, Keycloak, registry, OAuth2 Proxy, Connect and
    Schema Registry JMX); Grafana datasource links, Pyroscope UID and the
    PostgreSQL datasources with the reader role and secret metadata
    (criteria 5, 6).
-2. W2 Drilldown backends: Loki volume, patterns and levels; Tempo
+2. W2: Drilldown backends: Loki volume, patterns and levels; Tempo
    `local-blocks` and TraceQL metrics; Alloy `pprof` scrape; OTLP tracing in
    Keycloak, Grafana and Airflow (criterion 7).
-3. W3 Dashboards: apply the dispositions, vendor the external dashboards
+3. W3: Dashboards: apply the dispositions, vendor the external dashboards
    with source and revision, resolve datasource references, write the
    coverage table (criteria 1, 2, 3).
-4. W4 Alerting: rewrite or drop the 26 dead rules, rename the OpenBao file,
+4. W4: Alerting: rewrite or drop the 26 dead rules, rename the OpenBao file,
    fix runbook links, add rules for new jobs, `promtool` (criterion 8).
-5. W5 Contract test and documents: dashboard, datasource and coverage test;
+5. W5: Contract test and documents: dashboard, datasource and coverage test;
    GDE, POL and RUN-0041, RUN-0045, Grafana README (criteria 1, 10).
-6. W6 Rollout: raise Grafana's memory limit first; create the reader role;
+6. W6: Rollout: raise Grafana's memory limit first; create the reader role;
    reload Prometheus; recreate the changed services one at a time; check
    datasource health, dashboard data, the Drilldown apps and `ALERTS`
    (criteria 4, 5, 6, 7).
-7. W7 Resources, after 2026-10-03: take the final W8 figures from SPEC-0182,
+7. W7: Resources, after 2026-10-03: take the final W8 figures from SPEC-0182,
    set the named limits and container-resource alert thresholds where evidence
    and approval are complete, record the figures, and keep HOME service
    recreation or live retuning as NOT_RUN until separately approved (criterion 9).
-8. W8 Gates: full gate and both suites (criterion 11).
+8. W8: Gates: full gate and both suites (criterion 11).
 
 ## Risk and Rollback
 
@@ -73,3 +73,9 @@ statement. Relabelled series keep old labels until retention removes them.
 ## Rulings
 
 - 2026-09-30: The owner's five rulings are recorded in the Spec.
+- 2026-10-04: The owner explicitly approved source acceptance and preservation
+  with HOME verification separate. Task 0001 records retained CPU/diagnostic
+  threshold decisions from corrected W8 data and completes W7's source scope.
+  Historical W6 observations remain unchanged. New HOME recreation, live
+  retuning and remeasurement remain NOT_RUN; completed source does not approve
+  them. Preserve the entire completed package only from its protected revision.

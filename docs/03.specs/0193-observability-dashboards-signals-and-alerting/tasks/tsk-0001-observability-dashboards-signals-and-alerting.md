@@ -1,8 +1,8 @@
 ---
 title: "Observability Dashboards, Signals and Alerting"
-version: "0.3.16"
+version: "0.3.17"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -214,7 +214,7 @@ acceptance criterion of [SPEC-0193](../spec.md).
 
 ## Verification Evidence
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| Historical acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
 | 1 | W5 | PASS: the dated `f8c2c6f98` receipt covered 152 Compose services and 49 dashboards; current root coverage is dynamic, excludes independent LAB Compose services, and the contract still fails on a root job without a dashboard or a dashboard without a service | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
 | 2 | W3 | PASS: the 30 disposed files are gone, 49 dashboards remain, and the largest metric-name overlap of any pair is 12% (`8ad894202`, `f8c2c6f98`) | [contract tests](../../../../tests/validation/test_compose_baseline_gates.py) |
@@ -242,6 +242,26 @@ acceptance criterion of [SPEC-0193](../spec.md).
 | `python3 scripts/validation/check-operations-catalog.py` after the approved two-cell projection | PASS, exit 0 | Initial two stale Resources findings resolved; historical prose preserved |
 | Final selected 0193 Spec/Plan/Task plus research projection: `check-document-metadata.py --mode check-changed --base-ref origin/main` | PASS, exit 0, selected 4, violations 0 | Baseline `0460795abf6da9203e38f30291a8f20118c6ab88`; no transition override |
 | Selected three current 0193 documents: `check-document-metadata.py --mode check-changed --base-ref HEAD` | PASS, exit 0, violations 0 | Document metadata only |
+
+### Current completion coverage — 2026-10-04
+
+The earlier table remains historical evidence. This current receipt maps one
+criterion/work pair per row to the registered Plan format without removing
+criteria, weakening validators or converting unexecuted HOME work to PASS.
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W5 | PASS: dynamic root/LAB coverage contract and dated dashboard table evidence retained; fresh focused tests passed | [Grafana README](../../../../infra/06-observability/grafana/README.md) |
+| 2 | W3 | PASS: recorded dashboard dispositions and overlap checks retained | [Grafana source](../../../../infra/06-observability/grafana/README.md) |
+| 3 | W3 | PASS: recorded external revisions and datasource reference checks retained | [Grafana source](../../../../infra/06-observability/grafana/README.md) |
+| 4 | W6 | PASS: dated live metric/query receipts and explicitly unused-feature exceptions retained; no new runtime claim | [Grafana guide](../../../05.operations/guides/0041-grafana.md) |
+| 5 | W1 | PASS: reader/datasource source and dated read-only healthy datasource checks retained | [Grafana runbook](../../../05.operations/runbooks/0041-grafana.md) |
+| 6 | W1 | PASS: recorded unique-job/target evidence and current contract checks retained; stopped LAB targets remain excluded | [Prometheus guide](../../../05.operations/guides/0045-prometheus.md) |
+| 7 | W2 | PASS: dated Drilldown/correlation evidence and owner's Airflow tracing exception retained | [Grafana guide](../../../05.operations/guides/0041-grafana.md) |
+| 8 | W4 | PASS: dated rule checks, runbook links and fresh source contract checks retained | [Alert source](../../../../infra/06-observability/prometheus/config/alert_rules) |
+| 9 | W7 | PASS: owner-approved retained CPU/memory defaults and diagnostic thresholds close source/settings acceptance; HOME rollout and remeasurement NOT_RUN | [Optimization runbook](../../../05.operations/runbooks/0044-observability-optimization-hardening.md) |
+| 10 | W5 | PASS: dated GDE/POL/RUN and source README updates retained | [Grafana guide](../../../05.operations/guides/0041-grafana.md) |
+| 11 | W8 | PASS: historical full gate/library/validation receipts retained; current 25 focused checks and public renders passed; changed-document and hosted checks remain distinct delivery gates | N/A: gate evidence for this documentation-only completion |
 
 ## Review Evidence
 
@@ -296,9 +316,110 @@ projection correction is limited to two Resources cells.
   alert-threshold retuning and package completion remain separate evidence
   and approval boundaries.
 
+### Owner-approved W7 source acceptance — 2026-10-04
+
+The owner requested prerequisite reconciliation for SPEC-0182/0193/0204,
+then explicitly approved: “소스 인수 완료·보관 승인, HOME 검증은 별도”.
+This resolves the independent review disagreement about the old Task rollout
+wording versus current Spec criterion 9. The exact writers are this Task,
+`../spec.md` and `../plan.md`; no operational source, private environment,
+resource limit, alert expression, credential or HOME service is changed.
+
+Baseline is protected main `ebeb83521c768fedc620380b0c2e92db10a6fcdc`.
+The corrected historical SPEC-0182 W8 pointwise-maximum aggregates support:
+
+| Service | CPU default cores | W8 CPU p95 / max cores | Memory default MiB | W8 memory max MiB |
+| --- | ---: | --- | ---: | ---: |
+| Grafana | 1 | 0.0211 / 0.0418 | 1024 | 732.2070 |
+| OpenBao | 1 | 0.0205 / 0.9972 | 512 | 116.1523 |
+| airflow-triggerer | 0.5 | 0.2150 / 0.2293 | 384 | 233.6641 |
+| Flower | 0.5 | 0.0042 / 0.0052 | 384 | 242.6445 |
+
+These are tracked defaults inherited from `infra/common-optimizations.yml`
+and service overrides, not observations of current private `.env` values or
+running quotas. Retain CPU defaults: historical quota changes and absent
+latency/SLO evidence do not justify increasing or reducing them. In particular,
+a high throttled-period fraction is not CPU utilization or a workload-capacity
+proof. Retain diagnostic CPU above 90% for 15m, memory warning above 90% and
+critical above 95% for 10m, and throttled-period fraction above 25% for 10m.
+The memory maxima fit the selected source budgets; sustained guards retain
+headroom diagnostics without claiming live tuning, latency or fault safety.
+
+The source/no-change CPU and threshold decisions close W7/criterion 9 under
+the owner's explicit scope decision. The historical 2026-09-30 recreate and
+re-measure-before-completion instruction is superseded for package completion
+only; it remains a separate operational acceptance obligation. Other dated
+criterion receipts are preserved. HOME rollout, remeasurement, low-use service
+disposition and resulting performance remain NOT_RUN under their Stage 05
+owners; source completion never approves execution or reduces those checks.
+
+Earlier prerequisite checks on this baseline: `python3 -m unittest
+ tests.validation.test_service_runtime_compatibility
+ tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests
+ tests.validation.test_compose_baseline_gates.BackupContractTests
+ tests.validation.test_compose_baseline_gates.RouteAuthContractTests -q`
+passed 24 tests, exit 0, with synthetic inputs and no container execution.
+`bash scripts/operations/sync-tech-stack-versions.sh --check` passed, exit 0
+(92 repositories, 74 external, 18 local-custom). Public-example n8n/Crawl4AI
+and Cassandra LAB Compose renders passed, exit 0. The owner subsequently approved implementation of this source acceptance and
+whole-package capture plan on 2026-10-04. Its fresh combined suite subsequently
+passed 25 tests, exit 0; Storybook source contract, core/experience and Cassandra
+public-example renders and version92 checks each exited 0. Changed metadata (14 documents/0 violations), corpus lifecycle/archive recovery
+(341 preserved/0 violations), links (0 failures/1 legacy provenance warning),
+Markdown14 and diff checks each exited 0. Independent source/lifecycle review
+returned PASS. Required hosted delivery remains pending and is not a local PASS.
+Recovery is a scoped documentation correction; original source and historical
+receipts remain recoverable. Whole-package preservation will use the actual
+protected completed revision, not this uncommitted candidate or an old head.
+
 ## Deferred Items
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
-| W7 remaining runtime retune from the final SPEC-0182 W8 figures: HOME recreation for the 384 MiB `airflow-triggerer` and Flower source budgets; CPU quota decisions for OpenBao, node-exporter, SeaweedFS S3 and `mng-valkey-exporter`; `ContainerHigh*` threshold retuning; and low-use group disposition for ComfyUI, Ollama, SeaweedFS volume, Loki, n8n and Airflow servers. CPU remains measurement-only in this source change | agent | separate approval |
+| Operational follow-up: approved HOME recreation for the triggerer/Flower source budgets, quota-stable remeasurement before further CPU/threshold changes, and consumer-backed low-use group disposition. Current CPU/threshold source decisions are closed above; HOME execution and performance are NOT_RUN | @buenhyden | Separate exact approval; RUN-0044, RUN-0050 and the relevant service owners |
 | CouchDB metrics (needs its Prometheus port setting or admin credentials) | @buenhyden | When CouchDB is used |
+
+### Owner-approved merged development branch cleanup — 2026-10-04
+
+Owner explicitly confirmed `main에 병합된 개발 브랜치 정리` for local and remote
+development branches. Target repository is `buenhyden/hy-home.docker`; approved
+command classes are expected-tip atomic remote ref deletion and local `git branch -d`.
+Fresh protected baseline is `ebeb83521c768fedc620380b0c2e92db10a6fcdc`; root is clean on main.
+All candidates are ancestors of that baseline, are not checked out and have no open PR.
+All recovery objects remain reachable through protected main; no commit history rewrite.
+Both dirty worktrees and local unmerged `codex/ci-qa-dedup` and
+`feat/0206-storybook-sharing` are excluded. Exact before-state:
+
+| Development branch | Expected commit | Delete scope |
+| --- | --- | --- |
+| `codex/0201-0202-active` | `b591cb9cb13b8ecc03d8e9e8f3bcda2e10f2a446` | local |
+| `codex/0201-0202-approved` | `e6de3357f6da7033e7720922951cf556fc927a9c` | local |
+| `codex/0201-0202-completed` | `70509e28d6feb4e8b1deaaa90d002467bb24a3c1` | local |
+| `codex/0201-0202-review` | `f508abc615f4d3bcb02e2a93596ee0cf7f228797` | local |
+| `codex/secrets-layout` | `8df1e89fce0b3bea1f5f3241b95af5c8fefb8fd3` | local |
+| `codex/spec-0201-0205-closure` | `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` | local and remote |
+| `codex/spec-0204-active-edge` | `e37e6b6496eb996602662a49570b1418a597b876` | local and remote |
+| `codex/spec-0204-approved` | `dab35a5a2886fddf845e6f7e5b54b27fe950cbdb` | local and remote |
+| `codex/spec-0204-completion-receipts` | `167543120d2728462f5a46ae99462bc55c56acdb` | local and remote |
+| `codex/spec-0204-registration` | `b9ada04ce7f110e3f36cb90f43d48bbb928582fa` | local |
+| `codex/spec-0204-review-current` | `5821e257324815acfd2cf08b1bf4c277f5e7546d` | local and remote |
+| `codex/spec-0204-source-integration` | `0ff55fa8378365ee6a9eb81c34c837bc494aa006` | local and remote |
+| `codex/spec-0205-bounded-audit` | `625e12eb21b807e436d2a14eaf89c87199751848` | local and remote |
+| `codex/spec-0206-delivery-receipt` | `61f0a5c2354a84db77c10a8c809f6070f4f1ac24` | local and remote |
+| `codex/spec-backlog-review` | `14d890700085a38e6c62d0bd2f4cbd008bc18daa` | local and remote |
+| `feat/0204-common-integration-ops` | `4deddef1c41a1483659f6473bd410f0ba495f440` | local |
+| `feat/0205-storybook-dependency-refresh` | `fbbea9123751c13588022cdb76213fd8b5a14b6e` | local |
+
+Remote registration and `feat/0206-storybook-sharing` were already absent before this
+execution; only their stale local origin tracking refs may be removed with expected
+OID checks. The unmerged local feature branch remains. Before/after worktree diff
+digests verify preservation without copying private state. Remote mutations reject a
+moved branch through individual expected-OID leases in an atomic deletion push.
+Independent lifecycle review: PASS for the guarded deletion protocol. Execution
+`python3 /tmp/hyhome-delete-merged-branches.py` exited 0: local branches deleted 17,
+live remote branches deleted 9, already-absent tracking refs removed 2. Live remote
+readback retains only main; five local branches remain (main, two dirty-worktree
+branches and two unmerged branches). Main/origin/main remain at the baseline SHA;
+before/after worktree diff digests and status match. No source/private file, HOME
+service, commit object or worktree was deleted. Recovery uses the table commits
+reachable from main; recreating any remote branch requires separate approval.
