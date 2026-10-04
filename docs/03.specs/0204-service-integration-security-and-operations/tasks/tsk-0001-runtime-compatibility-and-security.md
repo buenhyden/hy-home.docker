@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -527,3 +527,24 @@ remain separate from these prior results. No new runtime evidence is claimed.
 Task source approval, image/digest acceptance, synthetic container preflight,
 HOME version upgrade, management DB/encryption-key backup, real credential
 handling and all service operations remain separate.
+
+Protected delivery continuation, 2026-10-04. PR356 merged as
+bf4b84edffcd8a8ec4a7da27c4b02dbdee9017bd after required run37174055840
+passed. Its merged main-security and channel-tag run37175100677 passed.
+PR354 aggregate head5821e257324815acfd2cf08b1bf4c277f5e7546d passed required
+run37176029838 and merged as7209cde8b0a2bb18e9d2b7779fca29bb4528844b;
+main-security/channel run37176771913 passed. PR353 and PR355 were automatically
+reported MERGED and their original heads were verified as main ancestors.
+Four independently reviewed clean owned temporary worktrees were removed;
+all branch references, the old dirty review worktree and pending work remain.
+
+PR357 delivered only Spec review to approved as
+0e792cdff4e13b17af0e514b5519c56c501f04d8, after required run37176990885
+and CodeQL passed on dab35a5a2886fddf845e6f7e5b54b27fe950cbdb. The user’s
+existing design, written Spec, Plan and execution approvals continue to govern.
+This next edge advances Spec/Plan approved to active and ready Tasks to
+in-progress without source, runtime or private-state implementation. Source
+closure and eligible packet preservation require a fresh exact writer ledger,
+actual protected base, focused validation and separate required hosted delivery.
+These observed receipts replace previous pending delivery descriptions only;
+no historical failure is converted to PASS and no HOME proof is inferred.
