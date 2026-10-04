@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.10"
+version: "1.0.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -797,4 +797,4 @@ binding fixture11 PASS), shell/root render, workflow/version/catalog exited0. In
 boundary-wrapper failure was corrected; capture's first POSIX-mode preflight
 rejected harmless umask, Git mode/blob/member check corrected and reviewed.
 Authored Markdown52, corpus/archive341 and changed metadata77 passed:0 violations, exit0.
-Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. Hosted delivery and protected private parity pending; no HOME/data run.
+Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`/`required CI run37180461557 PASS`; parity `exit0, files_changed=0, values=preserved, secret_files=untouched`; HOME/data/runtime NOT_RUN.
