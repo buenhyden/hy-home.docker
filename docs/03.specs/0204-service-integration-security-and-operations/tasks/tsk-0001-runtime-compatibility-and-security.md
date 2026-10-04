@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.12"
+version: "1.0.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -794,3 +794,6 @@ Remaining genuine source/runtime gaps are crawler private/link-local/metadata eg
 
 The owner approved the four-package plan, commit/push/protected merge and eligible branch cleanup. Exact writers are this Task, this package Plan, and existing `tests/validation/test_service_runtime_compatibility.py`; the latter tests Crawl4AI missing/empty/15-character rejection, 16-character acceptance and output/argv non-disclosure using the actual Compose command with synthetic files and a stub launcher. No production command, image or secret reference changes. A minimum-length-guard mutation must be rejected; existing n8n/OpenBao/LAB guards are reused. Baseline runtime module 6 PASS/exit0; minimum-length-guard mutation RED rejected 2 invalid inputs/exit1; current module 7 PASS/exit0 and combined runtime/observability/backup/route suite 25 PASS/exit0. Pinned Ruff0.15.12 lint/format and diff checks exit0. Independent test/security and source/lifecycle reviews PASS. Changed metadata14/corpus/archive recovery/links (one legacy provenance warning)/Markdown14/diff gates exited0; final receipt/parent checks are repeated before commit. Container/HOME/restore/migration remain NOT_RUN.
 SPEC-0206 source/static completion and archival are separately approved; its HOME TLS/OIDC/session and remote-MCP follow-ups remain with POL/RUN-0101. This replaces the earlier current package-blocker interpretation, not historical failures or execution receipts. Rollback is a scoped source/doc revert, never frozen-archive rewriting.
+
+Protected completion PR361 merged as `275d708ab797e0c86a30508351666482ebc04907`: required CI run37186133788, CodeQL and GitGuardian PASS; main-security/channel run37187599350 PASS. Approved archive writers are the exact seven source deletions/raw copies for completed0193 (3 members) and completed0206 (4), `docs/03.specs/README.md`, `docs/98.archive/retention-catalog.md` and this receipt. Independent pre-unlink review verified source Git blobs/modes/member sets and unchanged existing catalog rows; catalog records that protected source SHA. Current consumers were promoted by PR361 to Stage05; frozen bodies remain unchanged. Empty source directories caused an initial lifecycle/metadata failure and were removed with exact rmdir; final gates follow in the archive PR. Links PASS/exit0 with the existing 2870 legacy-source warning; no operational authority, HOME action, image pull, secret change, restore or migration is granted by capture.
+Final archive pre-commit acceptance: metadata3 violations0, corpus violations0/preserved348, links failures0/one existing warning, authored Markdown3 and diff checks all exit0; independent final cutover/raw-object review PASS. Required archive PR CI remains a separate delivery gate.
