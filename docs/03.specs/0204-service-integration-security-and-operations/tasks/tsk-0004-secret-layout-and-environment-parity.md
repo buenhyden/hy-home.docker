@@ -1,8 +1,8 @@
 ---
 title: "Secret Layout and Environment Parity Task"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -78,9 +78,8 @@ empty.
 ### Closure source evidence imported during 2026-10-04 integration
 
 Closure commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` preserved the
-following historical source evidence. Current merge head
-`5997231003690e3ea69b3d0de09ae4e72b2b6006` includes the source side, but current
-verification is still pending.
+following historical source evidence. PR359 carries the source side, current
+static QA and the protected parity receipt below.
 
 | Evidence | Result | Limit |
 | --- | --- | --- |
@@ -104,7 +103,7 @@ not attest repository identity or defend concurrent same-user mutation.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1, 4, 8 | W1/W5 | IN_PROGRESS: historical approved source, value-preserving path/metadata and key parity evidence imported; current verification pending; HOME recreation and rotation excluded | [Secret ownership and consumer contract](../../../../secrets/README.md) |
+| 1, 4, 8 | W1/W5 | PASS: approved source, value-preserving path/metadata and protected parity evidence recorded; HOME recreation and rotation excluded | [Secret ownership and consumer contract](../../../../secrets/README.md) |
 
 ## Review Evidence
 
@@ -116,15 +115,13 @@ the verification receipt. On 2026-10-03 the independent security reviewer also
 reran 32 quality/object regressions, `py_compile` and diff hygiene after
 rejecting ambient AWS CLI resolution, weak credential permissions and partial
 restore publication. The two Medium findings were resolved; actual SeaweedFS
-execution remains NOT_RUN. Current integration review is pending.
+execution remains NOT_RUN. Independent current integration review returned PASS.
 
 ## Commit Ledger
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; predecessor
 secret-layout integration `8df1e89fce0b3bea1f5f3241b95af5c8fefb8fd3`;
-closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; current merge head
-`5997231003690e3ea69b3d0de09ae4e72b2b6006` pending verification. Remote
-publication and merge are not implied by this Task body.
+closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. Remote publication and merge are recorded only by the protected delivery receipt.
 
 ## Rulings
 
@@ -152,13 +149,23 @@ from the owner checkout consumes its private registry/root/LAB env only inside
 the approved tool; `--metadata-source-root` selects this reviewed source tree's
 three public examples. Output is changed-file counters only; no values, file
 contents, credentials, runtime or writes are authorized by this check.
-Candidate-source parity cannot be reported as protected-main parity: repeat
-against delivered main before Task completion. Rotation remains separate.
+Candidate-source parity was not used as protected-main proof. Rotation remains separate.
 
 Candidate preflight on 2026-10-04: from the owner checkout,
 `bash /tmp/hyhome-0204-source-integration/scripts/operations/gen-secrets.sh
 --sync-metadata-prune-check --metadata-source-root /tmp/hyhome-0204-source-integration`
 exited0, `files_changed=0`, values preserved and secret files untouched. This
-only proves candidate public/private metadata and env exact-set parity; no
-new credential validity, file move, service recreation or current protected
-source acceptance is claimed. Protected rerun remains required.
+proved candidate public/private metadata and env exact-set parity only; no
+new credential validity, file move or service recreation was claimed from it.
+
+### Protected completion receipt — 2026-10-04
+
+After PR359 reached protected main as `467bd644b071f9dfa02ca1af2d622502c3445d28`, the owner-checkout
+`bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
+--metadata-source-root /home/hyunyoun/data/hy-home.docker`
+rerun recorded `exit0, files_changed=0, values=preserved, secret_files=untouched`. Combined with the Task1 source QA packet and
+workflow/secret/gate tests, this completes the source/public metadata and
+approved private parity contract without printing or reading secret values
+outside the approved tool. HOME recreation, service restart, credential
+rotation/reissue, irreversible alias deletion, private-log inspection and
+credential validity remain `NOT_RUN`.

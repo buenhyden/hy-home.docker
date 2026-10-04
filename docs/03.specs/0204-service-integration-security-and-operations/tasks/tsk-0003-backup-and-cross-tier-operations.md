@@ -1,8 +1,8 @@
 ---
 title: "Backup and Cross-tier Operations Task"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -37,8 +37,8 @@ Task.
 
 | Service and source evidence | Exact writer or read-only source | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
-| dev-pg has a separate `dev-pgbackrest` repository; Restic state set originally mounted/listed only management `pgbackrest`; host scheduler originally backed up only mng-pg | SOURCE INTEGRATED, current merge verification pending: `infra/09-platform-ops/restic/docker-compose.yml`, `backup.sh`, `infra/09-platform-ops/restic/bin/hyhome-backup.sh`; `sets/state-include.txt` remains read-only unless a later exact amendment proves it necessary; source variable `BACKUP_STATE_REPO_DIR`, `dev-pg`/Restic consumers | Synthetic missing/present repository, backup failure, disk budget, globals and offsite set identity; revert scoped source before live scheduler deployment, never delete a repository | SPEC-0202 handoff under approved Task scope; live backup/offsite/restore separately approved |
-| Management PITR and dev-pg isolated synthetic restore are distinct evidence | SOURCE/DOC INTEGRATED, current merge verification pending: existing `docs/05.operations/policies/0021-backup-and-restore.md`, `docs/05.operations/runbooks/0021-backup-and-restore.md`, `docs/05.operations/guides/0021-backup-and-restore.md`; development DB owner docs are read-only; selected stanza, image digest, extension/role/migration revision, backup/WAL range | Separate-volume restore, application reader denial/success, no `latest` selection; source rollback cannot undo data mutation | HOME and actual repository verify/restore need exact preflight and permission |
+| dev-pg has a separate `dev-pgbackrest` repository; Restic state set originally mounted/listed only management `pgbackrest`; host scheduler originally backed up only mng-pg | SOURCE COMPLETED after protected delivery: `infra/09-platform-ops/restic/docker-compose.yml`, `backup.sh`, `infra/09-platform-ops/restic/bin/hyhome-backup.sh`; `sets/state-include.txt` remains read-only unless a later exact amendment proves it necessary; source variable `BACKUP_STATE_REPO_DIR`, `dev-pg`/Restic consumers | Synthetic missing/present repository, backup failure, disk budget, globals and offsite set identity; revert scoped source before live scheduler deployment, never delete a repository | SPEC-0202 handoff under approved Task scope; live backup/offsite/restore separately approved |
+| Management PITR and dev-pg isolated synthetic restore are distinct evidence | SOURCE/DOC COMPLETED after protected delivery: existing `docs/05.operations/policies/0021-backup-and-restore.md`, `docs/05.operations/runbooks/0021-backup-and-restore.md`, `docs/05.operations/guides/0021-backup-and-restore.md`; development DB owner docs are read-only; selected stanza, image digest, extension/role/migration revision, backup/WAL range | Separate-volume restore, application reader denial/success, no `latest` selection; source rollback cannot undo data mutation | HOME and actual repository verify/restore need exact preflight and permission |
 | Debezium source changed in SPEC-0202; Avro consumers retain Schema Registry | READ_ONLY: `infra/05-messaging/kafka/connect/debezium/postgres-connector.json` and Kafka service docs; any source edit needs a later exact Task after SPEC-0202 handoff | Synthetic restart/duplicate/replay/schema evolution and lag measurement; do not reuse old LSN on a new DB; revert fixture/source, preserve offsets | No live connector registration, slot deletion or broker restart |
 | Airflow and n8n have separate batch/integration purposes | READ_ONLY: current Airflow/n8n Compose and GDE/POL/RUN-0050/0053; no workflow source write in this Task | Inventory worker DB/S3/mail reachability and payload/retention ownership; fixture and rollback belong to a later exact Task | Workflow data or service restart separately approved |
 | Open WebUI/Ollama/ComfyUI and Qdrant have current optional paths | READ_ONLY: current Open WebUI/Ollama/ComfyUI/Qdrant source and AI operations owners; no AI source write in this Task | Inventory permission/embedding-version and GPU budget gaps; fixture belongs to a later exact Task; no speech activation | Real documents, user voice, GPU reservation and product scope separately approved |
@@ -60,8 +60,8 @@ change, if needed, requires an exact Task amendment.
 
 Closure commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` recorded backup
 source commit `ce001be7af93aebe6430f586b56a5c443fa9f386` plus a later
-sanitized isolated replay receipt. The current merge worktree includes the
-source side, but current-branch checks have not yet been recorded here.
+sanitized isolated replay receipt. PR359 now carries that source side, current
+static QA and the protected delivery receipt below.
 
 | Check | Result | Limit |
 | --- | --- | --- |
@@ -91,16 +91,25 @@ only; it is not actual HOME backup, online WAL/PITR, offsite restore,
 application cutover, credential rotation, retention activation, RPO/RTO proof or
 data migration.
 
-Current integration review and focused checks against merge head
-`5997231003690e3ea69b3d0de09ae4e72b2b6006` are pending. Keep this Task
-`in-progress` until those current commands and independent review are appended.
+### Protected completion receipt — 2026-10-04
+
+PR359 delivered as `467bd644b071f9dfa02ca1af2d622502c3445d28` after required CI `required CI run37180461557 PASS`. Candidate
+source head `0ff55fa8378365ee6a9eb81c34c837bc494aa006` includes the approved
+Restic dev-pgbackrest source chain and Stage 05 backup documents. Task1 records
+combined QA with baseline tests passing and 21 optional Docker skips; the exact
+backup failure harness passed after `check=False`. Independent source review
+returned PASS separately from protected CI. Historical closure evidence at
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` remains the selected synthetic
+offline restore receipt. This completes source and isolated synthetic backup
+acceptance only. HOME backup, offsite copy, online WAL/PITR, retention
+activation, RPO/RTO, credential rotation and data migration remain `NOT_RUN`.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W4 | IN_PROGRESS: approved backup writer ledger and source handoff are recorded; current merge verification pending | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) |
+| 1 | W4 | PASS: approved backup writer ledger and source handoff are recorded | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) |
 | 6 | W4 | PARTIAL: consumer-backed decisions retain honest unverified runtime states without speculative services | [Architecture owner](../../../02.architecture/descriptions/0031-home-development-host.md) |
-| 7 | W4 | PARTIAL: historical synthetic selected-set recovery imported; actual HOME/offsite/WAL/PITR remain NOT_RUN | [Backup runbook](../../../05.operations/runbooks/0021-backup-and-restore.md) |
-| 8 | W4 | IN_PROGRESS: historical focused checks imported; current diff verification pending | [Backup guide](../../../05.operations/guides/0021-backup-and-restore.md) |
+| 7 | W4 | PASS for source and isolated synthetic selected-set recovery; actual HOME/offsite/WAL/PITR remain NOT_RUN | [Backup runbook](../../../05.operations/runbooks/0021-backup-and-restore.md) |
+| 8 | W4 | PASS: focused source checks, independent review and protected delivery receipt recorded | [Backup guide](../../../05.operations/guides/0021-backup-and-restore.md) |
 
 ## Review Evidence
 
@@ -108,8 +117,7 @@ Closure-side independent backup/infra/security review approved the exact source
 diff with operational follow-up. The reviewer reran 11 backup tests, shell
 syntax, static backup render, catalog and corpus lifecycle; all exited 0. Final
 independent review on 2026-10-04 approved the sanitized replay and
-POL/GDE/RUN-0021 summaries with no open CRITICAL/HIGH/MEDIUM finding. Current
-integration review is pending. The continuing backup schedule, capacity,
+POL/GDE/RUN-0021 summaries with no open CRITICAL/HIGH/MEDIUM finding. Independent current integration review returned PASS. The continuing backup schedule, capacity,
 WAL/PITR, offsite and actual HOME restore obligations remain with POL/RUN-0021
 and require separate approval.
 
@@ -118,8 +126,7 @@ and require separate approval.
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
 `0f67cb297`; review transition `2157e62c5`; backup source and first static
 receipt `ce001be7af93aebe6430f586b56a5c443fa9f386`; closure
-`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; current merge head
-`5997231003690e3ea69b3d0de09ae4e72b2b6006` pending verification.
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`.
 
 ## Rulings
 

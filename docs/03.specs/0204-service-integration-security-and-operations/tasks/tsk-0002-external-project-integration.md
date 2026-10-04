@@ -1,8 +1,8 @@
 ---
 title: "External Project Integration Task"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -45,7 +45,7 @@ this Task alone.
 | Keycloak/OAuth2 Proxy currently implement management browser SSO; project clients are absent | READ_ONLY: `infra/02-auth/keycloak/docker-compose.yml`, `infra/02-auth/oauth2-proxy/docker-compose.yml`, existing GDE/POL-0079; later exact Task owns client ID and secret reference | Issuer/audience/PKCE/redirect/cookie/logout and machine HTML-rejection fixtures; no admin token granted to app; revert client mapping before issuance | Project OIDC creation and secret issuance require exact owner approval |
 | OpenBao Agent currently renders management secrets with one sink and output volume | Keep `infra/03-security/openbao/config/agent.hcl` and management policy/output unchanged. A future approved project gets its own AppRole, token sink, policy, output directory/volume and exact-file mounts; manifest carries reference names only | Missing/expired/renewed template and cross-project/management denial tests; revert project-only source | No shared renderer/output, live secret read, rotation or admin-token share |
 | Alloy Docker relabel keeps only `hy-home-infra`; SPEC-0203 added bounded quality metrics | READ_ONLY: `infra/06-observability/alloy/config/config.alloy`, `config.home.alloy`, `infra/06-observability/docker-compose.yml`; later exact Task owns approved project identity and receiver changes | Synthetic registered/unregistered/LAB labels, authenticated receiver identity mapped to server labels, spoofed OTLP/trace-attribute denial, metrics/logs/traces preservation and quota; revert allowlist change | Project label allowlist and HOME collector restart separately approved |
-| Infra resource metadata has only dev-pg fixture fields today | SOURCE INTEGRATED, current merge verification pending: `infra/09-platform-ops/project-registration/schema.json`, Korean `README.md`, `scripts/validation/check-project-registration.py`, `scripts/manifest.yaml`, `tests/validation/test_project_registration.py`; existing dev-pg `project.py` remains SPEC-0202-owned, Prompt 06 owns external `integration/infra-consumer.yaml` | Reject missing project_id/environment/ref, unapproved secret reference names, malformed or credential-bearing endpoint, invalid DB/Valkey/S3/OIDC/search scope; run separate secret scan/review; no resource created by metadata alone; revert only these new files | Named project ID, resource quotas and provision/secret operations separate |
+| Infra resource metadata has only dev-pg fixture fields today | SOURCE COMPLETED after protected delivery: `infra/09-platform-ops/project-registration/schema.json`, Korean `README.md`, `scripts/validation/check-project-registration.py`, `scripts/manifest.yaml`, `tests/validation/test_project_registration.py`; existing dev-pg `project.py` remains SPEC-0202-owned, Prompt 06 owns external `integration/infra-consumer.yaml` | Reject missing project_id/environment/ref, unapproved secret reference names, malformed or credential-bearing endpoint, invalid DB/Valkey/S3/OIDC/search scope; run separate secret scan/review; no resource created by metadata alone; revert only these new files | Named project ID, resource quotas and provision/secret operations separate |
 
 The proposed metadata fields are `project_id`, `environment`, `infra_ref`,
 `template_ref`, `project_ref`, endpoints by connection location, allowed
@@ -91,18 +91,25 @@ focused checks were:
 | Default-empty secret allowlist and safe error output | HISTORICAL PASS synthetic | `--allow-secret-ref` is explicit; semantic errors return fixed non-value reasons. No secret bytes read or echoed. |
 | External project network, OIDC/S3/search/DB provision, DNS/TLS certificate, Alloy ingestion and HOME restart | NOT_RUN | Named project and separate operation approval absent. `approval`/`verification` fields are not an authorization source. |
 
-Current source integration is present in this merge worktree, but current-branch
-checks have not yet been recorded in this Task. Keep this Task `in-progress`
-until exact current SHA commands and independent review are appended. No live
-project connection, DNS/TLS, credential issuance, network publication, Alloy
-collector restart or HOME service change is implied.
+### Protected completion receipt — 2026-10-04
+
+PR359 delivered as `467bd644b071f9dfa02ca1af2d622502c3445d28` after required CI `required CI run37180461557 PASS`. Candidate
+source head `0ff55fa8378365ee6a9eb81c34c837bc494aa006` includes the approved
+project-registration README, schema, validator, manifest registration and
+focused tests. Task1 records the combined source QA packet; the project
+registration slice is covered by the existing focused command
+`python3 -m unittest tests.validation.test_project_registration -q` and the
+runtime/project/quality/version packet. Independent source review returned PASS
+separately from protected CI. This completes the source-only infra registration
+contract. External project provision, DNS/TLS, OIDC/S3/search resources, Alloy
+ingestion, credential issuance and HOME restart remain `NOT_RUN`.
 
 | Acceptance criterion | Plan work unit | Task result | Durable owner |
 | --- | --- | --- | --- |
-| 1 | W1/W5 | IN_PROGRESS: source boundary recorded; runtime consumers unobserved | This Task and current GDE/POL/RUN owners |
+| 1 | W1/W5 | PASS: source boundary recorded; runtime consumers unobserved | This Task and current GDE/POL/RUN owners |
 | 4 | W3/W5 | PARTIAL design; project-specific runtime source remains gated | POL-0079, GDE/POL/RUN-0085 |
-| 5 | W3/W5 | IN_PROGRESS: historical infra metadata validator evidence imported; current verification pending; consumed app manifest and real resources NOT_RUN | This Task and Prompt 06 external repository |
-| 8 | W5 | IN_PROGRESS: historical focused checks imported; current diff verification pending | This Task verification receipts |
+| 5 | W3/W5 | PASS: infra metadata schema and validator delivered; consumed app manifest and real resources NOT_RUN | This Task and Prompt 06 external repository |
+| 8 | W5 | PASS: focused source checks, independent review and protected delivery receipt recorded | This Task verification receipts |
 
 ## Review Evidence
 
@@ -116,16 +123,14 @@ non-value failure reasons were added after a Minor operability finding.
 Residual limits: DNS resolution, certificate validation, network egress,
 resource authorization, secret-byte scanning and the truth of Git/Task/approval
 references need a named consumer and separate exact Task. No service consumes
-this metadata as an authorization decision today. Current integration review is
-pending.
+this metadata as an authorization decision today. Independent current integration review returned PASS.
 
 ## Commit Ledger
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
 `0f67cb297`; review transition `2157e62c5`; historical source commit
 `d302f54cb` recorded by closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`.
-Current merge head is `5997231003690e3ea69b3d0de09ae4e72b2b6006`; current
-post-merge checks are still pending. No external project or resource action.
+PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. No external project or resource action.
 
 ## Rulings
 
