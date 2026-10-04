@@ -12,6 +12,8 @@ from pathlib import Path
 
 import yaml
 
+from scripts.lib.document_governance.operations_catalog import _ComposeLoader
+
 SCRIPT = Path(__file__).resolve().parents[2] / "scripts/operations/gen-secrets.sh"
 ROOT = SCRIPT.parents[2]
 # DEFAULT_MOUNT_VOLUME_PATH left this set when the Restic job mounted it directly.
@@ -68,7 +70,7 @@ def walk_scalars(value):
 
 def compose_sources(root=ROOT):
     root_text = (root / "docker-compose.yml").read_text()
-    document = yaml.safe_load(root_text)
+    document = yaml.load(root_text, Loader=_ComposeLoader)
     sources = {"docker-compose.yml": root_text}
     for entry in document.get("include", []):
         relative = entry if isinstance(entry, str) else entry["path"]
@@ -102,7 +104,7 @@ def environment_contract(compose_texts, env_text, supplemental_ids=HTPASSWD_ID_I
     public = set(env_assignments(env_text))
     references = defaultdict(list)
     for relative, text in compose_texts.items():
-        document = yaml.safe_load(text)
+        document = yaml.load(text, Loader=_ComposeLoader)
         for scalar in walk_scalars(document):
             for name, operator in interpolation_references(scalar):
                 references[name].append((relative, operator))
@@ -389,7 +391,7 @@ def service_secret_contract(root, compose_texts):
     for relative, text in compose_texts.items():
         if relative == "docker-compose.yml":
             continue
-        document = yaml.safe_load(text) or {}
+        document = yaml.load(text, Loader=_ComposeLoader) or {}
         for name, service in (document.get("services") or {}).items():
             grants = service_grants(service)
             references = set()
@@ -429,7 +431,7 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
     for domain in (root_domain, *lab_domains):
         domain_declarations = {}
         for relative, text in domain.items():
-            document = yaml.safe_load(text) or {}
+            document = yaml.load(text, Loader=_ComposeLoader) or {}
             for name, value in (document.get("secrets") or {}).items():
                 if name in declarations:
                     raise AssertionError(f"duplicate secret declaration: {name}")
@@ -496,6 +498,35 @@ def secret_contract(root, compose_texts, registry_text, consumed_env):
         "registered_paths": registered_paths,
         "registry_orphans": registry_orphans,
     }
+
+
+class ComposeSchemaTagTests(unittest.TestCase):
+    def test_compose_tags_preserve_values_and_references_without_unsafe_loading(self):
+        text = (
+            "services:\n"
+            "  probe:\n"
+            "    group_add: !override ['${TAGGED_GROUP}']\n"
+            "    environment: !override {REQUIRED: '${TAGGED_ENV}'}\n"
+            "    volumes: !reset []\n"
+            "    command: !override synthetic-command\n"
+        )
+        contract = environment_contract(
+            {"synthetic.yml": text}, "", supplemental_ids=set()
+        )
+        self.assertEqual({"TAGGED_GROUP", "TAGGED_ENV"}, contract["missing"])
+        service = yaml.load(text, Loader=_ComposeLoader)["services"]["probe"]
+        self.assertEqual(["${TAGGED_GROUP}"], service["group_add"])
+        self.assertEqual({"REQUIRED": "${TAGGED_ENV}"}, service["environment"])
+        self.assertEqual([], service["volumes"])
+        self.assertEqual("synthetic-command", service["command"])
+        with self.assertRaises(yaml.constructor.ConstructorError):
+            yaml.safe_load(text)
+        with self.assertRaises(yaml.constructor.ConstructorError):
+            environment_contract(
+                {"synthetic.yml": "services: !!python/object/apply:builtins.list []\n"},
+                "",
+                supplemental_ids=set(),
+            )
 
 
 class SecretMetadataSyncTests(unittest.TestCase):
@@ -980,7 +1011,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
     def test_source_analysis_services_hold_no_secrets(self):
         found = set()
         for text in self.compose_texts.values():
-            document = yaml.safe_load(text) or {}
+            document = yaml.load(text, Loader=_ComposeLoader) or {}
             for name, service in (document.get("services") or {}).items():
                 if name not in SOURCE_ANALYSIS_SERVICES:
                     continue
@@ -1040,7 +1071,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_secret_scanner_mutations_detect_dangling_grant_and_registry_drift(self):
         observability_path = "infra/06-observability/docker-compose.yml"
-        observability = yaml.safe_load(self.compose_texts[observability_path])
+        observability = yaml.load(
+            self.compose_texts[observability_path], Loader=_ComposeLoader
+        )
         observability["services"]["prometheus"].setdefault("environment", {})[
             "DANGLING_FILE"
         ] = "/run/secrets/missing_literal"
@@ -1049,13 +1082,17 @@ class PublicSecretSchemaTests(unittest.TestCase):
         contract = self.scoped_secret_contract(mutated, self.registry_text)
         self.assertIn(("prometheus", "missing_literal"), contract["dangling"])
 
-        observability = yaml.safe_load(self.compose_texts[observability_path])
+        observability = yaml.load(
+            self.compose_texts[observability_path], Loader=_ComposeLoader
+        )
         observability["services"]["prometheus"]["secrets"].remove("openbao_token")
         mutated[observability_path] = yaml.safe_dump(observability)
         contract = self.scoped_secret_contract(mutated, self.registry_text)
         self.assertIn(("prometheus", "openbao_token"), contract["missing_grants"])
 
-        observability = yaml.safe_load(self.compose_texts[observability_path])
+        observability = yaml.load(
+            self.compose_texts[observability_path], Loader=_ComposeLoader
+        )
         observability["services"]["loki"]["secrets"] = ["grafana_admin_password"]
         mutated[observability_path] = yaml.safe_dump(observability)
         contract = self.scoped_secret_contract(mutated, self.registry_text)
@@ -1075,7 +1112,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_lab_secret_must_be_declared_in_its_own_entrypoint(self):
         path = "labs/couchdb.yml"
-        couchdb = yaml.safe_load(self.lab_compose_texts[path])
+        couchdb = yaml.load(self.lab_compose_texts[path], Loader=_ComposeLoader)
         name = next(iter(couchdb["secrets"]))
         couchdb["secrets"].pop(name)
         lab = dict(self.lab_compose_texts)
@@ -1089,7 +1126,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         self.assertIn(name, contract["granted_sources"])
         self.assertTrue(any(reference == name for _, reference in contract["dangling"]))
 
-        couchdb = yaml.safe_load(self.lab_compose_texts[path])
+        couchdb = yaml.load(self.lab_compose_texts[path], Loader=_ComposeLoader)
         couchdb["secrets"][name]["file"] = "${LAB_SECRET_DIR}/../../escape"
         lab[path] = yaml.safe_dump(couchdb)
         with self.assertRaisesRegex(AssertionError, "escaped isolated path"):
@@ -1101,7 +1138,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
             )
 
     def test_root_secret_cannot_use_lab_credential_tree(self):
-        root = yaml.safe_load(self.compose_texts["docker-compose.yml"])
+        root = yaml.load(
+            self.compose_texts["docker-compose.yml"], Loader=_ComposeLoader
+        )
         root["secrets"]["mng_postgres_password"]["file"] = "./secrets/labs/wrong.txt"
         changed = dict(self.compose_texts)
         changed["docker-compose.yml"] = yaml.safe_dump(root)
@@ -1110,7 +1149,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_secret_scanner_detects_n8n_workdir_entrypoint_grant_swap(self):
         n8n_path = "infra/07-workflow/n8n/docker-compose.yml"
-        n8n = yaml.safe_load(self.compose_texts[n8n_path])
+        n8n = yaml.load(self.compose_texts[n8n_path], Loader=_ComposeLoader)
         n8n["services"]["n8n"]["secrets"] = [
             "grafana_admin_password" if grant == "mng_valkey_password" else grant
             for grant in n8n["services"]["n8n"]["secrets"]
@@ -1234,17 +1273,18 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_prometheus_uses_a_dedicated_openbao_metrics_token(self):
         root = SCRIPT.parents[2]
-        declarations = yaml.safe_load((root / "docker-compose.yml").read_text())[
-            "secrets"
-        ]
+        declarations = yaml.load(
+            (root / "docker-compose.yml").read_text(), Loader=_ComposeLoader
+        )["secrets"]
         self.assertEqual(
             {"file": "./secrets/security/openbao_token.txt"},
             declarations.get("openbao_token"),
         )
         self.assertNotIn("vault_token", declarations)
 
-        observability = yaml.safe_load(
-            (root / "infra/06-observability/docker-compose.yml").read_text()
+        observability = yaml.load(
+            (root / "infra/06-observability/docker-compose.yml").read_text(),
+            Loader=_ComposeLoader,
         )
         grants = observability["services"]["prometheus"]["secrets"]
         self.assertIn("openbao_token", grants)
@@ -1284,9 +1324,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 row[column] for row in rows if row[column] not in ("", "-")
             )
             self.assertEqual([], [name for name, count in counts.items() if count > 1])
-        declarations = yaml.safe_load((root / "docker-compose.yml").read_text())[
-            "secrets"
-        ]
+        declarations = yaml.load(
+            (root / "docker-compose.yml").read_text(), Loader=_ComposeLoader
+        )["secrets"]
         expected = {
             value["file"].removeprefix("./")
             for value in declarations.values()

@@ -1,6 +1,6 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.7"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -193,3 +193,45 @@ No real environment, secret, HOME state or user-global npm config was used.
 The original npm run typecheck, npm run lint and
 bash scripts/validation/check-storybook-contract.sh each passed (exit 0).
 The required hosted rerun and protected delivery remain pending.
+
+#### Approved Baseline Gate Reconciliation
+
+Hosted run 37171287899 on 95c0e91798e4021e8bfd6bfa38acb4e867cfd8b9
+failed in existing public regression ownership: the secret schema test could
+not construct Compose !override, and the full profile omitted four existing
+modules. This is a separate root gate reconciliation, not another change to
+the bounded audit acceptance or UI prerequisite. Its failure remains recorded.
+
+The owner explicitly approved the following exact four-file amendment after
+independent read-only root-cause and policy review:
+
+- .github/workflow-contract.yml
+- tests/lib/gate/test_github_workflow_contract.py
+- tests/validation/test_secret_metadata_sync.py
+- docs/03.specs/0205-storybook-dependency-refresh/tasks/tsk-0001-refresh-storybook-packages.md
+
+Reuse the repository's SafeLoader-based Compose parser for Compose consumers;
+preserve generic configuration parsing and global SafeLoader behavior. Test
+plain tagged values, retained environment references and unsafe tag rejection.
+Register the existing perf_db_contract, k6_results, quality_mock_lab and
+quality_observability modules in the existing compose-baseline-regressions
+leaf, with its current required selectors and five optional runtime scopes.
+Keep changed-path routing, thresholds, timeouts, audit acceptance and branch
+protection unchanged. Recovery reverts this bounded reconciliation commit.
+
+RED: existing full-profile ownership acceptance failed (exit 1, exactly four
+missing modules); PublicSecretSchemaTests failed before executing a test
+(exit 5, unsupported !override). The four omitted modules themselves passed
+when explicitly invoked (36 tests, exit 0), using public contracts and
+synthetic fixtures without Docker execution. GREEN: the original ownership/workflow modules passed (59 tests, exit 0);
+the workflow contract checker passed (5 workflows, 9 jobs, 8 actions, exit 0).
+The added tag regression failed first (1 test, exit 1), then passed with
+PublicSecretSchemaTests (15 tests, exit 0). The complete secret metadata
+module passed (40 tests, exit 0), using public/synthetic inputs only. Fifteen
+Compose parse sites reuse the canonical SafeLoader-based parser; generic
+Prometheus config still uses yaml.safe_load. Tagged scalar/list/map values
+and environment references survive parsing; unsafe Python object tags remain
+rejected and global SafeLoader is unchanged. Ruff 0.15.12 checks and format
+checks passed (exit 0). The typed contract, adapter and path-aware plan modules passed
+(92 tests, exit 0). Independent exact four-file policy/source/security review:
+PASS. Protected delivery remains pending.
