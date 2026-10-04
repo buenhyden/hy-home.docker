@@ -4,7 +4,7 @@ version: "0.5.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -56,8 +56,8 @@ Agent에는 HTTP listener나 자체 metrics endpoint가 선언되어 있지 않�
 실제로 선택된 template은 `keycloak_admin_password.ctmpl`,
 `grafana_admin_password.ctmpl` 두 개뿐이다. 같은 디렉터리의 나머지 template는
 mount되어 있어도 `agent.hcl`에서 선택하지 않으며 renderer ACL을 확장하지 않는다.
-서버 health는 `bao status`의0과2(sealed)를 모두 허용한다. Agent의
-`service_healthy` dependency도 unseal을 기다리지 않으며 자체 health는 옛 token
+서버 health는 `bao status`의 0(unsealed)만 허용한다. sealed(2) 상태에서는
+새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent 자체 health는 옛 token
 파일이 남아 있어도 통과한다. 실제 unsealed·인증 성공·갱신·읽기/거부·출력 갱신을
 따로 검증한다. 근거는 [선언 릴리스 계열 status](https://openbao.org/docs/2.6.x/commands/status/)와
 [Agent AppRole](https://openbao.org/docs/2.6.x/agent-and-proxy/autoauth/methods/approle/)이다.

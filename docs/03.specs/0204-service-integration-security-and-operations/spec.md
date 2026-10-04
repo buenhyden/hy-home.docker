@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.0.1"
+version: "1.0.3"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -11,9 +11,6 @@ parent_ids:
 - "REQ-0027"
 - "AD-0031"
 - "ADR-0046"
-- "SPEC-0201"
-- "SPEC-0202"
-- "SPEC-0203"
 created: "2026-10-03"
 ---
 
@@ -30,10 +27,10 @@ SPEC-0203 owns performance results and its Alloy metrics path; Prompt 05 owns
 Storybook; Prompt 06 owns an external application's consumed manifest and
 application Compose. This package must not reimplement those owners.
 
-This is a draft behavior contract. No SPEC-0204 Task had approval when the
-package was opened. Drafting this package does not authorize infrastructure
-source edits, HOME changes, credential actions, external publication, or a
-protected-branch merge.
+The user approved Prompt 04 and its source scopes. Protected PR358 activated
+this package at `79b42b604b99bcc6712887d29e36f8244ec0f9eb`. Task1 records the
+exclusive writer ledger and the normal source/history integration. Existing
+Git delivery approval is separate from HOME, credential and data operations.
 
 ## Boundaries and Inputs
 
@@ -42,9 +39,12 @@ tracked configuration and key-only environment contracts, current Stage 01/02/03
 and Stage 05 owners, and official vendor documentation at implementation time.
 SPEC-0201 supplies the source inventory and exclusive-writer handoff. SPEC-0202
 supplies the dev-pg/dev-valkey source contract, synthetic restore result, and
-operational exclusions. SPEC-0203 supplies a source-only quality/Alloy contract;
-its live target, object handoff, Grafana result reader, and end-to-end metrics
-remain unverified. Archived SPEC-0199/0200 provide no current approval.
+operational exclusions. SPEC-0203 supplies completed source and historical
+isolated synthetic quality/Alloy contract, including actual importer replay/concurrency/outage and metrics
+temporality/retry/restart evidence. Its real application target, SeaweedFS
+object handoff and live Grafana result reader remain unverified; synthetic
+metrics acceptance is not a live external-project receipt. Archived
+SPEC-0199/0200 provide no current approval.
 
 No business project ID, external deployment topology, application endpoint,
 OIDC client, S3 identity, search authority, traffic budget, or speech product
@@ -140,9 +140,11 @@ files, authentication files, raw HOME logs, or user data.
 
 ## Technical Approach
 
-Use three serial Tasks: confirmed compatibility/security corrections; an
-external-project integration contract and bounded discovery; then backup and
-cross-tier operations. Each Task owns exact files and focused regressions in
+Use four serial Tasks: confirmed compatibility/security corrections; an
+external-project integration contract and bounded discovery; backup and
+cross-tier operations; then whole-tree secret path and environment parity.
+TSK-0004 records the user's subsequent explicit 2026-10-03 authorization,
+including value-preserving path moves and incident disposition. Each Task owns exact files and focused regressions in
 its Task ledger before source mutation. Shared root, Alloy, environment,
 Registry and backup files have one writer at a time. If a named project or
 consumer is missing, record a versioned contract and `BLOCKED` runtime result
@@ -209,21 +211,25 @@ without its separate exact approval.
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
-- [SPEC-0201](../0201-home-infrastructure-diagnosis-and-work-design/spec.md)
-- [SPEC-0202](../0202-development-data-and-lab-isolation/spec.md)
-- [SPEC-0203](../0203-quality-results-and-isolated-load-testing/spec.md)
+- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
+- [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
+- [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
 
 ## Open Questions
 
-The owner must approve the exact Task source scopes and later any HOME upgrade,
+The user approved the listed Task source scopes on 2026-10-03; a new path
+requires an exact Task amendment. Any HOME upgrade,
 backup execution, restore, credential issuance or network publication. A real
 external project must separately identify its project ID, endpoint topology,
-OIDC/S3/search scopes and operator before a live connection can pass. A
-verified dev-pg recovery target and capacity budget are still absent.
+OIDC/S3/search scopes and operator before a live connection can pass. The
+historical selected synthetic dev-pg recovery target passed TSK-0003; a HOME recovery
+target, offsite/PITR evidence and measured operational capacity budget remain
+absent. TSK-0001 exact-image runtime and security acceptance still require
+the separately pending execution approval.
 
 ## Operational Impact
 
 Source changes may alter n8n workflow execution, crawler rejection, OpenBao
 health dependency and future backup scheduling when deployed. Each requires
-its own staged rollback and HOME change window; the draft does not exercise
+its own staged rollback and HOME change window; this package does not exercise
 those effects.

@@ -54,7 +54,7 @@ services:
       secrets_net: {}
       obs_net: {}
     healthcheck:
-      test: [ 'CMD-SHELL', 'bao status >/dev/null 2>&1; rc=$$?; [ "$$rc" -eq 0 ] || [ "$$rc" -eq 2 ]' ]
+      test: [ 'CMD-SHELL', 'bao status >/dev/null 2>&1' ]
       interval: 15s
       timeout: 10s
       retries: 10

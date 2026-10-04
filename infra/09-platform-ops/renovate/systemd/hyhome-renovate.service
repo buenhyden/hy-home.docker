@@ -18,7 +18,7 @@ WorkingDirectory=/home/hyunyoun/data/hy-home.docker
 # creates the container. Compose itself performs a second check inside the
 # entrypoint (set -eu + test -s), so this is a fast-fail guard only.
 ExecStartPre=/bin/bash -ec \
-    "test -s /home/hyunyoun/data/hy-home.docker/secrets/tools/renovate_token.txt || { echo 'ERROR: renovate_token secret missing or empty'; exit 1; }"
+    "test -s /home/hyunyoun/data/hy-home.docker/secrets/tools/renovate/renovate_token.txt || { echo 'ERROR: renovate_token secret missing or empty'; exit 1; }"
 
 # Pull the latest declared image tag before running so the pinned digest is
 # always current.  --quiet suppresses the layer-pull progress noise in the

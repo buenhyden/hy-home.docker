@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.5"
+version: "1.0.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -11,6 +11,11 @@ parent_ids:
 - "SPEC-0204"
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-03"
+branch_integration_receipts:
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design", source_artifact_id: "SPEC-0201", preserved_package_path: "docs/98.archive/superseded/03.specs/0201-home-infrastructure-diagnosis-and-work-design", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0202-development-data-and-lab-isolation", source_artifact_id: "SPEC-0202", preserved_package_path: "docs/98.archive/superseded/03.specs/0202-development-data-and-lab-isolation", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0203-quality-results-and-isolated-load-testing", source_artifact_id: "SPEC-0203", preserved_package_path: "docs/98.archive/superseded/03.specs/0203-quality-results-and-isolated-load-testing", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0205-storybook-dependency-refresh", source_artifact_id: "SPEC-0205", preserved_package_path: "docs/98.archive/superseded/03.specs/0205-storybook-dependency-refresh", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
 ---
 
 # Runtime Compatibility and Security Task
@@ -31,6 +36,218 @@ Task is an approval draft: no source edits, image pull, HOME deployment or
 credential action has been authorized by its existence.
 
 ## Work Log
+
+### Protected source and archive integration writer ledger — approved reintegration
+
+Protected PR358 delivered the active Spec/Plan and in-progress Tasks at
+`79b42b604b99bcc6712887d29e36f8244ec0f9eb` (run37177848208 PASS). This is the captured protected base
+for the approved reintegration ledger; verify the actual base and closure source ancestry before source edits.
+Prior source/integration/disposition approvals persist; archive records grant no authority. Task1 exclusively writes shared surfaces; Tasks2–4 consume the contract.
+
+Approved source writers: 125 exact paths = 123 closure-only paths + two shared paths (`.github/workflow-contract.yml`,
+`tests/validation/test_secret_metadata_sync.py`). The shared table repeats the same Task1 ownership, not another writer.
+Actual rename-aware comparison decides add/delete/modify; private contents are excluded.
+
+```text
+.env.example
+.github/workflow-contract.yml
+.gitignore
+docs/02.architecture/decisions/0042-openbao-unseal-method.md
+docs/02.architecture/descriptions/0004-data-architecture.md
+docs/02.architecture/descriptions/0031-home-development-host.md
+docs/05.operations/guides/0010-sensitive-env-vars-comparison.md
+docs/05.operations/guides/0021-backup-and-restore.md
+docs/05.operations/guides/0045-prometheus.md
+docs/05.operations/guides/0053-n8n.md
+docs/05.operations/guides/0064-performance-testing.md
+docs/05.operations/guides/0085-openbao.md
+docs/05.operations/guides/0091-crawl4ai.md
+docs/05.operations/guides/0096-k8s-integration.md
+docs/05.operations/guides/0099-system-operations.md
+docs/05.operations/policies/0021-backup-and-restore.md
+docs/05.operations/policies/0053-n8n.md
+docs/05.operations/policies/0085-openbao.md
+docs/05.operations/runbooks/0014-keycloak.md
+docs/05.operations/runbooks/0021-backup-and-restore.md
+docs/05.operations/runbooks/0034-qdrant.md
+docs/05.operations/runbooks/0050-airflow.md
+docs/05.operations/runbooks/0053-n8n.md
+docs/05.operations/runbooks/0057-open-webui.md
+docs/05.operations/runbooks/0085-openbao.md
+docs/05.operations/runbooks/0089-jupyterlab.md
+docs/05.operations/runbooks/0090-dbt.md
+docs/05.operations/runbooks/0091-crawl4ai.md
+docs/05.operations/runbooks/0096-k8s-integration.md
+docs/05.operations/runbooks/0097-superset.md
+docs/05.operations/runbooks/0098-cold-start-and-reboot.md
+examples/operations/locust-telemetry/README.md
+examples/operations/locust-telemetry/acceptance.py
+examples/operations/locust-telemetry/compose.override.yml
+examples/operations/locust-telemetry/locustfile.py
+examples/operations/quality-metrics/README.md
+examples/operations/quality-metrics/acceptance.py
+examples/operations/quality-metrics/docker-compose.yml
+examples/operations/quality-path-guard/README.md
+examples/operations/quality-path-guard/acceptance.py
+examples/operations/quality-path-guard/docker-compose.yml
+infra/03-security/openbao/docker-compose.yml
+infra/04-data/dev-db/README.md
+infra/04-data/dev-db/pg/README.md
+infra/06-observability/grafana/dashboards/Infrastructure/perf-results.json
+infra/06-observability/grafana/provisioning/contracts/perf-db.datasource.yml.example
+infra/07-workflow/n8n/Dockerfile
+infra/07-workflow/n8n/README.md
+infra/07-workflow/n8n/dev.Dockerfile
+infra/07-workflow/n8n/docker-compose.yml
+infra/07-workflow/n8n/docker-entrypoint.dev.sh
+infra/07-workflow/n8n/docker-entrypoint.sh
+infra/08-ai/crawl4ai/README.md
+infra/08-ai/crawl4ai/docker-compose.yml
+infra/08-ai/mlflow/README.md
+infra/09-platform-ops/project-registration/README.md
+infra/09-platform-ops/project-registration/schema.json
+infra/09-platform-ops/renovate/systemd/hyhome-renovate.service
+infra/09-platform-ops/restic/backup.sh
+infra/09-platform-ops/restic/bin/hyhome-backup.sh
+infra/09-platform-ops/restic/docker-compose.yml
+infra/11-quality/k6/README.md
+infra/11-quality/k6/container_executor.py
+infra/11-quality/k6/http_guard.py
+infra/11-quality/k6/object_store.py
+infra/11-quality/k6/quality_run.py
+infra/11-quality/k6/result_import.py
+infra/11-quality/k6/result_inspection.py
+infra/12-analytics/dbt/README.md
+infra/12-analytics/jupyterlab/README.md
+labs/locust.md
+labs/locust.yml
+renovate.json5
+scripts/manifest.yaml
+scripts/operations/gen-secrets.sh
+scripts/validation/check-project-registration.py
+scripts/validation/validate-docker-compose.sh
+secrets/README.md
+secrets/SENSITIVE_ENV_VARS.md.example
+secrets/auth/airflow/.gitkeep
+secrets/auth/dozzle/.gitkeep
+secrets/auth/gatus/.gitkeep
+secrets/auth/grafana/.gitkeep
+secrets/auth/kafbat/.gitkeep
+secrets/auth/keycloak/.gitkeep
+secrets/auth/oauth2-proxy/.gitkeep
+secrets/auth/open-webui/.gitkeep
+secrets/auth/superset/.gitkeep
+secrets/auth/traefik/.gitkeep
+secrets/automation/airflow/.gitkeep
+secrets/automation/n8n/.gitkeep
+secrets/backup/mng-pg/.gitkeep
+secrets/backup/openbao/.gitkeep
+secrets/backup/restic/.gitkeep
+secrets/communication/slack/.gitkeep
+secrets/communication/smtp/.gitkeep
+secrets/communication/stalwart/.gitkeep
+secrets/communication/supabase/.gitkeep
+secrets/data/opensearch/.gitkeep
+secrets/data/qdrant/.gitkeep
+secrets/data/supabase/.gitkeep
+secrets/db/legacy-app/.gitkeep
+secrets/db/mng-pg/.gitkeep
+secrets/db/mng-valkey/.gitkeep
+secrets/db/n8n-valkey/.gitkeep
+secrets/db/surrealdb/.gitkeep
+secrets/observability/grafana/.gitkeep
+secrets/observability/prometheus/.gitkeep
+secrets/security/openbao/.gitkeep
+secrets/storage/seaweedfs/.gitkeep
+secrets/tools/crawl4ai/.gitkeep
+secrets/tools/jupyterlab/.gitkeep
+secrets/tools/open-notebook/.gitkeep
+secrets/tools/pact-broker/.gitkeep
+secrets/tools/renovate/.gitkeep
+secrets/tools/superset/.gitkeep
+secrets/tools/terrakube/.gitkeep
+tests/validation/test_k6_results.py
+tests/validation/test_locust_telemetry.py
+tests/validation/test_project_registration.py
+tests/validation/test_quality_object_store.py
+tests/validation/test_quality_observability.py
+tests/validation/test_quality_raw_points.py
+tests/validation/test_secret_metadata_sync.py
+tests/validation/test_service_runtime_compatibility.py
+```
+
+#### Shared resolution — 18 exact paths
+
+| Path | Resolution contract |
+| --- | --- |
+| `.github/workflow-contract.yml` | Keep the approved bounded audit leaf and exact acceptance fields; retain its four registered quality modules once; add service_runtime_compatibility, quality_object_store, quality_raw_points, locust_telemetry to compose suite and project_registration to repository-integrity suite. |
+| `docker-compose.yml` | Combine closure secret reference paths with current Storybook root include and dedicated experience_ingress_net; preserve all newer main additions. |
+| `docs/03.specs/0204-service-integration-security-and-operations/plan.md` | Keep actual protected active lifecycle; integrate closure work-unit outcomes and current acceptance limits. |
+| `docs/03.specs/0204-service-integration-security-and-operations/spec.md` | Keep actual protected active lifecycle and approvals; reconcile existing closure acceptance and source outcomes without weakening runtime criteria. |
+| `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0001-runtime-compatibility-and-security.md` | Retain actual protected in-progress lifecycle, new audit approvals and independent evidence; add typed handoff receipts and criterion/Plan mapping. Do not substitute closure blocked status or claim runtime completion. |
+| `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0002-external-project-integration.md` | Keep actual protected in-progress lifecycle and unchanged approval provenance; integrate closure execution evidence. Task1 owns shared writes; this Task consumes the integration contract. |
+| `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0003-backup-and-cross-tier-operations.md` | Keep actual protected in-progress lifecycle and unchanged approval provenance; integrate closure execution evidence. Task1 owns shared writes; this Task consumes the integration contract. |
+| `docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0004-secret-layout-and-environment-parity.md` | Keep actual protected in-progress lifecycle and unchanged approval provenance; integrate closure execution evidence. Task1 owns shared writes; this Task consumes the integration contract. |
+| `docs/03.specs/README.md` | Keep SPEC-0206 navigation; remove 0201/0202/0203/0205 current rows only with atomic raw packet handoff and retained records. |
+| `docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md` | Preserve historical rationale and Storybook membership; regenerate only current-service-inventory projection from combined tracked sources. |
+| `docs/99.templates/registry.json` | Keep current ID allocation: operations high_water 101 and next_number 102 or a later actual protected allocation; never revert to closure 99/100. |
+| `infra/06-observability/grafana/README.md` | Keep current Storybook coverage and newer resources; add closure perf-results contract and source-only datasource evidence. |
+| `infra/tech-stack.versions.json` | Generate from resolved Compose source; retain Storybook and reflect n8n/Crawl4AI declaration changes. Do not select either old JSON wholesale. |
+| `projects/storybook/nextjs/package-lock.json` | Preserve current UI/MCP graph; no restoration of the pre-0206 lockfile. Verify approved audit chain remains exact. |
+| `projects/storybook/nextjs/package.json` | Keep current prepare/build:ui, UI workspace, MCP package, scripts and dependency graph. Closure pins already match the current package train. |
+| `tests/lib/gate/test_github_workflow_contract.py` | Keep current four registrations and complete Storybook fixture inputs; align expected compose selectors with the combined suite without duplicates. |
+| `tests/validation/test_compose_baseline_gates.py` | Keep current Compose schema loader, dedicated Storybook ingress tests and pinned Ruff formatting; add closure dev-pg Restic failure/recovery assertions. |
+| `tests/validation/test_secret_metadata_sync.py` | Keep candidate _ComposeLoader and schema-tag/unsafe-tag rejection tests; add closure compose_default normalization, public-root metadata checks, regular-empty markers and service/instance-path ownership assertions. |
+
+#### Full packet preservation and consumer cutover
+
+Keep all14 completed closure members from `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` with original raw bytes,
+modes/member sets and catalog Source. Preserve each current full packet from the actual protected base into its exact
+superseded mirror; do not rewrite statuses, frozen bodies or old audit evidence to manufacture completion.
+
+| Current full packet | Exact superseded mirror | Existing completed closure packet |
+| --- | --- | --- |
+| `docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design/` | `docs/98.archive/superseded/03.specs/0201-home-infrastructure-diagnosis-and-work-design/` | `docs/98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/` |
+| `docs/03.specs/0202-development-data-and-lab-isolation/` | `docs/98.archive/superseded/03.specs/0202-development-data-and-lab-isolation/` | `docs/98.archive/completed/03.specs/0202-development-data-and-lab-isolation/` |
+| `docs/03.specs/0203-quality-results-and-isolated-load-testing/` | `docs/98.archive/superseded/03.specs/0203-quality-results-and-isolated-load-testing/` | `docs/98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/` |
+| `docs/03.specs/0205-storybook-dependency-refresh/` | `docs/98.archive/superseded/03.specs/0205-storybook-dependency-refresh/` | `docs/98.archive/completed/03.specs/0205-storybook-dependency-refresh/` |
+
+Additional exact writers are `docs/98.archive/retention-catalog.md` (preserve existing rows; add actual raw-capture
+rows), `docs/03.specs/README.md` (retain 0206/unfinished routes) and `docs/05.operations/guides/0064-performance-testing.md` (cut the0203 link over to completed historical evidence). Task1 is the future typed carrier, one receipt per
+source packet, only after real-base capture.
+
+`docs/03.specs/0206-shared-storybook-and-docs-mcp/spec.md` owns the two Traceability consumer cutovers from
+current0201/0205 paths to their completed archives. Preserve its active status/criteria/history; if Overview describes
+the old braces hold as current, identify the then-observed baseline and route current security behavior to the canonical
+quality policy. Increment from its actual future protected version; preserve newer concurrent edits. This extra consumer
+writer is outside closure157, not a new functional feature.
+
+Coverage: 123 closure-only +18 shared +14 completed archive members +two separate paths =157 rename-aware closure paths.
+The two separate paths are `docs/98.archive/retention-catalog.md` and `docs/03.specs/0203-quality-results-and-isolated-load-testing/tasks/tsk-0001-quality-source-integration.md`; the latter deletion is paired with full raw-packet handoff.
+Superseded mirrors and new consumer cutovers are additional handoff work. Verify exact coverage on actual main; new
+writers require an exact ledger amendment before editing. Legacy marker rename sources are preserve/verify-only, never
+private deletion permission. Keep existing audit acceptance policy/adapter/tests and current Storybook/UI/MCP
+declarations; OpenBao2.7 adoption is excluded, only its approved readiness correction is in scope.
+
+`docs/05.operations/policies/0100-development-database.md` is an additional exact consumer writer: metadata parent and inline parent description move to current SPEC-0204; historical SPEC-0202 evidence and all controls remain unchanged. Prior Prompt02 GDE/POL/RUN-0100 handoff and independent policy review cover this correction.
+
+#### Integration, checks and rollback
+
+Normal three-way merge must make closure source commits ce001be7,686b7177, 9f89d0a2 ancestors; no squash, ours strategy,
+wholesale tree replacement or frozen-body edits. Preserve all unrelated worker state. Map every criterion and Plan unit
+to actual source/checks/current durable owners before disposition; old completed0205 proves dependency refresh, not the
+new bounded audit policy.
+
+Use current path-aware selection and exact selector equality; run relevant gate/audit/workflow, secret/schema, Compose,
+runtime-compatibility, project-registration and quality/object/raw/Locust regressions. Render root/LAB with public
+synthetic inputs; never profile-star up. Regenerate versions and only current-service inventory through their registered
+generators. Check changed metadata/corpus/raw-archive bytes,modes,members,reachability/links against actual protected
+base, then independent review and hosted required CI. Before remote merge, abandon only this owned clean checkout; after
+merge use a scoped revert preserving history, strict audit recovery and runtime state.
+
+This ledger entry records scope only; it performs no source integration or preservation. HOME start, restart, deployment/unseal, real
+backup/restore/migration/deletion, secret rotation/private-file operations, image execution and host/network changes
+remain separately approved; no historical receipt proves a new deployment.
 
 | Service and source evidence | Proposed exact writer path and variable/consumer | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
@@ -548,3 +765,36 @@ closure and eligible packet preservation require a fresh exact writer ledger,
 actual protected base, focused validation and separate required hosted delivery.
 These observed receipts replace previous pending delivery descriptions only;
 no historical failure is converted to PASS and no HOME proof is inferred.
+
+### Source reintegration and historical acceptance transfer — 2026-10-04
+
+Normal merge `2de9cd69ad6e2b04d11202ba8f98a0a09f7f9ccb` retains closure
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` source commits and frozen records. Task1 source receipt at `a51014aab597cd95bf5db19f00348e1d487ce642`
+records n8n2.41.6 matching server/runners, timeout and selected-secret guards;
+Crawl4AI0.9.4 security pin; OpenBao2.6.2 sealed readiness; Cassandra LAB render.
+Historical 58 static/shell tests and public Compose renders exited0; this is
+not a new container or HOME acceptance. Fresh combined source checks follow.
+Criteria1/8 map W1/W5 to current source/projections/review; criterion2 maps W2
+to n8n sources and GDE/POL/RUN0053; criterion3 maps W2 to Crawl4AI0091/Cassandra
+LAB; criterion4 maps W2 to OpenBao0085. Exact-image Code-secret denial, crawler
+host/LAN/metadata egress, Agent renewal/freshness and Cassandra auth/data remain
+NOT_RUN. Closure's BLOCKED_IMAGE_NOT_AVAILABLE finding is historical; no pull,
+image-cache or runtime preflight was repeated here. Existing private-file
+move/parity receipts in Task4 remain historical; no new private inspection.
+
+The newer SPEC0205 bounded audit, prepare hook and compatibility registrations
+were actually delivered by PR356; canonical policy/contract/adapter owners keep
+the exact GHSA path, expiry and fail-closed checks. Frozen completed0205 proves
+dependency refresh only. The four current packets are preserved raw through
+typed receipts; superseded records are historical input, not runtime authority.
+
+Fresh QA: workflow/secret/gate153 PASS; runtime/project/quality/version118 PASS;
+DB/Valkey/Influx/LAB35 PASS; baseline94 PASS (21 optional Docker skips);
+SurfaceOwnership11 PASS; exact backup failure harness1 PASS after check=False.
+All commands used `python3 -m unittest` with the named registered modules; exit0.
+Ruff0.15.12 changed21 lint/format (AST-equal formatting/import cleanup; loop
+binding fixture11 PASS), shell/root render, workflow/version/catalog exited0. Inventory's first
+boundary-wrapper failure was corrected; capture's first POSIX-mode preflight
+rejected harmless umask, Git mode/blob/member check corrected and reviewed.
+Authored Markdown52, corpus/archive341 and changed metadata77 passed:0 violations, exit0.
+Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. Hosted delivery and protected private parity pending; no HOME/data run.

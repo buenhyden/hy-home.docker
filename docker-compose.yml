@@ -101,56 +101,56 @@ networks:
   #   name: ${OPENCLAW_DEFAULT_NAME:-openclaw_default}
 
 secrets:
-  # ── Common ─────────────────────────────────────────────
+  # ── Communication ─────────────────────────────────────────────
   smtp_password:
-    file: ./secrets/common/smtp_password.txt
+    file: ./secrets/communication/smtp/smtp_password.txt
   slack_webhook:
-    file: ./secrets/common/slack_webhook.txt
+    file: ./secrets/communication/slack/slack_webhook.txt
   smtp_username:
-    file: ./secrets/common/smtp_username.txt
+    file: ./secrets/communication/smtp/smtp_username.txt
   stalwart_password:
-    file: ./secrets/common/stalwart_password.txt
+    file: ./secrets/communication/stalwart/stalwart_password.txt
   supabase_smtp_password:
-    file: ./secrets/common/supabase_smtp_password.txt
+    file: ./secrets/communication/supabase/supabase_smtp_password.txt
 
   # ── Gateway ─────────────────────────────────────────────
   traefik_basicauth_password:
-    file: ./secrets/auth/traefik_basicauth_password.txt
+    file: ./secrets/auth/traefik/traefik_basicauth_password.txt
   traefik_opensearch_basicauth_password:
-    file: ./secrets/auth/traefik_opensearch_basicauth_password.txt
+    file: ./secrets/auth/traefik/traefik_opensearch_basicauth_password.txt
   traefik_prometheus_api_htpasswd:
-    file: ./secrets/auth/traefik_prometheus_api_htpasswd.txt
+    file: ./secrets/auth/traefik/traefik_prometheus_api_htpasswd.txt
 
   # ── Auth ────────────────────────────────────────────────
   keycloak_admin_password:
-    file: ./secrets/auth/keycloak_admin_password.txt
+    file: ./secrets/auth/keycloak/keycloak_admin_password.txt
   oauth2_proxy_client_secret:
-    file: ./secrets/auth/oauth2_proxy_client_secret.txt
+    file: ./secrets/auth/oauth2-proxy/oauth2_proxy_client_secret.txt
   oauth2_proxy_cookie_secret:
-    file: ./secrets/auth/oauth2_proxy_cookie_secret.txt
+    file: ./secrets/auth/oauth2-proxy/oauth2_proxy_cookie_secret.txt
   kafbat_client_secret:
-    file: ./secrets/auth/kafbat_client_secret.txt
+    file: ./secrets/auth/kafbat/kafbat_client_secret.txt
   openwebui_oidc_client_secret:
-    file: ./secrets/auth/openwebui_oidc_client_secret.txt
+    file: ./secrets/auth/open-webui/openwebui_oidc_client_secret.txt
   gatus_oidc_client_secret:
-    file: ./secrets/auth/gatus_oidc_client_secret.txt
+    file: ./secrets/auth/gatus/gatus_oidc_client_secret.txt
   grafana_client_secret:
-    file: ./secrets/auth/grafana_client_secret.txt
+    file: ./secrets/auth/grafana/grafana_client_secret.txt
   airflow_keycloak_client_secret:
-    file: ./secrets/auth/airflow_client_secret.txt
+    file: ./secrets/auth/airflow/airflow_client_secret.txt
   dozzle_client_secret:
-    file: ./secrets/auth/dozzle_client_secret.txt
+    file: ./secrets/auth/dozzle/dozzle_client_secret.txt
 
   # ── Security ───────────────────────────────────────
   openbao_token:
-    file: ./secrets/security/openbao_token.txt
+    file: ./secrets/security/openbao/openbao_token.txt
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
-    file: ./secrets/observability/grafana_admin_password.txt
+    file: ./secrets/observability/grafana/grafana_admin_password.txt
 
   # ── PostgreSQL ─────────────────────────────────────
   mng_postgres_password:
-    file: ./secrets/db/postgres/mng_password.txt
+    file: ./secrets/db/mng-pg/mng_password.txt
   dev_pg_admin_password:
     file: ./secrets/db/dev-pg/admin_password.txt
   dev_pg_platform_migrator_password:
@@ -160,17 +160,17 @@ secrets:
   dev_pg_platform_reader_password:
     file: ./secrets/db/dev-pg/platform_reader_password.txt
   keycloak_db_password:
-    file: ./secrets/db/postgres/keycloak_password.txt
+    file: ./secrets/db/mng-pg/keycloak_password.txt
   airflow_db_password:
-    file: ./secrets/db/postgres/airflow_password.txt
+    file: ./secrets/db/mng-pg/airflow_password.txt
   n8n_db_password:
-    file: ./secrets/db/postgres/n8n_password.txt
+    file: ./secrets/db/mng-pg/n8n_password.txt
   sonarqube_db_password:
-    file: ./secrets/db/postgres/sonarqube_password.txt
+    file: ./secrets/db/mng-pg/sonarqube_password.txt
   terrakube_db_password:
-    file: ./secrets/db/postgres/terrakube_password.txt
+    file: ./secrets/db/mng-pg/terrakube_password.txt
   supabase_db_password:
-    file: ./secrets/db/postgres/supabase_password.txt
+    file: ./secrets/db/mng-pg/supabase_password.txt
 
   # ── PostgreSQL (Patroni / Spilo) ───────────────────────
   # ── Cassandra ───────────────────────────────────────────
@@ -180,154 +180,154 @@ secrets:
     file: ./secrets/db/neo4j/neo4j_password.txt
   # ── Valkey / Redis ─────────────────────────────────────
   n8n_valkey_password:
-    file: ./secrets/db/valkey/n8n_password.txt
+    file: ./secrets/db/n8n-valkey/n8n_password.txt
   mng_valkey_password:
-    file: ./secrets/db/valkey/mng_password.txt
+    file: ./secrets/db/mng-valkey/mng_password.txt
   dev_valkey_admin_password:
     file: ./secrets/db/dev-valkey/admin_password.txt
   oauth2_valkey_password:
-    file: ./secrets/db/valkey/oauth2_password.txt
+    file: ./secrets/db/mng-valkey/oauth2_password.txt
   terrakube_valkey_password:
-    file: ./secrets/db/valkey/terrakube_password.txt
+    file: ./secrets/db/mng-valkey/terrakube_password.txt
   airflow_valkey_password:
-    file: ./secrets/db/valkey/airflow_password.txt
+    file: ./secrets/db/mng-valkey/airflow_password.txt
   # ── SeaweedFS ───────────────────────────────────────────
   seaweedfs_jwt_volume_key:
-    file: ./secrets/storage/seaweedfs_jwt_volume_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_jwt_volume_key.txt
   seaweedfs_jwt_filer_key:
-    file: ./secrets/storage/seaweedfs_jwt_filer_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_jwt_filer_key.txt
   seaweedfs_s3_admin_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_admin_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_admin_secret_key.txt
   seaweedfs_s3_loki_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_loki_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_loki_secret_key.txt
   seaweedfs_s3_tempo_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_tempo_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_tempo_secret_key.txt
   seaweedfs_s3_mlflow_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_mlflow_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt
   seaweedfs_s3_terrakube_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_terrakube_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_terrakube_secret_key.txt
   seaweedfs_s3_lakehouse_secret_key:
-    file: ./secrets/storage/seaweedfs_s3_lakehouse_secret_key.txt
+    file: ./secrets/storage/seaweedfs/seaweedfs_s3_lakehouse_secret_key.txt
 
   # ── OpenSearch ──────────────────────────────────────────
   opensearch_admin_password:
-    file: ./secrets/data/opensearch_admin_password.txt
+    file: ./secrets/data/opensearch/opensearch_admin_password.txt
   opensearch_dashboard_password:
-    file: ./secrets/data/opensearch_dashboard_password.txt
+    file: ./secrets/data/opensearch/opensearch_dashboard_password.txt
   opensearch_exporter_password:
-    file: ./secrets/data/opensearch_exporter_password.txt
+    file: ./secrets/data/opensearch/opensearch_exporter_password.txt
   opensearch_security_cookie:
-    file: ./secrets/data/opensearch_security_cookie.txt
+    file: ./secrets/data/opensearch/opensearch_security_cookie.txt
 
   # ── Workflow: Airflow ───────────────────────────────────
   airflow_fernet_key:
-    file: ./secrets/automation/airflow_fernet_key.txt
+    file: ./secrets/automation/airflow/airflow_fernet_key.txt
   airflow_api_jwt_secret:
-    file: ./secrets/automation/airflow_api_jwt_secret.txt
+    file: ./secrets/automation/airflow/airflow_api_jwt_secret.txt
 
   # ── Workflow: n8n ───────────────────────────────────────
   n8n_encryption_key:
-    file: ./secrets/automation/n8n_encryption_key.txt
+    file: ./secrets/automation/n8n/n8n_encryption_key.txt
   n8n_runner_auth_token:
-    file: ./secrets/automation/n8n_runner_auth_token.txt
+    file: ./secrets/automation/n8n/n8n_runner_auth_token.txt
 
   # ── Tooling: SonarQube ──────────────────────────────────
 
   # ── Tooling: Terrakube ──────────────────────────────────
   terrakube_pat_secret:
-    file: ./secrets/tools/terrakube_pat_secret.txt
+    file: ./secrets/tools/terrakube/terrakube_pat_secret.txt
   terrakube_internal_secret:
-    file: ./secrets/tools/terrakube_internal_secret.txt
+    file: ./secrets/tools/terrakube/terrakube_internal_secret.txt
 
   # ── Data: Supabase ──────────────────────────────────────
   supabase_jwt_secret:
-    file: ./secrets/data/supabase_jwt_secret.txt
+    file: ./secrets/data/supabase/supabase_jwt_secret.txt
   supabase_anon_key:
-    file: ./secrets/data/supabase_anon_key.txt
+    file: ./secrets/data/supabase/supabase_anon_key.txt
   supabase_service_key:
-    file: ./secrets/data/supabase_service_key.txt
+    file: ./secrets/data/supabase/supabase_service_key.txt
   supabase_dashboard_password:
-    file: ./secrets/data/supabase_dashboard_password.txt
+    file: ./secrets/data/supabase/supabase_dashboard_password.txt
   supabase_secret_key_base:
-    file: ./secrets/data/supabase_secret_key_base.txt
+    file: ./secrets/data/supabase/supabase_secret_key_base.txt
   supabase_vault_enc_key:
-    file: ./secrets/data/supabase_vault_enc_key.txt
+    file: ./secrets/data/supabase/supabase_vault_enc_key.txt
   supabase_pg_meta_crypto_key:
-    file: ./secrets/data/supabase_pg_meta_crypto_key.txt
+    file: ./secrets/data/supabase/supabase_pg_meta_crypto_key.txt
   supabase_openai_api_key:
-    file: ./secrets/data/supabase_openai_api_key.txt
+    file: ./secrets/data/supabase/supabase_openai_api_key.txt
   supabase_logflare_private_token:
-    file: ./secrets/data/supabase_logflare_private_token.txt
+    file: ./secrets/data/supabase/supabase_logflare_private_token.txt
 
   # ── Data: SURREAL DB ──────────────────────────────────────
   surreal_db_password:
-    file: ./secrets/db/surreal_db/surreal_db_password.txt
+    file: ./secrets/db/surrealdb/surreal_db_password.txt
 
   # ── InfluxDB ─────────────────────────────────────────────
 
   # ── CouchDB ──────────────────────────────────────────────
   # ── Open Notebook ──────────────────────────────────────────────
   open_notebook_password:
-    file: ./secrets/tools/open_notebook_password.txt
+    file: ./secrets/tools/open-notebook/open_notebook_password.txt
   open_notebook_encryption_key:
-    file: ./secrets/tools/open_notebook_encryption_key.txt
+    file: ./secrets/tools/open-notebook/open_notebook_encryption_key.txt
 
   renovate_token:
-    file: ./secrets/tools/renovate_token.txt
+    file: ./secrets/tools/renovate/renovate_token.txt
   # ── Crawl4AI ───────────────────────────────────────────────────
   crawl4ai_api_token:
-    file: ./secrets/tools/crawl4ai_api_token.txt
+    file: ./secrets/tools/crawl4ai/crawl4ai_api_token.txt
   qdrant_api_key:
-    file: ./secrets/data/qdrant_api_key.txt
+    file: ./secrets/data/qdrant/qdrant_api_key.txt
   qdrant_read_only_api_key:
-    file: ./secrets/data/qdrant_read_only_api_key.txt
+    file: ./secrets/data/qdrant/qdrant_read_only_api_key.txt
   # ── Web Scraper (Playwright) ─────────────────────────────────
 
   mlflow_db_password:
-    file: ./secrets/db/postgres/mlflow_password.txt
+    file: ./secrets/db/mng-pg/mlflow_password.txt
 
   dbt_db_password:
-    file: ./secrets/db/postgres/dbt_password.txt
+    file: ./secrets/db/dev-pg/dbt_password.txt
 
   debezium_postgres_password:
-    file: ./secrets/db/postgres/debezium_password.txt
+    file: ./secrets/db/dev-pg/debezium_password.txt
 
   pact_broker_db_password:
-    file: ./secrets/db/postgres/pact_broker_password.txt
+    file: ./secrets/db/mng-pg/pact_broker_password.txt
 
   superset_db_password:
-    file: ./secrets/db/postgres/superset_password.txt
+    file: ./secrets/db/mng-pg/superset_password.txt
 
   grafana_reader_password:
-    file: ./secrets/db/postgres/grafana_reader_password.txt
+    file: ./secrets/db/mng-pg/grafana_reader_password.txt
 
   superset_secret_key:
-    file: ./secrets/tools/superset_secret_key.txt
+    file: ./secrets/tools/superset/superset_secret_key.txt
 
   superset_oidc_client_secret:
-    file: ./secrets/auth/superset_oidc_client_secret.txt
+    file: ./secrets/auth/superset/superset_oidc_client_secret.txt
 
   pact_broker_basic_auth_password:
-    file: ./secrets/tools/pact_broker_basic_auth_password.txt
+    file: ./secrets/tools/pact-broker/pact_broker_basic_auth_password.txt
 
 
   jupyter_token:
-    file: ./secrets/tools/jupyter_token.txt
+    file: ./secrets/tools/jupyterlab/jupyter_token.txt
 
   # ── Backup ─────────────────────────────────────────────────────
   pgbackrest_cipher_pass:
-    file: ./secrets/backup/pgbackrest_cipher_pass.txt
+    file: ./secrets/backup/mng-pg/pgbackrest_cipher_pass.txt
   dev_pgbackrest_cipher_pass:
     file: ./secrets/backup/dev-pg/pgbackrest_cipher_pass.txt
   restic_password:
-    file: ./secrets/backup/restic_password.txt
+    file: ./secrets/backup/restic/restic_password.txt
   # Offsite (Cloudflare R2, ADR-0041): files plus offline custody, never OpenBao.
   restic_offsite_password:
-    file: ./secrets/backup/restic_offsite_password.txt
+    file: ./secrets/backup/restic/restic_offsite_password.txt
   r2_access_key_id:
-    file: ./secrets/backup/r2_access_key_id.txt
+    file: ./secrets/backup/restic/r2_access_key_id.txt
   r2_secret_access_key:
-    file: ./secrets/backup/r2_secret_access_key.txt
+    file: ./secrets/backup/restic/r2_secret_access_key.txt
 
 include:
   # Every file below is included unconditionally; Compose profiles decide what

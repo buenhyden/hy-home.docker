@@ -14,7 +14,11 @@
   ],
 
   "docker-compose": {
-    "managerFilePatterns": ["/^labs\\/[^/]+\\.ya?ml$/"]
+    "managerFilePatterns": [
+      "/^labs\\/[^/]+\\.ya?ml$/",
+      "/^infra\\/07-workflow\\/n8n\\/docker-compose\\.yml$/",
+      "/^infra\\/08-ai\\/crawl4ai\\/docker-compose\\.yml$/"
+    ]
   },
 
   "pip_requirements": {
@@ -99,6 +103,12 @@
         "custom.regex"
       ],
       "automerge": false
+    },
+    {
+      "description": "n8n core, runner, build args and local image tags require one manual compatibility update",
+      "matchManagers": ["docker-compose", "dockerfile"],
+      "matchPackageNames": ["n8nio/n8n", "n8nio/runners"],
+      "enabled": false
     },
 
     {

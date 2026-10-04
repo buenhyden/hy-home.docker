@@ -4,7 +4,7 @@ version: "3.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0010"
 parent_ids: []
@@ -62,9 +62,11 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 ## Runbook Handoff
 
 [Secret 관리 안내](../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
-실제 credential 변경, 재시작 또는 데이터 복구는 대상과 영향을 명시한 별도 승인
-범위에서 수행한다. 단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로
-정리하며, 유지 대상의 개인 값을 덮어쓰지 않는다.
+승인된 경로 재배치에서는 보호 백업을 만든 뒤 기존 HOME 경로의 호환 참조와 새
+Compose 경로를 함께 검사한다. 호환 참조 제거, 실제 credential 변경, 재시작 또는
+데이터 복구는 대상과 영향을 명시한 별도 운영 승인 범위에서 수행한다.
+단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로 정리하며, 유지 대상의
+개인 값을 덮어쓰지 않는다.
 
 ## Traceability
 

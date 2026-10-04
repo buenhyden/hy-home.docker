@@ -1,6 +1,6 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
@@ -51,4 +51,5 @@ created: "2026-10-02"
 
 ## Related Documents
 
-[문서 진입점](../../../../docs/README.md)에서 현재 SPEC-0202와 Stage 05 백업 정책·런북을 찾으십시오.
+[문서 진입점](../../../../docs/README.md)에서 현재 개발 DB 계약의
+POL-0100·RUN-0100과 백업·복구 RUN-0021을 참조하십시오.

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -26,8 +26,8 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 ## Controls
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
-파일을 절대 로깅하지 않는다. 현재 상태 health는 sealed 상태를 허용한다. 컨테이너
-health만으로는 secret 전달을 증명할 수 없다. 기존 애플리케이션 Docker Secret은 Agent
+파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
+health만으로는 새 인증·출력 갱신과 secret 전달을 증명할 수 없다. 기존 애플리케이션 Docker Secret은 Agent
 출력으로 자동 대체되지 않는다.
 
 사람이 하는 일반 관리 작업은 Keycloak을 backend로 하는 OpenBao native OIDC를 통해
@@ -42,7 +42,7 @@ UI 앞의 Gateway SSO는 HTTP 접근 제어일 뿐이며 OpenBao native OIDC 인
 Prometheus는 전용 service token으로 `sys/metrics`에 인증해야 하며, 그 유일한 service
 policy는 추적되는 `infra/03-security/openbao/config/policies/prometheus.hcl`이다. 이
 policy는 `sys/metrics`에 대한 `read`만 부여한다. 토큰은 수동으로 발급해
-`secrets/security/openbao_token.txt`에 저장하고 Prometheus만 마운트하며 유한한 만료
+`secrets/security/openbao/openbao_token.txt`에 저장하고 Prometheus만 마운트하며 유한한 만료
 전에 회전한다. 인증 없는 metrics를 활성화하거나 root, human operator, renderer AppRole,
 renderer sink 토큰을 재사용하지 않는다.
 
@@ -119,7 +119,7 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 
 ### Existing custody decision and missing closure
 
-기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao_unseal_keys.txt`
+기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao/openbao_unseal_keys.txt`
 한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
 private registry는 SEC-003 placeholder만 보관하고 이 파일이 유일한 사본이다.
 이는 분리 custody의 기존 명시적 예외다. 파일을 읽는 한 주체가 unseal threshold를

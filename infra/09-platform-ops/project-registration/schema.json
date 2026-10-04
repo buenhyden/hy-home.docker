@@ -1,0 +1,410 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "External project infrastructure registration metadata v1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "interface_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 16,
+      "pattern": "^[1-9][0-9]*\\.[0-9]+$"
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "environment": {
+      "const": "development"
+    },
+    "infra_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "template_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "project_ref": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "endpoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "same_daemon": {
+          "$ref": "#/$defs/serviceEndpoints"
+        },
+        "host": {
+          "$ref": "#/$defs/serviceEndpoints"
+        },
+        "external": {
+          "$ref": "#/$defs/serviceEndpoints"
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    },
+    "allowed_networks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 63,
+        "pattern": "^[a-z][a-z0-9_-]{1,62}$"
+      }
+    },
+    "db": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        },
+        "owner_role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        },
+        "migrator_role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        },
+        "runtime_role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        },
+        "reader_role": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        },
+        "schema": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_]{1,62}$"
+        }
+      },
+      "required": [
+        "name",
+        "schema",
+        "owner_role",
+        "migrator_role",
+        "runtime_role",
+        "reader_role"
+      ]
+    },
+    "valkey": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "acl_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_-]{1,62}$"
+        },
+        "acl_prefix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        }
+      },
+      "required": [
+        "acl_user",
+        "acl_prefix"
+      ]
+    },
+    "s3": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bucket": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$"
+        },
+        "prefix": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^(?:[a-z0-9][a-z0-9_-]{0,62}/){1,8}$"
+        }
+      },
+      "required": [
+        "bucket",
+        "prefix"
+      ]
+    },
+    "oidc": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "client_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        }
+      },
+      "required": [
+        "client_id"
+      ]
+    },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "collection": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 63,
+          "pattern": "^[a-z][a-z0-9_-]{1,62}$"
+        },
+        "authorization_path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512,
+          "pattern": "^/(?:[a-z0-9][a-z0-9_-]{0,62})(?:/[a-z0-9][a-z0-9_-]{0,62}){0,7}$"
+        }
+      },
+      "required": [
+        "collection",
+        "authorization_path"
+      ]
+    },
+    "telemetry": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "service.name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-z][a-z0-9.-]{1,127}$"
+        }
+      },
+      "required": [
+        "service.name"
+      ]
+    },
+    "backup_restore": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backup_owner": {
+          "enum": [
+            "infra",
+            "project"
+          ]
+        },
+        "restore_owner": {
+          "enum": [
+            "infra",
+            "project"
+          ]
+        }
+      },
+      "required": [
+        "backup_owner",
+        "restore_owner"
+      ]
+    },
+    "secret_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9_]{2,63}$"
+      }
+    },
+    "quota": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu_milli": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memory_mib": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "storage_gib": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "requests_per_minute": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "cpu_milli",
+        "memory_mib",
+        "storage_gib",
+        "requests_per_minute"
+      ]
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "draft",
+            "approved"
+          ]
+        },
+        "task_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 18,
+          "pattern": "^SPEC-[0-9]{4}-TSK-[0-9]{4}$"
+        }
+      },
+      "required": [
+        "state",
+        "task_ref"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "enum": [
+            "not_run",
+            "passed",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "state"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "interface_version",
+    "project_id",
+    "environment",
+    "infra_ref",
+    "template_ref",
+    "project_ref",
+    "endpoints",
+    "allowed_networks",
+    "db",
+    "valkey",
+    "s3",
+    "oidc",
+    "search",
+    "telemetry",
+    "backup_restore",
+    "secret_refs",
+    "quota",
+    "approval",
+    "verification"
+  ],
+  "$defs": {
+    "endpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scheme": {
+          "enum": [
+            "http",
+            "https",
+            "postgresql",
+            "redis",
+            "rediss"
+          ]
+        },
+        "host": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 253,
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^/(?:[a-zA-Z0-9._~-]+(?:/[a-zA-Z0-9._~-]+)*)?$"
+        }
+      },
+      "required": [
+        "scheme",
+        "host",
+        "port",
+        "path"
+      ]
+    },
+    "serviceEndpoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "db": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "valkey": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "s3": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "oidc": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "search": {
+          "$ref": "#/$defs/endpoint"
+        },
+        "telemetry": {
+          "$ref": "#/$defs/endpoint"
+        }
+      },
+      "required": [],
+      "minProperties": 1
+    }
+  }
+}

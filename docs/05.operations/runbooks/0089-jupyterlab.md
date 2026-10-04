@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -43,7 +43,7 @@ created: "2026-09-21"
    `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`를 Docker가 임의 생성하도록 바꾸지
    말고 승인된 경로와 소유권을 확인한 뒤 필요한 생성·수정을 수행한다.
 3. 토큰 노출이 의심될 경우: 서비스를 정지하고, 등록된 시크릿 워크플로로
-   `secrets/tools/jupyter_token.txt`를 교체하고, 예상치 못한 파일이 있는지
+   `secrets/tools/jupyterlab/jupyter_token.txt`를 교체하고, 예상치 못한 파일이 있는지
    작업 디렉터리를 검토한다. 단일 파일 bind 교체를 반영하도록 공통 정책에 따라
    승인된 재생성을 수행한다. 재시작·재생성만으로 기존 cookie 폐기를 보장하지 않는다.
    선택한 base의 cookie-secret 동작을 확인하고 이전 token과 기존 cookie 거부를 각각

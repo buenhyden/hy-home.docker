@@ -1,6 +1,6 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -85,8 +85,8 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 
 ## How to Work in This Area
 
-1. 프로필을 선택하기 전에 등록된 시크릿 워크플로우를 통해 `secrets/db/postgres/mlflow_password.txt`와
-   `secrets/storage/seaweedfs_s3_mlflow_secret_key.txt`가 존재하는지 확인합니다.
+1. 프로필을 선택하기 전에 등록된 시크릿 워크플로우를 통해 `secrets/db/mng-pg/mlflow_password.txt`와
+   `secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt`가 존재하는지 확인합니다.
 2. 선택 사항을 정적으로 검증한 뒤, 소유자의 환경에서 승인된 대상으로만 시작합니다. 예:
    `docker compose --profile core --profile mlops up -d mlflow`.
 3. SDK 클라이언트는 `MLFLOW_TRACKING_URI`를 가리키게 하고 브라우저 사용자는 게이트웨이 라우트를 사용합니다.

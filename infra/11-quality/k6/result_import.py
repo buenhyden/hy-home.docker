@@ -94,7 +94,11 @@ def _utc_timestamp(value: object) -> dt.datetime:
     return parsed
 
 
-def _validate(envelope: dict[str, Any]) -> None:
+def _validate(
+    envelope: dict[str, Any],
+    object_contract: dict[str, Any] | None = None,
+    approved_endpoints: tuple[str, ...] = (),
+) -> None:
     _exact(
         envelope,
         {
@@ -204,9 +208,21 @@ def _validate(envelope: dict[str, Any]) -> None:
             or isinstance(artifact["bytes"], bool)
             or not isinstance(artifact["bytes"], int)
             or artifact["bytes"] < 0
-            or artifact["object_ref"] is not None
         ):
             raise ImportContractError("import artifact values are invalid")
+        if artifact["object_ref"] is not None:
+            from object_store import validate_object_binding
+
+            try:
+                validate_object_binding(
+                    artifact["object_ref"],
+                    identity,
+                    artifact,
+                    object_contract,
+                    approved_endpoints,
+                )
+            except ValueError as exc:
+                raise ImportContractError("import object reference is invalid") from exc
     unhashed = dict(envelope)
     del unhashed["payload_sha256"]
     if hashlib.sha256(_canonical(unhashed)).hexdigest() != envelope["payload_sha256"]:
@@ -232,9 +248,14 @@ def import_db(
     envelope_path: pathlib.Path,
     receipt_path: pathlib.Path,
     psql_binary: str = "psql",
+    object_contract_path: pathlib.Path | None = None,
+    approved_endpoints: tuple[str, ...] = (),
 ) -> tuple[dict[str, Any], int]:
     envelope = _load_json(envelope_path)
-    _validate(envelope)
+    object_contract = (
+        _load_json(object_contract_path) if object_contract_path is not None else None
+    )
+    _validate(envelope, object_contract, approved_endpoints)
     encoded = _canonical(envelope).hex()
     unsigned = dict(envelope)
     del unsigned["payload_sha256"]

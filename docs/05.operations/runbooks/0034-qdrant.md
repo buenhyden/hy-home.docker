@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -44,7 +44,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 ### Checklist
 
 - [ ] 루트 compose에서 `infra/04-data/qdrant/docker-compose.yml`가 active include인지 확인한다.
-- [ ] `secrets/data/qdrant_api_key.txt`와 `secrets/data/qdrant_read_only_api_key.txt`가 있고 비어 있지 않은지 값을 읽지 않고 확인한다(`test -s`).
+- [ ] `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`가 있고 비어 있지 않은지 값을 읽지 않고 확인한다(`test -s`).
 - [ ] collection delete, snapshot recovery, volume replacement, cluster repair가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 application data payload는 기록하지 않는다.
 

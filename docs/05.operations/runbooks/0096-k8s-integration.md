@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -128,7 +128,7 @@ prune 경계는 유지한다. Troubleshooting을 참고하며 승인된 수정�
 ```bash
 grep -c '^PROMETHEUS_API_USERNAME=' .env
 bash scripts/operations/gen-secrets.sh
-stat -c '%n %s %a' secrets/observability/prometheus_api_password.txt secrets/auth/traefik_prometheus_api_htpasswd.txt
+stat -c '%n %s %a' secrets/observability/prometheus/prometheus_api_password.txt secrets/auth/traefik/traefik_prometheus_api_htpasswd.txt
 ```
 
 예상 결과: `1`, 그리고 두 파일 모두 크기가 0이 아니고 모드가 `640`이다.
@@ -154,7 +154,7 @@ coverage를 갖춘 mount hash 검증까지 마친다.
 stdin(`-K -`)으로 전달하므로 프로세스 인자에는 절대 나타나지 않는다:
 
 ```bash
-prom_auth() { printf 'user = "%s:%s"\n' "$(grep '^PROMETHEUS_API_USERNAME=' .env | cut -d= -f2 | tr -d '"')" "$(cat secrets/observability/prometheus_api_password.txt)"; }
+prom_auth() { printf 'user = "%s:%s"\n' "$(grep '^PROMETHEUS_API_USERNAME=' .env | cut -d= -f2 | tr -d '"')" "$(cat secrets/observability/prometheus/prometheus_api_password.txt)"; }
 curl -s -o /dev/null -w '%{http_code}\n' --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://prometheus.hy.home.arpa/api/v1/status/buildinfo
 prom_auth | curl -K - -s -o /dev/null -w '%{http_code}\n' --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://prometheus.hy.home.arpa/api/v1/status/buildinfo
 curl -s -o /dev/null -w '%{http_code}\n' --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem https://prometheus.hy.home.arpa/graph
@@ -210,7 +210,7 @@ stdin으로 전달한다:
 
 ```bash
 set -e -o pipefail
-graf_auth() { printf 'user = "%s:%s"\n' "$(grep '^GRAFANA_ADMIN_USERNAME=' .env | cut -d= -f2 | tr -d '"')" "$(cat secrets/observability/grafana_admin_password.txt)"; }
+graf_auth() { printf 'user = "%s:%s"\n' "$(grep '^GRAFANA_ADMIN_USERNAME=' .env | cut -d= -f2 | tr -d '"')" "$(cat secrets/observability/grafana/grafana_admin_password.txt)"; }
 graf_auth | curl -K - --fail-with-body -sS --resolve grafana.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem 'https://grafana.hy.home.arpa/api/serviceaccounts/search?query=k8s-kiali' >"$K8S_WORK/grafana-search.json"
 # HTTP 성공 뒤 JSON을 확인한다. 정확한 이름의 결과가 0 또는 1개여야 한다.
 jq -e '[.serviceAccounts[] | select(.name=="k8s-kiali")] | length <= 1' "$K8S_WORK/grafana-search.json" >/dev/null
@@ -247,7 +247,7 @@ Viewer 계정 ID와 만료 설정을 확인한다. `.key`가 null/빈 값이면 
 
 ```bash
 IMG=$(docker compose config --images openbao)
-docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/valkey/mng_password.txt:/s/valkey:ro" -v "$PWD/secrets/observability/prometheus_api_password.txt:/s/prom:ro" -e PROM_API_USER="$(grep '^PROMETHEUS_API_USERNAME=' .env | cut -d= -f2 | tr -d '"')" -v "$K8S_WORK:/s/k8s" --entrypoint sh "$IMG"
+docker run --rm -it --network host --user "$(id -u):$(id -g)" -e HOME=/tmp -e BAO_ADDR=https://openbao.hy.home.arpa -e BAO_CACERT=/ca.pem -v "$PWD/secrets/certs/rootCA.pem:/ca.pem:ro" -v "$PWD/infra/03-security/openbao/config/policies:/policies:ro" -v "$PWD/secrets/db/mng-valkey/mng_password.txt:/s/valkey:ro" -v "$PWD/secrets/observability/prometheus/prometheus_api_password.txt:/s/prom:ro" -e PROM_API_USER="$(grep '^PROMETHEUS_API_USERNAME=' .env | cut -d= -f2 | tr -d '"')" -v "$K8S_WORK:/s/k8s" --entrypoint sh "$IMG"
 ```
 
 이 단계의 나머지 절차는 컨테이너 내부에서 실행한다.
@@ -266,7 +266,7 @@ bao operator raft snapshot save /s/k8s/pre-change.snap   # or a name for the cha
 않는다.
 
 5.4 **임시 root**(최초 설정, 또는 추가 애플리케이션). 승인된 root 세션과
-`secrets/security/openbao_unseal_keys.txt`에서 가져온 서로 다른 unseal
+`secrets/security/openbao/openbao_unseal_keys.txt`에서 가져온 서로 다른 unseal
 share 두 개가 필요하며, 각각 숨겨진 프롬프트에 붙여넣는다. `R`은 명령마다
 root를 전달하므로 절대 export되지 않는다.
 
@@ -401,7 +401,7 @@ boolean만 기록한다. client 종료 전 임시 응답 파일의 custody를 �
 | Item | Source |
 | --- | --- |
 | Bootstrap 토큰(2시간 이내 사용) | `$K8S_WORK/k8s-bootstrap.token` |
-| Prometheus API credential | OpenBao `secret/platform/prometheus-api`(`username`, `password`), ESO가 동기화; 출처는 `.env`의 `PROMETHEUS_API_USERNAME`과 `secrets/observability/prometheus_api_password.txt` |
+| Prometheus API credential | OpenBao `secret/platform/prometheus-api`(`username`, `password`), ESO가 동기화; 출처는 `.env`의 `PROMETHEUS_API_USERNAME`과 `secrets/observability/prometheus/prometheus_api_password.txt` |
 | Kiali Grafana 토큰 | OpenBao `secret/platform/grafana-api`(`token`), ESO가 동기화; 5.1a에서 발급 |
 | Gateway CA(public) | `secrets/certs/rootCA.pem` |
 | Endpoints | [가이드](../guides/0096-k8s-integration.md)의 contract 표 |

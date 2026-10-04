@@ -1,0 +1,21 @@
+# 소비 계약: 이 example은 Grafana의 datasources/ 자동 로드 경로 밖입니다.
+# 프로젝트·LOGIN reader·읽기 전용 secret bind·network 승인 후에만 활성화합니다.
+apiVersion: 1
+datasources:
+  - name: ${PERF_DB_DATASOURCE_NAME}
+    type: grafana-postgresql-datasource
+    uid: ${PERF_DB_DATASOURCE_UID} # 승인된 프로젝트별 perf-db- 접두사
+    access: proxy
+    url: dev-pg:5432
+    user: ${PERF_DB_READER_LOGIN}
+    editable: false
+    isDefault: false
+    jsonData:
+      database: perf_db
+      sslmode: disable # 승인된 로컬 개발 private network에 한정
+      postgresVersion: 1800
+      maxOpenConns: 2
+      maxIdleConns: 1
+      connMaxLifetime: 300
+    secureJsonData:
+      password: $__file{/run/secrets/perf_db_reader_password}

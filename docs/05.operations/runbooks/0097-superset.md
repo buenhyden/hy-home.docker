@@ -1,10 +1,10 @@
 ---
 title: "Superset Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0097"
 parent_ids:
@@ -33,7 +33,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
       redirect URI `https://superset.${DEFAULT_URL}/oauth-authorized/keycloak`,
       web origin `https://superset.${DEFAULT_URL}`을 설정해 confidential
       client `home-superset`를 생성한다.
-   2. 해당 client secret을 `secrets/auth/superset_oidc_client_secret.txt`로
+   2. 해당 client secret을 `secrets/auth/superset/superset_oidc_client_secret.txt`로
       저장한다(IAM-013, 한 줄, 모드 `0640`).
    3. `bash scripts/operations/gen-secrets.sh --sync-metadata`를 실행한 다음
       `bash scripts/operations/gen-secrets.sh`를 실행해 PG-028과 AUTO-020을

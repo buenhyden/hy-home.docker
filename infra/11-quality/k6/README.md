@@ -1,6 +1,6 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -15,7 +15,7 @@ created: "2026-03-26"
 
 ## Overview
 
-이 패키지는 k6 manifest 검증, 격리 실행 argv 준비, fail-closed 중단 증거, 결과 확정과 적재 봉투 생성을 제공합니다. 승인 path proxy가 없어 실제 트래픽 실행은 차단되어 있습니다.
+이 패키지는 k6 manifest 검증, 기존 Traefik을 재사용하는 합성 HTTP 경로 경계, 격리 실행, 중단 증거, 결과 확정과 적재 봉투 생성을 제공합니다. 실제 앱 부하는 별도 승인과 target 계약이 필요합니다.
 
 > [!NOTE]
 > **구현 정보**: 이 디렉터리(`infra/11-quality/k6`)는 `testing` 프로필이 선택하는 단일 `k6` 서비스를 소유합니다. 분산 master-worker 실습은 별도 LAB의 Locust가 담당합니다.
@@ -39,8 +39,7 @@ created: "2026-03-26"
 
 ### Out of Scope
 
-- **실제 부하**: 승인 path만 전달하는 HTTP proxy와 격리 runtime 인수 전까지
-  `BLOCKED`.
+- **실제 부하**: 실제 앱 target·트래픽 승인이 없는 상태에서는 `BLOCKED`.
 - **실시간 지표**: Prometheus remote write 연결은 현재 executor에 없으며
   `BLOCKED`.
 - **시각화**: Grafana 대시보드 자체의 소유는 `06-observability`에 있음.
@@ -54,7 +53,9 @@ k6/
 ├── docker-compose.yml  # 부하 시험 작업 정의
 ├── quality_run.py      # 실행 전 검증, 격리 실행, 확정, 적재 봉투 CLI
 ├── container_executor.py # 전용 Docker network와 자원 제한 실행기
+├── http_guard.py       # 기존 Traefik의 정확한 HTTP 경로 계약
 ├── result_import.py    # perf_db 적재와 receipt 계약
+├── object_store.py     # 승인 endpoint의 불변 객체 업로드·복원 계약
 ├── result_inspection.py # summary/exit 안전성 검사
 └── README.md           # 이 문서
 ```
@@ -106,9 +107,9 @@ manifest CIDR과 대조합니다.
    디렉터리에 `manifest.json`을 배타적으로 생성합니다.
 2. `run`은 사전 준비된 internal Docker network와 WireMock peer를
    검사하고 scenario snapshot, 빈 summary file, digest image와 CPU·메모리·PID
-   제한이 있는 Docker argv를 준비합니다. 현재 승인 path만 통과시키는 HTTP
-   proxy가 없으므로 container를 시작하지 않고 `path_confinement_unavailable`
-   interrupted 증거를 남깁니다.
+   제한이 있는 Docker argv를 준비합니다. `--guard-config`를 전달하면 기존
+   Traefik의 정확한 Path 라우터와 두 망 dependency closure를 검증한 뒤 합성
+   실행합니다. guard가 없으면 `path_confinement_unavailable`로 거절합니다.
 3. `finalize`는 sample 수, 선언한 threshold, 종료 상태를 분리해
    `checksums.json`과 `final.json`을 만듭니다. 0 sample, 잘린 JSON,
    NaN/Infinity, 중단 또는 일부 결과는 통과 판정이 될 수 없습니다.
@@ -132,28 +133,35 @@ python3 infra/11-quality/k6/quality_run.py run \
   --wiremock-container <approved-wiremock-container>
 ```
 
-`run`은 명시한 Docker context에서 다음 조건을 모두 확인한 경우에만
-실행됩니다. network는 `Internal=true`, local bridge, attachable=false이며
-manifest run_id와 `k6-wiremock` purpose label, manifest와 정확히 같은 subnet을
-가져야 합니다. 실행 전 peer는 하나뿐이어야 하며 WireMock container는 같은
-run_id, role, mock_mode label, `wiremock` alias, 비공개 HTTP 8080만, 단일
-network와 `--admin-api-require-https` command를 가져야 합니다. HTTPS port가
-없어 WireMock admin HTTP 요청은 403이어야 합니다. 현재 root Compose는 이 network를 만들지 않으며 `version`만
-실행하는 inventory/render job이므로 실제 실행은 계속 `BLOCKED`입니다. 자동
-할당 CIDR을 승인된 값으로 추정하지 않습니다.
+`run`은 명시한 Docker context에서 internal·local bridge·attachable=false인
+runner 망의 subnet·run_id·단일 peer를 검사합니다. guard 없는 WireMock 직접
+연결은 이전과 같이 거절합니다. guard fixture는
+[별도 rehearsal Compose](../../../examples/operations/quality-path-guard/README.md)를 사용하며
+정상 root에 포함되지 않습니다. runner 망에는 Traefik만 있고 backend 망에는
+Traefik과 WireMock만 있습니다. 정확한 Path 목록 외에는 upstream으로 전달하지 않습니다.
+설정 byte·읽기 전용 mount·digest 이미지·provider command·게시 포트·추가 peer를 검증합니다.
+CLI의 `--wiremock-container`는 이 모드에서 Traefik container 이름이며
+`--backend-container`가 실제 WireMock입니다. 구성은 `prepare-guard`로 생성합니다.
 
-manifest의 `tool_image`는 `--pull never` Docker argv에 digest
-reference로 들어가며, `fixture_sha256`을 다시 확인한 scenario snapshot만
-read-only mount 후보가 됩니다. 현재 fail-closed 경계에서는 이 argv를 실행하지
-않으므로 이를 runtime 증거로 보고하지 않습니다.
+infra wrapper가 외부 scenario의 exports를 유지하고 manifest threshold와
+공식 `handleSummary`의 structured JSON을 소유합니다. legacy `--summary-export` 형식을
+현재 importer의 typed metric 형식으로 오인하지 않습니다.
 
-`run`은 승인 origin을 `HYHOME_TARGET_ORIGIN`으로만 전달할
-argv를 준비합니다. WireMock admin HTTP는 HTTPS 요구 조건으로 차단하지만 임의 JavaScript가
-manifest 밖의 path로 요청해 404를 만드는 행위까지 Docker network만으로 막을
-수 없습니다. 승인 path를
-강제하는 HTTP proxy와 그 회귀 검사가 추가될 때까지 실행은 `BLOCKED`입니다.
-CPU·메모리·PID와 보안 옵션도 준비된 argv에서만 검증됐으며 실제 적용은
-`NOT_RUN`입니다.
+executor는 `--out json=/results/raw-points.json`으로 Metric/Point 원본과 RFC3339
+시각의 정밀도를 그대로 보존합니다. trend 통계에는 count도 명시합니다. 각 파일은
+64 MiB 실행 한도, NDJSON 한 줄은 64 KiB 검사 한도입니다. 유한값·시각·metric type·
+project/run/attempt identity와 승인된 고정 tag만 허용하고 URL·query·custom tag는 거절합니다.
+`hyhome.quality-exit/v2`는 원본 필수 조건을 명시하며 누락·잘림·unsafe 원본은
+`incomplete`와 import 거절로 판정합니다. checksum·읽기 전용 snapshot·업로드/복구
+artifact 목록에 원본을 포함합니다. 이전 v1 summary-only 기록은 호환하지만 분포
+원본의 증거로 사용하지 않습니다. [공식 JSON 출력](https://grafana.com/docs/k6/latest/results-output/real-time/json/)과
+[통계 옵션](https://grafana.com/docs/k6/latest/using-k6/k6-options/reference/#summary-trend-stats)을 확인했습니다.
+
+manifest `tool_image`는 `--pull never`로 실행하며 해시를 대조한 scenario snapshot만
+읽기 전용으로 연결합니다. CPU·메모리·PID 제한과 `--max-redirects 0`을 유지합니다.
+runner가 시간 예산을 넘기면 incomplete receipt를 먼저 보존하고 해당 실행 label과
+이미지가 일치하는 합성 container만 정리합니다. 실제 앱이나 HOME 활성화는 이 계약에서
+승인되지 않습니다.
 
 finalizer는 raw summary의 key와 문자열에서 URL, IP, Authorization, cookie와 query
 형태를 검사합니다. 검출한 run은 `incomplete`이며 metric을 importer로 넘기지
@@ -171,12 +179,28 @@ custom metric 이름을 검토할 책임은 남습니다.
 ### 객체 보관 경계
 
 현재 저장소에는 SeaweedFS bucket 준비 작업이 사용하는 AWS CLI 이미지가 있지만
-관리자 identity 전용입니다. 품질 결과용 bucket/prefix와 제한된 writer identity가
-승인되지 않았고 host에는 `aws`, `mc`, `rclone` CLI가 확인되지 않았습니다. 따라서
-이번 source 계약의 `object_ref`는 `null`이며 multipart upload, 부분 실패 재개,
-다운로드 checksum 대조는 `BLOCKED`입니다. 관리자 secret을 runner나 importer에
-재사용하지 않습니다. 승인된 bucket과 전용 identity가 마련되면 AWS CLI의
-multipart 계약과 합성 중단·재개 검사를 별도 작업으로 추가해야 합니다.
+관리자 identity 전용입니다. `object_store.py`는 기존 AWS CLI를 사용하여 제한된
+endpoint·bucket·prefix·quota와 별도 key 파일 참조를 소비합니다. 실제 bucket이나
+writer가 없는 상태에서는 발급·접속을 수행하지 않습니다. 승인된 endpoint allowlist,
+동일 project identity, 불변 checksum·파일 크기 대조를 모두 요구합니다. AWS 실행 파일도
+승인된 절대 경로·일반 executable·소유권·권한을 확인하며 기본 PATH에서 임의로 선택하지 않습니다.
+
+업로드는 `(project_id, run_id, attempt, sha256, name)` 경로를 사용하며 조건부
+생성으로 기존 객체를 덮어쓰지 않습니다. 업로드 후 서버의 크기·SHA256을 다시
+확인한 뒤 receipt를 배타적으로 작성합니다. 원본과 다른 동일 identity는 충돌입니다.
+이 receipt를 최초 `prepare-import --object-receipt /approved/receipt.json`에 전달하면
+로컬 final SHA와 정확한 artifact 집합을 대조합니다. `prepare-import`와 `import-db` 모두
+별도의 `--object-contract /approved/storage-contract.json`과
+`--approved-object-endpoint <approved-origin>`을 요구하며 해당 project·bucket·prefix·quota에
+맞는 `s3://` object_ref만 허용합니다. 봉투의 self-hash나 내장 receipt는 승인을 대신하지 않습니다.
+receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 identity에 나중에
+다른 payload를 덧씌우는 방식은 지원하지 않습니다.
+
+복원은 승인된 빈 scratch에서 원격 ETag·checksum·크기를 대조한 파일만 연결합니다.
+복원된 raw/manifest/exit를 원래 schema/interface revision의 finalizer로 다시 확정하고
+원본 receipt의 final_sha256과 대조해야 합니다. 실제 SeaweedFS의 조건부 생성·checksum
+호환성과 실비밀을 사용하는 업로드·복원은 `NOT_RUN`입니다. 합성 client 시험은 실제
+서버의 지원 증거가 아니며 관리자 identity를 runner/importer에 재사용하지 않습니다.
 
 ## Validation
 

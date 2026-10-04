@@ -68,6 +68,7 @@ case "$action" in
         done
         echo /src/state/exports >>"$list"
         echo /src/state/pgbackrest >>"$list"
+        echo /src/state/dev-pgbackrest >>"$list"
         RESTIC_REPOSITORY="$(repo_for state)" restic backup \
             --host hy-home --tag hyhome-state \
             --exclude-file "$SETS_DIR/state-exclude.txt" --exclude-caches \

@@ -21,6 +21,7 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 MODE="run"
+METADATA_SOURCE_ROOT="$REPO_ROOT"
 declare -A ENV_VALUES=()
 declare -A SECRET_VALUES=()
 declare -a TEMP_PATHS=()
@@ -51,6 +52,10 @@ Modes:
                          absent from their public metadata sources.
   --sync-metadata-prune-check
                          Same exact-set comparison without writes; exits 1 on drift.
+
+  --metadata-source-root DIR
+                         Metadata modes only: read the three public example files
+                         from DIR; private inputs/outputs remain in the owner checkout.
 
 No-argument mode preserves the existing operator workflow and may read/write
 local secret registry and secret files. Do not use no-argument mode for audit
@@ -86,6 +91,15 @@ cleanup() {
 trap cleanup EXIT
 
 parse_args() {
+    if [[ "$#" -eq 3 && "$2" == "--metadata-source-root" && -n "$3" ]]; then
+        case "$1" in
+            --sync-metadata|--sync-metadata-check|--sync-metadata-prune|--sync-metadata-prune-check)
+                METADATA_SOURCE_ROOT="$3"
+                set -- "$1"
+                ;;
+            *) usage >&2; exit 2 ;;
+        esac
+    fi
     if [[ "$#" -gt 1 ]]; then
         usage >&2
         exit 2
@@ -458,9 +472,9 @@ run_generation() {
     info "Processing secrets..."
     collect_secret_values
 
-    process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik_basicauth_password.txt"
-    process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik_opensearch_basicauth_password.txt"
-    process_htpasswd "INFRA-007" "OBS-012" "OBS-013" "secrets/auth/traefik_prometheus_api_htpasswd.txt"
+    process_htpasswd "INFRA-003" "INFRA-001" "INFRA-002" "secrets/auth/traefik/traefik_basicauth_password.txt"
+    process_htpasswd "INFRA-004" "OBS-003" "OBS-004" "secrets/auth/traefik/traefik_opensearch_basicauth_password.txt"
+    process_htpasswd "INFRA-007" "OBS-012" "OBS-013" "secrets/auth/traefik/traefik_prometheus_api_htpasswd.txt"
 
     info "Updating Markdown registry..."
     rewrite_registry
@@ -534,7 +548,7 @@ run_dry_run() {
 
 
 run_metadata_sync() {
-    python3 - "$REPO_ROOT" "$MODE" <<'PY_METADATA'
+    python3 - "$REPO_ROOT" "$MODE" "$METADATA_SOURCE_ROOT" <<'PY_METADATA'
 import os
 from pathlib import Path
 import re
@@ -548,17 +562,17 @@ check_only = mode.endswith("-check")
 prune = mode.startswith("sync-metadata-prune")
 
 
-def safe_path(relative):
+def safe_path(relative, base=root):
     path = Path(relative)
     if path.is_absolute() or ".." in path.parts:
         raise ValueError("unsafe metadata path")
-    target = root / path
+    target = base / path
     for item in (target, *target.parents):
-        if item == root:
+        if item == base:
             break
         if item.is_symlink():
             raise ValueError("symlink metadata path")
-    if not target.resolve().is_relative_to(root):
+    if not target.resolve().is_relative_to(base):
         raise ValueError("metadata path escapes repository")
     return target
 
@@ -711,15 +725,22 @@ def replace(path, payload, mode):
 
 
 def main():
+    public_root = Path(os.path.abspath(sys.argv[3]))
+    if not public_root.is_dir() or any(item.is_symlink() for item in (public_root, *public_root.parents)):
+        raise ValueError("invalid public metadata root")
+    public_root = public_root.resolve()
     specifications = [("secrets/SENSITIVE_ENV_VARS.md.example", "secrets/SENSITIVE_ENV_VARS.md", registry_plan),
                       (".env.example", ".env", env_plan)]
-    if (root / "labs/.env.example").exists():
+    if (public_root / "labs/.env.example").exists():
         specifications.append(("labs/.env.example", "labs/.env", env_plan))
     plans = []
     for source_name, target_name, planner in specifications:
-        source, target = safe_path(source_name), safe_path(target_name)
-        before, identity = snapshot(target)
+        source, target = safe_path(source_name, public_root), safe_path(target_name)
+        source_info = source.lstat()
+        if not stat.S_ISREG(source_info.st_mode) or source_info.st_size > 2 * 1024 * 1024:
+            raise ValueError("public metadata source must be a bounded regular file")
         public = source.read_bytes().decode("utf-8")
+        before, identity = snapshot(target)
         current = (before or b"").decode("utf-8")
         after = planner(public, current, prune).encode("utf-8")
         current_mode = stat.S_IMODE(identity[3]) if identity else None

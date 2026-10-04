@@ -1,6 +1,6 @@
 ---
 title: "JupyterLab Workspace"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -73,7 +73,7 @@ JupyterLab은 한 명의 운영자를 위해 하나의 Jupyter Server를 실행�
 
 ## How to Work in This Area
 
-1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/jupyter_token.txt`를 만들고 작업 디렉터리를
+1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/jupyterlab/jupyter_token.txt`를 만들고 작업 디렉터리를
    UID 1000 소유로 생성합니다.
 2. 정적으로 검증한 뒤 승인된 대상으로만 시작합니다. 예:
    `docker compose --profile core --profile data-science up -d jupyterlab`.
