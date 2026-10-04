@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "draft"
+status: "review"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:

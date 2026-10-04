@@ -1,8 +1,8 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "0.1.6"
+version: "1.0.0"
 type: "sdlc/task"
-status: "draft"
+status: "ready"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
@@ -59,6 +59,40 @@ Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
 ## Verification Evidence
+
+### Protected review edge — 2026-10-04
+
+Protected `origin/main` now contains PR352 at
+`7f939ae802afc1d23f96b8eca4100abfcc2bf629`, registering all six draft
+members. The preceding gate and hold receipts remain dated evidence; their
+unmerged PR352 descriptions are historical. The owner closed PR351 without
+merging its source. The latest owner request keeps braces on hold and asks
+for the remaining Spec/Plan/Task work to proceed.
+
+Existing Prompt 04 design/package/Plan/Task source approvals are carried
+forward for this source-only lifecycle edge: Spec draft→review, Plan
+draft→approved, Tasks1–4 draft→ready. Only these six package documents
+change. No implementation completion, hosted gate waiver, source merge,
+image pull, HOME action, secret operation or deployment is approved or
+reported by this edge. Runtime checks remain NOT_RUN. A later source
+integration must separately reconcile the closed PR351's preserved work;
+this receipt does not reopen it or discard its recovery objects.
+
+Local `check-document-metadata.py --mode check-changed --base-ref origin/main`
+selected6/violations0/legacy0/overrides0 against the protected baseline above.
+Cached installed markdownlint-cli2 0.22.1 and `git diff --check` returned exit0;
+all six original bodies are preserved apart from this dated Task1 receipt.
+The first formatter attempt used its cache source entrypoint and exited1 for
+missing `globby`; the installed package entrypoint resolves that environment
+issue without modifying tools or rules. Independent read-only review returned
+PASS; hosted checks remain pending for this edge. Domain tests and container
+execution are N/A for this edge.
+
+The separate backlog PR353 head `7cfd890dbcd4b262a39ada1b45b5efc51ca332da`
+ran hosted CI `37162825263`: metadata selected8/violations0, operations catalog
+PASS and formatting hooks PASS, but the gate exited1 with five high findings
+under `GHSA-vfj7-8cjw-p6xm`. The owner's braces hold remains; this document
+edge adds no security exception and does not merge that PR.
 
 ### Protected registration repair — 2026-10-04
 
