@@ -1,8 +1,8 @@
 ---
 title: "Secret Layout and Environment Parity Task"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/task"
-status: "ready"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-04"
 layer: "specs"
