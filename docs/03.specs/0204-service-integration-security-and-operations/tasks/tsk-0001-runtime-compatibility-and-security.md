@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -139,7 +139,7 @@ The user's named candidate is assessed as [nexu-io/open-design](https://github.c
 not the separate opendesign.cc design-system catalog or similarly named forks.
 Authenticated public-source readback exited0 at main revision
 `53231d40b778d88eba23f35547bf99485d3ae9fc`; latest release is
-`open-design-v0.24.1` while that source manifest declares0.23.1. These are
+`open-design-v0.24.1` while that source manifest declares 0.23.1. These are
 separate artifacts, not a verified runtime pin. Upstream Apache-2.0 permits
 self-hosting; BYOK/provider or cloud usage is not thereby free, and imported
 brand assets keep their own rights.
@@ -181,6 +181,75 @@ head `ed2600286e12d16349345f080244c6966321f273` run37165579521 failed:
 metadata selected6/violations0 and corpus violations0, followed by five high
 braces findings in sanitized diagnostics. This does not prove the new head's
 hosted result. Actual candidate execution remains NOT_RUN.
+
+### Lint substitution and temporary exception proposal — 2026-10-04
+
+The user asked whether removing eslint-config-next in favor of
+eslint-plugin-storybook or governing a temporary exception is possible.
+This receipt is a reviewed proposal, not approval to alter rules or risk
+acceptance. Existing patch-before-merge approval remains binding.
+
+Storybook 10.6.1's [official flat recommended configuration](https://github.com/storybookjs/storybook/blob/v10.6.1/code/lib/eslint-plugin/src/configs/flat/recommended.ts)
+limits its rules to stories and .storybook/main; it is already registered in
+the current eslint.config.mjs. It supplies neither the current TypeScript
+parser/rules nor Next/React/Hooks/accessibility coverage. Actual Next pages
+remain in src/pages. The [Next configuration contract](https://nextjs.org/docs/app/api-reference/config/eslint)
+separately owns those presets. Current lockfile inspection found only
+@next/eslint-plugin-next directly depending on fast-glob. Removing that chain
+is a plausible graph change, but retaining the Next plugin directly retains
+braces; adding Storybook's already-present plugin alone is not equivalent.
+A source redesign would need explicit rule coverage mapping, negative TS,
+React/Hooks/a11y/Next fixtures, existing builds/browser coverage and a clean
+resolved audit. No lint rule is disabled as this investigation's result.
+
+A narrowly approved temporary risk acceptance is technically possible while
+keeping the required validation-changed gate, but current npm audit admission
+has no exception consumer. The documentation literal exception contract and
+infra hardening exceptions do not authorize dependency-security exclusions.
+Do not use continue-on-error, SKIP, omit-dev as the only audit, audit-level
+critical, return0 for any audit failure or a blanket package allowlist.
+
+Proposed bounded contract, pending owner approval:
+
+- Accept only GHSA-vfj7-8cjw-p6xm/CVE-2026-93687 for dev-only braces3.0.3
+  through the exact Next ESLint chain in this workspace. All five derived
+  npm findings must terminate only in that advisory; names alone never grant
+  an exception. Preserve the raw audit exit/result as FAIL and report accepted
+  risk separately, not zero vulnerabilities or a repaired package.
+- Owner @buenhyden; expires at 2026-10-11 00:00:00 KST (2026-10-10T15:00:00Z),
+  with no automatic extension. Review earlier if a supported patch appears.
+- Fail closed on malformed/missing audit data, tool/network/advisory lookup
+  failure, changed path/version, any other high/critical, production finding,
+  expiry, or a published patch until removal/update is verified. Run complete
+  and production audits; production-only success is insufficient.
+- Exit condition: remove acceptance when a supported patched dependency or
+  equivalent lint redesign passes full audit and existing source checks.
+  The accepted risk is development/CI denial of service from nested patterns,
+  not a claim that dev dependencies are harmless.
+- Source owner would be amended SPEC-0205 Spec/Plan/Task1. Proposed exact writer
+  paths are those three package documents, .agents/governance/quality-standards.md,
+  .github/workflow-contract.yml, scripts/lib/gate/ci_gate_contract.py,
+  scripts/lib/gate/ci_gate_adapters.py, tests/lib/gate/test_ci_gate_contract.py
+  and tests/lib/gate/test_ci_gate_adapters.py. Reuse the current contract and
+  adapter; add no independent workflow, generic exception framework or main
+  protection change. Register the bounded metadata in the current machine
+  contract. A failing test needing another file requires a scoped amendment.
+- Before implementation, owner must approve replacing the prior patch-only
+  hold with this precise risk contract, amended documents and policy/source
+  scope; independent rules/security review and negative fixtures are required.
+  Revert the approved policy/adapter receipt to restore strict failure, never
+  bypass protection to land either the acceptance or subsequent archives.
+
+Recommendation: preserve Next lint coverage. If protected delivery is now
+more urgent than the previous patch wait, seek the above explicit, expiring
+risk approval; otherwise keep the hold. No acceptance or dependency removal
+is applied here. OpenDesign remains a separate design companion candidate,
+not a solution to this lint dependency. Candidate execution and policy/audit
+implementation are NOT_RUN. Focused validation: metadata check-changed
+selected=1, violations=0 (exit 0); Markdownlint CLI2 0.22.1 (exit 0);
+`git diff --check` (exit 0); preceding receipt preservation check (exit 0).
+Independent proposal/security/lifecycle review: PASS. Staged classifier:
+markdown=1, generated=0; no source or gate change.
 
 ### Protected review edge — 2026-10-04
 
