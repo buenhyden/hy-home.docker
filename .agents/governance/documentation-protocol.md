@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.1.0"
+version: "3.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-04"
 ---
 
 # Documentation Protocol
@@ -375,16 +375,22 @@ retention hold, and conditional current owner; `superseded` requires a real
 successor. Previous judgments remain in Git history. Do not delete an assessment
 to regain the default, or restore `invalidated` to `usable` without evidence.
 
-Removing a retained unit requires separate unit/action/date-scoped approval,
-reassessment, no hold, completed current-consumer cutover, reachable source
-history with recoverable objects, and complete unit absence. The decision is a
-pinned Task revision with authority and scope verified at that revision; an
-existing ID, a proposed ADR, or an approver name alone proves no authorization.
-A later lifecycle change does not invalidate an approval valid at its original
-revision. Partial deletion, renaming, rewriting, and deletion of the capture row
-are rejected. Keep the catalog and capture envelope and route discovery to them,
-not a missing payload. Restoration is a separately explained recovery into a
-current owner, not silent resurrection of frozen authority.
+Removing a retained unit requires a separately current unit/action/date-scoped
+authorization from the trusted operator route, reassessment, no hold, completed
+current-consumer cutover, reachable source history with recoverable objects, and
+complete unit absence. The pinned Task revision is an immutable structural record
+of the original completed disposition and its scope; it is not a trusted approval
+source. An existing ID, a proposed ADR, an approver name, an archive
+authorization record, or a validator result alone proves no current
+authorization. A later lifecycle change does not rewrite or invalidate the
+historical record valid at its original revision, but missing, mismatched, or
+revoked current authorization blocks a pending or new removal. Automatic
+authentication and revocation enforcement are unsupported unless separately
+observed through a native provider capability. Partial deletion, renaming,
+rewriting, and deletion of the capture row are rejected. Keep the catalog and
+capture envelope and route discovery to them, not a missing payload. Restoration
+is a separately explained recovery into a current owner, not silent resurrection
+of frozen authority.
 
 `git-history-only` means that the current tree supplies no payload; it makes no
 claim about purging Git history, clones, forks, or caches. `purged` is not a

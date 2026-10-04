@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-04"
 ---
 
 # Agentic Engineering Policy
@@ -25,6 +25,13 @@ selection and permission mappings live in `.agents/governance/providers/registry
   skill states its own preconditions and does not restate this rule, because a
   copy that drifts is worse than a reference that cannot.
 - Record commands, results, recovery, skipped checks, and blockers in the Task.
+- Safety denials are owned by [Approval boundaries](approval-boundaries.md) and
+  cannot be bypassed by a cost, token, or time budget. Before a required check,
+  record its tool, environment, permission, and any applicable budget route. If
+  an exact ceiling or supported native control is required but unavailable,
+  record it as unknown and stop or use the authorized operator route; do not
+  claim hard enforcement, alter a command, or use a wrapper to bypass the
+  boundary.
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.
@@ -47,14 +54,16 @@ return evidence.
 Workers report `working`, `blocked`, or `done`. A delegation or resumption
 envelope records Task-declared applicable request, token, time, concurrency,
 and retry ceilings, the shared-budget identity and remaining allocation, and the
-approval source and scope. Unsupported fields are recorded unknown. It refuses
-an unapproved fallback, extra spend, or silent resume. A supervisor may request
-one narrower retry after a failed check. Repeated failure, conflicting authority,
-missing or revoked approval, exhausted declared budget, or expanding blast radius
-stops and escalates. Provider delivery and hook events are neither approval nor
-completion evidence. This contract does not infer account RPM, TPM, price, or a
-provider enforcement mechanism; only a supported native observation can show
-hard enforcement.
+authorization source and scope. Those fields are structural records, not
+authentication; their validity is resolved through approval boundaries.
+Unsupported fields are recorded unknown. It refuses an unapproved fallback,
+extra spend, or silent resume. A supervisor may request one narrower retry after
+a failed check. Repeated failure, conflicting authority, missing or revoked
+approval, exhausted declared budget, or expanding blast radius stops and
+escalates. Provider delivery and hook events are neither approval nor completion
+evidence. This contract does not infer account RPM, TPM, price, or a provider
+enforcement mechanism; only a supported native observation can show hard
+enforcement.
 
 ## External Capability Intake
 

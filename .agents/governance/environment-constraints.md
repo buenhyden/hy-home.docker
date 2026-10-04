@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.1.1"
+version: "1.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-23"
+updated: "2026-10-04"
 ---
 
 # Environment Constraints
@@ -26,6 +26,10 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 - System, developer, and direct user instructions always override repository instruction files.
 - Use in-place refactors only; do not create parallel replacement files for canonical docs.
 - Never write plaintext secrets; use Docker Secrets or `secrets/` mounts.
+- Resolve the authority for every protected operation through
+  [Approval boundaries](approval-boundaries.md#authorization-source-and-records).
+  This policy supplies environment-specific protocols; its Task evidence fields
+  do not authenticate an approval.
 - Session bootstrap is repository-context inspection only. It must not run
   `docker ps`, probe live services, or imply runtime readiness.
 - Agent-output evaluation is deterministic and model-free. Use only synthetic
@@ -71,8 +75,9 @@ only; it does not require starting, stopping, rebuilding, or recreating services
 
 ### 2.2 Approved Secrets Work Protocol
 
-When the user approves secrets work, agents may inspect repository-local secret
-metadata needed for the task, but secret values remain non-output data.
+When the user separately approves a concrete secret operation, agents may
+inspect repository-local secret metadata needed for the task, but secret values
+remain non-output data.
 Permitted evidence includes counts, IDs, file paths, key names, registry
 metadata, rotation status, and command success/failure. Prohibited evidence
 includes plaintext values, private keys, token-bearing logs, shell history, and

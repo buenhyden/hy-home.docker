@@ -322,11 +322,13 @@ def _compare_members(
     root, path, source_path, surface, source, preserved, assessment, registry
 ):
     if assessment is not None and assessment.availability == "git-history-only":
-        from scripts.lib.document_governance.archive_assessments import _approval
+        from scripts.lib.document_governance.archive_assessments import (
+            _approval_record_matches,
+        )
 
         if assessment.hold != registry.common["archive_retention"][
             "absence_token"
-        ] or not _approval(root, assessment, {"assess", "remove"}):
+        ] or not _approval_record_matches(root, assessment, {"assess", "remove"}):
             return [ArchiveFinding("assessment-approval-invalid", path, surface)]
         return (
             [ArchiveFinding("assessment-history-only-payload-present", path, surface)]

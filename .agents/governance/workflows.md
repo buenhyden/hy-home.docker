@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-04"
 ---
 
 # Workflows
@@ -21,9 +21,14 @@ Every repository change follows one lifecycle:
 2. **Design/plan** — an approved contributor records the bounded approach,
    acceptance contract, recovery, and smallest meaningful checks in the active
    Spec Package and Task.
-3. **Approval** — human approval for design, then the written Spec, then the
-   written Plan and execution are distinct. Required approval and read-only
-   `rules-engineer` policy review are resolved before a protected mutation begins.
+3. **Approval** — human approval for a new or unapproved scope, then the
+   written Spec, Plan, and execution are distinct. A current explicit request
+   remains effective for its unchanged scope and does not require repeated
+   routine human approval. Required approval and read-only `rules-engineer`
+   policy review are resolved before a protected mutation begins. The
+   authorization source is owned by
+   [approval boundaries](approval-boundaries.md#authorization-source-and-records);
+   Task records describe evidence and never authenticate it.
 4. **Implement** — the assigned contributor changes only approved scope.
 5. **Validate** — `qa-engineer` runs focused checks and any applicable
    repository Gate; a configured hook is supporting evidence, not approval.
@@ -57,7 +62,9 @@ after the bound, on unknown ownership, on an unresolved policy conflict, or
 when required evidence is unavailable.
 
 Evidence is value-free and sanitized. Never record auth files, credentials,
-private keys, raw logs, secret values, shell history, or tokens.
+private keys, raw logs, secret values, shell history, or tokens. Historical
+citations and archive records preserve provenance only; they cannot authorize a
+current operation.
 
 ## SDLC Workflow
 

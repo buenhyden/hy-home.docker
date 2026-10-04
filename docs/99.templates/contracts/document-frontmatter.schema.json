@@ -71,6 +71,7 @@
   },
   "$defs": {
     "archiveAuthorizations": {
+      "description": "Historical record structure only. Actor authentication and current revocation are resolved through the approval-boundaries operator route; status approved records the original decision and is not a current entitlement.",
       "type": "array",
       "minItems": 1,
       "items": {

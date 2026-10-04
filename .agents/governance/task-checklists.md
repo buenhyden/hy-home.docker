@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-04"
 ---
 
 # Task Checklists
@@ -41,8 +41,11 @@ updated: "2026-09-28"
 - [ ] Bind any later preservation to its prepared source object and separate
       disposition approval. Preserve Task Commit Ledgers and frozen bodies.
 - [ ] For reassessment or history-only availability, verify the current assessment,
-      original-revision unit/action/date approval, hold, consumer cutover, and
-      recoverability. Test removal in fixtures unless actual removal is authorized.
+      original-revision structural record, hold, consumer cutover, recoverability,
+      and a separately current trusted-operator authorization for any pending
+      removal. A missing, mismatched, or revoked current source blocks the
+      operation; archive-record validation is not authentication. Test missing and
+      mismatched record integrity in fixtures unless actual removal is authorized.
 - [ ] Distinguish worktree, index, commit, and historical-link checks, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits only after review approval.
