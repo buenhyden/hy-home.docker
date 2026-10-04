@@ -1,10 +1,10 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.5"
+version: "0.1.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0205-TSK-0001"
 parent_ids:
@@ -87,3 +87,151 @@ Storybook 11 alpha, TypeScript 7 or duplicate npm updater.
 
 Patched braces release or validated replacement; HOME and remote actions
 remain separate.
+
+### Approved Bounded Audit Acceptance — 2026-10-04
+
+The owner explicitly approves replacing the previous patch-only merge hold
+with one expiring risk acceptance for GHSA-vfj7-8cjw-p6xm / CVE-2026-93687.
+This amendment supersedes only that hold; preceding audit FAIL receipts remain
+historical evidence. Keep Next, React Hooks, TypeScript and accessibility lint.
+The exact development dependency chain is eslint-config-next@16.3.8 ->
+@next/eslint-plugin-next@16.3.8 -> fast-glob@3.3.1 -> micromatch@4.0.8 ->
+braces@3.0.3 in projects/storybook/nextjs. Owner: @buenhyden. Expiry:
+2026-10-11 00:00:00 KST (2026-10-10T15:00:00Z), without automatic extension.
+
+Reuse the typed workflow contract and existing gate adapter. Preserve the full
+and production npm audits, report raw audit FAIL separately from ACCEPTED_RISK,
+and admit derived findings only when every advisory leaf is that exact GHSA
+on the verified development lock graph. Unknown/malformed reports, command or
+network failures, advisory lookup failure, changed paths/versions, other
+high/critical findings, production findings, expiry, or an available patch
+fail closed. A clean full audit needs no risk acceptance. No threshold change,
+continue-on-error, skipped gate, dependency removal or branch protection bypass.
+
+Acceptance requires RED/GREEN negative fixtures, scoped contract/adapter tests,
+format/lint/document checks, independent rules and security review, and the
+normal required hosted PR gate. Recovery reverts this bounded policy and
+adapter to strict audit failure; HOME execution is not approved.
+
+#### Exact Amendment Writer Scope
+
+- `docs/03.specs/0205-storybook-dependency-refresh/spec.md`
+- `docs/03.specs/0205-storybook-dependency-refresh/plan.md`
+- `docs/03.specs/0205-storybook-dependency-refresh/tasks/tsk-0001-refresh-storybook-packages.md`
+- `.agents/governance/quality-standards.md`
+- `.github/workflow-contract.yml`
+- `scripts/lib/gate/ci_gate_contract.py`
+- `scripts/lib/gate/ci_gate_adapters.py`
+- `tests/lib/gate/test_ci_gate_contract.py`
+- `tests/lib/gate/test_ci_gate_adapters.py`
+
+Order: amend approved contract -> independent policy review -> RED fixtures ->
+minimal shared adapter/typed contract -> GREEN focused checks -> independent
+review -> record evidence -> commit/push/required CI -> protected integration.
+No completion or archive is claimed before its evidence and delivery boundary.
+
+#### Current Implementation Evidence
+
+Baseline: `7f939ae802afc1d23f96b8eca4100abfcc2bf629`. The exact nine-file
+amendment passed independent pre-implementation rules review. The typed
+acceptance regression first failed (exit 1, missing API/metadata), then passed
+(exit 0, 3 tests). Full contract tests passed (exit 0, 22 tests). Adapter
+negative fixtures first failed (exit 1), then passed (exit 0, 35 tests).
+The scoped contract/adapter/workflow consumer modules passed (exit 0,
+106 tests); workflow contract validator passed (5 workflows, 9 jobs, 8 actions).
+An initially mistyped nonexistent runner module caused one import failure;
+this was a command selection error, not a product or accepted gate failure.
+Registered runner module checks passed (exit 0, 48 tests). Metadata checks
+passed (selected=4, violations=0, exit 0); the first attempt rejected new H2
+headings, then existing-template H3/H4 placement passed without a waiver.
+Final adapter tests passed (exit 0, 39 tests). The final combined contract,
+adapter, workflow and runner regression command passed (157 tests, exit 0).
+Ruff 0.15.12 lint/format checks, Markdownlint CLI2 0.22.1 and diff checks passed
+(exits 0). Independent final policy/source/security review: PASS, including
+the observed downgrade delta. Live standalone adapter integration passed
+(exit 0): full raw audit FAIL (exit 1), production audit PASS (exit 0), exact
+GHSA ACCEPTED_RISK. This is isolated adapter verification, not a hosted PR
+gate or deployment. The public network test used task-local cache and sterile
+npm config paths; no real HOME state, secret or user-global configuration was
+read or changed. Hosted required CI and protected delivery remain pending.
+
+The owner separately approved transmission of public package names/versions
+to npm audit and read-only public GitHub advisory requests after automatic
+approval review rejected the initial network check. No secret or private app
+payload is permitted. Live npm reports suggest an exact Next preset downgrade
+to 14.2.35 rather than a braces patch; no downgrade is applied. Such a report
+is admissible only for the exact accepted chain and the verified unpatched
+advisory. Unknown suggestions remain failures.
+
+#### Approved Clean-install UI Prerequisite Retry
+
+Hosted runs 37167419114 and 37169033355 retain their failures. The first
+run rejected a lowercase PR title; the policy-valid title now passes that
+identity boundary without rewriting the published source commit. The second
+run passed the bounded audit acceptance but failed frontend typecheck with
+TS2307 for @hy-home/storybook-ui. A clean npm ci links the workspace; its
+exports reference dist/index.d.ts and dist/index.js, which did not exist
+before typecheck. Coverage consumes the same package and prerequisite.
+
+The owner explicitly approved adding only
+projects/storybook/nextjs/package.json to the writer scope and recording this
+retry in this Task. The source correction is one prepare hook invoking the
+existing build:ui script. Independent read-only policy/root-cause review
+approved this approach. It preserves typecheck: tsc --noEmit, the current
+required gate commands, Next lint, dependency versions, lockfile and coverage
+threshold. Recovery removes that single hook; it does not weaken a gate.
+Docker's existing npm ci --ignore-scripts remains followed by source copy
+and build-storybook, whose existing script explicitly builds the UI.
+Intentional --ignore-scripts installs still require an explicit build:ui
+before consuming the generated package exports.
+
+RED: task-local npm ci --ignore-scripts --no-audit --no-fund passed (exit 0,
+543 packages), then npm run typecheck failed with the same TS2307 (exit 2).
+GREEN: clean npm ci --offline --no-audit --no-fund used only the public
+package cache and executed prepare -> build:ui (exit 0, 543 packages).
+No real environment, secret, HOME state or user-global npm config was used.
+The original npm run typecheck, npm run lint and
+bash scripts/validation/check-storybook-contract.sh each passed (exit 0).
+The required hosted rerun and protected delivery remain pending.
+
+#### Approved Baseline Gate Reconciliation
+
+Hosted run 37171287899 on 95c0e91798e4021e8bfd6bfa38acb4e867cfd8b9
+failed in existing public regression ownership: the secret schema test could
+not construct Compose !override, and the full profile omitted four existing
+modules. This is a separate root gate reconciliation, not another change to
+the bounded audit acceptance or UI prerequisite. Its failure remains recorded.
+
+The owner explicitly approved the following exact four-file amendment after
+independent read-only root-cause and policy review:
+
+- .github/workflow-contract.yml
+- tests/lib/gate/test_github_workflow_contract.py
+- tests/validation/test_secret_metadata_sync.py
+- docs/03.specs/0205-storybook-dependency-refresh/tasks/tsk-0001-refresh-storybook-packages.md
+
+Reuse the repository's SafeLoader-based Compose parser for Compose consumers;
+preserve generic configuration parsing and global SafeLoader behavior. Test
+plain tagged values, retained environment references and unsafe tag rejection.
+Register the existing perf_db_contract, k6_results, quality_mock_lab and
+quality_observability modules in the existing compose-baseline-regressions
+leaf, with its current required selectors and five optional runtime scopes.
+Keep changed-path routing, thresholds, timeouts, audit acceptance and branch
+protection unchanged. Recovery reverts this bounded reconciliation commit.
+
+RED: existing full-profile ownership acceptance failed (exit 1, exactly four
+missing modules); PublicSecretSchemaTests failed before executing a test
+(exit 5, unsupported !override). The four omitted modules themselves passed
+when explicitly invoked (36 tests, exit 0), using public contracts and
+synthetic fixtures without Docker execution. GREEN: the original ownership/workflow modules passed (59 tests, exit 0);
+the workflow contract checker passed (5 workflows, 9 jobs, 8 actions, exit 0).
+The added tag regression failed first (1 test, exit 1), then passed with
+PublicSecretSchemaTests (15 tests, exit 0). The complete secret metadata
+module passed (40 tests, exit 0), using public/synthetic inputs only. Fifteen
+Compose parse sites reuse the canonical SafeLoader-based parser; generic
+Prometheus config still uses yaml.safe_load. Tagged scalar/list/map values
+and environment references survive parsing; unsafe Python object tags remain
+rejected and global SafeLoader is unchanged. Ruff 0.15.12 checks and format
+checks passed (exit 0). The typed contract, adapter and path-aware plan modules passed
+(92 tests, exit 0). Independent exact four-file policy/source/security review:
+PASS. Protected delivery remains pending.

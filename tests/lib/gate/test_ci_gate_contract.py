@@ -15,6 +15,42 @@ from scripts.lib.gate import ci_gate_contract as contract
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
+class NpmAuditAcceptanceTests(unittest.TestCase):
+    def test_single_approved_acceptance_is_immutable_and_exact(self) -> None:
+        acceptance = contract.load_npm_audit_acceptance(ROOT)
+        self.assertEqual("GHSA-vfj7-8cjw-p6xm", acceptance["id"])
+        self.assertEqual("2026-10-10T15:00:00Z", acceptance["expires_at"])
+        self.assertEqual("braces@3.0.3", acceptance["dependency_chain"][-1])
+        with self.assertRaises(TypeError):
+            acceptance["owner"] = "another-owner"
+
+    def test_unknown_or_changed_acceptance_is_rejected(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        for field, value in (
+            ("owner", "someone"),
+            ("expires_at", "2099-01-01T00:00:00Z"),
+            ("extra", True),
+            ("project", "another-project"),
+            ("dependency_chain", ["braces@3.0.3"]),
+        ):
+            with self.subTest(field=field):
+                amended = dict(document)
+                amended["npm_audit_acceptance"] = dict(
+                    document["npm_audit_acceptance"], **{field: value}
+                )
+                with self.assertRaises(contract.GateContractError):
+                    contract.parse_gate_registry(amended, "contract")
+
+    def test_missing_acceptance_is_not_an_implicit_waiver(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        document.pop("npm_audit_acceptance", None)
+        with mock.patch.object(
+            contract, "load_contract_document", return_value=document
+        ):
+            with self.assertRaises(contract.GateContractError):
+                contract.load_npm_audit_acceptance(ROOT)
+
+
 class PublicSuiteRegistryTests(unittest.TestCase):
     def test_retired_job_roots_are_rejected_by_the_strict_contract(self) -> None:
         document = contract.load_contract_document(ROOT)
