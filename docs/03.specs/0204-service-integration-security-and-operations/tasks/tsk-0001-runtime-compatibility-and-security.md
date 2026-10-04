@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/task"
 status: "ready"
 owner: "@buenhyden"
@@ -473,6 +473,56 @@ with the exact wrapper/Dockerfile path before writing one. Existing LAB
 Cassandra work is a verification item, not a repeat implementation.
 
 ## Deferred Items
+
+### Approved combined protected delivery
+
+The owner authorized commit, push and protected main integration for the
+listed SPEC backlog. Read-only policy review found no per-Task PR requirement.
+PR #354 carries independently approved changes through ordinary merge commits:
+its review-edge head 05a06902af7bd6a3a2f467f2bccdd6600525f2b6,
+PR #353 head 14d890700085a38e6c62d0bd2f4cbd008bc18daa, and corrected
+PR #355 head 61f0a5c2354a84db77c10a8c809f6070f4f1ac24. All original source
+and recovery objects remain ancestors; no rebase, squash or history rewrite.
+The observed protected base is bf4b84edffcd8a8ec4a7da27c4b02dbdee9017bd.
+
+The bounded diff contains seventeen files: six SPEC-0204 documents, eight
+SPEC-0182/0193 and current-inventory documents, two existing Airflow/Prometheus
+configurations, and one SPEC-0206 delivery Task. Each original Task owns its
+criteria and evidence. SPEC-0204 advances only Spec draft to review, Plan to
+approved and Tasks to ready; subsequent approved/active edges remain separate.
+This delivery adds no Prompt 04 runtime execution or new source implementation.
+
+Before-state checks on the constituent heads passed: changed metadata selected
+six, eight and one documents respectively, with zero violations/overrides.
+PR #353 operations catalog, five ObservabilityDashboardContractTests and public
+workflow-airflow Compose render each exited 0; traceability exited 0 and
+alignment retained only the existing archive legacy warning. Independent review
+passed all constituent diffs after the single SPEC-0206 historical-wording
+correction. These receipts do not substitute for aggregate-head checks or CI.
+
+The next command classes are focused aggregate validation, independent review,
+feature-branch push, comprehensive PR summary and normal protected merge after
+required checks pass. Read-back protection requires strict validation-changed,
+zero approving reviews and no enforced CODEOWNER review. No direct main push,
+bypass, new risk acceptance or HOME action is authorized by this combination.
+After merge, verify the constituent heads are protected-main ancestors before
+reporting their delivery; do not infer a separate PR close or branch deletion.
+Recovery is a reviewed follow-up correction or scoped revert preserving original
+history. Main synchronization is fast-forward only; other workers' state stays
+untouched. Aggregate required CI and protected delivery remain pending.
+
+Aggregate local verification on bc7016a9e7259d5f5cd609a9ab2273a275566481
+plus this Task receipt: check-document-metadata.py --mode check-changed
+--base-ref origin/main selected 15 documents, zero violations/overrides,
+exit 0. check-operations-catalog.py passed (exit 0). The five existing
+ObservabilityDashboardContractTests passed (exit 0). docker compose --env-file
+.env.example --profile workflow-airflow config --quiet passed (exit 0), without
+service execution. MarkdownCLI 0.22.1 and git diff --check origin/main passed
+(exit 0). git merge-base --is-ancestor for each of the three constituent heads
+against HEAD exited 0. Independent exact aggregate review returned PASS,
+conditional on recording these completed checks; this paragraph closes that
+condition. Final receipt metadata/Markdown checks and required hosted CI still
+remain separate from these prior results. No new runtime evidence is claimed.
 
 Task source approval, image/digest acceptance, synthetic container preflight,
 HOME version upgrade, management DB/encryption-key backup, real credential
