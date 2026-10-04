@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -39,7 +39,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```
 
 2. `64` 종료는 토큰 시크릿이 없거나 16자 미만임을 의미한다.
-3. 토큰 노출 시: 서비스를 정지하고, `secrets/tools/crawl4ai_api_token.txt`를
+3. 토큰 노출 시: 서비스를 정지하고, `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를
    승인된 secret 소유자 절차로 교체하고 컨슈머의 토큰을 함께 갱신한다. 단일 파일 secret inode가 바뀌면 소비자 컨테이너 재생성이 필요하다. 새 token의 허용과 기존 token의 거부를 값 비노출로 확인한다.
 4. 반복적인 메모리 부족 재시작 시, `mem_limit`을 올리기 전에 호출자 측에서
    crawl 동시성을 낮춘다.

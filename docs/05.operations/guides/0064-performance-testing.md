@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.1.0"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -66,6 +66,25 @@ k6의 check만으로 실패 종료를 보장하지 않으므로 threshold와 종
 DB에는 정규화 결과와 객체 참조를 둔다. 실제 bucket, secret, 보존 기간은
 프로젝트별 승인 계약이 정한다.
 
+### 구현 계약과 연결 경계
+
+[k6 runner 계약](../../../infra/11-quality/k6/README.md)은 승인된 exact-path
+경계와 native 원본의 크기·파일 신원·단위·태그 검사를 소유한다. v2 실행은
+request-level 원본이 없거나 잘리면 증거를 incomplete로 처리하며 적재를 거절한다.
+객체 upload/restore는 프로젝트별로 승인된 endpoint·bucket/prefix·quota 계약과
+SHA256 대조가 필요하다. 실제 SeaweedFS 호환성·writer 발급은 별도 인수 대상이다.
+
+[Locust LAB](../../../labs/locust.md)은 client별 request-event/timeout 계약을
+소유한다. 합성 HttpUser.requests 실행은 counter·ms histogram·master CSV를
+대조하며 SDK exporter 전달을 대신 증명하지 않는다. 실행 도구는 신뢰 가능한
+Docker 경로와 빈 임시 HOME/config를 사용하고 결과 파일과 정리 범위를 제한한다.
+
+[Grafana 결과 조회 계약](../../../infra/06-observability/grafana/README.md)은
+별도 승인 reader의 project/run/attempt 조회와 opt-in datasource를 소유한다.
+Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반영이나
+재시작을 넘는 메트릭 영속성 증거가 아니다. 실제 reader·bucket·부하 대상이
+선정되기 전에는 소스 계약만 소비하며 자동 연결·배포하지 않는다.
+
 ## Common Checks
 
 - `python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로의
@@ -89,7 +108,7 @@ DB에는 정규화 결과와 객체 참조를 둔다. 실제 bucket, secret, 보
 
 - [POL-0064](../policies/0064-performance-testing.md)
 - [RUN-0064](../runbooks/0064-performance-testing.md)
-- [SPEC-0203](../../03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
+- [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
 
 ## Related Documents

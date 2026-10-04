@@ -1,0 +1,56 @@
+# Ephemeral synthetic regression only; never included by HOME root.
+services:
+  prometheus:
+    image: ${METRICS_PROM_IMAGE:?cached Prometheus digest required}
+    user: '65534:65534'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: '0.5'
+    pids_limit: 64
+    restart: 'no'
+    tmpfs: ['/prometheus:rw,nosuid,nodev,size=128m,uid=65534,gid=65534']
+    command: [--config.file=/etc/prometheus/prometheus.yml, --storage.tsdb.path=/prometheus, --web.enable-remote-write-receiver]
+    volumes:
+      - type: bind
+        source: ${METRICS_PROM_CONFIG:?synthetic config required}
+        target: /etc/prometheus/prometheus.yml
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [metrics]
+  alloy:
+    image: ${METRICS_ALLOY_IMAGE:?cached Alloy digest required}
+    user: '1000:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: '0.5'
+    pids_limit: 128
+    restart: 'no'
+    tmpfs: ['/tmp:rw,nosuid,nodev,size=128m,uid=1000,gid=1000']
+    command: [run, --stability.level=experimental, --storage.path=/tmp/alloy, /etc/alloy/metrics.alloy]
+    volumes:
+      - type: bind
+        source: ${METRICS_ALLOY_CONFIG:?extracted source config required}
+        target: /etc/alloy/metrics.alloy
+        read_only: true
+        bind: {create_host_path: false}
+    networks: [metrics]
+  probe:
+    image: ${METRICS_PROBE_IMAGE:?cached Python digest required}
+    user: '1000:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 64m
+    cpus: '0.25'
+    pids_limit: 32
+    restart: 'no'
+    command: [python, -c, 'import time; time.sleep(300)']
+    networks: [metrics]
+networks:
+  metrics:
+    name: ${METRICS_NETWORK:?new owned network required}
+    internal: true

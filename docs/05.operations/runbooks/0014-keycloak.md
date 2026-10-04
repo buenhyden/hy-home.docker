@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -108,7 +108,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - client secret 노출: client `Credentials` 탭의 `Regenerate` 또는
      `POST /admin/realms/hy-home.realm/clients/{client-uuid}/client-secret`으로
      새 secret을 만든다. 새 값은 출력하지 않고 해당 secret 파일(예:
-     `secrets/auth/airflow_client_secret.txt`)을 기존 소유자와 mode로
+     `secrets/auth/airflow/airflow_client_secret.txt`)을 기존 소유자와 mode로
      교체한 뒤, 그 secret을 읽는 서비스만 재생성한다. 파일을 교체하기 전까지
      서비스는 로그인 code를 token으로 교환하지 못한다.
    - Admin REST 호출에 쓰는 admin token도 출력하거나 기록하지 않는다.

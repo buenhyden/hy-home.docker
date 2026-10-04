@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
@@ -21,7 +21,7 @@ OpenBao runs as a single-node Raft on the 2.6-series image pinned by
 `BAO_LOCAL_CONFIG` has no `seal` stanza, so it is the default Shamir seal. Per
 RUN-0085, there are 3 shares with a threshold of 2. By owner decision
 (2026-09-22), the three shares live together in one file,
-`secrets/security/openbao_unseal_keys.txt` (SEC-003, `0600`, excluded from
+`secrets/security/openbao/openbao_unseal_keys.txt` (SEC-003, `0600`, excluded from
 Git, not mounted into the container). Anyone who can read this file can
 unseal OpenBao. This file is also encrypted with BKP-002 inside the host
 Restic repository.

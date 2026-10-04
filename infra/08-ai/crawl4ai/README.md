@@ -1,14 +1,14 @@
 ---
-title: "AI Crawl4AI Crawler"
-version: "1.0.3"
+title: "Crawl4AI 웹 크롤러"
+version: "1.0.5"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-04"
 created: "2026-09-21"
 ---
 
-# AI Crawl4AI Crawler
+# Crawl4AI 웹 크롤러
 
 > 토큰으로 보호되는 웹 크롤러로, Chromium으로 페이지를 렌더링하고 LLM에 바로 사용 가능한 Markdown을 반환합니다.
 
@@ -19,6 +19,8 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 있으며 다른 저장소 네트워크에는 절대 참여하지 않습니다. 의도된 소비자는
 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 오늘
 시점에는 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다.
+별도 bridge와 토큰은 실제 호스트·LAN·메타데이터 목적지의 이그레스 거절을 증명하지
+않습니다. 정확한 이미지에서 DNS·redirect 거절과 실행 경계를 확인하는 시험은 미실행입니다.
 
 ## Audience
 
@@ -47,6 +49,10 @@ Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 
 런타임 고정 값은 Compose 선언이 소유하고
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
+2026-10-04 확인한 [0.9.4 공식 LICENSE](https://github.com/unclecode/crawl4ai/blob/v0.9.4/LICENSE)는
+Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포함합니다. 무료 자체 호스팅과
+라이선스 의무를 구분하고 외부 공개 시 해당 조건을 검토합니다.
+
 ## Configuration
 
 | Field | Value |
@@ -65,7 +71,7 @@ Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 
 
 ## How to Work in This Area
 
-1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai_api_token.txt`를 생성합니다.
+1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai`.
 3. Open Notebook을 연결하려면 해당 서비스에 `crawl4ai_net`을 추가하고 `CRAWL4AI_API_URL`과
    토큰을 하나의 검토된 변경으로 설정합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.

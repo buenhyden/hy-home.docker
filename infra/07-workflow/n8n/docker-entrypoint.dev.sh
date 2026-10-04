@@ -9,7 +9,11 @@ require_secret() {
 }
 
 require_secret /run/secrets/n8n_db_password
-require_secret /run/secrets/mng_valkey_password
+case "${N8N_VALKEY_HOST:-mng-valkey}:${N8N_VALKEY_SECRET:-mng_valkey_password}" in
+  mng-valkey:mng_valkey_password|n8n-valkey:n8n_valkey_password) ;;
+  *) echo "unsupported n8n broker/secret selection" >&2; exit 1 ;;
+esac
+require_secret "/run/secrets/${N8N_VALKEY_SECRET:-mng_valkey_password}"
 require_secret /run/secrets/n8n_encryption_key
 require_secret /run/secrets/n8n_runner_auth_token
 

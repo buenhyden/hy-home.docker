@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook and Documentation MCP Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -18,7 +18,7 @@ created: "2026-10-03"
 
 ## Overview
 
-Make the existing `projects/storybook/nextjs` a shared UI reference with a static image, restricted browser route, reusable component contract, and local read-only documentation MCP. Baseline main/origin-main is `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; the isolated dependency prerequisite is `fbbea9123751c13588022cdb76213fd8b5a14b6e` on `feat/0205-storybook-dependency-refresh`. That prerequisite retains an unresolved high `braces` advisory and the user's remote-merge hold.
+Make the existing `projects/storybook/nextjs` a shared UI reference with a static image, restricted browser route, reusable component contract, and local read-only documentation MCP. Baseline main/origin-main is `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; the isolated dependency prerequisite is `fbbea9123751c13588022cdb76213fd8b5a14b6e` on `feat/0205-storybook-dependency-refresh`. At that historical baseline, the unresolved high `braces` advisory held remote merge. PR356 later delivered the owner-approved, expiring single-advisory acceptance; current blocking behavior belongs to the canonical quality policy and gate contract, and no advisory patch is claimed.
 
 ## Boundaries and Inputs
 
@@ -61,8 +61,8 @@ Reject context leakage, authentication HTML in assets/MCP, stale manifests, expo
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- [SPEC-0201](../0201-home-infrastructure-diagnosis-and-work-design/spec.md)
-- [SPEC-0205](../0205-storybook-dependency-refresh/spec.md)
+- [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
+- [SPEC-0205](../../98.archive/completed/03.specs/0205-storybook-dependency-refresh/spec.md)
 
 ## Open Questions
 

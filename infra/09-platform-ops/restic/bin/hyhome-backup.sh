@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Daily HOME backup orchestrator (run by systemd/hyhome-backup.service).
 #   1. single-run lock and cross-disk preflight
-#   2. pgBackRest physical backup of mng-pg (full on Sunday, else differential)
+#   2. pgBackRest physical backup of mng-pg and dev-pg (full on Sunday, else differential)
 #   3. consistent exports: PostgreSQL globals, Valkey RDB, SQLite stores,
 #      SeaweedFS filer metadata (vacuum paused until the run ends)
 #   4. Restic backup and check of both repositories
@@ -35,7 +35,7 @@ print(json.loads(sys.stdin.read())["services"]["restic"]["environment"]["BACKUP_
 staging="$state_repo/staging"
 
 device_of() { stat -c %d -- "$1"; }
-for dir in "$state_repo/restic" "$state_repo/pgbackrest" "$host_repo/restic" "$staging"; do
+for dir in "$state_repo/restic" "$state_repo/pgbackrest" "$state_repo/dev-pgbackrest" "$host_repo/restic" "$staging"; do
     [[ -d "$dir" && ! -L "$dir" ]] || { echo "missing backup directory: $dir" >&2; exit 64; }
 done
 # A repository inside a backed-up source would snapshot itself and grow
@@ -102,6 +102,43 @@ if running mng-pg; then
         >"$staging/mng-pg-globals.sql" || status=1
 else
     echo "mng-pg not running: physical backup and globals skipped" >&2
+    status=1
+fi
+
+# Development backup contract. Activation still requires the separately
+# approved stanza/key/WAL preflight; archive_mode=off must not pass check.
+rm -f "$staging"/dev-pg-{globals,schema}.sql "$staging"/dev-pg-{image-id,infra-revision}.txt
+if running dev-pg; then
+    dev_type="diff"
+    [[ "$(date +%u)" == 7 ]] && dev_type="full"
+    if docker exec -u postgres dev-pg timeout 300 pgbackrest --stanza=dev check &&
+        docker exec -u postgres dev-pg timeout 1800 pgbackrest --stanza=dev --type="$dev_type" backup; then
+        for export in globals schema; do
+            option="--globals-only"
+            [[ "$export" == schema ]] && option="--schema-only"
+            if ! docker exec -u postgres dev-pg sh -c \
+                'exec timeout 300 pg_dumpall "$1" -U "$POSTGRES_USER"' sh "$option" \
+                >"$staging/dev-pg-$export.sql"; then
+                rm -f "$staging/dev-pg-$export.sql"
+                echo "dev-pg $export export failed; partial export dropped" >&2
+                status=1
+            fi
+        done
+        # Image identity and source revision are metadata, never secret values.
+        if ! docker inspect -f '{{.Image}}' dev-pg >"$staging/dev-pg-image-id.txt"; then
+            rm -f "$staging/dev-pg-image-id.txt"
+            status=1
+        fi
+        if ! git rev-parse HEAD >"$staging/dev-pg-infra-revision.txt"; then
+            rm -f "$staging/dev-pg-infra-revision.txt"
+            status=1
+        fi
+    else
+        echo "dev-pg check or physical backup failed; exports skipped" >&2
+        status=1
+    fi
+else
+    echo "dev-pg not running: physical backup and exports skipped" >&2
     status=1
 fi
 

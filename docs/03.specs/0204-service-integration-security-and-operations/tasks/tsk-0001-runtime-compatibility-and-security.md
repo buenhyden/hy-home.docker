@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.6"
+version: "1.0.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -11,6 +11,11 @@ parent_ids:
 - "SPEC-0204"
 - "SPEC-0204-PLAN-0001"
 created: "2026-10-03"
+branch_integration_receipts:
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0201-home-infrastructure-diagnosis-and-work-design", source_artifact_id: "SPEC-0201", preserved_package_path: "docs/98.archive/superseded/03.specs/0201-home-infrastructure-diagnosis-and-work-design", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0202-development-data-and-lab-isolation", source_artifact_id: "SPEC-0202", preserved_package_path: "docs/98.archive/superseded/03.specs/0202-development-data-and-lab-isolation", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0203-quality-results-and-isolated-load-testing", source_artifact_id: "SPEC-0203", preserved_package_path: "docs/98.archive/superseded/03.specs/0203-quality-results-and-isolated-load-testing", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
+- {source_commit: "79b42b604b99bcc6712887d29e36f8244ec0f9eb", source_package_path: "docs/03.specs/0205-storybook-dependency-refresh", source_artifact_id: "SPEC-0205", preserved_package_path: "docs/98.archive/superseded/03.specs/0205-storybook-dependency-refresh", target_package_path: "docs/03.specs/0204-service-integration-security-and-operations", target_artifact_id: "SPEC-0204", disposition: "historical-superseded"}
 ---
 
 # Runtime Compatibility and Security Task
@@ -759,3 +764,36 @@ closure and eligible packet preservation require a fresh exact writer ledger,
 actual protected base, focused validation and separate required hosted delivery.
 These observed receipts replace previous pending delivery descriptions only;
 no historical failure is converted to PASS and no HOME proof is inferred.
+
+### Source reintegration and historical acceptance transfer — 2026-10-04
+
+Normal merge of `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` retains its source
+commits and frozen records. Task1 source receipt at `a51014aab597cd95bf5db19f00348e1d487ce642`
+records n8n2.41.6 matching server/runners, timeout and selected-secret guards;
+Crawl4AI0.9.4 security pin; OpenBao2.6.2 sealed readiness; Cassandra LAB render.
+Historical 58 static/shell tests and public Compose renders exited0; this is
+not a new container or HOME acceptance. Fresh combined source checks follow.
+Criteria1/8 map W1/W5 to current source/projections/review; criterion2 maps W2
+to n8n sources and GDE/POL/RUN0053; criterion3 maps W2 to Crawl4AI0091/Cassandra
+LAB; criterion4 maps W2 to OpenBao0085. Exact-image Code-secret denial, crawler
+host/LAN/metadata egress, Agent renewal/freshness and Cassandra auth/data remain
+NOT_RUN. Closure's BLOCKED_IMAGE_NOT_AVAILABLE finding is historical; no pull,
+image-cache or runtime preflight was repeated here. Existing private-file
+move/parity receipts in Task4 remain historical; no new private inspection.
+
+The newer SPEC0205 bounded audit, prepare hook and compatibility registrations
+were actually delivered by PR356; canonical policy/contract/adapter owners keep
+the exact GHSA path, expiry and fail-closed checks. Frozen completed0205 proves
+dependency refresh only. The four current packets are preserved raw through
+typed receipts; superseded records are historical input, not runtime authority.
+
+Fresh QA: workflow/secret/gate153 PASS; runtime/project/quality/version118 PASS;
+DB/Valkey/Influx/LAB35 PASS; baseline94 PASS (21 optional Docker skips);
+SurfaceOwnership11 PASS; exact backup failure harness1 PASS after check=False.
+All commands used `python3 -m unittest` with the named registered modules; exit0.
+Ruff0.15.12 changed21 lint/format (AST-equal formatting/import cleanup; loop
+binding fixture11 PASS), shell/root render, workflow/version/catalog exited0. Inventory's first
+boundary-wrapper failure was corrected; capture's first POSIX-mode preflight
+rejected harmless umask, Git mode/blob/member check corrected and reviewed.
+Authored Markdown52 exited0; no container/HOME/data/private parity run. Pre-merge
+archive links await real merge ancestry; exact-head full gates/delivery pending.

@@ -4,6 +4,7 @@ import os
 import posixpath
 import re
 import shlex
+import stat
 import subprocess
 import tempfile
 import unittest
@@ -26,12 +27,12 @@ HTPASSWD_ID_INPUTS = {
     "TRAEFIK_ADMIN_USERNAME",
 }
 REGISTRY_PATH_EXCEPTIONS = {
-    "INFRA-002": "secrets/auth/traefik_admin_password.txt",
-    "OBS-013": "secrets/observability/prometheus_api_password.txt",
-    "SEC-003": "secrets/security/openbao_unseal_keys.txt",
+    "INFRA-002": "secrets/auth/traefik/traefik_admin_password.txt",
+    "OBS-013": "secrets/observability/prometheus/prometheus_api_password.txt",
+    "SEC-003": "secrets/security/openbao/openbao_unseal_keys.txt",
 }
 CUTOVER_REGISTRY_PATH_EXCEPTIONS = {
-    "PG-020": "secrets/db/postgres/service_password.txt",
+    "PG-020": "secrets/db/legacy-app/service_password.txt",
 }
 HOST_INTERPOLATION_KEYS = {"HOME"}
 CONFIG_SUFFIXES = {
@@ -154,10 +155,10 @@ def service_grants(service):
     grants = {}
     for grant in service.get("secrets", []) or []:
         if isinstance(grant, str):
-            grants[grant] = grant
+            grants[compose_default(grant)] = compose_default(grant)
         else:
-            source = grant["source"]
-            grants[grant.get("target", source)] = source
+            source = compose_default(grant["source"])
+            grants[compose_default(grant.get("target", source))] = source
     return grants
 
 
@@ -236,8 +237,7 @@ def mounted_config_files(root, compose_path, service, tracked):
 
 
 def compose_default(value):
-    match = re.fullmatch(r"\$\{[A-Za-z_][A-Za-z0-9_]*:-([^}]+)\}", value)
-    return match[1] if match else value
+    return re.sub(r"\$\{[A-Za-z_][A-Za-z0-9_]*:-([^}]+)\}", r"\1", value)
 
 
 def final_stage_instructions(logical_lines):
@@ -396,7 +396,7 @@ def service_secret_contract(root, compose_texts):
             grants = service_grants(service)
             references = set()
             for scalar in walk_scalars(service):
-                references |= literal_secret_names(scalar)
+                references |= literal_secret_names(compose_default(scalar))
             source_files = (
                 set()
                 if name in SOURCE_ANALYSIS_SERVICES
@@ -405,7 +405,7 @@ def service_secret_contract(root, compose_texts):
             )
             for path in source_files:
                 references |= literal_secret_names(
-                    path.read_bytes().decode("utf-8", errors="ignore")
+                    compose_default(path.read_bytes().decode("utf-8", errors="ignore"))
                 )
             services[name] = {"grants": grants, "references": references}
     return services
@@ -559,6 +559,75 @@ class SecretMetadataSyncTests(unittest.TestCase):
         self.assertNotIn("synthetic-private", result.stdout + result.stderr)
         return result
 
+    def test_alternate_public_root_updates_owner_metadata_without_copying_private_files(
+        self,
+    ):
+        source = self.root / "public-input"
+        (source / "secrets").mkdir(parents=True)
+        (source / "labs").mkdir()
+        (source / "secrets/SENSITIVE_ENV_VARS.md.example").write_text(
+            self.example.read_text()
+        )
+        (source / ".env.example").write_text("EXISTING=example\nADDED=example\n")
+        (source / "labs/.env.example").write_text("LAB_KEEP=example\n")
+        (self.root / "labs").mkdir()
+        (self.root / "labs/.env").write_text("LAB_KEEP=synthetic-private-lab\n")
+        before_source = {
+            path: path.read_bytes() for path in source.rglob("*") if path.is_file()
+        }
+        args = [
+            "bash",
+            str(SCRIPT),
+            "--sync-metadata-prune",
+            "--metadata-source-root",
+            str(source),
+        ]
+        result = subprocess.run(
+            args, cwd=self.root, capture_output=True, text=True, check=False
+        )
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertNotIn("synthetic-private", result.stdout + result.stderr)
+        self.assertIn("synthetic-private-value", self.target.read_text())
+        self.assertIn(
+            "EXISTING=synthetic-private-env", (self.root / ".env").read_text()
+        )
+        self.assertEqual(
+            "LAB_KEEP=synthetic-private-lab\n", (self.root / "labs/.env").read_text()
+        )
+        self.assertEqual(
+            before_source,
+            {path: path.read_bytes() for path in source.rglob("*") if path.is_file()},
+        )
+        self.assertEqual(
+            0,
+            subprocess.run(
+                [*args[:2], "--sync-metadata-prune-check", *args[3:]],
+                cwd=self.root,
+                capture_output=True,
+                check=False,
+            ).returncode,
+        )
+
+    def test_alternate_public_root_is_rejected_outside_metadata_modes(self):
+        before = self.target.read_bytes(), (self.root / ".env").read_bytes()
+        for mode in (None, "--dry-run", "--check", "--help"):
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(SCRIPT),
+                    *([mode] if mode else []),
+                    "--metadata-source-root",
+                    str(self.root),
+                ],
+                cwd=self.root,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(2, result.returncode, mode)
+            self.assertEqual(
+                before, (self.target.read_bytes(), (self.root / ".env").read_bytes())
+            )
+
     def test_mirrors_public_layout_keeps_values_unknown_rows_and_env_bytes(self):
         self.example.write_text(
             "# Registry\n\n"
@@ -591,7 +660,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         rows = (
             "| **INFRA-001** | `X` | `ID` | `(empty)` | `TRAEFIK_ADMIN_USERNAME` | | 2026-01-01 | Admin name |\n"
             "| **INFRA-002** | `O` | `PW` | `(empty)` | `-` | `secrets/auth/admin.txt` | 2026-01-01 | Admin password |\n"
-            "| **INFRA-003** | `O` | `Secret` | `(empty)` | `-` | `secrets/auth/traefik_basicauth_password.txt` | 2026-01-01 | Admin hash |\n"
+            "| **INFRA-003** | `O` | `Secret` | `(empty)` | `-` | `secrets/auth/traefik/traefik_basicauth_password.txt` | 2026-01-01 | Admin hash |\n"
         )
         self.example.write_text(rows)
         self.target.write_text(rows)
@@ -599,7 +668,7 @@ class SecretMetadataSyncTests(unittest.TestCase):
         (self.root / ".env").write_text("TRAEFIK_ADMIN_USERNAME=synthetic-user\n")
         (self.root / "secrets/auth").mkdir()
         (self.root / "secrets/auth/admin.txt").write_text("synthetic-password\n")
-        htpasswd = self.root / "secrets/auth/traefik_basicauth_password.txt"
+        htpasswd = self.root / "secrets/auth/traefik/traefik_basicauth_password.txt"
         first = self.run_mode("")
         self.assertEqual(0, first.returncode, first.stderr)
         before = htpasswd.read_bytes()
@@ -1023,6 +1092,20 @@ class PublicSecretSchemaTests(unittest.TestCase):
                     self.assertNotIn("secrets", str(volume), (name, volume))
         self.assertEqual(SOURCE_ANALYSIS_SERVICES, found)
 
+    def test_secret_directory_markers_are_empty_regular_files(self):
+        markers = list((ROOT / "secrets").rglob(".gitkeep"))
+        for relative in (
+            "communication/smtp/.gitkeep",
+            "db/surrealdb/.gitkeep",
+            "security/openbao/.gitkeep",
+            "backup/openbao/.gitkeep",
+        ):
+            self.assertIn(ROOT / "secrets" / relative, markers)
+        for path in markers:
+            info = path.lstat()
+            self.assertTrue(stat.S_ISREG(info.st_mode), path)
+            self.assertEqual(0, info.st_size, path)
+
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
         self.assertEqual(101, len(contract["declarations"]))
@@ -1037,7 +1120,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 "auth": 14,
                 "automation": 4,
                 "backup": 6,
-                "common": 5,
+                "communication": 5,
                 "data": 15,
                 "db": 26,
                 "labs": 14,
@@ -1049,6 +1132,14 @@ class PublicSecretSchemaTests(unittest.TestCase):
             dict(areas),
         )
         self.assertEqual(33, len(contract["rows"]) - sum(areas.values()))
+        self.assertEqual(
+            "secrets/db/surrealdb/surreal_db_password.txt",
+            contract["rows"]["AI-003"]["path"],
+        )
+        self.assertEqual(
+            "secrets/communication/smtp/smtp_password.txt",
+            contract["rows"]["COMM-002"]["path"],
+        )
         self.assertEqual(set(), contract["dangling"])
         self.assertEqual(set(), contract["missing_grants"])
         self.assertEqual(contract["declarations"], contract["granted_sources"])
@@ -1067,6 +1158,26 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 for identity in REGISTRY_PATH_EXCEPTIONS
                 | CUTOVER_REGISTRY_PATH_EXCEPTIONS
             },
+        )
+
+    def test_registry_paths_use_service_directories_and_preserve_instance_ownership(
+        self,
+    ):
+        rows = registry_rows(self.registry_text)
+        for identity, row in rows.items():
+            if row["path"].startswith("secrets/"):
+                self.assertGreaterEqual(len(Path(row["path"]).parts), 4, identity)
+                self.assertNotIn("common", Path(row["path"]).parts)
+                self.assertNotIn("surreal_db", Path(row["path"]).parts)
+        self.assertEqual("secrets/db/dev-pg/dbt_password.txt", rows["PG-023"]["path"])
+        self.assertEqual(
+            "secrets/db/dev-pg/debezium_password.txt", rows["PG-025"]["path"]
+        )
+        self.assertEqual(
+            "secrets/db/mng-pg/grafana_reader_password.txt", rows["PG-030"]["path"]
+        )
+        self.assertEqual(
+            "secrets/db/legacy-app/service_password.txt", rows["PG-020"]["path"]
         )
 
     def test_secret_scanner_mutations_detect_dangling_grant_and_registry_drift(self):
@@ -1151,7 +1262,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
         n8n_path = "infra/07-workflow/n8n/docker-compose.yml"
         n8n = yaml.load(self.compose_texts[n8n_path], Loader=_ComposeLoader)
         n8n["services"]["n8n"]["secrets"] = [
-            "grafana_admin_password" if grant == "mng_valkey_password" else grant
+            "grafana_admin_password"
+            if compose_default(grant) == "mng_valkey_password"
+            else grant
             for grant in n8n["services"]["n8n"]["secrets"]
         ]
         mutated = dict(self.compose_texts)
@@ -1277,7 +1390,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
             (root / "docker-compose.yml").read_text(), Loader=_ComposeLoader
         )["secrets"]
         self.assertEqual(
-            {"file": "./secrets/security/openbao_token.txt"},
+            {"file": "./secrets/security/openbao/openbao_token.txt"},
             declarations.get("openbao_token"),
         )
         self.assertNotIn("vault_token", declarations)
@@ -1309,7 +1422,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         registry = (root / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
         self.assertNotIn("**SEC-001**", registry)  # legacy Vault token, removed in S08
         self.assertIn("**SEC-002**", registry)
-        self.assertIn("secrets/security/openbao_token.txt", registry)
+        self.assertIn("secrets/security/openbao/openbao_token.txt", registry)
 
     def test_public_ids_paths_and_env_keys_have_unique_owners(self):
         root = SCRIPT.parents[2]

@@ -392,8 +392,8 @@
         "n8nio/runners": "external"
       },
       "images": [
-        "hyhome/n8n:2.29.5-local",
-        "n8nio/runners:2.41.3"
+        "hyhome/n8n:2.41.6-local",
+        "n8nio/runners:2.41.6"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -402,13 +402,13 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "hyhome/n8n:2.29.5-local"
+            "hyhome/n8n:2.41.6-local"
           ]
         },
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/runners:2.41.3"
+            "n8nio/runners:2.41.6"
           ]
         }
       ]
@@ -1790,7 +1790,7 @@
         "unclecode/crawl4ai": "external"
       },
       "images": [
-        "unclecode/crawl4ai:0.9.3"
+        "unclecode/crawl4ai:0.9.4"
       ],
       "compose_files": [
         "infra/08-ai/crawl4ai/docker-compose.yml"
@@ -1799,7 +1799,7 @@
         {
           "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
           "images": [
-            "unclecode/crawl4ai:0.9.3"
+            "unclecode/crawl4ai:0.9.4"
           ]
         }
       ]

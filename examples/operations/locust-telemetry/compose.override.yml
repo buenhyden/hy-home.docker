@@ -1,0 +1,53 @@
+# Rehearsal overlay for the authored labs/locust.yml; no root include.
+services:
+  lab-locust-master:
+    image: ${QUALITY_LOCUST_IMAGE:?approved immutable Locust image}
+    build: !reset null
+    user: '${QUALITY_UID:?}:${QUALITY_GID:?}'
+    group_add: !reset []
+    volumes: !override
+      - ${QUALITY_SCENARIO_DIR:?}:/mnt/locust/scenario:ro
+      - ${QUALITY_RESULTS_DIR:?}:/mnt/locust/results:rw
+    cpus: 0.5
+    mem_limit: 256m
+    pids_limit: 128
+    healthcheck:
+      start_period: 1s
+      interval: 1s
+  lab-locust-worker:
+    image: ${QUALITY_LOCUST_IMAGE:?approved immutable Locust image}
+    build: !reset null
+    user: '${QUALITY_UID:?}:${QUALITY_GID:?}'
+    group_add: !reset []
+    volumes: !override
+      - ${QUALITY_SCENARIO_DIR:?}:/mnt/locust/scenario:ro
+      - ${QUALITY_RESULTS_DIR:?}:/mnt/locust/results:rw
+    cpus: 0.5
+    mem_limit: 256m
+    pids_limit: 128
+    deploy:
+      replicas: 1
+  mock-backend:
+    image: ${QUALITY_MOCK_IMAGE:?approved immutable WireMock image}
+    profiles: [lab-locust]
+    user: '${QUALITY_UID:?}:${QUALITY_GID:?}'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 512m
+    pids_limit: 128
+    tmpfs:
+      - '/tmp:rw,noexec,nosuid,nodev,size=64m'
+      - '/home/wiremock/__files:rw,noexec,nosuid,nodev,size=1m'
+    environment:
+      JAVA_OPTS: '-Xmx256m -Duser.home=/tmp'
+    command: [--port, '8080', --no-request-journal]
+    volumes:
+      - ${QUALITY_MAPPINGS_DIR:?}:/home/wiremock/mappings:ro
+    networks: [lab_locust_net]
+networks:
+  lab_locust_net:
+    internal: true
+    attachable: false
+volumes: !reset {}

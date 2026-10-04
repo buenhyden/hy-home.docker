@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -78,7 +78,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 ### Native Keycloak OIDC migration and recovery
 
 - 전용 client는 `home-openwebui`이며 S256 PKCE를 쓰는 confidential authorization-code flow다. Callback은 `https://chat.${DEFAULT_URL}/oauth/oidc/callback`, discovery realm은 `hy-home.realm`이고 private-CA TLS를 검증한다.
-- `secrets/auth/openwebui_oidc_client_secret.txt`는 `/run/secrets/openwebui_oidc_client_secret`에 읽기 전용 mount된다. Capability 없는 UID 0 프로세스가 읽도록 host 파일은 **root:root 0600**이어야 한다. UID 1000 소유 0600은 읽지 못한다. 회전 시 해당 파일 소유권 이전을 승인 범위에 포함하고 권한 확대나 DAC capability 추가로 우회하지 않는다. 값을 출력하거나 Compose 환경 텍스트에 넣지 않는다. Entry point가 process 내부에서만 export한다.
+- `secrets/auth/open-webui/openwebui_oidc_client_secret.txt`는 `/run/secrets/openwebui_oidc_client_secret`에 읽기 전용 mount된다. Capability 없는 UID 0 프로세스가 읽도록 host 파일은 **root:root 0600**이어야 한다. UID 1000 소유 0600은 읽지 못한다. 회전 시 해당 파일 소유권 이전을 승인 범위에 포함하고 권한 확대나 DAC capability 추가로 우회하지 않는다. 값을 출력하거나 Compose 환경 텍스트에 넣지 않는다. Entry point가 process 내부에서만 export한다.
 - `rootCA.pem`은 공개 인증서이며 private key가 아니다. UID 0이 읽을 수 있어야 하고 mode 변경 전 certificate-only 여부를 확인한다. Entry point는 공개 CA와 결합하며 TLS 검증을 끄지 않는다.
 
 ### Historical transition record

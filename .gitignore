@@ -84,27 +84,25 @@ infra/05-messaging/kafka/kafbat-ui/dynamic_config.yaml
 # projects
 projects/storybook/nextjs/node_modules
 projects/storybook/react-ts/node_modules
-# secrets
-secrets/certs/*.pem
-secrets/certs/*.srl
-secrets/certs/*.crt
-secrets/certs/*.p12
-secrets/**/*.txt
-secrets/**/*.custody
-secrets/**/*.snap
-# SeaweedFS gRPC CA and component keys (bin/gen-grpc-certs.sh)
-secrets/certs/seaweedfs/
-secrets/SENSITIVE_ENV_VARS.md
-# Standalone LAB private inputs; only examples, README and empty directory markers are tracked.
+# Secrets are private by default. Track only the public contract and directory markers.
+/secrets/**
+!/secrets/
+!/secrets/**/
+!/secrets/**/.gitkeep
+!/secrets/README.md
+!/secrets/SENSITIVE_ENV_VARS.md.example
+# Even directory markers in custody areas must stay private.
+/secrets/.backup-*/
+/secrets/.retired/
+# Compatibility aliases are private; canonical service directories own markers.
+/secrets/common/
+/secrets/db/surreal_db/
+/secrets/db/postgres/
+/secrets/db/valkey/
+# Standalone LAB private inputs; examples and README remain tracked.
 labs/.env
 labs/.env.*
 !labs/.env.example
-secrets/labs/**
-!secrets/labs/**/
-!secrets/labs/**/.gitkeep
-# Operator-local registry/.env backups and quarantined retired credential files
-secrets/.backup-*/
-secrets/.retired/
 # opencode Skills
 .opencode/skills/
 !.opencode/skills/.gitkeep

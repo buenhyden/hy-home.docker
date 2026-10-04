@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 created: "2026-10-03"
 ---
 
@@ -78,7 +78,9 @@ labs/
 
 CSV full history는 시간대별 aggregate이며 request별 raw evidence가 아니다. master의
 종료 코드와 CSV 파일이 모두 있어야 실행 결과를 판정할 수 있다. 각 scenario는
-client timeout을 명시해야 한다. 사용하는 client가 OpenTelemetry를 직접 지원하지
+client timeout을 명시해야 한다. master readiness는 이미지에 있는 Python으로 TCP 5557을
+확인하며 worker는 Python으로 실제 process argv의 `--worker`를 확인한다.
+별도 `pgrep` 실행 파일의 설치를 가정하지 않는다. 사용하는 client가 OpenTelemetry를 직접 지원하지
 않으면 Locust request event에서 별도 계측하는 계약을 외부 프로젝트가 소유한다.
 
 ## Validation
@@ -95,6 +97,12 @@ python3 -m unittest tests.validation.test_quality_mock_lab -v
 
 정적 render는 scenario 정확성, worker 접속, target 권한, OTel 전달, client timeout,
 생성기 포화 또는 결과 완전성을 증명하지 않는다.
+
+[합성 request-event 인수](../examples/operations/locust-telemetry/README.md)는 실제
+HttpUser.requests worker의 counter·ms histogram·ReadTimeout과 master CSV를
+대조한다. client URL·context·header·body·예외 문자열은 수집하지 않는다.
+이 결과는 해당 client/event 경로의 검증이며 OTel SDK exporter 전달, 모든 Python
+client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로 확대하지 않는다.
 
 ## How to Work in This Area
 

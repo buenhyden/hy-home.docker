@@ -1,6 +1,6 @@
 ---
 title: "분석 dbt 변환 작업"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -79,7 +79,7 @@ HOME에는 포함되지 않습니다.
 
 ## How to Work in This Area
 
-1. 등록된 시크릿 워크플로우를 통해 `secrets/db/postgres/dbt_password.txt`를 프로비저닝합니다.
+1. 등록된 시크릿 워크플로우를 통해 `secrets/db/dev-pg/dbt_password.txt`를 프로비저닝합니다.
 2. 승인된 환경에서 `docker compose --profile core --profile analytics-engineering run --rm dbt debug`를
    실행한 뒤 `... run --rm dbt compile`을 실행합니다.
 3. 대상 스키마를 검토한 후에만 `... run --rm dbt build --select <models>`를 실행합니다.

@@ -1,6 +1,6 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/package-readme"
 status: "active"
 owner: "@buenhyden"
@@ -153,7 +153,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-pg` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
-| 04-data | `dev-perf-provision` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
+| 04-data | `dev-perf-provision` | none | `Infrastructure/containers`, `Infrastructure/perf-results` | 소스 선언만; reader datasource 활성화·실제 결과 조회 미실행 |
 | 04-data | `dev-platform-provision` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 04-data | `dev-valkey` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
 | 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
@@ -226,6 +226,32 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
 
+### perf_db 읽기 계약
+
+`provisioning/contracts/perf-db.datasource.yml.example`은
+자동 데이터소스 로드 디렉터리 밖의 소비 계약이며 현재 활성화하지 않습니다.
+프로젝트가 승인된 뒤 `perf_db`의 해당 프로젝트 reader group만 상속하는 전용
+LOGIN, `default_transaction_read_only=on`, `statement_timeout=30s`, 제한된
+연결 수와 secret 읽기 전용 mount·허용 네트워크를 함께 승인합니다. owner,
+writer, verdict 권한을 이 LOGIN에 주지 않습니다. DB 권한과 RLS가 조회 경계이며
+대시보드 project 필터나 Grafana 편집 권한은 보안 경계를 대체하지 않습니다.
+현재 SQL view와 reader grant를 재사용하며 새 공용 reader 계정을 생성하지 않습니다.
+
+`Infrastructure/perf-results`는 `perf-db-` UID를 갖는 승인된 PostgreSQL
+데이터소스를 사용자가 선택하도록 하며 기본 datasource와 project 값은 비어 있습니다.
+project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으로 제한합니다.
+근거 미완료와 실제 판정을 분리하고, NULL object reference를 업로드 성공으로 표시하지
+않습니다. 기준 run/attempt를 명시적으로 선택하여 같은 이름·유형·단위의 summary
+값을 나란히 조회합니다. 동일 시나리오·예산·인터페이스인지 확인한 뒤 비교하며
+백분위 평균이나 자동 판정 변경은 수행하지 않습니다. 원본 참조는 텍스트만 표시하여
+미검증 URL을 클릭하거나 객체 저장소 접근 권한을 부여하지 않습니다.
+
+이 소스 계약과 합성 정적 검사는 실제 datasource 생성, A/B LOGIN 조회, 대시보드
+브라우저·Alloy→Prometheus 전달 검사를 대신하지 않습니다. 해당 실행은 `NOT_RUN`입니다.
+공식 [Grafana PostgreSQL 권한·provisioning 안내](https://grafana.com/docs/grafana/latest/datasources/postgres/configure/)와
+[PostgreSQL security-invoker view 안내](https://www.postgresql.org/docs/current/sql-createview.html)를
+2026-10-03 확인했습니다.
+
 ### LAB Dashboard Coverage
 
 독립 LAB Compose에 속한 다음 대시보드는 파일을 보존하지만 정상 root의 Prometheus는
@@ -260,6 +286,7 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 | `Infrastructure/docker-registry` | `infrastructure-docker-registry` | grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry |
 | `Infrastructure/etcd-cluster` | `hyhome-etcd` | monitoring-mixins etcd/etcd.json (2026-09-24) |
 | `Infrastructure/haproxy-overview` | `hyhome-haproxy` | grafana.com dashboard 12693 revision 14 (2026-04-11) |
+| `Infrastructure/perf-results` | `hyhome-perf-results` | Local dashboard: `perf_db.quality.run_results` security-invoker view와 프로젝트 RLS; datasource·실제 조회 미승인 |
 | `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30); SPEC-0203에서 `project_id`/`run_id`/`attempt` 필터와 기존 `testid` 계열을 유지하는 명시적 `All=.*` 호환값을 로컬 적용 |
 | `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
 | `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |

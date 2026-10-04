@@ -1,6 +1,6 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/package-readme"
 status: "draft"
 owner: "@buenhyden"
@@ -54,7 +54,7 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 
 ## Related Documents
 
-[문서 진입점](../../../docs/README.md)에서 개발 데이터 계약을 다루는 현재
-SPEC-0202와 Stage 05 운영 문서를 찾으십시오. 엔진 세부 사항은
+[문서 진입점](../../../docs/README.md)에서 현재 개발 데이터 계약의
+GDE-0100·POL-0100·RUN-0100을 참조하십시오. 엔진 세부 사항은
 [PostgreSQL README](pg/README.md) 및 [Valkey README](valkey/README.md)를
 참조하십시오.

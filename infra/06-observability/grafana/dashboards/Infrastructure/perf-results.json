@@ -1,0 +1,187 @@
+{
+  "id": null,
+  "uid": "hyhome-perf-results",
+  "title": "품질 시험 결과 (perf_db reader)",
+  "description": "Local dashboard: SPEC-0203 project reader RLS; no datasource or credential is created. Empty project selects no rows. Compare only identical scenario, budgets and interfaces; no percentile averaging or automatic verdict. Missing evidence/object references remain visible.",
+  "editable": false,
+  "schemaVersion": 41,
+  "version": 1,
+  "tags": [
+    "hy-home",
+    "quality",
+    "local"
+  ],
+  "refresh": "",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PERF_DB",
+        "label": "승인된 프로젝트 reader datasource",
+        "type": "datasource",
+        "query": "grafana-postgresql-datasource",
+        "regex": "/^perf-db-/",
+        "current": {},
+        "hide": 0,
+        "refresh": 1
+      },
+      {
+        "name": "project_id",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 0
+      },
+      {
+        "name": "run_id",
+        "type": "textbox",
+        "query": "*",
+        "current": {
+          "text": "*",
+          "value": "*"
+        },
+        "hide": 0
+      },
+      {
+        "name": "attempt",
+        "type": "textbox",
+        "query": "*",
+        "current": {
+          "text": "*",
+          "value": "*"
+        },
+        "hide": 0
+      },
+      {
+        "name": "baseline_run_id",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 0
+      },
+      {
+        "name": "baseline_attempt",
+        "type": "textbox",
+        "query": "",
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "table",
+      "title": "시험 상태와 근거",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_PERF_DB}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_PERF_DB}"
+          },
+          "format": "table",
+          "editorMode": "code",
+          "rawSql": "SELECT r.project_id, r.run_id, r.attempt, r.execution_state, r.reported_verdict, r.official_verdict, r.evidence_state, r.started_at, r.ended_at, r.samples FROM quality.run_results r WHERE r.project_id IN (${project_id:sqlstring}) AND ('*' IN (${run_id:sqlstring}) OR r.run_id::text IN (${run_id:sqlstring})) AND ('*' IN (${attempt:sqlstring}) OR r.attempt::text IN (${attempt:sqlstring})) ORDER BY r.ended_at DESC NULLS FIRST LIMIT 500"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "table",
+      "title": "원본 artifact 참조 (NULL은 업로드 미확인)",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_PERF_DB}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 8
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_PERF_DB}"
+          },
+          "format": "table",
+          "editorMode": "code",
+          "rawSql": "SELECT r.project_id, r.run_id, r.attempt, a.name, a.sha256, a.bytes, a.object_ref FROM quality.run_results r JOIN quality.artifacts a USING (project_id, run_id, attempt) WHERE r.project_id IN (${project_id:sqlstring}) AND ('*' IN (${run_id:sqlstring}) OR r.run_id::text IN (${run_id:sqlstring})) AND ('*' IN (${attempt:sqlstring}) OR r.attempt::text IN (${attempt:sqlstring})) ORDER BY r.ended_at DESC NULLS FIRST, a.name LIMIT 500"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "table",
+      "title": "명시적 기준 시험과 지표 비교",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_PERF_DB}"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_PERF_DB}"
+          },
+          "format": "table",
+          "editorMode": "code",
+          "rawSql": "SELECT r.project_id, r.run_id, r.attempt, m.name, m.metric_type, m.contains, m.values AS current_values, b.values AS baseline_values, m.thresholds FROM quality.run_results r JOIN quality.metric_summaries m USING (project_id, run_id, attempt) LEFT JOIN quality.metric_summaries b ON b.project_id = m.project_id AND b.name = m.name AND b.metric_type = m.metric_type AND b.contains = m.contains AND b.run_id::text IN (${baseline_run_id:sqlstring}) AND b.attempt::text IN (${baseline_attempt:sqlstring}) WHERE r.project_id IN (${project_id:sqlstring}) AND ('*' IN (${run_id:sqlstring}) OR r.run_id::text IN (${run_id:sqlstring})) AND ('*' IN (${attempt:sqlstring}) OR r.attempt::text IN (${attempt:sqlstring})) ORDER BY r.ended_at DESC NULLS FIRST, m.name LIMIT 500"
+        }
+      ]
+    }
+  ]
+}

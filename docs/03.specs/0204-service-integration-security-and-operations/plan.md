@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/plan"
 status: "active"
 owner: "@buenhyden"
@@ -16,20 +16,21 @@ created: "2026-10-03"
 
 ## Objective
 
-Prepare Prompt 04 for source implementation in reversible, reviewable Tasks.
-The user requested implementation based on an approved Task; no SPEC-0204
-Task existed at the baseline. This draft establishes file ownership and
-acceptance gates before any service declaration is changed.
+Implement Prompt 04 in reversible, reviewable Tasks. The user approved the
+listed source scopes on 2026-10-03. The package established file ownership
+and acceptance gates before any service declaration was changed.
 
 ## Dependencies
 
 - Local and remote `main` at `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
   when drafting; fetch/recompare before source implementation.
 - SPEC-0201 W5 exact handoff, SPEC-0202's dev data/backup contract, SPEC-0203's
-  source-only quality/Alloy contract and current Requirement/Architecture.
-- Owner approval of this Plan and each Task's source scope. Kafka connector and
-  backup-policy ownership transfer waits for SPEC-0202's lifecycle closure;
-  an already merged source commit alone is not that closure.
+  completed source and isolated synthetic quality/Alloy contract and current
+  Requirement/Architecture. Real external-project/store/reader connections
+  remain outside that completion receipt.
+- User approval of this Plan and the listed Task source scopes on 2026-10-03.
+- Kafka connector and backup-policy ownership transfer follows SPEC-0202 lifecycle
+  closure, integrated locally before TSK-0003 source writing.
 - Official n8n, Crawl4AI, Cassandra, backup and security references rechecked
   at implementation; image architecture/digest and secret consumer behavior
   remain runtime-unverified until bounded acceptance.
@@ -42,7 +43,7 @@ acceptance gates before any service declaration is changed.
 1. **W1: freeze source and authority.** Recheck main, root include, current
    service consumers, lifecycle IDs and protected paths. Confirm the exact
    changed-file ledger and separate confirmed defects from runtime questions.
-   Update this draft if a concurrent change has closed a finding. Maps
+   Update the Task if a concurrent change has closed a finding. Maps
    acceptance 1 and 8.
 2. **W2: repair priority compatibility and security source.** TSK-0001 owns
    n8n server/worker/runner version, timeout and secret-file consumption,
@@ -62,7 +63,10 @@ acceptance gates before any service declaration is changed.
    mail delivery and analytics reader/checkpoint paths. Source modifications
    require confirmed consumers and contract fixtures; otherwise mark them
    `BLOCKED` with a named follow-up owner. Maps 6 and 7.
-5. **W5: verify, document and hand off.** Run focused tests, scoped Compose
+5. **W5: verify, document and hand off.** TSK-0004 serially owns the later
+   whole-tree secret path, metadata and actual/public environment parity
+   request. It preserves values and IDs, writes only its exact consumer
+   ledger, and keeps credential rotation/HOME recreation separately approved. Run focused tests, scoped Compose
    render, registered projection generators/checks, relevant document and
    path-aware gates. Obtain independent code and security review. Record each
    command, exit, revision and unsupported environment separately; stage
@@ -88,16 +92,32 @@ and scoped static validation. A container run requires exact Docker context,
 project, ports, networks, volumes, resource budget and cleanup review before
 execution. Generated version projection uses its registered generator, not
 manual JSON edits. Stage 03 metadata/link checks and `git diff --check` apply
-to draft documents. Protected PR checks are required for remote integration;
-local success is not a merge receipt. HOME activation, backup, restore, data
-migration and real external-project connection remain `NOT_RUN` here.
+to changed documents. Protected PR checks are required for remote integration;
+local success is not a merge receipt. HOME activation, real backup/restore,
+data migration and real external-project
+connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
+Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 
 ## Rulings
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
-bounded external discovery after review. SPEC-0202 still owns development DB
-and Kafka/backup handoff until lifecycle closure. Prompt 05 owns Storybook;
+bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
+closure branch before the backup source change. Prompt 05 owns Storybook;
 Prompt 06 owns the external application's consumed manifest and deployment.
 Cassandra's current official-image LAB move is already implemented; no
 Bitnami-wide replacement is planned. Crawl4AI has no confirmed consumer and
 gets a security fix, not automatic HOME activation.
+
+### Historical closure-branch completion recheck — 2026-10-04
+
+At closure source `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`, W4's
+Restic/dev-pg source chain and approved synthetic restore passed; TSK-0003 is completed with its exact selected-set/snapshot receipt.
+TSK-0002 and TSK-0004 remain completed. W2's exact-image n8n/Crawl4AI runtime
+and secret/egress security acceptance remain BLOCKED in TSK-0001, so this Plan
+and Spec remain active. Image pulls and the reviewed isolated security fixture
+require the pending scope approval; HOME and host policy changes remain held.
+
+Protected PR358 activated the current Plan and Tasks; Task1 now owns the
+exclusive reintegration ledger and fresh validation. The historical Task
+completion statements above are closure-branch receipts, not new execution
+or current lifecycle transitions. Runtime gaps keep this Plan active.

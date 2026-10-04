@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/architecture-description"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-03"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -41,15 +41,33 @@ not change HOME selection or the root Compose project (ADR-0045).
 | Class | Retained capability | Activation and limitation |
 | --- | --- | --- |
 | HOME | Traefik, Keycloak, OAuth2 Proxy, OpenBao | `core`; OpenBao bootstrap readiness required |
-| HOME | Management PostgreSQL/Valkey and exporters | `mng`; application databases and queue state |
+| HOME | Management PostgreSQL/Valkey and exporters | `mng`; service metadata, sessions and management queues |
 | HOME | Ollama, Open WebUI, ComfyUI, Qdrant | `ai`; shared GPU concurrency is bounded |
 | HOME | Airflow and n8n, workers and runners | `workflow`; initialization and daemon readiness differ |
 | HOME | Single-node object storage | `storage`; no single-host HA claim |
 | HOME | Metrics, host/GPU signals, availability, logs, alerts, tracing and profiling | narrow observability profiles from POL-0078 |
+| DEV | Single TimescaleDB Community PostgreSQL and Valkey | `dev-data`; project database/roles and ACL prefixes are separately approved |
 | DEV | Mail capture and explicit update/IaC jobs | jobs run only for a named operation |
 | OPTIONAL | Additional application databases and analytics | enable only for a known consumer |
 | LAB | Multi-node database, broker and storage variants | rehearsal topology, not physical fault isolation |
 | MIGRATE | superseded tooling awaiting acceptance | preserve data and references until migration acceptance |
+
+Traefik remains the shared gateway. Development time-series workloads use
+TimescaleDB Community on the single development PostgreSQL; its TSL terms
+are distinct from PostgreSQL licensing. Management PostgreSQL does not gain
+Timescale without an existing consumer requirement. Projects use explicit
+database/role and Valkey ACL contracts rather than expanding legacy `app_db`.
+Shared Prometheus, Grafana, SeaweedFS and Qdrant remain the common services;
+k6 supplies load tests, WireMock HTTP mocks, and Locust optional isolated LABs.
+
+External Project-Template-derived workspaces own business API/UI, migrations,
+adapters, workflows, fixtures, E2E and application Compose. Infrastructure
+owns engines, shared ingress/identity, observability, backup and bounded
+resource registration. Root Compose never includes external application source.
+The [registration contract](../../../infra/09-platform-ops/project-registration/README.md)
+and [development database policy](../../05.operations/policies/0100-development-database.md)
+own the current interfaces; metadata approval does not deploy or issue secrets.
+The independent 07/08 product-planning tracks grant no runtime resource authority.
 
 ## Data Flow
 
