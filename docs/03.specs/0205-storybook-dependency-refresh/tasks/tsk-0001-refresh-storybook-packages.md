@@ -1,6 +1,6 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -162,3 +162,34 @@ payload is permitted. Live npm reports suggest an exact Next preset downgrade
 to 14.2.35 rather than a braces patch; no downgrade is applied. Such a report
 is admissible only for the exact accepted chain and the verified unpatched
 advisory. Unknown suggestions remain failures.
+
+#### Approved Clean-install UI Prerequisite Retry
+
+Hosted runs 37167419114 and 37169033355 retain their failures. The first
+run rejected a lowercase PR title; the policy-valid title now passes that
+identity boundary without rewriting the published source commit. The second
+run passed the bounded audit acceptance but failed frontend typecheck with
+TS2307 for @hy-home/storybook-ui. A clean npm ci links the workspace; its
+exports reference dist/index.d.ts and dist/index.js, which did not exist
+before typecheck. Coverage consumes the same package and prerequisite.
+
+The owner explicitly approved adding only
+projects/storybook/nextjs/package.json to the writer scope and recording this
+retry in this Task. The source correction is one prepare hook invoking the
+existing build:ui script. Independent read-only policy/root-cause review
+approved this approach. It preserves typecheck: tsc --noEmit, the current
+required gate commands, Next lint, dependency versions, lockfile and coverage
+threshold. Recovery removes that single hook; it does not weaken a gate.
+Docker's existing npm ci --ignore-scripts remains followed by source copy
+and build-storybook, whose existing script explicitly builds the UI.
+Intentional --ignore-scripts installs still require an explicit build:ui
+before consuming the generated package exports.
+
+RED: task-local npm ci --ignore-scripts --no-audit --no-fund passed (exit 0,
+543 packages), then npm run typecheck failed with the same TS2307 (exit 2).
+GREEN: clean npm ci --offline --no-audit --no-fund used only the public
+package cache and executed prepare -> build:ui (exit 0, 543 packages).
+No real environment, secret, HOME state or user-global npm config was used.
+The original npm run typecheck, npm run lint and
+bash scripts/validation/check-storybook-contract.sh each passed (exit 0).
+The required hosted rerun and protected delivery remain pending.
