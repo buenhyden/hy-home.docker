@@ -1,6 +1,6 @@
 ---
 title: "Secret Layout and Environment Parity Task"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -143,3 +143,22 @@ separately approved provider/server-first plan. COMM-001 is an account identity;
 its replacement depends on the selected provider procedure. Each rotation needs
 selected consumers, rollback window and verification before revoking the old
 credential. No current rotation or HOME execution is authorized.
+
+### Owner-checkout candidate parity preflight
+
+The existing owner approval for value-preserving metadata synchronization is
+retained. A read-only `gen-secrets.sh --sync-metadata-prune-check` invocation
+from the owner checkout consumes its private registry/root/LAB env only inside
+the approved tool; `--metadata-source-root` selects this reviewed source tree's
+three public examples. Output is changed-file counters only; no values, file
+contents, credentials, runtime or writes are authorized by this check.
+Candidate-source parity cannot be reported as protected-main parity: repeat
+against delivered main before Task completion. Rotation remains separate.
+
+Candidate preflight on 2026-10-04: from the owner checkout,
+`bash /tmp/hyhome-0204-source-integration/scripts/operations/gen-secrets.sh
+--sync-metadata-prune-check --metadata-source-root /tmp/hyhome-0204-source-integration`
+exited0, `files_changed=0`, values preserved and secret files untouched. This
+only proves candidate public/private metadata and env exact-set parity; no
+new credential validity, file move, service recreation or current protected
+source acceptance is claimed. Protected rerun remains required.

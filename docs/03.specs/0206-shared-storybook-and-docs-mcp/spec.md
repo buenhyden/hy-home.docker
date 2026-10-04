@@ -1,16 +1,16 @@
 ---
 title: "Shared Storybook and Documentation MCP Specification"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0206"
 parent_ids:
 - "REQ-0027"
 - "AD-0031"
-- "SPEC-0201"
+- "SPEC-0204"
 created: "2026-10-03"
 ---
 
@@ -58,6 +58,8 @@ Reject context leakage, authentication HTML in assets/MCP, stale manifests, expo
 7. README, Guide/Policy/Runbook, derived projection, inventory, focused gates, review and rollback agree with source.
 
 ## Traceability
+
+- [현재 인계 소유자 SPEC-0204](../0204-service-integration-security-and-operations/spec.md)
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)

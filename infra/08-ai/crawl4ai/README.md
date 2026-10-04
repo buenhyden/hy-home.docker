@@ -49,7 +49,7 @@ Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 
 런타임 고정 값은 Compose 선언이 소유하고
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-2026-10-04 확인한 [0.9.4 공식 LICENSE](https://github.com/unclecode/crawl4ai/blob/v0.9.4/LICENSE)는
+2026-10-04 확인한 [선정 버전의 공식 LICENSE](https://github.com/unclecode/crawl4ai/blob/133e1d92e37885dfccc03ea2e3687d06c98b7ceb/LICENSE)는
 Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포함합니다. 무료 자체 호스팅과
 라이선스 의무를 구분하고 외부 공개 시 해당 조건을 검토합니다.
 

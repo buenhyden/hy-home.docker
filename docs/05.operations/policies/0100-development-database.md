@@ -1,21 +1,23 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
 - "AD-0031"
-- "SPEC-0202"
+- "SPEC-0204"
 created: "2026-10-03"
 ---
 
 # Development Database Operations Policy
 
 ## Overview
+
+현재 source 인계 소유자는 [SPEC-0204](../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 보관된 역사적 근거입니다.
 
 이 정책은 source-only `dev-pg`와 `dev-valkey`의 관리 데이터 분리, 최소 권한
 provision, 그리고 승인 전 실행 금지 경계를 정한다.
@@ -68,7 +70,7 @@ backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime 
 
 ## Traceability
 
-- Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0202`.
+- Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0204`.
 - Runtime declaration: `infra/04-data/dev-db/docker-compose.yml`.
 
 ## Related Documents

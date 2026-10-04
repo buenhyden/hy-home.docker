@@ -14,7 +14,7 @@ created: "2025-11-12"
 
 n8n은 시각적 인터페이스로 워크플로우 자동화를 구현하는 로우코드 도구이다. 복잡한 Airflow DAG와 달리 직관적인 노드 연결로 API 통합, 웹후크 처리, 이벤트 기반 자동화를 빠르게 배포할 수 있다.
 
-2026-10-04 확인한 [2.41.6 공식 LICENSE](https://github.com/n8n-io/n8n/blob/n8n%402.41.6/LICENSE.md)는
+2026-10-04 확인한 [선정 버전의 공식 LICENSE](https://github.com/n8n-io/n8n/blob/f5da43d99f6599a24574206f922625dcabfd4de0/LICENSE.md)는
 일반 소스에 Sustainable Use License, Enterprise 부분에 별도 조건을 적용합니다.
 무료 내부 자체 호스팅과 무제한 오픈소스·외부 제공 권한을 동일하게 취급하지 않습니다.
 

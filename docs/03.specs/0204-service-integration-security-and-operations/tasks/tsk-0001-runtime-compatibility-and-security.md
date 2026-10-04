@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.8"
+version: "1.0.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -42,8 +42,7 @@ credential action has been authorized by its existence.
 Protected PR358 delivered the active Spec/Plan and in-progress Tasks at
 `79b42b604b99bcc6712887d29e36f8244ec0f9eb` (run37177848208 PASS). This is the captured protected base
 for the approved reintegration ledger; verify the actual base and closure source ancestry before source edits.
-Prior owner source/integration/disposition approvals persist; archive records alone grant no authority.
-Task1 exclusively writes shared surfaces; Tasks2–4 consume this contract and supply acceptance evidence.
+Prior source/integration/disposition approvals persist; archive records grant no authority. Task1 exclusively writes shared surfaces; Tasks2–4 consume the contract.
 
 Approved source writers: 125 exact paths = 123 closure-only paths + two shared paths (`.github/workflow-contract.yml`,
 `tests/validation/test_secret_metadata_sync.py`). The shared table repeats the same Task1 ownership, not another writer.
@@ -229,6 +228,8 @@ Superseded mirrors and new consumer cutovers are additional handoff work. Verify
 writers require an exact ledger amendment before editing. Legacy marker rename sources are preserve/verify-only, never
 private deletion permission. Keep existing audit acceptance policy/adapter/tests and current Storybook/UI/MCP
 declarations; OpenBao2.7 adoption is excluded, only its approved readiness correction is in scope.
+
+`docs/05.operations/policies/0100-development-database.md` is an additional exact consumer writer: metadata parent and inline parent description move to current SPEC-0204; historical SPEC-0202 evidence and all controls remain unchanged. Prior Prompt02 GDE/POL/RUN-0100 handoff and independent policy review cover this correction.
 
 #### Integration, checks and rollback
 
@@ -767,8 +768,8 @@ no historical failure is converted to PASS and no HOME proof is inferred.
 
 ### Source reintegration and historical acceptance transfer — 2026-10-04
 
-Normal merge of `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` retains its source
-commits and frozen records. Task1 source receipt at `a51014aab597cd95bf5db19f00348e1d487ce642`
+Normal merge `2de9cd69ad6e2b04d11202ba8f98a0a09f7f9ccb` retains closure
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` source commits and frozen records. Task1 source receipt at `a51014aab597cd95bf5db19f00348e1d487ce642`
 records n8n2.41.6 matching server/runners, timeout and selected-secret guards;
 Crawl4AI0.9.4 security pin; OpenBao2.6.2 sealed readiness; Cassandra LAB render.
 Historical 58 static/shell tests and public Compose renders exited0; this is
@@ -795,5 +796,5 @@ Ruff0.15.12 changed21 lint/format (AST-equal formatting/import cleanup; loop
 binding fixture11 PASS), shell/root render, workflow/version/catalog exited0. Inventory's first
 boundary-wrapper failure was corrected; capture's first POSIX-mode preflight
 rejected harmless umask, Git mode/blob/member check corrected and reviewed.
-Authored Markdown52 exited0; no container/HOME/data/private parity run. Pre-merge
-archive links await real merge ancestry; exact-head full gates/delivery pending.
+Authored Markdown52, corpus/archive341 and changed metadata77 passed:0 violations, exit0.
+Links0 failures/1 legacy warning; prior7 routing/pin findings corrected. Hosted delivery and protected private parity pending; no HOME/data run.

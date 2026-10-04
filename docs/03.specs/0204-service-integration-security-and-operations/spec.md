@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/spec"
 status: "active"
 owner: "@buenhyden"
@@ -11,9 +11,6 @@ parent_ids:
 - "REQ-0027"
 - "AD-0031"
 - "ADR-0046"
-- "SPEC-0201"
-- "SPEC-0202"
-- "SPEC-0203"
 created: "2026-10-03"
 ---
 
