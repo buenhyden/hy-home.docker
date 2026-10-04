@@ -1,10 +1,10 @@
 ---
 title: "Refresh Storybook Packages Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-04"
 layer: "specs"
 artifact_id: "SPEC-0205-TSK-0001"
 parent_ids:
@@ -87,3 +87,78 @@ Storybook 11 alpha, TypeScript 7 or duplicate npm updater.
 
 Patched braces release or validated replacement; HOME and remote actions
 remain separate.
+
+### Approved Bounded Audit Acceptance — 2026-10-04
+
+The owner explicitly approves replacing the previous patch-only merge hold
+with one expiring risk acceptance for GHSA-vfj7-8cjw-p6xm / CVE-2026-93687.
+This amendment supersedes only that hold; preceding audit FAIL receipts remain
+historical evidence. Keep Next, React Hooks, TypeScript and accessibility lint.
+The exact development dependency chain is eslint-config-next@16.3.8 ->
+@next/eslint-plugin-next@16.3.8 -> fast-glob@3.3.1 -> micromatch@4.0.8 ->
+braces@3.0.3 in projects/storybook/nextjs. Owner: @buenhyden. Expiry:
+2026-10-11 00:00:00 KST (2026-10-10T15:00:00Z), without automatic extension.
+
+Reuse the typed workflow contract and existing gate adapter. Preserve the full
+and production npm audits, report raw audit FAIL separately from ACCEPTED_RISK,
+and admit derived findings only when every advisory leaf is that exact GHSA
+on the verified development lock graph. Unknown/malformed reports, command or
+network failures, advisory lookup failure, changed paths/versions, other
+high/critical findings, production findings, expiry, or an available patch
+fail closed. A clean full audit needs no risk acceptance. No threshold change,
+continue-on-error, skipped gate, dependency removal or branch protection bypass.
+
+Acceptance requires RED/GREEN negative fixtures, scoped contract/adapter tests,
+format/lint/document checks, independent rules and security review, and the
+normal required hosted PR gate. Recovery reverts this bounded policy and
+adapter to strict audit failure; HOME execution is not approved.
+
+#### Exact Amendment Writer Scope
+
+- `docs/03.specs/0205-storybook-dependency-refresh/spec.md`
+- `docs/03.specs/0205-storybook-dependency-refresh/plan.md`
+- `docs/03.specs/0205-storybook-dependency-refresh/tasks/tsk-0001-refresh-storybook-packages.md`
+- `.agents/governance/quality-standards.md`
+- `.github/workflow-contract.yml`
+- `scripts/lib/gate/ci_gate_contract.py`
+- `scripts/lib/gate/ci_gate_adapters.py`
+- `tests/lib/gate/test_ci_gate_contract.py`
+- `tests/lib/gate/test_ci_gate_adapters.py`
+
+Order: amend approved contract -> independent policy review -> RED fixtures ->
+minimal shared adapter/typed contract -> GREEN focused checks -> independent
+review -> record evidence -> commit/push/required CI -> protected integration.
+No completion or archive is claimed before its evidence and delivery boundary.
+
+#### Current Implementation Evidence
+
+Baseline: `7f939ae802afc1d23f96b8eca4100abfcc2bf629`. The exact nine-file
+amendment passed independent pre-implementation rules review. The typed
+acceptance regression first failed (exit 1, missing API/metadata), then passed
+(exit 0, 3 tests). Full contract tests passed (exit 0, 22 tests). Adapter
+negative fixtures first failed (exit 1), then passed (exit 0, 35 tests).
+The scoped contract/adapter/workflow consumer modules passed (exit 0,
+106 tests); workflow contract validator passed (5 workflows, 9 jobs, 8 actions).
+An initially mistyped nonexistent runner module caused one import failure;
+this was a command selection error, not a product or accepted gate failure.
+Registered runner module checks passed (exit 0, 48 tests). Metadata checks
+passed (selected=4, violations=0, exit 0); the first attempt rejected new H2
+headings, then existing-template H3/H4 placement passed without a waiver.
+Final adapter tests passed (exit 0, 39 tests). The final combined contract,
+adapter, workflow and runner regression command passed (157 tests, exit 0).
+Ruff 0.15.12 lint/format checks, Markdownlint CLI2 0.22.1 and diff checks passed
+(exits 0). Independent final policy/source/security review: PASS, including
+the observed downgrade delta. Live standalone adapter integration passed
+(exit 0): full raw audit FAIL (exit 1), production audit PASS (exit 0), exact
+GHSA ACCEPTED_RISK. This is isolated adapter verification, not a hosted PR
+gate or deployment. The public network test used task-local cache and sterile
+npm config paths; no real HOME state, secret or user-global configuration was
+read or changed. Hosted required CI and protected delivery remain pending.
+
+The owner separately approved transmission of public package names/versions
+to npm audit and read-only public GitHub advisory requests after automatic
+approval review rejected the initial network check. No secret or private app
+payload is permitted. Live npm reports suggest an exact Next preset downgrade
+to 14.2.35 rather than a braces patch; no downgrade is applied. Such a report
+is admissible only for the exact accepted chain and the verified unpatched
+advisory. Unknown suggestions remain failures.

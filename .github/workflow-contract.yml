@@ -409,11 +409,7 @@
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
-        "run-npm",
-        "audit",
-        "--audit-level=high",
-        "--prefix",
-        "projects/storybook/nextjs"
+        "run-approved-npm-audit"
       ],
       "cwd": ".",
       "allowed_env_keys": [],
@@ -1517,5 +1513,19 @@
       ],
       "security_disposition": "approved-node24"
     }
+  },
+  "npm_audit_acceptance": {
+    "id": "GHSA-vfj7-8cjw-p6xm",
+    "owner": "@buenhyden",
+    "expires_at": "2026-10-10T15:00:00Z",
+    "project": "projects/storybook/nextjs",
+    "dependency_chain": [
+      "eslint-config-next@16.3.8",
+      "@next/eslint-plugin-next@16.3.8",
+      "fast-glob@3.3.1",
+      "micromatch@4.0.8",
+      "braces@3.0.3"
+    ],
+    "advisory_url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm"
   }
 }
