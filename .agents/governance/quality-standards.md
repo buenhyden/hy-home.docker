@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.2.1"
+version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-04"
 ---
 
 # Agent Quality and Security Standards
@@ -44,6 +44,24 @@ Quality dimensions:
   validator or hook enforces the specific field.
 - Network hardening: isolate traffic on intended networks and enforce TLS at
   ingress boundaries.
+
+### Bounded npm risk acceptance
+
+An owner-approved risk acceptance is not a vulnerability fix or a branch
+protection bypass. SPEC-0205 records the 2026-10-04 approval for exactly
+GHSA-vfj7-8cjw-p6xm, the verified Next lint development chain, and expiry
+2026-10-10T15:00:00Z. `.github/workflow-contract.yml` owns the typed metadata;
+the existing CI adapter executes and checks it. Keep Next lint coverage.
+
+The full npm audit retains its raw FAIL receipt. A separate ACCEPTED_RISK
+receipt may satisfy this leaf only for that exact advisory and locked chain,
+with a clean production audit and an official advisory still lacking a patch.
+Unknown or malformed inputs, command/network/lookup errors, path/version drift,
+other high/critical or production findings, expiry and patch availability fail
+closed. Never use a skipped audit, lower threshold, continue-on-error, blanket
+package exception or omitted development audit. Expiry cannot auto-extend.
+Revert the bounded policy/adapter to strict failure when removing acceptance;
+normal required hosted checks continue to own protected integration.
 
 ## 3. Reliability Baseline
 
