@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import errno
 import fcntl
+import json
 import os
 import pathlib
 import re
@@ -12,7 +13,9 @@ import sys
 import threading
 import time
 import tomllib
+import urllib.request
 from collections.abc import Mapping
+from datetime import UTC, datetime
 from types import MappingProxyType
 
 SUBCOMMANDS = (
@@ -22,6 +25,7 @@ SUBCOMMANDS = (
     "run-unittest",
     "run-agent-output-eval",
     "run-npm",
+    "run-approved-npm-audit",
     "check-git-flow",
     "install-playwright",
     "run-zizmor-sarif",
@@ -144,6 +148,7 @@ ADAPTER_CONTEXTS = MappingProxyType(
         "check-git-flow": frozenset({"pull_request"}),
         "install-playwright": _CI_CONTEXTS,
         "run-npm": _CI_CONTEXTS,
+        "run-approved-npm-audit": _CI_CONTEXTS,
         "run-zizmor-sarif": _CI_CONTEXTS,
     }
 )
@@ -287,6 +292,9 @@ def _dispatch_adapter(
     if command == "run-agent-output-eval":
         _no_arguments(arguments)
         return _run_agent_output_eval(canonical_root, environ)
+    if command == "run-approved-npm-audit":
+        _no_arguments(arguments)
+        return _run_approved_npm_audit(canonical_root, environ)
     if command == "run-npm":
         npm_arguments = _npm_arguments(arguments)
         return _returncode(
@@ -747,6 +755,255 @@ def _npm_arguments(arguments: tuple[str, ...]) -> tuple[str, ...]:
     return arguments
 
 
+def _audit_failure() -> None:
+    raise AdapterError(
+        "ci-gate-adapter-audit", "the bounded audit acceptance is unavailable"
+    )
+
+
+def _audit_now() -> datetime:
+    return datetime.now(UTC)
+
+
+def _load_audit_acceptance(root: pathlib.Path) -> Mapping[str, object]:
+    from scripts.lib.gate.ci_gate_contract import load_npm_audit_acceptance
+
+    # The runner supplies an adopted descriptor root; the contract loader owns
+    # canonical path admission and no-follow reads of its authored input.
+    return load_npm_audit_acceptance(root.resolve(strict=True))
+
+
+def _audit_json(payload: bytes) -> dict[str, object]:
+    def unique(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, value in pairs:
+            if key in result:
+                _audit_failure()
+            result[key] = value
+        return result
+
+    try:
+        document = json.loads(
+            payload.decode("utf-8"),
+            object_pairs_hook=unique,
+            parse_constant=lambda _: _audit_failure(),
+        )
+        if not isinstance(document, dict):
+            _audit_failure()
+        return document
+    except (ValueError, UnicodeError):
+        _audit_failure()
+    raise AssertionError
+
+
+def _fetch_audit_advisory(url: str) -> dict[str, object]:
+    class NoRedirect(urllib.request.HTTPRedirectHandler):
+        def redirect_request(self, req, fp, code, msg, headers, newurl):
+            return None
+
+    request = urllib.request.Request(
+        url,
+        headers={
+            "Accept": "application/vnd.github+json",
+            "User-Agent": "hyhome-bounded-audit",
+        },
+    )
+    # No inherited credentials or proxy auth; only the fixed public HTTPS URL.
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect())
+    try:
+        with opener.open(request, timeout=10) as response:
+            if response.status != 200:
+                _audit_failure()
+            payload = response.read(_MAX_CAPTURE_BYTES + 1)
+            if len(payload) > _MAX_CAPTURE_BYTES:
+                _audit_failure()
+            return _audit_json(payload)
+    except (OSError, ValueError):
+        _audit_failure()
+    raise AssertionError
+
+
+def _read_audit_lock(root: pathlib.Path, project: str) -> dict[str, object]:
+    root_fd = _owned_root_descriptor(root)
+    descriptors: list[int] = []
+    try:
+        parent = root_fd
+        for component in project.split("/"):
+            descriptor = os.open(
+                component,
+                os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_DIRECTORY,
+                dir_fd=parent,
+            )
+            descriptors.append(descriptor)
+            parent = descriptor
+        descriptor = os.open(
+            "package-lock.json",
+            os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK,
+            dir_fd=parent,
+        )
+        descriptors.append(descriptor)
+        if not stat.S_ISREG(os.fstat(descriptor).st_mode):
+            _audit_failure()
+        return _audit_json(_read_bounded(descriptor))
+    except OSError:
+        _audit_failure()
+    finally:
+        for descriptor in reversed(descriptors):
+            os.close(descriptor)
+    raise AssertionError
+
+
+def _audit_nodes(result: subprocess.CompletedProcess[bytes]) -> dict[str, object]:
+    document = _audit_json(result.stdout or b"")
+    nodes = document.get("vulnerabilities")
+    metadata = document.get("metadata")
+    if (
+        result.returncode not in (0, 1)
+        or result.stderr
+        or document.get("error")
+        or document.get("auditReportVersion") != 2
+        or not isinstance(nodes, dict)
+        or not isinstance(metadata, dict)
+    ):
+        _audit_failure()
+    counts = metadata.get("vulnerabilities")
+    if (
+        not isinstance(counts, dict)
+        or set(counts) != {"info", "low", "moderate", "high", "critical", "total"}
+        or any(type(value) is not int or value < 0 for value in counts.values())
+    ):
+        _audit_failure()
+    severities = {level: 0 for level in ("info", "low", "moderate", "high", "critical")}
+    for node in nodes.values():
+        if not isinstance(node, dict) or node.get("severity") not in severities:
+            _audit_failure()
+        severities[node["severity"]] += 1
+    if counts != {**severities, "total": len(nodes)} or result.returncode != int(
+        bool(severities["high"] + severities["critical"])
+    ):
+        _audit_failure()
+    return nodes
+
+
+def _run_approved_npm_audit(root: pathlib.Path, environ: Mapping[str, str]) -> int:
+    policy = _load_audit_acceptance(root)
+    expiry = datetime.fromisoformat(str(policy["expires_at"]).replace("Z", "+00:00"))
+    if _audit_now() >= expiry:
+        _audit_failure()
+    chain = tuple(item.rsplit("@", 1) for item in policy["dependency_chain"])
+    lock = _read_audit_lock(root, str(policy["project"]))
+    packages = lock.get("packages")
+    if lock.get("lockfileVersion") != 3 or not isinstance(packages, dict):
+        _audit_failure()
+    for index, (name, version) in enumerate(chain):
+        entry = packages.get("node_modules/" + name)
+        if (
+            not isinstance(entry, dict)
+            or entry.get("version") != version
+            or entry.get("dev") is not True
+        ):
+            _audit_failure()
+        if index < len(chain) - 1 and chain[index + 1][0] not in entry.get(
+            "dependencies", {}
+        ):
+            _audit_failure()
+        # A second nested copy is a different dependency path, never accepted.
+        if any(
+            path != "node_modules/" + name and path.endswith("/node_modules/" + name)
+            for path in packages
+        ):
+            _audit_failure()
+    advisory = _fetch_audit_advisory(str(policy["advisory_url"]))
+    vulnerabilities = advisory.get("vulnerabilities")
+    if (
+        advisory.get("ghsa_id") != policy["id"]
+        or advisory.get("cve_id") != "CVE-2026-93687"
+        or "withdrawn_at" not in advisory
+        or advisory.get("withdrawn_at") is not None
+        or not isinstance(vulnerabilities, list)
+        or len(vulnerabilities) != 1
+    ):
+        _audit_failure()
+    affected = vulnerabilities[0]
+    if (
+        not isinstance(affected, dict)
+        or affected.get("package") != {"ecosystem": "npm", "name": "braces"}
+        or "first_patched_version" not in affected
+        or affected.get("first_patched_version") is not None
+        or str(affected.get("vulnerable_version_range")).replace(" ", "") != "<=3.0.3"
+    ):
+        _audit_failure()
+    audit_environment = {**environ, "NPM_CONFIG_UPDATE_NOTIFIER": "false"}
+    full = _run_child(
+        ("npm", "audit", "--audit-level=high", "--json", *_NPM_PREFIX),
+        root=root,
+        environ=audit_environment,
+        capture_output=True,
+    )
+    production = _run_child(
+        ("npm", "audit", "--omit=dev", "--audit-level=high", "--json", *_NPM_PREFIX),
+        root=root,
+        environ=audit_environment,
+        capture_output=True,
+    )
+    print(
+        f"raw npm audit: {'PASS' if full.returncode == 0 else 'FAIL'} (exit {full.returncode})"
+    )
+    print(
+        f"production npm audit: {'PASS' if production.returncode == 0 else 'FAIL'} (exit {production.returncode})"
+    )
+    nodes = _audit_nodes(full)
+    if _audit_nodes(production):
+        _audit_failure()
+    if _audit_now() >= expiry:
+        _audit_failure()
+    if not nodes:
+        return 0
+    names = tuple(name for name, _ in chain)
+    if set(nodes) != set(names):
+        _audit_failure()
+    for index, name in enumerate(names):
+        node = nodes[name]
+        if (
+            node.get("name") != name
+            or node.get("severity") != "high"
+            or node.get("nodes") != ["node_modules/" + name]
+            or not (
+                node.get("fixAvailable") is False
+                or (
+                    isinstance(node.get("fixAvailable"), dict)
+                    and node["fixAvailable"]
+                    == {
+                        "name": "eslint-config-next",
+                        "version": "14.2.35",
+                        "isSemVerMajor": True,
+                    }
+                    and node["fixAvailable"]["isSemVerMajor"] is True
+                )
+            )
+        ):
+            _audit_failure()
+        via = node.get("via")
+        if index < len(names) - 1:
+            if via != [names[index + 1]]:
+                _audit_failure()
+        elif (
+            not isinstance(via, list)
+            or len(via) != 1
+            or not isinstance(via[0], dict)
+            or via[0].get("url") != "https://github.com/advisories/" + str(policy["id"])
+            or via[0].get("name") != name
+            or via[0].get("dependency") != name
+            or via[0].get("severity") != "high"
+            or str(via[0].get("range")).replace(" ", "") != "<=3.0.3"
+        ):
+            _audit_failure()
+    print(
+        f"ACCEPTED_RISK {policy['id']} owner={policy['owner']} expires_at={policy['expires_at']}; raw audit remains FAIL"
+    )
+    return 0
+
+
 def _load_commit_contract(
     root: pathlib.Path,
 ) -> tuple[re.Pattern[str], int, frozenset[str]]:
@@ -966,4 +1223,5 @@ def _write_all(descriptor: int, payload: bytes) -> None:
 
 
 if __name__ == "__main__":
+    sys.path.insert(0, pathlib.Path(__file__).resolve().parents[3].as_posix())
     raise SystemExit(main())

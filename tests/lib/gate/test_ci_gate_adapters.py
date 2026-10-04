@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import fcntl
 import io
+import json
 import os
 import pathlib
 import re
@@ -12,6 +13,7 @@ import tempfile
 import tomllib
 import unittest
 from collections.abc import Mapping
+from datetime import UTC, datetime
 from unittest import mock
 
 from scripts.lib.gate import ci_gate_adapters as adapters
@@ -25,6 +27,7 @@ EXPECTED_SUBCOMMANDS = (
     "run-unittest",
     "run-agent-output-eval",
     "run-npm",
+    "run-approved-npm-audit",
     "check-git-flow",
     "install-playwright",
     "run-zizmor-sarif",
@@ -1530,6 +1533,283 @@ class CiGateAdapterTests(unittest.TestCase):
             b'{"partial":true}',
             (self.root / "results.sarif").read_bytes(),
         )
+
+
+class ApprovedNpmAuditTests(unittest.TestCase):
+    chain = (
+        "eslint-config-next@16.3.8",
+        "@next/eslint-plugin-next@16.3.8",
+        "fast-glob@3.3.1",
+        "micromatch@4.0.8",
+        "braces@3.0.3",
+    )
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.root = pathlib.Path(self.temporary.name)
+        self.policy = dict(
+            id="GHSA-vfj7-8cjw-p6xm",
+            owner="@buenhyden",
+            expires_at="2026-10-10T15:00:00Z",
+            project="projects/storybook/nextjs",
+            dependency_chain=self.chain,
+            advisory_url="https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+        )
+        packages = {}
+        self.nodes = {}
+        for index, item in enumerate(self.chain):
+            name, version = item.rsplit("@", 1)
+            via = (
+                [self.chain[index + 1].rsplit("@", 1)[0]]
+                if index < 4
+                else [
+                    dict(
+                        url="https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+                        name="braces",
+                        dependency="braces",
+                        severity="high",
+                        range="<=3.0.3",
+                    )
+                ]
+            )
+            path = "node_modules/" + name
+            packages[path] = dict(
+                version=version,
+                dev=True,
+                dependencies={self.chain[index + 1].rsplit("@", 1)[0]: "*"}
+                if index < 4
+                else {},
+            )
+            self.nodes[name] = dict(
+                name=name,
+                severity="high",
+                via=via,
+                nodes=[path],
+                range="*",
+                effects=[],
+                fixAvailable=False,
+            )
+        target = self.root / self.policy["project"]
+        target.mkdir(parents=True)
+        self.lock = dict(lockfileVersion=3, packages=packages)
+        (target / "package-lock.json").write_text(json.dumps(self.lock))
+        self.advisory = dict(
+            ghsa_id=self.policy["id"],
+            cve_id="CVE-2026-93687",
+            withdrawn_at=None,
+            vulnerabilities=[
+                dict(
+                    package=dict(ecosystem="npm", name="braces"),
+                    vulnerable_version_range="<= 3.0.3",
+                    first_patched_version=None,
+                )
+            ],
+        )
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def audit(self, nodes=None, returncode=1):
+        return subprocess.CompletedProcess(
+            [],
+            returncode,
+            json.dumps(
+                dict(
+                    auditReportVersion=2,
+                    vulnerabilities=self.nodes if nodes is None else nodes,
+                    metadata=dict(
+                        vulnerabilities=dict(
+                            info=0,
+                            low=0,
+                            moderate=0,
+                            high=5 if nodes is None else len(nodes),
+                            critical=0,
+                            total=5 if nodes is None else len(nodes),
+                        )
+                    ),
+                )
+            ).encode(),
+            b"",
+        )
+
+    def run_audit(self, full=None, production=None):
+        recorder = ChildRecorder(
+            [full or self.audit(), production or self.audit({}, 0)]
+        )
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=recorder),
+            mock.patch.object(
+                adapters,
+                "_load_audit_acceptance",
+                return_value=self.policy,
+                create=True,
+            ),
+            mock.patch.object(
+                adapters,
+                "_fetch_audit_advisory",
+                return_value=self.advisory,
+                create=True,
+            ),
+            mock.patch.object(
+                adapters,
+                "_audit_now",
+                return_value=datetime(2026, 10, 4, tzinfo=UTC),
+                create=True,
+            ),
+            mock.patch.object(sys, "stdout", io.StringIO()) as output,
+        ):
+            result = adapters.run_adapter(
+                self.root, ("run-approved-npm-audit",), {"PATH": "/usr/bin"}
+            )
+        return result, recorder, output.getvalue()
+
+    def test_exact_dev_chain_is_accepted_with_raw_failure_visible(self):
+        result, recorder, output = self.run_audit()
+        self.assertEqual(0, result)
+        self.assertEqual(2, len(recorder.calls))
+        self.assertIn("--omit=dev", recorder.calls[1][0])
+        self.assertIn("raw npm audit: FAIL", output)
+        self.assertIn("ACCEPTED_RISK", output)
+
+    def test_production_finding_rejects(self):
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit(production=self.audit())
+
+    def test_unknown_advisory_and_dependency_reject(self):
+        for mutation in ("url", "dependency"):
+            nodes = json.loads(json.dumps(self.nodes))
+            if mutation == "url":
+                nodes["braces"]["via"][0]["url"] = (
+                    "https://github.com/advisories/GHSA-unknown"
+                )
+            else:
+                nodes["other"] = nodes.pop("braces")
+            with (
+                self.subTest(mutation=mutation),
+                self.assertRaises(adapters.AdapterError),
+            ):
+                self.run_audit(full=self.audit(nodes))
+
+    def test_malformed_and_tool_exit_reject(self):
+        for code, payload in (
+            (1, b"{}"),
+            (2, b"{}"),
+            (1, b"not-json"),
+            (0, b'{"auditReportVersion":2,"vulnerabilities":{},"vulnerabilities":{}}'),
+        ):
+            with (
+                self.subTest(code=code, payload=payload),
+                self.assertRaises(adapters.AdapterError),
+            ):
+                self.run_audit(full=subprocess.CompletedProcess([], code, payload, b""))
+
+    def test_lock_version_or_dev_scope_drift_reject(self):
+        target = self.root / self.policy["project"] / "package-lock.json"
+        for field, value in (("version", "3.0.4"), ("dev", False)):
+            lock = json.loads(json.dumps(self.lock))
+            lock["packages"]["node_modules/braces"][field] = value
+            target.write_text(json.dumps(lock))
+            with self.subTest(field=field), self.assertRaises(adapters.AdapterError):
+                self.run_audit()
+
+    def test_expired_and_patch_available_reject(self):
+        self.policy["expires_at"] = "2026-10-04T00:00:00Z"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+        self.policy["expires_at"] = "2026-10-10T15:00:00Z"
+        self.advisory["vulnerabilities"][0]["first_patched_version"] = "3.0.4"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+
+    def test_advisory_unknown_range_or_withdrawal_reject(self):
+        for field, value in (("withdrawn_at", "2026-10-04"), ("ghsa_id", "GHSA-other")):
+            saved = self.advisory[field]
+            self.advisory[field] = value
+            with self.subTest(field=field), self.assertRaises(adapters.AdapterError):
+                self.run_audit()
+            self.advisory[field] = saved
+        self.advisory["vulnerabilities"][0]["vulnerable_version_range"] = "*"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+
+    def test_advisory_transport_failure_is_closed(self):
+        with (
+            mock.patch.object(
+                adapters, "_load_audit_acceptance", return_value=self.policy
+            ),
+            mock.patch.object(
+                adapters, "_audit_now", return_value=datetime(2026, 10, 4, tzinfo=UTC)
+            ),
+            mock.patch.object(adapters.urllib.request, "build_opener") as opener,
+        ):
+            opener.return_value.open.side_effect = OSError("synthetic network failure")
+            with self.assertRaises(adapters.AdapterError):
+                adapters.run_adapter(
+                    self.root, ("run-approved-npm-audit",), {"PATH": "/usr/bin"}
+                )
+
+    def test_closed_new_grammar_and_context(self):
+        adapters.validate_adapter_argv(("run-approved-npm-audit",))
+        with self.assertRaises(adapters.AdapterError):
+            adapters.validate_adapter_argv(("run-approved-npm-audit", "--ignore"))
+        self.assertNotIn("local", adapters.ADAPTER_CONTEXTS["run-approved-npm-audit"])
+
+    def test_audit_metadata_mismatch_and_zero_audit(self):
+        broken = self.audit()
+        doc = json.loads(broken.stdout)
+        doc["metadata"]["vulnerabilities"]["high"] = 4
+        broken.stdout = json.dumps(doc).encode()
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit(full=broken)
+        self.assertEqual(0, self.run_audit(full=self.audit({}, 0))[0])
+
+    def test_missing_patch_status_and_cycle_reject(self):
+        saved = self.advisory["vulnerabilities"][0].pop("first_patched_version")
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+        self.advisory["vulnerabilities"][0]["first_patched_version"] = saved
+        nodes = json.loads(json.dumps(self.nodes))
+        nodes["micromatch"]["via"] = ["fast-glob"]
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit(full=self.audit(nodes))
+
+    def test_known_next_downgrade_is_not_a_braces_patch(self):
+        for node in self.nodes.values():
+            node["fixAvailable"] = {
+                "name": "eslint-config-next",
+                "version": "14.2.35",
+                "isSemVerMajor": True,
+            }
+        self.assertEqual(0, self.run_audit()[0])
+        self.nodes["braces"]["fixAvailable"]["version"] = "14.2.36"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+
+    def test_unknown_stderr_and_malformed_fix_types_reject(self):
+        full = self.audit()
+        full.stderr = b"synthetic unknown diagnostic"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit(full=full)
+        for value in (
+            0,
+            None,
+            True,
+            {"name": "eslint-config-next", "version": "14.2.35", "isSemVerMajor": 1},
+        ):
+            self.nodes["braces"]["fixAvailable"] = value
+            with self.subTest(value=value), self.assertRaises(adapters.AdapterError):
+                self.run_audit()
+
+    def test_missing_withdrawal_and_nonfinite_json_reject(self):
+        self.advisory.pop("withdrawn_at")
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+        for payload in (b'{"unexpected":NaN}', b'{"unexpected":Infinity}'):
+            with (
+                self.subTest(payload=payload),
+                self.assertRaises(adapters.AdapterError),
+            ):
+                adapters._audit_json(payload)
 
 
 if __name__ == "__main__":

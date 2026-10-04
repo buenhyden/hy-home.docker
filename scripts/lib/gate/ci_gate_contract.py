@@ -11,6 +11,7 @@ import stat
 import subprocess
 import sys
 from collections.abc import Mapping
+from types import MappingProxyType
 
 import yaml
 
@@ -71,6 +72,7 @@ _COMPLETE_CAPABILITY_ARGV = {
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "schema_version",
+        "npm_audit_acceptance",
         "workflows",
         "gate_nodes",
         "public_gate",
@@ -572,6 +574,38 @@ def load_contract_document(root: pathlib.Path) -> dict[str, object]:
     return document
 
 
+def _parse_npm_audit_acceptance(document: Mapping[str, object]) -> Mapping[str, object]:
+    # One approved incident, not a general package allowlist. A new risk requires
+    # another reviewed policy amendment and accompanying negative fixtures.
+    expected = {
+        "id": "GHSA-vfj7-8cjw-p6xm",
+        "owner": "@buenhyden",
+        "expires_at": "2026-10-10T15:00:00Z",
+        "project": "projects/storybook/nextjs",
+        "dependency_chain": [
+            "eslint-config-next@16.3.8",
+            "@next/eslint-plugin-next@16.3.8",
+            "fast-glob@3.3.1",
+            "micromatch@4.0.8",
+            "braces@3.0.3",
+        ],
+        "advisory_url": "https://api.github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+    }
+    if document.get("npm_audit_acceptance") != expected:
+        raise GateContractError(
+            "ci-gate-npm-audit-acceptance",
+            _CONTRACT_PATH.as_posix(),
+            "the single approved npm risk contract is missing or changed",
+        )
+    return MappingProxyType(
+        {**expected, "dependency_chain": tuple(expected["dependency_chain"])}
+    )
+
+
+def load_npm_audit_acceptance(root: pathlib.Path) -> Mapping[str, object]:
+    return _parse_npm_audit_acceptance(load_contract_document(root))
+
+
 def parse_gate_registry(
     document: Mapping[str, object],
     path: str,
@@ -596,6 +630,8 @@ def parse_gate_registry(
                 path,
                 "registry sections must be JSON objects",
             )
+    if "npm_audit_acceptance" in document:
+        _parse_npm_audit_acceptance(document)
     raw_nodes = _require_records(document["gate_nodes"], "ci-gate-nodes-type", path)
     if len(raw_nodes) > _MAX_GATE_NODES:
         raise GateContractError(
