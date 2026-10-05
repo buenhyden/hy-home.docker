@@ -31,7 +31,7 @@ The message does not follow Commit Standards in
 
 **Required format:**
 
-```
+```text
 <type>[(scope)][!]: <description>
 ```
 

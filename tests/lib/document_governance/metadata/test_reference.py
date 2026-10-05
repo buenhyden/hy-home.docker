@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import io
 import json
 import pathlib
@@ -225,9 +226,85 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 
+    def test_historical_archive_alias_requires_identity_metadata_and_raw_bytes(
+        self,
+    ) -> None:
+        profiles = current_profiles()
+        relative = pathlib.Path("docs/98.archive/migrations/0001-example.md")
+        text = (
+            "---\nartifact_id: MIG-0001\ntype: archive/migration\n"
+            "status: sealed\n---\n# Historical Migration\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / relative
+            path.parent.mkdir(parents=True)
+            path.write_bytes(text.encode())
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "source",
+                ],
+                cwd=root,
+                check=True,
+            )
+            revision = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            record = metadata._record_from_text(relative, text, profiles=profiles)
+            expected = frozenset({relative.as_posix()})
+            self.assertEqual(
+                expected,
+                reference_module._source_bound_legacy_archive_types(
+                    root, (record,), profiles, revision
+                ),
+            )
+            for key, value in (("artifact_id", "MIG-0002"), ("status", "draft")):
+                with self.subTest(changed_metadata=key):
+                    changed = dataclasses.replace(
+                        record, metadata={**record.metadata, key: value}
+                    )
+                    self.assertEqual(
+                        frozenset(),
+                        reference_module._source_bound_legacy_archive_types(
+                            root, (changed,), profiles, revision
+                        ),
+                    )
+            with mock.patch.object(
+                reference_module, "collect_selected_records_at_ref", return_value={}
+            ):
+                self.assertEqual(
+                    frozenset(),
+                    reference_module._source_bound_legacy_archive_types(
+                        root, (record,), profiles, revision
+                    ),
+                )
+            for payload in (
+                (text + "Changed body.\n").encode(),
+                text.replace("\n", "\r\n").encode(),
+            ):
+                path.write_bytes(payload)
+                self.assertEqual(
+                    frozenset(),
+                    reference_module._source_bound_legacy_archive_types(
+                        root, (record,), profiles, revision
+                    ),
+                )
+
     def test_terminal_task_body_baseline_requires_exact_generation_blob(self) -> None:
         profiles = current_profiles()
         relative = pathlib.Path("docs/03.specs/0001-example/tasks/tsk-0001-example.md")
+        missing_relative = pathlib.Path(
+            "docs/03.specs/0001-example/tasks/tsk-0002-missing-at-source.md"
+        )
         text = (
             "---\nartifact_id: SPEC-0001-TSK-0001\ntype: sdlc/task\n"
             "status: completed\n---\n# Historical Task\n"
@@ -266,13 +343,61 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             exact_record, exact_text = reference_module._generation_task_body_baseline(
                 root, record, text, profiles, bindings
             )
+
+            path.write_bytes(text.replace("\n", "\r\n").encode("utf-8"))
+            normalized_crlf_text = path.read_text(encoding="utf-8")
+            self.assertEqual(text, normalized_crlf_text)
+            crlf_only = reference_module._generation_task_body_baseline(
+                root, record, normalized_crlf_text, profiles, bindings
+            )
+
+            changed_text = text + "changed\n"
+            path.write_bytes(changed_text.encode("utf-8"))
             changed = reference_module._generation_task_body_baseline(
-                root, record, text + "changed\n", profiles, bindings
+                root, record, path.read_text(encoding="utf-8"), profiles, bindings
+            )
+
+            symlink_target = path.with_name("same-content.md")
+            symlink_target.write_text(text, encoding="utf-8")
+            path.unlink()
+            path.symlink_to(symlink_target.name)
+            nonregular = reference_module._generation_task_body_baseline(
+                root, record, text, profiles, bindings
+            )
+
+            path.unlink()
+            path.write_text(text, encoding="utf-8")
+            with mock.patch.object(
+                reference_module,
+                "MAX_SPEC_FILE_BYTES",
+                len(text.encode("utf-8")) - 1,
+                create=True,
+            ):
+                oversized = reference_module._generation_task_body_baseline(
+                    root, record, text, profiles, bindings
+                )
+
+            missing_path = root / missing_relative
+            missing_path.write_text(text, encoding="utf-8")
+            missing_record = metadata._record_from_text(
+                missing_relative, text, profiles=profiles
+            )
+            missing_bindings = reference_module._GenerationBindings(
+                revision,
+                {missing_relative.as_posix(): "completed"},
+                frozenset({missing_relative.as_posix()}),
+            )
+            missing_source = reference_module._generation_task_body_baseline(
+                root, missing_record, text, profiles, missing_bindings
             )
 
         self.assertIsNotNone(exact_record)
         self.assertEqual(text, exact_text)
+        self.assertEqual((None, None), crlf_only)
         self.assertEqual((None, None), changed)
+        self.assertEqual((None, None), nonregular)
+        self.assertEqual((None, None), oversized)
+        self.assertEqual((None, None), missing_source)
 
     def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
         profiles = current_profiles()

@@ -1,8 +1,8 @@
 ---
 title: "Common Document Contract Adoption Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
-status: "blocked"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"
@@ -40,7 +40,234 @@ digests, Git source objects, metadata structure, and read-only review do not
 authenticate that origin or grant approval. Automatic account or native-actor
 authentication is unsupported; no approval API or runtime grant is claimed.
 
+### Consumer Recovery Authorization
+
+The fresh trusted user message on 2026-10-05 says `PLEASE IMPLEMENT THIS PLAN`
+and supplies the P02 document-contract consumer-recovery plan. That actual
+message authorizes the assigned QA implementer as the single writer of three
+consumers, five affected regression files, and this package's Spec, Plan, and
+Task in `.worktrees/p02-document-consumer-recovery`. Root owns checks, staging,
+and the conditional local commit; a separate reviewer remains read-only.
+The former documentation-writer assignment describes the historical adoption
+attempt and does not expand the current eleven-file ownership.
+
+This origin authorizes one initial test-first/source batch plus one narrower
+P02-owned correction and at most two public changed-gate executions on different
+inputs. Completion and the local commit remain conditional on required
+PASS/accepted evidence and independent review. Remote push, PR, merge, live
+HOME operations, deployment, secrets, archive disposition, npm exception work,
+and importing P01 changes are excluded. This Task records that scope; it does
+not authenticate the origin or create native authorization.
+
 ## Work Log
+
+### Current Consumer Recovery Preflight
+
+Root observed clean `main` at `7df4df9eaa31ee609dbb4fbb86f295e56672eacd` and
+created branch `codex/p02-document-consumer-recovery` in the requested new
+worktree. Both observed OIDC entrypoint modes there are `0755`: executable
+and neither group nor world writable. No chmod was performed and no cause
+for the prior recovery worktree's different modes is inferred. Prior recovery
+and P01 worktrees are separate preserved inputs, not this attempt's evidence.
+
+The candidate patch contains exactly the three consumers and five regression
+files named by the approved plan. Its rechecked SHA-256 is
+`d930455e9cc91940f0e49032766e88a525736672aa6598595d55c0e4ffc40729`.
+Only its five test-file hunks were applied initially; production stayed at
+main until root witnessed the CRLF RED. The three approved production hunks
+were then applied as the same initial batch. The initial documentation edits and
+later approved production hunks constitute one initial batch. Earlier recovery
+Spec/Plan/Task drafts and the SPEC-0204 npm receipt are not copied.
+
+Root's current tool preflight observed Python 3.12.3, PyYAML 6.0.3,
+markdown-it-py 3.0.0, html5lib 1.1, and jsonschema 4.26.0. Numeric token,
+time, and cost budgets and native remaining allocation are UNKNOWN. The QA
+writer explicitly read bootstrap/provider, canonical qa-engineer, test-authoring
+and style-validation, the package, and its Requirement/Architecture parents.
+The registered cached Ruff binary reports 0.15.12 and is reserved for scoped
+check mode; the PATH binary's different version is not substituted. Docker
+Compose reports CLI version v5.6.0. These are readiness observations only;
+no Ruff, Compose structural, or live runtime PASS is claimed.
+These reads do not prove provider entitlement, hook delivery, runtime acceptance,
+or a test result. No initial focused test, final staged gate, review, or
+acceptance is claimed before root actually observes it.
+
+The existing generation-5 Registry, scalar Task status, eight-column Evidence,
+high-water identity, native skill envelope, completed Tasks, and sealed archive
+bodies are retained. W4 restores bounded Git/current byte comparison before text
+interpretation, exact migration/merge-based generation 3–5 compatibility, and
+Registry-declared Operations optional fields without widening current Task
+transitions or terminal requirements. W5 binds the final diff and actual checks
+and review to this worktree input; historical FAIL receipts below remain intact.
+
+### Current Raw-byte RED Witness
+
+Before the production hunks, root verified all three consumer files were exact
+HEAD bytes and ran:
+
+```sh
+PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-document-recovery-venv/bin/python -B -m unittest tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_terminal_task_body_baseline_requires_exact_generation_blob -v
+```
+
+The observed process exited 1 in 0.937 seconds; unittest ran one test in
+0.420 seconds with one FAIL. The failing line 396 assertion expected
+`(None, None)` for `crlf_only`; the uncorrected consumer admitted the
+newline-normalized source instead. This was the intended behavioral RED,
+not an environment failure or closure evidence. The synthetic regression
+output location was `/tmp/hy-home-p02-red.log`. The exact approved three
+consumer hunks were applied only after that root observation. GREEN and
+independent review remain unobserved at this receipt.
+
+### Current Focused GREEN and Initial Review
+
+After the approved consumer hunks, root ran the following exact focused check
+with the same no-user-site/no-bytecode environment as the RED witness:
+
+```sh
+PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-document-recovery-venv/bin/python -B -m unittest tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_terminal_task_body_baseline_requires_exact_generation_blob tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_historical_archive_alias_requires_identity_metadata_and_raw_bytes tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_mainline_generation_terminal_task_requires_exact_integration_blob tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_historical_type_source_rejects_untrusted_provenance tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_same_generation_alias_source_preserves_lifecycle_baseline tests.lib.document_governance.test_operations_catalog.OperationsCatalogTopologyTests.test_registry_operations_profiles_require_a_layer_declaration tests.lib.document_governance.test_operations_catalog.OperationsCatalogTopologyTests.test_registry_operations_profiles_reject_malformed_optional_frontmatter tests.lib.document_governance.test_operations_catalog.OperationsCatalogTopologyTests.test_nested_corrective_actions_require_one_substantive_owned_section -v
+```
+
+It exited 0 in 29.932 seconds; unittest ran eight tests in 29.355 seconds,
+all PASS. The selectors are the raw-byte baseline, archive-alias identity and
+metadata binding, mainline integration blob binding, untrusted type provenance,
+same-generation lifecycle baseline, Operations layer declaration, malformed
+optional fields, and unique substantive corrective-action section regressions.
+The synthetic result location was `/tmp/hy-home-p02-green.log`. These focused
+checks do not claim the full library, metadata, or public gate passed.
+
+Root used the registered cached Ruff 0.15.12 binary for both read-only commands:
+
+```sh
+/home/hyunyoun/.cache/pre-commit/repo9lhk7fql/py_env-python3.12/bin/ruff check --no-cache scripts/lib/document_governance/metadata/reference.py scripts/lib/document_governance/operations_catalog.py scripts/lib/document_governance/spec_packages.py tests/lib/document_governance/metadata/test_reference.py tests/lib/document_governance/test_operations_catalog.py tests/lib/document_governance/test_references.py tests/lib/document_governance/test_spec_packages.py tests/lib/document_governance/test_taxonomy.py
+/home/hyunyoun/.cache/pre-commit/repo9lhk7fql/py_env-python3.12/bin/ruff format --check --no-cache scripts/lib/document_governance/metadata/reference.py scripts/lib/document_governance/operations_catalog.py scripts/lib/document_governance/spec_packages.py tests/lib/document_governance/metadata/test_reference.py tests/lib/document_governance/test_operations_catalog.py tests/lib/document_governance/test_references.py tests/lib/document_governance/test_spec_packages.py tests/lib/document_governance/test_taxonomy.py
+```
+
+Both exited 0: check reported `All checks passed`; format check reported
+`8 files already formatted`. No formatter write was performed. Inputs were the
+eight approved Python files whose complete diff retained candidate SHA-256
+`d930455e9cc91940f0e49032766e88a525736672aa6598595d55c0e4ffc40729`.
+
+The actual separate read-only reviewer `/root/p02_reviewer` inspected all eleven
+owned files, their canonical contract, and these results. Its exact reviewed
+diff SHA-256 was
+`62076e12d92d2c573c1185ca29d5bd911e4df44b7f63019769be50512e95fb74`;
+root's `/tmp/hy-home-p02-initial-input.json` bound all eleven working/index
+hashes as equal. The reviewer reported no findings and conditional code
+approval. This review precedes the planned receipt update and frozen public
+gate; final criterion acceptance remains pending. The narrower P02 correction
+budget is unused. The root-owned public changed gate is NOT_RUN at this receipt.
+
+### Current Frozen Public Gate and Source Preservation
+
+Root froze exactly the eleven owned files with working and index hashes equal
+in `/tmp/hy-home-p02-public-input.json`. The frozen complete diff SHA-256 was
+`d8c4ec87bccd7f451a21d2b43bb95faa9f269367c7903d7ab2dd182ffbe94ca1`.
+The public explain route resolved 36 local leaf invocations on that input;
+its plan-file NOT_RUN values describe pre-execution planning only. Root then ran:
+
+```sh
+TEMPLATE_GATE_BASE=main /tmp/hy-home-document-recovery-venv/bin/python3 -B scripts/validation/run-ci-gate.py --profile changed
+```
+
+The observed process exited 0 in 2,258.294 seconds. The actual runner completed
+all 36 selected leaf invocations successfully and returns nonzero on a failed
+invocation. Root rechecked every frozen working/index hash after execution;
+all eleven still matched. The observed result and synthetic QA output locations
+were `/tmp/hy-home-p02-public-result.json` and
+`/tmp/hy-home-p02-public-changed-gate.log`. No second public run, full profile,
+hosted check, or narrower implementation correction was used. Root's additional
+`/tmp/hy-home-p02-public-success-receipt.json` binds all 36 actual selected
+successes to the public runner's exit-0 contract. It also records unchanged,
+clean main at `7df4df9eaa31ee609dbb4fbb86f295e56672eacd` and unchanged complete
+diffs in both the prior recovery and P01 worktrees. Their inputs and pending
+work remain separate from this recovery. The upcoming receipt checks use
+metadata `check-changed` against main with the three owned document paths and
+link `alignment` mode; neither result is claimed in advance.
+
+| Observed check | Actual outcome and boundary |
+| --- | --- |
+| Active document metadata | 479 records; zero violations. |
+| Document links | 1,101 documents and 11,026 links; zero failures and one warning. The 2,870 uncaptured historical links remain UNVERIFIED. |
+| Full selected metadata regressions | 138 tests PASS in 392.396 seconds. |
+| Document-governance library | 670 tests PASS in 653.152 seconds. |
+| Operations catalog | PASS on the frozen current input. |
+| Supply-chain fixture policy | 239 tests PASS in 77.809 seconds. |
+| Isolated Conftest policy | 16 passed, zero failed, zero skipped. |
+| Compose baseline regressions | 232 tests OK, with 23 runtime-conditional skips; those runtime cases are unverified. |
+| Structural Compose/configuration leaves | Selected structural checks succeeded; this is not live HOME capacity, recovery, deployment, or runtime activation. |
+
+Root also performed a supplementary read-only source comparison against
+`8b85e88fe2dfef54f4cc125ee2687982c86c1942`. It observed 495 preserved archive
+records with identical complete raw bytes, excluding only the two current routers
+`docs/98.archive/README.md` and `docs/98.archive/retention-catalog.md`, and 72
+source-completed Task bodies with identical body bytes. The comparison exited
+0 with zero defects. `/tmp/hy-home-p02-protected-source-observation.json` binds
+those observed paths and results. These counts describe this source/input
+observation and do not become fixed-count preservation requirements.
+
+### Current Criteria Reconciliation Pending Acceptance
+
+AC1/W1 reuses the earlier accepted attachment/source integrity and whole-stage
+inventory. Current AC2/W2 reconciles the already-adopted unchanged Registry,
+schema, template, and native extension contract with the successful Registry
+and consumer regressions. Current AC3/W3 combines the active metadata/link
+results with exact protected-source observations; it grants no historical-link
+resolution claim and rewrites no preserved body. Current AC4/W4 binds the
+witnessed RED/GREEN and full generation 3–5 metadata/library compatibility
+results. Current AC5/W5 binds the exact frozen public gate and the actual
+initial independent review. Final receipt checks and final acceptance review
+are still pending; no completion event or local commit has occurred.
+
+The historical FAIL rows and failed input receipts below remain unchanged.
+Current reconciliation rows refer to this newly corrected input and may be
+accepted only after the final receipt checks and independent review. Historical
+results never become PASS by copying a new-input result over them.
+
+### Current Completion Evidence
+
+Root staged the post-gate receipt and observed exact complete diff SHA-256
+`25ff4665a5bc24b8db8a1757ed6389aeefef132adc085c67b49830be9de3cd48`.
+All eleven working/index hashes matched the tested receipt. On that still
+in-progress input, root ran the following minimal checks:
+
+```sh
+/tmp/hy-home-document-recovery-venv/bin/python3 -B scripts/validation/check-document-metadata.py --mode check-changed --base-ref main --changed-path docs/03.specs/0209-common-document-contract-adoption/spec.md --changed-path docs/03.specs/0209-common-document-contract-adoption/plan.md --changed-path docs/03.specs/0209-common-document-contract-adoption/tasks/tsk-0001-common-document-contract-adoption.md
+/tmp/hy-home-document-recovery-venv/bin/python3 -B scripts/validation/check-document-links.py --mode alignment
+```
+
+Metadata exited 0 in 155.304 seconds: three selected records, zero violations,
+zero legacy exceptions, and zero transition overrides. Link alignment exited
+0 in 40.494 seconds: 1,101 documents, 11,026 links, zero failures, and one
+existing warning for 2,870 uncaptured historical links. Those historical links
+remain UNVERIFIED. `/tmp/hy-home-p02-receipt-checks.json` records the actual
+arguments, results, and value-free synthetic output locations.
+
+The actual independent reviewer `/root/p02_reviewer` reproduced the exact
+receipt diff and eleven working/index hashes, inspected the actual public gate,
+protected-source proof, and minimal checks, and reported APPROVED with no
+findings. It accepted AC1/W1, AC2/W2, AC3/W3, AC4/W4, and AC5/W5 on the tested
+in-progress receipt. Only the five current reconciliation rows and current
+pre-completion receipt proof are promoted here; historical failed-input rows
+and pending dispositions remain intact.
+
+This accepted receipt supplies the real in-progress-to-completed events for
+Spec, Plan, and Task recorded below. Root then tested the exact completed-input
+diff `7eab0d7382b150fa275cb384477c6a65fb00551fd798f791fe431cbfad35e7c3`:
+three-path metadata exited 0 in 155.178 seconds with three selected records,
+zero violations, zero legacy exceptions, and zero transition overrides;
+link alignment exited 0 in 40.693 seconds with 1,101 documents, 11,026 links,
+zero failures, and the same one warning for 2,870 UNVERIFIED historical links.
+Actual commands/results are bound by `/tmp/hy-home-p02-completion-checks.json`.
+
+The independent reviewer reproduced all eleven current/index hashes and
+approved the exact completed input without findings. It accepted completed
+parent/member projection, direct completion events, all five accepted work
+pairs, and current links. This final result receipt changes only the Task;
+root minimally validates that appended receipt and obtains a read-only receipt
+supplement before the authorized local commit. The actual local commit OID is
+located through Git history after creation; this receipt invents no future OID,
+remote integration, archive disposition, live HOME recovery, or runtime
+activation.
 
 ### Execution Procedure and Preflight
 
@@ -127,6 +354,12 @@ existing prior review worktree. No merge or commit had occurred at that check.
 | SPEC-0209 | in-progress | blocked | #local-integration-handoff |
 | SPEC-0209-PLAN-0001 | in-progress | blocked | #local-integration-handoff |
 | SPEC-0209-TSK-0001 | in-progress | blocked | #local-integration-handoff |
+| SPEC-0209 | blocked | in-progress | #consumer-recovery-authorization |
+| SPEC-0209-PLAN-0001 | blocked | in-progress | #consumer-recovery-authorization |
+| SPEC-0209-TSK-0001 | blocked | in-progress | #consumer-recovery-authorization |
+| SPEC-0209 | in-progress | completed | #current-completion-evidence |
+| SPEC-0209-PLAN-0001 | in-progress | completed | #current-completion-evidence |
+| SPEC-0209-TSK-0001 | in-progress | completed | #current-completion-evidence |
 
 ### Package Authorization and Source Binding
 
@@ -764,8 +997,30 @@ rollback; no reset or history rewrite is proposed.
 | Raw-byte terminal Task guard | 4 | W4 | Independent review of source-blob equality | `_text_at_ref` and `Path.read_text` newline normalization in metadata reference consumer | FAIL | This Task, Latest Changed Gate and Raw-byte Review | pending |
 | Post-merge reader compatibility | 4 | W4 | Actual metadata check-changed against P01 source | Main `ddd07f38067db166bb5acc18b58226827e8b2db2`; base `68e0bfd3edb0895235dc628d03d427ca9fd14736` | FAIL | This Task, Integration Outcome | pending |
 | Closure evidence | 5 | W5 | Latest changed gate and actual post-merge metadata check | Main `ddd07f38067db166bb5acc18b58226827e8b2db2`; recorded latest gate packet | FAIL | This Task, Latest Changed Gate and Integration Outcome | pending |
+| Current raw-byte RED witness | 4 | W4 | Exact-generation-blob CRLF regression before production correction | Five approved test hunks; three consumers byte-identical to HEAD `7df4df9eaa31ee609dbb4fbb86f295e56672eacd` | FAIL | This Task, Current Raw-byte RED Witness | pending |
+| Current consumer recovery | 4 | W4 | Witnessed raw-byte RED/GREEN and eight new or changed boundary regressions | New P02 recovery worktree at main `7df4df9eaa31ee609dbb4fbb86f295e56672eacd`; approved eight-file candidate patch | PASS | This Task, Current Focused GREEN and Initial Review | pending |
+| Current scoped Ruff checks | 4 | W4 | Registered Ruff 0.15.12 check and format check, no write | Eight approved Python files; exact candidate patch | PASS | This Task, Current Focused GREEN and Initial Review | pending |
+| Initial independent code review | 5 | W5 | Actual read-only reviewer inspected all eleven files and focused results | Exact eleven-file diff `62076e12d92d2c573c1185ca29d5bd911e4df44b7f63019769be50512e95fb74` | PASS | This Task, Current Focused GREEN and Initial Review | pending |
+| Current recovery public gate | 5 | W5 | Actual public changed gate on exactly eleven frozen owned files | Complete staged diff `d8c4ec87bccd7f451a21d2b43bb95faa9f269367c7903d7ab2dd182ffbe94ca1`; base main `7df4df9eaa31ee609dbb4fbb86f295e56672eacd` | PASS | This Task, Current Frozen Public Gate and Source Preservation | pending |
+| Current AC1 reconciliation | 1 | W1 | Reuse accepted attachment/source integrity and whole-stage inventory with the bounded current ownership | Original approved source and preserved inventory; new eleven-file recovery scope | PASS | This Task, Inputs and Authorization, Whole Stage 99 source inventory, and Current Criteria Reconciliation Pending Acceptance | accepted |
+| Current AC2 reconciliation | 2 | W2 | Reconcile adopted Registry/schema/template and native extension contracts with successful current contract regressions | Unchanged generation-5 authority; frozen eleven-file gate input | PASS | This Task, Current Frozen Public Gate and Source Preservation and Current Criteria Reconciliation Pending Acceptance | accepted |
+| Current AC3 reconciliation | 3 | W3 | Current active metadata/link checks and exact protected-source comparisons | Frozen gate input; source `8b85e88fe2dfef54f4cc125ee2687982c86c1942`; 495 archive records and 72 completed Task bodies | PASS | This Task, Current Frozen Public Gate and Source Preservation | accepted |
+| Current AC4 reconciliation | 4 | W4 | Witnessed raw-byte RED/GREEN plus full selected metadata and generation 3–5 library regressions | Approved eight-file consumer/test patch and frozen eleven-file public gate input | PASS | This Task, Current Raw-byte RED Witness, Current Focused GREEN and Initial Review, and Current Frozen Public Gate and Source Preservation | accepted |
+| Current AC5 reconciliation | 5 | W5 | Exact frozen public changed gate and actual initial independent review | Frozen gate diff `d8c4ec87bccd7f451a21d2b43bb95faa9f269367c7903d7ab2dd182ffbe94ca1`; final acceptance still pending | PASS | This Task, Current Focused GREEN and Initial Review and Current Frozen Public Gate and Source Preservation | accepted |
+| Accepted current receipt validation | 5 | W5 | Actual three-document metadata/link checks and independent final receipt review | Tested in-progress receipt diff `25ff4665a5bc24b8db8a1757ed6389aeefef132adc085c67b49830be9de3cd48`; three metadata records without violations; alignment without failures | PASS | This Task, Current Completion Evidence | accepted |
+| Accepted completed-input validation | 5 | W5 | Actual post-completion three-document metadata/link checks and independent completion supplement | Exact completed-input diff `7eab0d7382b150fa275cb384477c6a65fb00551fd798f791fe431cbfad35e7c3`; zero metadata violations/link failures; all eleven hashes reproduced | PASS | This Task, Current Completion Evidence | accepted |
 
 ## Review and Completion
+
+The current authorized recovery is completed with PASS/accepted evidence for
+AC1/W1 through AC5/W5. Root's post-completion metadata/link checks passed and
+the independent reviewer approved the exact completed input without findings,
+including parent/member projection and direct completion events. Root minimally
+validates this appended result receipt and its read-only review supplement
+before local commit. Historical integration receipts below retain their failed
+inputs and scope; current reconciliation does not alter those observations.
+
+### Historical Integration Review
 
 The Spec, Plan, and Task remain blocked after local integration.
 Prior changed-gate executions failed, including the latest 6 FAIL/18 ERROR

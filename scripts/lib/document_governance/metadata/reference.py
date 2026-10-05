@@ -114,8 +114,11 @@ from scripts.lib.document_governance.requirements import (
     load_requirement_packages,
 )
 from scripts.lib.document_governance.spec_packages import (
+    MAX_SPEC_FILE_BYTES,
     SpecPackageError,
+    _bounded_git,
     load_spec_packages,
+    resolve_contract_migration_source,
     resolve_lifecycle_base,
     validate_repository_spec_package_lifecycle_details,
 )
@@ -239,6 +242,76 @@ def _registered_generation_normalization(
     )
 
 
+def _source_blob_matches_worktree(
+    root: pathlib.Path, path: pathlib.Path, revision: str | None
+) -> bool:
+    """Return whether a generation blob exactly matches current file bytes."""
+
+    if revision is None:
+        return False
+    try:
+        listing = _bounded_git(
+            root,
+            "ls-tree",
+            "-z",
+            revision,
+            "--",
+            path.as_posix(),
+            byte_limit=512,
+        )
+        rows = tuple(row for row in listing.split(b"\0") if row)
+        if len(rows) != 1:
+            return False
+        metadata, raw_path = rows[0].split(b"\t", 1)
+        mode, object_type, raw_object_id = metadata.split(b" ", 2)
+        if (
+            mode not in {b"100644", b"100755"}
+            or object_type != b"blob"
+            or raw_path.decode("utf-8") != path.as_posix()
+        ):
+            return False
+        object_id = raw_object_id.decode("ascii")
+        size_text = (
+            _bounded_git(
+                root,
+                "cat-file",
+                "-s",
+                object_id,
+                byte_limit=64,
+            )
+            .decode("ascii")
+            .strip()
+        )
+        if not size_text.isdigit():
+            return False
+        source_size = int(size_text)
+        if source_size > MAX_SPEC_FILE_BYTES:
+            return False
+        current = read_bounded_regular(
+            root,
+            pathlib.PurePosixPath(path.as_posix()),
+            max_bytes=MAX_SPEC_FILE_BYTES,
+        )
+        if len(current) != source_size:
+            return False
+        source = _bounded_git(
+            root,
+            "cat-file",
+            "blob",
+            object_id,
+            byte_limit=MAX_SPEC_FILE_BYTES,
+        )
+    except (
+        OSError,
+        OperationsAuthorityError,
+        SpecPackageError,
+        UnicodeError,
+        ValueError,
+    ):
+        return False
+    return len(source) == source_size and source == current
+
+
 def _generation_task_body_baseline(
     root: pathlib.Path,
     record: Record,
@@ -251,6 +324,8 @@ def _generation_task_body_baseline(
     path = record.path.as_posix()
     if bindings.revision is None or path not in bindings.frozen_terminal_tasks:
         return None, None
+    if not _source_blob_matches_worktree(root, record.path, bindings.revision):
+        return None, None
     source_text = _text_at_ref(root, record.path, bindings.revision)
     if source_text is None or source_text != current_text:
         return None, None
@@ -262,6 +337,29 @@ def _generation_task_body_baseline(
             profiles=profiles,
         ),
         source_text,
+    )
+
+
+def _source_bound_legacy_archive_types(
+    root: pathlib.Path,
+    records: Sequence[Record],
+    profiles: dict[str, object],
+    revision: str,
+) -> frozenset[str]:
+    """Admit archive aliases only for the same identity, metadata and raw blob."""
+
+    source_records = collect_selected_records_at_ref(
+        root, profiles, [record.path.as_posix() for record in records], revision
+    )
+    return frozenset(
+        record.path.as_posix()
+        for record in records
+        if (source := source_records.get(record.path.as_posix())) is not None
+        and source.artifact_type == record.artifact_type
+        and isinstance(record.metadata.get("artifact_id"), str)
+        and source.metadata.get("artifact_id") == record.metadata.get("artifact_id")
+        and source.metadata == record.metadata
+        and _source_blob_matches_worktree(root, record.path, revision)
     )
 
 
@@ -365,6 +463,37 @@ def _validate_repository_contracts(
                 actual_lifecycle_normalizations.update(
                     spec_lifecycle.actual_normalizations
                 )
+                alias_candidates = tuple(
+                    record
+                    for record in records
+                    if isinstance(
+                        expected_type := active_registry.profiles.get(
+                            record.artifact_type, {}
+                        ).get("type"),
+                        str,
+                    )
+                    and _is_legacy_archive_route_type(record, expected_type)
+                )
+                alias_revision = spec_lifecycle.generation_source
+                if (
+                    alias_candidates
+                    and alias_revision is None
+                    and active_registry.common.get("lifecycle_generation") == 5
+                ):
+                    try:
+                        alias_revision = resolve_contract_migration_source(
+                            root, spec_packages, active_registry
+                        )
+                    except SpecPackageError as error:
+                        findings.append(
+                            Finding("docs/03.specs", "spec-package-invalid", str(error))
+                        )
+                if alias_candidates and alias_revision is not None:
+                    source_bound_legacy_types.update(
+                        _source_bound_legacy_archive_types(
+                            root, alias_candidates, profiles, alias_revision
+                        )
+                    )
                 if spec_lifecycle.generation_source is not None:
                     generation_revision = spec_lifecycle.generation_source
                     migration_contract = active_registry.common.get(
@@ -416,27 +545,6 @@ def _validate_repository_contracts(
                         current_profile = active_registry.profiles.get(
                             record.artifact_type
                         )
-                        expected_type = (
-                            current_profile.get("type")
-                            if isinstance(current_profile, Mapping)
-                            else None
-                        )
-                        if (
-                            isinstance(expected_type, str)
-                            and _is_legacy_archive_route_type(record, expected_type)
-                            and source.metadata == record.metadata
-                        ):
-                            source_text = _text_at_ref(
-                                root, record.path, spec_lifecycle.generation_source
-                            )
-                            try:
-                                current_text = (root / record.path).read_text(
-                                    encoding="utf-8"
-                                )
-                            except (OSError, UnicodeError):
-                                current_text = None
-                            if source_text is not None and current_text == source_text:
-                                source_bound_legacy_types.add(record.path.as_posix())
                         source_status = source.metadata.get("status")
                         current_status = record.metadata.get("status")
                         source_profile = source_profiles_by_id.get(record.artifact_type)
@@ -506,16 +614,9 @@ def _validate_repository_contracts(
                                 str(source_lifecycle_contract), ()
                             )
                         ):
-                            source_text = _text_at_ref(
+                            if _source_blob_matches_worktree(
                                 root, record.path, spec_lifecycle.generation_source
-                            )
-                            try:
-                                current_text = (root / record.path).read_text(
-                                    encoding="utf-8"
-                                )
-                            except (OSError, UnicodeError):
-                                current_text = None
-                            if source_text is not None and source_text == current_text:
+                            ):
                                 frozen_terminal_tasks.add(record.path.as_posix())
                         normalization = (
                             record.path.as_posix(),

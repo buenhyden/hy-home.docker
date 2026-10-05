@@ -29,6 +29,7 @@ from scripts.lib.document_governance.registry import (
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 GENERATION_4_SOURCE = "8b85e88fe2dfef54f4cc125ee2687982c86c1942"
 GENERATION_3_SOURCE = "2bba11baa1009e673a763a727b0a9e3d7e0bb5a7"
+INTEGRATION_BASE = "68e0bfd3edb0895235dc628d03d427ca9fd14736"
 _PRODUCTION_LOAD_REGISTRY = None
 
 
@@ -441,6 +442,130 @@ def _branch_handoff_fixture(
 
 
 class SpecPackageTests(unittest.TestCase):
+    def test_mainline_generation_terminal_task_requires_exact_integration_blob(
+        self,
+    ) -> None:
+        module = _spec_packages_module()
+        task_path = pathlib.PurePosixPath(
+            "docs/03.specs/0001-example/tasks/tsk-0002-historical.md"
+        )
+
+        def task_text(*, updated: str, parents: tuple[str, ...], newline: str = "\n"):
+            parent_rows = newline.join(f'- "{parent}"' for parent in parents)
+            return newline.join(
+                (
+                    "---",
+                    'title: "Historical Task"',
+                    'version: "1.0.0"',
+                    'type: "sdlc/task"',
+                    'status: "completed"',
+                    'owner: "@buenhyden"',
+                    f'updated: "{updated}"',
+                    'artifact_id: "SPEC-0001-TSK-0002"',
+                    "parent_ids:",
+                    parent_rows,
+                    'created: "2026-10-04"',
+                    "---",
+                    "",
+                    "# Historical Task",
+                    "",
+                    "## Verification Evidence",
+                    "",
+                    "Preserved generation-three receipt.",
+                    "",
+                )
+            )
+
+        def document(text: str, *, path=task_path, artifact_id="SPEC-0001-TSK-0002"):
+            return module.SpecDocument(
+                path,
+                "task",
+                artifact_id,
+                "completed",
+                ("SPEC-0001-PLAN-0001",),
+                body=module.frontmatter_record_from_text(
+                    pathlib.Path(path.as_posix()), text
+                ).body,
+                source_text=text,
+            )
+
+        def package(task):
+            return module.SpecPackage(
+                pathlib.Path("docs/03.specs/0001-example"),
+                "0001",
+                "example",
+                module.SpecDocument(
+                    pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+                    "spec",
+                    "SPEC-0001",
+                    "in-progress",
+                    ("REQ-0001",),
+                ),
+                None,
+                (task,),
+                (),
+            )
+
+        main_text = task_text(
+            updated="2026-10-04",
+            parents=("SPEC-0001", "SPEC-0001-PLAN-0001"),
+        )
+        integrated_text = task_text(
+            updated="2026-10-05",
+            parents=("SPEC-0001-PLAN-0001",),
+        )
+        main_task = document(main_text)
+        integrated_task = document(integrated_text)
+        self.assertEqual(
+            frozenset({task_path}),
+            module._mainline_historical_terminal_tasks(
+                (),
+                (package(main_task),),
+                (package(integrated_task),),
+                (package(integrated_task),),
+            ),
+        )
+
+        for label, changed in (
+            ("identity", document(integrated_text, artifact_id="SPEC-0001-TSK-9999")),
+            (
+                "status",
+                dataclasses.replace(integrated_task, status="cancelled"),
+            ),
+            (
+                "body",
+                document(
+                    integrated_text.replace(
+                        "Preserved generation-three receipt.", "Changed receipt."
+                    )
+                ),
+            ),
+            (
+                "crlf",
+                document(integrated_text.replace("\n", "\r\n")),
+            ),
+            (
+                "new-path",
+                document(
+                    integrated_text,
+                    path=pathlib.PurePosixPath(
+                        "docs/03.specs/0001-example/tasks/tsk-0003-new.md"
+                    ),
+                    artifact_id="SPEC-0001-TSK-0003",
+                ),
+            ),
+        ):
+            with self.subTest(label=label):
+                self.assertEqual(
+                    frozenset(),
+                    module._mainline_historical_terminal_tasks(
+                        (),
+                        (package(main_task),),
+                        (package(integrated_task),),
+                        (package(changed),),
+                    ),
+                )
+
     def test_unreviewed_historical_completion_rows_do_not_become_v5_proof(
         self,
     ) -> None:
@@ -3399,6 +3524,120 @@ No Plan work is assigned to this cancelled Task.
             with self.assertRaisesRegex(spec_packages.SpecPackageError, "Stage 04"):
                 spec_packages.load_spec_packages(stage)
 
+    def test_historical_type_source_rejects_untrusted_provenance(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        proof = spec_packages._MigrationProof(
+            GENERATION_4_SOURCE, pathlib.PurePosixPath("docs/03.specs/fixture/task.md")
+        )
+        with (
+            mock.patch.object(spec_packages, "_migration_proof", return_value=proof),
+            mock.patch.object(
+                spec_packages,
+                "load_registry_document_at_revision",
+                side_effect=spec_packages.RegistryError("missing source"),
+            ),
+            self.assertRaisesRegex(spec_packages.SpecPackageError, "missing source"),
+        ):
+            spec_packages.resolve_contract_migration_source(ROOT, (), registry)
+        for stage, message in (
+            ("registry", "migration source Registry is invalid"),
+            ("ancestor", "not a current ancestor"),
+            ("integration", "requires one main integration"),
+        ):
+            with (
+                self.subTest(stage=stage),
+                mock.patch.object(
+                    spec_packages, "_migration_proof", return_value=proof
+                ),
+                mock.patch.object(
+                    spec_packages, "load_registry_document_at_revision", return_value={}
+                ),
+                mock.patch.object(
+                    spec_packages,
+                    "_validate_source_registry",
+                    side_effect=(
+                        spec_packages.SpecPackageError(message)
+                        if stage == "registry"
+                        else None
+                    ),
+                ),
+                mock.patch.object(
+                    spec_packages,
+                    "_bounded_git",
+                    return_value=(
+                        ("f" * 40 if stage == "ancestor" else GENERATION_4_SOURCE)
+                        + "\n"
+                    ).encode(),
+                ),
+                mock.patch.object(
+                    spec_packages,
+                    "_generation_integration",
+                    side_effect=(
+                        spec_packages.SpecPackageError(message)
+                        if stage == "integration"
+                        else None
+                    ),
+                ),
+                self.assertRaisesRegex(spec_packages.SpecPackageError, message),
+            ):
+                spec_packages.resolve_contract_migration_source(ROOT, (), registry)
+
+    def test_same_generation_alias_source_preserves_lifecycle_baseline(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        packages = spec_packages.load_spec_packages(
+            ROOT / "docs/03.specs", registry=registry
+        )
+        lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
+            ROOT, packages, registry=registry
+        )
+        self.assertIsNone(lifecycle.generation_source)
+        self.assertEqual(frozenset(), lifecycle.actual_normalizations)
+        revision = spec_packages.resolve_contract_migration_source(
+            ROOT, packages, registry
+        )
+        self.assertEqual(GENERATION_4_SOURCE, revision)
+        after = spec_packages.validate_repository_spec_package_lifecycle_details(
+            ROOT, packages, registry=registry
+        )
+        self.assertEqual(lifecycle, after)
+        proof_task = next(
+            task
+            for package in packages
+            for task in package.tasks
+            if GENERATION_4_SOURCE in task.body
+            and "### Contract Migration" in task.body
+        )
+        for body, message in (
+            (
+                proof_task.body.split("### Contract Migration", 1)[0],
+                "migration requires one proof",
+            ),
+            (
+                proof_task.body.replace(GENERATION_4_SOURCE, "not-a-full-object-id"),
+                "full object ID",
+            ),
+        ):
+            changed_task = dataclasses.replace(proof_task, body=body)
+            changed_packages = tuple(
+                dataclasses.replace(
+                    package,
+                    tasks=tuple(
+                        changed_task if task.path == changed_task.path else task
+                        for task in package.tasks
+                    ),
+                )
+                for package in packages
+            )
+            with (
+                self.subTest(proof_error=message),
+                self.assertRaisesRegex(spec_packages.SpecPackageError, message),
+            ):
+                spec_packages.resolve_contract_migration_source(
+                    ROOT, changed_packages, registry
+                )
+
     def test_current_repository_spec_packages_cover_spec_directories(self) -> None:
         spec_packages = _spec_packages_module()
         registry = load_current_registry()
@@ -3422,7 +3661,7 @@ No Plan work is assigned to this cancelled Task.
         lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
             ROOT,
             packages,
-            base_ref="main",
+            base_ref=INTEGRATION_BASE,
             registry=registry,
         )
         self.assertEqual((), lifecycle.findings)
@@ -3527,7 +3766,7 @@ No Plan work is assigned to this cancelled Task.
             spec_packages.validate_repository_spec_package_lifecycle_details(
                 ROOT,
                 packages,
-                base_ref="main",
+                base_ref=INTEGRATION_BASE,
                 registry=registry,
             )
 

@@ -40,7 +40,6 @@ and acceptance gates before any service declaration was changed.
   scope for Prompts 07/08. Runtime, secret issuance, data, remote and network
   operations need their own exact approvals.
 
-
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -52,7 +51,6 @@ and acceptance gates before any service declaration was changed.
 | W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
 
 ### Work Details
-
 
 1. **W1: freeze source and authority.** Recheck main, root include, current
    service consumers, lifecycle IDs and protected paths. Confirm the exact

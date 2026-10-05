@@ -230,7 +230,14 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
                     f"REQ-{match.group('number')}", metadata["artifact_id"]
                 )
                 self.assertEqual("sdlc/requirement", metadata["type"])
-                self.assertEqual([], metadata["parent_ids"])
+                from scripts.lib.document_governance.registry import load_registry
+
+                requirement_profile = load_registry().profiles["requirements-package"]
+                self.assertNotIn(
+                    "parent_ids", requirement_profile["required_frontmatter"]
+                )
+                self.assertIn("parent_ids", requirement_profile["optional_frontmatter"])
+                self.assertNotIn("parent_ids", metadata)
                 self.assertRegex(
                     str(metadata["created"]), r"^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
                 )
