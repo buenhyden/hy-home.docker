@@ -266,6 +266,40 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
             self.assertNotIn("registry-operations-profile-invalid", codes)
             self.assertNotIn("registry-operations-lifecycle-invalid", codes)
 
+    def test_registry_operations_profiles_require_a_layer_declaration(self) -> None:
+        context, root = self._fixture()
+        with context:
+            registry_path = root / REGISTRY_PATH
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            guide = next(item for item in registry["profiles"] if item["id"] == "guide")
+            guide["required_frontmatter"] = [
+                item for item in guide["required_frontmatter"] if item != "layer"
+            ]
+            guide["optional_frontmatter"] = [
+                item for item in guide["optional_frontmatter"] if item != "layer"
+            ]
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            self.assertIn("registry-operations-profile-invalid", finding_codes(root))
+
+    def test_registry_operations_profiles_reject_malformed_optional_frontmatter(
+        self,
+    ) -> None:
+        context, root = self._fixture()
+        with context:
+            registry_path = root / REGISTRY_PATH
+            registry = json.loads(registry_path.read_text(encoding="utf-8"))
+            guide = next(item for item in registry["profiles"] if item["id"] == "guide")
+            guide["optional_frontmatter"] = [""]
+            registry_path.write_text(json.dumps(registry), encoding="utf-8")
+            codes = finding_codes(root)
+            self.assertTrue(
+                codes
+                & {
+                    "registry-canonical-invalid",
+                    "registry-operations-profile-invalid",
+                }
+            )
+
     def test_malformed_registry_returns_findings_without_traceback(self) -> None:
         for mutation in (
             "missing-artifact-pattern",
@@ -534,6 +568,53 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                     else:
                         self.assertNotIn("incident-postmortem-required", codes)
                         self.assertNotIn("incident-corrective-owner-required", codes)
+
+    def test_nested_corrective_actions_require_one_substantive_owned_section(self):
+        cases = (
+            (
+                "unique-owned",
+                "## Overview\n### Corrective Actions\nGDE-0011\n"
+                "## Corrective Actions\n",
+                False,
+            ),
+            (
+                "missing",
+                "## Overview\nIncident summary.\n## Corrective Actions\n",
+                True,
+            ),
+            (
+                "ambiguous",
+                "## Overview\n### Corrective Actions\nGDE-0011\n"
+                "### Corrective Actions\nGDE-0012\n## Corrective Actions\n",
+                True,
+            ),
+            (
+                "owner-missing",
+                "## Overview\n### Corrective Actions\nFollow up later.\n"
+                "## Corrective Actions\n",
+                True,
+            ),
+        )
+        for label, body, expects_finding in cases:
+            with self.subTest(label=label):
+                context, root = self._fixture()
+                with context:
+                    incident = self._write_incident_packet(
+                        root, status="resolved", artifact_id="inc-2026-0001"
+                    )
+                    (incident.parent / "postmortem.md").write_text(
+                        "---\ntype: operation/postmortem\n"
+                        "status: published\nartifact_id: inc-2026-0001-PM\n"
+                        "parent_ids: [inc-2026-0001]\ncreated: 2026-08-23\n"
+                        "updated: 2026-08-23\nreviewed_at: 2026-08-23\n---\n" + body,
+                        encoding="utf-8",
+                    )
+                    self._track(root, incident.parent)
+                    codes = finding_codes(root)
+                    self.assertEqual(
+                        expects_finding,
+                        "incident-corrective-owner-required" in codes,
+                    )
 
     def test_incident_year_packet_and_roles_are_exact(self) -> None:
         mutations = (

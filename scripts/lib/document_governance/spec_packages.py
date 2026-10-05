@@ -154,6 +154,14 @@ class _MigrationProof:
 
 
 @dataclasses.dataclass(frozen=True)
+class _GenerationIntegration:
+    """The exact first-parent merge that joined the new contract to main."""
+
+    revision: str
+    main_revision: str
+
+
+@dataclasses.dataclass(frozen=True)
 class _LoadBudget:
     entries: int = 0
     file_bytes: int = 0
@@ -1497,6 +1505,43 @@ def _legacy_completed_task_pairs(
     return completed
 
 
+def _generation_three_completed_task_pairs(
+    package: SpecPackage,
+    registry: DocumentRegistry,
+    admitted_paths: frozenset[pathlib.PurePosixPath],
+) -> dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]]:
+    """Read exact PASS pairs from source-bound generation-three receipts."""
+
+    contract = registry.common.get("spec_completion_evidence")
+    if not isinstance(contract, Mapping):
+        raise SpecPackageError("completion evidence contract is missing from Registry")
+    completed: dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]] = {}
+    for task in package.tasks:
+        if task.path not in admitted_paths or task.status != "completed":
+            continue
+        pairs: set[tuple[str, str]] = set()
+        for key, rows in _completion_rows(task, contract):
+            if key != "table_headers":
+                continue
+            for criterion, unit, result, _owner in rows:
+                if re.fullmatch(r"PASS(?:: \S.*)?", result) is None:
+                    raise SpecPackageError(
+                        f"{task.path}: historical completed Task requires PASS evidence"
+                    )
+                pair = (criterion, unit)
+                if pair in pairs:
+                    raise SpecPackageError(
+                        f"{task.path}: historical evidence duplicates {criterion}/{unit}"
+                    )
+                pairs.add(pair)
+        if not pairs:
+            raise SpecPackageError(
+                f"{task.path}: historical completed Task requires evidence"
+            )
+        completed[task.path] = frozenset(pairs)
+    return completed
+
+
 def _validate_completion_evidence(
     spec: SpecDocument,
     plan: SpecDocument | None,
@@ -1999,17 +2044,39 @@ def load_spec_packages(
                 proof.source_revision,
                 root=stage_root.parent.parent,
             )
+            integration = _generation_integration(
+                stage_root.parent.parent,
+                proof,
+                target_generation=5,
+            )
+            main_packages = _load_base_spec_packages(
+                stage_root.parent.parent,
+                base_ref=integration.main_revision,
+            )
+            integrated_packages = _load_base_spec_packages(
+                stage_root.parent.parent,
+                base_ref=integration.revision,
+            )
+            mainline_historical_tasks = _mainline_historical_terminal_tasks(
+                source_packages,
+                main_packages,
+                integrated_packages,
+                packages,
+            )
             source_tasks = {
                 task.path: task for package in source_packages for task in package.tasks
             }
             historical_tasks = frozenset(
-                task.path
-                for package in packages
-                for task in package.tasks
-                if task.status in {"completed", "cancelled"}
-                and task.path in source_tasks
-                and source_tasks[task.path].status in {"completed", "cancelled"}
-                and task.source_text == source_tasks[task.path].source_text
+                {
+                    task.path
+                    for package in packages
+                    for task in package.tasks
+                    if task.status in {"completed", "cancelled"}
+                    and task.path in source_tasks
+                    and source_tasks[task.path].status in {"completed", "cancelled"}
+                    and task.source_text == source_tasks[task.path].source_text
+                }
+                | set(mainline_historical_tasks)
             )
             historical_completed_pairs: dict[
                 pathlib.PurePosixPath, frozenset[tuple[str, str]]
@@ -2085,6 +2152,17 @@ def load_spec_packages(
                     source_work,
                     source_closed_pairs,
                 )
+            main_contract = load_registry_at_revision(
+                integration.main_revision,
+                root=stage_root.parent.parent,
+            )
+            for main_package in main_packages:
+                admitted = _generation_three_completed_task_pairs(
+                    main_package,
+                    main_contract,
+                    mainline_historical_tasks,
+                )
+                historical_completed_pairs.update(admitted)
             spec_statuses = {
                 package.spec.artifact_id: package.spec.status for package in packages
             }
@@ -2214,6 +2292,38 @@ def _documents(
                 )
             result[member.path] = member
     return result
+
+
+def _with_missing_historical_tasks(
+    primary: Sequence[SpecPackage],
+    fallback: Sequence[SpecPackage],
+    admitted_paths: frozenset[pathlib.PurePosixPath],
+) -> tuple[SpecPackage, ...]:
+    """Add only Git-bound Task paths absent from the generation snapshot."""
+
+    fallback_by_name = {package.spec.path.parts[2]: package for package in fallback}
+    merged: list[SpecPackage] = []
+    for package in primary:
+        name = package.spec.path.parts[2]
+        supplement = fallback_by_name.get(name)
+        existing = {task.path for task in package.tasks}
+        additional = (
+            tuple(
+                task
+                for task in supplement.tasks
+                if task.path in admitted_paths and task.path not in existing
+            )
+            if supplement is not None
+            else ()
+        )
+        tasks = tuple(
+            sorted(
+                (*package.tasks, *additional),
+                key=lambda task: task.path.as_posix(),
+            )
+        )
+        merged.append(dataclasses.replace(package, tasks=tasks))
+    return tuple(merged)
 
 
 def disposition_entry_statuses(
@@ -2921,6 +3031,135 @@ def _migration_proof(
     return proofs[0]
 
 
+def resolve_contract_migration_source(
+    root: pathlib.Path,
+    current: Sequence[SpecPackage],
+    registry: DocumentRegistry,
+    *,
+    target_generation: int = 5,
+) -> str:
+    """Resolve proven historical type provenance without changing lifecycle baselines."""
+
+    if (
+        target_generation != 5
+        or registry.common.get("lifecycle_generation") != target_generation
+    ):
+        raise SpecPackageError("historical type source requires lifecycle generation 5")
+    try:
+        proof = _migration_proof(
+            current, registry, root=root, target_generation=target_generation
+        )
+        source_registry = load_registry_document_at_revision(
+            proof.source_revision, root=root
+        )
+        _validate_source_registry(
+            source_registry,
+            target_generation,
+            source_revision=proof.source_revision,
+            root=root,
+        )
+    except RegistryError as error:
+        raise SpecPackageError(str(error)) from error
+    ancestor = (
+        _bounded_git(root, "merge-base", proof.source_revision, "HEAD", byte_limit=256)
+        .decode("ascii")
+        .strip()
+    )
+    if ancestor != proof.source_revision:
+        raise SpecPackageError(
+            "Contract Migration source revision is not a current ancestor"
+        )
+    _generation_integration(root, proof, target_generation=target_generation)
+    return proof.source_revision
+
+
+def _generation_integration(
+    root: pathlib.Path,
+    proof: _MigrationProof,
+    *,
+    target_generation: int,
+) -> _GenerationIntegration:
+    """Find the one first-parent merge that admitted the typed migration.
+
+    The migration Task binds the generation-4 source, while a local integration
+    can also bring a terminal generation-3 Task from main.  The merge is usable
+    only when its non-main parent descends from that exact source and its tree
+    contains the target Registry generation.  This avoids treating an
+    arbitrary current revision as a historical source.
+    """
+
+    raw_revisions = _bounded_git(
+        root,
+        "rev-list",
+        "--first-parent",
+        "--merges",
+        "HEAD",
+        byte_limit=MAX_TOTAL_ENTRIES * 41,
+    )
+    revisions = tuple(raw_revisions.decode("ascii").splitlines())
+    if len(revisions) > MAX_TOTAL_ENTRIES or any(
+        _RECOVERY_COMMIT.fullmatch(revision) is None for revision in revisions
+    ):
+        raise SpecPackageError("generation integration history is malformed")
+    matches: list[_GenerationIntegration] = []
+    for revision in revisions:
+        parent_line = (
+            _bounded_git(
+                root,
+                "rev-list",
+                "--parents",
+                "-n",
+                "1",
+                revision,
+                byte_limit=256,
+            )
+            .decode("ascii")
+            .strip()
+            .split()
+        )
+        if len(parent_line) != 3 or parent_line[0] != revision:
+            continue
+        main_parent, migration_parent = parent_line[1:]
+        try:
+            current_registry = load_registry_document_at_revision(revision, root=root)
+        except RegistryError:
+            continue
+        current_common = current_registry.get("common")
+        if (
+            not isinstance(current_common, Mapping)
+            or current_common.get("lifecycle_generation") != target_generation
+        ):
+            continue
+        try:
+            main_registry = load_registry_document_at_revision(main_parent, root=root)
+        except RegistryError:
+            continue
+        main_common = main_registry.get("common")
+        if (
+            isinstance(main_common, Mapping)
+            and main_common.get("lifecycle_generation") == target_generation
+        ):
+            continue
+        ancestor = (
+            _bounded_git(
+                root,
+                "merge-base",
+                proof.source_revision,
+                migration_parent,
+                byte_limit=256,
+            )
+            .decode("ascii")
+            .strip()
+        )
+        if ancestor == proof.source_revision:
+            matches.append(_GenerationIntegration(revision, main_parent))
+    if len(matches) != 1:
+        raise SpecPackageError(
+            "lifecycle generation migration requires one main integration"
+        )
+    return matches[0]
+
+
 def _validate_source_registry(
     raw: Mapping[str, object],
     target_generation: int = 4,
@@ -3064,36 +3303,91 @@ def _validate_terminal_task_migration(
             raise SpecPackageError(
                 f"terminal Task removed during contract migration: {path}"
             )
-        if (
-            task.profile_id != "task"
-            or before.status != task.status
-            or not before.source_text
-            or not task.source_text
-        ):
-            raise SpecPackageError(
-                f"terminal Task changed during contract migration: {path}"
-            )
+        if not _terminal_task_migration_matches(before, task):
+            raise SpecPackageError(f"terminal Task body or identity changed: {path}")
+
+
+def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -> bool:
+    """Match a terminal Task while allowing only the approved envelope move."""
+
+    if (
+        before.path != task.path
+        or before.profile_id != "task"
+        or task.profile_id != "task"
+        or before.artifact_id != task.artifact_id
+        or before.status not in {"completed", "cancelled"}
+        or before.status != task.status
+        or not before.source_text
+        or not task.source_text
+    ):
+        return False
+    try:
         before_record = frontmatter_record_from_text(
-            pathlib.Path(path.as_posix()), before.source_text
+            pathlib.Path(before.path.as_posix()), before.source_text
         )
         current_record = frontmatter_record_from_text(
-            pathlib.Path(path.as_posix()), task.source_text
+            pathlib.Path(task.path.as_posix()), task.source_text
         )
-        before_metadata = {
-            key: value
-            for key, value in before_record.metadata.items()
-            if key not in {"parent_ids", "updated"}
-        }
-        current_metadata = {
-            key: value
-            for key, value in current_record.metadata.items()
-            if key not in {"parent_ids", "updated"}
-        }
+    except FrontmatterError:
+        return False
+    before_metadata = {
+        key: value
+        for key, value in before_record.metadata.items()
+        if key not in {"parent_ids", "updated"}
+    }
+    current_metadata = {
+        key: value
+        for key, value in current_record.metadata.items()
+        if key not in {"parent_ids", "updated"}
+    }
+    return (
+        before_record.body == current_record.body
+        and before_metadata == current_metadata
+    )
+
+
+def _mainline_historical_terminal_tasks(
+    generation_source: Sequence[SpecPackage],
+    main_source: Sequence[SpecPackage],
+    integration: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+) -> frozenset[pathlib.PurePosixPath]:
+    """Admit terminal Tasks added on main before the typed migration merge.
+
+    A candidate must be absent from the Task-declared generation source,
+    already terminal on the merge's main parent, preserve its body and identity
+    through that merge, and remain byte-for-byte identical to the merge blob in
+    the current tree. UTF-8 decoding is lossless here, so newline changes remain
+    observable in the complete source-text comparison.
+    """
+
+    generation_paths = set(_documents(generation_source))
+    integration_documents = _documents(integration)
+    current_documents = _documents(current)
+    admitted: set[pathlib.PurePosixPath] = set()
+    for path, before in _documents(main_source).items():
         if (
-            before_record.body != current_record.body
-            or before_metadata != current_metadata
+            path in generation_paths
+            or before.profile_id != "task"
+            or before.status not in {"completed", "cancelled"}
         ):
-            raise SpecPackageError(f"terminal Task body or identity changed: {path}")
+            continue
+        merged = integration_documents.get(path)
+        task = current_documents.get(path)
+        if (
+            merged is None
+            or task is None
+            or not _terminal_task_migration_matches(before, merged)
+            or merged.path != task.path
+            or merged.profile_id != task.profile_id
+            or merged.artifact_id != task.artifact_id
+            or merged.status != task.status
+            or not merged.source_text
+            or merged.source_text != task.source_text
+        ):
+            continue
+        admitted.add(path)
+    return frozenset(admitted)
 
 
 def _lifecycle_event_rows(
@@ -3428,8 +3722,9 @@ def _validate_legacy_multirow_receipts(
     contract = registry.common.get("spec_completion_evidence")
     if not isinstance(contract, Mapping):
         return ()
-    previous_documents = _documents(
-        migration_source if migration_source is not None else previous
+    previous_documents = _documents(previous)
+    migration_documents = (
+        _documents(migration_source) if migration_source is not None else {}
     )
     findings: list[SpecPackageFinding] = []
     for package in current:
@@ -3450,7 +3745,9 @@ def _validate_legacy_multirow_receipts(
             missing_review = not _review_rows(task, registry)
             if len(legacy_rows) <= 1 and not missing_review:
                 continue
-            before = previous_documents.get(task.path)
+            before = migration_documents.get(task.path) or previous_documents.get(
+                task.path
+            )
             if (
                 before is not None
                 and before.status == task.status == "completed"
@@ -3904,6 +4201,7 @@ def validate_repository_spec_package_lifecycle_details(
     source_registry: Mapping[str, object] | None = None
     source_registry_contract: DocumentRegistry | None = None
     source_packages: tuple[SpecPackage, ...] | None = None
+    mainline_historical_tasks: frozenset[pathlib.PurePosixPath] = frozenset()
     normalizations: frozenset[tuple[str, str, str]] = frozenset()
     generation_source: str | None = None
     if current_surface:
@@ -3979,6 +4277,22 @@ def validate_repository_spec_package_lifecycle_details(
                 root,
                 base_ref=generation_source,
             )
+            integration = _generation_integration(
+                root,
+                proof,
+                target_generation=int(generation),
+            )
+            if base_commit == integration.main_revision:
+                integrated_packages = _load_base_spec_packages(
+                    root,
+                    base_ref=integration.revision,
+                )
+                mainline_historical_tasks = _mainline_historical_terminal_tasks(
+                    source_packages,
+                    previous,
+                    integrated_packages,
+                    current,
+                )
             normalizations = _generation_normalizations(
                 source_packages, current, registry
             )
@@ -3986,7 +4300,13 @@ def validate_repository_spec_package_lifecycle_details(
         elif previous:
             _validate_terminal_task_migration(previous, current)
     event_baseline = (
-        source_packages if generation == 5 and source_packages is not None else previous
+        _with_missing_historical_tasks(
+            source_packages,
+            previous,
+            mainline_historical_tasks,
+        )
+        if generation == 5 and source_packages is not None
+        else previous
     )
     event_findings, actual_transitions = _validate_task_lifecycle_events(
         event_baseline,

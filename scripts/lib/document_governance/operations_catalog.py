@@ -1294,6 +1294,7 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             )
             continue
         required_frontmatter = profile.get("required_frontmatter")
+        optional_frontmatter = profile.get("optional_frontmatter")
         required_sections = profile.get("required_sections")
         lifecycle_id = profile.get("lifecycle_id")
         lifecycle = (
@@ -1305,8 +1306,11 @@ def _validate_registry(registry: Mapping[str, object]) -> list[CatalogFinding]:
             or not isinstance(profile.get("artifact_id_pattern"), str)
             or not isinstance(required_frontmatter, list)
             or not all(isinstance(item, str) and item for item in required_frontmatter)
-            or not {"title", "type", "layer", "status", "owner", "artifact_id"}
+            or not isinstance(optional_frontmatter, list)
+            or not all(isinstance(item, str) and item for item in optional_frontmatter)
+            or not {"title", "type", "status", "owner", "artifact_id"}
             <= set(required_frontmatter)
+            or "layer" not in set(required_frontmatter) | set(optional_frontmatter)
             or not isinstance(required_sections, list)
             or not required_sections
             or not all(isinstance(item, str) and item for item in required_sections)
@@ -1450,7 +1454,9 @@ def _incident_closure_findings(
             ),
         )
     try:
-        section = "\n".join(_contract_section(body, contract["corrective_section"]))
+        section = _corrective_action_section(
+            body, str(contract["corrective_section"]), _contract_section
+        )
         names = str(incident.get("artifact_id", "")) + " " + section
         valid = _names_are_valid(root, "resolved", names)
         if valid and re.search(r"no corrective action:\s*\S", section) is None:
@@ -1469,6 +1475,33 @@ def _incident_closure_findings(
             ),
         )
     return ()
+
+
+def _corrective_action_section(body: str, heading: str, section_reader) -> str:
+    """Read one substantive current or migrated corrective-action section."""
+
+    core = section_reader(body, heading)
+    if any(line.strip() for line in core):
+        return "\n".join(core)
+    overview = section_reader(body, "Overview")
+    marker = "### " + heading
+    starts = [index for index, line in enumerate(overview) if line == marker]
+    candidates: list[str] = []
+    for start in starts:
+        end = next(
+            (
+                index
+                for index in range(start + 1, len(overview))
+                if overview[index].startswith("### ")
+            ),
+            len(overview),
+        )
+        candidate = "\n".join(overview[start + 1 : end]).strip()
+        if candidate:
+            candidates.append(candidate)
+    if len(candidates) != 1:
+        raise ValueError("corrective actions require one substantive section")
+    return candidates[0]
 
 
 def _index_member_links(text: str) -> Counter[str]:

@@ -1,8 +1,8 @@
 ---
 title: "Common Document Contract Adoption Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
-status: "blocked"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-05"
 layer: "specs"
@@ -48,6 +48,15 @@ archive disposition, pushes, PRs, and provider calls remain out of scope.
 4. Completion requires `PASS` and accepted evidence for each required
    criterion. Cancellation records a real reason, authorization reference, and
    criterion disposition; it never invents authorization or waives Spec work.
+
+The remaining consumer-recovery slice reuses W4/W5 and the existing Registry
+contract. It is limited to the metadata reference, Operations catalog, and
+Spec-package consumers; their five affected regression files; and this package's
+Spec, Plan, and Task. It restores raw-byte source proof, bounded historical
+Task and route-type compatibility, and declared optional-field handling.
+Current lifecycle requirements and preserved bodies remain unchanged. No
+Registry, schema, template, README, provider, archive, or infrastructure change
+belongs to this slice.
 
 ## Acceptance Criteria
 

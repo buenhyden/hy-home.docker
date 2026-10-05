@@ -557,9 +557,10 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
 
         references = self._references()
         section = references.protected_research_declaration(ROOT)
-        self.assertNotRegex(section, r"\b[0-9a-f]{7,64}\b")
+        declaration = section.split("\n### ", 1)[0]
+        self.assertNotRegex(declaration, r"\b[0-9a-f]{7,64}\b")
         declared = references.protected_research_paths(ROOT)
-        spans = re.findall(r"`([^`]+)`", section)
+        spans = re.findall(r"`([^`]+)`", declaration)
         self.assertTrue(spans)
         for span in spans:
             with self.subTest(span=span):
