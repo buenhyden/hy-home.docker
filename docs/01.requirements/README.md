@@ -16,13 +16,6 @@ layer: "requirements"
 수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
 Stage 03, 실행 증거는 현재 변경 패킷, 운영 절차는 Stage 05가 소유한다.
 
-## Audience
-
-- Product Owners
-- System Architects
-- Developers
-- AI Agents
-
 ## Scope
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
@@ -65,6 +58,17 @@ docs/01.requirements/
 high-water를 낮추지 않는다.
 
 ## Usage
+
+### Usage
+
+### Audience
+
+- Product Owners
+- System Architects
+- Developers
+- AI Agents
+
+### Usage
 
 1. [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)를 사용한다.
 2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.

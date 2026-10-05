@@ -17,7 +17,13 @@ review_cycle: "on-source-change"
 
 # Reference: Harness Engineering
 
-## Current External Research
+## Overview
+
+### Overview
+
+## Scope and Method
+
+### Current External Research
 
 This member owns the harness: the environment and controls that make agent work bounded, observable and reviewable. Originals were opened on 2026-09-27. The older workspace/event inventories below remain historical, not refreshed measurements. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
@@ -45,31 +51,19 @@ This member owns the harness: the environment and controls that make agent work 
 
 **C-m0008-05 — recommendation.** Evaluate changed harness behavior against a fixed baseline with failure fixtures: ignored instruction, denied tool/write/network, malformed output, blocked/repeated hook, child failure, compact/resume, stale memory and false completion. Declare expected evidence and stop outcomes before running. Counts of hooks or passing happy paths do not show universal reliability. [m0010](m0010-loop-engineering.md#current-external-research) owns loop budgets; [m0019](m0019-verification-validation.md#current-external-research) owns verification/validation evidence.
 
-## Claims and Sources
+### Related Documents
 
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0008-01 | Observable repository harness case | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | Engineering case studies; no product guarantee | Case-study fact | One experiment; no local productivity transfer | Not assessed in this run |
-| C-m0008-02 | Discoverable evidence contract | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | Engineering case studies; no product guarantee | Interpretation | Design principle, not adopted policy | Not assessed in this run |
-| C-m0008-03 | Long-task continuity experiment | [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Case-study fact | Historical experiment; no local resume test | Not assessed in this run |
-| C-m0008-04 | Native control translation | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2026-02-11 / 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Recommendations | Need versioned failure-oriented acceptance | Not assessed in this run |
-| C-m0008-05 | Failure-oriented harness evaluation | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2026-02-11 / 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Recommendations | Need versioned failure-oriented acceptance | Not assessed in this run |
+- [Research pack](README.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-openai-com-harness-engineering | [Original](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | OpenAI engineering case study; not stable API specification | Blank-repository experiment; productivity not generalized |
-| S-anthropic-com-effective-harnesses-long-running-agents | [Original](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Anthropic engineering experiment; historical design evidence | No requirement for new local progress files |
+## Findings
 
-## Future Internal Checks
-
-Candidate surfaces do not assert implementation. These checks require a separate authorized task.
-
-| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0008-02–05 / controls | Governance, provider/tool and execution environment | If harness change is proposed | Bootstrap, adapters, role/skill and hook owners | Which layer enforces each intended boundary? | Nonsecret versioned config and positive/negative traces | Approved disposable native-client matrix | Observable allowed/denied behavior for every claimed boundary | Runtime/configuration changes separately approved | harness-optimizer / security-reviewer | Not assessed in this run |
-| C-m0008-03–05 / continuity | Task/session, knowledge and acceptance | If long-running work is supported | Task/handoff, memory and verification owners | Can resume find evidence and reject stale completion? | Pre/post resume state, remaining work, check outputs | Authorized restart/child-failure/false-completion fixtures | Scope and unresolved evidence survive; missing checks never imply success | No private session or memory inspection in this run | loop-operator / eval-engineer | Not assessed in this run |
-
-## Historical Workspace Observations
+### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -510,12 +504,30 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > preserve the evidence-depth distinctions, and route implementation changes to
 > their canonical agent governance/03/04 owner.
 
-## Related Documents
+## Limitations
 
-- [Research pack](README.md)
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+### Future Internal Checks
+
+Candidate surfaces do not assert implementation. These checks require a separate authorized task.
+
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0008-02–05 / controls | Governance, provider/tool and execution environment | If harness change is proposed | Bootstrap, adapters, role/skill and hook owners | Which layer enforces each intended boundary? | Nonsecret versioned config and positive/negative traces | Approved disposable native-client matrix | Observable allowed/denied behavior for every claimed boundary | Runtime/configuration changes separately approved | harness-optimizer / security-reviewer | Not assessed in this run |
+| C-m0008-03–05 / continuity | Task/session, knowledge and acceptance | If long-running work is supported | Task/handoff, memory and verification owners | Can resume find evidence and reject stale completion? | Pre/post resume state, remaining work, check outputs | Authorized restart/child-failure/false-completion fixtures | Scope and unresolved evidence survive; missing checks never imply success | No private session or memory inspection in this run | loop-operator / eval-engineer | Not assessed in this run |
+
+## Sources
+
+### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0008-01 | Observable repository harness case | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | Engineering case studies; no product guarantee | Case-study fact | One experiment; no local productivity transfer | Not assessed in this run |
+| C-m0008-02 | Discoverable evidence contract | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | Engineering case studies; no product guarantee | Interpretation | Design principle, not adopted policy | Not assessed in this run |
+| C-m0008-03 | Long-task continuity experiment | [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Case-study fact | Historical experiment; no local resume test | Not assessed in this run |
+| C-m0008-04 | Native control translation | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2026-02-11 / 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Recommendations | Need versioned failure-oriented acceptance | Not assessed in this run |
+| C-m0008-05 | Failure-oriented harness evaluation | [S-openai-com-harness-engineering](https://openai.com/index/harness-engineering/); repository system of record and agent legibility; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2026-02-11 / 2025-11-26 | 2026-09-27 | Engineering case studies; no product guarantee | Recommendations | Need versioned failure-oriented acceptance | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-openai-com-harness-engineering | [Original](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | OpenAI engineering case study; not stable API specification | Blank-repository experiment; productivity not generalized |
+| S-anthropic-com-effective-harnesses-long-running-agents | [Original](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Anthropic engineering experiment; historical design evidence | No requirement for new local progress files |

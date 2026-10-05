@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 
 > Scope: Nginx Special-path Proxy Recovery
@@ -26,7 +34,7 @@ created: "2026-05-17"
 - config lint 실패 시 안전 롤백
 - 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복
 
-## When to Use
+### When to Use
 
 - `nginx -t` 실패
 - `/ping` healthcheck 반복 실패
@@ -34,6 +42,8 @@ created: "2026-05-17"
 - 백엔드 장애 전환(failover) 동작 이상
 
 ## Procedure
+
+### Procedure
 
 ### Target and prerequisites
 
@@ -97,13 +107,17 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 - timeout·`proxy_next_upstream`·`max_fails/fail_timeout`을 확인하되 단일 upstream을
   다중 노드 failover로 보고하지 않는다. 실패 시 트래픽 전환을 멈춘다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 시각, source revision, 승인 대상, lint 종료 상태, HTTP/HTTPS 구분, route별
 최소 상태 코드, 수행하지 않은 검증을 Task/Incident에 기록한다. 원문 access/error
 로그와 인증정보는 수집하지 않고 오류 종류·빈도만 전달한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 1. Traefik이 같은 listener를 점유하지 않는지 확인하고 마지막 검토된 Compose와
    `nginx.conf`를 복구한다. 인증서는 private owner의 일치하는 세트를 사용한다.
@@ -118,14 +132,14 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 격리 검증 환경과 현재 Nginx route 수용 결과는 제공되지 않았다. 기존 2026-09-20
 교정과 이번 문서 감사 모두 복구를 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 반복 lint/health 실패, OOM·5xx 증가, 인증 루프, placeholder를 보호 route로
 사용하려는 변경, secret 노출 징후 또는 dependency 불명은 @buenhyden에게
 전달한다. 여러 앱 영향은 [RUN-0099](0099-system-operations.md)로 연결한다.
 원인 후보, 정제된 결과와 미검증 항목을 남기고 임의 전체 재시작은 하지 않는다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [01-Gateway Nginx Usage Guide](../guides/0011-nginx.md) (`GDE-0011`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)

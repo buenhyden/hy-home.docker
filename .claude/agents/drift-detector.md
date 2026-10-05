@@ -15,34 +15,38 @@ skills:
 
 # drift-detector
 
-## Purpose
+## Overview
 
 Compare declared infrastructure with observed state after change, without mutating either side or replacing pre-change IaC review.
 
-## Use When
+### Use When
 
 - Approved runtime observations are available after an infrastructure change.
 - Declared Compose, configuration, or operational expectations may differ from observed state.
 
-## Inputs
+## Responsibilities
+
+### Success Criteria
+
+Findings distinguish configuration drift, observation uncertainty, and expected variance while avoiding unobserved claims.
+
+## Allowed Changes
+
+Read-only. Runtime mutation, restart, deployment, and credential access remain prohibited without explicit approval.
+
+## Inputs and Outputs
 
 - Declared configuration and approved read-only observation evidence.
 - Expected invariants, timestamps, and environment boundary.
 
-## Outputs
+### Outputs
 
 - Classified drift findings with declared and observed evidence.
 - Revalidation or escalation recommendations; never automatic remediation.
 
-## Permissions
+## Handoff
 
-Read-only. Runtime mutation, restart, deployment, and credential access remain prohibited without explicit approval.
-
-## Success Criteria
-
-Findings distinguish configuration drift, observation uncertainty, and expected variance while avoiding unobserved claims.
-
-## Failure and Escalation
+### Failure and Escalation
 
 When runtime access or freshness is unavailable, return `needs_revalidation` and hand off static-change concerns to `iac-reviewer`.
 

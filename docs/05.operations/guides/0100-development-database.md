@@ -20,7 +20,17 @@ created: "2026-10-03"
 
 # Development Database Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 `dev-db`는 미래 외부 프로젝트의 업무 데이터를 위한 선택형 개발 엔진이다.
 관리 서비스 metadata·세션·관리 queue는 `mng-db`에 계속 남는다. `app_db`는 신규
@@ -63,7 +73,7 @@ SPEC-0202-TSK-0002의 합성 격리 환경에서는 오프라인 전체 백업�
 WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
 기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
 
-## Common Checks
+### Common Checks
 
 저장소 root에서 정적 Compose와 permission contract만 확인한다. 이 명령은 컨테이너를
 시작하거나 private environment를 출력하지 않는다.
@@ -77,13 +87,13 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 포함하거나 profile을 변경하지 않는다. `dev-pg` readiness는 연결 수락만 확인하며 extension,
 project grant, 백업 또는 application readiness를 증명하지 않는다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../runbooks/0100-development-database.md)이
 소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002에 있다. HOME 기동·실제 프로젝트
 provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0100`; governing policy: `POL-0100`.
 - Source contract: `SPEC-0202`; architecture context: `AD-0031`.

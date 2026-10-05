@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # 04-Data Optimization Hardening Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
@@ -28,6 +36,8 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 영향받은 서비스와 소유 Compose 파일 및 M0021 disposition으로부터 현재 root
    profile을 식별한다.
@@ -61,24 +71,15 @@ Valkey Cluster [RUN-0022](0022-valkey-cluster.md), 또는 SeaweedFS
 [RUN-0024](0024-seaweedfs.md). 이 범용 runbook은 restore shortcut을 제공하지
 않는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Rollback or Recovery
-
-rollback은 client를 이전에 유효했던 source configuration과 엔진별 runbook으로
-되돌린다. cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증,
-보존된 rollback window 이후에만 실행한다.
-
-## Escalation
-
-범위, identity, checksum, 보안, 호환성, 또는 ownership drift에서 중단하고
-안전한 evidence를 보존한 뒤 서비스/데이터 @buenhyden에게 escalation한다.
-
-## Verification Record
+### Verification Record
 
 ### Acceptance
 
@@ -87,7 +88,20 @@ rollback은 client를 이전에 유효했던 source configuration과 엔진별 r
 날짜가 기록된 scoped evidence package가 달리 명시하지 않는 한 runtime 상태,
 암호화, 용량, restore는 입증되지 않은 상태로 남는다.
 
-## Traceability
+## Rollback and Escalation
+
+### Rollback or Recovery
+
+rollback은 client를 이전에 유효했던 source configuration과 엔진별 runbook으로
+되돌린다. cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증,
+보존된 rollback window 이후에만 실행한다.
+
+### Escalation
+
+범위, identity, checksum, 보안, 호환성, 또는 ownership drift에서 중단하고
+안전한 evidence를 보존한 뒤 서비스/데이터 @buenhyden에게 escalation한다.
+
+### Traceability
 
 - Artifact: `RUN-0030`; parent guide: `GDE-0030`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.

@@ -18,7 +18,17 @@ created: "2026-09-19"
 
 # OpenBao Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Implementation Sources
 
@@ -154,18 +164,18 @@ server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 cus
 기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
 restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
 
-## Common Checks
+### Common Checks
 
 사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
 확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
 검증되지 않은 상태다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 [Runbook](../runbooks/0085-openbao.md)이 command, 예상 결과, recovery를
 관장한다. [Policy](../policies/0085-openbao.md)가 control을 관장한다.
 
-## Traceability
+### Traceability
 
 - Governing architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](0085-openbao.md), [Policy](../policies/0085-openbao.md), [Runbook](../runbooks/0085-openbao.md)

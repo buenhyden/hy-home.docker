@@ -7,13 +7,20 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0009"
-parent_ids: []
 created: "2026-06-04"
 ---
 
 # Release Management Runbook
 
 ## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
 
 이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 release/tag 준비 절차와 `main-current` 채널 태그 운영을 설명한다. GitHub branch protection, Docker runtime, secret, `.env`, port의 변경 권한은 부여하지 않는다.
 
@@ -30,13 +37,15 @@ created: "2026-06-04"
 
 실패 시에는 GitHub Actions의 `main-security`와 `update-main-current` 상태, 원격 `refs/heads/main` 및 `refs/tags/main-current`의 SHA를 확인한다. 재실행은 해당 SHA의 보안 검사가 성공했고 원격 `main`이 여전히 그 SHA일 때만 허용한다. 태그를 수동으로 이동하기 전에 실패 원인과 승인 범위를 Task에 기록한다.
 
-## When to Use
+### When to Use
 
 - Release 또는 tag 생성 전에 local documentation, validation, changelog readiness를 확인해야 할 때.
 - PR 또는 local branch가 release candidate로 승격되기 전에 어떤 evidence를 남겨야 하는지 확인할 때.
 - Rollback 가능성을 주장하기 전에 실제로 남겨야 할 local evidence를 확인해야 할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -191,7 +200,9 @@ created: "2026-06-04"
 - [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
 - [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 현재 branch와 clean/예상된 작업 트리 상태.
 - 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
@@ -206,7 +217,9 @@ created: "2026-06-04"
 - Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
   Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 해당 service·workflow·deployment에 문서화된 rollback/recovery 절차만 사용한다.
 - 모든 Compose service에 적용되는 일반 rollback 명령은 N/A다. 서비스별 data migration과 backup 복구 경계를 따른다.
@@ -218,12 +231,12 @@ created: "2026-06-04"
   cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
   call 없이 class `60`으로 중단한다.
 
-## Escalation
+### Escalation
 
 - tag 생성, release branch push, branch protection/required check 변경, 배포, runtime 변경은 해당 승인을 확인하고 저장소 소유자 또는 담당 operator에게 handoff한다.
 - secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단·에스컬레이션한다.
 
-## Traceability
+### Traceability
 
 - 현재 정책: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
 - 과거 구현 증거: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.

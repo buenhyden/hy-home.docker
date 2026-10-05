@@ -227,11 +227,11 @@ class TemplateMetadataTests(unittest.TestCase):
         )
         for heading in (
             "## Objective",
-            "## Inputs",
+            "## Inputs and Authorization",
             "## Work Log",
-            "## Verification Evidence",
-            "## Review Evidence",
-            "## Commit Ledger",
+            "## Evidence",
+            "## Review and Completion",
+            "## Related Documents",
         ):
             with self.subTest(heading=heading):
                 self.assertIn(heading, text)
@@ -257,7 +257,10 @@ class TemplateMetadataTests(unittest.TestCase):
 
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
-        self.assertEqual(("Related Documents",), profile["required_sections"])
+        self.assertEqual(
+            ("Overview", "Scope", "Rules", "Exceptions", "Related Documents"),
+            profile["required_sections"],
+        )
         self.assertTrue(profile["free_form_sections"])
         path = pathlib.Path(".agents/governance/approval-boundaries.md")
         record = metadata.Record(
@@ -281,13 +284,17 @@ class TemplateMetadataTests(unittest.TestCase):
             [],
             section_codes(
                 body_with_headings(
-                    "## Authorization Source and Records", "## Related Documents"
+                    "## Overview",
+                    "## Scope",
+                    "## Rules",
+                    "## Exceptions",
+                    "## Related Documents",
                 )
             ),
         )
         self.assertIn(
             "body-heading-missing",
-            section_codes(body_with_headings("## Authorization Source and Records")),
+            section_codes(body_with_headings("## Overview", "## Rules")),
         )
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)
@@ -295,18 +302,23 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_stage_99_catalogs_publish_the_current_role_inventory(self) -> None:
         catalogs = {
             "docs/99.templates/README.md": (
-                "Requirement Package",
-                "Architecture Description",
-                "Guide, Policy, Runbook, Incident, and Postmortem",
-                "Research, Audit, Data, and Tombstone",
-                "transition-only\n  Migration profile",
+                "Requirement Package and Architecture Description profiles",
+                "Research, Audit, Data publication roles and archive route records",
+                "#### Cancellation and Archive Assessments",
             ),
-            "docs/99.templates/templates/README.md": (
-                "Requirement Package",
-                "Architecture Description, Architecture Decision",
-                "Guide, Policy, Runbook, Incident, Postmortem",
-                "Research, Audit, Data",
-                "| [archive/](./archive/) | Migration, Tombstone |",
+            "docs/99.templates/templates/README.md": tuple(
+                f"| [{name}/]({name}/) |"
+                for name in (
+                    "architecture",
+                    "archive",
+                    "common",
+                    "governance",
+                    "operations",
+                    "references",
+                    "requirements",
+                    "runtime",
+                    "specs",
+                )
             ),
         }
         for relative_path, literal_inventories in catalogs.items():

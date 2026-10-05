@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: 정상 단일 OpenSearch의 준비 상태와 별도 standalone LAB의 정적·운영 경계.
 
 정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택합니다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster.yml`의 별도 project입니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록합니다.
@@ -26,7 +34,7 @@ created: "2026-05-17"
 - 정상 root와 별도 LAB project를 혼동하지 않는다.
 - index/shard 작업 전 snapshot이나 escalation evidence를 확보한다.
 
-## When to Use
+### When to Use
 
 - primary `opensearch` healthcheck가 실패할 때
 - Dashboards가 OpenSearch에 연결할 수 없을 때
@@ -41,6 +49,8 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -109,20 +119,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 6. restore 또는 security validation이 실패하면 isolated volume만 중지하고 보존하고 별도 승인된 새 target에서 변경되지 않은 snapshot에서 재시도한다. 강제 복구를 위해 shard를 reroute하거나 active index를 덮어쓰지 않는다.
 7. cutover, alias 변경, snapshot 삭제, active-cluster restore는 별도 approval이 필요하다. rehearsal이 성공을 기록하기 전까지 restore는 검증되지 않은 상태다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - compose file, service 이름, health 상태, 로그 요약, escalation 결정을 기록한다.
 - password 값은 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 rehearsal의 rollback은 source cluster와 snapshot을 변경하지 않은 채 isolated topology를 보존하고 원본을 계속 사용하는 것이다. cutover plan은 source를 유지하고 alias/DNS 전환을 별도로 정의해야 한다.
 
-## Escalation
+### Escalation
 
 health가 계속 red/unavailable이거나, shard 변경이 필요하거나, secret이나 cert가 없거나, primary와 cluster variant evidence가 충돌할 때 escalation한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [OpenSearch Usage Guide](../guides/0019-opensearch.md) (`GDE-0019`)
 - Governing authority: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)

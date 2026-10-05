@@ -14,7 +14,17 @@ created: "2026-03-25"
 
 # Airflow Dag Basics Operations
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -79,7 +89,7 @@ my_workflow()
 - **Relative Imports**: DAG 내부에서 relative import를 피한다. 공유 로직에는 `plugins/` 디렉터리를 사용한다.
 - **Heavy Initialization**: DAG file의 top level에서 무거운 연산이나 database query를 수행하지 않는다. `@task` 안에 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
@@ -88,11 +98,11 @@ my_workflow()
 
 선언된 Airflow의 `airflow.sdk` TaskFlow API를 사용한다. Task code가 Airflow metadata DB를 직접 조회해서는 안 된다. 업무용 PostgreSQL 작업은 별도 Connections와 transaction/idempotency 통제를 따른다. Staging/production은 승격 단계이며 별도 stack 존재를 증명하지 않는다. 복구는 [RUN-0050](../runbooks/0050-airflow.md)을 공유하고 기존 GDE-0051/POL-0052 ID 예외를 유지한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 N/A — 이 가이드에 대응하는 runbook이 없다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [DAG Deployment Operations Policy](../policies/0052-airflow-dag-lifecycle.md) (`POL-0052`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)

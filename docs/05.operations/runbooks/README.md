@@ -10,27 +10,23 @@ layer: "operations"
 
 # 운영 런북
 
-> 사용 조건, 명령 순서, 검증, 복구, 에스컬레이션을 소유하는 Runbook 인덱스
-
 ## Overview
+
+### Overview
 
 Runbook은 언제 쓰는지, 어디서 무엇을 입력해 어떤 순서로 실행하는지, 기대 결과, 중단 조건, 검증, 복구, 에스컬레이션을 소유한다.
 
-## Audience
-
-- 운영자
-- 개발자
-- SREs
-- 보안 담당자
-- AI 에이전트
-
 ## Scope
+
+### Scope
 
 - 이 디렉터리의 모든 Runbook를 도메인별로 한 번씩 나열한다.
 - 파일 이름은 `####-<slug>.md`이고 `####`는 문서 자신의 artifact 번호다.
 - 같은 slug는 다른 역할 디렉터리에서 같은 subject를 가리킨다.
 
 ## Structure
+
+### Structure
 
 도메인은 경로가 아니라 이 인덱스의 분류다. `관련 문서` 열은 같은 subject의
 다른 역할 문서를 가리킨다.
@@ -197,6 +193,16 @@ Runbook은 언제 쓰는지, 어디서 무엇을 입력해 어떤 순서로 실�
 | [hy-home.k8s integration](0096-k8s-integration.md) | `RUN-0096` | [Guide](../guides/0096-k8s-integration.md), [Policy](../policies/0096-k8s-integration.md) |
 
 ## Usage
+
+### Audience
+
+- 운영자
+- 개발자
+- SREs
+- 보안 담당자
+- AI 에이전트
+
+### Usage
 
 1. 새 Runbook는 [Runbook template](../../99.templates/templates/operations/runbook.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고, 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.

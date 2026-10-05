@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # InfluxDB Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -93,18 +103,18 @@ InfluxDB3 Core3.11.5 의 `influxdb3 serve --object-store=file`와 node-id 설정
 - Root secret declaration을 leaf server token provisioning으로 간주하는 경우
 - host port가 직접 선언되어 있다고 가정하는 경우
 
-## Common Checks
+### Common Checks
 
 - `test -f infra/04-data/influxdb/docker-compose.yml`
 - `/api/v3/write_lp`, operator-selected database name, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
 - `python3 scripts/validation/check-document-links.py --mode all`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0017-influxdb.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [InfluxDB Operations Policy](../policies/0017-influxdb.md) (`POL-0017`)
 - Governing authority: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)

@@ -26,7 +26,17 @@ created: "2026-05-10"
 
 # Airflow Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 `airflow-valkey-exporter`는 별도로 선택한 Airflow 전용 broker의 관측기다. HOME 관리 broker는 자체 exporter를 사용하며 exporter health로 broker readiness를 대신하지 않는다.
 
@@ -106,10 +116,10 @@ Keycloak auth manager가 처리한다. Keycloak client secret이나 JWT secret�
 
 ```bash
 
-## workflow root compose static validation
+### workflow root compose static validation
 HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
 
-## DAG 목록 로드 확인
+### DAG 목록 로드 확인
 docker compose exec airflow-apiserver airflow dags list
 ```
 
@@ -151,17 +161,17 @@ Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한
 - **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile workflow config --quiet`를 사용한 뒤, 대상별 기동과 upgrade는 [RUN-0050](../runbooks/0050-airflow.md)을 따른다. workflow 전체를 시작하면 n8n과 migration을 수행할 수 있는 초기화도 실행될 수 있다. pause/drain, 일관된 DB/artifact/key backup, migration, canary와 재개 결정은 Runbook이 소유한다.
 - **공식 문서·license**: [Airflow database 설정](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet 지침](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), [권장 운영 방식](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)을 따른다. Apache Airflow에는 Apache-2.0 license가 적용된다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - Runtime이 실행 중이면 `docker compose exec airflow-apiserver airflow dags list`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0050-airflow.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Airflow Operations Policy](../policies/0050-airflow.md) (`POL-0050`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)

@@ -18,7 +18,17 @@ created: "2026-05-10"
 
 # OpenSearch Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 정상 `opensearch`는 선택형 단일 노드입니다. 세 노드 학습 구성은 별도 LAB 프로젝트에만 있습니다.
 
@@ -90,18 +100,18 @@ Dashboard 연결, snapshot/restore는 정적 render로 검증되지 않습니다
 
 - 인덱스는 도메인별 패턴을 따른다(예: `logs-*-*`).
 
-## Common Checks
+### Common Checks
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster.yml`
 - `docker compose -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0019-opensearch.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [OpenSearch Operations Policy](../policies/0019-opensearch.md) (`POL-0019`)
 - Governing authority: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)

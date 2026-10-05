@@ -22,8 +22,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "allowed_statuses": { "$ref": "#/$defs/stringList" },
-        "archive_disposition_model": { "enum": ["transition", "adopted"] },
+        "allowed_statuses": {
+          "$ref": "#/$defs/stringList"
+        },
+        "archive_disposition_model": {
+          "enum": [
+            "transition",
+            "adopted"
+          ]
+        },
         "archive_retention": {
           "type": "object",
           "additionalProperties": false,
@@ -141,22 +148,130 @@
             }
           }
         },
-        "incident_closure": {"type":"object","additionalProperties":false,"required":["incident_status","postmortem_status","corrective_section"],"properties":{"incident_status":{"type":"string","minLength":1},"postmortem_status":{"type":"string","minLength":1},"corrective_section":{"type":"string","minLength":1}}},
-        "archive_source_prefixes": { "$ref": "#/$defs/stringList" },
-        "frontmatter_order": { "$ref": "#/$defs/stringList" },
-        "frozen_transition_fields": { "$ref": "#/$defs/stringList" },
-        "generated_outputs": { "$ref": "#/$defs/stringMap" },
-        "globally_forbidden": { "$ref": "#/$defs/stringList" },
-        "inventory_excludes": { "$ref": "#/$defs/stringList" },
-        "root_exceptions": { "$ref": "#/$defs/stringMap" },
-        "template_placeholders": { "$ref": "#/$defs/stringMap" },
-        "template_required_placeholders": { "$ref": "#/$defs/stringList" },
-        "terminal_statuses": { "$ref": "#/$defs/stringList" },
+        "incident_closure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "incident_status",
+            "postmortem_status",
+            "corrective_section"
+          ],
+          "properties": {
+            "incident_status": {
+              "type": "string",
+              "minLength": 1
+            },
+            "postmortem_status": {
+              "type": "string",
+              "minLength": 1
+            },
+            "corrective_section": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "archive_source_prefixes": {
+          "$ref": "#/$defs/stringList"
+        },
+        "frontmatter_order": {
+          "$ref": "#/$defs/stringList"
+        },
+        "frozen_transition_fields": {
+          "$ref": "#/$defs/stringList"
+        },
+        "generated_outputs": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "globally_forbidden": {
+          "$ref": "#/$defs/stringList"
+        },
+        "inventory_excludes": {
+          "$ref": "#/$defs/stringList"
+        },
+        "root_exceptions": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "template_placeholders": {
+          "$ref": "#/$defs/stringMap"
+        },
+        "template_required_placeholders": {
+          "$ref": "#/$defs/stringList"
+        },
+        "terminal_statuses": {
+          "$ref": "#/$defs/stringList"
+        },
         "transitions": {
           "type": "object",
-          "additionalProperties": { "$ref": "#/$defs/stringList" }
+          "additionalProperties": {
+            "$ref": "#/$defs/stringList"
+          }
         },
-        "typed_keys": { "$ref": "#/$defs/stringList" },
+        "typed_keys": {
+          "$ref": "#/$defs/stringList"
+        },
+        "contract_id": {
+          "const": "SDLC-COMMON-v4"
+        },
+        "result_domain": {
+          "const": [
+            "NOT_RUN",
+            "PASS",
+            "FAIL",
+            "DEFER",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "acceptance_domain": {
+          "const": [
+            "pending",
+            "accepted",
+            "rejected",
+            "not-required"
+          ]
+        },
+        "evidence_columns": {
+          "const": [
+            "Evidence",
+            "Criteria",
+            "Work Unit",
+            "Check",
+            "Input",
+            "Result",
+            "Location",
+            "Acceptance"
+          ]
+        },
+        "plan_columns": {
+          "const": [
+            "Work Unit",
+            "Criteria",
+            "Work",
+            "Dependencies",
+            "Task",
+            "Verification"
+          ]
+        },
+        "spec_section": {
+          "const": "Acceptance Criteria"
+        },
+        "plan_section": {
+          "const": "Work Breakdown"
+        },
+        "task_section": {
+          "const": "Evidence"
+        },
+        "readme_documents_columns": {
+          "const": [
+            "Path",
+            "Purpose"
+          ]
+        },
+        "readme_documents_optional_columns": {
+          "const": [
+            "Owner"
+          ]
+        },
         "template_initial_version": {
           "type": "string",
           "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
@@ -209,12 +324,16 @@
             },
             "task_result_values": {
               "type": "array",
-              "items": {"type": "string", "minLength": 1},
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
               "minItems": 5,
               "maxItems": 5,
               "uniqueItems": true
             }
-          }
+          },
+          "description": "Historical generation 1–4 reader contract only; forbidden in the current generation-5 Registry."
         },
         "task_lifecycle_events": {
           "type": "object",
@@ -246,7 +365,10 @@
             "migration": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["subsection", "table_headers"],
+              "required": [
+                "subsection",
+                "table_headers"
+              ],
               "properties": {
                 "subsection": {
                   "type": "string",
@@ -254,7 +376,10 @@
                 },
                 "table_headers": {
                   "type": "array",
-                  "items": {"type": "string", "minLength": 1},
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  },
                   "minItems": 3,
                   "maxItems": 3,
                   "uniqueItems": true
@@ -264,11 +389,24 @@
                   "items": {
                     "type": "object",
                     "additionalProperties": false,
-                    "required": ["lifecycle_id", "from_status", "to_status"],
+                    "required": [
+                      "lifecycle_id",
+                      "from_status",
+                      "to_status"
+                    ],
                     "properties": {
-                      "lifecycle_id": {"type": "string", "minLength": 1},
-                      "from_status": {"type": "string", "minLength": 1},
-                      "to_status": {"type": "string", "minLength": 1}
+                      "lifecycle_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "from_status": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "to_status": {
+                        "type": "string",
+                        "minLength": 1
+                      }
                     }
                   },
                   "minItems": 1,
@@ -281,31 +419,91 @@
         "review_evidence": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["section", "table_headers", "acceptance_values"],
+          "required": [
+            "section",
+            "table_headers",
+            "acceptance_values"
+          ],
           "properties": {
-            "section": {"type": "string", "minLength": 1},
+            "section": {
+              "type": "string",
+              "minLength": 1
+            },
             "table_headers": {
               "type": "array",
-              "items": {"type": "string", "minLength": 1},
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
               "minItems": 3,
               "maxItems": 3,
               "uniqueItems": true
             },
             "acceptance_values": {
               "type": "array",
-              "items": {"type": "string", "minLength": 1},
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
               "minItems": 4,
               "maxItems": 4,
               "uniqueItems": true
             }
-          }
+          },
+          "description": "Historical generation 1–4 reader contract only; forbidden in the current generation-5 Registry."
         }
       },
       "required": [
         "archive_disposition_model",
         "frozen_transition_fields",
-        "template_initial_version",
-        "spec_completion_evidence"
+        "template_initial_version"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lifecycle_generation": {
+                "const": 5
+              }
+            },
+            "required": [
+              "lifecycle_generation"
+            ]
+          },
+          "then": {
+            "required": [
+              "contract_id",
+              "result_domain",
+              "acceptance_domain",
+              "evidence_columns",
+              "plan_columns",
+              "spec_section",
+              "plan_section",
+              "task_section",
+              "readme_documents_columns",
+              "readme_documents_optional_columns"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "spec_completion_evidence"
+                  ]
+                },
+                {
+                  "required": [
+                    "review_evidence"
+                  ]
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "spec_completion_evidence"
+            ]
+          }
+        }
       ]
     },
     "profiles": {
@@ -367,29 +565,52 @@
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["kind"],
-          "properties": {
-            "kind": { "const": "year-directory" }
-          }
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["kind", "owner"],
+          "required": [
+            "kind"
+          ],
           "properties": {
             "kind": {
-              "enum": ["delegate-reference-members", "provider-owned-binding", "native-skill-envelope"]
-            },
-            "owner": { "type": "string", "minLength": 1 }
+              "const": "year-directory"
+            }
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["kind", "status", "paths"],
+          "required": [
+            "kind",
+            "owner"
+          ],
           "properties": {
-            "kind": { "const": "frozen-legacy-status" },
-            "status": { "type": "string", "minLength": 1 },
+            "kind": {
+              "enum": [
+                "delegate-reference-members",
+                "provider-owned-binding",
+                "native-skill-envelope"
+              ]
+            },
+            "owner": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "status",
+            "paths"
+          ],
+          "properties": {
+            "kind": {
+              "const": "frozen-legacy-status"
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1
+            },
             "paths": {
               "$ref": "#/$defs/stringList",
               "minItems": 1

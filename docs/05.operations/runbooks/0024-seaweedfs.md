@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # SeaweedFS Stack Health and Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
@@ -29,6 +37,8 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 repository root에서 실행한다.
 
@@ -104,26 +114,30 @@ SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum이 꺼진 채로 �
 4. client를 전환하기 전에 S3를 통해 모든 bucket의 객체를 읽어 manifest와
    count/byte를 비교한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 실패한 cutover는 write boundary를 검증한 뒤 client를 보존된 원본 store로
 되돌린다. coordinated artifact와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
 보존된 rollback window를 거친 뒤에만 진행한다.
 
-## Escalation
+### Escalation
 
 filer metadata 누락, topology mismatch, 고아 volume, checksum 실패, 보안
 노출, version 비호환이 있으면 중단한다. 동일 snapshot의 filer metadata
 export 없이 volume tree를 절대 복원하지 않는다.
 
-## Traceability
+### Traceability
 
 - Runtime source: [SeaweedFS Compose](../../../infra/04-data/seaweedfs/docker-compose.yml).
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.

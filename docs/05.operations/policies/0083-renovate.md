@@ -16,15 +16,26 @@ created: "2026-09-19"
 
 ## Overview
 
+### Overview
+
 Renovate는 원격 저장소 쓰기 권한을 가지며 명시적으로 선택하는 `dependency-update` job이다.
 HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 이 정책은 `renovate`와 그 Docker Secret, 설정, 캐시, 원격 변경사항, 업그레이드, 증거를
 다룬다. 업데이트 전략의 권위는 `POL-0086`에 있다.
 
-## Controls
+### Traceability
+
+- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 동일 주제 문서: [Guide](../guides/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md)
+
+## Rules
+
+### Controls
 
 - `renovate_token`은 선언된 secret으로만 마운트하고 최소한의 저장소와 권한만 부여한다.
   토큰 파일이나 렌더링된 secret을 절대 출력하지 않는다.
@@ -41,17 +52,12 @@ HOME이나 일반 도구 기동에는 절대 포함되지 않는다.
 - job 실행 시각, 설정 커밋, 대상 저장소, 이미지 선언, sanitize된 결과, secret 값 없이
   생성된 PR을 기록한다.
 
-## Verification
+### Verification
 
 [Runbook step 1](../runbooks/0083-renovate.md#procedure)에 따라 실제 실행 전에 저장소와
 self-host 설정 검증을 반드시 통과해야 한다.
 
-## Exceptions
-
-토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
-만료일, 롤백, 보안 검토가 필요하다. 구문 검증을 통과해도 실제 실행 승인은 면제되지 않는다.
-
-## Review Cadence
+### Review Cadence
 
 매월, 그리고 이미지, 토큰 범위, 저장소 목록, manager, 허용 명령어, `POL-0086`이 변경될
 때마다 검토한다.
@@ -63,10 +69,12 @@ timer가 시작한 실행과 수동 실행에는 같은 승인·근거 규칙이
 `@buenhyden`이며 host unit 설치·교체는 검토된 사본으로만 수행한다. 이미지 태그는
 resolved digest와 같지 않으므로 불변성 통제의 충족 여부를 따로 확인한다.
 
-## Traceability
+## Exceptions
 
-- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
-- 동일 주제 문서: [Guide](../guides/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md)
+### Exceptions
+
+토큰 권한, 저장소 범위, 허용 명령어, 스크립트 실행, 원격 변경의 확대는 기록된 owner,
+만료일, 롤백, 보안 검토가 필요하다. 구문 검증을 통과해도 실제 실행 승인은 면제되지 않는다.
 
 ## Related Documents
 

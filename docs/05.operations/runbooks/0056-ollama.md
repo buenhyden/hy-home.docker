@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
 
 > Scope: Ollama Inference Service
@@ -28,7 +36,7 @@ created: "2026-05-17"
 - GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
 - 복구 후 Open WebUI 연동 상태를 검증한다.
 
-## When to Use
+### When to Use
 
 - Ollama API(`/api/tags`, `/api/generate`) 호출 실패.
 - 컨테이너 내부 GPU 미인식 또는 CPU fallback 발생.
@@ -36,6 +44,8 @@ created: "2026-05-17"
 - Open WebUI에서 모델 목록 미표시.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -72,7 +82,16 @@ GPU 미인식 진단과 Docker daemon/컨테이너 재시작 절차는 [GPU Reco
 
 ```bash
 
-## keep_alive=0으로 상주 모델 언로드(예시)
+## Verification
+
+### Evidence
+
+- 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
+- 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
+
+## Rollback and Escalation
+
+### keep_alive=0으로 상주 모델 언로드(예시)
 curl -X POST http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
   "model": "llama3",
   "prompt": "",
@@ -94,7 +113,7 @@ docker compose exec ollama ollama list
 
 ```bash
 
-## Open WebUI 컨테이너에서 Ollama 접근 확인
+### Open WebUI 컨테이너에서 Ollama 접근 확인
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 ```
 
@@ -161,22 +180,17 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
 3. 호환되는 GPU·runtime 설정으로 Ollama를 기동하고 `/api/tags`, 모델 digest, GPU 인식, 대표 추론 한 건, exporter 수집을 확인한다. Open WebUI는 격리 endpoint에 대해서만 시험한다.
 4. 불일치하면 격리 서비스를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 백업·원본 manifest로 돌아간다. 운영 volume이나 경로 교체에는 별도 변경 승인이 필요하다.
 
-## Evidence
-
-- 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
-- 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
-
-## Rollback or Recovery
+### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 위 격리 복구 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 증거를 첨부한다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Ollama Usage Guide](../guides/0056-ollama.md) (`GDE-0056`)
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)

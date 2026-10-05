@@ -14,7 +14,15 @@ created: "2026-09-23"
 
 # Superset Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 최초 설정, 로그인 실패, 웹 서버가 healthy 상태가 되지 않을 때, 또는 업그레이드할 때 사용한다.
 
@@ -27,6 +35,8 @@ created: "2026-09-23"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 최초 설정(각 단계는 승인을 받으며, 값은 로그나 문서에 절대 남기지 않는다):
    1. Keycloak realm `hy-home.realm`: standard flow만 사용하고 PKCE `S256`,
@@ -54,21 +64,25 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 6. 업그레이드: 정확한 metadata backup, signing key custody, image/schema 호환성과 rollback을 승인받은 다음 재빌드한다. `docker compose --profile bi run --rm superset-init`을
    실행하고 `superset`을 재생성한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋을
 기록한다. secret, token, session cookie는 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 메타데이터는 공유 mng-pg의 physical pgBackRest set에 포함된다. 전체 set을 live로 복원하면 다른 모든 DB도 되돌리므로 Superset만의 rollback으로 실행하지 않는다. RUN-0021의 새 격리 target에서 호환 image로 복원·검증한 뒤 필요한 metadata DB의 logical extraction/cutover를 별도 승인한다. 암호화 connection을 읽는 원래 signing key를 별도 custody한다. 이전 image를 migrated DB에 즉시 연결하지 않는다. dashboard/dataset/role/연결과 OIDC 검증 전 승격하지 않으며 실패 target은 보존한다.
 
-## Escalation
+### Escalation
 
 폼 로그인 활성화, 등록 시 `Admin` 부여, 호스트 포트 게시, 또는 환경 변수에
 credential을 넣으라는 요청이 있으면 중단하고 @buenhyden에게 전달한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0097-superset.md) (`GDE-0097`)
 - [Policy](../policies/0097-superset.md) (`POL-0097`)

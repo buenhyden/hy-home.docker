@@ -19,6 +19,10 @@ This document records the decision to first carry out immediately applicable har
 
 The tooling tier corresponds to the platform's operational control plane, and if the boundaries around security/quality/test tools are weak, this directly affects organization-wide deployment stability. At the same time, the catalog requires expansion/strengthened policy per tool, so separating short-term stabilization from mid-term expansion is needed.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Carry out immediate hardening.
@@ -32,6 +36,30 @@ The tooling tier corresponds to the platform's operational control plane, and if
   - Registry signing/scan blocking policy
   - Redefine sonarqube quality gate
   - Standardize k6/locust tests
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Implement all catalog expansion immediately
+
+- Good:
+  - Fast functional sense of the expansion items
+- Bad:
+  - Increased change scope raises stabilization/verification complexity
+
+### Update documentation only, hold off on runtime/CI hardening
+
+- Good:
+  - Reduces short-term implementation cost
+- Bad:
+  - Lacks the ability to block regressions
 
 ## Consequences
 
@@ -54,30 +82,6 @@ The tooling tier corresponds to the platform's operational control plane, and if
 
 - Guardrail strategy: The tooling public router requires the gateway+SSO chain
 - Tool gating: Enforce `check-all-hardening.sh 09-tooling` as a required policy gate before merging
-
-## Options Considered
-
-### Implement all catalog expansion immediately
-
-- Good:
-  - Fast functional sense of the expansion items
-- Bad:
-  - Increased change scope raises stabilization/verification complexity
-
-### Update documentation only, hold off on runtime/CI hardening
-
-- Good:
-  - Reduces short-term implementation cost
-- Bad:
-  - Lacks the ability to block regressions
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

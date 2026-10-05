@@ -4,12 +4,22 @@ version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Task Checklists
 
-## Before Editing
+## Overview
+
+Check scope, implementation evidence, and completion before changing repository state.
+
+## Scope
+
+Approved repository edits, ongoing implementation, and completion evidence.
+
+## Rules
+
+### Before Editing
 
 - [ ] Confirm the approved objective, editable paths, protected surfaces, and exclusions.
 - [ ] Load applicable Requirement, Architecture, Spec, Plan, Task, policy, and skill sources.
@@ -17,7 +27,7 @@ updated: "2026-10-04"
       provider changes to explicit approval, validation, and recovery.
 - [ ] Define acceptance checks and inspect the shared worktree.
 
-## During Work
+### During Work
 
 - [ ] Keep changes traceable to the approved Plan Task.
 - [ ] Keep canonical sources separate from generated provider projections.
@@ -26,7 +36,7 @@ updated: "2026-10-04"
 - [ ] Record actual evidence in the Task, not a second progress or handoff document.
 - [ ] Stop on missing authority, destructive ambiguity, or unexpected scope.
 
-## Before Completion
+### Before Completion
 
 - [ ] Never run `pre-commit run` directly; use
       `scripts/validation/run-agent-precommit-all-files.sh` only when the
@@ -49,6 +59,10 @@ updated: "2026-10-04"
 - [ ] Distinguish worktree, index, commit, and historical-link checks, and report
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits only after review approval.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

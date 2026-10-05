@@ -5,7 +5,10 @@
   "description": "Value grammar only. Registry profiles own required, optional, forbidden, order, const, and enum rules.",
   "type": "object",
   "properties": {
-    "title": {"type": "string", "minLength": 1},
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
     "version": {
       "type": "string",
       "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
@@ -14,60 +17,213 @@
       "type": "string",
       "pattern": "^(common|governance|sdlc|operation|reference|archive)/[a-z][a-z0-9-]*$"
     },
-    "status": {"type": "string", "minLength": 1},
-    "owner": {"type": "string", "minLength": 1},
-    "updated": {"type": "string", "format": "date"},
-    "layer": {"type": "string", "minLength": 1},
-    "artifact_id": {"type": "string", "minLength": 1},
-    "parent_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
-    "implementation_services": {"$ref": "#/$defs/implementationServices"},
-    "supersedes": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
-    "superseded_by": {"type": ["string", "null"]},
-    "created": {"type": "string", "format": "date"},
-    "observed_at": {"type": "string", "format": "date"},
-    "identity_recovery": {"$ref": "#/$defs/identityRecovery"},
-    "identity_recovery_decisions": {"$ref": "#/$defs/identityRecoveryDecisions"},
-    "requirement_allocation_recovery_decisions": {"$ref": "#/$defs/requirementAllocationRecoveryDecisions"},
-    "branch_integration_receipts": {"$ref": "#/$defs/branchIntegrationReceipts"},
-    "archive_authorizations": {"$ref": "#/$defs/archiveAuthorizations"},
-    "cancellation": {"$ref": "#/$defs/taskCancellation"},
-    "reviewed_at": {"type": "string", "format": "date"},
-    "next_review_at": {"type": "string", "format": "date"},
-    "occurred_at": {"type": "string", "format": "date-time"},
-    "resolved_at": {"type": ["string", "null"], "format": "date-time"},
-    "completed_at": {"type": "string", "format": "date-time"},
-    "generated_by": {"type": "string", "minLength": 1},
-    "runtime": {"type": "string", "minLength": 1},
-    "archive_disposition": {"type": "string", "minLength": 1},
-    "archive_reason": {"type": "string", "minLength": 1},
-    "archived_at": {"type": "string", "format": "date-time"},
-    "archived_blob": {"type": "string", "minLength": 1},
-    "archived_commit": {"type": "string", "minLength": 1},
-    "archived_from": {"type": "string", "minLength": 1},
-    "preservation_class": {"type": "string", "minLength": 1},
-    "name": {"type": "string", "minLength": 1},
-    "description": {"type": "string", "minLength": 1},
-    "action": {"type": "string", "minLength": 1},
-    "conditions": {"$ref": "#/$defs/hookConditions"},
-    "enabled": {"type": "boolean"},
-    "event": {"type": "string", "minLength": 1},
-    "pattern": {"type": "string", "minLength": 1},
-    "agent_id": {"type": "string", "minLength": 1},
-    "scope": {"type": "string", "minLength": 1},
-    "tier": {"type": "string", "minLength": 1},
-    "work_profile": {"type": "string", "minLength": 1},
-    "permission_profile": {"type": "string", "minLength": 1},
-    "tool_profile": {"type": "string", "minLength": 1},
-    "skill_ids": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
-    "function_id": {"type": "string", "minLength": 1},
-    "owner_agent": {"type": "string", "minLength": 1},
-    "review_cycle": {"type": "string", "minLength": 1},
-    "model": {"type": "string", "minLength": 1},
-    "model_reasoning_effort": {"type": "string", "minLength": 1},
-    "effort": {"type": "string", "minLength": 1},
-    "permissionMode": {"type": "string", "minLength": 1},
-    "skills": {"$ref": "#/$defs/nonEmptyUniqueStrings"},
-    "tools": {"$ref": "#/$defs/nonEmptyUniqueStrings"}
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner": {
+      "type": "string",
+      "minLength": 1
+    },
+    "updated": {
+      "type": "string",
+      "format": "date"
+    },
+    "layer": {
+      "type": "string",
+      "minLength": 1
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parent_ids": {
+      "$ref": "#/$defs/nonEmptyUniqueStrings"
+    },
+    "implementation_services": {
+      "$ref": "#/$defs/implementationServices"
+    },
+    "supersedes": {
+      "$ref": "#/$defs/nonEmptyUniqueStrings"
+    },
+    "superseded_by": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created": {
+      "type": "string",
+      "format": "date"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "identity_recovery": {
+      "$ref": "#/$defs/identityRecovery"
+    },
+    "identity_recovery_decisions": {
+      "$ref": "#/$defs/identityRecoveryDecisions"
+    },
+    "requirement_allocation_recovery_decisions": {
+      "$ref": "#/$defs/requirementAllocationRecoveryDecisions"
+    },
+    "branch_integration_receipts": {
+      "$ref": "#/$defs/branchIntegrationReceipts"
+    },
+    "archive_authorizations": {
+      "$ref": "#/$defs/archiveAuthorizations"
+    },
+    "cancellation": {
+      "$ref": "#/$defs/taskCancellation"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_review_at": {
+      "type": "string",
+      "format": "date"
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "generated_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archive_disposition": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archive_reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archived_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "archived_blob": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archived_commit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "archived_from": {
+      "type": "string",
+      "minLength": 1
+    },
+    "preservation_class": {
+      "type": "string",
+      "minLength": 1
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "conditions": {
+      "$ref": "#/$defs/hookConditions"
+    },
+    "enabled": {
+      "type": "boolean"
+    },
+    "event": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pattern": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agent_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tier": {
+      "type": "string",
+      "minLength": 1
+    },
+    "work_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "permission_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skill_ids": {
+      "$ref": "#/$defs/nonEmptyUniqueStrings"
+    },
+    "function_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "owner_agent": {
+      "type": "string",
+      "minLength": 1
+    },
+    "review_cycle": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model_reasoning_effort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "effort": {
+      "type": "string",
+      "minLength": 1
+    },
+    "permissionMode": {
+      "type": "string",
+      "minLength": 1
+    },
+    "skills": {
+      "$ref": "#/$defs/nonEmptyUniqueStrings"
+    },
+    "tools": {
+      "$ref": "#/$defs/nonEmptyUniqueStrings"
+    }
   },
   "$defs": {
     "archiveAuthorizations": {
@@ -77,37 +233,95 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["unit", "action", "approved_by", "approved_at", "evidence", "status"],
+        "required": [
+          "unit",
+          "action",
+          "approved_by",
+          "approved_at",
+          "evidence",
+          "status"
+        ],
         "properties": {
-          "unit": {"type": "string", "pattern": "\\S"},
-          "action": {"enum": ["assess", "rehabilitate", "remove"]},
-          "approved_by": {"type": "string", "pattern": "\\S"},
-          "approved_at": {"type": "string", "format": "date"},
-          "evidence": {"type": "string", "pattern": "^#[A-Za-z0-9][A-Za-z0-9._-]*$"},
-          "status": {"const": "approved"}
+          "unit": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "action": {
+            "enum": [
+              "assess",
+              "rehabilitate",
+              "remove"
+            ]
+          },
+          "approved_by": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "approved_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "evidence": {
+            "type": "string",
+            "pattern": "^#[A-Za-z0-9][A-Za-z0-9._-]*$"
+          },
+          "status": {
+            "const": "approved"
+          }
         }
       }
     },
     "taskCancellation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["reason", "approved_by", "approved_at", "criteria"],
+      "required": [
+        "reason",
+        "authorization_ref",
+        "criteria_disposition"
+      ],
       "properties": {
-        "reason": {"type": "string", "pattern": "\\S"},
-        "approved_by": {"type": "string", "pattern": "\\S"},
-        "approved_at": {"type": "string", "format": "date"},
-        "criteria": {
+        "reason": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "authorization_ref": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "criteria_disposition": {
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": ["criterion"],
+            "required": [
+              "criterion"
+            ],
             "properties": {
-              "criterion": {"type": "integer"},
-              "reassigned_to": {"type": "string", "pattern": "^SPEC-[0-9]{4}-TSK-[0-9]{4}$"},
-              "withdrawn": {"type": "string", "pattern": "\\S"}
+              "criterion": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "successor": {
+                "type": "string",
+                "pattern": "^SPEC-[0-9]{4}(?:-(?:PLAN|TSK)-[0-9]{4})?$"
+              },
+              "withdrawal_ref": {
+                "type": "string",
+                "pattern": "\\S"
+              }
             },
-            "oneOf": [{"required": ["reassigned_to"]}, {"required": ["withdrawn"]}]
+            "oneOf": [
+              {
+                "required": [
+                  "successor"
+                ]
+              },
+              {
+                "required": [
+                  "withdrawal_ref"
+                ]
+              }
+            ]
           }
         }
       }
@@ -129,57 +343,209 @@
         }
       }
     },
-    "requirementAllocationRecoveryDecisions": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["comparison_base_commit", "defect_commit", "valid_predecessor_commit", "requirement_path", "allocation_name", "predecessor_current_issued", "corrupt_declared", "repaired_current_issued", "repaired_reserved_history", "disposition", "repaired_requirement_sha256"], "properties": {"comparison_base_commit": {"const": "d1e6ded52808b02392c52472d5416518a3b959d6"}, "defect_commit": {"const": "70aaeffb84e8f6bc537241615d4743b79ccac079"}, "valid_predecessor_commit": {"const": "b66da447f68993dd9bddfd100bdd4c4b90d19be4"}, "requirement_path": {"const": "docs/01.requirements/0012-laboratory.md"}, "allocation_name": {"const": "REQ-0012.FR"}, "predecessor_current_issued": {"const": [1, 2, 3, 4]}, "corrupt_declared": {"const": [1, 2, 3]}, "repaired_current_issued": {"const": [1, 2, 4]}, "repaired_reserved_history": {"const": [3]}, "disposition": {"const": "stable-identity-restoration"}, "repaired_requirement_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}},
+    "requirementAllocationRecoveryDecisions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "comparison_base_commit",
+          "defect_commit",
+          "valid_predecessor_commit",
+          "requirement_path",
+          "allocation_name",
+          "predecessor_current_issued",
+          "corrupt_declared",
+          "repaired_current_issued",
+          "repaired_reserved_history",
+          "disposition",
+          "repaired_requirement_sha256"
+        ],
+        "properties": {
+          "comparison_base_commit": {
+            "const": "d1e6ded52808b02392c52472d5416518a3b959d6"
+          },
+          "defect_commit": {
+            "const": "70aaeffb84e8f6bc537241615d4743b79ccac079"
+          },
+          "valid_predecessor_commit": {
+            "const": "b66da447f68993dd9bddfd100bdd4c4b90d19be4"
+          },
+          "requirement_path": {
+            "const": "docs/01.requirements/0012-laboratory.md"
+          },
+          "allocation_name": {
+            "const": "REQ-0012.FR"
+          },
+          "predecessor_current_issued": {
+            "const": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "corrupt_declared": {
+            "const": [
+              1,
+              2,
+              3
+            ]
+          },
+          "repaired_current_issued": {
+            "const": [
+              1,
+              2,
+              4
+            ]
+          },
+          "repaired_reserved_history": {
+            "const": [
+              3
+            ]
+          },
+          "disposition": {
+            "const": "stable-identity-restoration"
+          },
+          "repaired_requirement_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
     "identityRecovery": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_commit", "source_path", "source_artifact_id", "decision_path", "decision_artifact_id", "disposition"],
+      "required": [
+        "source_commit",
+        "source_path",
+        "source_artifact_id",
+        "decision_path",
+        "decision_artifact_id",
+        "disposition"
+      ],
       "properties": {
-        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "source_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
-        "source_artifact_id": {"type": "string", "minLength": 1},
-        "decision_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
-        "decision_artifact_id": {"type": "string", "minLength": 1},
-        "disposition": {"const": "consolidated"}
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_path": {
+          "type": "string",
+          "pattern": "^docs/[A-Za-z0-9._/-]+$"
+        },
+        "source_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_path": {
+          "type": "string",
+          "pattern": "^docs/[A-Za-z0-9._/-]+$"
+        },
+        "decision_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposition": {
+          "const": "consolidated"
+        }
       }
     },
     "identityRecoveryDecisions": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/identityRecoveryDecision"}
+      "items": {
+        "$ref": "#/$defs/identityRecoveryDecision"
+      }
     },
     "identityRecoveryDecision": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_commit", "source_path", "source_artifact_id", "target_path", "target_artifact_id", "disposition"],
+      "required": [
+        "source_commit",
+        "source_path",
+        "source_artifact_id",
+        "target_path",
+        "target_artifact_id",
+        "disposition"
+      ],
       "properties": {
-        "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "source_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
-        "source_artifact_id": {"type": "string", "minLength": 1},
-        "target_path": {"type": "string", "pattern": "^docs/[A-Za-z0-9._/-]+$"},
-        "target_artifact_id": {"type": "string", "minLength": 1},
-        "disposition": {"const": "consolidated"}
+        "source_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_path": {
+          "type": "string",
+          "pattern": "^docs/[A-Za-z0-9._/-]+$"
+        },
+        "source_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_path": {
+          "type": "string",
+          "pattern": "^docs/[A-Za-z0-9._/-]+$"
+        },
+        "target_artifact_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disposition": {
+          "const": "consolidated"
+        }
       }
     },
     "branchIntegrationReceipts": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
-      "items": {"$ref": "#/$defs/branchIntegrationReceipt"}
+      "items": {
+        "$ref": "#/$defs/branchIntegrationReceipt"
+      }
     },
     "branchIntegrationReceipt": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source_commit", "source_package_path", "source_artifact_id", "preserved_package_path", "target_package_path", "target_artifact_id", "disposition"],
+      "required": [
+        "source_commit",
+        "source_package_path",
+        "source_artifact_id",
+        "preserved_package_path",
+        "target_package_path",
+        "target_artifact_id",
+        "disposition"
+      ],
       "properties": {
-        "source_commit": {"type": "string", "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"},
-        "source_package_path": {"type": "string", "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
-        "source_artifact_id": {"type": "string", "pattern": "^SPEC-[0-9]{4}$"},
-        "preserved_package_path": {"type": "string", "pattern": "^docs/98\\.archive/superseded/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
-        "target_package_path": {"type": "string", "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"},
-        "target_artifact_id": {"type": "string", "pattern": "^SPEC-[0-9]{4}$"},
-        "disposition": {"const": "historical-superseded"}
+        "source_commit": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+        },
+        "source_package_path": {
+          "type": "string",
+          "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"
+        },
+        "source_artifact_id": {
+          "type": "string",
+          "pattern": "^SPEC-[0-9]{4}$"
+        },
+        "preserved_package_path": {
+          "type": "string",
+          "pattern": "^docs/98\\.archive/superseded/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"
+        },
+        "target_package_path": {
+          "type": "string",
+          "pattern": "^docs/03\\.specs/[0-9]{4}-[a-z0-9][a-z0-9-]*$"
+        },
+        "target_artifact_id": {
+          "type": "string",
+          "pattern": "^SPEC-[0-9]{4}$"
+        },
+        "disposition": {
+          "const": "historical-superseded"
+        }
       }
     },
     "hookConditions": {
@@ -189,17 +555,33 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["field", "operator", "pattern"],
+        "required": [
+          "field",
+          "operator",
+          "pattern"
+        ],
         "properties": {
-          "field": {"type": "string", "minLength": 1},
-          "operator": {"type": "string", "minLength": 1},
-          "pattern": {"type": "string", "minLength": 1}
+          "field": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operator": {
+            "type": "string",
+            "minLength": 1
+          },
+          "pattern": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       }
     },
     "nonEmptyUniqueStrings": {
       "type": "array",
-      "items": {"type": "string", "minLength": 1},
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
       "uniqueItems": true
     }
   },

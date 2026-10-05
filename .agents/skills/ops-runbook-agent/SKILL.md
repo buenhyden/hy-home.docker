@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-29"
+  updated: "2026-10-05"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -15,7 +15,9 @@ metadata:
 
 # ops-runbook-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -34,11 +36,7 @@ Operational behavior must be implemented and verified; commands, expected outcom
 3. Write ordered commands with expected observations, decision points, and stop conditions grounded in current implementation.
 4. Add validation, rollback or recovery, evidence capture, and escalation steps, then test links and commands safely.
 
-## Outputs
-
-- One typed runbook at `docs/05.operations/runbooks/####-<slug>.md` with executable, topic-specific procedure.
-
-## Gates
+### Gates
 
 - Procedures are executable and expected outcomes are observable.
 - Rollback/recovery and escalation are explicit.
@@ -46,11 +44,15 @@ Operational behavior must be implemented and verified; commands, expected outcom
 - Incident packets use `docs/05.operations/incidents/<year>/inc-####-<slug>/`; the paired
   postmortem filename is fixed: Filename: `postmortem.md`.
 
+## Outputs
+
+- One typed runbook at `docs/05.operations/runbooks/####-<slug>.md` with executable, topic-specific procedure.
+
 ## Failure Handling
 
 Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan. A static readiness review cannot be presented as a successful recovery.
 
-## Related Documents
+## References
 
 - [Documentation writer](../../roles/doc-writer.md)
 - [Operations scope](../../governance/quality-standards.md)

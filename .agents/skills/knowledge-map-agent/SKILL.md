@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-10-05"
   function_id: "knowledge-map-agent"
   scope: "docs"
   owner_agent: "doc-writer"
@@ -15,7 +15,9 @@ metadata:
 
 # knowledge-map-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -43,21 +45,21 @@ routing from a repository surface to its canonical owner.
 3. Corroborate any advisory graph claim against tracked source before recording
    it, and say which claims were corroborated and which were dropped.
 
+### Gates
+
+- The map introduces no parallel authority or confidential payload exposure.
+- An advisory graph claim is either corroborated against tracked source or left out.
+
 ## Outputs
 
 - A curated knowledge map that points to canonical sources and records which
   claims were corroborated against tracked source.
 
-## Gates
-
-- The map introduces no parallel authority or confidential payload exposure.
-- An advisory graph claim is either corroborated against tracked source or left out.
-
 ## Failure Handling
 
 Exclude unsafe or unverifiable paths, record the omission, and stop if provenance or source ownership cannot be established.
 
-## Related Documents
+## References
 
 - [Documentation writer](../../roles/doc-writer.md)
 - [Documentation scope](../../governance/documentation-protocol.md)

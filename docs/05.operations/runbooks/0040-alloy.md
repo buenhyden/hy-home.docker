@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Alloy 준비 상태, Docker discovery 증거, OTLP 입력 진단, 하위 exporter 검증, 재시작과 설정 rollback.
 
 이 런북은 Grafana Alloy의 service readiness failure, Docker discovery/log collection gap, OTLP trace ingress failure, downstream exporter failure, pipeline label drift, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-alloy` 상태를 확인하고 Docker discovery, Loki/Prometheus/Tempo/Pyroscope exporter 경로, OTLP ports, route, config boundary를 검증하며, mount 권한이나 pipeline 구조 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Alloy UI or `/-/healthy` endpoint가 실패할 때.
 - Docker logs, metrics, or traces가 backend에 도착하지 않을 때.
@@ -33,6 +41,8 @@ created: "2026-05-17"
 - `config.alloy` 변경 후 component graph, label, or exporter 상태 검증이 필요할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -150,22 +160,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. config를 검증하고 Alloy를 시작한 뒤, label을 붙인 test log/trace/metric 입력을 주입한다. 구성된 각 downstream과 retry/WAL 동작을 검증한다. profile은 source component를 확인한 후에만 test한다.
 4. 불일치가 있으면 격리된 collector를 중지하고 log를 보존한다. config/image를 rollback하고, 운영 환경을 변경하기 전에 허용한 전송 중 data 손실을 기록한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret-bearing label or payload가 의심되면 원문 값을 기록하지 않는다.
 - Pipeline 장애는 component name, backend endpoint, log excerpt, affected telemetry signal을 함께 기록한다.
 - Mount or endpoint change 필요성이 보이면 approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. Docker mount permission, exporter endpoint, OTLP port, high-cardinality relabel, or backend runtime 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, Docker mount/endpoint/port 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Alloy Usage Guide](../guides/0040-alloy.md) (`GDE-0040`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

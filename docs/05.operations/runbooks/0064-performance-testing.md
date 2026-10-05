@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > 범위: 공유 서비스에 영향을 주는 k6·Locust LAB 부하 시험의 중단과 진단.
 
 이 런북은 성능 테스트 실행 중 target service 또는 shared gateway/auth/data tier에 영향이 발생했을 때 사용하는 공통 절차다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 테스트 부하를 우선 중단하고 root `k6` 작업 또는 독립 Locust LAB의 정확한 프로젝트를 확인한 뒤 대상 회복과 증거 완전성을 판정한다.
 
-## When to Use
+### When to Use
 
 - 테스트 중 target SLI가 승인된 한계 아래로 떨어진다.
 - Gateway/Auth/Data tier가 부하 테스트 영향으로 degraded 상태가 된다.
@@ -32,6 +40,8 @@ created: "2026-05-17"
 - 실행 주체가 root `k6`인지 별도 Locust LAB인지 불명확하다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -89,24 +99,28 @@ created: "2026-05-17"
 2. target service recovery는 해당 target의 runbook으로 전환한다.
 3. 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 수행한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령 결과, 시각, 서비스명, 테스트 매개변수, 대상 SLI 요약과 최종 회복 상태를 기록한다.
 - Locust 또는 k6 중 어떤 절차를 사용했는지 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 부하 생성기별 중단 절차와 대상별 복구 런북을 사용한다. 중단 후에도 원본 파일과
 격리 결과 디렉터리를 보존하고 승인된 checksum과 대상 프로젝트만 재적재한다.
 이 문서는 대상 서비스를 재시작하거나 결과 볼륨을 삭제하는 승인이 아니다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 부하 중지 후에도 대상이 회복되지 않거나 루트 Compose 문맥이 깨지거나 비밀 노출이 의심되면 플랫폼 책임자와 대상 소유자에게 보고한다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Performance Testing Usage Guide](../guides/0064-performance-testing.md) (`GDE-0064`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)

@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Valkey Cluster Health and Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
@@ -35,6 +43,8 @@ static validation은 이 문서화 task에서 안전하게 수행할 수 있다.
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 정적 검사는 `labs/.env.example`과 `labs/valkey-cluster.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
@@ -83,26 +93,30 @@ exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르�
    writer를 일시 정지하고, 최종 backup을 만들고, client를 전환하고,
    검증하고, rollback을 위해 이전 상태를 보존해야 한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 실패한 cutover는 identity와 write boundary를 검증한 뒤 client를 보존된 원본
 cluster로 되돌린다. backup 세트와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
 보존된 rollback window를 거친 뒤에만 진행한다.
 
-## Escalation
+### Escalation
 
 AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은
 slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 중단한다. secret 값 없이 로그를 보존하고 data @buenhyden에게 escalation한다.
 
-## Traceability
+### Traceability
 
 - Runtime source: [Valkey Cluster Compose](../../../labs/valkey-cluster.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.

@@ -4,16 +4,22 @@ version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 ---
 
 # Agent Bootstrap Policy
 
-## Purpose
+## Overview
 
 Provide the sole repository bootstrap sequence for supported agents.
 
-## Canonical Load Order
+## Scope
+
+Supported agent entry shims, authored provider adapters, and request-scoped canonical loading.
+
+## Rules
+
+### Canonical Load Order
 
 1. Enter through root `AGENTS.md` or `CLAUDE.md`.
 2. Load this policy, the matching authored `.claude/provider.md` or
@@ -38,7 +44,7 @@ stage document. Current agent rules live in their canonical governance owner;
 README navigation, historical provenance and typed machine inputs follow the
 [documentation protocol](documentation-protocol.md#entry-point-for-documents-outside-docs).
 
-## Authority and Precedence
+### Authority and Precedence
 
 1. Direct system and user instructions.
 2. Canonical governance policies, including workflow and approval behavior.
@@ -60,7 +66,7 @@ Execution progress and handoff state belong to the current Task. A document that
 leaves an active stage is preserved under `docs/98.archive/`; Git history proves
 that preserved record is what was removed.
 
-## Hard Constraints
+### Hard Constraints
 
 - Canonical governance, roles, skills, knowledge, prompts, evaluations, and native provider
   sources remain English-only, except their `README.md` files, which follow the
@@ -72,8 +78,19 @@ that preserved record is what was removed.
 - Use in-place canonical edits; do not create legacy redirects or parallel
   authority copies.
 
-## Verification Routing
+### Verification Routing
 
 Use [task-checklists.md](task-checklists.md) for completion and
 [approval-boundaries.md](approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+## Related Documents
+
+- [Governance navigation](../README.md)
+- [Approval boundaries](approval-boundaries.md)
+- [Documentation protocol](documentation-protocol.md)
+- [Completion checklist](task-checklists.md)

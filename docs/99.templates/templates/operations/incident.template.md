@@ -18,7 +18,7 @@ occurred_at: "{{OCCURRED_AT}}"
 
 # {{TITLE}}
 
-## Summary
+## Overview
 
 {{SUMMARY}}
 
@@ -26,35 +26,39 @@ occurred_at: "{{OCCURRED_AT}}"
 
 {{IMPACT}}
 
-## Coordination
-
-{{ROLES_AND_COORDINATION}}
-
 ## Timeline
 
 <!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
 
 {{TIMELINE}}
 
-## Mitigation
+## Response
+
+### Coordination
+
+{{ROLES_AND_COORDINATION}}
+
+### Mitigation
 
 {{MITIGATION}}
 
-## Current Status
+### Communications
+
+{{COMMUNICATIONS}}
+
+## Resolution
+
+### Current Status
 
 <!-- Author prompt: Derive any current lifecycle label from frontmatter status. Describe observations with their actual timestamp and timezone; do not maintain a second independent current-state value or invent precision. -->
 {{CURRENT_STATUS}}
 
-## Corrective Actions
+### Corrective Actions
 
 <!-- Author prompt: Record observed mitigation and tracked next actions; move causal analysis and durable follow-up to the postmortem after stabilization. -->
 
 {{CORRECTIVE_ACTIONS}}
 
-## Traceability
+## Related Documents
 
 {{RUNBOOK_AND_SYSTEM_LINKS}}
-
-## Communications
-
-{{COMMUNICATIONS}}

@@ -14,7 +14,15 @@ created: "2026-09-19"
 
 # Home and Development Host Architecture
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 One Linux server shares HOME service and development experiments. The user
 also designated AI and workflow as always-on HOME capabilities. The goal is
@@ -22,7 +30,7 @@ to keep the service within the scope where one operator can explain state
 and the recovery path. An optional capability with no confirmed real
 consumer does not push its always-on startup cost onto HOME.
 
-## System Boundaries
+### System Boundaries
 
 The root Compose owns include, and the service profile owns activation. The
 canonical owner of the vocabulary is
@@ -36,7 +44,11 @@ prove complete network isolation.
 Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are under `12-analytics`. Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
 not change HOME selection or the root Compose project (ADR-0045).
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 | Class | Retained capability | Activation and limitation |
 | --- | --- | --- |
@@ -69,7 +81,7 @@ and [development database policy](../../05.operations/policies/0100-development-
 own the current interfaces; metadata approval does not deploy or issue secrets.
 The independent 07/08 product-planning tracks grant no runtime resource authority.
 
-## Data Flow
+### Data Flow
 
 ```mermaid
 flowchart LR
@@ -87,7 +99,7 @@ OpenBao rendered outputs and Docker Secret consumers are distinct existing paths
 a migration must verify consumer mounts and permissions before claiming automatic
 rotation or complete secret delivery. No secret values belong in diagrams or evidence.
 
-## Deployment View
+### Deployment View
 
 The source-controlled selection is validated before deployment. `core mng ai
 workflow storage obs-core obs-host availability logs alerting tracing profiling
@@ -102,6 +114,22 @@ Dockerfile build sources. Documents route to the applicable source or projection
 instead of repeating patch pins without context.
 Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
 
+### Risks
+
+Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
+capabilities. Existing shared networks and host-level capabilities limit isolation.
+Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
+proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
+
+### Evolution
+
+Measure actual application usage and restore evidence before removing persistent
+services or changing storage engines. Promote only validated optional capabilities;
+retire migrations through existing archive and identity contracts, never by
+rewriting history or deleting unverified data.
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies image drift verification.
+
 ## Quality Attributes
 
 - Availability: initialization completion, daemon health and application readiness
@@ -115,25 +143,11 @@ Renovate owns enabled infrastructure managers and Dependabot owns Storybook npm.
 - Security: prefer authenticated gateway ingress and loopback diagnostic ports;
   document remaining host publications and shared network grants as residual risk.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
 - [Service disposition research](../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
 - [Infrastructure implementation](../../../infra/README.md)
-
-## Risks
-
-Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
-capabilities. Existing shared networks and host-level capabilities limit isolation.
-Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
-proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
-
-## Evolution
-
-Measure actual application usage and restore evidence before removing persistent
-services or changing storage engines. Promote only validated optional capabilities;
-retire migrations through existing archive and identity contracts, never by
-rewriting history or deleting unverified data.
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies image drift verification.

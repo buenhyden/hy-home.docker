@@ -14,12 +14,22 @@ created: "2026-09-23"
 
 # WireMock Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 기능 또는 load 모드가 비정상이거나, 스텁이 예상된 위치에서 요청이 404를 반환하거나,
 매핑 파일이 로드에 실패하거나, 컨테이너가 메모리 제한에 도달했을 때 사용한다.
 
 ## Procedure
+
+### Procedure
 
 1. 먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
    override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
@@ -80,26 +90,30 @@ reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 
 합성 요청으로 검증한 뒤 승인한다. journal은 복원하지 않으며 필요한 정제된 집계만
 보존한 후 컨테이너를 제거한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 기능 모드는 health 응답, `__admin/mappings`의 매핑 개수, journal reset 종료 코드와
 소스 커밋을 기록한다. load 모드는 mode, no-journal/HTTP admin 거부 command, host port 없음, 공개 stub health와
 소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
 크리덴셜을 전송했을 수 있다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 서비스는 영속 상태를 갖지 않는다. 추적되는 이미지와 매핑에서 다시 만드는
 것이 완전한 복구이며 인메모리 스텁과 journal은 설계상 사라진다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 admin API를 loopback 밖으로 공개하거나, 실제 업스트림에 대한 녹화를
 활성화하거나, 캡처된 프로덕션 응답을 커밋하라는 요청이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0092-wiremock.md) (`GDE-0092`)
 - [Policy](../policies/0092-wiremock.md) (`POL-0092`)

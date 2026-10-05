@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Open Notebook Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -50,13 +60,13 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0073-open-notebook.md)의 `승인된 사용과 일관된 복구 세트` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile notebook config --quiet`
 - `docker compose --profile notebook config --services`
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 
-## Runbook Handoff
+### Runbook Handoff
 
 데이터베이스/키/provider 복구와 업그레이드에는
 [runbook](../runbooks/0073-open-notebook.md)을 사용한다.
@@ -71,7 +81,7 @@ secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모�
 선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
 자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0073-open-notebook.md) (`POL-0073`)
 - [Runbook](../runbooks/0073-open-notebook.md) (`RUN-0073`)

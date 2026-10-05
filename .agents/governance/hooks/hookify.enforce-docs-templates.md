@@ -1,10 +1,10 @@
 ---
 title: "WARNING: template use required"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -15,7 +15,17 @@ event: "file"
 name: "enforce-docs-templates"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# WARNING: template use required
+
+## Overview
+
+Apply the declared `warn` action for enforce-docs-templates.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Template use required (project rule)**
 
@@ -35,3 +45,12 @@ stage-specific contract. The Registry owns the mapped template for each profile.
 
 After completion, run `python3 scripts/validation/run-ci-gate.py --profile changed` to
 verify that template contracts still hold.
+
+## Exceptions
+
+No exception is declared by this rule.
+
+## Related Documents
+
+- [Documentation protocol](../documentation-protocol.md)
+- [Stage authoring matrix](../stage-authoring-matrix.md)

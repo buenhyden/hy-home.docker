@@ -14,11 +14,9 @@ created: "2026-05-17"
 
 # Performance Testing Operations Policy
 
-> `hy-home.docker`의 k6 기본 부하 검증, WireMock 모의 의존성, Locust LAB와 결과 보존 정책입니다.
-
----
-
 ## Overview
+
+### Overview
 
 이 문서는 로드 테스팅 및 벤치마킹 작업 시 시스템의 가용성과 안정성을 유지하기 위한 운영 정책을 정의합니다. 특히, 부하 테스트가 실제 운영 중인 다른 서비스에 미치는 영향을 최소화하고 지표의 무결성을 보장하는 방법을 다룹니다.
 
@@ -28,7 +26,9 @@ created: "2026-05-17"
 - **가용성 보존**: 테스트 중 임계 시스템(Gateway, Identity)의 다운타임을 방지해야 함.
 - **데이터 보존**: 테스트 결과 지표와 evidence를 벤치마킹 자산으로 안전하게 보관해야 함.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/11-quality/k6/`와 실행별 원본·판정·적재 계약
 - `infra/11-quality/wiremock/`의 기능/부하 모의 모드
@@ -42,7 +42,14 @@ created: "2026-05-17"
 - Performance Engineer
 - Infrastructure Admin
 
-## Controls
+### Traceability
+
+- 상위 문서: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- 동일 주제 문서: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
+
+## Rules
+
+### Controls
 
 - **Required**: 연결된 가이드와 구현 원본의 운영 계약을 유지한다.
 - **Allowed**: 링크와 검증 근거를 갱신하는 문서 수정을 허용한다.
@@ -74,24 +81,21 @@ created: "2026-05-17"
 
 이 정책은 플랫폼의 전체 성능 가용성 기준을 따르며, 모든 테스트 수행 이력은 감사(Audit) 대상이 될 수 있습니다.
 
-## Exceptions
-
-N/A — 현재 승인된 예외 없음.
-
-## Verification
+### Verification
 
 - 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
 - 정책이나 연결된 운영 문서를 변경하면 `python3 scripts/validation/run-ci-gate.py --profile changed`로 검증한다.
 - 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
 
-## Review Cadence
+### Review Cadence
 
 - 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
 
-## Traceability
+## Exceptions
 
-- 상위 문서: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
+### Exceptions
+
+N/A — 현재 승인된 예외 없음.
 
 ## Related Documents
 

@@ -22,8 +22,10 @@ from scripts.lib.document_governance.registry import (
     RegistryError,
     document_type,
     load_registry,
+    load_registry_at_revision,
     load_registry_document_at_revision,
     validate_registry,
+    validate_registry_at_revision,
 )
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
@@ -747,10 +749,65 @@ def task_cancellation_findings(
     cancellation: object,
     criteria: frozenset[int],
     task_statuses: Mapping[str, str],
+    *,
+    generation: int = 4,
+    references: frozenset[str] = frozenset(),
 ) -> tuple[str, ...]:
     """Judge cancellation without changing metadata or exempting completion."""
     if not isinstance(cancellation, Mapping):
         return ("cancellation must be an object",)
+    if generation >= 5:
+        expected = {"reason", "authorization_ref", "criteria_disposition"}
+        if set(cancellation) != expected:
+            return (
+                "cancellation requires exactly reason, authorization_ref, and criteria_disposition",
+            )
+        for field in ("reason", "authorization_ref"):
+            value = cancellation.get(field)
+            if not isinstance(value, str) or not value.strip():
+                return (f"cancellation {field} must be a nonempty string",)
+        if cancellation["authorization_ref"] not in references:
+            return (
+                "cancellation authorization_ref must resolve to one unique same-Task heading",
+            )
+        entries = cancellation.get("criteria_disposition")
+        if not isinstance(entries, (list, tuple)):
+            return ("cancellation criteria_disposition must be a list",)
+        seen_criteria: set[int] = set()
+        for entry in entries:
+            if not isinstance(entry, Mapping):
+                return ("cancellation criteria disposition must be an object",)
+            criterion = entry.get("criterion")
+            if type(criterion) is not int or criterion not in criteria:
+                return ("cancellation criterion must name a Spec acceptance criterion",)
+            if criterion in seen_criteria:
+                return ("cancellation criterion must occur only once",)
+            seen_criteria.add(criterion)
+            alternatives = {"successor", "withdrawal_ref"} & set(entry)
+            if set(entry) != {"criterion", *alternatives} or len(alternatives) != 1:
+                return (
+                    "cancellation criterion needs exactly one successor or approved withdrawal reference",
+                )
+            if "withdrawal_ref" in entry:
+                reference = entry["withdrawal_ref"]
+                if not isinstance(reference, str) or not reference.strip():
+                    return ("cancellation withdrawal_ref must be nonempty",)
+                if reference not in references:
+                    return (
+                        "cancellation withdrawal_ref must resolve to one unique same-Task heading",
+                    )
+                continue
+            target = entry["successor"]
+            if (
+                not isinstance(target, str)
+                or target == task_id
+                or target not in task_statuses
+                or task_statuses[target] == "cancelled"
+            ):
+                return (
+                    "cancellation successor must name another non-cancelled package Task",
+                )
+        return ()
     for field in ("reason", "approved_by"):
         value = cancellation.get(field)
         if not isinstance(value, str) or not value.strip():
@@ -800,6 +857,39 @@ def task_cancellation_findings(
                     "cancellation reassigned_to must name another non-cancelled package Task",
                 )
     return ()
+
+
+def _v5_cancellation_findings(
+    document: SpecDocument,
+    criteria: frozenset[int],
+    statuses: Mapping[str, str],
+) -> tuple[str, ...]:
+    findings = task_cancellation_findings(
+        document.artifact_id,
+        document.cancellation,
+        criteria,
+        statuses,
+        generation=5,
+        references=_document_anchor_references(document.source_text),
+    )
+    if findings:
+        return findings
+    assert isinstance(document.cancellation, Mapping)
+    entries = document.cancellation["criteria_disposition"]
+    assert isinstance(entries, (list, tuple))
+    disposed = {entry["criterion"] for entry in entries if isinstance(entry, Mapping)}
+    if disposed != set(criteria):
+        return ("cancellation criteria disposition must match assigned criteria",)
+    return ()
+
+
+def _document_anchor_references(source_text: str) -> frozenset[str]:
+    anchors = [
+        "#" + _heading_anchor(match.group(1))
+        for line in _completion_visible_lines(source_text)
+        if (match := re.fullmatch(r"#{1,6} +(.+?) *#*", line)) is not None
+    ]
+    return frozenset(anchor for anchor in anchors if anchors.count(anchor) == 1)
 
 
 def _registered_table_rows(
@@ -910,6 +1000,255 @@ def _task_result_value(result: str, allowed: frozenset[str]) -> str:
     return result
 
 
+def _registered_common_values(
+    registry: DocumentRegistry, key: str, expected_length: int | None = None
+) -> tuple[str, ...]:
+    values = registry.common.get(key)
+    if (
+        not isinstance(values, (list, tuple))
+        or not all(isinstance(value, str) and value for value in values)
+        or len(values) != len(set(values))
+        or (expected_length is not None and len(values) != expected_length)
+    ):
+        raise SpecPackageError(f"{key} is missing or malformed in Registry")
+    return tuple(values)
+
+
+def _registered_common_section(registry: DocumentRegistry, key: str) -> str:
+    value = registry.common.get(key)
+    if not isinstance(value, str) or not value:
+        raise SpecPackageError(f"{key} is missing or malformed in Registry")
+    return value
+
+
+def _cell_references(value: str, label: str) -> tuple[str, ...]:
+    references = tuple(item.strip() for item in value.split(","))
+    if not references or any(not item for item in references):
+        raise SpecPackageError(f"{label} references are malformed")
+    return references
+
+
+def _work_references(value: str) -> tuple[str, ...]:
+    if value == "None":
+        return ()
+    references: list[str] = []
+    for item in _cell_references(value, "Plan Dependencies"):
+        match = re.fullmatch(r"W([1-9][0-9]*)[–-]W([1-9][0-9]*)", item)
+        if match is None:
+            references.append(item)
+            continue
+        start, end = map(int, match.groups())
+        if start >= end:
+            raise SpecPackageError("Plan dependency range is malformed")
+        references.extend(f"W{number}" for number in range(start, end + 1))
+    if any(re.fullmatch(r"W[1-9][0-9]*", item) is None for item in references):
+        raise SpecPackageError("Plan Dependencies must reference Work Unit identities")
+    return tuple(references)
+
+
+def _v5_plan_rows(
+    plan: SpecDocument, registry: DocumentRegistry
+) -> tuple[tuple[str, ...], ...]:
+    headers = _registered_common_values(registry, "plan_columns", 6)
+    if headers != (
+        "Work Unit",
+        "Criteria",
+        "Work",
+        "Dependencies",
+        "Task",
+        "Verification",
+    ):
+        raise SpecPackageError("generation 5 Plan columns are not canonical")
+    return _registered_table_rows(
+        _contract_section(
+            plan.body, _registered_common_section(registry, "plan_section")
+        ),
+        headers,
+    )
+
+
+def _v5_evidence_rows(
+    task: SpecDocument, registry: DocumentRegistry
+) -> tuple[tuple[str, ...], ...]:
+    headers = _registered_common_values(registry, "evidence_columns", 8)
+    if headers != (
+        "Evidence",
+        "Criteria",
+        "Work Unit",
+        "Check",
+        "Input",
+        "Result",
+        "Location",
+        "Acceptance",
+    ):
+        raise SpecPackageError("generation 5 Evidence columns are not canonical")
+    return _registered_table_rows(
+        _contract_section(
+            task.body, _registered_common_section(registry, "task_section")
+        ),
+        headers,
+    )
+
+
+def _v5_evidence_contract(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+    registry: DocumentRegistry,
+    historical_tasks: frozenset[pathlib.PurePosixPath] = frozenset(),
+    historical_completed_pairs: Mapping[
+        pathlib.PurePosixPath, frozenset[tuple[str, str]]
+    ]
+    | None = None,
+) -> tuple[
+    frozenset[str],
+    frozenset[str],
+    frozenset[tuple[str, str]],
+    frozenset[tuple[str, str]],
+]:
+    criterion_numbers = tuple(
+        str(number)
+        for number in acceptance_criterion_numbers(
+            spec.body, _registered_common_section(registry, "spec_section")
+        )
+    )
+    if not criterion_numbers or len(criterion_numbers) != len(set(criterion_numbers)):
+        raise SpecPackageError(
+            "generation 5 evidence requires unique numbered Spec criteria"
+        )
+    criteria = frozenset(criterion_numbers)
+    if plan is None:
+        if tasks:
+            raise SpecPackageError("generation 5 Task evidence requires a Plan")
+        return criteria, frozenset(), frozenset(), frozenset()
+    plan_rows = _v5_plan_rows(plan, registry)
+    work: set[str] = set()
+    planned_pairs: set[tuple[str, str]] = set()
+    assignments: dict[tuple[str, str], frozenset[str]] = {}
+    task_references = {
+        reference: task.artifact_id
+        for task in tasks
+        for reference in (
+            task.artifact_id,
+            task.artifact_id.rsplit("-", 2)[-2]
+            + "-"
+            + task.artifact_id.rsplit("-", 1)[-1],
+        )
+    }
+    for unit, raw_criteria, _, dependencies, raw_tasks, _ in plan_rows:
+        if re.fullmatch(r"W[1-9][0-9]*", unit) is None or unit in work:
+            raise SpecPackageError("Plan Work Unit identities must be unique W labels")
+        if any(reference not in work for reference in _work_references(dependencies)):
+            raise SpecPackageError(
+                "Plan Dependencies must reference earlier Work Units"
+            )
+        work.add(unit)
+        assigned = _cell_references(raw_tasks, "Plan Task")
+        if any(reference not in task_references for reference in assigned):
+            raise SpecPackageError("Plan Task must name a same-package Task")
+        assigned_ids = frozenset(task_references[reference] for reference in assigned)
+        for criterion in _cell_references(raw_criteria, "Plan Criteria"):
+            if criterion not in criteria:
+                raise SpecPackageError("Plan row references an unknown criterion")
+            pair = (criterion, unit)
+            planned_pairs.add(pair)
+            assignments[pair] = assigned_ids
+    results = frozenset(_registered_common_values(registry, "result_domain"))
+    acceptance = frozenset(_registered_common_values(registry, "acceptance_domain"))
+    if results != {"NOT_RUN", "PASS", "FAIL", "DEFER", "NOT_APPLICABLE"}:
+        raise SpecPackageError("generation 5 result domain is not canonical")
+    if acceptance != {"pending", "accepted", "rejected", "not-required"}:
+        raise SpecPackageError("generation 5 acceptance domain is not canonical")
+    completed_pairs: set[tuple[str, str]] = set()
+    for task in tasks:
+        assigned = {
+            pair
+            for pair, assigned_tasks in assignments.items()
+            if task.artifact_id in assigned_tasks
+        }
+        if task.path in historical_tasks:
+            admitted = (historical_completed_pairs or {}).get(task.path, frozenset())
+            completed_pairs.update(assigned & admitted)
+            continue
+        if task.status == "cancelled":
+            cancellation = task.cancellation
+            entries = (
+                cancellation.get("criteria_disposition", ())
+                if isinstance(cancellation, Mapping)
+                else ()
+            )
+            disposed = {
+                str(entry.get("criterion"))
+                for entry in entries
+                if isinstance(entry, Mapping)
+            }
+            assigned_criteria = {criterion for criterion, _ in assigned}
+            if disposed != assigned_criteria:
+                raise SpecPackageError(
+                    "cancelled Task criteria disposition must match its Plan assignment"
+                )
+            successors = {
+                str(entry.get("criterion")): entry.get("successor")
+                for entry in entries
+                if isinstance(entry, Mapping) and "successor" in entry
+            }
+            for pair in assigned:
+                successor = successors.get(pair[0])
+                if successor is None:
+                    continue
+                successor_id = (
+                    task_references.get(successor)
+                    if isinstance(successor, str)
+                    else None
+                )
+                if successor_id is None or successor_id not in assignments[pair]:
+                    raise SpecPackageError(
+                        "cancellation successor must be assigned the disposed Plan work"
+                    )
+        rows = _v5_evidence_rows(task, registry)
+        task_completed_pairs: set[tuple[str, str]] = set()
+        for _evidence, raw_criteria, unit, _, _, result, _, disposition in rows:
+            if unit not in work:
+                raise SpecPackageError("Evidence row references an unknown Work Unit")
+            row_criteria = _cell_references(raw_criteria, "Evidence Criteria")
+            if any(
+                (criterion, unit) not in planned_pairs for criterion in row_criteria
+            ):
+                raise SpecPackageError(
+                    "Evidence row references an unknown criterion/Work Unit pair"
+                )
+            if any(
+                task.artifact_id not in assignments[(criterion, unit)]
+                for criterion in row_criteria
+            ):
+                raise SpecPackageError(
+                    f"{task.path}: Evidence row is outside the Plan Task assignment"
+                )
+            if result not in results:
+                raise SpecPackageError(
+                    "Evidence Result is outside the registered result domain"
+                )
+            if disposition not in acceptance:
+                raise SpecPackageError(
+                    "Evidence Acceptance is outside the registered acceptance domain"
+                )
+            if result == "PASS" and disposition == "accepted":
+                row_pairs = {(criterion, unit) for criterion in row_criteria}
+                task_completed_pairs.update(row_pairs)
+        if task.status == "completed":
+            completed_pairs.update(task_completed_pairs)
+            if not assigned <= task_completed_pairs:
+                raise SpecPackageError(
+                    "completed Task requires PASS and accepted evidence"
+                )
+    return (
+        criteria,
+        frozenset(work),
+        frozenset(planned_pairs),
+        frozenset(completed_pairs),
+    )
+
+
 def _item_status_summary(
     statuses: Sequence[str], terminal_statuses: frozenset[str]
 ) -> str:
@@ -932,7 +1271,22 @@ def _validate_task_item_evidence(
     plan: SpecDocument | None,
     tasks: tuple[SpecDocument, ...],
     registry: DocumentRegistry,
+    historical_tasks: frozenset[pathlib.PurePosixPath] = frozenset(),
+    historical_completed_pairs: Mapping[
+        pathlib.PurePosixPath, frozenset[tuple[str, str]]
+    ]
+    | None = None,
 ) -> None:
+    if registry.common.get("lifecycle_generation") == 5:
+        _v5_evidence_contract(
+            spec,
+            plan,
+            tasks,
+            registry,
+            historical_tasks,
+            historical_completed_pairs,
+        )
+        return
     contract = registry.common.get("spec_completion_evidence")
     if not isinstance(contract, Mapping):
         raise SpecPackageError("completion evidence contract is missing from Registry")
@@ -967,9 +1321,7 @@ def _validate_task_item_evidence(
     ):
         raise SpecPackageError("multi-row completion evidence requires item statuses")
     evidence_tables = tuple(
-        (task, key, rows)
-        for task, task_tables in tables
-        for key, rows in task_tables
+        (task, key, rows) for task, task_tables in tables for key, rows in task_tables
     )
     if not evidence_tables:
         return
@@ -1016,9 +1368,7 @@ def _validate_task_item_evidence(
         statuses: list[str] = []
         reviews = _review_rows(task, registry)
         legacy_terminal_without_review = (
-            key == "table_headers"
-            and task.status in terminal_statuses
-            and not reviews
+            key == "table_headers" and task.status in terminal_statuses and not reviews
         )
         if legacy_terminal_without_review:
             for criterion, unit, _, _ in raw_rows:
@@ -1091,8 +1441,12 @@ def _validate_task_item_evidence(
             raise SpecPackageError(
                 "review evidence criteria must match the Task item criteria"
             )
-        if task.status == "completed" and not legacy_terminal_without_review and any(
-            review_by_criterion[criterion] != "accepted" for criterion in assigned
+        if (
+            task.status == "completed"
+            and not legacy_terminal_without_review
+            and any(
+                review_by_criterion[criterion] != "accepted" for criterion in assigned
+            )
         ):
             raise SpecPackageError("completed Task requires accepted review evidence")
         if key == "item_table_headers" and task.status != _item_status_summary(
@@ -1103,6 +1457,46 @@ def _validate_task_item_evidence(
             )
 
 
+def _legacy_completed_task_pairs(
+    spec: SpecDocument,
+    plan: SpecDocument | None,
+    tasks: tuple[SpecDocument, ...],
+    registry: DocumentRegistry,
+) -> dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]]:
+    """Return only completion pairs admitted by the exact source contract."""
+
+    _validate_task_item_evidence(spec, plan, tasks, registry)
+    contract = registry.common.get("spec_completion_evidence")
+    if not isinstance(contract, Mapping):
+        raise SpecPackageError("completion evidence contract is missing from Registry")
+    result_values = frozenset(contract.get("task_result_values", ()))
+    completed: dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]] = {}
+    for task in tasks:
+        if task.status != "completed":
+            continue
+        reviews = {
+            criterion: acceptance
+            for criterion, acceptance, _ in _review_rows(task, registry)
+        }
+        if not reviews:
+            completed[task.path] = frozenset()
+            continue
+        admitted: set[tuple[str, str]] = set()
+        for key, raw_rows in _completion_rows(task, contract):
+            for criterion, unit, *tail in raw_rows:
+                status, result = (
+                    (task.status, tail[0]) if key == "table_headers" else tail[:2]
+                )
+                if (
+                    status == "completed"
+                    and _task_result_value(result, result_values) == "PASS"
+                    and reviews.get(criterion) == "accepted"
+                ):
+                    admitted.add((criterion, unit))
+        completed[task.path] = frozenset(admitted)
+    return completed
+
+
 def _validate_completion_evidence(
     spec: SpecDocument,
     plan: SpecDocument | None,
@@ -1110,9 +1504,55 @@ def _validate_completion_evidence(
     registry: DocumentRegistry,
     *,
     current_contracts: bool = True,
+    historical_tasks: frozenset[pathlib.PurePosixPath] = frozenset(),
+    historical_completed_pairs: Mapping[
+        pathlib.PurePosixPath, frozenset[tuple[str, str]]
+    ]
+    | None = None,
+    source_criteria: frozenset[str] | None = None,
+    source_work: frozenset[str] | None = None,
+    source_closed_pairs: frozenset[tuple[str, str]] | None = None,
 ) -> None:
     """Check structural coverage only; reported results are not execution proof."""
     if spec.status != "completed":
+        return
+    if registry.common.get("lifecycle_generation") == 5:
+        if plan is None or plan.status != "completed" or not tasks:
+            raise SpecPackageError(
+                "completion requires a completed Plan and Task evidence"
+            )
+        if any(task.status not in {"completed", "cancelled"} for task in tasks):
+            raise SpecPackageError(
+                "completion requires every remaining Task to be terminal"
+            )
+        criteria, work, planned_pairs, completed_pairs = _v5_evidence_contract(
+            spec,
+            plan,
+            tasks,
+            registry,
+            historical_tasks,
+            historical_completed_pairs,
+        )
+        if (
+            source_criteria is not None
+            and source_work is not None
+            and (criteria != source_criteria or work != source_work)
+        ):
+            raise SpecPackageError(
+                "completed migrated package must preserve source criteria and work identities"
+            )
+        if source_closed_pairs is not None and planned_pairs != source_closed_pairs:
+            raise SpecPackageError(
+                "completed historical package Plan pairs must match source closure evidence"
+            )
+        if (
+            {criterion for criterion, _ in completed_pairs} != criteria
+            or {unit for _, unit in completed_pairs} != work
+            or not planned_pairs <= completed_pairs
+        ):
+            raise SpecPackageError(
+                "completion evidence must cover every acceptance criterion and Plan work unit"
+            )
         return
     contract = registry.common.get("spec_completion_evidence")
     if not isinstance(contract, Mapping):
@@ -1402,14 +1842,21 @@ def _load_package(
             for task in tasks:
                 if task.status != "cancelled":
                     continue
-                heading = str(
-                    registry.common["spec_completion_evidence"]["spec_section"]
+                generation = int(registry.common.get("lifecycle_generation", 4))
+                heading = (
+                    _registered_common_section(registry, "spec_section")
+                    if generation >= 5
+                    else str(
+                        registry.common["spec_completion_evidence"]["spec_section"]
+                    )
                 )
                 findings = task_cancellation_findings(
                     task.artifact_id,
                     task.cancellation,
                     frozenset(acceptance_criterion_numbers(spec.body, heading)),
                     task_statuses,
+                    generation=generation,
+                    references=_document_anchor_references(task.source_text),
                 )
                 if findings:
                     raise SpecPackageError(f"{task.path}: {findings[0]}")
@@ -1453,6 +1900,11 @@ def load_spec_packages(
     stage_root = pathlib.Path(stage_root)
     active_registry = load_registry() if registry is None else registry
     _validate_registry_contract(active_registry)
+    defer_v5_evidence = (
+        _completion_evidence
+        and _current_contracts
+        and active_registry.common.get("lifecycle_generation") == 5
+    )
     parent_descriptor, descriptor, stage_name, snapshot = _open_directory_path(
         stage_root,
         "Stage 03",
@@ -1509,13 +1961,231 @@ def load_spec_packages(
                 match,
                 registry=active_registry,
                 budget=budget,
-                completion_evidence=_completion_evidence,
+                completion_evidence=_completion_evidence and not defer_v5_evidence,
                 current_contracts=_current_contracts,
             )
             packages.append(package)
         artifact_ids = tuple(package.spec.artifact_id for package in packages)
         if len(artifact_ids) != len(set(artifact_ids)):
             raise SpecPackageError("duplicate Stage 03 Spec identity")
+        if defer_v5_evidence:
+            proof = _migration_proof(
+                packages,
+                active_registry,
+                root=stage_root.parent.parent,
+                target_generation=5,
+            )
+            source_registry = load_registry_document_at_revision(
+                proof.source_revision,
+                root=stage_root.parent.parent,
+            )
+            if validate_registry_at_revision(
+                proof.source_revision, root=stage_root.parent.parent
+            ):
+                raise SpecPackageError("generation 5 source Registry is invalid")
+            source_common = source_registry.get("common")
+            if (
+                not isinstance(source_common, Mapping)
+                or source_common.get("lifecycle_generation") != 4
+            ):
+                raise SpecPackageError(
+                    "generation 5 migration source must be lifecycle generation 4"
+                )
+            source_packages = _load_base_spec_packages(
+                stage_root.parent.parent,
+                base_ref=proof.source_revision,
+            )
+            source_contract = load_registry_at_revision(
+                proof.source_revision,
+                root=stage_root.parent.parent,
+            )
+            source_tasks = {
+                task.path: task for package in source_packages for task in package.tasks
+            }
+            historical_tasks = frozenset(
+                task.path
+                for package in packages
+                for task in package.tasks
+                if task.status in {"completed", "cancelled"}
+                and task.path in source_tasks
+                and source_tasks[task.path].status in {"completed", "cancelled"}
+                and task.source_text == source_tasks[task.path].source_text
+            )
+            historical_completed_pairs: dict[
+                pathlib.PurePosixPath, frozenset[tuple[str, str]]
+            ] = {}
+            source_semantics: dict[
+                str,
+                tuple[
+                    frozenset[str],
+                    frozenset[str],
+                    frozenset[tuple[str, str]] | None,
+                ],
+            ] = {}
+            source_completion = source_contract.common.get("spec_completion_evidence")
+            if not isinstance(source_completion, Mapping):
+                raise SpecPackageError(
+                    "generation 5 source completion contract is missing"
+                )
+            for source_package in source_packages:
+                admitted = _legacy_completed_task_pairs(
+                    source_package.spec,
+                    source_package.plan,
+                    source_package.tasks,
+                    source_contract,
+                )
+                historical_completed_pairs.update(
+                    {
+                        path: pairs
+                        for path, pairs in admitted.items()
+                        if path in historical_tasks
+                    }
+                )
+                source_criteria = frozenset(
+                    str(number)
+                    for number in acceptance_criterion_numbers(
+                        source_package.spec.body,
+                        str(source_completion["spec_section"]),
+                    )
+                )
+                source_work = (
+                    frozenset(
+                        re.findall(
+                            r"^[1-9][0-9]*\. (?:\*\*)?(W[1-9][0-9]*)(?:\*\*)?: \S",
+                            "\n".join(
+                                _contract_section(
+                                    source_package.plan.body,
+                                    str(source_completion["plan_section"]),
+                                )
+                            ),
+                            re.M,
+                        )
+                    )
+                    if source_package.plan is not None
+                    else frozenset()
+                )
+                source_closed_pairs = None
+                if (
+                    source_package.spec.status == "completed"
+                    and source_package.plan is not None
+                    and source_package.plan.status == "completed"
+                ):
+                    _validate_completion_evidence(
+                        source_package.spec,
+                        source_package.plan,
+                        source_package.tasks,
+                        source_contract,
+                        current_contracts=True,
+                    )
+                    source_closed_pairs = frozenset(
+                        pair for pairs in admitted.values() for pair in pairs
+                    )
+                source_semantics[source_package.spec.artifact_id] = (
+                    source_criteria,
+                    source_work,
+                    source_closed_pairs,
+                )
+            spec_statuses = {
+                package.spec.artifact_id: package.spec.status for package in packages
+            }
+            plan_statuses = {
+                package.plan.artifact_id: package.plan.status
+                for package in packages
+                if package.plan is not None
+            }
+            for package in packages:
+                if package.spec.status == "cancelled":
+                    numbers = acceptance_criterion_numbers(
+                        package.spec.body,
+                        _registered_common_section(active_registry, "spec_section"),
+                    )
+                    if len(numbers) != len(set(numbers)):
+                        raise SpecPackageError(
+                            f"{package.spec.path}: cancellation criteria must be unique"
+                        )
+                    findings = _v5_cancellation_findings(
+                        package.spec, frozenset(numbers), spec_statuses
+                    )
+                    if findings:
+                        raise SpecPackageError(f"{package.spec.path}: {findings[0]}")
+                if package.plan is not None and package.plan.status == "cancelled":
+                    spec_criteria = frozenset(
+                        str(number)
+                        for number in acceptance_criterion_numbers(
+                            package.spec.body,
+                            _registered_common_section(active_registry, "spec_section"),
+                        )
+                    )
+                    raw_plan_criteria = tuple(
+                        criterion
+                        for row in _v5_plan_rows(package.plan, active_registry)
+                        for criterion in _cell_references(row[1], "Plan Criteria")
+                    )
+                    if any(
+                        criterion not in spec_criteria
+                        for criterion in raw_plan_criteria
+                    ):
+                        raise SpecPackageError(
+                            f"{package.plan.path}: Plan row references an unknown criterion"
+                        )
+                    plan_criteria = frozenset(map(int, raw_plan_criteria))
+                    findings = _v5_cancellation_findings(
+                        package.plan, plan_criteria, plan_statuses
+                    )
+                    if findings:
+                        raise SpecPackageError(f"{package.plan.path}: {findings[0]}")
+                task_statuses = {
+                    task.artifact_id: task.status for task in package.tasks
+                }
+                cancelled = tuple(
+                    task
+                    for task in package.tasks
+                    if task.status == "cancelled" and task.path not in historical_tasks
+                )
+                if cancelled:
+                    criteria = frozenset(
+                        acceptance_criterion_numbers(
+                            package.spec.body,
+                            _registered_common_section(active_registry, "spec_section"),
+                        )
+                    )
+                for task in cancelled:
+                    findings = task_cancellation_findings(
+                        task.artifact_id,
+                        task.cancellation,
+                        criteria,
+                        task_statuses,
+                        generation=5,
+                        references=_document_anchor_references(task.source_text),
+                    )
+                    if findings:
+                        raise SpecPackageError(f"{task.path}: {findings[0]}")
+                _validate_task_item_evidence(
+                    package.spec,
+                    package.plan,
+                    package.tasks,
+                    active_registry,
+                    historical_tasks,
+                    historical_completed_pairs,
+                )
+                source_semantic = source_semantics.get(package.spec.artifact_id)
+                _validate_completion_evidence(
+                    package.spec,
+                    package.plan,
+                    package.tasks,
+                    active_registry,
+                    historical_tasks=historical_tasks,
+                    historical_completed_pairs=historical_completed_pairs,
+                    source_criteria=(
+                        source_semantic[0] if source_semantic is not None else None
+                    ),
+                    source_work=(
+                        source_semantic[1] if source_semantic is not None else None
+                    ),
+                    source_closed_pairs=(
+                        source_semantic[2] if source_semantic is not None else None
+                    ),
+                )
         _verify_directory_entry(
             parent_descriptor,
             stage_name,
@@ -2149,7 +2819,11 @@ def _heading_anchor(heading: str) -> str:
 
 
 def _migration_proof(
-    current: Sequence[SpecPackage], registry: DocumentRegistry
+    current: Sequence[SpecPackage],
+    registry: DocumentRegistry,
+    *,
+    root: pathlib.Path | None = None,
+    target_generation: int | None = None,
 ) -> _MigrationProof:
     events_contract = registry.common.get("task_lifecycle_events")
     migration = (
@@ -2226,16 +2900,51 @@ def _migration_proof(
                     "Contract Migration evidence must name one unique same-Task anchor"
                 )
             proofs.append(_MigrationProof(revision, task.path))
+    if root is not None and target_generation is not None:
+        expected_source_generation = (
+            target_generation - 1 if target_generation > 4 else None
+        )
+        matching: list[_MigrationProof] = []
+        for proof in proofs:
+            raw = load_registry_document_at_revision(proof.source_revision, root=root)
+            common = raw.get("common")
+            source_generation = (
+                common.get("lifecycle_generation")
+                if isinstance(common, Mapping)
+                else None
+            )
+            if source_generation == expected_source_generation:
+                matching.append(proof)
+        proofs = matching
     if len(proofs) != 1:
-        raise SpecPackageError("lifecycle generation 4 requires one migration proof")
+        raise SpecPackageError("lifecycle generation migration requires one proof")
     return proofs[0]
 
 
-def _validate_source_registry(raw: Mapping[str, object]) -> None:
-    if validate_registry(raw):
+def _validate_source_registry(
+    raw: Mapping[str, object],
+    target_generation: int = 4,
+    *,
+    source_revision: str | None = None,
+    root: pathlib.Path = pathlib.Path("."),
+) -> None:
+    findings = (
+        validate_registry_at_revision(source_revision, root=root)
+        if source_revision is not None
+        else validate_registry(raw)
+    )
+    if findings:
         raise SpecPackageError("migration source Registry is invalid")
     common = raw.get("common")
-    if not isinstance(common, Mapping) or "lifecycle_generation" in common:
+    if not isinstance(common, Mapping):
+        raise SpecPackageError("migration source Registry common contract is missing")
+    if target_generation == 5:
+        if common.get("lifecycle_generation") != 4:
+            raise SpecPackageError(
+                "generation 5 migration source must be lifecycle generation 4"
+            )
+        return
+    if "lifecycle_generation" in common:
         raise SpecPackageError(
             "migration source must be the original lifecycle generation"
         )
@@ -2343,16 +3052,18 @@ def _validate_terminal_task_migration(
     current_documents = _documents(current)
     current_packages = {package.spec.path.parts[2] for package in current}
     for path, before in _documents(source).items():
-        if (
-            before.profile_id != "task"
-            or before.status not in {"completed", "cancelled"}
-        ):
+        if before.profile_id != "task" or before.status not in {
+            "completed",
+            "cancelled",
+        }:
             continue
         task = current_documents.get(path)
         if task is None:
             if path.parts[2] not in current_packages:
                 continue
-            raise SpecPackageError(f"terminal Task removed during contract migration: {path}")
+            raise SpecPackageError(
+                f"terminal Task removed during contract migration: {path}"
+            )
         if (
             task.profile_id != "task"
             or before.status != task.status
@@ -2612,12 +3323,8 @@ def _validate_task_lifecycle_events(
                 historical_direct = historical_target in historical_edges.get(
                     historical_baseline, ()
                 )
-                if (
-                    expected != historical_target
-                    and not (
-                        not historical_events
-                        and historical_direct
-                    )
+                if expected != historical_target and not (
+                    not historical_events and historical_direct
                 ):
                     findings.append(
                         _event_finding(
@@ -2727,6 +3434,11 @@ def _validate_legacy_multirow_receipts(
     findings: list[SpecPackageFinding] = []
     for package in current:
         for task in package.tasks:
+            legacy_section = contract.get("task_section")
+            if not isinstance(legacy_section, str) or (
+                f"## {legacy_section}" not in task.body.splitlines()
+            ):
+                continue
             legacy_rows = next(
                 (
                     rows
@@ -3182,7 +3894,7 @@ def validate_repository_spec_package_lifecycle_details(
     )
     registry = registry if registry is not None else load_registry()
     generation = registry.common.get("lifecycle_generation")
-    v4_surface = any(
+    current_surface = any(
         package.plan is not None
         and any(
             task.parent_ids == (package.plan.artifact_id,) for task in package.tasks
@@ -3190,12 +3902,13 @@ def validate_repository_spec_package_lifecycle_details(
         for package in current
     )
     source_registry: Mapping[str, object] | None = None
+    source_registry_contract: DocumentRegistry | None = None
     source_packages: tuple[SpecPackage, ...] | None = None
     normalizations: frozenset[tuple[str, str, str]] = frozenset()
     generation_source: str | None = None
-    if v4_surface:
-        if generation != 4:
-            raise SpecPackageError("current lifecycle generation must be 4")
+    if current_surface:
+        if generation not in {4, 5}:
+            raise SpecPackageError("current lifecycle generation must be 4 or 5")
         try:
             base_registry = load_registry_document_at_revision(
                 base_commit,
@@ -3211,8 +3924,13 @@ def validate_repository_spec_package_lifecycle_details(
             if isinstance(base_common, Mapping)
             else None
         )
-        if previous and base_generation != 4:
-            proof = _migration_proof(current, registry)
+        if previous and base_generation != generation:
+            proof = _migration_proof(
+                current,
+                registry,
+                root=root,
+                target_generation=int(generation),
+            )
             generation_source = proof.source_revision
             head = (
                 _bounded_git(
@@ -3247,7 +3965,16 @@ def validate_repository_spec_package_lifecycle_details(
                 )
             except RegistryError as error:
                 raise SpecPackageError(str(error)) from error
-            _validate_source_registry(source_registry)
+            _validate_source_registry(
+                source_registry,
+                int(generation),
+                source_revision=generation_source,
+                root=root,
+            )
+            source_registry_contract = load_registry_at_revision(
+                generation_source,
+                root=root,
+            )
             source_packages = _load_base_spec_packages(
                 root,
                 base_ref=generation_source,
@@ -3258,18 +3985,21 @@ def validate_repository_spec_package_lifecycle_details(
             _validate_terminal_task_migration(source_packages, current)
         elif previous:
             _validate_terminal_task_migration(previous, current)
+    event_baseline = (
+        source_packages if generation == 5 and source_packages is not None else previous
+    )
     event_findings, actual_transitions = _validate_task_lifecycle_events(
-        previous,
+        event_baseline,
         current,
         registry,
-        prefix_previous=source_packages,
+        prefix_previous=source_packages if generation == 4 else None,
         normalizations=normalizations,
-        source_registry=source_registry,
+        source_registry=source_registry if generation == 4 else None,
     )
     receipt_shape_findings = _validate_legacy_multirow_receipts(
         previous,
         current,
-        registry,
+        source_registry_contract or registry,
         migration_source=source_packages,
     )
     completed = _load_preserved_spec_packages(root, "completed", registry)

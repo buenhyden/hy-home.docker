@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. `dedicated-valkey` profile은 전용 broker를 기동할 뿐이며, `AIRFLOW_VALKEY_HOST`와 `AIRFLOW_VALKEY_SECRET`을 전용 pair로 바꾼 환경만 `airflow-valkey`를 사용한다.
 
 > Scope: Apache Airflow (07-workflow)
@@ -28,7 +36,7 @@ created: "2026-05-17"
 - 파이프라인 중단 시간 최소화
 - 시스템 상태 검증 및 정상화 확인
 
-## When to Use
+### When to Use
 
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
@@ -37,6 +45,8 @@ created: "2026-05-17"
 - Airflow token 또는 session이 노출되어 폐기해야 할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -160,22 +170,26 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 4. 의존 서비스를 기동하고 지원되는 Airflow DB 점검·마이그레이션을 수행한 뒤 processor·scheduler·API·worker를 기동한다. DAG 파싱, DB 상태, 값을 출력하지 않는 Connections 복호화, worker ping, Keycloak 네이티브 로그인, 작업 로그 접근, 외부 효과가 없는 canary DAG를 확인한다.
 5. 불일치하면 격리 프로젝트를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 원본 백업으로 돌아간다. 운영 교체나 DNS·경로 변경에는 별도 변경 승인이 필요하다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 위 격리 복원은 미실행 상태다. 상태를 변경하기 전에 날짜가 있는 출력과 산출물 checksum을 기록한다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Airflow Usage Guide](../guides/0050-airflow.md) (`GDE-0050`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)

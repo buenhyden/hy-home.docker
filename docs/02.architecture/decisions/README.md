@@ -16,13 +16,6 @@ layer: "architecture"
 고려한 대안, 선택, 근거, 결과, 확인 방법과 supersession을 보존한다.
 ADR은 구현 명세나 운영 절차가 아니다.
 
-## Audience
-
-- System Architects
-- Developers
-- Reviewers
-- AI Agents
-
 ## Scope
 
 이 디렉터리는 현재 유효한 ADR을 보유한다. 각 ADR은 하나의 material
@@ -116,6 +109,17 @@ docs/02.architecture/decisions/
   Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
 
 ## Usage
+
+### Usage
+
+### Audience
+
+- System Architects
+- Developers
+- Reviewers
+- AI Agents
+
+### Usage
 
 1. 상위 [Architecture Description](../descriptions/README.md)을 확인한다.
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.

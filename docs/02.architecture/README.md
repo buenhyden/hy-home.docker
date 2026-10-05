@@ -17,13 +17,6 @@ layer: "architecture"
 Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안, 근거,
 결과와 supersession을 기록한다.
 
-## Audience
-
-- System Architects
-- Developers
-- Reviewers
-- AI Agents
-
 ## Scope
 
 이 stage는 Architecture Description과 ADR을 보유한다. 개수는 유지 기준이
@@ -48,6 +41,17 @@ docs/02.architecture/
   rationale, consequences, confirmation과 supersession.
 
 ## Usage
+
+### Usage
+
+### Audience
+
+- System Architects
+- Developers
+- Reviewers
+- AI Agents
+
+### Usage
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은

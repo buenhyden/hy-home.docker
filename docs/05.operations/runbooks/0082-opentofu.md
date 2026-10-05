@@ -14,13 +14,23 @@ created: "2026-09-19"
 
 # OpenTofu Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 검토된 plan, lock 실패, 보호된 state backup/recovery, 또는 런타임/provider upgrade에
 사용한다. 저장소 루트에서 작업한다. backend/provider에 접근하는 명령은 아래 명시된 승인이
 필요하다.
 
 ## Procedure
+
+### Procedure
 
 1. configuration commit, 정확한 workspace 디렉터리, 선택한 OpenTofu workspace, backend,
    account, 명령 클래스, rollback 담당자를 기록한다. 다른 writer가 활성 상태가 아님을
@@ -72,26 +82,30 @@ backend로 격리된 restore를 검증한다. 중간의 모든 OpenTofu upgrade 
 검토하고 apply하지 않고 저장된 plan workflow를 테스트한다. 이 문서를 변경하면서
 plan, state backup, restore, provider 호출은 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 exit, 버전, configuration/plan digest, backend/workspace 식별자, 정제된 action 개수, lock
 owner 결정, 최종 처리 상태를 기록한다. state, plan 본문, credential, 또는 secret을 포함한
 provider 응답은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 Git이나 이미지를 되돌려도 remote resource는 되돌아가지 않는다. resource rollback에는 새로
 검토된 plan이 필요하다. state restore와 upgrade 리허설은 현재 이 저장소에서 **계획됨,
 미실행** 상태다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 알 수 없는 backend/workspace, 보호된 backup 부재, 활성 lock owner, lineage/serial 불일치,
 파괴적 plan, 또는 credential/account 모호성이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0082-opentofu.md) (`GDE-0082`)
 - [Policy](../policies/0082-opentofu.md) (`POL-0082`)

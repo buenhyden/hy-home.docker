@@ -18,7 +18,7 @@ metadata:
 
 # {{TITLE}}
 
-## Preconditions
+## Purpose
 
 {{WHEN_THIS_PROCEDURE_IS_VALID}}
 
@@ -34,14 +34,10 @@ metadata:
 
 {{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
 
-## Gates
-
-{{REGISTERED_CHECKS_THAT_MUST_PASS}}
-
 ## Failure Handling
 
 {{STOP_CONDITIONS_AND_RECOVERY}}
 
-## Related Documents
+## References
 
 {{OWNING_ROLE_AND_POLICY_LINKS}}

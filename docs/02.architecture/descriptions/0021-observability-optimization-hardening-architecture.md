@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # 06-Observability Optimization Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `06-observability` layer. It organizes the gateway boundary security,
@@ -31,7 +39,7 @@ management plane (UI/API) separately. The management plane applies the
 standard middleware+SSO chain at the Traefik TLS termination point, and the
 data plane is kept over `obs_net` internal communication.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -51,6 +59,63 @@ non-goals, and constraints already recorded in the current document.
   - Immediate multi-cluster/multi-region observability adoption
   - Full redesign of the sampling policy
 
+### Traceability
+
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+
+## Architecture
+
+### Architecture
+
+### Components
+
+### Viewpoints and Views
+
+The context, component, or deployment representation in this section serves
+as the view for that concern.
+
+- Storage/Query Plane:
+  - Prometheus, Loki, Tempo, Pyroscope
+- Control/Presentation Plane:
+  - Grafana, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
+- Gateway Path:
+  - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-*` -> target service
+- Internal Path:
+  - OTLP/log/trace traffic over `obs_net`
+
+### Data Flow
+
+### Data and Control Flows
+
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
+
+- **Key Entities / Flows**:
+  - Metrics, logs, traces, profiles
+- **Storage Strategy**:
+  - Prometheus local TSDB
+  - Loki/Tempo object storage via SeaweedFS
+  - Pyroscope local storage
+- **Data Boundaries**:
+  - the long-term retention policy is managed at the operations layer
+
+### Deployment View
+
+- **Runtime / Platform**:
+  - Docker Compose + `infra/common-optimizations.yml`
+- **Deployment Model**:
+  - single-node observability core + optional horizontal expansion
+- **Operational Evidence**:
+  - `scripts/hardening/check-all-hardening.sh 06-observability`
+  - CI `infrastructure-hardening` job
+
+### Evolution
+
+- Prometheus: scrape budget + remote_write tiering
+- Loki: label cardinality budget + separate retention/compactor operation
+- Tempo: per-service/endpoint sampling policy + span-burst protection
+- Alloy: onboarding templating + modularized collection pipeline
+
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -69,59 +134,6 @@ execution evidence is owned by the related Spec and Operations documents.
 - **Observability**: cAdvisor health, pyroscope availability, and stack health validation
 - **Operability**: script-based regression blocking + standard runbook
   procedure
-
-## Components
-
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- Storage/Query Plane:
-  - Prometheus, Loki, Tempo, Pyroscope
-- Control/Presentation Plane:
-  - Grafana, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
-- Gateway Path:
-  - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-*` -> target service
-- Internal Path:
-  - OTLP/log/trace traffic over `obs_net`
-
-## Data Flow
-
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - Metrics, logs, traces, profiles
-- **Storage Strategy**:
-  - Prometheus local TSDB
-  - Loki/Tempo object storage via SeaweedFS
-  - Pyroscope local storage
-- **Data Boundaries**:
-  - the long-term retention policy is managed at the operations layer
-
-## Deployment View
-
-- **Runtime / Platform**:
-  - Docker Compose + `infra/common-optimizations.yml`
-- **Deployment Model**:
-  - single-node observability core + optional horizontal expansion
-- **Operational Evidence**:
-  - `scripts/hardening/check-all-hardening.sh 06-observability`
-  - CI `infrastructure-hardening` job
-
-## Evolution
-
-- Prometheus: scrape budget + remote_write tiering
-- Loki: label cardinality budget + separate retention/compactor operation
-- Tempo: per-service/endpoint sampling policy + span-burst protection
-- Alloy: onboarding templating + modularized collection pipeline
-
-## Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

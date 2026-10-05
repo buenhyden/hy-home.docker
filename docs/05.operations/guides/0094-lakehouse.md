@@ -26,7 +26,17 @@ created: "2026-09-23"
 
 # Lakehouse Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -129,17 +139,17 @@ table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table de
 | `docker compose exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지; 이전 체크포인트에서 커밋된 데이터는 유지 |
 | `docker compose --profile lakehouse run --rm --no-deps great-expectations validate [SUITE...]` | Trino를 통해 테이블을 읽음; expectation 실패 시 `1`로 종료 |
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=lakehouse bash scripts/validation/validate-docker-compose.sh`
 - `python3 scripts/validation/check-operations-catalog.py`
 
-## Runbook Handoff
+### Runbook Handoff
 
 카탈로그 오류, 접근 거부, job 실패, 테이블 복구는
 [runbook](../runbooks/0094-lakehouse.md)을 사용한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0094-lakehouse.md) (`POL-0094`)
 - [Runbook](../runbooks/0094-lakehouse.md) (`RUN-0094`)

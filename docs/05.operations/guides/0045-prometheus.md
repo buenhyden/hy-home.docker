@@ -19,9 +19,17 @@ created: "2026-05-10"
 
 # Prometheus Usage Guide
 
-관련 구성요소의 현재 선언은 [버전 레지스트리](../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인한다.
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
 
 ## Usage
+
+### Usage
 
 `node-exporter`는 Prometheus를 위해 host metrics를 수집한다. Host mount와 namespace grant는 Compose에 정의되어 있고 scope를 바꾸기 전에 검토해야 한다.
 
@@ -240,18 +248,18 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
-## Common Checks
+### Common Checks
 
 - `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
 - `rg --files infra/06-observability/prometheus/config/alert_rules`
 - `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`
 - `docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0045-prometheus.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Prometheus Operations Policy](../policies/0045-prometheus.md) (`POL-0045`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 `08-ai` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, Ollama concurrency 설정 누락, Open WebUI stateful 드리프트, exporter health 계약 실패, CI 게이트 실패를 중심으로 점검/복구한다.
 
 ### Purpose
@@ -23,7 +31,7 @@ created: "2026-05-17"
 - AI 공개 경로 보안과 GPU 안정성 기준을 빠르게 복구한다.
 - compose/script/CI 회귀를 표준 절차로 차단한다.
 
-## When to Use
+### When to Use
 
 - `infrastructure-hardening` CI가 실패할 때
 - Ollama/Open WebUI 경로 접근 정책이 비정상일 때
@@ -31,6 +39,8 @@ created: "2026-05-17"
 - exporter metrics 수집이 실패할 때
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -109,22 +119,26 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0056`, `RUN-0057`, `RUN-0081`이 소유한다. 이 최적화 Runbook으로 모델·SQLite·벡터·워크플로 복구를 입증하지 않는다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [08-AI Optimization Hardening Usage Guide](../guides/0058-ai-optimization-hardening.md) (`GDE-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)

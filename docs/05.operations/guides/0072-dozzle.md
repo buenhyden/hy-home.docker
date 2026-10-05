@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Dozzle Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -43,12 +53,12 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0072-dozzle.md)의 `승인된 사용·설정 보존·업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile admin-logs config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
-## Runbook Handoff
+### Runbook Handoff
 
 OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 [runbook](../runbooks/0072-dozzle.md)을 사용한다.
@@ -61,7 +71,7 @@ OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 socket 준비는 따로 확인한다. 자원 상한은 선언된 템플릿을 따르며 로그 지연과 CPU·메모리
 증가를 함께 관찰한다. TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0072-dozzle.md) (`POL-0072`)
 - [Runbook](../runbooks/0072-dozzle.md) (`RUN-0072`)

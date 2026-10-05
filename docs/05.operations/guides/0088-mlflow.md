@@ -18,7 +18,17 @@ created: "2026-09-21"
 
 # MLflow Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -80,13 +90,13 @@ SSO 없이 route를 열지 않는다.
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0088-mlflow.md)의 `Tracking 데이터와 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 - `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
-## Runbook Handoff
+### Runbook Handoff
 
 provisioning 실패, credential 회전, restore, upgrade에는
 [runbook](../runbooks/0088-mlflow.md)을 사용한다.
@@ -110,7 +120,7 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
 해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0088-mlflow.md) (`POL-0088`)
 - [Runbook](../runbooks/0088-mlflow.md) (`RUN-0088`)

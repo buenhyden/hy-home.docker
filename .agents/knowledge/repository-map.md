@@ -1,10 +1,10 @@
 ---
 title: "Repository Authority Map"
 version: "0.4.0"
-type: "governance/knowledge"
+type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2026-09-06"
 observed_at: "2026-09-29"
 review_cycle: "on-surface-change"
@@ -24,7 +24,9 @@ column names the document that holds it.
 Tracked repository surfaces and their canonical owners. Excluded: runtime state, service health, credential
 contents, user-global provider settings, and anything outside this repository.
 
-## Surface Ownership
+## Rules
+
+### Surface Ownership
 
 | Surface | Canonical owner | Approval boundary | Proving check |
 | --- | --- | --- | --- |
@@ -53,7 +55,7 @@ contents, user-global provider settings, and anything outside this repository.
 | `secrets/**` | path and policy context only | metadata-only evidence; values are never read | template security baseline |
 | `graphify-out/**` | untracked local navigation snapshot | advisory when its commit differs from HEAD, and absent until rebuilt | regenerate with the CLI; never hand-edit or track |
 
-## Entry Order
+### Entry Order
 
 1. Root `AGENTS.md` or `CLAUDE.md`.
 2. [Bootstrap policy](../governance/bootstrap.md) and the matching authored
@@ -72,7 +74,7 @@ tool, a path, or an approval; the selected role's permission profile still
 governs. [`bootstrap.md`](../governance/bootstrap.md) owns this order and this
 list restates it; a disagreement between them is a defect here.
 
-## Where Similar Things Differ
+### Where Similar Things Differ
 
 - A Requirement states a need; a Spec states a bounded change; a Task states
   what actually happened. Execution evidence belongs only to the Task.
@@ -84,7 +86,9 @@ list restates it; a disagreement between them is a defect here.
 - The workflow contract owns which checks run; the script manifest owns which
   files exist and who consumes them. Neither repeats the other.
 
-## Provenance
+## Evidence
+
+### Provenance
 
 Derived by reading tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06: the canonical
@@ -104,7 +108,7 @@ read at `.agents/evaluations/agent_output_eval.py`, the Provider Registry,
 Stage 99 registry and script manifest to refresh the active ownership row.
 The former path above is historical provenance, not a current loading alias.
 
-## Knowledge Validity
+### Knowledge Validity
 
 The facts here are valid only while their named sources agree with the stated
 observation range and no refresh trigger has fired. They cover tracked,
@@ -114,7 +118,7 @@ correction, or review expiry invalidates the affected fact until it is re-read.
 An obligation or durable decision routes to its canonical owner; this map is
 then refreshed or retired rather than copied.
 
-## Refresh Triggers
+### Refresh Triggers
 
 - A canonical category is added to or removed from `.agents/`.
 - `bootstrap.md` changes the canonical load order this map restates.

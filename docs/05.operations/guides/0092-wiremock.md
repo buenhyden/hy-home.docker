@@ -17,7 +17,17 @@ created: "2026-09-23"
 
 # WireMock Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -53,13 +63,13 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0092-wiremock.md)의 `매핑 변경·기동·재적용` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
 - `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
 - `python3 scripts/validation/check-operations-catalog.py`
 
-## Runbook Handoff
+### Runbook Handoff
 
 서비스가 비정상이거나 스텁이 일치하지 않거나 메모리 한도에 도달하면
 [runbook](../runbooks/0092-wiremock.md)을 사용한다.
@@ -74,7 +84,7 @@ WireMock은 외부 대상과의 실제 계약 검증을 대신하지 않는다. 
 사라진다. HTTP 인증서·DB 복원은 적용되지 않지만 노출·요청 데이터 보존 통제는
 유지한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0092-wiremock.md) (`POL-0092`)
 - [Runbook](../runbooks/0092-wiremock.md) (`RUN-0092`)

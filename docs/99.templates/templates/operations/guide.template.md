@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "operations"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 ---
 
@@ -17,6 +16,14 @@ created: "{{CREATED}}"
 <!-- Author prompt: Write body prose in Korean; keep headings, paths, identifiers, and commands unchanged. -->
 
 # {{TITLE}}
+
+## Overview
+
+{{OVERVIEW}}
+
+## Audience and Goal
+
+{{AUDIENCE_AND_GOAL}}
 
 ## Usage
 
@@ -28,17 +35,17 @@ created: "{{CREATED}}"
 
 {{USAGE}}
 
-## Common Checks
+### Common Checks
 
 {{COMMON_CHECKS}}
 
-## Runbook Handoff
+### Runbook Handoff
 
 <!-- Author prompt: Keep this optional section only when an actual runbook owns executable steps; link it without copying commands. -->
 
 {{RUNBOOK_HANDOFF}}
 
-## Traceability
+### Traceability
 
 {{SUBJECT_AND_AUTHORITY_LINKS}}
 

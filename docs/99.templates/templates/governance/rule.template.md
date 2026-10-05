@@ -1,7 +1,7 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
@@ -12,19 +12,19 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Purpose
+## Overview
 
 {{WHY_THIS_RUNTIME_RULE_EXISTS}}
 
-## Trigger
+## Scope
 
 {{EVENT_AND_PATTERN_EXPLANATION}}
 
-## Operator Message
+## Rules
 
 {{MESSAGE_SHOWN_WHEN_THE_RULE_FIRES}}
 
-## Remediation
+## Exceptions
 
 {{APPROVED_ALTERNATIVE_ACTION}}
 

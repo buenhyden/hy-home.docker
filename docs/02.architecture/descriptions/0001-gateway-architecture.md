@@ -13,7 +13,15 @@ created: "2026-03-26"
 ---
 # Gateway Tier Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the architecture of the Gateway tier, the unified entry point for the `hy-home.docker` system. It describes a structure that achieves dynamic service discovery and fine-grained path routing at the same time through a hybrid Traefik and Nginx configuration.
 
@@ -23,7 +31,7 @@ Requirement owners, implementers, and operators share the concerns recorded in t
 
 The Gateway tier acts as the primary passage between the external network and the internal service network. The root compose includes both leaves unconditionally, and a profile decides which starts. `traefik` belongs to `core` and `dev`, and `nginx` belongs only to the dedicated `nginx` profile, so neither starts without a profile. Nginx remains as an auxiliary proxy leaf for specific legacy compatibility and special-path handling.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
@@ -44,20 +52,15 @@ This section preserves the system boundaries, consumption relationships, non-goa
   - Detailed payload logging for all traffic (handled as sampling in the observability tier).
   - Service Mesh-level complex dynamic control (currently focused on simple Ingress).
 
-## Quality Attributes
+### Traceability
 
-### Quality Scenarios
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+## Architecture
 
-- **Performance**: Guarantees low latency through Traefik's Go-based asynchronous processing. Optimizes static assets using Nginx's caching capability.
-- **Security**: Prioritizes TLS 1.3, enforces HSTS, limits request size, integrates authentication (SSO).
-- **Reliability**: Automatically excludes unhealthy targets through Health Check. Self-healing routing based on the Docker Provider.
-- **Scalability**: Adds new service horizontal scaling and routing using only Docker labels.
-- **Observability**: Exposes Prometheus metrics, integrates distributed tracing through OpenTelemetry (Tempo).
-- **Operability**: Secures real-time routing visibility through the Traefik Dashboard. Supports file-based dynamic configuration.
+### Architecture
 
-## Components
+### Components
 
 ### Viewpoints and Views
 
@@ -67,7 +70,7 @@ Gateway leaves join `edge_net`, but they are alternative host listeners. Normal
 HOME traffic enters Traefik. The `nginx` profile instead selects Nginx for its
 special-path routes; Nginx is not chained behind Traefik in the current Compose.
 
-## Data Flow
+### Data Flow
 
 ### Data and Control Flows
 
@@ -80,7 +83,7 @@ Data and control flows include only the interactions specified in this section a
 - **Storage Strategy**: Targets a stateless architecture; configuration files and certificates are supplied through volume mounts.
 - **Data Boundaries**: The gateway only modifies or forwards request metadata (header, path); it does not persist the request body.
 
-## Deployment View
+### Deployment View
 
 - **Runtime / Platform**: Docker Compose / Linux Alpine-based container.
 - **Deployment Model**: the root compose includes both leaves. `traefik` is selected
@@ -89,9 +92,18 @@ Data and control flows include only the interactions specified in this section a
   the root network and healthy SeaweedFS S3 dependency context.
 - **Operational Evidence**: root `core` profile compose validation, `check-all-hardening.sh 01-gateway`, Traefik Dashboard (`dashboard.DEFAULT_URL`) and sanitized runtime logs when the approved stack is running.
 
-## Traceability
+## Quality Attributes
 
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+### Quality Scenarios
+
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+
+- **Performance**: Guarantees low latency through Traefik's Go-based asynchronous processing. Optimizes static assets using Nginx's caching capability.
+- **Security**: Prioritizes TLS 1.3, enforces HSTS, limits request size, integrates authentication (SSO).
+- **Reliability**: Automatically excludes unhealthy targets through Health Check. Self-healing routing based on the Docker Provider.
+- **Scalability**: Adds new service horizontal scaling and routing using only Docker labels.
+- **Observability**: Exposes Prometheus metrics, integrates distributed tracing through OpenTelemetry (Tempo).
+- **Operability**: Secures real-time routing visibility through the Traefik Dashboard. Supports file-based dynamic configuration.
 
 ## Related Documents
 

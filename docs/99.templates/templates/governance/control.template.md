@@ -12,7 +12,7 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Purpose
+## Overview
 
 {{CONTROL_PURPOSE}}
 
@@ -24,9 +24,9 @@ updated: "{{UPDATED}}"
 
 {{NORMATIVE_RULES}}
 
-## Enforcement
+## Exceptions
 
-{{GATES_SCRIPTS_AND_REVIEW_POINTS}}
+{{SCOPED_EXCEPTIONS_AND_AUTHORIZATION_BOUNDARIES}}
 
 ## Related Documents
 

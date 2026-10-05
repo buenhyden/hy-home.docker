@@ -20,10 +20,6 @@ package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 �
 이 README는 현재 package로 가는 길만 안내합니다. package 안의 Spec, Plan,
 Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않습니다.
 
-## Audience
-
-현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
-
 ## Scope
 
 - 포함: 진행 중인 변경, 검증이 끝나 보관 승인을 기다리는 package의
@@ -48,6 +44,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0204 | [서비스 연동·보안·운영](./0204-service-integration-security-and-operations/) | 공통 서비스 호환성·외부 연결·백업 경계의 승인용 계약 |
 | SPEC-0207 | [공통 권한·안전한 저술](./0207-common-authorization-and-safe-authoring/) | 권한 원본·검토·안전한 문서 저술 경계의 수렴 |
 | SPEC-0208 | [Stage 99 frontmatter·Task 수명주기](./0208-stage99-frontmatter-and-task-lifecycle/) | Stage 99 완료 증거와 Task 수명주기 기록의 기계 계약 |
+| SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
@@ -65,6 +62,14 @@ Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelle
 | Contract | Spec이 소유하는 등록된 실행 가능 인터페이스 |
 
 ## Usage
+
+### Usage
+
+### Audience
+
+현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
+
+### Usage
 
 1. 관련 Requirement, Architecture Description, ADR을 먼저 읽습니다.
 2. 등록된 Spec template으로 `spec.md`를 만들거나 고칩니다.

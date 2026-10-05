@@ -26,6 +26,13 @@ the infrastructure is unclear or conflicts, this causes inter-service
 communication failures or difficulty managing IPs. Therefore all infrastructure
 services need to be forced to run on the same virtual network plane.
 
+### Traceability
+
+The confirmation basis for this decision is limited to the Architecture
+Description, Spec, and Operations documents linked in `Related Documents`, and
+the current repository configuration. Runtime state without separate execution
+evidence is not claimed.
+
 ## Decision
 
 - **Decision item 1**: Fix the subnet of `infra_net` to `${INFRA_SUBNET:-172.19.0.0/16}`
@@ -36,6 +43,29 @@ services need to be forced to run on the same virtual network plane.
   as `k3d-hyhome`, keep that connection and add `infra_net` rather than removing it.
 - **Decision item 4**: Write a service's `infra_net` declaration as a dictionary,
   and assign a static IP within `172.19.0.0/16` through `ipv4_address`.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Alternative 1: Docker Default Bridge (Automatic CIDR)
+
+- Good: Docker allocates addresses on its own with no separate configuration.
+- Bad: IPs change depending on service placement order, making static
+  IP-based configuration impossible.
+
+### Alternative 2: External IPAM Service
+
+- Good: A dedicated, independent management tool can automate IP address
+  management.
+- Bad: Adds excessive configuration and operational complexity for a small
+  Docker Compose-based local infrastructure.
 
 ## Consequences
 
@@ -54,32 +84,6 @@ services need to be forced to run on the same virtual network plane.
   scope.
 - Changing the dedicated interconnect network configuration inside the database
   cluster is not covered.
-
-## Options Considered
-
-### Alternative 1: Docker Default Bridge (Automatic CIDR)
-
-- Good: Docker allocates addresses on its own with no separate configuration.
-- Bad: IPs change depending on service placement order, making static
-  IP-based configuration impossible.
-
-### Alternative 2: External IPAM Service
-
-- Good: A dedicated, independent management tool can automate IP address
-  management.
-- Bad: Adds excessive configuration and operational complexity for a small
-  Docker Compose-based local infrastructure.
-
-## Traceability
-
-The confirmation basis for this decision is limited to the Architecture
-Description, Spec, and Operations documents linked in `Related Documents`, and
-the current repository configuration. Runtime state without separate execution
-evidence is not claimed.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

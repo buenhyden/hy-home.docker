@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "compose-stack-agent"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,9 @@ metadata:
 
 # compose-stack-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ An approved Compose specification, exact service scope, and rollback path must e
 2. Implement the smallest atomic YAML/configuration change while preserving external secret references and dependency semantics.
 3. Run static Compose validation and any explicitly approved scoped runtime check, then inspect the rendered delta.
 
-## Outputs
-
-- A validated Compose change plus exact configuration and safety evidence.
-
-## Gates
+### Gates
 
 - `docker compose config` or the repository wrapper succeeds.
 - Secret values never enter Compose files, logs, or evidence.
+
+## Outputs
+
+- A validated Compose change plus exact configuration and safety evidence.
 
 ## Failure Handling
 
 Stop on unresolved variables, missing secret files, invalid dependency order, or unapproved runtime impact and revert the logical change.
 
-## Related Documents
+## References
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Docker Compose patterns](../docker-compose-patterns/SKILL.md)

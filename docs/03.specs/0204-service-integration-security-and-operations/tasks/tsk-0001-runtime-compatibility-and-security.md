@@ -26,7 +26,7 @@ consumer defects, check Crawl4AI's security pin, and separate OpenBao sealed
 status from readiness. Verify Cassandra LAB's already changed official-image
 contract without moving data or creating LAB credentials again.
 
-## Inputs
+## Inputs and Authorization
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03;
 SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The original approval-draft boundary below is historical for pre-PR359 planning. Later owner approval authorized the recorded source/document reconciliation only; it still does not authorize image pulls, HOME deployment, secret issuance, credential rotation, data restore or service operations.
@@ -283,7 +283,7 @@ and [OpenBao status exit codes](https://openbao.org/docs/commands/status/).
 Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
-## Verification Evidence
+## Evidence
 
 ### Storybook blocker and alternative assessment — 2026-10-04
 
@@ -672,19 +672,19 @@ rewriting or cancellation of already-completed work.
 | Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
 
-| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
-| --- | --- | --- | --- | --- |
-| 1 | W1 | in-progress | PASS | [Task receipt](#verification-evidence) |
-| 1 | W5 | blocked | NOT_RUN | [Task receipt](#verification-evidence) |
-| 2 | W2 | blocked | PASS | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
-| 2 | W5 | blocked | NOT_RUN | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) |
-| 3 | W2 | blocked | NOT_RUN | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
-| 3 | W5 | blocked | NOT_RUN | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) |
-| 4 | W2 | blocked | NOT_RUN | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) |
-| 4 | W5 | blocked | NOT_RUN | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) |
-| 8 | W1 | in-progress | NOT_RUN | [Plan W1](../plan.md#execution-sequence); [Task 0002 receipt](tsk-0002-external-project-integration.md#verification-evidence) |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Current Task status: in-progress | 1 | W1 | Source evidence | Task receipt | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 1 | W5 | Runtime handoff evidence | Task receipt | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 2 | W2 | n8n source evidence | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 2 | W5 | n8n runtime evidence | [RUN-0053](../../../05.operations/runbooks/0053-n8n.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 3 | W2 | Crawl4AI evidence | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 3 | W5 | Crawl4AI runtime evidence | [RUN-0091](../../../05.operations/runbooks/0091-crawl4ai.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 4 | W2 | OpenBao evidence | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: blocked | 4 | W5 | External connection evidence | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: in-progress | 8 | W1 | Prerequisite reconciliation | Plan W1; Task 0002 receipt | NOT_RUN | This Task, Evidence | pending |
 
-## Review Evidence
+## Review and Completion
 
 | Acceptance criterion | Acceptance | Evidence |
 | --- | --- | --- |
@@ -696,11 +696,11 @@ rewriting or cancellation of already-completed work.
 
 Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 
-## Commit Ledger
+### Commit Ledger
 
 Prompt 04 source reconciliation merged through PR359 at `467bd644b071f9dfa02ca1af2d622502c3445d28`; completion receipts merged through PR360 at `ebeb83521c768fedc620380b0c2e92db10a6fcdc`. Earlier “No Prompt 04 commit” wording is historical for the draft phase. This receipt authorizes no HOME operation, restore, image pull, authentication change or private read.
 
-## Rulings
+### Rulings
 
 Do not shrink main runners without path evidence. Do not use a generic `_FILE`
 assumption for `n8nio/runners`; verify its entrypoint first. If the pinned
@@ -708,7 +708,7 @@ runner lacks a safe supported file-consumption path, stop and amend this Task
 with the exact wrapper/Dockerfile path before writing one. Existing LAB
 Cassandra work is a verification item, not a repeat implementation.
 
-## Deferred Items
+### Deferred Items
 
 ### Approved combined protected delivery
 
@@ -820,3 +820,8 @@ SPEC-0206 source/static completion and archival are separately approved; its HOM
 
 Protected completion PR361 merged as `275d708ab797e0c86a30508351666482ebc04907`: required CI run37186133788, CodeQL and GitGuardian PASS; main-security/channel run37187599350 PASS. Approved archive writers are the exact seven source deletions/raw copies for completed0193 (3 members) and completed0206 (4), `docs/03.specs/README.md`, `docs/98.archive/retention-catalog.md` and this receipt. Independent pre-unlink review verified source Git blobs/modes/member sets and unchanged existing catalog rows; catalog records that protected source SHA. Current consumers were promoted by PR361 to Stage05; frozen bodies remain unchanged. Empty source directories caused an initial lifecycle/metadata failure and were removed with exact rmdir; final gates follow in the archive PR. Links PASS/exit0 with the existing 2870 legacy-source warning; no operational authority, HOME action, image pull, secret change, restore or migration is granted by capture.
 Final archive pre-commit acceptance: metadata3 violations0, corpus violations0/preserved348, links failures0/one existing warning, authored Markdown3 and diff checks all exit0; independent final cutover/raw-object review PASS. Required archive PR CI remains a separate delivery gate.
+
+## Related Documents
+
+- [Specification](../spec.md)
+- [Plan](../plan.md)

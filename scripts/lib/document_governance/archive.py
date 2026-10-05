@@ -1042,6 +1042,7 @@ def validate_active_stage_occupancy(
     from scripts.lib.document_governance.frontmatter import read_frontmatter_values
     from scripts.lib.document_governance.spec_packages import (
         SpecPackageError,
+        _document_anchor_references,
         acceptance_criterion_numbers,
         disposition_entry_statuses,
         task_cancellation_findings,
@@ -1138,11 +1139,17 @@ def validate_active_stage_occupancy(
                 continue
             if kind == "task" and status == "cancelled":
                 try:
+                    generation = int(registry.common.get("lifecycle_generation", 4))
+                    heading = (
+                        str(registry.common["spec_section"])
+                        if generation >= 5
+                        else str(
+                            registry.common["spec_completion_evidence"]["spec_section"]
+                        )
+                    )
                     criteria = acceptance_criterion_numbers(
                         (root / package / "spec.md").read_text(encoding="utf-8"),
-                        str(
-                            registry.common["spec_completion_evidence"]["spec_section"]
-                        ),
+                        heading,
                     )
                     findings.extend(
                         f"{relative}: {finding}"
@@ -1151,6 +1158,10 @@ def validate_active_stage_occupancy(
                             metadata.get("cancellation"),
                             frozenset(criteria),
                             task_statuses,
+                            generation=generation,
+                            references=_document_anchor_references(
+                                (root / relative).read_text(encoding="utf-8")
+                            ),
                         )
                     )
                 except (OSError, SpecPackageError) as error:

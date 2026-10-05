@@ -16,10 +16,14 @@ created: "2026-09-18"
 
 ## Overview
 
+### Overview
+
 이 정책은 Keycloak을 중앙 IdP로 사용하면서 OAuth2 Proxy ForwardAuth와
 application-native OIDC를 선택·운영하는 기준을 정의한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - Keycloak
 - OAuth2 Proxy
@@ -30,7 +34,15 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 신규 OIDC-capable internal applications
 - Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
 
-## Controls
+### Traceability
+
+- Parent: [ADR-0038](../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- Child: [GDE-0079](../guides/0079-application-auth-integration.md)
+- Architecture: [AD-0002](../../02.architecture/descriptions/0002-auth-architecture.md)
+
+## Rules
+
+### Controls
 
 ### Required
 
@@ -83,13 +95,7 @@ owner 예외가 아니므로, 새 예외가 필요하면 정확한 범위·위�
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](0006-infrastructure-optimization-governance.md)과
 [POL-0021](0021-backup-and-restore.md)을 적용한다.
 
-## Exceptions
-
-긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
-기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
-`Authorization` header 충돌이 없음을 먼저 검증해야 한다.
-
-## Verification
+### Verification
 
 정적 검증: [GDE-0079](../guides/0079-application-auth-integration.md#서비스별-정적-검증)의
 profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
@@ -103,7 +109,7 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../runbooks/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 
-## Review Cadence
+### Review Cadence
 
 - Keycloak update
 - OAuth2 Proxy update
@@ -112,11 +118,13 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - 신규 Native OIDC 서비스 승인
 - 분기별 인증 연동 검토
 
-## Traceability
+## Exceptions
 
-- Parent: [ADR-0038](../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- Child: [GDE-0079](../guides/0079-application-auth-integration.md)
-- Architecture: [AD-0002](../../02.architecture/descriptions/0002-auth-architecture.md)
+### Exceptions
+
+긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
+기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
+`Authorization` header 충돌이 없음을 먼저 검증해야 한다.
 
 ## Related Documents
 

@@ -19,7 +19,17 @@ created: "2026-09-23"
 
 # Superset Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -72,16 +82,16 @@ Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn co
 | `docker compose --profile bi run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
 | `docker compose --profile bi exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=bi bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-## Runbook Handoff
+### Runbook Handoff
 
 최초 설정, 로그인 실패, 업그레이드는 [runbook](../runbooks/0097-superset.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0097-superset.md) (`POL-0097`)
 - [Runbook](../runbooks/0097-superset.md) (`RUN-0097`)

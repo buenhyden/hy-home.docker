@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # ComfyUI Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
 root Compose가 [해당 구현](../../../infra/08-ai/comfyui/docker-compose.yml)을
@@ -83,7 +93,7 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 
 재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
 
-## Common Checks
+### Common Checks
 
 - [Compose 소스](../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
   라우트, 마운트, 리소스, healthcheck를 점검한다.
@@ -92,12 +102,12 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 - 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../policies/0021-backup-and-restore.md)을
   사용한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../runbooks/0081-comfyui.md)을
 사용한다.
 
-## Traceability
+### Traceability
 
 - Governing architecture: [AD-0008](../../02.architecture/descriptions/0008-ai-architecture.md)
 - [Policy](../policies/0081-comfyui.md) and [Runbook](../runbooks/0081-comfyui.md)

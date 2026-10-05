@@ -14,7 +14,17 @@ created: "2026-05-17"
 
 # 05-Messaging Optimization Hardening Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다. hardening은
 root-rendered Kafka family, Kafbat native OIDC, persistence, health, 리소스,
@@ -47,13 +57,13 @@ static 성공은 runtime health, 인증 흐름, 성능, 데이터 내구성, res
 TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime 보안
 작업에는 명시된 계획과 rollback이 필요하다.
 
-## Common Checks
+### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이고 runtime과 restore는 별개 문제로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
 - Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.

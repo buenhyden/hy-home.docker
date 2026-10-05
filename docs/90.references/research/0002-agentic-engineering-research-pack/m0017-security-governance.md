@@ -17,7 +17,13 @@ review_cycle: "on-source-change"
 
 # Reference: Security Governance and Secure Delivery
 
-## Current External Research
+## Overview
+
+### Overview
+
+## Scope and Method
+
+### Current External Research
 
 Question: which supply-chain and agent trust boundaries require explicit
 security decisions? Sources checked on **2026-09-27** against document baseline
@@ -118,75 +124,22 @@ existing daemon/capability boundary (S-docker-engine-security); it does not asse
 any current workload configuration. Future evidence must identify privileged
 mode, capabilities, host paths, effective access and justified exceptions.
 
-## Claims and Sources
+### Related Documents
 
-All source URLs below were opened on **2026-09-27**. Unversioned product
-documentation is mutable. `Not supplied` denotes no visible date; publication
-is not inferred from a crawl timestamp.
+- [Research pack](README.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
+- [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Data index](../../data/README.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
-| Claim ID | Claim | Source ID / detailed location | Publication / update | Actual check | Product / version / channel / stability | Kind | Limits / recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0017-01 | SSDF 1.1 is final; 1.2 Rev. 1 is initial public draft with closed comment period. | S-nist-ssdf-publications; entries for 800-218 and Rev. 1; S-nist-ssdf-revision-draft, publication details | 2022-02-03 final; 2025-12-17 draft; comment close 2026-01-30 | 2026-09-27 | NIST SSDF 1.1 final / 1.2 draft | Fact | Recheck official publication record before policy change. |
-| C-m0017-02 | SSDF groups preparation, protection, production and response; practices are risk-tailored. | S-nist-ssdf-project; SSDF overview and practices | Project updated 2026-04-13 | 2026-09-27 | SSDF project guidance | Fact | No local conformity or mandatory example implementation inferred. |
-| C-m0017-03 | SP 800-218A is an AI model-development community profile. | S-nist-ssdf-ai-profile; title/abstract/publication details | 2024-07-26 final | 2026-09-27 | SP 800-218A final | Fact / interpretation | Profile scope does not certify agent runtime permissions. |
-| C-m0017-04 | SLSA 1.2 has Build/Source tracks; provenance verification needs trusted identity, digest and expectations. | S-slsa-v1-2; tracks; S-slsa-verification; trusted builder and policy; S-slsa-build-provenance; buildDefinition/runDetails | Version 1.2; page date not supplied | 2026-09-27 | SLSA 1.2 approved | Fact | Format alone neither establishes level nor artifact safety. |
-| C-m0017-05 | CycloneDX 1.7 models inventory/dependency/completeness and vulnerability/VEX information. | S-cyclonedx-overview; 1.7 and object model | 1.7 released 2025-10-21 | 2026-09-27 | CycloneDX 1.7; specification | Fact | Availability of fields is not inventory completeness or exploitability proof. |
-| C-m0017-06 | Cosign verifies artifact signatures using identity/issuer or key trust; attestations have separate checks. | S-sigstore-cosign-verify; verify, identity flags and verify-attestation | Not supplied | 2026-09-27 | Cosign current docs; documented | Fact | Verify selected trust policy; experimental subsection excluded. |
-| C-m0017-07 | GitHub can generate provenance/SBOM attestations; private/internal use requires Enterprise Cloud. | S-github-artifact-attestations; availability and provenance; S-github-attest-use; workflow setup | Not supplied | 2026-09-27 | GitHub.com current; documented | Fact | Public use and plan/channel limits; no local adoption checked. |
-| C-m0017-08 | Minimum permissions, immutable action pins and isolation of untrusted execution reduce Actions exposure. | S-github-secure-use; token, third-party actions, script injection, self-hosted runners | Not supplied | 2026-09-27 | GitHub Actions current guidance | Fact / recommendation | Read alongside version-specific event/cache/checkout facts in m0004. |
-| C-m0017-09 | OWASP 2026 final LLM01 covers direct/indirect/persistent prompt injection. | S-owasp-llm-2026-readme; publication/canonical path; S-owasp-llm-2026-prompt-injection; Description, Prevention | Published 2026-08-04 | 2026-09-27 | OWASP LLM Top 10 2026 final guidance | Fact | Community risk taxonomy, not certification; do not use pre-renumbering draft IDs. |
-| C-m0017-10 | Poisoned agent memory may persist and propagate; attribution, segmentation and rollback are relevant controls. | S-owasp-agentic-2026; ASI06 pp. 24–26 | 2026 edition; exact publication date not extracted | 2026-09-27 | OWASP Agentic Top 10 2026 guidance | Fact / recommendation | Threat class only; no local memory attack or control absence assessed. |
-| C-m0017-11 | MCP guidance forbids token passthrough and addresses consent, confused deputy and SSRF. | S-mcp-security-2025-11-25; Token passthrough, Confused deputy, SSRF | Version 2025-11-25 | 2026-09-27 | Versioned MCP security guide | Fact | Not asserted latest; transport/server/provider capabilities differ. |
-| C-m0017-12 | Docker daemon control is a host authority boundary; restrict privileged mode and host bind access by justified need. | S-docker-engine-security; Docker daemon attack surface / Linux kernel capabilities; S-docker-bind-mounts; Considerations and constraints / read-only / Recursive mounts | Not supplied | 2026-09-27 | Docker Engine current docs | Fact / interpretation | Rootless/remote/host configuration affects risk; no host examined. |
-| C-m0017-13 | Separate read/edit/execute/persist/publish authority and track residual-risk decisions. | C-m0017-02,08–12 | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Requires explicit future scope and decision owner; not applied here. |
+## Findings
 
-| Source ID | Opened source |
-| --- | --- |
-| S-nist-ssdf-publications | [NIST SSDF publications](https://csrc.nist.gov/projects/ssdf/publications) |
-| S-nist-ssdf-revision-draft | [SP 800-218 Rev. 1 initial public draft](https://csrc.nist.gov/pubs/sp/800/218/r1/ipd) |
-| S-nist-ssdf-project | [NIST SSDF project](https://csrc.nist.gov/projects/ssdf) |
-| S-nist-ssdf-ai-profile | [SP 800-218A final](https://csrc.nist.gov/pubs/sp/800/218/a/final) |
-| S-slsa-v1-2 | [SLSA v1.2](https://slsa.dev/spec/v1.2/) |
-| S-slsa-verification | [SLSA verifying artifacts](https://slsa.dev/spec/v1.2/verifying-artifacts) |
-| S-slsa-build-provenance | [SLSA build provenance](https://slsa.dev/spec/v1.2/build-provenance) |
-| S-cyclonedx-overview | [CycloneDX specification overview](https://cyclonedx.org/specification/overview/) |
-| S-sigstore-cosign-verify | [Cosign verification](https://docs.sigstore.dev/cosign/verifying/verify/) |
-| S-github-artifact-attestations | [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) |
-| S-github-attest-use | [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) |
-| S-github-secure-use | [Secure use of Actions](https://docs.github.com/en/actions/reference/security/secure-use) |
-| S-owasp-llm-2026-readme | [OWASP LLM Top 10 2026 release directory](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md) |
-| S-owasp-llm-2026-prompt-injection | [OWASP 2026 final LLM01](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md) |
-| S-owasp-agentic-2026 | [OWASP Agentic Top 10 2026 PDF](https://genai.owasp.org/download/52117/?tmstv=1765059207) |
-| S-mcp-security-2025-11-25 | [MCP 2025-11-25 security guide](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices) |
-| S-docker-bind-mounts | [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/); current Engine docs, publication date not supplied; checked 2026-09-27; recursive read-only kernel/version constraints retained |
-| S-docker-engine-security | [Docker Engine security](https://docs.docker.com/engine/security/) |
-
-## Future Internal Checks
-
-These are conditional proposals. Surface candidates are historical routes or
-hypothetical designs; neither existence nor adequacy was investigated.
-
-| Topic / claims | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SSDF status/response C-m0017-01–03,13 | repository/task; governance/security | Policy or vulnerability process changes | Historical security docs; hypothetical response/exception register | Which final practice/outcome and risk owner support the policy? | Versioned requirement mapping, affected versions, response owner/expiry | Approved document/process review | Pass: scoped outcomes and bounded exception; fail: draft called final or unowned risk | No compliance certification without designated authority | Security/governance | Not assessed in this run |
-| Inventory/provenance/signing C-m0017-04–07 | artifact/CI/release; supply chain | Distributable artifact exists | Historical build/publish workflow; hypothetical evidence bundle | Do SBOM, provenance and verified signature refer to the same digest and trusted builder? | Artifact digest, completeness, signer/issuer, builder ID, verification policy | Approved fixture verification of pass/mismatch/untrusted cases | Pass: identity/digest/policy matched; fail: format/signature equated with safety | Registry/write credentials and paid plan adoption separately approved | Release/security | Not assessed in this run |
-| Untrusted CI C-m0017-08 | CI/environment; automation/security | PRs, remote inputs or persistent runners execute | Historical Actions routes; hypothetical adversarial PR fixture | Can untrusted data/code reach credentials, publication or persistent state? | Event/ref, permission map, immutable dependencies, runner lifecycle | Scoped static flow review then isolated hostile-input fixtures | Pass: trusted boundary enforced; fail: untrusted execution can obtain privileged capability | No dispatch, secrets or live runner exercise in this run | CI/security | Not assessed in this run |
-| Injection/agent authority C-m0017-09,13 | task/provider/tool; agent governance/security | Agent reads untrusted documents or tools | Provider instructions/MCP/plugin/hook candidates | Can source text enlarge tool permissions or publication authority? | Trust map, tool scopes, schema/denied-destination cases | Approved synthetic prompt/tool-output injection fixtures | Pass: external text cannot grant authority; fail: model instruction bypasses deterministic boundary | Do not use real secrets or external exfiltration target | Agent/security owner | Not assessed in this run |
-| Persistent memory C-m0017-10,13 | package/task/multi-agent; memory/security | Data persists or crosses agents | Historical memory surface; hypothetical scoped store | Are source, namespace, write approval and rollback retained across summarization? | Provenance/retention rules, snapshots, synthetic poisoned write/read cases | Authorized temporary store with bounded rollback | Pass: trust attribution and isolation survive; fail: poisoned memory silently becomes authority | No global/personal memory or settings writes without scope | Memory/security owner | Not assessed in this run |
-| MCP/plugin/hook supply chain C-m0017-11,13 | provider/server/local execution; security | Server/plugin/hook installed or network tool authorized | Historical config references; hypothetical install/update path | Are executable origin, credentials, destinations and consent scoped? | Package pin/origin, auth audience, permissions, SSRF/token-negative fixtures | Approved config review and isolated mock endpoints | Pass: no passthrough/unapproved destination; fail: inherited broad credentials | Installation/network/account access needs separate authorization | Provider/security | Not assessed in this run |
-| Docker authority C-m0017-12 | host/container; infrastructure/security | Workload can control daemon or privileged host resources | Historical compose/daemon candidates | Who can cross container-to-host authority and for what purpose? | Explicit target, socket/daemon access map, privileged mode, host bind paths/effective read-write access, capability rationale | Separately authorized target-specific review; no socket commands here | Pass: documented least authority and accepted exception; fail: unreviewed broad control | Runtime/host inspection and remediation require approved scope | Infrastructure/security | Not assessed in this run |
-
-### Limitations and preservation decision
-
-No scan, secret access, account inspection, host diagnosis or provider execution
-occurred. No “secure”, “vulnerable”, adopted, absent or compliant verdict is made
-for this workspace. Recheck standards status before changing policy, and product
-guidance after trust, version, artifact or permission changes. Dated Task 8
-findings, resolution/exception counts, different action-count denominators and
-historical remote observations remain verbatim below; they are not current
-authority.
-
-## Historical workspace observations — not reassessed in this run
+### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -714,15 +667,74 @@ authority.
 > release evidence separate. Owner: Documentation maintainers with independent
 > Security, QA, Infra, and Operations review.
 
-## Related Documents
+## Limitations
 
-- [Research pack](README.md)
-- [Verification and validation](./m0019-verification-validation.md)
-- [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
-- [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
-- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Data index](../../data/README.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+### Future Internal Checks
+
+These are conditional proposals. Surface candidates are historical routes or
+hypothetical designs; neither existence nor adequacy was investigated.
+
+| Topic / claims | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SSDF status/response C-m0017-01–03,13 | repository/task; governance/security | Policy or vulnerability process changes | Historical security docs; hypothetical response/exception register | Which final practice/outcome and risk owner support the policy? | Versioned requirement mapping, affected versions, response owner/expiry | Approved document/process review | Pass: scoped outcomes and bounded exception; fail: draft called final or unowned risk | No compliance certification without designated authority | Security/governance | Not assessed in this run |
+| Inventory/provenance/signing C-m0017-04–07 | artifact/CI/release; supply chain | Distributable artifact exists | Historical build/publish workflow; hypothetical evidence bundle | Do SBOM, provenance and verified signature refer to the same digest and trusted builder? | Artifact digest, completeness, signer/issuer, builder ID, verification policy | Approved fixture verification of pass/mismatch/untrusted cases | Pass: identity/digest/policy matched; fail: format/signature equated with safety | Registry/write credentials and paid plan adoption separately approved | Release/security | Not assessed in this run |
+| Untrusted CI C-m0017-08 | CI/environment; automation/security | PRs, remote inputs or persistent runners execute | Historical Actions routes; hypothetical adversarial PR fixture | Can untrusted data/code reach credentials, publication or persistent state? | Event/ref, permission map, immutable dependencies, runner lifecycle | Scoped static flow review then isolated hostile-input fixtures | Pass: trusted boundary enforced; fail: untrusted execution can obtain privileged capability | No dispatch, secrets or live runner exercise in this run | CI/security | Not assessed in this run |
+| Injection/agent authority C-m0017-09,13 | task/provider/tool; agent governance/security | Agent reads untrusted documents or tools | Provider instructions/MCP/plugin/hook candidates | Can source text enlarge tool permissions or publication authority? | Trust map, tool scopes, schema/denied-destination cases | Approved synthetic prompt/tool-output injection fixtures | Pass: external text cannot grant authority; fail: model instruction bypasses deterministic boundary | Do not use real secrets or external exfiltration target | Agent/security owner | Not assessed in this run |
+| Persistent memory C-m0017-10,13 | package/task/multi-agent; memory/security | Data persists or crosses agents | Historical memory surface; hypothetical scoped store | Are source, namespace, write approval and rollback retained across summarization? | Provenance/retention rules, snapshots, synthetic poisoned write/read cases | Authorized temporary store with bounded rollback | Pass: trust attribution and isolation survive; fail: poisoned memory silently becomes authority | No global/personal memory or settings writes without scope | Memory/security owner | Not assessed in this run |
+| MCP/plugin/hook supply chain C-m0017-11,13 | provider/server/local execution; security | Server/plugin/hook installed or network tool authorized | Historical config references; hypothetical install/update path | Are executable origin, credentials, destinations and consent scoped? | Package pin/origin, auth audience, permissions, SSRF/token-negative fixtures | Approved config review and isolated mock endpoints | Pass: no passthrough/unapproved destination; fail: inherited broad credentials | Installation/network/account access needs separate authorization | Provider/security | Not assessed in this run |
+| Docker authority C-m0017-12 | host/container; infrastructure/security | Workload can control daemon or privileged host resources | Historical compose/daemon candidates | Who can cross container-to-host authority and for what purpose? | Explicit target, socket/daemon access map, privileged mode, host bind paths/effective read-write access, capability rationale | Separately authorized target-specific review; no socket commands here | Pass: documented least authority and accepted exception; fail: unreviewed broad control | Runtime/host inspection and remediation require approved scope | Infrastructure/security | Not assessed in this run |
+
+### Limitations and preservation decision
+
+No scan, secret access, account inspection, host diagnosis or provider execution
+occurred. No “secure”, “vulnerable”, adopted, absent or compliant verdict is made
+for this workspace. Recheck standards status before changing policy, and product
+guidance after trust, version, artifact or permission changes. Dated Task 8
+findings, resolution/exception counts, different action-count denominators and
+historical remote observations remain verbatim below; they are not current
+authority.
+
+## Sources
+
+### Claims and Sources
+
+All source URLs below were opened on **2026-09-27**. Unversioned product
+documentation is mutable. `Not supplied` denotes no visible date; publication
+is not inferred from a crawl timestamp.
+
+| Claim ID | Claim | Source ID / detailed location | Publication / update | Actual check | Product / version / channel / stability | Kind | Limits / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0017-01 | SSDF 1.1 is final; 1.2 Rev. 1 is initial public draft with closed comment period. | S-nist-ssdf-publications; entries for 800-218 and Rev. 1; S-nist-ssdf-revision-draft, publication details | 2022-02-03 final; 2025-12-17 draft; comment close 2026-01-30 | 2026-09-27 | NIST SSDF 1.1 final / 1.2 draft | Fact | Recheck official publication record before policy change. |
+| C-m0017-02 | SSDF groups preparation, protection, production and response; practices are risk-tailored. | S-nist-ssdf-project; SSDF overview and practices | Project updated 2026-04-13 | 2026-09-27 | SSDF project guidance | Fact | No local conformity or mandatory example implementation inferred. |
+| C-m0017-03 | SP 800-218A is an AI model-development community profile. | S-nist-ssdf-ai-profile; title/abstract/publication details | 2024-07-26 final | 2026-09-27 | SP 800-218A final | Fact / interpretation | Profile scope does not certify agent runtime permissions. |
+| C-m0017-04 | SLSA 1.2 has Build/Source tracks; provenance verification needs trusted identity, digest and expectations. | S-slsa-v1-2; tracks; S-slsa-verification; trusted builder and policy; S-slsa-build-provenance; buildDefinition/runDetails | Version 1.2; page date not supplied | 2026-09-27 | SLSA 1.2 approved | Fact | Format alone neither establishes level nor artifact safety. |
+| C-m0017-05 | CycloneDX 1.7 models inventory/dependency/completeness and vulnerability/VEX information. | S-cyclonedx-overview; 1.7 and object model | 1.7 released 2025-10-21 | 2026-09-27 | CycloneDX 1.7; specification | Fact | Availability of fields is not inventory completeness or exploitability proof. |
+| C-m0017-06 | Cosign verifies artifact signatures using identity/issuer or key trust; attestations have separate checks. | S-sigstore-cosign-verify; verify, identity flags and verify-attestation | Not supplied | 2026-09-27 | Cosign current docs; documented | Fact | Verify selected trust policy; experimental subsection excluded. |
+| C-m0017-07 | GitHub can generate provenance/SBOM attestations; private/internal use requires Enterprise Cloud. | S-github-artifact-attestations; availability and provenance; S-github-attest-use; workflow setup | Not supplied | 2026-09-27 | GitHub.com current; documented | Fact | Public use and plan/channel limits; no local adoption checked. |
+| C-m0017-08 | Minimum permissions, immutable action pins and isolation of untrusted execution reduce Actions exposure. | S-github-secure-use; token, third-party actions, script injection, self-hosted runners | Not supplied | 2026-09-27 | GitHub Actions current guidance | Fact / recommendation | Read alongside version-specific event/cache/checkout facts in m0004. |
+| C-m0017-09 | OWASP 2026 final LLM01 covers direct/indirect/persistent prompt injection. | S-owasp-llm-2026-readme; publication/canonical path; S-owasp-llm-2026-prompt-injection; Description, Prevention | Published 2026-08-04 | 2026-09-27 | OWASP LLM Top 10 2026 final guidance | Fact | Community risk taxonomy, not certification; do not use pre-renumbering draft IDs. |
+| C-m0017-10 | Poisoned agent memory may persist and propagate; attribution, segmentation and rollback are relevant controls. | S-owasp-agentic-2026; ASI06 pp. 24–26 | 2026 edition; exact publication date not extracted | 2026-09-27 | OWASP Agentic Top 10 2026 guidance | Fact / recommendation | Threat class only; no local memory attack or control absence assessed. |
+| C-m0017-11 | MCP guidance forbids token passthrough and addresses consent, confused deputy and SSRF. | S-mcp-security-2025-11-25; Token passthrough, Confused deputy, SSRF | Version 2025-11-25 | 2026-09-27 | Versioned MCP security guide | Fact | Not asserted latest; transport/server/provider capabilities differ. |
+| C-m0017-12 | Docker daemon control is a host authority boundary; restrict privileged mode and host bind access by justified need. | S-docker-engine-security; Docker daemon attack surface / Linux kernel capabilities; S-docker-bind-mounts; Considerations and constraints / read-only / Recursive mounts | Not supplied | 2026-09-27 | Docker Engine current docs | Fact / interpretation | Rootless/remote/host configuration affects risk; no host examined. |
+| C-m0017-13 | Separate read/edit/execute/persist/publish authority and track residual-risk decisions. | C-m0017-02,08–12 | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Requires explicit future scope and decision owner; not applied here. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-nist-ssdf-publications | [NIST SSDF publications](https://csrc.nist.gov/projects/ssdf/publications) |
+| S-nist-ssdf-revision-draft | [SP 800-218 Rev. 1 initial public draft](https://csrc.nist.gov/pubs/sp/800/218/r1/ipd) |
+| S-nist-ssdf-project | [NIST SSDF project](https://csrc.nist.gov/projects/ssdf) |
+| S-nist-ssdf-ai-profile | [SP 800-218A final](https://csrc.nist.gov/pubs/sp/800/218/a/final) |
+| S-slsa-v1-2 | [SLSA v1.2](https://slsa.dev/spec/v1.2/) |
+| S-slsa-verification | [SLSA verifying artifacts](https://slsa.dev/spec/v1.2/verifying-artifacts) |
+| S-slsa-build-provenance | [SLSA build provenance](https://slsa.dev/spec/v1.2/build-provenance) |
+| S-cyclonedx-overview | [CycloneDX specification overview](https://cyclonedx.org/specification/overview/) |
+| S-sigstore-cosign-verify | [Cosign verification](https://docs.sigstore.dev/cosign/verifying/verify/) |
+| S-github-artifact-attestations | [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations) |
+| S-github-attest-use | [Using artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) |
+| S-github-secure-use | [Secure use of Actions](https://docs.github.com/en/actions/reference/security/secure-use) |
+| S-owasp-llm-2026-readme | [OWASP LLM Top 10 2026 release directory](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/README.md) |
+| S-owasp-llm-2026-prompt-injection | [OWASP 2026 final LLM01](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md) |
+| S-owasp-agentic-2026 | [OWASP Agentic Top 10 2026 PDF](https://genai.owasp.org/download/52117/?tmstv=1765059207) |
+| S-mcp-security-2025-11-25 | [MCP 2025-11-25 security guide](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices) |
+| S-docker-bind-mounts | [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/); current Engine docs, publication date not supplied; checked 2026-09-27; recursive read-only kernel/version constraints retained |
+| S-docker-engine-security | [Docker Engine security](https://docs.docker.com/engine/security/) |

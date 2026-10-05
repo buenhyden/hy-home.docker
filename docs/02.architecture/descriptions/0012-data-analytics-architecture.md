@@ -14,29 +14,40 @@ created: "2026-03-26"
 
 # Analytics Tier Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 `infra/12-analytics` groups stream/batch processing, SQL queries, transformation,
 data quality and BI for data engineers and analysts. The former description
 covered only `04-data/analytics` storage engines; ADR-0045 makes the storage
 versus processing boundary explicit. InfluxDB and OpenSearch remain in Data.
 
-## System Boundaries
+### System Boundaries
 
 Analytics owns seven complete execution packages: Flink, Spark, Trino, Great Expectations, Superset, dbt and JupyterLab. Great Expectations validates data; software verification belongs to `11-quality`. Data owns the shared object/database stores;
 Messaging transports events; Workflow schedules jobs; Observability handles
 operational telemetry. This directory boundary provides neither physical
 failure isolation nor a separate Compose project.
 
-## Quality Attributes
+### Traceability
 
-Retain optional profiles and current network/secret boundaries. Preserve
-Flink checkpoints and Superset metadata; processing packages are not assumed
-stateless. Loopback-only Trino/Flink interfaces remain loopback-only. No
-performance, HA, authenticated runtime or backup success is inferred from
-static source validation. Runtime version pins remain in Compose/Dockerfiles.
+- [REQ-0005](../../01.requirements/0005-data-analytics.md)
+- [ADR-0039](../decisions/0039-analytics-engines-after-lakehouse-convergence.md)
+- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
+- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 | Package | Interface and dependency | Activation |
 | --- | --- | --- |
@@ -48,7 +59,7 @@ static source validation. Runtime version pins remain in Compose/Dockerfiles.
 | dbt | PostgreSQL transformations using feature-owned grants/schema | analytics-engineering |
 | JupyterLab | interactive data analysis, token-protected kernels and optional MLflow SDK access | data-science |
 
-## Data Flow
+### Data Flow
 
 Flink writes and Spark maintains Iceberg tables on SeaweedFS; Trino reads them.
 Great Expectations validates through Trino and Superset presents configured
@@ -56,7 +67,7 @@ data sources. dbt uses PostgreSQL, not an implied Trino adapter. Shared
 storage identity, schema ownership and provisioning stay unchanged. Running
 a query engine does not automatically ingest a Kafka topic or run a dbt model.
 
-## Deployment View
+### Deployment View
 
 Root Compose includes all seven package files; existing profile memberships
 control selection. No new analytics profile or HOME activation is added.
@@ -64,12 +75,13 @@ control selection. No new analytics profile or HOME activation is added.
 persistent host paths, volume identities and services remain unchanged.
 Running-container reconciliation is a separate operational action.
 
-## Traceability
+## Quality Attributes
 
-- [REQ-0005](../../01.requirements/0005-data-analytics.md)
-- [ADR-0039](../decisions/0039-analytics-engines-after-lakehouse-convergence.md)
-- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
-- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
+Retain optional profiles and current network/secret boundaries. Preserve
+Flink checkpoints and Superset metadata; processing packages are not assumed
+stateless. Loopback-only Trino/Flink interfaces remain loopback-only. No
+performance, HA, authenticated runtime or backup success is inferred from
+static source validation. Runtime version pins remain in Compose/Dockerfiles.
 
 ## Related Documents
 

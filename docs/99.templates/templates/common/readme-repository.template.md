@@ -16,13 +16,13 @@ updated: "{{UPDATED}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
+
+### Audience
+
+{{AUDIENCE}}
 
 ## Structure
 
@@ -32,13 +32,19 @@ updated: "{{UPDATED}}"
 
 {{STRUCTURE}}
 
-## Getting Started
+### Documents
 
-{{GETTING_STARTED}}
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
 
 ## Usage
 
 {{WORK_INSTRUCTIONS}}
+
+### Getting Started
+
+{{GETTING_STARTED}}
 
 ## Related Documents
 

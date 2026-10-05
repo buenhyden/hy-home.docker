@@ -4,7 +4,7 @@ version: "0.2.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2026-09-06"
 ---
 
@@ -17,7 +17,7 @@ describes what the commit actually changes. The draft is reviewed by a human or
 by the repository's own commit-message validation before it is used; this prompt
 produces a draft, never a commit.
 
-## Required Inputs
+## Inputs
 
 - `git diff --staged --stat` and `git diff --staged`, so the message is derived
   from staged content rather than from intent.
@@ -34,7 +34,31 @@ Stop and request staging if the staged set is empty or spans unrelated concerns.
 Stop the draft for stale or partial inputs, worktree disagreement, or revoked
 approval. This prompt never commits or claims check results.
 
-## Output Contract
+## Instructions
+
+### Constraints
+
+- Describing unstaged, planned, or intended work.
+- Claiming a verification result the commit does not carry. A message never
+  asserts that a check passed; the Task owns that evidence.
+- Inventing a scope, type, or trailer the conventions do not define.
+- Bypassing commit-message validation, running the commit with a verification
+  bypass flag, or using an arbitrary skip list to silence a hook.
+- Creating the commit. This prompt ends at the draft.
+- Secret values, credentials, tokens, private paths, or raw log excerpts.
+
+### Applies To
+
+- Roles: any role authorized to commit within its approved Task scope. Drafting
+  a message grants no commit authorization by itself.
+- Skills: [change-review-execution](../skills/change-review-execution/SKILL.md)
+  owns the review-then-commit ordering; this prompt owns only the message
+  envelope.
+- Evaluation: the draft is adequate when every staged path is accounted for,
+  the subject names one logical change, and the body states a reason that the
+  diff alone does not convey.
+
+## Outputs
 
 One draft message:
 
@@ -62,17 +86,6 @@ The `commit-msg` hook remains the final local enforcement point.
 Alongside the draft, list any staged path the message does not account for. That
 list being empty is part of the output.
 
-## Prohibited
-
-- Describing unstaged, planned, or intended work.
-- Claiming a verification result the commit does not carry. A message never
-  asserts that a check passed; the Task owns that evidence.
-- Inventing a scope, type, or trailer the conventions do not define.
-- Bypassing commit-message validation, running the commit with a verification
-  bypass flag, or using an arbitrary skip list to silence a hook.
-- Creating the commit. This prompt ends at the draft.
-- Secret values, credentials, tokens, private paths, or raw log excerpts.
-
 ## Failure Handling
 
 If the staged set mixes unrelated logical changes, report the split rather than
@@ -80,17 +93,6 @@ writing a message that covers both; the correct fix is restaging, not looser
 wording. If a staged path cannot be explained from the diff, say so and stop.
 If message validation rejects the draft, correct the draft against the stated
 rule; never disable the validation.
-
-## Applies To
-
-- Roles: any role authorized to commit within its approved Task scope. Drafting
-  a message grants no commit authorization by itself.
-- Skills: [change-review-execution](../skills/change-review-execution/SKILL.md)
-  owns the review-then-commit ordering; this prompt owns only the message
-  envelope.
-- Evaluation: the draft is adequate when every staged path is accounted for,
-  the subject names one logical change, and the body states a reason that the
-  diff alone does not convey.
 
 ## Related Documents
 

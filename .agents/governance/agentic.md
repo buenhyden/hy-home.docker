@@ -4,16 +4,24 @@ version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Agentic Engineering Policy
+
+## Overview
 
 Agent governance defines auditable, provider-neutral AI-agent execution. Canonical
 roles live in `.agents/roles/`, reusable procedures live in `.agents/skills/`, and provider
 selection and permission mappings live in `.agents/governance/providers/registry.yaml`.
 
-## Execution Rules
+## Scope
+
+Provider-neutral agent execution, delegation, capability intake, and Task evidence.
+
+## Rules
+
+### Execution Rules
 
 - Discover repository evidence and the approved Spec, Plan, and Task before mutation.
 - Keep one primary owner for each logical unit and independent review separate.
@@ -43,7 +51,7 @@ selection and permission mappings live in `.agents/governance/providers/registry
   must not rewrite, and fails closed when the owner declares no boundary.
   Inspect the resulting diff before committing.
 
-## Delegation Contract
+### Delegation Contract
 
 Delegate only to a role declared in `.agents/roles/` and mapped by the provider
 registry. Each envelope names the role and primary responsibility, exact owned
@@ -65,7 +73,7 @@ evidence. This contract does not infer account RPM, TPM, price, or a provider
 enforcement mechanism; only a supported native observation can show hard
 enforcement.
 
-## External Capability Intake
+### External Capability Intake
 
 An external agent catalog, prompt collection, or role library is a discovery
 input, never an install source or a local authority. Adoption requires all of
@@ -87,7 +95,7 @@ Record the decision and its evidence in the current Task. Stage 90 research may
 describe an external catalog and recommend intake, but it never records the
 decision itself.
 
-## Lifecycle
+### Lifecycle
 
 The sequence is discovery, applicability, approved execution, focused
 verification, independent review, and completion evidence. Failed verification
@@ -95,6 +103,10 @@ returns to implementation; rejected design stays in planning; missing authority
 stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
 controls come from the provider registry. Neither may be replaced by
 prompt-local policy.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

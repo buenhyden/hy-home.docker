@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Triage root-active Qdrant service health, REST route (SSO) assumptions, persistence path, and evidence capture without destructive data actions.
 
 이 런북은 health triage와 별도 승인 후 수행할 Qdrant snapshot의 격리 복원 rehearsal 계약을 제공한다. 이번 변경에서 snapshot create/recover API나 storage mutation은 실행하지 않았다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 REST Traefik route, snapshot path evidence를 수집하고 compose가 보장하는 범위 안에서만 비파괴 조치를 수행한다.
 
-## When to Use
+### When to Use
 
 - `qdrant`가 unhealthy, stopped, or missing 상태일 때
 - `/readyz`가 200 응답을 반환하지 않을 때
@@ -40,6 +48,8 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -114,21 +124,25 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. `/readyz`, collection status/config, aliases, point counts와 representative search invariants를 검증한다. version, checksum 또는 count mismatch면 승격하지 않는다.
 6. 실패하면 target을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. production route switch, API key 교체, collection deletion과 volume replacement는 별도 승인 사항이다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log, route label과 readiness 요약을 기록한다.
 - vector payload, collection data, credential 또는 mutation API body는 기록하지 않는다.
 - 문제가 container health, REST route, network 내부 gRPC, 영속성 또는 snapshot-path 증상 중 어디와 관련되는지 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이번 변경에서는 snapshot mutation, collection restore/delete, volume replacement와 route change를 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 restart 후에도 `/readyz`가 실패하거나, log에 storage 손상이 나타나거나, route label이 예상한 compose와 다르거나, API key가 없어 client가 401을 받거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Qdrant Usage Guide](../guides/0034-qdrant.md) (`GDE-0034`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

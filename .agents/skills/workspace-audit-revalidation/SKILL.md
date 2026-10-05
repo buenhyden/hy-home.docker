@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "workspace-audit-revalidation"
   scope: "agentic"
   owner_agent: "eval-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # workspace-audit-revalidation
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ A canonical audit, criterion definitions, current repository baseline, and repre
 2. Apply the defined scorer and threshold to representative evidence, separating repository adoption from runtime acceptance or entitlement.
 3. Record changed statuses, unchanged gaps, confidence, and exact validation evidence without backdating or promoting unobserved claims.
 
-## Outputs
-
-- A calibrated revalidation with criterion-level evidence and explicit uncertainty.
-
-## Gates
+### Gates
 
 - Evidence is representative, source-bounded, and reproducible.
 - No criterion receives a pass from absent runtime or provider observation.
+
+## Outputs
+
+- A calibrated revalidation with criterion-level evidence and explicit uncertainty.
 
 ## Failure Handling
 
 Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
 
-## Related Documents
+## References
 
 - [Evaluation engineer](../../roles/eval-engineer.md)
 - [Agent catalog contract](../../governance/providers/registry.yaml)

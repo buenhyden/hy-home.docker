@@ -17,7 +17,13 @@ review_cycle: "on-source-change"
 
 # Reference: Quality, CI, and Formatting
 
-## Current External Research
+## Overview
+
+### Overview
+
+## Scope and Method
+
+### Current External Research
 
 Question: what does each quality control prove, where should it run, and how
 should failure, data and reproducibility be managed? External sources checked
@@ -100,58 +106,21 @@ Verify that a failing process reaches the aggregate status; a helpful diagnostic
 step must not mask the original failure. Keep independent review tied to the
 candidate/diff and selected evidence, with absent checks stated explicitly.
 
-## Claims and Sources
+### Related Documents
 
-All sources opened on **2026-09-27**. Mutable unversioned routes describe
-upstream capability only. `Not supplied` means no visible publication date.
+- [Research pack](README.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Automation pipeline and workflow topology](./m0004-automation-pipeline-workflow.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
-| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0014-01 | Prettier check and write differ; exit 1 means formatting mismatch, 2 tool problem. | S-prettier-cli; --write, --check, Exit codes | Not supplied | 2026-09-27 | Prettier current CLI docs; documented | Fact | No installed version/adoption inferred. |
-| C-m0014-02 | pre-commit filters/stages select checks; hooks must exit nonzero on failure or modify files. | S-precommit-documentation; stages, filtering, creating hooks | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Configuration/install does not prove execution. |
-| C-m0014-03 | NIST lists minimum verification techniques including static, structural, black-box, regression and fuzz methods. | S-nist-developer-verification; Abstract | Publication landing 2021-10-06; updated 2022-11-29 | 2026-09-27 | NISTIR 8397 guidance; final publication | Fact | Explicitly not the totality of verification; not universal acceptance. |
-| C-m0014-04 | Fixtures establish test context; contract tests do not establish provider side effects/business functionality. | S-pytest-fixtures; fixture role/cleanup; S-pact-contract-functional; scope distinctions | Not supplied | 2026-09-27 | pytest stable docs/Pact guidance; documented | Fact | Tool-specific model, not live-system proof. |
-| C-m0014-05 | Uncontrolled state causes flakes; Playwright labels failed-first/passed-retry as flaky. | S-pytest-flaky; root causes/quarantine; S-playwright-retries; test categories | Not supplied | 2026-09-27 | pytest stable/Playwright current; documented | Fact | Retry result must retain first failure. |
-| C-m0014-06 | Stryker score uses detected/valid; timeouts count detected, invalids excluded. | S-stryker-mutant-metrics; states, Metrics | Not supplied | 2026-09-27 | Mutation Testing Elements current; documented | Fact | Equivalent/operator/timeout choices limit score. |
-| C-m0014-07 | Vitest exposes four thresholds, per-file/glob rules and include/exclude controls. | S-vitest-coverage-config; thresholds, include/exclude | Not supplied | 2026-09-27 | Vitest current docs; documented | Fact | No local threshold or version observed. |
-| C-m0014-08 | Quality layers answer different questions and cannot substitute for intended-use acceptance. | C-m0014-01–07; m0019 definitions | 2026-09-27 analysis | 2026-09-27 | Pack analytical taxonomy | Interpretation | Tailor to artifact/risk, not an automatic checklist. |
-| C-m0014-09 | Bound flake quarantine and require independent oracles for generated tests. | C-m0014-04–07; m0004 AI generation | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate owner/adoption decision. |
+## Findings
 
-| Source ID | Opened source |
-| --- | --- |
-| S-prettier-cli | [Prettier CLI](https://prettier.io/docs/cli) |
-| S-precommit-documentation | [pre-commit docs](https://pre-commit.com/) |
-| S-nist-developer-verification | [NIST developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
-| S-pytest-fixtures | [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) |
-| S-pact-contract-functional | [Pact contract versus functional tests](https://docs.pact.io/consumer/contract_tests_not_functional_tests) |
-| S-pytest-flaky | [pytest flaky tests](https://docs.pytest.org/en/stable/explanation/flaky.html) |
-| S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
-| S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
-| S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |
-
-## Future Internal Checks
-
-Candidates are historically described routes or hypothetical test designs,
-not newly inspected files or proof of adoption.
-
-| Topic / claims | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Format/lint/syntax/schema/type C-m0014-01–03 | package/repository/CI; docs/common/QA | Artifact language/rule applies | Historical configs/public gate; hypothetical omitted-language checks | Do selected rules cover changed inputs and distinguish tool failure from mismatch? | Filters, exact versions, positive/negative fixtures, exit propagation | Authorized focused checks and static selection review | Pass: relevant defects fail; fail: skipped/failed tool called pass | Auto-fix writes need review; no direct uncontrolled all-files run | QA/DevEx | Not assessed in this run |
-| Unit/integration/contract/E2E C-m0014-03–04,08 | task/environment; product/QA | Behavior/interface/journey exists | Historical tests/project scripts; hypothetical journey contract | What actual behavior does each oracle cover and which dependency is mocked? | Requirements/cases, collected suite, environment, observed results | Approved isolated runs and independent test design | Pass: claimed layer has matching oracle/context; fail: component renamed E2E | External integrations/runtime need target approval | QA/product | Not assessed in this run |
-| Fixtures C-m0014-04 | package/data; QA/security | Reusable data/context needed | Testware candidates; hypothetical fixture provenance | Are boundaries/adversarial cases represented and teardown isolated? | Data origin/schema/sensitivity, setup/teardown cases | Safe fixtures with reordered/parallel cases | Pass: no state leakage/private data; fail: cross-test dependency or unsupported realism | No production exports or secrets | QA/data owner | Not assessed in this run |
-| Flakes C-m0014-05,09 | CI/environment; QA/ops | Intermittent results observed later | Hypothetical retry/quarantine ledger | Is first failure retained and quarantine reviewed? | Attempts, traces, versions, owner/expiry | Bounded repeat/order isolation after approval | Pass: cause/fix or bounded exception; fail: rerun-until-green/hidden first failure | Budget and safe trace retention | QA | Not assessed in this run |
-| Coverage/mutation C-m0014-06–07 | package/task; QA | Risk path and measured denominator identified | Historical coverage config; hypothetical mutation target | Are assertions sensitive to relevant defects rather than merely executing lines? | Include/exclude, four metrics, mutant states/equivalents | Focused coverage and approved mutation fixture | Pass: denominator explicit/relevant defect detected; fail: exclusions inflate claim or surviving critical mutant unexplained | Additional tool installation/resource use requires adoption approval | QA/code owner | Not assessed in this run |
-| Docs/security/review C-m0014-03,08–09 | repository/task; docs/security/governance | Claims or trust boundary changed | Registered docs gates, hypothetical review range | Are sources correct and review independence/evidence complete beyond format? | Link/source/metadata results, scanner target, reviewer range | Focused document checks and named independent review | Pass: supported claim and explicit uncertainty; fail: mechanically valid unsupported conclusion | Security scans separately scoped; no certification inference | Docs/security reviewer | Not assessed in this run |
-
-### Limitations and preservation decision
-
-No current tool inventory, pass, coverage, compliance or absence is asserted.
-Tutorials and tool metrics do not select local policy. Recheck after tool,
-oracle, denominator, environment or risk changes. Historical hook/test counts,
-html5lib findings, frontend thresholds and checkout-dependent verdicts remain
-exactly as dated in the preserved quotation; they are not new findings.
-
-## Historical workspace observations — not reassessed in this run
+### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -658,14 +627,57 @@ exactly as dated in the preserved quotation; they are not new findings.
 > configuration, local execution, CI definition, hosted result, remote
 > enforcement, runtime acceptance, and deployment evidence in separate fields.
 
-## Related Documents
+## Limitations
 
-- [Research pack](README.md)
-- [Verification and validation](./m0019-verification-validation.md)
-- [Automation pipeline and workflow topology](./m0004-automation-pipeline-workflow.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+### Future Internal Checks
+
+Candidates are historically described routes or hypothetical test designs,
+not newly inspected files or proof of adoption.
+
+| Topic / claims | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Format/lint/syntax/schema/type C-m0014-01–03 | package/repository/CI; docs/common/QA | Artifact language/rule applies | Historical configs/public gate; hypothetical omitted-language checks | Do selected rules cover changed inputs and distinguish tool failure from mismatch? | Filters, exact versions, positive/negative fixtures, exit propagation | Authorized focused checks and static selection review | Pass: relevant defects fail; fail: skipped/failed tool called pass | Auto-fix writes need review; no direct uncontrolled all-files run | QA/DevEx | Not assessed in this run |
+| Unit/integration/contract/E2E C-m0014-03–04,08 | task/environment; product/QA | Behavior/interface/journey exists | Historical tests/project scripts; hypothetical journey contract | What actual behavior does each oracle cover and which dependency is mocked? | Requirements/cases, collected suite, environment, observed results | Approved isolated runs and independent test design | Pass: claimed layer has matching oracle/context; fail: component renamed E2E | External integrations/runtime need target approval | QA/product | Not assessed in this run |
+| Fixtures C-m0014-04 | package/data; QA/security | Reusable data/context needed | Testware candidates; hypothetical fixture provenance | Are boundaries/adversarial cases represented and teardown isolated? | Data origin/schema/sensitivity, setup/teardown cases | Safe fixtures with reordered/parallel cases | Pass: no state leakage/private data; fail: cross-test dependency or unsupported realism | No production exports or secrets | QA/data owner | Not assessed in this run |
+| Flakes C-m0014-05,09 | CI/environment; QA/ops | Intermittent results observed later | Hypothetical retry/quarantine ledger | Is first failure retained and quarantine reviewed? | Attempts, traces, versions, owner/expiry | Bounded repeat/order isolation after approval | Pass: cause/fix or bounded exception; fail: rerun-until-green/hidden first failure | Budget and safe trace retention | QA | Not assessed in this run |
+| Coverage/mutation C-m0014-06–07 | package/task; QA | Risk path and measured denominator identified | Historical coverage config; hypothetical mutation target | Are assertions sensitive to relevant defects rather than merely executing lines? | Include/exclude, four metrics, mutant states/equivalents | Focused coverage and approved mutation fixture | Pass: denominator explicit/relevant defect detected; fail: exclusions inflate claim or surviving critical mutant unexplained | Additional tool installation/resource use requires adoption approval | QA/code owner | Not assessed in this run |
+| Docs/security/review C-m0014-03,08–09 | repository/task; docs/security/governance | Claims or trust boundary changed | Registered docs gates, hypothetical review range | Are sources correct and review independence/evidence complete beyond format? | Link/source/metadata results, scanner target, reviewer range | Focused document checks and named independent review | Pass: supported claim and explicit uncertainty; fail: mechanically valid unsupported conclusion | Security scans separately scoped; no certification inference | Docs/security reviewer | Not assessed in this run |
+
+### Limitations and preservation decision
+
+No current tool inventory, pass, coverage, compliance or absence is asserted.
+Tutorials and tool metrics do not select local policy. Recheck after tool,
+oracle, denominator, environment or risk changes. Historical hook/test counts,
+html5lib findings, frontend thresholds and checkout-dependent verdicts remain
+exactly as dated in the preserved quotation; they are not new findings.
+
+## Sources
+
+### Claims and Sources
+
+All sources opened on **2026-09-27**. Mutable unversioned routes describe
+upstream capability only. `Not supplied` means no visible publication date.
+
+| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0014-01 | Prettier check and write differ; exit 1 means formatting mismatch, 2 tool problem. | S-prettier-cli; --write, --check, Exit codes | Not supplied | 2026-09-27 | Prettier current CLI docs; documented | Fact | No installed version/adoption inferred. |
+| C-m0014-02 | pre-commit filters/stages select checks; hooks must exit nonzero on failure or modify files. | S-precommit-documentation; stages, filtering, creating hooks | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Configuration/install does not prove execution. |
+| C-m0014-03 | NIST lists minimum verification techniques including static, structural, black-box, regression and fuzz methods. | S-nist-developer-verification; Abstract | Publication landing 2021-10-06; updated 2022-11-29 | 2026-09-27 | NISTIR 8397 guidance; final publication | Fact | Explicitly not the totality of verification; not universal acceptance. |
+| C-m0014-04 | Fixtures establish test context; contract tests do not establish provider side effects/business functionality. | S-pytest-fixtures; fixture role/cleanup; S-pact-contract-functional; scope distinctions | Not supplied | 2026-09-27 | pytest stable docs/Pact guidance; documented | Fact | Tool-specific model, not live-system proof. |
+| C-m0014-05 | Uncontrolled state causes flakes; Playwright labels failed-first/passed-retry as flaky. | S-pytest-flaky; root causes/quarantine; S-playwright-retries; test categories | Not supplied | 2026-09-27 | pytest stable/Playwright current; documented | Fact | Retry result must retain first failure. |
+| C-m0014-06 | Stryker score uses detected/valid; timeouts count detected, invalids excluded. | S-stryker-mutant-metrics; states, Metrics | Not supplied | 2026-09-27 | Mutation Testing Elements current; documented | Fact | Equivalent/operator/timeout choices limit score. |
+| C-m0014-07 | Vitest exposes four thresholds, per-file/glob rules and include/exclude controls. | S-vitest-coverage-config; thresholds, include/exclude | Not supplied | 2026-09-27 | Vitest current docs; documented | Fact | No local threshold or version observed. |
+| C-m0014-08 | Quality layers answer different questions and cannot substitute for intended-use acceptance. | C-m0014-01–07; m0019 definitions | 2026-09-27 analysis | 2026-09-27 | Pack analytical taxonomy | Interpretation | Tailor to artifact/risk, not an automatic checklist. |
+| C-m0014-09 | Bound flake quarantine and require independent oracles for generated tests. | C-m0014-04–07; m0004 AI generation | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate owner/adoption decision. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-prettier-cli | [Prettier CLI](https://prettier.io/docs/cli) |
+| S-precommit-documentation | [pre-commit docs](https://pre-commit.com/) |
+| S-nist-developer-verification | [NIST developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
+| S-pytest-fixtures | [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) |
+| S-pact-contract-functional | [Pact contract versus functional tests](https://docs.pact.io/consumer/contract_tests_not_functional_tests) |
+| S-pytest-flaky | [pytest flaky tests](https://docs.pytest.org/en/stable/explanation/flaky.html) |
+| S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
+| S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
+| S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |

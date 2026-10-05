@@ -32,7 +32,7 @@ this package at `79b42b604b99bcc6712887d29e36f8244ec0f9eb`. Task1 records the
 exclusive writer ledger and the normal source/history integration. Existing
 Git delivery approval is separate from HOME, credential and data operations.
 
-## Boundaries and Inputs
+### Boundaries and Inputs
 
 Use the current root include graph, service Compose/Dockerfiles/entrypoints,
 tracked configuration and key-only environment contracts, current Stage 01/02/03
@@ -54,7 +54,71 @@ application code, DBs, crawlers, ASR/TTS services, or GPU reservations for
 planning-only Prompts 07 and 08. Do not read secret values, private environment
 files, authentication files, raw HOME logs, or user data.
 
-## Behavior Contract
+### Technical Approach
+
+Use four serial Tasks: confirmed compatibility/security corrections; an
+external-project integration contract and bounded discovery; backup and
+cross-tier operations; then whole-tree secret path and environment parity.
+TSK-0004 records the user's subsequent explicit 2026-10-03 authorization,
+including value-preserving path moves and incident disposition. Each Task owns exact files and focused regressions in
+its Task ledger before source mutation. Shared root, Alloy, environment,
+Registry and backup files have one writer at a time. If a named project or
+consumer is missing, record a versioned contract and `BLOCKED` runtime result
+instead of provisioning resources. No Task changes HOME services or real data.
+
+### Interfaces and Data
+
+- Input: reviewed current declarations, official release/security references,
+  named service consumers, approved project metadata and secret **reference
+  names**, and a Task-specific execution target.
+- Output: matched source declarations, restricted integration metadata,
+  contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
+  owners, and Task evidence. Values of secrets and raw operational data are
+  never outputs.
+- External application input/output: Prompt 06's Project-Template-derived
+  repository supplies app Compose, business API/UI, migrations, collectors,
+  workflow definitions, fixtures and E2E. Infra supplies approved engines,
+  ingress/identity, telemetry and backup interfaces; the manifest records
+  scopes and owners but cannot deploy the app.
+
+### Failure Modes and Guardrails
+
+Reject version mismatch, unsupported `_FILE` variables, missing selected
+secret, unsafe redirect, public unauthenticated machine API, unknown project
+label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
+claims, missing WAL/backups, and projection drift. Preserve unrelated worker
+changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
+remote push/PR/merge, credential rotation, DNS/firewall edit or HOME restart
+without its separate exact approval.
+
+### Open Questions
+
+The user approved the listed Task source scopes on 2026-10-03; a new path
+requires an exact Task amendment. Any HOME upgrade,
+backup execution, restore, credential issuance or network publication. A real
+external project must separately identify its project ID, endpoint topology,
+OIDC/S3/search scopes and operator before a live connection can pass. The
+historical selected synthetic dev-pg recovery target passed TSK-0003; a HOME recovery
+target, offsite/PITR evidence and measured operational capacity budget remain
+absent. TSK-0001 exact-image runtime and security acceptance still require
+the separately pending execution approval.
+
+### Operational Impact
+
+Source changes may alter n8n workflow execution, crawler rejection, OpenBao
+health dependency and future backup scheduling when deployed. Each requires
+its own staged rollback and HOME change window; this package does not exercise
+those effects.
+
+## Scope
+
+### Scope
+
+## Contracts
+
+### Contracts
+
+### Behavior Contract
 
 1. All changes are classified as confirmed source defects, consumer-dependent
    design, or runtime-unverified conditions. Each service row names the actual
@@ -138,44 +202,11 @@ files, authentication files, raw HOME logs, or user data.
     failed and uncertain delivery. AI/GPU and Flink checkpoint settings are
     budgeted or left unverified rather than asserted from configuration alone.
 
-## Technical Approach
+## Acceptance Criteria
 
-Use four serial Tasks: confirmed compatibility/security corrections; an
-external-project integration contract and bounded discovery; backup and
-cross-tier operations; then whole-tree secret path and environment parity.
-TSK-0004 records the user's subsequent explicit 2026-10-03 authorization,
-including value-preserving path moves and incident disposition. Each Task owns exact files and focused regressions in
-its Task ledger before source mutation. Shared root, Alloy, environment,
-Registry and backup files have one writer at a time. If a named project or
-consumer is missing, record a versioned contract and `BLOCKED` runtime result
-instead of provisioning resources. No Task changes HOME services or real data.
+### Acceptance Criteria
 
-## Interfaces and Data
-
-- Input: reviewed current declarations, official release/security references,
-  named service consumers, approved project metadata and secret **reference
-  names**, and a Task-specific execution target.
-- Output: matched source declarations, restricted integration metadata,
-  contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
-  owners, and Task evidence. Values of secrets and raw operational data are
-  never outputs.
-- External application input/output: Prompt 06's Project-Template-derived
-  repository supplies app Compose, business API/UI, migrations, collectors,
-  workflow definitions, fixtures and E2E. Infra supplies approved engines,
-  ingress/identity, telemetry and backup interfaces; the manifest records
-  scopes and owners but cannot deploy the app.
-
-## Failure Modes and Guardrails
-
-Reject version mismatch, unsupported `_FILE` variables, missing selected
-secret, unsafe redirect, public unauthenticated machine API, unknown project
-label, cross-project read/write, unbounded crawler egress, sealed-is-healthy
-claims, missing WAL/backups, and projection drift. Preserve unrelated worker
-changes; no reset, stash, broad clean, full-stack `up`, `down -v`, volume prune,
-remote push/PR/merge, credential rotation, DNS/firewall edit or HOME restart
-without its separate exact approval.
-
-## Acceptance Contract
+### Acceptance Contract
 
 1. Current service evidence and owner/file/variable/consumer/regression/
    rollback/approval ledger is complete, and no Prompt 02/03/05/06 owner is
@@ -206,7 +237,9 @@ without its separate exact approval.
    review match the exact diff. The final report separately records source,
    static, isolation, HOME and migration statuses with SHA and exit evidence.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
@@ -214,22 +247,3 @@ without its separate exact approval.
 - [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 - [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 - [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
-
-## Open Questions
-
-The user approved the listed Task source scopes on 2026-10-03; a new path
-requires an exact Task amendment. Any HOME upgrade,
-backup execution, restore, credential issuance or network publication. A real
-external project must separately identify its project ID, endpoint topology,
-OIDC/S3/search scopes and operator before a live connection can pass. The
-historical selected synthetic dev-pg recovery target passed TSK-0003; a HOME recovery
-target, offsite/PITR evidence and measured operational capacity budget remain
-absent. TSK-0001 exact-image runtime and security acceptance still require
-the separately pending execution approval.
-
-## Operational Impact
-
-Source changes may alter n8n workflow execution, crawler rejection, OpenBao
-health dependency and future backup scheduling when deployed. Each requires
-its own staged rollback and HOME change window; this package does not exercise
-those effects.

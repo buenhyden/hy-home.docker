@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # SonarQube Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 health·DB 연결 실패, 백그라운드 작업 지연, 검색 인덱스 실패, 토큰·인증 사고,
 DB 복원 또는 승인된 업그레이드에 사용한다.
@@ -29,6 +37,8 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
@@ -84,18 +94,22 @@ DB secret 보관, 여기 표현되지 않은 외부 설치 plugin/config도 보�
 이미지 롤백만으로는 스키마 마이그레이션을 되돌릴 수 없다. 여기서는 백업/복원/
 업그레이드를 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 command exit, image/source commit, DB backup/checksum/schema, project와 task
 count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
 source code, personal data, token은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 database restore/reindex와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
 검증된 database recovery point 없이 search index를 삭제해서는 안 된다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -110,7 +124,7 @@ Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 
 근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
 현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0066-sonarqube.md) (`GDE-0066`)
 - [Policy](../policies/0066-sonarqube.md) (`POL-0066`)

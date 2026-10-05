@@ -14,13 +14,15 @@ created: "2026-10-03"
 
 # Service Integration, Security, and Operations Plan
 
-## Objective
+## Overview
+
+### Objective
 
 Implement Prompt 04 in reversible, reviewable Tasks. The user approved the
 listed source scopes on 2026-10-03. The package established file ownership
 and acceptance gates before any service declaration was changed.
 
-## Dependencies
+### Dependencies
 
 - Local and remote `main` at `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
   when drafting; fetch/recompare before source implementation.
@@ -38,7 +40,19 @@ and acceptance gates before any service declaration was changed.
   scope for Prompts 07/08. Runtime, secret issuance, data, remote and network
   operations need their own exact approvals.
 
-## Execution Sequence
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1, 8 | Freeze source and authority | None | TSK-0001 | Task evidence |
+| W2 | 2, 3, 4 | Repair compatibility and security source | W1 | TSK-0001 | Task evidence |
+| W3 | 4, 5 | Contract external connection | W1 | TSK-0002 | Task evidence |
+| W4 | 6, 7 | Close backup and cross-tier handoffs | None | TSK-0003 | Task evidence |
+| W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
+
+### Work Details
+
 
 1. **W1: freeze source and authority.** Recheck main, root include, current
    service consumers, lifecycle IDs and protected paths. Confirm the exact
@@ -72,33 +86,7 @@ and acceptance gates before any service declaration was changed.
    command, exit, revision and unsupported environment separately; stage
    durable operations meaning in existing Stage 05 owners. Maps 1-8.
 
-## Risk and Rollback
-
-| Risk | Bound and recovery |
-| --- | --- |
-| n8n update mutates metadata or encryption compatibility | Back up compatible metadata and key before any separate HOME upgrade; source rollback alone cannot reverse DB migration. |
-| Runner token or Valkey secret is not consumed | Test actual entrypoint with synthetic files; no plaintext arguments, shell tracing or unbounded environment export. Revert only Task-owned source on failure. |
-| Crawler fix changes allowed URLs | Use pinned synthetic DNS/redirect/private-destination cases; a separate bridge is not egress enforcement. Preserve the prior image declaration until source acceptance. |
-| External discovery widens collection or ingress | Require project/service network or backend auth, direct-peer denial, authenticated OTLP identity mapping, trace scrub and quotas; reject unregistered peers. Revert scoped source; do not delete project state. |
-| Backup path is incomplete or data is deleted | Include mount, list, scheduler, offsite and alert as one reviewed source change; no live PGDATA copy, retention/prune or restore without separate approval. |
-| Parallel writers change shared files | TSK-0001, then TSK-0002, then TSK-0003 write serially. Rebase against exact preceding diff; do not reset, stash or clean another worker's state. |
-| Existing required CI is red | Keep source review and hosted gate results distinct; do not bypass branch protection or weaken a security audit. |
-
-## Verification
-
-For each Task, select its current path-aware tests from the repository matrix.
-Compose or Docker source requires synthetic env render, secret-ref/route checks
-and scoped static validation. A container run requires exact Docker context,
-project, ports, networks, volumes, resource budget and cleanup review before
-execution. Generated version projection uses its registered generator, not
-manual JSON edits. Stage 03 metadata/link checks and `git diff --check` apply
-to changed documents. Protected PR checks are required for remote integration;
-local success is not a merge receipt. HOME activation, real backup/restore,
-data migration and real external-project
-connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
-Restic restore passed in TSK-0003 and is not HOME recovery evidence.
-
-## Rulings
+### Rulings
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
 bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
@@ -138,3 +126,41 @@ bounded network and resources, synthetic secrets, redaction, failure
 preservation, and identity-bound cleanup. This Plan does not duplicate those
 findings or authorize an image pull, container run, HOME change, live secret
 use, or host/DNS/firewall mutation.
+
+## Verification Plan
+
+### Verification
+
+For each Task, select its current path-aware tests from the repository matrix.
+Compose or Docker source requires synthetic env render, secret-ref/route checks
+and scoped static validation. A container run requires exact Docker context,
+project, ports, networks, volumes, resource budget and cleanup review before
+execution. Generated version projection uses its registered generator, not
+manual JSON edits. Stage 03 metadata/link checks and `git diff --check` apply
+to changed documents. Protected PR checks are required for remote integration;
+local success is not a merge receipt. HOME activation, real backup/restore,
+data migration and real external-project
+connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
+Restic restore passed in TSK-0003 and is not HOME recovery evidence.
+
+## Risks and Rollback
+
+### Risk and Rollback
+
+| Risk | Bound and recovery |
+| --- | --- |
+| n8n update mutates metadata or encryption compatibility | Back up compatible metadata and key before any separate HOME upgrade; source rollback alone cannot reverse DB migration. |
+| Runner token or Valkey secret is not consumed | Test actual entrypoint with synthetic files; no plaintext arguments, shell tracing or unbounded environment export. Revert only Task-owned source on failure. |
+| Crawler fix changes allowed URLs | Use pinned synthetic DNS/redirect/private-destination cases; a separate bridge is not egress enforcement. Preserve the prior image declaration until source acceptance. |
+| External discovery widens collection or ingress | Require project/service network or backend auth, direct-peer denial, authenticated OTLP identity mapping, trace scrub and quotas; reject unregistered peers. Revert scoped source; do not delete project state. |
+| Backup path is incomplete or data is deleted | Include mount, list, scheduler, offsite and alert as one reviewed source change; no live PGDATA copy, retention/prune or restore without separate approval. |
+| Parallel writers change shared files | TSK-0001, then TSK-0002, then TSK-0003 write serially. Rebase against exact preceding diff; do not reset, stash or clean another worker's state. |
+| Existing required CI is red | Keep source review and hosted gate results distinct; do not bypass branch protection or weaken a security audit. |
+
+## Related Documents
+
+- [Specification](spec.md)
+- [Task 0001](tasks/tsk-0001-runtime-compatibility-and-security.md)
+- [Task 0002](tasks/tsk-0002-external-project-integration.md)
+- [Task 0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
+- [Task 0004](tasks/tsk-0004-secret-layout-and-environment-parity.md)

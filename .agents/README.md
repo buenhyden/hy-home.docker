@@ -58,6 +58,17 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 
 ## Structure
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [governance/](governance/) | 공유 정책과 Provider Registry |
+| [roles/](roles/) | 역할 identity와 permission |
+| [skills/](skills/) | 명시적으로 호출하는 절차 |
+| [knowledge/](knowledge/) | 소유 표면과 검증 경로 |
+| [prompts/](prompts/) | 재사용하는 입력과 출력 계약 |
+| [evaluations/](evaluations/) | 결정론적 model-free 평가 입력 |
+
 ```text
 .agents/
 ├── README.md

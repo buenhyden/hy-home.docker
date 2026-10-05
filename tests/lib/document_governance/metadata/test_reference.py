@@ -183,7 +183,12 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                 mock.patch.object(
                     reference_module,
                     "_validate_repository_contracts",
-                    return_value=([finding], transitions, normalizations),
+                    return_value=(
+                        [finding],
+                        transitions,
+                        normalizations,
+                        reference_module._GenerationBindings(),
+                    ),
                 ) as contracts,
                 mock.patch.object(
                     reference_module,
@@ -219,6 +224,55 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
+
+    def test_terminal_task_body_baseline_requires_exact_generation_blob(self) -> None:
+        profiles = current_profiles()
+        relative = pathlib.Path("docs/03.specs/0001-example/tasks/tsk-0001-example.md")
+        text = (
+            "---\nartifact_id: SPEC-0001-TSK-0001\ntype: sdlc/task\n"
+            "status: completed\n---\n# Historical Task\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / relative
+            path.parent.mkdir(parents=True)
+            path.write_text(text, encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "source",
+                ],
+                cwd=root,
+                check=True,
+            )
+            revision = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            record = metadata._record_from_text(relative, text, profiles=profiles)
+            bindings = reference_module._GenerationBindings(
+                revision,
+                {relative.as_posix(): "completed"},
+                frozenset({relative.as_posix()}),
+            )
+
+            exact_record, exact_text = reference_module._generation_task_body_baseline(
+                root, record, text, profiles, bindings
+            )
+            changed = reference_module._generation_task_body_baseline(
+                root, record, text + "changed\n", profiles, bindings
+            )
+
+        self.assertIsNotNone(exact_record)
+        self.assertEqual(text, exact_text)
+        self.assertEqual((None, None), changed)
 
     def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
         profiles = current_profiles()

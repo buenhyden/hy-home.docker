@@ -23,7 +23,7 @@ Postmortem은 사고 안정화 이후 구조적 원인과 재발 방지 조치�
 따르며 timestamps, IDs, commands, evidence labels, service names,
 environment variables는 원형을 유지합니다.
 
-## Audience
+### Audience
 
 이 README의 주요 독자:
 

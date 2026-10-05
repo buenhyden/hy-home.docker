@@ -7,13 +7,20 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "RUN-0055"
-parent_ids: []
 created: "2026-03-25"
 ---
 
 # AI GPU Recovery Runbook
 
 ## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
 
 > Scope: `infra/08-ai`의 `ollama` NVIDIA GPU 가속 복구.
 
@@ -25,7 +32,7 @@ created: "2026-03-25"
 - Docker daemon 또는 GPU-dependent container 재시작 전에 증적과 승인 기준을 남긴다.
 - 복구 후 Ollama와 Open WebUI 연동 상태를 확인한다.
 
-## When to Use
+### When to Use
 
 - Ollama 로그에 GPU driver load failure 또는 CPU-only fallback이 나타난다.
 - `docker compose exec ollama nvidia-smi`가 실패한다.
@@ -33,6 +40,8 @@ created: "2026-03-25"
 - Open WebUI에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -117,20 +126,24 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - **Tool Disable / Revoke**: 복구 중 자동 고동시성 추론을 중단한다.
 - **Eval Re-run**: 복구 후 목록/API와 별도 승인된 추론 검증을 수행한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령·시각, daemon 재시작 승인과 GPU 전후 상태를 기록한다.
 - 실패 검사·증상과 최종 복구 또는 에스컬레이션 상태를 Task/Incident에 남긴다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 `## Procedure`에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
 
-## Escalation
+### Escalation
 
 Host `nvidia-smi`, NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재 또는 `08-ai` 밖 영향이면 중단하고 @buenhyden에게 넘긴다. 정제된 로그, 시도한 단계와 현재 복구 상태를 전달한다.
 
-## Traceability
+### Traceability
 
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: `0055` 번호를 공유하는 Guide·Policy는 없다.

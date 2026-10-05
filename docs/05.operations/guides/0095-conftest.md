@@ -17,7 +17,17 @@ created: "2026-09-23"
 
 # Conftest Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -53,13 +63,13 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 | --- | --- |
 | `docker compose --profile policy-check run --rm conftest` | 정책을 검증한 다음 run.sh가 선택한 raw Compose 파일과 Dockerfile을 테스트 |
 
-## Common Checks
+### Common Checks
 
 - CI는 `repository-integrity` suite에서 `leaf.conftest-policy`
   (`scripts/validation/check-conftest-policy.sh`)로 이 job을 실행한다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
 
-## Runbook Handoff
+### Runbook Handoff
 
 job이 실패하면 [runbook](../runbooks/0095-conftest.md)을 사용한다.
 
@@ -71,7 +81,7 @@ job이 실패하면 [runbook](../runbooks/0095-conftest.md)을 사용한다.
 앞 단계가 실패하면 뒤 단계는 실행되지 않으므로 세 요약을 항상 기대하지 않는다.
 네트워크 없음·읽기 전용·사용자 제한을 갖춘 선언된 Compose 작업만 사용한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0095-conftest.md) (`POL-0095`)
 - [Runbook](../runbooks/0095-conftest.md) (`RUN-0095`)

@@ -42,12 +42,12 @@ prompt를 읽는 것은 어떤 role도 선택하지 않으며 어떤 permission�
 └── test-design.md
 ```
 
-| Prompt | Answers |
+| Path | Purpose |
 | --- | --- |
-| [handoff](handoff.md) | 다음 session은 파일과 Git 상태만으로 어떻게 재개하는가? |
-| [diff-review](diff-review.md) | 정확한 diff는 작성자와 무관하게 어떻게 검토되는가? |
-| [commit-message](commit-message.md) | commit message는 staged diff로부터 어떻게 작성되는가? |
-| [test-design](test-design.md) | test는 requirement와 그 failure condition으로부터 어떻게 도출되는가? |
+| [handoff.md](handoff.md) | Next-session handoff contract |
+| [diff-review.md](diff-review.md) | Independent diff-review contract |
+| [commit-message.md](commit-message.md) | Staged-diff commit-message contract |
+| [test-design.md](test-design.md) | Requirement-driven test-design contract |
 
 Prompt slug는 skill id와 구분되게 유지되어 하나의 이름이 두 가지 다른
 것으로 resolve되지 않습니다.

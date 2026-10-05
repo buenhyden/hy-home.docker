@@ -21,7 +21,7 @@ did not take: repository follow-ups, runtime follow-ups and legacy data, and
 recovery and authentication acceptance. The owner put all three groups in
 scope on 2026-09-25 and retired the rest with reasons recorded below.
 
-## Boundaries and Inputs
+### Boundaries and Inputs
 
 Inputs are the archived SPEC-0180 and SPEC-0181 Tasks, two read-only
 investigations of 2026-09-25 recorded in the Tasks, current tracked source and
@@ -58,15 +58,7 @@ Live mutation, credential work, data disposal and remote changes each need an
 approval that names the target. Secret values never enter output, diffs,
 Tasks or PRs.
 
-## Behavior Contract
-
-Each item closes only with evidence of its kind: a merged change with its
-checks for repository work, a live result stated as names, statuses, counts
-and durations for runtime work, and an owner record for decisions and
-custody. A rehearsal on synthetic data is never reported as a HOME recovery
-result. A failed or unexecuted step is never recorded as done.
-
-## Technical Approach
+### Technical Approach
 
 Three Tasks carry the work. Task 0001 makes the repository changes and their
 live applies. Task 0002 handles runtime follow-ups and legacy disposal in
@@ -75,7 +67,7 @@ writes the two options memos and, after the owner's decisions, the reboot
 runbook and its rehearsal. The agent runs every step that needs no secret
 input; the owner runs steps that do, and makes the decisions.
 
-## Interfaces and Data
+### Interfaces and Data
 
 Qdrant and Prometheus secrets and scrape jobs, Open WebUI environment, the n8n
 Valkey exporter, SeaweedFS S3 metrics and alert rules, the document-metadata
@@ -84,7 +76,7 @@ image, single-file bind mounts, legacy directories, volumes, files and
 images, the Restic include set, pgBackRest and Restic repositories, Traefik
 SSO routes, and Keycloak test identities.
 
-## Failure Modes and Guardrails
+### Failure Modes and Guardrails
 
 Record a final inventory before any deletion: names, sizes and hashes for
 data, and names, sizes, modes and times only for credential files. Do not
@@ -104,7 +96,50 @@ Existing Restic snapshots keep the Vault tree and the quarantined credential
 files (the host set covers all of `secrets/`) until their retention expires,
 up to twelve months; that is the accepted cost of not rewriting snapshots.
 
-## Acceptance Contract
+### Open Questions
+
+None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
+target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
+2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. Task 0002
+records the six-container re-decision and subsequent CDC retirement on
+2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
+cover criteria 3–6, with dated results and the disclosed Pyroscope hash
+limitation. Task 0003 now records W8/criterion 8 observations, including
+sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
+recovery evidence; criterion 10 still needs the R2 scratch restore and offline
+key custody. Those operational holds prevent package completion.
+
+### Operational Impact
+
+Recreates of Qdrant, Prometheus, SeaweedFS (S3, master, volume, filer), Open
+WebUI, `mng-pg` and any kept Superset or Kafbat UI, each in an approved
+window. `mng-pg` restarts every management-database consumer, Keycloak
+included. The SeaweedFS recreates interrupt Loki, Tempo and MLflow writes
+briefly and stay clear of the nightly backup. Legacy disposal frees about 1.2
+GB. The reboot rehearsal takes the host, and the hy-home.k8s containers on it,
+down.
+
+## Scope
+
+### Scope
+
+## Contracts
+
+### Contracts
+
+### Behavior Contract
+
+Each item closes only with evidence of its kind: a merged change with its
+checks for repository work, a live result stated as names, statuses, counts
+and durations for runtime work, and an owner record for decisions and
+custody. A rehearsal on synthetic data is never reported as a HOME recovery
+result. A failed or unexecuted step is never recorded as done.
+
+## Acceptance Criteria
+
+### Acceptance Criteria
+
+### Acceptance Contract
 
 1. Six repository changes merge, each with a focused test: the Qdrant
    read-only scrape key (AI-009); the Open WebUI `VECTOR_DB_URL` removal with
@@ -153,7 +188,9 @@ up to twelve months; that is the accepted cost of not rewriting snapshots.
     Renovate units, the Vault-based compose-core-readiness rig kept as a
     generic fixture, and Open WebUI keeping its local vector store.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [SPEC-0180](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
@@ -162,26 +199,3 @@ up to twelve months; that is the accepted cost of not rewriting snapshots.
 - [Task 0001: repository follow-ups](tasks/tsk-0001-repository-follow-ups.md)
 - [Task 0002: runtime and legacy data](tasks/tsk-0002-runtime-and-legacy-data.md)
 - [Task 0003: recovery and authentication acceptance](tasks/tsk-0003-recovery-and-auth-acceptance.md)
-
-## Open Questions
-
-None open for design. The owner accepted ADR-0041 (Cloudflare R2 offsite
-target) and ADR-0042 (auto-unseal deferred, manual Shamir kept) on
-2026-09-25, and chose the W8 window 2026-09-26 to 2026-10-02. Task 0002
-records the six-container re-decision and subsequent CDC retirement on
-2026-09-29; that owner decision is closed. Its completed W3–W6 receipts
-cover criteria 3–6, with dated results and the disclosed Pyroscope hash
-limitation. Task 0003 now records W8/criterion 8 observations, including
-sample gaps and identity deduplication. Criterion 7 still needs current-policy PostgreSQL
-recovery evidence; criterion 10 still needs the R2 scratch restore and offline
-key custody. Those operational holds prevent package completion.
-
-## Operational Impact
-
-Recreates of Qdrant, Prometheus, SeaweedFS (S3, master, volume, filer), Open
-WebUI, `mng-pg` and any kept Superset or Kafbat UI, each in an approved
-window. `mng-pg` restarts every management-database consumer, Keycloak
-included. The SeaweedFS recreates interrupt Loki, Tempo and MLflow writes
-briefly and stay clear of the nightly backup. Legacy disposal frees about 1.2
-GB. The reboot rehearsal takes the host, and the hy-home.k8s containers on it,
-down.

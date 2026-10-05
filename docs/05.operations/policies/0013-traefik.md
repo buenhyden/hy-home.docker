@@ -16,9 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 문서는 `01-gateway`의 Traefik 운영 정책을 정의한다. 런타임 모델은 `Traefik Primary`이며, 표준 하드닝 강도는 `Balanced`다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/01-gateway/traefik/docker-compose.yml`
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
@@ -27,7 +31,14 @@ created: "2026-05-17"
 - **Systems**: Traefik v3 (gateway tier)
 - **Environments**: Local, Dev, Stage, Production-like
 
-## Controls
+### Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Runbook](../runbooks/0013-traefik.md) (`RUN-0013`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
@@ -69,11 +80,7 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-## Exceptions
-
-- 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
-
-## Verification
+### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
@@ -86,15 +93,16 @@ Config rollback과 certificate rollback을 구분한다. 이전 config와 certif
 official migration/release notes, config validation, dashboard authentication,
 representative routes, metrics, and explicit prior-image rollback을 요구한다.
 
-## Review Cadence
+### Review Cadence
 
 - 월 1회 정기 점검
 - Traefik 버전 변경/라우터 추가 시 수시 점검
 
-## Traceability
+## Exceptions
 
-- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Runbook](../runbooks/0013-traefik.md) (`RUN-0013`)
+### Exceptions
+
+- 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
 
 ## Related Documents
 

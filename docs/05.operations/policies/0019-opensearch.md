@@ -16,16 +16,27 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 문서는 정상 root의 단일 OpenSearch와 별도 standalone LAB 클러스터의 운영 경계를 정의합니다. 정상 구성은 `infra/04-data/opensearch/docker-compose.yml`의 선언된 OpenSearch custom build와 Dashboards 이미지입니다. 세 노드는 [LAB Compose](../../../labs/opensearch-cluster.yml)에서만 선택하며 root에는 include되지 않습니다. 소스나 문서의 변경은 기동·중단·복구 승인을 부여하지 않습니다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - **Systems**: 정상 `opensearch`/`opensearch-dashboards`; 별도 LAB의 `opensearch-node1..3`/`lab-opensearch-dashboards`
 - **Secrets**: 정상은 기존 `opensearch_*` 및 `oauth2_proxy_client_secret`; LAB는 `${LAB_SECRET_DIR}/opensearch-cluster/`의 별도 `lab_opensearch_*`만 사용
 - **Persistence**: 정상 bind-backed `opensearch-data`/`opensearch-dashboards-data`; LAB는 별도 프로젝트의 네 새 named volume
 - **Environments**: repo-local, development, homelab, production-like rehearsal
 
-## Controls
+### Traceability
+
+- Declared parent: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
+- Subject peers: [Guide](../guides/0019-opensearch.md) (`GDE-0019`), [Runbook](../runbooks/0019-opensearch.md) (`RUN-0019`)
+
+## Rules
+
+### Controls
 
 - **Activation**: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증합니다. LAB에는 별도 `LAB_SECRET_DIR` 및 `LAB_OPENSEARCH_CERT_DIR`가 필요합니다. 두 project의 선택과 실행 승인을 따로 기록합니다.
 - **Security**: 정상 TLS, 인증서, security plugin, secret-backed user, gateway middleware를 보존합니다. LAB는 별도 CA/node 인증서와 secret, 내부 네트워크, 기본 내부 인증만 사용하며 정상 gateway/OIDC 및 데이터를 연결하지 않습니다. `.opendistro_security`를 유일한 security backup으로 snapshot하지 않는다; 검토된 security configuration을 별도로 보존하고 그 credential을 제한한다.
@@ -43,25 +54,22 @@ created: "2026-05-17"
 
 적용 identity: 정상 `opensearch`, `opensearch-dashboards`; LAB `opensearch-node1..3`, `lab-opensearch-dashboards`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-임시 index setting, LAB cluster 실험, security config 변경은 owner의 별도 실행 승인과 before/after health evidence가 필요합니다. 현재 custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin의 선언 버전 호환성 문제와 LAB 인증서 검증은 runtime admission blocker입니다.
-
-## Verification
+### Verification
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster.yml`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## Review Cadence
+### Review Cadence
 
 - image/build, 인증서, secret, security config, cluster topology 변경 시
 - 분기별 문서화된 recovery evidence 검토
 
-## Traceability
+## Exceptions
 
-- Declared parent: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
-- Subject peers: [Guide](../guides/0019-opensearch.md) (`GDE-0019`), [Runbook](../runbooks/0019-opensearch.md) (`RUN-0019`)
+### Exceptions
+
+임시 index setting, LAB cluster 실험, security config 변경은 owner의 별도 실행 승인과 before/after health evidence가 필요합니다. 현재 custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin의 선언 버전 호환성 문제와 LAB 인증서 검증은 runtime admission blocker입니다.
 
 ## Related Documents
 

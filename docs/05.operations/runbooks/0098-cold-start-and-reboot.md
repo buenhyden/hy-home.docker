@@ -14,7 +14,15 @@ created: "2026-09-25"
 
 # Cold Start and Reboot Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
@@ -30,6 +38,8 @@ Unseal 방식은 [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-
 수행한다고 전제한다.
 
 ## Procedure
+
+### Procedure
 
 실행 중인 checkout의 저장소 root에서 명령을 수행한다. secret file, unseal share,
 SecretID, token, 렌더링된 Compose model을 출력하지 않는다. 현재 Task에 host·project·
@@ -204,34 +214,15 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 | 6. SecretID 발급과 전달 | SecretID 유효기간 10분, 1회용 | 10분 이내에 끝나야 함 |
 | 7. hy-home.k8s 확인 | k3d 컨테이너 자체 기동 시간 문서화 안 됨 | **owner 확인 필요** |
 
-## Evidence
+## Verification
+
+### Evidence
 
 각 단계의 실행 시각, `docker ps`/`docker inspect`/`bao status`의 상태 문자열,
 grep 결과(개수만)를 현재 Task에 기록한다. 원문 로그, secret 값, unseal share,
 SecretID, token 값은 기록하지 않는다.
 
-## Rollback or Recovery
-
-- 4단계(unseal)가 실패하면 중단하고 [RUN-0085](0085-openbao.md)의 credential·
-  cluster 상태 진단과 owner escalation을 따른다. unseal 실패만으로 Raft snapshot을
-  복원하지 않는다. 데이터 손상 근거와 별도 복구 승인이 있을 때만 격리된 restore를 사용한다.
-- 6단계(SecretID 전달)가 실패하거나 시간을 넘기면
-  [RUN-0085](0085-openbao.md#renderer-secretid-delivery)의 실패 처리를 따라 새
-  SecretID를 발급한다. CLI 세션이 끝났으면 그 절차의 1단계부터 다시 시작한다.
-  Agent volume의 `role_id`와 이전 token 파일은 지우지 않는다.
-- 0단계의 백업이 실패한 상태로 재부팅을 강행하지 않는다: 재부팅 전 backup과
-  `restic check`이 성공할 때까지 재시도한다.
-- 데이터베이스나 OpenBao의 복구(스냅샷 복원)는 각각
-  [RUN-0021](0021-backup-and-restore.md)과
-  [RUN-0085](0085-openbao.md)가 소유한다.
-
-## Escalation
-
-Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 시작
-여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
-알린다.
-
-## Verification Record
+### Verification Record
 
 아래 표는 2026-09-30 실행 기록을 원문 그대로 보존한 것이다. 새로운 리허설은
 현재 Task에 별도 기록하며 이 표가 현재 readiness나 실행 권한을 제공하지 않는다.
@@ -251,7 +242,30 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 | 2026-09-30 | 6. SecretID delivery (owner, RUN-0085) | before 10:30:27 KST | 10:30:29 KST | PASS: Agent restarted 10:30:27, `authentication successful` 10:30:29, SecretID `consumed`, token renewed, no error after the restart |
 | 2026-09-30 | 7. k3d | 10:03:53 KST | 10:31 KST | PASS: five `k3d-hyhome-*` Up, 38 pods Running; `vault-backend` revalidated `Ready=True` at 10:11:17 after the unseal, and all six ExternalSecrets `SecretSynced` |
 
-## Traceability
+## Rollback and Escalation
+
+### Rollback or Recovery
+
+- 4단계(unseal)가 실패하면 중단하고 [RUN-0085](0085-openbao.md)의 credential·
+  cluster 상태 진단과 owner escalation을 따른다. unseal 실패만으로 Raft snapshot을
+  복원하지 않는다. 데이터 손상 근거와 별도 복구 승인이 있을 때만 격리된 restore를 사용한다.
+- 6단계(SecretID 전달)가 실패하거나 시간을 넘기면
+  [RUN-0085](0085-openbao.md#renderer-secretid-delivery)의 실패 처리를 따라 새
+  SecretID를 발급한다. CLI 세션이 끝났으면 그 절차의 1단계부터 다시 시작한다.
+  Agent volume의 `role_id`와 이전 token 파일은 지우지 않는다.
+- 0단계의 백업이 실패한 상태로 재부팅을 강행하지 않는다: 재부팅 전 backup과
+  `restic check`이 성공할 때까지 재시도한다.
+- 데이터베이스나 OpenBao의 복구(스냅샷 복원)는 각각
+  [RUN-0021](0021-backup-and-restore.md)과
+  [RUN-0085](0085-openbao.md)가 소유한다.
+
+### Escalation
+
+Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 시작
+여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
+알린다.
+
+### Traceability
 
 - 과거 구현·리허설 근거: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md)
   criterion 11, [Plan W11](../../03.specs/0182-home-residual-backlog/plan.md),

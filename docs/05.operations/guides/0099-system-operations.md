@@ -14,7 +14,17 @@ created: "2026-10-01"
 
 # System Operations Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Reader purpose and boundaries
 
@@ -146,7 +156,7 @@ object 저장 경로와 [lakehouse](0094-lakehouse.md)의 기반이다. Loki·Te
 | 11 Quality | [성능 검사](0064-performance-testing.md), [SonarQube](0066-sonarqube.md), [WireMock](0092-wiremock.md), [Pact](0093-pact-broker.md), [Conftest](0095-conftest.md), [Mailpit](0084-mailpit.md) | 승인된 대상·합성 데이터·계약·정책 검사; 개발 캡처와 운영 메일 구분 |
 | 12 Analytics | [Lakehouse](0094-lakehouse.md), [Superset](0097-superset.md), [dbt](0090-dbt.md), [JupyterLab](0089-jupyterlab.md) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
 
-## Common Checks
+### Common Checks
 
 | 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
 | --- | --- | --- |
@@ -162,14 +172,14 @@ object 저장 경로와 [lakehouse](0094-lakehouse.md)의 기반이다. Loki·Te
 비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
 남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 장애 원인이 여러 티어에 걸치면 [RUN-0099](../runbooks/0099-system-operations.md)의
 관찰 → 분기 → 서비스 절차 흐름을 사용한다. 예정된 재부팅은 RUN-0098,
 백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다. 인증·data·network
 변경이나 파괴적 복구는 대상, 승인, 중단 조건을 해당 절차에서 다시 확인한다.
 
-## Traceability
+### Traceability
 
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
 - [REQ-0027](../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.

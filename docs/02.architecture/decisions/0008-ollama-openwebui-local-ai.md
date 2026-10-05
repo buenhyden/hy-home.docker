@@ -19,11 +19,35 @@ This document records the decision to select Ollama and Open WebUI as the core t
 
 To provide intelligent services within the project, an LLM inference engine and a user interface that can use it are needed. In addition, RAG (Retrieval-Augmented Generation) is essential for generating answers based on internal documents. Commercial APIs (OpenAI, etc.) were excluded due to cost and security concerns, and various open-source alternatives capable of local operation were reviewed.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 - **Inference engine**: adopt `Ollama`. (Go-based fast execution, easy model deployment, strong GPU acceleration support)
 - **UI/RAG**: adopt `Open WebUI`. (UI convenience, built-in Qdrant-integrated RAG support, OpenAI API spec compatibility)
 - **Accelerator**: keep a dedicated technical GPU pass-through via the NVIDIA Docker runtime.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### vLLM
+
+- Good: throughput performance is excellent, enabling highly efficient serving.
+- Bad: configuration is complex, VRAM usage stays consistently high, and model management is more cumbersome than Ollama.
+
+### LocalAI
+
+- Good: broadly supports various models (audio, image, etc.).
+- Bad: less optimized for performance than Ollama, and deployment configuration is relatively heavy.
 
 ## Consequences
 
@@ -44,26 +68,6 @@ To provide intelligent services within the project, an LLM inference engine and 
 
 - **Model selection**: adopt `llama3.1-8b` for lightweight work and the `qwen2.5-coder` family for complex reasoning.
 - **Tool gating**: agents perform inference indirectly through Open WebUI's API endpoint.
-
-## Options Considered
-
-### vLLM
-
-- Good: throughput performance is excellent, enabling highly efficient serving.
-- Bad: configuration is complex, VRAM usage stays consistently high, and model management is more cumbersome than Ollama.
-
-### LocalAI
-
-- Good: broadly supports various models (audio, image, etc.).
-- Bad: less optimized for performance than Ollama, and deployment configuration is relatively heavy.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

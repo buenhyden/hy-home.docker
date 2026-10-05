@@ -18,7 +18,7 @@ created: "2026-09-25"
 
 Carry out W7–W12 of the [Plan](../plan.md) and hold the completion receipt.
 
-## Inputs
+## Inputs and Authorization
 
 Read-only investigation of 2026-09-25:
 
@@ -205,7 +205,7 @@ entry-closed dispositions are preserved above`.
   snapshot of both sets (18 in R2) and reported 1303841307 stored bytes;
   `check` 12:06:27-12:06:39 read 10% of the packs with no errors.
 
-## Verification Evidence
+## Evidence
 
 W11, supervised reboot rehearsal (criterion 11), 2026-09-30, RUN-0098:
 
@@ -412,16 +412,16 @@ synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
 receipts. W10 R2 scratch restore/offline key custody also remain open; this
 Task is blocked while the Spec package remains active.
 
-| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |
-| --- | --- | --- | --- | --- |
-| 7 | W7 | blocked | NOT_RUN | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) |
-| 8 | W8 | completed | PASS | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) |
-| 9 | W9 | completed | PASS | [Task receipt](#verification-evidence) |
-| 10 | W10 | blocked | NOT_RUN | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) |
-| 11 | W11 | completed | PASS | [RUN-0098](../../../05.operations/runbooks/0098-cold-start-and-reboot.md) |
-| 12 | W12 | completed | PASS | [Task receipt](#verification-evidence) |
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | pending |
+| Current Task status: completed | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: completed | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | pending |
+| Current Task status: completed | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | pending |
 
-## Review Evidence
+## Review and Completion
 
 | Acceptance criterion | Acceptance | Evidence |
 | --- | --- | --- |
@@ -448,7 +448,7 @@ the registry backup directory, Restic retention of deleted data, criterion
 wording for CDC steps, RPO/RTO, ADRs, owner-declined rows and retirements)
 are applied in the same PR. The owner's approval follows.
 
-## Commit Ledger
+### Commit Ledger
 
 | PR | Scope | State |
 | --- | --- | --- |
@@ -466,7 +466,7 @@ are applied in the same PR. The owner's approval follows.
 | #280 | W7, W9, W10 and W11 records | merged |
 | #281 | Task 0001 completed; RUN-0021 data-disk scratch; RUN-0088 rehearsal path | merged |
 
-## Rulings
+### Rulings
 
 See the Plan.
 
@@ -476,7 +476,7 @@ See the Plan.
   JupyterLab evidence; a real-content rehearsal follows once the directory
   holds work.
 
-## Deferred Items
+### Deferred Items
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
@@ -525,3 +525,8 @@ log inspection, data deletion or remote snapshot operation ran. This receipt
 closes prerequisite inspection only. Changed metadata14, corpus/archive recovery,
 links (one legacy warning), Markdown14 and diff checks exited 0; independent
 source/lifecycle review returned PASS. Recovery is a scoped documentation correction.
+
+## Related Documents
+
+- [Specification](../spec.md)
+- [Plan](../plan.md)

@@ -9,22 +9,11 @@ updated: "2026-10-05"
 
 # docs
 
-> 단계별 저장소 지식을 위한 공유 harness-engineering 및 agent-first engineering 문서 공간.
-
 ## Overview
 
 `docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
 현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 05.operations`입니다. Plan과 Task는 별도 stage가 아니라 소유 패키지 안의 `03.specs/{number:4}-{slug}/plan.md`와 `03.specs/{number:4}-{slug}/tasks/`에 함께 놓입니다. 보조 문서 공간으로 `90.references`, `98.archive`, `99.templates`를 사용합니다. 공통 Agent 거버넌스는 문서 stage 밖의 [`.agents/`](../.agents/README.md)가 소유합니다.
-
-## Audience
-
-이 README의 주요 독자:
-
-- Developers
-- Operators
-- Documentation Writers
-- AI Agents
 
 ## Scope
 
@@ -58,7 +47,7 @@ docs/
 
 각 stage 하위의 실제 구조는 그 stage의 README가 소유합니다.
 
-## Routing
+### Routing
 
 | 하려는 작업 | 이동할 곳 |
 | --- | --- |
@@ -76,21 +65,13 @@ docs/
 | LLM 대상 저장소 탐색을 제공 | root `llms.txt`와 각 surface README |
 | 보존된 본문이나 그 처분 기록을 확인 | `98.archive/` |
 
-## Migration Map
+### Migration Map
 
 이전 stage 경로의 이관 매핑은 [Stage 98 README](98.archive/README.md)를
 통해 historical Migration에서 찾습니다. 그 기록은 과거 이동의 근거이며
 현재 경로나 작성 계약은 Stage 99 Registry가 소유합니다.
 
-## Usage
-
-1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
-2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
-3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 그 template catalog의 `templates/common/readme-documentation.template.md`를 따릅니다.
-4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
-5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
-
-## Documentation Standards
+### Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작합니다.
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
@@ -100,13 +81,13 @@ docs/
   정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
-## Documentation Contract
+### Documentation Contract
 
 [Stage 99](99.templates/README.md)가 모든 문서 profile, 경로, lifecycle,
 identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](../.agents/README.md)는
 작성 행동과 승인 경계를 소유합니다. 이 index는 탐색 전용입니다.
 
-## Cross-link Rules
+### Cross-link Rules
 
 - 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
@@ -118,7 +99,7 @@ identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](.
   현재 route를 인용하고, 이름을 불러야 하는 frozen 기록은 식별자로 부른 뒤
   Stage 98 README에서 찾습니다.
 
-## Template Usage
+### Template Usage
 
 역할은 [99.templates](99.templates/README.md)의 Registry(`registry.json`)에서
 고르고, 그 source는 같은 곳의 template catalog(`templates/README.md`)에서
@@ -127,7 +108,7 @@ Requirement 자식 identity는 그 package가 소유하며, Stage 98은 frozen
 본문을 담는 retention class와 아무것도 담지 않는 route disposition을
 포함합니다.
 
-## Document Contract Validation
+### Document Contract Validation
 
 문서 체계와 repository contract는 다음 검증으로 유지합니다.
 
@@ -138,7 +119,7 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 `run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-document-links.py --mode alignment`는 현재 소유자 문서와 operations 문서 간 추적성 동기화를 확인합니다.
 
-## Historical Refresh Evidence
+### Historical Refresh Evidence
 
 이전 infra/secrets/docs refresh의 Spec은 아래 보존 package에 있습니다. 이
 package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본문은 archive에
@@ -156,7 +137,7 @@ package는 Spec만 보존하던 시기에 처분되었으므로 Plan과 Task 본
 | Plan and Task evidence | 보존되지 않음; 이 package는 ADR-0033이 대체한 Spec-only 모델 아래서 처분되었고 그 Plan과 Task는 Git history만으로 복구할 수 있습니다 |
 | Runtime scope | Docker Compose runtime, secret 값, 인증서 내용, agent runtime은 변경되지 않음 |
 
-## LLM Wiki Ownership and Historical Evidence
+### LLM Wiki Ownership and Historical Evidence
 
 repo-local LLM Wiki는 2026-09-10에 은퇴했습니다. 그 generator, 세 개의
 생성된 index, 이를 유지하던 operations package가 함께 제거되었습니다.
@@ -174,6 +155,27 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 | Plan and Task evidence | 보존되지 않음; 이 package는 ADR-0033이 대체한 Spec-only 모델 아래서 처분되었고 그 Plan과 Task는 Git history만으로 복구할 수 있습니다 |
 | Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, 각각 tombstone으로 기록됨 |
 | Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, 각각 tombstone으로 기록됨 |
+
+## Usage
+
+### Usage
+
+### Audience
+
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+- AI Agents
+
+### Usage
+
+1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
+2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
+3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 그 template catalog의 `templates/common/readme-documentation.template.md`를 따릅니다.
+4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
+5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
 ## Related Documents
 

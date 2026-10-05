@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "archive/tombstone"
-status: "sealed"
+type: "archive/route"
+status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "archive"
@@ -16,18 +16,18 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Retired Path
+## Overview
 
 {{RETIRED_PATH}}
 
-## Successor
-
-{{SUCCESSOR_OR_NONE}}
-
-## Reason
+## Route Disposition
 
 {{REASON}}
 
-## Traceability
+## Current Owner
+
+{{SUCCESSOR_OR_NONE}}
+
+## Related Documents
 
 {{ARCHIVE_INDEX_OR_CURRENT_OWNER_LINK}}

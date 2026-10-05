@@ -7,12 +7,15 @@ owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0008"
-parent_ids: []
 created: "2026-03-26"
 ---
 # Workflow Tier (07-workflow) Product Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 This document defines the product requirements for the `07-workflow` tier (Airflow, n8n). The tier's goal is to efficiently manage complex business logic and data flow by providing data pipeline automation, task orchestration, and powerful low-code integration features.
 
@@ -20,7 +23,37 @@ This document defines the product requirements for the `07-workflow` tier (Airfl
 
 Currently scattered script-based tasks are hard to monitor, and there is no standardized platform for centrally controlling complex integration work between systems.
 
-## Stakeholders and User Needs
+## Requirements
+
+### Requirements
+
+### Functional Requirements
+
+- **REQ-0008-FR-0001**: Support complex Python-based DAG definitions (Airflow).
+- **REQ-0008-FR-0002**: Support worker scaling for distributed processing (CeleryExecutor).
+- **REQ-0008-FR-0003**: Support GUI-based low-code automation and integration with 400+ external nodes (n8n).
+- **REQ-0008-FR-0004**: Provide real-time monitoring of workflow execution status and logs.
+- **REQ-0008-FR-0005**: Provide an interface for agents to control workflows via API.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0008-FR-0001**: Complete Airflow migration for all core data pipelines (100%).
+- **REQ-0008-FR-0002**: Reduce new integration build time via n8n by 50%.
+- **REQ-0008-FR-0003**: 100% notification handling rate on task failure.
+
+## Scope
+
+### Scope
+
+### Stakeholders and User Needs
 
 Build an integrated workflow engine that spans complex data engineering tasks to simple API integrations, maximizing operational efficiency and providing an environment where agents can autonomously orchestrate tasks.
 
@@ -36,29 +69,7 @@ Build an integrated workflow engine that spans complex data engineering tasks to
 - **STORY-02**: A developer uses n8n to build, in 5 minutes, an integration scenario that calls a specific API when a Slack message arrives.
 - **STORY-03**: A system monitoring agent runs a response workflow in n8n to attempt automatic recovery when a specific failure is detected.
 
-## Functional Requirements
-
-- **REQ-0008-FR-0001**: Support complex Python-based DAG definitions (Airflow).
-- **REQ-0008-FR-0002**: Support worker scaling for distributed processing (CeleryExecutor).
-- **REQ-0008-FR-0003**: Support GUI-based low-code automation and integration with 400+ external nodes (n8n).
-- **REQ-0008-FR-0004**: Provide real-time monitoring of workflow execution status and logs.
-- **REQ-0008-FR-0005**: Provide an interface for agents to control workflows via API.
-
-## Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-## Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0008-FR-0001**: Complete Airflow migration for all core data pipelines (100%).
-- **REQ-0008-FR-0002**: Reduce new integration build time via n8n by 50%.
-- **REQ-0008-FR-0003**: 100% notification handling rate on task failure.
-
-## Constraints
+### Constraints
 
 - **In Scope**:
   - Dedicated to complex batch and ETL processes centered on business logic.
@@ -76,7 +87,7 @@ No separately numbered solution-independent external interface requirement was i
 - **Disallowed Actions**: Change Airflow administrator settings, direct DB manipulation.
 - **Human-in-the-loop Requirement**: Deploying a new DAG and activating an n8n workflow require final human approval.
 
-## Risks
+### Risks
 
 - **Risks**: Possible DB schema migration interruption during an Airflow upgrade.
 - **Dependencies**: `04-data` (PostgreSQL) and `06-observability` (metrics/logging).
@@ -99,7 +110,9 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 When the runtime is running, check the internal health of Airflow and n8n in the `airflow-apiserver` and `n8n` containers, respectively.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/0007-workflow-architecture.md)
 - **Spec**: [008-workflow/spec.md](../02.architecture/descriptions/0007-workflow-architecture.md)

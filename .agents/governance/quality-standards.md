@@ -4,14 +4,22 @@ version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Agent Quality and Security Standards
 
+## Overview
+
 Universal quality gate for agent-driven changes in this repository.
 
-## 1. Documentation Quality Rubric
+## Scope
+
+Change-specific verification, security, reliability, generated freshness, and local or hosted quality routing.
+
+## Rules
+
+### 1. Documentation Quality Rubric
 
 | Grade | Description | Requirements                                                           |
 | :---- | :---------- | :--------------------------------------------------------------------- |
@@ -27,7 +35,7 @@ Quality dimensions:
 - Conciseness: avoid generic filler.
 - Accuracy: references match current repository structure.
 
-## 2. Security Baseline
+### 2. Security Baseline
 
 - Never commit plaintext credentials.
 - Prefer secret managers or mounted secret files.
@@ -45,7 +53,7 @@ Quality dimensions:
 - Network hardening: isolate traffic on intended networks and enforce TLS at
   ingress boundaries.
 
-### Bounded npm risk acceptance
+#### Bounded npm risk acceptance
 
 An owner-approved risk acceptance is not a vulnerability fix or a branch
 protection bypass. SPEC-0205 records the 2026-10-04 approval for exactly
@@ -63,7 +71,7 @@ package exception or omitted development audit. Expiry cannot auto-extend.
 Revert the bounded policy/adapter to strict failure when removing acceptance;
 normal required hosted checks continue to own protected integration.
 
-## 3. Reliability Baseline
+### 3. Reliability Baseline
 
 - Include health checks for long-running services when applicable.
 - Keep validation explicit in plans and task evidence.
@@ -80,7 +88,7 @@ normal required hosted checks continue to own protected integration.
 - A SEV1 or SEV2 incident requires a retrospective as `postmortem.md` inside
   its incident packet folder.
 
-## 4. Execution Boundary
+### 4. Execution Boundary
 
 - **Local**: fail-fast validation, for example
   `scripts/validation/run-ci-gate.py --profile changed`, automatic commit hooks
@@ -107,7 +115,7 @@ normal required hosted checks continue to own protected integration.
   registrations must not be reintroduced: the PR job owns the public changed
   gate and manual dispatch owns the full audit.
 
-### Canonical delivery phase matrix
+#### Canonical delivery phase matrix
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
@@ -132,7 +140,7 @@ PR run on the candidate revision remains the merge gate.
 
 CodeQL and external security integrations remain separate hosted observations. An absent, cancelled or failed required PR status does not authorize a merge. A failed `main-security` or tag update remains a visible post-merge failure; recovery follows `docs/05.operations/runbooks/0009-release-management.md`. The out-of-repository installed Git hook is not changed by editing the tracked declaration.
 
-### Local QA Environment
+#### Local QA Environment
 
 Use a Linux host, Linux VM, or WSL2 with `/proc` and pidfd support, Git, Bash,
 Python 3.12 or later, and the Docker Compose CLI. Create a clean virtual
@@ -154,7 +162,7 @@ execution, GitHub event identity, pre-commit, security scanning, and SARIF uploa
 still require their real GitHub Actions evidence; setting `GITHUB_ACTIONS=true`
 locally is not a supported substitute.
 
-## 5. Change-Type Verification Matrix
+### 5. Change-Type Verification Matrix
 
 This is the sole change-type verification matrix for all providers and GitHub
 workflows. Provider adapters and GitHub policy route here rather than copying
@@ -182,7 +190,7 @@ source, and independent review disposition. Unobserved surfaces remain
 `BLOCKED`, `NOT_RUN`, or unverified as applicable. The review and human
 escalation route is owned by [workflows](workflows.md#change-lifecycle).
 
-## 6. Generated-Artifact Freshness
+### 6. Generated-Artifact Freshness
 
 Some artifacts are generated from repository content and must be regenerated as
 part of QA before completion. Treat regeneration as a verification step, not an
@@ -202,7 +210,7 @@ optional cleanup.
 - **General rule**: never hand-edit a generated artifact to pass a check. Re-run
   its generator and commit the generated result as a separate logical unit.
 
-## 7. Local QA/CI Orchestration
+### 7. Local QA/CI Orchestration
 
 Use `python3 scripts/validation/run-ci-gate.py --profile changed --explain` to render the
 selected public suite-to-validator mapping without execution. The public runner
@@ -233,7 +241,7 @@ workflow definitions through
 public context. Local QA never runs real pre-commit through the CI-only entry
 point and exercises that wrapper only with the fake-binary regression.
 
-### Gate and Fixture Ownership
+#### Gate and Fixture Ownership
 
 A gate owns one current invariant, not a historical document count, a copied
 command list, or a Task's observed commit. The workflow manifest owns composition;
@@ -252,7 +260,7 @@ require model execution or a second all-files sweep for wording-only edits.
 Retain negative cases for authorization, ownership, symlinks, and fail-closed
 execution. A smaller suite must not mean missing behavioral coverage.
 
-## 8. Workflow and Language Routing
+### 8. Workflow and Language Routing
 
 - Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `.agents/governance/workflows.md`.
@@ -262,14 +270,14 @@ execution. A smaller suite must not mean missing behavioral coverage.
   `.agents/governance/documentation-protocol.md#readme-navigation`.
 - Resolve write permission through `.agents/governance/approval-boundaries.md`.
 
-## 9. Completion Routing
+### 9. Completion Routing
 
 Use only `.agents/governance/task-checklists.md#before-completion`. Its conditional
 harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `.agents/governance/github-governance.md`.
 
-## 10. Formatting and Linting Ownership
+### 10. Formatting and Linting Ownership
 
 - `.pre-commit-config.yaml` owns shared formatter and linter invocations;
   registered project-local package scripts own their actual package scope.
@@ -303,6 +311,10 @@ Gate in `.agents/governance/github-governance.md`.
   exemption belongs on the line as a stated marker.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

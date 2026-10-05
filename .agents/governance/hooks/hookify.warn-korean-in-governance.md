@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Korean text in governance documentation"
 version: "1.1.0"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -18,7 +18,17 @@ event: "file"
 name: "warn-korean-in-governance"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# WARNING: Korean text in governance documentation
+
+## Overview
+
+Apply the declared `warn` action for warn-korean-in-governance.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Korean text detected in governance documentation (project rule)**
 
@@ -28,6 +38,10 @@ what excludes them, so keep it when editing the pattern. Resolve the file's lang
 document-role authority at
 `.agents/governance/documentation-protocol.md#document-language`;
 the hook does not publish a second language table or exception rule.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

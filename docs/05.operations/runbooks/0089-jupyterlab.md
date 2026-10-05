@@ -14,7 +14,15 @@ created: "2026-09-21"
 
 # JupyterLab Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 시작 실패, 토큰 노출, 멈춘 커널, 작업 파일 손실, 이미지 업그레이드 시
 사용한다.
@@ -29,6 +37,8 @@ created: "2026-09-21"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 점검한다.
 
@@ -66,12 +76,16 @@ work 디렉터리를 복사하기 전에 server를 멈춘다. notebook과 output
 수 있는 data로 취급한다. library를 바꾸려면 image를 재빌드하고, MLflow
 client version을 server와 맞춘다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드, 이미지 태그, 소스 커밋, 파일 개수를 기록한다. 토큰이나 노트북
 내용은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 설정은 검토된 Compose와 requirements로 복원하고, 보존된 이전 이미지 식별자를
 우선 확인한다. 재빌드가 원래 이미지와 같다는 보장은 없다. 사용자 데이터는 먼저
@@ -91,14 +105,14 @@ client version을 server와 맞춘다.
 > 데이터가 없었으므로 실행 중인 서비스는 정지하지 않았다. 사용자 데이터가
 > 있는 경우 1단계가 요구하는 대로 먼저 정지한다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 알 수 없는 코드 실행의 증거, JupyterHub 없이 다중 사용자 접근 요청, 토큰
 비활성화 요청이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0089-jupyterlab.md) (`GDE-0089`)
 - [Policy](../policies/0089-jupyterlab.md) (`POL-0089`)

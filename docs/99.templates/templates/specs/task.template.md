@@ -14,7 +14,7 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
-<!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason and approved_by, a valid approved_at date, and criteria entries containing an integer criterion plus exactly one reassigned_to Task identity or nonempty withdrawn reason. An empty criteria list states that this Task held no criterion; it does not waive Spec completion evidence. Never seed or infer cancellation approval. -->
+<!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason, an actual authorization_ref, and criteria_disposition entries containing an integer criterion plus exactly one successor Task identity or approved withdrawal_ref. A successor is another non-cancelled Task in the same package. authorization_ref and withdrawal_ref use unambiguous same-Task heading anchors to actual structural evidence; those records do not authenticate or grant approval. An empty criteria_disposition list states that this Task held no criterion; it does not waive Spec completion evidence. Never seed or infer cancellation approval. -->
 
 # {{TITLE}}
 
@@ -22,45 +22,24 @@ created: "{{CREATED}}"
 
 {{OBJECTIVE}}
 
-## Inputs
+## Inputs and Authorization
 
-{{INPUTS}}
+{{INPUTS_AND_AUTHORIZATION}}
 
 ## Work Log
 
 {{WORK_LOG}}
 
-<!-- Author prompt: For an observed direct registered transition in this package, add the optional `### Lifecycle Events` subsection here with the exact `Artifact | From | To | Evidence` table. Evidence must name a real same-Task anchor. Remove the whole optional subsection when no event is observed; do not seed approval or execution timestamps. -->
+## Evidence
 
-## Verification Evidence
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| {{EVIDENCE}} | {{CRITERIA}} | {{WORK_UNIT}} | {{CHECK}} | {{INPUT}} | {{RESULT}} | {{LOCATION}} | {{ACCEPTANCE}} |
 
-{{RED_GREEN_AND_GATE_EVIDENCE}}
+## Review and Completion
 
-<!-- Author prompt: Fill the promotion receipt using .agents/governance/sdlc.md. Task result is exactly one of NOT_RUN, PASS, FAIL, DEFER, or NOT_APPLICABLE; link genuine evidence or record its reason in the durable-owner cell. -->
-<!-- Author prompt: A single logical Task keeps the four-column receipt below, whose status source is frontmatter. For multiple acceptance-criterion/work-unit items, deliberately replace it with one five-column receipt: `| Acceptance criterion | Plan work unit | Status | Task result | Durable owner |`; its Status cells are the source and frontmatter stores the validated derived summary. Do not add another progress table. -->
+{{REVIEW_AND_COMPLETION}}
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
-| --- | --- | --- | --- |
-| {{CRITERION_NUMBER}} | {{WORK_UNIT}} | {{TASK_RESULT}} | {{DURABLE_OWNER_OR_REASON}} |
+## Related Documents
 
-## Review Evidence
-
-{{REVIEW_EVIDENCE}}
-
-<!-- Author prompt: For every numbered acceptance criterion, add one row using the registered review table. `not-required` records a review disposition only; it never waives the Task's PASS completion evidence. -->
-
-| Acceptance criterion | Acceptance | Evidence |
-| --- | --- | --- |
-| {{CRITERION_NUMBER}} | {{REVIEW_ACCEPTANCE}} | {{REVIEW_EVIDENCE}} |
-
-## Commit Ledger
-
-{{COMMIT_LEDGER}}
-
-## Rulings
-
-{{RULINGS}}
-
-## Deferred Items
-
-{{DEFERRED_ITEMS}}
+{{RELATED_DOCUMENTS}}

@@ -7,7 +7,6 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "POL-0001"
-parent_ids: []
 created: "2026-06-04"
 ---
 
@@ -16,10 +15,14 @@ created: "2026-06-04"
 
 ## Overview
 
+### Overview
+
 이 문서는 `infra/common-optimizations.yml` 적용 시 허용되는 예외 목록과 승인 기준을 정의한다.
 예외는 임시 편의가 아니라 운영/보안 상의 명시적 승인 항목으로 관리하며, 모든 검증 스크립트와 운영 문서는 동일 레지스트리를 참조해야 한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `common-optimizations.yml` 템플릿 계열(`template-*`)의 제어항목 예외 관리
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
@@ -27,7 +30,13 @@ created: "2026-06-04"
 - **Systems**: Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` (root 통합 Compose 해석 기준)
 - **Environments**: Local, Dev, Stage, Production-like
 
-## Controls
+### Traceability
+
+- 같은 번호 `0001`의 Guide/Runbook은 없다.
+
+## Rules
+
+### Controls
 
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 단일 파일로 유지
@@ -48,7 +57,30 @@ created: "2026-06-04"
 - **Log / Trace Retention**: [task checklists](../../../.agents/governance/task-checklists.md)를 따른다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
+### Verification
+
+- `bash scripts/validation/check-quickwin-baseline.sh`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `bash scripts/validation/validate-docker-compose.sh`
+
+검증기는 선택 범위를 각각 기록한다. 두 baseline script는 기본 `core`의
+선언을 검사하며 모든 OPTIONAL/LAB의 compliance나 runtime health를 증명하지
+않는다. template source 검사와 resolved service 검사도 구분한다. 공개 입력·임시
+파일 경계는 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)을
+따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
+
+### Review Cadence
+
+책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
+새 승인을 만들지 않는다.
+
+- 월 1회 정기 검토
+- 신규 예외 추가/삭제 시 즉시 검토
+
 ## Exceptions
+
+### Exceptions
 
 - 템플릿/서비스 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 를 기준으로 한다.
 현재 예외는 JSON registry의 template/job/dev/security 항목까지 적용되는 대상을
@@ -62,31 +94,6 @@ created: "2026-06-04"
 > - 2026-03-28 기준 승인된 서비스 예외:
 >   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
 >   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
-
-## Verification
-
-- `bash scripts/validation/check-quickwin-baseline.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `bash scripts/validation/validate-docker-compose.sh`
-
-검증기는 선택 범위를 각각 기록한다. 두 baseline script는 기본 `core`의
-선언을 검사하며 모든 OPTIONAL/LAB의 compliance나 runtime health를 증명하지
-않는다. template source 검사와 resolved service 검사도 구분한다. 공개 입력·임시
-파일 경계는 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)을
-따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
-
-## Review Cadence
-
-책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
-새 승인을 만들지 않는다.
-
-- 월 1회 정기 검토
-- 신규 예외 추가/삭제 시 즉시 검토
-
-## Traceability
-
-- 같은 번호 `0001`의 Guide/Runbook은 없다.
 
 ## Related Documents
 

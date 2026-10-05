@@ -23,6 +23,12 @@ stop, document-profile 규칙은 소유하지 않습니다.
 
 ## Structure
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [registry.yaml](registry.yaml) | provider identity와 native 번역 사실 |
+
 - [Claude provider](../../../.claude/provider.md) — Claude의 authored loading 방식과 runtime 동작.
 - [Codex provider](../../../.codex/provider.md) — Codex의 authored loading 방식과 runtime 동작.
 - `registry.yaml` — 형식화된 provider와 projection fact.

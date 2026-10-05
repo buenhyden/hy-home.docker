@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-29"
+  updated: "2026-10-05"
   function_id: "infra-cross-validate"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,7 +15,9 @@ metadata:
 
 # infra-cross-validate
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -34,21 +36,21 @@ A proposed infrastructure diff, declared runtime contract, and static validation
 3. When persistent state or recovery changes, route the sanitized recovery contract through [stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md) before any operational recommendation.
 4. Report conflicts and required corrections without applying the infrastructure change.
 
-## Outputs
-
-- Cross-validation findings with exact file evidence, downstream observation needs, and any separate recovery-readiness verdict.
-
-## Gates
+### Gates
 
 - Review remains read-only.
 - Cross-file dependencies and declared behavior are mutually consistent.
 - A recovery-readiness verdict never authorizes or reports an operational restore.
 
+## Outputs
+
+- Cross-validation findings with exact file evidence, downstream observation needs, and any separate recovery-readiness verdict.
+
 ## Failure Handling
 
 Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration. Keep recovery readiness blocked when its required contract facts are missing.
 
-## Related Documents
+## References
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Drift detector](../../roles/drift-detector.md)

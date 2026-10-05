@@ -19,31 +19,35 @@ layer: "templates"
 [Stage 99 README](../README.md)에, 완성된 문서가 지켜야 할 규칙은 각 문서를
 소유한 stage에 있습니다.
 
-## Audience
-
-- Documentation Writers
-- Repository Maintainers
-- AI Agents
-
 ## Scope
 
 - 포함: Registry `template_roles`가 가리키는 template 원본.
 - 제외: 완성된 문서, 과거 template, category별 README. 과거 template은 Git
   history로만 복구하며 현재 작성에 복사하지 않습니다.
 
+### Audience
+
+- Documentation Writers
+- Repository Maintainers
+- AI Agents
+
 ## Structure
 
-| Category | 등록된 역할 |
-| :--- | :--- |
-| [governance/](./governance/) | Contract, Control, Rule, Provider, Role, Skill, Knowledge, Prompt |
-| [runtime/](./runtime/) | Claude agent projection, Codex agent projection |
-| [requirements/](./requirements/) | Requirement Package |
-| [architecture/](./architecture/) | Architecture Description, Architecture Decision |
-| [specs/](./specs/) | Spec, Plan, Task, 그리고 `contracts/`의 Data Model, OpenAPI, GraphQL, Proto |
-| [operations/](./operations/) | Guide, Policy, Runbook, Incident, Postmortem |
-| [references/](./references/) | Research, Audit, Data의 pack 양식과 reference 양식 |
-| [archive/](./archive/) | Migration, Tombstone |
-| [common/](./common/) | Stage, domain, package README 양식 |
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [architecture/](architecture/) | Description과 ADR source |
+| [archive/](archive/) | route record source |
+| [common/](common/) | README source |
+| [governance/](governance/) | 공유 governance source |
+| [operations/](operations/) | 운영 역할별 source |
+| [references/](references/) | reference pack과 member source |
+| [requirements/](requirements/) | Requirement source |
+| [runtime/](runtime/) | native provider projection source |
+| [specs/](specs/) | Spec·Plan·Task와 interface source |
+
+
 
 ## Usage
 

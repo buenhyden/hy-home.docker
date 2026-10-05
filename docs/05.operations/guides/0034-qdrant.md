@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Qdrant Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -78,18 +88,18 @@ Qdrant를 vector storage로 사용할 때 현재 repository의 service name, rou
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile qdrant config --quiet`
 - `docker compose ps qdrant`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\napi-key: %s\r\n\r\n" "$(tr -d "\r\n" </run/secrets/qdrant_api_key)" >&3; cat <&3'`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Qdrant runbook](../runbooks/0034-qdrant.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Qdrant Operations Policy](../policies/0034-qdrant.md) (`POL-0034`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

@@ -17,7 +17,13 @@ review_cycle: "on-source-change"
 
 # Reference: Agent Instructions and Bounded Vibe Coding
 
-## Current External Research
+## Overview
+
+### Overview
+
+## Scope and Method
+
+### Current External Research
 
 This member owns instruction discovery and bounded exploratory coding. Original external pages were opened on **2026-09-27**; preserved `observed_at` and `reviewed_at` describe historical evidence. This research is non-normative. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
@@ -66,31 +72,18 @@ owner; file copying or symlinking alone proves neither loading nor equivalence.
 
 Anthropic distinguishes prescribed workflows from dynamically directed agents and recommends simpler compositions first, environmental feedback and stopping conditions. This is design advice, not a quality standard. [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) (S-anthropic-com-building-effective-agents; loop implications owned by [m0010](m0010-loop-engineering.md#current-external-research)). A concise instruction map saves repeated context but depends on reliable discovery; a large always-loaded policy increases conflict and context costs. This research does not authorize relocating policy.
 
-## Claims and Sources
+### Related Documents
 
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0001-01 | Codex instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Current documented behavior; installed version unexamined | Not assessed in this run |
-| C-m0001-02 | Claude native AGENTS loading | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Version/plugin/launch-path conditional | Not assessed in this run |
-| C-m0001-03 | Shared filenames differ in semantics | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Interpretation | Common semantics require separate acceptance evidence | Not assessed in this run |
-| C-m0001-04 | Bounded exploratory promotion | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Recommendation | Only where scope and completion can be observed | Not assessed in this run |
+- [Research pack](README.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
-| S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
-| S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |
+## Findings
 
-## Future Internal Checks
-
-Candidate surfaces do not assert implementation. These checks require a separate authorized task.
-
-| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0001-01–03 / discovery | Repository/directory/session; governance/instruction discovery | If parity is evaluated | AGENTS.md, canonical bootstrap, provider adapters | Which owners load automatically, explicitly or not at all, and are stack/coding constraints distinct from role/tool authority and output preferences? | Version, launch path, fixture tree, loading trace, canonical owner links and separate coding/style expectations | Approved disposable nested-directory fixture | Expected precedence/read observed; silent omission fails | Separate runtime authorization; no private/global-state export | rules-engineer / reviewer | Not assessed in this run |
-| C-m0001-04 / exploration | Task/Spec; implementation/quality/governance | If a draft is promoted | Existing Spec/Plan/Task and review prompts | Are scope, stop and behavior checks recorded? | Representative draft, check output, independent review | Document review then authorized reversible trial | Promotion requires observable acceptance; self-declaration fails | Implementation/runtime checks separately authorized | planner / code-reviewer | Not assessed in this run |
-
-## Historical Workspace Observations
+### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -424,11 +417,30 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > Preserve the five evidence states above and never infer live compliance from a
 > tracked file.
 
-## Related Documents
+## Limitations
 
-- [Research pack](README.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Harness engineering](./m0008-harness-engineering.md)
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+### Future Internal Checks
+
+Candidate surfaces do not assert implementation. These checks require a separate authorized task.
+
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0001-01–03 / discovery | Repository/directory/session; governance/instruction discovery | If parity is evaluated | AGENTS.md, canonical bootstrap, provider adapters | Which owners load automatically, explicitly or not at all, and are stack/coding constraints distinct from role/tool authority and output preferences? | Version, launch path, fixture tree, loading trace, canonical owner links and separate coding/style expectations | Approved disposable nested-directory fixture | Expected precedence/read observed; silent omission fails | Separate runtime authorization; no private/global-state export | rules-engineer / reviewer | Not assessed in this run |
+| C-m0001-04 / exploration | Task/Spec; implementation/quality/governance | If a draft is promoted | Existing Spec/Plan/Task and review prompts | Are scope, stop and behavior checks recorded? | Representative draft, check output, independent review | Document review then authorized reversible trial | Promotion requires observable acceptance; self-declaration fails | Implementation/runtime checks separately authorized | planner / code-reviewer | Not assessed in this run |
+
+## Sources
+
+### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0001-01 | Codex instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Current documented behavior; installed version unexamined | Not assessed in this run |
+| C-m0001-02 | Claude native AGENTS loading | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Version/plugin/launch-path conditional | Not assessed in this run |
+| C-m0001-03 | Shared filenames differ in semantics | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Interpretation | Common semantics require separate acceptance evidence | Not assessed in this run |
+| C-m0001-04 | Bounded exploratory promotion | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Recommendation | Only where scope and completion can be observed | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
+| S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
+| S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |

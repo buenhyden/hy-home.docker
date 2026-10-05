@@ -14,7 +14,15 @@ created: "2026-09-19"
 
 # ComfyUI Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 승인된 ComfyUI 배포, UI 접근 불가, healthcheck 실패, 또는 계획된 데이터/이미지/custom-node
 복구에 사용한다. 런타임 변경 전에 commit, 선택한 서비스, mount 위치, 이미지 식별자와 backup
@@ -27,6 +35,8 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -74,23 +84,27 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 3. 고정된 이미지를 시작하고, `/system_stats`, GPU 가시성, model checksum, 예상 custom node, workflow 로드, 그리고 입력과 출력 invariant가 안전하게 기록 가능한 대표 생성 1건을 검증한다.
 4. 불일치가 있으면 격리된 서비스를 중단하고 로그/checksum을 보존한다. 손대지 않은 source 아티팩트로 돌아간다. 프로덕션 mount나 route 교체에는 별도 승인된 변경이 필요하다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 정제된 명령 출력, 시각, commit, 선택한 profile, 이미지 식별자, mount 이름과 결과 상태를
 현재 Task에 기록한다. 사용자 자산, workflow 콘텐츠, 비공개 환경, 토큰, 원격 다운로드
 credential은 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 추적된 구성만 검토된 버전으로 되돌린다. 영속 mount는 보존한다. 승인된 교체 전에 격리된
 스토리지로 복원한다.
 
-## Escalation
+### Escalation
 
 backup 부재, custom-node provenance 공백, 예상치 못한 노출, GPU 실패, 또는 파괴적 작업은
 @buenhyden에게 에스컬레이션한다.
 
-## Traceability
+### Traceability
 
 - 관장 architecture: [AD-0008](../../02.architecture/descriptions/0008-ai-architecture.md)
 - 대상 peer 문서: [Guide](../guides/0081-comfyui.md), [Policy](../policies/0081-comfyui.md)

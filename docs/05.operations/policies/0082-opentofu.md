@@ -16,15 +16,27 @@ created: "2026-09-19"
 
 ## Overview
 
+### Overview
+
 OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider 계정을 읽거나
 원격 인프라를 변경할 권한을 결코 뜻하지 않는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 로컬 이미지 빌드, `/workspace`, 마운트된 클라우드 자격 증명, 백엔드 상태,
 lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 
-## Controls
+### Traceability
+
+- [가이드](../guides/0082-opentofu.md) (`GDE-0082`)
+- [런북](../runbooks/0082-opentofu.md) (`RUN-0082`)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Rules
+
+### Controls
 
 - **Activation:** `iac` 아래에서 루트 프로젝트의 명명된 `opentofu` job을
   호출한다. HOME이나 일반 tooling 시작에는 절대 포함하지 않는다.
@@ -47,18 +59,13 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
   백엔드 상태, 자격 증명, 소유권 기록을 보존한다. 컨테이너 제거가 의도적으로
   인프라를 파괴하는 일은 결코 없다.
 
-## Exceptions
-
-별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
-만료, 복구 아티팩트, 종료 조건을 기록한다.
-
-## Verification
+### Verification
 
 정적 Compose 점검은 선택만 증명한다. 런타임 증거는 버전, init/validate,
 plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복구와 업그레이드
 리허설은 공백으로 남는다.
 
-## Review Cadence
+### Review Cadence
 
 모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
 접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
@@ -69,11 +76,12 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 실행 영향을 확인한다. 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은
 완전히 고정된 빌드가 아니므로 복구 시 사용한 이미지·provider lock 식별자를 보존한다.
 
-## Traceability
+## Exceptions
 
-- [가이드](../guides/0082-opentofu.md) (`GDE-0082`)
-- [런북](../runbooks/0082-opentofu.md) (`RUN-0082`)
-- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+### Exceptions
+
+별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
+만료, 복구 아티팩트, 종료 조건을 기록한다.
 
 ## Related Documents
 

@@ -16,31 +16,37 @@ updated: "{{UPDATED}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
+
+### Audience
+
+{{AUDIENCE}}
 
 ## Structure
 
 {{STRUCTURE}}
 
+### Current Inventory
+
+{{CURRENT_INVENTORY}}
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
 ## Usage
 
 {{WORK_INSTRUCTIONS}}
 
-## Current Inventory
-
-{{CURRENT_INVENTORY}}
-
-## Documentation Standards
+### Documentation Standards
 
 {{DOCUMENTATION_STANDARDS}}
 
-## AI Agent Guidance
+### AI Agent Guidance
 
 {{AI_AGENT_GUIDANCE}}
 

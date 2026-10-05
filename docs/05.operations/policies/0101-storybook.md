@@ -16,16 +16,27 @@ created: "2026-10-03"
 
 ## Overview
 
+### Overview
+
 공유 Storybook은 검토된 UI 구성요소의 정적 문서 origin이다. 코드 재사용은 별도
 패키지 계약이 소유하고, 로컬 문서 MCP는 root Compose의 서비스가 아니다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 `infra/13-experience/storybook/docker-compose.yml`의 선택형 `storybook` 서비스,
 Traefik 브라우저 경로, 공개 정적 자산, 코드 revision 및 운영 검증에 적용한다.
 프로젝트 업무 앱과 원격 MCP 배포는 포함하지 않는다. SPEC-0206은 source/static completion의 역사적 근거이며, 운영 승인과 반복 절차는 이 Stage 05 subject가 소유한다.
 
-## Controls
+### Traceability
+
+- Artifact: `POL-0101`; historical source/static completion: `SPEC-0206`; architecture context `AD-0031` remains draft.
+- Runtime declaration: [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
+
+## Rules
+
+### Controls
 
 - `experience` profile을 명시적으로 선택할 때만 서비스 후보가 된다. HOME 선택에는
   포함하지 않으며, 이 문서와 profile 선택은 기동 승인이 아니다.
@@ -54,15 +65,7 @@ Traefik 브라우저 경로, 공개 정적 자산, 코드 revision 및 운영 �
 - 디자인 도구에는 승인된 UI 코드·토큰·합성 화면만 제공한다. 외부 저장소 전체,
   내부 URL, 환경 파일, 사용자 데이터는 전송 대상이 아니다.
 
-## Exceptions
-
-현재 검토자 그룹과 원격 MCP 클라이언트가 없다. 담당자 @buenhyden이 접근 대상,
-OIDC issuer/audience/client, 권한, 만료·철회 및 검증 결과를 승인할 때 별도 운영 Task에서
-해제한다. HOME route 활성화, DNS/TLS 관찰, reviewer group 추가, remote MCP 공개,
-외부 design account 사용은 이 정책의 follow-up trigger다. 정적 origin의 관리자 제한을
-완화하는 예외는 이 정책에 포함되지 않는다.
-
-## Verification
+### Verification
 
 `experience`와 HOME profile을 각각 정적 render하여 서비스 선택, router,
 middleware, network, port, health, resource와 read-only 계약을 비교한다. 합성
@@ -71,15 +74,20 @@ middleware, network, port, health, resource와 read-only 계약을 비교한다.
 관리자 세션은 운영 실행 승인 후에만 관찰한다. 로컬 MCP 성공을 원격 MCP의
 인증 성공으로 기록하지 않는다.
 
-## Review Cadence
+### Review Cadence
 
 Storybook image, Compose route/profile, OAuth2 Proxy 허용 그룹, manifest, package export,
 MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
 
-## Traceability
+## Exceptions
 
-- Artifact: `POL-0101`; historical source/static completion: `SPEC-0206`; architecture context `AD-0031` remains draft.
-- Runtime declaration: [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
+### Exceptions
+
+현재 검토자 그룹과 원격 MCP 클라이언트가 없다. 담당자 @buenhyden이 접근 대상,
+OIDC issuer/audience/client, 권한, 만료·철회 및 검증 결과를 승인할 때 별도 운영 Task에서
+해제한다. HOME route 활성화, DNS/TLS 관찰, reviewer group 추가, remote MCP 공개,
+외부 design account 사용은 이 정책의 follow-up trigger다. 정적 origin의 관리자 제한을
+완화하는 예외는 이 정책에 포함되지 않는다.
 
 ## Related Documents
 

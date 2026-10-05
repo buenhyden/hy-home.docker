@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: 관측 gateway·SSO middleware, Compose 상태 의존성, 커스텀 이미지 보안 강화, 검사, 재시작과 Git 기반 rollback 증거.
 
 이 런북은 `06-observability` hardening regression을 복구하기 위한 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, and CI hardening baseline failure를 중심으로 점검/복구한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 observability management route, compose dependency, healthcheck, custom image, and hardening validation boundary를 확인하고, runtime/security policy 변경이 필요한 경우 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - `infrastructure-hardening` CI가 실패할 때.
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때.
@@ -34,6 +42,8 @@ created: "2026-05-17"
 - hardening script, Compose, Dockerfile, or operations docs 변경 후 rollback 가능성을 확인해야 할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -139,22 +149,26 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 3. 상태, 예상 호스트·컨테이너 시계열, label 연속성, 수집 시간·cardinality, 보호된 cAdvisor 경로를 확인하고 예상하지 않은 쓰기 가능 마운트나 secret이 없는지 점검한다.
 4. 불일치하면 격리 서비스를 중지하고 이미지·설정을 되돌린다. 운영 권한이나 마운트 변경은 별도 보안 승인이 필요하다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret 값, token, credential payload 원문은 기록하지 않는다.
 - Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, and recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, evidence capture, and Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation, or external service 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [06-Observability Optimization Hardening Usage Guide](../guides/0044-observability-optimization-hardening.md) (`GDE-0044`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

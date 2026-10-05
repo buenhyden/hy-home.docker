@@ -14,7 +14,15 @@ created: "2026-10-03"
 
 # Development Database Source Preflight Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
 현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
@@ -23,6 +31,8 @@ HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실�
 운영 백업 검증·복원은 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
 
 ## Procedure
+
+### Procedure
 
 저장소 root에서 working tree와 intended source를 확인한다. private `.env`, secret value,
 rendered private Compose와 database content는 출력하지 않는다.
@@ -50,27 +60,31 @@ volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback 
 secret reference, quota와 approval state가 승인된 뒤에만 별도 task에서 실행한다. 앱 migration은
 외부 workspace가 소유한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
 운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
 resolved mount path는 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 source 문제는 runtime mutation 전에 source patch를 되돌려 static checks를 재실행한다.
 runtime activation 뒤의 rollback은 해당 승인 task의 preserved volume, compatible image,
 consumer impact와 recovery point를 사용한다. source rollback은 schema, data, ACL 또는
 credential rollback을 보장하지 않는다.
 
-## Escalation
+### Escalation
 
 Compose render failure, ambiguous project identity, secret/mount ownership drift, host port/network
 collision, insufficient resource evidence, unsupported image/extension/backup compatibility,
 grant isolation failure, current management dependency 발견 시 중단하고 @buenhyden에게
 target, source SHA, failure signal, proposed approval boundary를 전달한다.
 
-## Traceability
+### Traceability
 
 - Artifact: `RUN-0100`; parent guide: `GDE-0100`.
 - Governing source contract: `SPEC-0202`.

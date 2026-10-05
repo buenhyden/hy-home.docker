@@ -17,9 +17,36 @@ review_cycle: "on-source-change"
 
 # Reference: Documentation Architecture and Diataxis Reader Modes
 
-Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked: 2026-09-27. Document updated: 2026-09-27. Historical workspace observations retain their original dates/commits below. Current local adoption and implementation: **Not assessed in this run**. This non-normative research changes no policy, profile, service or integration.
+## Overview
 
-## Current External Research
+### Overview
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Diataxis distinguishes four documentation modes by the reader need being served:
+> tutorial for learning, how-to for completing a goal, reference for retrieving
+> information, and explanation for building understanding. This is a content and
+> reader-intent lens. It is not a replacement for this repository's normative
+> governance and Stage 01-99 lifecycle taxonomy, artifact profiles, or approval gates.
+>
+> The rendered `https://diataxis.fr/` site was reopened on 2026-08-08 and
+> returned HTTP 429 with `cf-mitigated: challenge`. On re-attempt on 2026-08-14
+> the same rendered site returned successfully: the landing page states the
+> framework covers "tutorials, how-to guides, technical reference and
+> explanation" and that Diátaxis "places them in a systematic relationship."
+> This is a direct verification, not an inference from the previously
+> inaccessible page. The four-mode model and detailed per-mode guidance remain
+> independently verified from the pinned upstream source repository at commit
+> `957c09ca40b4a1edc23874f713e01937d50d54d5`, and this revision additionally
+> verified the site's own `/how-to-use-diataxis/` page live. Both routes now
+> agree: no discrepancy between the rendered site and the pinned source was
+> found. The prior revision's inability to reach the rendered site is retained
+> below as **Historical retained** evidence of host volatility, not deleted.
+>
+
+## Scope and Method
+
+### Current External Research
 
 ### Reader needs and architecture concerns
 
@@ -49,86 +76,7 @@ GitHub README guidance includes purpose, utility, getting started, help and main
 
 Link one detailed owner; avoid copied fields, commands, rules and acceptance criteria. Title/scope/ownership changes prompt entry-point/consumer review. Mechanical links prove reachability; a reader journey asks whether an unfamiliar reader finds authority without conflicting copies. A full four-folder rewrite adds maintenance without demonstrated need; incremental improvements retain lifecycle ownership. Retired LLM Wiki functionality is not restored. Local adoption is **Not assessed in this run**.
 
-## Claims and Sources
-
-Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
-
-| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0007-01 | Four modes serve learning/goals/information/understanding without fixed sequence | S-diataxis-map — Expectations and guidance; Journey around the map | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Reader lens, not lifecycle |
-| C-m0007-02 | Compass distinguishes action/cognition and acquisition/application | S-diataxis-compass — Compass table; Using the compass | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Opened now; earlier unfetched limitation remains historical |
-| C-m0007-03 | Improve incrementally without empty quadrants | S-diataxis-how-to-use — Guide not plan; Structure; Work one step at a time | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | No local restructuring approval |
-| C-m0007-04 | C4 offers four static levels; context/container suffice for most teams | S-c4model-diagrams — Static structure diagrams; S-c4model-abstractions — Software systems; containers (applications/data stores); components; code | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Audience determines useful detail |
-| C-m0007-05 | Dynamic/deployment views express selected interactions/environment topology | S-c4model-dynamic — Definition; Scope; Audience; S-c4model-deployment — Definition; Scope; Audience | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | No runtime evidence |
-| C-m0007-06 | arc42 covers twelve concerns, avoids duplicated decisions and uses measurable scenarios | S-arc42-overview — Twelve-section outline; S-arc42-section-9 — Content; Form; ADR background; S-arc42-section-10 — Quality Requirements; Quality Scenarios; S-arc42-section-11 — Risks and Technical Debt | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Not mandatory full framework or local adoption |
-| C-m0007-07 | Specialize README navigation and avoid copied detailed authority | S-github-about-readmes — About READMEs; S-arc42-section-9 — Content; Form; ADR background | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label; Current public guidance; no release/status label | Recommendation | Local profiles remain authoritative |
-
-| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
-| --- | --- | --- | --- | --- |
-| S-diataxis-map | [Expectations and guidance; Journey around the map](https://diataxis.fr/map/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-diataxis-compass | [Compass table; Using the compass](https://diataxis.fr/compass/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-diataxis-how-to-use | [Guide not plan; Structure; Work one step at a time](https://diataxis.fr/how-to-use-diataxis/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-c4model-diagrams | [Static structure diagrams](https://c4model.com/diagrams) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-c4model-dynamic | [Definition; Scope; Audience](https://c4model.com/diagrams/dynamic) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-c4model-deployment | [Definition; Scope; Audience](https://c4model.com/diagrams/deployment) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-arc42-overview | [Twelve-section outline](https://arc42.org/overview/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-arc42-section-9 | [Content; Form; ADR background](https://docs.arc42.org/section-9/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-arc42-section-10 | [Quality Requirements; Quality Scenarios](https://docs.arc42.org/section-10/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-arc42-section-11 | [Risks and Technical Debt](https://docs.arc42.org/section-11/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-github-about-readmes | [About READMEs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes) | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label |
-
-| S-c4model-abstractions | [C4 abstractions](https://c4model.com/abstractions) | Software systems; containers (applications/data stores); components; code | Not stated | Checked 2026-09-27; current public C4 guidance; no release/status label |
-
-## Future Internal Checks
-
-Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
-
-| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Reader modes / C-m0007-01,02,03 | Directory/package; docs/product | Reader journey needs improvement | Hypothetical approved page/Guide/README | Can named readers learn/act/retrieve/understand without conflicting modes? | Audience/outcome/representative journey | Content review and walkthrough | Pass: primary need met with links; fail: empty structure/unanswered goal | Read-only review; edits separately scoped | Documentation/product owner | Not assessed in this run |
-| Views / C-m0007-04,05,06 | Repository; architecture/ops | Stakeholder needs structure/interaction/topology | Hypothetical current Description | Does view answer a concern at useful abstraction with intended/observed boundary? | Editable source, audience/scope/legend/concern map | Architecture/readability review | Pass: useful view/one owner; fail: unlabeled duplicate or runtime inference | No infrastructure audit granted | Architect | Not assessed in this run |
-| README / C-m0007-07 | Repository/directory/package; docs | Title/scope/owner changes | Confirmed RES-0002 routes; hypothetical operational index | Can a reader find current authority without competing copies? | Scoped diff/link results/journey | Link and navigation review | Pass: coherent owner; fail: broken/conflicting copies | Document-only scope | Documentation owner | Not assessed in this run |
-
-## Historical Workspace Observations
-
-Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
-
-> Historical evidence (not current authority; source: Git history):
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
-## Overview
-
-> Historical evidence (not current authority; source: Git history):
->
-> Diataxis distinguishes four documentation modes by the reader need being served:
-> tutorial for learning, how-to for completing a goal, reference for retrieving
-> information, and explanation for building understanding. This is a content and
-> reader-intent lens. It is not a replacement for this repository's normative
-> governance and Stage 01-99 lifecycle taxonomy, artifact profiles, or approval gates.
->
-> The rendered `https://diataxis.fr/` site was reopened on 2026-08-08 and
-> returned HTTP 429 with `cf-mitigated: challenge`. On re-attempt on 2026-08-14
-> the same rendered site returned successfully: the landing page states the
-> framework covers "tutorials, how-to guides, technical reference and
-> explanation" and that Diátaxis "places them in a systematic relationship."
-> This is a direct verification, not an inference from the previously
-> inaccessible page. The four-mode model and detailed per-mode guidance remain
-> independently verified from the pinned upstream source repository at commit
-> `957c09ca40b4a1edc23874f713e01937d50d54d5`, and this revision additionally
-> verified the site's own `/how-to-use-diataxis/` page live. Both routes now
-> agree: no discrepancy between the rendered site and the pinned source was
-> found. The prior revision's inability to reach the rendered site is retained
-> below as **Historical retained** evidence of host volatility, not deleted.
->
-
-## Purpose
+### Purpose
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -138,7 +86,7 @@ Original observations, source checks, corrections, measurements, access failures
 > recommendation as policy.
 >
 
-## Repository Role
+### Repository Role
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -151,7 +99,7 @@ Original observations, source checks, corrections, measurements, access failures
 > change an artifact's evidence role, or prove that the reader need was met.
 >
 
-## Scope
+### Scope
 
 ### In scope
 
@@ -179,7 +127,7 @@ Original observations, source checks, corrections, measurements, access failures
 >   tomorrow's.)
 >
 
-## Definitions / Facts
+### Definitions / Facts
 
 ### Verified source boundary
 
@@ -384,7 +332,7 @@ Original observations, source checks, corrections, measurements, access failures
 > - **The primary documentation-framework site is a standing access boundary.** The site serves an edge bot challenge rather than rate limiting, so no backoff will clear it. The two-axis wording is `UNVERIFIED` at the rendered site and rests on a pinned upstream source alone: the corroborating vendor page confirms the four type names independently but does **not** state the two axes, so no second source carries that half of the claim. The marker belongs with the four-mode and compass claims, not apart from them.
 >
 
-## Scope Implications
+### Scope Implications
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -407,38 +355,7 @@ Original observations, source checks, corrections, measurements, access failures
 > | `security`     | Keep procedures, control reference, threat rationale, and training content distinct; none authorizes secret-value access or weakens redaction.                                           |
 >
 
-## Sources
-
-> Historical evidence (not current authority; source: Git history):
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Source                                                                                                                                       | Accessed                  | Class                             | Verification state                                                                                                                               |
-> | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-> | [Diataxis rendered site, 2026-08-08 attempt](https://diataxis.fr/)                                                                           | 2026-08-08T17:14:35+09:00 | External mutable                  | **Historical retained — UNVERIFIED page body at that timestamp**: HTTP 429, `cf-mitigated: challenge`; no content claims used from that attempt. |
-> | [Diataxis rendered site, 2026-08-14 re-attempt](https://diataxis.fr/)                                                                        | 2026-08-14                | External mutable                  | Verified live: HTTP success; four-mode statement and compass reference read directly and cross-checked against the pinned source below.          |
-> | [Diataxis how-to-use page, 2026-08-14](https://diataxis.fr/how-to-use-diataxis/)                                                             | 2026-08-14                | External mutable                  | Verified live: incremental-adoption and no-empty-structures guidance read directly, matching the pinned `how-to-use-diataxis.rst` paraphrase.    |
-> | [Diataxis upstream source](https://github.com/evildmp/diataxis-documentation-framework/tree/957c09ca40b4a1edc23874f713e01937d50d54d5/source) | 2026-08-08                | External fixed at pinned revision | Verified through GitHub API/raw source; `index.rst`, `map.rst`, four mode files, and `how-to-use-diataxis.rst` read directly.                    |
-> | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
-> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
-> | README profile contract (retired path: `../../../99.templates/support/readme-profile-contract.md`)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
-> | [SDLC document roles](./m0016-sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
-> | [Metadata lifecycle](./m0006-document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |
-> | [Scope application matrix](./m0015-scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                  | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; not used as proof.                                                                                                        |
->
-
-## Architecture Practice Delta Claims
-
-> Historical evidence (not current authority; source: Git history):
->
-> | Claim ID | Owner leaf | Evidence mode | Source family |
-> | --- | --- | --- | --- |
-> | `DOCARCH-C4-001` | `documentation-architecture.md` | source-backed | `https://c4model.com/` |
-> | `DOCARCH-ARC42-001` | `documentation-architecture.md` | source-backed | `https://arc42.org/` |
-> | `DOCARCH-COMP-001` | `documentation-architecture.md` | synthesis-only | `—` |
->
-
-## Architecture Practice Direct-Page Evidence
+### Architecture Practice Direct-Page Evidence
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -451,7 +368,7 @@ Original observations, source checks, corrections, measurements, access failures
 > | `ARC42-OVERVIEW` | `DA-SRC-005` | `DOCARCH-ARC42-001` | `https://arc42.org/` | `https://arc42.org/overview/` | 2026-08-28 | VERIFIED |
 >
 
-## Scope Application
+### Scope Application
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -467,7 +384,7 @@ Original observations, source checks, corrections, measurements, access failures
 > | security | applies | Include threat-relevant relationships when scoped. | Review diagram evidence. | No threat-model execution. |
 >
 
-## Architecture Practice Composition Links
+### Architecture Practice Composition Links
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -475,7 +392,7 @@ Original observations, source checks, corrections, measurements, access failures
 > - [Scope application matrix](./m0015-scope-application-matrix.md)
 >
 
-## 2026-09-05 Revalidation
+### 2026-09-05 Revalidation
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -497,7 +414,7 @@ Original observations, source checks, corrections, measurements, access failures
 > [C4](https://c4model.com/), and [arc42](https://arc42.org/documentation/).
 >
 
-## Maintenance
+### Maintenance
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -511,7 +428,7 @@ Original observations, source checks, corrections, measurements, access failures
 > persists, and always record the actual HTTP outcome observed at fetch time.
 >
 
-## Related Documents
+### Related Documents
 
 - [Research pack](README.md)
 
@@ -522,3 +439,92 @@ Original observations, source checks, corrections, measurements, access failures
 - [Workspace baseline](./m0020-workspace-baseline.md)
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+## Findings
+
+### Historical Workspace Observations
+
+Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+### Architecture Practice Delta Claims
+
+> Historical evidence (not current authority; source: Git history):
+>
+> | Claim ID | Owner leaf | Evidence mode | Source family |
+> | --- | --- | --- | --- |
+> | `DOCARCH-C4-001` | `documentation-architecture.md` | source-backed | `https://c4model.com/` |
+> | `DOCARCH-ARC42-001` | `documentation-architecture.md` | source-backed | `https://arc42.org/` |
+> | `DOCARCH-COMP-001` | `documentation-architecture.md` | synthesis-only | `—` |
+>
+
+## Limitations
+
+### Future Internal Checks
+
+Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
+
+| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Reader modes / C-m0007-01,02,03 | Directory/package; docs/product | Reader journey needs improvement | Hypothetical approved page/Guide/README | Can named readers learn/act/retrieve/understand without conflicting modes? | Audience/outcome/representative journey | Content review and walkthrough | Pass: primary need met with links; fail: empty structure/unanswered goal | Read-only review; edits separately scoped | Documentation/product owner | Not assessed in this run |
+| Views / C-m0007-04,05,06 | Repository; architecture/ops | Stakeholder needs structure/interaction/topology | Hypothetical current Description | Does view answer a concern at useful abstraction with intended/observed boundary? | Editable source, audience/scope/legend/concern map | Architecture/readability review | Pass: useful view/one owner; fail: unlabeled duplicate or runtime inference | No infrastructure audit granted | Architect | Not assessed in this run |
+| README / C-m0007-07 | Repository/directory/package; docs | Title/scope/owner changes | Confirmed RES-0002 routes; hypothetical operational index | Can a reader find current authority without competing copies? | Scoped diff/link results/journey | Link and navigation review | Pass: coherent owner; fail: broken/conflicting copies | Document-only scope | Documentation owner | Not assessed in this run |
+
+## Sources
+
+### Claims and Sources
+
+Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
+
+| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0007-01 | Four modes serve learning/goals/information/understanding without fixed sequence | S-diataxis-map — Expectations and guidance; Journey around the map | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Reader lens, not lifecycle |
+| C-m0007-02 | Compass distinguishes action/cognition and acquisition/application | S-diataxis-compass — Compass table; Using the compass | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Opened now; earlier unfetched limitation remains historical |
+| C-m0007-03 | Improve incrementally without empty quadrants | S-diataxis-how-to-use — Guide not plan; Structure; Work one step at a time | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | No local restructuring approval |
+| C-m0007-04 | C4 offers four static levels; context/container suffice for most teams | S-c4model-diagrams — Static structure diagrams; S-c4model-abstractions — Software systems; containers (applications/data stores); components; code | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Audience determines useful detail |
+| C-m0007-05 | Dynamic/deployment views express selected interactions/environment topology | S-c4model-dynamic — Definition; Scope; Audience; S-c4model-deployment — Definition; Scope; Audience | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | No runtime evidence |
+| C-m0007-06 | arc42 covers twelve concerns, avoids duplicated decisions and uses measurable scenarios | S-arc42-overview — Twelve-section outline; S-arc42-section-9 — Content; Form; ADR background; S-arc42-section-10 — Quality Requirements; Quality Scenarios; S-arc42-section-11 — Risks and Technical Debt | Not stated | 2026-09-27 | Current public guidance; no release/status label | Fact | Not mandatory full framework or local adoption |
+| C-m0007-07 | Specialize README navigation and avoid copied detailed authority | S-github-about-readmes — About READMEs; S-arc42-section-9 — Content; Form; ADR background | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label; Current public guidance; no release/status label | Recommendation | Local profiles remain authoritative |
+
+| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
+| --- | --- | --- | --- | --- |
+| S-diataxis-map | [Expectations and guidance; Journey around the map](https://diataxis.fr/map/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-diataxis-compass | [Compass table; Using the compass](https://diataxis.fr/compass/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-diataxis-how-to-use | [Guide not plan; Structure; Work one step at a time](https://diataxis.fr/how-to-use-diataxis/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-c4model-diagrams | [Static structure diagrams](https://c4model.com/diagrams) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-c4model-dynamic | [Definition; Scope; Audience](https://c4model.com/diagrams/dynamic) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-c4model-deployment | [Definition; Scope; Audience](https://c4model.com/diagrams/deployment) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-arc42-overview | [Twelve-section outline](https://arc42.org/overview/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-arc42-section-9 | [Content; Form; ADR background](https://docs.arc42.org/section-9/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-arc42-section-10 | [Quality Requirements; Quality Scenarios](https://docs.arc42.org/section-10/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-arc42-section-11 | [Risks and Technical Debt](https://docs.arc42.org/section-11/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-github-about-readmes | [About READMEs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes) | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label |
+
+| S-c4model-abstractions | [C4 abstractions](https://c4model.com/abstractions) | Software systems; containers (applications/data stores); components; code | Not stated | Checked 2026-09-27; current public C4 guidance; no release/status label |
+
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                                                       | Accessed                  | Class                             | Verification state                                                                                                                               |
+> | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+> | [Diataxis rendered site, 2026-08-08 attempt](https://diataxis.fr/)                                                                           | 2026-08-08T17:14:35+09:00 | External mutable                  | **Historical retained — UNVERIFIED page body at that timestamp**: HTTP 429, `cf-mitigated: challenge`; no content claims used from that attempt. |
+> | [Diataxis rendered site, 2026-08-14 re-attempt](https://diataxis.fr/)                                                                        | 2026-08-14                | External mutable                  | Verified live: HTTP success; four-mode statement and compass reference read directly and cross-checked against the pinned source below.          |
+> | [Diataxis how-to-use page, 2026-08-14](https://diataxis.fr/how-to-use-diataxis/)                                                             | 2026-08-14                | External mutable                  | Verified live: incremental-adoption and no-empty-structures guidance read directly, matching the pinned `how-to-use-diataxis.rst` paraphrase.    |
+> | [Diataxis upstream source](https://github.com/evildmp/diataxis-documentation-framework/tree/957c09ca40b4a1edc23874f713e01937d50d54d5/source) | 2026-08-08                | External fixed at pinned revision | Verified through GitHub API/raw source; `index.rst`, `map.rst`, four mode files, and `how-to-use-diataxis.rst` read directly.                    |
+> | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                                                       | 2026-08-08                | Workspace tracked                 | Canonical stage, language, and advisory-reference boundary.                                                                                      |
+> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                                       | 2026-08-14                | Workspace tracked                 | Re-read directly for R2 (README Sync) and R3 (Related Documents) blocking-rule text quoted above.                                                |
+> | README profile contract (retired path: `../../../99.templates/support/readme-profile-contract.md`)                                                          | 2026-08-14                | Workspace tracked                 | Re-read directly; confirms 17 registered README profiles and fail-closed profile-selection rule.                                                 |
+> | [SDLC document roles](./m0016-sdlc-document-roles.md)                                                                                              | 2026-08-08                | Workspace tracked draft           | Current twelve-role lifecycle analysis; does not itself change policy.                                                                           |
+> | [Metadata lifecycle](./m0006-document-metadata-lifecycle.md)                                                                                       | 2026-08-08                | Workspace tracked draft           | Current profile/lifecycle evidence boundary.                                                                                                     |
+> | [Scope application matrix](./m0015-scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                  | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; not used as proof.                                                                                                        |
+>

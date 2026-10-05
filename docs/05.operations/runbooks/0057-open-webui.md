@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Open WebUI 장애 및 성능 저하 상황에서 즉시 실행 가능한 복구 절차를 제공한다. SQLite 데이터 복구, RAG 인덱스 재동기화, Ollama 연결과 local Chroma 일관성 복구를 표준화한다.
 
 > Scope: Open WebUI Service
@@ -28,7 +36,7 @@ created: "2026-05-17"
 - RAG 기능(인덱싱/검색) 정상 상태를 재확인한다.
 - 동일 장애 재발 시 일관된 증적을 남긴다.
 
-## When to Use
+### When to Use
 
 - `https://chat.${DEFAULT_URL}` 접속 실패 또는 5xx 증가.
 - 모델 목록 미표시, 채팅 응답 실패.
@@ -36,6 +44,8 @@ created: "2026-05-17"
 - Open WebUI healthcheck 실패.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -68,7 +78,16 @@ docker compose exec open-webui curl -f http://localhost:${OLLAMA_WEBUI_PORT:-808
 
 ```bash
 
-## Open WebUI -> Ollama
+## Verification
+
+### Evidence
+
+- 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
+- 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
+
+## Rollback and Escalation
+
+### Open WebUI -> Ollama
 docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/tags
 
 ```
@@ -154,22 +173,17 @@ docker compose restart open-webui
 3. 격리된 Ollama와 복원한 로컬 데이터에 연결해 Open WebUI를 기동한다. 스키마 시작, 사용자·대화 건수, 업로드, `home-openwebui`의 Keycloak 네이티브 로그인, 비활성화된 비밀번호·가입 경로, 모델 목록, 통제된 RAG 질의 한 건을 확인한다.
 4. 불일치하면 격리 프로젝트를 중지하고 로그·checksum을 보존한다. 변경하지 않은 원본 백업으로 돌아가며 운영 volume·로컬 index·OIDC client·경로 교체에는 별도 승인이 필요하다.
 
-## Evidence
-
-- 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
-- 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
-
-## Rollback or Recovery
+### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 위 격리 복원 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 WebUI·로컬 index 증거를 첨부한다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Open WebUI Usage Guide](../guides/0057-open-webui.md) (`GDE-0057`)
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)

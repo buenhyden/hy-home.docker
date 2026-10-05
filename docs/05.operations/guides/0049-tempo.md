@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Tempo Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -101,18 +111,18 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 
 예외는 지정 cluster 통합 목적과 설정된 LAN 인터페이스로 한정한다. 소스에는 k3d만 식별하는 인증이 없으며 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰하지 않았다. 사람은 보호된 hostname을, 기계 검증은 [GDE-0096](../guides/0096-k8s-integration.md)을 따른다. 실제 log/trace payload 대신 상태와 시험 ID만 남긴다. 재바인딩·제거·인증/TLS 추가·노출 확대는 통합 소유자와 조정한 별도 승인 변경이다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile obs ps tempo`
 - `docker logs --tail=100 infra-tempo`
 - `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
 - `rg -n 'bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0049-tempo.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Tempo Operations Policy](../policies/0049-tempo.md) (`POL-0049`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

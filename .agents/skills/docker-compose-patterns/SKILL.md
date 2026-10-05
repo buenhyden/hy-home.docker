@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "docker-compose-patterns"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,9 @@ metadata:
 
 # docker-compose-patterns
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ Compose requirements and workspace conventions must identify whether the task is
 2. Select the simplest Compose pattern that satisfies dependency, health, isolation, and operability requirements.
 3. Record trade-offs and validation obligations without presenting orchestrator-only behavior as native Compose capability.
 
-## Outputs
-
-- A Compose pattern selection with rationale and validation requirements.
-
-## Gates
+### Gates
 
 - Selected YAML and Compose features are schema-valid.
 - The pattern matches repository naming, secret, network, and lifecycle rules.
+
+## Outputs
+
+- A Compose pattern selection with rationale and validation requirements.
 
 ## Failure Handling
 
 Escalate to architecture design when no Compose-native pattern meets the requirement; do not simulate unsupported deployment guarantees.
 
-## Related Documents
+## References
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Compose stack function](../compose-stack-agent/SKILL.md)

@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: 오래된 지표 정리, Pushgateway 준비 상태, 메모리 버퍼 초기화.
 
 이 런북은 Pushgateway 운영 중 발생할 수 있는 stale metric, metric group contamination, memory pressure, and push failure를 복구하기 위한 실행 절차를 정의한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상적인 메트릭 데이터를 정제하여 가시성 품질을 확보한다.
 
-## When to Use
+### When to Use
 
 - 특정 batch or CI job metric이 갱신되지 않고 stale value를 유지할 때.
 - Pushgateway metric group이 오염되었거나 high-cardinality label이 잘못 push되었을 때.
@@ -33,6 +41,8 @@ Pushgateway의 안정적인 메트릭 버퍼 상태를 유지하고, 비정상�
 - Pushgateway memory usage가 비정상적으로 높고 stale group cleanup만으로 회복되지 않을 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -132,22 +142,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. health, push/delete 의미, scrape label, 오래된 group 정리와 재시작 시 예상되는 손실을 검증한다. volume이나 `--persistence.file`이 추가되지 않았는지 확인한다.
 4. 불일치가 있으면 격리된 optional service를 중지하고 config/image를 되돌린다. 운영 환경에서의 활성화나 producer 변경은 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - 삭제한 metric group path와 삭제 전후 `/metrics` evidence를 기록한다.
 - Prometheus scrape job check 결과를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery or escalation 상태를 관련 task or incident evidence에 남긴다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 cleanup, restart, repush 절차만 사용한다. 이 범위를 벗어난 persistence option, scrape job 추가, route 변경, image 변경은 별도 task와 approval이 필요한 runtime configuration change다. 관찰된 실패가 절차와 다르면 변경을 중단하고 evidence를 보존한 뒤 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, metric 삭제 범위가 불명확하거나, runtime config 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Pushgateway Usage Guide](../guides/0046-pushgateway.md) (`GDE-0046`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

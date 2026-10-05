@@ -13,10 +13,6 @@ created: "2026-03-26"
 ---
 # ADR-0002: Choice of Keycloak and OAuth2 Proxy for IAM and SSO
 
-> This ADR documents the decision to use Keycloak as the Identity Provider and OAuth2 Proxy as the authentication gateway.
-
----
-
 ## Context
 
 This document covers the technical background for choosing Keycloak and OAuth2 Proxy as the authentication scheme for `hy-home.docker`. It is a choice made for standard OIDC protocol compliance, support for various authentication methods, and implementation of a ForwardAuth architecture that protects existing services without client-side code changes.
@@ -27,6 +23,10 @@ We need an authentication system that is:
 2. Protocol-standard (OIDC, SAML).
 3. Easily integrable with Traefik.
 4. Capable of protecting "dumb" upstream services that don't have built-in auth.
+
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 ## Decision
 
@@ -41,7 +41,15 @@ We decided to use:
 - **OAuth2 Proxy** allows us to enforce authentication at the ingress layer (Traefik) without modifying the source code of internal applications.
 - This combination is well-supported, highly configurable, and integrates natively with our Traefik gateway via the ForwardAuth middleware pattern.
 
-## Options Considered
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
 
 - **Authelia**: A lightweight alternative. While good, it lacks the advanced identity provider features and wide community support of Keycloak.
 - **Casdoor**: Another IAM. Less "enterprise-proven" compared to Keycloak in our assessment.
@@ -65,14 +73,6 @@ Agents must use the OIDC discovery endpoint provided by Keycloak (`/realms/hy-ho
 #### Additional Consequences
 
 Existing rationale, positive/negative notes, and trade-off text in this ADR remain the consequence record. This alignment section introduces no new decision outcome.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

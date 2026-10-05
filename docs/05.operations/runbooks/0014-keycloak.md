@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Keycloak readiness 실패, DB 연결 오류, issuer/redirect 불일치, proxy header 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다. 값이 필요한 점검은 secret 값을 출력하지 않는 방식으로만 수행한다.
 
 > Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
@@ -26,7 +34,7 @@ created: "2026-05-17"
 - issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁힌다.
 - 시크릿/설정 회귀 시 안전하게 롤백한다.
 
-## When to Use
+### When to Use
 
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
@@ -36,6 +44,8 @@ created: "2026-05-17"
 - token, session, client secret 노출 후 폐기가 필요할 때
 
 ## Procedure
+
+### Procedure
 
 ### Target, approval and safe evidence
 
@@ -198,23 +208,27 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 - [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
       기존 환경을 변경하지 않은 채 database owner에게 인계한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 Realm export는 database backup을 대신하지 않는다. 공식 절차는 일관성을 위해
 모든 Keycloak node를 중지한 export를 권장한다. 업그레이드 rollback에는 이전
 image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구 절차는 계획된
 절차이며 2026-09-20 문서 교정 중 실행되지 않았다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [02-Auth Keycloak Usage Guide](../guides/0014-keycloak.md) (`GDE-0014`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)

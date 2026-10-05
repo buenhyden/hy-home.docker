@@ -14,14 +14,22 @@ created: "2026-09-01"
 
 # Document Lifecycle Governance Architecture
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 Governance owns when documents remain current, leave active stages, are
 reassessed, and may be removed from the working tree. This Description explains
 which components read which authority and what their checks establish.
 Maintainers and agents use the same contracts before claiming completion.
 
-## System Boundaries
+### System Boundaries
 
 Inside the boundary are the Stage 99 Registry, current stage trees, Stage 98
 capture catalog and optional current assessments, and registered document
@@ -30,7 +38,18 @@ chooses trusted comparison snapshots but does not grant disposition authority.
 Runtime systems, secret access, remote integration, and actual archival removal
 remain separately authorized actions.
 
-## Components
+### Traceability
+
+- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
+- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
+- [ADR-0037 Archive lifecycle and preservation decision](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+
+## Architecture
+
+### Architecture
+
+### Components
 
 - `scripts/lib/document_governance/registry.py` loads profiles, lifecycles,
   identity spaces, and archive contracts. The Registry is the machine authority
@@ -55,7 +74,7 @@ remain separately authorized actions.
   resolved; Tombstones and Migrations hold routes rather than original bodies.
   Disposition directories are created on first use.
 
-## Data Flow
+### Data Flow
 
 Load Registry contracts before classifying documents. Enumerate the selected
 current snapshot and read the comparison base through bounded Git operations.
@@ -111,7 +130,7 @@ Withdrawn, invalidated, and history-only payloads are blocked before incident
 exceptions. Archive index/catalog discovery is distinguished from normative
 citation; retained completed and resolved bodies remain historical evidence.
 
-## Deployment View
+### Deployment View
 
 Validators are registered in `scripts/manifest.yaml` and selected by
 `scripts/validation/run-ci-gate.py`. Local comparison normally uses `HEAD`; CI
@@ -120,20 +139,7 @@ worktree, index, target commit, or historical source context. These read-only
 checks do not write to Stage 98 or operate services. Full gate or remote runs
 retain their own authorization and execution evidence requirements.
 
-## Quality Attributes
-
-- Fail closed: unsafe traversal, missing approval, missing source objects, and
-  unsupported recovery contexts yield findings instead of exemptions.
-- Derived: membership and current judgments come from Registry, selected trees,
-  and preserved history rather than fixed counts or invented digest ledgers.
-- Bounded: Git reads, directory enumeration, and file data have resource limits;
-  exceeding one is a diagnostic, never an automatic retention action.
-- Immutable evidence: captures, original Task Commit Ledgers, and sealed records
-  remain unchanged. Current assessment history is maintained through Git.
-- Separable: governance explains the rule without loading a package; this
-  Description explains enforcement without relying on a past execution Task.
-
-## Risks
+### Risks
 
 - Metadata `check-changed` compares current and base bodies with
   `changed_boundary=True` to reject newly introduced template instructions and
@@ -155,12 +161,18 @@ retain their own authorization and execution evidence requirements.
 - History-only availability does not imply secure erasure of Git history,
   clones, caches, or forks. Security response remains a separate workflow.
 
-## Traceability
+## Quality Attributes
 
-- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
-- ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- [ADR-0037 Archive lifecycle and preservation decision](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+- Fail closed: unsafe traversal, missing approval, missing source objects, and
+  unsupported recovery contexts yield findings instead of exemptions.
+- Derived: membership and current judgments come from Registry, selected trees,
+  and preserved history rather than fixed counts or invented digest ledgers.
+- Bounded: Git reads, directory enumeration, and file data have resource limits;
+  exceeding one is a diagnostic, never an automatic retention action.
+- Immutable evidence: captures, original Task Commit Ledgers, and sealed records
+  remain unchanged. Current assessment history is maintained through Git.
+- Separable: governance explains the rule without loading a package; this
+  Description explains enforcement without relying on a past execution Task.
 
 ## Related Documents
 

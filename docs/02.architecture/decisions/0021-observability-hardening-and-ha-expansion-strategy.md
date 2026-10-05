@@ -19,6 +19,10 @@ This document records the decision to first apply immediately applicable hardeni
 
 The observability layer provides many management paths, and failures can spread easily if the security chain is missing, startup order is unstable, or runtime hardening is insufficient. Layer-specific verification automation is needed to block operational regressions at the PR stage.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Perform immediate hardening.
@@ -29,6 +33,30 @@ The observability layer provides many management paths, and failures can spread 
   - Introduce `check-all-hardening.sh 06-observability` and the CI `infrastructure-hardening` job.
   - Create the PRD-through-Runbook document set to secure bidirectional traceability.
 - Introduce catalog expansion (sampling/long-term retention/modularization) in phases through a policy approval procedure.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Implement all catalog expansion immediately
+
+- Good:
+  - Short-term functional expansion effect
+- Bad:
+  - Increased change scope raises failure isolation/rollback difficulty
+
+### Update documentation only, keep runtime/CI unchanged
+
+- Good:
+  - Reduces short-term implementation burden
+- Bad:
+  - Lacks the ability to actually block regressions
 
 ## Consequences
 
@@ -49,30 +77,6 @@ The observability layer provides many management paths, and failures can spread 
 
 - Tool gating: Use `check-all-hardening.sh 06-observability` as a required PR gate
 - Guardrail strategy: Require a security chain on public routers, require non-root/secret guard
-
-## Options Considered
-
-### Implement all catalog expansion immediately
-
-- Good:
-  - Short-term functional expansion effect
-- Bad:
-  - Increased change scope raises failure isolation/rollback difficulty
-
-### Update documentation only, keep runtime/CI unchanged
-
-- Good:
-  - Reduces short-term implementation burden
-- Bad:
-  - Lacks the ability to actually block regressions
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

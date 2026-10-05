@@ -14,12 +14,14 @@ created: "2026-10-04"
 
 # Common Authorization and Safe Authoring Plan
 
-## Objective
+## Overview
+
+### Objective
 
 Implement the bounded P01 policy convergence through one active Task, preserving
 one current authority per rule and recording only observed local evidence.
 
-## Dependencies
+### Dependencies
 
 - Current user request approving local P01 policy and documentation edits.
 - REQ-0024, AD-0027, ADR-0032, canonical policy owners, provider registry, and
@@ -27,7 +29,17 @@ one current authority per rule and recording only observed local evidence.
 - Read-only policy review before final completion; focused documentation and
   governance checks. Remote integration requires separate approval and evidence.
 
-## Execution Sequence
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1 | Inventory and route authority | None | TSK-0001 | Task evidence |
+| W2 | 2 | Converge canonical policy | W1 | TSK-0001 | Task evidence |
+| W3 | 3 | Verify and review | W2 | TSK-0001 | Task evidence |
+
+### Work Details
+
 
 1. W1: inventory and route authority. Record policy-to-role-to-skill-to-
    provider-to-hook-to-consumer paths and conflicts only where a real consumer
@@ -42,23 +54,32 @@ one current authority per rule and recording only observed local evidence.
    then prepare one logical local commit. Remote
    push, PR, merge, and hosted checks remain `NOT_RUN` without separate approval.
 
-## Risk and Rollback
+### Rulings
 
-Ambiguous wording can create a parallel owner or overstate native capabilities.
-Rollback is one logical revert of the P01 policy/package change after preserving
-the Task evidence. No secret, runtime, remote, provider, or sandbox state is
-modified.
+- `approval-boundaries.md` is the current authorization owner.
+- Task/schema/CLI/archive fields are structural records, never authentication.
+- Historical evidence preserves provenance and cannot authorize a current action.
+- Review stays independent and read-only; doc-writer remains the policy writer.
 
-## Verification
+## Verification Plan
+
+### Verification
 
 Run the applicable documentation metadata/link and changed-profile governance
 checks once after the final local diff. Run provider rendering only if a provider
 surface changes. Record missing tools, sandbox limits, and hosted checks as
 `NOT_RUN` or `BLOCKED`, never as a pass.
 
-## Rulings
+## Risks and Rollback
 
-- `approval-boundaries.md` is the current authorization owner.
-- Task/schema/CLI/archive fields are structural records, never authentication.
-- Historical evidence preserves provenance and cannot authorize a current action.
-- Review stays independent and read-only; doc-writer remains the policy writer.
+### Risk and Rollback
+
+Ambiguous wording can create a parallel owner or overstate native capabilities.
+Rollback is one logical revert of the P01 policy/package change after preserving
+the Task evidence. No secret, runtime, remote, provider, or sandbox state is
+modified.
+
+## Related Documents
+
+- [Specification](spec.md)
+- [Task 0001](tasks/tsk-0001-policy-convergence.md)

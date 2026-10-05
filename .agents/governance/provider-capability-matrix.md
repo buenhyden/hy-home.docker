@@ -4,16 +4,24 @@ version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 ---
 
 # Provider Capability Matrix
+
+## Overview
 
 Canonical agent governance supports exactly Claude and Codex. Capability
 documentation separates provider support, repository adoption, and observed
 runtime acceptance.
 
-## Authority Namespaces
+## Scope
+
+Canonical ownership, provider adapters, tracked adoption, and observed runtime capabilities.
+
+## Rules
+
+### Authority Namespaces
 
 | Namespace | Owns | Does not own |
 | --- | --- | --- |
@@ -48,6 +56,10 @@ version and action ID.
 `.agents/` is the authored canonical source home, separate from generated native
 roots. Unknown or unsafe entries fail closed and are preserved for review;
 canonical files are never deleted or quarantined as stale projections.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

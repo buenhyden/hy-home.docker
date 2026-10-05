@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import os
 import pathlib
@@ -106,7 +107,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             None,
         )
         self.assertEqual(
-            ["template-body-token-in-target"], [item.code for item in findings]
+            ["body-heading-missing", "template-body-token-in-target"],
+            [item.code for item in findings],
         )
 
     def test_current_operations_policy_preserves_its_own_body_baseline(self) -> None:
@@ -151,7 +153,6 @@ class CurrentBodyContractTests(unittest.TestCase):
             "updated": "2026-08-01",
             "layer": "operations",
             "artifact_id": "POL-0001",
-            "parent_ids": [],
             "created": "2026-08-01",
         }
 
@@ -310,6 +311,40 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 body, _ = self._conforming_body(profile_id)
                 self.assertIn(
                     "body-h1-count", self._findings(profile_id, body + "\n# Second\n")
+                )
+
+    def test_readme_documents_module_uses_registered_columns(self) -> None:
+        body, _ = self._conforming_body("readme")
+        for header in (
+            "| Path | Purpose |",
+            "| Path | Purpose | Owner |",
+        ):
+            with self.subTest(header=header):
+                candidate = (
+                    body
+                    + "\n### Documents\n\n"
+                    + header
+                    + "\n| --- | --- |"
+                    + (" --- |" if "Owner" in header else "")
+                    + "\n"
+                )
+                self.assertNotIn(
+                    "readme-documents-header-invalid",
+                    self._findings("readme", candidate),
+                )
+
+    def test_readme_documents_module_rejects_other_header_shapes(self) -> None:
+        body, _ = self._conforming_body("readme")
+        for header in (
+            "| Name | Purpose |",
+            "| Path | Purpose | Status |",
+            "| Purpose | Path |",
+        ):
+            with self.subTest(header=header):
+                candidate = body + "\n### Documents\n\n" + header + "\n"
+                self.assertIn(
+                    "readme-documents-header-invalid",
+                    self._findings("readme", candidate),
                 )
 
 
@@ -759,19 +794,17 @@ class SealedSectionShapeTests(unittest.TestCase):
     def test_the_changed_check_rejects_only_an_added_sealed_shape_record(self) -> None:
         """End to end through the base subtraction, with a shape registered."""
 
-        import tempfile
-
-        registry_source = json.loads(
-            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        registry = metadata.load_registry()
+        profile = {
+            **registry.profiles["tombstone"],
+            "required_sections": self._NEW_SHAPE,
+            "sealed_section_shapes": (self._SEALED_SHAPE,),
+        }
+        adapted_registry = dataclasses.replace(
+            registry,
+            profiles={**registry.profiles, "tombstone": profile},
         )
-        for profile in registry_source["profiles"]:
-            if profile["id"] == "tombstone":
-                profile["required_sections"] = list(self._NEW_SHAPE)
-                profile["sealed_section_shapes"] = [list(self._SEALED_SHAPE)]
-        with tempfile.TemporaryDirectory() as directory:
-            path = pathlib.Path(directory) / "registry.json"
-            path.write_text(json.dumps(registry_source), encoding="utf-8")
-            profiles = metadata.build_registry_profiles(metadata.load_registry(path))
+        profiles = metadata.build_registry_profiles(adapted_registry)
         record = metadata.Record(
             pathlib.Path("docs/98.archive/tombstones/01.requirements/0001-example.md"),
             {"artifact_type": "tombstone", "status": "sealed"},
@@ -959,16 +992,30 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
                 'type: "operation/policy"\nstatus: "active"\n'
                 'owner: "@fixture"\nupdated: "2026-09-19"\n'
-                'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n'
+                'layer: "operations"\nartifact_id: "POL-9999"\n'
                 'created: "2026-09-19"\n---\n\n# ExampleDB\n\n'
             )
             pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
-            document.write_text(frontmatter + pointer + "ExampleDB 3.9.8\n")
+            body_prefix = (
+                "## Overview\n\nExample policy.\n\n## Scope\n\nFixture.\n\n## Rules\n\n"
+            )
+            body_suffix = (
+                "\n## Exceptions\n\nNone.\n\n## Related Documents\n\n- Fixture.\n"
+            )
+            document.write_text(
+                frontmatter + body_prefix + pointer + "ExampleDB 3.9.8\n" + body_suffix
+            )
             self.assertEqual(0, git(root, "add", ".").returncode)
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(1, result.returncode, result.stdout + result.stderr)
             self.assertIn("runtime-version-literal", result.stdout)
-            document.write_text(frontmatter + pointer + "Connection setup.\n")
+            document.write_text(
+                frontmatter
+                + body_prefix
+                + pointer
+                + "Connection setup.\n"
+                + body_suffix
+            )
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
@@ -978,7 +1025,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
                 'type: "operation/policy"', 'type: "common/readme"'
             )
             readme_metadata = readme_metadata.replace(
-                'layer: "operations"\nartifact_id: "POL-9999"\nparent_ids: []\n', ""
+                'layer: "operations"\nartifact_id: "POL-9999"\n', ""
             )
             runtime_readme.write_text(readme_metadata + pointer + "ExampleDB 3.9.8\n")
             unrelated = runtime_readme.parent / "private-config.md"

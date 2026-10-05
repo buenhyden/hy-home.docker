@@ -25,7 +25,7 @@ documentation edits, the bounded archive-record consumer/helper/test change,
 and one local logical commit only. SPEC-0182 and SPEC-0204 remain unrelated
 active packages; archived SPEC-0193 and SPEC-0206 are not reopened.
 
-## Boundaries and Inputs
+### Boundaries and Inputs
 
 Inputs are REQ-0024, AD-0027, ADR-0032, the current canonical governance
 sources, provider registry, tracked hooks, and the current Task. The baseline
@@ -35,7 +35,50 @@ write, push, PR, merge, or provider sandbox change is in scope. The bounded
 consumer work is limited to the archive approval-record helper, its direct
 consumer, and focused structural-integrity test source.
 
-## Behavior Contract
+### Technical Approach
+
+Use this one Task to inventory policy-to-consumer paths, amend only canonical
+owners and their routing references, and validate the policy/document surface.
+The hook implementation may clarify that archive approval-record matching is
+read-only structural validation; it does not implement authentication.
+
+### Interfaces and Data
+
+Inputs and outputs are policy text, metadata, redacted examples, synthetic
+fixtures, links, and value-free command receipts. The authorization source is a
+trusted user/operator/native channel; no automatic source authenticator is
+introduced by this Spec. Repository fields cannot automatically verify the
+account identity behind a trusted origin.
+
+### Failure Modes and Guardrails
+
+Stop protected operations when authorization is missing, mismatched, expired,
+revoked, or outside scope. Do not claim that a Task field, review, hook, schema,
+or provider delivery authenticates approval. Safety denial cannot be converted
+into a budget exception; required-check budget and environment gaps stop through
+agentic preflight. No wrapper or command variation bypasses a boundary.
+
+### Open Questions
+
+No automatic authorization authenticator is available. The supported current
+trusted user/operator/native-channel procedure is documented; any durable
+cryptographic or provider-native authentication needs separate approved design
+and observed capability evidence.
+
+### Operational Impact
+
+The change narrows policy interpretation and does not execute an operational
+action. Hosted, live, remote, or provider behavior remains unobserved.
+
+## Scope
+
+### Scope
+
+## Contracts
+
+### Contracts
+
+### Behavior Contract
 
 1. `approval-boundaries.md` owns current protected-operation authorization:
    actor, operation, subject, revision or scope, and recovery are bound to a
@@ -52,30 +95,11 @@ consumer, and focused structural-integrity test source.
    current operation. Hooks, archive validators, and provider fields cannot
    self-authorize or lower the native sandbox.
 
-## Technical Approach
+## Acceptance Criteria
 
-Use this one Task to inventory policy-to-consumer paths, amend only canonical
-owners and their routing references, and validate the policy/document surface.
-The hook implementation may clarify that archive approval-record matching is
-read-only structural validation; it does not implement authentication.
+### Acceptance Criteria
 
-## Interfaces and Data
-
-Inputs and outputs are policy text, metadata, redacted examples, synthetic
-fixtures, links, and value-free command receipts. The authorization source is a
-trusted user/operator/native channel; no automatic source authenticator is
-introduced by this Spec. Repository fields cannot automatically verify the
-account identity behind a trusted origin.
-
-## Failure Modes and Guardrails
-
-Stop protected operations when authorization is missing, mismatched, expired,
-revoked, or outside scope. Do not claim that a Task field, review, hook, schema,
-or provider delivery authenticates approval. Safety denial cannot be converted
-into a budget exception; required-check budget and environment gaps stop through
-agentic preflight. No wrapper or command variation bypasses a boundary.
-
-## Acceptance Contract
+### Acceptance Contract
 
 1. The current authorization owner and each consumer route are recorded in the
    Task conflict matrix with actual source locations and consumer status.
@@ -95,22 +119,12 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
    cover missing and mismatched historical-record integrity without claiming
    automatic revocation enforcement.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0032](../../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - [Plan](plan.md)
 - [Task 0001](tasks/tsk-0001-policy-convergence.md)
-
-## Open Questions
-
-No automatic authorization authenticator is available. The supported current
-trusted user/operator/native-channel procedure is documented; any durable
-cryptographic or provider-native authentication needs separate approved design
-and observed capability evidence.
-
-## Operational Impact
-
-The change narrows policy interpretation and does not execute an operational
-action. Hosted, live, remote, or provider behavior remains unobserved.

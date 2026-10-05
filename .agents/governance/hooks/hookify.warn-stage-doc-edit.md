@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -15,7 +15,17 @@ event: "file"
 name: "warn-stage-doc-edit"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# WARNING: Stage document edit
+
+## Overview
+
+Apply the declared `warn` action for warn-stage-doc-edit.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Stage document edit detected (project rule)**
 
@@ -36,6 +46,10 @@ name: "warn-stage-doc-edit"
 ```bash
 python3 scripts/validation/run-ci-gate.py --profile changed
 ```
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

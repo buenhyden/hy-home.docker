@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # 성능 시험 사용 가이드
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 `k6`는 기본 부하 발생기, WireMock은 외부 HTTP 의존성의 모의 서버,
 Locust는 독립 LAB에서 사용하는 선택 도구다. 실제 경로는
@@ -85,7 +95,7 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
 재시작을 넘는 메트릭 영속성 증거가 아니다. 실제 reader·bucket·부하 대상이
 선정되기 전에는 소스 계약만 소비하며 자동 연결·배포하지 않는다.
 
-## Common Checks
+### Common Checks
 
 - `python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로의
   소스·문서 회귀를 검사한다. 통과해도 실행 대상의 준비 상태는 증명하지 않는다.
@@ -97,14 +107,14 @@ Alloy의 합성 delta/cumulative·중복·drop/retry·restart 검증은 HOME 반
   없으므로 호스트 공개와 내부 peer 접근을 제한한다.
 - 실제 실행은 `RUN-0064`의 대상·자원·정리 사전 점검과 별도 승인을 따른다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 [RUN-0064](../runbooks/0064-performance-testing.md)는 부하 중단과 대상
 회복 판단을 소유한다. 현재 SPEC-0203 소스·합성 검증은 HOME 실행이나
 실제 프로젝트의 성능 수치가 아니다. k6, Locust, WireMock의 세부 절차는
 각 서비스 런북을 따른다.
 
-## Traceability
+### Traceability
 
 - [POL-0064](../policies/0064-performance-testing.md)
 - [RUN-0064](../runbooks/0064-performance-testing.md)

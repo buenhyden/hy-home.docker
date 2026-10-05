@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -17,8 +17,6 @@ enabled: true
 event: "file"
 name: "block-gha-secrets-in-run"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **GitHub Actions secret exposure pattern blocked (project rule)**
 
@@ -40,6 +38,17 @@ name: "block-gha-secrets-in-run"
 
 ```yaml
 # BLOCKED: prints a secret to logs
+
+## Overview
+
+Apply the declared `block` action for block-gha-secrets-in-run.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 - run: echo ${{ secrets.API_KEY }}
 
 # ALLOWED: passes the secret as a masked environment variable
@@ -49,6 +58,12 @@ name: "block-gha-secrets-in-run"
 ```
 
 Prefer OIDC-based cloud credentials over long-lived repository secrets.
+
+The declared action applies when the pattern matches.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

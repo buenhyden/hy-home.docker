@@ -156,6 +156,19 @@ class ArchiveAssessmentTests(unittest.TestCase):
         self.assertEqual(set(), self.codes())
         self.assertEqual(before, (self.root / self.catalog).read_bytes())
 
+    def test_present_empty_assessment_section_has_effective_defaults(self) -> None:
+        path = self.root / self.catalog
+        path.write_text(
+            path.read_text() + "\n## Current Assessments\n\n"
+            "No current assessment is recorded.\n",
+            encoding="utf-8",
+        )
+
+        row = api.assessment_lookup(self.root, self.registry)[self.unit]
+
+        self.assertEqual(("unreviewed", "retained"), (row.assessment, row.availability))
+        self.assertEqual(set(), self.codes())
+
     def test_pinned_matching_task_approval_passes(self) -> None:
         self.write_catalog("usable")
         self.assertEqual(set(), self.codes())

@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # PostgreSQL Cluster Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -101,18 +111,18 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
 - logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
-## Common Checks
+### Common Checks
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile postgres-ha config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml exec pg-0 patronictl -c /home/postgres/postgres.yml list`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha.yml logs --tail=120 pg-router pg-cluster-init`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [PostgreSQL cluster runbook](../runbooks/0031-postgresql-cluster.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [PostgreSQL Cluster Operations Policy](../policies/0031-postgresql-cluster.md) (`POL-0031`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

@@ -13,7 +13,15 @@ created: "2026-04-01"
 ---
 # Compose Network Segmentation Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 The Compose services once shared one bridge network, `infra_net`, so every
 container could reach every other one. SPEC-0180 S05 replaced that mesh with
@@ -21,7 +29,7 @@ networks that each carry one kind of flow. Maintainers and operators need to
 know which network owns a flow, who declares membership, and what still holds a
 fixed address.
 
-## System Boundaries
+### System Boundaries
 
 - Root `docker-compose.yml` owns the network definitions and their explicit
   `10.250.x.0/24` subnets, so Docker's automatic pool cannot take one first.
@@ -36,7 +44,11 @@ fixed address.
   architecture's ownership. No service joins `k3d-hyhome`; the owner removed
   the k3d integration on 2026-09-23. This removes shared-bridge membership, not the separately approved Kubernetes LAN endpoints governed by POL-0096.
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 ### Networks (SPEC-0180 S05)
 
@@ -66,7 +78,7 @@ project default network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic` and `backup-sqlite-export` keep
 `network_mode: none`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Stalwart and Mailpit keep `edge_net` for their routed UIs and share `mail_net` for SMTP; listener bindings also permit peer access from both networks.
 
-## Data Flow
+### Data Flow
 
 Services resolve names through Docker DNS and use static addresses only where
 tracked Compose explicitly declares them. New allocation selects an unused
@@ -82,7 +94,7 @@ announce them to each other. A multi-homed server listens on `0.0.0.0`, never
 on the address its own name resolves to, because that resolves on only one of
 its networks.
 
-## Deployment View
+### Deployment View
 
 Docker Compose creates every network from the root definition. Static
 verification uses scripts/validation/validate-docker-compose.sh, the
@@ -101,7 +113,9 @@ Compose configuration.
 - Operability: one Architecture Description and one Operations subject own the
   structural map and procedure.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0023 Compose network segmentation](../../01.requirements/0023-standardize-infra-net.md)
 - [ADR-0026 Standardize infra_net (the superseded single-mesh decision)](../decisions/0026-standardize-infra-net.md)

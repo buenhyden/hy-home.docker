@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "requirements-to-design-agent"
   scope: "architecture"
   owner_agent: "rules-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # requirements-to-design-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ Requirements must be approved, testable, and traceable; unresolved product choic
 2. Identify design alternatives and decision points while preserving product intent and explicit non-goals.
 3. Produce traceable design inputs for ARD/ADR/Spec authors and record uncovered or contradictory requirements.
 
-## Outputs
-
-- Traceable design input with requirement coverage, boundaries, and decision needs.
-
-## Gates
+### Gates
 
 - Every in-scope requirement has an architecture disposition.
 - Architecture does not cross approved system or authority boundaries silently.
+
+## Outputs
+
+- Traceable design input with requirement coverage, boundaries, and decision needs.
 
 ## Failure Handling
 
 Return ambiguous or conflicting requirements to Stage 01 with concrete questions; do not invent design authority.
 
-## Related Documents
+## References
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - [ADR writing](../adr-writing/SKILL.md)

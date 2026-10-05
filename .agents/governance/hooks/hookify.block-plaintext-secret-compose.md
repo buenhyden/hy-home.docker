@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: plaintext secrets"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -17,8 +17,6 @@ enabled: true
 event: "file"
 name: "block-plaintext-secret-compose"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
@@ -34,6 +32,17 @@ name: "block-plaintext-secret-compose"
 
 ```yaml
 # BLOCKED: plaintext secrets
+
+## Overview
+
+Apply the declared `block` action for block-plaintext-secret-compose.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 environment:
   POSTGRES_PASSWORD: mysecretpassword
   MYSQL_PASSWORD: hunter2
@@ -66,6 +75,12 @@ env_file:
 
 **Exclusions:** `_FILE` suffixes, `${...}` variable references, `/run/secrets/`
 paths, and empty values are not flagged.
+
+The declared action applies when the pattern matches.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

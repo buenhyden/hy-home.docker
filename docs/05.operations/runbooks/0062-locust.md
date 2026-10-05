@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Locust Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
@@ -23,6 +31,8 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
@@ -81,18 +91,22 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
 이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
 중지/실행 상태를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
 validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
 롤백하거나 target data를 복구하지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -100,7 +114,7 @@ load 중지 후에도 target health가 회복되지 않거나, worker가 healthy
 않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
 나타날 때 escalation한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0062-locust.md) (`GDE-0062`)
 - [Policy](../policies/0062-locust.md) (`POL-0062`)

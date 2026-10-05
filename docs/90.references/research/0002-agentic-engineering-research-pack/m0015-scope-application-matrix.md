@@ -17,165 +17,9 @@ review_cycle: "on-source-change"
 
 # Reference: Agentic Engineering Scope Application Matrix
 
-## Refresh Boundary and Research Question
-
-How do the requested external topics apply at different levels and across
-concerns, and what evidence would a separately authorized internal assessment
-need? This matrix is an analytical index, not a scope policy or permission
-change. All internal adoption status is **Not assessed in this run**.
-
-The prior fourteen-scope, eight-value-enum and corrected eight-file claims
-remain historical below, including their contradictions. None is a current
-count. No implementation, catalog reachability, provider, service, account,
-security or runtime assessment was performed for this synthesis.
-
-| Provenance field | Value and boundary |
-| --- | --- |
-| repository_baseline | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; SPEC-0185 document-refresh baseline, not an implementation observation |
-| external_sources_checked_at | No external source reopened for these synthesis/preservation members; linked topic members own their actual source access dates |
-| document_updated_at | 2026-09-27 |
-| historical_workspace_observation | Original 2026-08-08/11/14 and 2026-09-05 records below; `observed_at` and `reviewed_at` remain 2026-09-05 |
-
-## Two-Axis Analytical Model
-
-These request-derived axes do not replace repository vocabulary. Name both a
-level and a concern for each future question; conditions describe potential
-applicability without assigning a non-applicable verdict to uninspected work.
-
-| Application level | Meaning | Cross-concern question | Internal status |
-| --- | --- | --- | --- |
-| Organization / user global | Rules/preferences spanning workspaces | Who owns the rule and what information may cross workspace boundaries? | Not assessed in this run |
-| Repository | Shared source, lifecycle and collaboration | Which approved source controls change and reproducible evidence? | Not assessed in this run |
-| Directory / package | Bounded component or document family | Which local exception composes with its parent scope? | Not assessed in this run |
-| Task / Spec | Authorized objective and acceptance | Who approves and accepts the change and its impact? | Not assessed in this run |
-| Session / agent | Ephemeral context, action and handoff | Which state survives and what stops the loop? | Not assessed in this run |
-| Provider / tool | Native capabilities and adapter/tool trust | Which semantics are shared and which need native runtime proof? | Not assessed in this run |
-| CI/CD | Checks, artifacts, promotion and remote controls | What ran on which identity and what does that establish? | Not assessed in this run |
-| Execution environment | Runtime, network, data and recovery | What is ready, recoverable and accepted for intended use? | Not assessed in this run |
-
-| Concern | Question | Representative research owner | Internal status |
-| --- | --- | --- | --- |
-| Product / requirements | Whose intended outcome needs acceptance? | [Topic owner](m0018-spec-driven-sdlc.md) | Not assessed in this run |
-| Architecture | Which boundary, alternative and quality trade-off needs explanation? | [Topic owner](m0007-documentation-architecture.md) | Not assessed in this run |
-| Implementation | Which behavior or native feature could realize the intent? | [Topic owner](m0008-harness-engineering.md) | Not assessed in this run |
-| Data / knowledge | How are provenance, retention and contamination controlled? | [Topic owner](m0011-memory-hierarchy.md) | Not assessed in this run |
-| Documentation | Which reader, owner, lifecycle and navigation need is met? | [Topic owner](m0016-sdlc-document-roles.md) | Not assessed in this run |
-| Quality | Which contract or intended use is established by which evidence? | [Topic owner](m0019-verification-validation.md) | Not assessed in this run |
-| Security | Which trust, permission, secret or supply-chain boundary matters? | [Topic owner](m0017-security-governance.md) | Not assessed in this run |
-| Infrastructure / operations | Which service, release or recovery outcome needs proof? | [Topic owner](m0005-docker-compose-infrastructure.md) | Not assessed in this run |
-| Governance / collaboration | Who decides, acts, reviews, approves and receives evidence? | [Topic owner](m0001-agent-instructions-vibe-coding.md) | Not assessed in this run |
-
-## Request Coverage and Claim Ownership
-
-This is an A–L coverage route, not a claim that research or internal acceptance
-is complete. Named members own distinct explanations; provider comparison owns
-native-product differences while topic members own lifecycle, loops, memory,
-security and evidence. Detailed future-check rows remain in their topic owners.
-
-| Request | Covered questions | Distinct topic owners | Level / concern | Internal status |
-| --- | --- | --- | --- | --- |
-| A | Harness: instructions, tools, environment, sandbox, permission, context, memory, skills, orchestration, observation, evaluation, recovery, approval; loops: goal/state/plan/act/observe/verify/review/stop/handoff, completion, iteration/time/token/cost bounds, stalls, retry/backoff, checkpoint/resume, idempotency, conflicts and independent review | [m0008](m0008-harness-engineering.md), [m0010](m0010-loop-engineering.md), [m0012](m0012-provider-implementation-comparison.md) | Task, session, provider, environment / implementation, quality, security, governance | Not assessed in this run |
-| B | Instruction/policy/role/procedure/tool/style distinctions; hierarchy, conflict, global/project/path/task context, loading/discovery, stack/coding/explanation style; common source, thin adapters, native merging/trust and drift | [m0001 authoring distinctions](m0001-agent-instructions-vibe-coding.md#instruction-authoring-distinctions), [m0012](m0012-provider-implementation-comparison.md) | Organization/user, repository, directory, task, session, provider / governance, documentation, security | Not assessed in this run |
-| C | agency-agents role format, conversion, license, update/pin, permissions, evaluation/maintenance; task/reasoning/fallback and replacement criteria; product/channel/token/context/compaction/cache/concurrency/rate/retry/price, usage measurement and budget stop | [m0003](m0003-ai-agent-catalogs.md), [m0002](m0002-agent-model-selection.md), [m0013](m0013-provider-model-landscape.md), [m0010](m0010-loop-engineering.md) | Task, provider, CI/CD / implementation, quality, security, governance | Not assessed in this run |
-| D | Working/durable/domain memory versus progress/approval evidence; record/promotion/retrieval/summary/expiry/deletion/access/privacy/contamination/provenance; wiki source/synthesis/schema/ingest/query/lint/links/conflict/regeneration versus RAG/navigation/retired local work; bounded cross-provider handoff | [m0011](m0011-memory-hierarchy.md), [m0009](m0009-llm-wiki-system.md), [m0012](m0012-provider-implementation-comparison.md) | Repository, directory, task, session, provider / knowledge, documentation, security, collaboration | Not assessed in this run |
-| E | SDD/SDLC purpose, accountability, feedback/change/approval/traceability; PRD/Requirement/Spec/Plan/Task/ADR questions, inputs/outputs, owner/reviewer/lifecycle/content/relations/change/split/merge/preservation; intent-to-acceptance and task-to-handoff flows, one progress owner, requirement-to-test trace and mismatch/impact analysis | [m0018](m0018-spec-driven-sdlc.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, task, CI/CD / product, architecture, documentation, quality, governance | Not assessed in this run |
-| F | Guide/Incident/Postmortem/Policy/Release/Runbook reader, trigger, owner, fields, state/review/revision/retention/relations; factual incident versus analysis, policy versus procedure, guide versus runbook, release notes versus approval/deployment/rollback; preconditions, safety stop, success, recovery, timelines, action owners and expiry | [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, directory, task, environment / documentation, operations, quality, governance | Not assessed in this run |
-| G | Diátaxis reader needs without stage equivalence; proportionate C4 abstraction and dynamic/deployment views; arc42 structure/quality/risks; ADR context/alternatives/consequences/supersession; README repository/directory/package/operations purpose/start/owner/support/navigation/constraints and avoiding duplicate detail | [m0007](m0007-documentation-architecture.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md) | Repository, directory, task / architecture, documentation, product, governance | Not assessed in this run |
-| H | Versioned Compose include/merge/extends, profiles/interpolation/project names, dependency/health, network/port/volume/config/secret, resources/shutdown/restart/provenance/pins; Linux config/data/secret separation, ingress/TLS/DNS, observation, backup/restore/DR/update/rollback; optional service role/license/image/overlap/burden; static/process/readiness/user/recovery evidence distinct | [m0005](m0005-docker-compose-infrastructure.md), [m0021](m0021-local-docker-service-consolidation.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Directory, task, environment / architecture, implementation, operations, security, quality | Not assessed in this run |
-| I | CI/delivery/deployment and test/build/package/publish/deploy/promote/rollback boundaries; Actions events/path filters/workflow/job/step/reuse/matrix/concurrency/cache/artifact/checks/environment approval/OIDC/least privilege/SHA pins; untrusted PR/self-hosted runners, automated review/test loop permissions/cost/quality; local/hosted/protection/deployment distinct | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Repository, provider, CI/CD, environment / implementation, quality, security, operations, governance | Not assessed in this run |
-| J | Format/lint/syntax/schema/static/unit/integration/contract/E2E/docs/link/template/security, flakes/fixtures/mutation/coverage; verification of contracts versus validation of intended use, evidence, layer, failure, owner, reproducibility, independent review and measurement limits | [m0014](m0014-quality-ci-formatting.md), [m0019](m0019-verification-validation.md), [m0017](m0017-security-governance.md) | Repository, task, CI/CD, environment / quality, security, product, governance | Not assessed in this run |
-| K | Dated SSDF/version/status, supply-chain integrity/SBOM/provenance/signatures/vulnerability, least privilege/sandbox/secrets/pins/exceptions/residual risk/audit; agent/MCP/plugin/hook trust, injection/exfiltration/unsafe commands/memory contamination; Docker socket/mount/privilege/exposure and runner defenses; normative/vendor/proposal distinctions | [m0017](m0017-security-governance.md), [m0005](m0005-docker-compose-infrastructure.md), [m0004](m0004-automation-pipeline-workflow.md), [m0012](m0012-provider-implementation-comparison.md) | All levels / security, implementation, knowledge, operations, governance | Not assessed in this run |
-| L | Provider/Git/editor/CI hooks execution owner/permission/timing; pre-commit format/analysis/lint, commit-message draft versus action approval, inline/doc/test automation, bypass/network/secrets and post-fix review; editor/OS/version shortcuts; GitHub Issues/Projects/Linear/Jira/Markdown hierarchy/dependencies/roadmap/workflow/automation/access/Git/API/MCP/export/portability/cost/admin | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0018](m0018-spec-driven-sdlc.md), [m0012](m0012-provider-implementation-comparison.md), [m0001](m0001-agent-instructions-vibe-coding.md) | Organization/user, repository, directory, task, provider, CI/CD / implementation, documentation, quality, security, collaboration | Not assessed in this run |
-
-## Future Internal Checks
-
-These are representative designs, not authorized executions. Verified document
-paths are the Spec/Plan/Task, governance documents read for bootstrap, and these
-two assigned members. Other member links are verified navigation destinations,
-not implementation evidence. Every proposed implementation target below is a
-**hypothetical candidate**, even when a historical record named a similar path.
-Expected roles remain subject to the future Task's approved assignment.
-
-| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: [SPEC-0185](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md); hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
-| SCOPE-B: precedence | Organization/user + repository + directory + task + provider / governance, security | Intentional conflict test is approved | Verified docs: [bootstrap](../../../../.agents/governance/bootstrap.md), [provider adapter](../../../../.codex/provider.md); hypothetical: synthetic instruction hierarchy/load trace | Which instruction wins at each trust boundary, including discovery/load differences? | Fixture hashes, hierarchy, trust/approval state, loaded text and outcome | Approved synthetic conflicts per product/channel | Pass if agreed precedence/trust matches observed behavior; fail on silent omission or unauthorized override | No user-global/private inspection; live trials separately approved | rules-engineer + eval-engineer | Not assessed in this run |
-| SCOPE-C: model/cost | Task + provider / quality, governance | Owner considers a model/budget change | Verified doc: Spec acceptance; hypothetical: synthetic dataset, redacted usage export | Does selection meet quality, cost/latency and fallback/budget bounds? | Product/billing units/date, authorized aggregate usage, sample outcomes/fallback | Fixed reproducible task sample with failure case | Pass if agreed quality/cost/latency/fallback hold; fail on regression or budget breach | Paid calls/account export require separate approval; no entitlement inference | eval-engineer + repository owner | Not assessed in this run |
-| SCOPE-D: memory/handoff | Repository + task + session + provider / knowledge, security | Durable memory or cross-provider handoff is proposed | Verified doc: current Task; hypothetical: bounded packet and synthetic lifecycle records | Can recipient recover goal/baseline/approval/decisions/checks/next action while poison and expiry stay excluded? | Provenance/access/retention rules, synthetic promotion/expiry/deletion/injection cases | Review packet and approved non-sensitive lifecycle trial | Pass if scope/provenance/lifecycle observable; fail on leakage, stale promotion or approval expansion | No raw/private conversations; storage/live tools separately approved | doc-writer + security-auditor | Not assessed in this run |
-| SCOPE-E: lifecycle trace | Repository + task / product, architecture, documentation, quality | Separate change enters approved SDLC | Verified docs: SPEC-0185/Plan/Task; hypothetical: future requirement/ADR/issue/test map | Does every change trace through decisions/Spec/Plan/Task/acceptance with one progress owner? | Exact baseline, approval, impact decision and requirement-to-test map | Bounded graph and exact-diff review of approved change | Pass if owners/approval/traces consistent; fail on dual authority or unaccepted requirement drift | Protected edits need their own scope; no tracker mutation | workflow-supervisor + doc-writer | Not assessed in this run |
-| SCOPE-F: operational records | Task + environment / operations, documentation, quality | Operator requests packet/runbook review | Verified doc: this routing matrix; hypothetical: redacted incident/runbook/release packet | Are facts, analysis, actions, stop/success/rollback and release evidence distinct and accountable? | Approved reader/trigger/packet, times, action owners and verification | Bounded packet review; dry-run only separately approved | Pass if evidence and follow-up accountable; fail on unsafe recovery or unobserved outcome implied | Production access/operation requires separate approval | incident-responder + doc-writer | Not assessed in this run |
-| SCOPE-G: reader fit | Repository + directory + task / architecture, documentation | Documentation adoption review approved | Verified docs: research navigation; hypothetical: selected README/view/ADR | Can intended reader find purpose/start/owner/constraints/decision without contradictory copies? | Reader scenario, bounded navigation, diagram labels and source/decision links | Independent walkthrough against approved reader scenario | Pass if task completes with consistent owner/abstraction; fail on dead ends or conflicting copies | Document review only; no implementation inferred from diagram | doc-writer + code-reviewer | Not assessed in this run |
-| SCOPE-H: readiness/recovery | Directory + task + environment / implementation, operations, quality | Service owner approves static and isolated recovery scope | Verified doc: [preserved m0020](m0020-workspace-baseline.md); hypothetical: selected Compose model, disposable restore target | Can model render and isolated restore meet agreed integrity/RPO/RTO? | Model/CLI versions, safe artifact, user/health scenario, backup cutoff, hashes/timings | Separate static review from approved disposable restore/readiness trial | Pass per each layer criterion; fail on integrity/RPO/RTO loss or treating render as recovery | Exact targets/isolation/rollback approval; avoid values and production data | infra-implementer + iac-reviewer | Not assessed in this run |
-| SCOPE-I: delivery proof | Repository + CI/CD + environment / quality, security, operations | Owner approves CI/control-plane/promotion assessment | Verified doc: Spec boundaries; hypothetical: hosted run, protection readback, deployment packet | Which event/identity ran a check, which protection enforced it, which approval permits promotion? | Exact SHA/event, hosted result, scoped readback, provenance and separate acceptance | Approved read-only inspection; no promotion absent action approval | Pass if identities/approval/evidence match; fail if local success replaces hosted/enforced/deployed proof | Authenticated reads and remote/deployment changes separately approved | ci-cd-engineer + security-auditor | Not assessed in this run |
-| SCOPE-J: V&V evidence | Task + CI/CD + environment / product, quality | Concrete change acceptance is requested | Verified doc: acceptance contract; hypothetical: focused checks/negative fixtures/acceptance | Which contract/intended-use claims remain unproved despite format or coverage success? | Baseline, selected paths, command/result, negative case, independent acceptance | Requirement-to-evidence mapping and reproducible approved focused checks | Pass if each accepted claim has fitting limited evidence; fail on missing claim or class promotion | Runtime/stakeholder checks separately authorized | qa-engineer + eval-engineer | Not assessed in this run |
-| SCOPE-K: trust boundaries | Repository + provider + CI/CD + environment / security, knowledge | Scoped security review approved | Verified doc: scope exclusions; hypothetical: redacted permission map, synthetic injection/provenance case | Can untrusted source/tool/memory escalate authority or disclose data across runner/container boundaries? | Scoped threat model, permissions, synthetic negative tests and residual-risk owner | Read-only design first; synthetic control trial separately approved | Pass if prohibited acts blocked/exceptions owned; fail on authority escalation or unowned risk | No secrets/production scan/credential changes | security-auditor + surface owner | Not assessed in this run |
-| SCOPE-L: hooks/editor/tracker | Repository + provider + CI/CD / implementation, quality, collaboration | Bounded developer-flow or tracker decision approved | Verified doc: current Task; hypothetical: synthetic flow/hook result/tracker export | Who executes each event, how is bypass/failure/auto-fix reviewed, can records export with one progress owner? | Product/OS/version, event/permission semantics, post-fix diff, hierarchy/export and cost criteria | Approved synthetic flow and portability comparison; no live migration | Pass if failure/mutation review/ownership/export explicit; fail on bypass, unreviewed edits or dual authority | Hook code, account connection, commit/push and migration approvals separate | ci-cd-engineer + doc-writer | Not assessed in this run |
-
-## Representative Future-Check Index
-
-Each linked owner supplies topic-specific evidence, method, acceptance and
-risk/approval rows. This matrix routes them without replacing their criteria.
-
-| Member | Request coverage | Future-check owner | Internal status |
-| --- | --- | --- | --- |
-| m0001 | B, L | [Detailed checks](m0001-agent-instructions-vibe-coding.md#future-internal-checks) | Not assessed in this run |
-| m0002 | C | [Detailed checks](m0002-agent-model-selection.md#future-internal-checks) | Not assessed in this run |
-| m0003 | C | [Detailed checks](m0003-ai-agent-catalogs.md#future-internal-checks) | Not assessed in this run |
-| m0004 | I, K, L | [Detailed checks](m0004-automation-pipeline-workflow.md#future-internal-checks) | Not assessed in this run |
-| m0005 | H, K | [Detailed checks](m0005-docker-compose-infrastructure.md#future-internal-checks) | Not assessed in this run |
-| m0006 | E, F, G | [Detailed checks](m0006-document-metadata-lifecycle.md#future-internal-checks) | Not assessed in this run |
-| m0007 | G | [Detailed checks](m0007-documentation-architecture.md#future-internal-checks) | Not assessed in this run |
-| m0008 | A | [Detailed checks](m0008-harness-engineering.md#future-internal-checks) | Not assessed in this run |
-| m0009 | D | [Detailed checks](m0009-llm-wiki-system.md#future-internal-checks) | Not assessed in this run |
-| m0010 | A, C | [Detailed checks](m0010-loop-engineering.md#future-internal-checks) | Not assessed in this run |
-| m0011 | D | [Detailed checks](m0011-memory-hierarchy.md#future-internal-checks) | Not assessed in this run |
-| m0012 | A, B, D, K, L | [Detailed checks](m0012-provider-implementation-comparison.md#future-internal-checks) | Not assessed in this run |
-| m0013 | C | [Detailed checks](m0013-provider-model-landscape.md#future-internal-checks) | Not assessed in this run |
-| m0014 | I, J, L | [Detailed checks](m0014-quality-ci-formatting.md#future-internal-checks) | Not assessed in this run |
-| m0016 | E, F, G | [Detailed checks](m0016-sdlc-document-roles.md#future-internal-checks) | Not assessed in this run |
-| m0017 | H, I, J, K | [Detailed checks](m0017-security-governance.md#future-internal-checks) | Not assessed in this run |
-| m0018 | E, L | [Detailed checks](m0018-spec-driven-sdlc.md#future-internal-checks) | Not assessed in this run |
-| m0019 | E, F, H, I, J | [Detailed checks](m0019-verification-validation.md#future-internal-checks) | Not assessed in this run |
-| m0020 | Historical preservation | [Detailed checks](m0020-workspace-baseline.md#future-internal-checks) | Not assessed in this run |
-| m0021 | H | [Detailed checks](m0021-local-docker-service-consolidation.md#future-internal-checks) | Not assessed in this run |
-
-## Evidence, Authority and Recheck Boundaries
-
-This current matrix is request-derived synthesis. External primary-source
-locations, actual access dates, product/channel constraints and uncertainty
-belong to the linked topic members. No new external fact, price, model
-availability or standard version is asserted here. Future criteria are
-conditional research proposals, not current normative requirements.
-
-The [Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md),
-[Plan](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/plan.md) and
-[Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)
-own this refresh and its evidence. Adoption routes to the applicable governance,
-requirement, architecture, Spec/Task or operations owner. Revisit this routing
-when coverage or ownership changes; fresh catalog/scope counts require a
-separate approved internal assessment.
-
-## Historical Workspace Observations — Not Reassessed in This Run
-
-All original prose and tables below retain their dates, counts, conclusions
-and source context inside explicit historical quotations. Original headings
-remain for existing anchors. Words such as “current”, “implemented”, “missing”,
-“normative” and “re-run” describe history only. Contradictions and corrections
-are retained together rather than resolved by a new scan. Original source
-access dates do not mean those sources were reopened in this refresh.
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
 ## Overview
+
+### Overview
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -204,7 +48,73 @@ access dates do not mean those sources were reopened in this refresh.
 > four-class reachability taxonomy is below.
 >
 
-## Purpose
+## Scope and Method
+
+### Refresh Boundary and Research Question
+
+How do the requested external topics apply at different levels and across
+concerns, and what evidence would a separately authorized internal assessment
+need? This matrix is an analytical index, not a scope policy or permission
+change. All internal adoption status is **Not assessed in this run**.
+
+The prior fourteen-scope, eight-value-enum and corrected eight-file claims
+remain historical below, including their contradictions. None is a current
+count. No implementation, catalog reachability, provider, service, account,
+security or runtime assessment was performed for this synthesis.
+
+| Provenance field | Value and boundary |
+| --- | --- |
+| repository_baseline | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; SPEC-0185 document-refresh baseline, not an implementation observation |
+| external_sources_checked_at | No external source reopened for these synthesis/preservation members; linked topic members own their actual source access dates |
+| document_updated_at | 2026-09-27 |
+| historical_workspace_observation | Original 2026-08-08/11/14 and 2026-09-05 records below; `observed_at` and `reviewed_at` remain 2026-09-05 |
+
+### Two-Axis Analytical Model
+
+These request-derived axes do not replace repository vocabulary. Name both a
+level and a concern for each future question; conditions describe potential
+applicability without assigning a non-applicable verdict to uninspected work.
+
+| Application level | Meaning | Cross-concern question | Internal status |
+| --- | --- | --- | --- |
+| Organization / user global | Rules/preferences spanning workspaces | Who owns the rule and what information may cross workspace boundaries? | Not assessed in this run |
+| Repository | Shared source, lifecycle and collaboration | Which approved source controls change and reproducible evidence? | Not assessed in this run |
+| Directory / package | Bounded component or document family | Which local exception composes with its parent scope? | Not assessed in this run |
+| Task / Spec | Authorized objective and acceptance | Who approves and accepts the change and its impact? | Not assessed in this run |
+| Session / agent | Ephemeral context, action and handoff | Which state survives and what stops the loop? | Not assessed in this run |
+| Provider / tool | Native capabilities and adapter/tool trust | Which semantics are shared and which need native runtime proof? | Not assessed in this run |
+| CI/CD | Checks, artifacts, promotion and remote controls | What ran on which identity and what does that establish? | Not assessed in this run |
+| Execution environment | Runtime, network, data and recovery | What is ready, recoverable and accepted for intended use? | Not assessed in this run |
+
+| Concern | Question | Representative research owner | Internal status |
+| --- | --- | --- | --- |
+| Product / requirements | Whose intended outcome needs acceptance? | [Topic owner](m0018-spec-driven-sdlc.md) | Not assessed in this run |
+| Architecture | Which boundary, alternative and quality trade-off needs explanation? | [Topic owner](m0007-documentation-architecture.md) | Not assessed in this run |
+| Implementation | Which behavior or native feature could realize the intent? | [Topic owner](m0008-harness-engineering.md) | Not assessed in this run |
+| Data / knowledge | How are provenance, retention and contamination controlled? | [Topic owner](m0011-memory-hierarchy.md) | Not assessed in this run |
+| Documentation | Which reader, owner, lifecycle and navigation need is met? | [Topic owner](m0016-sdlc-document-roles.md) | Not assessed in this run |
+| Quality | Which contract or intended use is established by which evidence? | [Topic owner](m0019-verification-validation.md) | Not assessed in this run |
+| Security | Which trust, permission, secret or supply-chain boundary matters? | [Topic owner](m0017-security-governance.md) | Not assessed in this run |
+| Infrastructure / operations | Which service, release or recovery outcome needs proof? | [Topic owner](m0005-docker-compose-infrastructure.md) | Not assessed in this run |
+| Governance / collaboration | Who decides, acts, reviews, approves and receives evidence? | [Topic owner](m0001-agent-instructions-vibe-coding.md) | Not assessed in this run |
+
+### Evidence, Authority and Recheck Boundaries
+
+This current matrix is request-derived synthesis. External primary-source
+locations, actual access dates, product/channel constraints and uncertainty
+belong to the linked topic members. No new external fact, price, model
+availability or standard version is asserted here. Future criteria are
+conditional research proposals, not current normative requirements.
+
+The [Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md),
+[Plan](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/plan.md) and
+[Task](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/tasks/tsk-0001-external-research-refresh.md)
+own this refresh and its evidence. Adoption routes to the applicable governance,
+requirement, architecture, Spec/Task or operations owner. Revisit this routing
+when coverage or ownership changes; fresh catalog/scope counts require a
+separate approved internal assessment.
+
+### Purpose
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -220,7 +130,7 @@ access dates do not mean those sources were reopened in this refresh.
 > surfaces assign the same path to different owners.
 >
 
-## Repository Role
+### Repository Role
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -231,7 +141,7 @@ access dates do not mean those sources were reopened in this refresh.
 > enforcement.
 >
 
-## Scope
+### Scope
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -266,7 +176,7 @@ access dates do not mean those sources were reopened in this refresh.
 > - Treating this Stage 90 analysis as authority to adopt a recommendation.
 >
 
-## Definitions / Facts
+### Definitions / Facts
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -603,7 +513,7 @@ access dates do not mean those sources were reopened in this refresh.
 > >   read-only boundary, so they need explicit approval regardless of who owns them.
 >
 
-## Scope Implications
+### Scope Implications
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -729,6 +639,214 @@ access dates do not mean those sources were reopened in this refresh.
 > separately approved evidence exists.
 >
 
+### Architecture Practice Scope Application
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> | Claim ID | Scope | Disposition | Adoption conditions | Limitations | Verification |
+> | --- | --- | --- | --- | --- | --- |
+> | `SCOPE-COMP-001` | agentic | applies | Select reader form and structural view for an agent boundary. | ADR gaps remain UNVERIFIED. | Review typed owner and linked evidence. |
+> | `SCOPE-COMP-001` | architecture | applies | Combine C4 view, arc42 outline, and decision-ready ADR deliberately. | No implied lifecycle/relationship rule. | Inspect C4/arc42/ADR evidence states. |
+> | `SCOPE-COMP-001` | common | applies | Use composition only for a stated communication need. | Advisory, not policy. | Check scope and audience. |
+> | `SCOPE-COMP-001` | docs | applies | Choose Diataxis form and self-contained diagram details. | No mandatory template. | Review form, legend, and links. |
+> | `SCOPE-COMP-001` | infra | applies | Use deployment view only where an infra owner needs it. | C4 container is not Docker proof. | Confirm infra owner/path. |
+> | `SCOPE-COMP-001` | ops | applies | Use dynamic/deployment communication for a catalog or incident concern. | No operation observed. | Confirm catalog/packet owner. |
+> | `SCOPE-COMP-001` | qa | applies | Review diagram readability and evidence limits. | No certification. | Inspect labels and source rows. |
+> | `SCOPE-COMP-001` | security | applies | Include security-relevant relationships when scoped. | No threat-model run. | Review scoped evidence. |
+>
+
+### Scope Application
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Follow the approved Spec, Plan, and Task before agentic work. | Read governing paths at the literal baseline. | This is routing, not agent execution proof. |
+> | architecture | applies | Route architecture decisions to their canonical artifacts and owners; investigate whether a C4 view, arc42 outline, or ADR is needed before adoption. | Confirm the tracked owner/path, source state, and scoped diff; seek separate approval for runtime observation. | D4 composition is advisory; ADR lifecycle and AD/Spec relationships remain UNVERIFIED. |
+> | common | applies | Apply shared-worktree and approval-boundary constraints. | Inspect only the exact owned-path diff. | A shared rule is not observed enforcement. |
+> | docs | applies | Apply the research and generic-reference document contracts. | Check frontmatter, headings, and local destinations. | The draft pack has no parent router. |
+> | infra | applies | Inspect tracked infrastructure configuration; seek separate approval for runtime observation. | Confirm the cited configuration path and scoped diff. | Configuration cannot demonstrate deployment. |
+> | ops | applies | Route an operational need to its owner and inspect tracked records before use. | Confirm the record path and scoped diff; seek separate approval for live operation. | No run or incident is inferred. |
+> | qa | applies | Perform scoped document and path checks after the unit is final. | Record actual commands and results in Task 0004; seek separate approval for execution-environment checks. | Full acceptance checks remain deferred. |
+> | security | applies | Keep sources local and avoid secret, credential, or remote-state access. | Confirm cited sources are tracked documentation; seek separate approval for control testing. | No control effectiveness is evaluated. |
+>
+
+### Architecture Practice Composition Links
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - [Documentation architecture](./m0007-documentation-architecture.md)
+> - [SDLC document roles](./m0016-sdlc-document-roles.md)
+>
+
+### 2026-09-05 Revalidation
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> The package README maps all 93 requested category items to exactly one topical
+> member, while allowing related audits, data packages, and RES-0084 to supply
+> non-competing evidence. Current repository-baseline ownership is consolidated
+> into m0020; RES-0085 supplies dated scope and identity-recovery evidence only.
+> No category requires a new research identity or a member split.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
+> | Canonical ownership | Stage 00/01/02/03/05/99 remain normative | Repository-enforced | Semantic duplication still needs review | exact-diff review |
+> | Baseline evidence | m0020 records current `main`; RES-0085 preserves dated recovery evidence; RES-0084 owns GitHub mechanics | Defined, Local/Remote evidence by source | Mutable observations expire | dated revalidation |
+>
+> Recommendation: extend an existing member when its question and lifecycle fit;
+> allocate a new package only for a distinct question, owner, observation cycle,
+> and navigational boundary.
+>
+
+### Maintenance
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Re-run the sorted scope-file query and parse all three typed contracts whenever
+> persona scopes, catalog enums, agents, functions, path-authority records, prose
+> ownership tables, or provider projections change. Re-measure path counts when
+> relevant surfaces are added, removed, or renamed. Re-check the three ownership
+> surfaces against one another whenever any of them is edited, since no validator
+> does it. A later topic leaf may refine applicability, but it must retain an
+> explicit disposition for every scope and link back to this matrix.
+>
+
+### Related Documents
+
+- [Research pack](README.md)
+- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
+- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
+- [Verification and validation](m0019-verification-validation.md)
+- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - [Workspace baseline](./m0020-workspace-baseline.md)
+> - [Verification and validation](./m0019-verification-validation.md)
+> - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
+> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+> - [Agent governance hub](../../../../.agents/README.md)
+> - [Research category router](../README.md)
+
+## Findings
+
+### Request Coverage and Claim Ownership
+
+This is an A–L coverage route, not a claim that research or internal acceptance
+is complete. Named members own distinct explanations; provider comparison owns
+native-product differences while topic members own lifecycle, loops, memory,
+security and evidence. Detailed future-check rows remain in their topic owners.
+
+| Request | Covered questions | Distinct topic owners | Level / concern | Internal status |
+| --- | --- | --- | --- | --- |
+| A | Harness: instructions, tools, environment, sandbox, permission, context, memory, skills, orchestration, observation, evaluation, recovery, approval; loops: goal/state/plan/act/observe/verify/review/stop/handoff, completion, iteration/time/token/cost bounds, stalls, retry/backoff, checkpoint/resume, idempotency, conflicts and independent review | [m0008](m0008-harness-engineering.md), [m0010](m0010-loop-engineering.md), [m0012](m0012-provider-implementation-comparison.md) | Task, session, provider, environment / implementation, quality, security, governance | Not assessed in this run |
+| B | Instruction/policy/role/procedure/tool/style distinctions; hierarchy, conflict, global/project/path/task context, loading/discovery, stack/coding/explanation style; common source, thin adapters, native merging/trust and drift | [m0001 authoring distinctions](m0001-agent-instructions-vibe-coding.md#instruction-authoring-distinctions), [m0012](m0012-provider-implementation-comparison.md) | Organization/user, repository, directory, task, session, provider / governance, documentation, security | Not assessed in this run |
+| C | agency-agents role format, conversion, license, update/pin, permissions, evaluation/maintenance; task/reasoning/fallback and replacement criteria; product/channel/token/context/compaction/cache/concurrency/rate/retry/price, usage measurement and budget stop | [m0003](m0003-ai-agent-catalogs.md), [m0002](m0002-agent-model-selection.md), [m0013](m0013-provider-model-landscape.md), [m0010](m0010-loop-engineering.md) | Task, provider, CI/CD / implementation, quality, security, governance | Not assessed in this run |
+| D | Working/durable/domain memory versus progress/approval evidence; record/promotion/retrieval/summary/expiry/deletion/access/privacy/contamination/provenance; wiki source/synthesis/schema/ingest/query/lint/links/conflict/regeneration versus RAG/navigation/retired local work; bounded cross-provider handoff | [m0011](m0011-memory-hierarchy.md), [m0009](m0009-llm-wiki-system.md), [m0012](m0012-provider-implementation-comparison.md) | Repository, directory, task, session, provider / knowledge, documentation, security, collaboration | Not assessed in this run |
+| E | SDD/SDLC purpose, accountability, feedback/change/approval/traceability; PRD/Requirement/Spec/Plan/Task/ADR questions, inputs/outputs, owner/reviewer/lifecycle/content/relations/change/split/merge/preservation; intent-to-acceptance and task-to-handoff flows, one progress owner, requirement-to-test trace and mismatch/impact analysis | [m0018](m0018-spec-driven-sdlc.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, task, CI/CD / product, architecture, documentation, quality, governance | Not assessed in this run |
+| F | Guide/Incident/Postmortem/Policy/Release/Runbook reader, trigger, owner, fields, state/review/revision/retention/relations; factual incident versus analysis, policy versus procedure, guide versus runbook, release notes versus approval/deployment/rollback; preconditions, safety stop, success, recovery, timelines, action owners and expiry | [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, directory, task, environment / documentation, operations, quality, governance | Not assessed in this run |
+| G | Diátaxis reader needs without stage equivalence; proportionate C4 abstraction and dynamic/deployment views; arc42 structure/quality/risks; ADR context/alternatives/consequences/supersession; README repository/directory/package/operations purpose/start/owner/support/navigation/constraints and avoiding duplicate detail | [m0007](m0007-documentation-architecture.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md) | Repository, directory, task / architecture, documentation, product, governance | Not assessed in this run |
+| H | Versioned Compose include/merge/extends, profiles/interpolation/project names, dependency/health, network/port/volume/config/secret, resources/shutdown/restart/provenance/pins; Linux config/data/secret separation, ingress/TLS/DNS, observation, backup/restore/DR/update/rollback; optional service role/license/image/overlap/burden; static/process/readiness/user/recovery evidence distinct | [m0005](m0005-docker-compose-infrastructure.md), [m0021](m0021-local-docker-service-consolidation.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Directory, task, environment / architecture, implementation, operations, security, quality | Not assessed in this run |
+| I | CI/delivery/deployment and test/build/package/publish/deploy/promote/rollback boundaries; Actions events/path filters/workflow/job/step/reuse/matrix/concurrency/cache/artifact/checks/environment approval/OIDC/least privilege/SHA pins; untrusted PR/self-hosted runners, automated review/test loop permissions/cost/quality; local/hosted/protection/deployment distinct | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Repository, provider, CI/CD, environment / implementation, quality, security, operations, governance | Not assessed in this run |
+| J | Format/lint/syntax/schema/static/unit/integration/contract/E2E/docs/link/template/security, flakes/fixtures/mutation/coverage; verification of contracts versus validation of intended use, evidence, layer, failure, owner, reproducibility, independent review and measurement limits | [m0014](m0014-quality-ci-formatting.md), [m0019](m0019-verification-validation.md), [m0017](m0017-security-governance.md) | Repository, task, CI/CD, environment / quality, security, product, governance | Not assessed in this run |
+| K | Dated SSDF/version/status, supply-chain integrity/SBOM/provenance/signatures/vulnerability, least privilege/sandbox/secrets/pins/exceptions/residual risk/audit; agent/MCP/plugin/hook trust, injection/exfiltration/unsafe commands/memory contamination; Docker socket/mount/privilege/exposure and runner defenses; normative/vendor/proposal distinctions | [m0017](m0017-security-governance.md), [m0005](m0005-docker-compose-infrastructure.md), [m0004](m0004-automation-pipeline-workflow.md), [m0012](m0012-provider-implementation-comparison.md) | All levels / security, implementation, knowledge, operations, governance | Not assessed in this run |
+| L | Provider/Git/editor/CI hooks execution owner/permission/timing; pre-commit format/analysis/lint, commit-message draft versus action approval, inline/doc/test automation, bypass/network/secrets and post-fix review; editor/OS/version shortcuts; GitHub Issues/Projects/Linear/Jira/Markdown hierarchy/dependencies/roadmap/workflow/automation/access/Git/API/MCP/export/portability/cost/admin | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0018](m0018-spec-driven-sdlc.md), [m0012](m0012-provider-implementation-comparison.md), [m0001](m0001-agent-instructions-vibe-coding.md) | Organization/user, repository, directory, task, provider, CI/CD / implementation, documentation, quality, security, collaboration | Not assessed in this run |
+
+### Historical Workspace Observations — Not Reassessed in This Run
+
+All original prose and tables below retain their dates, counts, conclusions
+and source context inside explicit historical quotations. Original headings
+remain for existing anchors. Words such as “current”, “implemented”, “missing”,
+“normative” and “re-run” describe history only. Contradictions and corrections
+are retained together rather than resolved by a new scan. Original source
+access dates do not mean those sources were reopened in this refresh.
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+### Architecture Practice Delta Claims
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> | Claim ID | Owner leaf | Evidence mode | Source family |
+> | --- | --- | --- | --- |
+> | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
+>
+
+## Limitations
+
+### Future Internal Checks
+
+These are representative designs, not authorized executions. Verified document
+paths are the Spec/Plan/Task, governance documents read for bootstrap, and these
+two assigned members. Other member links are verified navigation destinations,
+not implementation evidence. Every proposed implementation target below is a
+**hypothetical candidate**, even when a historical record named a similar path.
+Expected roles remain subject to the future Task's approved assignment.
+
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| SCOPE-A: bounded harness/loop | Task + session + provider / implementation, quality, governance | An owner approves a bounded agent workflow | Verified doc: [SPEC-0185](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md); hypothetical: adapter, loop state, synthetic event record | Can stop/resume/retry preserve scope without duplicate side effects? | Target/version, approved actions, injected stall/retry trace, checkpoint/review | Separately authorized synthetic failure and handoff trial | Pass if bounds, terminal conditions and idempotency hold; fail on unbounded work, duplicate effects or scope escape | Live tools require separate approval; cost/mutation exposure | hook-developer + eval-engineer | Not assessed in this run |
+| SCOPE-B: precedence | Organization/user + repository + directory + task + provider / governance, security | Intentional conflict test is approved | Verified docs: [bootstrap](../../../../.agents/governance/bootstrap.md), [provider adapter](../../../../.codex/provider.md); hypothetical: synthetic instruction hierarchy/load trace | Which instruction wins at each trust boundary, including discovery/load differences? | Fixture hashes, hierarchy, trust/approval state, loaded text and outcome | Approved synthetic conflicts per product/channel | Pass if agreed precedence/trust matches observed behavior; fail on silent omission or unauthorized override | No user-global/private inspection; live trials separately approved | rules-engineer + eval-engineer | Not assessed in this run |
+| SCOPE-C: model/cost | Task + provider / quality, governance | Owner considers a model/budget change | Verified doc: Spec acceptance; hypothetical: synthetic dataset, redacted usage export | Does selection meet quality, cost/latency and fallback/budget bounds? | Product/billing units/date, authorized aggregate usage, sample outcomes/fallback | Fixed reproducible task sample with failure case | Pass if agreed quality/cost/latency/fallback hold; fail on regression or budget breach | Paid calls/account export require separate approval; no entitlement inference | eval-engineer + repository owner | Not assessed in this run |
+| SCOPE-D: memory/handoff | Repository + task + session + provider / knowledge, security | Durable memory or cross-provider handoff is proposed | Verified doc: current Task; hypothetical: bounded packet and synthetic lifecycle records | Can recipient recover goal/baseline/approval/decisions/checks/next action while poison and expiry stay excluded? | Provenance/access/retention rules, synthetic promotion/expiry/deletion/injection cases | Review packet and approved non-sensitive lifecycle trial | Pass if scope/provenance/lifecycle observable; fail on leakage, stale promotion or approval expansion | No raw/private conversations; storage/live tools separately approved | doc-writer + security-auditor | Not assessed in this run |
+| SCOPE-E: lifecycle trace | Repository + task / product, architecture, documentation, quality | Separate change enters approved SDLC | Verified docs: SPEC-0185/Plan/Task; hypothetical: future requirement/ADR/issue/test map | Does every change trace through decisions/Spec/Plan/Task/acceptance with one progress owner? | Exact baseline, approval, impact decision and requirement-to-test map | Bounded graph and exact-diff review of approved change | Pass if owners/approval/traces consistent; fail on dual authority or unaccepted requirement drift | Protected edits need their own scope; no tracker mutation | workflow-supervisor + doc-writer | Not assessed in this run |
+| SCOPE-F: operational records | Task + environment / operations, documentation, quality | Operator requests packet/runbook review | Verified doc: this routing matrix; hypothetical: redacted incident/runbook/release packet | Are facts, analysis, actions, stop/success/rollback and release evidence distinct and accountable? | Approved reader/trigger/packet, times, action owners and verification | Bounded packet review; dry-run only separately approved | Pass if evidence and follow-up accountable; fail on unsafe recovery or unobserved outcome implied | Production access/operation requires separate approval | incident-responder + doc-writer | Not assessed in this run |
+| SCOPE-G: reader fit | Repository + directory + task / architecture, documentation | Documentation adoption review approved | Verified docs: research navigation; hypothetical: selected README/view/ADR | Can intended reader find purpose/start/owner/constraints/decision without contradictory copies? | Reader scenario, bounded navigation, diagram labels and source/decision links | Independent walkthrough against approved reader scenario | Pass if task completes with consistent owner/abstraction; fail on dead ends or conflicting copies | Document review only; no implementation inferred from diagram | doc-writer + code-reviewer | Not assessed in this run |
+| SCOPE-H: readiness/recovery | Directory + task + environment / implementation, operations, quality | Service owner approves static and isolated recovery scope | Verified doc: [preserved m0020](m0020-workspace-baseline.md); hypothetical: selected Compose model, disposable restore target | Can model render and isolated restore meet agreed integrity/RPO/RTO? | Model/CLI versions, safe artifact, user/health scenario, backup cutoff, hashes/timings | Separate static review from approved disposable restore/readiness trial | Pass per each layer criterion; fail on integrity/RPO/RTO loss or treating render as recovery | Exact targets/isolation/rollback approval; avoid values and production data | infra-implementer + iac-reviewer | Not assessed in this run |
+| SCOPE-I: delivery proof | Repository + CI/CD + environment / quality, security, operations | Owner approves CI/control-plane/promotion assessment | Verified doc: Spec boundaries; hypothetical: hosted run, protection readback, deployment packet | Which event/identity ran a check, which protection enforced it, which approval permits promotion? | Exact SHA/event, hosted result, scoped readback, provenance and separate acceptance | Approved read-only inspection; no promotion absent action approval | Pass if identities/approval/evidence match; fail if local success replaces hosted/enforced/deployed proof | Authenticated reads and remote/deployment changes separately approved | ci-cd-engineer + security-auditor | Not assessed in this run |
+| SCOPE-J: V&V evidence | Task + CI/CD + environment / product, quality | Concrete change acceptance is requested | Verified doc: acceptance contract; hypothetical: focused checks/negative fixtures/acceptance | Which contract/intended-use claims remain unproved despite format or coverage success? | Baseline, selected paths, command/result, negative case, independent acceptance | Requirement-to-evidence mapping and reproducible approved focused checks | Pass if each accepted claim has fitting limited evidence; fail on missing claim or class promotion | Runtime/stakeholder checks separately authorized | qa-engineer + eval-engineer | Not assessed in this run |
+| SCOPE-K: trust boundaries | Repository + provider + CI/CD + environment / security, knowledge | Scoped security review approved | Verified doc: scope exclusions; hypothetical: redacted permission map, synthetic injection/provenance case | Can untrusted source/tool/memory escalate authority or disclose data across runner/container boundaries? | Scoped threat model, permissions, synthetic negative tests and residual-risk owner | Read-only design first; synthetic control trial separately approved | Pass if prohibited acts blocked/exceptions owned; fail on authority escalation or unowned risk | No secrets/production scan/credential changes | security-auditor + surface owner | Not assessed in this run |
+| SCOPE-L: hooks/editor/tracker | Repository + provider + CI/CD / implementation, quality, collaboration | Bounded developer-flow or tracker decision approved | Verified doc: current Task; hypothetical: synthetic flow/hook result/tracker export | Who executes each event, how is bypass/failure/auto-fix reviewed, can records export with one progress owner? | Product/OS/version, event/permission semantics, post-fix diff, hierarchy/export and cost criteria | Approved synthetic flow and portability comparison; no live migration | Pass if failure/mutation review/ownership/export explicit; fail on bypass, unreviewed edits or dual authority | Hook code, account connection, commit/push and migration approvals separate | ci-cd-engineer + doc-writer | Not assessed in this run |
+
+### Representative Future-Check Index
+
+Each linked owner supplies topic-specific evidence, method, acceptance and
+risk/approval rows. This matrix routes them without replacing their criteria.
+
+| Member | Request coverage | Future-check owner | Internal status |
+| --- | --- | --- | --- |
+| m0001 | B, L | [Detailed checks](m0001-agent-instructions-vibe-coding.md#future-internal-checks) | Not assessed in this run |
+| m0002 | C | [Detailed checks](m0002-agent-model-selection.md#future-internal-checks) | Not assessed in this run |
+| m0003 | C | [Detailed checks](m0003-ai-agent-catalogs.md#future-internal-checks) | Not assessed in this run |
+| m0004 | I, K, L | [Detailed checks](m0004-automation-pipeline-workflow.md#future-internal-checks) | Not assessed in this run |
+| m0005 | H, K | [Detailed checks](m0005-docker-compose-infrastructure.md#future-internal-checks) | Not assessed in this run |
+| m0006 | E, F, G | [Detailed checks](m0006-document-metadata-lifecycle.md#future-internal-checks) | Not assessed in this run |
+| m0007 | G | [Detailed checks](m0007-documentation-architecture.md#future-internal-checks) | Not assessed in this run |
+| m0008 | A | [Detailed checks](m0008-harness-engineering.md#future-internal-checks) | Not assessed in this run |
+| m0009 | D | [Detailed checks](m0009-llm-wiki-system.md#future-internal-checks) | Not assessed in this run |
+| m0010 | A, C | [Detailed checks](m0010-loop-engineering.md#future-internal-checks) | Not assessed in this run |
+| m0011 | D | [Detailed checks](m0011-memory-hierarchy.md#future-internal-checks) | Not assessed in this run |
+| m0012 | A, B, D, K, L | [Detailed checks](m0012-provider-implementation-comparison.md#future-internal-checks) | Not assessed in this run |
+| m0013 | C | [Detailed checks](m0013-provider-model-landscape.md#future-internal-checks) | Not assessed in this run |
+| m0014 | I, J, L | [Detailed checks](m0014-quality-ci-formatting.md#future-internal-checks) | Not assessed in this run |
+| m0016 | E, F, G | [Detailed checks](m0016-sdlc-document-roles.md#future-internal-checks) | Not assessed in this run |
+| m0017 | H, I, J, K | [Detailed checks](m0017-security-governance.md#future-internal-checks) | Not assessed in this run |
+| m0018 | E, L | [Detailed checks](m0018-spec-driven-sdlc.md#future-internal-checks) | Not assessed in this run |
+| m0019 | E, F, H, I, J | [Detailed checks](m0019-verification-validation.md#future-internal-checks) | Not assessed in this run |
+| m0020 | Historical preservation | [Detailed checks](m0020-workspace-baseline.md#future-internal-checks) | Not assessed in this run |
+| m0021 | H | [Detailed checks](m0021-local-docker-service-consolidation.md#future-internal-checks) | Not assessed in this run |
+
 ## Sources
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
@@ -758,113 +876,3 @@ access dates do not mean those sources were reopened in this refresh.
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                  |
 > | Predecessor scope matrix, retiring 2026-07-05 pack                                                     | 2026-08-14 | Historical retained    | Read for structural comparison only; its dispositions were re-derived rather than carried forward. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
 >
-
-## Architecture Practice Delta Claims
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> | Claim ID | Owner leaf | Evidence mode | Source family |
-> | --- | --- | --- | --- |
-> | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
->
-
-## Architecture Practice Scope Application
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> | Claim ID | Scope | Disposition | Adoption conditions | Limitations | Verification |
-> | --- | --- | --- | --- | --- | --- |
-> | `SCOPE-COMP-001` | agentic | applies | Select reader form and structural view for an agent boundary. | ADR gaps remain UNVERIFIED. | Review typed owner and linked evidence. |
-> | `SCOPE-COMP-001` | architecture | applies | Combine C4 view, arc42 outline, and decision-ready ADR deliberately. | No implied lifecycle/relationship rule. | Inspect C4/arc42/ADR evidence states. |
-> | `SCOPE-COMP-001` | common | applies | Use composition only for a stated communication need. | Advisory, not policy. | Check scope and audience. |
-> | `SCOPE-COMP-001` | docs | applies | Choose Diataxis form and self-contained diagram details. | No mandatory template. | Review form, legend, and links. |
-> | `SCOPE-COMP-001` | infra | applies | Use deployment view only where an infra owner needs it. | C4 container is not Docker proof. | Confirm infra owner/path. |
-> | `SCOPE-COMP-001` | ops | applies | Use dynamic/deployment communication for a catalog or incident concern. | No operation observed. | Confirm catalog/packet owner. |
-> | `SCOPE-COMP-001` | qa | applies | Review diagram readability and evidence limits. | No certification. | Inspect labels and source rows. |
-> | `SCOPE-COMP-001` | security | applies | Include security-relevant relationships when scoped. | No threat-model run. | Review scoped evidence. |
->
-
-## Scope Application
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-> | --- | --- | --- | --- | --- |
-> | agentic | applies | Follow the approved Spec, Plan, and Task before agentic work. | Read governing paths at the literal baseline. | This is routing, not agent execution proof. |
-> | architecture | applies | Route architecture decisions to their canonical artifacts and owners; investigate whether a C4 view, arc42 outline, or ADR is needed before adoption. | Confirm the tracked owner/path, source state, and scoped diff; seek separate approval for runtime observation. | D4 composition is advisory; ADR lifecycle and AD/Spec relationships remain UNVERIFIED. |
-> | common | applies | Apply shared-worktree and approval-boundary constraints. | Inspect only the exact owned-path diff. | A shared rule is not observed enforcement. |
-> | docs | applies | Apply the research and generic-reference document contracts. | Check frontmatter, headings, and local destinations. | The draft pack has no parent router. |
-> | infra | applies | Inspect tracked infrastructure configuration; seek separate approval for runtime observation. | Confirm the cited configuration path and scoped diff. | Configuration cannot demonstrate deployment. |
-> | ops | applies | Route an operational need to its owner and inspect tracked records before use. | Confirm the record path and scoped diff; seek separate approval for live operation. | No run or incident is inferred. |
-> | qa | applies | Perform scoped document and path checks after the unit is final. | Record actual commands and results in Task 0004; seek separate approval for execution-environment checks. | Full acceptance checks remain deferred. |
-> | security | applies | Keep sources local and avoid secret, credential, or remote-state access. | Confirm cited sources are tracked documentation; seek separate approval for control testing. | No control effectiveness is evaluated. |
->
-
-## Architecture Practice Composition Links
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - [Documentation architecture](./m0007-documentation-architecture.md)
-> - [SDLC document roles](./m0016-sdlc-document-roles.md)
->
-
-## 2026-09-05 Revalidation
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-> The package README maps all 93 requested category items to exactly one topical
-> member, while allowing related audits, data packages, and RES-0084 to supply
-> non-competing evidence. Current repository-baseline ownership is consolidated
-> into m0020; RES-0085 supplies dated scope and identity-recovery evidence only.
-> No category requires a new research identity or a member split.
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
-> | --- | --- | --- | --- | --- |
-> | Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
-> | Canonical ownership | Stage 00/01/02/03/05/99 remain normative | Repository-enforced | Semantic duplication still needs review | exact-diff review |
-> | Baseline evidence | m0020 records current `main`; RES-0085 preserves dated recovery evidence; RES-0084 owns GitHub mechanics | Defined, Local/Remote evidence by source | Mutable observations expire | dated revalidation |
->
-> Recommendation: extend an existing member when its question and lifecycle fit;
-> allocate a new package only for a distinct question, owner, observation cycle,
-> and navigational boundary.
->
-
-## Maintenance
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Re-run the sorted scope-file query and parse all three typed contracts whenever
-> persona scopes, catalog enums, agents, functions, path-authority records, prose
-> ownership tables, or provider projections change. Re-measure path counts when
-> relevant surfaces are added, removed, or renamed. Re-check the three ownership
-> surfaces against one another whenever any of them is edited, since no validator
-> does it. A later topic leaf may refine applicability, but it must retain an
-> explicit disposition for every scope and link back to this matrix.
->
-
-## Related Documents
-
-- [Research pack](README.md)
-- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
-- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
-- [Verification and validation](m0019-verification-validation.md)
-- [Refresh Spec](../../../98.archive/completed/03.specs/0185-agentic-research-refresh/spec.md)
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - [Workspace baseline](./m0020-workspace-baseline.md)
-> - [Verification and validation](./m0019-verification-validation.md)
-> - [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
-> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
-> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-> - [Agent governance hub](../../../../.agents/README.md)
-> - [Research category router](../README.md)

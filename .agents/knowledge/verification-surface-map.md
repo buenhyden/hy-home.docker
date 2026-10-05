@@ -1,10 +1,10 @@
 ---
 title: "Verification Surface Map"
 version: "0.8.1"
-type: "governance/knowledge"
+type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-05"
 created: "2026-09-06"
 observed_at: "2026-10-02"
 review_cycle: "on-gate-change"
@@ -26,7 +26,9 @@ the local context withholds. Hosted job scheduling is routed to the
 [canonical phase matrix](../governance/quality-standards.md#canonical-delivery-phase-matrix);
 remote branch protection and runtime observation are outside this map.
 
-## Public Entrypoints
+## Rules
+
+### Public Entrypoints
 
 | Command | Use |
 | --- | --- |
@@ -39,7 +41,7 @@ remote branch protection and runtime observation are outside this map.
 Inspect with `--explain` before executing when a change touches an unfamiliar
 surface. A leaf may need inputs the current authorization does not cover.
 
-## Suites and Their Roots
+### Suites and Their Roots
 
 | Suite | Root gate nodes |
 | --- | --- |
@@ -50,7 +52,7 @@ surface. A leaf may need inputs the current authorization does not cover.
 | `operations` | operations catalog; supply chain; Compose validation; infrastructure hardening; template security baseline; quickwin baseline |
 | `repository-integrity` | diff hygiene; shell syntax; script manifest; tech stack version drift; workflow harness; dependency vulnerability audit; git-flow contract; frontend quality; Storybook coverage; `zizmor`; pre-commit; repository integrity regressions |
 
-## What the Local Context Withholds
+### What the Local Context Withholds
 
 `--profile full` names every suite, not every leaf. `_LOCAL_EXCLUDED_GATE_IDS`
 in `scripts/validation/ci_gate_runner.py` removes nine leaves when the context
@@ -75,7 +77,7 @@ local gate installs nothing. `run-npm`, `install-playwright` and
 `pull_request`, inside the adapter, so removing a leaf from this list alone
 would not make it reachable.
 
-## What a Change Selects
+### What a Change Selects
 
 The declared `repository-integrity` fallback is always included. Rows below
 show the suites selected by each matching path rule, not a replacement for
@@ -104,7 +106,7 @@ Known paths outside a root's prefixes omit that optional root. Unavailable or
 invalid changed-path evidence fails closed before planning. `full` retains
 all suite roots before the execution-context exclusions above apply.
 
-## Changed Route and PR Title Edits
+### Changed Route and PR Title Edits
 
 `.github/workflow-contract.yml` `public_gate.changed_path_rules` selects the
 suites for a changed path. The tracked pre-commit declaration no longer
@@ -118,7 +120,7 @@ eligible for documentation-only and title-only PR events. The installed
 `core.hooksPath` can differ from the tracked declaration and must be observed
 separately.
 
-## Generated Outputs and Staging Order
+### Generated Outputs and Staging Order
 
 A generator that builds its inventory from `git ls-files --cached` cannot see an
 added file until that file is staged, so a freshness check can pass on an
@@ -129,7 +131,7 @@ the thing to get right before believing a freshness result. `graphify-out/`
 is not a comparable case: it is untracked local output, so it produces no diff
 to separate and the intermediate-stash race it once caused cannot occur.
 
-## Test Ownership
+### Test Ownership
 
 | Layer | Location | Verifies |
 | --- | --- | --- |
@@ -139,7 +141,9 @@ to separate and the intermediate-stash race it once caused cannot occur.
 | Operational rehearsal | `examples/operations/` | reusable synthetic operational input |
 | Agent output | `.agents/evaluations/` | deterministic, model-free fixture evaluation |
 
-## Provenance
+## Evidence
+
+### Provenance
 
 Every section was re-read against the tracked sources at repository commit
 `e7ec6e78b` on 2026-09-15. Each source is named with the commit that last
@@ -188,7 +192,7 @@ working tree based on `567e9ea00` was subsequently read on 2026-09-29 at
 Those sources establish the canonical cutover and retained all-six-suite
 impact; the former path above preserves only the earlier observation.
 
-## Knowledge Validity
+### Knowledge Validity
 
 The facts here are valid only while their named sources agree with the stated
 observation range and no refresh trigger has fired. They cover tracked,
@@ -198,7 +202,7 @@ correction, or review expiry invalidates the affected fact until it is re-read.
 An obligation or durable decision routes to its canonical owner; this map is
 then refreshed or retired rather than copied.
 
-## Refresh Triggers
+### Refresh Triggers
 
 - A public suite is added, removed, or renamed.
 - A root gate node joins or leaves a suite.

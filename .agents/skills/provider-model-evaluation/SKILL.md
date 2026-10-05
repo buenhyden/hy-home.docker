@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-29"
+  updated: "2026-10-05"
   function_id: "provider-model-evaluation"
   scope: "qa"
   owner_agent: "eval-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # provider-model-evaluation
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -40,15 +42,7 @@ and synthetic comparison fixture must be explicit before evaluation begins.
    catalog presence, configured defaults, or synthetic scores into a live-model
    claim.
 
-## Outputs
-
-- `sourced-model-disposition`, `native-acceptance-verdict`, and
-  `regression-comparison`, each in the shape `assets/disposition.md` defines.
-  The shapes keep provider lifecycle, repository disposition, entitlement, and
-  runtime acceptance in separate rows, because collapsing any pair is how a
-  catalog row becomes a claim that a model is usable here.
-
-## Gates
+### Gates
 
 - Every fast-moving fact retains its official source and retrieval date;
   `references/source-discipline.md` states what counts as one and what may
@@ -57,13 +51,21 @@ and synthetic comparison fixture must be explicit before evaluation begins.
   separately approved runtime boundary supplies direct evidence.
 - Comparisons are deterministic, value-free, and do not call a provider.
 
+## Outputs
+
+- `sourced-model-disposition`, `native-acceptance-verdict`, and
+  `regression-comparison`, each in the shape `assets/disposition.md` defines.
+  The shapes keep provider lifecycle, repository disposition, entitlement, and
+  runtime acceptance in separate rows, because collapsing any pair is how a
+  catalog row becomes a claim that a model is usable here.
+
 ## Failure Handling
 
 Return an unverified disposition and stop when a source, native-schema fact,
 fixture result, or approval boundary is missing. Do not infer runtime
 acceptance, entitlement, quality, cost, or latency.
 
-## Related Documents
+## References
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)

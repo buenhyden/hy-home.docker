@@ -1,7 +1,7 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "governance/sdlc"
+type: "governance/workflow"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
@@ -16,13 +16,21 @@ updated: "{{UPDATED}}"
 
 {{CONTRACT_PURPOSE}}
 
-## Lifecycle
+## Inputs
+
+{{APPROVED_SCOPE_AND_REQUIRED_SOURCE_INPUTS}}
+
+## Sequence
 
 {{STAGE_SEQUENCE_AND_STATUS_TRANSITIONS}}
 
-## Authority Boundaries
+## Stop Conditions
 
 {{OWNED_AND_NOT_OWNED_DECISIONS}}
+
+## Outputs
+
+{{RESULT_ARTIFACTS_AND_TASK_EVIDENCE}}
 
 ## Related Documents
 

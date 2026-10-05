@@ -34,6 +34,14 @@ route하고 link를 남깁니다.
 
 ## Structure
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [glossary.md](glossary.md) | 저장소 용어와 실제 rule owner |
+| [repository-map.md](repository-map.md) | 표면에서 canonical owner로의 경로 |
+| [verification-surface-map.md](verification-surface-map.md) | 검증 진입점과 suite 경로 |
+
 ```text
 .agents/knowledge/
 ├── README.md

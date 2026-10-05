@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Triage CouchDB 3-node cluster health, cluster-init results, membership, and isolated-network route limits.
 
 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 fresh CouchDB cluster의 격리 복원 rehearsal 계약을 제공한다. 이번 문서 변경에서 데이터 명령은 실행하지 않았다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구현에 없는 서비스명이나 secret control을 사용하지 않도록 한다.
 
-## When to Use
+### When to Use
 
 - 한 개 이상의 CouchDB 노드가 unhealthy, stopped, or missing 상태일 때
 - `couchdb-cluster-init`가 실패했거나 membership이 세 노드를 표시하지 않을 때
@@ -40,6 +48,8 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 정적 검사는 `labs/.env.example`과 `labs/couchdb.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
@@ -120,21 +130,25 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. file restore에서는 upstream 순서대로 index files를 database files보다 먼저 배치하고, config/metadata/data ownership을 검증한 뒤 target만 시작한다. replication path에서는 security objects와 system database scope를 별도로 확인한다.
 6. `/_up`, `/_membership`, `/_all_dbs`, shard maps, per-database document counts, representative reads, `_security`, replication scheduler를 검증한다. 불일치가 있으면 target을 승격하지 않고 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 membership 요약을 기록한다.
 - secret 값, cookie 값 또는 민감한 field를 포함한 인증된 HTTP 전체 출력은 기록하지 않는다.
 - runtime session에 선택한 profile을 기록한다. root는 `labs/couchdb.yml`을 include하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. production cutover, membership 변경, cookie rotation은 별도 승인 사항이며 이 변경에서는 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 membership에 예상한 node 3개가 나타나지 않거나, cluster-init이 반복 실패하거나, 외부 접근이 필요하거나, secret 노출 위험이 있거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, membership 요약, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [CouchDB Usage Guide](../guides/0026-couchdb.md) (`GDE-0026`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

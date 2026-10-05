@@ -1,7 +1,7 @@
 ---
 title: "Software Development Lifecycle"
 version: "1.3.0"
-type: "governance/sdlc"
+type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
 updated: "2026-10-05"
@@ -14,7 +14,12 @@ updated: "2026-10-05"
 Provide one lifecycle for human and agent work without duplicating document
 shape rules or executable gates.
 
-## Lifecycle
+## Inputs
+
+An approved change uses its governing Requirements and Architecture, the active
+Spec Package, the current Task, and the registered Stage 99 contract.
+
+## Sequence
 
 1. **Requirements** — Stage 01 owns durable, solution-independent needs and
    acceptance criteria.
@@ -35,7 +40,7 @@ to its Stage 01/02/05 owner, then complete and preserve the execution package.
 This adapts the [Spec Kit workflow](https://github.com/github/spec-kit) while
 retaining this repository's separate numbered Task records.
 
-The current Task's `Verification Evidence` owns the promotion receipt: connect
+The current Task's `Evidence` owns the promotion receipt: connect
 each acceptance criterion to its Plan work unit, actual Task result, and durable
 target document, or record why no durable update is needed. Link existing
 evidence rather than copying it into a second ledger. Failed acceptance returns
@@ -52,32 +57,26 @@ and `superseded`; Tasks retain `draft`, `ready`, `in-progress`, `blocked`,
 `completed`, and `cancelled`. Navigation READMEs and the current archive
 catalog remain `active`; route records use `draft` or `sealed`.
 
-A Plan has one Spec parent and a Task has one Plan parent. A multi-item Task
-uses its registered Status cells as its execution source: blocked first, then
-mixed terminal/nonterminal or any in-progress as in-progress, then ready,
-draft, all-cancelled as cancelled, and remaining terminal items as completed.
-The frontmatter stores that derived summary. Over validated nonterminal Task
+A Plan has one Spec parent and a Task has one Plan parent. Task frontmatter is
+the only execution-status source, including Tasks with multiple evidence rows.
+Each row identifies the existing criterion and Plan work unit; it carries a
+result and acceptance, never another status or item identity. Over nonterminal Task
 summaries, any in-progress summary makes the Spec and Plan in-progress; a
 nonempty set of all blocked summaries makes both blocked. A mixed ready/blocked
 set, or a zero/terminal-only set, retains the actual contract status and never
-auto-closes it. A completed execution item can record `PASS` while Review
-Evidence remains pending in a blocked or otherwise nonterminal Task. At Task
-and Spec closure, every numbered criterion requires `PASS` and accepted Review
-Evidence; `not-required` does not waive that requirement. Task-result vocabulary
+auto-closes it. An evidence row can record `PASS` while acceptance
+remains pending in a blocked or otherwise nonterminal Task. At Task
+and Spec closure, every numbered criterion requires `PASS` and accepted
+evidence; `not-required` does not waive that requirement. Task-result vocabulary
 is exactly `NOT_RUN`, `PASS`, `FAIL`, `DEFER`, and `NOT_APPLICABLE`. Lifecycle
 events and generation-migration proof rows record observed structure only; they
 do not authenticate approval, review, or execution.
 
-An ordinary four-column Task receipt uses frontmatter as its status source.
-Where one Task records multiple criterion/work-unit items, the optional
-five-column receipt's Status cells are the source and share the existing
-criterion/work-unit identity; frontmatter stores the validated derived summary.
-It does not receive a second counter or progress ledger. A multi-item Task
-summary derives in this order:
-`blocked`; mixed terminal/nonterminal or any `in-progress`; `ready`; `draft`;
-all `cancelled`; then remaining terminal members as `completed`. The Registry
-supplies exact table shapes and status vocabulary, and `spec_packages.py`
-implements this SDLC meaning. A Task event records only an observed
+The Registry supplies the exact eight-column Evidence and six-column Work
+Breakdown shapes. `spec_packages.py` implements their coverage and completion
+meaning. Frozen or already-terminal Task bodies retain their source-generation
+reader, bound by the current migration's exact Git source proof. That
+compatibility does not authorize new legacy receipts. A Task event records only an observed
 direct registered transition with same-Task evidence. Structural event
 validation does not authenticate approval; current authorization remains manual
 under the approval boundary.
@@ -92,7 +91,7 @@ receipt's machine shape, so templates refer here for completion meaning.
 Spec and Plan closure require their registered terminal conditions; Task
 completion evidence alone does not close a package with nonterminal members.
 
-## Authority Boundaries
+## Stop Conditions
 
 Every transition requires the smallest applicable validation set, exact Task
 evidence, independent review for material changes, and logical Conventional
@@ -105,6 +104,11 @@ Approval boundaries are defined in
 Trace durable requirement IDs through Architecture and Spec packages. Record
 implementation and verification against the current Task rather than a parallel
 progress or handoff document.
+
+## Outputs
+
+The current Task records execution evidence, and the durable Requirement,
+Architecture, Operations, or governance owner receives any lasting meaning.
 
 ## Related Documents
 

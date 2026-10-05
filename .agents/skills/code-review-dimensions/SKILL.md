@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -15,7 +15,9 @@ metadata:
 
 # code-review-dimensions
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ An exact diff and governing specification must be available; review scope and no
 2. Reproduce candidate defects against tracked code or tests and cite the narrowest useful file-and-line location.
 3. Calibrate Critical, Important, and Minor severity from impact, reachability, and remediation urgency.
 
-## Outputs
-
-- A dimensioned review with evidence-backed findings and a bounded verdict.
-
-## Gates
+### Gates
 
 - Every finding has a concrete evidence citation.
 - Severity is calibrated and does not inflate style preferences into blockers.
+
+## Outputs
+
+- A dimensioned review with evidence-backed findings and a bounded verdict.
 
 ## Failure Handling
 
 Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
 
-## Related Documents
+## References
 
 - [Code reviewer](../../roles/code-reviewer.md)
 - [Change review execution](../change-review-execution/SKILL.md)

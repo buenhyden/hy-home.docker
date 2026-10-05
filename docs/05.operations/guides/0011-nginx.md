@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # 01-Gateway Nginx Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Implementation Sources
 
@@ -115,18 +125,18 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 - `proxy_pass` trailing slash 처리 실수로 경로 재작성 오류
 - timeout 전역값/특정 location override 충돌
 
-## Common Checks
+### Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec nginx nginx -t`는 승인된 Nginx runtime context가 실행 중일 때만 사용한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0011-nginx.md)을 따른다.
 
 구성·인증서 복구, 변경 적용과 업그레이드는 [Runbook](../runbooks/0011-nginx.md#rollback-or-recovery)이 소유한다. tmpfs는 업무 데이터 백업 대상이 아니다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [01-Gateway Nginx Operations Policy](../policies/0011-nginx.md) (`POL-0011`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)

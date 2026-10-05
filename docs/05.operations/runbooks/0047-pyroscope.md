@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Pyroscope 준비 상태, profile 입력 진단, 로컬 저장소 증거, 재시작과 용량 문제 보고.
 
 이 런북은 Pyroscope profile ingestion gap, Grafana datasource failure, local filesystem storage pressure, high CPU overhead, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limits, local storage boundary를 검증하며, 데이터 삭제나 retention/capacity 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Grafana Pyroscope datasource에서 최근 profile이 보이지 않을 때.
 - Alloy `pyroscope.write` endpoint는 선언되어 있지만 profile ingestion gap이 의심될 때.
@@ -33,6 +41,8 @@ created: "2026-05-17"
 - `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -146,22 +156,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. Pyroscope를 시작하고 `profilecli ready`를 실행한다. 과거 기준값을 조회하고 label을 붙인 test profile 1개를 수집·조회한 뒤 Grafana 연동을 검증한다. Alloy가 수집한다고 주장하기 전에 실제 source를 확인한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 state/route 변경은 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Profile label or payload에 secret-bearing value가 의심되면 원문 값을 기록하지 않는다.
 - Ingestion 장애는 Alloy writer check, Pyroscope ready state, Grafana datasource result를 함께 기록한다.
 - Storage/capacity symptom은 로그 발췌, `pyroscope-data` volume 경계, approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 profile data deletion, filesystem mutation, retention/storage/ingestion-limit change는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, storage/capacity 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Pyroscope Usage Guide](../guides/0047-pyroscope.md) (`GDE-0047`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

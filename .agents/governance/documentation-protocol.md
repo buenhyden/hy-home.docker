@@ -4,18 +4,28 @@ version: "3.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Documentation Protocol
 
-## Authority
+## Overview
+
+Keep one document authority per role and preserve truthful provenance throughout authoring and retirement.
+
+## Scope
+
+Current authored documents, registered machine inputs, and retained historical units.
+
+## Rules
+
+### Authority
 
 The Stage 99 registry is the only machine authority for paths, profiles,
 required sections, lifecycle values, and identifier relations. agent governance owns
 authoring behavior and `scripts/` owns executable validation.
 
-## Document Boundaries
+### Document Boundaries
 
 - Stage 01 owns long-lived solution-independent requirements.
 - Stage 02 owns current architecture descriptions and durable decisions.
@@ -31,7 +41,7 @@ Do not create parallel PRD, SRS, interface-requirement, design, tests, release,
 progress, or handoff authorities when the canonical package already owns the
 content. Root `DESIGN.md` remains UI and design-system authority only.
 
-### Entry point for documents outside `docs/`
+#### Entry point for documents outside `docs/`
 
 Outside `docs/`, README navigation and directory-purpose routes are allowed.
 Do not link to individual numbered-stage documents or depend on them for current
@@ -66,7 +76,7 @@ reads, investigation, and docs-internal traceability are not outside-docs
 instruction dependencies. Links inside `docs/` keep their existing rules;
 [Links into Stage 98](#links-into-stage-98) governs archive citations.
 
-## Authoring Rules
+### Authoring Rules
 
 1. Select the registry profile before creating or moving a document.
 2. Use four-digit numbered slugs where the profile requires an identity.
@@ -122,13 +132,13 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     that owns the implementation.
 13. Update cross-links in the same logical change.
 14. Record execution evidence in the co-located Stage 03 Task.
-    A single Task status belongs in frontmatter. A multi-item receipt keeps its
-    existing acceptance-criterion/work-unit identity and uses the Registry's
-    optional Status column; it does not create a second progress ledger. Record
+    Task status belongs only in frontmatter. Every evidence row keeps its
+    existing acceptance-criterion/work-unit identity and records result and
+    acceptance; it has no Status column or second progress ledger. Record
     an optional lifecycle event only for an observed direct registered edge and
     same-Task evidence. A Plan has one Spec parent and a Task has one Plan
-    parent where their Registry profiles require it. Task results and Review
-    Evidence use the Registry vocabulary; structural records do not authenticate
+    parent where their Registry profiles require it. Task results and evidence
+    acceptance use the Registry vocabulary; structural records do not authenticate
     approval, review, or execution.
 15. Validate metadata, links, and stage-specific contracts before completion.
 16. Keep a fenced command block runnable: every repository path it names must be
@@ -142,7 +152,7 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
     outside the check: the first are untracked by design and the second are
     supposed to name what the tree has since dropped.
 
-### Document language
+#### Document language
 
 The Registry `language` field of a document's profile decides the language of
 its prose. The profiles follow one priority order:
@@ -182,7 +192,7 @@ every document whose profile declares a language, and the metadata body
 contract applies the same judgment to each changed document. Conversational responses are not artifacts and
 follow [output style](output-style.md).
 
-### README navigation
+#### README navigation
 
 A README whose directory holds at least one subdirectory and no direct files,
 apart from itself and placeholders such as `.gitkeep`, is a folder router. Within its own directory,
@@ -206,15 +216,15 @@ For machine-consumed historical tables, place
 immediately before the table header and separator. Only that contiguous table is
 evidence; surrounding instructions remain current and validated normally.
 
-### Role-Specific Authoring
+#### Role-Specific Authoring
 
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
-- Use existing Description sections for architecture views: context and scope
-  in `System Boundaries`, building blocks in `Components`, runtime interaction
-  in `Data Flow`, topology in `Deployment View`, and quality scenarios in
+- Use the Description core for architecture views: context and scope
+  in `Scope`, building blocks, runtime interaction, and topology in `Architecture`,
+  and quality scenarios in
   `Quality Attributes`. Add registered optional content only when it helps the
   reader; do not impose an empty full architecture framework.
 - Consider system context and container diagrams for system-level Descriptions.
@@ -250,7 +260,7 @@ evidence; surrounding instructions remain current and validated normally.
   applicable. Registered generators own generated outputs, whose freshness is
   verified without turning evidence into current policy.
 
-### Release Evidence Boundary
+#### Release Evidence Boundary
 
 The repository uses `external-release-evidence`: the Release Runbook owns the
 repeatable readiness procedure; the current Task owns a particular execution's
@@ -265,7 +275,7 @@ consumer requires it, through an approved ADR and a coordinated Registry change.
 Do not change an existing accepted decision silently. Remote release and
 deployment actions require separate authorization.
 
-### Reference Framework Adoption
+#### Reference Framework Adoption
 
 These sources inform the rules above; they do not replace stage taxonomy or
 machine contracts. Templates use concise repository-specific forms, not copies
@@ -280,7 +290,7 @@ of external templates.
 | [arc42](https://arc42.org/) | partial | proportionate context, structure, flow, deployment, quality, and risk views in registered Description sections |
 | [Google SRE incident management](https://sre.google/resources/practices-and-processes/incident-management-guide/) | partial | factual Incident coordination and blameless Postmortem follow-through; no implied live-response authority |
 
-### Gap-to-Stage Routing
+#### Gap-to-Stage Routing
 
 | Gap Type | Owner | Rule |
 | --- | --- | --- |
@@ -298,14 +308,14 @@ of external templates.
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
-## Document Retention and Retirement
+### Document Retention and Retirement
 
 Retention follows lifecycle and ownership. Age and document count are never
 retention criteria. A document is retained while it owns current behavior,
 structure, decision, or procedure. It is retired when its status is terminal
 and its still-current meaning has moved to a canonical owner.
 
-### Stage 98 dispositions
+#### Stage 98 dispositions
 
 Stage 98 retains what the active stages no longer carry, in six dispositions.
 Each disposition owns a directory that is created by the change that first uses
@@ -350,7 +360,7 @@ normal Git history remains the recovery mechanism for frozen content. Existing
 Task Commit Ledgers are original execution evidence and remain unchanged; they
 are not duplicate Archive recovery ledgers.
 
-#### Links into Stage 98
+##### Links into Stage 98
 
 Links between documents inside `docs/` keep their existing contracts. Resolve
 path, profile, and preservation unit first; then apply current assessment and
@@ -371,7 +381,7 @@ commit and original path, never repaired against today's tree. Current catalog
 and assessment links still use current link checks. A historical broken target
 is an observation or erratum, not permission to rewrite its source.
 
-#### Current assessment and Git-history-only availability
+##### Current assessment and Git-history-only availability
 
 The existing Retention Catalog owns optional current assessment rows, at most
 one per unit. The capture envelope remains immutable. Assessment values are
@@ -407,7 +417,7 @@ credential revocation and security response, not ordinary archival deletion.
 Tests of removal use isolated Git fixtures and grant no permission to remove
 real records. A sealed Tombstone or Migration keeps its original form.
 
-### Retention by status
+#### Retention by status
 
 The Registry owns each profile's entry state, transition edges, and terminal
 states. Apply that lifecycle before disposition; do not infer permission from
@@ -428,17 +438,17 @@ object, including the original Task evidence.
 Stage 03 occupancy is a package judgment using the Registry's Spec, Plan, and
 Task terminal sets. In an unfinished package, completed Tasks and validly
 cancelled Tasks may remain; a terminal Plan may not. A cancelled Task records
-nonempty `reason` and `approved_by`, a valid `approved_at` date, and `criteria`.
-Each criterion names a Spec acceptance number and exactly one of another
-non-cancelled Task in the package (`reassigned_to`) or a nonempty withdrawal
-reason (`withdrawn`). An empty list means no assigned criterion. Withdrawal
+nonempty `reason`, an actual `authorization_ref`, and `criteria_disposition`.
+Each item names a Spec acceptance `criterion` and exactly one of another
+non-cancelled Task in the package (`successor`) or an actual approved scope
+withdrawal reference (`withdrawal_ref`). An empty list means no assigned criterion. Withdrawal
 never exempts a criterion still present in the Spec from PASS evidence.
 A cancelled or superseded Spec keeps no package members in active Stage 03.
 Standalone documents keep their per-document disposition rule. No rule here
 renames lifecycle statuses or applies a union of terminal sets to other stages.
 Stage 03 may be empty when no package remains, including no waiting package.
 
-### Retirement preconditions
+#### Retirement preconditions
 
 Retire a package or a standalone document only when all of these hold.
 
@@ -485,7 +495,7 @@ objects remain explicit recovery limits.
 
 Age may trigger a disposition review. It never triggers a deletion.
 
-### Tombstone scope
+#### Tombstone scope
 
 One Tombstone records one retired route, never one per member. It names the
 retired route, its successor or absence, and the reason, holds no body, and
@@ -500,7 +510,7 @@ namespace of the document it retires, and the change that writes a stage's
 first Tombstone creates that namespace. A missing namespace is a namespace to
 create, never a reason to remove a document without a withdrawal record.
 
-### Divergent branch package handoff
+#### Divergent branch package handoff
 
 This rule applies only to an explicitly approved integration of divergent,
 committed lineages when the same source identity is already an immutable
@@ -528,13 +538,17 @@ evidence. Machine guards verify the full source tree against the superseded
 mirror, the exact source commit/path/identity, the existing immutable completed
 same-ID Spec record, and the distinct target.
 
-### Implementation coverage
+#### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement
 owner for its obligation and one Stage 02 Description or ADR owner for its
 structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

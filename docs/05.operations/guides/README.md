@@ -10,27 +10,23 @@ layer: "operations"
 
 # 운영 가이드
 
-> 정상 운영 맥락, 전제, 공통 점검을 소유하는 Guide 인덱스
-
 ## Overview
+
+### Overview
 
 Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하는 데 필요한 맥락을 소유한다. 실행 절차가 필요하면 같은 slug의 Runbook으로 넘긴다. 아래 표는 도메인별로 등록된 모든 Guide를 한 번씩 나열하며 각 행의 관련 문서 열에서 같은 subject의 Policy와 Runbook을 찾을 수 있다.
 
-## Audience
-
-- 운영자
-- 개발자
-- SREs
-- 보안 담당자
-- AI 에이전트
-
 ## Scope
+
+### Scope
 
 - 이 디렉터리의 모든 Guide를 도메인별로 한 번씩 나열한다.
 - 파일 이름은 `####-<slug>.md`이고 `####`는 문서 자신의 artifact 번호다.
 - 같은 slug는 다른 역할 디렉터리에서 같은 subject를 가리킨다.
 
 ## Structure
+
+### Structure
 
 도메인은 경로가 아니라 이 인덱스의 분류다. `관련 문서` 열은 같은 subject의
 다른 역할 문서를 가리킨다.
@@ -201,6 +197,16 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 | [hy-home.k8s integration](0096-k8s-integration.md) | `GDE-0096` | [Policy](../policies/0096-k8s-integration.md), [Runbook](../runbooks/0096-k8s-integration.md) |
 
 ## Usage
+
+### Audience
+
+- 운영자
+- 개발자
+- SREs
+- 보안 담당자
+- AI 에이전트
+
+### Usage
 
 1. 새 Guide는 [Guide template](../../99.templates/templates/operations/guide.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.

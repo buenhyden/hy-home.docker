@@ -19,6 +19,10 @@ This document records the decision to first apply immediately applicable hardeni
 
 The laboratory tier greatly affects operator productivity but provides UIs with strong privileges. Therefore, loose security/operating standards can create bypass paths into the entire core tier. Boundary hardening is needed in the short term, and strengthened experimental-service operating governance (expiration/approval/audit) is needed in the mid term.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Apply immediate hardening.
@@ -35,23 +39,15 @@ The laboratory tier greatly affects operator productivity but provides UIs with 
   - RedisInsight minimal-privilege/audit log policy
   - open-notebook notebook data retention/expiration and direct API/DB host-port exposure review
 
-## Consequences
+### Decision Drivers
 
-- **Positive**:
-  - Management UIs sit behind a consistent security boundary.
-  - Removes direct-exposure bypass paths and blocks operational drift in CI.
-  - Catalog expansion items become executable in Plan/Tasks/Operations.
-- **Trade-offs**:
-  - The allowlist default may require environment variable adjustment for remote operator access.
-  - Adding the CI gate slightly increases PR processing time.
+The decision context above records the applicable drivers and evidence.
 
-### Explicit Non-goals
+## Alternatives
 
-- Immediately replatforming the laboratory service group
-- A full redesign of core Keycloak/Traefik policy
-- Immediately automating the runtime of all catalog expansion items
+### Alternatives
 
-## Options Considered
+### Options Considered
 
 ### Implement all catalog items immediately
 
@@ -67,13 +63,21 @@ The laboratory tier greatly affects operator productivity but provides UIs with 
 - Bad:
   - Lacks the ability to actually block regressions
 
-## Traceability
+## Consequences
 
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+- **Positive**:
+  - Management UIs sit behind a consistent security boundary.
+  - Removes direct-exposure bypass paths and blocks operational drift in CI.
+  - Catalog expansion items become executable in Plan/Tasks/Operations.
+- **Trade-offs**:
+  - The allowlist default may require environment variable adjustment for remote operator access.
+  - Adding the CI gate slightly increases PR processing time.
 
-## Decision Drivers
+### Explicit Non-goals
 
-The decision context above records the applicable drivers and evidence.
+- Immediately replatforming the laboratory service group
+- A full redesign of core Keycloak/Traefik policy
+- Immediately automating the runtime of all catalog expansion items
 
 ## Related Documents
 

@@ -19,6 +19,10 @@ This document records the decision to first carry out immediately applicable har
 
 The AI tier handles GPU/model resources and user conversation paths at the same time, so an imbalance in security/availability/operational control can quickly lead to failures and policy violations. The catalog requires strengthened operating standards for 08-ai, so a decision that separates short-term stabilization from mid-term expansion is needed.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Carry out immediate hardening.
@@ -31,6 +35,30 @@ The AI tier handles GPU/model resources and user conversation paths at the same 
   - Establish an Ollama model promotion (experimental -> production) procedure
   - Establish an Open WebUI model access permission separation policy
   - Establish a conversation log retention/masking policy
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Implement all catalog expansion immediately
+
+- Good:
+  - Functional expansion can be felt quickly
+- Bad:
+  - Increased change scope raises stabilization/rollback complexity
+
+### Update documentation only, hold off on runtime/CI hardening
+
+- Good:
+  - Reduces short-term implementation cost
+- Bad:
+  - Cannot automatically block policy violations/regressions
 
 ## Consequences
 
@@ -53,30 +81,6 @@ The AI tier handles GPU/model resources and user conversation paths at the same 
 
 - Guardrail strategy: The AI public path requires the gateway+SSO chain
 - Tool gating: Apply `check-all-hardening.sh 08-ai` as a required policy gate before merging into the AI tier
-
-## Options Considered
-
-### Implement all catalog expansion immediately
-
-- Good:
-  - Functional expansion can be felt quickly
-- Bad:
-  - Increased change scope raises stabilization/rollback complexity
-
-### Update documentation only, hold off on runtime/CI hardening
-
-- Good:
-  - Reduces short-term implementation cost
-- Bad:
-  - Cannot automatically block policy violations/regressions
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

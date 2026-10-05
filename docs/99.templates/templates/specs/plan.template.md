@@ -18,28 +18,24 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Objective
+## Overview
 
-{{OBJECTIVE}}
+{{OVERVIEW}}
 
-## Dependencies
+## Work Breakdown
 
-{{DEPENDENCIES}}
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| {{WORK_UNIT}} | {{CRITERIA}} | {{WORK}} | {{DEPENDENCIES}} | {{TASK}} | {{VERIFICATION}} |
 
-## Execution Sequence
+## Verification Plan
 
-<!-- Author prompt: Use numbered entries with stable W-number labels, for example W1 followed by a colon, so Task evidence can refer to each work unit. -->
+{{VERIFICATION_PLAN}}
 
-{{TASKS_AND_ORDER}}
+## Risks and Rollback
 
-## Risk and Rollback
+{{RISKS_AND_ROLLBACK}}
 
-{{RISK_AND_ROLLBACK}}
+## Related Documents
 
-## Verification
-
-{{VERIFICATION}}
-
-## Rulings
-
-{{IMPLEMENTATION_RULINGS}}
+{{RELATED_DOCUMENTS}}

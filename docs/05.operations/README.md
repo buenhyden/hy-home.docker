@@ -23,7 +23,7 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 구조 결정은 [ADR-0043](../02.architecture/decisions/0043-operations-role-layout.md)이
 소유한다.
 
-## Audience
+### Audience
 
 - 운영자
 - 개발자

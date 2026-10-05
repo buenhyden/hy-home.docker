@@ -14,7 +14,15 @@ created: "2026-09-23"
 
 # Pact Broker Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 프로비저닝 실패, 비정상 broker, 인가되어야 할 클라이언트에 대한 401 오류,
 데이터베이스 손실, 크리덴셜 교체 시 사용한다.
@@ -29,6 +37,8 @@ created: "2026-09-23"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 점검한다.
 
@@ -70,12 +80,16 @@ Basic secret은 모든 승인된 client에도 반영한다. 이전 자격 증명
 검증 이력·인증을 확인한다. 승인 전 활성 DB를 덮어쓰지 않는다. 업그레이드는 wrapper와
 broker 선언 버전의 release/schema 근거 및 이전 이미지·DB 복구점을 함께 검토한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
 크리덴셜이나 pact 본문은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 broker 데이터베이스가 유일한 상태다. 이 데이터베이스는 `mng-pg` pgBackRest 백업에
 포함되며(RUN-0021), `mng-pg`를 복원하면 함께 복원된다. 데이터베이스를 잃으면
@@ -83,14 +97,14 @@ broker 데이터베이스가 유일한 상태다. 이 데이터베이스는 `mng
 있고 provider는 다시 검증할 수 있다. 데이터베이스를 삭제하는 것은 승인이
 필요한 데이터 변경이다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 basic auth 비활성화, 공개 읽기 허용, loopback 밖으로 포트 노출, 역할에
 자신의 데이터베이스 이상의 권한 부여 요청이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0093-pact-broker.md) (`GDE-0093`)
 - [Policy](../policies/0093-pact-broker.md) (`POL-0093`)

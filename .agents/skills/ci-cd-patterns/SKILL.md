@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "ci-cd-patterns"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # ci-cd-patterns
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ The delivery contract, repository workflow state, and protected remote-action bo
 2. Select least-privilege permissions, immutable action references, bounded matrices, and secret-safe output for each job.
 3. Validate trigger/base-SHA behavior and record which deployment or remote gates remain outside local evidence.
 
-## Outputs
-
-- A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
-
-## Gates
+### Gates
 
 - Workflow permissions are least privilege.
 - Every check is reproducible or explicitly classified as CI-only.
+
+## Outputs
+
+- A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
 
 ## Failure Handling
 
 Stop when credentials, remote rulesets, or promotion authority are required; produce a scoped follow-up rather than weakening the gate.
 
-## Related Documents
+## References
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
 - [GitHub governance](../../governance/github-governance.md)

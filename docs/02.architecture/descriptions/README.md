@@ -17,13 +17,6 @@ layer: "architecture"
 viewpoints와 views, 데이터·제어 흐름, 인프라, 요구사항 disposition과 관련
 ADR을 기록한다.
 
-## Audience
-
-- System Architects
-- Developers
-- Operators
-- AI Agents
-
 ## Scope
 
 이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
@@ -68,6 +61,17 @@ docs/02.architecture/descriptions/
   home and development host 아키텍처.
 
 ## Usage
+
+### Usage
+
+### Audience
+
+- System Architects
+- Developers
+- Operators
+- AI Agents
+
+### Usage
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.

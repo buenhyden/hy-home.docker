@@ -1,18 +1,16 @@
 ---
 title: "BLOCKED: git commit --no-verify"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "block"
 enabled: true
 event: "bash"
 name: "block-git-no-verify"
 pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **`git commit --no-verify` blocked (project rule)**
 
@@ -40,6 +38,17 @@ agent all-files route.
 
 ```bash
 # BLOCKED: git commit --no-verify
+
+## Overview
+
+Apply the declared `block` action for block-git-no-verify.
+
+## Scope
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 git commit --no-verify -m "fix: something"
 git commit -n -m "fix: something"
 
@@ -49,6 +58,12 @@ git commit -n -m "fix: something"
 git add -p
 git commit -m "fix(scope): actual fix"
 ```
+
+The declared action applies when the pattern matches.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

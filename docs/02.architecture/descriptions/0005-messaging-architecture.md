@@ -14,13 +14,21 @@ created: "2026-03-26"
 
 # Messaging Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 `05-messaging` is the optional Kafka event-streaming boundary. The current
 HOME implementation contains one Kafka KRaft broker, Schema Registry, Kafka Connect,
 Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second broker family is part of the current architecture.
 
-## System Boundaries
+### System Boundaries
 
 - **Owns:** Kafka topic/configuration and KRaft state, schema history, Connect
   runtime state, REST access, metrics export and Kafbat administration.
@@ -29,20 +37,11 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - **Does not own:** Keycloak lifecycle, OAuth2 Proxy sessions, workflow
   orchestration, producer source-of-truth data, or external connector systems.
 
-## Quality Attributes
+## Architecture
 
-- **Reliability:** health checks, explicit persistent broker/Connect volumes and
-  complete topic/offset/schema/connector recovery. The separate three-broker LAB on one host does
-  not provide host availability.
-- **Security:** services remain on `kafka_net`; Kafbat uses native OIDC/RBAC.
-  Current broker/controller/host listeners are PLAINTEXT, a known boundary that
-  excludes sensitive or untrusted traffic until a planned TLS/SASL change.
-- **Operability:** exact root profiles and static rendering; named workload,
-  retention, capacity and recovery targets before activation.
-- **Observability:** JMX/Kafka exporter metrics without record payload or secret
-  disclosure.
+### Architecture
 
-## Components
+### Components
 
 - `kafka-1` participates in `messaging` and role-specific HOME selectors.
 - `lab-kafka-1/2/3` participate only in the separate `labs/kafka-cluster.yml` project.
@@ -51,7 +50,7 @@ Kafka REST Proxy, Kafbat UI, Kafka Exporter and a topic-init job. No second brok
 - The HOME init job declares replication factor 1; the LAB init job declares
   replication factor 3 and requires three healthy LAB brokers.
 
-## Data Flow
+### Data Flow
 
 Kafbat renders native `auth.type: OAUTH2` configuration from its tracked template,
 reads its client secret from Docker secret custody, trusts the local CA and maps
@@ -66,7 +65,7 @@ Kafka Connect -> Kafka + approved external system
 browser -> Traefik standard chain -> Kafbat -> Keycloak OIDC
 ```
 
-## Deployment View
+### Deployment View
 
 Broker and Connect volumes are separate bind-backed named volumes. Recovery must
 coordinate topic records/configs, consumer offsets, KRaft metadata, Schema
@@ -75,7 +74,7 @@ The preferred path is producer replay or approved cross-cluster replication into
 a fresh isolated cluster. Piecemeal raw log-directory copy and live cluster-ID
 reuse are outside the architecture.
 
-## Risks
+### Risks
 
 Kafka remains OPTIONAL until a durable producer/consumer is named. Current
 PLAINTEXT listeners and same-host replication limit the suitable workload. Image,
@@ -83,7 +82,22 @@ protocol, topology or security changes require compatibility, license, isolated
 restore and rollback evidence. Confluent edition-specific capabilities are not
 assumed from the selected images.
 
-## Traceability
+## Quality Attributes
+
+- **Reliability:** health checks, explicit persistent broker/Connect volumes and
+  complete topic/offset/schema/connector recovery. The separate three-broker LAB on one host does
+  not provide host availability.
+- **Security:** services remain on `kafka_net`; Kafbat uses native OIDC/RBAC.
+  Current broker/controller/host listeners are PLAINTEXT, a known boundary that
+  excludes sensitive or untrusted traffic until a planned TLS/SASL change.
+- **Operability:** exact root profiles and static rendering; named workload,
+  retention, capacity and recovery targets before activation.
+- **Observability:** JMX/Kafka exporter metrics without record payload or secret
+  disclosure.
+
+## Related Documents
+
+### Traceability
 
 - **Requirement:** [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 - **Decision:** [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)

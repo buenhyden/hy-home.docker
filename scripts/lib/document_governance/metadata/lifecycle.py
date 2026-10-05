@@ -99,6 +99,14 @@ def _expected_document_type(profile_id: str) -> str:
         return profile_id
 
 
+def _is_legacy_archive_route_type(record: Record, expected_type: str) -> bool:
+    return (
+        expected_type == "archive/route"
+        and record.artifact_type in {"migration", "tombstone"}
+        and record.metadata.get("type") == f"archive/{record.artifact_type}"
+    )
+
+
 def validate_record(
     record: Record,
     profiles: dict[str, object],
@@ -110,6 +118,8 @@ def validate_record(
     actual_lifecycle_transitions: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalizations: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalization_sources: Mapping[str, str] | None = None,
+    unchanged_generation_statuses: Mapping[str, str] | None = None,
+    source_bound_legacy_type: bool = False,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -327,7 +337,12 @@ def validate_record(
                     "archived status is reserved for archive tombstones",
                 )
             )
-    previous_status = record.previous_status
+    generation_status = (unchanged_generation_statuses or {}).get(
+        record.path.as_posix()
+    )
+    previous_status = (
+        generation_status if generation_status == status else record.previous_status
+    )
     initial_status = raw_profile.get("initial_status")
     transitions = raw_profile.get("transitions", common.get("transitions", {}))
     initial_transition_evidence = (
@@ -349,15 +364,11 @@ def validate_record(
     normalization_source = (actual_lifecycle_normalization_sources or {}).get(
         record.path.as_posix()
     )
-    initial_actual_normalization = (
-        isinstance(normalization_source, str)
-        and (
-            record.path.as_posix(),
-            normalization_source,
-            status,
-        )
-        in (actual_lifecycle_normalizations or ())
-    )
+    initial_actual_normalization = isinstance(normalization_source, str) and (
+        record.path.as_posix(),
+        normalization_source,
+        status,
+    ) in (actual_lifecycle_normalizations or ())
     actual_normalization_transition = any(
         path == record.path.as_posix()
         and source == normalization_source
@@ -436,7 +447,13 @@ def validate_record(
     )
     expected_type = _expected_document_type(expected_profile)
     if declared_type is not None:
-        if not isinstance(declared_type, str) or declared_type != expected_type:
+        if not isinstance(declared_type, str) or (
+            declared_type != expected_type
+            and not (
+                source_bound_legacy_type
+                and _is_legacy_archive_route_type(record, expected_type)
+            )
+        ):
             findings.append(
                 _finding(
                     record,

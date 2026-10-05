@@ -17,9 +17,13 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/cdn/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/01-gateway/nginx/docker-compose.yml`
 - `infra/01-gateway/nginx/config/nginx.conf`
@@ -27,7 +31,14 @@ created: "2026-05-17"
 - **Systems**: Nginx gateway proxy
 - **Environments**: Local, Dev, Stage, Production-like
 
-## Controls
+### Traceability
+
+- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../guides/0011-nginx.md) (`GDE-0011`), [Runbook](../runbooks/0011-nginx.md) (`RUN-0011`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
@@ -70,11 +81,7 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-## Exceptions
-
-- 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
-
-## Verification
+### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec nginx nginx -t`와 같은 Nginx runtime lint는 root network와 backend 의존성을 갖춘 승인된 Nginx context가 실행 중일 때만 유효하다.
@@ -87,15 +94,16 @@ Rollback은 검토된 config commit과 이에 맞는 private certificate 세트�
 image upgrade에는 `nginx -t`, 대표 route의 수용 검증, 같은 config로 복구할 수 있는
 이전 image 선언이 필요하다.
 
-## Review Cadence
+### Review Cadence
 
 - 월 1회 정기 점검
 - nginx.conf 변경 시 수시 점검
 
-## Traceability
+## Exceptions
 
-- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../guides/0011-nginx.md) (`GDE-0011`), [Runbook](../runbooks/0011-nginx.md) (`RUN-0011`)
+### Exceptions
+
+- 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
 
 ## Related Documents
 

@@ -7,12 +7,21 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0012"
-parent_ids: []
 created: "2026-07-06"
 ---
 # Edge Routing Stack Operations
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -84,7 +93,7 @@ runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefi
 - **Network Isolation**: backend service가 발견되려면 Traefik Docker provider network인 `edge_net`에 있어야 한다.
 - **Service-local Compose**: 독립적인 `infra/01-gateway/*/docker-compose.yml` 렌더링은 root network/secret/dependency context가 없으므로 gateway readiness 증거가 아니다.
 
-## Common Checks
+### Common Checks
 
 - Step-by-step Instructions 의 검증 단계를 따른다.
 
@@ -94,11 +103,11 @@ Traefik chain의 limiter 미준수·401/403 차이는 [Traefik Guide](0013-traef
 정적 검증만으로 이 한계가 해소되거나 인증·복구가 성공한 것은 아니다.
 시스템 영향과 profile 공통 의미는 [System Guide](0099-system-operations.md)를 따른다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 runtime recovery는 [Traefik runbook](../runbooks/0013-traefik.md)과 [Nginx runbook](../runbooks/0011-nginx.md)이 처리한다.
 
-## Traceability
+### Traceability
 
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: none — `0012` 번호를 공유하는 Policy나 Runbook이 없다.

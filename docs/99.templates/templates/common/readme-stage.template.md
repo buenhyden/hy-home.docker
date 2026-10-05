@@ -17,17 +17,23 @@ layer: "{{LAYER}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
 
+### Audience
+
+{{AUDIENCE}}
+
 ## Structure
 
 {{STRUCTURE}}
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
 
 ## Usage
 

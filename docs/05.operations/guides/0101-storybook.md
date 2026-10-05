@@ -17,7 +17,17 @@ created: "2026-10-03"
 
 # Shared Storybook Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 `projects/storybook/nextjs`는 공유 UI 구성요소의 story와 문서를 소유한다.
 `storybook`은 그 빌드 결과를 읽기 전용으로 제공하는 선택형 정적 origin이다.
@@ -96,7 +106,7 @@ Storybook과 Claude Design 간 전용 양방향 MCP 동기화는 이 구현의 �
 접근성·상호작용·회귀 검사 순서다. 공무원 학습·언어 앱의 미승인 기획을
 이 Storybook의 업무 화면이나 음성 원본으로 추가하지 않는다.
 
-## Common Checks
+### Common Checks
 
 저장소 root에서 공개 예제 환경으로 선택형 서비스 선언만 정적 확인한다.
 
@@ -109,14 +119,14 @@ python3 scripts/validation/check-operations-catalog.py
 Claude Design 계정 연동을 증명하지 않는다. 해당 증거와 승인 경계는
 [RUN-0101](../runbooks/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 이미지 빌드·격리 HTTP 검사·HOME 실행 사전 점검과 rollback 순서는
 [RUN-0101](../runbooks/0101-storybook.md)을 따른다. 운영 follow-up 소유자는
 GDE/POL/RUN-0101이며 trigger는 HOME route 활성화, 검토자 그룹 승인, 원격 MCP
 OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청이다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0101`; governing policy: `POL-0101`.
 - Historical source/static completion: `SPEC-0206`; architecture context: `AD-0031` remains draft and is not promoted by this guide.

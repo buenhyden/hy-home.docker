@@ -51,7 +51,7 @@ allow-list입니다. 이 넷 모두 같은 변경에서 제거되었습니다. �
 `docs/98.archive/retired/90.references/audits/` 아래에 있으며
 `tomb-AUD-0019`부터 `tomb-AUD-0032`까지의 tombstone으로 기록됩니다.
 
-## Dated Historical Snapshots
+### Dated Historical Snapshots
 
 은퇴한 audit snapshot은 metadata에 자신의 관찰 날짜를 유지하며 현재
 package 경로는 날짜를 포함하지 않습니다.
@@ -62,11 +62,15 @@ owner로 링크하고 있었습니다. 남은 한 결함은 이를 소유하는 
 guide로 옮겨졌습니다. 보존된 본문은 `docs/98.archive/retired/` 아래에
 있으며 `tomb-AUD-0097`이 그 처분을 기록합니다.
 
-## Supersession Ledgers
+## Usage
+
+### Usage
+
+### Supersession Ledgers
 
 Migration 0003이 과거 경로 복구를 기록합니다.
 
-## Usage
+### Usage
 
 package는 `audits/####-<slug>/` 아래에만 만들고 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner

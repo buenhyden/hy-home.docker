@@ -24,6 +24,10 @@ The project faces two different workflow needs.
 
 Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 - Adopt **Apache Airflow** as the "Core Orchestrator", handling complex data pipelines and system batch jobs.
@@ -42,6 +46,26 @@ Solving both with a single solution does not work well: Airflow is too heavy for
   changed, so the sentence above is preserved as a record of its time.
   Recorded by SPEC-0176.
 
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### [Alternative 1: Airflow Only]
+
+- Good: simple with single-engine operation, strong control.
+- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
+
+### [Alternative 2: n8n Only]
+
+- Good: very fast development speed, intuitive visualization.
+- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
+
 ## Consequences
 
 - **Positive**:
@@ -56,26 +80,6 @@ Solving both with a single solution does not work well: Airflow is too heavy for
 
 - Does not standardize direct mutual calls between the two engines (done only through an API when needed).
 - Does not use n8n for large-volume data processing.
-
-## Options Considered
-
-### [Alternative 1: Airflow Only]
-
-- Good: simple with single-engine operation, strong control.
-- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
-
-### [Alternative 2: n8n Only]
-
-- Good: very fast development speed, intuitive visualization.
-- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

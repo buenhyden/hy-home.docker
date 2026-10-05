@@ -22,41 +22,38 @@ identity_recovery:
 
 # Workspace Engineering Main Baseline Request Scope
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
-
 ## Overview
+
+### Overview
 
 This member preserves the binding repository target, comparison baseline,
 evidence boundaries, and recovered request identity for the dated RES-0085
 assessment. Current workspace-baseline conclusions are consolidated into
 RES-0002-m0020; GitHub Actions platform findings remain in RES-0084.
 
-## Research Questions
+## Scope and Method
+
+### Research Questions
 
 - Which repository revision is the baseline for the current assessment?
 - Which evidence classes may support repository, Hosted, runtime, provider, and
   remote-control-plane claims?
 - Which observations remain outside the approved or accessible boundary?
 
-## Purpose
+### Purpose
 
 Prevent the original request, historical observations, or configuration-only
 evidence from being mistaken for the current `main` implementation or live
 runtime state, while keeping the exact recovery provenance available.
 
-## Repository Role
+### Repository Role
 
 RES-0085 owns the dated request and recovery evidence. RES-0002-m0020 owns
 current baseline interpretation, RES-0002 owns cross-domain research, RES-0084
 owns GitHub Actions platform mechanics, canonical agent governance owns policy, and the current
 Task owns execution evidence.
 
-## Scope
+### Scope
 
 ### In Scope
 
@@ -74,7 +71,7 @@ Task owns execution evidence.
 - New deployment, release, tag, provider, or remote-control-plane mutation.
 - Runtime acceptance for an unnamed service target.
 
-## Definitions / Facts
+### Definitions / Facts
 
 - **Repository evidence** is tracked content or a deterministic local validator
   result tied to the baseline.
@@ -84,7 +81,7 @@ Task owns execution evidence.
 - **Remote evidence** requires authenticated read-back from the remote control
   plane and remains point-in-time.
 
-## Dated Repository State
+### Dated Repository State
 
 All harness engineering, loop engineering, Claude Code and Codex governance,
 spec-driven development, Docker Compose, infrastructure, SDLC, operations,
@@ -97,7 +94,59 @@ Generic guidance is informative only. Repository-local instructions,
 architecture decisions, policies, security controls, and verification evidence
 have precedence.
 
-## Detailed Findings
+### Evidence and Adoption Matrix
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Baseline identity | Exact `main` SHA recorded by RES-0085 | Defined, Local-executed | Later commits require a new observation | `git rev-parse main` |
+| Research ownership | RES-0002-m0020 owns the current baseline; RES-0084 owns GitHub mechanics | Repository-enforced | Any later RES-0085 lifecycle transition requires separate approval | reference contract, lifecycle, and link checks |
+| Hosted CI | Exact aggregate job runs recorded by SPEC-0172 | Hosted-executed | Future runs are mutable | completed Spec plus GitHub run |
+| Main protection | Exact approved read-back recorded by SPEC-0172 | Remote-verified on 2026-09-05 | Later drift is possible | authenticated full read-back |
+| Deployment and release | No named target or current event | Unverified / not adopted | Acceptance and rollback target absent | separate approved Requirement-to-Task chain |
+
+### Gaps and Risks
+
+- This evidence is intentionally fixed to the named baseline and must not be
+  presented as current after later `main` revisions.
+- Local validation cannot prove Hosted runner, provider entitlement, deployed
+  service, or remote GitHub state.
+- Copying current or topical findings into this member would recreate the
+  authority duplication removed by consolidation.
+
+### Recommendations
+
+- Re-observe current repository state in RES-0002-m0020 when `main` changes
+  materially; do not refresh this dated scope carrier in place.
+- Keep mutable Hosted, provider, runtime, and remote claims dated and tied to
+  their owning evidence.
+- Route implementation work through Research → Requirement → Architecture/ADR
+  → Spec → Plan → Task → Verification → Independent Review.
+
+### Verification
+
+- `python3 -m unittest tests.lib.document_governance.test_references`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `python3 scripts/knowledge/generate-llm-wiki.py --check`
+- `python3 scripts/validation/run-ci-gate.py --profile full`
+
+### Scope Implications
+
+This scope permits current repository and dated external research. It does not
+authorize policy creation in Stage 90, deployment, release, secret inspection,
+or a new remote mutation. Any new implementation recommendation needs a
+separate owner and the repository SDLC chain.
+
+### Related Documents
+
+- [Dated baseline assessment package](README.md)
+- [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
+- [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
+- [GitHub Actions platform research](../0084-github-actions-platform/README.md)
+- [Current identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)
+
+## Findings
+
+### Detailed Findings
 
 - The requested comparison target is `main` at
   `4c6d211129615eab372d720ebd209b6c27618c86`, observed 2026-09-05.
@@ -110,40 +159,9 @@ have precedence.
   SPEC-0172; live deployment, tag, and release remain outside this observation.
 - This renewal uses a feature branch and does not write directly to `main`.
 
-## Evidence and Adoption Matrix
+## Limitations
 
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Baseline identity | Exact `main` SHA recorded by RES-0085 | Defined, Local-executed | Later commits require a new observation | `git rev-parse main` |
-| Research ownership | RES-0002-m0020 owns the current baseline; RES-0084 owns GitHub mechanics | Repository-enforced | Any later RES-0085 lifecycle transition requires separate approval | reference contract, lifecycle, and link checks |
-| Hosted CI | Exact aggregate job runs recorded by SPEC-0172 | Hosted-executed | Future runs are mutable | completed Spec plus GitHub run |
-| Main protection | Exact approved read-back recorded by SPEC-0172 | Remote-verified on 2026-09-05 | Later drift is possible | authenticated full read-back |
-| Deployment and release | No named target or current event | Unverified / not adopted | Acceptance and rollback target absent | separate approved Requirement-to-Task chain |
-
-## Gaps and Risks
-
-- This evidence is intentionally fixed to the named baseline and must not be
-  presented as current after later `main` revisions.
-- Local validation cannot prove Hosted runner, provider entitlement, deployed
-  service, or remote GitHub state.
-- Copying current or topical findings into this member would recreate the
-  authority duplication removed by consolidation.
-
-## Recommendations
-
-- Re-observe current repository state in RES-0002-m0020 when `main` changes
-  materially; do not refresh this dated scope carrier in place.
-- Keep mutable Hosted, provider, runtime, and remote claims dated and tied to
-  their owning evidence.
-- Route implementation work through Research → Requirement → Architecture/ADR
-  → Spec → Plan → Task → Verification → Independent Review.
-
-## Verification
-
-- `python3 -m unittest tests.lib.document_governance.test_references`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `python3 scripts/knowledge/generate-llm-wiki.py --check`
-- `python3 scripts/validation/run-ci-gate.py --profile full`
+### Limitations
 
 ## Sources
 
@@ -153,18 +171,3 @@ have precedence.
 - [Registry](../../../99.templates/registry.json) and the
   [research member template](../../../99.templates/templates/references/research.template.md).
 - [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md).
-
-## Scope Implications
-
-This scope permits current repository and dated external research. It does not
-authorize policy creation in Stage 90, deployment, release, secret inspection,
-or a new remote mutation. Any new implementation recommendation needs a
-separate owner and the repository SDLC chain.
-
-## Related Documents
-
-- [Dated baseline assessment package](README.md)
-- [Current workspace baseline](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
-- [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
-- [GitHub Actions platform research](../0084-github-actions-platform/README.md)
-- [Current identity-recovery decision](../../../98.archive/completed/03.specs/0173-governance-qa-surface-convergence/tasks/tsk-0001-lifecycle-and-red-contracts.md)

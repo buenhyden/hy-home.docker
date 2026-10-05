@@ -21,30 +21,30 @@ created: "{{CREATED}}"
 
 {{CONTEXT}}
 
-## Decision Drivers
+### Decision Drivers
 
 {{DECISION_DRIVERS}}
-
-## Options Considered
-
-{{OPTIONS}}
 
 ## Decision
 
 {{DECISION}}
 
+## Alternatives
+
+{{OPTIONS}}
+
 ## Consequences
 
 {{CONSEQUENCES}}
 
-## Traceability
-
-{{REQUIREMENTS_ARCHITECTURE_AND_SPECS}}
-
-## Compliance
+### Compliance
 
 {{COMPLIANCE}}
 
-## Follow-up
+### Follow-up
 
 {{FOLLOW_UP}}
+
+## Related Documents
+
+{{REQUIREMENTS_ARCHITECTURE_AND_SPECS}}

@@ -28,11 +28,10 @@ Stage 99가 소유하는 것:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
-- the Research, Audit, Data, and Tombstone profiles plus the transition-only
-  Migration profile;
+- the Research, Audit, Data publication roles and archive route records;
 - canonical path와 안정 ID 패턴;
 - profile별 frontmatter와 section 계약;
-- lifecycle 상태와 허용된 forward transition;
+- lifecycle 상태와 허용된 직접 transition;
 - Requirement child space를 포함한 단조 증가 identity 발급 상태;
 - template 역할-profile 등록;
 - 재사용 가능한 Markdown과 실행 가능한 interface-contract template;
@@ -43,6 +42,14 @@ Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운
 reference finding을 소유하지 않습니다.
 
 ## Structure
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [registry.json](registry.json) | 문서 profile과 lifecycle machine 권위 |
+| [contracts/](contracts/) | Registry와 frontmatter 값 schema |
+| [templates/](templates/) | 등록된 복사용 작성 source |
 
 ```text
 docs/99.templates/
@@ -100,15 +107,14 @@ fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작
 
 #### Stage 03 Evidence
 
-Task 하나의 요약 상태는 frontmatter에 둡니다. 여러 acceptance criterion과
-Plan work unit을 기록할 때는 Registry가 등록한 item table의 Status 열과 기존
-두 식별자 쌍을 사용하며, 별도 progress table이나 item ID를 만들지 않습니다.
-Lifecycle Events는 관측한 직접 전이와 같은 Task 안의 evidence anchor가 있을
-때만 선택적으로 기록합니다. 이 구조 검증은 승인 source를 인증하지 않으며,
-승인·검토·실행의 의미는 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
-정확한 table header와 status vocabulary는 Registry가, summary 의미는
-[SDLC](../../.agents/governance/sdlc.md)가, aggregation 구현은 validator가
-소유합니다.
+Task 상태는 frontmatter에만 둡니다. `Evidence`의 각 행은 기존 criterion과
+Plan work unit, 실제 check와 input, result, location, acceptance를 기록하며 Status
+열을 두지 않습니다. 필수 criterion의 완료에는 `PASS`와 `accepted`가 모두
+필요합니다. Plan의 `Work Breakdown`은 여섯 열이고 Task의 `Evidence`는 여덟
+열입니다. 정확한 열 순서와 vocabulary는 Registry가 소유합니다.
+Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
+승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
+[SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
 
 #### Registered Identity Shapes
 
@@ -184,8 +190,9 @@ draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, ter
 
 #### Cancellation and Archive Assessments
 
-`cancelled` Task에는 `cancellation`이 필요합니다. 사유·승인자·유효한 승인 날짜와
-수용 기준별 재배정 또는 철회 사유를 작성합니다. 재배정 대상은 같은 package의
+`cancelled` Task에는 `cancellation`이 필요합니다. 실제 `reason`과 `authorization_ref`,
+`criteria_disposition`을 작성합니다. 각 `criterion`에는 `successor` 또는 승인된
+범위 철회 참조 `withdrawal_ref` 중 하나만 둡니다. 재배정 대상은 같은 package의
 자신이 아닌 유효한 Task여야 합니다. 취소는 완료 영수증의 PASS 의무를 면제하지
 않으며 template은 승인값을 미리 채우지 않습니다.
 

@@ -16,9 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 문서는 `02-auth` Keycloak 운영 정책을 정의한다. DB/관리자 시크릿 처리, readiness 검증, 변경 통제 기준을 명시한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/02-auth/keycloak/docker-compose.yml`
 - Keycloak secret injection and healthcheck contract
@@ -27,7 +31,14 @@ created: "2026-05-17"
 - **Systems**: Keycloak (Quarkus)
 - **Environments**: Local, Dev, Stage, Production-like
 
-## Controls
+### Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Runbook](../runbooks/0014-keycloak.md) (`RUN-0014`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -55,11 +66,7 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-## Exceptions
-
-- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
-
-## Verification
+### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
@@ -76,15 +83,16 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - upgrade 전에 복구 가능한 database backup을 확인하고 격리 복제본에서 migration과
   대표 OIDC 흐름을 검증한다. rollback에는 이전 image와 이전 database가 함께 필요하다.
 
-## Review Cadence
+### Review Cadence
 
 - 월 1회 정기 점검
 - Keycloak 버전/realm 정책 변경 시 수시 점검
 
-## Traceability
+## Exceptions
 
-- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Runbook](../runbooks/0014-keycloak.md) (`RUN-0014`)
+### Exceptions
+
+- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
 ## Related Documents
 

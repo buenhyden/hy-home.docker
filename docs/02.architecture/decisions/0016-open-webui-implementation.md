@@ -13,13 +13,19 @@ created: "2026-03-27"
 ---
 # ADR-0016: Open WebUI as Primary AI/RAG Interface
 
----
-
 ## Context
 
 This document records the architecture decision for selecting Open WebUI as the default AI interface and RAG (Retrieval-Augmented Generation) orchestrator of the `hy-home.docker` ecosystem.
 
 Local LLM interaction requires a user-friendly, feature-complete interface that supports document-based knowledge expansion (RAG). We need a solution that integrates natively with Ollama and Qdrant while supporting modern web standards and security (SSO).
+
+### Follow-up
+
+performance.
+
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
 
 ## Decision
 
@@ -29,9 +35,25 @@ Local LLM interaction requires a user-friendly, feature-complete interface that 
 - **Decision 3**: Integrate with Traefik SSO middleware for auth.
 - **Decision 4**: Use Ollama as primary inference engine.
 
-## Follow-up
+### Decision Drivers
 
-performance.
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### [LibreChat]
+
+- Good: Highly customizable, supports many providers.
+- Bad: More complex setup for local RAG compared to Open WebUI's native Ollama integration.
+
+### [Ollama CLI]
+
+- Good: Extremely lightweight.
+- Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
 
 ## Consequences
 
@@ -47,26 +69,6 @@ performance.
 
 - Custom development of a chat UI from scratch.
 - Real-time multi-modal streaming without local model support.
-
-## Options Considered
-
-### [LibreChat]
-
-- Good: Highly customizable, supports many providers.
-- Bad: More complex setup for local RAG compared to Open WebUI's native Ollama integration.
-
-### [Ollama CLI]
-
-- Good: Extremely lightweight.
-- Bad: No visual RAG, no multi-user history, high barrier for non-technical users.
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

@@ -32,6 +32,12 @@ checkpoint, Trino read the same rows, and the Great Expectations suite passed
 through Trino. ksqlDB and StarRocks had never been deployed and had no host
 data or volume.
 
+### Traceability
+
+The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
+stages, the 2026-09-24 live acceptance record, and the current repository
+configuration. Unrecorded runtime state is not claimed.
+
 ## Decision
 
 - **Time series**: Keep the single InfluxDB 3 Core deployment (same as
@@ -47,6 +53,24 @@ data or volume.
 
 Tracked Compose files fix the runtime image tags, and
 `infra/tech-stack.versions.json` holds the current image list.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Alternative 01: Keep ksqlDB and StarRocks alongside Flink and Trino
+
+- **Good**: Does not change the existing decision.
+- **Bad**: Operates two engines for the same role, and keeps maintaining
+  documentation and validation for engines that were never deployed.
+
+### Alternative 02: Handle stream and OLAP with Spark alone
+
+- **Good**: Reduces to a single engine.
+- **Bad**: Heavier than Trino for interactive SQL queries, and S12 Spark is
+  kept for table maintenance and batch purposes.
 
 ## Consequences
 
@@ -67,26 +91,6 @@ Tracked Compose files fix the runtime image tags, and
 
 - Moving InfluxDB or OpenSearch into the lakehouse.
 - Storing core transactional data directly in an analytics engine.
-
-## Options Considered
-
-### Alternative 01: Keep ksqlDB and StarRocks alongside Flink and Trino
-
-- **Good**: Does not change the existing decision.
-- **Bad**: Operates two engines for the same role, and keeps maintaining
-  documentation and validation for engines that were never deployed.
-
-### Alternative 02: Handle stream and OLAP with Spark alone
-
-- **Good**: Reduces to a single engine.
-- **Bad**: Heavier than Trino for interactive SQL queries, and S12 Spark is
-  kept for table maintenance and batch purposes.
-
-## Traceability
-
-The basis is the S01 ruling of SPEC-0180 Task 0008, the S12-S15 source
-stages, the 2026-09-24 live acceptance record, and the current repository
-configuration. Unrecorded runtime state is not claimed.
 
 ## Related Documents
 

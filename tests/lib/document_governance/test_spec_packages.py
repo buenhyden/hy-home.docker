@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import functools
 import importlib
 import importlib.util
 import inspect
@@ -17,9 +18,23 @@ import unittest
 from unittest import mock
 
 from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
-from scripts.lib.document_governance.registry import DEFAULT_REGISTRY, load_registry
+from scripts.lib.document_governance.registry import (
+    load_registry as load_current_registry,
+)
+from scripts.lib.document_governance.registry import (
+    load_registry_at_revision,
+    load_registry_document_at_revision,
+)
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
+GENERATION_4_SOURCE = "8b85e88fe2dfef54f4cc125ee2687982c86c1942"
+GENERATION_3_SOURCE = "2bba11baa1009e673a763a727b0a9e3d7e0bb5a7"
+_PRODUCTION_LOAD_REGISTRY = None
+
+
+@functools.lru_cache(maxsize=1)
+def _generation_4_registry():
+    return load_registry_at_revision(GENERATION_4_SOURCE, root=ROOT)
 
 
 def _current_spec_rows(index_text: str) -> dict[str, str]:
@@ -32,10 +47,22 @@ def _current_spec_rows(index_text: str) -> dict[str, str]:
 
 
 def _spec_packages_module():
+    global _PRODUCTION_LOAD_REGISTRY
     module_name = "scripts.lib.document_governance.spec_packages"
     if importlib.util.find_spec(module_name) is None:
         raise AssertionError(f"missing production module: {module_name}")
-    return importlib.import_module(module_name)
+    module = importlib.import_module(module_name)
+    if _PRODUCTION_LOAD_REGISTRY is None:
+        _PRODUCTION_LOAD_REGISTRY = module.load_registry
+    module.load_registry = _generation_4_registry
+    return module
+
+
+def tearDownModule() -> None:
+    if _PRODUCTION_LOAD_REGISTRY is None:
+        return
+    module = importlib.import_module("scripts.lib.document_governance.spec_packages")
+    module.load_registry = _PRODUCTION_LOAD_REGISTRY
 
 
 def _document_text(
@@ -116,7 +143,12 @@ def _write_package(
     fixture_registry = stage.parent / "99.templates/registry.json"
     if not fixture_registry.exists():
         fixture_registry.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(DEFAULT_REGISTRY, fixture_registry)
+        fixture_registry.write_text(
+            json.dumps(
+                load_registry_document_at_revision(GENERATION_4_SOURCE, root=ROOT)
+            ),
+            encoding="utf-8",
+        )
     package = stage / f"{number}-{slug}"
     package.mkdir(parents=True)
     package.joinpath("spec.md").write_text(
@@ -409,7 +441,524 @@ def _branch_handoff_fixture(
 
 
 class SpecPackageTests(unittest.TestCase):
-    def test_v4_four_column_completion_requires_registered_result_and_review(self) -> None:
+    def test_unreviewed_historical_completion_rows_do_not_become_v5_proof(
+        self,
+    ) -> None:
+        module = _spec_packages_module()
+        registry = _generation_4_registry()
+        contract = registry.common["spec_completion_evidence"]
+        spec = module.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+            "spec",
+            "SPEC-0001",
+            "in-progress",
+            ("REQ-0001",),
+            f"## {contract['spec_section']}\n\n1. First.\n",
+        )
+        plan = module.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md"),
+            "plan",
+            "SPEC-0001-PLAN-0001",
+            "in-progress",
+            ("SPEC-0001",),
+            f"## {contract['plan_section']}\n\n1. W1: First.\n",
+        )
+        task = module.SpecDocument(
+            pathlib.PurePosixPath(
+                "docs/03.specs/0001-example/tasks/tsk-0001-example.md"
+            ),
+            "task",
+            "SPEC-0001-TSK-0001",
+            "completed",
+            ("SPEC-0001-PLAN-0001",),
+            f"""## {contract["task_section"]}
+
+| Acceptance criterion | Plan work unit | Task result | Durable owner |
+| --- | --- | --- | --- |
+| 1 | W1 | PASS: preserved historical result | N/A: historical record |
+
+## Review Evidence
+
+Narrative historical review without a structured acceptance table.
+""",
+        )
+
+        self.assertEqual(
+            {task.path: frozenset()},
+            module._legacy_completed_task_pairs(spec, plan, (task,), registry),
+        )
+
+    def test_v5_evidence_uses_frontmatter_status_and_exact_eight_columns(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        registry = dataclasses.replace(
+            registry,
+            common={
+                **registry.common,
+                "lifecycle_generation": 5,
+                "plan_columns": (
+                    "Work Unit",
+                    "Criteria",
+                    "Work",
+                    "Dependencies",
+                    "Task",
+                    "Verification",
+                ),
+                "evidence_columns": (
+                    "Evidence",
+                    "Criteria",
+                    "Work Unit",
+                    "Check",
+                    "Input",
+                    "Result",
+                    "Location",
+                    "Acceptance",
+                ),
+                "result_domain": (
+                    "NOT_RUN",
+                    "PASS",
+                    "FAIL",
+                    "DEFER",
+                    "NOT_APPLICABLE",
+                ),
+                "acceptance_domain": (
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "not-required",
+                ),
+                "spec_section": "Acceptance Criteria",
+                "plan_section": "Work Breakdown",
+                "task_section": "Evidence",
+            },
+        )
+        spec = module.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+            "spec",
+            "SPEC-0001",
+            "completed",
+            ("REQ-0001",),
+            "## Acceptance Criteria\n\n1. First.\n2. Second.\n",
+        )
+        plan = module.SpecDocument(
+            pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md"),
+            "plan",
+            "SPEC-0001-PLAN-0001",
+            "completed",
+            ("SPEC-0001",),
+            """## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1 | First | None | TSK-0001 | Check |
+| W2 | 2 | Second | W1 | TSK-0001 | Check |
+""",
+        )
+        task = module.SpecDocument(
+            pathlib.PurePosixPath(
+                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+            ),
+            "task",
+            "SPEC-0001-TSK-0001",
+            "completed",
+            ("SPEC-0001-PLAN-0001",),
+            """## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| First check | 1 | W1 | Unit | fixture | PASS | test | accepted |
+| Second check | 2 | W2 | Unit | fixture | PASS | test | accepted |
+""",
+        )
+
+        module._validate_task_item_evidence(spec, plan, (task,), registry)
+        module._validate_completion_evidence(spec, plan, (task,), registry)
+
+        supplemental = dataclasses.replace(
+            task,
+            body=task.body.replace(
+                "| First check | 1 | W1 | Unit | fixture | PASS | test | accepted |",
+                "| First check | 1 | W1 | Context | fixture | NOT_APPLICABLE | test | not-required |\n"
+                "| First check | 1 | W1 | Unit | fixture | PASS | test | accepted |",
+            ),
+        )
+        module._validate_task_item_evidence(spec, plan, (supplemental,), registry)
+        module._validate_completion_evidence(spec, plan, (supplemental,), registry)
+
+        cancelled = dataclasses.replace(
+            task,
+            status="cancelled",
+            cancellation={
+                "reason": "Scope moved",
+                "authorization_ref": "#authorization",
+                "criteria_disposition": [
+                    {"criterion": 1, "withdrawal_ref": "#withdrawal"},
+                    {"criterion": 2, "withdrawal_ref": "#withdrawal"},
+                ],
+            },
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "cover every"):
+            module._validate_completion_evidence(spec, plan, (cancelled,), registry)
+
+        reassigned_plan = dataclasses.replace(
+            plan,
+            body=plan.body.replace("TSK-0001 | Check", "TSK-0001, TSK-0002 | Check"),
+        )
+        reassigned = dataclasses.replace(
+            task,
+            path=pathlib.PurePosixPath(
+                "docs/03.specs/0001-example/tasks/tsk-0002-implement.md"
+            ),
+            artifact_id="SPEC-0001-TSK-0002",
+        )
+        module._validate_task_item_evidence(
+            spec, reassigned_plan, (cancelled, reassigned), registry
+        )
+        module._validate_completion_evidence(
+            spec, reassigned_plan, (cancelled, reassigned), registry
+        )
+        handoff = dataclasses.replace(
+            cancelled,
+            cancellation={
+                **cancelled.cancellation,
+                "criteria_disposition": [
+                    {"criterion": 1, "successor": reassigned.artifact_id},
+                    {"criterion": 2, "withdrawal_ref": "#withdrawal"},
+                ],
+            },
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "assigned the disposed"):
+            module._validate_task_item_evidence(
+                spec, plan, (handoff, reassigned), registry
+            )
+        module._validate_task_item_evidence(
+            spec, reassigned_plan, (handoff, reassigned), registry
+        )
+
+        historical_paths = frozenset({task.path})
+        historical_pairs = {task.path: frozenset({("1", "W1"), ("2", "W2")})}
+        module._validate_task_item_evidence(
+            spec,
+            plan,
+            (task,),
+            registry,
+            historical_paths,
+            historical_pairs,
+        )
+        module._validate_completion_evidence(
+            spec,
+            plan,
+            (task,),
+            registry,
+            historical_tasks=historical_paths,
+            historical_completed_pairs=historical_pairs,
+            source_criteria=frozenset({"1", "2"}),
+            source_work=frozenset({"W1", "W2"}),
+            source_closed_pairs=frozenset({("1", "W1"), ("2", "W2")}),
+        )
+        added_criterion = dataclasses.replace(
+            spec, body=spec.body + "3. New obligation.\n"
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "preserve source"):
+            module._validate_completion_evidence(
+                added_criterion,
+                plan,
+                (task,),
+                registry,
+                historical_tasks=historical_paths,
+                historical_completed_pairs=historical_pairs,
+                source_criteria=frozenset({"1", "2"}),
+                source_work=frozenset({"W1", "W2"}),
+                source_closed_pairs=frozenset({("1", "W1"), ("2", "W2")}),
+            )
+        reduced_spec = dataclasses.replace(
+            spec, body=spec.body.replace("2. Second.\n", "")
+        )
+        reduced_plan = dataclasses.replace(
+            plan,
+            body="\n".join(
+                line for line in plan.body.splitlines() if "| W2 |" not in line
+            ),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "preserve source"):
+            module._validate_completion_evidence(
+                reduced_spec,
+                reduced_plan,
+                (task,),
+                registry,
+                historical_tasks=historical_paths,
+                historical_completed_pairs=historical_pairs,
+                source_criteria=frozenset({"1", "2"}),
+                source_work=frozenset({"W1", "W2"}),
+                source_closed_pairs=frozenset({("1", "W1"), ("2", "W2")}),
+            )
+        removed_work_plan = dataclasses.replace(
+            plan,
+            body="\n".join(
+                line.replace("| W1 | 1 |", "| W1 | 1, 2 |")
+                for line in plan.body.splitlines()
+                if "| W2 |" not in line
+            ),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "preserve source"):
+            module._validate_completion_evidence(
+                spec,
+                removed_work_plan,
+                (task,),
+                registry,
+                historical_tasks=historical_paths,
+                historical_completed_pairs={
+                    task.path: frozenset({("1", "W1"), ("2", "W1")})
+                },
+                source_criteria=frozenset({"1", "2"}),
+                source_work=frozenset({"W1", "W2"}),
+                source_closed_pairs=frozenset({("1", "W1"), ("2", "W2")}),
+            )
+        remapped_plan = dataclasses.replace(
+            plan,
+            body=plan.body.replace("| W1 | 1 |", "| W1 | 1, 2 |").replace(
+                "| W2 | 2 |", "| W2 | 1 |"
+            ),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "Plan pairs"):
+            module._validate_completion_evidence(
+                spec,
+                remapped_plan,
+                (task,),
+                registry,
+                historical_tasks=historical_paths,
+                historical_completed_pairs={
+                    task.path: frozenset({("1", "W1"), ("2", "W1"), ("1", "W2")})
+                },
+                source_criteria=frozenset({"1", "2"}),
+                source_work=frozenset({"W1", "W2"}),
+                source_closed_pairs=frozenset({("1", "W1"), ("2", "W2")}),
+            )
+        malformed_plan = dataclasses.replace(
+            plan,
+            body=plan.body.replace("| Verification |", "|"),
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "malformed headers"):
+            module._validate_task_item_evidence(
+                spec,
+                malformed_plan,
+                (task,),
+                registry,
+                historical_paths,
+                historical_pairs,
+            )
+
+        duplicate_criterion = dataclasses.replace(
+            spec, body=spec.body + "1. A distinct duplicate-number obligation.\n"
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "unique numbered"):
+            module._validate_task_item_evidence(
+                duplicate_criterion, plan, (task,), registry
+            )
+        with self.assertRaisesRegex(module.SpecPackageError, "unique numbered"):
+            module._validate_task_item_evidence(duplicate_criterion, None, (), registry)
+        with self.assertRaisesRegex(module.SpecPackageError, "malformed headers"):
+            module._validate_task_item_evidence(spec, malformed_plan, (), registry)
+
+        missing_disposition = dataclasses.replace(
+            cancelled,
+            cancellation={
+                **cancelled.cancellation,
+                "criteria_disposition": [],
+            },
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "Plan assignment"):
+            module._validate_task_item_evidence(
+                spec, plan, (missing_disposition,), registry
+            )
+        extra_disposition = dataclasses.replace(
+            cancelled,
+            cancellation={
+                **cancelled.cancellation,
+                "criteria_disposition": [
+                    *cancelled.cancellation["criteria_disposition"],
+                    {"criterion": 3, "withdrawal_ref": "#withdrawal"},
+                ],
+            },
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "Plan assignment"):
+            module._validate_task_item_evidence(
+                spec, plan, (extra_disposition,), registry
+            )
+
+        unassigned_cancelled = dataclasses.replace(
+            cancelled,
+            path=pathlib.PurePosixPath(
+                "docs/03.specs/0001-example/tasks/tsk-0002-cancelled.md"
+            ),
+            artifact_id="SPEC-0001-TSK-0002",
+            cancellation={
+                **cancelled.cancellation,
+                "criteria_disposition": [],
+            },
+            body="""## Evidence
+
+No Plan work is assigned to this cancelled Task.
+""",
+        )
+        module._validate_task_item_evidence(
+            spec, plan, (task, unassigned_cancelled), registry
+        )
+
+        bad = dataclasses.replace(task, body=task.body.replace("PASS", "SKIP", 1))
+        with self.assertRaisesRegex(module.SpecPackageError, "registered result"):
+            module._validate_task_item_evidence(spec, plan, (bad,), registry)
+        for old, new, message in (
+            ("| Evidence | Criteria |", "| Evidence | Broken |", "malformed headers"),
+            (
+                "| PASS | test | accepted |",
+                "| DEFER | test | accepted |",
+                "PASS and accepted",
+            ),
+            (
+                "| PASS | test | accepted |",
+                "| PASS | test | not-required |",
+                "PASS and accepted",
+            ),
+            (
+                "| First check | 1 | W1 |",
+                "| First check | 2 | W1 |",
+                "unknown criterion/Work Unit pair",
+            ),
+        ):
+            with self.subTest(message=message):
+                invalid = dataclasses.replace(task, body=task.body.replace(old, new, 1))
+                with self.assertRaisesRegex(module.SpecPackageError, message):
+                    module._validate_task_item_evidence(
+                        spec, plan, (invalid,), registry
+                    )
+        wrong_assignment = dataclasses.replace(
+            plan, body=plan.body.replace("TSK-0001", "TSK-9999", 1)
+        )
+        with self.assertRaisesRegex(module.SpecPackageError, "same-package Task"):
+            module._validate_task_item_evidence(
+                spec, wrong_assignment, (task,), registry
+            )
+        incomplete = dataclasses.replace(
+            task,
+            body="\n".join(
+                line for line in task.body.splitlines() if "Second check" not in line
+            ),
+        )
+        with self.assertRaisesRegex(
+            module.SpecPackageError,
+            "completed Task requires PASS and accepted evidence",
+        ):
+            module._validate_completion_evidence(spec, plan, (incomplete,), registry)
+
+    def test_v5_cancellation_requires_authorization_and_criterion_disposition(
+        self,
+    ) -> None:
+        module = _spec_packages_module()
+        task_id = "SPEC-0001-TSK-0001"
+        successor = "SPEC-0001-TSK-0002"
+        statuses = {task_id: "cancelled", successor: "ready"}
+        valid = {
+            "reason": "Scope moved",
+            "authorization_ref": "#authorization",
+            "criteria_disposition": [
+                {"criterion": 1, "successor": successor},
+                {
+                    "criterion": 2,
+                    "withdrawal_ref": "#withdrawal",
+                },
+            ],
+        }
+        self.assertEqual(
+            (),
+            module.task_cancellation_findings(
+                task_id,
+                valid,
+                frozenset({1, 2}),
+                statuses,
+                generation=5,
+                references=frozenset({"#authorization", "#withdrawal"}),
+            ),
+        )
+        for key in ("reason", "authorization_ref", "criteria_disposition"):
+            with self.subTest(key=key):
+                invalid = {name: value for name, value in valid.items() if name != key}
+                self.assertTrue(
+                    module.task_cancellation_findings(
+                        task_id, invalid, frozenset({1, 2}), statuses, generation=5
+                    )
+                )
+        mismatched = {**valid, "authorization_ref": "#missing"}
+        self.assertTrue(
+            module.task_cancellation_findings(
+                task_id,
+                mismatched,
+                frozenset({1, 2}),
+                statuses,
+                generation=5,
+                references=frozenset({"#authorization", "#withdrawal"}),
+            )
+        )
+        for profile_id, artifact_id, filename in (
+            ("spec", "SPEC-0001", "spec.md"),
+            ("plan", "SPEC-0001-PLAN-0001", "plan.md"),
+        ):
+            with self.subTest(profile=profile_id):
+                document = module.SpecDocument(
+                    pathlib.PurePosixPath(f"docs/03.specs/0001-example/{filename}"),
+                    profile_id,
+                    artifact_id,
+                    "cancelled",
+                    (),
+                    cancellation={
+                        "reason": "Approved scope withdrawal",
+                        "authorization_ref": "#authorization",
+                        "criteria_disposition": [
+                            {"criterion": 1, "withdrawal_ref": "#withdrawal"}
+                        ],
+                    },
+                    source_text=(
+                        "## Authorization\n\nApproved record.\n\n"
+                        "## Withdrawal\n\nApproved withdrawal.\n"
+                    ),
+                )
+                statuses = {artifact_id: "cancelled"}
+                self.assertEqual(
+                    (),
+                    module._v5_cancellation_findings(
+                        document, frozenset({1}), statuses
+                    ),
+                )
+                missing_anchor = dataclasses.replace(
+                    document,
+                    cancellation={
+                        **document.cancellation,
+                        "authorization_ref": "#missing",
+                    },
+                )
+                self.assertTrue(
+                    module._v5_cancellation_findings(
+                        missing_anchor, frozenset({1}), statuses
+                    )
+                )
+                mismatched = dataclasses.replace(
+                    document,
+                    cancellation={
+                        **document.cancellation,
+                        "criteria_disposition": [
+                            {"criterion": 2, "withdrawal_ref": "#withdrawal"}
+                        ],
+                    },
+                )
+                self.assertTrue(
+                    module._v5_cancellation_findings(
+                        mismatched, frozenset({1}), statuses
+                    )
+                )
+
+    def test_v4_four_column_completion_requires_registered_result_and_review(
+        self,
+    ) -> None:
         spec_packages = _spec_packages_module()
         for result, acceptance, valid in (
             ("PASS", "accepted", True),
@@ -850,7 +1399,7 @@ class SpecPackageTests(unittest.TestCase):
             result = spec_packages._validate_legacy_multirow_receipts(
                 (),
                 current,
-                load_registry(),
+                _generation_4_registry(),
             )
             self.assertIn(
                 "task-completion-items-invalid",
@@ -1033,7 +1582,7 @@ class SpecPackageTests(unittest.TestCase):
 
     def test_old_registry_and_preserved_load_do_not_require_new_tables(self) -> None:
         spec_packages = _spec_packages_module()
-        registry = load_registry()
+        registry = _generation_4_registry()
         common = dict(registry.common)
         completion = dict(common["spec_completion_evidence"])
         completion.pop("item_table_headers", None)
@@ -1388,7 +1937,7 @@ class SpecPackageTests(unittest.TestCase):
 
     def test_disposition_members_follow_profile_registry_not_terminal_union(self):
         module = _spec_packages_module()
-        registry = load_registry()
+        registry = _generation_4_registry()
         with tempfile.TemporaryDirectory() as directory:
             stage = pathlib.Path(directory) / "docs/03.specs"
             _write_package(stage, plan=True, task=True, task_status="completed")
@@ -2692,9 +3241,7 @@ class SpecPackageTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
-            receipt = (
-                "| 1 | W1 | PASS: focused check | N/A: local validation only |\n"
-            )
+            receipt = "| 1 | W1 | PASS: focused check | N/A: local validation only |\n"
             task_body = task.read_text(encoding="utf-8")
             task.write_text(task_body.replace(receipt, ""), encoding="utf-8")
             findings = spec_packages.validate_repository_spec_package_lifecycle(
@@ -2854,7 +3401,7 @@ class SpecPackageTests(unittest.TestCase):
 
     def test_current_repository_spec_packages_cover_spec_directories(self) -> None:
         spec_packages = _spec_packages_module()
-        registry = load_registry()
+        registry = load_current_registry()
         packages = spec_packages.load_spec_packages(
             ROOT / "docs/03.specs", registry=registry
         )
@@ -2879,14 +3426,23 @@ class SpecPackageTests(unittest.TestCase):
             registry=registry,
         )
         self.assertEqual((), lifecycle.findings)
-        self.assertRegex(lifecycle.generation_source or "", r"^[0-9a-f]{40,64}$")
-        self.assertTrue(lifecycle.actual_normalizations)
+        self.assertEqual(GENERATION_4_SOURCE, lifecycle.generation_source)
+        self.assertEqual(frozenset(), lifecycle.actual_normalizations)
+        generation_3 = spec_packages.load_registry_document_at_revision(
+            GENERATION_3_SOURCE, root=ROOT
+        )
+        generation_4 = spec_packages.load_registry_document_at_revision(
+            GENERATION_4_SOURCE, root=ROOT
+        )
+        self.assertNotIn("lifecycle_generation", generation_3["common"])
+        self.assertEqual(4, generation_4["common"]["lifecycle_generation"])
+        self.assertEqual(5, registry.common["lifecycle_generation"])
 
         proof_task = next(
             task
             for package in packages
             for task in package.tasks
-            if "### Contract Migration" in task.body
+            if lifecycle.generation_source in task.body
         )
         missing = dataclasses.replace(
             proof_task,
@@ -2902,15 +3458,21 @@ class SpecPackageTests(unittest.TestCase):
             )
             for package in packages
         )
-        with self.assertRaisesRegex(spec_packages.SpecPackageError, "migration proof"):
-            spec_packages._migration_proof(altered_packages, registry)
+        with self.assertRaisesRegex(
+            spec_packages.SpecPackageError, "migration requires one proof"
+        ):
+            spec_packages._migration_proof(
+                altered_packages,
+                registry,
+                root=ROOT,
+                target_generation=5,
+            )
 
         malformed_task = dataclasses.replace(
             proof_task,
             body=proof_task.body.replace(
                 lifecycle.generation_source or "missing-source",
                 "not-a-full-object-id",
-                1,
             ),
         )
         malformed_packages = tuple(
@@ -2924,7 +3486,12 @@ class SpecPackageTests(unittest.TestCase):
             for package in packages
         )
         with self.assertRaisesRegex(spec_packages.SpecPackageError, "full object ID"):
-            spec_packages._migration_proof(malformed_packages, registry)
+            spec_packages._migration_proof(
+                malformed_packages,
+                registry,
+                root=ROOT,
+                target_generation=5,
+            )
 
         source_registry = json.loads(
             json.dumps(
@@ -2934,11 +3501,15 @@ class SpecPackageTests(unittest.TestCase):
                 )
             )
         )
-        source_registry["common"]["lifecycle_generation"] = 4
+        source_registry["common"]["lifecycle_generation"] = 5
         with self.assertRaisesRegex(
-            spec_packages.SpecPackageError, "original lifecycle generation"
+            spec_packages.SpecPackageError,
+            "migration source Registry is invalid",
         ):
-            spec_packages._validate_source_registry(source_registry)
+            spec_packages._validate_source_registry(
+                source_registry,
+                target_generation=5,
+            )
 
         real_bounded_git = spec_packages._bounded_git
 
@@ -3023,7 +3594,7 @@ class SpecPackageTests(unittest.TestCase):
                 cwd=root,
                 check=True,
             )
-            registry = load_registry()
+            registry = _generation_4_registry()
             current = spec_packages.load_spec_packages(stage, registry=registry)
             result = spec_packages.validate_repository_spec_package_lifecycle_details(
                 root,
@@ -3054,7 +3625,7 @@ class SpecPackageTests(unittest.TestCase):
         self,
     ) -> None:
         spec_packages = _spec_packages_module()
-        registry = load_registry()
+        registry = _generation_4_registry()
         spec_path = pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md")
         plan_path = pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md")
         task_path = pathlib.PurePosixPath(
@@ -3263,8 +3834,7 @@ class SpecPackageTests(unittest.TestCase):
                 dataclasses.replace(
                     source_terminal.tasks[0],
                     body=source_terminal.tasks[0].body + "\nChanged.\n",
-                    source_text=source_terminal.tasks[0].source_text
-                    + "\nChanged.\n",
+                    source_text=source_terminal.tasks[0].source_text + "\nChanged.\n",
                 ),
             ),
         )
@@ -3320,7 +3890,7 @@ class SpecPackageTests(unittest.TestCase):
             for path in metadata_sources:
                 if stale in path.read_text(encoding="utf-8"):
                     violations.append(f"{path.relative_to(ROOT)}:{stale}")
-        registry = load_registry(ROOT / "docs/99.templates/registry.json")
+        registry = load_current_registry(ROOT / "docs/99.templates/registry.json")
         self.assertEqual(
             "docs/03.specs/{package_number:4}-{slug}/plan.md",
             registry.profiles["plan"]["path_pattern"],

@@ -15,9 +15,17 @@ created: "2026-06-04"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
 
-## When to Use
+### When to Use
 
 - Root instruction 파일이 변경될 때
 - `.claude` 또는 `.codex` 파일이 변경될 때
@@ -26,6 +34,8 @@ created: "2026-06-04"
 - harness 또는 Agent-first audit이 요청될 때
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -179,21 +189,25 @@ bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --ch
 - 현재 승인된 Spec Package의 Plan과 Task evidence
 - [Agent Governance Hub](../../../.agents/README.md)
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
 - 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 `## Escalation`에 따라 escalation한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
 
-## Traceability
+### Traceability
 
 - 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`)

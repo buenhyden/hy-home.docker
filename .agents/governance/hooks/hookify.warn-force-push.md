@@ -1,18 +1,16 @@
 ---
 title: "Prefer --force-with-lease over --force."
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "warn"
 enabled: true
 event: "bash"
 name: "warn-force-push"
 pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **Force push detected (project rule)**
 
@@ -39,8 +37,23 @@ pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 
 ```bash
 # Prefer --force-with-lease over --force.
+
+## Overview
+
+Apply the declared `warn` action for warn-force-push.
+
+## Scope
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 git push --force-with-lease origin feat/42-my-feature
 ```
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

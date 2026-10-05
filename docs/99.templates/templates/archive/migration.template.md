@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "archive/migration"
-status: "sealed"
+type: "archive/route"
+status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "archive"
@@ -16,22 +16,24 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Purpose
+## Overview
 
 {{PURPOSE}}
 
-## Moved Scope
+## Route Disposition
+
+### Moved Scope
 
 {{MOVED_SCOPE}}
+
+### Approval
+
+{{APPROVAL}}
 
 ## Current Owner
 
 {{CURRENT_OWNER}}
 
-## Approval
-
-{{APPROVAL}}
-
-## Traceability
+## Related Documents
 
 {{TRACEABILITY_LINKS}}

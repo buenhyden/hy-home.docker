@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "operations"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 ---
 
@@ -20,11 +19,11 @@ created: "{{CREATED}}"
 
 {{OVERVIEW}}
 
-## Policy Scope
+## Scope
 
 {{POLICY_SCOPE}}
 
-## Controls
+## Rules
 
 <!-- Author prompt: For a service subject, cover only applicable fields; omit nonapplicable fields without filler. Specify activation, network exposure and trust boundaries, authentication and authorization, secret handling, least privilege, data retention, backup and restore expectations, resource limits, update ownership, upgrade and migration, and removal or decommission criteria. For a non-service workspace subject, keep only controls its implementation actually has. Distinguish an enforced control from pending runtime evidence; give exceptions an owner, risk and exit condition. -->
 
@@ -36,15 +35,15 @@ created: "{{CREATED}}"
 
 {{EXCEPTIONS}}
 
-## Verification
+### Verification
 
 {{VERIFICATION}}
 
-## Review Cadence
+### Review Cadence
 
 {{REVIEW_CADENCE}}
 
-## Traceability
+### Traceability
 
 {{SUBJECT_AND_AUTHORITY_LINKS}}
 

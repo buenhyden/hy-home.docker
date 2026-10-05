@@ -27,6 +27,12 @@ layer: "references"
 
 {{STRUCTURE}}
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
 ## Usage
 
 {{USAGE}}

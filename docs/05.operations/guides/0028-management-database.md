@@ -21,7 +21,17 @@ created: "2026-05-10"
 
 # Management Database Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 management database는 인증, 워크플로, 도구를 위한 5개 서비스로 구성된 HOME
 의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
@@ -120,13 +130,13 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 
-## Common Checks
+### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
 - Runtime authority: `infra/04-data/mng-db/docker-compose.yml`.

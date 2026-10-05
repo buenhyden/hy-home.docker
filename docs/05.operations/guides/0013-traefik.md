@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # 01-Gateway Traefik Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Implementation Sources
 
@@ -109,19 +119,19 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 - dashboard middleware 순서/구분자(`,`) 오류
 - 비게이트웨이 소유 라우터까지 무분별하게 체인 확장 적용
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec traefik traefik healthcheck --ping`은 승인된 root stack이 실행 중일 때만 사용한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0013-traefik.md)을 따른다.
 
 구성·private 인증서 복구, upgrade 수용 검증과 prior-image rollback은 [Runbook](../runbooks/0013-traefik.md#rollback-or-recovery)이 소유한다. 공통 변경 흐름은 [RUN-0086](../runbooks/0086-dependency-version-management.md), 여러 서비스 장애는 [RUN-0099](../runbooks/0099-system-operations.md)로 연결한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [01-Gateway Traefik Operations Policy](../policies/0013-traefik.md) (`POL-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)

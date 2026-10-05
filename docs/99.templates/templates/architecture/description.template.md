@@ -17,23 +17,23 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Context and Stakeholders
+## Overview
 
 {{CONTEXT_AND_STAKEHOLDERS}}
 
-## System Boundaries
+## Scope
 
 {{SYSTEM_BOUNDARIES}}
 
-## Components
+## Architecture
 
 {{COMPONENTS}}
 
-## Data Flow
+### Runtime View
 
 {{DATA_FLOW}}
 
-## Deployment View
+### Deployment View
 
 {{DEPLOYMENT_VIEW}}
 
@@ -41,14 +41,14 @@ created: "{{CREATED}}"
 
 {{QUALITY_ATTRIBUTES}}
 
-## Traceability
-
-{{REQUIREMENTS_DECISIONS_AND_SPECS}}
-
-## Risks
+### Risks
 
 {{RISKS}}
 
-## Evolution
+### Evolution
 
 {{EVOLUTION}}
+
+## Related Documents
+
+{{REQUIREMENTS_DECISIONS_AND_SPECS}}

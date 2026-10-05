@@ -14,13 +14,23 @@ created: "2026-09-19"
 
 # OpenBao Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 `openbao openbao-agent` readiness 점검과 승인된 대상 지정 배포 또는 복구에 사용한다. 저장소
 루트에서 작업한다. 런타임 변경 전에 configuration commit, 이미지 source, 기존 데이터 위치,
 보호된 backup을 확인한다.
 
 ## Procedure
+
+### Procedure
 
 1. 기존 Compose validator로 선택한 profile을 검증한다. 비공개 렌더링 모델은 절대 출력하지
    않는다.
@@ -458,13 +468,17 @@ renderer 두 경로 read와 사람 operator의 platform credential create/update
 승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
 결과로 확인하며 불일치 시 중단한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 날짜, configuration commit, 서비스 이름, exit status, 정제된 health/resource 결과를 현재
 Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
 않는다. 날짜가 기록된 런타임 결과와 recovery-custody 전달은 현재 Task에 속한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 non-root operator 신원으로 보호된 Raft 스냅샷을 캡처하고, checksum, cluster ID, 이미지
 선언, seal 구성, custody 영수증을 기록한 뒤, network egress와 consumer가 비활성화된 새
@@ -480,12 +494,12 @@ token을 재확인하고 폐기한다. 임시 root가 폐기된 후 operator 신
 수행한다. 기존 Raft 데이터 위에 initialize하거나 스토리지를 제자리에서 다운그레이드하지
 않는다.
 
-## Escalation
+### Escalation
 
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
 
-## Traceability
+### Traceability
 
 - 관장 architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](../guides/0085-openbao.md), [Policy](../policies/0085-openbao.md), [Runbook](0085-openbao.md)

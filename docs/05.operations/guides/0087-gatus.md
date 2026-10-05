@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # Gatus Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability
 monitor이다. root Compose가 포함 여부를 관장하며,
@@ -85,19 +95,19 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
   [Gatus repository/release](https://github.com/TwiN/gatus)를 따른다. Gatus는
   Apache-2.0 license이며 patch provenance를 보존한다.
 
-## Common Checks
+### Common Checks
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)에서
   native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
 - 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
   probe coverage를 증명하지 않는다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 승인 게이트가 걸린 진단, 재시작, recovery에는
 [Gatus Runbook](../runbooks/0087-gatus.md)을 사용한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0087-gatus.md), [Runbook](../runbooks/0087-gatus.md)
 - [Gatus configuration reference](https://github.com/TwiN/gatus#configuration)

@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "operations"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 ---
 
@@ -16,7 +15,11 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## When to Use
+## Overview
+
+{{OPERATIONAL_PURPOSE_AND_SUBJECT}}
+
+## Trigger and Preconditions
 
 {{WHEN_TO_USE}}
 
@@ -28,22 +31,24 @@ created: "{{CREATED}}"
 
 {{PROCEDURE}}
 
-## Evidence
+## Verification
 
 {{EVIDENCE}}
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 {{ROLLBACK_OR_RECOVERY}}
 
-## Escalation
+### Escalation
 
 {{ESCALATION}}
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 {{SUBJECT_AND_AUTHORITY_LINKS}}
-
-## Related Documents
 
 {{RELATED_DOCUMENTS}}

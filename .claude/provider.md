@@ -4,13 +4,13 @@ version: "1.1.2"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 runtime: "claude"
 ---
 
 # Claude Provider Adapter
 
-## Purpose
+## Overview
 
 Translate provider-neutral canonical governance into Claude Code syntax.
 
@@ -24,7 +24,7 @@ Read the selected canonical role and procedure before acting.
 directly, in the order the bootstrap policy sets. Claude has no generated
 projection of either, and their absence under `.claude/` is not a defect.
 
-## Runtime Boundary
+## Native Controls
 
 - `.claude/agents/` and `.claude/skills/` contain generated native adapters.
   Thin skill adapters point to `.agents/skills/<skill_id>/SKILL.md`; they do not
@@ -41,7 +41,7 @@ projection of either, and their absence under `.claude/` is not a defect.
   lifecycle, templates, model selection, or completion criteria. Canonical
   `.agents/` files are never generated, quarantined, or overwritten as outputs.
 
-## Verification
+## Limitations
 
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).

@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # Cassandra Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 독립 `labs/cassandra.yml`은 공식 `labs/cassandra.yml`에 선언된 공식 Cassandra 이미지의 단일 `cassandra-node1` 실습용 정의다. HOME root는 include하지 않으며 확인된 HOME 소비자는 없다. 이미지 선언 버전은 Compose가 소유한다. 현재 공식 이미지의 기본 `AllowAllAuthenticator`/`AllowAllAuthorizer`는 계정 인증을 제공하지 않는다. 이를 인증된 업무 저장소로 사용하지 않는다.
 
@@ -57,15 +67,15 @@ Operator, Developer, AI Agent.
 
 `nodetool`의 UN 상태는 인증, 영속 복구, 업무 CQL 성능의 증거가 아니다. 단일 노드는 HA가 아니다. 무인증 CQL을 외부 network나 실제 업무 데이터에 연결하지 않는다.
 
-## Common Checks
+### Common Checks
 
 정적 Compose 렌더와 root include 제외를 확인한다. 격리 실행은 `NOT_RUN`이다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 [RUN-0025](../runbooks/0025-cassandra.md)를 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [POL-0025](../policies/0025-cassandra.md)
 - Architecture: [AD-0004](../../02.architecture/descriptions/0004-data-architecture.md)

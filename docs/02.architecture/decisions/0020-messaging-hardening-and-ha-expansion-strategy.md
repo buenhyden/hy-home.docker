@@ -19,6 +19,10 @@ This document records the decision to first introduce immediately applicable har
 
 The messaging layer exposes operationally sensitive management paths externally, and can be vulnerable to traffic spikes/transient failures. Floating-tag images and dev configuration consistency issues also lower reproducibility and stability. Automated baseline verification is needed to block operational regressions at the PR stage.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Reflect the immediate hardening items first.
@@ -29,6 +33,30 @@ The messaging layer exposes operationally sensitive management paths externally,
   - Create the optimization-hardening Stage 01-05 document set and sync links
 - Keep RabbitMQ on its current `messaging-option` operating model (opt-in activation).
 - Apply catalog expansion items in phases through a policy/guide/runbook-based approval procedure.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Implement all catalog expansion items immediately
+
+- Good:
+  - Can deliver many functional improvements in the short term
+- Bad:
+  - Change scope grows, making failure isolation and rollback harder
+
+### Update documentation only and hold off on compose/CI changes
+
+- Good:
+  - Reduces short-term implementation burden
+- Bad:
+  - Cannot automatically block actual operational regressions
 
 ## Consequences
 
@@ -50,30 +78,6 @@ The messaging layer exposes operationally sensitive management paths externally,
 
 - Tool gating: Enforce `check-all-hardening.sh 05-messaging` as a CI gate
 - Guardrail strategy: Prohibit floating tags, enforce the standard middleware chain, maintain document link integrity
-
-## Options Considered
-
-### Implement all catalog expansion items immediately
-
-- Good:
-  - Can deliver many functional improvements in the short term
-- Bad:
-  - Change scope grows, making failure isolation and rollback harder
-
-### Update documentation only and hold off on compose/CI changes
-
-- Good:
-  - Reduces short-term implementation burden
-- Bad:
-  - Cannot automatically block actual operational regressions
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

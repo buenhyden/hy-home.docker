@@ -14,7 +14,17 @@ created: "2026-05-17"
 
 # Administration and Experimentation Hardening Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -56,18 +66,18 @@ created: "2026-05-17"
 - 문서 링크/README 인덱스 동기화를 누락하는 실수
 - service-local standalone compose render를 root readiness evidence로 오해하는 실수
 
-## Common Checks
+### Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0074-laboratory-optimization-hardening.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Administration and Experimentation Hardening Operations Policy](../policies/0074-laboratory-optimization-hardening.md) (`POL-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)

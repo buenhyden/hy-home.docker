@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "requirements"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 ---
 
@@ -16,42 +15,44 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Problem and Goals
+## Overview
 
 {{PROBLEM_AND_GOALS}}
 
-## Stakeholders and User Needs
+## Requirements
 
-{{STAKEHOLDERS_AND_USER_NEEDS}}
-
-## Functional Requirements
+### Functional Requirements
 
 - **REQ-####-FR-####**: {{FUNCTIONAL_REQUIREMENT}}
 
-## Non-functional Requirements
+### Stakeholders and User Needs
+
+{{STAKEHOLDERS_AND_USER_NEEDS}}
+
+### Non-functional Requirements
 
 - **REQ-####-NFR-####**: {{NON_FUNCTIONAL_REQUIREMENT}}
 
-## Interface Requirements
+### Interface Requirements
 
 - **REQ-####-IF-####**: {{SOLUTION_INDEPENDENT_INTERFACE_REQUIREMENT}}
-
-## Constraints
-
-{{CONSTRAINTS}}
 
 ## Acceptance Criteria
 
 {{ACCEPTANCE_CRITERIA}}
 
-## Traceability
+## Scope
 
-{{ARCHITECTURE_AND_SPEC_LINKS}}
+{{CONSTRAINTS}}
 
-## Assumptions
+### Assumptions
 
 {{ASSUMPTIONS}}
 
-## Risks
+### Risks
 
 {{RISKS}}
+
+## Related Documents
+
+{{ARCHITECTURE_AND_SPEC_LINKS}}
