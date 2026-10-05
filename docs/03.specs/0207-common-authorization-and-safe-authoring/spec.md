@@ -1,6 +1,6 @@
 ---
 title: "Common Authorization and Safe Authoring Specification"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "in-progress"
 owner: "@buenhyden"
@@ -39,8 +39,9 @@ observed before implementation is `830ab0583f65e1252badb6be34b79c92bcb3c293`.
 Those original implementation scopes excluded secret values, auth files, raw
 logs, live commands, provider/model calls, remote writes, pushes, PRs, merges,
 and provider sandbox changes. The later user-authorized local main finish
-follows the SPEC-0209 handoff; remote merge remains unauthorized. The bounded
-consumer work covers the archive approval-record helper and direct consumer,
+follows the SPEC-0209 handoff. Current separately approved delivery scope is
+recorded in Task 0003; the original exclusions do not authorize those operations.
+The bounded consumer work covers the archive approval-record helper and direct consumer,
 plus the existing pre-tool hook consumer and their focused tests; the shared
 `tool_payload.py` parser remains unchanged.
 
@@ -54,7 +55,8 @@ and observed capability evidence.
 ### Operational Impact
 
 The change narrows policy interpretation and does not execute an operational
-action. Hosted, live, remote, or provider behavior remains unobserved.
+action. Hosted, live, remote, and provider observations and authorization remain distinct
+and are recorded only by the executing Task.
 
 ## Contracts
 
@@ -81,6 +83,11 @@ Task 0001 inventories and converges the authorization boundary. Task 0002
 converges execution-boundary references and may make pre-tool payload denials
 diagnosable without disclosing input. Both use canonical owners and their real
 consumer routes; neither implements authentication or changes native limits.
+
+Task 0003 reconciles the current P01 authority, implementation, evidence, and
+blocker routes against the audit revision and current main. It preserves the
+existing policies and completed Tasks, and records the bounded comparison in
+its own Task without reopening unrelated recovery or operational work.
 
 ### Interfaces and Data
 
@@ -130,3 +137,4 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
 - [Plan](plan.md)
 - [Task 0001](tasks/tsk-0001-policy-convergence.md)
 - [Task 0002](tasks/tsk-0002-execution-boundary-and-safe-diagnostics.md)
+- [Task 0003](tasks/tsk-0003-current-authority-and-blocker-reconciliation.md)
