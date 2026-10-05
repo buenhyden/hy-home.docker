@@ -30,7 +30,6 @@ for truthful Task lifecycle evidence and completion-item receipts.
 - Read-only review and focused validation before completion. Commit and remote
   integration require their separately recorded authorization and evidence.
 
-
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -41,7 +40,6 @@ for truthful Task lifecycle evidence and completion-item receipts.
 | W4 | 5 | Record checkpoint and review | W3 | TSK-0001 | Completed Task evidence |
 
 ### Work Details
-
 
 1. W1: inventory Stage 99 profiles, templates, schemas, roles, consumers,
    named lifecycle families, pure-navigation READMEs, and current Stage 03

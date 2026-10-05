@@ -32,7 +32,6 @@ completion receipt and its current Task status.
   decisions and the reboot window.
 - W11 follows W10; the reboot runbook documents the unseal method in place.
 
-
 ## Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
@@ -51,7 +50,6 @@ completion receipt and its current Task status.
 | W11 | 11 | Recovery acceptance | W10 | TSK-0003 | Task evidence |
 
 ### Work Details
-
 
 Run order: W1, W2 (the owner moved its SeaweedFS S3 recreate from the W4
 window into W2 on 2026-09-25), W12, W6, W4, W3, W5, W7, W8, W10, W9, W11. W6 precedes W4 so only

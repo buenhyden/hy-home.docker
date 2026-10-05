@@ -47,8 +47,6 @@ layer: "templates"
 | [runtime/](runtime/) | native provider projection source |
 | [specs/](specs/) | Spec·Plan·Task와 interface source |
 
-
-
 ## Usage
 
 1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾고
