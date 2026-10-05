@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight"
 version: "1.0.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-03-26"
 ---
 
@@ -53,7 +53,7 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `04-data` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 ### 1. Initial Setup
 

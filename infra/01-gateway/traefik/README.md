@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
 version: "1.0.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -73,7 +73,7 @@ traefik/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 루트 profile 검증과 게이트웨이 하드닝 검사부터 시작하고 Traefik runtime이 이미 승인되어 실행 중일 때만 서비스 로그를 확인함 |
 
-## How to Work in This Area
+## Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 

@@ -7,13 +7,22 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0059"
-parent_ids: []
 created: "2026-03-25"
 ---
 
 # RAG Workflow Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -62,16 +71,16 @@ created: "2026-03-25"
 - Open WebUI service-local compose 파일만 단독 검증해 선언된 network undefined 오류를 현재 구현 실패로 오해하는 경우.
 - host localhost로 Open WebUI 내부 endpoint를 직접 조회하는 경우. 현재 Open WebUI는 Traefik route와 container-internal healthcheck를 기준으로 한다.
 
-## Common Checks
+### Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Open WebUI recovery runbook](../runbooks/0057-open-webui.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: none — no Policy or Runbook shares number `0059`.

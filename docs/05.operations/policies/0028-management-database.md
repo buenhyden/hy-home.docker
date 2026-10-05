@@ -16,16 +16,34 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 다섯 개의 `mng-db` 서비스는 HOME 대상이다. 공유 의존성이므로 database,
 role, broker, credential 변경은 consumer를 인지하는 유지보수와 rollback을
 요구한다.
 
-## Controls
+### Traceability
+
+- Artifact: `POL-0028`; parent: `AD-0004`.
+- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
+
+### References
+
+- [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html)
+- [pg_restore security and options](https://www.postgresql.org/docs/current/app-pgrestore.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Runbook](../runbooks/0028-management-database.md)
+
+## Rules
+
+### Controls
 
 - `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다.
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
@@ -75,34 +93,24 @@ cutover나 data 교체는 별도 승인이 필요하다.
 
 적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
-mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
-허용하지 않는다.
-
-## Verification
+### Verification
 
 Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-## Review Cadence
+### Review Cadence
 
 Profile, image, volume, credential, consumer, retention 또는 upstream
 lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
-## Traceability
+## Exceptions
 
-- Artifact: `POL-0028`; parent: `AD-0004`.
-- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
+### Exceptions
 
-### References
-
-- [PostgreSQL backup](https://www.postgresql.org/docs/current/backup.html)
-- [pg_restore security and options](https://www.postgresql.org/docs/current/app-pgrestore.html)
-- [Valkey persistence](https://valkey.io/topics/persistence/)
-- [Runbook](../runbooks/0028-management-database.md)
+Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
+mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
+허용하지 않는다.
 
 ## Related Documents
 

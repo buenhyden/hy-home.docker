@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Kafka Cluster Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리된 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
@@ -28,6 +36,8 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 저장소 루트에서 실행한다.
 
@@ -97,27 +107,31 @@ key, value, header에 대한 SHA-256 digest가 일치했다. connector config
 4~6단계는 실행하지 않았다. live database를 대상으로 한 Connect worker가 production
 replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거했다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 cutover가 실패하면 offset/write-boundary 검증 이후 producer와 consumer를
 보존된 source cluster로 되돌리며, replay source와 target은 계속 보존된다.
 cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증, 보존된
 rollback window 이후에만 실행한다.
 
-## Escalation
+### Escalation
 
 schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
 수리하라는 압박이 있으면 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
 않았다.
 
-## Traceability
+### Traceability
 
 - Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
   및 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).

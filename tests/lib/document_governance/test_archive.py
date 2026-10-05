@@ -705,7 +705,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
         self,
         spec_status,
         task_status,
-        plan_status="active",
+        plan_status="in-progress",
         cancellation=None,
         registry=None,
     ):
@@ -728,7 +728,8 @@ class ArchiveMinimizationTests(unittest.TestCase):
             for name, metadata in documents.items():
                 (package / name).write_text(
                     "---\n" + yaml.safe_dump(metadata) + "---\n\n"
-                    "## Acceptance Contract\n\n1. Criterion.\n",
+                    "## Acceptance Criteria\n\n1. Criterion.\n\n"
+                    "### Cancellation Authorization\n\nApproved fixture record.\n",
                     encoding="utf-8",
                 )
             standalone = root / "docs/02.architecture/decisions/0001-example.md"
@@ -742,19 +743,18 @@ class ArchiveMinimizationTests(unittest.TestCase):
     def test_stage_03_occupancy_is_judged_per_package(self) -> None:
         cancellation = {
             "reason": "No longer needed",
-            "approved_by": "@owner",
-            "approved_at": "2026-09-28",
-            "criteria": [],
+            "authorization_ref": "#cancellation-authorization",
+            "criteria_disposition": [],
         }
         cases = (
-            ("active", "completed", "active", None, 0),
-            ("active", "cancelled", "active", cancellation, 0),
-            ("active", "cancelled", "active", None, 1),
-            ("active", "in-progress", "completed", None, 1),
+            ("in-progress", "completed", "in-progress", None, 0),
+            ("in-progress", "cancelled", "in-progress", cancellation, 0),
+            ("in-progress", "cancelled", "in-progress", None, 1),
+            ("in-progress", "in-progress", "completed", None, 0),
             ("completed", "completed", "completed", None, 0),
             ("completed", "completed", None, None, 0),
             ("completed", "cancelled", "completed", cancellation, 0),
-            ("completed", "completed", "active", None, 1),
+            ("completed", "completed", "in-progress", None, 1),
             ("completed", "in-progress", "completed", None, 1),
             ("completed", "cancelled", "completed", None, 1),
             ("cancelled", "completed", "completed", None, 3),
@@ -786,9 +786,8 @@ class ArchiveMinimizationTests(unittest.TestCase):
         )
         cancellation = {
             "reason": "No longer needed",
-            "approved_by": "@owner",
-            "approved_at": "2026-09-28",
-            "criteria": [],
+            "authorization_ref": "#cancellation-authorization",
+            "criteria_disposition": [],
         }
         normal = self._occupancy(
             "completed", "cancelled", "completed", cancellation, registry

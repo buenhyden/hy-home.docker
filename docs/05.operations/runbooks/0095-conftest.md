@@ -14,11 +14,21 @@ created: "2026-09-23"
 
 # Conftest Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 `conftest` 작업이 0이 아닌 상태로 종료될 때 사용한다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 승인된 로컬 컨테이너 작업을 실행하고 첫 실패 단계·줄을 읽는다.
    원본 읽기 전용 작업이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
@@ -47,23 +57,27 @@ created: "2026-09-23"
 테스트를 확인하고 검토한 이전 소스로 rollback한다. 작업 자체 데이터·credential·TLS
 복원은 적용되지 않으며 Git의 정책 원본과 정제된 검사 근거만 보존한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
 단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 작업은 아무것도 바꾸지 않으며 상태도 갖지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 `secrets/`, `.env` 또는 Docker 소켓을 작업에 마운트하라는 요청, 또는 실패하는
 변경을 통과시키기 위해 `deny`를 `warn`으로 바꾸라는 요청이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0095-conftest.md) (`GDE-0095`)
 - [Policy](../policies/0095-conftest.md) (`POL-0095`)

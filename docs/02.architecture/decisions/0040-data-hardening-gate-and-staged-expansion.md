@@ -29,6 +29,12 @@ this ADR rewrites the same decisions against the current services.
 blast radius. An automated validation gate is therefore needed to prevent
 regressions.
 
+### Traceability
+
+The basis is `check-all-hardening.sh`'s 04-data checks, the CI
+`infrastructure-hardening` gate, and the current repository configuration.
+Unrecorded runtime state is not claimed.
+
 ## Decision
 
 - Implement immediate hardening items as Compose contracts and protect them
@@ -45,6 +51,22 @@ regressions.
   the approved transition procedure in policy and runbooks.
 - Keep the `template-stateful-*` and `template-infra-*` inheritance model.
 
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Expand all 04-data services to an HA standard at once
+
+- **Good**: Can raise availability quickly.
+- **Bad**: Large change radius makes it hard to isolate regression causes.
+
+### Update only documentation and defer Compose and CI changes
+
+- **Good**: Low short-term change risk.
+- **Bad**: Does not prevent actual operational regressions.
+
 ## Consequences
 
 - **Positive**:
@@ -59,24 +81,6 @@ regressions.
 - Large-scale HA topology restructuring for each engine.
 - Business query optimization and schema refactoring.
 - Migration to cloud-managed services.
-
-## Options Considered
-
-### Expand all 04-data services to an HA standard at once
-
-- **Good**: Can raise availability quickly.
-- **Bad**: Large change radius makes it hard to isolate regression causes.
-
-### Update only documentation and defer Compose and CI changes
-
-- **Good**: Low short-term change risk.
-- **Bad**: Does not prevent actual operational regressions.
-
-## Traceability
-
-The basis is `check-all-hardening.sh`'s 04-data checks, the CI
-`infrastructure-hardening` gate, and the current repository configuration.
-Unrecorded runtime state is not claimed.
 
 ## Related Documents
 

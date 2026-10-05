@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # CouchDB Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -81,17 +91,17 @@ CouchDB HTTP API, cluster-init job, 독립 LAB network, Docker Secret 기반 adm
 - 클러스터 init은 [curlimages/curl image declaration](../../../labs/couchdb.yml) 기반 일회성 job이며, 반복 실패 시 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남겨야 한다.
 - backup/restore는 database 단위 replication을 우선한다. file backup이 승인되면 config와 cluster metadata를 보존하고 upstream 순서대로 index files를 database files보다 먼저 복원한다.
 
-## Common Checks
+### Common Checks
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb.yml --profile couchdb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml logs couchdb-cluster-init`
 - `_membership` 확인은 [CouchDB runbook의 private TTY/native-prompt 절차](../runbooks/0026-couchdb.md#steps)를 따른다. Password를 URL·argv·환경 변수·history·로그에 넣지 않으며 custody/TTY가 없으면 중단한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [CouchDB runbook](../runbooks/0026-couchdb.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [CouchDB Operations Policy](../policies/0026-couchdb.md) (`POL-0026`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

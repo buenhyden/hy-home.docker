@@ -17,7 +17,17 @@ created: "2026-09-21"
 
 # JupyterLab Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -63,14 +73,14 @@ MLflow 인증을 채택하면 인증되지 않은 API를 다시 열지 말고 no
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0089-jupyterlab.md)의 `작업 디렉터리와 라이브러리 보존` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=data-science bash scripts/validation/validate-docker-compose.sh`
 - 승인된 런타임 검사에서 gateway 로그인 redirect와 인가 거부, 서버 token 거부를
   각각 확인한다. `sso-errors`가 인증 실패 401을 302로 바꿀 수 있으므로 외부 route의
   응답을 무조건 401로 기대하지 않는다. health의 `/api` 응답은 인증·kernel 증거가 아니다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 token, 시작, kernel, restore 문제에는
 [runbook](../runbooks/0089-jupyterlab.md)을 사용한다.
@@ -93,7 +103,7 @@ listener에 접근할 수 있으므로 물리적 격리를 주장하지 않는�
 사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
 해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0089-jupyterlab.md) (`POL-0089`)
 - [Runbook](../runbooks/0089-jupyterlab.md) (`RUN-0089`)

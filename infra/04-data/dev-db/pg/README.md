@@ -1,10 +1,10 @@
 ---
 title: "개발 PostgreSQL"
 version: "0.1.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-02"
 ---
 
@@ -45,7 +45,7 @@ created: "2026-10-02"
 
 `python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 정적 확인: `python3 -m unittest tests.validation.test_dev_pg_provision` 및 `python3 infra/04-data/dev-db/pg/provision/project.py infra/04-data/dev-db/pg/provision/platform.json --validate-only`. 백업 운영 절차는 Stage 05의 기존 백업 정책·런북 소유자가 별도로 갱신합니다.
 

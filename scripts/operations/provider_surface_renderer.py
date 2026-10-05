@@ -289,10 +289,10 @@ def _pointer(
             "---\n"
             f'title: "{title}"\n'
             'version: "1.0.0"\n'
-            'type: "common/runtime-governance-readme"\n'
+            'type: "common/readme"\n'
             'status: "active"\n'
             'owner: "@buenhyden"\n'
-            'updated: "2026-09-04"\n'
+            'updated: "2026-10-05"\n'
             'generated_by: "scripts/operations/provider_surface_renderer.py"\n'
             "---\n\n"
         )
@@ -301,6 +301,16 @@ def _pointer(
         if is_readme
         else f"This generated adapter routes to `{source}`."
     )
+    if is_readme:
+        return (
+            f"{envelope}{_marker(source)}\n\n# {title}\n\n"
+            f"## Overview\n\n{route_sentence}\n\n"
+            "## Scope\n\nThis directory contains generated provider adapters.\n\n"
+            "## Structure\n\nCanonical governance remains in the linked source.\n\n"
+            "## Usage\n\nRead the linked source before using these adapters.\n\n"
+            "## Related Documents\n\n"
+            f"- [`{source}`](../{source})\n"
+        ).encode()
     return f"{envelope}{_marker(source)}\n\n# {title}\n\n{route_sentence}\n".encode()
 
 

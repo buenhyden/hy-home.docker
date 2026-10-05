@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 `07-workflow` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, health dependency 회귀, n8n image/entrypoint drift, CI 게이트 실패를 중심으로 점검/복구한다.
 
 ### Purpose
@@ -23,7 +31,7 @@ created: "2026-05-17"
 - workflow 관리 경로 보안과 startup 안정성 기준을 빠르게 복구한다.
 - compose/script/CI 회귀를 표준 절차로 차단한다.
 
-## When to Use
+### When to Use
 
 - `infrastructure-hardening` CI가 실패할 때
 - Airflow/Flower/n8n 경로 접근 정책이 비정상일 때
@@ -31,6 +39,8 @@ created: "2026-05-17"
 - n8n worker/task-runner 재시작 루프가 발생할 때
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -96,22 +106,26 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 `check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 위의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0050`과 `RUN-0053`이 소유한다. 이 최적화 Runbook으로 DB·암호화 키·큐 복구를 입증하지 않는다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 `## Escalation`에 따라 보고한다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [07-Workflow Optimization Hardening Usage Guide](../guides/0054-workflow-optimization-hardening.md) (`GDE-0054`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)

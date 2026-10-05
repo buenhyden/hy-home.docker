@@ -69,6 +69,8 @@ def _table(text: str, heading: str, columns) -> list[tuple[str, ...]]:
         raise ValueError("duplicate archive table")
     body = re.split(r"(?m)^## ", text[sections[0].end() :], maxsplit=1)[0]
     lines = [line.strip() for line in body.splitlines() if line.strip().startswith("|")]
+    if not lines:
+        return []
     cells = [
         tuple(cell.strip() for cell in line.strip("|").split("|")) for line in lines
     ]

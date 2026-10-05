@@ -16,14 +16,26 @@ created: "2026-09-23"
 
 ## Overview
 
+### Overview
+
 Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 하나에 있다.
 접근 범위, 파괴적 유지보수, 테스트 데이터의 분리가 통제 대상이다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 카탈로그 노출, 엔진 identity, namespace, 테이블 유지보수, 이미지 및 제거.
 
-## Controls
+### Traceability
+
+- [가이드](../guides/0094-lakehouse.md) (`GDE-0094`)
+- [런북](../runbooks/0094-lakehouse.md) (`RUN-0094`)
+- [SeaweedFS policy](0024-seaweedfs.md)
+
+## Rules
+
+### Controls
 
 - `lakehouse`를 통해서만 선택한다. HOME에는 절대 추가하지 않는다.
 - 카탈로그는 `object_net`에서만 접근 가능해야 하고 라우트/host port를 금지한다. 현재 all-interface S3 listener는 edge_net/seaweed_internal에도8181을 열어 이 통제가 미준수다(POL-0024). route/host port 부재와 authenticated catalog 동작은 더 좁은 통제이며 network 격리를 대신하지 않는다. 별도 구현 수정 전 compliant로 인정하지 않는다. 엔진은
@@ -53,27 +65,23 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
 
 적용 identity: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-없음. 카탈로그 credential vending이나 라우트를 활성화하려면 검토된 변경이
-필요하다.
-
-## Verification
+### Verification
 
 Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity가 테이블을
 생성·쓰기·compact·삭제할 수 있고 다른 버킷은 읽을 수 없음을 증명하는
 격리된 실행.
 
-## Review Cadence
+### Review Cadence
 
 SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 namespace가
 생길 때마다 검토한다.
 
-## Traceability
+## Exceptions
 
-- [가이드](../guides/0094-lakehouse.md) (`GDE-0094`)
-- [런북](../runbooks/0094-lakehouse.md) (`RUN-0094`)
-- [SeaweedFS policy](0024-seaweedfs.md)
+### Exceptions
+
+없음. 카탈로그 credential vending이나 라우트를 활성화하려면 검토된 변경이
+필요하다.
 
 ## Related Documents
 

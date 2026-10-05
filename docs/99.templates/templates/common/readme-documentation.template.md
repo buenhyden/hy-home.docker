@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "common/documentation-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 ---
@@ -16,31 +16,37 @@ updated: "{{UPDATED}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
+
+### Audience
+
+{{AUDIENCE}}
 
 ## Structure
 
 {{STRUCTURE}}
 
-## How to Work in This Area
-
-{{WORK_INSTRUCTIONS}}
-
-## Current Inventory
+### Current Inventory
 
 {{CURRENT_INVENTORY}}
 
-## Documentation Standards
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
+## Usage
+
+{{WORK_INSTRUCTIONS}}
+
+### Documentation Standards
 
 {{DOCUMENTATION_STANDARDS}}
 
-## AI Agent Guidance
+### AI Agent Guidance
 
 {{AI_AGENT_GUIDANCE}}
 

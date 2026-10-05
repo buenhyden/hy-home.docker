@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # Renovate Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 Renovate는 `dependency-update`에서만 선택하는 **DEV** one-shot repository
 유지보수 작업이다. HOME과 일반 `tooling` 시작에서는 제외된다. root Compose
@@ -103,7 +113,7 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../runbooks/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 
-## Common Checks
+### Common Checks
 
 - repository와 self-host 설정에 대한 strict validation.
 - `bash scripts/operations/sync-tech-stack-versions.sh --check`.
@@ -144,7 +154,7 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 영역이다. 선언된 CPU·메모리 상한과 timeout 안에서 끝나는지 관찰하되 timeout을
 원격 변경의 자동 취소로 해석하지 않는다. 캐시 삭제는 repository나 PR을 복구하지 않는다.
 
-## Traceability
+### Traceability
 
 - 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 동일 주제 문서: [Policy](../policies/0083-renovate.md), [Runbook](../runbooks/0083-renovate.md)

@@ -14,16 +14,18 @@ created: "2026-05-17"
 
 # Prometheus Operations Policy
 
-관련 구성요소의 현재 선언은 [버전 레지스트리](../../../infra/tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다.
-
 ## Overview
+
+### Overview
 
 이 정책은 scrape target registration, alerting rule management, TSDB
 persistence, lifecycle reload, secret file reference, protected access에
 대한 Prometheus control을 정의한다. 순서가 있는 recovery나 reload
 procedure는 해당 runbook에 있다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
@@ -31,7 +33,14 @@ alert-rule surface에 적용된다.
 - **Systems**: compose service `prometheus`, container `infra-prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
-## Controls
+### Traceability
+
+- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Runbook](../runbooks/0045-prometheus.md) (`RUN-0045`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
@@ -123,14 +132,7 @@ alert-rule surface에 적용된다.
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
-## Exceptions
-
-- Scrape interval, retention, secret reference, route, rule-loading
-  예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
-  runbook을 통해 기록해야 한다.
-
-## Verification
+### Verification
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
@@ -141,16 +143,20 @@ alert-rule surface에 적용된다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-## Review Cadence
+### Review Cadence
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
   secret references, route, retention, mounted paths가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
-## Traceability
+## Exceptions
 
-- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Runbook](../runbooks/0045-prometheus.md) (`RUN-0045`)
+### Exceptions
+
+- Scrape interval, retention, secret reference, route, rule-loading
+  예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
+  runbook을 통해 기록해야 한다.
 
 ## Related Documents
 

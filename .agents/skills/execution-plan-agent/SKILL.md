@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -15,7 +15,9 @@ metadata:
 
 # execution-plan-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ An approved specification and corroborated repository baseline must exist; unres
 2. Order work by dependency and reversibility, isolating protected or runtime changes into separately approved tasks.
 3. Define RED/GREEN checks, review gates, commit boundaries, and terminal completion criteria.
 
-## Outputs
-
-- An executable Plan co-located at `docs/03.specs/####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
-
-## Gates
+### Gates
 
 - File scope and ownership are explicit.
 - Verification commands prove each acceptance criterion and name skipped/CI-only gates.
+
+## Outputs
+
+- An executable Plan co-located at `docs/03.specs/####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
 
 ## Failure Handling
 
 Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
 
-## Related Documents
+## References
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Task breakdown](../task-breakdown-agent/SKILL.md)

@@ -14,7 +14,15 @@ created: "2026-09-19"
 
 # Mailpit Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거나, 보존 한도가 예상과
 다르거나, backup/restore/upgrade가 승인된 경우에 사용한다. 저장소 루트에서 작업하고 캡처된
@@ -30,6 +38,8 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. root 선택과 한정된 런타임 상태를 확인한다.
 
@@ -81,24 +91,28 @@ database와 SQLite sidecar를 일관되게 함께 복사한다. 이미지 upgrad
 capture와 메시지 수를 검증한다. restore는 먼저 격리된 Mailpit instance에서
 수행한다. 이 절차는 문서로 남겼지만 이 task에서 실행하지는 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 명령 exit, 이미지/source commit, database/export checksum, 메시지 개수, synthetic 식별자,
 최종 상태를 기록한다. 수신자, 헤더, 본문, 첨부파일, credential은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 backup/restore와 upgrade 리허설은 여기서 **계획됨, 미실행** 상태다. 격리된 restore가
 성공하고 구체적 데이터 교체가 승인될 때까지 활성 SQLite database를 덮어쓰지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 실제 메일 캡처가 의심되거나, database 불일치, 보호된 backup 부재, 알 수 없는 SQLite
 sidecar, 외부 노출, 또는 호환되지 않는 upgrade가 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0084-mailpit.md) (`GDE-0084`)
 - [Policy](../policies/0084-mailpit.md) (`POL-0084`)

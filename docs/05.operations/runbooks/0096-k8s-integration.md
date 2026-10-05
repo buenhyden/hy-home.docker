@@ -14,7 +14,15 @@ created: "2026-09-23"
 
 # hy-home.k8s Integration Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 | Situation | Phases |
 | --- | --- |
@@ -38,6 +46,8 @@ created: "2026-09-23"
   않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Shared prerequisites and result handling
 
@@ -576,12 +586,16 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 | Kiali가 Grafana에 연결할 수 없거나 `401`을 표시 | `secret/platform/grafana-api`가 없거나, 만료되었거나, 토큰이 삭제됨 | 토큰 재발급, 그다음 ESO refresh |
 | 7.2에서 `cluster="k3d-hyhome"` 시리즈가 없음 | 클러스터 sender가 구성되지 않았거나 443에 도달할 수 없음 | 클러스터 소유자가 Alloy 로그, DNS, CA, egress를 확인 |
 
-## Evidence
+## Verification
+
+### Evidence
 
 Phase 8에 나열된 단계 출력, 소스 커밋, "When to Use"에서 적용된 상황을
 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - **Prometheus API:** 현재 source와 보호된 이전 credential 상태를 비교하여 owner가
   승인한 정확한 rollback만 수행한다. API router 제거는 모든 API consumer를
@@ -592,13 +606,13 @@ Phase 8에 나열된 단계 출력, 소스 커밋, "When to Use"에서 적용된
 - **Bootstrap 토큰:** 단독으로 폐기한다(Troubleshooting 참고).
 - **Private registry와 `.env`:** Phase 2 백업에서 복원한다.
 
-## Escalation
+### Escalation
 
 `ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, 클러스터를 위해
 OpenBao 앞에 SSO나 허용목록을 두라는 요청, 또는 인증 없이 Prometheus나
 Grafana를 게시하라는 요청이 있으면 중단하고 @buenhyden에게 연락한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0096-k8s-integration.md) (`GDE-0096`)
 - [Policy](../policies/0096-k8s-integration.md) (`POL-0096`)

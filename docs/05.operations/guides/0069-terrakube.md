@@ -19,7 +19,17 @@ created: "2026-05-10"
 
 # Terrakube Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -66,13 +76,13 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0069-terrakube.md)의 `복구 세트와 버전 변경` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile iac config --quiet`
 - `docker compose --profile iac config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-## Runbook Handoff
+### Runbook Handoff
 
 실행 실패, 조정된 백업/복원, OIDC 진단, 업그레이드에는
 [runbook](../runbooks/0069-terrakube.md)을 사용한다.
@@ -94,7 +104,7 @@ UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기�
 외부 도구의 `main` 및 Terraform release 목록은 특정 workspace 엔진 버전의 증거가
 아니다. 사용한 도구·엔진의 실제 식별자를 승인된 실행 근거에 남겨야 한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0069-terrakube.md) (`POL-0069`)
 - [Runbook](../runbooks/0069-terrakube.md) (`RUN-0069`)

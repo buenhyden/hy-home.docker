@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # 05-Messaging Optimization Hardening Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다. runtime
 변경, restore, 정리, credential rotation은 별도 task가 필요하다.
@@ -28,6 +36,8 @@ HOME 대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 현재 selector를 렌더링한다.
 
@@ -47,7 +57,18 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. 정확한 diff와 운영 문서를 검토한다. 컨테이너를 시작하지 않고 명령, 종료
    상태, 미해결 gap을 기록한다.
 
-## Rollback or Recovery
+## Verification
+
+### Evidence
+
+통과란 root configuration이 parse되고 현재 profile이 resolve되고 scoped
+hardening script가 통과하고 native OIDC와 standard gateway routing이
+일치하고 recovery ownership이 명시되었다는 뜻이다. runtime, 성능, OIDC 로그인,
+failover, restore는 입증하지 않는다.
+
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 정적 실패라면 이를 소유한 leaf source나 shared template을 식별하고 승인된
 범위만 수정한다. 동일한 selector를 다시 렌더링한다. 실패한 secret, health,
@@ -58,19 +79,12 @@ mutation을 중단한 뒤 [RUN-0036](0036-kafka.md)을 사용한다. raw log-dir
 수리, offset 이동, schema 삭제, connector 재개, cluster identity 변경은
 승인된 recovery task가 필요하다.
 
-## Evidence
-
-통과란 root configuration이 parse되고 현재 profile이 resolve되고 scoped
-hardening script가 통과하고 native OIDC와 standard gateway routing이
-일치하고 recovery ownership이 명시되었다는 뜻이다. runtime, 성능, OIDC 로그인,
-failover, restore는 입증하지 않는다.
-
-## Escalation
+### Escalation
 
 source/profile, persistence, secret, OIDC, listener-security, 또는 recovery
 ownership drift에서 중단하고 messaging @buenhyden에게 escalation한다.
 
-## Traceability
+### Traceability
 
 - Artifact: `RUN-0037`; parent guide: `GDE-0037`.
 - 정적 evidence는 runtime이나 restore를 입증하지 않는다.

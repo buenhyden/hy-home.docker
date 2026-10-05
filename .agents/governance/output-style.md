@@ -4,37 +4,45 @@ version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 ---
 
 # Output Style
+
+## Overview
 
 Claude and Codex communicate outcomes first, use plain language, cite concrete
 repository evidence, and distinguish verified facts from assumptions. Long-work
 updates are concise. Final reports include changed scope, validation, residual
 risks, and blockers without copying sensitive output.
 
-## Language
+## Scope
+
+Conversational outcomes, findings, procedures, and completion reports from supported agents.
+
+## Rules
+
+### Language
 
 Conversational responses follow the user's active language. Artifact language is
 not a presentation choice: it is routed by document role through
 [documentation protocol](documentation-protocol.md#document-language). A provider
 surface may not set either rule.
 
-## Findings
+### Findings
 
 State a finding as a claim plus its evidence, not as narrative. Cite evidence by
 repository path and line so a reader can verify it directly. Tag a review issue
 with one severity: `blocker`, `high`, `medium`, or `low`. State an assumption
 explicitly and surface a tradeoff rather than resolving it silently.
 
-## Procedures
+### Procedures
 
 Write an instruction in the active voice with one action per step and one
 expected result. Keep a command runnable as written; mark a non-executable
 snippet explicitly.
 
-## Completion Reporting
+### Completion Reporting
 
 Report outcomes faithfully. Show failing output rather than summarizing it, name
 a skipped step, and state completion only after the check that proves it has
@@ -49,6 +57,10 @@ another.
 
 Provider-native presentation may adapt rendering but may not change governance
 authority, language routing, or acceptance criteria.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

@@ -14,7 +14,15 @@ created: "2026-10-01"
 
 # System Operations Diagnostic Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 여러 앱의 접속·로그인·작업·저장이 함께 실패하거나, 앱과 관측 화면의 장애가
 같은 원인인지 모를 때 사용한다. 공유 host·gateway·인증·DB·broker·객체 저장소
@@ -29,6 +37,8 @@ unseal, credential 발급, 설정 변경, 복원, cleanup 또는 부하 생성�
 않는다. 영향 범위는 관찰 대상뿐이며 앱 데이터와 인증정보는 읽거나 출력하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### 1. Confirm scope before diagnosis
 
@@ -99,7 +109,9 @@ OpenBao와 Agent의 `healthy`는 unseal·인증·렌더링 성공을 증명하�
 다시 확인한다. 컨테이너 healthy만으로 종료하지 않으며, 확인하지 않은 기능과
 data integrity·복원 가능성은 미검증으로 남긴다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 현재 Task 또는 실제 사건의 [Incident](../incidents/README.md)에 시각·시간대,
 source revision, 대상 context·선택의 확인 여부, 영향·정상 기능, 최소 상태 요약,
@@ -107,7 +119,9 @@ source revision, 대상 context·선택의 확인 여부, 영향·정상 기능,
 `PASS`/`FAIL`/`NOT_RUN`을 구분하고, 장애 원인 후보는 확정 사실과 분리한다.
 원문 로그, secret 값, 인증 헤더·cookie, 사용자 데이터, 비공개 경로는 첨부하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 읽기 전용 진단은 runtime 상태를 변경하지 않아 되돌릴 조치가 없다. 복구·rollback은
 위 표의 해당 서비스 Runbook과 승인된 Task가 소유한다. 공통 장애라는 이유로
@@ -115,7 +129,7 @@ source revision, 대상 context·선택의 확인 여부, 영향·정상 기능,
 다운그레이드를 선택하지 않는다. 검증된 격리 복원 경로가 없으면 복원 불가/미검증
 상태를 보존하고 별도 작업으로 넘긴다.
 
-## Escalation
+### Escalation
 
 Docker 대상 불명, 여러 HOME 기능의 지속 장애, 반복 OOM, 공유 저장소 쓰기 실패,
 인증 우회·secret 노출 징후, 필수 복원 증거 부재, 또는 승인된 절차와 실제 상태의
@@ -123,7 +137,7 @@ Docker 대상 불명, 여러 HOME 기능의 지속 장애, 반복 OOM, 공유 �
 영향받은 기능, 관찰 시각, 마지막 변경, 공통 원인 후보, 해당 Runbook, 미검증
 항목과 필요한 승인만 전달하며 사건 기록은 기존 Incident 구조를 사용한다.
 
-## Traceability
+### Traceability
 
 - [GDE-0099](../guides/0099-system-operations.md): 사용자·데이터 경로와 공통 의존성.
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md): 호스트 구조와 실패 영역.

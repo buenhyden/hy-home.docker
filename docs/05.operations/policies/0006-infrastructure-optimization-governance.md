@@ -7,17 +7,20 @@ owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "operations"
 artifact_id: "POL-0006"
-parent_ids: []
 created: "2026-06-04"
 ---
 # Infrastructure Optimization Governance Policy
 
 ## Overview
 
+### Overview
+
 이 정책은 root Compose가 include하는 정상 서비스와 `labs/*.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 12개 티어를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - 대상: `infra/` 하위 게이트웨이/인증/보안/데이터/메시징/관측성/워크플로/AI/플랫폼 운영/커뮤니케이션/품질/분석 서비스
 - 목적: 공통 운영 기준 통일 + 서비스별 개선 백로그 우선순위화
@@ -31,7 +34,13 @@ created: "2026-06-04"
 >
 > - **Systems**: tracked Compose source의 140 service identity(2026-09-20 inventory: Compose fragment와 root include 각 42개). service directory 수는 identity 수나 activation 범위의 대체 지표가 아니다.
 
-## Controls
+### Traceability
+
+- 같은 번호 `0006`의 Guide/Runbook은 없다.
+
+## Rules
+
+### Controls
 
 - **Required**:
   - 모든 장기 실행 서비스에 `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용
@@ -232,12 +241,7 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [Locust LAB](../../../labs/locust.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
   ([OPER](../guides/0062-locust.md), [RUN](../runbooks/0062-locust.md))
 
-## Exceptions
-
-- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
-  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
-
-## Verification
+### Verification
 
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
 - Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
@@ -253,16 +257,19 @@ Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 
 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의
 공개/sanitized 입력 경계를 따른다. check PASS는 필수 통제의 전체 runtime 증명이 아니다.
 
-## Review Cadence
+### Review Cadence
 
 책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
 
 - 월 1회 정기 검토
 - 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
 
-## Traceability
+## Exceptions
 
-- 같은 번호 `0006`의 Guide/Runbook은 없다.
+### Exceptions
+
+- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
+  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
 
 ## Related Documents
 

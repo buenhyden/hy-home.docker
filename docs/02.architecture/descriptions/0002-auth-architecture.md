@@ -16,9 +16,15 @@ created: "2026-03-26"
 
 # 02-Auth Architecture Description
 
-> This document defines the technical architecture for Identity and Access Management (IAM), Gateway ForwardAuth, and application-native OIDC.
+## Overview
 
-## Context and Stakeholders
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 The `02-auth` architecture centers on `Keycloak`, which serves the central IAM role, and `OAuth2 Proxy`, the gateway authentication layer. Not every application is forced into the same ingress auth pattern. Services that provide their own OIDC and application-level RBAC connect directly to Keycloak, while services without their own OIDC, or for which gateway authentication fits, use OAuth2 Proxy ForwardAuth.
 
@@ -37,7 +43,42 @@ The `02-auth` architecture centers on `Keycloak`, which serves the central IAM r
 - **Fail Closed**: Access to protected resources is not allowed when authentication/authorization verification fails.
 - **Secret Boundary**: The client/cookie/JWT secrets Compose injects use file-based Secrets. Approved OpenBao native OIDC client secrets are stored in the OpenBao auth backend.
 
-## Components
+### Traceability
+
+- **IAM Engine**: Keycloak
+- **Gateway SSO**: OAuth2 Proxy
+- **Native OIDC**: Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao
+- **Session Manager**: Valkey for OAuth2 Proxy
+- **Storage**: PostgreSQL for Keycloak realm/user/client state
+
+### System Boundaries
+
+- **Owns**:
+  - Keycloak-based identity boundary
+  - The selection criteria between ForwardAuth and Native OIDC
+  - OAuth2 Proxy session boundary
+  - OIDC issuer/redirect trust relationship
+- **Consumes**:
+  - `01-gateway` HTTPS ingress/routing
+  - `04-data` PostgreSQL/Valkey
+- **Does Not Own**:
+  - Detailed RBAC implementation per application
+  - Non-authentication business logic
+  - Secret values themselves
+  - Evidence of individual execution
+- **Native OIDC Boundary**:
+  - Airflow/Kafbat RBAC and OpenBao policy are owned by each application and the Operations documents.
+  - OAuth2 Proxy does not replace that RBAC.
+- **Non-goals**:
+  - Introducing a new identity provider
+  - A fail-open default policy
+  - Forcing every service's authentication implementation into a single middleware
+
+## Architecture
+
+### Architecture
+
+### Components
 
 The auth system provides one central identity source with two ingress authentication patterns.
 
@@ -124,15 +165,7 @@ Traefik handles only TLS and routing/gateway middleware. The application perform
 - `dedicated-valkey` profile: adds `oauth2-proxy-valkey`
 - Native OIDC application session/RBAC: owned by each application
 
-## Traceability
-
-- **IAM Engine**: Keycloak
-- **Gateway SSO**: OAuth2 Proxy
-- **Native OIDC**: Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao
-- **Session Manager**: Valkey for OAuth2 Proxy
-- **Storage**: PostgreSQL for Keycloak realm/user/client state
-
-## Data Flow
+### Data Flow
 
 The browser request enters through Traefik HTTPS ingress and then branches according to the service's auth pattern.
 
@@ -144,38 +177,7 @@ Keycloak realm/user/session metadata is stored in PostgreSQL.
 
 The client/cookie/DB/JWT secrets Compose injects are read from `/run/secrets`. The OpenBao native OIDC client secret is stored in the OpenBao auth backend during the approved bootstrap process and is not included in public Compose files or documents.
 
-## System Boundaries
-
-- **Owns**:
-  - Keycloak-based identity boundary
-  - The selection criteria between ForwardAuth and Native OIDC
-  - OAuth2 Proxy session boundary
-  - OIDC issuer/redirect trust relationship
-- **Consumes**:
-  - `01-gateway` HTTPS ingress/routing
-  - `04-data` PostgreSQL/Valkey
-- **Does Not Own**:
-  - Detailed RBAC implementation per application
-  - Non-authentication business logic
-  - Secret values themselves
-  - Evidence of individual execution
-- **Native OIDC Boundary**:
-  - Airflow/Kafbat RBAC and OpenBao policy are owned by each application and the Operations documents.
-  - OAuth2 Proxy does not replace that RBAC.
-- **Non-goals**:
-  - Introducing a new identity provider
-  - A fail-open default policy
-  - Forcing every service's authentication implementation into a single middleware
-
-## Quality Attributes
-
-- **Performance**: ForwardAuth targets use the lightweight `/oauth2/auth` check.
-- **Security**: Avoids unnecessary `Authorization` header injection into Native OIDC apps.
-- **Reliability**: Verifies Keycloak/Valkey/PostgreSQL health state and the application login flow separately.
-- **Operability**: Documents the auth pattern in the service onboarding document.
-- **Observability**: Failure points must be separable in Keycloak/OAuth2 Proxy/application logs.
-
-## Deployment View
+### Deployment View
 
 Keycloak runs in `infra/02-auth/keycloak/docker-compose.yml`, and OAuth2 Proxy runs in `infra/02-auth/oauth2-proxy/docker-compose.yml`.
 
@@ -185,6 +187,14 @@ Kafbat UI configures native OAuth2 in `infra/05-messaging/kafka/docker-compose.y
 
 The OpenBao router also uses only `gateway-standard-chain@file`. The Keycloak group `/openbao-admins` is a condition for the OpenBao OIDC role `home-admin`, and the login result is an OpenBao token under the `hy-home-operator` policy. Keycloak users/groups and OpenBao roles/policies are separate objects. The actual login verification is owned by the
 [OpenBao work record](../../98.archive/completed/03.specs/0180-home-dev-convergence/tasks/tsk-0002-openbao-access-and-env-convergence.md).
+
+## Quality Attributes
+
+- **Performance**: ForwardAuth targets use the lightweight `/oauth2/auth` check.
+- **Security**: Avoids unnecessary `Authorization` header injection into Native OIDC apps.
+- **Reliability**: Verifies Keycloak/Valkey/PostgreSQL health state and the application login flow separately.
+- **Operability**: Documents the auth pattern in the service onboarding document.
+- **Observability**: Failure points must be separable in Keycloak/OAuth2 Proxy/application logs.
 
 ## Related Documents
 

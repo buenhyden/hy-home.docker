@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-14"
+  updated: "2026-10-05"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,9 @@ metadata:
 
 # infra-validate
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -53,20 +55,20 @@ The approved infrastructure change and its validation contract must identify whi
 3. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
 4. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
 
-## Outputs
-
-- Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
-
-## Gates
+### Gates
 
 - Static validation passes before any runtime action.
 - Runtime checks remain within approved service and mutation scope.
+
+## Outputs
+
+- Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
 
 ## Failure Handling
 
 Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
 
-## Related Documents
+## References
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Compose stack function](../compose-stack-agent/SKILL.md)

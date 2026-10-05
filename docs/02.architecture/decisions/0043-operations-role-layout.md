@@ -38,25 +38,29 @@ Facts at baseline `0deb430ea`:
   MIG-0002's merge.
 - The `optimization-hardening` slug repeats across 7 domains.
 
-## Decision Drivers
+### Compliance
+
+`scripts/validation/check-operations-catalog.py`, the Registry's taxonomy
+check, and `check-document-links.py --mode all` enforce this decision.
+
+### Follow-up
+
+- `inc-2026-0002` is unrelated to this decision. It was resolved on owner
+  evidence (SPEC-0183 Task W13), and its postmortem is published.
+- Fixing links in other repositories is performed by each repository's owner.
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 - People look first by role (understand, control, execute).
 - Do not change issued IDs (documentation protocol authoring rule 5).
 - Do not run two discovery systems in parallel.
 - Do not rewrite Stage 98 frozen bodies and sealed records.
 
-## Options Considered
-
-1. **Keep the catalog**: No change cost, but leaves a structure the owner has
-   explicitly said conflicts with the goal.
-2. **Keep the catalog and add a per-role index**: Two discovery systems run in
-   parallel permanently, exactly the state the README prohibits by banning
-   "publishing a parallel per-role index."
-3. **Switch to role-first paths (adopted)**: `guides/`, `policies/`,
-   `runbooks/`, `incidents/` own the role, and domain remains an index
-   classification.
-
-## Decision
+### Decision
 
 - Path: under `docs/05.operations/`, `guides/####-<slug>.md`,
   `policies/####-<slug>.md`, `runbooks/####-<slug>.md`. Incident and
@@ -80,6 +84,21 @@ Facts at baseline `0deb430ea`:
 - For external repository consumers, MIG-0005 announces the move's scope and
   current owner.
 
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+1. **Keep the catalog**: No change cost, but leaves a structure the owner has
+   explicitly said conflicts with the goal.
+2. **Keep the catalog and add a per-role index**: Two discovery systems run in
+   parallel permanently, exactly the state the README prohibits by banning
+   "publishing a parallel per-role index."
+3. **Switch to role-first paths (adopted)**: `guides/`, `policies/`,
+   `runbooks/`, `incidents/` own the role, and domain remains an index
+   classification.
+
 ## Consequences
 
 - Positive: People find documents directly by role. There is no structural
@@ -91,20 +110,11 @@ Facts at baseline `0deb430ea`:
 - Stage 98 records and MIG-0002 continue to carry the catalog path as
   historical fact.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - Parent architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - Superseded structural decision: SPEC-0158 and MIG-0002's catalog convergence
   (Stage 98 preserved record)
 - Execution: [SPEC-0183](../../98.archive/completed/03.specs/0183-operations-role-layout/spec.md)
-
-## Compliance
-
-`scripts/validation/check-operations-catalog.py`, the Registry's taxonomy
-check, and `check-document-links.py --mode all` enforce this decision.
-
-## Follow-up
-
-- `inc-2026-0002` is unrelated to this decision. It was resolved on owner
-  evidence (SPEC-0183 Task W13), and its postmortem is published.
-- Fixing links in other repositories is performed by each repository's owner.

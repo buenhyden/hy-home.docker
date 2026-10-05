@@ -1,10 +1,10 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
 version: "0.1.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 ---
 
 # 외부 프로젝트 인프라 등록 계약
@@ -88,7 +88,7 @@ python3 scripts/validation/check-script-manifest.py
 별도의 비밀 검사와 사람 검토가 필요합니다. 정적 통과는 route, OIDC, DB,
 Valkey, S3, 검색, 관측의 접근 권한이나 실제 연결을 증명하지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 실제 프로젝트가 승인되면 외부 저장소가 소비용 manifest를 작성합니다. 인프라
 담당자는 해당 Task에서 참조 이름과 자원 범위를 확인하고, 이 schema와 검증기를

@@ -1,10 +1,10 @@
 ---
 title: "Loki Log Aggregation System"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-01-12"
 ---
 
@@ -99,7 +99,7 @@ loki/
 - Grafana는 URL `http://loki:3100`으로 데이터소스 `Loki`를 프로비저닝합니다.
 - `service_name`, `env`, `stream`처럼 카디널리티가 낮은 레이블로 Grafana Explore에서 쿼리합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 사용법과 쿼리 맥락은 Loki 가이드(`docs/05.operations/guides/0043-loki.md`)를 따릅니다.
 2. 준비 상태, 저장소, 수집, 재시작, 롤백 절차는 Loki 런북(`docs/05.operations/runbooks/0043-loki.md`)을 따릅니다.

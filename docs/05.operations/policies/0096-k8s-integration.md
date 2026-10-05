@@ -16,16 +16,28 @@ created: "2026-09-23"
 
 ## Overview
 
+### Overview
+
 hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의
 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를
 오가는 자격 증명의 처리 방식을 고정한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 클러스터가 호출할 수 있는 엔드포인트, OpenBao Kubernetes 인증과 bootstrap
 토큰, Prometheus HTTP API 자격 증명, 저장소 경계를 넘는 값 전달.
 
-## Controls
+### Traceability
+
+- [가이드](../guides/0096-k8s-integration.md) (`GDE-0096`)
+- [런북](../runbooks/0096-k8s-integration.md) (`RUN-0096`)
+- [OpenBao policy](0085-openbao.md)
+
+## Rules
+
+### Controls
 
 - 클러스터는 승인된 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)를 통해 이 스택에 도달한다. 어떤 Compose
   서비스도 다시 k3d 네트워크에 참여하지 않으며, 클러스터를 위해 고정 주소를
@@ -68,12 +80,7 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 절차는 `BLOCKED`로 중단한다. 명령 실패만으로 인증 거절·폐기 성공을 판정하지
 않으며 transport/서버 상태/구문 오류는 `INDETERMINATE`로 처리한다.
 
-## Exceptions
-
-없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
-contract 표에 대한 검토된 변경이 필요하다.
-
-## Verification
+### Verification
 
 - Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
   두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
@@ -84,16 +91,17 @@ contract 표에 대한 검토된 변경이 필요하다.
 - 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
   Tempo3200 조회/API와 Alloy4317/4318 trace 수집을 구분한다.
 
-## Review Cadence
+### Review Cadence
 
 책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
 시, 자격 증명이 회전할 때마다 검토한다.
 
-## Traceability
+## Exceptions
 
-- [가이드](../guides/0096-k8s-integration.md) (`GDE-0096`)
-- [런북](../runbooks/0096-k8s-integration.md) (`RUN-0096`)
-- [OpenBao policy](0085-openbao.md)
+### Exceptions
+
+없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
+contract 표에 대한 검토된 변경이 필요하다.
 
 ## Related Documents
 

@@ -29,11 +29,17 @@ created: "2026-05-10"
 
 # Supabase Usage Guide
 
-> 이 가이드로 현재 self-hosted Supabase stack을 이해하고 확인한다.
+## Overview
 
----
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
 
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -140,19 +146,19 @@ created: "2026-05-10"
 - 생성된 Kong 또는 데이터베이스 config를 문서 전용 상태로 취급하는 것 — 이 config는 `${DEFAULT_DATA_DIR}`에서 마운트되는 runtime 구성이다.
 - self-hosted update config backup을 데이터베이스나 Storage backup으로 사용하는 것 — upstream 문서는 update backup을 구성 전용으로만 설명한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile supabase config --quiet`
 - `docker compose --profile supabase ps`
 - 커밋 전에 짝을 이루는 guide/policy/runbook에서 직접 Studio host-port 가정, 오래된 Compose CLI 표기, template copyright 잔재를 검색한다.
 - 기대 결과: compose가 렌더링되고, 서비스가 compose 파일과 일치하며, 오래된 Studio/직접 포트 또는 template 잔재가 없다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은
 [recovery runbook](../runbooks/0029-supabase.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Supabase Operations Policy](../policies/0029-supabase.md) (`POL-0029`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

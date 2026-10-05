@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "adr-writing"
   scope: "architecture"
   owner_agent: "doc-writer"
@@ -15,7 +15,9 @@ metadata:
 
 # adr-writing
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ Use only when a material architecture choice has approved context, explicit driv
 2. Compare credible alternatives against the named quality attributes and document consequences, risks, and reversibility.
 3. Link the selected outcome to its parent ARD/PRD and the downstream Spec or superseded ADR.
 
-## Outputs
-
-- One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
-
-## Gates
+### Gates
 
 - Architecture traceability resolves upstream and downstream links.
 - Decision status and supersession semantics match the metadata contract.
+
+## Outputs
+
+- One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
 
 ## Failure Handling
 
 If the choice, authority, or alternatives are not decision-ready, return a decision-gap report instead of fabricating an accepted ADR.
 
-## Related Documents
+## References
 
 - [Documentation protocol](../../governance/documentation-protocol.md)
 - [Documentation scope](../../governance/documentation-protocol.md)

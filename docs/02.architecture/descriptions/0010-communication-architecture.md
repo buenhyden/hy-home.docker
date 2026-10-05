@@ -14,13 +14,21 @@ created: "2026-03-26"
 
 # Communication Tier Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 The mail requirements separate development message capture in `11-quality/mailpit` from the optional internal mail server in `10-communication/stalwart`. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
-## System Boundaries
+### System Boundaries
 
 - **Mailpit owns:** test-message capture in persistent SQLite
   `/data/mailpit.db`, loopback-published SMTP/UI ports, and a Traefik UI route.
@@ -33,13 +41,22 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 - **Non-goals:** Mailpit does not replace Stalwart, and Stalwart is not an
   automatic HOME service.
 
-## Components
+### Traceability
+
+- [Mailpit operations](../../05.operations/guides/0084-mailpit.md)
+- [Stalwart operations](../../05.operations/guides/0070-mail.md)
+
+## Architecture
+
+### Architecture
+
+### Components
 
 Mailpit is the development SMTP/UI component backed by one SQLite database.
 Stalwart is the optional mail-protocol and administration component backed by
 the operator-selected storage configuration under its persistent mount.
 
-## Data Flow
+### Data Flow
 
 ```mermaid
 flowchart LR
@@ -50,7 +67,7 @@ flowchart LR
   Stalwart --> Store[(configured data/blob/directory backends)]
 ```
 
-## Deployment View
+### Deployment View
 
 The root project includes both leaves. Profile choice determines activation:
 `mail-dev`/`dev`/`local` select Mailpit and `mail-server` selects Stalwart plus `stalwart-config`. The helper uses its selected `config/Dockerfile` and existing reconciliation wrapper. A
@@ -68,11 +85,6 @@ rendered; profile rendering is not a stop operation.
   point, then restores with outbound delivery disabled.
 - **Licensing:** Stalwart upstream offers AGPL-3.0 and enterprise licensing;
   deployment documentation must not assume paid features or entitlement.
-
-## Traceability
-
-- [Mailpit operations](../../05.operations/guides/0084-mailpit.md)
-- [Stalwart operations](../../05.operations/guides/0070-mail.md)
 
 ## Related Documents
 

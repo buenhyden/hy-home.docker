@@ -19,7 +19,17 @@ created: "2026-05-10"
 
 # 02-Auth OAuth2 Proxy Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Implementation Sources
 
@@ -163,13 +173,13 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
 전달 방식 수정은 별도 구현 변경으로 검토한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0015-oauth2-proxy.md)을 따른다.
 
@@ -178,7 +188,7 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 복구 한계는 [Runbook](../runbooks/0015-oauth2-proxy.md#rollback-or-recovery)에 남긴다.
 이미지 변경·PKCE·logout·session 만료 검증과 helper 기동/중지는 같은 Runbook이 소유한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../policies/0015-oauth2-proxy.md) (`POL-0015`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)

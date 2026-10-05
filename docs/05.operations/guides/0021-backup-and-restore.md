@@ -19,7 +19,17 @@ created: "2026-09-22"
 
 # Backup and Restore Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### What owns which copy
 
@@ -117,7 +127,7 @@ restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune �
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-## Common Checks
+### Common Checks
 
 backup data를 변경하지 않는 점검이다(Restic은 여전히 짧게 유지되는 lock을 기록한다):
 
@@ -131,12 +141,12 @@ journalctl -u hyhome-backup.service -n 50 --no-pager
 정상이면 output에 최근 backup과 WAL archive range가 담긴 `status: ok`,
 최근 `hyhome-state`와 `hyhome-host` snapshot, 성공한 마지막 실행이 나온다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 초기 설정, manual 실행, restore, point-in-time recovery, retention delete
 절차는 [RUN-0021](../runbooks/0021-backup-and-restore.md)에 있다.
 
-## Traceability
+### Traceability
 
 - Policy: [POL-0021](../policies/0021-backup-and-restore.md)
 - Implementation: [Restic Compose](../../../infra/09-platform-ops/restic/docker-compose.yml),

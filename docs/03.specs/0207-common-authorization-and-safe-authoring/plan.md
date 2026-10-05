@@ -2,9 +2,9 @@
 title: "Common Authorization and Safe Authoring Plan"
 version: "1.0.0"
 type: "sdlc/plan"
-status: "active"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0207-PLAN-0001"
 parent_ids:
@@ -14,13 +14,17 @@ created: "2026-10-04"
 
 # Common Authorization and Safe Authoring Plan
 
-## Objective
+## Overview
 
 Implement bounded P01 policy convergence through Task 0001's authorization
 work and Task 0002's execution-boundary follow-up, preserving one current
 authority per rule and recording only observed local evidence.
 
-## Dependencies
+The current user-authorized local main finish follows the
+[SPEC-0209 handoff](../0209-common-document-contract-adoption/tasks/tsk-0001-common-document-contract-adoption.md#local-integration-handoff).
+The completed Tasks retain their original implementation scopes and evidence.
+
+### Dependencies
 
 - Current user request approving local P01 policy and documentation edits.
 - REQ-0024, AD-0027, ADR-0032, canonical policy owners, provider registry, and
@@ -28,7 +32,25 @@ authority per rule and recording only observed local evidence.
 - Read-only policy review before final completion; focused documentation and
   governance checks. Remote integration requires separate approval and evidence.
 
-## Execution Sequence
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1, 2, 3, 5, 7 | Inventory and route current authority and follow-up consumers. | None | TSK-0001, TSK-0002 | Original Task evidence and current source review. |
+| W2 | 2, 3, 4, 5 | Converge canonical authorization, safe-authoring, review, and budget policy. | W1 | TSK-0001 | Original Task 0001 evidence. |
+| W3 | 4, 6, 7 | Preserve prior verification and complete the execution-boundary follow-up. | W2 | TSK-0001, TSK-0002 | Original per-Task evidence and actual follow-up checks. |
+| W4 | 6 | Verify and review the follow-up's final exact diff. | W3 | TSK-0002 | Original Task 0002 evidence. |
+
+### Historical Assignment Boundaries
+
+Task 0001's original pairs are `1/W1`, `2/W2`, `3/W2`, `4/W2`, `5/W2`,
+`6/W3`, and `7/W3`. Task 0002's original pairs are `1/W1`, `2/W1`, `3/W1`,
+`5/W1`, `7/W1`, `4/W3`, and `6/W4`. The current table preserves their union;
+shared row routing does not establish additional historical coverage or
+acceptance for either Task. Execution and completion evidence remain in the
+actual Tasks; the Spec and Plan make no new completion claim.
+
+### Work Details
 
 1. W1: inventory and route authority. Record policy-to-role-to-skill-to-
    provider-to-hook-to-consumer paths and conflicts only where a real consumer
@@ -44,31 +66,34 @@ authority per rule and recording only observed local evidence.
 4. W4: verify and review the final exact diff. Run focused document/policy and
    hook checks, record actual results and independent review, then prepare one
    logical local commit. The prior local merge `2bba11baa1009e673a763a727b0a9e3d7e0bb5a7`
-   is preserved; this follow-up creates no additional local main merge. Remote
+   is preserved; Task 0002's original follow-up scope excluded an additional
+   local main merge. The latest authorized local main finish follows the
+   SPEC-0209 handoff above. Remote
    push, PR, merge, and hosted checks remain `NOT_RUN` without separate approval.
 
-## Risk and Rollback
-
-Ambiguous wording can create a parallel owner or overstate native capabilities.
-Rollback is one logical revert of the P01 policy/package change after preserving
-the Task evidence. No secret, runtime, remote, provider, or sandbox state is
-modified.
-
-## Verification
-
-Run the applicable documentation metadata/link and changed-profile governance
-checks once after the final local diff. Run provider rendering only if a provider
-surface changes. Record missing tools, sandbox limits, and hosted checks as
-`NOT_RUN` or `BLOCKED`, never as a pass.
-
-## Rulings
+### Rulings
 
 - `approval-boundaries.md` is the current authorization owner.
 - Task/schema/CLI/archive fields are structural records, never authentication.
 - Historical evidence preserves provenance and cannot authorize a current action.
 - Review stays independent and read-only; doc-writer remains the policy writer.
 
-## Task Routing
+## Verification Plan
 
+Run the applicable documentation metadata/link and changed-profile governance
+checks once after the final local diff. Run provider rendering only if a provider
+surface changes. Record missing tools, sandbox limits, and hosted checks as
+`NOT_RUN` or `BLOCKED`, never as a pass.
+
+## Risks and Rollback
+
+Ambiguous wording can create a parallel owner or overstate native capabilities.
+Rollback is one logical revert of the P01 policy/package change after preserving
+the Task evidence. No secret, runtime, remote, provider, or sandbox state is
+modified.
+
+## Related Documents
+
+- [Specification](spec.md)
 - [Task 0001: policy convergence](tasks/tsk-0001-policy-convergence.md)
 - [Task 0002: execution boundary and safe diagnostics](tasks/tsk-0002-execution-boundary-and-safe-diagnostics.md)

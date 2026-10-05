@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-10-05"
   function_id: "policy-gate-agent"
   scope: "agentic"
   owner_agent: "rules-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # policy-gate-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -41,6 +43,11 @@ The governed change, canonical policy owner, typed contract, and applicable appr
    naming for each finding the gate that produced it and distinguishing a gate
    that passed from one that was skipped, blocked, or never run.
 
+### Gates
+
+- One canonical authority governs each policy topic.
+- Protected changes have explicit approval and review evidence.
+
 ## Outputs
 
 - A policy-gate verdict with evidence, owner, and unresolved approvals, in the
@@ -48,16 +55,11 @@ The governed change, canonical policy owner, typed contract, and applicable appr
   gate, written before the results are known, because a gate with no row is a
   gate nobody looked at.
 
-## Gates
-
-- One canonical authority governs each policy topic.
-- Protected changes have explicit approval and review evidence.
-
 ## Failure Handling
 
 Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing approvals and escalate to the workflow supervisor.
 
-## Related Documents
+## References
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - Agent governance artifacts contract (`docs/99.templates/registry.json`)

@@ -15,16 +15,13 @@ observed_at: "2026-09-05"
 
 # Agentic Engineering Research Pack
 
-## Question
+## Overview
 
-공식 외부 자료에 근거해 agent engineering, SDLC, 문서화, Compose, CI/CD,
-품질과 보안의 선택지를 어떻게 구분하고, 후속 내부 조사에 필요한 질문과
-수용 증거를 어떻게 준비할 것인가?
-
-이번 결과는 비규범적 연구다. 상세 주장은 기존 멤버 한 곳이 소유하며 이
-README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
+### Overview
 
 ## Scope
+
+### Scope
 
 | 구분 | 이번 기록 |
 | --- | --- |
@@ -39,7 +36,22 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 실제 계정·비용, 환경변수·비밀값·원시 로그 조사는 제외했다. 연구를 근거로 한
 설정·정책 변경, 배포·재시작·push·PR·merge도 수행 범위가 아니다.
 
-## Method
+## Structure
+
+### Structure
+
+## Usage
+
+### Question
+
+공식 외부 자료에 근거해 agent engineering, SDLC, 문서화, Compose, CI/CD,
+품질과 보안의 선택지를 어떻게 구분하고, 후속 내부 조사에 필요한 질문과
+수용 증거를 어떻게 준비할 것인가?
+
+이번 결과는 비규범적 연구다. 상세 주장은 기존 멤버 한 곳이 소유하며 이
+README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
+
+### Method
 
 질문, 증거 모델, 수명주기/관측 시점, 활용 목적이 모두 같을 때 현재 설명을
 동일 주장으로 통합한다. 외부 제품 사양과 과거 내부 실행 결과는 합치지 않는다.
@@ -91,7 +103,7 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 - `m0020-workspace-baseline.md`
 - `m0021-local-docker-service-consolidation.md`
 
-## Findings
+### Findings
 
 ### Request Coverage and Member Navigation
 
@@ -582,7 +594,7 @@ owner로 만듭니다.
   취급합니다; 현재 생성된 LLM Wiki 신선도는 오직 등록된 generator와
   check만이 결정합니다.
 
-## Sources
+### Sources
 
 원문별 상세 절·확인일·제품 범위는 멤버의 `Claims and Sources`에서 직접 확인한다.
 공급자·모델은 [m0012](m0012-provider-implementation-comparison.md#claims-and-sources)와
@@ -597,7 +609,7 @@ owner로 만듭니다.
 역사 인용을 이번 확인 날짜로 다시 지정하지 않았다. 접근 불가, 발행일 미표시,
 draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
 
-## Implications
+### Implications
 
 작은 local-first 작업 공간에서는 기존 문서·작업 기록·native 기능으로 필요를
 충족하는지 먼저 평가한다. 새로운 wrapper, tracker, 기억 시스템, agent catalog는
@@ -608,7 +620,20 @@ draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
 복구 시험, 실제 provider 호출, 계정·권한 read-back, 서비스 변경은 권한과 격리
 조건을 먼저 정해야 한다. 이번 연구는 그 실행을 승인하지 않는다.
 
-## Traceability
+### Limitations
+
+- 워크스페이스 구현·운영·계정·보안 상태는 새로 평가하지 않았다. 내부 적용
+  상태는 모두 `Not assessed in this run`이다.
+- 공식 문서도 변한다. 버전·채널·과금·지원 범위는 채택 전에 재확인한다.
+  과거 자료와 이번 가변 문서를 동일한 관측으로 취급하지 않는다.
+- 역사 자료의 생성·검증 명령과 count는 실행 지시가 아니다. 폐기된 로컬
+  LLM Wiki를 복원하거나 생성기를 실행하지 않는다.
+- 문서 검증은 서비스 health, 복구, 성능, 공급자 이용 권한 또는 remote
+  enforcement를 증명하지 않는다. 실제 결과와 미실행 사유는 Task에서 구분한다.
+
+## Related Documents
+
+### Traceability
 
 연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
 [SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
@@ -623,14 +648,3 @@ draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
 [pack template](../../../99.templates/templates/references/research-pack.template.md),
 [member template](../../../99.templates/templates/references/research.template.md).
 탐색: [연구 인덱스](../README.md).
-
-## Limitations
-
-- 워크스페이스 구현·운영·계정·보안 상태는 새로 평가하지 않았다. 내부 적용
-  상태는 모두 `Not assessed in this run`이다.
-- 공식 문서도 변한다. 버전·채널·과금·지원 범위는 채택 전에 재확인한다.
-  과거 자료와 이번 가변 문서를 동일한 관측으로 취급하지 않는다.
-- 역사 자료의 생성·검증 명령과 count는 실행 지시가 아니다. 폐기된 로컬
-  LLM Wiki를 복원하거나 생성기를 실행하지 않는다.
-- 문서 검증은 서비스 health, 복구, 성능, 공급자 이용 권한 또는 remote
-  enforcement를 증명하지 않는다. 실제 결과와 미실행 사유는 Task에서 구분한다.

@@ -17,9 +17,30 @@ review_cycle: "on-source-change"
 
 # Reference: SDLC Document Roles
 
-Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked: 2026-09-27. Document updated: 2026-09-27. Historical workspace observations retain their original dates/commits below. Current local adoption and implementation: **Not assessed in this run**. This non-normative research changes no policy, profile, service or integration.
+## Overview
 
-## Current External Research
+### Overview
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Each document role owns a distinct question, trigger, handoff, and evidence
+> boundary. Current roles and their copy sources are declared by the
+> [Stage 99 Registry](../../../99.templates/registry.json); the
+> [canonical agent governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
+> owns their meaning. Requirement Package combines PRD/SRS perspectives;
+> Architecture Description replaces the older ARD name and remains distinct
+> from ADR. Release
+> uses external evidence rather than an independent document profile.
+>
+> The historical role survey below was read at
+> `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` on 2026-08-14, following the Task 5
+> baseline `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`. Its twelve-role and
+> 21-profile counts describe that boundary, not today's authoring choices.
+>
+
+## Scope and Method
+
+### Current External Research
 
 ### Document roles, relationships and responsibility
 
@@ -61,84 +82,7 @@ Incident records distinguish observed impact, estimates and hypotheses, with tim
 
 GitHub releases package tag-based iterations with notes/assets, and tag/release dates can differ. Readiness, packaging/publication, rollout and runtime acceptance need separate facts (C-m0016-06–07). No independent Release profile is required by this research. Local operations, deployment and framework adoption are **Not assessed in this run**; [m0006](m0006-document-metadata-lifecycle.md) owns lifecycle/date semantics and [m0007](m0007-documentation-architecture.md) reader/framework composition.
 
-## Claims and Sources
-
-Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
-
-| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0016-01 | ADRs preserve significant decisions/context/status/consequences and superseded history | S-cognitect-architecture-decisions — ADR format; status; consequences; supersession; S-adr-home — ADR definition; decision log; S-arc42-section-9 — Content; Form; ADR background | 2011-11-15; Not stated | 2026-09-27 | Original author article; Current public guidance; no release/status label | Fact | Practice does not establish local enum/path |
-| C-m0016-02 | MADR records why a decision status field exists | S-adr-madr-status — Context; Decision Outcome | Not stated | 2026-09-27 | MADR decision 0008; not local schema | Fact | Earlier UNVERIFIED remains dated; no backdating |
-| C-m0016-03 | Separate intent/behavior/planning/actual evidence/decision responsibilities | S-speckit-agentic-sdd — Command overview; analyze; converge; taskstoissues; S-cognitect-architecture-decisions — ADR format; status; consequences; supersession | Not stated; 2011-11-15 | 2026-09-27 | Spec Kit current public Docs; release status not inferred; Original author article | Recommendation | Matrix is synthesis, not universal standard |
-| C-m0016-04 | Incident management uses defined roles and a working investigation/mitigation record | S-sre-incident-response — Basic principles; Main Roles; Putting Best Practices into Practice; S-sre-workbook-colophon — Copyright/publication footer | 2018 workbook; chapter update not stated; 2018 | 2026-09-27 | Google Site Reliability Workbook published practice; Workbook publication identity | Fact | Small responses may combine roles; no live authority |
-| C-m0016-05 | Postmortem actions need ownership/tracking/priority/verifiable end state and follow-up | S-sre-postmortem-culture — Missing ownership; Concrete action items; Postmortem follow-up | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice | Fact | No Google priority/cadence policy adopted |
-| C-m0016-06 | GitHub releases package tag-based iterations with notes/assets; dates can differ | S-github-about-releases — About releases | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label | Fact | Download availability is not deployment |
-| C-m0016-07 | Separate release procedure from execution evidence/notes | S-github-about-releases — About releases; S-sre-release-engineering — Release Process; Build and Deployment | Not stated; Not established from fetched chapter | 2026-09-27 | GitHub.com current Docs; no preview label; Google SRE published book chapter | Recommendation | No independent profile or publish authorization |
-| C-m0016-08 | Use role-specific maintenance and runbook permission/stop/success/recovery branches | S-sre-incident-response — Basic principles; Main Roles; Putting Best Practices into Practice; S-sre-postmortem-culture — Missing ownership; Concrete action items; Postmortem follow-up; S-diataxis-map — Expectations and guidance; Journey around the map | 2018 workbook; chapter update not stated; Not stated | 2026-09-27 | Google Site Reliability Workbook published practice; Current public guidance; no release/status label | Recommendation | Proposed fields; later authorized execution evidence needed |
-
-| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
-| --- | --- | --- | --- | --- |
-| S-cognitect-architecture-decisions | [ADR format; status; consequences; supersession](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2011-11-15 | 2026-09-27 | Original author article |
-| S-adr-home | [ADR definition; decision log](https://adr.github.io/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-arc42-section-9 | [Content; Form; ADR background](https://docs.arc42.org/section-9/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-| S-adr-madr-status | [Context; Decision Outcome](https://adr.github.io/madr/decisions/0008-add-status-field.html) | Not stated | 2026-09-27 | MADR decision 0008; not local schema |
-| S-speckit-agentic-sdd | [Command overview; analyze; converge; taskstoissues](https://github.github.io/spec-kit/reference/agentic-sdd.html) | Not stated | 2026-09-27 | Spec Kit current public Docs; release status not inferred |
-| S-sre-incident-response | [Basic principles; Main Roles; Putting Best Practices into Practice](https://sre.google/workbook/incident-response/) | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice |
-| S-sre-workbook-colophon | [Copyright/publication footer](https://sre.google/workbook/colophon/) | 2018 | 2026-09-27 | Workbook publication identity |
-| S-sre-postmortem-culture | [Missing ownership; Concrete action items; Postmortem follow-up](https://sre.google/workbook/postmortem-culture/) | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice |
-| S-github-about-releases | [About releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label |
-| S-sre-release-engineering | [Release Process; Build and Deployment](https://sre.google/sre-book/release-engineering/) | Not established from fetched chapter | 2026-09-27 | Google SRE published book chapter |
-| S-diataxis-map | [Expectations and guidance; Journey around the map](https://diataxis.fr/map/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
-
-## Future Internal Checks
-
-Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
-
-| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Product/Requirement / C-m0016-03 | Product/repository/Spec | Accepted need changes | Hypothetical Requirement Package | Is value/scope distinct from testable solution-independent need and technical choice? | Accepted need, stable IDs, criteria and owner | Stakeholder/QA review | Pass: need/criteria/owner explicit; fail: technical choice silently sets intent | Stakeholder decision required | Product/requirement owner | Not assessed in this run |
-| Spec/Plan/Task / C-m0016-03 | Spec/task; quality | Planning or execution | Hypothetical approved Spec/Plan/Tasks | Are behavior/prospective sequence/actual attempts coherent and separate? | Contract/plan/baseline and exact results | Cross-artifact bounded review | Pass: same intent/bounded evidence; fail: planned check presented passed | No work beyond approved Task | Engineering/QA | Not assessed in this run |
-| ADR / C-m0016-01,02 | Repository/Spec; architecture/documentation | Consequential decision changes | Hypothetical accepted/replacement ADR | Can original context/options/consequences and replacement be recovered? | Original/new record, owner review, supersession links | Exact decision diff/link review | Pass: explicit history/rationale; fail: silent rewrite | Decision/change approval required | Architect | Not assessed in this run |
-| Guide/Policy / C-m0016-08 | Repository/execution environment; operations/documentation/security | Help or obligation changes | Hypothetical approved Guide/Policy | Does help link approved controls/exception owner instead of inventing obligations? | Reader purpose, control approval/scope/exception/review | Operator/policy review | Pass: clear audience/control authority; fail: recommendation portrayed mandatory | Policy approval required | Documentation/ops/security | Not assessed in this run |
-| Runbook / C-m0016-08 | Operations/environment; security | Repeatable operation/recovery | Hypothetical approved Runbook/disposable target | Are identity/prerequisites/authority/stop/success/compatible recovery demonstrated for a named target? | Reviewed steps, authorization, isolated receipt/limits | Tabletop; separately authorized isolated exercise | Pass: bounded safe procedure/signals; fail: ambiguous target/no failure path | Execution may change service/lose data; isolate/approve | Operations owner | Not assessed in this run |
-| Incident / C-m0016-04 | Operations/task; security | Actual qualifying event | Hypothetical incident packet | Are impact/timestamps/roles/actions/status distinct from uncertain causes? | Redacted bounded observations/timezone timeline/handoff | Authorized event-record review | Pass: facts/hypotheses/next owner clear; fail: fabricated event/certain speculative cause | Private evidence separately authorized | Incident lead/security | Not assessed in this run |
-| Postmortem / C-m0016-05 | Operations/quality/Spec | Stable incident meets criteria | Hypothetical paired record/corrective Task | Does each action have owner/priority/due/tracking/verification and closure evidence? | Reviewed causes/action map/later checks | Review plus bounded closure sampling | Pass: accountable measurable action; fail: untracked checkbox/publication equals closure | Incident-data access scoped | Operations/QA/action owner | Not assessed in this run |
-| Release / C-m0016-06,07 | Task/CI/operations | Actual release/deployment | Hypothetical Runbook/Task/tag/changelog/CI receipt | Which facts prove readiness/package/publish/target outcome/recovery separately? | Exact identity/artifacts/approval/checks/outcome/unavailable evidence | Read-only event-chain review | Pass: bounded separate facts; fail: tag/build proves deploy | Remote publish/deploy/recovery separate approval | Release/operations owner | Not assessed in this run |
-
-## Historical Workspace Observations
-
-Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
-
-> Historical evidence (not current authority; source: Git history):
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
-## Overview
-
-> Historical evidence (not current authority; source: Git history):
->
-> Each document role owns a distinct question, trigger, handoff, and evidence
-> boundary. Current roles and their copy sources are declared by the
-> [Stage 99 Registry](../../../99.templates/registry.json); the
-> [canonical agent governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
-> owns their meaning. Requirement Package combines PRD/SRS perspectives;
-> Architecture Description replaces the older ARD name and remains distinct
-> from ADR. Release
-> uses external evidence rather than an independent document profile.
->
-> The historical role survey below was read at
-> `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` on 2026-08-14, following the Task 5
-> baseline `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee`. Its twelve-role and
-> 21-profile counts describe that boundary, not today's authoring choices.
->
-
-## Purpose
+### Purpose
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -147,7 +91,7 @@ Original observations, source checks, corrections, measurements, access failures
 > Registry mapping, not by a historical table or convenient template.
 >
 
-## Repository Role
+### Repository Role
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -158,7 +102,7 @@ Original observations, source checks, corrections, measurements, access failures
 > role nor authorizes a target document.
 >
 
-## Scope
+### Scope
 
 ### In scope
 
@@ -181,7 +125,7 @@ Original observations, source checks, corrections, measurements, access failures
 > - Changing owners, templates, profiles, stages, or runtime systems.
 >
 
-## Definitions / Facts
+### Definitions / Facts
 
 ### Complete role contract
 
@@ -433,7 +377,7 @@ Original observations, source checks, corrections, measurements, access failures
 > - **The committee catalog is the fallback route when the main standards host refuses.** The main standards site `www.iso.org` returned HTTP 403 to automated retrieval, and the ISO-operated `committee.iso.org` catalog served the same records. Recorded as the method, not as the dated stage codes: when `www.iso.org` refuses, `committee.iso.org` is the corroborating route. **Stage codes carried 2026-08-19** after a seat measured that one of them survives nowhere else: `60.60` occurs in no tracked file outside the retiring leaf and this migration's own ledger, so the claim that the codes are preserved elsewhere held for one half and not the other. The observed codes are recorded here rather than dropped — ISO/IEC/IEEE 29148:2018 and 42010:2022 were both read at stage `60.60` and current, and record 63712 — ISO/IEC/IEEE **12207:2017**, whose named successor is **12207:2026** — was read at stage `95.99`, which the source states as withdrawal of an International Standard rather than of an earlier edition. Both the identifier and the exact stage wording are restored 2026-08-19; `12207` occurred zero times in this leaf, so the record was unrecoverable after deletion. These are dated catalog readings, not conformance claims, and the 95.99 reading remains part of this protected research record. The hostnames are stated because the method is not reproducible from a description of them.
 >
 
-## Scope Implications
+### Scope Implications
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -455,7 +399,162 @@ Original observations, source checks, corrections, measurements, access failures
 > | `security`     | Security controls belong in Policy/Spec, response state in Incident, learning in Postmortem, and executable recovery in Runbook with redaction and approval.         |
 >
 
+### Architecture Practice Direct-Page Evidence
+
+> Historical evidence (not current authority; source: Git history):
+>
+> | Page key | Source ID | Claim ID | Family root | Direct URL | Accessed at | State |
+> | --- | --- | --- | --- | --- | --- | --- |
+> | `ADR-ROLE` | `SDR-SRC-001` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html` | 2026-08-28 | VERIFIED |
+> | `ADR-LIFECYCLE` | `SDR-SRC-002` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0008-add-status-field.html` | 2026-08-28 | UNVERIFIED |
+> | `ADR-RELATIONSHIPS` | `SDR-SRC-003` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/` | 2026-08-28 | UNVERIFIED |
+>
+
+### Scope Application
+
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | Agents consume approved Spec and Task boundaries. | Inspect Stage 03 links. | No agent behavior proof. |
+> | architecture | applies | Use AD for structure and ADR for decision-ready choices. | Confirm registry profiles. | ADR gaps remain UNVERIFIED. |
+> | common | applies | Keep owner/consumer handoffs explicit. | Review role table. | Advisory analysis. |
+> | docs | applies | Publish typed documents in registered paths. | Check registry path patterns. | Legacy support is not authority. |
+> | infra | applies | Apply Guide/Policy/Runbook roles to infrastructure catalog subjects. | Confirm `docs/05.operations/catalog/<domain>/<subject>/` ownership. | No runtime claim. |
+> | ops | applies | Select Guide, Policy, Runbook, Incident, or Postmortem by purpose. | Check catalog/packet convention. | No live incident is asserted. |
+> | qa | applies | Attach verification evidence to Task. | Inspect Task evidence. | A Task record is not execution proof. |
+> | security | applies | Use Policy constraints and incident handling boundaries. | Inspect scoped source references. | No control effectiveness claim. |
+>
+
+### Architecture Practice Composition Links
+
+> Historical evidence (not current authority; source: Git history):
+>
+> - [Documentation architecture](./m0007-documentation-architecture.md)
+> - [Scope application matrix](./m0015-scope-application-matrix.md)
+>
+
+### 2026-09-05 Revalidation
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> Current execution evidence is co-located as Plan and Task inside its Stage 03
+> Spec package. Stage 05 registers Guide, Policy, Runbook, Incident, and
+> Postmortem. It intentionally has no independent Release profile: release
+> evidence is composed from the owning Task, changelog/tag, CI, and applicable
+> Runbook evidence.
+>
+> | Artifact role | Current owner | Evidence depth | Non-substitution rule |
+> | --- | --- | --- | --- |
+> | Requirement/PRD/SRS/interface perspective | Stage 01 package | Repository-enforced | Does not become architecture or implementation |
+> | Architecture Description/ADR | Stage 02 | Repository-enforced | Description is current design; ADR preserves decision |
+> | Spec/Plan/Task | Stage 03 package | Repository-enforced | Behavior, prospective sequence, and executed evidence stay separate |
+> | Guide/Policy/Runbook/Incident/Postmortem | Stage 05 | Repository-enforced | Reader help, control, procedure, event, and learning stay separate |
+> | Release/deployment evidence | Task + tag/changelog + CI + Runbook as applicable | Defined | A document title cannot prove deployment |
+>
+> Recommendation: add or change a role only through Registry, template,
+> consumer, validator, and lifecycle evidence as one contract slice.
+>
+
+### Maintenance
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Recheck when Stage 99 adds/removes a role, path, template, parent relation,
+> lifecycle/freshness rule, or first real Incident/Postmortem/Release target.
+> Re-open mutable external pages and repin repository sources before changing a
+> comparative claim. Keep ARD labeled local coinage and Release separated from
+> deployment/runtime proof. Re-run the typed-role-coverage `grep -l` counts on
+> each future revision; Plan/Task migration depth in particular is likely to
+> keep moving faster than the other roles and the table above will go stale
+> first.
+>
+
+### Related Documents
+
+- [Research pack](README.md)
+
+- [Verification and validation](./m0019-verification-validation.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+## Findings
+
+### Historical Workspace Observations
+
+Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+### Architecture Practice Delta Claims
+
+> Historical evidence (not current authority; source: Git history):
+>
+> | Claim ID | Owner leaf | Evidence mode | Source family |
+> | --- | --- | --- | --- |
+> | `SDLCDOC-ADR-001` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+> | `SDLCDOC-ADR-002` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+> | `SDLCDOC-ADR-003` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
+>
+
+## Limitations
+
+### Future Internal Checks
+
+Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
+
+| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Product/Requirement / C-m0016-03 | Product/repository/Spec | Accepted need changes | Hypothetical Requirement Package | Is value/scope distinct from testable solution-independent need and technical choice? | Accepted need, stable IDs, criteria and owner | Stakeholder/QA review | Pass: need/criteria/owner explicit; fail: technical choice silently sets intent | Stakeholder decision required | Product/requirement owner | Not assessed in this run |
+| Spec/Plan/Task / C-m0016-03 | Spec/task; quality | Planning or execution | Hypothetical approved Spec/Plan/Tasks | Are behavior/prospective sequence/actual attempts coherent and separate? | Contract/plan/baseline and exact results | Cross-artifact bounded review | Pass: same intent/bounded evidence; fail: planned check presented passed | No work beyond approved Task | Engineering/QA | Not assessed in this run |
+| ADR / C-m0016-01,02 | Repository/Spec; architecture/documentation | Consequential decision changes | Hypothetical accepted/replacement ADR | Can original context/options/consequences and replacement be recovered? | Original/new record, owner review, supersession links | Exact decision diff/link review | Pass: explicit history/rationale; fail: silent rewrite | Decision/change approval required | Architect | Not assessed in this run |
+| Guide/Policy / C-m0016-08 | Repository/execution environment; operations/documentation/security | Help or obligation changes | Hypothetical approved Guide/Policy | Does help link approved controls/exception owner instead of inventing obligations? | Reader purpose, control approval/scope/exception/review | Operator/policy review | Pass: clear audience/control authority; fail: recommendation portrayed mandatory | Policy approval required | Documentation/ops/security | Not assessed in this run |
+| Runbook / C-m0016-08 | Operations/environment; security | Repeatable operation/recovery | Hypothetical approved Runbook/disposable target | Are identity/prerequisites/authority/stop/success/compatible recovery demonstrated for a named target? | Reviewed steps, authorization, isolated receipt/limits | Tabletop; separately authorized isolated exercise | Pass: bounded safe procedure/signals; fail: ambiguous target/no failure path | Execution may change service/lose data; isolate/approve | Operations owner | Not assessed in this run |
+| Incident / C-m0016-04 | Operations/task; security | Actual qualifying event | Hypothetical incident packet | Are impact/timestamps/roles/actions/status distinct from uncertain causes? | Redacted bounded observations/timezone timeline/handoff | Authorized event-record review | Pass: facts/hypotheses/next owner clear; fail: fabricated event/certain speculative cause | Private evidence separately authorized | Incident lead/security | Not assessed in this run |
+| Postmortem / C-m0016-05 | Operations/quality/Spec | Stable incident meets criteria | Hypothetical paired record/corrective Task | Does each action have owner/priority/due/tracking/verification and closure evidence? | Reviewed causes/action map/later checks | Review plus bounded closure sampling | Pass: accountable measurable action; fail: untracked checkbox/publication equals closure | Incident-data access scoped | Operations/QA/action owner | Not assessed in this run |
+| Release / C-m0016-06,07 | Task/CI/operations | Actual release/deployment | Hypothetical Runbook/Task/tag/changelog/CI receipt | Which facts prove readiness/package/publish/target outcome/recovery separately? | Exact identity/artifacts/approval/checks/outcome/unavailable evidence | Read-only event-chain review | Pass: bounded separate facts; fail: tag/build proves deploy | Remote publish/deploy/recovery separate approval | Release/operations owner | Not assessed in this run |
+
 ## Sources
+
+### Claims and Sources
+
+Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
+
+| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0016-01 | ADRs preserve significant decisions/context/status/consequences and superseded history | S-cognitect-architecture-decisions — ADR format; status; consequences; supersession; S-adr-home — ADR definition; decision log; S-arc42-section-9 — Content; Form; ADR background | 2011-11-15; Not stated | 2026-09-27 | Original author article; Current public guidance; no release/status label | Fact | Practice does not establish local enum/path |
+| C-m0016-02 | MADR records why a decision status field exists | S-adr-madr-status — Context; Decision Outcome | Not stated | 2026-09-27 | MADR decision 0008; not local schema | Fact | Earlier UNVERIFIED remains dated; no backdating |
+| C-m0016-03 | Separate intent/behavior/planning/actual evidence/decision responsibilities | S-speckit-agentic-sdd — Command overview; analyze; converge; taskstoissues; S-cognitect-architecture-decisions — ADR format; status; consequences; supersession | Not stated; 2011-11-15 | 2026-09-27 | Spec Kit current public Docs; release status not inferred; Original author article | Recommendation | Matrix is synthesis, not universal standard |
+| C-m0016-04 | Incident management uses defined roles and a working investigation/mitigation record | S-sre-incident-response — Basic principles; Main Roles; Putting Best Practices into Practice; S-sre-workbook-colophon — Copyright/publication footer | 2018 workbook; chapter update not stated; 2018 | 2026-09-27 | Google Site Reliability Workbook published practice; Workbook publication identity | Fact | Small responses may combine roles; no live authority |
+| C-m0016-05 | Postmortem actions need ownership/tracking/priority/verifiable end state and follow-up | S-sre-postmortem-culture — Missing ownership; Concrete action items; Postmortem follow-up | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice | Fact | No Google priority/cadence policy adopted |
+| C-m0016-06 | GitHub releases package tag-based iterations with notes/assets; dates can differ | S-github-about-releases — About releases | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label | Fact | Download availability is not deployment |
+| C-m0016-07 | Separate release procedure from execution evidence/notes | S-github-about-releases — About releases; S-sre-release-engineering — Release Process; Build and Deployment | Not stated; Not established from fetched chapter | 2026-09-27 | GitHub.com current Docs; no preview label; Google SRE published book chapter | Recommendation | No independent profile or publish authorization |
+| C-m0016-08 | Use role-specific maintenance and runbook permission/stop/success/recovery branches | S-sre-incident-response — Basic principles; Main Roles; Putting Best Practices into Practice; S-sre-postmortem-culture — Missing ownership; Concrete action items; Postmortem follow-up; S-diataxis-map — Expectations and guidance; Journey around the map | 2018 workbook; chapter update not stated; Not stated | 2026-09-27 | Google Site Reliability Workbook published practice; Current public guidance; no release/status label | Recommendation | Proposed fields; later authorized execution evidence needed |
+
+| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
+| --- | --- | --- | --- | --- |
+| S-cognitect-architecture-decisions | [ADR format; status; consequences; supersession](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2011-11-15 | 2026-09-27 | Original author article |
+| S-adr-home | [ADR definition; decision log](https://adr.github.io/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-arc42-section-9 | [Content; Form; ADR background](https://docs.arc42.org/section-9/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
+| S-adr-madr-status | [Context; Decision Outcome](https://adr.github.io/madr/decisions/0008-add-status-field.html) | Not stated | 2026-09-27 | MADR decision 0008; not local schema |
+| S-speckit-agentic-sdd | [Command overview; analyze; converge; taskstoissues](https://github.github.io/spec-kit/reference/agentic-sdd.html) | Not stated | 2026-09-27 | Spec Kit current public Docs; release status not inferred |
+| S-sre-incident-response | [Basic principles; Main Roles; Putting Best Practices into Practice](https://sre.google/workbook/incident-response/) | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice |
+| S-sre-workbook-colophon | [Copyright/publication footer](https://sre.google/workbook/colophon/) | 2018 | 2026-09-27 | Workbook publication identity |
+| S-sre-postmortem-culture | [Missing ownership; Concrete action items; Postmortem follow-up](https://sre.google/workbook/postmortem-culture/) | 2018 workbook; chapter update not stated | 2026-09-27 | Google Site Reliability Workbook published practice |
+| S-github-about-releases | [About releases](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases) | Not stated | 2026-09-27 | GitHub.com current Docs; no preview label |
+| S-sre-release-engineering | [Release Process; Build and Deployment](https://sre.google/sre-book/release-engineering/) | Not established from fetched chapter | 2026-09-27 | Google SRE published book chapter |
+| S-diataxis-map | [Expectations and guidance; Journey around the map](https://diataxis.fr/map/) | Not stated | 2026-09-27 | Current public guidance; no release/status label |
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -479,96 +578,3 @@ Original observations, source checks, corrections, measurements, access failures
 > | Spec-contracts templates (retired path: `../../../99.templates/templates/spec-contracts/`)                                                    | 2026-08-14 | Workspace tracked            | Directory listing confirming eight registered focused-contract template files.                             |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
 >
-
-## Architecture Practice Delta Claims
-
-> Historical evidence (not current authority; source: Git history):
->
-> | Claim ID | Owner leaf | Evidence mode | Source family |
-> | --- | --- | --- | --- |
-> | `SDLCDOC-ADR-001` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
-> | `SDLCDOC-ADR-002` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
-> | `SDLCDOC-ADR-003` | `sdlc-document-roles.md` | source-backed | `https://adr.github.io/` |
->
-
-## Architecture Practice Direct-Page Evidence
-
-> Historical evidence (not current authority; source: Git history):
->
-> | Page key | Source ID | Claim ID | Family root | Direct URL | Accessed at | State |
-> | --- | --- | --- | --- | --- | --- | --- |
-> | `ADR-ROLE` | `SDR-SRC-001` | `SDLCDOC-ADR-001` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0000-use-markdown-architectural-decision-records.html` | 2026-08-28 | VERIFIED |
-> | `ADR-LIFECYCLE` | `SDR-SRC-002` | `SDLCDOC-ADR-002` | `https://adr.github.io/` | `https://adr.github.io/madr/decisions/0008-add-status-field.html` | 2026-08-28 | UNVERIFIED |
-> | `ADR-RELATIONSHIPS` | `SDR-SRC-003` | `SDLCDOC-ADR-003` | `https://adr.github.io/` | `https://adr.github.io/madr/` | 2026-08-28 | UNVERIFIED |
->
-
-## Scope Application
-
-> Historical evidence (not current authority; source: Git history):
->
-> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-> | --- | --- | --- | --- | --- |
-> | agentic | applies | Agents consume approved Spec and Task boundaries. | Inspect Stage 03 links. | No agent behavior proof. |
-> | architecture | applies | Use AD for structure and ADR for decision-ready choices. | Confirm registry profiles. | ADR gaps remain UNVERIFIED. |
-> | common | applies | Keep owner/consumer handoffs explicit. | Review role table. | Advisory analysis. |
-> | docs | applies | Publish typed documents in registered paths. | Check registry path patterns. | Legacy support is not authority. |
-> | infra | applies | Apply Guide/Policy/Runbook roles to infrastructure catalog subjects. | Confirm `docs/05.operations/catalog/<domain>/<subject>/` ownership. | No runtime claim. |
-> | ops | applies | Select Guide, Policy, Runbook, Incident, or Postmortem by purpose. | Check catalog/packet convention. | No live incident is asserted. |
-> | qa | applies | Attach verification evidence to Task. | Inspect Task evidence. | A Task record is not execution proof. |
-> | security | applies | Use Policy constraints and incident handling boundaries. | Inspect scoped source references. | No control effectiveness claim. |
->
-
-## Architecture Practice Composition Links
-
-> Historical evidence (not current authority; source: Git history):
->
-> - [Documentation architecture](./m0007-documentation-architecture.md)
-> - [Scope application matrix](./m0015-scope-application-matrix.md)
->
-
-## 2026-09-05 Revalidation
-
-> Historical evidence (not current authority; source: Git history):
->
-> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-> Current execution evidence is co-located as Plan and Task inside its Stage 03
-> Spec package. Stage 05 registers Guide, Policy, Runbook, Incident, and
-> Postmortem. It intentionally has no independent Release profile: release
-> evidence is composed from the owning Task, changelog/tag, CI, and applicable
-> Runbook evidence.
->
-> | Artifact role | Current owner | Evidence depth | Non-substitution rule |
-> | --- | --- | --- | --- |
-> | Requirement/PRD/SRS/interface perspective | Stage 01 package | Repository-enforced | Does not become architecture or implementation |
-> | Architecture Description/ADR | Stage 02 | Repository-enforced | Description is current design; ADR preserves decision |
-> | Spec/Plan/Task | Stage 03 package | Repository-enforced | Behavior, prospective sequence, and executed evidence stay separate |
-> | Guide/Policy/Runbook/Incident/Postmortem | Stage 05 | Repository-enforced | Reader help, control, procedure, event, and learning stay separate |
-> | Release/deployment evidence | Task + tag/changelog + CI + Runbook as applicable | Defined | A document title cannot prove deployment |
->
-> Recommendation: add or change a role only through Registry, template,
-> consumer, validator, and lifecycle evidence as one contract slice.
->
-
-## Maintenance
-
-> Historical evidence (not current authority; source: Git history):
->
-> Recheck when Stage 99 adds/removes a role, path, template, parent relation,
-> lifecycle/freshness rule, or first real Incident/Postmortem/Release target.
-> Re-open mutable external pages and repin repository sources before changing a
-> comparative claim. Keep ARD labeled local coinage and Release separated from
-> deployment/runtime proof. Re-run the typed-role-coverage `grep -l` counts on
-> each future revision; Plan/Task migration depth in particular is likely to
-> keep moving faster than the other roles and the table above will go stale
-> first.
->
-
-## Related Documents
-
-- [Research pack](README.md)
-
-- [Verification and validation](./m0019-verification-validation.md)
-- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)

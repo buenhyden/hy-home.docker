@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: 준비 상태, 설정·rule 검증, lifecycle reload, 수집 target 진단, 재시작과 TSDB 증상 보고.
 
 이 런북은 Prometheus service disruption, scrape target failure, alert rule evaluation failure, lifecycle reload, and TSDB corruption symptom을 다룬다. Policy와 guide의 설명을 반복하지 않고, 실행 가능한 확인 절차와 evidence 기준만 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload or restart를 수행하며, 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Prometheus UI or `/-/healthy` endpoint가 실패할 때.
 - Grafana dashboards에서 metrics가 비어 있거나 stale하게 보일 때.
@@ -34,6 +42,8 @@ created: "2026-05-17"
 - TSDB corruption, compaction failure, WAL 관련 로그가 보일 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -143,22 +153,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. Prometheus를 시작하고 WAL replay/readiness, 범위를 제한한 과거·현재 조회, target label, rule health, 통제된 Alertmanager 전송과, 사용 중인 경우 remote-write receiver 동작을 검증한다.
 4. 불일치가 있으면 격리된 service를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 TSDB 교체는 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret values는 기록하지 않는다.
 - Target 장애는 job name, endpoint, observed error, final `UP/DOWN` state를 기록한다.
 - TSDB symptom은 로그 발췌, volume 경계, approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, reload, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 TSDB/WAL 조치는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, TSDB/WAL 조치가 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Prometheus Usage Guide](../guides/0045-prometheus.md) (`GDE-0045`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

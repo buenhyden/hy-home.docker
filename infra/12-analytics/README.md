@@ -1,10 +1,10 @@
 ---
 title: "12 Analytics"
 version: "0.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-10-01"
 ---
 
@@ -43,7 +43,7 @@ notebook은 `${DEFAULT_MANAGEMENT_DIR}/jupyterlab/work`에 보관하며 실행 �
 디렉터리 존재와 UID1000 소유권을 확인합니다. `data-science`는 AI tier의
 MLflow도 선택하지만 폴더 번호가 기동 순서나 물리적 격리를 만들지는 않습니다.
 
-## How to Work in This Area
+## Usage
 
 - 저장소 루트에서 각 profile을 선택합니다. `analytics`라는 새 기동 profile은
   추가하지 않았고 HOME 선택도 바뀌지 않습니다.

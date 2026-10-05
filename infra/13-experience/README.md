@@ -1,10 +1,10 @@
 ---
 title: "13 경험 자산"
 version: "1.0.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -56,7 +56,7 @@ python3 scripts/validation/check-operations-catalog.py
 
 정적 render는 HOME 기동, DNS/TLS, 로그인이나 브라우저 사용성을 증명하지 않는다.
 
-## How to Work in This Area
+## Usage
 
 1. 소스 revision과 image label·manifest revision을 대조한다.
 2. root와 Traefik의 전용망 연결, `sso-auth@file` 및 profile 분류를 함께 검토한다.

@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Open Notebook Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 app/DB readiness failure, 읽을 수 없는 provider key, missing notebook content,
 API exposure concern, backup/restore, 또는 승인된 upgrade에 사용한다.
@@ -29,6 +37,8 @@ API exposure concern, backup/restore, 또는 승인된 upgrade에 사용한다.
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -82,24 +92,28 @@ credential을 보호된 방식으로 보관한다. provider/network egress를 �
 전에는 floating-tag/release 변경 사항을 검토하고 이 복원을 테스트한다. 여기서는
 백업, 복원, provider 호출, 업그레이드를 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드·source 커밋·export/app-data checksum·개수·인증/복호화 판정·API 경계와
 최종 상태를 기록한다. content나 secret 값은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 backup/restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
 encryption key 손실은 database restore만으로는 복구되지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 encryption key 누락·불일치, DB export 실패, 예기치 않은 API exposure, 민감한
 content 유출, migration error, 알 수 없는 provider 활동이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0073-open-notebook.md) (`GDE-0073`)
 - [Policy](../policies/0073-open-notebook.md) (`POL-0073`)

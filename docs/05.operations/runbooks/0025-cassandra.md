@@ -16,9 +16,17 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 독립 Cassandra 단일 노드 LAB의 정적 점검과 승인 후 read-only triage 순서다. 이번 변경에서 실제 서비스·데이터를 실행하지 않았다.
 
-## When to Use
+### When to Use
 
 `cassandra-node1`의 선언·건강·데이터 경로를 점검하거나 격리 복구 범위를 설계할 때 사용한다.
 
@@ -27,6 +35,8 @@ created: "2026-05-17"
 실제 명령 전에 Docker context, 독립 Compose project, port, network, `${LAB_DATA_DIR}/cassandra/node1`, 용량, 기존 anonymous volume 소유자와 정확한 정리 범위를 확인한다. 무인증 내부 CQL이므로 신뢰하지 않는 peer를 연결하지 않는다. 기동·중단·복원·삭제는 별도 승인이다. 로그 원문과 비밀값은 증거에 복사하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -57,19 +67,23 @@ Compose health와 요약된 node 상태를 사용한다. exporter는 현재 LAB�
 
 소스 rollback은 데이터 rollback이 아니다. 별도 승인된 빈 target, 호환 release와 schema, snapshot tag/SSTable 전체, owner·권한·건수 점검으로 격리 복원을 검증한다. 기존 volume을 덮어쓰거나 `down -v`를 실행하지 않는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 정적 명령·종료 코드·source SHA만 기록한다. 실제 상태 조회와 복원 증거는 별도 실행 승인 후 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 소스 rollback은 데이터 rollback이 아니다. 기존 데이터를 보존하고 빈 격리 대상에 호환 snapshot 전체를 복원해 검증한다.
 
-## Escalation
+### Escalation
 
 데이터 소유권, 용량, 인증 필요성, 복구 세트가 불명확하면 @buenhyden에게 정확한 대상과 증거를 전달하고 mutation을 보류한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [GDE-0025](../guides/0025-cassandra.md)
 - Governing policy: [POL-0025](../policies/0025-cassandra.md)

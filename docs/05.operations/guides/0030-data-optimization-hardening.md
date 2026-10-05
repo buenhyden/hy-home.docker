@@ -14,7 +14,17 @@ created: "2026-05-17"
 
 # 04-Data Optimization Hardening Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성,
 명시적 persistence 소유권, secret, healthcheck, 리소스, 네트워크 경계, 복구
@@ -51,13 +61,13 @@ backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환�
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
-## Common Checks
+### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
 - Runtime authority: `root Compose plus scripts/hardening/check-all-hardening.sh`.

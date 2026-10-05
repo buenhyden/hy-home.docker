@@ -119,6 +119,30 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
+    def test_generation_normalization_accepts_only_registered_named_edges(self) -> None:
+        registered = frozenset(
+            {
+                ("navigation", "draft", "active"),
+                ("publication", "review", "in-review"),
+            }
+        )
+        self.assertTrue(
+            reference_module._registered_generation_normalization(
+                {"lifecycle_id": "navigation", "identity_relation": "none"},
+                "draft",
+                "active",
+                registered,
+            )
+        )
+        self.assertFalse(
+            reference_module._registered_generation_normalization(
+                {"lifecycle_id": "adr", "identity_relation": "direct"},
+                "accepted",
+                "rejected",
+                registered,
+            )
+        )
+
     def fixture(self, directory: str) -> tuple[pathlib.Path, pathlib.Path]:
         root = pathlib.Path(directory)
         return root, copy_registry_contract_fixture(root)
@@ -136,13 +160,41 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             finding = reference_module.Finding(
                 "docs/03.specs/README.md", "index-member-unlisted", "fixture"
             )
+            transitions = frozenset(
+                {
+                    (
+                        "docs/03.specs/0001-fixture/tasks/tsk-0001-work.md",
+                        "draft",
+                        "in-progress",
+                    )
+                }
+            )
+            normalizations = frozenset(
+                {
+                    (
+                        "docs/03.specs/0001-fixture/spec.md",
+                        "active",
+                        "in-progress",
+                    )
+                }
+            )
             output = io.StringIO()
             with (
                 mock.patch.object(
                     reference_module,
-                    "validate_repository_contracts",
-                    return_value=[finding],
+                    "_validate_repository_contracts",
+                    return_value=(
+                        [finding],
+                        transitions,
+                        normalizations,
+                        reference_module._GenerationBindings(),
+                    ),
                 ) as contracts,
+                mock.patch.object(
+                    reference_module,
+                    "validate_record",
+                    return_value=[],
+                ) as validate_record,
                 contextlib.redirect_stdout(output),
             ):
                 result = reference_module.main(
@@ -158,8 +210,69 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     ]
                 )
             contracts.assert_called_once()
+            self.assertTrue(
+                any(
+                    call.kwargs.get("actual_lifecycle_transitions") == transitions
+                    for call in validate_record.call_args_list
+                )
+            )
+            self.assertTrue(
+                any(
+                    call.kwargs.get("actual_lifecycle_normalizations") == normalizations
+                    for call in validate_record.call_args_list
+                )
+            )
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
+
+    def test_terminal_task_body_baseline_requires_exact_generation_blob(self) -> None:
+        profiles = current_profiles()
+        relative = pathlib.Path("docs/03.specs/0001-example/tasks/tsk-0001-example.md")
+        text = (
+            "---\nartifact_id: SPEC-0001-TSK-0001\ntype: sdlc/task\n"
+            "status: completed\n---\n# Historical Task\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = root / relative
+            path.parent.mkdir(parents=True)
+            path.write_text(text, encoding="utf-8")
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(
+                [
+                    "git",
+                    "-c",
+                    "user.name=Fixture",
+                    "-c",
+                    "user.email=fixture@example.invalid",
+                    "commit",
+                    "-qm",
+                    "source",
+                ],
+                cwd=root,
+                check=True,
+            )
+            revision = subprocess.check_output(
+                ["git", "rev-parse", "HEAD"], cwd=root, text=True
+            ).strip()
+            record = metadata._record_from_text(relative, text, profiles=profiles)
+            bindings = reference_module._GenerationBindings(
+                revision,
+                {relative.as_posix(): "completed"},
+                frozenset({relative.as_posix()}),
+            )
+
+            exact_record, exact_text = reference_module._generation_task_body_baseline(
+                root, record, text, profiles, bindings
+            )
+            changed = reference_module._generation_task_body_baseline(
+                root, record, text + "changed\n", profiles, bindings
+            )
+
+        self.assertIsNotNone(exact_record)
+        self.assertEqual(text, exact_text)
+        self.assertEqual((None, None), changed)
 
     def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
         profiles = current_profiles()

@@ -17,7 +17,13 @@ review_cycle: "on-source-change"
 
 # Reference: Loop Engineering
 
-## Current External Research
+## Overview
+
+### Overview
+
+## Scope and Method
+
+### Current External Research
 
 This member owns bounded iteration/continuation. Original sources were opened on 2026-09-27. No loop, schedule, provider call or internal controller was executed. The earlier taxonomies and retry values remain historical evidence. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
@@ -41,28 +47,19 @@ This member owns bounded iteration/continuation. Original sources were opened on
 
 **C-m0010-05 — recommendation.** Progress should reduce unresolved work with evidence. A changed file, new child or repeated continue message alone may not. Retry only a classified transient/recoverable failure; use bounded backoff and retry ceilings rather than immediate duplicate calls or model switches after denial. Deduplicate triggers/results and make authorized mutations idempotent where possible. Disjoint writes or isolated worktrees reduce conflicts; their merge/review cost remains. Checkpoint to the existing Task/handoff owner, preserving baseline, approved scope, decisions, check results, unresolved work and next action. Compacted/generated context points back to durable evidence; it is not acceptance. [m0008](m0008-harness-engineering.md#current-external-research) owns continuity design; [m0011](m0011-memory-hierarchy.md#current-external-research) owns memory lifecycle.
 
-## Claims and Sources
+### Related Documents
 
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0010-01 | Workflow versus autonomous agent | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Native client/environment or working design; see source owner | Design advice | Published 2024-12-19; later products differ | Not assessed in this run |
-| C-m0010-02 | Bounded loop working definition | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Native client/environment or working design; see source owner | Interpretation / recommendation | Real total enforcement needs proof | Not assessed in this run |
-| C-m0010-03 | Invocation versus overall limits | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | Native client/environment or working design; see source owner | Facts | Invocation/resume semantics version-specific | Not assessed in this run |
-| C-m0010-04 | Scheduler environment differences | [S-code-claude-com-scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry; [S-learn-chatgpt-com-automations](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Native client/environment or working design; see source owner | Facts | Distinct availability/data/expiry | Not assessed in this run |
-| C-m0010-05 | Evidence-based continuation | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2024-12-19 / 2025-11-26 | 2026-09-27 | Native client/environment or working design; see source owner | Recommendation | Separately approved bounded task | Not assessed in this run |
+- [Research pack](README.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
-Native originals were opened 2026-09-27; publication dates are not displayed. Version limits are explicit in m0012. No unverified academic success statistic, current event count or historical retry value becomes a product guarantee.
+## Findings
 
-## Future Internal Checks
-
-Candidate surfaces do not assert implementation. These checks require a separate authorized task.
-
-| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0010-02–03 / bounds | Task/session/provider and execution control | If autonomous loop is proposed | Loop/hook/controller and Task owner candidates | Do retries, resumes and hooks share a finite budget? | Limits, attempt ledger, cancel/time/cost/stall/denial traces | Authorized disposable loop with external kill limit | All fixtures terminate; resume/hook cannot evade overall bound | Runtime/provider spend separately approved; no remote loop here | loop-operator / eval-engineer | Not assessed in this run |
-| C-m0010-04–05 / scheduling | Execution environment and operational notification | If scheduling is separately requested | Local/cloud scheduler and notification owner | Do duplicate triggers avoid duplicate mutations/noise? | Trigger/expiry/host-off/duplicate traces and approved notification intent | Authorized synthetic events or isolated schedule | Expected availability/expiry; one intended mutation; meaningful notice only | Creating schedules/sending messages requires explicit scope | ci-cd-engineer / loop-operator | Not assessed in this run |
-
-## Historical Workspace Observations
+### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -489,12 +486,27 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > ten analytical patterns into retry policy without a reviewed canonical agent governance/03/04
 > change.
 
-## Related Documents
+## Limitations
 
-- [Research pack](README.md)
-- [Harness engineering](./m0008-harness-engineering.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+### Future Internal Checks
+
+Candidate surfaces do not assert implementation. These checks require a separate authorized task.
+
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass/fail criterion | Additional authorization / risk | Likely role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0010-02–03 / bounds | Task/session/provider and execution control | If autonomous loop is proposed | Loop/hook/controller and Task owner candidates | Do retries, resumes and hooks share a finite budget? | Limits, attempt ledger, cancel/time/cost/stall/denial traces | Authorized disposable loop with external kill limit | All fixtures terminate; resume/hook cannot evade overall bound | Runtime/provider spend separately approved; no remote loop here | loop-operator / eval-engineer | Not assessed in this run |
+| C-m0010-04–05 / scheduling | Execution environment and operational notification | If scheduling is separately requested | Local/cloud scheduler and notification owner | Do duplicate triggers avoid duplicate mutations/noise? | Trigger/expiry/host-off/duplicate traces and approved notification intent | Authorized synthetic events or isolated schedule | Expected availability/expiry; one intended mutation; meaningful notice only | Creating schedules/sending messages requires explicit scope | ci-cd-engineer / loop-operator | Not assessed in this run |
+
+## Sources
+
+### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0010-01 | Workflow versus autonomous agent | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Native client/environment or working design; see source owner | Design advice | Published 2024-12-19; later products differ | Not assessed in this run |
+| C-m0010-02 | Bounded loop working definition | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Native client/environment or working design; see source owner | Interpretation / recommendation | Real total enforcement needs proof | Not assessed in this run |
+| C-m0010-03 | Invocation versus overall limits | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | Native client/environment or working design; see source owner | Facts | Invocation/resume semantics version-specific | Not assessed in this run |
+| C-m0010-04 | Scheduler environment differences | [S-code-claude-com-scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry; [S-learn-chatgpt-com-automations](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Native client/environment or working design; see source owner | Facts | Distinct availability/data/expiry | Not assessed in this run |
+| C-m0010-05 | Evidence-based continuation | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2024-12-19 / 2025-11-26 | 2026-09-27 | Native client/environment or working design; see source owner | Recommendation | Separately approved bounded task | Not assessed in this run |
+
+Native originals were opened 2026-09-27; publication dates are not displayed. Version limits are explicit in m0012. No unverified academic success statistic, current event count or historical retry value becomes a product guarantee.

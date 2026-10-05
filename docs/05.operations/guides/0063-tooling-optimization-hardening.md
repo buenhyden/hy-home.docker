@@ -14,7 +14,17 @@ created: "2026-05-17"
 
 # Platform Operations and Quality Optimization Hardening Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -55,17 +65,17 @@ created: "2026-05-17"
 - 독립 LAB Locust worker health 상태를 root profile 검사로 오인하는 실수
 - k6 leaf에 존재하지 않는 worker 또는 Traefik route를 문서화하는 실수
 
-## Common Checks
+### Common Checks
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0063-tooling-optimization-hardening.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Platform Operations and Quality Optimization Hardening Operations Policy](../policies/0063-tooling-optimization-hardening.md) (`POL-0063`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)

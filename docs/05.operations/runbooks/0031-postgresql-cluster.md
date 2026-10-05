@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Triage optional PostgreSQL HA cluster health, etcd quorum symptoms, HAProxy routing, Patroni leadership, init job state, and exporter readiness without destructive data actions.
 
 이 런북은 현재 compose 기준 health triage와, 아직 실행 구현이 없는 실제 HA logical backup의 필수 격리 복원 계약을 제공한다. 이번 문서 변경에서 database 명령은 실행하지 않았다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수집하고, 승인된 상태 확인으로 범위를 좁힌다. 상태 triage는 재기동을 승인하지 않는다.
 
-## When to Use
+### When to Use
 
 - `pg-router` write/read endpoint가 응답하지 않을 때
 - `patronictl list`에서 leader/member 상태 확인이 필요할 때
@@ -40,6 +48,8 @@ PostgreSQL HA cluster의 서비스 상태와 routing/leadership evidence를 수�
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 정적 검사는 `labs/.env.example`과 `labs/postgresql-ha.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
@@ -123,21 +133,25 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. `patronictl list`, write/read routing through `pg-router`, roles/ACLs, extensions, schemas, sequences, row-count invariants와 representative transactions를 검증한다.
 6. 실패하면 target을 승격하지 않고 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. production cutover, route change, secret rotation과 DCS mutation은 별도 승인 사항이다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 leadership/routing 요약을 기록한다.
 - secret 값, SQL payload, database row 내용 또는 credential을 담은 connection string은 기록하지 않는다.
 - `postgres-ha`를 선택했음을 기록한다. root는 `labs/postgresql-ha.yml`을 include하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 위 HA 계약은 미구현이다. RUN-0032는 별도 fixture 한 DB의 synthetic PG17→18 logical rehearsal이며 `--no-owner --no-acl`을 사용하고 globals/roles, 모든 DB, Patroni/etcd, pg-router를 복원·검증하지 않는다. 성공해도 이 HA 계약의 acceptance가 아니다. 이 변경에서는 backup/restore, DCS reset, leadership mutation, credential rotation이나 volume replacement를 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 leader를 확인할 수 없거나, etcd quorum 관련 증상이 나타나거나, HAProxy routing이 compose와 다르거나, `pg-cluster-init`이 반복 실패하거나, log에 storage 손상이 나타나거나, secret 노출 위험이 있거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, 렌더링된 compose evidence, service 상태, leadership 요약과 시도한 단계를 포함한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [PostgreSQL Cluster Usage Guide](../guides/0031-postgresql-cluster.md) (`GDE-0031`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

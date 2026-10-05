@@ -20,31 +20,35 @@ skill_ids:
 
 # {{TITLE}}
 
-## Purpose
+## Overview
+
+### Purpose
 
 {{SINGLE_RESPONSIBILITY_OF_THIS_ROLE}}
 
-## Use When
+### Use When
 
 {{INVOCATION_CONDITIONS}}
 
-## Inputs
-
-{{REQUIRED_INPUTS}}
-
-## Outputs
-
-{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
-
-## Permissions
-
-{{ALLOWED_AND_WITHHELD_AUTHORITY}}
-
-## Success Criteria
+## Responsibilities
 
 {{OBSERVABLE_COMPLETION_CONDITIONS}}
 
-## Failure and Escalation
+## Allowed Changes
+
+{{ALLOWED_AND_WITHHELD_AUTHORITY}}
+
+## Inputs and Outputs
+
+### Inputs
+
+{{REQUIRED_INPUTS}}
+
+### Outputs
+
+{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
+
+## Handoff
 
 {{STOP_CONDITIONS_AND_ESCALATION_TARGET}}
 

@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-29"
+  updated: "2026-10-05"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -15,7 +15,9 @@ metadata:
 
 # incident-response
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -42,11 +44,7 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 3. Execute only authorized diagnostic or recovery steps, recording command class, expected result, and observed outcome.
 4. Escalate on blast-radius growth, hand off prevention work, and trigger a postmortem when the incident is stabilized.
 
-## Outputs
-
-- A sanitized response record with timeline, actions, decisions, outcome, and handoff.
-
-## Gates
+### Gates
 
 - Evidence is redacted and provenance-aware.
 - Response actions stay within the declared escalation boundary.
@@ -56,11 +54,15 @@ An incident boundary, authorized response owner, current runbook, and safe evide
 - A paired postmortem is routed to
   `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
 
+## Outputs
+
+- A sanitized response record with timeline, actions, decisions, outcome, and handoff.
+
 ## Failure Handling
 
 Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain. A readiness verdict never proves recovery success.
 
-## Related Documents
+## References
 
 - [Incident responder](../../roles/incident-responder.md)
 - [Operations scope](../../governance/quality-standards.md)

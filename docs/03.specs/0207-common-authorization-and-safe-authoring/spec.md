@@ -2,9 +2,9 @@
 title: "Common Authorization and Safe Authoring Specification"
 version: "1.0.0"
 type: "sdlc/spec"
-status: "active"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0207"
 parent_ids:
@@ -20,24 +20,45 @@ created: "2026-10-04"
 
 Converge current governance on one authorization owner while preserving the
 native provider sandbox and the distinct roles of approval, review, and Task
-evidence. The current user request authorizes reversible local P01 policy and
-documentation edits, bounded archive-record consumer/helper/test work, safe
-hook diagnostic clarification, and local logical commits only. SPEC-0182 and
+evidence. The original completed Task 0001 and Task 0002 implementation scopes
+authorized reversible local P01 policy and documentation edits, bounded
+archive-record consumer/helper/test work, safe hook diagnostic clarification,
+and local logical commits. The latest authorized local main integration is
+recorded in the [SPEC-0209 handoff](../0209-common-document-contract-adoption/tasks/tsk-0001-common-document-contract-adoption.md#local-integration-handoff).
+SPEC-0182 and
 SPEC-0204 remain unrelated active packages; archived SPEC-0193 and SPEC-0206
 are not reopened.
 
-## Boundaries and Inputs
+## Scope
+
+### Boundaries and Inputs
 
 Inputs are REQ-0024, AD-0027, ADR-0032, the current canonical governance
 sources, provider registry, tracked hooks, and the current Task. The baseline
 observed before implementation is `830ab0583f65e1252badb6be34b79c92bcb3c293`.
-No secret value, auth file, raw log, live command, provider/model call, remote
-write, push, PR, merge, or provider sandbox change is in scope. The bounded
+Those original implementation scopes excluded secret values, auth files, raw
+logs, live commands, provider/model calls, remote writes, pushes, PRs, merges,
+and provider sandbox changes. The later user-authorized local main finish
+follows the SPEC-0209 handoff; remote merge remains unauthorized. The bounded
 consumer work covers the archive approval-record helper and direct consumer,
 plus the existing pre-tool hook consumer and their focused tests; the shared
 `tool_payload.py` parser remains unchanged.
 
-## Behavior Contract
+### Open Questions
+
+No automatic authorization authenticator is available. The supported current
+trusted user/operator/native-channel procedure is documented; any durable
+cryptographic or provider-native authentication needs separate approved design
+and observed capability evidence.
+
+### Operational Impact
+
+The change narrows policy interpretation and does not execute an operational
+action. Hosted, live, remote, or provider behavior remains unobserved.
+
+## Contracts
+
+### Behavior Contract
 
 1. `approval-boundaries.md` owns current protected-operation authorization:
    actor, operation, subject, revision or scope, and recovery are bound to a
@@ -54,14 +75,14 @@ plus the existing pre-tool hook consumer and their focused tests; the shared
    current operation. Hooks, archive validators, and provider fields cannot
    self-authorize or lower the native sandbox.
 
-## Technical Approach
+### Technical Approach
 
 Task 0001 inventories and converges the authorization boundary. Task 0002
 converges execution-boundary references and may make pre-tool payload denials
 diagnosable without disclosing input. Both use canonical owners and their real
 consumer routes; neither implements authentication or changes native limits.
 
-## Interfaces and Data
+### Interfaces and Data
 
 Inputs and outputs are policy text, metadata, redacted examples, synthetic
 fixtures, links, and value-free command receipts. The authorization source is a
@@ -69,7 +90,7 @@ trusted user/operator/native channel; no automatic source authenticator is
 introduced by this Spec. Repository fields cannot automatically verify the
 account identity behind a trusted origin.
 
-## Failure Modes and Guardrails
+### Failure Modes and Guardrails
 
 Stop protected operations when authorization is missing, mismatched, expired,
 revoked, or outside scope. Do not claim that a Task field, review, hook, schema,
@@ -77,7 +98,9 @@ or provider delivery authenticates approval. Safety denial cannot be converted
 into a budget exception; required-check budget and environment gaps stop through
 agentic preflight. No wrapper or command variation bypasses a boundary.
 
-## Acceptance Contract
+## Acceptance Criteria
+
+### Acceptance Contract
 
 1. The current authorization owner and each consumer route are recorded in the
    Task conflict matrix with actual source locations and consumer status.
@@ -97,7 +120,9 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
    cover missing and mismatched historical-record integrity without claiming
    automatic revocation enforcement.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
@@ -105,15 +130,3 @@ agentic preflight. No wrapper or command variation bypasses a boundary.
 - [Plan](plan.md)
 - [Task 0001](tasks/tsk-0001-policy-convergence.md)
 - [Task 0002](tasks/tsk-0002-execution-boundary-and-safe-diagnostics.md)
-
-## Open Questions
-
-No automatic authorization authenticator is available. The supported current
-trusted user/operator/native-channel procedure is documented; any durable
-cryptographic or provider-native authentication needs separate approved design
-and observed capability evidence.
-
-## Operational Impact
-
-The change narrows policy interpretation and does not execute an operational
-action. Hosted, live, remote, or provider behavior remains unobserved.

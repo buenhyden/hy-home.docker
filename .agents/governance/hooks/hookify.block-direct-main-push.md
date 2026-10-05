@@ -1,18 +1,16 @@
 ---
 title: "BLOCKED: direct push to main"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "block"
 enabled: true
 event: "bash"
 name: "block-direct-main-push"
 pattern: "git\\s+push\\s+\\w[\\w.-]*\\s+(HEAD:)?main\\s*$"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **Direct push to `main` blocked (project rule)**
 
@@ -26,6 +24,17 @@ pattern: "git\\s+push\\s+\\w[\\w.-]*\\s+(HEAD:)?main\\s*$"
 
 ```bash
 # BLOCKED: direct push to main
+
+## Overview
+
+Apply the declared `block` action for block-direct-main-push.
+
+## Scope
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 git push origin main
 git push origin HEAD:main
 
@@ -42,6 +51,12 @@ git push origin fix/17-bug-fix
 3. No BLOCK-severity findings remain.
 4. CODEOWNERS reviewers are notified.
 5. No secrets or unpinned actions were introduced.
+
+The declared action applies when the pattern matches.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
 version: "1.2.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -48,7 +48,7 @@ created: "2025-11-12"
 └── README.md
 ```
 
-## How to Work in This Area
+## Usage
 
 1. Airflow/n8n 운영 문서를 확인합니다.
 2. Airflow 인증 변경 시에는 Native OIDC 계약을 확인합니다.

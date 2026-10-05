@@ -1,10 +1,10 @@
 ---
 title: "WARNING: parallel replacement document file"
 version: "1.0.2"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-11"
+updated: "2026-10-05"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -14,8 +14,6 @@ enabled: true
 event: "file"
 name: "warn-parallel-doc-file"
 ---
-
-<!-- markdownlint-disable MD041 MD040 -->
 
 **Parallel replacement document file detected (project rule)**
 
@@ -35,6 +33,17 @@ Edit the existing canonical file in place.
 
 ```bash
 # doc-paths: illustrative
+
+## Overview
+
+Apply the declared `warn` action for warn-parallel-doc-file.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
+
 # WARNING: parallel replacement document file
 docs/03.specs/0158-example/spec-new.md
 
@@ -47,6 +56,10 @@ edit that file directly. Record sequencing and execution evidence only in the
 same Spec Package's `plan.md` and `tasks/tsk-####-*.md`; do not create a
 parallel Plan, Task, progress, or handoff authority. Git history preserves the
 change record.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

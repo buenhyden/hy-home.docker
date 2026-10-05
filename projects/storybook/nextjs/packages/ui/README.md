@@ -1,10 +1,10 @@
 ---
 title: "Storybook 공유 UI 패키지"
 version: "1.0.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -45,7 +45,7 @@ import '@hy-home/storybook-ui/styles.css';
 
 `npm run build:ui` 뒤 `npm run test:artifacts`로 실행 export와 선언·스타일 계약을 확인합니다. 외부 프로젝트의 합성 소비 시험은 로컬 `npm pack` 산출물로 수행합니다.
 
-## How to Work in This Area
+## Usage
 
 Button의 API 또는 CSS를 변경하면 버전과 Storybook 상태별 story를 함께 검토합니다. 별도 배포 승인이 없으므로 공개 레지스트리 업로드는 하지 않습니다.
 

@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # MongoDB Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -92,17 +102,17 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 - `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`에 compose healthcheck가 있다. `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
 - replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
-## Common Checks
+### Common Checks
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs mongo-init`
 - `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../runbooks/0027-mongodb.md#steps)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [MongoDB runbook](../runbooks/0027-mongodb.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [MongoDB Operations Policy](../policies/0027-mongodb.md) (`POL-0027`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

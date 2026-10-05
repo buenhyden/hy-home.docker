@@ -62,7 +62,24 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The Transit seal requires the transit server to be reachable at start and
   unseal time, and recommends a periodic orphan token.
 
-## Decision Drivers
+### Follow-up
+
+- The W11 runbook records the unseal method actually in use at decision time.
+- If deferred, record the owner and trigger in Task 0003's Deferred Items.
+
+### Official references
+
+- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
+- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
+- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
+- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
+- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 - Whether the service must come back without the owner after a reboot
   (currently both unseal and SecretID need the owner).
@@ -75,7 +92,34 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The effect on the W11 cold start runbook and the Agent SecretID delivery
   method.
 
-## Options Considered
+### Decision
+
+**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
+owner is @buenhyden. Whichever of the following triggers comes first opens a
+new ADR that supersedes this decision.
+
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
+  KMS, so this trigger fires when a provider that offers a KMS is chosen).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+
+Rationale:
+
+- Auto-unseal alone does not give an unattended reboot. The Agent needs a
+  single-use SecretID issued by the owner at every restart, so the owner is
+  already part of the reboot procedure regardless.
+- A same-host key (d) widens the key-exposure surface with no security gain.
+  Another device (b) or cloud (c) creates a new availability dependency. At
+  the current scale, this cost outweighs the benefit.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
 
 | Option | Unattended reboot | Key location | New dependency | W11 impact |
 | --- | --- | --- | --- | --- |
@@ -159,29 +203,6 @@ Candidate triggers:
   same account).
 - OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
 
-## Decision
-
-**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
-owner is @buenhyden. Whichever of the following triggers comes first opens a
-new ADR that supersedes this decision.
-
-- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
-  while the owner is unavailable.
-- hy-home.k8s or another service comes to require OpenBao immediately after
-  boot.
-- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
-  KMS, so this trigger fires when a provider that offers a KMS is chosen).
-- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
-
-Rationale:
-
-- Auto-unseal alone does not give an unattended reboot. The Agent needs a
-  single-use SecretID issued by the owner at every restart, so the owner is
-  already part of the reboot procedure regardless.
-- A same-host key (d) widens the key-exposure surface with no security gain.
-  Another device (b) or cloud (c) creates a new availability dependency. At
-  the current scale, this cost outweighs the benefit.
-
 ## Consequences
 
 - **W11 cold start runbook**:
@@ -202,7 +223,9 @@ Rationale:
   be updated together. A protected Raft snapshot and an isolated recovery
   rehearsal are needed before the transition.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - Parent: [AD-0003 Security Architecture](../descriptions/0003-security-architecture.md)
 - Earlier deferral: [ADR-0018](0018-vault-hardening-and-ha-expansion-strategy.md)
@@ -212,16 +235,3 @@ Rationale:
 - Runbook: [RUN-0085](../../05.operations/runbooks/0085-openbao.md)
 - Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
   [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)
-
-## Follow-up
-
-- The W11 runbook records the unseal method actually in use at decision time.
-- If deferred, record the owner and trigger in Task 0003's Deferred Items.
-
-### Official references
-
-- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
-- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
-- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
-- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
-- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)

@@ -7,36 +7,15 @@ owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0084"
-parent_ids: []
 created: "2026-07-05"
 observed_at: "2026-09-05"
 ---
 
 # Reference: GitHub Actions Platform Mechanics
 
-현재 routing(2026-09-06): [공통 Agent 거버넌스](../../../../.agents/README.md)와
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md)가
-활성 source 위치를 소유합니다. 아래의 이전 Stage 00 경로, inventory,
-provider 투영, check 결과는 날짜가 있는 관찰로 남으며, 현재 지시나 새
-runtime 수용 증거가 아닙니다. Source 링크는 이제 현재 owner로
-연결되며, 원래의 `observed_at`, `reviewed_at`, status, 측정된 사실은
-그대로 보존됩니다.
+## Overview
 
-## Question
-
-이 저장소에 중요한 GitHub Actions 보안, 실행, 권한, identity,
-supply-chain, runner, remote-enforcement mechanics는 무엇이며, 그 가운데
-실제로 구성되었거나 실행되었거나 remote로 검증된 것은 무엇인가?
-
-세부 platform 분석은
-[RES-0084-m0001](m0001-platform-mechanics.md)이 소유합니다. 이 README는
-package question, 증거 경계, 결과 요약, navigation만 소유합니다.
-
-이 package는 [RES-0002](../0002-agentic-engineering-research-pack/README.md)의
-cross-package routing 아래에서 GitHub Actions 전문 증거를 소유합니다.
-경쟁하는 workspace baseline이나 일반 automation inventory가 아닙니다:
-현재 cross-category 결론은 RES-0002를 통해 route되고, 세부 workflow,
-Hosted, remote-control-plane 증거는 여기 남습니다.
+### Overview
 
 ## Scope
 
@@ -52,7 +31,31 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   권위는 `.github/`에, 실행 증거는 소유 Task에, remote 사실은 날짜가 있는
   인증된 read-back에 남습니다.
 
-## Method
+## Structure
+
+### Structure
+
+## Usage
+
+### Usage
+
+### Question
+
+이 저장소에 중요한 GitHub Actions 보안, 실행, 권한, identity,
+supply-chain, runner, remote-enforcement mechanics는 무엇이며, 그 가운데
+실제로 구성되었거나 실행되었거나 remote로 검증된 것은 무엇인가?
+
+세부 platform 분석은
+[RES-0084-m0001](m0001-platform-mechanics.md)이 소유합니다. 이 README는
+package question, 증거 경계, 결과 요약, navigation만 소유합니다.
+
+이 package는 [RES-0002](../0002-agentic-engineering-research-pack/README.md)의
+cross-package routing 아래에서 GitHub Actions 전문 증거를 소유합니다.
+경쟁하는 workspace baseline이나 일반 automation inventory가 아닙니다:
+현재 cross-category 결론은 RES-0002를 통해 route되고, 세부 workflow,
+Hosted, remote-control-plane 증거는 여기 남습니다.
+
+### Method
 
 1. 600줄짜리 package README를 남기거나 경쟁하는 research package를
    만드는 대신, 기존 platform 분석을 구성원으로 보존합니다.
@@ -65,7 +68,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 5. 분리 이후 구성원 identity, 링크, 생성된 index 신선도, public 저장소
    gate를 검증합니다.
 
-## Findings
+### Findings
 
 | Category | Member | Repository state | Evidence depth | Priority |
 | --- | --- | --- | --- | --- |
@@ -78,7 +81,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 remote required-check 대체가 이제 관찰되었다는 점이며, deployment와
 release는 여전히 증거 경계 밖에 있습니다.
 
-## Sources
+### Sources
 
 - [GitHub ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use).
@@ -91,7 +94,7 @@ release는 여전히 증거 경계 밖에 있습니다.
 
 세부 source inventory와 claim 단위 분석은 구성원이 소유합니다.
 
-## Implications
+### Implications
 
 - 인증된 read-back이 일치하는 동안 두 aggregate CI job을 workflow
   identity이자 strict required check로 유지합니다.
@@ -103,7 +106,21 @@ release는 여전히 증거 경계 밖에 있습니다.
 - 어떤 구현이든 Requirement → Architecture/ADR → Spec → Plan → Task →
   검증 → 독립 검토를 거쳐 route합니다.
 
-## Traceability
+### Limitations
+
+- Remote protection은 2026-09-05 read-back 시점에만 검증되었습니다;
+  이후 상태는 다를 수 있습니다.
+- 이번 갱신에서는 secret, environment 값, artifact, raw log, 조직 수준
+  Actions 정책을 조회하지 않았습니다.
+- 새 workflow dispatch나 deployment, release, tag, provider 변경은
+  없었습니다.
+- Hosted CI 성공은 명명된 revision과 run만 증명하며, 미래 runner나 외부
+  서비스 가용성을 증명하지 않습니다.
+- GitHub platform 문서는 2026-09-05 이후 바뀔 수 있습니다.
+
+## Related Documents
+
+### Traceability
 
 - Member: [RES-0084-m0001](m0001-platform-mechanics.md).
 - Research index: [Research Packages](../README.md).
@@ -123,15 +140,3 @@ release는 여전히 증거 경계 밖에 있습니다.
 - Templates and Registry: [research-pack template](../../../99.templates/templates/references/research-pack.template.md),
   [research-member template](../../../99.templates/templates/references/research.template.md),
   [Registry](../../../99.templates/registry.json).
-
-## Limitations
-
-- Remote protection은 2026-09-05 read-back 시점에만 검증되었습니다;
-  이후 상태는 다를 수 있습니다.
-- 이번 갱신에서는 secret, environment 값, artifact, raw log, 조직 수준
-  Actions 정책을 조회하지 않았습니다.
-- 새 workflow dispatch나 deployment, release, tag, provider 변경은
-  없었습니다.
-- Hosted CI 성공은 명명된 revision과 run만 증명하며, 미래 runner나 외부
-  서비스 가용성을 증명하지 않습니다.
-- GitHub platform 문서는 2026-09-05 이후 바뀔 수 있습니다.

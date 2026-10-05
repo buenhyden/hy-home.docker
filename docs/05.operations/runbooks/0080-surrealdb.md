@@ -16,19 +16,29 @@ created: "2026-09-19"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 헬스 트리아지와 계획된 격리 export/import 리허설을 제공한다. 이 문서를 고치면서 런타임, export, import, 스토리지 변경은 전혀 실행하지 않았다.
 
 ### Purpose
 
 안전한 증거를 수집하고, namespace, database, auth scope, 스키마와 데이터를 보존하는 반복 가능한 복구 테스트를 정의한다.
 
-## When to Use
+### When to Use
 
 - `surrealdb`가 없거나, 비정상이거나, 접근 불가한 경우.
 - 인증, namespace/database 선택, 영속성이 의심되는 경우.
 - 승인된 backup, upgrade, 또는 격리 restore 리허설을 계획 중인 경우.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -65,19 +75,23 @@ created: "2026-09-19"
 
 문서 변경은 범위가 한정된 diff로 되돌린다. 리허설이 실패하면 target과 전용 volume을 격리 보존하고 추가 쓰기를 중지한다. 삭제는 별도의 승인된 정리이며 자동 롤백이 아니다. source와 보호된 export는 그대로 둔다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 날짜, configuration commit, 서비스/profile, source와 target 버전, namespace/database 식별자, backup checksum, exit status, 정제된 invariant, 그리고 명시적 미실행/실행 상태를 기록한다. secret 값이나 원본 database 콘텐츠는 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 restore 증거는 위의 계획된 격리 리허설로만 확보한다. 프로덕션 cutover, route 변경, secret rotation, upgrade, 스토리지 교체는 별도 승인이 필요하며 여기서는 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 credential, 버전/스토리지 형식 호환성, namespace/database scope, 부분 import, 파괴적 스토리지 변경, 또는 backup 부재로 안전한 진행이 불가능하면 중단하고 `@buenhyden`에게 연락한다.
 
-## Traceability
+### Traceability
 
 - 선언된 parent: [SurrealDB Policy](../policies/0080-surrealdb.md) (`POL-0080`)
 - 관장 architecture: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)

@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "references"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 observed_at: "{{OBSERVED_AT}}"
 ---
@@ -17,34 +16,38 @@ observed_at: "{{OBSERVED_AT}}"
 
 # {{TITLE}}
 
-## Purpose
+## Overview
 
 {{PURPOSE}}
 
-## Schema
+## Scope
+
+### Schema
 
 {{SCHEMA}}
 
-## Provenance
+### Limitations
 
-{{PROVENANCE}}
+{{LIMITATIONS}}
 
-## Inventory
+## Structure
 
 {{INVENTORY}}
 
-## Refresh
+## Usage
+
+### Refresh
 
 {{REFRESH_PROCESS}}
 
-## Consumers
+### Consumers
 
 {{CONSUMERS}}
 
-## Traceability
+## Related Documents
 
 {{CURRENT_AUTHORITY_LINKS}}
 
-## Limitations
+## Sources
 
-{{LIMITATIONS}}
+{{PROVENANCE}}

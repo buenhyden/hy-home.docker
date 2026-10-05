@@ -18,6 +18,7 @@ from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     IdentitySpace,
     RequirementAllocationBaseline,
+    _trusted_requirement_sections,
     load_registry,
     validate_requirement_allocation_transition,
 )
@@ -508,7 +509,7 @@ def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
     items: list[RequirementItem] = []
     seen: set[str] = set()
     last_numbers = {kind: 0 for kind in _SECTION_KINDS.values()}
-    for section in _SECTION.finditer(text):
+    for section in _trusted_requirement_sections(text):
         expected_kind = _SECTION_KINDS.get(section.group("name"))
         if expected_kind is None:
             continue

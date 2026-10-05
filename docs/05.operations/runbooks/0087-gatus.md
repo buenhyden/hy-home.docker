@@ -14,13 +14,23 @@ created: "2026-09-19"
 
 # Gatus Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다. 저장소
 루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -97,13 +107,17 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
    백업으로 되돌린다. 프로덕션 상태/클라이언트/경로 교체는 별도 승인이
    필요하다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 현재 Task에 날짜, 커밋, 서비스 이름, 종료 코드, 정제된 health/프로브 결과를
 기록한다. 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 일관된 SQLite 백업에는 조율된 스냅샷 또는 승인된 quiescence가 필요하다.
 실행 중인 데이터베이스 파일만 복사하면 WAL 상태가 누락될 수 있다. 승인된
@@ -112,7 +126,7 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 프로브를 검증한다. 설정과 이미지는 독립적으로 롤백하며, 문제 해결의 기본
 수단으로 볼륨을 삭제하지 않는다.
 
-## Escalation
+### Escalation
 
 백업 누락, 인증 실패, 알 수 없는 데이터 경로 또는 파괴적 교체가 발생하면
 중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
@@ -122,7 +136,7 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 라우팅을 소유한다. [Dockerfile](../../../infra/06-observability/gatus/Dockerfile)이
 업스트림 빌드 핀을 소유하며, 로컬 이미지 이름은 업스트림 버전이 아니다.
 
-## Traceability
+### Traceability
 
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Guide](../guides/0087-gatus.md), [Policy](../policies/0087-gatus.md), [Runbook](0087-gatus.md)

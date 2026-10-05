@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: absolute file:// link"
 version: "1.0.1"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -18,7 +18,17 @@ event: "file"
 name: "block-absolute-file-link"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# BLOCKED: absolute file:// link
+
+## Overview
+
+Apply the declared `block` action for block-absolute-file-link.
+
+## Scope
+
+The declared `file` event and structured `conditions` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Absolute `file://` link blocked (project rule)**
 
@@ -45,6 +55,12 @@ Use a relative path instead of a machine-specific `file://` URL.
 ```
 
 Calculate relative paths from the current file location.
+
+The declared action applies when the pattern matches.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

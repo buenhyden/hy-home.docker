@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # SurrealDB Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -94,13 +104,13 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 - 라이브 `/mydata` 디렉터리를 복사하지 않는다. 승인된 export나 별도로 승인된
   정지 상태 스토리지 절차를 사용한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile surrealdb config --quiet`
 - `docker compose --profile surrealdb ps surrealdb`
 - `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
 
-## Runbook Handoff
+### Runbook Handoff
 
 [Runbook](../runbooks/0080-surrealdb.md)이 health triage와 계획된 격리 export/import
 리허설을 소유한다. [Policy](../policies/0080-surrealdb.md)가 백업, 인증, 보존,
@@ -115,7 +125,7 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
 컨테이너 접근이므로 정적 문서 검증과 구분한다.
 
-## Traceability
+### Traceability
 
 - 선언된 상위 문서: [SurrealDB Policy](../policies/0080-surrealdb.md) (`POL-0080`)
 - 관장 아키텍처: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)

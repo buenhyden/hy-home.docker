@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
 version: "1.1.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -64,7 +64,7 @@ created: "2025-11-12"
 
 정확한 포트 번호와 프로토콜은 각 서비스의 서비스 준비성 정보가 소유합니다: [traefik/](traefik/), [nginx/](nginx/). Traefik은 HTTP/HTTPS 진입점과 메트릭 진입점을, Nginx는 HTTP/HTTPS 진입점을 게시합니다.
 
-## How to Work in This Area
+## Usage
 
 1. [문서 인덱스](../../docs/README.md)와 subject package `docs/05.operations/README.md`를 검토해 트래픽 흐름을 이해합니다.
 2. 배포 전 `scripts/operations/gen-secrets.sh`로 secret을 생성했는지 확인합니다.

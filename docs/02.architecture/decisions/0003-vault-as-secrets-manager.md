@@ -21,6 +21,10 @@ A dedicated secrets management solution is needed to manage sensitive informatio
 - Docker Secrets has limited functionality, and complex secret rotation or fine-grained access control (ACL) is difficult.
 - In a cloud-native environment, dynamic secret injection is required based on trust relationships between services.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 **HashiCorp Vault** is adopted as the platform's standard secrets management tool.
@@ -34,6 +38,20 @@ A dedicated secrets management solution is needed to manage sensitive informatio
 
 - **Proposed**: 2026-03-26
 - **Accepted**: 2026-03-26
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+1. **Docker Secrets**: simple to use, but lacks functionality and has low flexibility.
+2. **SOPS**: good for file-based encryption, but dynamic injection and API-based management are difficult.
+3. **AWS/GCP Secrets Manager**: creates cloud dependency, with cost and availability issues in an on-premises/Docker environment.
 
 ## Consequences
 
@@ -53,20 +71,6 @@ A dedicated secrets management solution is needed to manage sensitive informatio
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
-
-## Options Considered
-
-1. **Docker Secrets**: simple to use, but lacks functionality and has low flexibility.
-2. **SOPS**: good for file-based encryption, but dynamic injection and API-based management are difficult.
-3. **AWS/GCP Secrets Manager**: creates cloud dependency, with cost and availability issues in an on-premises/Docker environment.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

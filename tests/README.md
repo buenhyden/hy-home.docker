@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
 version: "1.2.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-05"
 created: "2026-02-21"
 ---
 
@@ -58,7 +58,7 @@ tests/
 하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
 `tests/fixtures/`를 만듭니다.
 
-## How to Work in This Area
+## Usage
 
 1. 새 테스트 자산을 만들기 전에 같은 검증이 이미 `scripts/` 또는 하위 프로젝트 package script에 있는지 확인합니다.
 2. repository contract, doc traceability, Compose validation처럼 전역 검증에 가까운 항목은 [`../scripts/README.md`](../scripts/README.md)에 있는 기존 진입점을 우선 사용합니다.

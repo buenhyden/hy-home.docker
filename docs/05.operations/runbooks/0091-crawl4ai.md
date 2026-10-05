@@ -14,11 +14,21 @@ created: "2026-09-21"
 
 # Crawl4AI Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 시작 실패, 토큰 노출, 메모리 압박, 컨슈머 연결/해제 시 사용한다.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -49,21 +59,25 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 격리 network의 기존 승인 client에서 health와 protected API의 무자격 거부·승인 credential 성공을 구분해 확인한다. Token을 CLI 인자에 넣거나 crawl 내용을 캡처하지 않는다. UI/static 예외는 API 우회 증거가 아니다. 누락·짧은 secret으로 종료했다면 guard를 완화하지 않는다. 승인된 시작은 root Compose의 해당 service만 대상으로 하고 health·consumer 인증·허용 URL 시험 뒤 트래픽을 허용한다. 예상 밖 LAN/private 접근이나 자원 압박이면 중단한다. Tmpfs output/cache는 재시작으로 사라질 수 있으므로 미완료 요청을 consumer와 조정한다. 자체 영속 복원은 없고 provider credential은 [시크릿 소유자](0085-openbao.md)를 따른다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드, 이미지, 소스 커밋을 기록한다. 토큰이나 크롤링된 내용은 기록하지
 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 자체 영속 서비스 데이터는 없지만 필요한 output과 미완료 요청은 소비자와 조정한다. Compose·image·secret bind를 되돌릴 때는 restart로 적용되지 않는다. 이전 승인 image와 선언을 복원하고 [RUN-0086](0086-dependency-version-management.md)·[RUN-0085](0085-openbao.md)의 대상·token·중단 영향 검토를 거친 재생성 계획으로 넘긴다. 재생성 뒤 health, protected API 인증 거부·성공, 소비자 연결을 검증하고 실패하면 트래픽을 차단한 채 에스컬레이션한다.
 
-## Escalation
+### Escalation
 
 전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공,
 SSRF 의심 또는 복구 실패이면 중단하고 @buenhyden에게 정제된 증거로 넘긴다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0091-crawl4ai.md) (`GDE-0091`)
 - [Policy](../policies/0091-crawl4ai.md) (`POL-0091`)

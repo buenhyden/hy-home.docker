@@ -4,7 +4,7 @@ version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-30"
+updated: "2026-10-05"
 layer: "agent-governance"
 ---
 
@@ -58,6 +58,17 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 
 ## Structure
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [governance/](governance/) | 공유 정책과 Provider Registry |
+| [roles/](roles/) | 역할 identity와 permission |
+| [skills/](skills/) | 명시적으로 호출하는 절차 |
+| [knowledge/](knowledge/) | 소유 표면과 검증 경로 |
+| [prompts/](prompts/) | 재사용하는 입력과 출력 계약 |
+| [evaluations/](evaluations/) | 결정론적 model-free 평가 입력 |
+
 ```text
 .agents/
 ├── README.md
@@ -76,7 +87,7 @@ entry만 허용됩니다. 알 수 없는 entry는 보존되며 검토용으로 �
 않습니다. 여기에는 공통 runtime, progress ledger, installer, 생성된 role
 surface가 도입되지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 1. 루트 `AGENTS.md` 또는 `CLAUDE.md`로 진입하여 `governance/bootstrap.md`
    (Bootstrap)를 따릅니다.

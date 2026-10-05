@@ -1,10 +1,10 @@
 ---
 title: "Gatus Implementation"
 version: "0.3.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 # Gatus
@@ -74,7 +74,7 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 사용합니다. 설정 검증만으로는 네이티브 로그인, 로그아웃, 거부, 세션 만료,
 모니터링 이력 복구를 증명하지 못합니다.
 
-## How to Work in This Area
+## Usage
 
 변경 작업 중에는 데이터와 자격 증명을 보존합니다. 배포 전에 정확한 런타임
 대상을 검토합니다. 운영 절차는 기존 운영 주제(operations subject) 안에

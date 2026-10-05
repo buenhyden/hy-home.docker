@@ -17,19 +17,9 @@ review_cycle: "on-source-change"
 
 # Reference: GitHub Actions Platform Mechanics
 
-Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-Earlier Stage 00 paths, inventories, provider projections, and check results
-below remain dated observations, not current instructions or new runtime
-acceptance evidence. Source links now navigate to current owners; the
-original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
-
-**Historical evidence notice.** Sections below preserve the package created and
-initially observed on 2026-07-05, including its external-source refresh dated
-2026-08-10. The 2026-09-05 revalidation near the end of this member owns current
-repository adoption and mutable platform conclusions.
-
 ## Overview
+
+### Overview
 
 GitHub Actions is the remote execution substrate this repository depends on,
 but the pack has so far described only the part of it the repository actually
@@ -51,13 +41,15 @@ the same day could not reproduce those failures, so they may have been
 transient rather than evidence of a completed docs-tree restructure. Either
 way, treat every figure as a point-in-time snapshot.
 
-## Purpose
+## Scope and Method
+
+### Purpose
 
 Record how the GitHub Actions platform behaves, independent of how this
 repository happens to use it, so that future workflow changes can be reasoned
 about against documented platform rules rather than against local habit.
 
-## Repository Role
+### Repository Role
 
 `.github/workflows/` and `.github/workflow-contract.yml` remain the tracked
 implementation and its typed registry. The current policy is
@@ -65,7 +57,7 @@ implementation and its typed registry. The current policy is
 This Stage 90 document is a platform reference and changes no rule, workflow,
 or contract.
 
-## Scope
+### Scope
 
 ### In Scope
 
@@ -88,7 +80,7 @@ or contract.
 - Any authenticated read-back of this repository's remote control plane
 - Secret values, tokens, private keys, or raw run logs
 
-## Definitions / Facts
+### Definitions / Facts
 
 - **`GITHUB_TOKEN`** is an installation token minted per workflow run whose
   scopes are governed by the `permissions` key.
@@ -99,7 +91,7 @@ or contract.
 - **Version-sensitive claim** means a figure tied to an action major version,
   runner image, or documented numeric limit. These drift fastest.
 
-## Permission and Token Model
+### Permission and Token Model
 
 `permissions` may be set at workflow level, applying to all jobs, or at job
 level via `jobs.<job_id>.permissions`, where the job-level value overrides the
@@ -143,7 +135,7 @@ separately warns that `permissions: {}` alone "can unexpectedly pave the way
 for cache poisoning attacks," so the idiom must not be presented as sufficient
 on its own.
 
-## OIDC and Keyless Authentication
+### OIDC and Keyless Authentication
 
 `id-token: write` is the enabling permission: "The job or workflow must grant
 the `id-token: write` permission to allow GitHub's OIDC provider to create a
@@ -179,7 +171,7 @@ long-lived credential as a repository secret at all.
 Cloud-provider-side trust configuration was not retrieved and is not asserted
 here.
 
-## Reusable Workflows and Composite Actions
+### Reusable Workflows and Composite Actions
 
 Reusable workflows live in `.github/workflows/` and declare `on:
 workflow_call:` with typed `inputs` (`boolean`, `number`, `string`),
@@ -217,7 +209,7 @@ A composite action runs inside the caller's job and therefore has no
 caller workflow" framing, but no retrieved page states it directly, so it is
 recorded here as an inference rather than a quotation.
 
-## Untrusted Input and Privileged Triggers
+### Untrusted Input and Privileged Triggers
 
 The mechanism is substitution order. Security Lab states it plainly: "The
 expressions inside of `${{ }}` are evaluated and substituted with the
@@ -270,7 +262,7 @@ longer exempts a workflow from the change. This matters here: the repository
 pins `actions/checkout` by commit SHA with no version comment, so the effective
 major is not readable from the workflow file.
 
-## Supply Chain Hardening
+### Supply Chain Hardening
 
 The canonical sentence on pinning: "Pinning an action to a full-length commit
 SHA is currently the only way to use an action as an immutable release." The
@@ -317,7 +309,7 @@ Repository-level allowlisting offers four policies: allow all; local only
 (`./` and `$/` references); verified creators; or selected actions with
 wildcard and exclusion syntax.
 
-## Execution Control
+### Execution Control
 
 Concurrency admits one job or workflow per group at a time. Group names are
 case-insensitive, and queue processing is **FIFO by wait time, not dispatch
@@ -358,7 +350,7 @@ save is a warning, not a failure: "`actions/cache` logs a warning in the run and
 the job continues without saving." Any cache-poisoning guidance written before
 this date is partially superseded.
 
-## Environments, Rulesets, and Remote Enforcement
+### Environments, Rulesets, and Remote Enforcement
 
 Environments gate a job before it runs or reads environment secrets. Required
 reviewers allow "up to 6 people or teams," and "Only one of the required
@@ -390,7 +382,7 @@ YAML can never establish that a check is required, and why the pack's
 separation of tracked intent from remote enforcement is a platform property
 rather than a local caution.
 
-## Runner Models
+### Runner Models
 
 The governing warning is unambiguous: "Self-hosted runners should almost never
 be used for public repositories on GitHub, because any user can open pull
@@ -411,7 +403,7 @@ Standard GitHub-hosted runners are free and unlimited on public repositories.
 Larger runners bill per active minute, are not eligible for included minutes on
 private repositories, and require a card on file plus a nonzero spending limit.
 
-## Third-Party Workflow Static Analysis
+### Third-Party Workflow Static Analysis
 
 Neither tool below is GitHub-official. Both are independently versioned, carry
 no GitHub support commitment, and are themselves supply-chain dependencies that
@@ -477,7 +469,7 @@ by tag, not by commit SHA. `.pre-commit-config.yaml` is a different mechanism
 from `uses:` and GitHub's immutable-release argument does not transfer to it
 unchanged, but the mutable-tag exposure is the same in kind.
 
-## Platform Capability Adoption in This Repository
+### Platform Capability Adoption in This Repository
 
 This is the complement of the tracked inventory in
 `automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf), which
@@ -519,7 +511,111 @@ poisoning — is nonetheless low, because the repository uses neither
 construction rather than by mitigation, so it is worth preserving deliberately
 rather than assuming it will survive the next workflow change.
 
-## Documented Limits
+### Analysis
+
+Three platform properties explain most of the security guidance above.
+
+Trust is assigned by trigger, not by code. The same repository content executes
+with a read-only token under `pull_request` and with secrets and write access
+under `pull_request_target`. Nothing in the workflow file distinguishes them;
+only the event does.
+
+State that crosses runs is an execution channel. Caches and artifacts are
+written by one run and consumed by another, are unsigned, and can carry files
+that a later run executes. Permission scoping does not close this, which is
+precisely Security Lab's point about `permissions: {}`.
+
+Enforcement lives outside the repository. Required checks, reviewers, and
+deployment gates are server-side configuration readable only through the UI or
+an authenticated API. A green workflow file proves intent and nothing more.
+
+### Application Notes for This Workspace
+
+- Treat every figure in this document as dated. Several documentation paths
+  returned 404 during retrieval; a same-day independent check could not
+  reproduce them, so re-test before repeating that caveat as a live condition.
+- Verify action versions against the REST release endpoint rather than a
+  rendered page. A summarizing fetch of the `attest-build-provenance` releases
+  page during this research returned a publication year one full year off; the
+  API returned the correct value.
+- If artifact attestation is ever adopted, use `actions/attest` rather than
+  `actions/attest-build-provenance`, per the upstream release note.
+- Record the absence of `pull_request_target` and writable caches as a
+  deliberate posture, so a future workflow change does not silently introduce
+  either.
+- Do not describe `permissions: {}` plus per-job grants as GitHub's documented
+  recommendation. It is a sound community idiom built on documented primitives.
+- Keep citing rulesets as unverifiable from tracked files. That is a platform
+  property, not a gap in local evidence.
+
+### Potential Follow-up / Gap
+
+- A scope-by-scope table of `GITHUB_TOKEN` defaults under permissive versus
+  restricted could not be retrieved; four candidate URLs either 404ed or no
+  longer served the table. Only the two summary sentences are recorded.
+- The `GITHUB_TOKEN` lifetime is not stated on the authentication page. No
+  duration is asserted here.
+- The documented default for `fail-fast` was not found on the matrix page and is
+  not asserted.
+- Cloud-provider OIDC trust configuration is unverified and would need separate
+  retrieval before any adoption work.
+- Whether Dependabot rewrites SHA pins with their version comments is
+  unverified.
+- Ruleset enforcement status `evaluate` was not present in the retrieved
+  content and is not asserted, though it exists on some plans.
+
+### Maintenance
+
+- **Owner**: Documentation maintainers
+- **Review Cadence**: Review when GitHub Actions guidance, action major versions, or tracked workflow adoption changes
+- **Update Trigger**: Re-retrieve every cited page and re-query action versions through the REST API; do not carry a version claim forward from a rendered page
+
+### 2026-09-05 Revalidation
+
+Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+The current workflow contract has six workflows. CI Quality Gates now exposes
+two aggregate jobs: pull requests run `validation-changed`; pushes and manual
+dispatch run `validation-full`. Both use least-privilege job permissions and
+full-SHA action pins.
+
+| Capability | Repository implementation | Evidence depth | Gap | Verification route |
+| --- | --- | --- | --- | --- |
+| Aggregate CI | Two workflow jobs project the registered gate DAG | Repository-enforced, Hosted-executed in SPEC-0172 | Future runs remain mutable | public gates plus exact Actions run |
+| Main protection | `strict=true`; both aggregate contexts bind app ID 15368 | Remote-verified on 2026-09-05 | Later control-plane drift possible | authenticated branch-protection read-back |
+| Permissions/pins | Top-level and job-scoped permissions; immutable action SHAs | Configured, Repository-enforced | Organization-level allow policy unverified | workflow contract plus remote settings read-back |
+| OIDC/deployment | No current cloud deployment target or `id-token: write` route | Not adopted | Target, trust policy, environment, and rollback absent | separate approved deployment design |
+| Untrusted input | PR metadata is passed through environment variables before scripts | Configured, Repository-enforced | Runtime attack simulation not performed | workflow static analysis and adversarial fixture |
+
+Recommendation: preserve the two aggregate required checks while authenticated
+read-back matches. On mismatch, use the exact 12-check rollback recorded in the
+main-protection document. Do not add OIDC, environments, or privileged triggers
+without a named deployment target and threat model.
+
+Official sources re-opened 2026-09-05:
+[GitHub ruleset checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets),
+[secure use](https://docs.github.com/en/actions/reference/security/secure-use),
+[script injection](https://docs.github.com/en/actions/concepts/security/script-injections),
+and [OIDC](https://docs.github.com/en/actions/reference/security/oidc).
+
+### Related Documents
+
+- [RES-0084 package](README.md)
+- [Agentic automation research](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
+- [Quality research](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md)
+- [Security research](../0002-agentic-engineering-research-pack/m0017-security-governance.md)
+- [Verification and validation](../0002-agentic-engineering-research-pack/m0019-verification-validation.md)
+- [Workflow contract](../../../../.github/workflow-contract.yml)
+- [CI workflow](../../../../.github/workflows/ci-quality.yml)
+- [Main protection record](../../../../.github/rulesets/main-protection.md)
+- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)
+
+## Findings
+
+### Findings
+
+## Limitations
+
+### Documented Limits
 
 Every figure retrieved 2026-08-10 and version-sensitive. Most come from the
 Actions limits reference, but six do not and are cited to their own pages
@@ -547,60 +643,9 @@ eviction and key length from dependency-caching.
 | Cache key maximum length           | 512 characters                 |
 | API rate, `GITHUB_TOKEN`           | 1,000 requests/hour/repository |
 
-## Analysis
+## Sources
 
-Three platform properties explain most of the security guidance above.
-
-Trust is assigned by trigger, not by code. The same repository content executes
-with a read-only token under `pull_request` and with secrets and write access
-under `pull_request_target`. Nothing in the workflow file distinguishes them;
-only the event does.
-
-State that crosses runs is an execution channel. Caches and artifacts are
-written by one run and consumed by another, are unsigned, and can carry files
-that a later run executes. Permission scoping does not close this, which is
-precisely Security Lab's point about `permissions: {}`.
-
-Enforcement lives outside the repository. Required checks, reviewers, and
-deployment gates are server-side configuration readable only through the UI or
-an authenticated API. A green workflow file proves intent and nothing more.
-
-## Application Notes for This Workspace
-
-- Treat every figure in this document as dated. Several documentation paths
-  returned 404 during retrieval; a same-day independent check could not
-  reproduce them, so re-test before repeating that caveat as a live condition.
-- Verify action versions against the REST release endpoint rather than a
-  rendered page. A summarizing fetch of the `attest-build-provenance` releases
-  page during this research returned a publication year one full year off; the
-  API returned the correct value.
-- If artifact attestation is ever adopted, use `actions/attest` rather than
-  `actions/attest-build-provenance`, per the upstream release note.
-- Record the absence of `pull_request_target` and writable caches as a
-  deliberate posture, so a future workflow change does not silently introduce
-  either.
-- Do not describe `permissions: {}` plus per-job grants as GitHub's documented
-  recommendation. It is a sound community idiom built on documented primitives.
-- Keep citing rulesets as unverifiable from tracked files. That is a platform
-  property, not a gap in local evidence.
-
-## Potential Follow-up / Gap
-
-- A scope-by-scope table of `GITHUB_TOKEN` defaults under permissive versus
-  restricted could not be retrieved; four candidate URLs either 404ed or no
-  longer served the table. Only the two summary sentences are recorded.
-- The `GITHUB_TOKEN` lifetime is not stated on the authentication page. No
-  duration is asserted here.
-- The documented default for `fail-fast` was not found on the matrix page and is
-  not asserted.
-- Cloud-provider OIDC trust configuration is unverified and would need separate
-  retrieval before any adoption work.
-- Whether Dependabot rewrites SHA pins with their version comments is
-  unverified.
-- Ruleset enforcement status `evaluate` was not present in the retrieved
-  content and is not asserted, though it exists on some plans.
-
-## Source Rules
+### Source Rules
 
 - All external sources were retrieved on **2026-08-10** and are mutable
   retrieval-time guidance unless marked otherwise. None carries a visible
@@ -616,8 +661,6 @@ an authenticated API. A green workflow file proves intent and nothing more.
   `4122cecf`; no remote state was queried and no authenticated read-back was
   performed.
 - No source listed here is adopted policy.
-
-## Sources
 
 - [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - permissions keys, scope list, concurrency, `queue`
 - [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) - SHA pinning, untrusted input, cache and runner hazards
@@ -653,48 +696,3 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
 - [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
 - [Typed workflow contract](../../../../.github/workflow-contract.yml) - registry that factors gate definitions
-
-## Maintenance
-
-- **Owner**: Documentation maintainers
-- **Review Cadence**: Review when GitHub Actions guidance, action major versions, or tracked workflow adoption changes
-- **Update Trigger**: Re-retrieve every cited page and re-query action versions through the REST API; do not carry a version claim forward from a rendered page
-
-## 2026-09-05 Revalidation
-
-Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-The current workflow contract has six workflows. CI Quality Gates now exposes
-two aggregate jobs: pull requests run `validation-changed`; pushes and manual
-dispatch run `validation-full`. Both use least-privilege job permissions and
-full-SHA action pins.
-
-| Capability | Repository implementation | Evidence depth | Gap | Verification route |
-| --- | --- | --- | --- | --- |
-| Aggregate CI | Two workflow jobs project the registered gate DAG | Repository-enforced, Hosted-executed in SPEC-0172 | Future runs remain mutable | public gates plus exact Actions run |
-| Main protection | `strict=true`; both aggregate contexts bind app ID 15368 | Remote-verified on 2026-09-05 | Later control-plane drift possible | authenticated branch-protection read-back |
-| Permissions/pins | Top-level and job-scoped permissions; immutable action SHAs | Configured, Repository-enforced | Organization-level allow policy unverified | workflow contract plus remote settings read-back |
-| OIDC/deployment | No current cloud deployment target or `id-token: write` route | Not adopted | Target, trust policy, environment, and rollback absent | separate approved deployment design |
-| Untrusted input | PR metadata is passed through environment variables before scripts | Configured, Repository-enforced | Runtime attack simulation not performed | workflow static analysis and adversarial fixture |
-
-Recommendation: preserve the two aggregate required checks while authenticated
-read-back matches. On mismatch, use the exact 12-check rollback recorded in the
-main-protection document. Do not add OIDC, environments, or privileged triggers
-without a named deployment target and threat model.
-
-Official sources re-opened 2026-09-05:
-[GitHub ruleset checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets),
-[secure use](https://docs.github.com/en/actions/reference/security/secure-use),
-[script injection](https://docs.github.com/en/actions/concepts/security/script-injections),
-and [OIDC](https://docs.github.com/en/actions/reference/security/oidc).
-
-## Related Documents
-
-- [RES-0084 package](README.md)
-- [Agentic automation research](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
-- [Quality research](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md)
-- [Security research](../0002-agentic-engineering-research-pack/m0017-security-governance.md)
-- [Verification and validation](../0002-agentic-engineering-research-pack/m0019-verification-validation.md)
-- [Workflow contract](../../../../.github/workflow-contract.yml)
-- [CI workflow](../../../../.github/workflows/ci-quality.yml)
-- [Main protection record](../../../../.github/rulesets/main-protection.md)
-- [Completed SPEC-0172 outcome](../../../98.archive/completed/03.specs/0172-document-contract-convergence/spec.md)

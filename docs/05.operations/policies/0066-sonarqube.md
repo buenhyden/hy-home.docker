@@ -16,15 +16,27 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 정책은 추적 중인 SonarQube Community Build 배포를 다루며 유료 에디션 기능,
 네이티브 Keycloak 통합, 범용 CI 게이트는 가정하지 않는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 활성화, gateway/애플리케이션 인증, 토큰, 데이터베이스/인덱스/로그 데이터, 리소스
 제한, 백업/복구, 업그레이드, 제거.
 
-## Controls
+### Traceability
+
+- [가이드](../guides/0066-sonarqube.md) (`GDE-0066`)
+- [런북](../runbooks/0066-sonarqube.md) (`RUN-0066`)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+## Rules
+
+### Controls
 
 - **Activation:** `sast` 또는 일반 `tooling`을 사용한다. HOME 밖에 유지한다.
 - **Authentication:** gateway ForwardAuth가 진입을 보호하고, SonarQube가
@@ -46,18 +58,13 @@ created: "2026-05-17"
 - **Removal:** 데이터베이스/스키마 또는 볼륨을 삭제하기 전에 프로젝트, 설정,
   이슈, 사용자, 토큰, 백업 증거를 보존하거나 명시적으로 폐기한다.
 
-## Exceptions
-
-유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
-각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
-
-## Verification
+### Verification
 
 헬스는 부분적이다. 런타임 수용 기준에는 DB 접근, gateway와 앱 권한 부여,
 백그라운드 작업 완료, 대표 분석이 포함되며 백업/복구를 주장하는 경우 그
 증거도 포함된다.
 
-## Review Cadence
+### Review Cadence
 
 릴리스, DB/플러그인/인증/토큰, 리소스, 보존 정책 변경 시 검토한다.
 
@@ -67,11 +74,12 @@ created: "2026-05-17"
 별개이며 인증 실패를 해결하기 위해 middleware를 완화할 수 없다. 공유 PostgreSQL
 전체를 복원하는 변경은 다른 데이터 소유자의 영향 검토와 별도 승인을 요구한다.
 
-## Traceability
+## Exceptions
 
-- [가이드](../guides/0066-sonarqube.md) (`GDE-0066`)
-- [런북](../runbooks/0066-sonarqube.md) (`RUN-0066`)
-- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md)
+### Exceptions
+
+유료 기능, 네이티브 SAML/OIDC 프로비저닝, 더 넓은 품질 게이트 요구사항은
+각자의 소유 requirement/policy가 필요하며 여기서 유추할 수 없다.
 
 ## Related Documents
 

@@ -14,31 +14,28 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
+<!-- Author prompt: Map each stable W-number to one or more numbered acceptance criteria without creating a second lifecycle or approval record. -->
 
 # {{TITLE}}
 
-## Objective
+## Overview
 
-{{OBJECTIVE}}
+{{OVERVIEW}}
 
-## Dependencies
+## Work Breakdown
 
-{{DEPENDENCIES}}
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| {{WORK_UNIT}} | {{CRITERIA}} | {{WORK}} | {{DEPENDENCIES}} | {{TASK}} | {{VERIFICATION}} |
 
-## Execution Sequence
+## Verification Plan
 
-<!-- Author prompt: Use numbered entries with stable W-number labels, for example W1 followed by a colon, so Task evidence can refer to each work unit. -->
+{{VERIFICATION_PLAN}}
 
-{{TASKS_AND_ORDER}}
+## Risks and Rollback
 
-## Risk and Rollback
+{{RISKS_AND_ROLLBACK}}
 
-{{RISK_AND_ROLLBACK}}
+## Related Documents
 
-## Verification
-
-{{VERIFICATION}}
-
-## Rulings
-
-{{IMPLEMENTATION_RULINGS}}
+{{RELATED_DOCUMENTS}}

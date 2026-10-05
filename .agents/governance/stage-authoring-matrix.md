@@ -1,20 +1,22 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.2.2"
+version: "1.2.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 ---
 
 # Stage Authoring Matrix
+
+## Overview
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
 | Agent governance | — | shared policies, roles, skills, and provider translations | `.agents/` plus authored native adapters | contract, renderer parity, Task |
 | 01 | `requirements` | solution-independent requirements | Requirement Package | acceptance and traceability |
 | 02 | `architecture` | current structure and durable decisions | Description or ADR | architecture traceability |
-| 03 | `specs` | implementable change contract and execution | Spec Package | focused tests, Task, review |
+| 03 | `specs` | implementable change contract and execution | Spec Package: Spec contracts behavior, Plan sequences work, Task records execution and item evidence | focused tests, Task, review |
 | 05 | `operations` | operational knowledge and incidents | Operations Guide, Policy, Runbook, or Incident | safe procedure and observed result |
 | 90 | `references` | non-normative evidence | Research, Audit, or Data | provenance and observation date |
 | 98 | `archive` | retention classes for frozen bodies and route dispositions for outside routes | preserved records, Migration, or Tombstone | source-byte evidence; Git history recovers frozen content |
@@ -33,19 +35,25 @@ source for files outside docs. Use README navigation and canonical agent rules;
 scoped execution reads and required registry/schema/template inputs retain the
 narrow exceptions in that protocol.
 
-## Document Type Families
+## Scope
+
+Current stage roles, document families, canonical ownership, and verification routes.
+
+## Rules
+
+### Document Type Families
 
 `type` is a `family/kind` pair. The family names the authority that owns the
 document; the kind names its role inside that family.
 
 | Family | Owning stage | Kinds |
 | --- | --- | --- |
-| `governance` | canonical agent governance | `sdlc`, `policy`, `hook-policy`, `role`, `skill`, `knowledge`, `knowledge-index`, `prompt`, `prompt-index`, `provider`, `provider-index`, `claude-agent`, `codex-agent` |
+| `governance` | canonical agent governance | `workflow`, `policy`, `rule`, `control`, `role`, `skill`, `prompt`, `provider`; native `claude-agent`, `codex-agent` |
 | `sdlc` | 01, 02, 03 | `requirement`, `architecture-description`, `architecture-decision`, `spec`, `plan`, `task`, `data-model`, `openapi`, `graphql`, `proto` |
 | `operation` | 05 | `guide`, `policy`, `runbook`, `incident`, `postmortem` |
-| `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data`, `category-readme` |
-| `archive` | 98 | `migration`, `tombstone` |
-| `common` | any | `readme`, `documentation-readme`, `repository-readme`, `package-readme`, `runtime-governance-readme`, `template-source`, `unsupported` |
+| `reference` | 90 | `research-pack`, `research`, `audit-pack`, `audit`, `data-pack`, `data` |
+| `archive` | 98 | `catalog`, `route` |
+| `common` | any | `readme`; supporting `template-source`, `unsupported` |
 
 A Stage 90 `*-pack` kind is the container index; the bare kind is one `m####`
 member inside it.
@@ -59,9 +67,20 @@ No generated provider surface becomes a shared authority.
 
 `knowledge/` and `prompts/` are canonical categories, not stages. They route to owners and declare contracts; the owning policy, stage document, or Task keeps its authority.
 
+For Stage 03, approval enables the registered transition but review remains
+read-only and execution is recorded separately in the current Task. Task
+summary and optional lifecycle-event shape belong to Stage 99; the Task carries
+observed evidence and never authenticates an approval source. The Registry owns
+document-family state vocabulary, direct parent cardinality, result and review
+table shapes, and lifecycle generation; the SDLC owns their execution meaning.
+
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

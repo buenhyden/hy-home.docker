@@ -2,27 +2,46 @@
 title: "Workspace Engineering Main Baseline Assessment"
 version: "0.4.1"
 type: "reference/research-pack"
-status: "review"
+status: "in-review"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "references"
 artifact_id: "RES-0085"
-parent_ids: []
 created: "2026-09-04"
 observed_at: "2026-09-05"
 ---
 
 # Workspace Engineering Main Baseline Assessment
 
-현재 routing(2026-09-06): [공통 Agent 거버넌스](../../../../.agents/README.md)와
-[ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md)가
-활성 source 위치를 소유합니다. 아래의 이전 Stage 00 경로, inventory,
-provider 투영, check 결과는 날짜가 있는 관찰로 남으며, 현재 지시나 새
-runtime 수용 증거가 아닙니다. Source 링크는 이제 현재 owner로
-연결되며, 원래의 `observed_at`, `reviewed_at`, status, 측정된 사실은
-그대로 보존됩니다.
+## Overview
 
-## Question
+### Overview
+
+## Scope
+
+### Scope
+
+- 날짜가 있는 저장소 baseline: `buenhyden/hy-home.docker`
+  `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+- 저장소 관찰 날짜: 2026-09-05; 외부 source 확인 날짜: 2026-09-05.
+- 포함: 원래 binding request, 정확한 baseline identity, 증거 class 정의,
+  SPEC-0172 recovery tuple, 이 평가를 해석하는 데 필요한 날짜가 있는
+  관찰.
+- 제외: secret 또는 credential 값, 사용자 전역 Claude/Codex 설정, shell
+  history, raw log, 새 provider call, 새 runtime 변경, live deployment,
+  tag, release.
+- 현재 baseline 해석과 주제 연구는
+  [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)과
+  그 형제 구성원이 소유합니다. GitHub Actions mechanics는
+  [RES-0084](../0084-github-actions-platform/README.md)에 남습니다.
+
+## Structure
+
+### Structure
+
+## Usage
+
+### Question
 
 현재 workspace-baseline 소유권이 RES-0002-m0020으로 통합된 뒤,
 `main@4c6d211129615eab372d720ebd209b6c27618c86` 평가에서 어떤 binding
@@ -39,23 +58,7 @@ publication lifecycle이 review를 거치는 동안 날짜가 있는 평가 enve
 [RES-0084](../0084-github-actions-platform/README.md)와 경쟁하지 않습니다.
 identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 
-## Scope
-
-- 날짜가 있는 저장소 baseline: `buenhyden/hy-home.docker`
-  `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-- 저장소 관찰 날짜: 2026-09-05; 외부 source 확인 날짜: 2026-09-05.
-- 포함: 원래 binding request, 정확한 baseline identity, 증거 class 정의,
-  SPEC-0172 recovery tuple, 이 평가를 해석하는 데 필요한 날짜가 있는
-  관찰.
-- 제외: secret 또는 credential 값, 사용자 전역 Claude/Codex 설정, shell
-  history, raw log, 새 provider call, 새 runtime 변경, live deployment,
-  tag, release.
-- 현재 baseline 해석과 주제 연구는
-  [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)과
-  그 형제 구성원이 소유합니다. GitHub Actions mechanics는
-  [RES-0084](../0084-github-actions-platform/README.md)에 남습니다.
-
-## Method
+### Method
 
 1. 정확한 baseline SHA, 관찰 날짜, source request, 복구된 artifact
    identity, 상호 Task decision을 보존합니다.
@@ -69,7 +72,7 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
    inbound link, 보호된 RES-0002 집합, 생성된 index 신선도를
    검증합니다.
 
-## Findings
+### Findings
 
 | Evidence retained here | Dated result | Evidence depth | Current owner / disposition |
 | --- | --- | --- | --- |
@@ -84,7 +87,7 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)에
 통합되어 있습니다.
 
-## Sources
+### Sources
 
 - 저장소 baseline: Git commit
   `4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -107,7 +110,7 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
   RES-0084에 남습니다; 이 날짜가 있는 증거 package는 그 source
   inventory를 복사하지 않습니다.
 
-## Implications
+### Implications
 
 - 현재 workspace-baseline 결론과 향후 baseline 재관찰에는
   RES-0002-m0020을 사용합니다.
@@ -118,7 +121,26 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 - 실행 가능한 현재 gap은 canonical RES-0002 구성원과 일반적인
   Requirement-to-Task chain을 통해 route합니다.
 
-## Traceability
+### Limitations
+
+- secret, credential 값, 개인 key, environment 값, raw log, shell
+  history, 사용자 전역 provider 설정은 조회하지 않았습니다.
+- 이번 pass는 provider call, Compose service 시작, deployment, restart,
+  rollout, recovery, tag, release 변경을 수행하지 않았습니다.
+- 2026-09-04 provider/runtime과 2026-09-05 GitHub control-plane 증거는
+  SPEC-0172의 point-in-time 기록이며 영구 보장이 아닙니다.
+- `review`는 terminal disposition이 아닙니다. 이 package는 publication
+  lifecycle이 이후 승인된 변경을 통해 진행될 때까지 남아 있습니다.
+- Static Compose rendering은 네 가지 AUD-0097 domain 결함을 해결하지
+  않으며 service 건강성, 내구성, 복구, 성능, production 적합성을 증명하지
+  않습니다.
+- 가변적인 외부 source는 2026-09-05 이후 바뀔 수 있습니다; 유료 ISO
+  텍스트는 조회하지 않았고 public catalog/definition 자료만 그 공개
+  범위 안에서 사용했습니다.
+
+## Related Documents
+
+### Traceability
 
 - 현재 baseline, 주제 구성원, 보존 선언:
   [RES-0002](../0002-agentic-engineering-research-pack/README.md)와
@@ -138,20 +160,3 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
   LLM Wiki index, repository map.
 - Package registry: [Research index](../README.md)와
   [Stage 99 Registry](../../../99.templates/registry.json).
-
-## Limitations
-
-- secret, credential 값, 개인 key, environment 값, raw log, shell
-  history, 사용자 전역 provider 설정은 조회하지 않았습니다.
-- 이번 pass는 provider call, Compose service 시작, deployment, restart,
-  rollout, recovery, tag, release 변경을 수행하지 않았습니다.
-- 2026-09-04 provider/runtime과 2026-09-05 GitHub control-plane 증거는
-  SPEC-0172의 point-in-time 기록이며 영구 보장이 아닙니다.
-- `review`는 terminal disposition이 아닙니다. 이 package는 publication
-  lifecycle이 이후 승인된 변경을 통해 진행될 때까지 남아 있습니다.
-- Static Compose rendering은 네 가지 AUD-0097 domain 결함을 해결하지
-  않으며 service 건강성, 내구성, 복구, 성능, production 적합성을 증명하지
-  않습니다.
-- 가변적인 외부 source는 2026-09-05 이후 바뀔 수 있습니다; 유료 ISO
-  텍스트는 조회하지 않았고 public catalog/definition 자료만 그 공개
-  범위 안에서 사용했습니다.

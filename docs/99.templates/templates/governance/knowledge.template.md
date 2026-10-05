@@ -1,7 +1,7 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "governance/knowledge"
+type: "governance/control"
 status: "draft"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
@@ -22,13 +22,13 @@ observed_at: "{{OBSERVED_AT}}"
 
 {{INCLUDED_AND_EXCLUDED_CONTENT}}
 
-## Provenance
+## Rules
 
-{{TRACKED_SOURCES_COMMIT_AND_OBSERVATION_DATE}}
+{{SURFACE_TO_CANONICAL_OWNER_ROUTING}}
 
-## Refresh Triggers
+## Evidence
 
-{{CONDITIONS_THAT_MAKE_THIS_MEMBER_STALE}}
+{{TRACKED_SOURCES_COMMIT_OBSERVATION_DATE_AND_REFRESH_TRIGGERS}}
 
 ## Related Documents
 

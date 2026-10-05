@@ -19,6 +19,10 @@ This document records the decision to prioritize immediate hardening items for t
 
 The existing Vault Agent template used placeholder paths, and lacked a `vault-agent` healthcheck, output persistence, and a dedicated CI gate. Auto-unseal and remote audit, on the other hand, require coordinating operational policy, approval, and external dependencies (KMS/HSM, remote storage), so immediate implementation carries high risk.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Implement the immediate-application items first.
@@ -31,6 +35,31 @@ The existing Vault Agent template used placeholder paths, and lacked a `vault-ag
   - External TLS termination: Traefik
   - Internal `infra_net`: HTTP
 - Restore the existing regression (`scripts/hardening/check-all-hardening.sh 02-auth`) in the same change set.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Implement auto-unseal/remote audit at the same time, immediately
+
+- Good:
+  - Can quickly raise security maturity.
+- Bad:
+  - Change risk is high while operational approval/external dependencies are undecided.
+  - Harder to isolate root cause during a failure.
+
+### Update documentation only and hold off on infrastructure changes
+
+- Good:
+  - Short-term change risk is low.
+- Bad:
+  - Placeholder/healthcheck/CI regressions remain.
 
 ## Consequences
 
@@ -52,31 +81,6 @@ The existing Vault Agent template used placeholder paths, and lacked a `vault-ag
 
 - Tool gating: Enforce `check-all-hardening.sh 03-security` as a CI merge gate
 - Guardrail strategy: Prohibit placeholder paths, prohibit plaintext secrets
-
-## Options Considered
-
-### Implement auto-unseal/remote audit at the same time, immediately
-
-- Good:
-  - Can quickly raise security maturity.
-- Bad:
-  - Change risk is high while operational approval/external dependencies are undecided.
-  - Harder to isolate root cause during a failure.
-
-### Update documentation only and hold off on infrastructure changes
-
-- Good:
-  - Short-term change risk is low.
-- Bad:
-  - Placeholder/healthcheck/CI regressions remain.
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

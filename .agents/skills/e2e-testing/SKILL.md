@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "e2e-testing"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # e2e-testing
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ Acceptance criteria, runnable boundary, deterministic fixture strategy, and runt
 2. Execute through public interfaces, capture only sanitized evidence, and distinguish product failures from environment failures.
 3. Re-run the failing scenario to prove reproducibility, then run the focused suite after correction.
 
-## Outputs
-
-- End-to-end evidence with scenario, expected/actual result, and reproduction details.
-
-## Gates
+### Gates
 
 - Fixtures and timing are deterministic enough for repeat execution.
 - Every reported defect includes a reproducible failure path.
+
+## Outputs
+
+- End-to-end evidence with scenario, expected/actual result, and reproduction details.
 
 ## Failure Handling
 
 Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
 
-## Related Documents
+## References
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Test authoring](../test-authoring/SKILL.md)

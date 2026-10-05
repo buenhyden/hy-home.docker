@@ -17,7 +17,17 @@ created: "2026-09-21"
 
 # Crawl4AI Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -47,16 +57,16 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 여전히 접근 가능하므로, 호출자를 제한하고 네트워크 분리를 URL
 허용목록으로 여기지 않는다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 
-## Runbook Handoff
+### Runbook Handoff
 
 토큰, 시작, 소비자 연결 작업은 [runbook](../runbooks/0091-crawl4ai.md)을 사용한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0091-crawl4ai.md) (`POL-0091`)
 - [Runbook](../runbooks/0091-crawl4ai.md) (`RUN-0091`)

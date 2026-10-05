@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # Mailpit Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -60,13 +70,13 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0084-mailpit.md)의 `반출 방식과 업그레이드 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile mail-dev config --quiet`
 - `docker compose --profile mail-dev config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-## Runbook Handoff
+### Runbook Handoff
 
 capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
 [runbook](../runbooks/0084-mailpit.md)을 사용한다.
@@ -78,7 +88,7 @@ gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 pe
 실제 인증으로 해석하지 않는다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터
 소유자를 확인해야 하며 신뢰하지 않는 consumer의 연결을 허용해서는 안 된다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0084-mailpit.md) (`POL-0084`)
 - [Runbook](../runbooks/0084-mailpit.md) (`RUN-0084`)

@@ -16,15 +16,27 @@ created: "2026-09-21"
 
 ## Overview
 
+### Overview
+
 MLflow는 OPTIONAL tracking 서비스다. MLflow의 데이터베이스와 artifact store는 공유
 인프라 위의 feature-owned 자원이며 공유 인프라의 권한을 절대 넓혀서는 안 된다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저닝, 인증, credential
 처리, backup/restore, 업그레이드, 제거.
 
-## Controls
+### Traceability
+
+- [Guide](../guides/0088-mlflow.md) (`GDE-0088`)
+- [Runbook](../runbooks/0088-mlflow.md) (`RUN-0088`)
+- [Laboratory architecture](../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+## Rules
+
+### Controls
 
 - `mlops` 또는 `data-science`를 통해서만 선택한다. 명시적 결정 없이는 HOME이나 현재
   운영 명령에 절대 추가하지 않는다.
@@ -42,14 +54,7 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 - 업그레이드 전에 데이터베이스와 bucket을 함께 백업하고 격리 환경에서 restore를
   검증한다.
 
-## Exceptions
-
-`edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는
-동등한 네이티브 사용자 인증이 선언되지 않았다. MLflow 레벨 인증
-경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
-SSO를 비활성화할 수 없다.
-
-## Verification
+### Verification
 
 정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설. 런타임 검증은
 다음을 요구한다: 세션 없는 gateway 요청이 인증 경계에서 거부·로그인 redirect되고
@@ -57,7 +62,7 @@ SSO를 비활성화할 수 없다.
 round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, restore 리허설이
 수행된다.
 
-## Review Cadence
+### Review Cadence
 
 MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, credential 회전 시 검토한다.
 
@@ -68,11 +73,14 @@ MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, 
 승인한다. `--allowed-hosts`나 gateway `/admins` 검사로 직접 peer 경로의 권한 통제가
 완료되었다고 주장하지 않는다. 기존 DB migration은 서버 재시작과 별도 변경이다.
 
-## Traceability
+## Exceptions
 
-- [Guide](../guides/0088-mlflow.md) (`GDE-0088`)
-- [Runbook](../runbooks/0088-mlflow.md) (`RUN-0088`)
-- [Laboratory architecture](../../02.architecture/descriptions/0011-laboratory-architecture.md)
+### Exceptions
+
+`edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는
+동등한 네이티브 사용자 인증이 선언되지 않았다. MLflow 레벨 인증
+경로가 승인될 때까지 받아들이고 기록해 둔 gap일 뿐, 보증이 아니다. 어떤 예외도 gateway
+SSO를 비활성화할 수 없다.
 
 ## Related Documents
 

@@ -14,6 +14,7 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
+<!-- Author prompt: Contract observable behavior only. Approval, review, and execution are separate facts and must not be inferred from document structure. -->
 
 # {{TITLE}}
 
@@ -21,40 +22,21 @@ created: "{{CREATED}}"
 
 {{OVERVIEW}}
 
-## Boundaries and Inputs
+## Scope
 
-{{BOUNDARIES_AND_INPUTS}}
+{{SCOPE}}
 
-## Behavior Contract
+## Contracts
 
-{{OBSERVABLE_BEHAVIOR}}
+{{CONTRACTS}}
 
-## Technical Approach
-
-{{CHANGE_SCOPED_DESIGN}}
-
-## Interfaces and Data
-
-{{INTERFACES_AND_DATA}}
-
-## Failure Modes and Guardrails
-
-{{FAILURE_MODES_AND_GUARDRAILS}}
-
-## Acceptance Contract
+## Acceptance Criteria
 
 <!-- Author prompt: Use a numbered list of observable criteria; keep those numbers stable while Plan and Task evidence refers to them. -->
+<!-- Author prompt: A completed criterion needs observed PASS evidence in its Task. Cancellation disposition never waives Spec completion evidence. -->
 
-{{ACCEPTANCE_CONTRACT}}
+{{ACCEPTANCE_CRITERIA}}
 
-## Traceability
+## Related Documents
 
-{{FULL_REQUIREMENT_AND_ARCHITECTURE_IDS}}
-
-## Open Questions
-
-{{OPEN_QUESTIONS}}
-
-## Operational Impact
-
-{{OPERATIONAL_IMPACT}}
+{{RELATED_DOCUMENTS}}

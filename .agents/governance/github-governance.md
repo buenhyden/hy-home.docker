@@ -4,15 +4,23 @@ version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-05"
 ---
 
 # GitHub Governance Policy
 
+## Overview
+
 Normative policy baseline aligning agent behavior with GitHub repository operations.
 Repo-local stricter rules always override this document; never weaken them on the basis of this policy.
 
-## 1. Repository Protection Contract
+## Scope
+
+Repository protection, pull requests, hosted workflows, and separately authorized remote actions.
+
+## Rules
+
+### 1. Repository Protection Contract
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
 - This is an agent behavior contract, not evidence of applied GitHub settings.
@@ -30,7 +38,7 @@ Repo-local stricter rules always override this document; never weaken them on th
   remote verification is unavailable.
 - CODEOWNERS-triggered reviews are mandatory wherever remote protection enforces them. Agents must read the enforced state rather than assume it: when `require_code_owner_reviews` is enabled, an owned path's review must be obtained before merge; when it is disabled, `.github/CODEOWNERS` remains the ownership and review-routing record and no longer gates merges. Report which of the two applies; never record a review that protection did not require and no person gave.
 
-## 2. Pull Request and Review Contract
+### 2. Pull Request and Review Contract
 
 Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing a stale Issue does not
@@ -47,7 +55,7 @@ target and action.
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
   commit census into a standing merge Gate.
 
-## 3. Merge and Branch Discipline
+### 3. Merge and Branch Discipline
 
 This section is the single owner of merge and branch-lifecycle rules. Both the
 Git workflow policy and `.github/rulesets/main-protection.md` defer here; the
@@ -68,7 +76,7 @@ ruleset file records the observed remote state and issues no rule of its own.
   remaining work in the PR template.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
-## 4. GitHub Actions Security Contract
+### 4. GitHub Actions Security Contract
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
 - Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a WARN finding.
@@ -81,7 +89,7 @@ ruleset file records the observed remote state and issues no rule of its own.
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — flag as BLOCK.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
-## 5. Execution Boundary (Local vs Remote)
+### 5. Execution Boundary (Local vs Remote)
 
 - **Local Responsibility**: Follow the shared
   [execution boundary](quality-standards.md#4-execution-boundary) for focused
@@ -94,7 +102,7 @@ ruleset file records the observed remote state and issues no rule of its own.
   contains only cheap hooks; dedicated public gate leaves are separate. Callers
   must not introduce a second orchestration path.
 
-### 5.0 Approved Remote Mutation Protocol
+#### 5.0 Approved Remote Mutation Protocol
 
 When the user approves remote GitHub mutation, agents must still bind the action
 to a concrete repository and remote surface before changing state. Task evidence
@@ -108,7 +116,7 @@ Read-only remote checks may be recorded as verification evidence. Remote state
 that was approved but not changed must be reported as verified-only, not as a
 mutation.
 
-### 5.1 Tracked Workflow Definition Boundary
+#### 5.1 Tracked Workflow Definition Boundary
 
 A tracked workflow file is a local repository definition, not evidence that a
 remote schedule, manual dispatch, job, or required check ran. Agents may author
@@ -117,7 +125,7 @@ push it, enable it remotely, or change GitHub checks, rulesets, branch
 protection, environments, deployments, or releases without separate explicit
 approval for that repository and remote surface.
 
-### 5.2 Evidence Boundary by Change Type
+#### 5.2 Evidence Boundary by Change Type
 
 Use the [shared change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
 for local checks, selected public suites, and skipped-check rationale. This
@@ -132,7 +140,7 @@ not passing evidence.
 No task is complete by citing a CI-only gate alone when a cheap local check is
 available, and no local-only check replaces required protected-branch gates.
 
-## 6. Local Instruction Authority
+### 6. Local Instruction Authority
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
 - Instruction authority lives in repo-local assets only:
@@ -143,7 +151,7 @@ available, and no local-only check replaces required protected-branch gates.
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
-## 7. Completion Gate (GitHub-Specific)
+### 7. Completion Gate (GitHub-Specific)
 
 Before an agent declares any PR-related task complete, it must confirm:
 
@@ -155,7 +163,7 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 If any gate is unmet, the task status is "blocked" not "done."
 
-## 8. CI/CD Job Taxonomy
+### 8. CI/CD Job Taxonomy
 
 `ci-quality.yml` defines four jobs with distinct event and permission boundaries.
 The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
@@ -166,7 +174,7 @@ steps and dependencies. Archive, metadata, lifecycle and repository-contract
 checks remain leaves behind the two public profiles, not separate required
 status contexts.
 
-### Quality Jobs and Required Status
+#### Quality Jobs and Required Status
 
 | Job ID | Route | Event |
 | :--- | :--- | :--- |
@@ -185,7 +193,7 @@ Release tags remain governed by the release procedure. A failed main-security
 job must leave the tag job skipped, and a stale or rejected tag push must leave
 the existing pointer intact.
 
-### Non-Gating GitHub Automation
+#### Non-Gating GitHub Automation
 
 | Workflow                 | Purpose                    |
 | ------------------------ | -------------------------- |
@@ -207,6 +215,17 @@ update all three tracked surfaces together:
 Then update this explanatory table. Local validation does not prove that any
 of these checks ran remotely or that GitHub applies the proposed protection.
 
+### References
+
+- <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
+- <https://docs.github.com/en/actions/reference/security/secure-use>
+- <https://docs.github.com/en/actions/how-tos/monitor-workflows>
+- <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
 ## Related Documents
 
 - `.agents/governance/git-workflow.md`
@@ -219,10 +238,3 @@ of these checks ran remotely or that GitHub applies the proposed protection.
 - `.github/repository-surface.md`
 - `.github/rulesets/main-protection.md`
 - `docs/05.operations/runbooks/0009-release-management.md`
-
-## References
-
-- <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
-- <https://docs.github.com/en/actions/reference/security/secure-use>
-- <https://docs.github.com/en/actions/how-tos/monitor-workflows>
-- <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>

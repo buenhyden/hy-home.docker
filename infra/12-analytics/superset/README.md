@@ -1,10 +1,10 @@
 ---
 title: "Superset"
 version: "1.0.2"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -126,7 +126,7 @@ Secrets: `superset_secret_key` (AUTO-020), `superset_db_password` (PG-028),
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |
 
-## How to Work in This Area
+## Usage
 
 1. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. Superset 버전이 오르면 `image:` tag와 버전 투영도 바뀌며 `superset-init`이 필요합니다.
 2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.

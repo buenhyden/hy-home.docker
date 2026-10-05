@@ -17,25 +17,25 @@ created: "{{CREATED}}"
 
 {{WHAT_THIS_PROMPT_PRODUCES_AND_WHY}}
 
-## Required Inputs
+### Applies To
+
+{{ROLES_SKILLS_AND_EVALUATION_CRITERIA}}
+
+## Inputs
 
 {{INPUTS_AND_THE_STOP_CONDITION_WHEN_ONE_IS_MISSING}}
 
-## Output Contract
-
-{{EXACT_SHAPE_AND_ORDER_OF_THE_PRODUCED_OUTPUT}}
-
-## Prohibited
+## Instructions
 
 {{CONCRETE_REFUSALS}}
+
+## Outputs
+
+{{EXACT_SHAPE_AND_ORDER_OF_THE_PRODUCED_OUTPUT}}
 
 ## Failure Handling
 
 {{WHAT_TO_DO_WHEN_THE_CONTRACT_CANNOT_BE_MET}}
-
-## Applies To
-
-{{ROLES_SKILLS_AND_EVALUATION_CRITERIA}}
 
 ## Related Documents
 

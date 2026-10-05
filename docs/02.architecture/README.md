@@ -4,7 +4,7 @@ version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 layer: "architecture"
 ---
 
@@ -16,13 +16,6 @@ layer: "architecture"
 뷰, 데이터·제어 흐름, 품질 시나리오와 중요한 선택으로 연결한다.
 Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안, 근거,
 결과와 supersession을 기록한다.
-
-## Audience
-
-- System Architects
-- Developers
-- Reviewers
-- AI Agents
 
 ## Scope
 
@@ -47,7 +40,18 @@ docs/02.architecture/
 - [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
 
-## How to Work in This Area
+## Usage
+
+### Usage
+
+### Audience
+
+- System Architects
+- Developers
+- Reviewers
+- AI Agents
+
+### Usage
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은

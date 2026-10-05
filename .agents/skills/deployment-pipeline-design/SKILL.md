@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "deployment-pipeline-design"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # deployment-pipeline-design
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ Release policy, deployment constraints, environments, approval authority, and ro
 2. Place security, QA, and manual approval gates according to blast radius and environment authority.
 3. Define rollout observations, stop conditions, and the exact artifact/configuration rollback path.
 
-## Outputs
-
-- A deployment pipeline design with stages, authorities, evidence, and rollback semantics.
-
-## Gates
+### Gates
 
 - Promotion cannot cross an approval boundary implicitly.
 - Rollback is concrete, versioned, and testable before release.
+
+## Outputs
+
+- A deployment pipeline design with stages, authorities, evidence, and rollback semantics.
 
 ## Failure Handling
 
 Defer implementation when environment credentials, promotion authority, or rollback artifacts are absent; never substitute local success for deployment proof.
 
-## Related Documents
+## References
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
 - [CI/CD patterns](../ci-cd-patterns/SKILL.md)

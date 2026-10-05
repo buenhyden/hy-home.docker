@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Implementation"
 version: "0.2.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 ---
 
 # ComfyUI
@@ -59,7 +59,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 �
 
 저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 사용합니다. 대상별 런타임 확인과 승인 후 복구는 소유 운영 Runbook을 사용합니다. 마운트 누락, 예상치 못한 노출, 초기화 실패 시에는 중지합니다.
 
-## How to Work in This Area
+## Usage
 
 Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되게 유지합니다. 게이트웨이 인증, 영속화, 리소스 예산, 버전 예외를 변경하기 전에 검토합니다. 여기에 명령을 중복 기록하지 말고 기존 운영 주제(operations subject)를 업데이트합니다.
 

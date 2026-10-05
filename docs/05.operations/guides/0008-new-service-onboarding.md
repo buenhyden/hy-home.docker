@@ -15,9 +15,17 @@ created: "2026-06-04"
 
 # New Service Onboarding Guide
 
-> 새 컨테이너 서비스를 워크스페이스 표준에 맞게 추가하는 방법을 설명한다.
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
 
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -76,19 +84,19 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 - root 사용자 실행 또는 불필요한 capability 유지 — 최소 권한 원칙을 지킨다.
 - `docker-compose.yml`에 secret 값을 직접 작성 — 참조 메커니즘만 사용한다.
 
-## Common Checks
+### Common Checks
 
 - [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의 승인된 공개 입력으로 구성 검증을 수행한다. 전체 private 모델을 출력하지 않는다.
 - 승인된 기동 뒤에는 선택한 daemon의 health와 초기화 작업의 종료 결과, 인증된 기능을 구분해 확인한다. `start_period` 경과는 healthy 보장이 아니다.
 - `python3 scripts/validation/run-ci-gate.py --profile changed` — 서비스를 `infra/`에 편입할 때 contract가 동기화 상태를 유지한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 release/tag 준비는 [RUN-0009](../runbooks/0009-release-management.md)를 따른다.
 실제 배포·중단·rollback·data recovery는 추가한 서비스의 Runbook이 소유한다.
 기존 데이터나 승인된 복구 경계가 불명확하면 @buenhyden에게 전달한다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Release Management Runbook](../runbooks/0009-release-management.md) (`RUN-0009`)
 - 과거 구현 근거이며 현재 실행 권한이 아님: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)

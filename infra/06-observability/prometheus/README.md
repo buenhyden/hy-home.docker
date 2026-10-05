@@ -1,10 +1,10 @@
 ---
 title: "Prometheus"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-01-12"
 ---
 
@@ -71,7 +71,7 @@ infra/06-observability/prometheus/
 - **Operations Policy**: `docs/05.operations/policies/0045-prometheus.md`
 - **Runbook**: `docs/05.operations/runbooks/0045-prometheus.md`
 
-## How to Work in This Area
+## Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 

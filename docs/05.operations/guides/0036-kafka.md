@@ -24,7 +24,17 @@ created: "2026-05-10"
 
 # Kafka Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 `kafka-1`만 있고, 다중 broker 학습은 독립 LAB 진입점의 `lab-kafka`
@@ -149,7 +159,7 @@ Connect는 시작할 때 `debezium_postgres_password` secret에서
 connector 등록·snapshot·offset 재설정은 아직 실행하지 않았다. 기존 HOME
 `mng-pg/app_db` 기술 객체와 이전 topic은 별도 승인 전까지 보존한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 Kafka 복구 범위는 broker 디렉터리보다 넓다. topic 데이터와 config,
 partition 수, consumer-group offset, KRaft cluster metadata, Schema Registry
@@ -182,13 +192,13 @@ REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검
 - [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
 - [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
 
-## Common Checks
+### Common Checks
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0036`; 거버넌스 정책: `POL-0036`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml` and the

@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Docker Registry Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
@@ -29,6 +37,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 validate하고 bounded status를 캡처한다.
 
@@ -92,24 +102,28 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 4. 다시 사용하려면 Registry 참조를 pull하여 Compose 파일이 기대하는 이름으로
    재태깅하거나, 추적되는 Dockerfile에서 재빌드한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 backup/restore, GC, upgrade rehearsal은 이 문서에서 **계획되었으나 미실행** 상태이다.
 Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
 filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0065-registry.md) (`GDE-0065`)
 - [Policy](../policies/0065-registry.md) (`POL-0065`)

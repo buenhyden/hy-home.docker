@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Tempo 준비 상태, OTLP 입력 진단, SeaweedFS 저장소 증거, metrics generator 검증, 재시작과 WAL 증상 보고.
 
 이 런북은 Tempo trace ingestion failure, SeaweedFS-backed storage error, metrics generator failure, query latency, and WAL corruption symptom을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → SeaweedFS → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Grafana Tempo datasource에서 최근 trace가 검색되지 않을 때.
 - Alloy는 trace를 수신하지만 Tempo에 trace가 도착하지 않는다고 의심될 때.
@@ -33,6 +41,8 @@ created: "2026-05-17"
 - Config 변경 후 readiness, route, storage, remote write evidence가 필요할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -150,22 +160,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. Tempo를 시작하고 readiness/WAL replay를 검증한다. 과거 trace를 조회하고 격리된 Alloy를 통해 새 label을 붙인 trace를 전송·조회한 뒤 Grafana와 metrics-generator 동작을 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 object/local backup으로 돌아간다. 운영 bucket/path/route 교체는 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret values는 기록하지 않는다.
 - Trace ingestion 장애는 Alloy exporter check, Tempo ready state, Grafana datasource result를 함께 기록한다.
 - Storage/WAL symptom은 로그 발췌, `tempo-data` volume 경계, approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 WAL, bucket, object, retention 조치는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, WAL/bucket/object mutation이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Tempo Usage Guide](../guides/0049-tempo.md) (`GDE-0049`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

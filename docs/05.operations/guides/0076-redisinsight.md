@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # RedisInsight Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -47,12 +57,12 @@ history, 로그를 영속화한다.
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0076-redisinsight.md)의 `승인된 사용·설정 보존·업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile admin-data config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 04-data`
 
-## Runbook Handoff
+### Runbook Handoff
 
 인증, 설정, credential, 대상, 업그레이드 복구에는
 [runbook](../runbooks/0076-redisinsight.md)을 사용한다.
@@ -72,7 +82,7 @@ history, 로그를 영속화한다.
 사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
 해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0076-redisinsight.md) (`POL-0076`)
 - [Runbook](../runbooks/0076-redisinsight.md) (`RUN-0076`)

@@ -1,10 +1,10 @@
 ---
 title: "합성 OTLP 메트릭 전달 인수"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 ---
 
 # 합성 OTLP 메트릭 전달 인수
@@ -66,7 +66,7 @@ HTTP OTLP 수락만으로 전달 성공을 기록하지 않습니다. label allo
 identity가 실제 조회에서 지켜지는지도 확인합니다. 증거와 종료 코드는 현재 Task가
 소유합니다. cache/context/용량이 없으면 실행을 중단하고 검사를 `NOT_RUN`으로 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 원본 pipeline을 변경하거나 HOME 서비스·망·volume을 연결하지 않습니다. cleanup은
 정확한 controller project의 `compose down --timeout 10`만 사용하며 `down -v`·prune은

@@ -22,6 +22,10 @@ This document is the architecture decision record for the decision to use a hybr
 - Traefik is very strong at Docker Label based automatic service discovery (Dynamic Discovery), but configuring fine-grained, Nginx-level path control can be somewhat cumbersome.
 - Nginx, on the other hand, supports elaborate configuration, but upstream management in a dynamically changing Docker virtual IP environment is manual or needs a separate solution.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 - **Primary Edge Router**: use Traefik v3.
@@ -43,6 +47,26 @@ This document is the architecture decision record for the decision to use a hybr
   - Nginx handles detailed proxy pass, header manipulation, and buffering configuration internally.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### [Alternative 1: Traefik Only]
+
+- Good: The architecture becomes simpler and there are fewer management points.
+- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
+
+### [Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)]
+
+- Good: Configuration is very powerful and familiar.
+- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
+
 ## Consequences
 
 - **Positive**:
@@ -57,26 +81,6 @@ This document is the architecture decision record for the decision to use a hybr
 
 - Placing Nginx in front of every internal service (avoids unnecessary hop growth).
 - Exposing Nginx directly as the external edge.
-
-## Options Considered
-
-### [Alternative 1: Traefik Only]
-
-- Good: The architecture becomes simpler and there are fewer management points.
-- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
-
-### [Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)]
-
-- Good: Configuration is very powerful and familiar.
-- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

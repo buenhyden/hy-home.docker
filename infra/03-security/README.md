@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security)"
 version: "1.0.5"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -28,7 +28,7 @@ OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결�
 | --- | --- |
 | [openbao/](openbao/README.md) | HOME canonical 서버와 Agent |
 
-## How to Work in This Area
+## Usage
 
 1. 새 소비자는 [OpenBao 가이드 — 문서 인덱스](../../docs/README.md) (`GDE-0085`)를 따른다.
 2. 보존된 Vault 데이터 경로와 OpenBao 데이터 경로를 분리해 둔다. 백업·복원 및 현재 데이터 상태는 별도 검증 전까지 미확인으로 기록한다.

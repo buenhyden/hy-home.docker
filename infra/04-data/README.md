@@ -1,10 +1,10 @@
 ---
 title: "데이터 계층 (04-data)"
 version: "1.3.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -63,7 +63,7 @@ PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은
 
 `python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로에 맞는 검증을 선택합니다. 실행 여부와 종료 코드는 해당 Task에 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 - 저장소 루트에서 정확한 profile을 선택합니다. `core`나 디렉터리 이름만으로
   데이터 의존성 전체가 기동되지는 않습니다.

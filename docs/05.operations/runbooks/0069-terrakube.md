@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Terrakube Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 승인된 backup/restore/upgrade에 사용한다. 저장소 루트에서 작업한다.
@@ -29,6 +37,8 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 새 Terrakube run을 동결한다. workspace/run ID, VCS ref, state key, component
    status, apply 진행 여부를 기록한다. remote effect와 recovery owner를 파악하기
@@ -90,17 +100,21 @@ API/executor를 정지한다. provider와 webhook egress를 비활성화한 격�
 마이그레이션 이후 데이터베이스/state 롤백 없이 이미지만 롤백하는 것은 안전하지
 않다. 이 문서 작업에서는 백업/복원과 업그레이드 리허설을 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 정제된 컴포넌트 health·run/workspace 개수·백업 ID/checksum·state-key 개수·
 release/source 커밋·비적용 plan 결과와 최종 상태를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 coordinated backup/restore와 upgrade 단계는 **계획되었으나 미실행** 상태이다.
 component restart나 단일 store snapshot으로 recovery했다고 주장하지 않는다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -115,7 +129,7 @@ active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access
 현재 gateway 통제는 유지하며 로그인·health 성공을 실행 가능 증거로 기록하지 않는다.
 인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0069-terrakube.md) (`GDE-0069`)
 - [Policy](../policies/0069-terrakube.md) (`POL-0069`)

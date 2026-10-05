@@ -240,7 +240,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                 if "active" in targets:
                     targets.remove("active")
             registry_path.write_text(json.dumps(registry), encoding="utf-8")
-            self.assertIn("role-status-invalid", finding_codes(root))
+            self.assertIn("registry-canonical-invalid", finding_codes(root))
 
         context, root = self._fixture()
         with context:

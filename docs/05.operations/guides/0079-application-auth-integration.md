@@ -14,7 +14,17 @@ created: "2026-09-18"
 
 # Application Authentication Integration Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -496,18 +506,18 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
-## Runbook Handoff
+### Runbook Handoff
 
 - [Keycloak Runbook](../runbooks/0014-keycloak.md)
 - [OAuth2 Proxy Runbook](../runbooks/0015-oauth2-proxy.md)
 - [Kafka/Kafbat Runbook](../runbooks/0036-kafka.md)
 - [Airflow Runbook](../runbooks/0050-airflow.md)
 
-## Common Checks
+### Common Checks
 
 각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
 
-## Traceability
+### Traceability
 
 - Parent: [POL-0079](../policies/0079-application-auth-integration.md)
 - Decision: [ADR-0038](../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)

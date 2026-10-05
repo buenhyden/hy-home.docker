@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # RedisInsight Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 증명 노출, 설정 복원
 또는 업그레이드에 사용한다.
@@ -29,6 +37,8 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -69,18 +79,22 @@ Redis/Valkey에 접근할 수 없는 격리된 RedisInsight로 복원하고 나�
 키가 구성되면 같은 키를 사용한다. 업그레이드 전에는 release와 라이선스 약관을
 검토하고 저장된 연결/history를 테스트한다. 여기서는 백업/복원을 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드·source 커밋·설정 checksum/개수·gateway/CIDR 판정·자격 증명 회전 근거·
 대상 계정 범위와 최종 상태를 기록한다. password,
 key, query history, data 값은 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다. target
 Redis/Valkey data의 restore는 target engine runbook 소관이다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -95,7 +109,7 @@ target reachability가 있으면 중단한다.
 성공만으로 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된
 credential을 진단 출력으로 사용하지 않는다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0076-redisinsight.md) (`GDE-0076`)
 - [Policy](../policies/0076-redisinsight.md) (`POL-0076`)

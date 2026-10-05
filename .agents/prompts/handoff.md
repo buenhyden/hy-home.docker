@@ -4,7 +4,7 @@ version: "0.3.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 created: "2026-09-06"
 ---
 
@@ -17,7 +17,7 @@ state alone. The receiving session may be a different provider, a different
 model, or the same agent after a context reset. The handoff exists so that
 resuming never requires the previous conversation.
 
-## Required Inputs
+## Inputs
 
 - The current Spec Package Task path and its `Work Log`, `Verification
   Evidence`, and `Commit Ledger` sections.
@@ -42,7 +42,32 @@ and return to `workflow-supervisor`. A digest is resume evidence, not a standing
 completion SHA gate. Stop and request the missing input if the Task, branch, or
 approval scope cannot be identified.
 
-## Output Contract
+## Instructions
+
+### Constraints
+
+- Conversation transcripts, chat excerpts, or reasoning narration.
+- Secret values, credentials, private keys, tokens, auth files, raw logs, or
+  shell history.
+- User-global provider settings or any path outside the repository.
+- A second progress or handoff document. The Task is the only such authority;
+  this prompt renders a view of it and writes no new ledger.
+- Promoting a configured, static, or local result into runtime, entitlement,
+  Hosted CI, or remote acceptance.
+- Restating a policy body. Link the owning policy instead.
+
+### Applies To
+
+- Roles: any role may consume a handoff; `workflow-supervisor` owns producing
+  one at a boundary. Consuming a handoff grants no permission beyond the
+  reader's own role and approved Task scope.
+- Skills: [execution-plan-agent](../skills/execution-plan-agent/SKILL.md) owns
+  sequencing procedure; this prompt owns only the handoff envelope.
+- Evaluation: the handoff is adequate when a reader with no prior context can
+  name the next action, the owned paths, and the unverified state without
+  opening the previous conversation.
+
+## Outputs
 
 A single block with exactly these labeled parts, in this order:
 
@@ -69,18 +94,6 @@ A single block with exactly these labeled parts, in this order:
 Every claim is traceable to a tracked file or a Git fact. Where a claim is not,
 the handoff says so.
 
-## Prohibited
-
-- Conversation transcripts, chat excerpts, or reasoning narration.
-- Secret values, credentials, private keys, tokens, auth files, raw logs, or
-  shell history.
-- User-global provider settings or any path outside the repository.
-- A second progress or handoff document. The Task is the only such authority;
-  this prompt renders a view of it and writes no new ledger.
-- Promoting a configured, static, or local result into runtime, entitlement,
-  Hosted CI, or remote acceptance.
-- Restating a policy body. Link the owning policy instead.
-
 ## Failure Handling
 
 If the Task's recorded state disagrees with observed Git state, report the
@@ -88,17 +101,6 @@ disagreement and stop; do not reconcile it inside the handoff. If the Task is
 absent or terminal while work remains, route to `workflow-supervisor` rather
 than opening a new ledger. If a required input is unavailable, emit the handoff
 with that part marked unavailable and name what is needed.
-
-## Applies To
-
-- Roles: any role may consume a handoff; `workflow-supervisor` owns producing
-  one at a boundary. Consuming a handoff grants no permission beyond the
-  reader's own role and approved Task scope.
-- Skills: [execution-plan-agent](../skills/execution-plan-agent/SKILL.md) owns
-  sequencing procedure; this prompt owns only the handoff envelope.
-- Evaluation: the handoff is adequate when a reader with no prior context can
-  name the next action, the owned paths, and the unverified state without
-  opening the previous conversation.
 
 ## Related Documents
 

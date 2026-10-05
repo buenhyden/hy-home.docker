@@ -1,10 +1,10 @@
 ---
 title: "Neo4j"
 version: "1.0.4"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -68,7 +68,7 @@ neo4j/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `docker compose config --quiet`부터 시작한 뒤 서비스 로그와 연결된 운영/runbook 증거를 확인함 |
 
-## How to Work in This Area
+## Usage
 
 1. 아키텍처 맥락을 위해 시스템 가이드 (`docs/05.operations/guides/0033-neo4j.md`)부터 검토합니다.
 2. 서비스 시작 전에 `neo4j_password` secret이 provisioning되었는지 확인합니다.

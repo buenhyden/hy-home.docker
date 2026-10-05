@@ -12,7 +12,7 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Purpose
+## Overview
 
 {{TRANSLATION_PURPOSE_FOR_THIS_RUNTIME}}
 
@@ -20,11 +20,11 @@ updated: "{{UPDATED}}"
 
 {{ENTRY_SHIM_AND_BOOTSTRAP_ORDER}}
 
-## Runtime Boundary
+## Native Controls
 
 {{GENERATED_VERSUS_NATIVE_SURFACES}}
 
-## Verification
+## Limitations
 
 {{REGISTERED_GATE_COMMAND}}
 

@@ -4,14 +4,22 @@ version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 ---
 
 # Git Workflow Governance
 
+## Overview
+
 This rule defines the mandatory git workflow for all contributors and agents.
 
-## 1. Commit Standards
+## Scope
+
+Local Git authoring, branch integration, commits, review, and remote delivery boundaries.
+
+## Rules
+
+### 1. Commit Standards
 
 Use Conventional Commits with explicit scopes where possible.
 
@@ -33,7 +41,7 @@ Use Conventional Commits with explicit scopes where possible.
   before starting the commit. The `commit-msg` hook remains the final local
   enforcement point.
 
-## 2. Branching Strategy
+### 2. Branching Strategy
 
 - Protected baseline: `main`
 - Feature branch naming: `feat/<issue-id>-<short-description>`
@@ -45,7 +53,7 @@ Use Conventional Commits with explicit scopes where possible.
   tool-generated PR branches only. They must still merge through the PR
   protocol and required checks.
 
-## 3. Pull Request Protocol
+### 3. Pull Request Protocol
 
 1. Self-review changes before opening or updating a PR.
 2. Run relevant programmatic checks before requesting review.
@@ -58,7 +66,7 @@ Use Conventional Commits with explicit scopes where possible.
 7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
-## 4. Operational Best Practices
+### 4. Operational Best Practices
 
 - Keep commits atomic.
 - Use `fix` for user-visible or operational defect corrections and include regression evidence.
@@ -80,7 +88,7 @@ Use Conventional Commits with explicit scopes where possible.
   This exception does not authorize manual release-tag changes or bypass main
   protection.
 
-## 5. Agent Completion Commit Discipline
+### 5. Agent Completion Commit Discipline
 
 - For repository-modifying agent work, the completion default is to create
   logical Conventional Commits after verification and before declaring the task
@@ -95,10 +103,14 @@ Use Conventional Commits with explicit scopes where possible.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
-## 6. Enforcement
+### 6. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `.agents/governance/github-governance.md`.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

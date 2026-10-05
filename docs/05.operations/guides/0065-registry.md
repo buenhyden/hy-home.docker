@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Docker Registry Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -62,13 +72,13 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0065-registry.md)의 `계획된 저장소 유지보수` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile registry config --quiet`
 - `docker compose --profile registry config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-## Runbook Handoff
+### Runbook Handoff
 
 push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection에는
 [runbook](../runbooks/0065-registry.md)을 사용한다.
@@ -80,7 +90,7 @@ push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승�
 네트워크와 listener 선언을 기준으로 확인한다. 파일시스템 사용량·쓰기 오류·digest
 불일치를 함께 확인하며 `/v2/` 성공만으로 용량이나 복구 가능성을 판정하지 않는다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0065-registry.md) (`POL-0065`)
 - [Runbook](../runbooks/0065-registry.md) (`RUN-0065`)

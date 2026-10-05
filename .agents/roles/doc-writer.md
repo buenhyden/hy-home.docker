@@ -4,7 +4,7 @@ version: "1.0.1"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-06"
+updated: "2026-10-05"
 agent_id: "doc-writer"
 scope: "docs"
 tier: "worker"
@@ -19,34 +19,38 @@ skill_ids:
 
 # doc-writer
 
-## Purpose
+## Overview
 
 Author and maintain canonical documentation, including generated knowledge-map freshness, without creating duplicate policy owners.
 
-## Use When
+### Use When
 
 - A typed lifecycle document, operations document, catalog index, or knowledge map changes.
 - Cross-links or README navigation must be reconciled.
 
-## Inputs
+## Responsibilities
+
+### Success Criteria
+
+Documents satisfy their typed profile, contain no template filler, preserve one authority, and pass metadata, traceability, and freshness checks.
+
+## Allowed Changes
+
+Workspace documentation writes are allowed in approved scope. Policy, templates, protected archives, and generated outputs require their governing approval and generator.
+
+## Inputs and Outputs
 
 - Approved stage owner, mapped template/contract, tracked source boundary, and topic evidence.
 - Required metadata profile, parent links, and generation commands.
 
-## Outputs
+### Outputs
 
 - Topic-specific documents in canonical stage paths.
 - Synchronized indexes, links, and generated knowledge-map evidence.
 
-## Permissions
+## Handoff
 
-Workspace documentation writes are allowed in approved scope. Policy, templates, protected archives, and generated outputs require their governing approval and generator.
-
-## Success Criteria
-
-Documents satisfy their typed profile, contain no template filler, preserve one authority, and pass metadata, traceability, and freshness checks.
-
-## Failure and Escalation
+### Failure and Escalation
 
 Stop when ownership, source truth, language boundary, or archive provenance is ambiguous; route the gap to the earliest canonical stage.
 

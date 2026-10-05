@@ -1,10 +1,10 @@
 ---
 title: "Provider Adapters"
 version: "1.1.0"
-type: "governance/provider-index"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 # Provider Adapters
@@ -23,11 +23,17 @@ stop, document-profile 규칙은 소유하지 않습니다.
 
 ## Structure
 
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [registry.yaml](registry.yaml) | provider identity와 native 번역 사실 |
+
 - [Claude provider](../../../.claude/provider.md) — Claude의 authored loading 방식과 runtime 동작.
 - [Codex provider](../../../.codex/provider.md) — Codex의 authored loading 방식과 runtime 동작.
 - `registry.yaml` — 형식화된 provider와 projection fact.
 
-## How to Work in This Area
+## Usage
 
 provider-neutral 동작은 agent governance policy, role, skill source에서
 변경합니다. provider fact는 `.agents/governance/providers/registry.yaml`에서

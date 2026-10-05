@@ -7,13 +7,22 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0003"
-parent_ids: []
 created: "2026-06-04"
 ---
 
 # `.env.example` vs `.env` Key Comparison
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 공개 `.env.example`은 현재 환경변수 계약을 소유하고, 로컬 `.env`는 운영자 값을
 보존한다. 키 추가·폐기 시 Compose, Dockerfile, 스크립트의 직접·간접 소비자를
@@ -25,7 +34,7 @@ created: "2026-06-04"
 과거 감사 숫자를 현재 상태로 유지하지 않는다. 값, 원문 환경, 확장된 private
 Compose 모델은 증거에 포함하지 않는다.
 
-## Common Checks
+### Common Checks
 
 저장소 루트에서 기존 메타데이터 도구를 사용한다.
 
@@ -56,11 +65,11 @@ check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출�
 0600 권한을 확인한다. 기존 `--sync-metadata`는 미등록 항목 보존 모드이므로
 이 엄격한 정리의 완료 검사로 사용하지 않는다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 값 생성·회전·런타임 재시작은 이 키 비교의 범위가 아니다. [Secret 관리 안내](../../../secrets/README.md)와 해당 서비스 Runbook에서 대상, 승인, 백업 및 복구 절차를 확인한다.
 
-## Traceability
+### Traceability
 
 - 같은 번호 `0003`의 Policy/Runbook은 없다.
 

@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 ---
@@ -16,23 +16,33 @@ updated: "{{UPDATED}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
+
+### Audience
+
+{{AUDIENCE}}
 
 ## Structure
 
 {{STRUCTURE}}
 
-## Tech Stack
+### Tech Stack
 
 {{TECH_STACK}}
 
-## Configuration
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
+## Usage
+
+{{WORK_INSTRUCTIONS}}
+
+### Configuration
 
 <!-- Author prompt: Describe actual Compose/Dockerfile/config linkage, profiles, dependencies, networks, published ports, persistence paths, environment key names, secret references and health semantics. Record removal or migration state explicitly. Keep operational procedures with the owning Guide/Policy/Runbook and route numbered-stage links through docs/README.md outside docs/. -->
 
@@ -40,13 +50,9 @@ updated: "{{UPDATED}}"
 
 {{CONFIGURATION}}
 
-## Validation
+### Validation
 
 {{VALIDATION}}
-
-## How to Work in This Area
-
-{{WORK_INSTRUCTIONS}}
 
 ## Related Documents
 

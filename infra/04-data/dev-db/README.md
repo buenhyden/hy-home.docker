@@ -1,10 +1,10 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
 version: "0.1.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-02"
 ---
 
@@ -43,7 +43,7 @@ TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스�
 
 아래 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 루트에서 다음 정적 검사를 실행합니다. `config`는 컨테이너를 시작하지 않습니다.
 

@@ -1,10 +1,10 @@
 ---
 title: "Library Tests"
 version: "1.0.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-27"
 ---
 
@@ -35,7 +35,7 @@ library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 �
 테스트 파일의 정확한 대응은 [Script Manifest](../../scripts/manifest.yaml)의
 `tests` 항목이 소유합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 짝이 되는 디렉터리에는 추적되는 동작 테스트가 최소 하나 있어야 하며
    그 테스트는 public full profile에 등록되어야 합니다. 빈 디렉터리,

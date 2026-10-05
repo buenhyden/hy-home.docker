@@ -17,7 +17,43 @@ review_cycle: "on-source-change"
 
 # Reference: Agent Memory Hierarchy and Lifecycle
 
-## Current External Research
+## Overview
+
+### Overview
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> The workspace has one bounded current-state handoff, eight durable advisory
+> notes, and one append-preserved historical navigation file, all governed by a
+> README. Only the current handoff has typed size, section, Task-state, Git
+> ancestry, timestamp, and forbidden-material checks. Promotion, durable-note
+> retention, domain partition, eviction/deletion, and archival remain mostly
+> human procedures rather than a closed lifecycle contract.
+>
+> Measurements below were re-derived from tracked files at commit
+> `7a88efc1adbc061a121d565c7906e41591ddc3b7` (2026-08-11), which adds one
+> durable note (`ignored-sdd-scratch-deletion.md`) and a shorter `current.md`
+> relative to the Task 4 baseline `1cd9bc2830db710585348e8ef38b0318cc7f5a10`;
+> that baseline remains valid historical provenance for the earlier count. No
+> session transcript, raw interaction, ignored file, provider-private memory, or
+> secret value was read or recorded.
+>
+> A further re-measurement at repository commit
+> `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` (2026-08-14) finds the same 11
+> tracked files now totaling 2,308 lines and 1,234,111 bytes (+16 lines,
+> +1,189 bytes). `git log 7a88efc1a..ece3eda9` shows exactly two memory files
+> changed: `current.md` (replaced in place, +17 lines) and
+> `ignored-sdd-scratch-deletion.md` (a small in-place correction) — in-place
+> replacement consistent with the README's contract, not uncontrolled growth.
+> This pass also reopens the current Claude Code and Codex configuration
+> references to resolve mechanics this leaf previously described only
+> qualitatively, and surveys current external research on agent memory
+> architecture for comparison.
+>
+
+## Scope and Method
+
+### Current External Research
 
 How should short-term, long-term and domain memory preserve evidence, scope and deletion semantics across agent work?
 
@@ -94,82 +130,7 @@ A compiled wiki, a RAG index, `llms.txt` and a README serve distinct purposes;
 [m0009](m0009-llm-wiki-system.md#current-external-research) explains their relationship
 and the retired local wiki implementation.
 
-## Claims and Sources
-
-| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
-| --- | --- | --- | --- |
-| S-langchain-memory-concepts | [Memory concepts: short/long term and writes](https://docs.langchain.com/oss/python/concepts/memory) | Mutable LangGraph documentation; no package version or publication date pinned | 2026-09-27 |
-| S-code-claude-com-memory | [Memory: instructions and auto memory](https://code.claude.com/docs/en/memory#auto-memory) | Mutable Claude Code documentation; no installed version assessed | 2026-09-27 |
-| S-code-claude-com-sub-agents | [Subagents: persistent memory scope](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) | Mutable Claude Code documentation; feature behavior depends on current release | 2026-09-27 |
-| S-arxiv-minja-2503-03704 | [MINJA: query-only memory injection abstract](https://arxiv.org/abs/2503.03704) | v1 2025-03-05; displayed v5 2026-02-12; experimental research | 2026-09-27 |
-| S-owasp-llm01-prompt-injection | [LLM01:2025 indirect prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | OWASP 2025 risk guidance; living website | 2026-09-27 |
-
-| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0011-01 | Thread context and cross-thread memory are distinct; facts, experience and rules have different roles. | S-langchain-memory-concepts / short-term, long-term, writes | Not stated; mutable | 2026-09-27 | LangGraph concepts; package unpinned | Fact | Vocabulary is implementation-specific; recheck on framework/schema change. |
-| C-m0011-02 | Native memory scope/loading and compaction need product-specific verification. | S-code-claude-com-memory / auto memory; S-code-claude-com-sub-agents / enable persistent memory; m0012 | Not stated; mutable | 2026-09-27 | Claude Code current docs; no installed version | Fact plus recommendation | Defaults/features can change; neither context nor memory enforces permissions. |
-| C-m0011-03 | Portable summaries should preserve authority, omissions and links to original results. | S-langchain-memory-concepts / context management; research synthesis | Not stated; mutable | 2026-09-27 | Provider-neutral candidate handoff | Recommendation | No fidelity guarantee; evaluate omissions and receiving access before adoption. |
-| C-m0011-04 | Memory poisoning is a demonstrated research risk, not a local finding. | S-arxiv-minja-2503-03704 / abstract; S-owasp-llm01-prompt-injection / indirect injection | 2025-03-05; v5 2026-02-12; OWASP 2025 | 2026-09-27 | Experimental agents; OWASP guidance | Fact | Do not extrapolate attack rates or infer this repository is exploitable. |
-| C-m0011-05 | Promotion, provenance, expiry and deletion need owned lifecycle rules and consumer tracing. | S-langchain-memory-concepts / writes; S-owasp-llm01-prompt-injection / trust boundaries; research synthesis | Not stated; OWASP 2025 | 2026-09-27 | Candidate architecture | Recommendation | No universal TTL or backup erasure promise; policy and storage semantics must be assessed later. |
-
-## Future Internal Checks
-
-| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0011-01/02 | Document, environment × governance/security | Before enabling or migrating memory | Candidate instruction/memory scope documentation; not inspected | Who can write, read and promote each memory class? | Owner/audience map, provider/version behavior and authorized paths | Future scoped documentary and provider-feature review | Pass separate authority and write/read scopes; fail implicit cross-project access | Private memory/config access requires explicit approval | rules-engineer | Not assessed in this run |
-| C-m0011-03 | Spec/task × quality/operations | When handoff or compaction is proposed | Candidate handoff and linked original records; not inspected | Are scope conditions and failed checks preserved? | Before/after record pairs, omission log, receiving-link access and reviewer judgment | Future synthetic or sanitized handoff evaluation | Pass critical facts, negations and permission boundaries preserved; fail invented approval | Real chat export may contain protected material; use sanitized samples first | eval-engineer | Not assessed in this run |
-| C-m0011-04/05 | Environment × security/data | When retained retrieval accepts external input | Candidate memory writer/retriever; not inspected | Can a source promote itself into authority or cross an audience boundary? | Provenance chain, write policy and adversarial retrieval cases | Future isolated contamination evaluation | Pass untrusted instructions remain data and unauthorized content is filtered; fail promotion or leakage | Evaluation ingestion and protected inputs need scoped approval | security-auditor | Not assessed in this run |
-| C-m0011-05 | Document, environment × data/operations | For an expiry or deletion request | Candidate derivative graph and backup policy; not inspected | Does deletion stay effective after restore or reindex? | Consumer map, tombstone/retention rules, deletion receipt and isolated restore/reindex evidence | Future separately approved isolated restore/reindex with synthetic target | Pass revoked data remains unavailable according to policy; fail resurrection or undocumented copies | Backup access and restoration writes need explicit scoped approval | infra-implementer | Not assessed in this run |
-
-### Limits and recheck conditions
-
-No memory files, chats, provider settings, stores or retention mechanisms were
-inspected or modified. Native capability is not proof of safe configuration.
-Recheck on provider/version, audience, data sensitivity, retention policy and
-memory-write/retrieval architecture changes.
-
-## Historical workspace observations — not reassessed in this run
-
-> Historical evidence (not current authority; source: Git history):
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-## Overview
->
-> Historical evidence (not current authority; source: Git history):
->
-> The workspace has one bounded current-state handoff, eight durable advisory
-> notes, and one append-preserved historical navigation file, all governed by a
-> README. Only the current handoff has typed size, section, Task-state, Git
-> ancestry, timestamp, and forbidden-material checks. Promotion, durable-note
-> retention, domain partition, eviction/deletion, and archival remain mostly
-> human procedures rather than a closed lifecycle contract.
->
-> Measurements below were re-derived from tracked files at commit
-> `7a88efc1adbc061a121d565c7906e41591ddc3b7` (2026-08-11), which adds one
-> durable note (`ignored-sdd-scratch-deletion.md`) and a shorter `current.md`
-> relative to the Task 4 baseline `1cd9bc2830db710585348e8ef38b0318cc7f5a10`;
-> that baseline remains valid historical provenance for the earlier count. No
-> session transcript, raw interaction, ignored file, provider-private memory, or
-> secret value was read or recorded.
->
-> A further re-measurement at repository commit
-> `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c` (2026-08-14) finds the same 11
-> tracked files now totaling 2,308 lines and 1,234,111 bytes (+16 lines,
-> +1,189 bytes). `git log 7a88efc1a..ece3eda9` shows exactly two memory files
-> changed: `current.md` (replaced in place, +17 lines) and
-> `ignored-sdd-scratch-deletion.md` (a small in-place correction) — in-place
-> replacement consistent with the README's contract, not uncontrolled growth.
-> This pass also reopens the current Claude Code and Codex configuration
-> references to resolve mechanics this leaf previously described only
-> qualitatively, and surveys current external research on agent memory
-> architecture for comparison.
->
-## Purpose
+### Purpose
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -177,7 +138,8 @@ memory-write/retrieval architecture changes.
 > promotion, retrieval, retention, eviction/deletion, archival, partition,
 > privacy, size/freshness, and provider-native boundaries.
 >
-## Repository Role
+
+### Repository Role
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -192,7 +154,8 @@ memory-write/retrieval architecture changes.
 > rules belong to [canonical governance](../../../../.agents/governance/bootstrap.md).
 > This historical research does not authorize local or provider-global memory work.
 >
-## Scope
+
+### Scope
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -212,7 +175,8 @@ memory-write/retrieval architecture changes.
 > - Changing Memory files, bounds, hooks, schemas, retention, or provider settings.
 > - Claiming provider-native generation/retrieval happened in this workspace.
 >
-## Definitions / Facts
+
+### Definitions / Facts
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -511,7 +475,8 @@ memory-write/retrieval architecture changes.
 > authorization, review period, conflict resolution, and deletion evidence
 > before this process can be treated as an operating control.
 >
-## Scope Implications
+
+### Scope Implications
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -532,7 +497,116 @@ memory-write/retrieval architecture changes.
 > | `qa`           | Validate bounds, section envelope, ancestry, prohibited material, retrieval fixtures, and migration/deletion behavior.                                                                                                                                                                                                       |
 > | `security`     | Own privacy classification, redaction, deletion proof, provider-memory boundaries, and prompt-injection resistance; the 7-category forbidden-material regex set (see "Current-memory validator" above) is the only automated enforcement, and it covers `current.md` only, not durable notes or subagent-memory directories. |
 >
+
+### Scope Application
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | `workflow-supervisor` keeps Task evidence distinct from advisory memory. | Inspect Task and canonical-owner links. | No provider memory read. |
+> | architecture | applies | Architecture owner keeps durable decisions in their canonical artifact. | Review ADR/Spec ownership when approved. | No memory replaces a decision. |
+> | common | applies | `code-reviewer` checks provenance before reusable guidance is relied upon. | Review source binding. | Retrieval behavior unobserved. |
+> | docs | applies | `doc-writer` records the proposed lifecycle without creating memory policy. | Inspect this leaf and owner path. | No memory files mutated. |
+> | infra | applies | `infra-implementer` assesses storage, retention, and concrete machine-local targets before adoption. | Review an approved target-specific design. | Private stores untouched. |
+> | ops | applies | `incident-responder` keeps operational chronology in its owned record. | Inspect an incident record when applicable. | No incident memory imported. |
+> | qa | applies | `qa-engineer` would verify expiry/deletion evidence for an adopted process. | Require a typed test plan. | No lifecycle process executed. |
+> | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
+>
+
+### 2026-09-05 Revalidation
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> Current Claude documentation distinguishes project instructions, auto-memory,
+> and subagent memory scopes. Current Codex configuration also exposes optional
+> memory controls. This repository intentionally relies on Stage 00 instructions
+> and Task-owned evidence rather than claiming a provider-neutral durable
+> semantic-memory store.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Short-term context | Provider sessions plus compaction hooks | Configured | Semantic retention quality unmeasured | bounded compaction/handoff exercise |
+> | Durable evidence | Active Task records verified state and links | Repository-enforced | Evidence is not learned memory | Task schema and traceability checks |
+> | Promotion/expiry/privacy/deletion | Secret/PII boundaries exist | Defined | Cross-provider memory lifecycle is incomplete | Requirement and privacy threat model |
+>
+> Recommendation: define data class, owner, promotion trigger, retention period,
+> deletion path, and audit evidence before enabling shared durable memory.
+> Official basis: [Claude memory](https://code.claude.com/docs/en/memory) and
+> [subagent memory](https://code.claude.com/docs/en/sub-agents).
+>
+
+### Maintenance
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Rerun the tracked `wc` derivation and inspect only safe metadata when Memory
+> files, the current profile, bootstrap route, provider memory docs, or validator
+> changes. Never inspect provider-private stores merely to refresh this leaf.
+>
+
+### Related Documents
+
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Research pack navigation](README.md)
+
+## Findings
+
+### Historical workspace observations — not reassessed in this run
+
+> Historical evidence (not current authority; source: Git history):
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+## Limitations
+
+### Future Internal Checks
+
+| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0011-01/02 | Document, environment × governance/security | Before enabling or migrating memory | Candidate instruction/memory scope documentation; not inspected | Who can write, read and promote each memory class? | Owner/audience map, provider/version behavior and authorized paths | Future scoped documentary and provider-feature review | Pass separate authority and write/read scopes; fail implicit cross-project access | Private memory/config access requires explicit approval | rules-engineer | Not assessed in this run |
+| C-m0011-03 | Spec/task × quality/operations | When handoff or compaction is proposed | Candidate handoff and linked original records; not inspected | Are scope conditions and failed checks preserved? | Before/after record pairs, omission log, receiving-link access and reviewer judgment | Future synthetic or sanitized handoff evaluation | Pass critical facts, negations and permission boundaries preserved; fail invented approval | Real chat export may contain protected material; use sanitized samples first | eval-engineer | Not assessed in this run |
+| C-m0011-04/05 | Environment × security/data | When retained retrieval accepts external input | Candidate memory writer/retriever; not inspected | Can a source promote itself into authority or cross an audience boundary? | Provenance chain, write policy and adversarial retrieval cases | Future isolated contamination evaluation | Pass untrusted instructions remain data and unauthorized content is filtered; fail promotion or leakage | Evaluation ingestion and protected inputs need scoped approval | security-auditor | Not assessed in this run |
+| C-m0011-05 | Document, environment × data/operations | For an expiry or deletion request | Candidate derivative graph and backup policy; not inspected | Does deletion stay effective after restore or reindex? | Consumer map, tombstone/retention rules, deletion receipt and isolated restore/reindex evidence | Future separately approved isolated restore/reindex with synthetic target | Pass revoked data remains unavailable according to policy; fail resurrection or undocumented copies | Backup access and restoration writes need explicit scoped approval | infra-implementer | Not assessed in this run |
+
+### Limits and recheck conditions
+
+No memory files, chats, provider settings, stores or retention mechanisms were
+inspected or modified. Native capability is not proof of safe configuration.
+Recheck on provider/version, audience, data sensitivity, retention policy and
+memory-write/retrieval architecture changes.
+
 ## Sources
+
+### Claims and Sources
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-langchain-memory-concepts | [Memory concepts: short/long term and writes](https://docs.langchain.com/oss/python/concepts/memory) | Mutable LangGraph documentation; no package version or publication date pinned | 2026-09-27 |
+| S-code-claude-com-memory | [Memory: instructions and auto memory](https://code.claude.com/docs/en/memory#auto-memory) | Mutable Claude Code documentation; no installed version assessed | 2026-09-27 |
+| S-code-claude-com-sub-agents | [Subagents: persistent memory scope](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) | Mutable Claude Code documentation; feature behavior depends on current release | 2026-09-27 |
+| S-arxiv-minja-2503-03704 | [MINJA: query-only memory injection abstract](https://arxiv.org/abs/2503.03704) | v1 2025-03-05; displayed v5 2026-02-12; experimental research | 2026-09-27 |
+| S-owasp-llm01-prompt-injection | [LLM01:2025 indirect prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | OWASP 2025 risk guidance; living website | 2026-09-27 |
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0011-01 | Thread context and cross-thread memory are distinct; facts, experience and rules have different roles. | S-langchain-memory-concepts / short-term, long-term, writes | Not stated; mutable | 2026-09-27 | LangGraph concepts; package unpinned | Fact | Vocabulary is implementation-specific; recheck on framework/schema change. |
+| C-m0011-02 | Native memory scope/loading and compaction need product-specific verification. | S-code-claude-com-memory / auto memory; S-code-claude-com-sub-agents / enable persistent memory; m0012 | Not stated; mutable | 2026-09-27 | Claude Code current docs; no installed version | Fact plus recommendation | Defaults/features can change; neither context nor memory enforces permissions. |
+| C-m0011-03 | Portable summaries should preserve authority, omissions and links to original results. | S-langchain-memory-concepts / context management; research synthesis | Not stated; mutable | 2026-09-27 | Provider-neutral candidate handoff | Recommendation | No fidelity guarantee; evaluate omissions and receiving access before adoption. |
+| C-m0011-04 | Memory poisoning is a demonstrated research risk, not a local finding. | S-arxiv-minja-2503-03704 / abstract; S-owasp-llm01-prompt-injection / indirect injection | 2025-03-05; v5 2026-02-12; OWASP 2025 | 2026-09-27 | Experimental agents; OWASP guidance | Fact | Do not extrapolate attack rates or infer this repository is exploitable. |
+| C-m0011-05 | Promotion, provenance, expiry and deletion need owned lifecycle rules and consumer tracing. | S-langchain-memory-concepts / writes; S-owasp-llm01-prompt-injection / trust boundaries; research synthesis | Not stated; OWASP 2025 | 2026-09-27 | Candidate architecture | Recommendation | No universal TTL or backup erasure promise; policy and storage semantics must be assessed later. |
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -555,58 +629,3 @@ memory-write/retrieval architecture changes.
 > | [Memory in the Age of AI Agents: a Survey (paper list)](https://github.com/Shichun-Liu/Agent-Memory-Paper-List) | 2026-08-14                | External mutable         | Curated paper index; source for the 5-mechanism-family comparison, not adopted as policy.                                          |
 > | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
 >
-## Scope Application
->
-> Historical evidence (not current authority; source: Git history):
->
-> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-> | --- | --- | --- | --- | --- |
-> | agentic | applies | `workflow-supervisor` keeps Task evidence distinct from advisory memory. | Inspect Task and canonical-owner links. | No provider memory read. |
-> | architecture | applies | Architecture owner keeps durable decisions in their canonical artifact. | Review ADR/Spec ownership when approved. | No memory replaces a decision. |
-> | common | applies | `code-reviewer` checks provenance before reusable guidance is relied upon. | Review source binding. | Retrieval behavior unobserved. |
-> | docs | applies | `doc-writer` records the proposed lifecycle without creating memory policy. | Inspect this leaf and owner path. | No memory files mutated. |
-> | infra | applies | `infra-implementer` assesses storage, retention, and concrete machine-local targets before adoption. | Review an approved target-specific design. | Private stores untouched. |
-> | ops | applies | `incident-responder` keeps operational chronology in its owned record. | Inspect an incident record when applicable. | No incident memory imported. |
-> | qa | applies | `qa-engineer` would verify expiry/deletion evidence for an adopted process. | Require a typed test plan. | No lifecycle process executed. |
-> | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
->
-## 2026-09-05 Revalidation
->
-> Historical evidence (not current authority; source: Git history):
->
-> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-> Current Claude documentation distinguishes project instructions, auto-memory,
-> and subagent memory scopes. Current Codex configuration also exposes optional
-> memory controls. This repository intentionally relies on Stage 00 instructions
-> and Task-owned evidence rather than claiming a provider-neutral durable
-> semantic-memory store.
->
-> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
-> | --- | --- | --- | --- | --- |
-> | Short-term context | Provider sessions plus compaction hooks | Configured | Semantic retention quality unmeasured | bounded compaction/handoff exercise |
-> | Durable evidence | Active Task records verified state and links | Repository-enforced | Evidence is not learned memory | Task schema and traceability checks |
-> | Promotion/expiry/privacy/deletion | Secret/PII boundaries exist | Defined | Cross-provider memory lifecycle is incomplete | Requirement and privacy threat model |
->
-> Recommendation: define data class, owner, promotion trigger, retention period,
-> deletion path, and audit evidence before enabling shared durable memory.
-> Official basis: [Claude memory](https://code.claude.com/docs/en/memory) and
-> [subagent memory](https://code.claude.com/docs/en/sub-agents).
->
-## Maintenance
->
-> Historical evidence (not current authority; source: Git history):
->
-> Rerun the tracked `wc` derivation and inspect only safe metadata when Memory
-> files, the current profile, bootstrap route, provider memory docs, or validator
-> changes. Never inspect provider-private stores merely to refresh this leaf.
->
-
-## Related Documents
-
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-- [Research pack navigation](README.md)

@@ -1,10 +1,10 @@
 ---
 title: "개발 Valkey"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-02"
 ---
 
@@ -74,7 +74,7 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 
 아래 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
 
-## How to Work in This Area
+## Usage
 
 합성 비밀값을 쓰는 집중 검사는 저장소 루트에서 다음과 같이 실행합니다.
 

@@ -7,13 +7,22 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0002"
-parent_ids: []
 created: "2026-06-04"
 ---
 
 # Developer Environment Operations
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 이 가이드는 개발자·운영자·AI Agent가 로컬 작업 환경과 검증 범위를 구분하도록
 돕는다. 저장소 checkout이 있다고 HOME 서비스 운영이나 credential 접근 권한이
@@ -57,7 +66,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 전달하고 CA private key는 복사하거나 출력하지 않는다. 기존 인증서를 보존한
 상태에서 [Traefik Runbook](../runbooks/0013-traefik.md)으로 교체·검증을 넘긴다.
 
-## Common Checks
+### Common Checks
 
 저장소 README와 대상 package README에서 필요한 도구·입력을 확인한다.
 [RUN-0086의 공개 구성 검증](../runbooks/0086-dependency-version-management.md#static-configuration-validation)은
@@ -65,7 +74,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 이 검사 성공은 실제 credential, host trust, 서비스 health나 복구 성공이 아니다.
 도구 또는 승인된 입력이 없으면 실패 원인과 `BLOCKED`/`NOT_RUN`을 기록한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 이 비서비스 주제에는 별도 서비스 Runbook을 만들지 않는다. 반복 검증은
 [하네스 Runbook](../runbooks/0004-harness-agent-first-engineering.md), 설정 반영은
@@ -73,7 +82,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 [RUN-0013](../runbooks/0013-traefik.md)이 소유한다. 알 수 없는 대상·권한·기존 값의
 변경이 필요하면 중단하고 @buenhyden에게 값 없는 증거로 전달한다.
 
-## Traceability
+### Traceability
 
 - 이 주제에는 같은 번호의 Policy/Runbook이 없다.
 - [환경·승인 경계](../../../.agents/governance/environment-constraints.md)

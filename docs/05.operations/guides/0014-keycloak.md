@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # 02-Auth Keycloak Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Implementation Sources
 
@@ -131,13 +141,13 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 - CA trust가 깨져 OAuth2 Proxy가 issuer/JWKS를 가져오지 못하는 경우
 - OpenBao native OIDC 검증 성공을 다른 client의 login 검증으로 확대하는 경우
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0014-keycloak.md)을 따른다.
 
@@ -148,7 +158,7 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 [POL-0021](../policies/0021-backup-and-restore.md)의 Keycloak 파일 보존과 DB
 백업 기준을 함께 적용하며 기존 2026-09-20 미실행 복구 한계는 그대로다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [02-Auth Keycloak Operations Policy](../policies/0014-keycloak.md) (`POL-0014`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)

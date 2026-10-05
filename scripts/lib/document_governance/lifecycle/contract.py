@@ -2302,7 +2302,7 @@ def _partition_plan_findings(
             _finding(
                 source,
                 "manifest-partition-plan-status-invalid",
-                "partition plan must have active or completed approval status",
+                "partition plan must have active or completed lifecycle status",
             )
         ]
     if row.review_verdict != ReviewVerdict("pass", "pass"):

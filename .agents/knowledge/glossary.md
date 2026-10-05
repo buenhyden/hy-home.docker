@@ -1,10 +1,10 @@
 ---
 title: "Repository Vocabulary"
 version: "0.3.0"
-type: "governance/knowledge"
+type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-10-05"
 created: "2026-09-06"
 observed_at: "2026-09-08"
 review_cycle: "on-contract-change"
@@ -25,7 +25,9 @@ workflow contract, and validator output. Excluded: general software terms used
 in their ordinary sense, and vendor product terminology owned by the Provider
 Registry.
 
-## Document and Lifecycle Terms
+## Rules
+
+### Document and Lifecycle Terms
 
 | Term | Meaning here | Rule owner |
 | --- | --- | --- |
@@ -41,7 +43,7 @@ Registry.
 | Supersession | Replacing an accepted decision through a reciprocal lineage, not by rewriting it | [documentation protocol](../governance/documentation-protocol.md) |
 | Promotion receipt | The Task section connecting each acceptance criterion to its durable Stage 01, 02, or 05 owner | [SDLC](../governance/sdlc.md) |
 
-## Governance and Provider Terms
+### Governance and Provider Terms
 
 | Term | Meaning here | Rule owner |
 | --- | --- | --- |
@@ -55,7 +57,7 @@ Registry.
 | Explicit invocation | A skill runs only when named; discovery alone never selects or empowers it | [agentic policy](../governance/agentic.md) |
 | Fail closed | An unknown or unsafe input is preserved and reported, never auto-deleted or auto-approved | [agentic policy](../governance/agentic.md) |
 
-## Verification Terms
+### Verification Terms
 
 | Term | Meaning here | Rule owner |
 | --- | --- | --- |
@@ -81,7 +83,9 @@ Registry.
 | Controlled wrapper | The single approved all-files pre-commit route; direct `pre-commit run` is prohibited | [quality standards](../governance/quality-standards.md#4-execution-boundary) |
 | Generated-artifact freshness | A generated output must be reproduced by its generator, never hand-edited to pass | [quality standards](../governance/quality-standards.md) |
 
-## Evidence Classes
+## Evidence
+
+### Evidence Classes
 
 These are not interchangeable. A claim carries the weakest class that supports it.
 
@@ -96,7 +100,7 @@ These are not interchangeable. A claim carries the weakest class that supports i
 | Unverified entitlement | Account access to a model or feature was not confirmed |
 | Unverified remote | Hosted CI, branch protection, or deployed state was not observed |
 
-## Provenance
+### Provenance
 
 Compiled from tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06: canonical governance
@@ -111,7 +115,7 @@ The Retention class, Route disposition, and Tombstone rows were re-read from the
 documentation protocol's Stage 98 dispositions section on 2026-09-15, in the
 change that added that section.
 
-## Refresh Triggers
+### Refresh Triggers
 
 - A governance policy introduces or retires a term.
 - A Stage 99 lifecycle, profile, or identity relation changes.

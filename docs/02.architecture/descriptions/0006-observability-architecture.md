@@ -13,9 +13,15 @@ created: "2026-03-26"
 ---
 # Observability Architecture Description
 
-> Integrated Telemetry Pipeline with LGTM Stack and Grafana Alloy.
+## Overview
 
-## Context and Stakeholders
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the reference architecture of `06-observability`, the observability layer of the `hy-home.docker` platform. To secure cloud-level observability in a local environment, it integrates the currently implemented LGTM stack (Loki, Grafana, Tempo, Prometheus) with Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, and Pyroscope.
 
@@ -25,7 +31,7 @@ Requirement owners, implementers, and operators share the concerns recorded in t
 
 The Observability tier collects, stores, and visualizes status information across the system, and accelerates problem resolution through correlation analysis during incidents. The current compose provides OTLP trace ingress, Docker log discovery, and Prometheus scrape/remote-write paths, and Loki/Tempo use SeaweedFS-based S3 backend storage.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
@@ -46,19 +52,15 @@ This section preserves the system boundaries, consumption relationships, non-goa
 - **Non-goals**:
   - Dependency on external cloud monitoring vendors (fully self-hosted orientation)
 
-## Quality Attributes
+### Traceability
 
-### Quality Scenarios
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+## Architecture
 
-- **Performance**: Minimizes application overhead through asynchronous data processing via Alloy.
-- **Security**: Applies role-based access control (RBAC) based on Keycloak OIDC.
-- **Reliability**: A recovery boundary that covers Loki/Tempo's SeaweedFS object blocks together with each service's local WAL/working state.
-- **Scalability**: For Prometheus, the local TSDB is currently the durable authority; enabling the remote-write receiver alone does not imply an external long-term store.
-- **Observability**: Includes a self-monitoring dashboard.
+### Architecture
 
-## Components
+### Components
 
 ### Viewpoints and Views
 
@@ -66,7 +68,7 @@ This section uses the context, component, or deployment representation as the vi
 
 In the current source, Docker logs and OTLP traces pass through **Grafana Alloy** to Loki/Tempo, and Prometheus scrapes exporters/services directly. Prometheus scrapes Alloy self-metrics directly; the former Alloy self-remote-write loop is absent. Alloy declares pprof sources forwarding to Pyroscope, but successful end-to-end collection still needs runtime evidence. Users query each datasource in **Grafana**.
 
-## Data Flow
+### Data Flow
 
 ### Data and Control Flows
 
@@ -84,7 +86,7 @@ Data and control flows include only the interactions specified in this section a
   - Profiles: Pyroscope local filesystem backend
 - **Data Boundaries**: Scrapes and datasource queries use `obs_net`; object storage uses `object_net` and UI routes use `edge_net`. Approved Kubernetes LAN ingress/query exceptions remain governed by POL-0096; tier placement does not imply network-only isolation.
 
-## Deployment View
+### Deployment View
 
 - **Runtime / Platform**: Container orchestration based on Docker Compose v2.x.
 - **Deployment Model**: `prometheus`, `grafana`, `loki`, `alloy`, `tempo`,
@@ -97,9 +99,17 @@ Data and control flows include only the interactions specified in this section a
 - **Optional inspection:** `infra/06-observability/dozzle/docker-compose.yml` remains a separate leaf selected by `admin`/`admin-logs`; native OIDC, CIDR controls, socket visibility and settings persistence stay unchanged.
 - **Operational Evidence**: Grafana provisioning files, root compose profile validation, service-local compose validation with root network/secret context, and hardening script output.
 
-## Traceability
+## Quality Attributes
 
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+### Quality Scenarios
+
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+
+- **Performance**: Minimizes application overhead through asynchronous data processing via Alloy.
+- **Security**: Applies role-based access control (RBAC) based on Keycloak OIDC.
+- **Reliability**: A recovery boundary that covers Loki/Tempo's SeaweedFS object blocks together with each service's local WAL/working state.
+- **Scalability**: For Prometheus, the local TSDB is currently the durable authority; enabling the remote-write receiver alone does not imply an external long-term store.
+- **Observability**: Includes a self-monitoring dashboard.
 
 ## Related Documents
 

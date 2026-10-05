@@ -7,7 +7,6 @@ owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "references"
 artifact_id: "{{ARTIFACT_ID}}"
-parent_ids: []
 created: "{{CREATED}}"
 observed_at: "{{OBSERVED_AT}}"
 ---
@@ -17,7 +16,7 @@ observed_at: "{{OBSERVED_AT}}"
 
 # {{TITLE}}
 
-## Question
+## Overview
 
 {{RESEARCH_QUESTION}}
 
@@ -25,26 +24,32 @@ observed_at: "{{OBSERVED_AT}}"
 
 {{SCOPE}}
 
-## Method
+### Method
 
 {{METHOD}}
 
-## Findings
+### Limitations
 
-{{FINDINGS}}
+{{LIMITATIONS}}
+
+## Structure
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{RESEARCH_MEMBER_PURPOSE}} |
+
+## Usage
+
+{{IMPLICATIONS}}
+
+## Related Documents
+
+{{CURRENT_AUTHORITY_LINKS}}
 
 ## Sources
 
 {{PRIMARY_SOURCES}}
 
-## Implications
+## Findings
 
-{{IMPLICATIONS}}
-
-## Traceability
-
-{{CURRENT_AUTHORITY_LINKS}}
-
-## Limitations
-
-{{LIMITATIONS}}
+{{FINDINGS}}

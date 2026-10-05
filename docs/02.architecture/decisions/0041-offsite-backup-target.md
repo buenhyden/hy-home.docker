@@ -45,7 +45,25 @@ The state repository is bounded by the `BACKUP_STATE_MAX_GIB` budget of 5 GiB
 cap**. pgBackRest self-shrinks via `repo1-retention-full=2`, but Restic keeps
 growing until an approved `forget-prune`.
 
-## Decision Drivers
+### Follow-up
+
+- Implement the R2 offsite copy and record in Task 0003 the evidence that the
+  owner prepared the bucket, token, and first `restic init`.
+- If [ADR-0042](0042-openbao-unseal-method.md) chooses a cloud KMS, decide
+  together whether to use the same provider account.
+
+### Official references
+
+- [Restic repository backends](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
+  and [copying snapshots between repositories](https://restic.readthedocs.io/en/stable/045_working_with_repos.html)
+- [pgBackRest multiple repositories and S3](https://pgbackrest.org/user-guide.html)
+- [rest-server append-only mode](https://github.com/restic/rest-server)
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 - Recovery must be possible even if the host is lost (the gap in POL-0021
   control 1).
@@ -59,7 +77,28 @@ growing until an approved `forget-prune`.
   timer, minimal manual procedure).
 - The remote copy must not be deletable by ransomware or mistake.
 
-## Options Considered
+### Decision
+
+Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
+
+- Place a single remote Restic repository in an R2 bucket, and upload state
+  and host snapshots with `restic copy` after the local backup and `check`.
+  The 5 GiB cap fits inside the free tier (10 GB) and free egress.
+- pgBackRest starts by loading its repository directory into the remote
+  Restic (day-level remote RPO, no egress or keys on `mng-pg`). If WAL-level
+  RPO becomes necessary remotely too, a new decision opens to move to
+  `repo2-type=s3`.
+- Enable lock (retention rules) on the bucket, and scope this host's token to
+  that bucket only. Remote `forget-prune` is kept as a separate manual
+  procedure.
+- Store R2 credentials only as a file under `secrets/backup/` (0600, injected
+  as a Docker Secret) plus an offline copy; do not store them in OpenBao.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
 
 Costs are **order-of-magnitude estimates** based on public list prices and
 are reconfirmed at decision time.
@@ -156,23 +195,6 @@ repository via `repo2-type=s3` (and `gcs`, `azure`, `sftp`).
 - **Bad**: The state where host loss loses everything remains. SPEC-0182
   criterion 10 requires an owner and a trigger or date when deferring.
 
-## Decision
-
-Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
-
-- Place a single remote Restic repository in an R2 bucket, and upload state
-  and host snapshots with `restic copy` after the local backup and `check`.
-  The 5 GiB cap fits inside the free tier (10 GB) and free egress.
-- pgBackRest starts by loading its repository directory into the remote
-  Restic (day-level remote RPO, no egress or keys on `mng-pg`). If WAL-level
-  RPO becomes necessary remotely too, a new decision opens to move to
-  `repo2-type=s3`.
-- Enable lock (retention rules) on the bucket, and scope this host's token to
-  that bucket only. Remote `forget-prune` is kept as a separate manual
-  procedure.
-- Store R2 credentials only as a file under `secrets/backup/` (0600, injected
-  as a Docker Secret) plus an offline copy; do not store them in OpenBao.
-
 ## Consequences
 
 - **If (b) is chosen**:
@@ -192,7 +214,9 @@ Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
 - **If (d) is chosen**: The risk is accepted as-is, and this ADR reopens when
   a trigger arrives.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - Parent: [AD-0004 Data Architecture](../descriptions/0004-data-architecture.md)
 - Spec: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md) criterion 10, Plan W10,
@@ -204,17 +228,3 @@ Use **(b) S3-compatible cloud, Cloudflare R2** (owner decision, 2026-09-25).
   [pgBackRest configuration](../../../infra/04-data/mng-db/pg/backup/pgbackrest.conf)
 - Size basis: the `repository sizes` line of `journalctl -u hyhome-backup.service`
   (2026-09-23 to 25).
-
-## Follow-up
-
-- Implement the R2 offsite copy and record in Task 0003 the evidence that the
-  owner prepared the bucket, token, and first `restic init`.
-- If [ADR-0042](0042-openbao-unseal-method.md) chooses a cloud KMS, decide
-  together whether to use the same provider account.
-
-### Official references
-
-- [Restic repository backends](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
-  and [copying snapshots between repositories](https://restic.readthedocs.io/en/stable/045_working_with_repos.html)
-- [pgBackRest multiple repositories and S3](https://pgbackrest.org/user-guide.html)
-- [rest-server append-only mode](https://github.com/restic/rest-server)

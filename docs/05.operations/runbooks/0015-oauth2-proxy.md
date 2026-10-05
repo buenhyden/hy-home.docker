@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, CA/issuer/callback 불일치, Redis/Valkey session 장애, logout 경계 혼동, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
 > Scope: OAuth2 Proxy ForwardAuth Recovery
@@ -26,7 +34,7 @@ created: "2026-05-17"
 - degraded-mode 수행/종료를 통제한다.
 - config lint 실패 시 안전하게 롤백한다.
 
-## When to Use
+### When to Use
 
 - 로그인 루프(무한 redirect)
 - OIDC issuer 접근 실패
@@ -38,6 +46,8 @@ created: "2026-05-17"
 - compose/config 변경 후 런타임 부팅 실패
 
 ## Procedure
+
+### Procedure
 
 ### Target, approval and safe evidence
 
@@ -170,7 +180,9 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
 전달 방식 수정은 별도 구현 변경으로 검토한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
@@ -192,7 +204,9 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
 이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이미지 upgrade는 [RUN-0086](0086-dependency-version-management.md)을 따라 release와
 설정 변경을 검토한 뒤 격리된 issuer discovery, PKCE callback, ready, ForwardAuth
@@ -207,11 +221,11 @@ cookie/client secret을 노출하지 않는다. cookie secret이 바뀌었다면
 명시적으로 무효화하고 새 Keycloak login을 test한다. session-loss 복구와 upgrade
 rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [02-Auth OAuth2 Proxy Usage Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)

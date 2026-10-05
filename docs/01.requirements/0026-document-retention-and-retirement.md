@@ -7,13 +7,16 @@ owner: "@buenhyden"
 updated: "2026-09-28"
 layer: "requirements"
 artifact_id: "REQ-0026"
-parent_ids: []
 created: "2026-09-01"
 ---
 
 # Document Retention and Retirement Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 Retention rules must outlive the change that introduced them. A document remains
 current while it owns current meaning; when it leaves, readers must still find
@@ -21,13 +24,11 @@ what existed, why it left, its current owner, and recoverable source evidence.
 Capture facts, current assessment, and availability are distinct. Age, corpus
 size, and absent incoming links cannot by themselves authorize deletion.
 
-## Stakeholders and User Needs
+## Requirements
 
-- Maintainers need durable retention and review criteria independent of old Tasks.
-- Agents need enforceable lifecycle, approval, preservation, and citation boundaries.
-- Auditors need discoverable provenance and the original context of decisions.
+### Requirements
 
-## Functional Requirements
+### Functional Requirements
 
 - **REQ-0026-FR-0001**: Retention uses lifecycle and ownership. Age and corpus
   size may trigger review but never determine automatic removal.
@@ -113,7 +114,7 @@ size, and absent incoming links cannot by themselves authorize deletion.
   `resolved_at` value. Its bundle and corrective-work owner preserve closure
   evidence without claiming all corrective work is complete.
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 - **REQ-0026-NFR-0006**: Checks derive judgments from the selected tree,
   Registry, catalog, and preservation history. Fixed corpus counts and custom
@@ -122,25 +123,6 @@ size, and absent incoming links cannot by themselves authorize deletion.
 - **REQ-0026-NFR-0007**: One preservation unit has one capture record, not one
   record per package member. Resource bounds protect validation, never justify
   deleting records to satisfy a limit.
-
-## Constraints
-
-- The exact-preservation cutover is the registered baseline
-  `be949f338056ee05ca139ea72403576aa18f21d8`; captures already present there retain
-  legacy comparison. The named ADR-0036 bootstrap exception permits only its
-  registered metadata transition. All other new captures use prepared full-byte
-  originals. Do not invent source commits without commit authorization.
-- Packages captured while ADR-0031 was accepted may historically contain only
-  their Spec. Preserve that scope; do not manufacture missing members.
-- Keep sealed Tombstones and Migrations in their original form. Assessment does
-  not change capture disposition, source envelope, or original terminal status.
-- Distinguish worktree, index, target commit, and original-link context. Missing
-  objects, unsupported object formats, gitlinks, and external large-object
-  recovery are explicit verification limits. Do not fetch or execute filters
-  merely to conceal a limit.
-- Restore history into a separately explained current owner; do not silently
-  recreate a removed frozen unit as current authority. Secret exposure requires
-  separately authorized security response, not ordinary archive removal.
 
 ## Acceptance Criteria
 
@@ -162,7 +144,36 @@ size, and absent incoming links cannot by themselves authorize deletion.
 - Current metadata, lifecycle, catalog, link, and affected regression checks
   pass on the explicitly selected snapshot; unavailable checks are reported.
 
-## Traceability
+## Scope
+
+### Scope
+
+### Stakeholders and User Needs
+
+- Maintainers need durable retention and review criteria independent of old Tasks.
+- Agents need enforceable lifecycle, approval, preservation, and citation boundaries.
+- Auditors need discoverable provenance and the original context of decisions.
+
+### Constraints
+
+- The exact-preservation cutover is the registered baseline
+  `be949f338056ee05ca139ea72403576aa18f21d8`; captures already present there retain
+  legacy comparison. The named ADR-0036 bootstrap exception permits only its
+  registered metadata transition. All other new captures use prepared full-byte
+  originals. Do not invent source commits without commit authorization.
+- Packages captured while ADR-0031 was accepted may historically contain only
+  their Spec. Preserve that scope; do not manufacture missing members.
+- Keep sealed Tombstones and Migrations in their original form. Assessment does
+  not change capture disposition, source envelope, or original terminal status.
+- Distinguish worktree, index, target commit, and original-link context. Missing
+  objects, unsupported object formats, gitlinks, and external large-object
+  recovery are explicit verification limits. Do not fetch or execute filters
+  merely to conceal a limit.
+- Restore history into a separately explained current owner; do not silently
+  recreate a removed frozen unit as current authority. Secret exposure requires
+  separately authorized security response, not ordinary archive removal.
+
+### Traceability
 
 - [Documentation protocol](../../.agents/governance/documentation-protocol.md)
 - [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)

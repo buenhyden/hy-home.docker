@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication)"
 version: "1.1.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -29,7 +29,7 @@ created: "2025-11-12"
 | [stalwart/](stalwart/README.md) | `mail-server` | [0070-mail — 문서 인덱스](../../docs/README.md) (`GDE-0070`): 내부 전용 메일, host port·relay 없음 |
 | [Mailpit — Quality](../11-quality/mailpit/README.md) | `dev`, `local`, `mail-dev` | [0084-mailpit — 문서 인덱스](../../docs/README.md) (`GDE-0084`): 개발 캡처 |
 
-## How to Work in This Area
+## Usage
 
 1. 개발 SMTP는 Mailpit을 사용하고 외부 배달 경로와 분리한다.
 2. Stalwart의 허용 용도는 내부 메일 제출이다. 현재 `edge_net` peer 접근도 가능한 선언이므로 `mail_net` 전용 통제가 완성됐다고 보지 않는다. 외부 송수신은 DNS·평판을 포함한 새 요구사항이 필요하다.

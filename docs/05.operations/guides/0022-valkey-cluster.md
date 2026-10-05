@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # Valkey Cluster Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 이 package는 optional한 six-node Valkey Cluster laboratory를 설명한다. 모든
 node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로
@@ -109,13 +119,13 @@ BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유�
 - [Valkey security](https://valkey.io/topics/security/)
 - [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
 
-## Common Checks
+### Common Checks
 
 정확한 LAB profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를 확인한다.
 static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0022`; governing policy: `POL-0022`.
 - Runtime authority: `labs/valkey-cluster.yml`.

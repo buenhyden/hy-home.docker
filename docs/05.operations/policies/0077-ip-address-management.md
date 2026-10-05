@@ -17,16 +17,27 @@ created: "2026-04-01"
 
 ## Overview
 
+### Overview
+
 이 문서는 `hy-home.docker` 시스템의 Docker network 소속과 주소 할당 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 이 정책은 repository가 root Compose에서 소유하는 모든 network의 소속과 주소 할당 방식을 관할한다.
 
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Environments**: 현재 HOME/DEV와 명시적으로 선택한 OPTIONAL/LAB 환경. 미래 production을 검증된 대상으로 간주하지 않는다.
 
-## Controls
+### Traceability
+
+- 상위 문서: [Compose Network Segmentation Architecture Description](../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+- 같은 주제: [Guide](../guides/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../runbooks/0077-ip-address-management.md) (`RUN-0077`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
@@ -42,12 +53,7 @@ created: "2026-04-01"
   - 사용하지 않는 peer를 위한 network 연결.
   - 외부망 주소와의 브릿징 설정 수동 수정.
 
-## Exceptions
-
-현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
-별도 LAN endpoint 연동은 [POL-0096](0096-k8s-integration.md)의 기존 경계를 따른다.
-
-## Verification
+### Verification
 
 - `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
 - 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
@@ -61,17 +67,19 @@ created: "2026-04-01"
 중복은 별도로 검토한다. 이 구현 한계는 중복 금지 통제를 면제하지 않는다.
 검사 입력·임시 파일 효과는 [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)을 따른다.
 
-## Review Cadence
+### Review Cadence
 
 책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
 
 - **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
 - **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
 
-## Traceability
+## Exceptions
 
-- 상위 문서: [Compose Network Segmentation Architecture Description](../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- 같은 주제: [Guide](../guides/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../runbooks/0077-ip-address-management.md) (`RUN-0077`)
+### Exceptions
+
+현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
+별도 LAN endpoint 연동은 [POL-0096](0096-k8s-integration.md)의 기존 경계를 따른다.
 
 ## Related Documents
 

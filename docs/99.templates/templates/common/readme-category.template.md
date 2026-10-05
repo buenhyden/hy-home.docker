@@ -1,8 +1,8 @@
 ---
 title: "{{TITLE}}"
 version: "0.1.0"
-type: "reference/category-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "references"
@@ -19,15 +19,23 @@ layer: "references"
 
 {{AUTHORITY_BOUNDARY}}
 
-## Packages
+## Scope
 
-| Stable ID | Package | Status |
-| :--- | :--- | :--- |
-| {{PACKAGE_ID}} | {{PACKAGE_TITLE}} | {{PACKAGE_STATUS}} |
+{{SCOPE}}
 
-## Authoring
+## Structure
 
-{{AUTHORING_RULES}}
+{{STRUCTURE}}
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
+## Usage
+
+{{USAGE}}
 
 ## Related Documents
 

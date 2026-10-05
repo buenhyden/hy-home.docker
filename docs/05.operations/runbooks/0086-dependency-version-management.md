@@ -14,7 +14,15 @@ created: "2026-09-19"
 
 # Dependency Version Management Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 소스 이미지·빌드 의존성·updater 정책·파생 버전 projection 또는 단일 파일 config를
 변경할 때 사용한다. 저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
@@ -22,6 +30,8 @@ created: "2026-09-19"
 입력·Docker 작업이 필요한 단계는 대상 checkout/context와 별도 승인을 확인한다.
 
 ## Procedure
+
+### Procedure
 
 ### Source and updater changes
 
@@ -119,13 +129,17 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 있을 때만 사용하며 read-only 조회로 분류하지 않는다. helper 승인이나 읽기 경로가
 없으면 검증 미완료를 보존한다. 이는 script 수정이나 runtime 검증 성공 선언이 아니다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 명령·종료 코드·source commit·updater/validator 버전·선택과 coverage, 예상 결과와
 실패/중단을 현재 Task에 기록한다. private 값·원문 환경·raw log를 남기지 않는다.
 local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 미실행은 명시한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 source와 derived registry를 함께 이전 승인 상태로 되돌리고 검사한다. runtime
 config rollback은 기존 승인된 구성의 재반영·hash·기능 확인까지 필요하다.
@@ -133,13 +147,13 @@ Git rollback은 database 파일이나 migration을 downgrade하지 않는다. �
 호환 image와 보호된 backup을 유지하며 data restore는 서비스 소유의 격리된
 복구 절차와 별도 승인으로만 수행한다.
 
-## Escalation
+### Escalation
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류,
 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단하고
 @buenhyden에게 전달한다. gate를 우회하거나 force push하지 않는다.
 
-## Traceability
+### Traceability
 
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Guide](../guides/0086-dependency-version-management.md), [Policy](../policies/0086-dependency-version-management.md)

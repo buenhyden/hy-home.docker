@@ -2,7 +2,7 @@
 title: "{{TITLE}}"
 version: "0.1.0"
 type: "common/readme"
-status: "draft"
+status: "active"
 owner: "{{OWNER}}"
 updated: "{{UPDATED}}"
 layer: "{{LAYER}}"
@@ -17,19 +17,25 @@ layer: "{{LAYER}}"
 
 {{OVERVIEW}}
 
-## Audience
-
-{{AUDIENCE}}
-
 ## Scope
 
 {{SCOPE}}
+
+### Audience
+
+{{AUDIENCE}}
 
 ## Structure
 
 {{STRUCTURE}}
 
-## How to Work in This Area
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
+## Usage
 
 {{WORK_INSTRUCTIONS}}
 

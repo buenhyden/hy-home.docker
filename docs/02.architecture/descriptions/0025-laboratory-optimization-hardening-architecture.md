@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # Administration and Experimentation Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 administration and experimentation capabilities across Data, Observability, AI and Analytics. Existing source-specific authentication remains authoritative: RedisInsight ForwardAuth, Dozzle native OIDC, and Open Notebook password-file authentication with gateway CIDR controls. These exceptions predate relocation (POL-0073); the move grants no new authentication exemption. CI checks source drift, not live access acceptance.
@@ -32,7 +40,7 @@ high-privilege UIs.
 - Data Admin UI: redisinsight
 - Local notebook lab: open-notebook, surrealdb
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -56,6 +64,59 @@ non-goals, and constraints already recorded in the current document.
   - promoting an experimental service to the production workload tier
   - a full replatform of the management tools
 
+### Traceability
+
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+
+## Architecture
+
+### Architecture
+
+### Components
+
+### Viewpoints and Views
+
+The context, component, or deployment representation in this section serves
+as the view for that concern.
+
+- **Ingress path**:
+  - Operator -> Traefik(websecure) -> dozzle/redisinsight/open-notebook
+- **Control path**:
+  - dozzle -> Docker socket
+  - redisinsight -> valkey/redis endpoints
+  - open-notebook -> surrealdb
+
+### Data Flow
+
+### Data and Control Flows
+
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
+
+This hardening Architecture Description does not introduce production data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, Valkey/Redis endpoint inspection, and Open Notebook local laboratory state described in the control path.
+
+### Deployment View
+
+- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `infra/12-analytics/jupyterlab`)
+- **Deployment Model**:
+  - per-service compose + a common template (`infra/common-optimizations.yml`)
+- **Operational Evidence**:
+  - compose static checks
+  - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
+  - CI `infrastructure-hardening` job
+
+### Evolution
+
+- **Management UI**: keeping the approved service-specific authentication and ingress controls, applying an automatic
+  expiration policy for experimental services
+- **dozzle**: restricting the log viewing scope (rule blocking access to
+  production logs), ongoing review of least-privilege
+- **redisinsight**: minimizing access permission, prohibiting direct
+  production cache changes and strengthening the audit log policy
+- **open-notebook**: keeping secret-file credential injection, notebook data
+  retention/expiration policy, direct API/DB host-port exposure review
+  before production promotion
+
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -71,55 +132,6 @@ execution evidence is owned by the related Spec and Operations documents.
   hardening gate and runbook
 - **Scalability**: expands the catalog-based policy (expiration/approval/
   audit) in stages
-
-## Components
-
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- **Ingress path**:
-  - Operator -> Traefik(websecure) -> dozzle/redisinsight/open-notebook
-- **Control path**:
-  - dozzle -> Docker socket
-  - redisinsight -> valkey/redis endpoints
-  - open-notebook -> surrealdb
-
-## Data Flow
-
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-This hardening Architecture Description does not introduce production data ownership for the laboratory tier. Data access remains limited to management metadata, Docker socket visibility, log streams, Valkey/Redis endpoint inspection, and Open Notebook local laboratory state described in the control path.
-
-## Deployment View
-
-- **Runtime / Platform**: Docker Compose (`infra/04-data/redisinsight`, `infra/06-observability/dozzle`, `infra/08-ai/open-notebook`, `infra/08-ai/mlflow`, `infra/12-analytics/jupyterlab`)
-- **Deployment Model**:
-  - per-service compose + a common template (`infra/common-optimizations.yml`)
-- **Operational Evidence**:
-  - compose static checks
-  - `scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
-  - CI `infrastructure-hardening` job
-
-## Evolution
-
-- **Management UI**: keeping the approved service-specific authentication and ingress controls, applying an automatic
-  expiration policy for experimental services
-- **dozzle**: restricting the log viewing scope (rule blocking access to
-  production logs), ongoing review of least-privilege
-- **redisinsight**: minimizing access permission, prohibiting direct
-  production cache changes and strengthening the audit log policy
-- **open-notebook**: keeping secret-file credential injection, notebook data
-  retention/expiration policy, direct API/DB host-port exposure review
-  before production promotion
-
-## Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

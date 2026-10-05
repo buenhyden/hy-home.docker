@@ -4,7 +4,7 @@ version: "2.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-05"
 layer: "archive"
 ---
 
@@ -110,7 +110,23 @@ Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착
 새 기록은 등록된 template과 check를 만족합니다. 이미 봉인된 Tombstone과 Migration은
 기록 당시 형태를 역사로 유지하며, 새 계약에 맞추려고 다시 쓰지 않습니다.
 
+### Audience
+
+운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"와 "그 문서는 무엇이라
+말했는가"를 조회할 때 사용합니다.
+
 ## Structure
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [retention-catalog.md](retention-catalog.md) | 현재 보존 단위의 포착과 평가 |
+| [completed/](completed/) | 완료된 보존 단위 |
+| [superseded/](superseded/) | 대체된 보존 단위 |
+| [retired/](retired/) | 철회된 보존 단위 |
+| [tombstones/](tombstones/) | 봉인된 route 기록 |
+| [migrations/](migrations/) | 이동 route 기록 |
 
 ```text
 98.archive/
@@ -134,12 +150,7 @@ Task revision의 승인 상태·범위·본문 증거로 검증합니다. 포착
 `preserved_origin_path()`가 소유합니다. `docs/` 재편 이전에 철회된 문서는 당시
 루트(`archive/`)를 경로에 그대로 유지합니다.
 
-## Audience
-
-운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"와 "그 문서는 무엇이라
-말했는가"를 조회할 때 사용합니다.
-
-## How to Work in This Area
+## Usage
 
 1. **처분은 경로가 결정합니다.** 보존 기록의 `status`는 이동 당시 값 그대로이며
    처분을 뜻하지 않습니다. 어떤 기록이 철회된 것인지는 `retired/` 아래에 있다는

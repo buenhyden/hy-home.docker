@@ -13,9 +13,15 @@ created: "2026-03-27"
 ---
 # Open WebUI Architecture Description
 
----
+## Overview
 
-## Context and Stakeholders
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the reference architecture and quality attributes of Open WebUI. It is the baseline document that records the system boundary, responsibilities, data flow (Ollama interface, Qdrant RAG integration), and the operational view.
 
@@ -25,7 +31,7 @@ Requirement owners, implementers, and operators share the concerns recorded in t
 
 Open WebUI acts as the presentation layer and orchestration hub for AI services. it bridges the gap between raw API backends (Ollama) and end-users, while also providing the logic for document-based RAG.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships, non-goals, and constraints already recorded in the current document.
 
@@ -43,20 +49,15 @@ This section preserves the system boundary, consumption relationships, non-goals
 - **Non-goals**:
   - Handling raw model training or fine-tuning.
 
-## Quality Attributes
+### Traceability
 
-### Quality Scenarios
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-The quality scenarios point to the existing configuration, failure boundary, and verification expectation to which the attributes below apply. Concrete execution evidence is owned by the related Spec and Operations documents.
+## Architecture
 
-- **Performance**: CUDA-accelerated backend for embedding generation.
-- **Security**: Native Keycloak OIDC; the gateway provides TLS and the standard chain, while password login, signup, email merge and OAuth role/group management are disabled in Compose.
-- **Reliability**: Dependency on Ollama healthchecks (service_healthy).
-- **Scalability**: Stateful interface with metadata in the `${DEFAULT_AI_MODEL_DIR}/open-webui` volume; horizontal scaling requires externalizing the database first.
-- **Observability**: Healthcheck endpoint at container port `${OLLAMA_WEBUI_PORT:-8080}`.
-- **Operability**: Containerized deployment with environment-driven config.
+### Architecture
 
-## Components
+### Components
 
 ### Viewpoints and Views
 
@@ -76,7 +77,7 @@ Open WebUI communicates internally via `ai_net` with Ollama; RAG vectors stay in
 - **Guardrail Boundary**: gateway TLS/standard controls, application-native OIDC,
   and source GPU/resource limits.
 
-## Data Flow
+### Data Flow
 
 ### Data and Control Flows
 
@@ -91,7 +92,7 @@ The data and control flows include only the interactions specified in this secti
 - **Data Boundaries**:
   - Vector data is strictly owned by Qdrant.
 
-## Deployment View
+### Deployment View
 
 - **Runtime / Platform**: Docker (Linux / CUDA).
 - **Deployment Model**: owner-confirmed `HOME`; Compose profiles `ai` and
@@ -105,9 +106,18 @@ an isolated project and coordinate the separately owned Qdrant snapshot before
 RAG verification; neither a live filesystem copy nor a WebUI-only backup proves
 complete RAG recovery.
 
-## Traceability
+## Quality Attributes
 
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+### Quality Scenarios
+
+The quality scenarios point to the existing configuration, failure boundary, and verification expectation to which the attributes below apply. Concrete execution evidence is owned by the related Spec and Operations documents.
+
+- **Performance**: CUDA-accelerated backend for embedding generation.
+- **Security**: Native Keycloak OIDC; the gateway provides TLS and the standard chain, while password login, signup, email merge and OAuth role/group management are disabled in Compose.
+- **Reliability**: Dependency on Ollama healthchecks (service_healthy).
+- **Scalability**: Stateful interface with metadata in the `${DEFAULT_AI_MODEL_DIR}/open-webui` volume; horizontal scaling requires externalizing the database first.
+- **Observability**: Healthcheck endpoint at container port `${OLLAMA_WEBUI_PORT:-8080}`.
+- **Operability**: Containerized deployment with environment-driven config.
 
 ## Related Documents
 

@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Grafana 준비 상태, OAuth 역할 매핑 진단, datasource·provisioning 증거, dashboard 다시 읽기, 재시작과 설정 rollback.
 
 이 런북은 Grafana readiness failure, OAuth login loop, role mapping drift, datasource query errors, dashboard provisioning failure, trace-to-log link regression, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
 - OAuth login loop, `OAuth Login Failed`, or unexpected Viewer/Editor/Admin role이 발생할 때.
@@ -33,6 +41,8 @@ created: "2026-05-17"
 - `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider, or route 변경 후 rollback 가능성을 확인해야 할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -186,22 +196,26 @@ Status: **planned and not executed**. Grafana SQLite restore 성공 사례를 �
 3. Grafana를 시작하고 SQLite migration, users/teams, dashboards, alerts, plugins, datasource health, native OAuth를 검증하며 anonymous request가 거부되는지 확인한다.
 4. 불일치가 발견되면 isolated project를 중지하고 log/checksum을 보존한다. untouched backup으로 돌아가며, production state/client/route 교체는 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret 값, token, OAuth payload, rendered secret values는 기록하지 않는다.
 - Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, and provisioning diff를 함께 기록한다.
 - Role mapping/secret/datasource UID/provider/route 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 Runbook의 검증과 동일 bind-mounted provisioning·dashboard 파일 복원 후 재시작만 해당 분기에서 사용한다. Compose·image·secret bind 복원은 restart로 반영되지 않으므로 위의 R0086/R0085 승인된 재생성 경계로 넘긴다. Role mapping, secret rotation, datasource identity migration, dashboard provider lock, protected middleware, or image version 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Grafana Usage Guide](../guides/0041-grafana.md) (`GDE-0041`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

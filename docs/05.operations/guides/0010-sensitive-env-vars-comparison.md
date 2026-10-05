@@ -7,13 +7,22 @@ owner: "@buenhyden"
 updated: "2026-10-03"
 layer: "operations"
 artifact_id: "GDE-0010"
-parent_ids: []
 created: "2026-06-04"
 ---
 
 # Secret Registry Metadata Comparison
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 `secrets/SENSITIVE_ENV_VARS.md.example`은 공개 ID·env key·파일 경로·용도 계약을
 소유한다. 실제 값은 Git에서 제외된 로컬 registry와 secret 파일에 보관한다.
@@ -25,7 +34,7 @@ created: "2026-06-04"
 grant의 대응 관계를 함께 확인한다. 실제 점검 수치와 결과는 날짜·commit을 붙여
 현재 Task에 기록한다.
 
-## Common Checks
+### Common Checks
 
 저장소 루트에서 값이 출력되지 않는 기존 검사 경로를 사용한다.
 
@@ -59,7 +68,7 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 0600 권한을 확인하고 값, 원문 행, 인증 파일이나 token 내용을 증거에 남기지 않는다.
 `--check`는 생성 도구의 설치 여부까지 검사하며 `htpasswd` 누락 등은 별도로 보고한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 [Secret 관리 안내](../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
 승인된 경로 재배치에서는 보호 백업을 만든 뒤 기존 HOME 경로의 호환 참조와 새
@@ -68,7 +77,7 @@ Compose 경로를 함께 검사한다. 호환 참조 제거, 실제 credential �
 단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로 정리하며, 유지 대상의
 개인 값을 덮어쓰지 않는다.
 
-## Traceability
+### Traceability
 
 - 같은 번호 `0010`의 Policy/Runbook은 없다.
 

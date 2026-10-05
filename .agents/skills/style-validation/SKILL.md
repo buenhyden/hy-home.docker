@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-29"
+  updated: "2026-10-05"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # style-validation
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -51,14 +53,14 @@ Changed authored files and their language/document style contracts must be ident
 2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
 3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
 
-## Outputs
-
-- Style-validation evidence and approved deterministic formatting changes.
-
-## Gates
+### Gates
 
 - Formatting is deterministic and generated ownership is preserved.
 - Linting is scoped to relevant authored files and does not rely on blanket suppression.
+
+## Outputs
+
+- Style-validation evidence and approved deterministic formatting changes.
 
 ## Failure Handling
 
@@ -72,7 +74,7 @@ owns the conditions it carries, and those conditions decide whether an all-files
 pass is available at all. Read them before reaching for it; the normal answer to
 a scoped change is the scoped check, not the whole tree.
 
-## Related Documents
+## References
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Task checklists](../../governance/task-checklists.md)

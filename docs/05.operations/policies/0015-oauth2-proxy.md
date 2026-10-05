@@ -16,9 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
+### Overview
+
 이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/02-auth/oauth2-proxy/docker-compose.yml`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
@@ -30,7 +34,14 @@ created: "2026-05-17"
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
 - **Environments**: Local, Dev, Stage, Production-like
 
-## Controls
+### Traceability
+
+- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../runbooks/0015-oauth2-proxy.md) (`RUN-0015`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -76,19 +87,7 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-## Exceptions
-
-- OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
-- 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
-
-전용 Valkey server/exporter와 인증 health probe는 현재 password를 process 인자로
-소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
-`docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
-`.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
-횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
-전달 방식 수정은 별도 구현 변경으로 검토한다.
-
-## Verification
+### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
@@ -105,15 +104,24 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade한다.
   이전 image 선언을 보존하고 session 무효화 계획을 기록한다.
 
-## Review Cadence
+### Review Cadence
 
 - 월 1회 정기 점검
 - OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
 
-## Traceability
+## Exceptions
 
-- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../runbooks/0015-oauth2-proxy.md) (`RUN-0015`)
+### Exceptions
+
+- OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
+- 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
+
+전용 Valkey server/exporter와 인증 health probe는 현재 password를 process 인자로
+소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
+`docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
+`.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
+횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
+전달 방식 수정은 별도 구현 변경으로 검토한다.
 
 ## Related Documents
 

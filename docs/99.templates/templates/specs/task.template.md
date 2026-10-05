@@ -14,7 +14,7 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
-<!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason and approved_by, a valid approved_at date, and criteria entries containing an integer criterion plus exactly one reassigned_to Task identity or nonempty withdrawn reason. An empty criteria list states that this Task held no criterion; it does not waive Spec completion evidence. Never seed or infer cancellation approval. -->
+<!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason, an actual authorization_ref, and criteria_disposition entries containing an integer criterion plus exactly one successor Task identity or approved withdrawal_ref. A successor is another non-cancelled Task in the same package. authorization_ref and withdrawal_ref use unambiguous same-Task heading anchors to actual structural evidence; those records do not authenticate or grant approval. An empty criteria_disposition list states that this Task held no criterion; it does not waive Spec completion evidence. Never seed or infer cancellation approval. -->
 
 # {{TITLE}}
 
@@ -22,36 +22,24 @@ created: "{{CREATED}}"
 
 {{OBJECTIVE}}
 
-## Inputs
+## Inputs and Authorization
 
-{{INPUTS}}
+{{INPUTS_AND_AUTHORIZATION}}
 
 ## Work Log
 
 {{WORK_LOG}}
 
-## Verification Evidence
+## Evidence
 
-{{RED_GREEN_AND_GATE_EVIDENCE}}
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| {{EVIDENCE}} | {{CRITERIA}} | {{WORK_UNIT}} | {{CHECK}} | {{INPUT}} | {{RESULT}} | {{LOCATION}} | {{ACCEPTANCE}} |
 
-<!-- Author prompt: Fill the promotion receipt using .agents/governance/sdlc.md; record actual results and limits under the current approval and completion policies. -->
+## Review and Completion
 
-| Acceptance criterion | Plan work unit | Task result | Durable owner |
-| --- | --- | --- | --- |
-| {{CRITERION_NUMBER}} | {{WORK_UNIT}} | {{RESULT_AND_EVIDENCE}} | {{DURABLE_OWNER_OR_REASON}} |
+{{REVIEW_AND_COMPLETION}}
 
-## Review Evidence
+## Related Documents
 
-{{REVIEW_EVIDENCE}}
-
-## Commit Ledger
-
-{{COMMIT_LEDGER}}
-
-## Rulings
-
-{{RULINGS}}
-
-## Deferred Items
-
-{{DEFERRED_ITEMS}}
+{{RELATED_DOCUMENTS}}

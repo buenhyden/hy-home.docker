@@ -7,12 +7,15 @@ owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0025"
-parent_ids: []
 created: "2026-07-19"
 ---
 # Operational Readiness Closure Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 Static documents and Compose rendering alone cannot prove startup/readiness,
 data recovery, artifact trust, or promotion/rollback behavior. This
@@ -20,18 +23,11 @@ requirement reproduces the four behaviors in a locally isolated environment
 using sample artifacts and synthetic state owned by the repository, and
 records the actually verified scope without overstatement.
 
-## Stakeholders and User Needs
+## Requirements
 
-- The maintainer must distinguish implemented readiness behavior from
-  unapproved remote operations.
-- The operator needs a guarantee that the rehearsal does not change another
-  Docker project or real data.
-- The security reviewer must confirm that supply-chain verdicts are bound to
-  the same image digest.
-- The release reviewer must reproduce that a failed canary is not promoted
-  and is rolled back to the previous digest.
+### Requirements
 
-## Functional Requirements
+### Functional Requirements
 
 - **REQ-0025-FR-0001**: The approved `core` service set must start under a
   unique Compose project and provide bounded readiness and teardown results.
@@ -61,7 +57,7 @@ records the actually verified scope without overstatement.
   process-local temporary storage; durable evidence must contain only a
   secret-scrubbed summary and immutable subject identity.
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 - **REQ-0025-NFR-0011 — Isolation**: Every resource must be identified by a
   task-owned identity, and cleanup must apply only to that resource.
@@ -79,16 +75,6 @@ records the actually verified scope without overstatement.
   overstated as production readiness, full-profile coverage, live recovery,
   or remote release completion.
 
-## Constraints
-
-- Scope is limited to local isolated Compose readiness, synthetic PostgreSQL
-  logical recovery, sample-service supply chain, and local
-  promotion/rollback.
-- Production/shared runtime, real data, registry publication, OIDC signing,
-  and remote GitHub configuration and deployment are out of scope.
-- Automatic cleanup is allowed only for precisely identified task-owned
-  resources.
-
 ## Acceptance Criteria
 
 - `check-compose-core-readiness.sh` verifies readiness, timeout, and cleanup
@@ -102,7 +88,34 @@ records the actually verified scope without overstatement.
 - Related focused tests and the registered full profile pass, and Task
   evidence contains no secrets or raw runtime logs.
 
-## Traceability
+## Scope
+
+### Scope
+
+### Stakeholders and User Needs
+
+- The maintainer must distinguish implemented readiness behavior from
+  unapproved remote operations.
+- The operator needs a guarantee that the rehearsal does not change another
+  Docker project or real data.
+- The security reviewer must confirm that supply-chain verdicts are bound to
+  the same image digest.
+- The release reviewer must reproduce that a failed canary is not promoted
+  and is rolled back to the previous digest.
+
+### Constraints
+
+- Scope is limited to local isolated Compose readiness, synthetic PostgreSQL
+  logical recovery, sample-service supply chain, and local
+  promotion/rollback.
+- Production/shared runtime, real data, registry publication, OIDC signing,
+  and remote GitHub configuration and deployment are out of scope.
+- Automatic cleanup is allowed only for precisely identified task-owned
+  resources.
+
+## Related Documents
+
+### Traceability
 
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - **Decision**: [ADR-0028 Local-Isolated Readiness Evidence](../02.architecture/decisions/0028-local-isolated-readiness-evidence.md)

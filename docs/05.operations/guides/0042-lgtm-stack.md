@@ -7,13 +7,22 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "operations"
 artifact_id: "GDE-0042"
-parent_ids: []
 created: "2026-03-25"
 ---
 
 # LGTM Stack Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -92,18 +101,18 @@ created: "2026-03-25"
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile obs ps`
 - `rg -n '^  (prometheus|loki|tempo|alloy|grafana|cadvisor|pyroscope|alertmanager|pushgateway):' infra/06-observability/docker-compose.yml`
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `bash scripts/validation/validate-docker-compose.sh`
 
-## Runbook Handoff
+### Runbook Handoff
 
 N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 대응은 service별 runbook을 따른다.
 
-## Traceability
+### Traceability
 
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: none — no Policy or Runbook shares number `0042`.

@@ -1,18 +1,26 @@
 ---
 title: "Workflows"
 version: "1.3.0"
-type: "governance/policy"
+type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Workflows
 
+## Purpose
+
 This document owns repeatable provider-neutral workflow order. Provider
 adapters may map native controls but may not redefine these states.
 
-## Change Lifecycle
+## Inputs
+
+The approved Spec Package and current Task, canonical roles, required governance, and source-bound repository state.
+
+## Sequence
+
+### Change Lifecycle
 
 Every repository change follows one lifecycle:
 
@@ -66,7 +74,7 @@ private keys, raw logs, secret values, shell history, or tokens. Historical
 citations and archive records preserve provenance only; they cannot authorize a
 current operation.
 
-## SDLC Workflow
+### SDLC Workflow
 
 1. Capture long-lived, solution-independent needs in Stage 01.
 2. Capture current structure and durable decisions in Stage 02.
@@ -78,7 +86,7 @@ current operation.
 `sdlc.md` owns stage boundaries, the Stage 99 registry owns document shapes
 and lifecycle values, and `scripts/` owns executable validation.
 
-## Supporting Workflows
+### Supporting Workflows
 
 - Infrastructure: `compose-stack-agent` -> `infra-validate` -> independent review.
 - Code review: self-verification -> findings -> owner resolution -> re-verification.
@@ -92,11 +100,19 @@ only approved all-files pre-commit route and its clean linked-worktree,
 Task, prefix, and Git-visible-state conditions. Workflows does not create a
 second local invocation path.
 
-## Skill Lifecycle
+### Skill Lifecycle
 
 Reusable procedures follow discovery, applicability, canonical agent governance source,
 registered projection, focused validation, and evidence. Provider projections
 do not own this lifecycle.
+
+## Stop Conditions
+
+Apply the authorization and retry limits in Change Lifecycle. Missing authority, conflicting ownership, repeated failed verification, or a changed source binding stops the dependent operation.
+
+## Outputs
+
+Task-owned commands, results, review disposition, sanitized evidence, and the next accountable owner.
 
 ## Related Documents
 

@@ -16,9 +16,13 @@ created: "2026-05-10"
 
 ## Overview
 
+### Overview
+
 이 문서는 `06-observability` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, CI 기준선 검증, 카탈로그 확장 승인 조건을 통제한다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - `infra/06-observability/docker-compose.yml`
 - `infra/06-observability/loki/{Dockerfile,docker-entrypoint.sh}`
@@ -30,7 +34,14 @@ created: "2026-05-10"
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
 - **Environments**: 로컬·개발·홈랩 운영과 운영 환경에 준하는 검증
 
-## Controls
+### Traceability
+
+- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../guides/0044-observability-optimization-hardening.md) (`GDE-0044`), [Runbook](../runbooks/0044-observability-optimization-hardening.md) (`RUN-0044`)
+
+## Rules
+
+### Controls
 
 - **Required**:
   - Native OIDC routers `grafana`/`gatus`는
@@ -86,12 +97,7 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-## Exceptions
-
-- 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
-- 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
-
-## Verification
+### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -101,15 +107,17 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-## Review Cadence
+### Review Cadence
 
 - 월 1회 정기 검토
 - 관측성 주요 버전 변경/보안 이슈 발생 시 수시 검토
 
-## Traceability
+## Exceptions
 
-- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../guides/0044-observability-optimization-hardening.md) (`GDE-0044`), [Runbook](../runbooks/0044-observability-optimization-hardening.md) (`RUN-0044`)
+### Exceptions
+
+- 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
+- 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
 
 ## Related Documents
 

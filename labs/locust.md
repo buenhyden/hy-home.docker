@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
 version: "0.1.1"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 created: "2026-10-03"
 ---
 
@@ -104,7 +104,7 @@ HttpUser.requests worker의 counter·ms histogram·ReadTimeout과 master CSV를
 이 결과는 해당 client/event 경로의 검증이며 OTel SDK exporter 전달, 모든 Python
 client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로 확대하지 않는다.
 
-## How to Work in This Area
+## Usage
 
 1. Docker context, project, target origin, network, volume, CPU/RAM/디스크와 정확한
    정리 대상을 먼저 기록한다.

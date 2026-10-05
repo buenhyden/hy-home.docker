@@ -4,15 +4,23 @@ version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Approval Boundaries
 
+## Overview
+
 Approval is bound to a named surface, operation, evidence route, and recovery.
 It never expands through delegation or provider handoff.
 
-## Authorization Source and Records
+## Scope
+
+Actors, owned surfaces, protected operations, and their current trusted authorization sources.
+
+## Rules
+
+### Authorization Source and Records
 
 The current trusted user, operator, or native provider channel supplies an
 authorization only for its stated actor, operation, subject, revision or scope,
@@ -99,6 +107,10 @@ redaction boundary are defined by
 | `.claude/**`, `.codex/**` | canonical contract, authored/native distinction, and renderer parity | restore authored/native controls; regenerate only registered outputs |
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
+
+## Exceptions
+
+A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
 
 ## Related Documents
 

@@ -10,7 +10,7 @@ import pathlib
 import posixpath
 import re
 import subprocess
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 
 from markdown_it import MarkdownIt
 
@@ -221,12 +221,10 @@ def _validate_template_source(
         )
     parents = _string_list(record.metadata.get("parent_ids"))
     parent_placeholder = placeholders.get("parent_id")
-    # `forbidden` is empty for every profile, so testing it here made the
-    # exemption unreachable and demanded `parent_ids` from twelve templates
-    # whose target profile does not declare the key at all. Declaration is the
-    # thing that decides whether a template should carry it.
-    declares_parents = "parent_ids" in required or "parent_ids" in optional
-    if not declares_parents and "parent_ids" not in record.metadata:
+    # Required keys were reported above. An omitted optional relationship has
+    # no placeholder to validate; when present, it must still use the canonical
+    # placeholder and satisfy the target profile's cardinality.
+    if "parent_ids" not in record.metadata:
         pass
     elif parents is None:
         findings.append(
@@ -1262,6 +1260,56 @@ def _runtime_version_findings(
     return findings
 
 
+def _registered_readme_documents_findings(
+    record: Record,
+    text: str,
+    profile: Mapping[str, object],
+    common: Mapping[str, object],
+) -> list[Finding]:
+    """Validate a present README Documents module against its Registry columns."""
+
+    document_type = profile.get("type")
+    if not isinstance(document_type, str) or not (
+        document_type == "common/readme" or document_type.endswith("-readme")
+    ):
+        return []
+    required = common.get("readme_documents_columns")
+    optional = common.get("readme_documents_optional_columns")
+    if (
+        not isinstance(required, Sequence)
+        or isinstance(required, (str, bytes))
+        or not all(isinstance(value, str) for value in required)
+        or not isinstance(optional, Sequence)
+        or isinstance(optional, (str, bytes))
+        or not all(isinstance(value, str) for value in optional)
+    ):
+        return []
+    allowed = {tuple(required), (*required, *optional)}
+    findings: list[Finding] = []
+    in_documents = False
+    for line in _markdown_unfenced_lines(text):
+        heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
+        if heading:
+            level = len(heading.group(1))
+            name = heading.group(2).rstrip()
+            if level <= 3:
+                in_documents = level == 3 and name == "Documents"
+            continue
+        if not in_documents or not line.strip().startswith("|"):
+            continue
+        columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
+        if columns not in allowed:
+            findings.append(
+                _finding(
+                    record,
+                    "readme-documents-header-invalid",
+                    "README Documents table header must match the registered columns",
+                )
+            )
+        in_documents = False
+    return findings
+
+
 def validate_body_contract(
     record: Record,
     text: str,
@@ -1294,6 +1342,11 @@ def validate_body_contract(
             section_findings.extend(
                 _registered_section_findings(record, text, profile, changed_boundary)
             )
+            common = profiles.get("common", {})
+            if isinstance(common, Mapping):
+                section_findings.extend(
+                    _registered_readme_documents_findings(record, text, profile, common)
+                )
             declared = profile.get("language")
             # The message carries no ratio: it is the deficit identity, so an
             # edit to a body already in the wrong language is not "introduced".

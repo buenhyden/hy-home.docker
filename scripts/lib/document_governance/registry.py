@@ -81,14 +81,34 @@ _TRUSTED_CHILD_ID = re.compile(
     r"REQ-(?P<package>[0-9]{4})-(?P<kind>FR|NFR|IF)-(?P<number>[0-9]{4})"
 )
 _TRUSTED_REQUIREMENT_SECTION = re.compile(
-    r"(?ms)^## (?P<name>Functional Requirements|Non-functional Requirements|"
-    r"Interface Requirements)\n(?P<body>.*?)(?=^## |\Z)"
+    r"(?ms)^##(?P<h3>#)? "
+    r"(?P<name>Functional Requirements|Non-functional Requirements|"
+    r"Interface Requirements)\n(?P<body>.*?)(?=^(?(h3)#{1,3}|#{1,2}) |\Z)"
 )
+_REQUIREMENT_PARENT_SECTION = re.compile(r"(?m)^## (?!#)(?P<name>[^\n]+)$")
 _TRUSTED_SECTION_KIND = {
     "Functional Requirements": "FR",
     "Non-functional Requirements": "NFR",
     "Interface Requirements": "IF",
 }
+
+
+def _trusted_requirement_sections(text: str) -> tuple[re.Match[str], ...]:
+    """Return historical H2 groups and current H3 groups under Requirements."""
+
+    sections: list[re.Match[str]] = []
+    parents = tuple(_REQUIREMENT_PARENT_SECTION.finditer(text))
+    for section in _TRUSTED_REQUIREMENT_SECTION.finditer(text):
+        if section.group("h3") is not None:
+            preceding = tuple(
+                parent for parent in parents if parent.start() < section.start()
+            )
+            if not preceding or preceding[-1].group("name") != "Requirements":
+                continue
+        sections.append(section)
+    return tuple(sections)
+
+
 _TRUSTED_CHILD_SPACE_NAME = re.compile(
     r"REQ-(?P<package>[0-9]{4})\.(?P<kind>FR|NFR|IF)"
 )
@@ -309,6 +329,85 @@ def load_registry_document(
     return raw
 
 
+def load_registry_document_at_revision(
+    revision: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> Mapping[str, object]:
+    """Load the exact regular Registry blob owned by one committed revision."""
+
+    return _load_json_document_at_revision(
+        revision,
+        "docs/99.templates/registry.json",
+        root=root,
+    )
+
+
+def _load_json_document_at_revision(
+    revision: str,
+    relative_path: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> Mapping[str, object]:
+    """Load one exact bounded regular JSON blob from a committed revision."""
+
+    if (
+        not revision
+        or revision.startswith("-")
+        or any(ord(character) < 32 for character in revision)
+    ):
+        raise RegistryError("trusted Registry revision is invalid")
+    resolved = _git_read(
+        ["rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}"],
+        root=root,
+    ).strip()
+    if _GIT_OID.fullmatch(resolved) is None:
+        raise RegistryError("trusted Registry revision did not resolve to a commit")
+    listing = _git_read(
+        ["ls-tree", "-z", resolved, "--", relative_path],
+        root=root,
+    )
+    entries = [entry for entry in listing.split("\0") if entry]
+    if len(entries) != 1:
+        raise RegistryError("trusted revision must contain one JSON blob")
+    match = re.fullmatch(
+        r"(?P<mode>[0-7]{6}) (?P<type>[a-z]+) "
+        rf"(?P<oid>[0-9a-f]{{40,64}})\t{re.escape(relative_path)}",
+        entries[0],
+    )
+    if (
+        match is None
+        or match.group("mode") not in {"100644", "100755"}
+        or match.group("type") != "blob"
+    ):
+        raise RegistryError("trusted revision contains a non-regular JSON object")
+    source = _git_read(["cat-file", "blob", match.group("oid")], root=root)
+    try:
+        raw = json.loads(source, object_pairs_hook=_unique_object)
+    except (json.JSONDecodeError, RecursionError, RegistryError) as error:
+        raise RegistryError(f"invalid historical JSON: {error}") from error
+    _require_bounded_depth(raw)
+    if not isinstance(raw, Mapping):
+        raise RegistryError("historical JSON document must be a mapping")
+    return raw
+
+
+def validate_registry_at_revision(
+    revision: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> tuple[RegistryFinding, ...]:
+    """Validate a Registry blob against the schema committed beside it."""
+
+    raw = load_registry_document_at_revision(revision, root=root)
+    schema = _load_json_document_at_revision(
+        revision,
+        "docs/99.templates/contracts/document-profile.schema.json",
+        root=root,
+    )
+    return validate_registry(raw, profile_schema=schema)
+
+
 def _require_bounded_depth(value: object, depth: int = 0) -> None:
     if depth > MAX_JSON_DEPTH:
         raise RegistryError("registry JSON exceeds the depth limit")
@@ -356,16 +455,20 @@ def _identity_space(raw: Mapping[str, object]) -> IdentitySpace:
 def validate_registry(
     raw: Mapping[str, object],
     *,
+    profile_schema: Mapping[str, object] | None = None,
     trusted_requirement_baseline: RequirementAllocationBaseline | None = None,
     allow_requirement_allocation_transition: bool = False,
 ) -> tuple[RegistryFinding, ...]:
     """Return deterministic schema and semantic findings for ``raw``."""
 
     findings: list[RegistryFinding] = []
-    try:
-        schema = _parse_json(DEFAULT_PROFILE_SCHEMA, MAX_SCHEMA_BYTES)
-    except RegistryError as error:
-        return (RegistryFinding("schema-unavailable", "$", str(error)),)
+    if profile_schema is None:
+        try:
+            schema = _parse_json(DEFAULT_PROFILE_SCHEMA, MAX_SCHEMA_BYTES)
+        except RegistryError as error:
+            return (RegistryFinding("schema-unavailable", "$", str(error)),)
+    else:
+        schema = profile_schema
     if not isinstance(schema, Mapping):
         return (
             RegistryFinding("schema-invalid", "$", "profile schema is not a mapping"),
@@ -389,6 +492,58 @@ def validate_registry(
         if isinstance(spaces, Mapping):
             _validate_identity_space_bounds(spaces, "identity_spaces", findings)
         return tuple(sorted(set(findings)))
+    common = raw.get("common")
+    if isinstance(common, Mapping) and common.get("lifecycle_generation") == 5:
+        exact_common = {
+            "contract_id": "SDLC-COMMON-v4",
+            "spec_section": "Acceptance Criteria",
+            "plan_section": "Work Breakdown",
+            "task_section": "Evidence",
+            "result_domain": (
+                "NOT_RUN",
+                "PASS",
+                "FAIL",
+                "DEFER",
+                "NOT_APPLICABLE",
+            ),
+            "acceptance_domain": (
+                "pending",
+                "accepted",
+                "rejected",
+                "not-required",
+            ),
+            "evidence_columns": (
+                "Evidence",
+                "Criteria",
+                "Work Unit",
+                "Check",
+                "Input",
+                "Result",
+                "Location",
+                "Acceptance",
+            ),
+            "plan_columns": (
+                "Work Unit",
+                "Criteria",
+                "Work",
+                "Dependencies",
+                "Task",
+                "Verification",
+            ),
+        }
+        for key, expected in exact_common.items():
+            value = common.get(key)
+            valid = value == expected or (
+                isinstance(expected, tuple) and value == list(expected)
+            )
+            if not valid:
+                findings.append(
+                    RegistryFinding(
+                        "common-contract-invalid",
+                        f"common.{key}",
+                        f"generation 5 requires the canonical {key}",
+                    )
+                )
     contract = raw.get("common", {}).get("archive_retention")
     if isinstance(contract, Mapping):
         expected = {
@@ -460,6 +615,27 @@ def validate_registry(
         {name for name in profile_types if profile_types.count(name) > 1}
     )
     for name in duplicate_types:
+        owners = [
+            profile for _, profile in profile_entries if profile.get("type") == name
+        ]
+        if name == "common/readme" and all(
+            profile.get("lifecycle_id") == "navigation"
+            and profile.get("identity_relation") == "none"
+            and profile.get("artifact_id_pattern") is None
+            for profile in owners
+        ):
+            continue
+        shared_contract = {
+            (
+                profile.get("lifecycle_id"),
+                profile.get("frontmatter_policy"),
+                tuple(profile.get("required_frontmatter", ())),
+                tuple(profile.get("required_sections", ())),
+            )
+            for profile in owners
+        }
+        if len(shared_contract) == 1:
+            continue
         findings.append(RegistryFinding("profile-type-duplicate", "profiles", name))
     for left_offset, (left_index, left) in enumerate(profile_entries):
         left_id = left.get("id")
@@ -743,7 +919,8 @@ def validate_registry(
                     route in profile.get("additional_paths", ())
                     or path_matches_pattern(route, path_pattern)
                 )
-                or set(values) - set(required_frontmatter or ())
+                or set(values)
+                - (set(required_frontmatter or ()) | set(optional_frontmatter or ()))
             ):
                 findings.append(
                     RegistryFinding(
@@ -1761,7 +1938,7 @@ def _load_strict_requirement_allocation_baseline(
             path_match = _TRUSTED_REQUIREMENT_PATH.fullmatch(path)
             assert path_match is not None
             package_number = path_match.group("package")
-            for section in _TRUSTED_REQUIREMENT_SECTION.finditer(package_texts[path]):
+            for section in _trusted_requirement_sections(package_texts[path]):
                 expected_kind = _TRUSTED_SECTION_KIND[section.group("name")]
                 for match in _TRUSTED_CHILD_ID.finditer(section.group("body")):
                     if (
@@ -2245,23 +2422,11 @@ def classify_path(
     return matches[0] if len(matches) == 1 else None
 
 
-def load_registry(
-    path: pathlib.Path = DEFAULT_REGISTRY,
-    *,
-    trusted_requirement_baseline: RequirementAllocationBaseline | None = None,
-    allow_requirement_allocation_transition: bool = False,
+def _registry_from_document(
+    raw: Mapping[str, object], source: pathlib.PurePosixPath
 ) -> DocumentRegistry:
-    """Load, validate, and deeply freeze the sole Stage 99 machine authority."""
+    """Deeply freeze one already validated Registry document."""
 
-    raw = load_registry_document(path)
-    findings = validate_registry(
-        raw,
-        trusted_requirement_baseline=trusted_requirement_baseline,
-        allow_requirement_allocation_transition=allow_requirement_allocation_transition,
-    )
-    if findings:
-        first = findings[0]
-        raise RegistryError(f"{first.code} at {first.path}: {first.message}")
     profiles_raw = raw["profiles"]
     roles_raw = raw["template_roles"]
     lifecycles_raw = raw["lifecycles"]
@@ -2326,9 +2491,7 @@ def load_registry(
         }
     )
     return DocumentRegistry(
-        source=pathlib.PurePosixPath(path.relative_to(ROOT).as_posix())
-        if path.is_absolute() and path.is_relative_to(ROOT)
-        else pathlib.PurePosixPath(path.as_posix()),
+        source=source,
         profiles=profiles,
         lifecycle_initial_statuses=lifecycle_initial_statuses,
         lifecycle_terminal_statuses=lifecycle_terminal_statuses,
@@ -2347,3 +2510,50 @@ def load_registry(
         ),
         common=_freeze(raw.get("common", {})),  # type: ignore[arg-type]
     )
+
+
+def load_registry_at_revision(
+    revision: str,
+    *,
+    root: pathlib.Path = ROOT,
+) -> DocumentRegistry:
+    """Load and freeze the Registry contract committed at one exact revision."""
+
+    raw = load_registry_document_at_revision(revision, root=root)
+    findings = validate_registry_at_revision(revision, root=root)
+    if findings:
+        first = findings[0]
+        raise RegistryError(f"{first.code} at {first.path}: {first.message}")
+    resolved = _git_read(
+        ["rev-parse", "--verify", "--end-of-options", f"{revision}^{{commit}}"],
+        root=root,
+    ).strip()
+    return _registry_from_document(
+        raw,
+        pathlib.PurePosixPath(f"{resolved}:docs/99.templates/registry.json"),
+    )
+
+
+def load_registry(
+    path: pathlib.Path = DEFAULT_REGISTRY,
+    *,
+    trusted_requirement_baseline: RequirementAllocationBaseline | None = None,
+    allow_requirement_allocation_transition: bool = False,
+) -> DocumentRegistry:
+    """Load, validate, and deeply freeze the sole Stage 99 machine authority."""
+
+    raw = load_registry_document(path)
+    findings = validate_registry(
+        raw,
+        trusted_requirement_baseline=trusted_requirement_baseline,
+        allow_requirement_allocation_transition=allow_requirement_allocation_transition,
+    )
+    if findings:
+        first = findings[0]
+        raise RegistryError(f"{first.code} at {first.path}: {first.message}")
+    source = (
+        pathlib.PurePosixPath(path.relative_to(ROOT).as_posix())
+        if path.is_absolute() and path.is_relative_to(ROOT)
+        else pathlib.PurePosixPath(path.as_posix())
+    )
+    return _registry_from_document(raw, source)

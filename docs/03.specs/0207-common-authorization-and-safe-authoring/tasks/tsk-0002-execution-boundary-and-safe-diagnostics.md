@@ -4,11 +4,10 @@ version: "1.0.0"
 type: "sdlc/task"
 status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0207-TSK-0002"
 parent_ids:
-- "SPEC-0207"
 - "SPEC-0207-PLAN-0001"
 created: "2026-10-04"
 ---

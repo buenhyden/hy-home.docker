@@ -1,14 +1,13 @@
 ---
 title: "Recovery and Authentication Acceptance"
-version: "0.7.14"
+version: "0.7.15"
 type: "sdlc/task"
-status: "in-progress"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0182-TSK-0003"
 parent_ids:
-- "SPEC-0182"
 - "SPEC-0182-PLAN-0001"
 created: "2026-09-25"
 ---
@@ -19,7 +18,7 @@ created: "2026-09-25"
 
 Carry out W7–W12 of the [Plan](../plan.md) and hold the completion receipt.
 
-## Inputs
+## Inputs and Authorization
 
 Read-only investigation of 2026-09-25:
 
@@ -46,6 +45,32 @@ Read-only investigation of 2026-09-25:
   `infra/09-tooling/renovate/systemd/`, timer enabled.
 
 ## Work Log
+
+### Current Lifecycle Reconciliation
+
+The present Stage 99 reconciliation derives `blocked` from criterion 7's
+current isolated-recovery requirement and criterion 10's open R2 scratch
+restore/offline-key custody. Historical transition anchors were not observed
+and are not backfilled.
+
+### V4 Result Token Normalization
+
+On 2026-10-05, the current blocked Task's five-column result cells were
+normalized to the registered tokens without changing their Status, outcome, or
+durable evidence. The pre-normalization cell details were: criterion 7, `NOT_RUN: current
+isolated recovery, consistency checks, and measured recovery time are pending
+separately scoped operational approval`; 8, `PASS: approved-window CPU, memory,
+GPU, and disk observations are recorded above`; 9, `PASS: every recorded SSO
+behavior row has an observed result`; 10, `NOT_RUN: R2 scratch restore and
+offline-key custody remain open`; 11, `PASS: supervised reboot rehearsal and
+SecretID delivery are recorded above`; and 12, `PASS: recorded retired and
+entry-closed dispositions are preserved above`.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0182-TSK-0003 | in-progress | blocked | #current-lifecycle-reconciliation |
 
 - 2026-09-25 W12: the retired and entry-closed items were re-checked
   against the live host and `main`; results are under Verification Evidence.
@@ -180,7 +205,7 @@ Read-only investigation of 2026-09-25:
   snapshot of both sets (18 in R2) and reported 1303841307 stored bytes;
   `check` 12:06:27-12:06:39 read 10% of the packs with no errors.
 
-## Verification Evidence
+## Evidence
 
 W11, supervised reboot rehearsal (criterion 11), 2026-09-30, RUN-0098:
 
@@ -384,10 +409,28 @@ the earlier verification approval. Verify, restore and PITR remain NOT_RUN. A ne
 recovery, consistency checks and measured recovery time remain NOT_RUN and
 require the separately scoped operational approval. The bounded MLflow,
 synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
-receipts. W10 R2 scratch restore/offline key custody also remain open; the
-Task and Spec package remain in progress/active.
+receipts. W10 R2 scratch restore/offline key custody also remain open; this
+Task is blocked while the Spec package remains active.
 
-## Review Evidence
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Current Task status: blocked | 7 | W7 | Current recovery evidence | [Backup policy](../../../05.operations/policies/0021-backup-and-restore.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: completed | 8 | W8 | Measurement evidence | [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md) | PASS | This Task, Evidence | pending |
+| Current Task status: completed | 9 | W9 | SSO evidence | Task receipt | PASS | This Task, Evidence | pending |
+| Current Task status: blocked | 10 | W10 | Recovery evidence | [ADR-0041](../../../02.architecture/decisions/0041-offsite-backup-target.md) | NOT_RUN | This Task, Evidence | pending |
+| Current Task status: completed | 11 | W11 | Reboot evidence | [RUN-0098](../../../05.operations/runbooks/0098-cold-start-and-reboot.md) | PASS | This Task, Evidence | pending |
+| Current Task status: completed | 12 | W12 | Disposition evidence | Task receipt | PASS | This Task, Evidence | pending |
+
+## Review and Completion
+
+| Acceptance criterion | Acceptance | Evidence |
+| --- | --- | --- |
+| 7 | pending | Current isolated recovery and consistency evidence remains unavailable. |
+| 8 | pending | The recorded observations remain in Verification Evidence; no v4 acceptance is recorded. |
+| 9 | pending | The recorded SSO rows remain in Verification Evidence; no v4 acceptance is recorded. |
+| 10 | pending | R2 scratch restore and offline-key custody remain open. |
+| 11 | pending | The recorded rehearsal remains in Verification Evidence; no v4 acceptance is recorded. |
+| 12 | pending | The recorded dispositions remain in Verification Evidence; no v4 acceptance is recorded. |
 
 2026-10-04 independent read-only review: Task 0002 completion receipts PASS;
 Task 0003 W8 aggregates and current W7/W10 holds PASS with the scope of
@@ -405,7 +448,7 @@ the registry backup directory, Restic retention of deleted data, criterion
 wording for CDC steps, RPO/RTO, ADRs, owner-declined rows and retirements)
 are applied in the same PR. The owner's approval follows.
 
-## Commit Ledger
+### Commit Ledger
 
 | PR | Scope | State |
 | --- | --- | --- |
@@ -423,7 +466,7 @@ are applied in the same PR. The owner's approval follows.
 | #280 | W7, W9, W10 and W11 records | merged |
 | #281 | Task 0001 completed; RUN-0021 data-disk scratch; RUN-0088 rehearsal path | merged |
 
-## Rulings
+### Rulings
 
 See the Plan.
 
@@ -433,7 +476,7 @@ See the Plan.
   JupyterLab evidence; a real-content rehearsal follows once the directory
   holds work.
 
-## Deferred Items
+### Deferred Items
 
 | Item | Owner | Trigger or date |
 | --- | --- | --- |
@@ -482,3 +525,8 @@ log inspection, data deletion or remote snapshot operation ran. This receipt
 closes prerequisite inspection only. Changed metadata14, corpus/archive recovery,
 links (one legacy warning), Markdown14 and diff checks exited 0; independent
 source/lifecycle review returned PASS. Recovery is a scoped documentation correction.
+
+## Related Documents
+
+- [Specification](../spec.md)
+- [Plan](../plan.md)

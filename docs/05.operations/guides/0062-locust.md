@@ -14,7 +14,17 @@ created: "2026-05-10"
 
 # Locust Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -59,13 +69,13 @@ Scenario directory와 result directory에는 target URL, credential, payload, te
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0062-locust.md)의 `시나리오 보존과 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust config --quiet`
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust.yml --env-file labs/.env.example --profile lab-locust config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-## Runbook Handoff
+### Runbook Handoff
 
 Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행에는
 [runbook](../runbooks/0062-locust.md)을 사용한다.
@@ -76,7 +86,7 @@ LAB 서비스는 job template을 사용하며 정상 root 재시작 정책을 �
 중지하고 결과 디렉터리와 worker 종료 상태를 확인해야 한다. 자체 데이터베이스·TLS 인증서 복구는 없고, 호스트의
 시나리오·결과와 대상 시스템의 상태는 서로 다른 소유자가 복구한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0062-locust.md) (`POL-0062`)
 - [Runbook](../runbooks/0062-locust.md) (`RUN-0062`)

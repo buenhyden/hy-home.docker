@@ -14,7 +14,15 @@ created: "2026-09-22"
 
 # Backup and Restore Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
@@ -31,6 +39,8 @@ R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사�
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
 rendered Compose model을 절대 출력하지 않는다.
@@ -354,13 +364,17 @@ full backup하고 현재 Restic state chain으로 snapshot/복원한 repository�
 reader 읽기 허용/쓰기·DDL 거절이 통과했으며 missing source exit3·unknown label
 exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO가 아닙니다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
 configuration은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - `archive_command` 실패: `pgbackrest --stanza=mng check`가 원인을 보여준다.
   `pg_wal`이 disk를 채우기 전에 repository 경로나 ownership을 고치거나,
@@ -371,12 +385,12 @@ configuration은 절대 기록하지 않는다.
 - 중단된 Restic run: 다시 실행한다. 다른 Restic 프로세스가 실행 중이 아닌지
   확인한 뒤에만 `restic unlock`한다.
 
-## Escalation
+### Escalation
 
 restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
 잃어버렸을 때 @buenhyden에게 escalation한다.
 
-## Traceability
+### Traceability
 
 - Guide: [GDE-0021](../guides/0021-backup-and-restore.md); Policy: [POL-0021](../policies/0021-backup-and-restore.md)
 - Alerts: [host backup rules](../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)

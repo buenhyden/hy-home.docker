@@ -14,7 +14,15 @@ created: "2026-05-10"
 
 # Compose Network Membership Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 신규 서비스의 peer 연결, 기존 membership·고정 주소 변경 또는 DNS/IP 충돌을
 검토할 때 사용한다. 저장소 루트에서 정확한 Compose service·fragment·network·peer,
@@ -22,6 +30,8 @@ created: "2026-05-10"
 별도다. 승인된 Docker context와 기존 대상이 없으면 runtime 단계는 `NOT_RUN`이다.
 
 ## Procedure
+
+### Procedure
 
 ### 1. Confirm declaration and target
 
@@ -73,25 +83,29 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 [RUN-0086](0086-dependency-version-management.md#runtime-configuration-apply)에 따라
 수행하며, 이후 membership과 기능을 다시 확인한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 시각·context·service/profile·source commit·변경 hunk·network별 주소 대조와 검사
 종료 상태를 기록한다. runtime 미실행은 명시한다. 원문 환경, 전체 inspect, secret,
 개인 path나 payload를 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 source 오류는 해당 Compose/network hunk만 이전 승인 상태로 복원하고 다시 검증한다.
 Git rollback은 실행 중인 membership을 복원하지 않는다. runtime이 별도 승인으로
 변경되었다면 그 서비스의 승인된 이전 구성 반영·검증 절차로 넘긴다. 삭제나 광범위한
 network 재생성이 필요하면 incident와 별도 복구 승인을 요구한다.
 
-## Escalation
+### Escalation
 
 검증 실패, 잘못된 context, 알 수 없는 peer·주소 충돌, secret 노출 위험 또는 파괴적
 복구가 필요하면 멈추고 @buenhyden에게 대상·값 없는 증거·시도 단계·복구 상태를 전달한다.
 
-## Traceability
+### Traceability
 
 - 상위 Guide: [GDE-0077](../guides/0077-ip-address-management.md)
 - 구조: [AD-0026](../../02.architecture/descriptions/0026-standardize-infra-net.md)

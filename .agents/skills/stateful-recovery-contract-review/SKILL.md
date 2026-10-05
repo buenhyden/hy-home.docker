@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-30"
+  updated: "2026-10-05"
   function_id: "stateful-recovery-contract-review"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,7 +15,9 @@ metadata:
 
 # stateful-recovery-contract-review
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -39,14 +41,7 @@ restore, service action, credential access, or secret inspection.
 3. Complete the [verdict template](assets/verdict.md) with bounded evidence and
    one verdict: `READY_FOR_SEPARATE_RECOVERY_APPROVAL` or `BLOCKED`.
 
-## Outputs
-
-- A read-only readiness verdict with supplied evidence and its source/observation
-  time, missing or contradictory inputs, responsible owners, the separate
-  operational approval boundary, and distinct static, provider-native, supplied
-  historical operational-evidence, and current-action status.
-
-## Gates
+### Gates
 
 - Every required matrix row is supplied and mutually consistent before a ready
   verdict is allowed.
@@ -60,6 +55,13 @@ restore, service action, credential access, or secret inspection.
 - Supplied historical recovery evidence never changes the operational action in
   this review from `NOT_RUN`.
 
+## Outputs
+
+- A read-only readiness verdict with supplied evidence and its source/observation
+  time, missing or contradictory inputs, responsible owners, the separate
+  operational approval boundary, and distinct static, provider-native, supplied
+  historical operational-evidence, and current-action status.
+
 ## Failure Handling
 
 Return `BLOCKED` with the exact missing or contradictory fields. Stop when the
@@ -67,7 +69,7 @@ input includes credential payloads, secret values, unapproved live inspection,
 or instructions to execute recovery, and route those actions to the named human
 approval boundary.
 
-## Related Documents
+## References
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)

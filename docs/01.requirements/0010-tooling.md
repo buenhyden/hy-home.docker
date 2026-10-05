@@ -7,12 +7,15 @@ owner: "@buenhyden"
 updated: "2026-10-01"
 layer: "requirements"
 artifact_id: "REQ-0010"
-parent_ids: []
 created: "2026-03-26"
 ---
 # Platform Operations and Software Verification Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 This document retains the tooling requirements across `09-platform-ops` platform operations and `11-quality` software verification. IaC, Registry, Renovate and Restic remain in Platform Operations; SonarQube, k6, Locust, WireMock, Pact Broker, Conftest and Mailpit belong to Quality under SPEC-0197. Issued functional requirement identities remain unchanged. The tier provides supporting services across the whole development cycle, aiming to build a stable and efficient development environment by supporting IaC (Infrastructure as Code) automation, code quality analysis, and large-scale performance testing.
 
@@ -20,7 +23,36 @@ This document retains the tooling requirements across `09-platform-ops` platform
 
 When infrastructure changes are managed manually, tracking becomes difficult, and code quality and performance verification are fragmented, so a centralized tool is needed to guarantee the system's overall stability.
 
-## Stakeholders and User Needs
+## Requirements
+
+### Requirements
+
+### Functional Requirements
+
+- **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
+- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube).
+- **REQ-0010-FR-0003**: Support Python-based scenario definition and distributed load generation (Locust).
+- **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
+
+### Non-functional Requirements
+
+No separately numbered non-functional requirement was identified in the source package.
+
+### Interface Requirements
+
+No separately numbered solution-independent external interface requirement was identified in the source package.
+
+## Acceptance Criteria
+
+- **REQ-0010-FR-0001**: 100% IaC adoption rate for all infrastructure changes.
+- **REQ-0010-FR-0002**: Keep the technical debt ratio of key service code under 5%.
+- **REQ-0010-FR-0003**: Reduce new environment build time by 70% or more.
+
+## Scope
+
+### Scope
+
+### Stakeholders and User Needs
 
 Build an integrated tooling ecosystem spanning code quality checks to infrastructure provisioning automation, minimizing manual work and supporting data-driven engineering decisions.
 
@@ -36,28 +68,7 @@ Build an integrated tooling ecosystem spanning code quality checks to infrastruc
 - **STORY-02**: A developer automatically receives analysis of bugs, vulnerabilities, and code smells through SonarQube on every source push.
 - **STORY-03**: A performance engineer uses Locust to simulate tens of thousands of concurrent users in a distributed environment and find bottlenecks.
 
-## Functional Requirements
-
-- **REQ-0010-FR-0001**: Support an OpenTofu CLI helper for IaC execution and state management, plus centralized orchestration (Terrakube).
-- **REQ-0010-FR-0002**: Support multi-language static code analysis and quality gate enforcement (SonarQube).
-- **REQ-0010-FR-0003**: Support Python-based scenario definition and distributed load generation (Locust).
-- **REQ-0010-FR-0004**: Provide a single-node private image registry for internal service deployment.
-
-## Non-functional Requirements
-
-No separately numbered non-functional requirement was identified in the source package.
-
-## Interface Requirements
-
-No separately numbered solution-independent external interface requirement was identified in the source package.
-
-## Acceptance Criteria
-
-- **REQ-0010-FR-0001**: 100% IaC adoption rate for all infrastructure changes.
-- **REQ-0010-FR-0002**: Keep the technical debt ratio of key service code under 5%.
-- **REQ-0010-FR-0003**: Reduce new environment build time by 70% or more.
-
-## Constraints
+### Constraints
 
 Following removal of the Syncthing runtime, the file synchronization obligation of the former functional allocation `0005` was withdrawn on 2026-09-19. It is not currently a provided obligation and is not reallocated to another feature. The high-water mark of `REQ-0010.FR` is kept, and number 5 is permanently preserved in the Stage 99 Registry's `reserved_history`. The acceptance criteria above are verification targets and do not imply evidence that they are achieved on the current host.
 
@@ -75,12 +86,14 @@ Following removal of the Syncthing runtime, the file synchronization obligation 
 
 N/A
 
-## Risks
+### Risks
 
 - **Risks**: Risk of blocked infrastructure changes during a Terrakube API failure.
 - **Dependencies**: Selected services such as Terrakube/SonarQube use the declared `04-data` backend and `02-auth` boundary. The registry and OpenTofu helper are currently local/bind-mount centric. Preserving a single host's volume alone does not guarantee backup or host failure recovery.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
 - [Current convergence Spec](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)

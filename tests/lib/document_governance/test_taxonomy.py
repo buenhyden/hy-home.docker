@@ -412,6 +412,26 @@ class StableDocumentTaxonomyTests(unittest.TestCase):
             ),
         )
 
+    def test_incident_year_navigation_uses_its_distinct_path_profile(self):
+        findings = validate_stable_identity(
+            PurePosixPath("docs/05.operations/incidents/2026/README.md"),
+            {"type": "common/readme"},
+            {
+                "incident-year-readme": {
+                    "type": "common/readme",
+                    "artifact_id_pattern": None,
+                    "identity_relation": "none",
+                },
+                "readme": {
+                    "type": "common/readme",
+                    "artifact_id_pattern": None,
+                    "identity_relation": "none",
+                },
+            },
+            profile_id="incident-year-readme",
+        )
+        self.assertEqual([], findings)
+
     def test_accepts_architecture_description_identity(self):
         path = PurePosixPath("docs/02.architecture/descriptions/0001-gateway.md")
         self.assertEqual(

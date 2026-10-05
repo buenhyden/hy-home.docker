@@ -774,8 +774,13 @@ class AgentGovernanceContractTests(unittest.TestCase):
                 self.assertIn(profile_id, profiles)
                 profile = profiles[profile_id]
                 self.assertEqual(path_pattern, profile["path_pattern"])
-                self.assertEqual("living", profile["lifecycle_id"])
-                self.assertEqual("living", registry["transitions"][profile_id])
+                expected_lifecycle = (
+                    "navigation" if profile_id.endswith("-index") else "living"
+                )
+                self.assertEqual(expected_lifecycle, profile["lifecycle_id"])
+                self.assertEqual(
+                    expected_lifecycle, registry["transitions"][profile_id]
+                )
                 # A canonical category routes and declares; it never carries a
                 # traceable artifact identity of its own.
                 self.assertIsNone(profile["artifact_id_pattern"])

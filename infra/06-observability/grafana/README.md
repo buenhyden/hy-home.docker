@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
 version: "1.1.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-01-12"
 ---
 
@@ -323,7 +323,7 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 | `Security/keycloak-troubleshooting` | `hyhome-keycloak-troubleshooting` | keycloak/keycloak-grafana-dashboard dashboards/keycloak-troubleshooting-dashboard.json @f819507c13 |
 | `Security/openbao` | `openbao` | grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao |
 
-## How to Work in This Area
+## Usage
 
 1. 사용법과 프로비저닝 맥락은 Grafana 가이드(`docs/05.operations/guides/0041-grafana.md`)를 따릅니다.
 2. 준비 상태, SSO, 데이터소스, 대시보드 프로비저닝, 재시작, 롤백 절차는 Grafana 런북(`docs/05.operations/runbooks/0041-grafana.md`)을 따릅니다.

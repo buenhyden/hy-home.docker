@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Alloy Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -108,18 +118,18 @@ created: "2026-05-10"
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인하며, source가 있을 때만 profiling이 이루어진다고 주장한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile obs ps alloy`
 - `docker logs --tail=100 infra-alloy`
 - `rg -n 'discovery.docker|loki.source.docker|pyroscope.scrape|otelcol.receiver.otlp|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
 - `rg -n 'ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0040-alloy.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Alloy Operations Policy](../policies/0040-alloy.md) (`POL-0040`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

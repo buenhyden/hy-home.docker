@@ -1,10 +1,10 @@
 ---
 title: "WARNING: non-Conventional Commit message"
 version: "1.0.2"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-10-05"
 action: "warn"
 enabled: true
 event: "bash"
@@ -12,7 +12,17 @@ name: "warn-conventional-commit"
 pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(build|chore|ci|deps|docs|feat|fix|perf|refactor|release|revert|style|test)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# WARNING: non-Conventional Commit message
+
+## Overview
+
+Apply the declared `warn` action for warn-conventional-commit.
+
+## Scope
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Non-Conventional Commit message detected (project rule)**
 
@@ -49,6 +59,10 @@ git commit -m "release: Publish v1.0.0"
 **Exclusions:** `--amend`, `-C` (message reuse), `Merge`, `Revert`, `Initial commit`
 
 Reference issue IDs, ADR IDs, or plan/task IDs in the footer when applicable.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 

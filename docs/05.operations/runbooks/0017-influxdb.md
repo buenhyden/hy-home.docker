@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: InfluxDB 3 Core service readiness, database/endpoint 검증, unprovisioned-token escalation.
 
 이 런북은 InfluxDB 3 Core service가 unhealthy이거나 database/endpoint readiness 또는 token-provisioning 문제가 의심될 때 사용한다.
@@ -26,7 +34,7 @@ created: "2026-05-17"
 - Root secret metadata를 leaf token provisioning으로 오인하지 않고 health 상태를 확인한다.
 - cleanup이나 retention 변경을 escalation 없이 임의 수행하지 않도록 한다.
 
-## When to Use
+### When to Use
 
 - `influxdb` container healthcheck가 실패할 때
 - token provisioning이 승인/검증되지 않았거나 write/read request가 `401` 또는 service unavailable 상태를 보일 때
@@ -41,6 +49,8 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -96,20 +106,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. catalog/WAL 오류나 validation mismatch가 있으면 target을 중지하고 실패한 isolated target을 보존하고 별도 승인된 새 target에서 손대지 않은 recovery copy에서 다시 시도한다. live volume을 제자리에서 수리하거나 교체하지 않는다.
 6. cutover, restart, retention 변경, 삭제는 target과 rollback window를 명시한 별도 approval이 필요하다. rehearsal이 성공을 기록하기 전까지 restoration은 검증되지 않은 상태다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - compose file, health 응답 코드, token-provisioning escalation 상태, 로그 요약, 최종 조치를 기록한다.
 - secret 값은 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 rehearsal 동안 원본 service와 bind 경로를 변경하지 않는다. 실패한 restore는 isolated target만 보존하고 변경되지 않은 원본으로 되돌아가는 방식으로 rollback한다. live 경로로의 파일 복사는 허용하지 않는다.
 
-## Escalation
+### Escalation
 
 token provisioning이나 authenticated write acceptance가 필요할 때, health가 허용된 응답 코드와 일치하지 않을 때, disk pressure로 cleanup이 필요할 때, 관찰된 database/endpoint contract가 source와 다를 때 escalation한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [InfluxDB Usage Guide](../guides/0017-influxdb.md) (`GDE-0017`)
 - Governing authority: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)

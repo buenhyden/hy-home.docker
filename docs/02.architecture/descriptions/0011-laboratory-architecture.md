@@ -14,14 +14,22 @@ created: "2026-03-26"
 
 # Administration and Experimentation Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 The former Laboratory capabilities now reside in their owning Data, Observability, AI and Analytics tiers under SPEC-0197. This description preserves their optional operator and knowledge-work obligations. It is
 outside HOME and must not affect core traffic when absent. Its broad visibility
 into Docker, Redis/Valkey, provider APIs, and notebook content makes it an admin
 security boundary rather than a harmless dashboard layer.
 
-## System Boundaries
+### System Boundaries
 
 - **Dozzle:** `admin`/`admin-logs`; reads Docker logs through a read-only socket,
   stores settings under `/data`, and uses both native OIDC configuration and the
@@ -39,7 +47,17 @@ security boundary rather than a harmless dashboard layer.
   logs, production notebook workloads, or Metabase. No current Metabase service is
   declared in this tier.
 
-## Components
+### Traceability
+
+- [Dozzle operations](../../05.operations/guides/0072-dozzle.md)
+- [Open Notebook operations](../../05.operations/guides/0073-open-notebook.md)
+- [RedisInsight operations](../../05.operations/guides/0076-redisinsight.md)
+
+## Architecture
+
+### Architecture
+
+### Components
 
 ```mermaid
 flowchart LR
@@ -51,14 +69,14 @@ flowchart LR
   Notebook --> Providers[approved model/provider APIs]
 ```
 
-## Data Flow
+### Data Flow
 
 Dozzle requests Docker log streams, RedisInsight opens operator-defined target
 connections, and Open Notebook sends approved provider requests while persisting
 application records in SurrealDB. These flows are independent; selecting one
 narrow profile must not grant another tool's target or API access.
 
-## Deployment View
+### Deployment View
 
 The root project includes five package leaves across four tiers and seven service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` selects MLflow and its provisioner; `data-science` also selects JupyterLab. Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file. Profiles, host paths and service identities remain unchanged.
 
@@ -74,12 +92,6 @@ The root project includes five package leaves across four tiers and seven servic
   unreadable.
 - **Isolation:** restore rehearsals block provider egress, production Docker API,
   and production data targets until sanitized acceptance passes.
-
-## Traceability
-
-- [Dozzle operations](../../05.operations/guides/0072-dozzle.md)
-- [Open Notebook operations](../../05.operations/guides/0073-open-notebook.md)
-- [RedisInsight operations](../../05.operations/guides/0076-redisinsight.md)
 
 ## Related Documents
 

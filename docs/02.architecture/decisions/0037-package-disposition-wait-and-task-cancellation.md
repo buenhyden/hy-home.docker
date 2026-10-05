@@ -31,7 +31,25 @@ waiting/cancellation, reassessment/history-only adoption, and completing Standar
 before acceptance. This approval does not authorize actual payload removal,
 commits, remote integration, runtime operations or secret access.
 
-## Decision Drivers
+### Compliance
+
+Policy owns meaning; Registry owns shapes and generation boundaries; validators own
+executable judgments. SPEC-0179 records actual RED/GREEN, snapshot, metadata, corpus,
+link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
+This accepted decision is not itself a test result or per-unit removal authorization.
+
+### Follow-up
+
+SPEC-0179 owns implementation and local verification. Its lifecycle must still follow
+registered integration edges; the adoption approval does not fabricate intervening
+commits or authorize remote integration. A real unit disposition remains a separate
+scoped operation after recoverability and consumer checks.
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 - Status records actual lifecycle facts; cancellation must retain evidence and
   account for acceptance criteria.
@@ -43,18 +61,7 @@ commits, remote integration, runtime operations or secret access.
 - Current citation permission depends on assessment before source-profile exceptions.
 - Registry owns shapes, states and ordered judgments; code implements those contracts.
 
-## Options Considered
-
-1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
-   this cannot express approved waiting, truthful cancellation or reassessment.
-2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
-   derivable from member statuses, and a second catalog creates conflicting authority.
-3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
-   preserves identities and historical rows while making current management explicit.
-4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
-   and historical transformations cannot be retroactively manufactured.
-
-## Decision
+### Decision
 
 1. A completed Spec may wait in Stage 03 when its Plan is completed and
    every Task is completed or validly cancelled. Nonterminal members fail. Waiting
@@ -110,6 +117,21 @@ commits, remote integration, runtime operations or secret access.
     Postmortem `reviewed_at`, whole-unit preservation and external-route-only records
     remain required. No new document ID or second recovery ledger is needed.
 
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
+   this cannot express approved waiting, truthful cancellation or reassessment.
+2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
+   derivable from member statuses, and a second catalog creates conflicting authority.
+3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
+   preserves identities and historical rows while making current management explicit.
+4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
+   and historical transformations cannot be retroactively manufactured.
+
 ## Consequences
 
 - Authors can record cancellation and completion without inventing execution states.
@@ -123,24 +145,12 @@ commits, remote integration, runtime operations or secret access.
 - Rollback restores the scoped current-contract diff before integration; later rollback
   uses an approved change and never rewrites frozen records or published history.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
 - [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
 - [SPEC-0179](../../98.archive/completed/03.specs/0179-package-disposition-wait-and-task-cancellation/spec.md)
 - [Archive index, including predecessor ADR-0036](../../98.archive/README.md)
 - [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
-
-## Compliance
-
-Policy owns meaning; Registry owns shapes and generation boundaries; validators own
-executable judgments. SPEC-0179 records actual RED/GREEN, snapshot, metadata, corpus,
-link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
-This accepted decision is not itself a test result or per-unit removal authorization.
-
-## Follow-up
-
-SPEC-0179 owns implementation and local verification. Its lifecycle must still follow
-registered integration edges; the adoption approval does not fabricate intervening
-commits or authorize remote integration. A real unit disposition remains a separate
-scoped operation after recoverability and consumer checks.

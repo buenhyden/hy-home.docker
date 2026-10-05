@@ -4,13 +4,13 @@ version: "1.1.1"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-05"
 runtime: "codex"
 ---
 
 # Codex Provider Adapter
 
-## Purpose
+## Overview
 
 Translate provider-neutral canonical governance into Codex native syntax.
 
@@ -22,7 +22,7 @@ Load the active Spec Package and current Task when repository state changes.
 Select a canonical role from `.agents/roles/`, read its `skill_ids`, and explicitly
 read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 
-## Runtime Boundary
+## Native Controls
 
 - `.codex/agents/*.toml` contains generated role adapters.
 - `.agents/skills/<skill_id>/SKILL.md` is the authored native skill source.
@@ -48,7 +48,7 @@ read the selected `.agents/skills/<skill_id>/SKILL.md` before acting.
 - Generated files adapt syntax and cannot own shared policy, role intent,
   lifecycle, templates, model selection, or completion criteria.
 
-## Verification
+## Limitations
 
 Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
 and [completion checklist](../.agents/governance/task-checklists.md#before-completion).

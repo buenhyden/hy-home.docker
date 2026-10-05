@@ -13,7 +13,15 @@ created: "2026-07-19"
 ---
 # Operational Readiness Closure Architecture
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This architecture aligns Compose readiness, PostgreSQL logical recovery,
 sample-service supply chain, and local delivery under one isolation
@@ -21,7 +29,7 @@ principle. The maintainer, operator, security reviewer, and release reviewer
 must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
 
-## System Boundaries
+### System Boundaries
 
 - Execution is limited to repository-local, task-scoped Docker resources and
   synthetic input.
@@ -34,7 +42,11 @@ cleanup, and evidence of every lane.
 - Raw artifacts and logs are transient, and only a redacted summary remains
   in the current Task.
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
@@ -47,7 +59,7 @@ Focused tests supply deterministic positive and negative fixtures for these
 components. Operations documents provide operator-facing invocation and
 recovery guidance without owning the architectural decision.
 
-## Data Flow
+### Data Flow
 
 Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
 order. The Compose lane's readiness and the
@@ -56,7 +68,7 @@ uses a separate synthetic state and integrity oracle. A failure does not skip
 required verification and exits non-zero along with the owned cleanup
 result.
 
-## Deployment View
+### Deployment View
 
 Tracked scripts, policies, schemas, sample artifacts, and fixtures define the
 execution contract. Runtime containers, volumes, networks, generated SBOM,
@@ -76,7 +88,9 @@ and never run automatic cleanup or promotion against an unknown identity.
 - **Observability**: summarize the subject, transition, result, cleanup, and
   stable failure class without secrets.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
 - [ADR-0028 Local-Isolated Readiness Evidence](../decisions/0028-local-isolated-readiness-evidence.md)

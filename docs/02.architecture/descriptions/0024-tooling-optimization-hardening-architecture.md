@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # Platform Operations and Quality Optimization Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `09-platform-ops` and `11-quality` capabilities. It organizes the gateway+SSO boundary of the
@@ -37,7 +45,7 @@ platform operational quality.
 Every public management path must be policy-controlled behind the Traefik
 TLS boundary.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -59,6 +67,70 @@ non-goals, and constraints already recorded in the current document.
   - immediate multi-cluster toolchain operation
   - adopting/replacing a new toolchain
 
+### Traceability
+
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+
+## Architecture
+
+### Architecture
+
+### Components
+
+### Viewpoints and Views
+
+The context, component, or deployment representation in this section serves
+as the view for that concern.
+
+- **Ingress path**:
+  - Operator/Developer -> Traefik(websecure) -> SonarQube/Terrakube
+- **Execution plane**:
+  - OpenTofu job container
+  - terrakube api/ui/executor
+  - locust master/worker, k6 service
+- **Shared dependencies**:
+  - PostgreSQL, Valkey, SeaweedFS, InfluxDB, Keycloak
+
+### Data Flow
+
+### Data and Control Flows
+
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
+
+- **Key Entities / Flows**:
+  - tfstate/workspace metadata, quality gate results, perf metrics, image artifacts
+- **Storage Strategy**:
+  - registry/sonarqube persistence uses a bind volume + data tier backend
+- **Data Boundaries**:
+  - the tooling tier owns operational tool metadata and the execution
+    policy.
+
+### Deployment View
+
+- **Runtime / Platform**: Docker Compose (`infra/09-platform-ops/*` and `infra/11-quality/*`)
+- **Deployment Model**:
+  - independent per-service compose + a common template (`common-optimizations.yml`)
+- **Operational Evidence**:
+  - optional root-context compose rendering when runtime evidence is approved
+  - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
+  - CI `infrastructure-hardening` job
+
+### Evolution
+
+- **OpenTofu**: plan/apply approval gate, strengthened state lock/backup,
+  automatic drift detection
+- **terrakube**: workspace separation, execution permission control, audit
+  log integration
+- **registry**: cosign-based signing/verification, vulnerability-scan-failure
+  blocking policy
+- **sonarqube**: redefining quality gate thresholds, separating
+  branch/security rule sets
+- **k6**: automating performance regression baseline storage/comparison,
+  standardizing scenario tags
+- **locust**: standardizing distributed topology, test data
+  initialization/cleanup routine
+
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -78,66 +150,6 @@ execution evidence is owned by the related Spec and Operations documents.
   script + CI gate.
 - **Operability**: standardizes change/recovery through policy/guide/runbook
   linkage.
-
-## Components
-
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- **Ingress path**:
-  - Operator/Developer -> Traefik(websecure) -> SonarQube/Terrakube
-- **Execution plane**:
-  - OpenTofu job container
-  - terrakube api/ui/executor
-  - locust master/worker, k6 service
-- **Shared dependencies**:
-  - PostgreSQL, Valkey, SeaweedFS, InfluxDB, Keycloak
-
-## Data Flow
-
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - tfstate/workspace metadata, quality gate results, perf metrics, image artifacts
-- **Storage Strategy**:
-  - registry/sonarqube persistence uses a bind volume + data tier backend
-- **Data Boundaries**:
-  - the tooling tier owns operational tool metadata and the execution
-    policy.
-
-## Deployment View
-
-- **Runtime / Platform**: Docker Compose (`infra/09-platform-ops/*` and `infra/11-quality/*`)
-- **Deployment Model**:
-  - independent per-service compose + a common template (`common-optimizations.yml`)
-- **Operational Evidence**:
-  - optional root-context compose rendering when runtime evidence is approved
-  - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-  - CI `infrastructure-hardening` job
-
-## Evolution
-
-- **OpenTofu**: plan/apply approval gate, strengthened state lock/backup,
-  automatic drift detection
-- **terrakube**: workspace separation, execution permission control, audit
-  log integration
-- **registry**: cosign-based signing/verification, vulnerability-scan-failure
-  blocking policy
-- **sonarqube**: redefining quality gate thresholds, separating
-  branch/security rule sets
-- **k6**: automating performance regression baseline storage/comparison,
-  standardizing scenario tags
-- **locust**: standardizing distributed topology, test data
-  initialization/cleanup routine
-
-## Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

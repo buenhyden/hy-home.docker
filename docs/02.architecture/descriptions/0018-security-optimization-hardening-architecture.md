@@ -13,14 +13,22 @@ created: "2026-03-28"
 ---
 # Security Optimization and Hardening Architecture
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document describes the OpenBao and OpenBao Agent boundary implemented in
 `infra/03-security/`. The maintainer, service owner, and operator must clearly
 separate ownership of the source secret, the rendered output, health, and the
 recovery procedure.
 
-## System Boundaries
+### System Boundaries
 
 - OpenBao owns KV-v2 secret storage and lookup.
 - OpenBao Agent owns AppRole authentication, the token sink, and per-service
@@ -30,7 +38,11 @@ recovery procedure.
 - Per-application configuration parsing and external KMS/HSM operation are
   outside this architecture.
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 The current HOME implementation consists of `openbao` and `openbao-agent` from
 `infra/03-security/openbao/docker-compose.yml`, the policy, configuration, and
@@ -38,14 +50,14 @@ template files, and a persistent volume. Traefik provides the external
 boundary, and OpenBao Agent provides only minimum-scope output to consuming
 services.
 
-## Data Flow
+### Data Flow
 
 The source secret is stored in OpenBao KV-v2. OpenBao Agent authenticates with
 AppRole, keeps restricted token state at `/openbao/agent/token`, and then
 renders template output to `/openbao/out/<service>/<key>`. The source secret
 and the rendered output maintain separate access boundaries.
 
-## Deployment View
+### Deployment View
 
 The current HOME deployment is a single Docker Compose-based OpenBao and
 OpenBao Agent structure. `scripts/hardening/check-all-hardening.sh 03-security`, Compose validation, and the template security baseline check
@@ -64,7 +76,9 @@ topology without a separately approved Requirement and ADR.
 - **Operability**: configuration, the Operations procedure, and validation
   results must describe the same current topology.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [ADR-0018](../decisions/0018-vault-hardening-and-ha-expansion-strategy.md)

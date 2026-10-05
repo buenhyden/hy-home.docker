@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # 07-Workflow Optimization Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `07-workflow` layer. It organizes the gateway boundary security,
@@ -34,7 +42,7 @@ The workflow tier operates with two execution planes.
 The management plane of both systems shares standard middleware+SSO behind
 the Traefik TLS boundary.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -55,6 +63,66 @@ non-goals, and constraints already recorded in the current document.
   - immediate multi-region/cluster workflow operation
   - immediate full activation of a new workflow service deployment
 
+### Traceability
+
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+
+## Architecture
+
+### Architecture
+
+### Components
+
+### Viewpoints and Views
+
+The context, component, or deployment representation in this section serves
+as the view for that concern.
+
+- **Ingress path**:
+  - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
+- **Control plane**:
+  - Airflow API/Scheduler/Worker/Triggerer + Flower
+  - n8n main/worker/task-runner
+- **Data/control dependencies**:
+  - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
+
+### Data Flow
+
+### Data and Control Flows
+
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
+
+- **Key Entities / Flows**:
+  - DAG metadata, workflow executions, queue tasks
+- **Storage Strategy**:
+  - Airflow/n8n state via bind volumes + PostgreSQL metadata
+- **Data Boundaries**:
+  - the workflow tier owns orchestration metadata, and each domain owns its
+    business payload schema.
+
+### Deployment View
+
+- **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
+- **Deployment Model**:
+  - Airflow distributed components; the `dedicated-valkey` profile starts `airflow-valkey`, and without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+  - n8n queue mode + external runner; the `dedicated-valkey` profile starts `n8n-valkey`, and without it `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+- **Operational Evidence**:
+  - `docker compose config` checks
+  - `scripts/hardening/check-all-hardening.sh 07-workflow`
+  - CI `infrastructure-hardening` job
+
+### Evolution
+
+- **Airflow**:
+  - DAG quality gate (parse/schedule/delay) CI
+  - defining worker autoscale criteria and standardizing operation
+- **n8n**:
+  - standardizing workflow versioning/Git backup
+  - strengthening credential store OpenBao integration
+A new workflow service without a tracked infra artifact is excluded from the
+active workflow architecture scope.
+
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -74,62 +142,6 @@ execution evidence is owned by the related Spec and Operations documents.
 - **Observability**: verifies workflow stack health at the compose/CI level.
 - **Operability**: uses `check-all-hardening.sh 07-workflow` as the
   operational baseline.
-
-## Components
-
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- **Ingress path**:
-  - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
-- **Control plane**:
-  - Airflow API/Scheduler/Worker/Triggerer + Flower
-  - n8n main/worker/task-runner
-- **Data/control dependencies**:
-  - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
-
-## Data Flow
-
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - DAG metadata, workflow executions, queue tasks
-- **Storage Strategy**:
-  - Airflow/n8n state via bind volumes + PostgreSQL metadata
-- **Data Boundaries**:
-  - the workflow tier owns orchestration metadata, and each domain owns its
-    business payload schema.
-
-## Deployment View
-
-- **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
-- **Deployment Model**:
-  - Airflow distributed components; the `dedicated-valkey` profile starts `airflow-valkey`, and without it `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
-  - n8n queue mode + external runner; the `dedicated-valkey` profile starts `n8n-valkey`, and without it `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
-- **Operational Evidence**:
-  - `docker compose config` checks
-  - `scripts/hardening/check-all-hardening.sh 07-workflow`
-  - CI `infrastructure-hardening` job
-
-## Evolution
-
-- **Airflow**:
-  - DAG quality gate (parse/schedule/delay) CI
-  - defining worker autoscale criteria and standardizing operation
-- **n8n**:
-  - standardizing workflow versioning/Git backup
-  - strengthening credential store OpenBao integration
-A new workflow service without a tracked infra artifact is excluded from the
-active workflow architecture scope.
-
-## Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

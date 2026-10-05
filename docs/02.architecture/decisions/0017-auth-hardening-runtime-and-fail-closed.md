@@ -19,6 +19,10 @@ This document records the decision on the `02-auth` layer's runtime hardening ap
 
 The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline Compose shell. This approach had low change traceability and reusability, and did not align with operating standards (minimal-privilege runtime, a clear entrypoint contract). Also, whether bypass is allowed during an authentication failure was not clearly fixed in documentation.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 - Unify OAuth2 Proxy secret injection into `docker-entrypoint.sh`.
@@ -26,6 +30,31 @@ The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline C
 - Keep fail-closed as the default behavior for authentication failures.
 - Perform degraded-mode only in a limited way, per policy/runbook procedure, and require restoring the prior state afterward.
 - Keep Keycloak on `template-infra-high`, given its stateful characteristics and current resource baseline (do not force a switch to readonly).
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### Keep the Compose inline shell
+
+- Good:
+  - Easy to apply immediately.
+- Bad:
+  - Secret handling logic is mixed into a declarative file, giving low traceability.
+  - Hard to separate reuse/test points.
+
+### Adopt a fail-open exception as the default
+
+- Good:
+  - Short-term availability may rise during an IdP failure.
+- Bad:
+  - Authentication bypass risk grows and the security boundary collapses.
 
 ## Consequences
 
@@ -47,31 +76,6 @@ The OAuth2 Proxy in `infra/02-auth` handled secret injection through an inline C
 
 - Tool gating: Use `scripts/hardening/check-all-hardening.sh 02-auth` as a required CI gate
 - Guardrail strategy: Prohibit plaintext secrets and bypass policies
-
-## Options Considered
-
-### Keep the Compose inline shell
-
-- Good:
-  - Easy to apply immediately.
-- Bad:
-  - Secret handling logic is mixed into a declarative file, giving low traceability.
-  - Hard to separate reuse/test points.
-
-### Adopt a fail-open exception as the default
-
-- Good:
-  - Short-term availability may rise during an IdP failure.
-- Bad:
-  - Authentication bypass risk grows and the security boundary collapses.
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

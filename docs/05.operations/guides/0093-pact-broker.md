@@ -18,7 +18,17 @@ created: "2026-09-23"
 
 # Pact Broker Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and classification
 
@@ -58,12 +68,12 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 자격 증명은 `pact_broker_basic_auth_password` 시크릿이다. 명령줄이 아니라
 클라이언트 환경 변수(`PACT_BROKER_PASSWORD`)로 전달한다.
 
-## Common Checks
+### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
-## Runbook Handoff
+### Runbook Handoff
 
 프로비저닝 실패, 비정상 브로커, 인증 오류, 자격 증명 교체는
 [runbook](../runbooks/0093-pact-broker.md)을 사용한다.
@@ -79,7 +89,7 @@ secret은 Compose에 값으로 적히지 않지만 wrapper가 프로세스 환�
 이를 확인하려고 환경 전체를 출력하지 않는다. 데이터베이스가 권위 있는 영속 상태이며
 이미지·인증 변경과 삭제 전에 검증 이력·pact 보존 및 공유 DB 영향을 검토한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0093-pact-broker.md) (`POL-0093`)
 - [Runbook](../runbooks/0093-pact-broker.md) (`RUN-0093`)

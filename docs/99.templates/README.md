@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-28"
+updated: "2026-10-04"
 layer: "templates"
 ---
 
@@ -28,11 +28,10 @@ Stage 99가 소유하는 것:
 
 - the Requirement Package and Architecture Description profiles;
 - the Guide, Policy, Runbook, Incident, and Postmortem profiles;
-- the Research, Audit, Data, and Tombstone profiles plus the transition-only
-  Migration profile;
+- the Research, Audit, Data publication roles and archive route records;
 - canonical path와 안정 ID 패턴;
 - profile별 frontmatter와 section 계약;
-- lifecycle 상태와 허용된 forward transition;
+- lifecycle 상태와 허용된 직접 transition;
 - Requirement child space를 포함한 단조 증가 identity 발급 상태;
 - template 역할-profile 등록;
 - 재사용 가능한 Markdown과 실행 가능한 interface-contract template;
@@ -43,6 +42,14 @@ Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운
 reference finding을 소유하지 않습니다.
 
 ## Structure
+
+### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [registry.json](registry.json) | 문서 profile과 lifecycle machine 권위 |
+| [contracts/](contracts/) | Registry와 frontmatter 값 schema |
+| [templates/](templates/) | 등록된 복사용 작성 source |
 
 ```text
 docs/99.templates/
@@ -64,7 +71,7 @@ docs/99.templates/
     └── common/
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 등록된 profile과 template 역할을 선택합니다.
 2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
@@ -98,6 +105,17 @@ fallback과 등록된 frozen archive payload를 포괄하며, 둘 다 현재 작
 
 ### Identity and Lifecycle Rules
 
+#### Stage 03 Evidence
+
+Task 상태는 frontmatter에만 둡니다. `Evidence`의 각 행은 기존 criterion과
+Plan work unit, 실제 check와 input, result, location, acceptance를 기록하며 Status
+열을 두지 않습니다. 필수 criterion의 완료에는 `PASS`와 `accepted`가 모두
+필요합니다. Plan의 `Work Breakdown`은 여섯 열이고 Task의 `Evidence`는 여덟
+열입니다. 정확한 열 순서와 vocabulary는 Registry가 소유합니다.
+Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
+승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
+[SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
+
 #### Registered Identity Shapes
 
 `registry.json`은 profile별 identity 형태를 `artifact_id_pattern`에,
@@ -122,7 +140,8 @@ profile과 공통 값 schema를 통해 투영합니다. 이름, 폴더, `functio
 서로 일치해야 합니다. 이 직렬화 계약은 runtime 권한을 부여하지 않습니다.
 다른 작성 문서는 공통 frontmatter envelope를 유지합니다.
 
-`parent_ids`는 Registry가 선언한 구조적 관계를 담습니다. 더 넓은 증거와
+`parent_ids`는 Registry가 선언한 구조적 관계를 담습니다. Plan은 정확히 하나의
+Spec parent를, Task는 정확히 하나의 Plan parent를 둡니다. 더 넓은 증거와
 consumer 관계는 `Traceability`나 `Related Documents`에 둡니다. 소유권은
 `.github/CODEOWNERS` 또는 해당 canonical role에서 옵니다. 짧은 Registry
 profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추가 작성용
@@ -159,19 +178,21 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - lifecycle 전이는 그 profile의 lifecycle에 등록된 경우에만 유효합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
-의미적 흐름은 profile마다 다릅니다: Requirement는 승인하고, ADR은
-수락하거나 거부하고, Spec은 활성화 전에 검토·승인하고, Plan은 활성화
-전에 승인하고, Task는 준비 상태를 거쳐 진행 중이 되고, Incident는 감지에서
-해결로 진행하고, Postmortem과 reference는 게시되고, Migration과 Tombstone
-기록은 봉인됩니다. `registry.json`이 모든 진입 상태, edge, terminal 상태의
-정확한 권위로 남습니다.
+의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
+수락하거나 거부하며, Spec과 Plan은 승인 후 진행·차단·완료될 수 있고, Task는
+준비 상태를 거쳐 진행 중이 됩니다. Guide·Policy·Runbook과 common rule·Skill은
+검토 후 active가 되며, Postmortem과 reference는 게시되고, Navigation README와
+current archive catalog는 active로 유지되며 Migration과 Tombstone 기록은
+draft 또는 sealed입니다. `registry.json`이 모든 진입 상태, edge, terminal
+상태의 정확한 권위로 남습니다.
 전체 Git history 발급 검증은 전체 문서 계약 profile이 소유합니다. 변경
 검증은 저장된 Registry 발급 상태를 사용합니다.
 
 #### Cancellation and Archive Assessments
 
-`cancelled` Task에는 `cancellation`이 필요합니다. 사유·승인자·유효한 승인 날짜와
-수용 기준별 재배정 또는 철회 사유를 작성합니다. 재배정 대상은 같은 package의
+`cancelled` Task에는 `cancellation`이 필요합니다. 실제 `reason`과 `authorization_ref`,
+`criteria_disposition`을 작성합니다. 각 `criterion`에는 `successor` 또는 승인된
+범위 철회 참조 `withdrawal_ref` 중 하나만 둡니다. 재배정 대상은 같은 package의
 자신이 아닌 유효한 Task여야 합니다. 취소는 완료 영수증의 PASS 의무를 면제하지
 않으며 template은 승인값을 미리 채우지 않습니다.
 

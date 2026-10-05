@@ -14,7 +14,15 @@ created: "2026-03-26"
 
 # Workflow Tier (07-workflow) Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 `07-workflow` is the owner-confirmed always-on HOME workflow orchestration layer that runs Apache Airflow and n8n together.
 The `dedicated-valkey` profile starts a dedicated broker pair. The actual broker
@@ -27,7 +35,7 @@ selecting the profile alone does not change the default `mng-valkey` connection.
 - **n8n**: low-code automation and integration.
   The public UI keeps the approved OAuth2 Proxy ForwardAuth boundary.
 
-## System Boundaries
+### System Boundaries
 
 - **Owns**:
   - Airflow services (`airflow-apiserver`, scheduler, dag-processor, worker, triggerer, Flower)
@@ -44,15 +52,11 @@ selecting the profile alone does not change the default `mng-valkey` connection.
   - external CI/CD
   - stream processing
 
-## Quality Attributes
+## Architecture
 
-- **Reliability**: scheduler/worker/triggerer health and broker availability.
-- **Security**: Airflow uses Native OIDC; Flower/n8n each use their approved gateway auth policy.
-- **Scalability**: Celery worker horizontal scaling.
-- **Observability**: Flower, StatsD exporter, logs/metrics.
-- **Operability**: Manages the provider/database migration and auth bootstrap procedures through Operations documents.
+### Architecture
 
-## Components
+### Components
 
 ### Programmatic Orchestration — Airflow
 
@@ -95,7 +99,7 @@ switch `N8N_VALKEY_HOST`/`N8N_VALKEY_SECRET`, as a matching pair to use the
 dedicated broker. Core services are `HOME`; the two broker/exporter pairs are
 `OPTIONAL`.
 
-## Data Flow
+### Data Flow
 
 ### Airflow
 
@@ -124,7 +128,7 @@ PostgreSQL metadata and the application encryption key are the durable recovery
 authority. The Valkey queue is in-flight coordination, not the exact workflow
 recovery record.
 
-## Deployment View
+### Deployment View
 
 Airflow compose:
 `infra/07-workflow/airflow/docker-compose.yml`
@@ -138,7 +142,17 @@ Airflow auth:
 - CA bundle + `--proxy-headers`
 - gateway-only router
 
-## Traceability
+## Quality Attributes
+
+- **Reliability**: scheduler/worker/triggerer health and broker availability.
+- **Security**: Airflow uses Native OIDC; Flower/n8n each use their approved gateway auth policy.
+- **Scalability**: Celery worker horizontal scaling.
+- **Observability**: Flower, StatsD exporter, logs/metrics.
+- **Operability**: Manages the provider/database migration and auth bootstrap procedures through Operations documents.
+
+## Related Documents
+
+### Traceability
 
 - **PRD**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 - **ADR**: [Airflow/n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)

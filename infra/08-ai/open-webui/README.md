@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
 version: "1.1.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -67,7 +67,7 @@ open-webui/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. Open WebUI Interface & RAG Guide(`docs/05.operations/guides/0057-open-webui.md`)를 읽습니다.
 2. SSO로 `https://chat.${DEFAULT_URL}`에서 UI에 접속합니다.

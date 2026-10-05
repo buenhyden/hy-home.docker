@@ -19,6 +19,10 @@ This document records the architecture decision for selecting the core managemen
 
 To raise system operating efficiency, we need to build a container management, database inspection, and service navigation environment. This requires selecting tools that are lightweight, reliable, and integrate smoothly with Traefik and Keycloak.
 
+### Traceability
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
 ## Decision
 
 We select the following service stack as the standard tooling for `11-laboratory`.
@@ -28,6 +32,18 @@ We select the following service stack as the standard tooling for `11-laboratory
 3. **Data Inspection (RedisInsight)**: Redis/Valkey data structure visualization and analysis.
 4. **Log Viewer (Dozzle)**: Real-time log streaming across multiple containers.
 5. **Local Notebook Lab (Open Notebook + SurrealDB)**: Manages local knowledge work and experimental notebook state.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
 
 ## Consequences
 
@@ -42,18 +58,6 @@ We select the following service stack as the standard tooling for `11-laboratory
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
-
-## Options Considered
-
-Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
-
-## Traceability
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked under `Related Documents`, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

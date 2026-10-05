@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
 > Scope: Traefik Primary Gateway Recovery
@@ -26,13 +34,15 @@ created: "2026-05-17"
 - Dashboard 인증/접근 장애 진단
 - Traefik 서비스 정상성 복원
 
-## When to Use
+### When to Use
 
 - dashboard 접근 실패(401 loop, 429 burst, 5xx)
 - 미들웨어 체인 누락/오타/잘못된 순서
 - Traefik healthcheck 실패
 
 ## Procedure
+
+### Procedure
 
 ### Target and prerequisites
 
@@ -89,13 +99,17 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 실패하면 새 설정 적용을 중단하고 아래 rollback으로 전달한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 시각·revision·승인 대상, 명령 exit, chain 멤버십, 정제된 health/route/metrics
 결과만 Task/Incident에 남긴다. secret 값, Authorization/Cookie, 원문 access/error
 로그는 첨부하지 않는다. 증거별 static/runtime/NOT_RUN을 구분한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 1. Git의 검토된 static/dynamic 설정과 private owner의 일치하는 인증서 세트를
    준비한다. key를 repository/evidence에 복사하지 않는다.
@@ -111,14 +125,14 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 기존 2026-09-20 복구 계획과 이번 감사는 runtime 복구를 실행하지 않았다.
 전체 호스트 cold-start는 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
 
-## Escalation
+### Escalation
 
 limiter 미준수, 인증 우회·credential 노출 징후, persistent health/route 오류,
 잘못된 bind/network, 또는 canary·rollback 입력 부재는 @buenhyden에게 전달한다.
 영향 route, 정제된 관찰과 필요한 별도 구현/운영 승인을 기록한다. 여러 티어
 장애는 [RUN-0099](0099-system-operations.md)로 연결한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [01-Gateway Traefik Usage Guide](../guides/0013-traefik.md) (`GDE-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)

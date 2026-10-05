@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
 version: "0.1.3"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 ---
 
 # OpenBao
@@ -57,7 +57,7 @@ Persistence:
 
 저장소 루트에서 문서화된 profile을 선택해 `scripts/validation/validate-docker-compose.sh`를 사용하십시오. 대상 runtime 확인과 승인 후 복구는 소유 운영 Runbook을 사용하십시오. 누락된 마운트, 예기치 않은 노출, 초기화 실패 시 중단하십시오.
 
-## How to Work in This Area
+## Usage
 
 Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지하십시오. 변경 전에 gateway 인증, 지속성, 리소스 예산, 버전 예외를 검토하십시오. 여기에 명령을 중복 작성하지 말고 기존 운영 subject를 갱신하십시오.
 

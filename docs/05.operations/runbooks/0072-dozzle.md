@@ -14,7 +14,15 @@ created: "2026-05-17"
 
 # Dozzle Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 의심 또는 승인된
 업그레이드에 사용한다.
@@ -29,6 +37,8 @@ OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -66,24 +76,28 @@ client/claim을 확인한 다음 Dozzle만 시작한다. 최소 권한 테스트
 노트를 검토하고 OIDC와 필터링된 로그 접근을 테스트한다. 여기서는 백업, 복원,
 업그레이드를 실행하지 않았다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 종료 코드·source 커밋·OIDC/CIDR 허용/거부 판정·표시 컨테이너 수·설정 checksum과
 최종 socket/service 상태를 기록한다. log 내용은 redact한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다. Docker
 로그는 별도의 logging backend recovery가 필요하며 Dozzle은 이를 복원할 수 없다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 socket compromise 의심, auth/CIDR bypass, secret exposure, log authority 누락,
 settings 비호환이 있으면 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0072-dozzle.md) (`GDE-0072`)
 - [Policy](../policies/0072-dozzle.md) (`POL-0072`)

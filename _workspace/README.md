@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
 version: "1.3.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-03-05"
 ---
 
@@ -101,7 +101,7 @@ staging 계약을 벗어난 것입니다.
 던집니다. 이 테스트는 모든 게이트에서 실행되며 exit status로 둘을 실제로 구분합니다.
 이제 이 계약은 누군가 명령을 직접 입력해 기억하는 데 의존하지 않습니다.
 
-## How to Work in This Area
+## Usage
 
 1. 산출물을 `_workspace/repo-support/<task-slug>/` 아래에 씁니다 → 경로가
    ignore 대상이므로 `git status`가 깨끗하게 유지됩니다.

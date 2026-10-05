@@ -1,10 +1,10 @@
 ---
 title: "Auth Tier (02-auth)"
 version: "1.1.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -82,7 +82,7 @@ Browser -> Traefik -> Application -> Keycloak
 
 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 
-## How to Work in This Area
+## Usage
 
 1. [Auth Operations](../../docs/README.md)를 먼저 확인한다.
 2. Keycloak/OAuth2 Proxy compose/config를 변경하기 전에 guide/policy/runbook을 확인한다.

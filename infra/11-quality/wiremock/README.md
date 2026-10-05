@@ -1,10 +1,10 @@
 ---
 title: "WireMock HTTP 모의 서비스"
 version: "1.1.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -100,7 +100,7 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 추가한 별도 격리 검사에서는 stub GET 200과 **GET /__admin/health** HTTP 403을
 확인했다. 두 결과는 격리 실행 증거이며 HOME 배포나 실제 target 결과가 아니다.
 
-## How to Work in This Area
+## Usage
 
 1. 합성 데이터만 **mappings/**와 **__files/**에 추가한다.
 2. 기능 판정은 root Compose, mock 자체 부하 측정은 root와 load override를 함께 사용한다.

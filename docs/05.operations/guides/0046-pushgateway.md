@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # Pushgateway Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Overview
 
@@ -103,17 +113,17 @@ curl -X DELETE http://pushgateway:9091/metrics/job/my_batch_job
 - **수명 주기·복구**: backup 대상은 gateway memory가 아니라 producer 정의와 metric 계약이다. restart/rebuild 후 producer는 현재 유효한 metric만 다시 push한다. 오래된 관찰 결과를 재전송하지 않는다. upgrade할 때 API/label 호환성을 확인한다.
 - **공식 문서·license**: 공식 [Prometheus Pushgateway 저장소](https://github.com/prometheus/pushgateway)를 따른다. Pushgateway에는 Apache-2.0 license가 적용된다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile obs ps pushgateway`
 - `curl -I http://pushgateway:9091/-/ready`
 - `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/prometheus.yml`
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0046-pushgateway.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Pushgateway Operations Policy](../policies/0046-pushgateway.md) (`POL-0046`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

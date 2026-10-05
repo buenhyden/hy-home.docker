@@ -13,7 +13,15 @@ created: "2026-06-01"
 ---
 # Agent Governance Canonical Adapter Architecture
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 Even when several AI providers modify the same repository, policy, roles,
 skills, SDLC, and approval boundaries must stay single. The maintainer
@@ -21,7 +29,7 @@ reviews the norm in `.agents/`, the agent consumes the same norm through the
 provider adapter in native runtime form, and the reviewer independently
 verifies projection drift.
 
-## System Boundaries
+### System Boundaries
 
 - `.agents/` owns policy, workflow, canonical roles/skills, and the provider
   boundary.
@@ -45,7 +53,11 @@ verifies projection drift.
   model-free evaluation target is `.agents/evaluations/`; migration and
   verification evidence belong to the active Spec Package.
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 | Component | Responsibility |
 | --- | --- |
@@ -60,7 +72,7 @@ verifies projection drift.
 | Stage 99 Registry | document shape and lifecycle machine contract |
 | Validators and suites | focused predicate execution and routing |
 
-## Data Flow
+### Data Flow
 
 Bootstrap moves from the root shim to the shared agent governance policy and
 the matching provider adapter. It selectively loads only the canonical
@@ -76,7 +88,7 @@ the reviewed Git diff. Handoff is a derived Task view that rechecks repository
 and worktree identity,
 approval, evidence, and bounded shared allocations before resumption.
 
-## Deployment View
+### Deployment View
 
 The implementation surface is tracked Markdown, YAML, JSON, TOML, and
 validation scripts. Provider sync and governance tests check projection
@@ -96,7 +108,9 @@ runtime, a remote service, or secret mutation.
 - **Recoverability**: use Git diff and history instead of separate snapshots
   or SHA pins.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 - [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)

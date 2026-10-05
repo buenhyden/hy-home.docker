@@ -21,7 +21,17 @@ created: "2026-05-10"
 
 # SeaweedFS Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다.
 consumer profile을 통해 HOME에 속한다. `http://seaweedfs-s3:8333`
@@ -142,14 +152,14 @@ SeaweedFS의 license는 Apache-2.0이다.
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
-## Common Checks
+### Common Checks
 
 정확한 root profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를
 확인한다. static pass는 configuration 증거일 뿐이다. runtime과 restore는
 별개로 남는다.
 
-## Traceability
+### Traceability
 
 - Artifact: `GDE-0024`; governing policy: `POL-0024`.
 - Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.

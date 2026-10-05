@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch"
 version: "1.0.8"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -61,7 +61,7 @@ Dockerfile은 OpenSearch를 기반으로 하지만 prometheus-exporter plugin의
 
 아래 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
 
-## How to Work in This Area
+## Usage
 
 저장소 루트에서 정상 구성만 정적으로 확인합니다.
 

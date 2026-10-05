@@ -7,14 +7,37 @@ owner: "@buenhyden"
 updated: "2026-09-27"
 layer: "references"
 artifact_id: "RES-0096"
-parent_ids: []
 created: "2026-09-15"
 observed_at: "2026-09-15"
 ---
 
 # Archive Disposition Consistency Assessment
 
-## Question
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+- 범위 안: `.agents/governance/documentation-protocol.md`(문서 보존 및
+  은퇴), `docs/98.archive/README.md`, `docs/99.templates/registry.json`와
+  그 schema, `REQ-0026`, `AD-0030`, `ADR-0033`, `ADR-0035`, SPEC-0177
+  package, 이를 강제하는 `scripts/lib/document_governance/`와
+  `tests/lib/document_governance/` 아래의 모듈과 test.
+- 범위 밖: runtime service, Compose, hosted CI run, 그리고 운영자가
+  비교한 다른 저장소의 archive 모델. 그 설명은 비교 입력으로만
+  썼으며 거기서 나온 어떤 개수, test 총합, identifier도 이
+  저장소의 사실로 이곳에 옮기지 않았습니다.
+
+## Structure
+
+### Structure
+
+## Usage
+
+### Question
 
 Stage 98 archive 정책, Registry, 등록된 check, 그리고 이를 설명하는 활성
 문서가 `main@e233d2a19a3a266e3535184a95c55222f9793c8e`에서 서로 일치하는
@@ -27,19 +50,7 @@ Stage 98 archive 정책, Registry, 등록된 check, 그리고 이를 설명하�
 finding, SPEC-0177/SPEC-0178 route는 주제 연구나 infrastructure 연구에
 병합되지 않습니다. 현재 cross-package routing만 통합됩니다.
 
-## Scope
-
-- 범위 안: `.agents/governance/documentation-protocol.md`(문서 보존 및
-  은퇴), `docs/98.archive/README.md`, `docs/99.templates/registry.json`와
-  그 schema, `REQ-0026`, `AD-0030`, `ADR-0033`, `ADR-0035`, SPEC-0177
-  package, 이를 강제하는 `scripts/lib/document_governance/`와
-  `tests/lib/document_governance/` 아래의 모듈과 test.
-- 범위 밖: runtime service, Compose, hosted CI run, 그리고 운영자가
-  비교한 다른 저장소의 archive 모델. 그 설명은 비교 입력으로만
-  썼으며 거기서 나온 어떤 개수, test 총합, identifier도 이
-  저장소의 사실로 이곳에 옮기지 않았습니다.
-
-## Method
+### Method
 
 모든 claim은 확인 가능한 문장 하나로 쪼개어, 일관성과 그 문장이 어떻게
 검증되었는지라는 서로 독립된 두 축으로 기록됩니다. 검증 수준은 `source
@@ -60,7 +71,7 @@ read`(관장하는 텍스트를 읽음), `static code`(강제하는 코드를 �
 위 개수는 그 commit의 관찰값입니다. 이는 threshold가 아니며, link 총합은
 SPEC-0177 Task가 같은 날 W3에 기록한 `links=6655`와 이미 다릅니다.
 
-## Findings
+### Findings
 
 ### Consistency by review item
 
@@ -117,7 +128,7 @@ identifier가 아닙니다.
 | Write the Docs, *Docs as Code* | 문서화는 version control, 검토, 자동화된 test를 사용함 | 어떤 check를 실행할지 |
 | CommonMark 0.31.2 §4.4, §4.5, §4.7, §6.1, §6.3 | code block과 fence는 literal text임; code span은 link bracket보다 강하게 결합됨; reference definition은 reference link를 해석함 | GitHub Flavored Markdown 확장 |
 
-## Sources
+### Sources
 
 - <https://git-scm.com/docs/gitrevisions>
 - <https://git-scm.com/docs/git-cat-file>
@@ -153,7 +164,7 @@ SPEC-0179 Task가 소유하며 완료된 SPEC-0185를 다시 열지 않습니다
 새 보존 세대, 평가 schema, index/checkout 비교 또는 승인 검증 계약이 도입될
 때입니다. 다른 R01–R28 자료의 이번 재조회는 수행하지 않았습니다.
 
-## Implications
+### Implications
 
 - 여섯 개 disposition, retention class 이름, 두 번째 복구 원장 금지는
   지역적 설계 선택입니다. 어떤 조회된 source도 이를 요구하지 않으며,
@@ -172,7 +183,18 @@ SPEC-0179 Task가 소유하며 완료된 SPEC-0185를 다시 열지 않습니다
 - 항목 A11은 이 평가를 작성할 당시 어느 package에도 owner가 없었습니다.
   운영자가 2026-09-16에 SPEC-0178에 배정했습니다.
 
-## Traceability
+### Limitations
+
+- 이는 commit 한 개에 대한 날짜가 있는 관찰입니다. hosted CI run,
+  all-files나 full-profile 실행, 어떤 runtime 상태도 기록하지 않습니다.
+- Retention Catalog보다 먼저 존재한 보존된 본문은 기록된 source가 없어,
+  원본 object와의 동일성을 평가하지 않습니다.
+- PREMIS는 조회하지 않았으므로 어떤 preservation-standard conformance도
+  주장하거나 암시하지 않습니다.
+
+## Related Documents
+
+### Traceability
 
 - [문서 보존 정책](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 - [REQ-0026 문서 보존 및 은퇴](../../../01.requirements/0026-document-retention-and-retirement.md)
@@ -181,12 +203,3 @@ SPEC-0179 Task가 소유하며 완료된 SPEC-0185를 다시 열지 않습니다
 - [ADR-0037 Package Waiting, Cancellation and Archive Reassessment](../../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [SPEC-0177 Archive Disposition Enforcement](../../../98.archive/completed/03.specs/0177-archive-disposition-enforcement/spec.md)
 - [SPEC-0178 Archive Occupancy, Route Citation, and Frozen Identity](../../../98.archive/completed/03.specs/0178-archive-occupancy-citation-and-frozen-identity/spec.md)
-
-## Limitations
-
-- 이는 commit 한 개에 대한 날짜가 있는 관찰입니다. hosted CI run,
-  all-files나 full-profile 실행, 어떤 runtime 상태도 기록하지 않습니다.
-- Retention Catalog보다 먼저 존재한 보존된 본문은 기록된 source가 없어,
-  원본 object와의 동일성을 평가하지 않습니다.
-- PREMIS는 조회하지 않았으므로 어떤 preservation-standard conformance도
-  주장하거나 암시하지 않습니다.

@@ -14,7 +14,15 @@ created: "2026-10-03"
 
 # Shared Storybook Source Preflight Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
@@ -22,6 +30,8 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
 
 ## Procedure
+
+### Procedure
 
 1. 현재 Git SHA와 승인된 Storybook package/lock, Dockerfile, Compose, profile,
    운영 문서가 같은 작업 revision에 속하는지 확인한다. 실제 `.env`나 secret의 값을
@@ -57,28 +67,32 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
    비인증 거절, 만료 후 asset 접근과 이전 image로의 source rollback을 시험한다.
    MCP는 별도 로컬 절차이며 HOME Compose에 올리지 않는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
 기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 정적 구성 오류는 Storybook leaf Compose와 root include/profile 문서 변경만 되돌린 뒤
 같은 검사를 재실행한다. HOME 실행 이후에는 승인된 운영 Task가 이전 image와
 route를 복원하고 브라우저 경로를 다시 검사한다. 정적 origin은 업무 데이터를
 소유하지 않으므로 DB·volume 삭제나 migration은 복구 절차가 아니다.
 
-## Escalation
+### Escalation
 
 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입,
 image/context에 비밀값 유입, port 충돌, read-only runtime 실패 또는 manifest
 revision 불일치가 확인되면 배포를 중단하고 @buenhyden에게 SHA와 대상·증거·복구
 경계를 전달한다.
 
-## Traceability
+### Traceability
 
 - Artifact: `RUN-0101`; parent guide: `GDE-0101`.
 - Historical source/static completion: `SPEC-0206`; runtime declaration:

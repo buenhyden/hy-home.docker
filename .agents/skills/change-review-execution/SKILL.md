@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "change-review-execution"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -15,7 +15,9 @@ metadata:
 
 # change-review-execution
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ The review package must identify the base/head range, task requirements, and obs
 2. Test each candidate finding against repository evidence, then classify it with a precise remediation condition.
 3. Issue separate specification-compliance and quality verdicts and identify any forward dependency that cannot be verified in this task.
 
-## Outputs
-
-- Actionable findings and explicit PASS/APPROVED or correction-required verdicts.
-
-## Gates
+### Gates
 
 - Review remains read-only and independent.
 - No claim is made without reproducible evidence.
+
+## Outputs
+
+- Actionable findings and explicit PASS/APPROVED or correction-required verdicts.
 
 ## Failure Handling
 
 Return `cannot verify` with the missing evidence when the package is incomplete; never edit the implementation while acting as reviewer.
 
-## Related Documents
+## References
 
 - [Code reviewer role](../../roles/code-reviewer.md)
 - [Code review dimensions](../code-review-dimensions/SKILL.md)

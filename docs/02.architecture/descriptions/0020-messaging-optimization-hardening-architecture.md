@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # 05-Messaging Optimization Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `05-messaging` layer. It describes the structure that aligns the
@@ -33,7 +41,7 @@ the Traefik TLS termination point, and the data plane keeps a service
 health-based dependency relationship within the `kafka_net` internal
 boundary.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -54,27 +62,15 @@ non-goals, and constraints already recorded in the current document.
   - Immediate multi-region/multi-cluster migration
   - App-level reprocessing code implementation
 
-## Quality Attributes
+### Traceability
 
-### Quality Scenarios
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-The quality scenarios point to the existing configuration, failure boundary,
-and verification expectation to which the attributes below apply. Concrete
-execution evidence is owned by the related Spec and Operations documents.
+## Architecture
 
-- **Performance**: burst traffic control and transient-failure absorption
-  through the gateway standard chain
-- **Security**: TLS termination + SSO protection + floating-tag prohibition
-- **Reliability**: availability kept through healthcheck dependency and a
-  rolling recovery procedure
-- **Scalability**: catalog-based readiness for DLQ/reprocessing/quorum queue
-  expansion
-- **Observability**: linkage of compose health + exporter metrics + CI
-  evidence
-- **Operability**: a single operational contract kept through standard
-  scripts + runbook + policy documents
+### Architecture
 
-## Components
+### Components
 
 ### Viewpoints and Views
 
@@ -100,7 +96,7 @@ as the view for that concern.
   changes, and ungrounded exposure expansion
 - **Latency / Cost Budget**: managed in the operational policy
 
-## Data Flow
+### Data Flow
 
 ### Data and Control Flows
 
@@ -114,7 +110,7 @@ section and the existing infrastructure/deployment descriptions.
 - **Data Boundaries**:
   - long-term retention/analytics is offloaded to the `04-data` layer
 
-## Deployment View
+### Deployment View
 
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
@@ -126,9 +122,25 @@ section and the existing infrastructure/deployment descriptions.
   - `scripts/hardening/check-all-hardening.sh 05-messaging`
   - The `infrastructure-hardening` job in `.github/workflows/ci-quality.yml`
 
-## Traceability
+## Quality Attributes
 
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+### Quality Scenarios
+
+The quality scenarios point to the existing configuration, failure boundary,
+and verification expectation to which the attributes below apply. Concrete
+execution evidence is owned by the related Spec and Operations documents.
+
+- **Performance**: burst traffic control and transient-failure absorption
+  through the gateway standard chain
+- **Security**: TLS termination + SSO protection + floating-tag prohibition
+- **Reliability**: availability kept through healthcheck dependency and a
+  rolling recovery procedure
+- **Scalability**: catalog-based readiness for DLQ/reprocessing/quorum queue
+  expansion
+- **Observability**: linkage of compose health + exporter metrics + CI
+  evidence
+- **Operability**: a single operational contract kept through standard
+  scripts + runbook + policy documents
 
 ## Related Documents
 

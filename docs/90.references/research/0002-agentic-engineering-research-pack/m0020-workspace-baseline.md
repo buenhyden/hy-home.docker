@@ -17,58 +17,9 @@ review_cycle: "on-source-change"
 
 # Reference: Agentic Engineering Workspace Baseline
 
-## Historical Baseline Boundary
-
-This member preserves **Historical workspace observations — not reassessed in
-this run**. Current internal status is **Not assessed in this run**. Original
-observation dates, commits, counts, approvals, check results, source dates and
-adoption dispositions remain unchanged historical evidence. Original headings
-and anchors survive for consumers.
-
-| Provenance field | Value and boundary |
-| --- | --- |
-| repository_baseline | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; SPEC-0185 document-refresh baseline, not an implementation observation |
-| external_sources_checked_at | No external source reopened for these synthesis/preservation members; linked topic members own their actual source access dates |
-| document_updated_at | 2026-09-27 |
-| historical_workspace_observation | Original 2026-08-08/11/14 and 2026-09-05 records below; `observed_at` and `reviewed_at` remain 2026-09-05 |
-
-This refresh adds preservation context and future routing only. Historical
-wording such as “current baseline”, “normative scope-axis map”, “implemented”,
-“missing” and “re-measure” stays quoted, not today's verdict or instruction.
-No inventory, Compose rendering, provider/entitlement, remote protection, live
-service, backup, restore, security or account check was repeated.
-
-## Future Internal Checks
-
-The [scope matrix](m0015-scope-application-matrix.md#representative-future-check-index)
-routes topic-specific questions. These rows concern a future baseline and do
-not schedule or authorize assessment. Verified documentation denotes documents
-read for this refresh; hypothetical candidates denote uninspected targets.
-
-| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| BASELINE-01: dated inventory | Repository + directory / implementation, documentation, governance | Separate Task approves exact tracked inventory | Verified docs: this member/Spec; hypothetical: approved tracked list/catalog | Which requested counts can be derived without mixing authored/generated/local/ignored data? | SHA, approved path set, collection definition, command/result, prior comparator | Approved tracked-metadata enumeration with reproducible denominators | Pass if each count classified/reproducible with delta; fail on forwarded count or private contamination | New implementation audit separately approved; no global/ignored/secret contents | eval-engineer + doc-writer | Not assessed in this run |
-| BASELINE-02: evidence layers | Task + provider + CI/CD + environment / quality, security, operations | Separate owner approves a concrete acceptance claim | Verified docs: preserved baseline and Spec; hypothetical: approved local/hosted/remote/runtime packet | What proves the requested outcome and remains unproved despite config/local success? | Target/date/environment, scope/approval, exact result, independent acceptance | Bounded layer-specific check; account/runtime evidence only separately approved | Pass if claims stay in evidence layer and acceptance condition; fail on historical/config success promoted into runtime truth | Account reads, live/recovery/remote acts need scoped approval | eval-engineer + surface owner | Not assessed in this run |
-| BASELINE-03: delta preservation | Repository + task / documentation, governance | Approved successor baseline is published | Verified docs: m0020/m0015; hypothetical: future successor and comparator packet | Can both observations be reconstructed without replacing old dates/counts/approvals or checkout-relative verdicts? | Original/successor identity/date/SHA, explicit delta, sources, contradictions and review | Compare authorized document snapshots and route changed facts to evidence owner | Pass if originals preserved in-body and delta sourced; fail on redating, silent replacement or implied reassessment | Governing documentation scope required; no history rewrite/cleanup | doc-writer + independent code-reviewer | Not assessed in this run |
-
-## Preserved Historical Record
-
-All original prose and tables below are quoted historical evidence; headings
-remain outside quotations solely to preserve anchors. Original maintenance
-instructions are preserved history and are not executed by this refresh.
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
 ## Overview
+
+### Overview
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -90,7 +41,9 @@ instructions are preserved history and are not executed by this refresh.
 > merely because another document cites it.
 >
 
-## Research Ownership
+## Scope and Method
+
+### Research Ownership
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -102,7 +55,7 @@ instructions are preserved history and are not executed by this refresh.
 > topology and validation remain in [RES-0002-m0005](m0005-docker-compose-infrastructure.md).
 >
 
-## Purpose
+### Purpose
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -118,7 +71,7 @@ instructions are preserved history and are not executed by this refresh.
 > exists at all.
 >
 
-## Repository Role
+### Repository Role
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -130,7 +83,7 @@ instructions are preserved history and are not executed by this refresh.
 > remote state requires separate control-plane evidence.
 >
 
-## Scope
+### Scope
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -166,7 +119,7 @@ instructions are preserved history and are not executed by this refresh.
 >   all facts below were corroborated against tracked sources and stage docs.
 >
 
-## Definitions / Facts
+### Definitions / Facts
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -712,7 +665,7 @@ instructions are preserved history and are not executed by this refresh.
 > - **The tracked Codex session-end record conflicts with upstream.** `contracts/provider-models.yaml` records the Codex `session-end` binding as `unsupported` with a null native event, while Codex documents `SessionEnd`, which makes the tracked record stale rather than merely incomplete. The upstream half is a dated observation carried from the retiring pack and was not re-fetched here, so it is `UNVERIFIED` as a current capability claim; the repository half is directly checkable in the named contract.
 >
 
-## Scope Implications
+### Scope Implications
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -740,40 +693,7 @@ instructions are preserved history and are not executed by this refresh.
 > | `security`     | Direct: tracked hardening/supply-chain/incident surfaces and 19 placeholder-only `secrets/` files; no value inspected.      |
 >
 
-## Sources
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
-> | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
-> | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
-> | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
-> | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
-> | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
-> | [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
-> | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed in both interpreters; results recorded verbatim above.                                                                                                                                                                    |
-> | [Governance contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
-> | [Workflow contract](../../../../.github/workflow-contract.yml)                                         | 2026-08-14 | Tracked mutable        | Newly cited. Parsed; 16 `job_roots`, 80 `gate_nodes`, 3 `profile_roots`, 8 pinned actions.                                                                                                                                                      |
-> | [Branch-protection ruleset record](../../../../.github/rulesets/main-protection.md)                    | 2026-08-14 | Tracked mutable        | Newly cited. The file itself declares control-plane verification `unverified` and lists the same 16 checks.                                                                                                                                     |
-> | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                 | 2026-08-14 | Tracked mutable        | Re-verified directly; Stage 90 remains advisory.                                                                                                                                                                                                |
-> | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                               | 2026-08-14 | External fixed         | Re-fetched; live. Published February 2022; explicitly leaves tool choice to the adopting organization.                                                                                                                                          |
-> | [SLSA v1.1 provenance](https://slsa.dev/spec/v1.1/provenance)                                          | 2026-08-14 | External fixed         | Newly cited. Provenance describes the build process, not artifact properties; untrusted external parameters.                                                                                                                                    |
-> | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; protocol cannot enforce its own principles.                                                                                                                                 |
-> | GitHub CODEOWNERS documentation (URL below)                                                            | 2026-08-14 | External mutable       | Newly cited. Last matching pattern wins; CODEOWNERS alone does not enforce review.                                                                                                                                                              |
-> | [SPDX 3.0.1 model](https://spdx.github.io/spdx-spec/v3.0.1/model/AI/AI/)                               | 2026-08-14 | External fixed         | Newly cited. Profile-based modular inventory as a comparison for 25 typed artifact profiles.                                                                                                                                                    |
-> | ISO/IEC 42001 landing page                                                                             | 2026-08-14 | External, unretrieved  | Direct retrieval returned HTTP 403, the known `iso.org` refusal. No claim here depends on it.                                                                                                                                                   |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; not current evidence. Its 47 tracked files are counted as generated content.                                                                                                                                             |
-> | Predecessor workspace baseline, retiring 2026-07-05 pack                                               | 2026-08-14 | Historical retained    | Read for delta analysis only; its `.claude/` 49 and 24,597 B chain figures are superseded and explained above. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
->
-> The GitHub CODEOWNERS documentation cited above is at
-> <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>.
-> It is held outside the table only so one long URL does not widen every row.
->
-
-## Scope Application
+### Scope Application
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -791,7 +711,7 @@ instructions are preserved history and are not executed by this refresh.
 > | security | applies | Preserve the approval boundary and avoid secrets or credential access. | Confirm sources are tracked paths only; seek separate approval for control testing. | No security control effectiveness is claimed. |
 >
 
-## 2026-09-05 Consolidated Current Baseline
+### 2026-09-05 Consolidated Current Baseline
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -819,7 +739,7 @@ instructions are preserved history and are not executed by this refresh.
 > authorize provider, deployment, release, or remote mutation.
 >
 
-## 2026-09-05 Dated Baseline Revalidation at 71da6654
+### 2026-09-05 Dated Baseline Revalidation at 71da6654
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -857,7 +777,7 @@ instructions are preserved history and are not executed by this refresh.
 > claims, or authorize provider, deployment, release, or remote mutation.
 >
 
-## Maintenance
+### Maintenance
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -873,7 +793,7 @@ instructions are preserved history and are not executed by this refresh.
 > unit.
 >
 
-## Related Documents
+### Related Documents
 
 - [Research pack](README.md)
 - [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
@@ -892,3 +812,93 @@ instructions are preserved history and are not executed by this refresh.
 > - [Agent governance hub](../../../../.agents/README.md)
 > - [Dated RES-0085 assessment and recovery evidence](../0085-workspace-engineering-main-baseline-assessment/README.md)
 > - [Research category router](../README.md)
+
+## Findings
+
+### Findings
+
+## Limitations
+
+### Historical Baseline Boundary
+
+This member preserves **Historical workspace observations — not reassessed in
+this run**. Current internal status is **Not assessed in this run**. Original
+observation dates, commits, counts, approvals, check results, source dates and
+adoption dispositions remain unchanged historical evidence. Original headings
+and anchors survive for consumers.
+
+| Provenance field | Value and boundary |
+| --- | --- |
+| repository_baseline | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; SPEC-0185 document-refresh baseline, not an implementation observation |
+| external_sources_checked_at | No external source reopened for these synthesis/preservation members; linked topic members own their actual source access dates |
+| document_updated_at | 2026-09-27 |
+| historical_workspace_observation | Original 2026-08-08/11/14 and 2026-09-05 records below; `observed_at` and `reviewed_at` remain 2026-09-05 |
+
+This refresh adds preservation context and future routing only. Historical
+wording such as “current baseline”, “normative scope-axis map”, “implemented”,
+“missing” and “re-measure” stays quoted, not today's verdict or instruction.
+No inventory, Compose rendering, provider/entitlement, remote protection, live
+service, backup, restore, security or account check was repeated.
+
+### Future Internal Checks
+
+The [scope matrix](m0015-scope-application-matrix.md#representative-future-check-index)
+routes topic-specific questions. These rows concern a future baseline and do
+not schedule or authorize assessment. Verified documentation denotes documents
+read for this refresh; hypothetical candidates denote uninspected targets.
+
+| Topic / claim ID | Analytical scope | Applicability condition | Future surface candidates | Concrete question | Required evidence | Future method | Pass / fail criterion | Additional authority / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| BASELINE-01: dated inventory | Repository + directory / implementation, documentation, governance | Separate Task approves exact tracked inventory | Verified docs: this member/Spec; hypothetical: approved tracked list/catalog | Which requested counts can be derived without mixing authored/generated/local/ignored data? | SHA, approved path set, collection definition, command/result, prior comparator | Approved tracked-metadata enumeration with reproducible denominators | Pass if each count classified/reproducible with delta; fail on forwarded count or private contamination | New implementation audit separately approved; no global/ignored/secret contents | eval-engineer + doc-writer | Not assessed in this run |
+| BASELINE-02: evidence layers | Task + provider + CI/CD + environment / quality, security, operations | Separate owner approves a concrete acceptance claim | Verified docs: preserved baseline and Spec; hypothetical: approved local/hosted/remote/runtime packet | What proves the requested outcome and remains unproved despite config/local success? | Target/date/environment, scope/approval, exact result, independent acceptance | Bounded layer-specific check; account/runtime evidence only separately approved | Pass if claims stay in evidence layer and acceptance condition; fail on historical/config success promoted into runtime truth | Account reads, live/recovery/remote acts need scoped approval | eval-engineer + surface owner | Not assessed in this run |
+| BASELINE-03: delta preservation | Repository + task / documentation, governance | Approved successor baseline is published | Verified docs: m0020/m0015; hypothetical: future successor and comparator packet | Can both observations be reconstructed without replacing old dates/counts/approvals or checkout-relative verdicts? | Original/successor identity/date/SHA, explicit delta, sources, contradictions and review | Compare authorized document snapshots and route changed facts to evidence owner | Pass if originals preserved in-body and delta sourced; fail on redating, silent replacement or implied reassessment | Governing documentation scope required; no history rewrite/cleanup | doc-writer + independent code-reviewer | Not assessed in this run |
+
+### Preserved Historical Record
+
+All original prose and tables below are quoted historical evidence; headings
+remain outside quotations solely to preserve anchors. Original maintenance
+instructions are preserved history and are not executed by this refresh.
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+## Sources
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                              |
+> | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md) | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-31 and the twenty-leaf/twenty-one-file counts are unchanged since the 2026-08-11 access. |
+> | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-31's derivations are unchanged.                                                                                                                                                                                                |
+> | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26. Cardinality independently confirmed by an executed run.                                                                                                                                    |
+> | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Re-parsed at `ece3eda9`; unchanged since 2026-07-26.                                                                                                                                                                                            |
+> | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 25 artifact profiles, 7 path-authority records, 3 families, 3 shims, 3 README profiles.                                                                                                                                            |
+> | [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows confirmed at lines 25-38; unchanged since 2026-05-15.                                                                                                                                           |
+> | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed in both interpreters; results recorded verbatim above.                                                                                                                                                                    |
+> | [Governance contract tests](../../../../tests/lib/agent_governance/test_agent_governance_contract.py)            | 2026-08-14 | Local observation      | Newly cited. 159 tests executed, `OK` in the isolated environment; `scope_names` enumerates 13 of 14 scopes.                                                                                                                                    |
+> | [Workflow contract](../../../../.github/workflow-contract.yml)                                         | 2026-08-14 | Tracked mutable        | Newly cited. Parsed; 16 `job_roots`, 80 `gate_nodes`, 3 `profile_roots`, 8 pinned actions.                                                                                                                                                      |
+> | [Branch-protection ruleset record](../../../../.github/rulesets/main-protection.md)                    | 2026-08-14 | Tracked mutable        | Newly cited. The file itself declares control-plane verification `unverified` and lists the same 16 checks.                                                                                                                                     |
+> | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                 | 2026-08-14 | Tracked mutable        | Re-verified directly; Stage 90 remains advisory.                                                                                                                                                                                                |
+> | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                               | 2026-08-14 | External fixed         | Re-fetched; live. Published February 2022; explicitly leaves tool choice to the adopting organization.                                                                                                                                          |
+> | [SLSA v1.1 provenance](https://slsa.dev/spec/v1.1/provenance)                                          | 2026-08-14 | External fixed         | Newly cited. Provenance describes the build process, not artifact properties; untrusted external parameters.                                                                                                                                    |
+> | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; protocol cannot enforce its own principles.                                                                                                                                 |
+> | GitHub CODEOWNERS documentation (URL below)                                                            | 2026-08-14 | External mutable       | Newly cited. Last matching pattern wins; CODEOWNERS alone does not enforce review.                                                                                                                                                              |
+> | [SPDX 3.0.1 model](https://spdx.github.io/spdx-spec/v3.0.1/model/AI/AI/)                               | 2026-08-14 | External fixed         | Newly cited. Profile-based modular inventory as a comparison for 25 typed artifact profiles.                                                                                                                                                    |
+> | ISO/IEC 42001 landing page                                                                             | 2026-08-14 | External, unretrieved  | Direct retrieval returned HTTP 403, the known `iso.org` refusal. No claim here depends on it.                                                                                                                                                   |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; not current evidence. Its 47 tracked files are counted as generated content.                                                                                                                                             |
+> | Predecessor workspace baseline, retiring 2026-07-05 pack                                               | 2026-08-14 | Historical retained    | Read for delta analysis only; its `.claude/` 49 and 24,597 B chain figures are superseded and explained above. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
+>
+> The GitHub CODEOWNERS documentation cited above is at
+> <https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners>.
+> It is held outside the table only so one long URL does not widen every row.
+>

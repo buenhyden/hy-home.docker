@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker"
 version: "1.0.1"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2026-09-23"
 ---
 
@@ -131,7 +131,7 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | heartbeat를 먼저 확인한 뒤 프로비저닝과 broker 로그, 연결된 런북 순서로 확인합니다. |
 
-## How to Work in This Area
+## Usage
 
 1. 상위 tier README와 `docker-compose.yml`을 먼저 확인한다.
 2. 권한을 넓히는 SQL 변경은 policy의 거절 조건을 먼저 확인한다.

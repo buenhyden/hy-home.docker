@@ -17,9 +17,30 @@ review_cycle: "on-source-change"
 
 # Reference: Document Metadata and Lifecycle
 
-Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked: 2026-09-27. Document updated: 2026-09-27. Historical workspace observations retain their original dates/commits below. Current local adoption and implementation: **Not assessed in this run**. This non-normative research changes no policy, profile, service or integration.
+## Overview
 
-## Current External Research
+### Overview
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Document lifecycle in this workspace is a typed application-profile system,
+> not a universal frontmatter convention. The Stage 99 registry binds a path and
+> role to required/optional/forbidden keys, direct-parent types, headings,
+> template, lifecycle values, transition rules, and explicit exceptions.
+> Human-readable contracts explain intent; the metadata checker interprets the
+> machine contract.
+>
+> The historical analysis was re-derived at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
+> (2026-08-14), superseding the Task 5 baseline
+> `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee` previously cited. It separates
+> dated path counts, frontmatter states, typed migration depth, template
+> sources, generated outputs, README exceptions, and archive tombstones so none
+> is mistaken for another.
+>
+
+## Scope and Method
+
+### Current External Research
 
 ### Question and evidence boundary
 
@@ -44,66 +65,7 @@ Recommendation: before retiring a document identify still-current meaning/consum
 
 One owner-defined profile with focused validation avoids independent field conventions, but syntax cannot prove content correctness, stakeholder acceptance or runtime state. This reference does not copy Registry arrays or change contracts. Local adoption is **Not assessed in this run**. [Document roles](m0016-sdlc-document-roles.md), [reader/navigation design](m0007-documentation-architecture.md) and [SDD traceability](m0018-spec-driven-sdlc.md) own their detailed explanations.
 
-## Claims and Sources
-
-Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
-
-| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0006-01 | DCMI distinguishes metadata identity/type/dates/relations/versions/provenance | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation | Fact | Application-profile vocabulary, not local schema |
-| C-m0006-02 | PROV-O separates entities, activities, agents and derivation/revisions | S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation | Fact | No ontology adoption/conformance |
-| C-m0006-03 | Separate checks/edits/reviews/baselines/historical observation and review freshness by risk | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2020-01-20; 2013-04-30 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation; PROV-O; W3C Recommendation | Recommendation | Local profile admits fields; no universal expiry |
-| C-m0006-04 | Retire after approved owner/consumer cutover and preservation; age/count insufficient | S-cognitect-architecture-decisions — ADR format; status; consequences; supersession; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2011-11-15; 2013-04-30 | 2026-09-27 | Original author article; PROV-O; W3C Recommendation | Recommendation | No disposition performed; current local authority separate |
-
-| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
-| --- | --- | --- | --- | --- |
-| S-dublincore-dcmi-terms | [Introduction; identifier/created/modified/issued/provenance/version/replacement](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation |
-| S-w3c-prov-o | [Starting Point Terms; Expanded Terms](https://www.w3.org/TR/prov-o/) | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation |
-| S-cognitect-architecture-decisions | [ADR format; status; consequences; supersession](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2011-11-15 | 2026-09-27 | Original author article |
-
-## Future Internal Checks
-
-Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
-
-| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Dates / C-m0006-01,03 | Repository; docs/evidence | Document/source refresh | Confirmed research metadata; hypothetical lifecycle artifact | Are publication/check/edit/review/observation distinct without ID reissue? | Scoped metadata diff and source-read receipt | Authorized provenance review | Pass: history/identity/date semantics retained; fail: redated observation/invented approval | Document-only scope; no private records | Documentation owner | Not assessed in this run |
-| Retention / C-m0006-04 | Repository; docs/governance | Replacement/retirement proposed | Confirmed documentation protocol route; hypothetical disposition packet | Where did meaning and every consumer move, and how is original evidence preserved? | Approved disposition/source boundary/body/consumer map | Bounded preservation/link comparison | Pass: owners/consumers/provenance preserved; fail: Git-only removal/unresolved owner | Archive/retirement authorization required | Documentation/governance owner | Not assessed in this run |
-
-## Historical Workspace Observations
-
-Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
-
-> Historical evidence (not current authority; source: Git history):
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
-## Overview
-
-> Historical evidence (not current authority; source: Git history):
->
-> Document lifecycle in this workspace is a typed application-profile system,
-> not a universal frontmatter convention. The Stage 99 registry binds a path and
-> role to required/optional/forbidden keys, direct-parent types, headings,
-> template, lifecycle values, transition rules, and explicit exceptions.
-> Human-readable contracts explain intent; the metadata checker interprets the
-> machine contract.
->
-> The historical analysis was re-derived at HEAD `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`
-> (2026-08-14), superseding the Task 5 baseline
-> `0445a17860ac27f6bf5ff1f9a8ffcde32bc4f2ee` previously cited. It separates
-> dated path counts, frontmatter states, typed migration depth, template
-> sources, generated outputs, README exceptions, and archive tombstones so none
-> is mistaken for another.
->
-
-## Purpose
+### Purpose
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -113,7 +75,7 @@ Original observations, source checks, corrections, measurements, access failures
 > unexercised or legacy-partial without proposing changes to the contracts.
 >
 
-## Repository Role
+### Repository Role
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -125,7 +87,7 @@ Original observations, source checks, corrections, measurements, access failures
 > authorize a metadata change, lifecycle transition, migration, or runtime action.
 >
 
-## Scope
+### Scope
 
 ### In scope
 
@@ -149,7 +111,7 @@ Original observations, source checks, corrections, measurements, access failures
 >   current runtime behavior.
 >
 
-## Definitions / Facts
+### Definitions / Facts
 
 ### Application-profile model
 
@@ -406,7 +368,7 @@ Original observations, source checks, corrections, measurements, access failures
 > - **A status probe alone is not evidence that a source is unavailable.** A command-line client receives HTTP 403 from the W3C host while a browser-shaped fetch succeeds. Marking a source `UNVERIFIED` on a bare status probe is therefore unsound, which matters here because another host in this corpus genuinely does refuse automated retrieval.
 >
 
-## Scope Implications
+### Scope Implications
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -428,29 +390,7 @@ Original observations, source checks, corrections, measurements, access failures
 > | `security`     | Archive and evidence metadata must remain redacted and provenance-safe; no profile authorizes secret/private payloads or protected mutation.        |
 >
 
-## Sources
-
-> Historical evidence (not current authority; source: Git history):
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                                |
-> | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-> | [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary    | Identifier/type/relation comparison only; no schema adoption.                                                             |
-> | [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard      | Provenance/revision comparison only; workspace registry remains canonical.                                                |
-> | [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
-> | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
-> | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
-> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
-> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
-> | Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
-> | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
-> | Common document contract (retired path: `../../../99.templates/support/common-document-contract.md`)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
-> | Archive and retention contract (retired path: `../../../99.templates/support/archive-retention-contract.md`)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
-> | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
->
-
-## Scope Application
+### Scope Application
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -466,7 +406,7 @@ Original observations, source checks, corrections, measurements, access failures
 > | security | applies | Avoid secret values in metadata. | Inspect scoped diff. | No security-control test. |
 >
 
-## 2026-09-05 Revalidation
+### 2026-09-05 Revalidation
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -487,7 +427,7 @@ Original observations, source checks, corrections, measurements, access failures
 > substitute for the Registry transition graph.
 >
 
-## Maintenance
+### Maintenance
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -499,7 +439,7 @@ Original observations, source checks, corrections, measurements, access failures
 > Release profile is implied by the old survey.
 >
 
-## Related Documents
+### Related Documents
 
 - [Research pack](README.md)
 
@@ -508,3 +448,69 @@ Original observations, source checks, corrections, measurements, access failures
 - [SDLC document roles](./m0016-sdlc-document-roles.md)
 - [Workspace baseline](./m0020-workspace-baseline.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+## Findings
+
+### Historical Workspace Observations
+
+Original observations, source checks, corrections, measurements, access failures and recommendations below remain at their recorded boundaries and were not reassessed. Heading anchors are preserved for consumers. Historical instructions are not current authority.
+
+> Historical evidence (not current authority; source: Git history):
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+## Limitations
+
+### Future Internal Checks
+
+Every row is a design for later authorized assessment. Confirmed paths were read only for routing; other surfaces are hypothetical candidates. No implementation, account, execution, permission enforcement or adoption was assessed.
+
+| Topic/claim ID | Analytical scope | Applicability condition | Future surface candidate | Specific question | Required evidence | Future method | Pass/fail criterion | Additional authority/risk | Expected owner | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Dates / C-m0006-01,03 | Repository; docs/evidence | Document/source refresh | Confirmed research metadata; hypothetical lifecycle artifact | Are publication/check/edit/review/observation distinct without ID reissue? | Scoped metadata diff and source-read receipt | Authorized provenance review | Pass: history/identity/date semantics retained; fail: redated observation/invented approval | Document-only scope; no private records | Documentation owner | Not assessed in this run |
+| Retention / C-m0006-04 | Repository; docs/governance | Replacement/retirement proposed | Confirmed documentation protocol route; hypothetical disposition packet | Where did meaning and every consumer move, and how is original evidence preserved? | Approved disposition/source boundary/body/consumer map | Bounded preservation/link comparison | Pass: owners/consumers/provenance preserved; fail: Git-only removal/unresolved owner | Archive/retirement authorization required | Documentation/governance owner | Not assessed in this run |
+
+## Sources
+
+### Claims and Sources
+
+Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
+
+| Claim ID | Claim | Source ID and detailed section | Publication/update | Actual check | Product/version/channel/status | Fact/interpretation/recommendation | Limitation and recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0006-01 | DCMI distinguishes metadata identity/type/dates/relations/versions/provenance | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation | Fact | Application-profile vocabulary, not local schema |
+| C-m0006-02 | PROV-O separates entities, activities, agents and derivation/revisions | S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation | Fact | No ontology adoption/conformance |
+| C-m0006-03 | Separate checks/edits/reviews/baselines/historical observation and review freshness by risk | S-dublincore-dcmi-terms — Introduction; identifier/created/modified/issued/provenance/version/replacement; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2020-01-20; 2013-04-30 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation; PROV-O; W3C Recommendation | Recommendation | Local profile admits fields; no universal expiry |
+| C-m0006-04 | Retire after approved owner/consumer cutover and preservation; age/count insufficient | S-cognitect-architecture-decisions — ADR format; status; consequences; supersession; S-w3c-prov-o — Starting Point Terms; Expanded Terms | 2011-11-15; 2013-04-30 | 2026-09-27 | Original author article; PROV-O; W3C Recommendation | Recommendation | No disposition performed; current local authority separate |
+
+| Source ID | Original and detailed location | Publication/update | Actual check | Product/channel/status |
+| --- | --- | --- | --- | --- |
+| S-dublincore-dcmi-terms | [Introduction; identifier/created/modified/issued/provenance/version/replacement](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/) | 2020-01-20 | 2026-09-27 | DCMI Metadata Terms; DCMI Recommendation |
+| S-w3c-prov-o | [Starting Point Terms; Expanded Terms](https://www.w3.org/TR/prov-o/) | 2013-04-30 | 2026-09-27 | PROV-O; W3C Recommendation |
+| S-cognitect-architecture-decisions | [ADR format; status; consequences; supersession](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2011-11-15 | 2026-09-27 | Original author article |
+
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                                         | Accessed   | Class                        | Use and verification state                                                                                                |
+> | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+> | [DCMI Metadata Terms](https://www.dublincore.org/specifications/dublin-core/dcmi-terms/)                                       | 2026-08-08 | External fixed vocabulary    | Identifier/type/relation comparison only; no schema adoption.                                                             |
+> | [W3C PROV-O](https://www.w3.org/TR/prov-o/)                                                                                    | 2026-08-08 | External fixed standard      | Provenance/revision comparison only; workspace registry remains canonical.                                                |
+> | [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
+> | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
+> | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
+> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
+> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
+> | Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
+> | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
+> | Common document contract (retired path: `../../../99.templates/support/common-document-contract.md`)                                          | 2026-08-08 | Workspace tracked            | Reference/audit/archive/generated/governance ownership.                                                                   |
+> | Archive and retention contract (retired path: `../../../99.templates/support/archive-retention-contract.md`)                                  | 2026-08-08 | Workspace tracked            | Provenance, confidentiality, review signals, and directory budgets.                                                       |
+> | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
+>

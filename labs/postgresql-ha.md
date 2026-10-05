@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB"
 version: "1.0.2"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-05"
 created: "2025-11-12"
 ---
 
@@ -64,7 +64,7 @@ labs/
 | Helper assets | `../infra/04-data/postgresql-cluster/config/`, `pg/`, `scripts/` |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
-## How to Work in This Area
+## Usage
 
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-postgresql-ha-static docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile '*' config --quiet`로 렌더링한다.

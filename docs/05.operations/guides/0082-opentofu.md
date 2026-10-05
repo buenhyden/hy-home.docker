@@ -17,7 +17,17 @@ created: "2026-09-19"
 
 # OpenTofu Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose and runtime boundary
 
@@ -63,18 +73,18 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile iac config --quiet`
 - `docker compose --profile iac run --rm --no-deps opentofu version`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-## Runbook Handoff
+### Runbook Handoff
 
 state 복구, lock 진단, plan/apply 분리, upgrade에는
 [runbook](../runbooks/0082-opentofu.md)을 사용한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0082-opentofu.md) (`POL-0082`)
 - [Runbook](../runbooks/0082-opentofu.md) (`RUN-0082`)

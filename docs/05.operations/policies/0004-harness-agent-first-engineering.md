@@ -16,6 +16,8 @@ created: "2026-06-04"
 
 ## Overview
 
+### Overview
+
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
 
 canonical agent governance는 `.agents/`에 있다: governance policy가 규칙을 소유하고,
@@ -26,7 +28,9 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 아래 표는 canonical 규칙의 소유자로 연결한다. 모델·permission·scope를 이 문서에
 별도 값으로 복제하지 않는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 - Agent entry shim.
 - Governance policy, role, skill, provider registry.
@@ -45,7 +49,14 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 - `docs/05.operations/runbooks/[0-9][0-9][0-9][0-9]-*.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
-## Controls
+### Traceability
+
+- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
+## Rules
+
+### Controls
 
 | Control | Requirement |
 | --- | --- |
@@ -69,29 +80,26 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 기록하지 않는다. Docker·실제 환경 접근을 포함한 게이트는 해당 범위의 승인이 있어야
 실행하며, 실행 불가 상태는 검증 성공으로 바꾸지 않는다.
 
-## Exceptions
-
-- 과거 Stage 90 또는 Stage 98 evidence는 명확히 non-authoritative일 때 이전 source label을 언급할 수 있다.
-- `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
-- CLI를 사용할 수 없을 때 `graphify` refresh를 건너뛸 수 있지만 건너뛴 사실은 보고해야 한다.
-- `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
-- 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
-
-## Verification
+### Verification
 
 [Runbook §Procedure](../runbooks/0004-harness-agent-first-engineering.md#procedure)에 나열된 hook, runtime, repository contract check는 harness 또는 Agent-first change를 승인하기 전에 모두 통과해야 한다.
 
-## Review Cadence
+### Review Cadence
 
 - root, governance, runtime, provider, script, stage documentation change 이후 repository contract check를 실행한다.
 - 광범위한 harness 또는 Agent-first migration 완료를 선언하기 전에 전체 verification bundle을 다시 실행한다.
 - `.claude`, `.codex`, 또는 canonical agent governance role/skill catalog가 바뀌면 이 policy를 검토한다.
 - scope 밖 infra profile 실패는 HAFE acceptance criteria를 조용히 확장하는 대신 별도로 기록한다.
 
-## Traceability
+## Exceptions
 
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
-- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+### Exceptions
+
+- 과거 Stage 90 또는 Stage 98 evidence는 명확히 non-authoritative일 때 이전 source label을 언급할 수 있다.
+- `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
+- CLI를 사용할 수 없을 때 `graphify` refresh를 건너뛸 수 있지만 건너뛴 사실은 보고해야 한다.
+- `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
+- 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
 
 ## Related Documents
 

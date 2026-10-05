@@ -1,10 +1,10 @@
 ---
 title: "Examples Surface"
 version: "1.1.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-03"
 ---
 
@@ -52,7 +52,7 @@ examples/
 └── README.md             # This file
 ```
 
-## How to Work in This Area
+## Usage
 
 1. 시드 폴더 전체를 `infra/`의 대상 tier 아래로 복사합니다 → 원본 시드는 그대로 남습니다.
 2. 복사본에서 서비스 이름, 이미지, 포트, 네트워크를 대상 서비스에 맞게 바꿉니다 → `docker compose config`가 성공합니다.

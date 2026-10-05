@@ -4,14 +4,22 @@ version: "1.1.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Environment Constraints
 
+## Overview
+
 Detailed execution boundaries, verification rules, and Graphify behaviors for the `hy-home.docker` workspace.
 
-## 1. Hard Constraints
+## Scope
+
+Local repository work, infrastructure execution, secrets handling, and verification environment.
+
+## Rules
+
+### 1. Hard Constraints
 
 - `docs/01` to `docs/99` are read-only by default; modify only with explicit user instruction.
 - Active stage artifacts belong only under `docs/01.requirements`, `docs/02.architecture`, `docs/03.specs`, `docs/05.operations`, `docs/90.references`, and `docs/99.templates`.
@@ -36,7 +44,7 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
   fixture content; never load diagnostics dumps, local logs, auth files,
   credentials, tokens, secret values, or shell history as evaluation input.
 
-## 2. Infrastructure Constraints
+### 2. Infrastructure Constraints
 
 - **Networking**: inter-service traffic MUST stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
@@ -57,7 +65,7 @@ Detailed execution boundaries, verification rules, and Graphify behaviors for th
 - **Pruning**: `docker system prune` requires explicit user consent. Never run
   it without one.
 
-### 2.1 Approved Runtime Mutation Protocol
+#### 2.1 Approved Runtime Mutation Protocol
 
 When the user approves live runtime or Docker mutation, the agent still needs a
 concrete target before changing service state. The co-located Task evidence must
@@ -73,7 +81,7 @@ record:
 Approval without a concrete runtime target authorizes planning and validation
 only; it does not require starting, stopping, rebuilding, or recreating services.
 
-### 2.2 Approved Secrets Work Protocol
+#### 2.2 Approved Secrets Work Protocol
 
 When the user separately approves a concrete secret operation, agents may
 inspect repository-local secret metadata needed for the task, but secret values
@@ -87,7 +95,7 @@ Secret value reads, writes, or rotations require a concrete target and task
 evidence that records the redaction boundary, validation command, and rollback
 or recovery path. Do not commit, print, summarize, or quote secret values.
 
-## 3. Verification
+### 3. Verification
 
 - For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
 - For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all` and link/stale-reference checks for edited files.
@@ -109,7 +117,7 @@ or recovery path. Do not commit, print, summarize, or quote secret values.
   failure is value-free and requires an explicit validator review rather than
   a caller override.
 
-## 4. Graphify
+### 4. Graphify
 
 This project has a graphify knowledge graph at `graphify-out/`.
 
@@ -131,6 +139,10 @@ This project has a graphify knowledge graph at `graphify-out/`.
   to silence a guard that is reporting a smaller corpus. A dated snapshot the
   tool writes alongside a refusal is a byproduct, not a release, and is not
   committed without checking its node count against the tracked graph.
+
+## Exceptions
+
+Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations retain their separate approval requirements.
 
 ## Related Documents
 

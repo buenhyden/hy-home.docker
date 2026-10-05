@@ -14,7 +14,17 @@ created: "2026-09-23"
 
 # hy-home.k8s Integration Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### Purpose
 
@@ -95,7 +105,7 @@ Prometheus API는 `/api/v1/`과 `Authorization: Basic …`이 함께 있을 때 
 라우트를 선택한다. 잘못된 Basic은401, 유효한 Basic은200이며 header 없는 요청과
 UI는 현재 SSO redirect302 경로다. TLS·DNS 실패000을 인증 거절로 세지 않는다.
 
-## Common Checks
+### Common Checks
 
 아래 점검은 실행 승인이 있는 환경에서만 수행한다. metadata check는 private
 registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을 만들 수 있다.
@@ -105,12 +115,12 @@ registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을
 - `bash scripts/hardening/check-all-hardening.sh` (라우트, 정책, 미들웨어 고정)
 - `docker network inspect k3d-hyhome --format '{{range .Containers}}{{.Name}} {{end}}'`는 `k3d-hyhome-*` 컨테이너만 나열
 
-## Runbook Handoff
+### Runbook Handoff
 
 최초 설정, 클러스터 재구축, 자격 증명 교체는
 [runbook](../runbooks/0096-k8s-integration.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0096-k8s-integration.md) (`POL-0096`)
 - [Runbook](../runbooks/0096-k8s-integration.md) (`RUN-0096`)

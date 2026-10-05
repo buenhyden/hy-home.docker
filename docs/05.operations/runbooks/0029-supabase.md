@@ -14,11 +14,15 @@ created: "2026-05-17"
 
 # Supabase Stack Health Runbook
 
-> Scope: Supabase data profile stack의 health check, 접근 검증, evidence capture, escalation.
-
----
-
 ## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
 
 이 런북은 health triage와 별도 승인 후 수행할 coherent Supabase backup의 격리 복원 rehearsal 계약을 제공한다. 아래 database/storage/config 복원은 이번 문서 변경에서 실행하지 않았다.
 
@@ -26,7 +30,7 @@ created: "2026-05-17"
 
 Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경로, 주요 로그를 안전하게 확인하고, secret 노출이나 destructive recovery가 필요한 경우 빠르게 escalation하도록 한다.
 
-## When to Use
+### When to Use
 
 - `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `db`, `analytics`, 또는 `supavisor`가 unhealthy이거나 누락된 경우.
 - Kong HTTP/HTTPS 접근이 compose가 선언한 host port에서 응답하지 않는 경우.
@@ -42,6 +46,8 @@ Supabase data profile stack의 compose render, 서비스 상태, Kong 접근 경
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -112,20 +118,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 5. Kong API, Auth signup/login policy, REST read, Realtime subscription, Storage object read, Function invocation, Studio metadata, analytics ingestion과 Supavisor connection을 synthetic data로 확인한다. object-count/metadata mismatch나 missing key가 있으면 승격하지 않는다.
 6. 실패 시 isolated stack과 전용 volumes를 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. production cutover, DNS/route switch, secret rotation은 별도 승인 절차이며 source stack은 변경하지 않는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 compose 명령, 서비스 상태, Kong route 결과, destructive recovery나 credential rotation을 생략한 이유를 기록한다.
 - 실패한 검증 출력이나 서비스 증상은 secret 값을 복사하지 않고 관련 task나 incident evidence에 첨부한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이 변경에서는 backup/restore, storage mutation, JWT rotation이나 credential reset을 실행하지 않았다.
 
-## Escalation
+### Escalation
 
 compose 렌더링이 실패하거나, 필요한 secret이나 mounted config가 누락되거나, 문서화된 확인 이후에도 서비스가 unhealthy하거나, Kong 접근이 계속 불가능하거나, secret 노출 위험이 나타나거나, destructive database/storage/credential 변경이 필요하면 담당 operator에게 escalation한다.
 
-## Traceability
+### Traceability
 
 - 선언된 parent: [Supabase Usage Guide](../guides/0029-supabase.md) (`GDE-0029`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)

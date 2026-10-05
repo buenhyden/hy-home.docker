@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 이 런북은 관리·실험 기능 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. direct 노출 복원, allowlist/SSO/gateway 체인 누락, 네트워크 경계 드리프트, CI 게이트 실패를 중심으로 점검/복구한다.
 
 ### Purpose
@@ -23,7 +31,7 @@ created: "2026-05-17"
 - Laboratory 관리 UI 보안 경계와 운영 안정성 기준을 신속히 복구한다.
 - compose/script/CI 회귀를 표준 절차로 차단한다.
 
-## When to Use
+### When to Use
 
 - `infrastructure-hardening` CI가 실패할 때
 - dozzle/redisinsight/open-notebook 접근 경계가 비정상일 때
@@ -31,6 +39,8 @@ created: "2026-05-17"
 - dozzle socket 권한 드리프트가 발생했을 때
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -105,17 +115,21 @@ created: "2026-05-17"
 6. 카탈로그 확장 로드맵 반영
    - dozzle 로그 제한, redisinsight 감사 정책, open-notebook data retention/direct-port review를 tasks/operations에 반영한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 이 런북 실행의 명령 결과·시각과 운영자 또는 agent의 조치를 기록한다.
 - 실패 검사·관측 증상·최종 복구 또는 보고 상태를 해당 Task나 사고 근거에 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 - 위의 `Safe Rollback or Recovery Procedure`를 포함하여 이 런북에 정의된 복구·rollback 단계만 사용한다.
 - 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `## Escalation`을 따른다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -131,7 +145,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 정적 gate 통과는 직접 peer 접근 차단·인증·복구 성공을 증명하지 않는다. 승인된
 예외, 월별 검토와 같은 릴리스 안의 임시 예외 종료·재검증 조건은 유지한다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Administration and Experimentation Hardening Usage Guide](../guides/0074-laboratory-optimization-hardening.md) (`GDE-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)

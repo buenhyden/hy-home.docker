@@ -14,7 +14,15 @@ created: "2026-03-26"
 
 # Data Tier (04-data) Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 Data provides storage and data-platform packages for HOME applications and
 explicitly selected development workloads. Operators need to distinguish
@@ -22,7 +30,7 @@ shared HOME state from OPTIONAL platforms and LAB topologies. Package names
 are direct children of `infra/04-data`; Analytics processing lives in
 `infra/12-analytics` under ADR-0045.
 
-## System Boundaries
+### System Boundaries
 
 Data owns its database/object-store configuration and state contracts. It does
 not own every persistent file in the platform: analytics checkpoints,
@@ -31,18 +39,18 @@ Secrets, ingress and backup orchestration retain their existing owners.
 Supabase is an intact optional data platform, including its bundled interfaces.
 No package is split solely to make a folder taxonomy more uniform.
 
-## Quality Attributes
+### Traceability
 
-- HOME mng-pg and mng-valkey are shared single-instance dependencies, separate
-  from LAB PostgreSQL/Valkey clusters. Same-host replicas do not provide host HA.
-- Performance and failover require measured workload/recovery evidence; this
-  description makes no tier-wide latency or availability guarantee.
-- Preserve declared secret, network, port and persistent path boundaries.
-  A folder or Compose profile does not add isolation.
-- Recovery follows each engine's supported backup/restore process and POL-0021;
-  a volume declaration or a Git rollback is not a verified data backup.
+- [REQ-0004](../../01.requirements/0004-data.md)
+- [REQ-0027](../../01.requirements/0027-home-development-host.md)
+- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
+- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 
-## Components
+## Architecture
+
+### Architecture
+
+### Components
 
 | Packages | Responsibility | Classification |
 | --- | --- | --- |
@@ -62,7 +70,7 @@ The PostgreSQL cluster retains Patroni, etcd, pg-router and exporters. Those
 components do not describe HOME's mng-pg topology. SurrealDB stays with its
 sole consumer Open Notebook in `08-ai`. RedisInsight owns only its administration metadata; target engine backups remain owned by the corresponding Data service. Restic stays in `09-platform-ops` as cross-platform orchestration.
 
-## Data Flow
+### Data Flow
 
 Auth, Workflow, Tooling and Analytics use declared mng-db identities. AI uses
 Qdrant. Observability, AI and Analytics share SeaweedFS with their own storage
@@ -73,7 +81,7 @@ approved explicit DB/roles and Valkey ACLs. `perf_db` retains test results with
 project-scoped access, not raw business data in management databases. Existing Compose dependencies and profiles define actual
 activation; this description does not assert an automatic ingestion pipeline.
 
-## Deployment View
+### Deployment View
 
 The root Compose includes normal package fragments, including optional dev-db.
 Cluster/replica dependency closures are separate `labs/` entrypoints excluded
@@ -82,12 +90,16 @@ credential contracts. Exact profiles and networks remain in source and POL-0078.
 ports, secrets, persistent volume identities and host paths. It does not
 restart containers or reconcile existing source mounts.
 
-## Traceability
+## Quality Attributes
 
-- [REQ-0004](../../01.requirements/0004-data.md)
-- [REQ-0027](../../01.requirements/0027-home-development-host.md)
-- [ADR-0045](../decisions/0045-data-storage-and-analytics-tier-boundary.md)
-- [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
+- HOME mng-pg and mng-valkey are shared single-instance dependencies, separate
+  from LAB PostgreSQL/Valkey clusters. Same-host replicas do not provide host HA.
+- Performance and failover require measured workload/recovery evidence; this
+  description makes no tier-wide latency or availability guarantee.
+- Preserve declared secret, network, port and persistent path boundaries.
+  A folder or Compose profile does not add isolation.
+- Recovery follows each engine's supported backup/restore process and POL-0021;
+  a volume declaration or a Git rollback is not a verified data backup.
 
 ## Related Documents
 

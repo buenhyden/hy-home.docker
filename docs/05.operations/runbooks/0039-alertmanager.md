@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > Scope: Alertmanager 준비 상태, Prometheus 전달 증거, secret으로 렌더링한 설정, 알림 경로 진단, 재시작과 설정 rollback.
 
 이 런북은 Alertmanager UI/readiness failure, Prometheus alert delivery gap, Slack notification failure, silence/inhibition drift, and config rendering regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 운영자가 `infra-alertmanager` 상태를 확인하고 Prometheus `alertmanager:9093` delivery, route/receiver config, Docker Secret-rendered runtime boundary, protected UI route를 검증하며, Secret 노출이나 receiver 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
-## When to Use
+### When to Use
 
 - Prometheus에서 firing alert가 있는데 Alertmanager UI나 Slack receiver에서 보이지 않을 때.
 - Alertmanager UI `https://alertmanager.${DEFAULT_URL}` 또는 `/-/ready` endpoint가 실패할 때.
@@ -33,6 +41,8 @@ created: "2026-05-17"
 - `config.yml` 변경 후 route, receiver, template, notification delivery 상태 검증이 필요할 때.
 
 ## Procedure
+
+### Procedure
 
 ### Execution Boundary
 
@@ -150,22 +160,26 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. secret 값을 노출하지 않고 readiness, source alert 수신, silence 보존, inhibition/grouping, notification-log 동작과 통제된 test 알림 전송 1회를 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 route/state 교체는 별도로 승인받는다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret 값, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
 - Notification 장애는 affected receiver, matching route, alert labels, log excerpt, silence/inhibition state를 함께 기록한다.
 - Receiver/channel/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. Secret rotation, receiver/channel policy, inhibition policy, protected middleware, or external Slack/SMTP resource 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
-## Escalation
+### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, receiver/channel/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
 
-## Traceability
+### Traceability
 
 - Declared parent: [Alertmanager Usage Guide](../guides/0039-alertmanager.md) (`GDE-0039`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)

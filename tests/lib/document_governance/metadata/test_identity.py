@@ -187,7 +187,7 @@ class IdentityBehaviorTests(unittest.TestCase):
                 "updated": "2026-08-07",
             },
             "spec",
-            previous_status="active",
+            previous_status="in-progress",
             frontmatter_present=True,
         )
         records = [parent, child]
@@ -206,4 +206,4 @@ class IdentityBehaviorTests(unittest.TestCase):
             "| valid | parents=resolved:1; order=declared-list; supersedes=not-provided |",
             child_row,
         )
-        self.assertIn("available:active->completed; valid", child_row)
+        self.assertIn("available:in-progress->completed; valid", child_row)

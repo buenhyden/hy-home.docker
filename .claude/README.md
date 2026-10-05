@@ -1,10 +1,10 @@
 ---
 title: "Claude Runtime Route"
 version: "1.0.0"
-type: "common/runtime-governance-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-04"
+updated: "2026-10-05"
 generated_by: "scripts/operations/provider_surface_renderer.py"
 ---
 
@@ -12,4 +12,22 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 # Claude Runtime Route
 
+## Overview
+
 이 생성 어댑터는 `.claude/provider.md`로 안내합니다.
+
+## Scope
+
+This directory contains generated provider adapters.
+
+## Structure
+
+Canonical governance remains in the linked source.
+
+## Usage
+
+Read the linked source before using these adapters.
+
+## Related Documents
+
+- [`.claude/provider.md`](../.claude/provider.md)

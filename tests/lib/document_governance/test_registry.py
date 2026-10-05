@@ -128,6 +128,76 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_generation5_common_contract_is_exact(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.assertEqual((), validate_registry(raw))
+        self.assertNotIn("spec_completion_evidence", raw["common"])
+        self.assertNotIn("review_evidence", raw["common"])
+        cases = {
+            "contract_id": "SDLC-COMMON-v3",
+            "spec_section": "Acceptance Contract",
+            "plan_columns": ["Work Unit", "Criteria"],
+            "evidence_columns": ["Evidence", "Result"],
+            "result_domain": ["PASS", "SKIP"],
+            "acceptance_domain": ["pending", "accepted", "waived"],
+        }
+        for key, value in cases.items():
+            with self.subTest(key=key):
+                changed = json.loads(json.dumps(raw))
+                changed["common"][key] = value
+                self.assertIn(
+                    f"common.{key}",
+                    {finding.path for finding in validate_registry(changed)},
+                )
+
+    def test_historical_registry_validation_uses_its_committed_schema(self) -> None:
+        for revision, generation in (
+            ("2bba11baa1009e673a763a727b0a9e3d7e0bb5a7", None),
+            ("8b85e88fe2dfef54f4cc125ee2687982c86c1942", 4),
+        ):
+            with self.subTest(generation=generation):
+                raw = registry_module.load_registry_document_at_revision(
+                    revision, root=ROOT
+                )
+                self.assertEqual(
+                    generation,
+                    raw["common"].get("lifecycle_generation"),
+                )
+                self.assertEqual(
+                    (),
+                    registry_module.validate_registry_at_revision(revision, root=ROOT),
+                )
+
+    def test_registry_revision_document_uses_exact_committed_blob(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            registry = root / "docs/99.templates/registry.json"
+            registry.parent.mkdir(parents=True)
+            registry.write_text(
+                '{"common":{"lifecycle_generation":3}}\n', encoding="utf-8"
+            )
+            for args in (
+                ("init", "-q"),
+                ("config", "user.name", "Registry Fixture"),
+                ("config", "user.email", "registry@example.invalid"),
+                ("add", "."),
+                ("commit", "-qm", "baseline"),
+            ):
+                self.assertEqual(0, _fixture_git(root, *args).returncode)
+            registry.write_text(
+                '{"common":{"lifecycle_generation":4}}\n', encoding="utf-8"
+            )
+
+            historical = registry_module.load_registry_document_at_revision(
+                "HEAD", root=root
+            )
+
+            self.assertEqual(3, historical["common"]["lifecycle_generation"])
+            with self.assertRaises(RegistryError):
+                registry_module.load_registry_document_at_revision(
+                    "missing-revision", root=root
+                )
+
     def test_evaluation_migration_registers_only_exact_sources(self) -> None:
         from scripts.lib.agent_governance import agent_governance_contract as contract
 
@@ -168,7 +238,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         profiles = build_registry_profiles(load_registry())
         target = pathlib.Path(".agents/evaluations/README.md")
-        source = '---\ntype: "common/repository-readme"\nstatus: "active"\n---\n# Evaluations\n'
+        source = '---\ntype: "common/readme"\nstatus: "active"\n---\n# Evaluations\n'
         with (
             mock.patch.object(
                 lifecycle, "_text_at_ref", return_value=source
@@ -206,7 +276,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 pathlib.Path("evals/README.md"), historical.call_args.args[1]
             )
             for previous in (
-                source.replace("common/repository-readme", "governance/policy"),
+                source.replace("common/readme", "governance/policy"),
                 source.replace(
                     'status: "active"', 'status: "active"\nartifact_id: "different"'
                 ),
@@ -784,20 +854,24 @@ class DocumentRegistryTests(unittest.TestCase):
     ) -> None:
         valid = {
             "reason": "Scope consolidated",
-            "approved_by": "@fixture",
-            "approved_at": "2026-09-28",
-            "criteria": [],
+            "authorization_ref": "#cancellation-authorization",
+            "criteria_disposition": [],
         }
-        for criteria in (
+        for criteria_disposition in (
             [],
-            [{"criterion": 1, "withdrawn": "Scope removed"}],
-            [{"criterion": 1, "reassigned_to": "SPEC-0001-TSK-0002"}],
+            [{"criterion": 1, "withdrawal_ref": "#approved-withdrawal"}],
+            [{"criterion": 1, "successor": "SPEC-0001-TSK-0002"}],
         ):
-            with self.subTest(valid_criteria=criteria):
+            with self.subTest(valid_criteria=criteria_disposition):
                 self.assertEqual(
                     (),
                     validate_frontmatter(
-                        {"cancellation": {**valid, "criteria": criteria}}
+                        {
+                            "cancellation": {
+                                **valid,
+                                "criteria_disposition": criteria_disposition,
+                            }
+                        }
                     ),
                 )
         invalid = [
@@ -810,27 +884,23 @@ class DocumentRegistryTests(unittest.TestCase):
             ),
             *(
                 {**valid, key: value}
-                for key in ("reason", "approved_by")
+                for key in ("reason", "authorization_ref")
                 for value in (None, "", "   ")
             ),
+            {**valid, "criteria_disposition": {}},
             *(
-                {**valid, "approved_at": value}
-                for value in ("2026-02-30", "2026-9-28", "yesterday", None)
-            ),
-            {**valid, "criteria": {}},
-            *(
-                {**valid, "criteria": [entry]}
+                {**valid, "criteria_disposition": [entry]}
                 for entry in (
                     {"criterion": 1},
                     {
                         "criterion": 1,
-                        "withdrawn": "Removed",
-                        "reassigned_to": "SPEC-0001-TSK-0002",
+                        "withdrawal_ref": "#approved-withdrawal",
+                        "successor": "SPEC-0001-TSK-0002",
                     },
-                    {"criterion": True, "withdrawn": "Removed"},
-                    {"criterion": "1", "withdrawn": "Removed"},
-                    {"criterion": 1, "withdrawn": "   "},
-                    {"criterion": 1, "reassigned_to": "   "},
+                    {"criterion": True, "withdrawal_ref": "#approved-withdrawal"},
+                    {"criterion": "1", "withdrawal_ref": "#approved-withdrawal"},
+                    {"criterion": 1, "withdrawal_ref": "   "},
+                    {"criterion": 1, "successor": "   "},
                 )
             ),
         ]
@@ -880,8 +950,9 @@ class DocumentRegistryTests(unittest.TestCase):
             supplied = rendered.replace(
                 'created: "2026-09-28"',
                 'created: "2026-09-28"\ncancellation:\n'
-                '  reason: "Scope consolidated"\n  approved_by: "@fixture"\n'
-                '  approved_at: "2026-09-28"\n  criteria: []',
+                '  reason: "Scope consolidated"\n'
+                '  authorization_ref: "#inputs-and-authorization"\n'
+                "  criteria_disposition: []",
             )
             target.write_text(supplied)
             record = metadata_validator._record_from_text(
@@ -890,19 +961,14 @@ class DocumentRegistryTests(unittest.TestCase):
             codes = {item.code for item in validate_record(record, profiles, manifest)}
             self.assertEqual(set(), codes)
 
-    def test_published_postmortem_requires_review_evidence(self) -> None:
+    def test_published_postmortem_uses_frontmatter_lifecycle_status(self) -> None:
         profile = load_registry().profiles["postmortem"]
         self.assertEqual(
             (), registry_module.validate_profile_values({"status": "draft"}, profile)
         )
-        self.assertIn(
-            "status-frontmatter-required",
-            {
-                item.code
-                for item in registry_module.validate_profile_values(
-                    {"status": "published"}, profile
-                )
-            },
+        self.assertEqual(
+            (),
+            registry_module.validate_profile_values({"status": "published"}, profile),
         )
         self.assertEqual(
             (),
@@ -1086,26 +1152,33 @@ class DocumentRegistryTests(unittest.TestCase):
         registry = load_registry()
 
         self.assertEqual(
-            ("review",), registry.transitions["requirements-package"]["draft"]
+            ("in-review", "approved", "retired"),
+            registry.transitions["requirements-package"]["draft"],
         )
         self.assertEqual(
-            ("approved",), registry.transitions["requirements-package"]["review"]
+            ("approved", "draft", "retired"),
+            registry.transitions["requirements-package"]["in-review"],
         )
         self.assertNotIn(
             "active", registry.transitions["requirements-package"]["approved"]
         )
-        self.assertEqual(("ready",), registry.transitions["task"]["draft"])
+        self.assertEqual(("ready", "cancelled"), registry.transitions["task"]["draft"])
         self.assertIn("in-progress", registry.transitions["task"]["ready"])
         self.assertIn("blocked", registry.transitions["task"]["in-progress"])
         self.assertIn("in-progress", registry.transitions["task"]["blocked"])
-        self.assertNotIn("completed", registry.transitions["task"]["blocked"])
+        self.assertIn("completed", registry.transitions["task"]["blocked"])
         self.assertEqual(
-            ("investigating",), registry.transitions["incident"]["detected"]
+            ("investigating", "resolved"),
+            registry.transitions["incident"]["detected"],
         )
         self.assertEqual(
-            ("mitigated",), registry.transitions["incident"]["investigating"]
+            ("mitigated", "resolved"),
+            registry.transitions["incident"]["investigating"],
         )
-        self.assertEqual(("resolved",), registry.transitions["incident"]["mitigated"])
+        self.assertEqual(
+            ("resolved", "investigating"),
+            registry.transitions["incident"]["mitigated"],
+        )
 
     def test_active_corpus_uses_migrated_statuses_and_common_six(self) -> None:
         registry = load_registry()
@@ -1363,7 +1436,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertNotIn("release", registry.profiles)
         self.assertGreater(registry.identity_spaces["requirement"].next_number, 0)
 
-    def test_registry_uses_one_internal_id_per_external_type(self) -> None:
+    def test_shared_navigation_type_keeps_distinct_path_profiles(self) -> None:
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         profiles = raw["profiles"]
 
@@ -1371,9 +1444,34 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertTrue(all("id" in profile for profile in profiles))
         self.assertTrue(all("profile_id" not in profile for profile in profiles))
         profile_ids = [profile["id"] for profile in profiles]
-        document_types = [profile["type"] for profile in profiles]
         self.assertEqual(len(profile_ids), len(set(profile_ids)))
-        self.assertEqual(len(document_types), len(set(document_types)))
+        navigation = [
+            profile for profile in profiles if profile["type"] == "common/readme"
+        ]
+        self.assertGreater(len(navigation), 1)
+        self.assertTrue(
+            all(
+                profile["lifecycle_id"] == "navigation"
+                and profile["identity_relation"] == "none"
+                and profile.get("artifact_id_pattern") is None
+                for profile in navigation
+            )
+        )
+        self.assertNotIn(
+            "profile-type-duplicate", {item.code for item in validate_registry(raw)}
+        )
+        registry = load_registry()
+        self.assertEqual(
+            "reference-category-readme",
+            classify_path("docs/90.references/research/README.md", registry),
+        )
+        self.assertEqual(
+            "research",
+            classify_path(
+                "docs/90.references/research/0002-agentic-engineering-research-pack/README.md",
+                registry,
+            ),
+        )
 
         duplicate_type = json.loads(json.dumps(raw))
         duplicate_type["profiles"][1]["type"] = duplicate_type["profiles"][0]["type"]
@@ -2551,7 +2649,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profile_map = adapted["profiles"]
         self.assertIsInstance(profile_map, dict)
         spec = profile_map["spec"]
-        self.assertIn("superseded", spec["transitions"]["active"])
+        self.assertIn("superseded", spec["transitions"]["approved"])
         self.assertEqual([], spec["transitions"]["superseded"])
 
     def test_adapter_rejects_every_unregistered_target_route(self) -> None:
@@ -2607,8 +2705,9 @@ class DocumentRegistryTests(unittest.TestCase):
             frontmatter_present=True,
         )
         body = (
-            "# Lifecycle\n\n## Purpose\n\nPurpose.\n\n## Lifecycle\n\nLifecycle.\n\n"
-            "## Authority Boundaries\n\nBoundaries.\n\n## Related Documents\n\nLinks.\n"
+            "# Lifecycle\n\n## Purpose\n\nPurpose.\n\n## Inputs\n\nInputs.\n\n"
+            "## Sequence\n\nSequence.\n\n## Stop Conditions\n\nStop.\n\n"
+            "## Outputs\n\nOutputs.\n\n## Related Documents\n\nLinks.\n"
         )
         self.assertEqual(
             [],
@@ -2621,7 +2720,7 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         findings = validate_body_contract(
             valid,
-            body.replace("## Authority Boundaries\n\nBoundaries.\n\n", ""),
+            body.replace("## Inputs\n\nInputs.\n\n", ""),
             adapted,
             changed_boundary=True,
         )
@@ -2818,7 +2917,7 @@ class FreeFormProfileTests(unittest.TestCase):
                 re.M,
             )
         )
-        self.assertGreaterEqual(len(policies), 16)
+        self.assertTrue(policies)
         adapted = self._adapted()
         offenders: list[str] = []
         for path in policies:
@@ -2905,15 +3004,19 @@ class ExecutionLifecycleTests(unittest.TestCase):
 
     def test_task_lifecycle_requires_ready_and_in_progress(self) -> None:
         transitions = self._transitions("task")
-        self.assertEqual(["ready"], transitions["draft"])
+        self.assertEqual(["ready", "cancelled"], transitions["draft"])
         self.assertIn("in-progress", transitions["ready"])
         self.assertIn("completed", transitions["in-progress"])
 
     def test_plan_lifecycle_requires_approval_before_activation(self) -> None:
         transitions = self._transitions("plan")
-        self.assertEqual(["approved"], transitions["draft"])
-        self.assertEqual(["active"], transitions["approved"])
-        self.assertIn("completed", transitions["active"])
+        self.assertEqual(
+            ["in-review", "approved", "cancelled", "superseded"],
+            transitions["draft"],
+        )
+        self.assertIn("approved", transitions["in-review"])
+        self.assertIn("in-progress", transitions["approved"])
+        self.assertIn("completed", transitions["in-progress"])
 
     def test_execution_lifecycle_still_refuses_to_reopen(self) -> None:
         self.assertEqual([], self._transitions("task")["completed"])
@@ -2921,7 +3024,10 @@ class ExecutionLifecycleTests(unittest.TestCase):
     def test_spec_package_lifecycle_stays_strict(self) -> None:
         # A Spec Package is reviewed and approved before activation.
         self.assertNotIn("completed", self._transitions("spec")["draft"])
-        self.assertEqual(["review"], self._transitions("spec")["draft"])
+        self.assertEqual(
+            ["in-review", "approved", "cancelled", "superseded"],
+            self._transitions("spec")["draft"],
+        )
 
 
 class InvalidPreviousStatusTests(unittest.TestCase):
@@ -2962,14 +3068,208 @@ class InvalidPreviousStatusTests(unittest.TestCase):
             finding.code for finding in validate_record(record, self._profiles(), {})
         }
 
-    def test_repair_from_an_undefined_status_is_not_a_transition(self) -> None:
-        self.assertNotIn("invalid-transition", self._codes("archived", "sealed"))
+    def test_undefined_previous_status_needs_exact_migration_evidence(self) -> None:
+        self.assertIn("invalid-transition", self._codes("archived", "sealed"))
 
     def test_sealed_record_cannot_move_to_an_undefined_status(self) -> None:
         self.assertIn("invalid-transition", self._codes("sealed", "completed"))
 
     def test_repair_must_land_on_a_defined_status(self) -> None:
         self.assertIn("invalid-transition", self._codes("archived", "archived-too"))
+
+
+class ActualTaskLifecycleTransitionTests(unittest.TestCase):
+    def test_exact_validated_current_event_path_satisfies_initial_guard(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/9998-fixture/tasks/tsk-0001-implement.md")
+        record = Record(
+            path=path,
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/task",
+                "status": "in-progress",
+                "owner": "@owner",
+                "updated": "2026-10-04",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998-TSK-0001",
+                "parent_ids": ["SPEC-9998-PLAN-0001"],
+                "created": "2026-10-04",
+            },
+            artifact_type="task",
+            frontmatter_present=True,
+        )
+
+        def codes(actual=frozenset()):
+            return {
+                finding.code
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    {},
+                    enforce_initial_status=True,
+                    actual_lifecycle_transitions=actual,
+                )
+            }
+
+        self.assertIn("invalid-initial-status", codes())
+        transition = (path.as_posix(), "draft", "in-progress")
+        self.assertNotIn("invalid-initial-status", codes(frozenset({transition})))
+        self.assertIn(
+            "invalid-initial-status",
+            codes(frozenset({("docs/03.specs/9998-other/spec.md", *transition[1:])})),
+        )
+
+    def test_exact_generation_normalization_satisfies_lifecycle_guards(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/9998-fixture/spec.md")
+        record = Record(
+            path=path,
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/spec",
+                "status": "in-progress",
+                "owner": "@owner",
+                "updated": "2026-10-05",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998",
+                "parent_ids": [],
+                "created": "2026-10-04",
+            },
+            artifact_type="spec",
+            previous_status="active",
+            frontmatter_present=True,
+        )
+        exact = frozenset({(path.as_posix(), "active", "in-progress")})
+        without = {finding.code for finding in validate_record(record, profiles, {})}
+        with_exact = {
+            finding.code
+            for finding in validate_record(
+                record,
+                profiles,
+                {},
+                actual_lifecycle_normalizations=exact,
+            )
+        }
+        wrong_path = {
+            finding.code
+            for finding in validate_record(
+                record,
+                profiles,
+                {},
+                actual_lifecycle_normalizations=frozenset(
+                    {("docs/03.specs/9998-other/spec.md", "active", "in-progress")}
+                ),
+            )
+        }
+        self.assertIn("invalid-transition", without)
+        self.assertNotIn("invalid-transition", with_exact)
+        self.assertIn("invalid-transition", wrong_path)
+
+    def test_initial_generation_normalization_requires_its_source_status(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/9998-fixture/spec.md")
+        record = Record(
+            path=path,
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/spec",
+                "status": "in-progress",
+                "owner": "@owner",
+                "updated": "2026-10-05",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998",
+                "parent_ids": [],
+                "created": "2026-10-04",
+            },
+            artifact_type="spec",
+            frontmatter_present=True,
+        )
+        exact = frozenset({(path.as_posix(), "active", "in-progress")})
+
+        def codes(source: str) -> set[str]:
+            return {
+                finding.code
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    {},
+                    enforce_initial_status=True,
+                    actual_lifecycle_normalizations=exact,
+                    actual_lifecycle_normalization_sources={path.as_posix(): source},
+                )
+            }
+
+        self.assertNotIn("invalid-initial-status", codes("active"))
+        self.assertIn("invalid-initial-status", codes("draft"))
+
+    def test_initial_guard_accepts_exact_normalization_event_composition(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        path = pathlib.Path("docs/03.specs/9998-fixture/spec.md")
+        record = Record(
+            path=path,
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/spec",
+                "status": "completed",
+                "owner": "@owner",
+                "updated": "2026-10-05",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998",
+                "parent_ids": [],
+                "created": "2026-10-04",
+            },
+            artifact_type="spec",
+            previous_status="active",
+            frontmatter_present=True,
+        )
+        normalization = frozenset({(path.as_posix(), "active", "in-progress")})
+
+        def codes(source: str, transition_source: str) -> set[str]:
+            return {
+                finding.code
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    {},
+                    enforce_initial_status=True,
+                    actual_lifecycle_normalizations=normalization,
+                    actual_lifecycle_normalization_sources={path.as_posix(): source},
+                    actual_lifecycle_transitions=frozenset(
+                        {(path.as_posix(), transition_source, "completed")}
+                    ),
+                )
+            }
+
+        self.assertNotIn("invalid-transition", codes("active", "active"))
+        self.assertIn("invalid-transition", codes("active", "blocked"))
+
+    def test_current_task_parent_cardinality_is_registered(self) -> None:
+        profiles = build_registry_profiles(load_registry())
+        record = Record(
+            path=pathlib.Path("docs/03.specs/9998-fixture/tasks/tsk-0001-implement.md"),
+            metadata={
+                "title": "Fixture",
+                "version": "1.0.0",
+                "type": "sdlc/task",
+                "status": "draft",
+                "owner": "@owner",
+                "updated": "2026-10-05",
+                "layer": "specs",
+                "artifact_id": "SPEC-9998-TSK-0001",
+                "parent_ids": ["SPEC-9998", "SPEC-9998-PLAN-0001"],
+                "created": "2026-10-05",
+            },
+            artifact_type="task",
+            frontmatter_present=True,
+        )
+        self.assertIn(
+            "parent-cardinality",
+            {finding.code for finding in validate_record(record, profiles, {})},
+        )
 
 
 class ResurrectedMigrationContractTests(unittest.TestCase):

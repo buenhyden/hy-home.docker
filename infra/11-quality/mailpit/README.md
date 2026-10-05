@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Implementation"
 version: "0.2.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 ---
 
 # Mailpit
@@ -41,7 +41,7 @@ Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../do
 
 저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 실행합니다. 런타임 확인은 소유 Runbook을 사용합니다. 설정 검증만으로는 유지보수 작업의 성공이나 SMTP 캡처를 증명하지 못합니다.
 
-## How to Work in This Area
+## Usage
 
 변경 작업 중에는 데이터와 자격 증명을 보존합니다. 배포 전에 정확한 런타임 대상을 검토합니다. 운영 절차는 기존 운영 주제(operations subject) 안에 유지합니다.
 

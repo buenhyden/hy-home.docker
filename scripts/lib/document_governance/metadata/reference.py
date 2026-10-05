@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import argparse
 import collections
+import dataclasses
 import pathlib
 import posixpath
 import re
 import stat
 import sys
 from collections.abc import Mapping, Sequence
+from types import MappingProxyType
 
 from scripts.lib.document_governance.architecture import (
     ArchitectureDocumentError,
@@ -50,6 +52,7 @@ from scripts.lib.document_governance.metadata.identity import (
 )
 from scripts.lib.document_governance.metadata.lifecycle import (
     _governance_moved_body_baseline,
+    _is_legacy_archive_route_type,
     _legacy_exception_evidence,
     _link_target_neutral_text,
     _operations_moved_body_baseline,
@@ -96,6 +99,8 @@ from scripts.lib.document_governance.registry import (
     _declares_provider_binding,
     document_type,
     load_registry,
+    load_registry_at_revision,
+    load_registry_document_at_revision,
     load_trusted_requirement_allocation_baseline,
     normalize_profile_frontmatter,
     resolve_template_placeholders,
@@ -112,10 +117,31 @@ from scripts.lib.document_governance.spec_packages import (
     SpecPackageError,
     load_spec_packages,
     resolve_lifecycle_base,
-    validate_repository_spec_package_lifecycle,
+    validate_repository_spec_package_lifecycle_details,
 )
 
 _MARKDOWN_LINK_TARGET = re.compile(r"\]\(([^)\s]+)\)")
+
+
+@dataclasses.dataclass(frozen=True)
+class _GenerationBindings:
+    """Exact unchanged state recovered from an approved generation source."""
+
+    revision: str | None = None
+    unchanged_statuses: Mapping[str, str] = dataclasses.field(
+        default_factory=lambda: MappingProxyType({})
+    )
+    frozen_terminal_tasks: frozenset[str] = frozenset()
+
+    def __post_init__(self) -> None:
+        object.__setattr__(
+            self,
+            "unchanged_statuses",
+            MappingProxyType(dict(self.unchanged_statuses)),
+        )
+        object.__setattr__(
+            self, "frozen_terminal_tasks", frozenset(self.frozen_terminal_tasks)
+        )
 
 
 def _index_membership_findings(
@@ -199,13 +225,58 @@ def _is_registered_readme_form(path: pathlib.Path, registry: DocumentRegistry) -
     )
 
 
-def validate_repository_contracts(
+def _registered_generation_normalization(
+    profile: Mapping[str, object] | None,
+    source_status: object,
+    current_status: object,
+    registered: frozenset[tuple[object, object, object]],
+) -> bool:
+    if not isinstance(profile, Mapping):
+        return False
+    lifecycle_id = profile.get("lifecycle_id")
+    return (lifecycle_id, source_status, current_status) in registered and (
+        lifecycle_id != "navigation" or profile.get("identity_relation") == "none"
+    )
+
+
+def _generation_task_body_baseline(
+    root: pathlib.Path,
+    record: Record,
+    current_text: str,
+    profiles: dict[str, object],
+    bindings: _GenerationBindings,
+) -> tuple[Record | None, str | None]:
+    """Return an exact terminal Task blob from the validated generation source."""
+
+    path = record.path.as_posix()
+    if bindings.revision is None or path not in bindings.frozen_terminal_tasks:
+        return None, None
+    source_text = _text_at_ref(root, record.path, bindings.revision)
+    if source_text is None or source_text != current_text:
+        return None, None
+    return (
+        _record_from_text(
+            record.path,
+            source_text,
+            previous_status=bindings.unchanged_statuses.get(path),
+            profiles=profiles,
+        ),
+        source_text,
+    )
+
+
+def _validate_repository_contracts(
     root: pathlib.Path,
     profiles: dict[str, object],
     *,
     base_ref: str | None = None,
     transition_ref: str | None = None,
-) -> list[Finding]:
+) -> tuple[
+    list[Finding],
+    frozenset[tuple[str, str, str]],
+    frozenset[tuple[str, str, str]],
+    _GenerationBindings,
+]:
     """Validate tracked repository surfaces backed by the canonical registry.
 
     `transition_ref` names the committed state the working tree is compared
@@ -216,8 +287,15 @@ def validate_repository_contracts(
 
     _require_git_worktree(root)
     findings: list[Finding] = []
+    actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalizations: set[tuple[str, str, str]] = set()
+    actual_lifecycle_normalization_sources: dict[str, str] = {}
+    generation_revision: str | None = None
+    unchanged_generation_statuses: dict[str, str] = {}
+    frozen_terminal_tasks: set[str] = set()
     tracked_markdown = _tracked_repository_markdown(root)
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
+    source_bound_legacy_types: set[str] = set()
 
     if registry_native:
         active_registry = profiles.get("_registry")
@@ -243,17 +321,6 @@ def validate_repository_contracts(
         )
         manifest = build_current_manifest(root, records)
         findings.extend(_index_membership_findings(root, active_registry, records))
-        for record in records:
-            # Gating on `status == "active"` made `invalid-status` unreachable:
-            # a document with a status outside its lifecycle is by definition
-            # not active, so the check that would catch it never ran. Template
-            # sources keep their own route, because a template's placeholders
-            # are correct for a template and invalid for an authored document.
-            findings.extend(
-                finding
-                for finding in validate_record(record, profiles, manifest)
-                if finding.severity == "error"
-            )
         findings.extend(_allocation_findings(root, profiles, records, base_ref))
         requirement_root = root / "docs/01.requirements"
         if requirement_root.exists() or requirement_root.is_symlink():
@@ -279,10 +346,11 @@ def validate_repository_contracts(
                     if spec_root.exists() or spec_root.is_symlink()
                     else ()
                 )
-                spec_lifecycle_findings = validate_repository_spec_package_lifecycle(
+                spec_lifecycle = validate_repository_spec_package_lifecycle_details(
                     root,
                     spec_packages,
                     base_ref=base_ref,
+                    registry=active_registry,
                 )
             except SpecPackageError as error:
                 findings.append(
@@ -293,10 +361,218 @@ def validate_repository_contracts(
                     )
                 )
             else:
+                actual_lifecycle_transitions = spec_lifecycle.actual_transitions
+                actual_lifecycle_normalizations.update(
+                    spec_lifecycle.actual_normalizations
+                )
+                if spec_lifecycle.generation_source is not None:
+                    generation_revision = spec_lifecycle.generation_source
+                    migration_contract = active_registry.common.get(
+                        "task_lifecycle_events", {}
+                    )
+                    migration = (
+                        migration_contract.get("migration", {})
+                        if isinstance(migration_contract, Mapping)
+                        else {}
+                    )
+                    registered_normalizations = frozenset(
+                        (
+                            item.get("lifecycle_id"),
+                            item.get("from_status"),
+                            item.get("to_status"),
+                        )
+                        for item in migration.get("normalizations", ())
+                        if isinstance(item, Mapping)
+                    )
+                    source_registry = load_registry_document_at_revision(
+                        spec_lifecycle.generation_source,
+                        root=root,
+                    )
+                    source_registry_contract = load_registry_at_revision(
+                        spec_lifecycle.generation_source,
+                        root=root,
+                    )
+                    source_profiles = source_registry.get("profiles")
+                    source_lifecycles = source_registry.get("lifecycles")
+                    source_profiles_by_id = (
+                        {
+                            profile.get("id"): profile
+                            for profile in source_profiles
+                            if isinstance(profile, Mapping)
+                        }
+                        if isinstance(source_profiles, list)
+                        else {}
+                    )
+                    source_records = collect_selected_records_at_ref(
+                        root,
+                        profiles,
+                        [record.path.as_posix() for record in records],
+                        spec_lifecycle.generation_source,
+                    )
+                    for record in records:
+                        source = source_records.get(record.path.as_posix())
+                        if source is None:
+                            continue
+                        current_profile = active_registry.profiles.get(
+                            record.artifact_type
+                        )
+                        expected_type = (
+                            current_profile.get("type")
+                            if isinstance(current_profile, Mapping)
+                            else None
+                        )
+                        if (
+                            isinstance(expected_type, str)
+                            and _is_legacy_archive_route_type(record, expected_type)
+                            and source.metadata == record.metadata
+                        ):
+                            source_text = _text_at_ref(
+                                root, record.path, spec_lifecycle.generation_source
+                            )
+                            try:
+                                current_text = (root / record.path).read_text(
+                                    encoding="utf-8"
+                                )
+                            except (OSError, UnicodeError):
+                                current_text = None
+                            if source_text is not None and current_text == source_text:
+                                source_bound_legacy_types.add(record.path.as_posix())
+                        source_status = source.metadata.get("status")
+                        current_status = record.metadata.get("status")
+                        source_profile = source_profiles_by_id.get(record.artifact_type)
+                        source_lifecycle_id = (
+                            source_profile.get("lifecycle_id")
+                            if isinstance(source_profile, Mapping)
+                            else None
+                        )
+                        source_lifecycle = (
+                            source_lifecycles.get(source_lifecycle_id)
+                            if isinstance(source_lifecycles, Mapping)
+                            and isinstance(source_lifecycle_id, str)
+                            else None
+                        )
+                        current_lifecycle_id = (
+                            current_profile.get("lifecycle_id")
+                            if isinstance(current_profile, Mapping)
+                            else None
+                        )
+                        current_statuses = active_registry.lifecycles.get(
+                            str(current_lifecycle_id), ()
+                        )
+                        current_identity = record.metadata.get("artifact_id")
+                        source_identity = source.metadata.get("artifact_id")
+                        identity_is_bound = (
+                            source.artifact_type == record.artifact_type
+                            and (
+                                (
+                                    isinstance(current_identity, str)
+                                    and source_identity == current_identity
+                                )
+                                or (
+                                    current_identity is None
+                                    and source_identity is None
+                                    and isinstance(current_profile, Mapping)
+                                    and current_profile.get("identity_relation")
+                                    == "none"
+                                )
+                            )
+                        )
+                        if (
+                            identity_is_bound
+                            and isinstance(source_status, str)
+                            and source_status == current_status
+                            and isinstance(source_lifecycle, Mapping)
+                            and source_status in source_lifecycle.get("statuses", ())
+                            and current_status in current_statuses
+                        ):
+                            unchanged_generation_statuses[record.path.as_posix()] = (
+                                source_status
+                            )
+                        source_profile_contract = source_registry_contract.profiles.get(
+                            record.artifact_type
+                        )
+                        source_lifecycle_contract = (
+                            source_profile_contract.get("lifecycle_id")
+                            if isinstance(source_profile_contract, Mapping)
+                            else None
+                        )
+                        if (
+                            identity_is_bound
+                            and record.artifact_type == "task"
+                            and isinstance(source_status, str)
+                            and source_status == current_status
+                            and source_status
+                            in source_registry_contract.lifecycle_terminal_statuses.get(
+                                str(source_lifecycle_contract), ()
+                            )
+                        ):
+                            source_text = _text_at_ref(
+                                root, record.path, spec_lifecycle.generation_source
+                            )
+                            try:
+                                current_text = (root / record.path).read_text(
+                                    encoding="utf-8"
+                                )
+                            except (OSError, UnicodeError):
+                                current_text = None
+                            if source_text is not None and source_text == current_text:
+                                frozen_terminal_tasks.add(record.path.as_posix())
+                        normalization = (
+                            record.path.as_posix(),
+                            source_status,
+                            current_status,
+                        )
+                        if normalization in actual_lifecycle_normalizations:
+                            actual_lifecycle_normalization_sources[
+                                record.path.as_posix()
+                            ] = source_status
+                        if (
+                            source.artifact_type == record.artifact_type
+                            and source.metadata.get("artifact_id")
+                            == record.metadata.get("artifact_id")
+                            and source_status != current_status
+                            and isinstance(source_lifecycle, Mapping)
+                            and source_status in source_lifecycle.get("statuses", ())
+                            and current_status in current_statuses
+                            and _registered_generation_normalization(
+                                current_profile,
+                                source_status,
+                                current_status,
+                                registered_normalizations,
+                            )
+                        ):
+                            actual_lifecycle_normalization_sources[
+                                record.path.as_posix()
+                            ] = source_status
+                            actual_lifecycle_normalizations.add(normalization)
                 findings.extend(
                     Finding(finding.path, finding.code, finding.message)
-                    for finding in spec_lifecycle_findings
+                    for finding in spec_lifecycle.findings
                 )
+        for record in records:
+            # Template sources keep their own route because their placeholders
+            # are correct for a template and invalid for an authored document.
+            findings.extend(
+                finding
+                for finding in validate_record(
+                    record,
+                    profiles,
+                    manifest,
+                    actual_lifecycle_transitions=actual_lifecycle_transitions,
+                    actual_lifecycle_normalizations=frozenset(
+                        actual_lifecycle_normalizations
+                    ),
+                    actual_lifecycle_normalization_sources=(
+                        actual_lifecycle_normalization_sources
+                    ),
+                    unchanged_generation_statuses=unchanged_generation_statuses,
+                    enforce_initial_status=transition_ref is not None,
+                    source_bound_legacy_type=(
+                        record.path.as_posix() in source_bound_legacy_types
+                    ),
+                )
+                if finding.severity == "error"
+            )
 
     if (
         any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
@@ -518,7 +794,34 @@ def validate_repository_contracts(
                 )
             )
 
-    return sorted(set(findings))
+    return (
+        sorted(set(findings)),
+        actual_lifecycle_transitions,
+        frozenset(actual_lifecycle_normalizations),
+        _GenerationBindings(
+            generation_revision,
+            MappingProxyType(dict(unchanged_generation_statuses)),
+            frozenset(frozen_terminal_tasks),
+        ),
+    )
+
+
+def validate_repository_contracts(
+    root: pathlib.Path,
+    profiles: dict[str, object],
+    *,
+    base_ref: str | None = None,
+    transition_ref: str | None = None,
+) -> list[Finding]:
+    """Validate repository contracts while keeping transition details internal."""
+
+    findings, _, _, _ = _validate_repository_contracts(
+        root,
+        profiles,
+        base_ref=base_ref,
+        transition_ref=transition_ref,
+    )
+    return findings
 
 
 def _relation_impact_findings(
@@ -809,20 +1112,22 @@ def render_report(
         "",
         "# Reference: Frontmatter Semantic Inventory",
         "",
-        "## Objective",
+        "## Overview",
+        "",
+        "### Objective",
         "",
         "This generated advisory reference inventories tracked and selected new target-stage and",
         "governance/template Markdown document except this self-referential output. It records inferred profiles",
         "and metadata findings without printing body content, secret values, or raw logs.",
         "The original snapshot supported Spec 123 Tasks 7 and 8; this regeneration measures the current worktree.",
         "",
-        "## Criteria",
+        "### Criteria",
         "",
         "Use the Stage 99 Registry's profile, identity, relation, lifecycle, and freshness contracts.",
         "Historical semantic findings remain advisory here; the separate changed/new",
         "checker enforces only its safely selected diff scope.",
         "",
-        "## Repository Role",
+        "### Repository Role",
         "",
         "`.agents/governance` and Stage 99 own active metadata policy. This Stage 90 snapshot is",
         "generated evidence only; regenerate it with `check-document-metadata.py`.",
@@ -840,14 +1145,16 @@ def render_report(
         "- Filesystem modification times as freshness evidence",
         "- Raw document bodies, logs, credentials, or secret values",
         "",
-        "## Evidence",
+        "## Structure",
+        "",
+        "### Evidence",
         "",
         f"- **Current records**: {len(records)}",
         f"- **Records with findings**: {semantic_count}",
         f"- **Frontmatter parser failures**: {parse_count}",
         "- **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking",
         "",
-        "## Profile Summary",
+        "### Profile Summary",
         "",
         "| Profile | Records |",
         "| --- | ---: |",
@@ -858,9 +1165,9 @@ def render_report(
     lines.extend(
         [
             "",
-            "## Findings",
+            "### Findings",
             "",
-            "### Finding Summary",
+            "#### Finding Summary",
             "",
             "| Finding | Count |",
             "| --- | ---: |",
@@ -875,7 +1182,7 @@ def render_report(
     lines.extend(
         [
             "",
-            "## Inventory",
+            "### Inventory",
             "",
             "| Path | Profile | Frontmatter | Identity | Relations | Lifecycle | Transition Evidence | Freshness | Exception Context | Findings | Disposition |",
             "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -908,7 +1215,9 @@ def render_report(
     lines.extend(
         [
             "",
-            "## Source Rules",
+            "## Usage",
+            "",
+            "### Source Rules",
             "",
             "- Paths come from bounded Git tracked and changed/new Markdown discovery filtered to managed document roots; ignored files are excluded. Non-Git fixtures use sorted recursive discovery.",
             "- YAML is parsed with PyYAML `safe_load` behavior plus duplicate-key rejection.",
@@ -916,18 +1225,18 @@ def render_report(
             "- The report shows only bounded metadata states, safe repository paths, counts, and finding codes.",
             "- Graphify is advisory and is not used as inventory proof.",
             "",
-            "## Traceability",
+            "### Traceability",
             "",
             "- [Document Registry](../../../99.templates/registry.json) - metadata ownership and exception rules",
             "- [Template governance](../../../99.templates/README.md) - lifecycle vocabulary and transitions",
             "- [Semantic audit](../0024-frontmatter-template-readme-implementation/README.md) - historical pre-remediation criteria and baseline",
             "",
-            "## Conformance",
+            "### Conformance",
             "",
             f"The inventory contains {semantic_count} records with findings and {parse_count} parser failures. These counts describe static document checks; they do not establish execution or provider-runtime conformance.",
             "The separate official checks determine acceptance for their selected scope.",
             "",
-            "## Actions",
+            "### Actions",
             "",
             "- **Owner**: Metadata program owner / rules-engineer",
             "- **Review Cadence**: Regenerate when tracked Markdown or metadata profiles change",
@@ -1436,14 +1745,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     native_findings: list[Finding] = []
+    actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalizations: frozenset[tuple[str, str, str]] = frozenset()
+    actual_lifecycle_normalization_sources: dict[str, str] = {}
+    generation_bindings = _GenerationBindings()
     if registry is not None:
         try:
             if args.mode == "check-changed":
-                native_findings.extend(
-                    validate_repository_contracts(
-                        root, profiles, base_ref=args.base_ref
-                    )
+                (
+                    contract_findings,
+                    actual_lifecycle_transitions,
+                    actual_lifecycle_normalizations,
+                    generation_bindings,
+                ) = _validate_repository_contracts(
+                    root,
+                    profiles,
+                    base_ref=base.merge_base,
+                    transition_ref=base.merge_base,
                 )
+                actual_lifecycle_normalization_sources = {
+                    path: source for path, source, _ in actual_lifecycle_normalizations
+                }
+                native_findings.extend(contract_findings)
             else:
                 native_findings.extend(_reference_delegation_findings(root, profiles))
         except (ProfileError, SpecPackageError) as error:
@@ -1467,6 +1790,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                 else None
             ),
             enforce_initial_status=args.mode == "check-changed",
+            actual_lifecycle_transitions=actual_lifecycle_transitions,
+            actual_lifecycle_normalizations=actual_lifecycle_normalizations,
+            actual_lifecycle_normalization_sources=(
+                actual_lifecycle_normalization_sources
+            ),
+            unchanged_generation_statuses=generation_bindings.unchanged_statuses,
         )
         for record in records
     }
@@ -1509,6 +1838,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 continue
             base_record = base_records_by_path.get(path_text)
             base_text = governance_move_texts.get(path_text)
+            generation_record, generation_text = _generation_task_body_baseline(
+                root,
+                record,
+                current_text,
+                profiles,
+                generation_bindings,
+            )
+            if generation_record is not None and generation_text is not None:
+                base_record = generation_record
+                base_text = generation_text
             if base_text is None:
                 base_text = _text_at_ref(root, record.path, base.merge_base)
             if (

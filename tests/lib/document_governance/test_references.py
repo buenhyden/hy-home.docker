@@ -632,17 +632,21 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
 
     def test_declared_leaves_keep_substantive_research_shape(self) -> None:
         references = self._references()
+        from scripts.lib.document_governance.metadata.heading import (
+            extract_markdown_headings,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        required = tuple(
+            load_registry().profiles["research-member"]["required_sections"]
+        )
         for relative in sorted(references.protected_research_paths(ROOT)):
             if relative.endswith("/README.md"):
                 continue
             with self.subTest(leaf=relative):
                 text = (ROOT / relative).read_text(encoding="utf-8")
-                for section in (
-                    "## Definitions / Facts",
-                    "## Sources",
-                    "## Scope Implications",
-                ):
-                    self.assertIn(section, text)
+                _, h2 = extract_markdown_headings(text)
+                self.assertLessEqual({f"## {section}" for section in required}, set(h2))
                 self.assertRegex(text, r"https?://")
 
     def test_current_reference_topology_ignores_the_archive_migration(self) -> None:

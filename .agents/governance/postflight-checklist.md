@@ -4,10 +4,20 @@ version: "1.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Postflight Routing
+
+## Overview
+
+Route completion verification to the actual changed authority surface.
+
+## Scope
+
+Completion verification selected for the changed canonical and protected surfaces.
+
+## Rules
 
 `task-checklists.md` is the completion authority. Apply only validators mapped
 to the changed canonical source and protected surface. For provider projections,
@@ -22,6 +32,10 @@ For an approved all-files gate, the
 pre-commit prohibition and every wrapper condition. Postflight records only
 the concise result and hook-managed fallout; the controlled wrapper reports
 exit 20 for unexpected paths.
+
+## Exceptions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

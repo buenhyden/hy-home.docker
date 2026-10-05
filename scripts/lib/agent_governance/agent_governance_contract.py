@@ -824,7 +824,7 @@ def _load_roles(root: pathlib.Path) -> tuple[RoleRecord, ...]:
                 permission_profile=_string(values, "permission_profile", relative),
                 tool_profile=_string(values, "tool_profile", relative),
                 skill_ids=_identifiers(
-                    values.get("skill_ids"), field="skill_ids", path=relative
+                    values.get("skill_ids", []), field="skill_ids", path=relative
                 ),
                 source_path=relative,
                 source_text=text,

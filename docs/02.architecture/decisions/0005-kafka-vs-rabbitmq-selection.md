@@ -24,6 +24,10 @@ A modern microservices architecture has two types of messaging patterns interact
 
 Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to high operational complexity and low efficiency, so an approach that maximizes each tool's strengths is needed.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 - Select **Apache Kafka** as the **Primary Event Backbone**.
@@ -33,6 +37,26 @@ Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to
   - For pure asynchronous jobs and low-latency message delivery.
   - For cases that need complex routing rules (Exchange) based on the AMQP standard.
 - Adopt **Kafka KRaft Mode** to remove the Zookeeper dependency and simplify cluster management.
+
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+### [Only Apache Kafka]
+
+- Good: convenience of operating a single stack.
+- Bad: offset management and partition assignment logic can be overkill for simple task queuing.
+
+### [Only RabbitMQ]
+
+- Good: excellent routing flexibility and simplicity.
+- Bad: lacks horizontal scalability and replay capability for large-volume data such as log streaming.
 
 ## Consequences
 
@@ -47,26 +71,6 @@ Trying to satisfy both needs with a single solution (Kafka or RabbitMQ) leads to
 
 - Does not replace Redis Pub/Sub (excludes Zustand/in-memory state uses).
 - A Cloud Native Messaging (SQS/SNS) integration strategy is out of scope for this ADR.
-
-## Options Considered
-
-### [Only Apache Kafka]
-
-- Good: convenience of operating a single stack.
-- Bad: offset management and partition assignment logic can be overkill for simple task queuing.
-
-### [Only RabbitMQ]
-
-- Good: excellent routing flexibility and simplicity.
-- Bad: lacks horizontal scalability and replay capability for large-volume data such as log streaming.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

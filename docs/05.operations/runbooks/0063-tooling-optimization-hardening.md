@@ -16,6 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### Overview
+
 > 범위: 선택한 프로필에 해당하는 `09-platform-ops`·`11-quality` 패키지의 문서화된 하드닝 기준을 복구합니다.
 
 이 런북은 `09-platform-ops`·`11-quality` 하드닝 회귀가 의심될 때 사용한다. 공개 경계 SSO 체인, root 소유 선언된 network 경계, 독립 Locust LAB worker healthcheck, k6 wrapper volume 계약, 문서/검증 링크를 current-truth 기준으로 복구한다.
@@ -24,7 +32,7 @@ created: "2026-05-17"
 
 service-local compose 단독 검증과 root compose context를 혼동하지 않고, 현재 구현에 맞는 하드닝 기준선을 재확인한다.
 
-## When to Use
+### When to Use
 
 - `09-platform-ops`·`11-quality`의 CI 또는 로컬 하드닝 검사가 실패한다.
 - SonarQube/Terrakube middleware 체인이 승인된 설정과 달라진다.
@@ -33,6 +41,8 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 - 활성 문서가 프로필 선택 leaf를 루트 문맥 없이 단독 실행할 수 있다고 설명한다.
 
 ## Procedure
+
+### Procedure
 
 ### Checklist
 
@@ -109,22 +119,26 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 6. 카탈로그 확장 로드맵 반영
    - 도구별 확장 항목(opentofu/terrakube/registry/sonarqube/k6/locust/renovate)을 tasks/operations에 반영한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 - 명령 결과, 시각, 실패 검사명, 변경 diff와 최종 검증 상태를 기록한다.
 - Compose 렌더링을 근거로 남길 때 선택한 프로필을 기록한다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 위의 한정된 복구 단계만 사용한다. 실행 환경·데이터·자격 증명 변경이 필요하면 중단하고 `## Escalation`을 따른다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
 
-## Traceability
+### Traceability
 
 - 상위 문서: [Platform Operations and Quality Optimization Hardening Usage Guide](../guides/0063-tooling-optimization-hardening.md) (`GDE-0063`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)

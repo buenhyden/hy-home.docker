@@ -19,6 +19,10 @@ This document is the ADR that tracks the background, choices, and outcomes of th
 
 The `10-communication` layer handles the system's email-based notifications and message sending/receiving. During development, incidents where mail is sent to real users must be prevented, and in operation, a mail server with high deliverability and security is needed. For this, a lightweight sandbox and a modern, high-performance mail server solution must be selected.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 The following service stack is selected as the standard tooling for `10-communication`.
@@ -38,6 +42,18 @@ The following service stack is selected as the standard tooling for `10-communic
 
 Accepted (2026-03-26)
 
+### Decision Drivers
+
+The decision context above records the applicable drivers and evidence.
+
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
+
 ## Consequences
 
 - **Positive**:
@@ -52,18 +68,6 @@ Accepted (2026-03-26)
 - This ADR does not change runtime behavior.
 - This ADR does not rewrite historical decision evidence.
 - Implementation details remain in linked specs, plans, and tasks.
-
-## Options Considered
-
-Existing alternatives, rationale, or rejected options in this ADR remain the alternative analysis. This alignment section does not add new alternatives.
-
-## Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
-
-The decision context above records the applicable drivers and evidence.
 
 ## Related Documents
 

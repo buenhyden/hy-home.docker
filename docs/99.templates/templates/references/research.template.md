@@ -17,7 +17,25 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-{{MEMBER_BODY}}
+## Overview
+
+{{OBSERVATION_PURPOSE}}
+
+## Scope and Method
+
+{{BOUNDED_SCOPE_AND_REPRODUCIBLE_METHOD}}
+
+## Findings
+
+{{DATED_FINDINGS_WITH_SOURCE_REFERENCES}}
+
+## Limitations
+
+{{UNOBSERVED_FACTS_AND_INTERPRETATION_LIMITS}}
+
+## Sources
+
+{{SOURCE_PATHS_REVISIONS_AND_OBSERVATION_DATES}}
 
 ## Related Documents
 

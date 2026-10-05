@@ -1,10 +1,10 @@
 ---
 title: "Locust 합성 요청 계측 인수"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 ---
 
 # Locust 합성 요청 계측 인수
@@ -77,7 +77,7 @@ worker event count/failure 수가 master CSV와 같으며 누적 histogram이 �
 exit 0입니다. client timeout은 50ms이며 backend 지연은 250ms입니다. CSV는 aggregate이며
 request별 원본 또는 OTel 전달 완료의 증거가 아닙니다.
 
-## How to Work in This Area
+## Usage
 
 합성 값이 담긴 빈 환경 파일을 명시하여 저장소 `.env`와 `labs/.env`를 읽지 않습니다.
 기존 root include를 수정하지 않으며 추가 host mount와 외부 network를 허용하지 않습니다.

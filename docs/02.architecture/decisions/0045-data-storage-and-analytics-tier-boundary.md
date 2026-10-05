@@ -22,21 +22,28 @@ dbt transformation was in Tooling. The user approved SPEC-0197 and its native
 execution plan on 2026-10-01. Initial registration uses the proposed state;
 this records the approved design without inventing a prior Git transition.
 
-## Decision Drivers
+### Compliance
+
+Use the Spec's exact move map and model-difference allowlist. Registered
+Compose, hardening, catalog and document gates and independent review provide
+source acceptance. Task evidence records actual results and limitations.
+
+### Follow-up
+
+Runtime reconciliation requires a separately scoped operation. Do not treat
+source validation as live rollout, HA, authentication or recovery evidence.
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 Make package discovery predictable; keep storage and processing ownership
 explicit; preserve runtime identities, profiles and persistent data; reuse
 root Compose and existing operations/verification contracts.
 
-## Options Considered
-
-- Keep eight categories: smallest move but retains mixed classification axes.
-- Flatten all seventeen Data packages: removes nesting, keeps BI/processing
-  mixed with storage, and leaves dbt elsewhere.
-- Flatten twelve Data packages and establish Analytics with the five processing
-  packages plus dbt: one additional tier with a clear capability boundary.
-
-## Decision
+### Decision
 
 Adopt the third option. Data keeps mng-db, Supabase, PostgreSQL/Valkey clusters,
 Cassandra, CouchDB, MongoDB, SeaweedFS, InfluxDB, OpenSearch, Neo4j and Qdrant.
@@ -49,6 +56,18 @@ Tier numbering is a namespace, not startup order or an isolation guarantee.
 Keep the root project, service names, opt-in selectors and storage identities.
 Only source relocations and Analytics tier labels change in rendered models.
 
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+- Keep eight categories: smallest move but retains mixed classification axes.
+- Flatten all seventeen Data packages: removes nesting, keeps BI/processing
+  mixed with storage, and leaves dbt elsewhere.
+- Flatten twelve Data packages and establish Analytics with the five processing
+  packages plus dbt: one additional tier with a clear capability boundary.
+
 ## Consequences
 
 A single role-oriented index replaces overlapping category indexes. Current
@@ -57,20 +76,11 @@ Source mounts need explicit consideration before future runtime recreation.
 No new runtime, service registry, profile or independent project is introduced.
 ADR-0039's engine selection and storage/processing separation remain valid.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [AD-0004](../descriptions/0004-data-architecture.md)
 - [AD-0012](../descriptions/0012-data-analytics-architecture.md)
 - [REQ-0005](../../01.requirements/0005-data-analytics.md)
 - [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
-
-## Compliance
-
-Use the Spec's exact move map and model-difference allowlist. Registered
-Compose, hardening, catalog and document gates and independent review provide
-source acceptance. Task evidence records actual results and limitations.
-
-## Follow-up
-
-Runtime reconciliation requires a separately scoped operation. Do not treat
-source validation as live rollout, HA, authentication or recovery evidence.

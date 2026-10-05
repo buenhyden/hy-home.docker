@@ -17,7 +17,34 @@ review_cycle: "on-source-change"
 
 # Reference: LLM Wiki Navigation, Safety, and Freshness System
 
-## Current External Research
+## Overview
+
+### Overview
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> The workspace LLM Wiki is a repo-local, on-demand navigation system. A thin
+> root `llms.txt`, human README discovery, a curated repository map, a generated
+> path-only index, and a generated coverage summary route agents to canonical
+> tracked sources. They do not copy full source content, publish a website,
+> replace runtime truth, or auto-load into every agent session.
+>
+> Two shell generators independently render the index and coverage outputs from
+> safe paths derived from `git ls-files`. Their `--check` modes compare complete
+> rendered bytes with the committed outputs. On the Task 6 baseline commit
+> `25acd86225d98151f9149072aff6b60511c62695`, both named checks exit 1 because
+> their outputs were stale. Task 6 recorded those observations without
+> regenerating them. Task 9a/10b subsequently regenerated both outputs through
+> their canonical generators as part of the pack's route switch; the Stage 04
+> Task ledger records a canonical write/check `PASS` at 1,339 index rows and
+> 1,338 coverage safe paths. This reference did not re-run either generator; the
+> current byte-exact `--check` result must still be re-confirmed by a task
+> authorized to execute them.
+>
+
+## Scope and Method
+
+### Current External Research
 
 How can an agent maintain useful, attributable knowledge without turning a generated wiki into repository authority?
 
@@ -70,70 +97,7 @@ material below is historical evidence. The external proposal does not reactivate
 that implementation or justify new generated indexes. Adoption would need a
 separate approved package and canonical ownership decision.
 
-## Claims and Sources
-
-| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
-| --- | --- | --- | --- |
-| S-gist-karpathy-llm-wiki | [Author gist: layers and operations](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Created 2026-04-04; one displayed revision; conceptual proposal, not a product release | 2026-09-27 |
-| S-llmstxt-proposal | [llms.txt proposal: format and usage](https://llmstxt.org/) | Published 2024-09-03; modified 2026-08-10; community proposal | 2026-09-27 |
-| S-arxiv-rag-2005-11401 | [Original RAG paper: abstract](https://arxiv.org/abs/2005.11401) | Submitted 2020-05-22; research paper, not a deployment contract | 2026-09-27 |
-
-| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0009-01 | The original proposes source/wiki/schema layers and ingest/query/lint operations. | S-gist-karpathy-llm-wiki / author body, layers and operations | 2026-04-04 | 2026-09-27 | Conceptual gist; no release version | Fact | One displayed revision; no performance or reliability guarantees; recheck gist revisions. |
-| C-m0009-02 | A wiki can provide maintained retrieval material; RAG and wiki compilation can coexist. | S-arxiv-rag-2005-11401 / abstract; S-gist-karpathy-llm-wiki / author body | 2020-05-22; 2026-04-04 | 2026-09-27 | Research model and proposal | Interpretation | Modern retrieval designs vary; original paper does not define every RAG system. |
-| C-m0009-03 | llms.txt supplies proposed navigation, not model loading or permission evidence. | S-llmstxt-proposal / format and usage | 2024-09-03; modified 2026-08-10 | 2026-09-27 | Community proposal | Fact plus interpretation | Consumer support is not universal; recheck consumer behavior before reliance. |
-| C-m0009-04 | Source provenance, conflict review and derivative invalidation should govern persisted synthesis. | S-gist-karpathy-llm-wiki / lint; m0011 current lifecycle | 2026-04-04 | 2026-09-27 | Candidate local design | Recommendation | Our synthesis; does not establish local implementation or authorize retained data. |
-| C-m0009-05 | The local generator/index retirement remains a documented historical boundary. | Research README and knowledge-map-agent skill / retirement notice | 2026-09-10 retirement recorded | 2026-09-27 | Repository documentary history | Fact about document record | No generator execution or artifact audit; historical observation dates remain unchanged. |
-
-## Future Internal Checks
-
-| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0009-01/04 | Document, design × governance/quality | Only if a maintained knowledge compiler is proposed | Candidate Spec/schema/source manifests; not inspected | Which surfaces are authoritative and which are derived? | Approved ownership map, schema version, source and output receipts | Future document review with source-to-consumer tracing | Pass explicit ownership, review and reversible regeneration; fail ambiguous authority | New generator/files or ingestion need scoped authorization | doc-writer | Not assessed in this run |
-| C-m0009-04 | Environment × security/data | Only if private or external sources are ingested | Candidate access/index/cache boundaries; not inspected | Can lower-trust input alter instructions or leak across audiences? | Trust labels, access decisions, adversarial examples and deletion coverage | Future isolated ingestion/retrieval evaluation | Pass authorized audience filtering and instruction/data separation; fail cross-boundary retrieval | Protected source access and test ingestion need approval | security-auditor | Not assessed in this run |
-| C-m0009-05 | Document × governance | Before any navigation or generator adoption | Candidate retirement and navigation records; not inspected beyond dated notices | Does a proposed change preserve the retirement decision or explicitly replace it? | Owner decision, baseline links, consumer list and migration plan | Future approved document review; no legacy generator run | Pass owner-approved replacement with links intact; fail accidental revival | Changing canonical navigation requires scope approval | doc-writer | Not assessed in this run |
-
-### Limits and recheck conditions
-
-No local generator, retrieval store or wiki build was executed. The gist's rendered
-original was accessible; its raw-file endpoint failed in this check. Its informal
-scale and cost anecdotes were not independently validated. Recheck on schema,
-source permissions, provider retrieval behavior or ownership changes.
-
-## Historical workspace observations — not reassessed in this run
-
-> Historical evidence (not current authority; source: Git history):
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-## Overview
->
-> Historical evidence (not current authority; source: Git history):
->
-> The workspace LLM Wiki is a repo-local, on-demand navigation system. A thin
-> root `llms.txt`, human README discovery, a curated repository map, a generated
-> path-only index, and a generated coverage summary route agents to canonical
-> tracked sources. They do not copy full source content, publish a website,
-> replace runtime truth, or auto-load into every agent session.
->
-> Two shell generators independently render the index and coverage outputs from
-> safe paths derived from `git ls-files`. Their `--check` modes compare complete
-> rendered bytes with the committed outputs. On the Task 6 baseline commit
-> `25acd86225d98151f9149072aff6b60511c62695`, both named checks exit 1 because
-> their outputs were stale. Task 6 recorded those observations without
-> regenerating them. Task 9a/10b subsequently regenerated both outputs through
-> their canonical generators as part of the pack's route switch; the Stage 04
-> Task ledger records a canonical write/check `PASS` at 1,339 index rows and
-> 1,338 coverage safe paths. This reference did not re-run either generator; the
-> current byte-exact `--check` result must still be re-confirmed by a task
-> authorized to execute them.
->
-## Purpose
+### Purpose
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -142,7 +106,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > all fourteen scope implications without exposing private data or conflating a
 > repository contract result with byte-exact generator freshness.
 >
-## Repository Role
+
+### Repository Role
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -153,7 +118,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > repository or runtime facts. Graphify remains advisory and excluded from both
 > generated evidence sets.
 >
-## Scope
+
+### Scope
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -181,7 +147,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > - Secret contents, credentials, tokens, private keys, shell history, raw logs,
 >   ignored volumes, dependency trees, runtime state, or remote enforcement.
 >
-## Definitions / Facts
+
+### Definitions / Facts
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -367,7 +334,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > - **The full-content companion file is not part of the external proposal.** The proposal does not define a companion file; the site cites a project-specific expansion — FastHTML's `llms-ctx-full.txt`, named here 2026-08-19 because the generic phrase leaves nothing recoverable after the retiring leaf is deleted — as an example. Reading the companion file as specified by the proposal overstates what the external convention requires.
 > - **A cited vendor guide path redirects and serves no content.** The `developers.openai.com` guide path for `AGENTS.md` returns an HTTP 308 redirect and serves nothing directly, so its redirect target on `learn.chatgpt.com` must be cited instead. Both hosts are named here because the rule is unactionable without them. Re-derived 2026-08-19: no active tracked document cites the original path, and the citations that remain sit in archived change records, so this is a citation rule for future authors rather than a live defect.
 >
-## Scope Implications
+
+### Scope Implications
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -389,31 +357,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > | `qa`           | Must distinguish literal/safety contract checks from the two named byte-exact freshness checks and preserve failing baselines until their owner acts.             |
 > | `security`     | Secret contents, volumes, dependencies, minified outputs, raw logs, and Graphify evidence are excluded; only `secrets/README.md` is admitted as policy context.   |
 >
-## Sources
->
-> Historical evidence (not current authority; source: Git history):
->
-> | Source                                                                                                                        | Accessed   | Class                            | Verification state                                                                                                                                                    |
-> | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | [`llms.txt` proposal, re-fetched](https://llmstxt.org/)                                                                       | 2026-08-14 | External mutable                 | Direct page HTTP 200; now v2 — H1-only-required and optional-section structure unchanged, `llms_txt2ctx` mechanical semantics dropped, link-relation discovery added. |
-> | [`llms.txt` v1-to-v2 changes](https://llmstxt.org/changes.html)                                                               | 2026-08-14 | External mutable                 | Direct page HTTP 200; itemizes the discoverability, URL-flexibility, hierarchy, and semantics changes cited above.                                                    |
-> | [`AGENTS.md` convention, re-fetched](https://agents.md/)                                                                      | 2026-08-14 | External mutable                 | Direct page HTTP 200; root/nearest-file/standard-Markdown claims unchanged; now states Agentic AI Foundation / Linux Foundation governance and 60k+ project adoption. |
-> | [Root LLM entrypoint](../../../../llms.txt)                                                                                   | 2026-08-11 | Workspace tracked                | Complete 30-line file re-read; unchanged from Task 6 baseline.                                                                                                        |
-> | [Root agent shim](../../../../AGENTS.md)                                                                                      | 2026-08-11 | Workspace tracked                | Complete seven-line file re-read; no direct LLM Wiki registration; unchanged.                                                                                         |
-> | [Root README](../../../../README.md)                                                                                          | 2026-08-08 | Workspace tracked                | LLM Wiki routes and index-check entrypoint verified directly.                                                                                                         |
-> | LLM Wiki references                                                                               | 2026-08-08 | Workspace tracked                | Current category, safety, generation, and ownership description.                                                                                                      |
-> | Curated repository map                                                                    | 2026-08-08 | Workspace tracked                | Eleven current need-to-owner rows; advisory navigation only.                                                                                                          |
-> | Index generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-index.sh`)                                                   | 2026-08-11 | Workspace tracked executable     | Now a 553-line generator (grew from 336 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
-> | Coverage generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-coverage.sh`)                                             | 2026-08-11 | Workspace tracked executable     | Now a 606-line generator (grew from 389 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
-> | Generated index                                                                           | 2026-08-11 | Workspace generated              | Stored output inspected directly: 1,473 lines / 202,188 bytes / 1,339 path rows; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                   |
-> | Generated coverage                                                | 2026-08-11 | Workspace generated              | Stored output inspected directly: 127 lines / 11,911 bytes / 1,338 safe paths; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                     |
-> | Stage 04 Task ledger: generated-artifact inventory (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`) | 2026-08-11 | Workspace tracked                | Records Task 9a canonical write/check `PASS` at 1,339 index rows and 1,338 coverage safe paths, superseding the Task 6 FAIL baseline.                                 |
-> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                            | 2026-08-08 | Workspace tracked                | Reference/generated roles and registered-output behavior verified.                                                                                                    |
-> | Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                         | 2026-08-08 | Workspace tracked executable     | LLM Wiki literal/safety block read directly; does not invoke generators.                                                                                              |
-> | Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
->
-## Scope Application
+
+### Scope Application
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -428,7 +373,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > | qa | applies | Pair byte checks with semantic/link review. | Record separate checks. | `--check` is narrow. |
 > | security | applies | Retain safe-path exclusions. | Inspect tracked exclusions. | No security testing. |
 >
-## 2026-09-05 Revalidation
+
+### 2026-09-05 Revalidation
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -448,7 +394,8 @@ source permissions, provider retrieval behavior or ownership changes.
 > Recommendation: run `--write` only when the check reports path-set staleness;
 > never hand-edit generated outputs or treat graph ranking as canonical truth.
 >
-## Maintenance
+
+### Maintenance
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -473,7 +420,7 @@ source permissions, provider retrieval behavior or ownership changes.
 > [SDLC document roles](./m0016-sdlc-document-roles.md) for the full mapping.
 >
 
-## Related Documents
+### Related Documents
 
 - [Verification and validation](./m0019-verification-validation.md)
 - [Documentation architecture](./m0007-documentation-architecture.md)
@@ -485,3 +432,75 @@ source permissions, provider retrieval behavior or ownership changes.
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 - [Research pack navigation](README.md)
+
+## Findings
+
+### Historical workspace observations — not reassessed in this run
+
+> Historical evidence (not current authority; source: Git history):
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+## Limitations
+
+### Future Internal Checks
+
+| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0009-01/04 | Document, design × governance/quality | Only if a maintained knowledge compiler is proposed | Candidate Spec/schema/source manifests; not inspected | Which surfaces are authoritative and which are derived? | Approved ownership map, schema version, source and output receipts | Future document review with source-to-consumer tracing | Pass explicit ownership, review and reversible regeneration; fail ambiguous authority | New generator/files or ingestion need scoped authorization | doc-writer | Not assessed in this run |
+| C-m0009-04 | Environment × security/data | Only if private or external sources are ingested | Candidate access/index/cache boundaries; not inspected | Can lower-trust input alter instructions or leak across audiences? | Trust labels, access decisions, adversarial examples and deletion coverage | Future isolated ingestion/retrieval evaluation | Pass authorized audience filtering and instruction/data separation; fail cross-boundary retrieval | Protected source access and test ingestion need approval | security-auditor | Not assessed in this run |
+| C-m0009-05 | Document × governance | Before any navigation or generator adoption | Candidate retirement and navigation records; not inspected beyond dated notices | Does a proposed change preserve the retirement decision or explicitly replace it? | Owner decision, baseline links, consumer list and migration plan | Future approved document review; no legacy generator run | Pass owner-approved replacement with links intact; fail accidental revival | Changing canonical navigation requires scope approval | doc-writer | Not assessed in this run |
+
+### Limits and recheck conditions
+
+No local generator, retrieval store or wiki build was executed. The gist's rendered
+original was accessible; its raw-file endpoint failed in this check. Its informal
+scale and cost anecdotes were not independently validated. Recheck on schema,
+source permissions, provider retrieval behavior or ownership changes.
+
+## Sources
+
+### Claims and Sources
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-gist-karpathy-llm-wiki | [Author gist: layers and operations](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) | Created 2026-04-04; one displayed revision; conceptual proposal, not a product release | 2026-09-27 |
+| S-llmstxt-proposal | [llms.txt proposal: format and usage](https://llmstxt.org/) | Published 2024-09-03; modified 2026-08-10; community proposal | 2026-09-27 |
+| S-arxiv-rag-2005-11401 | [Original RAG paper: abstract](https://arxiv.org/abs/2005.11401) | Submitted 2020-05-22; research paper, not a deployment contract | 2026-09-27 |
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0009-01 | The original proposes source/wiki/schema layers and ingest/query/lint operations. | S-gist-karpathy-llm-wiki / author body, layers and operations | 2026-04-04 | 2026-09-27 | Conceptual gist; no release version | Fact | One displayed revision; no performance or reliability guarantees; recheck gist revisions. |
+| C-m0009-02 | A wiki can provide maintained retrieval material; RAG and wiki compilation can coexist. | S-arxiv-rag-2005-11401 / abstract; S-gist-karpathy-llm-wiki / author body | 2020-05-22; 2026-04-04 | 2026-09-27 | Research model and proposal | Interpretation | Modern retrieval designs vary; original paper does not define every RAG system. |
+| C-m0009-03 | llms.txt supplies proposed navigation, not model loading or permission evidence. | S-llmstxt-proposal / format and usage | 2024-09-03; modified 2026-08-10 | 2026-09-27 | Community proposal | Fact plus interpretation | Consumer support is not universal; recheck consumer behavior before reliance. |
+| C-m0009-04 | Source provenance, conflict review and derivative invalidation should govern persisted synthesis. | S-gist-karpathy-llm-wiki / lint; m0011 current lifecycle | 2026-04-04 | 2026-09-27 | Candidate local design | Recommendation | Our synthesis; does not establish local implementation or authorize retained data. |
+| C-m0009-05 | The local generator/index retirement remains a documented historical boundary. | Research README and knowledge-map-agent skill / retirement notice | 2026-09-10 retirement recorded | 2026-09-27 | Repository documentary history | Fact about document record | No generator execution or artifact audit; historical observation dates remain unchanged. |
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Source                                                                                                                        | Accessed   | Class                            | Verification state                                                                                                                                                    |
+> | ----------------------------------------------------------------------------------------------------------------------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | [`llms.txt` proposal, re-fetched](https://llmstxt.org/)                                                                       | 2026-08-14 | External mutable                 | Direct page HTTP 200; now v2 — H1-only-required and optional-section structure unchanged, `llms_txt2ctx` mechanical semantics dropped, link-relation discovery added. |
+> | [`llms.txt` v1-to-v2 changes](https://llmstxt.org/changes.html)                                                               | 2026-08-14 | External mutable                 | Direct page HTTP 200; itemizes the discoverability, URL-flexibility, hierarchy, and semantics changes cited above.                                                    |
+> | [`AGENTS.md` convention, re-fetched](https://agents.md/)                                                                      | 2026-08-14 | External mutable                 | Direct page HTTP 200; root/nearest-file/standard-Markdown claims unchanged; now states Agentic AI Foundation / Linux Foundation governance and 60k+ project adoption. |
+> | [Root LLM entrypoint](../../../../llms.txt)                                                                                   | 2026-08-11 | Workspace tracked                | Complete 30-line file re-read; unchanged from Task 6 baseline.                                                                                                        |
+> | [Root agent shim](../../../../AGENTS.md)                                                                                      | 2026-08-11 | Workspace tracked                | Complete seven-line file re-read; no direct LLM Wiki registration; unchanged.                                                                                         |
+> | [Root README](../../../../README.md)                                                                                          | 2026-08-08 | Workspace tracked                | LLM Wiki routes and index-check entrypoint verified directly.                                                                                                         |
+> | LLM Wiki references                                                                               | 2026-08-08 | Workspace tracked                | Current category, safety, generation, and ownership description.                                                                                                      |
+> | Curated repository map                                                                    | 2026-08-08 | Workspace tracked                | Eleven current need-to-owner rows; advisory navigation only.                                                                                                          |
+> | Index generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-index.sh`)                                                   | 2026-08-11 | Workspace tracked executable     | Now a 553-line generator (grew from 336 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
+> | Coverage generator (retired path: `../../../../scripts/knowledge/generate-llm-wiki-coverage.sh`)                                             | 2026-08-11 | Workspace tracked executable     | Now a 606-line generator (grew from 389 lines with an unrelated Gate 9 manifest-mode addition); read but not executed by this reference.                              |
+> | Generated index                                                                           | 2026-08-11 | Workspace generated              | Stored output inspected directly: 1,473 lines / 202,188 bytes / 1,339 path rows; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                   |
+> | Generated coverage                                                | 2026-08-11 | Workspace generated              | Stored output inspected directly: 127 lines / 11,911 bytes / 1,338 safe paths; Stage 04 Task ledger records Task 9a canonical write/check `PASS`.                     |
+> | Stage 04 Task ledger: generated-artifact inventory (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`) | 2026-08-11 | Workspace tracked                | Records Task 9a canonical write/check `PASS` at 1,339 index rows and 1,338 coverage safe paths, superseding the Task 6 FAIL baseline.                                 |
+> | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                            | 2026-08-08 | Workspace tracked                | Reference/generated roles and registered-output behavior verified.                                                                                                    |
+> | Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                         | 2026-08-08 | Workspace tracked executable     | LLM Wiki literal/safety block read directly; does not invoke generators.                                                                                              |
+> | Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
+>

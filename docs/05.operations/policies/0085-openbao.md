@@ -16,14 +16,30 @@ created: "2026-09-19"
 
 ## Overview
 
+### Overview
+
 HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으므로 현재 마이그레이션·복구 소스로 취급하지 않는다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 `infra/03-security/openbao`와 `core / dev / local / security / secrets` 프로필 아래의 서비스
 `openbao openbao-agent`.
 
-## Controls
+### Traceability
+
+- Governing architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
+- [Guide](../guides/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../runbooks/0085-openbao.md)
+- OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
+- OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
+- OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
+- unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
+- authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
+
+## Rules
+
+### Controls
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
 파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
@@ -106,7 +122,18 @@ Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하�
 unseal/custody 자료를 검증 전에 폐기하지 않는다. 서비스·Agent 제거는 소비자 이관,
 credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `down -v`로 대체하지 않는다.
 
+### Verification
+
+Compose/profile 검증과 [runbook](../runbooks/0085-openbao.md)이 별도의 정적/런타임 증거를
+제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
+
+### Review Cadence
+
+매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
+
 ## Exceptions
+
+### Exceptions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
 설정은 실제 backup이나 recovery의 증거가 아니다.
@@ -128,25 +155,6 @@ private registry는 SEC-003 placeholder만 보관하고 이 파일이 유일한 
 기존 기록에는 **만료와 종료 조건이 없다**. 위 Exceptions의 필수 항목을 충족했다고
 표시하지 않으며 @buenhyden의 후속 결정이 필요하다. 파일을 읽거나 이동하거나
 share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
-
-## Verification
-
-Compose/profile 검증과 [runbook](../runbooks/0085-openbao.md)이 별도의 정적/런타임 증거를
-제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
-
-## Review Cadence
-
-매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
-
-## Traceability
-
-- Governing architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
-- [Guide](../guides/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../runbooks/0085-openbao.md)
-- OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
-- OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
-- OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
-- unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
-- authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
 
 ## Related Documents
 

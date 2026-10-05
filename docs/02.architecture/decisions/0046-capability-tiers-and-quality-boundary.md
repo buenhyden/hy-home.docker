@@ -22,19 +22,29 @@ research capabilities by activation style. The user approved SPEC-0197 option C
 and its additional implementation Plan on2026-10-01. Initial registration uses
 proposed status without inventing a prior lifecycle transition.
 
-## Decision Drivers
+### Compliance
+
+Require exact before/after public-model comparison, source-content preservation,
+retained hardening controls and negative regressions, current document contracts,
+and independent read-only review. Record actual outcomes in the existing Tasks.
+
+### Follow-up
+
+Future container recreation must account for relocated source mounts. Runtime,
+image builds, deployment and data recovery need separately scoped authorization;
+static source acceptance does not prove their success.
+
+## Decision
+
+### Decision
+
+### Decision Drivers
 
 Use capability ownership, retain cohesive packages and helper jobs, preserve
 runtime configuration and persistent data, and keep existing Operations IDs.
 Directory placement must not imply activation order or security isolation.
 
-## Options Considered
-
-- A: retain the current directories and clarify navigation only.
-- B: move six packages/eight labels into existing capability tiers.
-- C: establish a Quality capability and relocate twelve packages/sixteen labels.
-
-## Decision
+### Decision
 
 Adopt C. `11-quality` owns k6, Locust, WireMock, Pact Broker, SonarQube, Conftest
 and Mailpit. `09-platform-ops` retains OpenTofu, Terrakube, Registry, Renovate and
@@ -55,6 +65,16 @@ platform-ops labels; existing Compose profiles, including tooling, remain intact
 The tracked Restic unit source path follows the move; installed-unit refresh
 is a separately controlled operational handoff.
 
+## Alternatives
+
+### Alternatives
+
+### Options Considered
+
+- A: retain the current directories and clarify navigation only.
+- B: move six packages/eight labels into existing capability tiers.
+- C: establish a Quality capability and relocate twelve packages/sixteen labels.
+
 ## Consequences
 
 Requirements and architecture descriptions retain their issued logical obligations
@@ -63,21 +83,11 @@ stay stable; active links, hardening dispatch and derived inventories follow the
 move. Dozzle keeps a leaf Compose file. A package move grants no new runtime,
 profile, authentication exception or deployment permission.
 
-## Traceability
+## Related Documents
+
+### Traceability
 
 - [AD-0009](../descriptions/0009-tooling-architecture.md)
 - [AD-0011](../descriptions/0011-laboratory-architecture.md)
 - [SPEC-0197](../../98.archive/completed/03.specs/0197-infra-tier-layout/spec.md)
 - [SPEC-0198](../../98.archive/completed/03.specs/0198-operations-documentation-system/spec.md)
-
-## Compliance
-
-Require exact before/after public-model comparison, source-content preservation,
-retained hardening controls and negative regressions, current document contracts,
-and independent read-only review. Record actual outcomes in the existing Tasks.
-
-## Follow-up
-
-Future container recreation must account for relocated source mounts. Runtime,
-image builds, deployment and data recovery need separately scoped authorization;
-static source acceptance does not prove their success.

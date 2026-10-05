@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Surface"
 version: "1.4.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2025-11-24"
 ---
 
@@ -182,7 +182,7 @@ tier Compose가 여러 하위 설정 폴더를 묶고 Dozzle만 별도 leaf Comp
 | Validation | 관련 compose, hardening, repo-contract 점검 |
 | Troubleshooting | 알려진 실패 모드와 첫 진단 명령 |
 
-## How to Work in This Area
+## Usage
 
 1. **Service Addition**: `infra/<tier>/<service>/` 디렉터리와 Compose/Dockerfile 구현 소스를 만듭니다.
 2. **Global Integration**: 새 Compose fragment는 루트 `docker-compose.yml`의 `include`에 추가하고 각 서비스의 `profiles:`와 POL-0078 소속을 함께 갱신합니다. HOME 여부는 새 어휘가 아니라 현재의 consumer 근거로 결정합니다.

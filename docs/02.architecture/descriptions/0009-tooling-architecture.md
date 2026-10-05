@@ -13,7 +13,15 @@ created: "2026-03-26"
 ---
 # Platform Operations and Software Verification Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the reference architecture and quality attributes of platform operations in `09-platform-ops` and software verification in `11-quality`. It provides the system boundary, responsibilities, and integration structure with common infrastructure for infrastructure automation, quality analysis, and performance testing tools.
 
@@ -23,7 +31,7 @@ Requirement owners, implementers, and operators share the concerns recorded in t
 
 These capability tiers retain the logical tooling obligations and form an auxiliary layer responsible for the project's "operational efficiency" and "quality assurance." It consists of an IaC engine, an analysis server, test workers, and similar components; services with a public admin UI use the gateway/SSO boundary, and only the services that need it integrate with data tier backends such as PostgreSQL, SeaweedFS, and Valkey.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundaries, consumption relationships, non-goals, and constraints the current document already records.
 
@@ -45,18 +53,15 @@ This section preserves the system boundaries, consumption relationships, non-goa
 - **Non-goals**:
   - Traffic routing and external exposure management for live services (owned by the Gateway layer)
 
-## Quality Attributes
+### Traceability
 
-### Quality Scenarios
+The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
-Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+## Architecture
 
-- **Scalability**: Locust worker and Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
-- **Security**: Applies a gateway+SSO chain to public admin UIs such as SonarQube/Terrakube.
-- **Reliability**: Keeps IaC state/object persistence in the declared backend. SeaweedFS and PostgreSQL on the same host are not independent failure domains, so continuity is not guaranteed during a host failure. Backup and isolated recovery verification need separate operational evidence.
-- **Operability**: Provides a unified control environment through a centralized dashboard and API.
+### Architecture
 
-## Components
+### Components
 
 ### Viewpoints and Views
 
@@ -67,7 +72,7 @@ The system is divided into "Managed Tools" and "Execution Tools."
 1. **Management**: SonarQube, the Terrakube API, and similar services manage central state in an environment where the matching profile is selected. They are not automatically included as HOME always-on targets.
 2. **Execution**: Terrakube Worker, Locust Worker, and similar services occupy resources and perform the actual computation when a job occurs.
 
-## Data Flow
+### Data Flow
 
 ### Data and Control Flows
 
@@ -77,7 +82,7 @@ Data and control flows include only the interactions specified in this section a
 - **Storage Strategy**: Terrakube state/object data uses the SeaweedFS S3 backend, and SonarQube/Terrakube metadata uses the management PostgreSQL. Registry and the OpenTofu workspace currently use bind-mount-based local persistence. The Syncthing runtime has been removed and does not own a file-sync path.
 - **Data Boundaries**: Each tool uses a separate database or schema to prevent data interference.
 
-## Deployment View
+### Deployment View
 
 - **Runtime / Platform**: Docker Compose using the current root Compose include and profile contract.
 - **Deployment Model**: The root `docker-compose.yml` includes every leaf, and
@@ -92,9 +97,16 @@ Data and control flows include only the interactions specified in this section a
   profile names span capability tiers and are unchanged by relocation. Registry is a HOME service; the other listed optional/job capabilities are not implicitly activated by a directory move. dbt belongs to Analytics.
 - **Operational Evidence**: `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`, service healthcheck, approved root-context runtime evidence.
 
-## Traceability
+## Quality Attributes
 
-The disposition of the upstream requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+### Quality Scenarios
+
+Quality scenarios point to the existing configuration these attributes apply to and the verification expectations tied to the failure boundary. Concrete execution evidence belongs to the related Spec and Operations documents.
+
+- **Scalability**: Locust worker and Terrakube execution capacity are adjusted through approved configuration changes. This does not mean the current fixed Compose services implement or have verified auto-scaling.
+- **Security**: Applies a gateway+SSO chain to public admin UIs such as SonarQube/Terrakube.
+- **Reliability**: Keeps IaC state/object persistence in the declared backend. SeaweedFS and PostgreSQL on the same host are not independent failure domains, so continuity is not guaranteed during a host failure. Backup and isolated recovery verification need separate operational evidence.
+- **Operability**: Provides a unified control environment through a centralized dashboard and API.
 
 ## Related Documents
 

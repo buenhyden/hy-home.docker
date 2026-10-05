@@ -47,42 +47,39 @@ layer: requirements
 status: active
 owner: "@buenhyden"
 artifact_id: REQ-{number}
-parent_ids: []
 created: 2026-08-22
 updated: 2026-08-22
 ---
 
 # Fixture Requirement Package
 
-## Problem and Goals
+## Overview
 
 One bounded problem and goal.
 
-## Stakeholders and User Needs
+## Requirements
 
-One stakeholder need.
-
-## Functional Requirements
+### Functional Requirements
 
 {functional}
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 {non_functional}
 
-## Interface Requirements
+### Interface Requirements
 
 {interface}
-
-## Constraints
-
-One constraint.
 
 ## Acceptance Criteria
 
 - The declared requirements are independently verifiable.
 
-## Traceability
+## Scope
+
+The fixture covers one bounded requirement package.
+
+## Related Documents
 
 - Architecture and Spec links are added when their packages exist.
 """
@@ -114,6 +111,79 @@ class RequirementPackageTests(unittest.TestCase):
         self.assertTrue(dataclasses.is_dataclass(package))
         with self.assertRaises(dataclasses.FrozenInstanceError):
             package.artifact_id = "REQ-9999"
+
+    def test_h3_requirement_sections_stop_before_the_following_h2(self) -> None:
+        requirements = _requirements_module()
+        registry = _registry_module()
+        text = """## Requirements
+
+### Functional Requirements
+
+- **REQ-0001-FR-0001**: The package provides one behavior.
+
+## Acceptance Criteria
+
+- **REQ-0001-FR-9999**: This citation is not a requirement declaration.
+"""
+
+        self.assertEqual(
+            ("REQ-0001-FR-0001",),
+            tuple(item.identity for item in requirements._parse_items(text, "0001")),
+        )
+        trusted = registry._trusted_requirement_sections(text)
+        self.assertEqual(1, len(trusted))
+        self.assertNotIn("REQ-0001-FR-9999", trusted[0].group("body"))
+
+        historical = """## Functional Requirements
+
+### Detail
+
+- **REQ-0001-FR-0002**: A nested historical declaration remains in scope.
+
+## Acceptance Criteria
+
+- **REQ-0001-FR-9999**: This citation remains outside the section.
+"""
+        self.assertEqual(
+            ("REQ-0001-FR-0002",),
+            tuple(
+                item.identity for item in requirements._parse_items(historical, "0001")
+            ),
+        )
+        trusted_historical = registry._trusted_requirement_sections(historical)
+        self.assertEqual(1, len(trusted_historical))
+        self.assertIn("REQ-0001-FR-0002", trusted_historical[0].group("body"))
+        self.assertNotIn("REQ-0001-FR-9999", trusted_historical[0].group("body"))
+
+        wrong_parent = """## Acceptance Criteria
+
+### Functional Requirements
+
+- **REQ-0001-FR-0003**: A declaration-shaped citation under the wrong parent.
+"""
+        self.assertEqual((), requirements._parse_items(wrong_parent, "0001"))
+        self.assertEqual((), registry._trusted_requirement_sections(wrong_parent))
+
+    def test_current_requirement_template_groups_are_all_parsed(self) -> None:
+        requirements = _requirements_module()
+        template = (
+            ROOT
+            / "docs/99.templates/templates/requirements/requirement-package.template.md"
+        ).read_text(encoding="utf-8")
+        filled = (
+            template.replace("REQ-####-FR-####", "REQ-0001-FR-0001")
+            .replace("REQ-####-NFR-####", "REQ-0001-NFR-0002")
+            .replace("REQ-####-IF-####", "REQ-0001-IF-0003")
+        )
+
+        self.assertEqual(
+            (
+                "REQ-0001-FR-0001",
+                "REQ-0001-NFR-0002",
+                "REQ-0001-IF-0003",
+            ),
+            tuple(item.identity for item in requirements._parse_items(filled, "0001")),
+        )
 
     def test_path_package_mismatch_fails_closed(self) -> None:
         requirements = _requirements_module()

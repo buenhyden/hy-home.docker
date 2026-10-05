@@ -7,12 +7,15 @@ owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0024"
-parent_ids: []
 created: "2026-06-01"
 ---
 # Agent Governance Standardization Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 The AI agents in this repository must follow one governance model and one
 SDLC even when their execution format differs by provider. The goal is to
@@ -20,19 +23,11 @@ separate the owners of policy, provider translation, document format, and
 execution evidence, and to keep `.claude/` and `.codex/` from degrading into
 independent policy sources.
 
-## Stakeholders and User Needs
+## Requirements
 
-- The maintainer must be able to immediately tell which document is
-  canonical in case of a conflict.
-- An AI agent must load only the minimum policy, role, skill, Spec, and Task
-  needed for the request.
-- A reviewer must be able to reproduce the difference between provider
-  projection and the canonical source, the approval boundary, and the
-  verification result.
-- An operator needs an explicit approval boundary so agent work does not
-  expand into secrets, runtime, deployment, or remote state.
+### Requirements
 
-## Functional Requirements
+### Functional Requirements
 
 - **REQ-0024-FR-0001**: `.agents/` must be the sole normative owner of AI agent
   policy, workflow, canonical role, canonical skill, and provider boundary.
@@ -85,7 +80,7 @@ independent policy sources.
   `.agents/evaluations/` target and its migration and verification evidence belong
   to the active Spec Package.
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 - **REQ-0024-NFR-0009**: Rule interpretation and provider projection
   verification must be deterministic and fail closed, with no conflicting
@@ -104,17 +99,6 @@ independent policy sources.
   implementation, and legacy, deprecated, or conflicting rules must be
   removed from the current surface.
 
-## Constraints
-
-- Shared agent governance policy changes are made only within the approved
-  repository scope.
-- Provider adapters do not use user-global settings or credentials as
-  canonical input.
-- Historical body clones, compatibility redirects, and separate progress
-  documents are not created.
-- Runtime, deployment, secret, and remote GitHub state changes require
-  separate explicit approval.
-
 ## Acceptance Criteria
 
 - There is no name/source/scope drift between shared agent governance and
@@ -132,7 +116,36 @@ independent policy sources.
 - The current authority does not use Stage 98 documents or deleted execution
   ledgers as input.
 
-## Traceability
+## Scope
+
+### Scope
+
+### Stakeholders and User Needs
+
+- The maintainer must be able to immediately tell which document is
+  canonical in case of a conflict.
+- An AI agent must load only the minimum policy, role, skill, Spec, and Task
+  needed for the request.
+- A reviewer must be able to reproduce the difference between provider
+  projection and the canonical source, the approval boundary, and the
+  verification result.
+- An operator needs an explicit approval boundary so agent work does not
+  expand into secrets, runtime, deployment, or remote state.
+
+### Constraints
+
+- Shared agent governance policy changes are made only within the approved
+  repository scope.
+- Provider adapters do not use user-global settings or credentials as
+  canonical input.
+- Historical body clones, compatibility redirects, and separate progress
+  documents are not created.
+- Runtime, deployment, secret, and remote GitHub state changes require
+  separate explicit approval.
+
+## Related Documents
+
+### Traceability
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)

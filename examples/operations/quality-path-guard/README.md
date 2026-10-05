@@ -1,10 +1,10 @@
 ---
 title: "합성 부하 시험 HTTP 경로 경계"
 version: "0.1.0"
-type: "common/package-readme"
-status: "draft"
+type: "common/readme"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 ---
 
 # 합성 부하 시험 HTTP 경로 경계
@@ -81,7 +81,7 @@ controller는 context·이미지·용량·subnet 충돌을 사전 검사하며 �
 실제 backend container는 두 번째 망에만 있습니다.
 변조된 설정, 다른 provider, 게시 포트, 공유 peer는 container 실행 전에 거절합니다.
 
-## How to Work in This Area
+## Usage
 
 HOME Compose나 운영 secret을 참조하지 않습니다. 종료 시 지정한 rehearsal 프로젝트의
 컨테이너·망만 정리하고 생성한 임시 합성 파일만 삭제합니다. `down -v`·prune은 사용하지 않습니다.

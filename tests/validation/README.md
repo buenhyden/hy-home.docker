@@ -1,10 +1,10 @@
 ---
 title: "Validation Contract Tests"
 version: "1.0.0"
-type: "common/repository-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-27"
+updated: "2026-10-05"
 created: "2026-09-27"
 ---
 
@@ -35,7 +35,7 @@ library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 테스트가 검증하는 스크립트는 [Script Manifest](../../scripts/manifest.yaml)의
 `tests` 항목이 소유합니다.
 
-## How to Work in This Area
+## Usage
 
 1. 새 entrypoint나 gate 동작을 바꾸면 이 트리에 실패하는 테스트를 먼저
    추가합니다.

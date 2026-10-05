@@ -13,7 +13,15 @@ created: "2026-03-28"
 ---
 # 08-AI Optimization Hardening Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 This document defines the optimization/hardening reference architecture of
 the `08-ai` layer. It organizes the gateway boundary security, GPU
@@ -35,7 +43,7 @@ The AI tier consists of two core planes.
 External entry shares the standard middleware+SSO chain at the Traefik TLS
 boundary.
 
-## System Boundaries
+### System Boundaries
 
 This section preserves the system boundary, consumption relationships,
 non-goals, and constraints already recorded in the current document.
@@ -57,6 +65,69 @@ non-goals, and constraints already recorded in the current document.
   - Immediate adoption of a distributed GPU scheduler
   - Immediate standardization of parallel external LLM providers
 
+### Traceability
+
+The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
+
+## Architecture
+
+### Architecture
+
+### Components
+
+### Viewpoints and Views
+
+The context, component, or deployment representation in this section serves
+as the view for that concern.
+
+- **Ingress path**:
+  - Client -> Traefik(websecure) -> ollama/chat routers -> Ollama/Open WebUI
+- **Inference/RAG plane**:
+  - Open WebUI -> Ollama (generation + embedding)
+  - Open WebUI -> its local vector store (vector retrieval)
+- **Control plane**:
+  - SSO middleware, policy gate script/CI, operational documents (guides/policies/runbooks)
+
+### Data Flow
+
+### Data and Control Flows
+
+The data and control flows include only the interactions specified in this
+section and the existing infrastructure/deployment descriptions.
+
+- **Key Entities / Flows**:
+  - model artifacts, conversation/session metadata, embedding vector
+    references
+- **Storage Strategy**:
+  - Ollama model cache: `${DEFAULT_AI_MODEL_DIR}/ollama`
+  - Open WebUI state data: `${DEFAULT_AI_MODEL_DIR}/open-webui`
+- **Data Boundaries**:
+  - Qdrant owns the actual vector index data, and the AI tier owns the
+    call/usage policy.
+
+### Deployment View
+
+- **Runtime / Platform**: Docker Compose (`infra/08-ai/*`)
+- **Deployment Model**:
+  - Ollama + exporter
+  - Open WebUI (stateful) + ollama dependency
+- **Operational Evidence**:
+  - root-active compose validation through `scripts/validation/validate-docker-compose.sh`
+  - optional AI compose contract checks through `scripts/hardening/check-all-hardening.sh 08-ai`
+  - `scripts/hardening/check-all-hardening.sh 08-ai`
+  - CI `infrastructure-hardening` job
+
+### Evolution
+
+- **Ollama**:
+  - formalizing the model cache/storage operational policy
+  - standardizing GPU scheduling/concurrency ceiling operation
+  - establishing a model promotion procedure (experiment -> production)
+- **Open WebUI**:
+  - strengthening SSO enforcement/no-bypass criteria
+  - separating model access permission (role/environment)
+  - strengthening conversation log retention/masking policy
+
 ## Quality Attributes
 
 ### Quality Scenarios
@@ -77,65 +148,6 @@ execution evidence is owned by the related Spec and Operations documents.
   the CI hardening gate.
 - **Operability**: uses `check-all-hardening.sh 08-ai` as the AI tier
   operational baseline.
-
-## Components
-
-### Viewpoints and Views
-
-The context, component, or deployment representation in this section serves
-as the view for that concern.
-
-- **Ingress path**:
-  - Client -> Traefik(websecure) -> ollama/chat routers -> Ollama/Open WebUI
-- **Inference/RAG plane**:
-  - Open WebUI -> Ollama (generation + embedding)
-  - Open WebUI -> its local vector store (vector retrieval)
-- **Control plane**:
-  - SSO middleware, policy gate script/CI, operational documents (guides/policies/runbooks)
-
-## Data Flow
-
-### Data and Control Flows
-
-The data and control flows include only the interactions specified in this
-section and the existing infrastructure/deployment descriptions.
-
-- **Key Entities / Flows**:
-  - model artifacts, conversation/session metadata, embedding vector
-    references
-- **Storage Strategy**:
-  - Ollama model cache: `${DEFAULT_AI_MODEL_DIR}/ollama`
-  - Open WebUI state data: `${DEFAULT_AI_MODEL_DIR}/open-webui`
-- **Data Boundaries**:
-  - Qdrant owns the actual vector index data, and the AI tier owns the
-    call/usage policy.
-
-## Deployment View
-
-- **Runtime / Platform**: Docker Compose (`infra/08-ai/*`)
-- **Deployment Model**:
-  - Ollama + exporter
-  - Open WebUI (stateful) + ollama dependency
-- **Operational Evidence**:
-  - root-active compose validation through `scripts/validation/validate-docker-compose.sh`
-  - optional AI compose contract checks through `scripts/hardening/check-all-hardening.sh 08-ai`
-  - `scripts/hardening/check-all-hardening.sh 08-ai`
-  - CI `infrastructure-hardening` job
-
-## Evolution
-
-- **Ollama**:
-  - formalizing the model cache/storage operational policy
-  - standardizing GPU scheduling/concurrency ceiling operation
-  - establishing a model promotion procedure (experiment -> production)
-- **Open WebUI**:
-  - strengthening SSO enforcement/no-bypass criteria
-  - separating model access permission (role/environment)
-  - strengthening conversation log retention/masking policy
-
-## Traceability
-
-The disposition of the parent requirement and the related decision/implementation specs are owned by the PRD, ADR, and Spec links in `Related Documents`. This description does not replace the role of those documents.
 
 ## Related Documents
 

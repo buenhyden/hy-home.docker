@@ -17,7 +17,7 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Summary
+## Overview
 
 {{SUMMARY}}
 
@@ -25,21 +25,29 @@ created: "{{CREATED}}"
 
 {{IMPACT}}
 
-## Timeline
+## Causes
+
+### Root Cause
+
+{{ROOT_CAUSE}}
+
+### Contributing Factors
+
+{{CONTRIBUTING_FACTORS}}
+
+### Timeline
 
 <!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
 
 {{TIMELINE}}
 
-## Root Cause
+## Lessons
 
-{{ROOT_CAUSE}}
+### Learning
 
-## Contributing Factors
+{{LEARNING}}
 
-{{CONTRIBUTING_FACTORS}}
-
-## Detection and Response
+### Detection and Response
 
 {{DETECTION_AND_RESPONSE}}
 
@@ -51,14 +59,10 @@ created: "{{CREATED}}"
 | --- | --- | --- | --- | --- |
 | {{ACTION}} | {{ACTION_OWNER}} | {{DUE_DATE}} | {{TRACKING_ID}} | {{VERIFICATION}} |
 
-## Learning
-
-{{LEARNING}}
-
-## Traceability
-
-{{INCIDENT_RUNBOOK_AND_TASK_LINKS}}
-
-## Follow-up Review
+### Follow-up Review
 
 {{FOLLOW_UP_REVIEW}}
+
+## Related Documents
+
+{{INCIDENT_RUNBOOK_AND_TASK_LINKS}}

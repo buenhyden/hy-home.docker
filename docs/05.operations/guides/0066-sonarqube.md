@@ -17,7 +17,17 @@ created: "2026-05-10"
 
 # SonarQube Usage Guide
 
+## Overview
+
+### Overview
+
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 ### 목적과 분류
 
@@ -60,13 +70,13 @@ SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTION
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0066-sonarqube.md)의 `보존 대상과 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-## Common Checks
+### Common Checks
 
 - `docker compose --profile sast config --quiet`
 - `docker compose --profile sast config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-## Runbook Handoff
+### Runbook Handoff
 
 DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../runbooks/0066-sonarqube.md)을
 사용한다.
@@ -87,7 +97,7 @@ Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 
 근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
 현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
 
-## Traceability
+### Traceability
 
 - [Policy](../policies/0066-sonarqube.md) (`POL-0066`)
 - [Runbook](../runbooks/0066-sonarqube.md) (`RUN-0066`)

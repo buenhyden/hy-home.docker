@@ -25,6 +25,32 @@ responsibility duplication.
 Airflow 3.3.1's Keycloak Auth Manager and Kafbat UI v1.5.0 provide the <!-- runtime-version-exception: history — the decision records the versions it evaluated -->
 application's own OIDC and authorization features.
 
+### Rationale
+
+- Keeps Keycloak as the central IAM.
+- Uses Airflow's Keycloak Authorization Services as-is.
+- Uses Kafbat's native OAuth2/RBAC as-is.
+- Prevents conflicts between the `Authorization` the proxy injects and the
+  application's own token.
+- Keeps ForwardAuth's simplicity for services without their own
+  authentication.
+
+### Guardrails
+
+- Do not apply ForwardAuth redundantly to native OIDC services by default.
+- Inject OIDC client secrets as Docker Secrets.
+- Add the local mkcert CA while preserving system/JDK public root trust.
+- Verify that gateway `Authorization` forwarding does not conflict with the
+  upstream token scheme.
+- Document new Native OIDC services in the architecture/operations documents.
+
+### Traceability
+
+- [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
+- [Auth Architecture](../descriptions/0002-auth-architecture.md)
+- [Application Auth Integration Policy](../../05.operations/policies/0079-application-auth-integration.md)
+- [Application Auth Integration Guide](../../05.operations/guides/0079-application-auth-integration.md)
+
 ## Decision
 
 Keycloak stays the central IdP.
@@ -57,17 +83,11 @@ Only `gateway-standard-chain@file` applies to the Airflow and Kafbat UI
 routers; OAuth2 Proxy's `sso-auth@file`/`sso-errors@file` is not applied
 redundantly.
 
-## Rationale
+## Alternatives
 
-- Keeps Keycloak as the central IAM.
-- Uses Airflow's Keycloak Authorization Services as-is.
-- Uses Kafbat's native OAuth2/RBAC as-is.
-- Prevents conflicts between the `Authorization` the proxy injects and the
-  application's own token.
-- Keeps ForwardAuth's simplicity for services without their own
-  authentication.
+### Alternatives
 
-## Options Considered
+### Options Considered
 
 ### ForwardAuth-only
 
@@ -104,22 +124,6 @@ Cons:
 
 - Auth pattern must be explicitly chosen during service onboarding.
 - The number of Keycloak clients increases.
-
-## Guardrails
-
-- Do not apply ForwardAuth redundantly to native OIDC services by default.
-- Inject OIDC client secrets as Docker Secrets.
-- Add the local mkcert CA while preserving system/JDK public root trust.
-- Verify that gateway `Authorization` forwarding does not conflict with the
-  upstream token scheme.
-- Document new Native OIDC services in the architecture/operations documents.
-
-## Traceability
-
-- [ADR-0002](0002-keycloak-oauth2-proxy-choice.md)
-- [Auth Architecture](../descriptions/0002-auth-architecture.md)
-- [Application Auth Integration Policy](../../05.operations/policies/0079-application-auth-integration.md)
-- [Application Auth Integration Guide](../../05.operations/guides/0079-application-auth-integration.md)
 
 ## Related Documents
 

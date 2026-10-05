@@ -1,10 +1,10 @@
 ---
 title: "HOME Residual Backlog Plan"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/plan"
-status: "active"
+status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-05"
 layer: "specs"
 artifact_id: "SPEC-0182-PLAN-0001"
 parent_ids:
@@ -14,14 +14,16 @@ created: "2026-09-25"
 
 # HOME Residual Backlog Plan
 
-## Objective
+## Overview
+
+### Objective
 
 Close the twelve [Spec](spec.md) criteria through three Tasks, each work unit
 ending in a merged change or a recorded live result.
-[Task 0003](tasks/tsk-0003-recovery-and-auth-acceptance.md) holds the
-completion receipt.
+[SPEC-0182-TSK-0003](tasks/tsk-0003-recovery-and-auth-acceptance.md) holds the
+completion receipt and its current Task status.
 
-## Dependencies
+### Dependencies
 
 - Docker on the HOME host; the running `hy-home-infra` project; the main
   checkout for live applies (pulled with `umask 022`).
@@ -30,7 +32,26 @@ completion receipt.
   decisions and the reboot window.
 - W11 follows W10; the reboot runbook documents the unseal method in place.
 
-## Execution Sequence
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1 | Repository follow-ups | None | TSK-0001 | Task evidence |
+| W2 | 2 | Runtime and legacy data | None | TSK-0001 | Task evidence |
+| W12 | 12 | Recovery acceptance | None | TSK-0003 | Task evidence |
+| W6 | 6 | Runtime and legacy data | None | TSK-0002 | Task evidence |
+| W4 | 4 | Runtime and legacy data | W6 | TSK-0002 | Task evidence |
+| W3 | 3 | Runtime and legacy data | None | TSK-0002 | Task evidence |
+| W5 | 5 | Runtime and legacy data | None | TSK-0002 | Task evidence |
+| W7 | 7 | Recovery acceptance | None | TSK-0003 | Task evidence |
+| W8 | 8 | Recovery acceptance | None | TSK-0003 | Task evidence |
+| W10 | 10 | Recovery acceptance | None | TSK-0003 | Task evidence |
+| W9 | 9 | Recovery acceptance | None | TSK-0003 | Task evidence |
+| W11 | 11 | Recovery acceptance | W10 | TSK-0003 | Task evidence |
+
+### Work Details
+
 
 Run order: W1, W2 (the owner moved its SeaweedFS S3 recreate from the W4
 window into W2 on 2026-09-25), W12, W6, W4, W3, W5, W7, W8, W10, W9, W11. W6 precedes W4 so only
@@ -83,7 +104,7 @@ Task 0002, runtime and legacy data:
    record the owner's decision for each; stop what the owner stops; amend
    POL-0078 if HOME changes.
 
-Task 0003, recovery and authentication acceptance:
+SPEC-0182-TSK-0003, recovery and authentication acceptance:
 
 1. W7: RUN-0021 step 5 against the real pgBackRest repository; MLflow
    (RUN-0088) on a named isolated network with no route to production
@@ -114,7 +135,27 @@ Task 0003, recovery and authentication acceptance:
 6. W12: Record the entry-closed and retired items with their evidence and
     reasons.
 
-## Risk and Rollback
+### Rulings
+
+- Mounts stay single-file; the rule and the hash check are the control.
+- Existing Restic snapshots keep the Vault tree until retention expires;
+  rewriting them is not worth its risk.
+- Open WebUI keeps its local vector store; selecting Qdrant would need
+  re-indexing and a secret, and nothing asks for it.
+- The compose-core-readiness rig keeps Vault as a generic fixture; porting it
+  to OpenBao touches about 200 lines of harness for no production gain.
+
+## Verification Plan
+
+### Verification
+
+Focused tests per repository change, promtool on rule changes, metadata,
+links, operations catalog, corpus lifecycle and pre-commit; live checks by
+target health, hashes, counts and log line counts, never by value.
+
+## Risks and Rollback
+
+### Risk and Rollback
 
 - Every recreate keeps the previous image or configuration commit;
   `mng-pg` rolls back to its `:pre-0182` tag under RUN-0021 step 2.
@@ -137,21 +178,12 @@ The W3 post-rebuild CDC check passed before the owner's later retirement of
 the unused connector/slot/publication. W5's planned 2026-09-26 snapshot
 failed before Restic; the actual 2026-09-29 and 2026-09-30 receipts close
 that condition. These are historical execution results, not a new runtime
-apply or today's recovery proof. Remaining Task 0003 work keeps this Plan
-and Spec active.
+apply or today's recovery proof. The current Task status and its item evidence
+own remaining-work progress; this Plan remains the execution sequence.
 
-## Verification
+## Related Documents
 
-Focused tests per repository change, promtool on rule changes, metadata,
-links, operations catalog, corpus lifecycle and pre-commit; live checks by
-target health, hashes, counts and log line counts, never by value.
-
-## Rulings
-
-- Mounts stay single-file; the rule and the hash check are the control.
-- Existing Restic snapshots keep the Vault tree until retention expires;
-  rewriting them is not worth its risk.
-- Open WebUI keeps its local vector store; selecting Qdrant would need
-  re-indexing and a secret, and nothing asks for it.
-- The compose-core-readiness rig keeps Vault as a generic fixture; porting it
-  to OpenBao touches about 200 lines of harness for no production gain.
+- [Specification](spec.md)
+- [Task 0001](tasks/tsk-0001-repository-follow-ups.md)
+- [Task 0002](tasks/tsk-0002-runtime-and-legacy-data.md)
+- [Task 0003](tasks/tsk-0003-recovery-and-auth-acceptance.md)

@@ -21,6 +21,10 @@ This document is the architecture decision record for adopting a Patroni and Etc
 - Need automated failover and replication-lag monitoring.
 - Need flexible cluster configuration and operational convenience in a container environment.
 
+### Traceability
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
 ## Decision
 
 **Spilo (Zalando's PostgreSQL + Patroni)** is selected as the core database engine.
@@ -29,17 +33,15 @@ This document is the architecture decision record for adopting a Patroni and Etc
 - **Spilo Image**: uses the proven PostgreSQL HA image maintained by Zalando.
 - **Etcd**: manages cluster state as a strongly consistent store.
 
-## Consequences
+### Decision Drivers
 
-- **Positive**: minimizes data loss and increases uptime on failure, with automated failover.
-- **Trade-offs**: increased resource consumption from the 3-node configuration, and a need for complex routing configuration through HAProxy (pg-router).
+The decision context above records the applicable drivers and evidence.
 
-### Explicit Non-goals
+## Alternatives
 
-- Database sharding (out of scope for this ADR).
-- Application-level data migration strategy.
+### Alternatives
 
-## Options Considered
+### Options Considered
 
 ### Vanilla PostgreSQL with Replication
 
@@ -51,13 +53,15 @@ This document is the architecture decision record for adopting a Patroni and Etc
 - Good: highly automated in a Kubernetes environment.
 - Bad: introduces significant overhead since the current environment is Docker Compose based.
 
-## Traceability
+## Consequences
 
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+- **Positive**: minimizes data loss and increases uptime on failure, with automated failover.
+- **Trade-offs**: increased resource consumption from the 3-node configuration, and a need for complex routing configuration through HAProxy (pg-router).
 
-## Decision Drivers
+### Explicit Non-goals
 
-The decision context above records the applicable drivers and evidence.
+- Database sharding (out of scope for this ADR).
+- Application-level data migration strategy.
 
 ## Related Documents
 

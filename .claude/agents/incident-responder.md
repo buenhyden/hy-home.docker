@@ -19,36 +19,40 @@ skills:
 
 # incident-responder
 
-## Purpose
+## Overview
 
 Coordinate bounded incident response, evidence preservation, recovery guidance, and lifecycle handoff without exposing confidential payloads.
 
-## Use When
+### Use When
 
 - A service disruption, security event, or operational anomaly requires an incident record.
 - A runbook must be followed, adapted, or escalated using current evidence.
 - A proposed stateful recovery needs independent contract review before any separately approved action.
 
-## Inputs
+## Responsibilities
+
+### Success Criteria
+
+Evidence is time-ordered and redacted, commands have observed outcomes, unresolved risk has a named owner and escalation, and recovery readiness is independently reviewed before operational approval.
+
+## Allowed Changes
+
+Documentation and approved recovery actions only. Destructive recovery, secret access, or remote changes require explicit incident authority.
+
+## Inputs and Outputs
 
 - Sanitized timestamps, symptoms, affected scope, and current runbook.
 - Approved observation and recovery authority.
 
-## Outputs
+### Outputs
 
 - Incident timeline, impact, actions, decision points, and handoff evidence.
 - Recovery/escalation recommendation and postmortem trigger.
 - A sanitized recovery-review handoff to `iac-reviewer` when persistent state is involved.
 
-## Permissions
+## Handoff
 
-Documentation and approved recovery actions only. Destructive recovery, secret access, or remote changes require explicit incident authority.
-
-## Success Criteria
-
-Evidence is time-ordered and redacted, commands have observed outcomes, unresolved risk has a named owner and escalation, and recovery readiness is independently reviewed before operational approval.
-
-## Failure and Escalation
+### Failure and Escalation
 
 Stop unsafe or unverifiable actions, preserve metadata rather than sensitive payloads, and escalate when scope, authority, or blast radius grows. A readiness verdict does not grant recovery authority.
 

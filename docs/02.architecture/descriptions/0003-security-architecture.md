@@ -14,7 +14,15 @@ created: "2026-03-26"
 
 # Security Tier Architecture Description
 
-## Context and Stakeholders
+## Overview
+
+### Overview
+
+## Scope
+
+### Scope
+
+### Context and Stakeholders
 
 `03-security` owns machine-secret storage and rendering. OpenBao plus
 `openbao-agent` is the canonical HOME implementation; Vault and `vault-agent`
@@ -22,7 +30,7 @@ were removed in SPEC-0180 S08. Security operators own
 seal/unseal custody, policy, authentication methods, snapshots, and migration;
 consumer tiers own the least-privilege paths they request.
 
-## System Boundaries
+### System Boundaries
 
 - **OpenBao:** selected by `core`, `dev`, `local`, `security`, or `secrets`;
   single-node integrated Raft storage; AppRole Agent rendering; native Keycloak
@@ -35,7 +43,15 @@ consumer tiers own the least-privilege paths they request.
   completed Vault-to-OpenBao data migration, multi-node Raft HA, or deployed
   OpenBao metrics scraping.
 
-## Components
+### Traceability
+
+Operational detail lives in [OpenBao operations](../../05.operations/guides/0085-openbao.md).
+
+## Architecture
+
+### Architecture
+
+### Components
 
 ```mermaid
 flowchart LR
@@ -53,14 +69,14 @@ Human OIDC group claims map to narrow Bao policies; root remains break-glass.
 The initial and temporary recovery roots are revoked only after a working non-root
 administrative path, Agent rendering, protected snapshot, and denial tests exist.
 
-## Data Flow
+### Data Flow
 
 An operator or Agent authenticates to OpenBao, policy limits the requested KV
 paths, and the Agent writes only declared templates to the consumer output volume.
 Snapshots flow from the authenticated Raft API to protected operator custody;
 unseal shares follow a separate custodial path and never enter the snapshot.
 
-## Deployment View
+### Deployment View
 
 The root Compose project owns shared networks, secrets, and selection. Runtime
 commands name `openbao`/`openbao-agent`; leaf-only Compose
@@ -79,10 +95,6 @@ path stays out of service and must never share storage with OpenBao.
   token state present at capture, so recovered root tokens must be rechecked.
 - **Scalability:** current single-node Raft is not HA. Cluster expansion requires
   a separate design and failure-domain evidence.
-
-## Traceability
-
-Operational detail lives in [OpenBao operations](../../05.operations/guides/0085-openbao.md).
 
 ## Related Documents
 

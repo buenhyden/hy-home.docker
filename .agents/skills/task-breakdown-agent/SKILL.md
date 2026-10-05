@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "task-breakdown-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -15,7 +15,9 @@ metadata:
 
 # task-breakdown-agent
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -33,20 +35,20 @@ An approved Plan, dependency map, acceptance criteria, and protected-surface dec
 2. Assign one implementer scope, RED/GREEN evidence, validation set, commit boundary, and independent review to each unit.
 3. Order dependencies, isolate protected/runtime work, and define the terminal evidence needed before the task can close.
 
-## Outputs
-
-- Bounded work units suitable for co-located Task evidence and logical commits.
-
-## Gates
+### Gates
 
 - Each unit maps to one logical commit or explicitly coupled small commit group.
 - Implementation and independent review roles remain separate.
+
+## Outputs
+
+- Bounded work units suitable for co-located Task evidence and logical commits.
 
 ## Failure Handling
 
 Return to planning when a unit cannot be made reversible, testable, or independently reviewable without hidden dependencies.
 
-## Related Documents
+## References
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Execution plan function](../execution-plan-agent/SKILL.md)

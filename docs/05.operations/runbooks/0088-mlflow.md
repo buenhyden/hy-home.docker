@@ -14,7 +14,15 @@ created: "2026-09-21"
 
 # MLflow Recovery Runbook
 
-## When to Use
+## Overview
+
+## Trigger and Preconditions
+
+### Overview
+
+### Trigger and Preconditions
+
+### When to Use
 
 프로비저닝 작업 실패, 서버 시작 또는 헬스 실패, 크리덴셜 교체, 아티팩트 접근
 거부, 트래킹 저장소 복원 또는 업그레이드 시 사용한다.
@@ -29,6 +37,8 @@ created: "2026-09-21"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
+
+### Procedure
 
 1. 저장소 루트에서 검증하고 점검한다.
 
@@ -104,18 +114,22 @@ lifecycle 변경이다. 따라서 artifact 자동 제거를 주장하지 않는�
 secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../policies/0006-infrastructure-optimization-governance.md)을
 따르고 이전 자격 증명 거부와 새 연결·artifact 조회를 각각 확인한다.
 
-## Evidence
+## Verification
+
+### Evidence
 
 명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
 비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
 
-## Rollback or Recovery
+## Rollback and Escalation
+
+### Rollback or Recovery
 
 설정 롤백은 Git에서 Compose 파일을 복원한다. 업그레이드가 실행한 데이터베이스
 마이그레이션은 업그레이드 이전 백업으로만 되돌릴 수 있다. 복원과 업그레이드
 리허설은 **계획됨, 미실행**이다.
 
-## Escalation
+### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
@@ -123,7 +137,7 @@ secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../pol
 크리덴셜 부여 요청, 복원 개수 비교 실패, 게이트웨이 SSO 제거 요청이 있으면
 중단한다.
 
-## Traceability
+### Traceability
 
 - [Guide](../guides/0088-mlflow.md) (`GDE-0088`)
 - [Policy](../policies/0088-mlflow.md) (`POL-0088`)

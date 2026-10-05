@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
 version: "1.2.3"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-05"
 created: "2025-12-06"
 ---
 
@@ -44,7 +44,7 @@ filer에는 route가 없습니다.
 1000이 소유합니다. Master, volume, filer는 `seaweed_internal`에만 있습니다.
 S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다.
 
-## How to Work in This Area
+## Usage
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet

@@ -16,9 +16,17 @@ created: "2026-06-04"
 
 ## Overview
 
+### Overview
+
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
 
+## Audience and Goal
+
+### Audience and Goal
+
 ## Usage
+
+### Usage
 
 [bootstrap](../../../.agents/governance/bootstrap.md)와 해당 provider adapter가
 읽기 순서를 소유한다. root README와 `docs/`, `infra/`, `scripts/` README는
@@ -103,7 +111,7 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 필요한 자산만 선별하는 별도 범위이며 개인 상태나 기존 실행 승인을 상속하지 않는다.
 정확한 실행 명령과 승인 경계는 연결된 runbook의 평가 단계에서 확인한다.
 
-## Troubleshooting
+### Troubleshooting
 
 - `.codex/agents/*.toml` 또는 `.claude/agents/*.md`를 canonical agent governance catalog에 대한 provider-native adapter가 아니라 canonical role catalog로 취급하는 것.
 - authored `.agents` source를 오래된 generated 파일로 취급하거나, canonical body를 native skill adapter로 복사하거나, static discovery 설정으로부터 live picker/invocation 승인을 추론하는 것.
@@ -118,16 +126,16 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 - `graphify` CLI를 사용할 수 없는데 graph refresh를 주장하는 것.
 - repository 안내에도 불구하고 `pre-commit`을 수동으로 실행하는 것.
 
-## Common Checks
+### Common Checks
 
 - 연결된 Runbook에서 적용 가능한 검증의 실제 결과와 범위, 실패·차단·미실행을 확인한다.
 
-## Runbook Handoff
+### Runbook Handoff
 
 반복 검증, evidence capture, rollback 또는 escalation 절차는
 [Harness / Agent-first Engineering Runbook](../runbooks/0004-harness-agent-first-engineering.md)을 따른다.
 
-## Traceability
+### Traceability
 
 - 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - 같은 주제: [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)

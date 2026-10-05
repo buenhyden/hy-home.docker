@@ -17,7 +17,31 @@ review_cycle: "on-source-change"
 
 # Reference: Docker Compose and Infrastructure
 
-## Current External Research
+## Overview
+
+### Overview
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Docker Compose defines an application model from services, networks, volumes,
+> configs, secrets, profiles, and related file features. This workspace adds an
+> infrastructure harness around that model: a root include boundary, forty-seven
+> infra variants across eleven tiers, a shared template library, generated
+> coverage and image-provenance snapshots, hardening checks, operations
+> documents, and protected-change rules.
+>
+> At Task 8 baseline `910ce5f36641635118c64b1aa6cfe48f86ecde14`,
+> the fresh generated inventory scans 48 Compose files including the root, 47
+> files with services, 168 service entries, and 25 profile labels including
+> `default`. Those 168 rows describe declarations across canonical, development,
+> and cluster variants; they are not 168 unique services or simultaneous runtime
+> containers. The root actually includes 17 leaf files containing 60 service
+> entries before profile selection.
+>
+
+## Scope and Method
+
+### Current External Research
 
 What Compose semantics and operating evidence should a Linux home/development server distinguish before a future infrastructure decision?
 
@@ -103,107 +127,7 @@ Update/rollback needs a migration compatibility boundary and preserved recoverab
 state. Service overlap, licenses, optional selection and operating burden belong
 in [m0021](m0021-local-docker-service-consolidation.md#current-external-research).
 
-## Claims and Sources
-
-| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0005-01 | Implementation support differs; version does not pin schema. | S-docker-compose-spec, optional attributes; S-docker-compose-version-name; S-docker-compose-release | Not stated; tagged release date not extracted | 2026-09-27 | Compose Specification / CLI v5.5.1 release | Fact | No local version measured; recheck target CLI/platform. |
-| C-m0005-02 | Include/merge/extends/profile semantics differ. | S-docker-compose-include; S-docker-compose-merge, exceptions; S-docker-compose-extends, paths; S-docker-compose-profiles, target | Not stated | 2026-09-27 | include 2.20.0+; !override 2.24.4+ | Fact | Extends path wording is context-dependent; test selected model later. |
-| C-m0005-03 | Interpolation/container environment/project naming have different precedence. | S-docker-compose-interpolation; S-docker-compose-env-precedence; S-docker-compose-project-name | Not stated | 2026-09-27 | Current Compose CLI docs | Fact | Synthetic inputs only; no private .env opened. |
-| C-m0005-04 | Startup, readiness and runtime recovery differ. | S-docker-compose-services, depends_on/healthcheck; S-docker-compose-startup; S-docker-container-restart | Not stated | 2026-09-27 | depends_on.restart 2.17.0+; required 2.20.0+ | Fact / interpretation | Probe quality remains target-specific. |
-| C-m0005-05 | Network/ports/storage/configs/secrets have distinct trust/lifecycle. | S-docker-compose-networks; S-docker-port-publishing; S-docker-compose-volumes; S-docker-compose-configs; S-docker-compose-secrets; S-docker-compose-use-secrets | Not stated | 2026-09-27 | Config content/environment 2.23.1+; localhost caveat pre-Engine 28 | Fact / interpretation | No exposure, encryption or grant enforcement assessed. |
-| C-m0005-06 | Capacity and shutdown/restart need runtime/application evidence. | S-docker-resource-constraints; S-docker-compose-deploy; S-docker-container-stop; S-docker-compose-services, stop_grace_period | Not stated | 2026-09-27 | Linux Engine / optional deploy support | Interpretation | No resource enforcement, utilization or data integrity measured. |
-| C-m0005-07 | Pin identity and provenance answer different questions. | S-docker-image-pinning; S-docker-build-provenance, mode/version | Not stated | 2026-09-27 | BuildKit schema v0.2 default; v1 optional | Fact / interpretation | No digest/signature/scan verified. |
-| C-m0005-08 | TLS/DNS/ACME need distinct operating contracts. | S-rfc-tls-9846, 1.2; S-rfc-acme-8555, 8; S-rfc-dns-1034, 3.6 | 2026-07; 2019-03; 1987-11 | 2026-09-27 | Standards Track originals | Fact / recommendation | Later RFC updates/errata and target behavior need recheck. |
-| C-m0005-09 | Backup/restoration and static/process/readiness/user evidence must remain distinct. | S-docker-volume-recovery; S-nist-contingency-800-34, 3.2/3.5/4.4; S-docker-compose-config; S-google-sre-monitoring | NIST May 2010, updated 2010-11-11; others not stated | 2026-09-27 | Corrected final SP 800-34 Rev.1 / CLI/SRE | Interpretation / recommendation | No backup/restore/runtime observed; federal guidance used proportionately. |
-| C-m0005-10 | Updates need application-aware rollback and optional scope. | S-docker-compose-production, updates; C-m0021-03 | Not stated | 2026-09-27 | Single-server Compose operations | Recommendation | No new service decision, update or migration executed. |
-
-| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
-| --- | --- | --- | --- |
-| S-docker-compose-spec | [Specification: optional attributes](https://github.com/compose-spec/compose-spec/blob/main/spec.md#requirements-and-optional-attributes) | Mutable main; specification, no commit pin obtained | 2026-09-27 |
-| S-docker-compose-release | [Compose v5.5.1 release](https://github.com/docker/compose/releases/tag/v5.5.1) | Official tagged release; timestamp not reliably extracted | 2026-09-27 |
-| S-docker-compose-version-name | [Obsolete version field](https://docs.docker.com/reference/compose-file/version-and-name/) | Mutable official reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-include | [Include: short/long syntax](https://docs.docker.com/reference/compose-file/include/) | Requires Compose 2.20.0+; mutable reference | 2026-09-27 |
-| S-docker-compose-merge | [Merge: exceptions/reset/replace](https://docs.docker.com/reference/compose-file/merge/) | !override requires 2.24.4+; mutable reference | 2026-09-27 |
-| S-docker-compose-extends | [Extends: relative paths](https://docs.docker.com/compose/how-tos/multiple-compose-files/extends/) | Mutable reference; stack deploy differs | 2026-09-27 |
-| S-docker-compose-profiles | [Profiles: target/dependencies](https://docs.docker.com/compose/how-tos/profiles/#auto-starting-profiles-and-dependency-resolution) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-interpolation | [Interpolation: source precedence](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#ways-to-set-variables-with-interpolation) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-env-precedence | [Container environment precedence](https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-project-name | [Project naming precedence](https://docs.docker.com/compose/how-tos/project-name/#set-a-project-name) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-services | [Services: dependencies/health/resources/stop](https://docs.docker.com/reference/compose-file/services/) | depends_on.restart 2.17.0+, required 2.20.0+; mutable reference | 2026-09-27 |
-| S-docker-compose-startup | [Startup and shutdown order](https://docs.docker.com/compose/how-tos/startup-order/) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-networks | [Networks: internal/external](https://docs.docker.com/reference/compose-file/networks/) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-port-publishing | [Host port binding and localhost caveat](https://docs.docker.com/engine/network/port-publishing/) | Mutable Engine reference; localhost caveat before Engine 28.0.0 | 2026-09-27 |
-| S-docker-compose-volumes | [Volume definitions/lifecycle](https://docs.docker.com/reference/compose-file/volumes/) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-configs | [Config file/content/environment](https://docs.docker.com/reference/compose-file/configs/) | content/environment sources introduced in 2.23.1 | 2026-09-27 |
-| S-docker-compose-secrets | [Secret source and grants](https://docs.docker.com/reference/compose-file/secrets/) | Mutable reference; environment source not supported by stack deploy | 2026-09-27 |
-| S-docker-compose-use-secrets | [Per-service secret grants/mounts](https://docs.docker.com/compose/how-tos/use-secrets/) | Mutable reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-deploy | [Deploy: resource/restart policy](https://docs.docker.com/reference/compose-file/deploy/) | Optional implementation aspect; mutable reference | 2026-09-27 |
-| S-docker-resource-constraints | [Linux resource constraints](https://docs.docker.com/engine/containers/resource_constraints/) | Mutable Engine reference; runtime/platform support matters | 2026-09-27 |
-| S-docker-container-restart | [Container restart policies](https://docs.docker.com/engine/containers/start-containers-automatically/) | Mutable Engine reference; publication date not stated | 2026-09-27 |
-| S-docker-container-stop | [Stop signals/timeouts](https://docs.docker.com/reference/cli/docker/container/stop/) | Mutable Engine CLI reference; publication date not stated | 2026-09-27 |
-| S-docker-compose-config | [Compose config model/options](https://docs.docker.com/reference/cli/docker/compose/config/) | Mutable CLI reference; publication date not stated | 2026-09-27 |
-| S-docker-image-pinning | [Build guidance: pin image versions](https://docs.docker.com/build/building/best-practices/#pin-base-image-versions) | Mutable guidance; old develop URL redirects here | 2026-09-27 |
-| S-docker-build-provenance | [Provenance: mode/version](https://docs.docker.com/build/metadata/attestations/slsa-provenance/) | BuildKit mode=min and schema v0.2 defaults; v1 optional | 2026-09-27 |
-| S-docker-volume-recovery | [Volume backup/restore mechanics](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes) | Mutable generic tar example; not database consistency proof | 2026-09-27 |
-| S-nist-contingency-800-34 | [NIST contingency: 3.2/3.5/4.4](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-34r1.pdf) | Final May 2010, updated 2010-11-11; corrected edition confirmed via /r1/upd1/final | 2026-09-27 |
-| S-google-sre-monitoring | [SRE: signals and black/white-box monitoring](https://sre.google/sre-book/monitoring-distributed-systems/) | Published book chapter; page revision date not stated; experiential guidance | 2026-09-27 |
-| S-rfc-tls-9846 | [TLS 1.3: relationship to RFC 8446](https://www.rfc-editor.org/rfc/rfc9846.html#section-1.2) | July 2026; Proposed Standard / Standards Track; obsoletes RFC 8446 | 2026-09-27 |
-| S-rfc-acme-8555 | [ACME: section 8 challenges](https://www.rfc-editor.org/rfc/rfc8555.html#section-8) | March 2019; Standards Track; later updates/errata possible | 2026-09-27 |
-| S-rfc-dns-1034 | [DNS: section 3.6 resource records](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6) | November 1987; foundational DNS RFC with later updates | 2026-09-27 |
-| S-docker-compose-production | [Single-server updates](https://docs.docker.com/compose/how-tos/production/) | Mutable guidance; old /compose/production URL redirects here | 2026-09-27 |
-
-## Future Internal Checks
-
-| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0005-01/02/03 | repository, directory, environment × infrastructure | Composition feature or selector change | Known historical reference: root docker-compose.yml; candidate fixtures not inspected | Do supported features, paths, collisions, profiles and precedence match the intended model? | Exact CLI/Engine/platform and dummy-input expected model | Future scoped synthetic render tests | Pass on exact expected model; fail on ignored attributes/unintended resources | Render can expose values; use dummy inputs; runtime separate | iac-reviewer | Not assessed in this run |
-| C-m0005-04 | environment × operations/quality | Startup/recovery change | Candidate isolated workload/probe; not inspected | Does readiness cover the actual consumer workflow and recovery? | Probe contract, controlled failure and user-outcome evidence | Future approved isolated startup/failure rehearsal | Pass within accepted recovery bound; fail if probe passes while workflow fails | Runtime/fault injection need approval | infra-implementer | Not assessed in this run |
-| C-m0005-05 | environment × security/data | Exposure or persistence change | Candidate network/storage/grant design; not inspected | Are ingress/peer/grant/persistence boundaries enforced? | Sanitized model and isolated reachability/state evidence | Future narrowly authorized review/rehearsal | Pass authorized access and expected persistence only; fail unintended access/grants | Host/network tests and confidential metadata require scope | security-auditor | Not assessed in this run |
-| C-m0005-06 | environment × capacity/operations | Resource/lifecycle change | Candidate isolated target; not inspected | Are limits enforced and writes cleanly drained? | Runtime/controller record and integrity after bounded stop | Future approved bounded resource/termination test | Pass agreed ceiling/drain criteria; fail missing enforcement/lost writes | Load/stop affect data; isolate and approve | infra-implementer | Not assessed in this run |
-| C-m0005-07 | tool, CI × supply chain | Image promotion | Candidate digest/attestation; not fetched | Can artifact identity bind to approved builder/source/platform? | Digest, provenance subject, trust and residual-risk decision | Future security-owned provenance verification | Pass matching subject/trust; fail mismatch/unverifiable origin | Registry access/paid tools separately scoped | security-auditor | Not assessed in this run |
-| C-m0005-08 | environment × ingress/operations | DNS/TLS change | Candidate test-domain/ingress runbook; not inspected | Can hostname, renewal and key/dependency recovery meet the intended contract? | Sanitized DNS/certificate/renewal/recovery evidence | Future approved isolated ingress rehearsal | Pass intended trust and recovery; fail wrong identity or unrecoverable key | DNS changes/issuance/key custody need approval | incident-responder | Not assessed in this run |
-| C-m0005-09 | environment × data/operations | Durable data before migration/removal | Candidate backup and empty isolated target; not inspected | Does restoration recover consistent data and workflow within RPO/RTO? | Backup timestamp/checksum, engine version, isolation proof, invariants, last recoverable transaction, duration and owner acceptance | Future separately approved isolated restore; no production overwrite | Pass integrity and agreed loss/time/user outcome; fail missing keys/corruption/exceeded objective | Protected backup access and restoration writes need scoped approval | infra-implementer | Not assessed in this run |
-| C-m0005-09/10 | Spec/task, environment × operations/quality | Upgrade acceptance | Candidate update/acceptance packet; not inspected | Does evidence separate each layer and name irreversible migrations? | Version-bound parser/runtime/probe/workflow/recovery results | Future packet review and isolated rollback rehearsal | Pass all required layers plus safe rollback; fail static-pass-only acceptance | Update/cutover/data actions remain future approval | iac-reviewer | Not assessed in this run |
-
-### Limits and recheck conditions
-
-No infrastructure configuration, service inventory, runtime, secrets, backup or
-account was inspected. Source pages are mutable; feature minima are not a complete
-compatibility matrix. Upstream specification main was opened without a revision
-pin. Recheck on CLI/Engine/platform, source or data-schema changes and before
-adoption. Historical measurements below are not new acceptance evidence.
-
-## Historical workspace observations — not reassessed in this run
-
-> Historical evidence (not current authority; source: Git history):
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-## Overview
->
-> Historical evidence (not current authority; source: Git history):
->
-> Docker Compose defines an application model from services, networks, volumes,
-> configs, secrets, profiles, and related file features. This workspace adds an
-> infrastructure harness around that model: a root include boundary, forty-seven
-> infra variants across eleven tiers, a shared template library, generated
-> coverage and image-provenance snapshots, hardening checks, operations
-> documents, and protected-change rules.
->
-> At Task 8 baseline `910ce5f36641635118c64b1aa6cfe48f86ecde14`,
-> the fresh generated inventory scans 48 Compose files including the root, 47
-> files with services, 168 service entries, and 25 profile labels including
-> `default`. Those 168 rows describe declarations across canonical, development,
-> and cluster variants; they are not 168 unique services or simultaneous runtime
-> containers. The root actually includes 17 leaf files containing 60 service
-> entries before profile selection.
->
-## Purpose
+### Purpose
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -213,7 +137,8 @@ adoption. Historical measurements below are not new acceptance evidence.
 > inventory, root-deployable topology, static validation, live execution, and
 > remote dependencies as separate evidence states.
 >
-## Repository Role
+
+### Repository Role
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -224,7 +149,8 @@ adoption. Historical measurements below are not new acceptance evidence.
 > policy and procedures remain in canonical agent governance and Stage 05, and implementation gaps
 > require a separate Stage 03/04 chain.
 >
-## Research Ownership
+
+### Research Ownership
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -234,7 +160,8 @@ adoption. Historical measurements below are not new acceptance evidence.
 > functionally redundant or should be removed. That service-role and license
 > question is consolidated in [RES-0002-m0021](m0021-local-docker-service-consolidation.md).
 >
-## Scope
+
+### Scope
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -265,7 +192,8 @@ adoption. Historical measurements below are not new acceptance evidence.
 > - Repairing the infra README census, Compose files, hardening policy, or any
 >   generated output.
 >
-## Definitions / Facts
+
+### Definitions / Facts
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -678,7 +606,8 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | Backup / recovery | Recovery must be separately specified for a named persistent target. | affected service Compose file and its adjacent `README.md` | Require an owner-approved backup, restore, and rollback plan before operational adoption. | No backup, restore, or failure exercise was performed or inferred. |
 > | IaC change control | A Compose edit is a tracked configuration change requiring reviewed scope and evidence. | changed Compose path, Task 0004, and relevant owner document | Bind change, reviewer, target, and rollback criteria before any execution authority. | Version control and review records do not prove deployed state. |
 >
-## Scope Implications
+
+### Scope Implications
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -699,7 +628,160 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | `qa`           | Keep file/profile/variant coverage, render validation, hardening, runtime health, recovery, and SLO verification as separate gates.                          |
 > | `security`     | Review transitive Compose trust, privileges, published ports, external networks, secret grants, images, and registered exceptions without reading values.    |
 >
+
+### Scope Application
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | An agent-proposed Compose edit names one file and one owner-approved task. | Inspect task scope and changed declaration. | A task does not authorize runtime execution. |
+> | architecture | applies | A system boundary change identifies service, network, data, and recovery effects. | Inspect tracked design and Compose edge. | Static topology is not a deployed architecture. |
+> | common | applies | Shared networks or reusable fragments have a named consumer and collision review. | Inspect root and referenced Compose files. | Inclusion does not prove compatible execution. |
+> | docs | applies | Document the literal revision, source state, and non-runtime limit. | Inspect source and claim rows. | Documentation is not operational evidence. |
+> | infra | applies | The proposed field has a target-specific configuration and source-bound semantic basis. | Inspect the exact `docker-compose*.yml` definition. | Profiles, dependency, health, and secret behavior remain UNVERIFIED here. |
+> | ops | applies | A runtime change has a separately approved operator, rollback, and observation plan. | Inspect approved runbook and event evidence. | No runtime plan or observation is supplied. |
+> | qa | applies | A static composition check is selected before a future runtime check. | Record the exact check and target. | No Docker command was run by this leaf. |
+> | security | applies | Secret references and exposure paths are reviewed without accessing secret values. | Inspect only declaration paths and ownership. | A reference does not prove secure storage, injection, or redaction. |
+>
+
+### 2026-09-05 Revalidation
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> The clean full gate rendered all 28 declared profile selections and reported
+> 232 selected-service instances in aggregate. DATA-0059 owns the service/profile
+> inventory; AUD-0097 separately preserves four domain defects that static
+> rendering does not expose.
+>
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Profiles and service boundaries | Root includes service-local Compose files; POL-0078 owns vocabulary | Configured, Repository-enforced | Four domain defects remain | all-profile render plus AUD-0097 owner actions |
+> | Network/volume/secret/healthcheck | Declarations and security baselines are tracked | Configured, Repository-enforced | Live connectivity, persistence, and secret delivery unverified | isolated runtime rehearsal without value capture |
+> | Runtime/deployment | SPEC-0172 observed Docker reachability but no repository deployment | Unverified for this stack | No exact live target | approved target, health, recovery, rollback evidence |
+>
+> Recommendation: do not convert a successful `docker compose config` into an
+> operational-readiness claim. Route AUD-0097 defects through their service-domain
+> owners. Official basis: [Compose services](https://docs.docker.com/reference/compose-file/services/),
+> [profiles](https://docs.docker.com/compose/how-tos/profiles/), and
+> [secrets](https://docs.docker.com/reference/compose-file/secrets/).
+>
+
+### Maintenance
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Re-run both canonical `--check` and `--dry-run` generators, the exact tracked
+> Compose inventory, and the hardening entry point after Compose, templates,
+> profiles, registries, exceptions, or relevant Docker guidance changes. Keep
+> variant inventory, selected root topology, rendered configuration, runtime
+> observation, and operations evidence in separate fields. Owner: Documentation
+> maintainers with Infra/DevOps, Entry, Security, and Operations review.
+>
+
+### Related Documents
+
+- [Verification and validation](./m0019-verification-validation.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Security governance](./m0017-security-governance.md)
+- [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Data index](../../data/README.md)
+- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Research pack navigation](README.md)
+
+## Findings
+
+### Historical workspace observations — not reassessed in this run
+
+> Historical evidence (not current authority; source: Git history):
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+## Limitations
+
+### Future Internal Checks
+
+| Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0005-01/02/03 | repository, directory, environment × infrastructure | Composition feature or selector change | Known historical reference: root docker-compose.yml; candidate fixtures not inspected | Do supported features, paths, collisions, profiles and precedence match the intended model? | Exact CLI/Engine/platform and dummy-input expected model | Future scoped synthetic render tests | Pass on exact expected model; fail on ignored attributes/unintended resources | Render can expose values; use dummy inputs; runtime separate | iac-reviewer | Not assessed in this run |
+| C-m0005-04 | environment × operations/quality | Startup/recovery change | Candidate isolated workload/probe; not inspected | Does readiness cover the actual consumer workflow and recovery? | Probe contract, controlled failure and user-outcome evidence | Future approved isolated startup/failure rehearsal | Pass within accepted recovery bound; fail if probe passes while workflow fails | Runtime/fault injection need approval | infra-implementer | Not assessed in this run |
+| C-m0005-05 | environment × security/data | Exposure or persistence change | Candidate network/storage/grant design; not inspected | Are ingress/peer/grant/persistence boundaries enforced? | Sanitized model and isolated reachability/state evidence | Future narrowly authorized review/rehearsal | Pass authorized access and expected persistence only; fail unintended access/grants | Host/network tests and confidential metadata require scope | security-auditor | Not assessed in this run |
+| C-m0005-06 | environment × capacity/operations | Resource/lifecycle change | Candidate isolated target; not inspected | Are limits enforced and writes cleanly drained? | Runtime/controller record and integrity after bounded stop | Future approved bounded resource/termination test | Pass agreed ceiling/drain criteria; fail missing enforcement/lost writes | Load/stop affect data; isolate and approve | infra-implementer | Not assessed in this run |
+| C-m0005-07 | tool, CI × supply chain | Image promotion | Candidate digest/attestation; not fetched | Can artifact identity bind to approved builder/source/platform? | Digest, provenance subject, trust and residual-risk decision | Future security-owned provenance verification | Pass matching subject/trust; fail mismatch/unverifiable origin | Registry access/paid tools separately scoped | security-auditor | Not assessed in this run |
+| C-m0005-08 | environment × ingress/operations | DNS/TLS change | Candidate test-domain/ingress runbook; not inspected | Can hostname, renewal and key/dependency recovery meet the intended contract? | Sanitized DNS/certificate/renewal/recovery evidence | Future approved isolated ingress rehearsal | Pass intended trust and recovery; fail wrong identity or unrecoverable key | DNS changes/issuance/key custody need approval | incident-responder | Not assessed in this run |
+| C-m0005-09 | environment × data/operations | Durable data before migration/removal | Candidate backup and empty isolated target; not inspected | Does restoration recover consistent data and workflow within RPO/RTO? | Backup timestamp/checksum, engine version, isolation proof, invariants, last recoverable transaction, duration and owner acceptance | Future separately approved isolated restore; no production overwrite | Pass integrity and agreed loss/time/user outcome; fail missing keys/corruption/exceeded objective | Protected backup access and restoration writes need scoped approval | infra-implementer | Not assessed in this run |
+| C-m0005-09/10 | Spec/task, environment × operations/quality | Upgrade acceptance | Candidate update/acceptance packet; not inspected | Does evidence separate each layer and name irreversible migrations? | Version-bound parser/runtime/probe/workflow/recovery results | Future packet review and isolated rollback rehearsal | Pass all required layers plus safe rollback; fail static-pass-only acceptance | Update/cutover/data actions remain future approval | iac-reviewer | Not assessed in this run |
+
+### Limits and recheck conditions
+
+No infrastructure configuration, service inventory, runtime, secrets, backup or
+account was inspected. Source pages are mutable; feature minima are not a complete
+compatibility matrix. Upstream specification main was opened without a revision
+pin. Recheck on CLI/Engine/platform, source or data-schema changes and before
+adoption. Historical measurements below are not new acceptance evidence.
+
 ## Sources
+
+### Claims and Sources
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0005-01 | Implementation support differs; version does not pin schema. | S-docker-compose-spec, optional attributes; S-docker-compose-version-name; S-docker-compose-release | Not stated; tagged release date not extracted | 2026-09-27 | Compose Specification / CLI v5.5.1 release | Fact | No local version measured; recheck target CLI/platform. |
+| C-m0005-02 | Include/merge/extends/profile semantics differ. | S-docker-compose-include; S-docker-compose-merge, exceptions; S-docker-compose-extends, paths; S-docker-compose-profiles, target | Not stated | 2026-09-27 | include 2.20.0+; !override 2.24.4+ | Fact | Extends path wording is context-dependent; test selected model later. |
+| C-m0005-03 | Interpolation/container environment/project naming have different precedence. | S-docker-compose-interpolation; S-docker-compose-env-precedence; S-docker-compose-project-name | Not stated | 2026-09-27 | Current Compose CLI docs | Fact | Synthetic inputs only; no private .env opened. |
+| C-m0005-04 | Startup, readiness and runtime recovery differ. | S-docker-compose-services, depends_on/healthcheck; S-docker-compose-startup; S-docker-container-restart | Not stated | 2026-09-27 | depends_on.restart 2.17.0+; required 2.20.0+ | Fact / interpretation | Probe quality remains target-specific. |
+| C-m0005-05 | Network/ports/storage/configs/secrets have distinct trust/lifecycle. | S-docker-compose-networks; S-docker-port-publishing; S-docker-compose-volumes; S-docker-compose-configs; S-docker-compose-secrets; S-docker-compose-use-secrets | Not stated | 2026-09-27 | Config content/environment 2.23.1+; localhost caveat pre-Engine 28 | Fact / interpretation | No exposure, encryption or grant enforcement assessed. |
+| C-m0005-06 | Capacity and shutdown/restart need runtime/application evidence. | S-docker-resource-constraints; S-docker-compose-deploy; S-docker-container-stop; S-docker-compose-services, stop_grace_period | Not stated | 2026-09-27 | Linux Engine / optional deploy support | Interpretation | No resource enforcement, utilization or data integrity measured. |
+| C-m0005-07 | Pin identity and provenance answer different questions. | S-docker-image-pinning; S-docker-build-provenance, mode/version | Not stated | 2026-09-27 | BuildKit schema v0.2 default; v1 optional | Fact / interpretation | No digest/signature/scan verified. |
+| C-m0005-08 | TLS/DNS/ACME need distinct operating contracts. | S-rfc-tls-9846, 1.2; S-rfc-acme-8555, 8; S-rfc-dns-1034, 3.6 | 2026-07; 2019-03; 1987-11 | 2026-09-27 | Standards Track originals | Fact / recommendation | Later RFC updates/errata and target behavior need recheck. |
+| C-m0005-09 | Backup/restoration and static/process/readiness/user evidence must remain distinct. | S-docker-volume-recovery; S-nist-contingency-800-34, 3.2/3.5/4.4; S-docker-compose-config; S-google-sre-monitoring | NIST May 2010, updated 2010-11-11; others not stated | 2026-09-27 | Corrected final SP 800-34 Rev.1 / CLI/SRE | Interpretation / recommendation | No backup/restore/runtime observed; federal guidance used proportionately. |
+| C-m0005-10 | Updates need application-aware rollback and optional scope. | S-docker-compose-production, updates; C-m0021-03 | Not stated | 2026-09-27 | Single-server Compose operations | Recommendation | No new service decision, update or migration executed. |
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-docker-compose-spec | [Specification: optional attributes](https://github.com/compose-spec/compose-spec/blob/main/spec.md#requirements-and-optional-attributes) | Mutable main; specification, no commit pin obtained | 2026-09-27 |
+| S-docker-compose-release | [Compose v5.5.1 release](https://github.com/docker/compose/releases/tag/v5.5.1) | Official tagged release; timestamp not reliably extracted | 2026-09-27 |
+| S-docker-compose-version-name | [Obsolete version field](https://docs.docker.com/reference/compose-file/version-and-name/) | Mutable official reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-include | [Include: short/long syntax](https://docs.docker.com/reference/compose-file/include/) | Requires Compose 2.20.0+; mutable reference | 2026-09-27 |
+| S-docker-compose-merge | [Merge: exceptions/reset/replace](https://docs.docker.com/reference/compose-file/merge/) | !override requires 2.24.4+; mutable reference | 2026-09-27 |
+| S-docker-compose-extends | [Extends: relative paths](https://docs.docker.com/compose/how-tos/multiple-compose-files/extends/) | Mutable reference; stack deploy differs | 2026-09-27 |
+| S-docker-compose-profiles | [Profiles: target/dependencies](https://docs.docker.com/compose/how-tos/profiles/#auto-starting-profiles-and-dependency-resolution) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-interpolation | [Interpolation: source precedence](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#ways-to-set-variables-with-interpolation) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-env-precedence | [Container environment precedence](https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-project-name | [Project naming precedence](https://docs.docker.com/compose/how-tos/project-name/#set-a-project-name) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-services | [Services: dependencies/health/resources/stop](https://docs.docker.com/reference/compose-file/services/) | depends_on.restart 2.17.0+, required 2.20.0+; mutable reference | 2026-09-27 |
+| S-docker-compose-startup | [Startup and shutdown order](https://docs.docker.com/compose/how-tos/startup-order/) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-networks | [Networks: internal/external](https://docs.docker.com/reference/compose-file/networks/) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-port-publishing | [Host port binding and localhost caveat](https://docs.docker.com/engine/network/port-publishing/) | Mutable Engine reference; localhost caveat before Engine 28.0.0 | 2026-09-27 |
+| S-docker-compose-volumes | [Volume definitions/lifecycle](https://docs.docker.com/reference/compose-file/volumes/) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-configs | [Config file/content/environment](https://docs.docker.com/reference/compose-file/configs/) | content/environment sources introduced in 2.23.1 | 2026-09-27 |
+| S-docker-compose-secrets | [Secret source and grants](https://docs.docker.com/reference/compose-file/secrets/) | Mutable reference; environment source not supported by stack deploy | 2026-09-27 |
+| S-docker-compose-use-secrets | [Per-service secret grants/mounts](https://docs.docker.com/compose/how-tos/use-secrets/) | Mutable reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-deploy | [Deploy: resource/restart policy](https://docs.docker.com/reference/compose-file/deploy/) | Optional implementation aspect; mutable reference | 2026-09-27 |
+| S-docker-resource-constraints | [Linux resource constraints](https://docs.docker.com/engine/containers/resource_constraints/) | Mutable Engine reference; runtime/platform support matters | 2026-09-27 |
+| S-docker-container-restart | [Container restart policies](https://docs.docker.com/engine/containers/start-containers-automatically/) | Mutable Engine reference; publication date not stated | 2026-09-27 |
+| S-docker-container-stop | [Stop signals/timeouts](https://docs.docker.com/reference/cli/docker/container/stop/) | Mutable Engine CLI reference; publication date not stated | 2026-09-27 |
+| S-docker-compose-config | [Compose config model/options](https://docs.docker.com/reference/cli/docker/compose/config/) | Mutable CLI reference; publication date not stated | 2026-09-27 |
+| S-docker-image-pinning | [Build guidance: pin image versions](https://docs.docker.com/build/building/best-practices/#pin-base-image-versions) | Mutable guidance; old develop URL redirects here | 2026-09-27 |
+| S-docker-build-provenance | [Provenance: mode/version](https://docs.docker.com/build/metadata/attestations/slsa-provenance/) | BuildKit mode=min and schema v0.2 defaults; v1 optional | 2026-09-27 |
+| S-docker-volume-recovery | [Volume backup/restore mechanics](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes) | Mutable generic tar example; not database consistency proof | 2026-09-27 |
+| S-nist-contingency-800-34 | [NIST contingency: 3.2/3.5/4.4](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-34r1.pdf) | Final May 2010, updated 2010-11-11; corrected edition confirmed via /r1/upd1/final | 2026-09-27 |
+| S-google-sre-monitoring | [SRE: signals and black/white-box monitoring](https://sre.google/sre-book/monitoring-distributed-systems/) | Published book chapter; page revision date not stated; experiential guidance | 2026-09-27 |
+| S-rfc-tls-9846 | [TLS 1.3: relationship to RFC 8446](https://www.rfc-editor.org/rfc/rfc9846.html#section-1.2) | July 2026; Proposed Standard / Standards Track; obsoletes RFC 8446 | 2026-09-27 |
+| S-rfc-acme-8555 | [ACME: section 8 challenges](https://www.rfc-editor.org/rfc/rfc8555.html#section-8) | March 2019; Standards Track; later updates/errata possible | 2026-09-27 |
+| S-rfc-dns-1034 | [DNS: section 3.6 resource records](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6) | November 1987; foundational DNS RFC with later updates | 2026-09-27 |
+| S-docker-compose-production | [Single-server updates](https://docs.docker.com/compose/how-tos/production/) | Mutable guidance; old /compose/production URL redirects here | 2026-09-27 |
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -724,65 +806,3 @@ adoption. Historical measurements below are not new acceptance evidence.
 > | [Image-tag floating exceptions](../../../../infra/image-tag-policy.exceptions.json)                                                             | 2026-08-14                | Workspace tracked                 | Read in full; confirmed all 4 registered floating images (`nginx:alpine`, `portainer/portainer-ce:sts`, `lfnovo/open_notebook:v1-latest-single`, `b4bz/homer`) carry owner, reason, and monthly cadence.                                                                                  |
 > | Direct `rg` re-scan of `infra/**/docker-compose*.yml` for `image:`, `restart:`, `deploy:`, `mem_limit:`, `cpus:`, `healthcheck:`                | 2026-08-14                | Workspace tracked                 | 137 image declarations / 82 distinct, 0 literal `:latest`, 1 untagged (registered); restart values limited to `unless-stopped` (45) and `'no'` (13); only 2 files declare `deploy.resources`.                                                                                             |
 >
-## Scope Application
->
-> Historical evidence (not current authority; source: Git history):
->
-> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-> | --- | --- | --- | --- | --- |
-> | agentic | applies | An agent-proposed Compose edit names one file and one owner-approved task. | Inspect task scope and changed declaration. | A task does not authorize runtime execution. |
-> | architecture | applies | A system boundary change identifies service, network, data, and recovery effects. | Inspect tracked design and Compose edge. | Static topology is not a deployed architecture. |
-> | common | applies | Shared networks or reusable fragments have a named consumer and collision review. | Inspect root and referenced Compose files. | Inclusion does not prove compatible execution. |
-> | docs | applies | Document the literal revision, source state, and non-runtime limit. | Inspect source and claim rows. | Documentation is not operational evidence. |
-> | infra | applies | The proposed field has a target-specific configuration and source-bound semantic basis. | Inspect the exact `docker-compose*.yml` definition. | Profiles, dependency, health, and secret behavior remain UNVERIFIED here. |
-> | ops | applies | A runtime change has a separately approved operator, rollback, and observation plan. | Inspect approved runbook and event evidence. | No runtime plan or observation is supplied. |
-> | qa | applies | A static composition check is selected before a future runtime check. | Record the exact check and target. | No Docker command was run by this leaf. |
-> | security | applies | Secret references and exposure paths are reviewed without accessing secret values. | Inspect only declaration paths and ownership. | A reference does not prove secure storage, injection, or redaction. |
->
-## 2026-09-05 Revalidation
->
-> Historical evidence (not current authority; source: Git history):
->
-> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-> The clean full gate rendered all 28 declared profile selections and reported
-> 232 selected-service instances in aggregate. DATA-0059 owns the service/profile
-> inventory; AUD-0097 separately preserves four domain defects that static
-> rendering does not expose.
->
-> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
-> | --- | --- | --- | --- | --- |
-> | Profiles and service boundaries | Root includes service-local Compose files; POL-0078 owns vocabulary | Configured, Repository-enforced | Four domain defects remain | all-profile render plus AUD-0097 owner actions |
-> | Network/volume/secret/healthcheck | Declarations and security baselines are tracked | Configured, Repository-enforced | Live connectivity, persistence, and secret delivery unverified | isolated runtime rehearsal without value capture |
-> | Runtime/deployment | SPEC-0172 observed Docker reachability but no repository deployment | Unverified for this stack | No exact live target | approved target, health, recovery, rollback evidence |
->
-> Recommendation: do not convert a successful `docker compose config` into an
-> operational-readiness claim. Route AUD-0097 defects through their service-domain
-> owners. Official basis: [Compose services](https://docs.docker.com/reference/compose-file/services/),
-> [profiles](https://docs.docker.com/compose/how-tos/profiles/), and
-> [secrets](https://docs.docker.com/reference/compose-file/secrets/).
->
-## Maintenance
->
-> Historical evidence (not current authority; source: Git history):
->
-> Re-run both canonical `--check` and `--dry-run` generators, the exact tracked
-> Compose inventory, and the hardening entry point after Compose, templates,
-> profiles, registries, exceptions, or relevant Docker guidance changes. Keep
-> variant inventory, selected root topology, rendered configuration, runtime
-> observation, and operations evidence in separate fields. Owner: Documentation
-> maintainers with Infra/DevOps, Entry, Security, and Operations review.
->
-
-## Related Documents
-
-- [Verification and validation](./m0019-verification-validation.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Security governance](./m0017-security-governance.md)
-- [Automation pipeline and workflow](./m0004-automation-pipeline-workflow.md)
-- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
-- [Data index](../../data/README.md)
-- [SPEC-0158 preservation contract](../../../98.archive/completed/03.specs/0158-document-governance-lifecycle-convergence/spec.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-- [Research pack navigation](README.md)

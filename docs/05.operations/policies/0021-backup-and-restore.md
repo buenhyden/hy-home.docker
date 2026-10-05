@@ -16,6 +16,8 @@ created: "2026-06-04"
 
 ## Overview
 
+### Overview
+
 이 policy는 현재 source configuration을 data protection, security, resource,
 lifecycle, 독립적으로 검증 가능한 operator control에 묶는다.
 
@@ -29,7 +31,9 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 `${DEFAULT_*}`로 시작하는 경로는 resolved host 값이 private operator state로
 남는 bind-backed named volume이다.
 
-## Policy Scope
+## Scope
+
+### Policy Scope
 
 이 policy는 현재 source-backed package와 그 보존 state에 적용된다.
 
@@ -58,7 +62,25 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Alertmanager silence/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped 또는 application-consistent snapshot; tracked routing configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Alertmanager operations가 silence와 route validation을 소유한다. |
 | Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | 중복 또는 누락된 ingestion이 허용되지 않을 때 stopped snapshot; 그렇지 않으면 loss window를 기록하고 tracked config로부터 rebuild | source-at-rest encryption 미검증; 보존 시 encrypted destination 필수; 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Rebuild는 telemetry gap을 수용할 때만 허용된다. |
 
-## Controls
+### Traceability
+
+- Artifact: `POL-0021`; parent: `AD-0004`.
+- Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
+
+### Official references
+
+- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
+- [SQLite Online Backup API](https://sqlite.org/backup.html) and [backup-copy hazards](https://sqlite.org/howtocorrupt.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Qdrant snapshots](https://qdrant.tech/documentation/concepts/snapshots/)
+- [Grafana backup guidance](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/)
+- [OpenBao Raft operator commands](https://openbao.org/docs/commands/operator/raft/)
+- [pgBackRest user guide](https://pgbackrest.org/user-guide.html) and [command reference](https://pgbackrest.org/command.html)
+- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)
+
+## Rules
+
+### Controls
 
 전체 export·백업·검증 성공이 유효 복구 세트의 필수 조건이다. 현재 `restic_ok`는 Restic backup/check만 gate하므로 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패에도 partial snapshot/copy가 생길 수 있다. 종료1·성공 timestamp 부재를 실패로 유지하고 snapshot 존재로 승격하지 않는다. 자동 skip 강화는 별도 구현 사항이다. `archive_timeout`의 5분은 segment 전환 설정이며 성공 archive RPO 보장이 아니다.
 
@@ -122,19 +144,13 @@ Rehearsal은 isolated target, 호환되는 engine version, disposable credential
 
 적용 identity: `restic`, `restic-offsite`, `backup-sqlite-export`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-HOME state owner; rebuildable exception은 기록된 source evidence가 필요하다.
-Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
-또는 same-host availability 주장을 승인하지 않는다.
-
-## Verification
+### Verification
 
 root configuration과 scoped static policy check를 검증한 다음, promotion
 또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
 
-## Review Cadence
+### Review Cadence
 
 profile, image, volume, credential, consumer, retention, 또는 upstream
 lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한다.
@@ -145,21 +161,13 @@ lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한
 Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
 snapshot은 위의 Restic retention에 따라 age out된다.
 
-## Traceability
+## Exceptions
 
-- Artifact: `POL-0021`; parent: `AD-0004`.
-- Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
+### Exceptions
 
-### Official references
-
-- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
-- [SQLite Online Backup API](https://sqlite.org/backup.html) and [backup-copy hazards](https://sqlite.org/howtocorrupt.html)
-- [Valkey persistence](https://valkey.io/topics/persistence/)
-- [Qdrant snapshots](https://qdrant.tech/documentation/concepts/snapshots/)
-- [Grafana backup guidance](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/)
-- [OpenBao Raft operator commands](https://openbao.org/docs/commands/operator/raft/)
-- [pgBackRest user guide](https://pgbackrest.org/user-guide.html) and [command reference](https://pgbackrest.org/command.html)
-- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)
+HOME state owner; rebuildable exception은 기록된 source evidence가 필요하다.
+Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
+또는 same-host availability 주장을 승인하지 않는다.
 
 ## Related Documents
 

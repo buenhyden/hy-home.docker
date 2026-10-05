@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-06"
+  updated: "2026-10-05"
   function_id: "security-audit"
   scope: "security"
   owner_agent: "security-auditor"
@@ -15,7 +15,9 @@ metadata:
 
 # security-audit
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -35,22 +37,22 @@ The exact change boundary, security contract, trust assumptions, and read-only a
 2. Reproduce plausible weaknesses using safe static or approved local checks and distinguish exploit paths from policy hardening.
 3. Rank findings by impact and reachability, cite evidence, and assign remediation or residual-risk ownership.
 
+### Gates
+
+- Every finding cites exact evidence.
+- Secret values and prohibited sensitive payloads are absent from output.
+
 ## Outputs
 
 - A read-only analysis in the shape of `assets/findings.md`. Every axis gets a
   row even when it found nothing, and `not-assessable` is recorded as a result
   rather than as a pass.
 
-## Gates
-
-- Every finding cites exact evidence.
-- Secret values and prohibited sensitive payloads are absent from output.
-
 ## Failure Handling
 
 Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
 
-## Related Documents
+## References
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Container threat modeling](../container-threat-modeling/SKILL.md)

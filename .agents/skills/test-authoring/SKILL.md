@@ -7,7 +7,7 @@ metadata:
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-09-10"
+  updated: "2026-10-05"
   function_id: "test-authoring"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,9 @@ metadata:
 
 # test-authoring
 
-## Preconditions
+## Purpose
+
+### Preconditions
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -37,14 +39,14 @@ A behavioral contract and reproducible failure or not-yet-implemented expectatio
 2. Implement or coordinate the smallest production change, then run the focused test to GREEN before refactoring.
 3. Add boundary/regression cases, run the affected suite, and record exact commands and observed outcomes.
 
-## Outputs
-
-- Deterministic tests and RED/GREEN/regression evidence.
-
-## Gates
+### Gates
 
 - The test is witnessed failing for the intended reason before implementation.
 - Regression coverage includes the discovered boundary and keeps existing tests green.
+
+## Outputs
+
+- Deterministic tests and RED/GREEN/regression evidence.
 
 ## Failure Handling
 
@@ -56,7 +58,7 @@ import path, working directory, or a missing descriptor while the code under
 test is correct. Reproduce the failure the way the contract runs it, and if the
 two disagree, the disagreement is the finding.
 
-## Related Documents
+## References
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [E2E testing](../e2e-testing/SKILL.md)

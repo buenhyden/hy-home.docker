@@ -7,13 +7,16 @@ owner: "@buenhyden"
 updated: "2026-09-29"
 layer: "requirements"
 artifact_id: "REQ-0027"
-parent_ids: []
 created: "2026-09-19"
 ---
 
 # Home and Development Host Requirements
 
-## Problem and Goals
+## Overview
+
+### Overview
+
+### Problem and Goals
 
 Operate real HOME services and development work on a single Linux host.
 Remove inconsistencies in implementation, operations documentation,
@@ -23,16 +26,11 @@ requirement is a draft recording the full audit/redesign scope the user
 requested. Authoring documents and implementation does not imply approval to
 deploy real services or change data.
 
-## Stakeholders and User Needs
+## Requirements
 
-- A HOME user must be able to use the access/authentication foundation and
-  AI/workflow features at all times.
-- A developer must be able to select the development/experiment features
-  they need and know the impact on HOME availability.
-- An operator must align configuration without exposing values and verify
-  state and recoverability before and after a change.
+### Requirements
 
-## Functional Requirements
+### Functional Requirements
 
 - **REQ-0027-FR-0001**: Every current service must be classified as HOME,
   DEV, OPTIONAL, LAB, REMOVE, or MIGRATE, describing its consumers, data,
@@ -59,7 +57,7 @@ deploy real services or change data.
   startup, status, authentication, persistence, resource, backup, and
   recovery results into actual evidence versus unverified items.
 
-## Non-functional Requirements
+### Non-functional Requirements
 
 - **REQ-0027-NFR-0001 — Confidentiality**: Passwords, tokens, keys, and
   local secret values must not appear in output, reports, model context, or
@@ -73,14 +71,6 @@ deploy real services or change data.
 - **REQ-0027-NFR-0004 — Verifiability**: Verification must run against the
   latest main, and unexecuted, failed, or blocked results must not be
   recorded as success.
-
-## Constraints
-
-Targets a single physical host with real operational data. Multiple
-containers or profiles on the same host do not provide physical failure
-isolation. Secret rotation, destructive data operations, reboots, and
-running-service changes follow a separate approval scope. Frozen historical
-documents and the meaning of issued identifiers are preserved.
 
 ## Acceptance Criteria
 
@@ -96,15 +86,38 @@ documents and the meaning of issued identifiers are preserved.
 5. A reviewable change history, verification results, residual risk, and
    incomplete execution verification are provided.
 
-## Traceability
+## Scope
 
-- [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
-- [Convergence Specification](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+### Scope
 
-## Risks
+### Stakeholders and User Needs
+
+- A HOME user must be able to use the access/authentication foundation and
+  AI/workflow features at all times.
+- A developer must be able to select the development/experiment features
+  they need and know the impact on HOME availability.
+- An operator must align configuration without exposing values and verify
+  state and recoverability before and after a change.
+
+### Constraints
+
+Targets a single physical host with real operational data. Multiple
+containers or profiles on the same host do not provide physical failure
+isolation. Secret rotation, destructive data operations, reboots, and
+running-service changes follow a separate approval scope. Frozen historical
+documents and the meaning of issued identifiers are preserved.
+
+### Risks
 
 Failures and resource contention on shared host, storage, and GPU affect
 multiple HOME features. The user's requirement for always-on availability is
 not a verification result that all concurrent workloads are possible on the
 current hardware, so real resource measurement and recovery rehearsal are
 needed.
+
+## Related Documents
+
+### Traceability
+
+- [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
+- [Convergence Specification](../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)

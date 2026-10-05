@@ -1,10 +1,10 @@
 ---
 title: "품질 계층 (11-quality)"
 version: "0.2.0"
-type: "common/package-readme"
+type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-05"
 created: "2026-10-01"
 ---
 
@@ -74,7 +74,7 @@ created: "2026-10-01"
 정적 통과는 실제 부하 생성, image build, target 승인 또는 결과 완전성의 증거가
 아닙니다.
 
-## How to Work in This Area
+## Usage
 
 1. 대상 소유자, network, 자원과 종료 조건을 승인받은 뒤에만 트래픽을 생성합니다.
 2. WireMock fixture에는 합성 데이터만 사용하고 admin API를 공용 route에 연결하지

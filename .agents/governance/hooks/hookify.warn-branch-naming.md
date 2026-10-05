@@ -1,10 +1,10 @@
 ---
 title: "WARNING: branch naming rule violation"
 version: "1.0.2"
-type: "governance/hook-policy"
+type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-08"
+updated: "2026-10-05"
 action: "warn"
 enabled: true
 event: "bash"
@@ -12,7 +12,17 @@ name: "warn-branch-naming"
 pattern: "git\\s+(checkout\\s+-b|switch\\s+-c)\\s+(?!(build|chore|ci|deps|docs|feat|fix|hotfix|perf|refactor|release|revert|style|test|dependabot|codex)/)"
 ---
 
-<!-- markdownlint-disable MD041 MD040 -->
+# WARNING: branch naming rule violation
+
+## Overview
+
+Apply the declared `warn` action for warn-branch-naming.
+
+## Scope
+
+The declared `bash` event and `pattern` define the matching scope; native event delivery remains a separate observation.
+
+## Rules
 
 **Branch naming rule violation detected (project rule)**
 
@@ -40,6 +50,10 @@ git checkout -b release/publish-v1.0.0
 ```
 
 Do not work directly on `main`. Start from a feature or fix branch.
+
+## Exceptions
+
+No exception is declared by this rule.
 
 ## Related Documents
 
