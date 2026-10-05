@@ -674,6 +674,81 @@ requires equal source/current status with proven identity and lifecycle;
 different statuses are not substituted. That safer status binding does not
 resolve the newly identified raw-byte defect.
 
+### Integration Outcome
+
+The user's explicit local P01/P02 integration request was carried out despite
+the recorded validation blockers; it did not authorize additional repairs or
+accept failed implementation evidence. P02's actual source commit is
+`4f96c9a398573613180cda6b20be42e4f13adc66`. Main's actual merge is
+`ddd07f38067db166bb5acc18b58226827e8b2db2`, with parents
+`68e0bfd3edb0895235dc628d03d427ca9fd14736` and the P02 source commit.
+Normal Git commit execution exited 0; installed commit-hook contents and
+delivery remain unobserved, so no automatic pre-commit PASS is claimed.
+
+Root resolved five current-document conflicts, preserving P01's manual
+pre-commit warning, no-verify block, quality-owner routing, actual Task
+assignments and references inside P02's current forms. Task 0002 changed only
+its direct parent to the Plan and its updated date to 2026-10-05; its complete
+body remained byte-exact to P01 source `68e0bfd3edb0895235dc628d03d427ca9fd14736`.
+The two native hook header representations and values were preserved;
+`load_rules` loaded 16 rules. The focused NativePayload module reported seven
+tests OK in 0.948 seconds. Independent read-only merge review passed for the
+13-path resolution packet (444 insertions/132 deletions); its scope was merge
+resolution, not whole implementation acceptance. The known P02 Important
+raw-byte finding remains unresolved.
+
+Root retained recovery stash `2e6bdda70244353aeca4f1893b5b2e23c131fd9a`
+for the prior 16-file review state: 15 preserved source blobs matched and one
+was an older Task draft. The clean review worktree was removed through the
+normal route without force. Four topic references were deleted with normal
+`-d` after reachability checks; P01, its antecedent commits, source 8b85 and
+P02 source 4f96 remained reachable from main. Only local main and the root
+workspace worktree remained. Remote references were untouched; no push, PR,
+hosted check, release, native delivery or live operation is claimed.
+
+The actual post-merge check was:
+
+```sh
+PATH=/tmp/hy-home-p01-qa-uv-u0r02jaa/bin:$PATH rtk proxy /tmp/hy-home-p01-qa-uv-u0r02jaa/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref 68e0bfd3edb0895235dc628d03d427ca9fd14736
+```
+
+Session 12042 exited 1: 577 selected records, 188 violations, zero legacy
+exceptions and zero transition overrides. Representative findings included
+`spec-package-invalid` with `completion requires one ## Evidence`, older-state
+draft-to-active and active-to-blocked/in-progress transitions, 0208/0209
+invalid-initial findings, and historical sealed MIG/TMB type mismatches.
+This receipt does not invent a complete error-ID list, stack trace or root
+cause. Reader/contract compatibility remains blocked. The earlier 576/zero
+pre-merge comparison used different input and cannot supply post-merge PASS.
+The latest gate's 6 FAIL/18 ERROR and raw-byte Important finding remain.
+
+Root's final narrow receipt check used this exact command against HEAD
+`ddd07f38067db166bb5acc18b58226827e8b2db2`:
+
+```sh
+PATH=/tmp/hy-home-p01-qa-uv-u0r02jaa/bin:$PATH rtk proxy /tmp/hy-home-p01-qa-uv-u0r02jaa/bin/python scripts/validation/check-document-metadata.py --mode check-changed --base-ref HEAD --changed-path docs/03.specs/0209-common-document-contract-adoption/tasks/tsk-0001-common-document-contract-adoption.md
+```
+
+Session 70399 exited 1: one selected record, 146 violations, zero legacy
+exceptions and zero transition overrides. Representative findings were
+`docs/03.specs` `spec-package-invalid` with `completion requires one ## Evidence`
+and historical sealed MIG/TMB type mismatches. Output was truncated; no
+complete diagnosis or finding list is claimed. Record review and diff checks
+are separate from metadata validation and establish no metadata PASS. This
+Task stays blocked with W4/W5 FAIL/pending; no further fix or rerun is claimed.
+
+### Commit Ledger
+
+- P02 source: `4f96c9a398573613180cda6b20be42e4f13adc66`.
+- Local main integration: `ddd07f38067db166bb5acc18b58226827e8b2db2`.
+
+The later receipt commit can be located through this file's Git history; it
+does not name its own future OID. For a separately authorized rollback, revert
+that receipt commit first, then `git revert -m 1 ddd07f38067db166bb5acc18b58226827e8b2db2`;
+optionally revert `68e0bfd3edb0895235dc628d03d427ca9fd14736` to undo the
+P01 follow-up as well. This is a future recovery instruction, not an executed
+rollback; no reset or history rewrite is proposed.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -687,14 +762,16 @@ resolve the newly identified raw-byte defect.
 | Terminal Task and frozen-source preservation | 3 | W3 | Root read-only Python stdin with `git ls-tree`, `git show`, and `git diff` | Exact source revision `8b85e88fe2dfef54f4cc125ee2687982c86c1942`; current source tree | PASS | This Task, Focused Source Checks | pending |
 | Consumer and projection compatibility | 4 | W4 | Final selected consumer checks, cancellation RED/GREEN, and projection write/check | Corrected current consumers; historical source readers; two providers and preserved authority fields | PASS | This Task, QA Attempts and Final Focused QA Results | pending |
 | Raw-byte terminal Task guard | 4 | W4 | Independent review of source-blob equality | `_text_at_ref` and `Path.read_text` newline normalization in metadata reference consumer | FAIL | This Task, Latest Changed Gate and Raw-byte Review | pending |
-| Closure evidence | 5 | W5 | Root staged reviews and latest changed gate; separate explicit main comparison | Latest packet `9e6891f2f23203ca60a81c0902e49d7c2b2b4ee634a54cf36fced026f5422931` | FAIL | This Task, Latest Changed Gate and Raw-byte Review | pending |
+| Post-merge reader compatibility | 4 | W4 | Actual metadata check-changed against P01 source | Main `ddd07f38067db166bb5acc18b58226827e8b2db2`; base `68e0bfd3edb0895235dc628d03d427ca9fd14736` | FAIL | This Task, Integration Outcome | pending |
+| Closure evidence | 5 | W5 | Latest changed gate and actual post-merge metadata check | Main `ddd07f38067db166bb5acc18b58226827e8b2db2`; recorded latest gate packet | FAIL | This Task, Latest Changed Gate and Integration Outcome | pending |
 
 ## Review and Completion
 
-The Spec, Plan, and Task are blocked at the local-integration handoff.
+The Spec, Plan, and Task remain blocked after local integration.
 Prior changed-gate executions failed, including the latest 6 FAIL/18 ERROR
-run; the latest explicit main metadata CLI passed at its separately recorded
-input. Earlier scoped reviews do not supersede the Important raw-byte finding.
+run. The pre-merge explicit main metadata CLI passed at its recorded input;
+the actual post-merge metadata CLI failed with 188 violations. Earlier scoped
+reviews do not supersede the Important raw-byte finding.
 Criteria 4/W4 and 5/W5 remain FAIL/pending, without mandatory acceptance.
 Completion requires every assigned criterion/work pair's mandatory
 `PASS` evidence and accepted review. Supplemental observations or
@@ -712,9 +789,9 @@ preservation. It does not authorize the declined code fix or convert failed
 validation into approval, acceptance, or completed lifecycle status.
 
 This Task records the actual results and three in-progress-to-blocked events
-against this same-package handoff. No merge or commit OID is claimed before
-root performs and observes it. Frozen source and completed Task bodies stay
-preserved; local integration remains root-owned. No additional tests, remote
+against this same-package handoff. Actual source and main merge OIDs are now
+recorded in Integration Outcome and Commit Ledger after root observed them.
+Frozen source and completed Task bodies stay preserved. No additional tests, remote
 actions, cleanup expansion, or new ledger are introduced by these records.
 
 ### Retry Budget Reconciliation
