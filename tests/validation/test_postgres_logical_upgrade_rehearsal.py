@@ -1507,6 +1507,7 @@ class PostgresLogicalUpgradeRehearsalTests(unittest.TestCase):
                         *) return 10 ;;
                       esac
                     }
+                    service_has_terminal_state() { return 1; }
                     main --negative-case timeout
                     """
                 ),

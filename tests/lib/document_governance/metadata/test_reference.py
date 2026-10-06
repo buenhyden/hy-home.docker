@@ -595,14 +595,6 @@ The fixture is intentionally in progress.
                 check=False,
             )
             self.assertEqual(0, cloned.returncode, cloned.stdout + cloned.stderr)
-            for relative_path in (
-                "docs/03.specs/0182-home-residual-backlog/tasks/"
-                "tsk-0003-recovery-and-auth-acceptance.md",
-                "docs/03.specs/0204-service-integration-security-and-operations/"
-                "tasks/tsk-0001-runtime-compatibility-and-security.md",
-            ):
-                shutil.copy2(ROOT / relative_path, root / relative_path)
-
             package_relative = pathlib.Path(
                 "docs/03.specs/0210-task-evidence-table-integrity"
             )

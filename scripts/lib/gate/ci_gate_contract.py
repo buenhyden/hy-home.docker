@@ -90,7 +90,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions",
     ),
     "local.workflow-harness": (
         "leaf.ci-gate-contract-regressions",

@@ -174,7 +174,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "leaf.dependency-vulnerability-audit",
                 "leaf.docs-traceability",
                 "leaf.document-governance-library-regressions",
-                "leaf.document-lifecycle-regressions",
                 "leaf.frontend-build",
                 "leaf.frontend-lint",
                 "leaf.frontend-quality",

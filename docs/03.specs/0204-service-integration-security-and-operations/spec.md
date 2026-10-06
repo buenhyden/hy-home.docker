@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -65,6 +65,18 @@ its Task ledger before source mutation. Shared root, Alloy, environment,
 Registry and backup files have one writer at a time. If a named project or
 consumer is missing, record a versioned contract and `BLOCKED` runtime result
 instead of provisioning resources. No Task changes HOME services or real data.
+
+The approved maintenance slice reuses TSK-0001 for criterion 8. It removes the
+completed SPEC-0153 migration-only gate after transferring the continuing
+lifecycle topology to the current contract, hook, and corpus owners. General
+archive preservation, current retired-authority guards, frozen bodies, and the
+bounded npm acceptance remain under their existing owners. This maintenance
+does not authorize archive disposition or change the package's blocked runtime
+status.
+The public metadata regression fixture uses coherent Git-baseline packages and
+does not mix unrelated current-owner Tasks from a later live worktree.
+A separately approved tenth path may correct only the timeout fixture's source
+terminal-state stub before one final public revalidation.
 
 ### Interfaces and Data
 
@@ -244,6 +256,9 @@ those effects.
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [ADR-0046](../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
+- [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
+- [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [SPEC-0201](../../98.archive/completed/03.specs/0201-home-infrastructure-diagnosis-and-work-design/spec.md)
 - [SPEC-0202](../../98.archive/completed/03.specs/0202-development-data-and-lab-isolation/spec.md)
 - [SPEC-0203](../../98.archive/completed/03.specs/0203-quality-results-and-isolated-load-testing/spec.md)
