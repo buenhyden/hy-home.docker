@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -49,6 +49,7 @@ and acceptance gates before any service declaration was changed.
 | W3 | 4, 5 | Contract external connection | W1 | TSK-0002 | Task evidence |
 | W4 | 6, 7 | Close backup and cross-tier handoffs | None | TSK-0003 | Task evidence |
 | W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
+| W6 | 8 | Retire completed migration-only QA while preserving current lifecycle and archive owners | None | TSK-0001 | Task evidence |
 
 ### Work Details
 
@@ -83,6 +84,19 @@ and acceptance gates before any service declaration was changed.
    path-aware gates. Obtain independent code and security review. Record each
    command, exit, revision and unsupported environment separately; stage
    durable operations meaning in existing Stage 05 owners. Maps 1-8.
+6. **W6: retire completed migration-only QA.** TSK-0001 removes the
+   SPEC-0153-only leaf, its current gate callers, and its dedicated test module
+   after a RED regression proves the lifecycle aggregate still has the obsolete
+   fourth child. The contract, hook, and corpus lifecycle leaves remain the
+   exact current owners. Preserve general archive tests, frozen source and
+   recovery references, current retired-authority guards, and the bounded npm
+   exception. The prerequisite is the approved current source baseline and
+   frozen W6 writer ledger, not completion of runtime-blocked W5. Maps 8 without
+   completing this blocked package.
+   Keep the public metadata regression on a coherent Git baseline instead of
+   copying unrelated live owner Tasks into its synthetic SPEC-0210 snapshot.
+   If the final gate reaches the PostgreSQL timeout fixture, add only its
+   source terminal-state stub and permit one fresh public revalidation.
 
 ### Rulings
 

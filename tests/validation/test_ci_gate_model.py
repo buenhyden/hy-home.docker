@@ -190,6 +190,25 @@ class PublicSuiteModelTests(unittest.TestCase):
             runner.public_suite_names(),
         )
 
+    def test_lifecycle_aggregate_routes_only_current_owners(self) -> None:
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT),
+            ".github/workflow-contract.yml",
+        )
+        lifecycle = next(
+            node
+            for node in registry.nodes
+            if node.gate_id == "local.document-corpus-lifecycle"
+        )
+        self.assertEqual(
+            (
+                "leaf.local-document-corpus-lifecycle-tests",
+                "leaf.local-hook-rule-tests",
+                "leaf.local-document-corpus-lifecycle",
+            ),
+            lifecycle.children,
+        )
+
     def test_full_explain_maps_each_atomic_validator_exactly_once(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
@@ -210,7 +229,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         self.assertCountEqual(expected_paths, rendered_paths)
         self.assertEqual(len(expected_paths), len(set(rendered_paths)))
 
-    def test_full_plan_routes_task5_regressions_through_their_public_owner(
+    def test_full_plan_routes_current_regressions_through_their_public_owner(
         self,
     ) -> None:
         expected_by_suite = {
@@ -219,9 +238,6 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "tests.validation.test_provider_native_surfaces",
                 "tests.validation.test_provider_surface_renderer",
                 "tests.validation.test_stop_gate_deferred_paths",
-            },
-            "document-lifecycle": {
-                "tests.validation.test_workspace_governance_migration",
             },
             "operations": {
                 "tests.validation.test_postgres_logical_upgrade_rehearsal",
@@ -241,19 +257,30 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "tests.validation.test_validator_entrypoints",
             },
         }
-        task5_modules = set().union(*expected_by_suite.values())
-        for suite, expected in expected_by_suite.items():
-            with self.subTest(suite=suite):
-                plan = _real_public_plan((suite,), {})
-                actual = {
-                    module
-                    for invocation in plan
-                    if invocation.entrypoint == runner._INTERNAL_ADAPTER_PATH
-                    and invocation.argv[:1] == ("run-unittest",)
-                    and invocation.argv[-1:] == ("-v",)
-                    for module in invocation.argv[1:-1]
-                }
-                self.assertEqual(expected, actual & task5_modules)
+        current_modules = set().union(*expected_by_suite.values())
+        environments = {
+            "local": {},
+            "ci-pr": {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "1" * 40,
+                "PR_TITLE": "P04 current-owner routing",
+                "HEAD_REF": "codex/p04-one-time-migration-qa-retirement",
+            },
+        }
+        for context, environ in environments.items():
+            for suite, expected in expected_by_suite.items():
+                with self.subTest(context=context, suite=suite):
+                    plan = _real_public_plan((suite,), environ)
+                    actual = {
+                        module
+                        for invocation in plan
+                        if invocation.entrypoint == runner._INTERNAL_ADAPTER_PATH
+                        and invocation.argv[:1] == ("run-unittest",)
+                        and invocation.argv[-1:] == ("-v",)
+                        for module in invocation.argv[1:-1]
+                    }
+                    self.assertEqual(expected, actual & current_modules)
 
     def test_validator_ownership_is_derived_from_the_workflow_contract(self) -> None:
         document = contract.load_contract_document(ROOT)

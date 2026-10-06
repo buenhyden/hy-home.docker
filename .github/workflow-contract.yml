@@ -418,21 +418,6 @@
       "suite_key": "dependency-vulnerability-audit"
     },
     {
-      "gate_id": "leaf.document-lifecycle-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.validation.test_workspace_governance_migration",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 15,
-      "opaque": true,
-      "suite_key": "document-lifecycle-regressions"
-    },
-    {
       "gate_id": "leaf.operations-catalog",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-operations-catalog.py",
@@ -976,8 +961,7 @@
       "children": [
         "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-hook-rule-tests",
-        "leaf.local-document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions"
+        "leaf.local-document-corpus-lifecycle"
       ]
     },
     {
@@ -1079,7 +1063,6 @@
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
-        "leaf.document-lifecycle-regressions",
         "leaf.local-document-metadata-tests",
         "leaf.document-governance-library-regressions"
       ],

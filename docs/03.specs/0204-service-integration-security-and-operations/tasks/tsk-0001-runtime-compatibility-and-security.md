@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.14"
+version: "1.0.16"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-06"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -44,6 +44,316 @@ transition anchors are not observed and are not backfilled.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0001 | in-progress | blocked | #current-lifecycle-reconciliation |
+
+### Completed migration QA retirement — 2026-10-06
+
+The repository owner approved P04 and reuse of this blocked Task for criterion
+8 / Plan W6. The implementation baseline is clean
+`main@92e2a702fa52f86e49964235af99602fffb7d94c`; the isolated writer is
+`.worktrees/p04-one-time-migration-qa-retirement` on
+`codex/p04-one-time-migration-qa-retirement`. Numeric execution and native
+allocation budgets were not provided and remain `UNKNOWN`.
+
+The sole QA writer initially owned eight tracked paths for this slice; the
+authorized completion repairs extend that ledger to these ten paths:
+
+```text
+.github/workflow-contract.yml
+scripts/lib/gate/ci_gate_contract.py
+tests/validation/test_ci_gate_model.py
+tests/lib/gate/test_github_workflow_contract.py
+tests/validation/test_workspace_governance_migration.py (delete)
+tests/lib/document_governance/metadata/test_reference.py
+tests/validation/test_postgres_logical_upgrade_rehearsal.py
+docs/03.specs/0204-service-integration-security-and-operations/spec.md
+docs/03.specs/0204-service-integration-security-and-operations/plan.md
+docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0001-runtime-compatibility-and-security.md
+```
+
+Root ran the test-first selector
+`tests.validation.test_ci_gate_model.PublicSuiteModelTests.test_lifecycle_aggregate_routes_only_current_owners`
+against the unchanged contract. It exited 1 with one expected assertion
+failure: `local.document-corpus-lifecycle` still had the fourth child
+`leaf.document-lifecycle-regressions`. There was no import or schema error;
+the frozen input stayed unchanged. The receipt is
+`/tmp/hy-home-p04-red-current-owner-topology-6040297d93f8-20261006T005359Z.log`
+with its adjacent JSON receipt. At that RED observation, GREEN, public gate,
+preservation comparison, independent review, and local commit were pending.
+
+The initial Plan row incorrectly depended on runtime-blocked W5. The approved
+maintenance is independent safe work, so W6 now depends on the current approved
+source baseline and frozen writer ledger rather than W5 completion. This is the
+single permitted narrow P04 correction; it changes no gate, test, archive, npm,
+or runtime behavior.
+
+Root then ran five focused current-owner and reachability regressions on frozen
+input `0a8c4239bc0b`; all five passed in 0.128 seconds with exit 0. The receipt
+is `/tmp/hy-home-p04-green-current-owner-routing-0a8c4239bc0b-20261006T005707Z.log`
+with its adjacent JSON receipt. Registered Ruff check passed exit 0 for the
+three changed Python files, and Ruff format check reported all three already
+formatted with exit 0. Their receipts are
+`/tmp/hy-home-p04-ruff-check-0a8c4239bc0b-20261006T005823Z.log` and
+`/tmp/hy-home-p04-ruff-format-check-0a8c4239bc0b-20261006T005828Z.log`.
+At this focused-check stage, public gate, preservation comparison, independent
+review, and local commit remained pending; the package status stayed `blocked`.
+
+Root's scoped check of the three changed package documents passed on input
+`f12428a7a111`: metadata, body, table shape, parent projection, six unchanged
+lifecycle-baseline comparisons, links with zero failures, and style with zero
+findings all passed. The receipt is
+`/tmp/hy-home-p04-scoped-docs-status-comparison-f12428a7a111-20261006T010309Z.json`.
+At that point, this document check did not satisfy the still-pending public gate
+or review.
+
+Root froze the eight-file input as `a0afd2f8ec58`. Preservation comparison
+passed for 508 protected files and four existing worktrees; the bounded npm
+acceptance metadata and helper were unchanged. The receipt is
+`/tmp/hy-home-p04-preservation-result.json`. The changed-profile explanation
+selected six suites and 35 unique invocations through 13 wrapper entrypoints;
+the receipt is `/tmp/hy-home-p04-selected-plan.json`.
+
+The required public changed gate then exited 1 on that unchanged input. Its
+document-governance library aggregate ran 670 tests in 650.140 seconds with one
+failure:
+`tests.lib.document_governance.test_identity_history.IdentityHistoryTests.test_registry_high_water_is_not_below_repository_history`.
+The Registry records `identity_spaces.spec.high_water` as 209 while repository
+history observes 210. The Registry is outside the approved P04 writer scope,
+and the preserved P03 SPEC-0210 commit is the source of that newer identity.
+No Registry correction, retry, integration, or gate bypass is authorized here.
+Later fail-fast leaves, including Compose and isolated Conftest, are `NOT_RUN`
+and are not promoted to PASS. The gate receipt is
+`/tmp/hy-home-p04-public-changed-gate-a0afd2f8ec58-20261006T010454Z.log`
+with its adjacent JSON receipt. W6 is blocked and not accepted; the whole
+criterion 8 and package remain pending and `blocked`.
+
+Final independent read-only review of the diff identified by digest prefix
+`47bca1cdc` against frozen input `a0afd2f8ec58` approved content quality with no Critical, Important, or
+Minor findings. Completion remains blocked solely by the mandatory public gate
+failure; this is not W6 acceptance. The final Task failure receipt then passed
+its minimum metadata, lifecycle, table, link, and style check at
+`f67f2523f5f3`; its receipt is
+`/tmp/hy-home-p04-blocked-task-receipt-f67f2523f5f3-20261006T013107Z.json`.
+The gate stopped before 22 selected later leaves, which remain `NOT_RUN`.
+
+The next owner is the preserved `SPEC-0210-TSK-0001` integration lane, which
+must first place its approved SPEC-0210 identity baseline on the selected main
+input. No such integration is performed here. After that prerequisite is
+actually fixed, this Task's W6 may retry only with new authorization and a new
+frozen input. No commit, push, merge, runtime action, or archive disposition is
+claimed by this blocked receipt.
+
+The removal is limited to the SPEC-0153 execution-specific leaf and module.
+Current contract, hook, corpus, archive-integrity, and retired-authority checks
+remain registered. Existing Stage 98 units have no assessment row, so their
+current disposition remains `unreviewed/retained`; no payload, catalog row,
+recovery object, source reference, or frozen body is moved or rewritten.
+
+The approved plan records GHSA-vfj7-8cjw-p6xm with no patched version and the
+approved development-only lock chain. Its typed exception and helper remain
+unchanged and expire at `2026-10-10T15:00:00Z` (2026-10-11 00:00 KST). No
+advisory query or npm audit is rerun in W6, no acceptance is extended, and the
+separate expiry/remediation work remains owned by this Task. Runtime blockers,
+HOME operations, deployment, secrets, image/volume deletion, and archive
+disposition remain outside this maintenance slice.
+
+### Authorized P01–P04 Completion Resumption — 2026-10-06
+
+The repository owner authorized resolving the remaining P01–P04 integration
+blockers, completing those bounded changes, and delivering them through the
+normal protected-main path. This instruction supersedes the earlier P04 stop
+and retry boundary only for the identity-baseline prerequisite, fresh
+validation and review, local commit, push, PR, and protected merge needed to
+complete Plan W6. It does not complete or reopen SPEC-0204 runtime work and
+does not authorize HOME operations, deployment, secret access, image or volume
+deletion, archive disposition, validator weakening, or automatic extension of
+the npm risk acceptance. The Spec, Plan, and this Task remain `blocked`, and
+criterion 8 overall remains pending because W1 and the package runtime
+obligations remain open.
+
+The first P03 protected delivery attempt carried the approved SPEC-0210 change
+but its hosted changed-boundary metadata check failed because two current Tasks
+used an unregistered `## Evidence Notes` H2. The earlier local `check-active`
+observation did not exercise that changed-boundary comparison. The authorized
+minimum correction changed only those two headings to `### Evidence Notes`,
+preserving their historical auxiliary tables under Work Log and retaining one
+later `## Evidence` owner with one continuous eight-column Evidence table.
+Completed SPEC-0210 bodies, Registry values, implementation, and tests were
+otherwise untouched. The original implementation commit is `4768f1605`; the
+heading correction and PR head are
+`1808f95718a74c6d5811b57389c1260605ce534f`. Canonical explicit-base changed
+metadata selected two documents with zero violations; strict Evidence, links,
+and style passed, and independent read-only review approved the correction.
+The original hosted failure and cancelled intermediate run remain historical.
+
+PR365's required `validation-changed` run 37403570464, job 112076053221,
+passed in 18 minutes 39 seconds. Protected merge
+`2615b1b5d7329300f97aa0a5070a3588ec90ab69` completed at
+2026-10-06T02:39:54Z, and clean root `main` fast-forwarded to that same SHA.
+The selected tree now records SPEC identity high-water 210 and next number 211,
+so the prior P04 gate's identity-baseline blocker is resolved by protected P03
+integration rather than a P04 Registry edit.
+
+Root created `.worktrees/p04-migration-qa-completion` on
+`codex/p04-migration-qa-completion` from that observed main with `umask 022`;
+both OIDC entrypoints are regular mode-0755 files and are not group/world
+writable. The original blocked P04 snapshot remains preserved in
+`/tmp/hy-home-p04-final-blocked.json`, with diff SHA-256
+`9b977764f49928061699a2832e4b5f647ce733b3a242704a2704b5988a896374`.
+Root applied its exact eight-path patch by three-way merge without conflict.
+The resulting Task keeps P03's `### Evidence Notes`, the unique later
+`## Evidence`, and every original P04 PASS, FAIL, and NOT_RUN receipt.
+
+This resumption receipt does not accept W6. At resumption, fresh focused checks,
+scoped document checks, preservation proof, the public changed gate, independent
+review, commit, required hosted checks, protected merge, and main readback were
+pending on their new actual inputs. Numeric execution and native allocation
+budgets remain `UNKNOWN`.
+
+Root then ran the five focused current-owner and reachability regressions on
+completion input `4bd071f86362`; all five passed in 0.130 seconds with exit 0,
+and the input remained unchanged. The receipts are
+`/tmp/hy-home-p04-completion-green-current-owner-routing-4bd071f86362-20261006T024144Z.log`
+and its adjacent JSON. The seven non-Task payloads exactly match the preserved
+P04 snapshot. The three changed Python files, available Ruff configuration,
+and pinned Ruff 0.15.12 binary also match the earlier lint/format input, so the
+existing Ruff PASS results apply without repeating the same leaf. The identity
+proof is `/tmp/hy-home-p04-completion-patch-and-ruff-identity.json`. Scoped
+documents, preservation, public gate, review, and delivery remain pending, and
+W6 remains unaccepted.
+
+Root froze the nine-path input as `aa54dda9b14b`; canonical explanation selected
+35 unique local invocations, recorded in
+`/tmp/hy-home-p04-completion-retry-selected-plan.json`. The one permitted fresh
+public changed-gate retry then exited 1 without changing that input. Its first
+14 invocations passed, including 139 metadata tests in 569.273 seconds, 672
+document-governance library tests in 658.345 seconds, and the operations
+catalog. Invocation 15, `leaf.supply-chain-fixture-policy`, ran 239 tests in
+78.119 seconds and had one failure:
+`tests.validation.test_postgres_logical_upgrade_rehearsal.PostgresLogicalUpgradeRehearsalTests.test_timeout_still_cleans`.
+The assertion expected reason `timeout`, but the fixture reported status
+`failed`, failure class `readiness`, and reason `source-state-query-failed`;
+cleanup status was `passed`. The remaining 20 selected invocations, including
+supply-chain policy, Compose/config, isolated Conftest, workflow, and gate
+regressions, are `NOT_RUN` for this fail-fast input. The receipt is
+`/tmp/hy-home-p04-completion-retry-public-changed-gate-aa54dda9b14b-20261006T031128Z.log`
+with its adjacent JSON receipt.
+
+At that observation, the failed leaf was outside the nine P04-owned paths and
+the authorized public retry was consumed. No further correction, retry,
+acceptance, or commit was then authorized. W6 remained unaccepted, criterion 8
+pending, and the Spec, Plan, and Task `blocked`. The blocked Task receipt passed
+its minimum check at `142ce3e8e6fa`; the preserved receipt is
+`/tmp/hy-home-p04-completion-final-blocked-task-receipt-142ce3e8e6fa-20261006T034354Z.json`.
+
+The repository owner then explicitly approved one fixture-line correction,
+one revalidation, and protected integration if it passes. This authorization
+adds only
+`tests/validation/test_postgres_logical_upgrade_rehearsal.py` as the tenth
+writer path. The reviewed patch SHA-256 is
+`a44967ca919c592ea2f320b421af01dbed2563c8cb0a7c674cfc3fecd0b0fda2`,
+and its verified source SHA-256 was
+`cfdb175aa1c90c01ddbe0670b60aaa49ed4825be9e4ff3ac1a1c65e63acc8026`.
+It adds only `service_has_terminal_state() { return 1; }` to the timeout fixture,
+so the source-side readiness probe cannot preempt the intended timeout branch.
+Production rehearsal code, timeouts, assertions, gate semantics, npm policy,
+Registry, and completed SPEC-0210 remain unchanged.
+
+The original identity gate failure, the mixed-snapshot metadata gate failure,
+and the PostgreSQL fixture gate failure remain historical. The single focused
+test, Ruff, scoped document checks, and the newly authorized one public
+revalidation are pending on the ten-path input. This authorization does not by
+itself accept W6; criterion 8 and all three package scalars remain pending or
+`blocked`.
+
+Root ran the exact timeout selector on corrected input `1dbf42ddd2c1`; its one
+test passed in 2.918 seconds with exit 0, and the input remained unchanged. The
+receipt is
+`/tmp/hy-home-p04-completion-timeout-focused-green-1dbf42ddd2c1-20261006T040451Z.json`.
+Registered Ruff check and format check passed unchanged for the tenth Python
+path; their receipts are
+`/tmp/hy-home-p04-completion-timeout-ruff-check-1dbf42ddd2c1-20261006T040453Z.json`
+and
+`/tmp/hy-home-p04-completion-timeout-ruff-format-1dbf42ddd2c1-20261006T040445Z.json`.
+The three changed package documents passed scoped metadata and body checks, six
+lifecycle/projection comparisons, links with zero failures, and style with zero
+findings. Its receipt is
+`/tmp/hy-home-p04-completion-timeout-scoped-docs-1dbf42ddd2c1-20261006T040454Z.json`.
+Preservation comparison passed for 511 protected files and five older worktrees
+with zero mismatches; production PostgreSQL code, npm policy and helper, and
+Registry remain unchanged. Its receipt is
+`/tmp/hy-home-p04-completion-timeout-preservation.json`. At that point, the
+newly authorized public revalidation, final review, and W6 acceptance remained
+pending.
+
+Root froze final input
+`8862a1fe1a9ad2123b130dbe33fe5f1309a54094e2e454272f2bbf97c16da9fb`,
+diff SHA-256
+`1af06c52ba9400624d81c458ce08fd6e5f36f1bb091da9a7ea11f50c02d19c98`,
+and index `3e5f2a9821d899e1df671bd5b001755b5b684c27`. The one authorized public
+changed-gate revalidation exited 0 with files and both mode-0755 OIDC
+entrypoints unchanged. All 35 local invocations passed. This included 139
+metadata tests in 570.641 seconds, 672 document-governance library tests in
+666.293 seconds, 239 supply-chain fixture tests in 78.352 seconds, 68 Compose
+selections covering 322 services, the config-only PostgreSQL check with
+cleanup, isolated Conftest groups of 16, 270, and 69 tests, and the later
+176-test aggregate. The receipt is
+`/tmp/hy-home-p04-completion-timeout-repair-public-changed-gate-8862a1fe1a9a-20261006T040638Z.log`
+with its adjacent JSON receipt.
+
+The isolated Compose, config-only, and Conftest results are local QA evidence,
+not HOME runtime, recovery, or deployment acceptance. Hosted P04 PR checks and
+protected merge remain `NOT_RUN`. Independent read-only review directly
+compared the exact diff and receipt and found no Critical, Important, or Minor
+findings; it approved final implementation quality for the W6 slice. The W6
+implementation slice is therefore accepted, while criterion 8 overall remains
+pending, all package scalars remain `blocked`, and protected integration still
+requires its actual commit, hosted checks, merge, and main readback. No own
+commit SHA is recorded here.
+
+The first resumed public changed gate ran on unchanged input `fa816d68fc14`
+and exited 1. Its metadata aggregate ran 139 tests and produced one error in
+`tests.lib.document_governance.metadata.test_reference.RepositoryContractIntegrationTests.test_repository_contracts_reject_fragmented_in_progress_task_evidence`.
+The regression fixture cloned committed HEAD, which has no W6, and then copied
+only the two live SPEC-0182 and SPEC-0204 owner Tasks from this later worktree.
+That produced an incoherent snapshot containing W6 Task evidence without the
+matching W6 Plan and Spec contract. The current three-document package checks
+pass, so this error does not demonstrate a production validator defect. The
+receipt is
+`/tmp/hy-home-p04-completion-public-changed-gate-fa816d68fc14-20261006T024536Z.log`
+with its adjacent JSON receipt.
+The gate stopped before 23 selected later leaves, which remain `NOT_RUN` for
+that input.
+
+The owner's P01–P04 blocker-resolution authorization extends the writer ledger
+only to `tests/lib/document_governance/metadata/test_reference.py`. The narrow
+repair removes the completed P03 pre-merge loop that copied those two live
+owner Tasks. It preserves the coherent committed foreign packages, synthetic
+SPEC-0210 materialization, Registry and reader overlay, negative assertions,
+helpers, and control flow. Completed SPEC-0210 documents, Registry, production
+validators, lifecycle, and public gate semantics remain frozen. This is the
+single narrow repair for the resumed input; after its focused GREEN, Ruff, and
+scoped document checks, at most one fresh public-gate retry is permitted.
+
+Root ran the previously failing selector on repaired input `3863437ac1c1`; its
+one test passed in 171.378 seconds with exit 0, and the input remained
+unchanged. The receipt is
+`/tmp/hy-home-p04-completion-repair-focused-green-3863437ac1c1-20261006T030605Z.json`
+with its adjacent log. Registered Ruff check and format check passed for the
+newly changed `test_reference.py`; their receipts are
+`/tmp/hy-home-p04-completion-repair-ruff-check-3863437ac1c1-20261006T030606Z.log`
+and
+`/tmp/hy-home-p04-completion-repair-ruff-format-3863437ac1c1-20261006T030606Z.log`.
+The three changed package documents also passed scoped metadata and body checks,
+six same-status and direct-lifecycle comparisons, links with zero failures, and
+style with zero findings. That receipt is
+`/tmp/hy-home-p04-completion-repair-scoped-docs-3863437ac1c1-20261006T030606Z.json`.
+Preservation comparison also passed for 511 protected files and five older
+worktrees with zero mismatches; the npm policy and helper and the Registry are
+unchanged. Its receipt is
+`/tmp/hy-home-p04-completion-repair-preservation.json`.
+The earlier five focused tests and three-Python Ruff result remain valid through
+their recorded exact-input proof. The one permitted fresh public retry, final
+review, and protected delivery remain pending; W6 remains unaccepted.
 
 ### Protected source and archive integration writer ledger — approved reintegration
 
@@ -685,6 +995,41 @@ rewriting or cancellation of already-completed work.
 | Current Task status: blocked | 4 | W2 | OpenBao evidence | [RUN-0085](../../../05.operations/runbooks/0085-openbao.md) | NOT_RUN | This Task, Evidence | pending |
 | Current Task status: blocked | 4 | W5 | External connection evidence | [POL-0079](../../../05.operations/policies/0079-application-auth-integration.md) | NOT_RUN | This Task, Evidence | pending |
 | Current Task status: in-progress | 8 | W1 | Prerequisite reconciliation | Plan W1; Task 0002 receipt | NOT_RUN | This Task, Evidence | pending |
+| Migration-only QA topology RED | 8 | W6 | Current lifecycle owner regression | `main@92e2a702f`; frozen test input `6040297d93f8` | FAIL | `/tmp/hy-home-p04-red-current-owner-topology-6040297d93f8-20261006T005359Z.log` | pending |
+| Current lifecycle owner GREEN | 8 | W6 | Five focused owner and reachability regressions | Frozen input `0a8c4239bc0b` | PASS | `/tmp/hy-home-p04-green-current-owner-routing-0a8c4239bc0b-20261006T005707Z.log` | pending |
+| Changed Python lint | 8 | W6 | Registered Ruff check | Three changed Python files at `0a8c4239bc0b` | PASS | `/tmp/hy-home-p04-ruff-check-0a8c4239bc0b-20261006T005823Z.log` | pending |
+| Changed Python format | 8 | W6 | Registered Ruff format check | Three changed Python files at `0a8c4239bc0b` | PASS | `/tmp/hy-home-p04-ruff-format-check-0a8c4239bc0b-20261006T005828Z.log` | pending |
+| Scoped package documents | 8 | W6 | Metadata, tables, projection, lifecycle baseline, links, and style | Three changed SPEC-0204 documents at `f12428a7a111` | PASS | `/tmp/hy-home-p04-scoped-docs-status-comparison-f12428a7a111-20261006T010309Z.json` | pending |
+| Preservation boundary | 8 | W6 | Protected files, worktrees, and npm acceptance preservation | Frozen input `a0afd2f8ec58`; 508 protected files and four worktrees | PASS | `/tmp/hy-home-p04-preservation-result.json` | pending |
+| Changed-profile selection | 8 | W6 | Public gate explanation | Frozen input `a0afd2f8ec58`; six suites, 35 unique invocations, 13 wrapper entrypoints | PASS | `/tmp/hy-home-p04-selected-plan.json` | pending |
+| Required public changed gate | 8 | W6 | `run-ci-gate.py --profile changed` | Frozen input `a0afd2f8ec58` | FAIL | `/tmp/hy-home-p04-public-changed-gate-a0afd2f8ec58-20261006T010454Z.log` | pending |
+| Fail-fast remainder | 8 | W6 | 22 selected leaves after document-governance library failure | Frozen input `a0afd2f8ec58` | NOT_RUN | Same public gate receipt | pending |
+| Independent content review | 8 | W6 | Exact diff and contract review | Diff digest prefix `47bca1cdc`; frozen input `a0afd2f8ec58` | PASS | Final read-only review receipt | pending |
+| Blocked Task receipt | 8 | W6 | Minimum metadata, lifecycle, table, link, and style check | Task failure receipt `f67f2523f5f3` | PASS | `/tmp/hy-home-p04-blocked-task-receipt-f67f2523f5f3-20261006T013107Z.json` | pending |
+| P03 identity prerequisite | 8 | W6 | Protected SPEC-0210 integration and main readback | PR365; merge/main `2615b1b5d7329300f97aa0a5070a3588ec90ab69`; identity 210/211 | PASS | Run 37403570464; job 112076053221; this Task, Work Log | accepted |
+| P04 completion rebase | 8 | W6 | Frozen eight-path patch application and overlap preservation | New main `2615b1b5d7329300f97aa0a5070a3588ec90ab69`; original diff `9b977764f499...` | PASS | `/tmp/hy-home-p04-final-blocked.json`; this Task, Work Log | accepted |
+| Resumed focused validation | 8 | W6 | Five current-owner and reachability regressions | Completion input `4bd071f86362` | PASS | `/tmp/hy-home-p04-completion-green-current-owner-routing-4bd071f86362-20261006T024144Z.log` | accepted |
+| Resumed Ruff identity | 8 | W6 | Changed Python, Ruff configuration, and pinned Ruff 0.15.12 input identity | Seven non-Task payloads on new completion base | PASS | `/tmp/hy-home-p04-completion-patch-and-ruff-identity.json` | accepted |
+| Resumed public changed gate | 8 | W6 | `run-ci-gate.py --profile changed` | Completion input `fa816d68fc14` | FAIL | `/tmp/hy-home-p04-completion-public-changed-gate-fa816d68fc14-20261006T024536Z.log` | pending |
+| Resumed fail-fast remainder | 8 | W6 | 23 selected leaves after metadata aggregate error | Completion input `fa816d68fc14` | NOT_RUN | Same public gate receipt | pending |
+| Metadata fixture coherence repair | 8 | W6 | Remove live owner-Task copy loop; retain synthetic SPEC-0210 contract | Repaired input `3863437ac1c1` | PASS | `/tmp/hy-home-p04-completion-repair-focused-green-3863437ac1c1-20261006T030605Z.json` | accepted |
+| Repair Python lint | 8 | W6 | Registered Ruff check | Changed `test_reference.py` at `3863437ac1c1` | PASS | `/tmp/hy-home-p04-completion-repair-ruff-check-3863437ac1c1-20261006T030606Z.log` | accepted |
+| Repair Python format | 8 | W6 | Registered Ruff format check | Changed `test_reference.py` at `3863437ac1c1` | PASS | `/tmp/hy-home-p04-completion-repair-ruff-format-3863437ac1c1-20261006T030606Z.log` | accepted |
+| Repaired scoped documents | 8 | W6 | Metadata, body, lifecycle, links, and style | Three changed package documents at `3863437ac1c1` | PASS | `/tmp/hy-home-p04-completion-repair-scoped-docs-3863437ac1c1-20261006T030606Z.json` | accepted |
+| Repaired preservation boundary | 8 | W6 | Protected files, old worktrees, npm acceptance, and Registry preservation | 511 protected files and five older worktrees | PASS | `/tmp/hy-home-p04-completion-repair-preservation.json` | accepted |
+| Final public retry completed prefix | 8 | W6 | First 14 of 35 selected invocations | Frozen input `aa54dda9b14b`; metadata 139, library 672, operations catalog PASS | PASS | `/tmp/hy-home-p04-completion-retry-public-changed-gate-aa54dda9b14b-20261006T031128Z.log` | pending |
+| Final public retry | 8 | W6 | `leaf.supply-chain-fixture-policy` | Frozen input `aa54dda9b14b`; 239 tests | FAIL | Same public gate receipt | pending |
+| Final retry fail-fast remainder | 8 | W6 | 20 selected invocations after supply-chain fixture failure | Frozen input `aa54dda9b14b` | NOT_RUN | Same public gate receipt | pending |
+| Final blocked Task receipt | 8 | W6 | Minimum metadata, lifecycle, table, link, and style check | Blocked input `142ce3e8e6fa` | PASS | `/tmp/hy-home-p04-completion-final-blocked-task-receipt-142ce3e8e6fa-20261006T034354Z.json` | pending |
+| PostgreSQL timeout fixture correction | 8 | W6 | Add one source terminal-state stub to the timeout fixture | Corrected input `1dbf42ddd2c1` | PASS | `/tmp/hy-home-p04-completion-timeout-focused-green-1dbf42ddd2c1-20261006T040451Z.json` | accepted |
+| Timeout fixture lint | 8 | W6 | Registered Ruff check | Tenth Python path at `1dbf42ddd2c1` | PASS | `/tmp/hy-home-p04-completion-timeout-ruff-check-1dbf42ddd2c1-20261006T040453Z.json` | accepted |
+| Timeout fixture format | 8 | W6 | Registered Ruff format check | Tenth Python path at `1dbf42ddd2c1` | PASS | `/tmp/hy-home-p04-completion-timeout-ruff-format-1dbf42ddd2c1-20261006T040445Z.json` | accepted |
+| Timeout scoped documents | 8 | W6 | Metadata, body, lifecycle/projection, links, and style | Three changed package documents at `1dbf42ddd2c1` | PASS | `/tmp/hy-home-p04-completion-timeout-scoped-docs-1dbf42ddd2c1-20261006T040454Z.json` | accepted |
+| Timeout preservation boundary | 8 | W6 | Protected files, old worktrees, production PG, npm, and Registry preservation | 511 protected files and five older worktrees | PASS | `/tmp/hy-home-p04-completion-timeout-preservation.json` | accepted |
+| Authorized final revalidation | 8 | W6 | Focused checks and all 35 public changed-gate invocations | Final input `8862a1fe1a9a`; diff `1af06c52ba94...` | PASS | `/tmp/hy-home-p04-completion-timeout-repair-public-changed-gate-8862a1fe1a9a-20261006T040638Z.log` | accepted |
+| Resumed independent review | 8 | W6 | Exact diff and public receipt review | Final input `8862a1fe1a9a` | PASS | Independent read-only reviewer verdict; this Task, Work Log | accepted |
+| W6 bounded implementation acceptance | 8 | W6 | Current-owner migration QA retirement and regression compatibility | Final input `8862a1fe1a9a` | PASS | Accepted W6 evidence rows; this Task, Work Log | accepted |
+| W6 protected integration | 8 | W6 | Commit, required hosted checks, protected merge, and main readback | New completion worktree input | NOT_RUN | Pending protected-delivery receipts | pending |
 
 ## Review and Completion
 
@@ -694,7 +1039,7 @@ rewriting or cancellation of already-completed work.
 | 2 | pending | Exact-image and Code-task runtime evidence remains unavailable. |
 | 3 | pending | Crawl4AI egress-deny runtime evidence remains unavailable. |
 | 4 | pending | Agent-renewal freshness and route acceptance remain unavailable. |
-| 8 | pending | W1 source checks and review remain pending; Task 0002 retains its historical W5 receipt. |
+| 8 | pending | W1 source checks and review remain pending; Task 0002 retains its historical W5 receipt. The three gate failures remain historical; their bounded corrections, all 35 final local invocations, and independent review pass. W6 implementation is accepted, while hosted P04 integration and the broader runtime criterion remain pending. |
 
 Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 
