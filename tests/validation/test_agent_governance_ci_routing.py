@@ -363,12 +363,12 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             self.assertFalse((repo / ".timeout-arguments").exists())
             self.assertFalse((repo / ".gate-calls").exists())
 
-    def test_active_workflows_route_provider_validation(self) -> None:
+    def test_active_workflows_do_not_route_local_public_profiles(self) -> None:
         workflow_text = (ROOT / ".github/workflows/ci-quality.yml").read_text(
             encoding="utf-8"
         )
-        self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile changed"))
-        self.assertEqual(1, workflow_text.count("run-ci-gate.py --profile full"))
+        self.assertEqual(0, workflow_text.count("run-ci-gate.py --profile changed"))
+        self.assertEqual(0, workflow_text.count("run-ci-gate.py --profile full"))
         self.assertNotIn("--gate", workflow_text)
 
     def test_post_tool_rejects_unsafe_paths_before_any_write(self) -> None:

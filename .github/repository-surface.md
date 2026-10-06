@@ -4,7 +4,7 @@ version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 created: "2026-02-14"
 ---
 
@@ -55,8 +55,8 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 
 ## Navigation / Inventory
 
-- [CI 품질 워크플로](./workflows/ci-quality.yml): 모든 PR의 필수 `validation-changed`, 수동 `validation-full`, main push 보안 검사와 성공 후 `main-current` 갱신
-- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 변경 경로별 PR 검사와 수동 전체 검사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
+- [CI 품질 워크플로](./workflows/ci-quality.yml): main push 보안 검사와 성공 후 `main-current` 갱신
+- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 로컬 변경 경로별 검사와 로컬 전체 검사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
 - [기여자 환영 워크플로](./workflows/greetings.yml)
 - [풀 리퀘스트 라벨러 워크플로](./workflows/pr-labeler.yml)
 - [스테일 스레드 워크플로](./workflows/stale.yml)
@@ -78,7 +78,7 @@ python3 scripts/validation/check-github-workflow-contract.py
   선택한 공개 스위트를 실행한다.
 - [전용 워크플로 검사기](../scripts/validation/check-github-workflow-contract.py)는
   `workflow-contract.yml`을 추적 대상 워크플로 정의 전체와 대조해 검증한다.
-  PR 필수 작업 이름, 이벤트 조건, main 보안 작업과 태그 작업의 종속성도 검사한다.
+  main 보안 작업 이름, 이벤트 조건과 태그 작업의 종속성도 검사한다.
 - [타입 지정 로컬 QA 게이트](../scripts/validation/run-ci-gate.py)에
   `--explain`을 붙이면 선택된 스위트-검증기 매핑을 보여 준다.
 

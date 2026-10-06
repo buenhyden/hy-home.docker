@@ -4,7 +4,7 @@ version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 ---
 
 # Agent Quality and Security Standards
@@ -69,7 +69,8 @@ other high/critical or production findings, expiry and patch availability fail
 closed. Never use a skipped audit, lower threshold, continue-on-error, blanket
 package exception or omitted development audit. Expiry cannot auto-extend.
 Revert the bounded policy/adapter to strict failure when removing acceptance;
-normal required hosted checks continue to own protected integration.
+Task-bound local public validation and review own candidate acceptance, while
+main-push security remains a post-merge observation.
 
 ### 3. Reliability Baseline
 
@@ -97,23 +98,26 @@ normal required hosted checks continue to own protected integration.
   execution uses only `scripts/validation/run-agent-precommit-all-files.sh` from
   an initially clean linked worktree with a tracked co-located Task and reviewed
   prefixes.
-- **Remote (GitHub CI)**: the ultimate SSoT quality gate. Heavy analysis such as
-  E2E, Zizmor SARIF upload, and SonarQube belongs here.
+- **Remote (GitHub CI)**: post-merge security observations run here. Task-bound
+  local validation and review own candidate evidence because no hosted public
+  quality job exists. Heavy analysis such as E2E,
+  Zizmor SARIF upload, and SonarQube remains a remote concern.
 - **CI-only pre-commit**: `scripts/validation/run-ci-precommit.sh` accepts no
   arguments, no Agent-wrapper variables, and no caller-supplied `SKIP`. It
   requires `GITHUB_ACTIONS=true` and `CI=true`, rejects caller `SKIP`, and
   executes `pre-commit run --all-files --show-diff-on-failure` with no skip
   list. It is not a local or Agent authorization path. The public gate reaches it as the `leaf.pre-commit`
-  root of the `repository-integrity` suite for every PR event, including
-  title edits, so an edited run cannot replace a cancelled revision check
-  with narrower evidence.
+  root of the `repository-integrity` suite only when an authorized CI consumer
+  explicitly invokes the wrapper. The tracked quality workflow does not.
+  Local changed/full-profile runs keep focused or complete feedback without
+  installing dependencies or claiming hosted evidence.
 - **Anti-duplication**: do not execute the same heavy workloads redundantly. The
   tracked pre-commit declaration contains only cheap checks; dedicated public
   gate leaves are absent from that declaration, so the CI runner needs no
   skip list.
   The removed `public-validation-changed` and `public-validation-full` hook
-  registrations must not be reintroduced: the PR job owns the public changed
-  gate and manual dispatch owns the full audit.
+  registrations must not be reintroduced: public changed and full profiles are
+  explicit local routes.
 
 #### Canonical delivery phase matrix
 
@@ -122,23 +126,22 @@ normal required hosted checks continue to own protected integration.
 | Commit | Installed local cheap secret, format, lint and message checks; tracked `.pre-commit-config.yaml` declares cheap checks only | Staged bytes; the installed `core.hooksPath` must be observed separately |
 | Feature push | No automatic public gate in this repository | Explicit focused local checks remain available |
 | Agent Stop | Status and completion diagnostics only | Current working-tree state; no second changed-profile run |
-| PR to main | One required `validation-changed` for opened, synchronized, reopened and edited PRs; title edits still run changed selection | Candidate revision and PR identity; document content validators run for document changes, document implementation regressions run when their owners change, and unknown paths select all roots |
+| PR to main | No automatic hosted quality job or required status context | Task-bound local evidence for the candidate revision; document content validators run for document changes, document implementation regressions run when their owners change, and unknown paths select all roots |
 | Main push | `main-security` runs the registered Zizmor adapter and uploads SARIF | Merged SHA in the hosted security context; no routine six-suite full rerun |
 | Successful main-push audit | `update-main-current` with `contents: write` only | Leased channel tag old/new SHA, after rechecking current remote main |
-| Manual dispatch | `validation-full` | Intentional all-suite audit of the selected ref |
 
-The path-to-root rule in `.github/workflow-contract.yml` owns the precise PR
-selection: ordinary authored documentation retains metadata, lifecycle, links,
+The path-to-root rule in `.github/workflow-contract.yml` owns the precise local
+changed selection: ordinary authored documentation retains metadata, lifecycle, links,
 repository contracts and applicable operations catalog checks while omitting
 only the two document implementation regression leaves. Validator, gate,
 registry, governance, and associated test changes select those regressions.
-Unknown paths fail closed to all suites and roots; manual `full` runs every
+Unknown paths fail closed to all suites and roots; local `full` runs every
 registered leaf once. The changed-document metadata route includes current
 repository contracts, so omitting regression tests never omits current-corpus
-content validation. Local changed-profile runs are focused feedback; the hosted
-PR run on the candidate revision remains the merge gate.
+content validation. Local changed-profile runs are focused evidence recorded in
+the active Task; they are not hosted runs or a reusable administrative bypass.
 
-CodeQL and external security integrations remain separate hosted observations. An absent, cancelled or failed required PR status does not authorize a merge. A failed `main-security` or tag update remains a visible post-merge failure; recovery follows `docs/05.operations/runbooks/0009-release-management.md`. The out-of-repository installed Git hook is not changed by editing the tracked declaration.
+CodeQL and external security integrations remain separate hosted observations. A failed `main-security` or tag update remains a visible post-merge failure; recovery follows `docs/05.operations/runbooks/0009-release-management.md`. The out-of-repository installed Git hook is not changed by editing the tracked declaration. Remote protection drift remains an observed control-plane fact until separately authorized and read back.
 
 #### Local QA Environment
 
@@ -170,17 +173,17 @@ or extending the matrix. Use the smallest meaningful checks for the touched
 layer. When a listed check is not applicable, record the skipped-check rationale
 in the task evidence.
 
-| Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Gate                                            | Hook or Script Evidence                                                | Skip Rationale Required                                              |
+| Change Type                                  | Local Checks                                                                                                                                                                                            | CI-Only / Remote Observation                                     | Hook or Script Evidence                                                | Skip Rationale Required                                              |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` | Public document suites selected by the changed-path contract | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
-| Historical-file cleanup                     | Documentation checks, stale active-reference scans, and minimal metadata/link checks                                                                                                                       | Remote docs implementation-alignment, traceability, and repo contracts | Task evidence and Git recovery reference                              | Domain tests, coverage, Docker runtime checks                        |
-| Governance or provider policy docs           | Documentation checks plus `python3 scripts/operations/provider_surface_renderer.py --check` when provider surfaces are affected                                                                          | Remote repo contracts and required checks                        | Provider renderer check output and policy-gate evidence                | Runtime tests unless behavior/config changed                         |
-| Provider adapter, hook, or validation script | Targeted script self-check, `python3 scripts/validation/run-ci-gate.py --profile changed` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Required GitHub quality gates and security scans | Command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped route rationale is explicit |
-| Runtime, Docker, or Compose config           | Compose validation, hardening scripts, targeted service smoke checks when safe                                                                                                                          | Compose and hardening jobs, any protected-branch required checks | Docker/Compose command output or explicit approval gate                | Live service mutation skipped unless approved                        |
-| CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | GitHub Actions jobs, branch protection/ruleset verification      | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
-| Model policy or reasoning-effort config      | agent governance policy review, provider sync, validator support check                                                                                                                                          | Required repo contracts after generated surfaces update          | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
-| Agent lifecycle or semantic evaluation       | Typed repository `all` section, provider sync `--check`, the registered model-free fixture/regression suite, and selector tests                                                                          | Existing repository-contract and agent-output eval jobs           | Deterministic pass markers and sanitized lifecycle evidence             | Live model/provider execution remains unclaimed unless separately observed |
-| Approved high-risk surface                   | Surface-specific local checks plus co-located Task approval/evidence review; secrets use metadata-only evidence unless a concrete redacted target exists                                                | Remote GitHub, CI, runtime, or provider gates named in task      | Approval source, before/after evidence, rollback path, redaction notes | Approved but unexecuted surfaces are recorded as verified-only       |
+| Documentation-only stage docs                | `python3 scripts/validation/run-ci-gate.py --profile changed` | No automatic hosted public job; separately approved readback when relevant | Post-edit validation hook and Task evidence                           | Domain tests, coverage, Docker runtime checks                        |
+| Historical-file cleanup                     | Documentation checks, stale active-reference scans, and minimal metadata/link checks                                                                                                                       | No automatic hosted public job; separately approved archive or remote readback | Task evidence and Git recovery reference                              | Domain tests, coverage, Docker runtime checks                        |
+| Governance or provider policy docs           | Documentation checks plus `python3 scripts/operations/provider_surface_renderer.py --check` when provider surfaces are affected                                                                          | Separately approved protection, ruleset, or provider readback    | Provider renderer check output and policy-gate evidence                | Runtime tests unless behavior/config changed                         |
+| Provider adapter, hook, or validation script | Targeted script self-check, `python3 scripts/validation/run-ci-gate.py --profile changed` when the change affects shared script/CI behavior, repo contracts, provider sync, quickwin/template-security baselines when relevant; controlled all-files wrapper only at an approved final QA gate | Post-merge security/SARIF or another separately registered remote consumer when relevant | Command/prefix/exit/path/review evidence or targeted script output | CI-only tools such as SARIF upload are named, not duplicated locally; skipped route rationale is explicit |
+| Runtime, Docker, or Compose config           | Compose validation, hardening scripts, targeted service smoke checks when safe                                                                                                                          | Separately approved runtime, Compose, or remote protection evidence | Docker/Compose command output or explicit approval gate                | Live service mutation skipped unless approved                        |
+| CI workflow or GitHub protection             | Static workflow validation, repo contracts, ruleset documentation review                                                                                                                                | Actual Actions result and protection/ruleset readback when separately approved | `gh` or workflow evidence where approved                               | Local execution of GitHub-only jobs such as `zizmor` SARIF upload    |
+| Model policy or reasoning-effort config      | agent governance policy review, provider sync, validator support check                                                                                                                                          | Separately registered provider observation when one exists       | Validator output and task evidence                                     | Any unsupported value remains blocked, not skipped                   |
+| Agent lifecycle or semantic evaluation       | Typed repository `all` section, provider sync `--check`, the registered model-free fixture/regression suite, and selector tests                                                                          | Separately registered remote evaluation when one exists          | Deterministic pass markers and sanitized lifecycle evidence             | Live model/provider execution remains unclaimed unless separately observed |
+| Approved high-risk surface                   | Surface-specific local checks plus co-located Task approval/evidence review; secrets use metadata-only evidence unless a concrete redacted target exists                                                | Exact remote GitHub, runtime, or provider observation named and approved in the Task | Approval source, before/after evidence, rollback path, redaction notes | Approved but unexecuted surfaces remain `NOT_RUN`; approval does not prove execution |
 
 Deterministic checks prove only their encoded invariants. Fixture scores and
 synthetic regressions do not prove arbitrary prose semantics, live provider or
@@ -228,11 +231,12 @@ implementation claims remain subject to drift checks; historical and migration
 boundaries are not rewritten to match a newer pin. Document frontmatter versions
 are independent. The registered metadata validator owns executable enforcement.
 
-Local and hosted QA use the same public entrypoint and suite manifest, while
-execution-context ownership determines which leaves can run. A local `full`
-result is not proof of a hosted `full` result. Do not fake GitHub environment
-variables to invoke CI-only wrappers locally. Record missing tools and
-unexecuted checks explicitly; neither absence nor a skipped check is a PASS.
+Current public QA routes are local. If a future hosted consumer is separately
+registered, it must use the same public entrypoint and suite manifest while
+its execution context determines which leaves can run. A local `full` result
+is never proof of a hosted result. Do not fake GitHub environment variables to
+invoke CI-only wrappers locally. Record missing tools and unexecuted checks
+explicitly; neither absence nor a skipped check is a PASS.
 
 The local runner validates `.github/workflow-contract.yml` and the registered
 workflow definitions through

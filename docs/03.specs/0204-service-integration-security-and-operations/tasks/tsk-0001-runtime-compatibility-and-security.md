@@ -1,6 +1,6 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.16"
+version: "1.0.17"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
@@ -44,6 +44,323 @@ transition anchors are not observed and are not backfilled.
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0001 | in-progress | blocked | #current-lifecycle-reconciliation |
+
+### Authorized W7 Hosted PR QA Removal — 2026-10-06
+
+The repository owner twice explicitly instructed removal of the hosted pull
+request QA path and delivery of the locally accepted P01-P04 work to
+`origin/main` without treating that hosted path as an acceptance prerequisite.
+The prior PR366 required job did not report a test failure: it was `cancelled`
+after exceeding its 30-minute hosted execution envelope. Repository owner
+`buenhyden` merged PR366 at 2026-10-06T06:39:42Z as
+`83e7e41ff958697e0ca2e43015b1355aed9f12db`; the agent did not push or merge
+the later five-file 45-minute budget proposal. That superseded proposal and its
+index remain preserved in the earlier worktree and are not applied here.
+
+Plan W7 depends on the accepted W6 implementation and is assigned to this
+Task. After the final fixture-order authorization, its sole writer owns exactly
+these 22 paths:
+
+```text
+.github/workflows/ci-quality.yml
+.github/workflow-contract.yml
+scripts/lib/gate/github_workflow_contract.py
+scripts/lib/gate/ci_gate_contract.py
+tests/lib/gate/test_github_workflow_contract.py
+tests/lib/document_governance/test_spec_packages.py
+tests/validation/test_ci_gate_model.py
+tests/validation/test_agent_governance_ci_routing.py
+tests/validation/test_tech_stack_version_contract.py
+scripts/manifest.yaml
+.agents/governance/quality-standards.md
+.agents/governance/github-governance.md
+.agents/knowledge/verification-surface-map.md
+.github/rulesets/main-protection.md
+.github/repository-surface.md
+README.md
+docs/05.operations/guides/0004-harness-agent-first-engineering.md
+docs/05.operations/runbooks/0004-harness-agent-first-engineering.md
+docs/05.operations/policies/0044-observability-optimization-hardening.md
+docs/03.specs/0204-service-integration-security-and-operations/spec.md
+docs/03.specs/0204-service-integration-security-and-operations/plan.md
+docs/03.specs/0204-service-integration-security-and-operations/tasks/tsk-0001-runtime-compatibility-and-security.md
+```
+
+The approved contract removes the `validation-changed` and `validation-full`
+jobs with their pull-request and manual triggers. It preserves the public CLI,
+local `changed` and `full` selectors, main security validation, channel-tag and
+tag validation, npm policy, failure propagation, and the existing test modules
+and gate-leaf coverage. Current guidance and checker expectations describe
+local public validation plus the hosted main-security/channel path without a
+hosted public-QA requirement. The desired remote required-check set is none;
+the dated observed ruleset still requires the stale `validation-changed`
+context and remains drift. No remote control-plane mutation is authorized in
+W7.
+
+Automatic approval review initially rejected the tracked
+`.github/rulesets/main-protection.md` target edit as a persistent protection
+weakening and rejected an indirect Spec/Plan formulation of the same remote
+target. The writer stopped that edit and did not mutate the target or create a
+workaround draft. The repository owner then gave fresh informed approval in
+the scoped input request `call_zxm7E0UhP66DmpjylLVVbxJS`: remove
+`validation-changed` from the tracked required-status target, document no
+hosted PR required QA, retain the local public `changed` selector, preserve
+past observations as stale drift, and leave actual GitHub settings unchanged.
+That approval authorizes only this tracked ruleset-document reconciliation;
+remote protection remains unmodified and unverified by W7.
+
+Automatic approval review later rejected the proposed removal of the now-dead
+hosted-public projection, bootstrap, Action, and provider consumers because its
+four-file blast radius had not yet been explicitly approved. The writer
+stopped without applying those source edits and produced only the review draft
+`/tmp/hy-home-p04-proposed-hosted-qa-consumer-retirement.patch`. After an
+independent review identified the exact setup-node baseline and routing-test
+consumers, the owner gave fresh informed approval in scoped reply
+`call_XXC1ucG63DvWN1tfy8Ba5yct` for the exact four-file patch with SHA-256
+`57d8bbffaecaaa55f3e616b4418be374f5a8d2e893099b3820f23d52727b904c`
+and the resulting 19-file W7 ledger. The writer verified that digest and exact
+file list, obtained a successful `git apply --check`, then applied that patch
+without changing the local public profile registry, DAG, selectors, leaves,
+modules, or CLI.
+
+The owner's exception is bounded to this one PR and the locally accepted
+P01-P04 input. It does not create a global administrative bypass or claim that
+unobserved hosted checks passed. Root owns the test-first RED/GREEN, static and
+document checks, independent review, one local public gate, staging, commit,
+push, and direct `origin/main` delivery. This first writer phase changes only
+the regression expectation; production and policy files remained unchanged
+until Root witnessed the intended RED. Criterion 8 and the Spec, Plan, and Task stay
+pending and `blocked` because the existing runtime obligations remain open.
+
+Root ran only
+`GithubWorkflowContractTests.test_quality_workflow_has_no_pull_request_trigger_or_changed_job`
+against test-first input `81855a247b7a`. It exited 1 with one expected
+assertion failure because the old pull-request trigger was still present; no
+import or unrelated error occurred, and inputs and entrypoint modes remained
+unchanged. The receipt is
+`/tmp/hy-home-p04-w7-red-81855a247b7a-20261006T070646Z.json` with its adjacent
+log. After that witnessed RED, the writer applied the bounded W7 workflow,
+typed-contract, checker, regression, current-governance, and operations-guide
+changes. GREEN, static and document checks, independent review, the local
+public gate, commit, push, direct delivery, and main readback were pending at
+that historical cutoff. The earlier 15-test GREEN applies only to that first
+contract; the final extended input still needs its own checks.
+
+Root's metadata-only audit then confirmed that hosted `validation-full` also
+exceeded the owner's 10-minute removal threshold in actual completed runs:
+run 33915640218 / job 101162071095 took 17m55s and succeeded; run 33901763378 /
+job 101117262381 took 18m02s and succeeded; run 33899635117 / job 101110407893
+took 19m57s and succeeded; and run 36848287186 / job 110323617649 took 27m21s
+and failed. No raw logs were read for this extension. The owner's latest
+explicit instruction therefore extended W7 to remove `validation-full` and its
+now-unused `workflow_dispatch` trigger as well. The later exact consumer-cleanup
+approval expanded the coherent writer ledger from 17 to 19 paths.
+The consolidated metadata-only receipt is
+`/tmp/hy-home-p04-w7-hosted-job-cost-evidence.json`; it also preserves the
+retired changed-job 1814-second observation and recent 22-second security and
+12-second channel-tag PASS observations.
+Local public `changed` and `full` selectors, every registered gate leaf,
+main-push security, and the channel-tag job remain. The earlier 15-test focused
+GREEN on input `ec304de0ca60` remains valid historical evidence for the first
+W7 contract, but the extended absence contract superseded that input. Root ran
+only the extended absence regression on input `24da633cec6f`; it exited 1 with
+one expected assertion failure because the old manual trigger was still
+present, with inputs and entrypoint modes unchanged. The receipt is
+`/tmp/hy-home-p04-w7-extended-red-24da633cec6f-20261006T072557Z.json`
+with its adjacent log. No final GREEN or broader acceptance is claimed yet.
+
+Root's preliminary final checks on exact 19-file input `fb89793bb1fa` ran 18
+focused regressions successfully, and registered Ruff check/format for five
+Python files plus yamllint for both YAML files passed. Actionlint failed only
+because the checkout step retained an unused `&checkout` anchor after both
+hosted public jobs were removed. The owner authorized one narrow correction:
+remove only that anchor without changing the checkout mapping, and replace the
+runbook's ownerless hosted-pending statement with the current local-evidence
+boundary. Affected focused, actionlint, document, and final public validation
+remain pending on the corrected input.
+
+Root froze corrected exact 19-file input `dc3808a0a531` and ran the authorized
+final local public `changed` gate once. The first 24 of 35 selected invocations
+passed. Invocation 25, `leaf.local-script-manifest`, failed with exactly three
+`consumers-unproven` findings: the two requirements manifests and the public
+runner still named the removed CI Quality workflow as a consumer. The final 10
+invocations did not run after fail-fast. Inputs and entrypoint modes remained
+unchanged. The receipt is
+`/tmp/hy-home-p04-w7-final-public-changed-dc3808a0a531-20261006T075733Z.json`
+with its adjacent log. The permitted public run is exhausted; W7 bounded
+acceptance remains pending, with no commit, push, or integration claim.
+
+The failed-input Task-only metadata, lifecycle, table, link, and style receipt
+passed at `a2929bdac55f`; its receipt is
+`/tmp/hy-home-p04-w7-failed-final-task-receipt-a2929bdac55f-20261006T084054Z.json`
+with its adjacent log. The owner then gave fresh exact approval in scoped reply
+`call_hZa0lqbBd68AX6p0UzKqXPYG` for the three manifest-consumer corrections and
+one new public revalidation. The authorized review patch is
+`/tmp/hy-home-p04-proposed-manifest-consumer-reconciliation.patch`, SHA-256
+`1a3f14b2e8b5f8cc1076997c3a980d002881a23ecc2987dfb55d162312dc5dbc`.
+It expands the W7 ledger to 20 paths, points both requirements manifests at
+their existing `scripts/README.md` consumer, and removes only the stale CI
+workflow consumer from the public runner while retaining
+`.github/repository-surface.md`. The writer reverified the digest, sole path,
+and successful `git apply --check`, then applied the exact patch. No schema,
+checker, CLI, lifecycle, authority, disposition, test, or other manifest field
+changed. Focused manifest validation, YAML/document checks, independent review,
+and the one newly authorized public run remain pending.
+
+The pre-public read-only policy review then found four present-tense authority
+statements that still implied automatic hosted candidate QA: the GitHub
+execution-boundary bullet, the common local/hosted sentence, the remote column
+of the change-type matrix, and the Plan's generic red-CI risk row. Within the
+same approved W7 document paths, the writer narrowed them to the current
+contract: Task-bound local validation and review own candidate evidence;
+main-push security/SARIF and separately registered, separately approved remote
+work are observations; authenticated protection readback remains conditional;
+and the one-time W7 delivery authorization does not replace the general
+no-bypass default. No workflow, manifest, Python, test, schema, checker, CLI,
+or acceptance state changed in this prose correction. Root's direct review
+also replaced the final matrix row's ambiguous `verified-only` wording with
+`NOT_RUN` and an explicit statement that approval does not prove execution.
+Scoped document checks,
+policy re-review, and the final public run remain pending.
+
+The independent policy re-review approved frozen exact 20-file input
+`806122eaddc9` with zero findings. Root then spent the one authorized public
+retry on that unchanged input. The first 29 of 35 selected invocations passed;
+that prefix included metadata 139 tests in 570.709 seconds, library 672 tests
+in 648.920 seconds, supply-chain fixtures 239 tests in 79.182 seconds, all
+selected Compose checks, Conftest, and manifest consumer validation.
+Invocation 30, the GitHub workflow-contract regression, failed in exactly one test,
+`test_mixed_yaml_on_spellings_are_rejected_as_ambiguous`, across its
+`quoted-matching-first` and `unquoted-matching-first` subtests. Both failures
+occurred before the parser assertion because the fixture's `matching_trigger`
+still required the retired pull-request and manual trigger text. No checker or
+parser failure was observed. Inputs remained unchanged; the receipt is
+`/tmp/hy-home-p04-w7-authorized-public-retry-806122eaddc9-20261006T085817Z.json`
+with its adjacent log. The final five invocations did not run after fail-fast.
+The retry limit is exhausted, so W7 remains pending and
+no commit, push, merge, cleanup, or further public run is claimed.
+
+The owner then explicitly authorized the exact one-file fixture patch with
+SHA-256
+`34ba642a328cd743efd92a6da940fbef257be012a60348780f0f43ee43e174d4`,
+focused/static checks, independent review, and exactly one new public gate.
+The authorization permits the already bounded commit, push, exact
+`origin/main` integration, and approved cleanup only if that gate passes; any
+new failure stops delivery. The writer reverified the patch digest, sole path,
+current applicability, and successful `git apply --check`, then applied only
+the four obsolete pull-request/manual trigger string literals in
+`test_github_workflow_contract.py`. The current `on`/push/main fragment, both
+ambiguity cases, exception code, sentinel assertions, checker, parser,
+workflow, schema, manifest, CLI, and all other payloads remain unchanged.
+Focused/static checks, review, and the newly authorized public gate are
+pending; no delivery or W7 acceptance is claimed yet.
+
+Root ran the repaired ambiguity regression on input `89f32b45b332`; it passed,
+as did registered Ruff check. Ruff format check failed because the exact
+four-literal deletion leaves `matching_trigger` in a parenthesized form that
+the registered formatter would collapse. The Task-only minimum check passed.
+Before any new public run started, independent review also found one Important
+stale planner claim in
+`tests/validation/test_tech_stack_version_contract.py`: its method name,
+docstring, and comment describe every pull request as actually executing the
+plan, while its unchanged assertion constructs only an explicit
+`ExecutionContext.PULL_REQUEST` plan. Under the owner's stop-on-new-failure
+boundary, Root did not start the public gate and no further repository source
+edit is authorized. A review-only two-file proposal may normalize only the
+formatter-owned `matching_trigger` form and reword only that planner test's
+name/docstring/comment while retaining its API calls and assertion. W7 remains
+pending; no delivery or cleanup is claimed.
+
+The owner gave fresh scoped approval in reply
+`call_R8Fadrawp2KbYztGyEyP4Fo8` for the exact two-file patch with SHA-256
+`86e1b3ba71f45bbfcc0609d9bd58301e8ca6cf9d6b201c7591559ea63667a380`,
+expansion of the W7 ledger from 20 to 21 paths, focused/static checks,
+independent review, and the still-unused one public gate. A PASS permits the
+already approved commit, push, exact `origin/main` integration, and cleanup;
+any additional failure stops delivery. The writer reverified the patch digest,
+two exact paths, successful `git apply --check`, and isolated Ruff 0.15.12
+format proof, then applied the exact patch. Only `matching_trigger` formatting
+and the planner test's name/docstring/comment changed; its plan construction,
+API calls, assertion, and every other payload remain unchanged. Checks, review,
+public validation, and delivery remain pending; no W7 acceptance is claimed.
+
+Root's final21 focused checks on frozen input `3c8cfd803673` passed, including
+the repaired ambiguity regression, unchanged tech-stack planner assertion,
+registered Ruff check/format, and the Task minimum check. The pre-public
+independent policy review approved that exact input with zero findings. Root
+then ran the one authorized public gate. The first 12 of 35 selected
+invocations passed. Invocation 13, the document-governance library suite, ran
+672 tests in 649.668 seconds and failed in one existing security fixture,
+`tests/lib/document_governance/test_spec_packages.py` at line 2657, because its
+final-file branch expected `SpecPackageError` but no exception was raised. The
+remaining 22 invocations did not run after fail-fast. Input bytes and entrypoint
+modes remained unchanged. The receipt is
+`/tmp/hy-home-p04-w7-final21-authorized-public-3c8cfd803673-20261006T095652Z.json`
+with its adjacent log. Independent read-only code review diagnosed a fixture
+ordering defect: mocked `stat` captures regular-file metadata before the
+second-call symlink mutation and then returns that stale value, so the final
+named-path check can observe the pre-mutation result. The reviewer proposed
+moving only that observational stat after the mutation; the review-only patch
+is `/tmp/hy-home-p04-proposed-finalfile-stat-fixture-order.patch`, SHA-256
+`495c4fde7fed0aa122fd6d37d72d59b44f01e007380c0321a9c1db0eb0072757`.
+It is not applied, the 22nd source path needs fresh approval, and the cause of
+prior passing observations is not established. No production defect, accepted
+security fix, or runtime result is evidenced. The stop boundary is active: W7
+remains pending, SPEC-0204 remains blocked, and no acceptance, commit, push,
+merge, cleanup, or further public run is claimed.
+
+The owner gave fresh scoped approval in reply
+`call_2CVGkq3cmFlcrRLLjol2gKxa` for exact patch
+`495c4fde7fed0aa122fd6d37d72d59b44f01e007380c0321a9c1db0eb0072757`,
+expansion from 21 to 22 source paths, one focused regression, registered Ruff
+check/format, Task minimum check, independent review, and one new public gate.
+A PASS alone permits the already approved commit, push, exact `origin/main`
+head integration with the one-time administrative route if needed, and
+cleanup; any additional failure stops delivery. The writer reverified the
+patch digest, sole path, successful `git apply --check`, and isolated formatter
+proof, then applied exactly the observation-order move in
+`test_spec_packages.py`. Production code, security assertions, fixture cases,
+checker, schema, CLI, and all other payloads remain unchanged. Prior PASS root
+cause remains unknown and this change does not claim a production security fix
+or runtime result.
+
+Root checked the frozen 22-file input `7634eded9a5e`, whose Task blob was
+`60f1dde18787a9323e20adda4dd890db878e64e6feab5a4a0a665523b48b440a`.
+The single focused regression passed in 0.607 seconds; registered Ruff check
+and format check, the Task minimum check, and canonical changed-profile
+explanation all passed with unchanged inputs and `0755` entrypoint modes. The
+receipts are
+`/tmp/hy-home-p04-w7-final22-focused-green-7634eded9a5e-20261006T103351Z.json`,
+`/tmp/hy-home-p04-w7-final22-ruff-check-7634eded9a5e-20261006T103351Z.json`,
+`/tmp/hy-home-p04-w7-final22-ruff-format-7634eded9a5e-20261006T103346Z.json`,
+`/tmp/hy-home-p04-w7-final22-resume-task-min-7634eded9a5e-20261006T103347Z.json`,
+and `/tmp/hy-home-p04-w7-final22-explain-7634eded9a5e-20261006T103521Z.json`.
+Independent pre-public code review approved the exact source and test change
+with zero findings. A policy review correctly found that this Task still
+described those observed checks as pending; this receipt-only correction
+resolved that record defect, and independent receipt-only policy confirmation
+approved exact 22-file input `78f1eea0323f` with zero findings. These earlier
+results apply to their named Task blobs, not to this later receipt text.
+
+Root then ran the one authorized final public changed-profile gate on frozen
+input `78f1eea0323f363dde8a4c5a93f1f60dc96d5d8008084962aa118298705158fb`.
+All 35 unique selected invocations passed with exit 0, unchanged inputs, and
+unchanged `0755` entrypoint modes. The completed coverage included 139 metadata
+tests, 672 document-governance library tests, 239 supply-chain fixture-policy
+tests, 39 workflow-contract tests, the selected structural Compose checks, and
+the isolated Conftest checks. Registered optional runtime skips remain skips;
+this local gate does not create HOME, hosted, deployment, or recovery evidence.
+The historical 2,870-link population remains `UNVERIFIED`, not newly validated.
+The receipt is
+`/tmp/hy-home-p04-w7-final22-authorized-public-78f1eea0323f-20261006T104209Z.json`
+with its adjacent log. Exact-source and policy reviews found zero findings, so
+the bounded W7 implementation is `PASS` and accepted. Criterion 8 and the
+Spec, Plan, and Task remain pending and `blocked` because the separate runtime
+obligations remain open. Commit, push, direct `origin/main` integration,
+readback, and cleanup remain `NOT_RUN`; their already approved route is the
+next action and no future delivery receipt is inferred here. A minimum check
+and final receipt-only review of this last Task delta remain outside this
+recording cutoff and must not cause another self-result rewrite.
 
 ### Completed migration QA retirement — 2026-10-06
 
@@ -1030,6 +1347,56 @@ rewriting or cancellation of already-completed work.
 | Resumed independent review | 8 | W6 | Exact diff and public receipt review | Final input `8862a1fe1a9a` | PASS | Independent read-only reviewer verdict; this Task, Work Log | accepted |
 | W6 bounded implementation acceptance | 8 | W6 | Current-owner migration QA retirement and regression compatibility | Final input `8862a1fe1a9a` | PASS | Accepted W6 evidence rows; this Task, Work Log | accepted |
 | W6 protected integration | 8 | W6 | Commit, required hosted checks, protected merge, and main readback | New completion worktree input | NOT_RUN | Pending protected-delivery receipts | pending |
+| W7 owner authorization | 8 | W7 | Remove hosted PR QA for this locally accepted P01-P04 delivery | `main@83e7e41ff958697e0ca2e43015b1355aed9f12db`; exact 17-file writer ledger | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 ruleset target authorization | 8 | W7 | Reconcile tracked desired required-status set after automatic approval rejection | Scoped owner reply `call_zxm7E0UhP66DmpjylLVVbxJS`; actual remote settings unchanged | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 hosted PR QA removal RED | 8 | W7 | YAML and typed-manifest absence regression | Test-first input `81855a247b7a` on `main@83e7e41ff958697e0ca2e43015b1355aed9f12db` | FAIL | `/tmp/hy-home-p04-w7-red-81855a247b7a-20261006T070646Z.json` and adjacent log | pending |
+| W7 initial focused GREEN | 8 | W7 | Fifteen hosted-PR-removal workflow regressions | Frozen 17-file input `ec304de0ca60` | PASS | `/tmp/hy-home-p04-w7-focused-green-ec304de0ca60-20261006T071711Z.json` and adjacent log | pending |
+| W7 hosted full runtime threshold | 8 | W7 | Completed job durations exceed owner 10-minute removal threshold | Runs 33915640218, 33901763378, 33899635117, 36848287186; metadata only | PASS | `/tmp/hy-home-p04-w7-hosted-job-cost-evidence.json`; this Task, Work Log | accepted |
+| W7 hosted-public consumer retirement authorization | 8 | W7 | Remove dead hosted projection/bootstrap/provider consumers while preserving local public contracts | Scoped owner reply `call_XXC1ucG63DvWN1tfy8Ba5yct`; exact four-file patch `57d8bbff...`; 19-file ledger | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 extended hosted validation removal RED | 8 | W7 | YAML and typed-manifest absence of PR/manual triggers and changed/full jobs | Extended test-first input `24da633cec6f` | FAIL | `/tmp/hy-home-p04-w7-extended-red-24da633cec6f-20261006T072557Z.json` and adjacent log | pending |
+| W7 preliminary focused regressions | 8 | W7 | Eighteen modified workflow, checker, local-profile, and routing regressions | Exact 19-file input `fb89793bb1fa` | PASS | `/tmp/hy-home-p04-w7-final-focused-green-fb89793bb1fa-20261006T075207Z.json` and adjacent log | pending |
+| W7 preliminary Python static checks | 8 | W7 | Registered Ruff check and format check for five changed Python files | Exact 19-file input `fb89793bb1fa` | PASS | `/tmp/hy-home-p04-w7-final-ruff-check-fb89793bb1fa-20261006T075225Z.json`; `/tmp/hy-home-p04-w7-final-ruff-format-fb89793bb1fa-20261006T075227Z.json` | pending |
+| W7 preliminary YAML style | 8 | W7 | Registered yamllint for workflow and typed contract | Exact 19-file input `fb89793bb1fa` | PASS | `/tmp/hy-home-p04-w7-final-yamllint-fb89793bb1fa-20261006T075224Z.json` and adjacent log | pending |
+| W7 preliminary workflow syntax | 8 | W7 | Registered actionlint | Exact 19-file input `fb89793bb1fa`; unused checkout anchor | FAIL | `/tmp/hy-home-p04-w7-final-actionlint-fb89793bb1fa-20261006T075226Z.json` and adjacent log | pending |
+| W7 final public completed prefix | 8 | W7 | First 24 of 35 selected changed-profile invocations | Corrected exact 19-file input `dc3808a0a531` | PASS | `/tmp/hy-home-p04-w7-final-public-changed-dc3808a0a531-20261006T075733Z.json` and adjacent log | pending |
+| W7 final public manifest ownership | 8 | W7 | `leaf.local-script-manifest` consumer proof | Corrected exact 19-file input `dc3808a0a531`; three stale workflow consumers | FAIL | Same final public gate receipt | pending |
+| W7 final public fail-fast remainder | 8 | W7 | Ten selected invocations after manifest failure | Corrected exact 19-file input `dc3808a0a531` | NOT_RUN | Same final public gate receipt | pending |
+| W7 failed-input Task receipt | 8 | W7 | Task metadata, lifecycle, tables, links, and style | Failed-gate Task input `a2929bdac55f` | PASS | `/tmp/hy-home-p04-w7-failed-final-task-receipt-a2929bdac55f-20261006T084054Z.json` and adjacent log | pending |
+| W7 manifest-consumer repair authorization | 8 | W7 | Reconcile exactly three stale consumer links and permit one public revalidation | Scoped owner reply `call_hZa0lqbBd68AX6p0UzKqXPYG`; one-file patch `1a3f14b2...`; 20-file ledger | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 pre-public authority review | 8 | W7 | Current GitHub, QA, verification-matrix, and delivery-risk authority prose | Authorized 20-file input before final public retry | FAIL | Independent read-only policy review; this Task, Work Log | pending |
+| W7 authority prose correction | 8 | W7 | Align current candidate and remote-observation ownership without changing executable contracts | Corrected authorized 20-file input | NOT_RUN | Pending scoped document checks and policy re-review | pending |
+| W7 final policy re-review | 8 | W7 | Exact current-authority prose and pending Task state | Frozen exact 20-file input `806122eaddc9` | PASS | Independent read-only policy reviewer verdict; this Task, Work Log | accepted |
+| W7 authorized public retry completed prefix | 8 | W7 | First 29 of 35 selected changed-profile invocations | Frozen exact 20-file input `806122eaddc9` | PASS | `/tmp/hy-home-p04-w7-authorized-public-retry-806122eaddc9-20261006T085817Z.json` and adjacent log | pending |
+| W7 authorized public retry manifest ownership | 8 | W7 | `leaf.local-script-manifest` consumer proof | Frozen exact 20-file input `806122eaddc9` | PASS | `/tmp/hy-home-p04-w7-authorized-public-retry-806122eaddc9-20261006T085817Z.json` and adjacent log | pending |
+| W7 authorized public retry workflow regression | 8 | W7 | GitHub workflow-contract regression suite | Frozen exact 20-file input `806122eaddc9`; one test/two stale fixture subtests | FAIL | Same authorized public retry receipt | pending |
+| W7 authorized public retry fail-fast remainder | 8 | W7 | Five selected invocations after workflow regression failure | Frozen exact 20-file input `806122eaddc9` | NOT_RUN | Same authorized public retry receipt | pending |
+| W7 YAML trigger fixture repair authorization | 8 | W7 | Remove only the retired PR/manual literals and permit one new public gate | Explicit owner approval; exact one-file patch `34ba642a...` | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 YAML trigger fixture repair | 8 | W7 | Preserve current push trigger and both ambiguity rejection cases | Authorized exact 20-file input after four-literal removal | NOT_RUN | Pending focused/static checks and review | pending |
+| W7 trigger fixture focused regression | 8 | W7 | Both YAML trigger ambiguity cases | Exact 20-file input `89f32b45b332` | PASS | `/tmp/hy-home-p04-w7-trigger-fixture-focused-green-89f32b45b332-20261006T094334Z.json` and adjacent log | pending |
+| W7 trigger fixture Ruff check | 8 | W7 | Registered Python lint | Exact 20-file input `89f32b45b332` | PASS | `/tmp/hy-home-p04-w7-trigger-fixture-ruff-check-89f32b45b332-20261006T094337Z.json` and adjacent log | pending |
+| W7 trigger fixture Ruff format | 8 | W7 | Registered Python format check | Exact 20-file input `89f32b45b332`; formatter would collapse `matching_trigger` | FAIL | `/tmp/hy-home-p04-w7-trigger-fixture-ruff-format-89f32b45b332-20261006T094336Z.json` and adjacent log | pending |
+| W7 trigger fixture Task receipt | 8 | W7 | Task metadata, lifecycle, tables, links, and style | Exact 20-file input `89f32b45b332` | PASS | `/tmp/hy-home-p04-w7-trigger-fixture-resume-task-min-89f32b45b332-20261006T094336Z.json` and adjacent log | pending |
+| W7 planner-claim review | 8 | W7 | Tech-stack drift leaf planner-context claim | Existing 20-file input plus unowned test observation | FAIL | Independent read-only reviewer finding; this Task, Work Log | pending |
+| W7 final test-normalization authorization | 8 | W7 | Apply formatter-owned trigger form and conditional planner wording; permit one unused public gate | Scoped owner reply `call_R8Fadrawp2KbYztGyEyP4Fo8`; exact patch `86e1b3ba...`; 21-file ledger | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 final test normalization | 8 | W7 | Preserve ambiguity behavior and tech-stack planner assertion | Authorized exact 21-file input | NOT_RUN | Pending focused/static checks and review | pending |
+| W7 final21 focused and static checks | 8 | W7 | Trigger ambiguity, planner assertion, Ruff check/format, and Task minimum | Frozen exact 21-file input `3c8cfd803673` | PASS | `/tmp/hy-home-p04-w7-final21-focused-green-3c8cfd803673-20261006T095225Z.json`; adjacent Ruff and Task receipts | pending |
+| W7 final21 pre-public review | 8 | W7 | Exact diff, policy boundary, and pending Task state | Frozen exact 21-file input `3c8cfd803673` | PASS | Independent read-only policy reviewer verdict; this Task, Work Log | accepted |
+| W7 final21 public completed prefix | 8 | W7 | First 12 of 35 selected changed-profile invocations | Frozen exact 21-file input `3c8cfd803673` | PASS | `/tmp/hy-home-p04-w7-final21-authorized-public-3c8cfd803673-20261006T095652Z.json` and adjacent log | pending |
+| W7 final21 document library regression | 8 | W7 | 672 document-governance library tests | Frozen exact 21-file input `3c8cfd803673`; one existing symlink fixture failed | FAIL | Same final21 public receipt | pending |
+| W7 final21 fixture diagnosis | 8 | W7 | Read-only ordering analysis of the final-file symlink fixture | Patch `495c4fde...` proposed but not applied; production unchanged | PASS | Independent read-only code reviewer verdict; this Task, Work Log | accepted |
+| W7 final21 fail-fast remainder | 8 | W7 | Twenty-two selected invocations after library failure | Frozen exact 21-file input `3c8cfd803673` | NOT_RUN | Same final21 public receipt | pending |
+| W7 fixture-order repair authorization | 8 | W7 | Move only observational stat after symlink mutation and permit one new public gate | Scoped owner reply `call_2CVGkq3cmFlcrRLLjol2gKxa`; exact patch `495c4fde...`; 22-file ledger | PASS | This Task, Authorized W7 Hosted PR QA Removal | accepted |
+| W7 fixture-order repair | 8 | W7 | Preserve every case and assertion while observing post-mutation metadata | Frozen exact 22-file input `7634eded9a5e`; prior Task blob `60f1dde...` | PASS | `/tmp/hy-home-p04-w7-final22-focused-green-7634eded9a5e-20261006T103351Z.json` and adjacent log | pending |
+| W7 fixture-order static checks | 8 | W7 | Registered Ruff check and format check | Frozen exact 22-file input `7634eded9a5e`; prior Task blob `60f1dde...` | PASS | `/tmp/hy-home-p04-w7-final22-ruff-check-7634eded9a5e-20261006T103351Z.json`; `/tmp/hy-home-p04-w7-final22-ruff-format-7634eded9a5e-20261006T103346Z.json` | pending |
+| W7 fixture-order prior Task minimum | 8 | W7 | Task metadata, lifecycle, table, link, and style checks | Prior Task blob `60f1dde...` in frozen exact 22-file input `7634eded9a5e` | PASS | `/tmp/hy-home-p04-w7-final22-resume-task-min-7634eded9a5e-20261006T103347Z.json` | pending |
+| W7 fixture-order canonical explanation | 8 | W7 | Final changed-profile prerequisite and selection explanation | Frozen exact 22-file input `7634eded9a5e`; prior Task blob `60f1dde...` | PASS | `/tmp/hy-home-p04-w7-final22-explain-7634eded9a5e-20261006T103521Z.json` | pending |
+| W7 fixture-order pre-public code review | 8 | W7 | Exact source and test change | Frozen exact 22-file input `7634eded9a5e`; prior Task blob `60f1dde...` | PASS | Independent read-only code review, zero findings; this Task, Work Log | accepted |
+| W7 fixture-order record reconciliation | 8 | W7 | Replace stale pending-check wording with observed receipts | Frozen exact 22-file input `78f1eea0323f` | PASS | Independent receipt-only policy confirmation, zero findings; this Task, Work Log | accepted |
+| W7 final22 public changed gate | 8 | W7 | All 35 unique selected invocations, including metadata 139, library 672, supply-chain fixture policy 239, workflow contract 39, structural Compose, and isolated Conftest | Frozen exact 22-file input `78f1eea0323f` | PASS | `/tmp/hy-home-p04-w7-final22-authorized-public-78f1eea0323f-20261006T104209Z.json` and adjacent log | accepted |
+| W7 optional and external observations | 8 | W7 | Optional runtime skips, HOME, hosted, deployment, recovery, and historical links | Frozen exact 22-file input `78f1eea0323f` | NOT_RUN | Registered skips retained; 2,870 historical links remain `UNVERIFIED`; no external runtime receipt | pending |
+| W7 bounded implementation | 8 | W7 | Workflow, typed contract, checker, projections, guidance, validation, and review | Frozen exact 22-file input `78f1eea0323f` | PASS | Focused/static receipts, independent zero-finding reviews, and final22 public changed-gate receipt | accepted |
+| W7 final Task receipt | 8 | W7 | Minimum checks and final receipt-only review after bounded acceptance recording | This last Task delta | NOT_RUN | External follow-up after this recording cutoff; no self-result rewrite | pending |
+| W7 direct delivery | 8 | W7 | Commit, push, direct `origin/main` integration, and main readback | Authorized locally accepted input | NOT_RUN | Pending delivery receipts | pending |
 
 ## Review and Completion
 
@@ -1039,7 +1406,7 @@ rewriting or cancellation of already-completed work.
 | 2 | pending | Exact-image and Code-task runtime evidence remains unavailable. |
 | 3 | pending | Crawl4AI egress-deny runtime evidence remains unavailable. |
 | 4 | pending | Agent-renewal freshness and route acceptance remain unavailable. |
-| 8 | pending | W1 source checks and review remain pending; Task 0002 retains its historical W5 receipt. The three gate failures remain historical; their bounded corrections, all 35 final local invocations, and independent review pass. W6 implementation is accepted, while hosted P04 integration and the broader runtime criterion remain pending. |
+| 8 | pending | W1 source checks and review remain pending; Task 0002 retains its historical W5 receipt. The three gate failures remain historical; their bounded corrections, all 35 final local invocations, and independent review pass. W6 and bounded W7 local implementation are accepted, while direct delivery and the broader runtime criterion remain pending. |
 
 Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 

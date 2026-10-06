@@ -540,17 +540,17 @@ class TechStackVersionContractTests(unittest.TestCase):
                 ]
                 self.assertNotIn(["bash", leaf["entrypoint"], *leaf["argv"]], commands)
 
-    def test_the_required_gate_reaches_the_drift_leaf_on_every_pull_request(
+    def test_pull_request_plan_reaches_drift_leaf_without_a_path_match(
         self,
     ) -> None:
-        """Every PR reaches the drift leaf, even without a matching path rule."""
+        """The PULL_REQUEST planner context reaches the drift leaf."""
 
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)
         registry = parse_gate_registry(document, ".github/workflow-contract.yml")
 
-        # An empty change set selects the declared fallback, which is the floor
-        # every pull request gets before any path rule adds to it.
+        # An empty change set selects the declared fallback for this explicit
+        # planner context; it does not claim that a hosted PR consumer exists.
         suites = select_public_suites(public, "changed", ())
         self.assertIn("repository-integrity", suites)
 

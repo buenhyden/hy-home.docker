@@ -63,7 +63,9 @@ settings by itself.
 - Require conversations to be resolved before merge.
 - Block force pushes.
 - Block branch deletion.
-- Require the latest branch head to pass required checks before merge.
+- Configure no required status-check contexts. Pull requests, resolved
+  conversations, force-push denial, and deletion denial remain separate
+  controls.
 - Do not enforce squash/rebase-only or linear-history settings that would
   discard referenced objects, so delivered history can keep them.
 - Recovery-commit preservation and branch deletion are stated once, in
@@ -72,18 +74,16 @@ settings by itself.
 
 ## Required Status Checks
 
-Use the CI Quality Gates workflow job names as required checks:
-`.github/workflow-contract.yml` owns their exact machine identity, and
-the focused workflow checker proves that every required job projects its
-registered root DAG exactly once through static typed-gate invocations.
+The desired required-status context set is empty. The tracked quality workflow
+has no hosted public-validation trigger or job;
+`.github/workflow-contract.yml` retains the local `changed` and `full` public
+profiles while owning only the main-push security and channel job identities
+for that workflow.
 
-- `validation-changed`
-
-`validation-full` runs only on manual dispatch. Main pushes run `main-security`
-on the merged revision, then `update-main-current` only after that audit succeeds.
-Neither post-merge job is a PR pre-merge gate; a failure after a push cannot
-retroactively prevent that merge. The required PR context remains
-`validation-changed` on every PR event, including title edits.
+Main pushes run `main-security` on the merged revision, then
+`update-main-current` only after that audit succeeds. Neither post-merge job is
+a PR pre-merge gate; a failure after a push cannot retroactively prevent that
+merge.
 
 GitHub treats a job skipped by a job-level condition as successful for required
 checks. A whole workflow skipped by path/branch filters or a commit-message
@@ -94,9 +94,12 @@ a failed prerequisite. See the
 
 A past merge blockage cannot be attributed to a skipped job without the actual
 check-run, PR head or test-merge SHA, expected source app, and contemporaneous
-protection configuration. The current required context is bound to GitHub
-Actions app ID 15368 with `strict=true`; current dated read-back belongs in the
-active Task, separately from the observations above.
+protection configuration. The last dated read-back still reports
+`validation-changed` bound to GitHub Actions app ID 15368 with `strict=true`.
+That is stale remote drift from the desired empty set, not evidence that the
+removed job still exists. A current read-back belongs in the active Task,
+separately from the observations above; this tracked change grants no remote
+mutation authority.
 
 ## Rollback State
 
@@ -104,11 +107,11 @@ A difference from this desired contract is a prompt to inspect, not permission
 to restore old settings. Obtain a fresh authenticated read-back and bind any
 approved correction to the exact field, before-state, target and recovery.
 
-For required checks, the current desired state is `validation-changed` alone,
-`strict=true`, app ID 15368. Do not restore the retired individual-check list or
-a previous two-context list from historical prose. Those contexts may no longer
-be produced on the required event or revision. Other protection fields require
-their own approved before-state and must not be reset incidentally.
+For required checks, the current desired state is an empty context set. Do not
+restore `validation-changed`, the retired individual-check list, or a previous
+two-context list from historical prose. Those contexts are not produced by the
+tracked PR event. Other protection fields require their own approved
+before-state and must not be reset incidentally.
 
 If reverting a future approved change, use that change's captured before-state
 only after confirming its checks are still produced by the matching workflow

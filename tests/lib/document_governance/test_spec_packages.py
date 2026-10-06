@@ -2645,13 +2645,13 @@ Narrative after the registered table.
 
             def replace_after_open(path, *args, **kwargs):
                 nonlocal calls
-                result = original_stat(path, *args, **kwargs)
                 if path == "spec.md" and kwargs.get("dir_fd") is not None:
                     calls += 1
                     if calls == 2:
                         saved = package / "saved-spec.md"
                         spec_path.rename(saved)
                         spec_path.symlink_to(saved)
+                result = original_stat(path, *args, **kwargs)
                 return result
 
             with (

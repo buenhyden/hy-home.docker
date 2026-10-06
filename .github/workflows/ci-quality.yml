@@ -3,10 +3,6 @@ name: CI Quality Gates
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened, edited]
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,78 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validation-changed:
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-      PR_TITLE: ${{ github.event.pull_request.title }}
-      HEAD_REF: ${{ github.head_ref }}
-    steps:
-      - &checkout
-        name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.14'
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Install uv
-        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
-      - name: Install validation dependencies
-        # The runner imports the declared libraries before planning any gate,
-        # and the `pre-commit` gate leaf needs its own pinned runner.
-        # Bootstrap is CI-only; local gate execution never installs packages.
-        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
-      - name: Run changed public validation suites
-        run: python3 scripts/validation/run-ci-gate.py --profile changed
-
-  validation-full:
-    if: github.event_name == 'workflow_dispatch'
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    env:
-      EVENT_NAME: ${{ github.event_name }}
-    steps:
-      - *checkout
-      - name: Set up Python
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.14'
-      - name: Set up Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: '24'
-          cache: 'npm'
-          cache-dependency-path: projects/storybook/nextjs/package-lock.json
-      - name: Install uv
-        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
-      - name: Install validation dependencies
-        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
-      - name: Run all public validation suites
-        run: python3 scripts/validation/run-ci-gate.py --profile full
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4.38.1
-        with:
-          sarif_file: results.sarif
-          category: zizmor
-
   main-security:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
@@ -96,7 +20,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - *checkout
+      -
+        name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
