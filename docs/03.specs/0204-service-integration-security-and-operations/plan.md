@@ -50,6 +50,7 @@ and acceptance gates before any service declaration was changed.
 | W4 | 6, 7 | Close backup and cross-tier handoffs | None | TSK-0003 | Task evidence |
 | W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
 | W6 | 8 | Retire completed migration-only QA while preserving current lifecycle and archive owners | None | TSK-0001 | Task evidence |
+| W7 | 8 | Retire hosted public QA while preserving local changed/full selectors, main security, and historical evidence | W6 | TSK-0001 | Task evidence |
 
 ### Work Details
 
@@ -97,6 +98,17 @@ and acceptance gates before any service declaration was changed.
    copying unrelated live owner Tasks into its synthetic SPEC-0210 snapshot.
    If the final gate reaches the PostgreSQL timeout fixture, add only its
    source terminal-state stub and permit one fresh public revalidation.
+7. **W7: retire hosted public QA.** TSK-0001 removes the quality workflow's
+   pull-request and manual triggers with the `validation-changed` and
+   `validation-full` jobs, then aligns the typed workflow contract, checker,
+   regressions, current governance, and operations guidance. The public
+   `changed` and `full` selectors remain available for exact local Task
+   evidence, and `main-security` plus its channel-tag dependency remain on main
+   pushes. W7 authorizes no remote control-plane mutation and does not complete
+   the blocked runtime package. Task-bound local validation and independent
+   review own W7 candidate acceptance. Remote integration follows its
+   separately approved delivery boundary and actual readback; local success is
+   not a merge receipt, and no hosted PASS is inferred. Maps 8.
 
 ### Rulings
 
@@ -167,7 +179,7 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 | External discovery widens collection or ingress | Require project/service network or backend auth, direct-peer denial, authenticated OTLP identity mapping, trace scrub and quotas; reject unregistered peers. Revert scoped source; do not delete project state. |
 | Backup path is incomplete or data is deleted | Include mount, list, scheduler, offsite and alert as one reviewed source change; no live PGDATA copy, retention/prune or restore without separate approval. |
 | Parallel writers change shared files | TSK-0001, then TSK-0002, then TSK-0003 write serially. Rebase against exact preceding diff; do not reset, stash or clean another worker's state. |
-| Existing required CI is red | Keep source review and hosted gate results distinct; do not bypass branch protection or weaken a security audit. |
+| Observed protection still names a retired required context | Preserve the general no-bypass default. For W7 only, use the separately approved one-time Task delivery boundary and actual remote readback; do not infer a hosted PASS or weaken the post-merge security audit. |
 
 ## Related Documents
 

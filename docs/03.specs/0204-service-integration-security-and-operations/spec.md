@@ -78,6 +78,14 @@ does not mix unrelated current-owner Tasks from a later live worktree.
 A separately approved tenth path may correct only the timeout fixture's source
 terminal-state stub before one final public revalidation.
 
+The approved W7 maintenance removes both hosted public validation jobs and
+their pull-request/manual triggers after W6. It retains the local public
+`changed` and `full` selectors for Task-bound evidence, main-push security and
+channel-tag ordering, tag workflows, npm handling, and all registered test
+modules and gate leaves. Current guidance does not require hosted public QA.
+W7 performs no remote control-plane mutation and does not change this
+package's blocked runtime status.
+
 ### Interfaces and Data
 
 - Input: reviewed current declarations, official release/security references,

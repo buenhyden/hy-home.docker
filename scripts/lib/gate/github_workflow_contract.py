@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-import ast
 import dataclasses
 import datetime
 import os
@@ -19,7 +18,6 @@ if __package__ in {None, ""}:
         sys.path.insert(0, str(_BOOTSTRAP_ROOT))
 
 from scripts.lib.gate.ci_gate_contract import (
-    CI_DEPENDENCY_BOOTSTRAP,
     GateContractError,
     GateRegistry,
     load_contract_document,
@@ -106,19 +104,12 @@ class _WorkflowPermissionBaseline:
 
 
 _CONTENTS_READ: Final[PermissionItems] = (("contents", "read"),)
-_FULL_GATE_PERMISSIONS: Final[PermissionItems] = (
-    ("actions", "read"),
-    ("contents", "read"),
-    ("security-events", "write"),
-)
 _WORKFLOW_PERMISSION_BASELINES: Final = (
     (
         ".github/workflows/ci-quality.yml",
         _WorkflowPermissionBaseline(
             top_level=_CONTENTS_READ,
             jobs=(
-                ("validation-changed", _CONTENTS_READ),
-                ("validation-full", _FULL_GATE_PERMISSIONS),
                 ("main-security", (("contents", "read"), ("security-events", "write"))),
                 ("update-main-current", (("contents", "write"),)),
             ),
@@ -196,10 +187,6 @@ _ACTION_REGISTRY_BASELINE: Final = (
     (
         "actions/labeler",
         "bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13",
-    ),
-    (
-        "actions/setup-node",
-        "820762786026740c76f36085b0efc47a31fe5020",
     ),
     (
         "actions/setup-python",
@@ -909,15 +896,13 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         if workflow.classification == "required-quality"
     ]
     if len(required_workflows) != 1 or set(required_workflows[0].jobs) != {
-        "validation-changed",
-        "validation-full",
         "main-security",
         "update-main-current",
     }:
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "exactly one required-quality workflow with the four owned jobs is required",
+            "exactly one required-quality workflow with the two owned jobs is required",
         )
     return WorkflowContract(
         schema_version=2,
@@ -942,30 +927,6 @@ def _job_tokens(job: dict[object, object]) -> tuple[str, ...]:
         if isinstance(run, str):
             tokens.extend(line.strip() for line in run.splitlines() if line.strip())
     return tuple(tokens)
-
-
-def _job_programs(job: dict[object, object]) -> tuple[str, ...]:
-    programs: list[str] = []
-    steps = job.get("steps")
-    if not isinstance(steps, list):
-        return ()
-    for step in steps:
-        if not isinstance(step, dict):
-            continue
-        run = step.get("run")
-        if isinstance(run, str):
-            programs.append(run)
-    return tuple(programs)
-
-
-_STATIC_GATE_PROGRAM_RE: Final = re.compile(
-    r"python3 scripts/validation/run-ci-gate\.py --profile (changed|full)\Z"
-)
-
-
-def _static_gate_profile(program: str) -> str | None:
-    match = _STATIC_GATE_PROGRAM_RE.fullmatch(program)
-    return match.group(1) if match is not None else None
 
 
 def _environment_keys(value: object) -> set[str] | None:
@@ -1000,29 +961,12 @@ def _workflow_projection_findings(
                 "required workflow defaults.run is forbidden",
             )
         )
-    expected_jobs: dict[str, tuple[str, str, dict[str, str] | None]] = {
-        "validation-changed": (
-            "changed",
-            "github.event_name == 'pull_request'",
-            {
-                "EVENT_NAME": "${{ github.event_name }}",
-                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
-                "PR_TITLE": "${{ github.event.pull_request.title }}",
-                "HEAD_REF": "${{ github.head_ref }}",
-            },
-        ),
-        "validation-full": (
-            "full",
-            "github.event_name == 'workflow_dispatch'",
-            {"EVENT_NAME": "${{ github.event_name }}"},
-        ),
+    expected_jobs: dict[str, tuple[str, dict[str, str] | None]] = {
         "main-security": (
-            "security",
             "github.event_name == 'push' && github.ref == 'refs/heads/main'",
             None,
         ),
         "update-main-current": (
-            "channel",
             "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
             None,
         ),
@@ -1046,7 +990,7 @@ def _workflow_projection_findings(
         expected_job = expected_jobs.get(raw_job_id)
         if expected_job is None:
             continue
-        profile, admitted_job_condition, admitted_job_environment = expected_job
+        admitted_job_condition, admitted_job_environment = expected_job
         if raw_job.get("if") != admitted_job_condition:
             findings.append(
                 _finding(
@@ -1158,162 +1102,6 @@ def _workflow_projection_findings(
                     )
                 )
             continue
-        if not steps or steps[0] != expected_checkout:
-            findings.append(
-                _finding(
-                    "workflow-gate-checkout-required",
-                    path,
-                    f"job {raw_job_id} requires the registered checkout first",
-                )
-            )
-        projected: list[str] = []
-        for step in steps:
-            if not isinstance(step, dict):
-                continue
-            program = step.get("run")
-            if program is None:
-                continue
-            if not isinstance(program, str):
-                findings.append(
-                    _finding(
-                        "workflow-gate-projection-invalid",
-                        path,
-                        f"job {raw_job_id} contains a non-string run program",
-                    )
-                )
-                continue
-            if (
-                step.get("if") is not None
-                or "shell" in step
-                or "working-directory" in step
-                or "env" in step
-            ):
-                findings.append(
-                    _finding(
-                        "workflow-gate-execution-context-invalid",
-                        path,
-                        f"job {raw_job_id} run step context is not admitted",
-                    )
-                )
-            selected_profile = (
-                "bootstrap"
-                if program == CI_DEPENDENCY_BOOTSTRAP
-                else _static_gate_profile(program)
-            )
-            if selected_profile is None:
-                findings.append(
-                    _finding(
-                        "workflow-gate-projection-invalid",
-                        path,
-                        f"job {raw_job_id} contains a non-static gate program",
-                    )
-                )
-            else:
-                projected.append(selected_profile)
-        if projected != ["bootstrap", profile]:
-            findings.append(
-                _finding(
-                    "workflow-gate-projection-mismatch",
-                    path,
-                    f"job {raw_job_id} must bootstrap dependencies then select its public profile exactly once",
-                )
-            )
-    return tuple(findings)
-
-
-# A gate leaf fails at spawn time when the program it runs is absent from the
-# runner, and the Action registry cannot see that: it proves an Action is
-# declared, pinned and named by a consumer, never that a leaf can start. These
-# three names tie the two together so that removing a setup step is a contract
-# failure rather than a runtime one.
-_ADAPTER_SOURCE: Final = "scripts/lib/gate/ci_gate_adapters.py"
-_RUNNER_BASELINE_PROGRAMS: Final = frozenset({"bash", "git", "python3"})
-_LEAF_PROGRAM_PROVIDERS: Final = {
-    "npm": "actions/setup-node",
-    "npx": "actions/setup-node",
-    "uvx": "astral-sh/setup-uv",
-}
-_QUALITY_WORKFLOW: Final = ".github/workflows/ci-quality.yml"
-
-
-def _adapter_programs(root: pathlib.Path) -> tuple[str, ...] | None:
-    """Return every program the adapters spawn, or None when unreadable."""
-    try:
-        tree = ast.parse((root / _ADAPTER_SOURCE).read_text(encoding="utf-8"))
-    except (OSError, SyntaxError, UnicodeError, ValueError):
-        return None
-    programs: set[str] = set()
-    for node in ast.walk(tree):
-        if (
-            not isinstance(node, ast.Call)
-            or not isinstance(node.func, ast.Name)
-            or node.func.id != "_run_child"
-            or not node.args
-        ):
-            continue
-        argv = node.args[0]
-        if not isinstance(argv, (ast.Tuple, ast.List)) or not argv.elts:
-            return None
-        first = argv.elts[0]
-        if not isinstance(first, ast.Constant) or not isinstance(first.value, str):
-            return None
-        programs.add(first.value)
-    return tuple(sorted(programs))
-
-
-def _leaf_program_findings(
-    programs: tuple[str, ...] | None,
-    documents_by_path: dict[str, WorkflowDocument],
-) -> tuple[WorkflowFinding, ...]:
-    if programs is None:
-        return (
-            _finding(
-                "leaf-program-source-unreadable",
-                _ADAPTER_SOURCE,
-                "the programs a gate leaf spawns cannot be read",
-            ),
-        )
-    document = documents_by_path.get(_QUALITY_WORKFLOW)
-    if document is None:
-        return (
-            _finding(
-                "leaf-program-workflow-missing",
-                _QUALITY_WORKFLOW,
-                "the quality workflow that installs leaf programs is absent",
-            ),
-        )
-    findings: list[WorkflowFinding] = []
-    jobs = document.data.get("jobs")
-    installed_by_job: dict[str, set[str]] = {}
-    for job_id, job in (jobs or {}).items():
-        steps = job.get("steps") if isinstance(job, dict) else None
-        installed_by_job[str(job_id)] = {
-            str(step["uses"]).partition("@")[0]
-            for step in (steps or [])
-            if isinstance(step, dict) and isinstance(step.get("uses"), str)
-        }
-    for program in programs:
-        if program in _RUNNER_BASELINE_PROGRAMS:
-            continue
-        provider = _LEAF_PROGRAM_PROVIDERS.get(program)
-        if provider is None:
-            findings.append(
-                _finding(
-                    "leaf-program-unmapped",
-                    _ADAPTER_SOURCE,
-                    "a spawned program declares no installing Action",
-                )
-            )
-            continue
-        for job_id in ("validation-changed", "validation-full"):
-            if provider not in installed_by_job[job_id]:
-                findings.append(
-                    _finding(
-                        "leaf-program-uninstalled",
-                        _QUALITY_WORKFLOW,
-                        f"job {job_id} does not install a program its leaves spawn",
-                    )
-                )
     return tuple(findings)
 
 
@@ -1401,7 +1189,6 @@ def validate_workflows(
     documents_by_path = {document.path: document for document in documents}
     specs_by_path = {spec.path: spec for spec in contract.workflows}
     findings.extend(_permission_baseline_findings(documents_by_path, specs_by_path))
-    findings.extend(_leaf_program_findings(_adapter_programs(root), documents_by_path))
     for path in sorted(set(specs_by_path) - set(documents_by_path)):
         findings.append(
             _finding("workflow-missing", path, "registered workflow is missing")

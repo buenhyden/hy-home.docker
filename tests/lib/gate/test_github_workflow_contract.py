@@ -7,7 +7,6 @@ import importlib.util
 import json
 import os
 import pathlib
-import re
 import shutil
 import subprocess
 import sys
@@ -20,22 +19,8 @@ from scripts.lib.gate import ci_gate_contract as gate_contract
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 
-
-def _bootstrap_program() -> str:
-    """Read the bootstrap command from the contract, never from a copy here."""
-
-    sys.path.insert(0, str(ROOT))
-    try:
-        from scripts.lib.gate.ci_gate_contract import CI_DEPENDENCY_BOOTSTRAP
-    finally:
-        sys.path.remove(str(ROOT))
-    return CI_DEPENDENCY_BOOTSTRAP
-
-
 REQUIRED_CI_JOBS = frozenset(
     {
-        "validation-changed",
-        "validation-full",
         "main-security",
         "update-main-current",
     }
@@ -116,8 +101,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.module = load_contract_module()
 
-    def test_quality_workflow_revalidates_edited_pull_request_titles(self) -> None:
-        expected = ["opened", "synchronize", "reopened", "edited"]
+    def test_quality_workflow_has_no_hosted_public_validation_route(self) -> None:
         workflow = next(
             workflow
             for workflow in self.module.load_workflows(ROOT)
@@ -125,19 +109,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         document = self.load_contract_document(ROOT)
 
-        trigger = workflow.data["on"]["pull_request"]
-        self.assertEqual(expected, trigger["types"])
-        self.assertEqual(["main"], trigger["branches"])
-        self.assertNotIn("paths", trigger)
-        self.assertNotIn("paths-ignore", trigger)
-        changed = workflow.data["jobs"]["validation-changed"]
-        self.assertEqual("github.event_name == 'pull_request'", changed["if"])
-        self.assertEqual(
-            expected,
-            document["workflows"][".github/workflows/ci-quality.yml"]["triggers"][
-                "pull_request"
-            ]["types"],
-        )
+        self.assertNotIn("pull_request", workflow.data["on"])
+        self.assertNotIn("workflow_dispatch", workflow.data["on"])
+        self.assertNotIn("validation-changed", workflow.data["jobs"])
+        self.assertNotIn("validation-full", workflow.data["jobs"])
+        quality_contract = document["workflows"][".github/workflows/ci-quality.yml"]
+        self.assertNotIn("pull_request", quality_contract["triggers"])
+        self.assertNotIn("workflow_dispatch", quality_contract["triggers"])
+        self.assertNotIn("validation-changed", quality_contract["jobs"])
+        self.assertNotIn("validation-full", quality_contract["jobs"])
 
     def test_quality_workflow_concurrency_separates_event_types(self) -> None:
         expected_group = (
@@ -267,7 +247,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         for case in (
-            "full-command",
             "public-route",
             "full-child",
             "npm-argv",
@@ -303,13 +282,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     command, cwd=root, capture_output=True, text=True, check=False
                 )
                 self.assertEqual(0, baseline.returncode, baseline.stderr)
-                if case == "full-command":
-                    path = root / ".github/workflows/ci-quality.yml"
-                    text = path.read_text(encoding="utf-8")
-                    old = "python3 scripts/validation/run-ci-gate.py --profile full"
-                    self.assertEqual(1, text.count(old))
-                    path.write_text(text.replace(old, "true", 1), encoding="utf-8")
-                elif case == "threshold":
+                if case == "threshold":
                     path = project / "vitest.config.ts"
                     text = path.read_text(encoding="utf-8")
                     self.assertIn("statements: 90", text)
@@ -358,9 +331,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(
             {
-                self.module.CI_DEPENDENCY_BOOTSTRAP,
-                "python3 scripts/validation/run-ci-gate.py --profile changed",
-                "python3 scripts/validation/run-ci-gate.py --profile full",
                 "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
                 "bash scripts/operations/update-main-current-tag.sh",
             },
@@ -481,21 +451,16 @@ class GithubWorkflowContractTests(unittest.TestCase):
             contract.gate_registry.public_roots,
         )
 
-    def test_full_job_preserves_every_declared_compose_selection(self) -> None:
-        workflows = {
-            workflow.path: workflow for workflow in self.module.load_workflows(ROOT)
-        }
-        full_env = workflows[".github/workflows/ci-quality.yml"].data["jobs"][
-            "validation-full"
-        ]["env"]
-
-        self.assertEqual(
-            {
-                "EVENT_NAME": "${{ github.event_name }}",
-            },
-            full_env,
+    def test_required_quality_jobs_do_not_inherit_compose_selection(self) -> None:
+        workflow = next(
+            item
+            for item in self.module.load_workflows(ROOT)
+            if item.path == ".github/workflows/ci-quality.yml"
         )
-        self.assertNotIn("HYHOME_COMPOSE_PROFILES", full_env)
+        self.assertEqual(REQUIRED_CI_JOBS, set(workflow.data["jobs"]))
+        self.assertNotIn("env", workflow.data)
+        for job in workflow.data["jobs"].values():
+            self.assertNotIn("env", job)
 
     def test_required_workflow_rejects_inherited_compose_selection(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
@@ -532,7 +497,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if workflow.path == ".github/workflows/ci-quality.yml"
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
-        self.assertEqual(4, len(ci.jobs))
+        self.assertEqual(2, len(ci.jobs))
         declared = self.load_contract_document(ROOT)["gate_nodes"]
         self.assertEqual(len(declared), len(contract.gate_registry.nodes))
         public = self.module.parse_public_gate_contract(
@@ -621,7 +586,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        self.assertEqual(8, len(contract.actions))
+        self.assertEqual(7, len(contract.actions))
         self.assertEqual(
             {"node24"},
             {action.runtime for action in contract.actions},
@@ -637,8 +602,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         }
         ci_jobs = workflows[".github/workflows/ci-quality.yml"].data["jobs"]
         self.assertIsInstance(ci_jobs, dict)
-        changed_steps = ci_jobs["validation-changed"]["steps"]
-        full_steps = ci_jobs["validation-full"]["steps"]
+        security_steps = ci_jobs["main-security"]["steps"]
         self.assertNotIn(
             "pre-commit/action",
             "\n".join(
@@ -651,29 +615,19 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(
             "actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
-            changed_steps[1]["uses"],
+            security_steps[1]["uses"],
         )
         setup_uv = next(
             f"{action.action}@{action.sha}"
             for action in contract.actions
             if action.action == "astral-sh/setup-uv"
         )
-        self.assertEqual(setup_uv, changed_steps[3]["uses"])
-        self.assertEqual(setup_uv, full_steps[3]["uses"])
+        self.assertEqual(setup_uv, security_steps[2]["uses"])
         self.assertEqual(
-            (
-                self.module.CI_DEPENDENCY_BOOTSTRAP,
-                "python3 scripts/validation/run-ci-gate.py --profile changed",
-            ),
-            (changed_steps[4]["run"], changed_steps[5]["run"]),
+            "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
+            security_steps[3]["run"],
         )
-        self.assertEqual(
-            (
-                self.module.CI_DEPENDENCY_BOOTSTRAP,
-                "python3 scripts/validation/run-ci-gate.py --profile full",
-            ),
-            (full_steps[4]["run"], full_steps[5]["run"]),
-        )
+        self.assertIn("github/codeql-action/upload-sarif@", security_steps[4]["uses"])
         self.assertEqual(
             "pre-commit==4.6.1\n",
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
@@ -686,8 +640,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             workflow = root / ".github/workflows/ci-quality.yml"
             text = workflow.read_text(encoding="utf-8")
             text = text.replace(
-                "  workflow_dispatch:\n",
-                "  workflow_dispatch:\n  pull_request_target:\n",
+                "on:\n  push:\n",
+                "on:\n  pull_request_target:\n  push:\n",
                 1,
             ).replace(
                 "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
@@ -713,333 +667,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
             raise AssertionError("required-quality jobs must be a mapping")
         return jobs
 
-    @staticmethod
-    def _static_gate_profile(program: str) -> str:
-        if program == _bootstrap_program():
-            return "bootstrap"
-        match = re.fullmatch(
-            r"python3 scripts/validation/run-ci-gate\.py --profile (changed|full)",
-            program,
-        )
-        if match is None:
-            raise AssertionError(f"non-static public profile program: {program!r}")
-        return match.group(1)
-
-    def required_quality_run_programs(self) -> tuple[str, ...]:
-        jobs = self._required_quality_jobs(self.module, ROOT)
-        return tuple(
-            step["run"]
-            for job_id in ("validation-changed", "validation-full")
-            for step in jobs[job_id].get("steps", [])
-            if isinstance(step, dict) and isinstance(step.get("run"), str)
-        )
-
-    def test_required_run_steps_use_only_static_gate_invocations(self) -> None:
-        programs = self.required_quality_run_programs()
-        for program in programs:
-            if self._static_gate_profile(program) == "bootstrap":
-                continue
-            self.assertRegex(
-                program,
-                r"\Apython3 scripts/validation/run-ci-gate\.py "
-                r"--profile (changed|full)\Z",
-            )
-        self.assertCountEqual(
-            ("bootstrap", "changed", "bootstrap", "full"),
-            map(self._static_gate_profile, programs),
-        )
-
-    def test_required_jobs_select_their_public_profiles_once(self) -> None:
-        jobs = self._required_quality_jobs(self.module, ROOT)
-        expected = {
-            "validation-changed": "changed",
-            "validation-full": "full",
-        }
-        self.assertEqual(REQUIRED_CI_JOBS, set(jobs))
-        for job_id, profile in expected.items():
-            job = jobs[job_id]
-            programs = tuple(
-                step["run"]
-                for step in job.get("steps", [])
-                if isinstance(step, dict) and isinstance(step.get("run"), str)
-            )
-            with self.subTest(job_id=job_id):
-                self.assertEqual(
-                    ("bootstrap", profile),
-                    tuple(map(self._static_gate_profile, programs)),
-                )
-
-    def test_every_program_a_gate_leaf_spawns_is_installed_by_both_jobs(self) -> None:
-        """A leaf that cannot start is a contract failure, not a runtime one."""
-
-        documents_by_path = {
-            document.path: document for document in self.module.load_workflows(ROOT)
-        }
-        programs = self.module._adapter_programs(ROOT)
-        self.assertIsNotNone(programs)
-        self.assertIn("uvx", programs)
-        self.assertEqual(
-            (),
-            self.module._leaf_program_findings(programs, documents_by_path),
-        )
-
-    def test_removing_an_installing_action_fails_both_quality_jobs(self) -> None:
-        """Deleting the setup step must fail here, never at spawn time."""
-
-        documents_by_path = {
-            document.path: document for document in self.module.load_workflows(ROOT)
-        }
-        document = documents_by_path[".github/workflows/ci-quality.yml"]
-        stripped = copy.deepcopy(document)
-        for job in stripped.data["jobs"].values():
-            job["steps"] = [
-                step
-                for step in job["steps"]
-                if not str(step.get("uses", "")).startswith("astral-sh/setup-uv@")
-            ]
-        findings = self.module._leaf_program_findings(
-            self.module._adapter_programs(ROOT),
-            {**documents_by_path, ".github/workflows/ci-quality.yml": stripped},
-        )
-        self.assertEqual({"leaf-program-uninstalled"}, {f.code for f in findings})
-        self.assertEqual(2, len(findings))
-
-    def test_an_unmapped_or_unreadable_spawned_program_fails_closed(self) -> None:
-        """A new program with no declared installer is a failure, not a default."""
-
-        documents_by_path = {
-            document.path: document for document in self.module.load_workflows(ROOT)
-        }
-        self.assertEqual(
-            ["leaf-program-unmapped"],
-            [
-                finding.code
-                for finding in self.module._leaf_program_findings(
-                    ("cargo",), documents_by_path
-                )
-            ],
-        )
-        self.assertEqual(
-            ["leaf-program-source-unreadable"],
-            [
-                finding.code
-                for finding in self.module._leaf_program_findings(
-                    None, documents_by_path
-                )
-            ],
-        )
-
-    def test_bootstrap_projection_is_exact_and_ordered(self) -> None:
-        contract = self.module.load_workflow_contract(ROOT)
-        document = next(
-            item
-            for item in self.module.load_workflows(ROOT)
-            if item.path == ".github/workflows/ci-quality.yml"
-        )
-        self.assertEqual(
-            (),
-            self.module._workflow_projection_findings(
-                document.path, document.data, document.data["jobs"], contract
-            ),
-        )
-        bootstrap = self.module.CI_DEPENDENCY_BOOTSTRAP
-        for job_id, profile in (
-            ("validation-changed", "changed"),
-            ("validation-full", "full"),
-        ):
-            command = f"python3 scripts/validation/run-ci-gate.py --profile {profile}"
-            for runs in (
-                [command],
-                [bootstrap],
-                [bootstrap, bootstrap, command],
-                [command, bootstrap],
-                [bootstrap, command, command],
-                [bootstrap + " --upgrade", command],
-                ["python3 -m pip install pyyaml", command],
-                [bootstrap + "\ntrue", command],
-                [bootstrap, "true", command],
-            ):
-                with self.subTest(job=job_id, runs=runs):
-                    data = copy.deepcopy(document.data)
-                    steps = data["jobs"][job_id]["steps"]
-                    data["jobs"][job_id]["steps"] = [
-                        step for step in steps if "run" not in step
-                    ] + [{"run": run} for run in runs]
-                    codes = {
-                        finding.code
-                        for finding in self.module._workflow_projection_findings(
-                            document.path, data, data["jobs"], contract
-                        )
-                    }
-                    self.assertTrue(
-                        codes
-                        & {
-                            "workflow-gate-projection-invalid",
-                            "workflow-gate-projection-mismatch",
-                        },
-                        codes,
-                    )
-
-    def test_bootstrap_retains_step_context_and_checkout_guards(self) -> None:
-        contract = self.module.load_workflow_contract(ROOT)
-        documents = self.module.load_workflows(ROOT)
-        document = next(
-            item
-            for item in documents
-            if item.path == ".github/workflows/ci-quality.yml"
-        )
-        for job_id in ("validation-changed", "validation-full"):
-            for key, value in (
-                ("if", False),
-                ("env", {"X": "Y"}),
-                ("shell", "bash"),
-                ("working-directory", "scripts"),
-                ("continue-on-error", True),
-                ("checkout-order", True),
-            ):
-                with self.subTest(job=job_id, key=key):
-                    data = copy.deepcopy(document.data)
-                    steps = data["jobs"][job_id]["steps"]
-                    step = next(
-                        step
-                        for step in steps
-                        if step.get("run") == self.module.CI_DEPENDENCY_BOOTSTRAP
-                    )
-                    if key == "checkout-order":
-                        steps.remove(step)
-                        steps.insert(0, step)
-                    else:
-                        step[key] = value
-                    changed = dataclasses.replace(document, data=data)
-                    with mock.patch.object(
-                        self.module,
-                        "load_workflows",
-                        return_value=tuple(
-                            changed if item.path == document.path else item
-                            for item in documents
-                        ),
-                    ):
-                        codes = {
-                            finding.code
-                            for finding in self.module.validate_workflows(
-                                ROOT, contract
-                            )
-                        }
-                    expected = (
-                        "workflow-gate-checkout-required"
-                        if key == "checkout-order"
-                        else "workflow-continue-on-error-forbidden"
-                        if key == "continue-on-error"
-                        else "workflow-gate-execution-context-invalid"
-                    )
-                    self.assertIn(expected, codes)
-
-    def test_workflow_projection_rejects_dynamic_ids_and_free_form_shell(
-        self,
-    ) -> None:
-        mutations = {
-            "multiline": "python3 scripts/validation/run-ci-gate.py --profile changed\ntrue",
-            "expression": (
-                "python3 scripts/validation/run-ci-gate.py --profile ${{ matrix.profile }}"
-            ),
-            "variable": (
-                "profile=changed\n"
-                'python3 scripts/validation/run-ci-gate.py --profile "$profile"'
-            ),
-            "heredoc": "python3 - <<'PY'\nprint('gate')\nPY",
-            "substitution": "python3 $(printf scripts/validation/run-ci-gate.py)",
-            "eval": "eval python3 scripts/validation/run-ci-gate.py",
-            "source": "source scripts/validation/run-ci-gate.py",
-            "shell-c": "bash -c 'true'",
-            "direct-script": (
-                "python3 scripts/validation/check-document-links.py --mode traceability"
-            ),
-        }
-        for label, program in mutations.items():
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                workflow = root / ".github/workflows/ci-quality.yml"
-                text = workflow.read_text(encoding="utf-8")
-                text = text.replace(
-                    "run: python3 scripts/validation/run-ci-gate.py --profile changed",
-                    "run: " + program.replace("\n", "\n          "),
-                    1,
-                )
-                workflow.write_text(text, encoding="utf-8")
-                codes = {
-                    finding.code
-                    for finding in self.module.validate_workflows(
-                        root,
-                        self.module.load_workflow_contract(root),
-                    )
-                }
-                self.assertIn("workflow-gate-projection-invalid", codes)
-
-    def test_required_run_steps_reject_execution_context_mutations(self) -> None:
-        cases = (
-            (
-                "workflow-defaults-run",
-                "permissions:\n  contents: read\n",
-                "permissions:\n  contents: read\n\ndefaults:\n  run:\n    shell: bash\n",
-            ),
-            (
-                "job-defaults-run",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n",
-                "  validation-changed:\n    defaults:\n"
-                "      run:\n"
-                "        working-directory: scripts\n"
-                "    if: github.event_name == 'pull_request'\n",
-            ),
-            (
-                "job-if",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n",
-                "  validation-changed:\n    if: false\n",
-            ),
-            (
-                "step-if",
-                "      - name: Run changed public validation suites\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-                "      - name: Run changed public validation suites\n"
-                "        if: false\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-            ),
-            (
-                "step-shell",
-                "      - name: Run changed public validation suites\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-                "      - name: Run changed public validation suites\n"
-                "        shell: bash\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-            ),
-            (
-                "step-working-directory",
-                "      - name: Run changed public validation suites\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-                "      - name: Run changed public validation suites\n"
-                "        working-directory: scripts\n"
-                "        run: python3 scripts/validation/run-ci-gate.py",
-            ),
-        )
-        for label, old, new in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                workflow = root / ".github/workflows/ci-quality.yml"
-                text = workflow.read_text(encoding="utf-8")
-                self.assertIn(old, text)
-                workflow.write_text(text.replace(old, new, 1), encoding="utf-8")
-                codes = {
-                    finding.code
-                    for finding in self.module.validate_workflows(
-                        root,
-                        self.module.load_workflow_contract(root),
-                    )
-                }
-                self.assertIn("workflow-gate-execution-context-invalid", codes)
-
     def test_only_registered_run_conditions_are_admitted(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
         self.assertEqual(
             {
-                "validation-changed": "github.event_name == 'pull_request'",
-                "validation-full": "github.event_name == 'workflow_dispatch'",
                 "main-security": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
                 "update-main-current": "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
             },
@@ -1053,7 +684,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         ]
         self.assertEqual([], conditioned_steps)
 
-    def test_public_profile_jobs_have_exact_registered_checkout(self) -> None:
+    def test_required_quality_jobs_have_exact_registered_checkout(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
         jobs = self._required_quality_jobs(self.module, ROOT)
         checkout = next(
@@ -1097,22 +728,64 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if item.path == ".github/workflows/ci-quality.yml"
         )
         contract = self.module.load_workflow_contract(ROOT)
-        for job_id, mutation in (
-            ("update-main-current", lambda job: job.pop("needs")),
-            ("main-security", lambda job: job["steps"].pop()),
-            ("main-security", lambda job: job.update({"continue-on-error": True})),
+        cases = (
             (
+                "channel-dependency",
+                "update-main-current",
+                lambda job: job.pop("needs"),
+                "workflow-gate-dependency-invalid",
+            ),
+            (
+                "security-sarif-upload",
+                "main-security",
+                lambda job: job["steps"].pop(),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
+                "security-setup-uv",
+                "main-security",
+                lambda job: job["steps"].pop(2),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
+                "security-condition",
+                "main-security",
+                lambda job: job.update({"if": "false"}),
+                "workflow-gate-execution-context-invalid",
+            ),
+            (
+                "security-continue-on-error",
+                "main-security",
+                lambda job: job.update({"continue-on-error": True}),
+                "workflow-gate-execution-context-invalid",
+            ),
+            (
+                "channel-continue-on-error",
                 "update-main-current",
                 lambda job: job.update({"continue-on-error": True}),
+                "workflow-gate-execution-context-invalid",
             ),
-        ):
-            with self.subTest(job=job_id):
+            (
+                "security-checkout-order",
+                "main-security",
+                lambda job: job["steps"].insert(1, job["steps"].pop(0)),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
+                "security-command-injection",
+                "main-security",
+                lambda job: job["steps"][3].update({"run": "bash -c true"}),
+                "workflow-gate-projection-mismatch",
+            ),
+        )
+        for label, job_id, mutation, expected in cases:
+            with self.subTest(label=label):
                 data = copy.deepcopy(document.data)
                 mutation(data["jobs"][job_id])
                 findings = self.module._workflow_projection_findings(
                     document.path, data, data["jobs"], contract
                 )
-                self.assertTrue(findings)
+                self.assertIn(expected, {finding.code for finding in findings})
 
     def test_public_profiles_share_one_validator_definition(self) -> None:
         document = self.load_contract_document(ROOT)
@@ -1137,24 +810,17 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.module.load_workflow_contract(root)
         self.assertEqual("ci-gate-document-fields", caught.exception.code)
 
-    def test_full_public_profile_owns_storybook_setup_and_coverage(
+    def test_local_full_public_profile_owns_storybook_setup_and_coverage(
         self,
     ) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        jobs = self._required_quality_jobs(self.module, ROOT)
-        programs = tuple(
-            step["run"]
-            for step in jobs["validation-full"]["steps"]
-            if isinstance(step, dict) and isinstance(step.get("run"), str)
-        )
-        self.assertEqual(
-            (
-                self.module.CI_DEPENDENCY_BOOTSTRAP,
-                "python3 scripts/validation/run-ci-gate.py --profile full",
-            ),
-            programs,
-        )
         document = self.load_contract_document(ROOT)
+        public = self.module.parse_public_gate_contract(document)
+        self.assertEqual(("changed", "full"), public.profile_names)
+        self.assertEqual(
+            public.suite_names,
+            self.module.select_public_suites(public, "full", ()),
+        )
         self.assertIn(
             "ci.storybook-coverage",
             document["public_gate"]["suite_roots"]["repository-integrity"],
@@ -1221,29 +887,29 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "pull-request-target",
                 ".github/workflows/ci-quality.yml",
-                "  workflow_dispatch:\n",
-                "  workflow_dispatch:\n  pull_request_target:\n",
+                "on:\n",
+                "on:\n  pull_request_target:\n",
                 "workflow-trigger-forbidden",
             ),
             (
                 "workflow-call",
                 ".github/workflows/ci-quality.yml",
-                "  workflow_dispatch:\n",
-                "  workflow_dispatch:\n  workflow_call:\n",
+                "on:\n",
+                "on:\n  workflow_call:\n",
                 "workflow-trigger-forbidden",
             ),
             (
                 "workflow-run",
                 ".github/workflows/ci-quality.yml",
-                "  workflow_dispatch:\n",
-                "  workflow_dispatch:\n  workflow_run:\n",
+                "on:\n",
+                "on:\n  workflow_run:\n",
                 "workflow-trigger-forbidden",
             ),
             (
                 "event-widening",
                 ".github/workflows/ci-quality.yml",
-                "  workflow_dispatch:\n",
-                "  workflow_dispatch:\n  issues:\n    types: [opened]\n",
+                "on:\n",
+                "on:\n  issues:\n    types: [opened]\n",
                 "workflow-trigger-mismatch",
             ),
             (
@@ -1277,15 +943,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "job-permission-widening",
                 ".github/workflows/ci-quality.yml",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n    permissions:\n      contents: read\n",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n    permissions:\n      contents: read\n      issues: read\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n      issues: read\n",
                 "workflow-job-permission-mismatch",
             ),
             (
                 "missing-timeout",
                 ".github/workflows/ci-quality.yml",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest\n    timeout-minutes: 30\n",
-                "  validation-changed:\n    if: github.event_name == 'pull_request'\n    permissions:\n      contents: read\n    runs-on: ubuntu-latest\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-latest\n    timeout-minutes: 15\n",
+                "  main-security:\n    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n    permissions:\n      contents: read\n      security-events: write\n    runs-on: ubuntu-latest\n",
                 "workflow-job-timeout-mismatch",
             ),
             (
@@ -1301,7 +967,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "jobs:\n  stale:\n",
                 (
                     "jobs:\n"
-                    "  validation-changed:\n"
+                    "  main-security:\n"
                     "    permissions:\n"
                     "      contents: read\n"
                     "    runs-on: ubuntu-latest\n"
@@ -1335,7 +1001,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             (
                 "unsafe-run-interpolation",
                 ".github/workflows/ci-quality.yml",
-                "        run: python3 scripts/validation/run-ci-gate.py --profile changed\n",
+                "        run: python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif\n",
                 f'        run: echo "${{{{ github.event.pull_request.title }}}}-{sentinel}"\n',
                 "workflow-run-interpolation-unsafe",
             ),
@@ -1368,10 +1034,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self,
     ) -> None:
         required_job_workflow = (
-            "  validation-changed:\n"
-            "    if: github.event_name == 'pull_request'\n"
+            "  main-security:\n"
+            "    if: github.event_name == 'push' && github.ref == 'refs/heads/main'\n"
             "    permissions:\n"
             "      contents: read\n"
+            "      security-events: write\n"
         )
         cases = [
             (
@@ -1402,27 +1069,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "",
                 )
             )
-        cases.append(
-            (
-                "full-extra-write",
-                (
-                    "    permissions:\n"
-                    "      actions: read\n"
-                    "      contents: read\n"
-                    "      security-events: write\n"
-                ),
-                (
-                    "    permissions:\n"
-                    "      actions: read\n"
-                    "      contents: read\n"
-                    "      security-events: write\n"
-                    "      packages: write\n"
-                ),
-                "",
-                "",
-            )
-        )
-
         for (
             label,
             workflow_old,
@@ -1442,10 +1088,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 ci = document["workflows"][".github/workflows/ci-quality.yml"]
                 if label == "top-contents-write":
                     ci["permissions"]["contents"] = "write"
-                elif label == "full-extra-write":
-                    ci["jobs"]["validation-full"]["permissions"]["packages"] = "write"
                 else:
-                    permissions = ci["jobs"]["validation-changed"]["permissions"]
+                    permissions = ci["jobs"]["main-security"]["permissions"]
                     if label == "job-contents-write":
                         permissions["contents"] = "write"
                     else:
@@ -1480,13 +1124,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 )
 
     def test_action_registry_and_local_action_policy_fail_closed(self) -> None:
-        cases = ("ninth-registered-action", "local-action")
+        cases = ("eighth-registered-action", "local-action")
         for label in cases:
             with self.subTest(label=label), self.workflow_fixture() as root:
                 workflow = root / ".github/workflows/ci-quality.yml"
                 text = workflow.read_text(encoding="utf-8")
                 step = "      - name: Additional Action probe\n        uses: "
-                if label == "ninth-registered-action":
+                if label == "eighth-registered-action":
                     action = "example/action"
                     sha = "0000000000000000000000000000000000000000"
                     step += f"{action}@{sha}\n"
@@ -1510,7 +1154,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 else:
                     step += "./.github/actions/private-probe\n"
                     expected = "action-local-reference-forbidden"
-                anchor = "      - name: Run changed public validation suites\n"
+                anchor = "      - name: Audit merged workflow revision\n"
                 self.assertIn(anchor, text)
                 workflow.write_text(
                     text.replace(anchor, step + anchor, 1),
@@ -1826,15 +1470,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.assertNotIn("private-sentinel", raised.exception.message)
 
     def test_mixed_yaml_on_spellings_are_rejected_as_ambiguous(self) -> None:
-        matching_trigger = (
-            "on:\n"
-            "  push:\n"
-            "    branches: [main]\n"
-            "  pull_request:\n"
-            "    branches: [main]\n"
-            "    types: [opened, synchronize, reopened, edited]\n"
-            "  workflow_dispatch:\n"
-        )
+        matching_trigger = "on:\n  push:\n    branches: [main]\n"
         malicious_trigger = (
             "  pull_request_target:\n    types: [private-trigger-sentinel]\n"
         )

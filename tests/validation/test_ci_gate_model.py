@@ -91,26 +91,24 @@ class PublicSuiteModelTests(unittest.TestCase):
                         profile="full",
                     )
 
-    def test_ci_bootstraps_declared_dependencies_before_runner_import(self) -> None:
+    def test_local_public_profiles_remain_registered_without_hosted_jobs(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2]
+        document = contract.load_contract_document(root)
+        public = contract.parse_public_gate_contract(document)
+        self.assertEqual(("changed", "full"), public.profile_names)
+        self.assertTrue(public.suite_names)
         jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
             "jobs"
         ]
-        for name in ("validation-changed", "validation-full"):
-            job = jobs[name]
-            steps = job["steps"]
-            runner_index = next(
-                i
-                for i, step in enumerate(steps)
-                if "scripts/validation/run-ci-gate.py" in step.get("run", "")
+        self.assertEqual({"main-security", "update-main-current"}, set(jobs))
+        self.assertFalse(
+            any(
+                "scripts/validation/run-ci-gate.py" in step.get("run", "")
+                for job in jobs.values()
+                for step in job["steps"]
+                if isinstance(step, dict)
             )
-            bootstrap = [
-                i
-                for i, step in enumerate(steps)
-                if step.get("run") == contract.CI_DEPENDENCY_BOOTSTRAP
-            ]
-            self.assertEqual(len(bootstrap), 1, name)
-            self.assertLess(bootstrap[0], runner_index)
+        )
         # No package installation: explicitly expose the already-installed site
         # dependencies to an otherwise clean interpreter, then import the runner.
         result = subprocess.run(

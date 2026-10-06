@@ -698,7 +698,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/workflows/ci-quality.yml
+  - scripts/README.md
   disposition: retain
   successor: null
   tests: []
@@ -708,7 +708,7 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - .github/workflows/ci-quality.yml
+  - scripts/README.md
   disposition: retain
   successor: null
   tests: []
@@ -923,7 +923,6 @@ files:
   mutation: none
   consumers:
   - .github/repository-surface.md
-  - .github/workflows/ci-quality.yml
   disposition: retain
   successor: null
   tests:

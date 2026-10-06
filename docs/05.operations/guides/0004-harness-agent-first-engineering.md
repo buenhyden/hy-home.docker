@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-06"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -55,11 +55,12 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 현재 Hadolint는 짝지어진 revision과 image tag를 사용하지만 image byte까지
 고정한 것은 아니다. digest 도입에는 별도 검토된 update/rollback 경계가 필요하다.
 
-`validation-changed`는 모든 PR의 필수 검사이고, 제목만 수정한 PR도 변경 범위
-검사와 git-flow 검사를 실행한다. 제목 변경 실행이 진행 중인 코드 변경 검사를 취소할
-수 있어 필수 검사를 축소하지 않는다. `validation-full`은 수동 점검에만 사용한다. main push에서는
+PR용 hosted 품질 job은 없다. 변경 범위와 git-flow 검사는 현재 Task의 정확한
+후보 입력에 대해 로컬 public `changed` profile로 실행하고, 그 결과를 hosted
+실행으로 승격하지 않는다. 전체 점검도 로컬 public `full` profile로 실행한다. main push에서는
 병합된 SHA의 Zizmor/SARIF 검사를 수행하고 성공하면 `main-current` 채널 태그를
-갱신한다. PR `edited`와 event/ref별 concurrency가 제목 검사와 수동 진단을 분리한다.
+갱신한다. event/ref별 concurrency는 같은 main push 그룹의 이전 실행을
+취소한다.
 공유 setup만으로 중복 gate라고 판단하거나 local 성공을 hosted 재실행으로
 기록하지 않는다. 정확한 진단·검증 순서는 Runbook의 CI 절로 전달한다.
 
@@ -69,7 +70,7 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 > input이므로 pull-request trigger에 `edited`를 추가한다. 또 manual 진단이
 > main-push validation을 취소하지 않도록 concurrency key를 workflow, ref, event로
 > 지정하고 비용이 큰 leaf보다 먼저 기존 pre-commit leaf를 실행한다. 이
-> follow-up은 gate set, job identity, `SKIP` ownership, changed/full 분리를 그대로 유지한다.
+> follow-up은 당시 gate set, job identity, `SKIP` ownership, changed/full 분리를 유지했다.
 > hosted verification은 여전히 필수이다.
 >
 > 2026-09-20 PR #169 incident와 그에 따른 Hadolint 정렬은

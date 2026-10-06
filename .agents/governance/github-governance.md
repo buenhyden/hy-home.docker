@@ -4,7 +4,7 @@ version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 ---
 
 # GitHub Governance Policy
@@ -96,7 +96,9 @@ ruleset file records the observed remote state and issues no rule of its own.
   local validation, direct pre-commit prohibition, anti-duplication, and the
   only approved all-files route. Routine commit and push hooks do not invoke
   public profiles.
-- **GitHub Responsibility**: Ultimate SSoT gates, E2E tests, SARIF generation, and workflows requiring secrets.
+- **GitHub Responsibility**: Observe post-merge security/SARIF and execute only
+  separately registered remote work that has an actual workflow consumer.
+  Task-bound local validation and review own candidate acceptance.
 - **Implementation**: The CI pre-commit runner rejects caller `SKIP` and runs
   the pinned all-files command without a skip list. The tracked declaration
   contains only cheap hooks; dedicated public gate leaves are separate. Callers
@@ -165,7 +167,7 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ### 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` defines four jobs with distinct event and permission boundaries.
+`ci-quality.yml` defines two jobs with distinct event and permission boundaries.
 The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
 owns when each check runs. `.github/workflow-contract.yml` owns the six-suite
 composition, changed-path impact rules, gate DAG, admitted environment keys,
@@ -178,16 +180,14 @@ status contexts.
 
 | Job ID | Route | Event |
 | :--- | :--- | :--- |
-| `validation-changed` | `changed`, including git-flow on title edits | opened, synchronized, reopened and edited PRs to main |
-| `validation-full` | `full` | manual dispatch |
 | `main-security` | registered Zizmor adapter and SARIF upload | main push |
 | `update-main-current` | leased channel tag update after successful `main-security` | main push |
 
-Only `validation-changed` is the PR required status. A title edit reruns the
-same changed profile: the edited run can cancel a synchronize run, so a
-narrower success would not prove the candidate revision. The protected-branch settings remain a remote
-fact that must be read back before merge. Main security observes the merged
-SHA; it does not replace pre-merge protection. The tag job alone receives
+The tracked quality workflow has no pull-request or manual trigger and no
+hosted public quality job. Candidate evidence comes from the exact local Task-bound validation and
+review required by the approved change; it is not a global administrative
+bypass. Protected-branch settings remain a remote fact that must be read back
+before a control-plane claim. Main security observes the merged SHA. The tag job alone receives
 `contents: write`; quality jobs remain read-only except the SARIF permission.
 Release tags remain governed by the release procedure. A failed main-security
 job must leave the tag job skipped, and a stale or rejected tag push must leave

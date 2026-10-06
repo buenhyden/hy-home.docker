@@ -4,7 +4,7 @@ version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 created: "2025-11-12"
 ---
 
@@ -259,16 +259,16 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.
 
-GitHub Actions 품질 게이트는 PR에서 `validation-changed`, push와 manual
-dispatch에서 `validation-full`을 사용합니다. 두 job은 각각 public
-`changed` 또는 `full` profile만 선택하며 validator 명령을 복사하지 않습니다.
+GitHub Actions에는 public 품질 profile을 실행하는 hosted job이 없습니다.
+로컬 검증은 public `changed` 또는 `full` profile을 명시적으로 실행합니다.
+각 경로는 profile만 선택하고 validator 명령을 복사하지 않습니다.
 
 추가로 `v*.*.*` 태그 push에는 `Release Changelog Check`가 실행되어
 `CHANGELOG.md`에 해당 release tag 항목이 있는지 확인합니다. 이는 tag-only
 release visibility gate이며, remote required-check enforcement 증거로
 간주하지 않습니다.
 
-`validation-full` job은 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
+`main-security` job은 main push의 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 triage/community 자동화이며 필수 품질 게이트에는 들지 않습니다.
 로컬에서는 `python3 scripts/validation/run-ci-gate.py --profile changed --explain`으로
 선택된 suite와 validator 매핑을 실행 없이 확인합니다.

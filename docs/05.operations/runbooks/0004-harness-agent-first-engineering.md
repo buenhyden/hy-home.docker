@@ -4,7 +4,7 @@ version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-06"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -128,21 +128,20 @@ created: "2026-06-04"
    고려한다. 이 path는 짝지어진 revision, tag, digest, update owner를 어떻게
    최신 상태로 유지할지 명시한다.
 4. focused regression과 workflow-contract check를 실행한 다음, 적용 가능한
-   가장 작은 local gate를 실행한다. hosted 결과는 GitHub Actions가 변경된
-   revision을 실행할 때까지 pending 상태로 남는다. local reproduction 성공은
-   rerun이 아니다.
-5. `validation-changed`와 `validation-full`을 분리해서 유지한다. 전자는
-   필수 pull-request gate이고, 후자는 main push 또는 manual dispatch에서
-   실행되며 추가 권한으로 SARIF를 업로드한다. 공유된 setup은 중복의 증거가
-   아니다. workflow/event/ref concurrency key는 push와 manual 실행을 분리한
-   채 각 event/ref 그룹 안의 오래된 실행을 취소한다. 이 방식은
+   가장 작은 local gate를 실행한다. 현재 tracked workflow는 hosted public
+   결과를 만들지 않으므로 local evidence는 local로 기록한다. 별도 승인된 실제
+   consumer가 실행된 경우에만 hosted 결과를 기록한다.
+5. 로컬 public `changed`와 `full`을 분리해서 유지한다. 전자는 현재 Task의
+   후보 입력에 대한 명시적 범위 검증이고, 후자는 로컬 전체 검증이다. main
+   push는 별도 `main-security` job이 SARIF를 업로드한다. 공유된 setup은 중복의 증거가
+   아니다. workflow/event/ref concurrency key는 같은 main push 그룹 안의
+   오래된 실행을 취소한다. 이 방식은
    [GitHub의 concurrency 안내](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency)를
    따른다.
 6. trigger, permission, gate node, consumer가 사용되지 않음을 inventory가
-   증명할 때까지는 단순화를 제안으로만 취급한다. commit 없이 title만 편집하면
-   이전의 green 실행이 그대로 남을 수 있으므로, title-dependent validation에는
-   `edited` event 평가가 필요하다. 이 가이드는 event, required check,
-   permission, remote ruleset을 변경하지 않는다.
+   증명할 때까지는 단순화를 제안으로만 취급한다. 현재 workflow에는 PR trigger와
+   title-dependent hosted validation이 없다. 원격 required-check read-back이 이
+   tracked 상태와 다르면 별도 control-plane 승인 전까지 drift로 기록한다.
 
 ### Model-free Evaluation Maintenance
 

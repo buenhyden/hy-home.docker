@@ -22,14 +22,6 @@ if __package__ in {None, ""}:
 
 from scripts.lib.document_governance.frontmatter import safe_load_unique
 
-# One bootstrap step per job: the workflow contract admits exactly one
-# dependency install before the gate program, and `pre-commit` is now a
-# gate leaf rather than a job of its own, so both requirement files install
-# together here.
-CI_DEPENDENCY_BOOTSTRAP = (
-    "python3 -m pip install -r scripts/requirements.txt"
-    " -r scripts/requirements-pre-commit.txt"
-)
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
 _MAX_JSON_DEPTH = 256

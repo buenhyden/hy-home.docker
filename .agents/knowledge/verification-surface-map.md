@@ -4,7 +4,7 @@ version: "0.8.1"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 created: "2026-09-06"
 observed_at: "2026-10-02"
 review_cycle: "on-gate-change"
@@ -110,15 +110,12 @@ all suite roots before the execution-context exclusions above apply.
 
 `.github/workflow-contract.yml` `public_gate.changed_path_rules` selects the
 suites for a changed path. The tracked pre-commit declaration no longer
-contains public `changed` or `full` hooks; the required PR
-`validation-changed` job owns that hosted check. On a GitHub PR `edited` event,
-the required job still selects the normal changed-path route and its
-registered git-flow leaf. A title-only shortcut under the required job would
-make an edited run capable of replacing an unfinished synchronize check.
-No workflow-level path filter is applied, so the required context remains
-eligible for documentation-only and title-only PR events. The installed
-`core.hooksPath` can differ from the tracked declaration and must be observed
-separately.
+contains public `changed` or `full` hooks. Operators and Tasks invoke the
+public `changed` or `full` route directly for the exact candidate input; there
+is no hosted producer for either public profile. PR-title and git-flow behavior remains a
+registered leaf of the local selector rather than a workflow trigger. The
+installed `core.hooksPath` can differ from the tracked declaration and must be
+observed separately.
 
 ### Generated Outputs and Staging Order
 
