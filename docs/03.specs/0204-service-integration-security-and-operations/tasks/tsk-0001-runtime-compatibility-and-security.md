@@ -283,7 +283,7 @@ and [OpenBao status exit codes](https://openbao.org/docs/commands/status/).
 Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
-## Evidence
+### Evidence Notes
 
 ### Storybook blocker and alternative assessment — 2026-10-04
 
@@ -671,6 +671,8 @@ rewriting or cancellation of already-completed work.
 | Draft package: `check-document-corpus-lifecycle.py --base-ref main`; registry JSON parse; `git diff --cached --check` | PASS (each exit 0) | Draft lifecycle and syntax only |
 | Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
+
+## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |

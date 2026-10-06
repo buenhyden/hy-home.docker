@@ -905,7 +905,12 @@ def _registered_table_rows(
     headers: tuple[str, ...],
     *,
     allowed_headers: frozenset[tuple[str, ...]] = frozenset(),
+    strict_contiguity: bool = False,
 ) -> tuple[tuple[str, ...], ...]:
+    def is_visible_pipe_row(line: str) -> bool:
+        content = line.lstrip(" ")
+        return len(line) - len(content) <= 3 and content.startswith("|")
+
     matches: list[int] = []
     for index, line in enumerate(lines):
         if not line.startswith("|"):
@@ -916,6 +921,8 @@ def _registered_table_rows(
         elif cells and cells[0] == headers[0] and cells not in allowed_headers:
             raise SpecPackageError("registered evidence table has malformed headers")
     if not matches:
+        if strict_contiguity and any(is_visible_pipe_row(line) for line in lines):
+            raise SpecPackageError("registered evidence table must be contiguous")
         return ()
     if len(matches) != 1:
         raise SpecPackageError("registered evidence table must occur only once")
@@ -929,15 +936,22 @@ def _registered_table_rows(
             f"registered evidence requires a {len(headers)}-column table"
         )
     rows: list[tuple[str, ...]] = []
-    for line in lines[index + 2 :]:
+    table_end = index + 2
+    for line in lines[table_end:]:
         if not line.startswith("|"):
             break
         values = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
         if len(values) != len(headers) or any(not value for value in values):
             raise SpecPackageError("registered evidence table has malformed columns")
         rows.append(values)
+        table_end += 1
     if not rows:
         raise SpecPackageError("registered evidence table requires at least one row")
+    if strict_contiguity and (
+        any(is_visible_pipe_row(line) for line in lines[:index])
+        or any(is_visible_pipe_row(line) for line in lines[table_end:])
+    ):
+        raise SpecPackageError("registered evidence table must be contiguous")
     return tuple(rows)
 
 
@@ -1072,6 +1086,7 @@ def _v5_plan_rows(
             plan.body, _registered_common_section(registry, "plan_section")
         ),
         headers,
+        strict_contiguity=True,
     )
 
 
@@ -1095,6 +1110,7 @@ def _v5_evidence_rows(
             task.body, _registered_common_section(registry, "task_section")
         ),
         headers,
+        strict_contiguity=True,
     )
 
 
