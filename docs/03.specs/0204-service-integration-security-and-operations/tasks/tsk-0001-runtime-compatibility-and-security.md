@@ -283,7 +283,7 @@ and [OpenBao status exit codes](https://openbao.org/docs/commands/status/).
 Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
-## Evidence Notes
+### Evidence Notes
 
 ### Storybook blocker and alternative assessment — 2026-10-04
 

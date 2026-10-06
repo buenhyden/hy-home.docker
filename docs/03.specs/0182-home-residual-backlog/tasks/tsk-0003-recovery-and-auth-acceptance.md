@@ -205,7 +205,7 @@ entry-closed dispositions are preserved above`.
   snapshot of both sets (18 in R2) and reported 1303841307 stored bytes;
   `check` 12:06:27-12:06:39 read 10% of the packs with no errors.
 
-## Evidence Notes
+### Evidence Notes
 
 W11, supervised reboot rehearsal (criterion 11), 2026-09-30, RUN-0098:
 
