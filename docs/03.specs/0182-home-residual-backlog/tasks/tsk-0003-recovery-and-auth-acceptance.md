@@ -205,7 +205,7 @@ entry-closed dispositions are preserved above`.
   snapshot of both sets (18 in R2) and reported 1303841307 stored bytes;
   `check` 12:06:27-12:06:39 read 10% of the packs with no errors.
 
-## Evidence
+## Evidence Notes
 
 W11, supervised reboot rehearsal (criterion 11), 2026-09-30, RUN-0098:
 
@@ -411,6 +411,8 @@ require the separately scoped operational approval. The bounded MLflow,
 synthetic CDC and owner-accepted empty JupyterLab evidence remain historical
 receipts. W10 R2 scratch restore/offline key custody also remain open; this
 Task is blocked while the Spec package remains active.
+
+## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |

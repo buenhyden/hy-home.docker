@@ -1,10 +1,10 @@
 ---
 title: "명세 패키지"
-version: "1.2.21"
+version: "1.2.22"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-06"
 layer: "specs"
 ---
 
@@ -45,6 +45,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0207 | [공통 권한·안전한 저술](./0207-common-authorization-and-safe-authoring/) | 권한 원본·검토·안전한 문서 저술 경계의 수렴 |
 | SPEC-0208 | [Stage 99 frontmatter·Task 수명주기](./0208-stage99-frontmatter-and-task-lifecycle/) | Stage 99 완료 증거와 Task 수명주기 기록의 기계 계약 |
 | SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
+| SPEC-0210 | [Task 증거 표 무결성](./0210-task-evidence-table-integrity/) | generation 5 Plan과 Task 증거 표의 분절 누락 방지 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
@@ -89,7 +90,7 @@ Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelle
 - Spec·Plan·Task의 정확한 상태와 전이는 Registry가 소유합니다.
 - 완료 전에 acceptance와 실제 검증 결과를 연결하고 오래 유지할 의미를 현재
   Stage 01·02·05 owner로 승격합니다. 승격 근거는 현재 Task의
-  `Verification Evidence` 한 곳에 기록합니다.
+  `Evidence` 한 곳에 기록합니다.
 - 완료된 package는 일관된 종결 상태로 보관 승인을 기다릴 수 있습니다.
   별도 승인을 받은 뒤 Spec·Plan·모든 Task를 Stage 98로 함께 옮깁니다.
   Git 복구만 믿고 실행 본문을 지우거나 동결된 내용을 다시 쓰지 않습니다.

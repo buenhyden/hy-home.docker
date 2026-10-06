@@ -407,6 +407,312 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             {finding.code for finding in findings},
         )
 
+    def test_repository_contracts_reject_fragmented_in_progress_task_evidence(
+        self,
+    ) -> None:
+        from scripts.lib.document_governance.registry import load_registry
+        from scripts.lib.document_governance.spec_packages import load_spec_packages
+
+        def materialize_in_progress_package(
+            root: pathlib.Path,
+            package_relative: pathlib.Path,
+            index_anchor: str,
+            index_row: str,
+        ) -> None:
+            package = root / package_relative
+            tasks = package / "tasks"
+            tasks.mkdir(parents=True, exist_ok=True)
+            package.joinpath("spec.md").write_text(
+                """---
+title: "Fixture Evidence Integrity Specification"
+version: "0.1.0"
+type: "sdlc/spec"
+status: "in-progress"
+owner: "@buenhyden"
+updated: "2026-10-06"
+layer: "specs"
+artifact_id: "SPEC-0210"
+parent_ids:
+- "REQ-0024"
+- "REQ-0026"
+- "AD-0027"
+- "AD-0030"
+- "ADR-0037"
+created: "2026-10-06"
+---
+
+# Fixture Evidence Integrity Specification
+
+## Overview
+
+Exercise the generation 5 Evidence contract.
+
+## Scope
+
+The fixture is local to this regression.
+
+## Contracts
+
+The Task Evidence table remains contiguous.
+
+## Acceptance Criteria
+
+1. Reject a detached Evidence row.
+
+## Related Documents
+
+- [Plan](plan.md)
+- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+""",
+                encoding="utf-8",
+            )
+            package.joinpath("plan.md").write_text(
+                """---
+title: "Fixture Evidence Integrity Plan"
+version: "0.1.0"
+type: "sdlc/plan"
+status: "in-progress"
+owner: "@buenhyden"
+updated: "2026-10-06"
+layer: "specs"
+artifact_id: "SPEC-0210-PLAN-0001"
+parent_ids:
+- "SPEC-0210"
+created: "2026-10-06"
+---
+
+# Fixture Evidence Integrity Plan
+
+## Overview
+
+Exercise one controlled in-progress Task.
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 1 | Validate detached Evidence. | None | TSK-0001 | Metadata contracts. |
+
+## Verification Plan
+
+Run the canonical metadata checker before and after the mutation.
+
+## Risks and Rollback
+
+The temporary repository is discarded after the test.
+
+## Related Documents
+
+- [Specification](spec.md)
+- [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+""",
+                encoding="utf-8",
+            )
+            tasks.joinpath("tsk-0001-task-evidence-table-integrity.md").write_text(
+                """---
+title: "Fixture Evidence Integrity Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "in-progress"
+owner: "@buenhyden"
+updated: "2026-10-06"
+layer: "specs"
+artifact_id: "SPEC-0210-TSK-0001"
+parent_ids:
+- "SPEC-0210-PLAN-0001"
+created: "2026-10-06"
+---
+
+# Fixture Evidence Integrity Task
+
+## Objective
+
+Exercise the public metadata path with an explicit in-progress Task.
+
+## Inputs and Authorization
+
+### Fixture Authorization
+
+This synthetic fixture grants no operation or approval.
+
+## Work Log
+
+### Fixture Start
+
+The controlled fixture is in progress.
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0210 | draft | approved | #fixture-authorization |
+| SPEC-0210 | approved | in-progress | #fixture-start |
+| SPEC-0210-PLAN-0001 | draft | approved | #fixture-authorization |
+| SPEC-0210-PLAN-0001 | approved | in-progress | #fixture-start |
+| SPEC-0210-TSK-0001 | draft | ready | #fixture-authorization |
+| SPEC-0210-TSK-0001 | ready | in-progress | #fixture-start |
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | pending |
+
+## Review and Completion
+
+The fixture is intentionally in progress.
+
+## Related Documents
+
+- [Specification](../spec.md)
+- [Plan](../plan.md)
+""",
+                encoding="utf-8",
+            )
+            index = root / "docs/03.specs/README.md"
+            index_text = index.read_text(encoding="utf-8")
+            row_count = index_text.count(index_row)
+            if row_count == 0:
+                self.assertEqual(1, index_text.count(index_anchor))
+                index.write_text(
+                    index_text.replace(
+                        index_anchor,
+                        f"{index_anchor}\n{index_row}",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+            else:
+                self.assertEqual(1, row_count)
+            self.assertEqual(1, index.read_text(encoding="utf-8").count(index_row))
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory) / "repository"
+            cloned = subprocess.run(
+                ("git", "clone", "--quiet", "--shared", str(ROOT), str(root)),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, cloned.returncode, cloned.stdout + cloned.stderr)
+            for relative_path in (
+                "docs/03.specs/0182-home-residual-backlog/tasks/"
+                "tsk-0003-recovery-and-auth-acceptance.md",
+                "docs/03.specs/0204-service-integration-security-and-operations/"
+                "tasks/tsk-0001-runtime-compatibility-and-security.md",
+            ):
+                shutil.copy2(ROOT / relative_path, root / relative_path)
+
+            package_relative = pathlib.Path(
+                "docs/03.specs/0210-task-evidence-table-integrity"
+            )
+            index_anchor = (
+                "| SPEC-0209 | [0209-common-document-contract-adoption/]"
+                "(./0209-common-document-contract-adoption/) | 공통 문서 계약의 "
+                "Registry, 현재 문서, 소비자 정합화 |"
+            )
+            index_row = (
+                "| SPEC-0210 | [0210-task-evidence-table-integrity/]"
+                "(./0210-task-evidence-table-integrity/) | generation 5 Plan과 "
+                "Task 증거 표의 분절 누락 방지 |"
+            )
+            materialize_in_progress_package(
+                root,
+                package_relative,
+                index_anchor,
+                index_row,
+            )
+            materialize_in_progress_package(
+                root,
+                package_relative,
+                index_anchor,
+                index_row,
+            )
+            shutil.copy2(
+                ROOT / "docs/99.templates/registry.json",
+                root / "docs/99.templates/registry.json",
+            )
+            shutil.copy2(
+                ROOT / "scripts/lib/document_governance/spec_packages.py",
+                root / "scripts/lib/document_governance/spec_packages.py",
+            )
+            staged = subprocess.run(
+                ("git", "-C", str(root), "add", "--all"),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, staged.returncode, staged.stdout + staged.stderr)
+            committed = subprocess.run(
+                (
+                    "git",
+                    "-C",
+                    str(root),
+                    "-c",
+                    "user.name=P03 Fixture",
+                    "-c",
+                    "user.email=p03@example.invalid",
+                    "commit",
+                    "--quiet",
+                    "-m",
+                    "p03 metadata fixture",
+                ),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(
+                0, committed.returncode, committed.stdout + committed.stderr
+            )
+            registry_path = root / "docs/99.templates/registry.json"
+            packages = load_spec_packages(
+                root / "docs/03.specs",
+                registry=load_registry(registry_path),
+            )
+            fixture_package = next(
+                package
+                for package in packages
+                if package.spec.artifact_id == "SPEC-0210"
+            )
+            self.assertEqual("in-progress", fixture_package.spec.status)
+            self.assertEqual("in-progress", fixture_package.plan.status)
+            self.assertEqual(1, len(fixture_package.tasks))
+            self.assertEqual("in-progress", fixture_package.tasks[0].status)
+            control = self.run_contracts(root, registry_path)
+            self.assertEqual(
+                0,
+                control.returncode,
+                control.stdout + control.stderr,
+            )
+
+            task = (
+                root
+                / package_relative
+                / ("tasks/tsk-0001-task-evidence-table-integrity.md")
+            )
+            marker = "\n## Review and Completion\n"
+            source = task.read_text(encoding="utf-8")
+            self.assertEqual(1, source.count(marker))
+            task.write_text(
+                source.replace(
+                    marker,
+                    "\nDetached evidence fragment.\n\n"
+                    "| Hidden failure | 1 | W1 | Source check | fixture | FAIL | "
+                    "detached | rejected |\n" + marker,
+                    1,
+                ),
+                encoding="utf-8",
+            )
+
+            result = self.run_contracts(
+                root,
+                registry_path,
+            )
+            rendered = result.stdout + result.stderr
+            self.assertEqual(1, result.returncode, rendered)
+            self.assertIn("spec-package-invalid", rendered)
+            self.assertIn("registered evidence table must be contiguous", rendered)
+
     def test_repository_contracts_enforce_machine_source_safety(self) -> None:
         relative_path = (
             "docs/99.templates/templates/specs/contracts/openapi.template.yaml"

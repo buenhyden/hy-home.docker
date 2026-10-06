@@ -976,6 +976,175 @@ No Plan work is assigned to this cancelled Task.
         ):
             module._validate_completion_evidence(spec, plan, (incomplete,), registry)
 
+    def test_v5_registered_tables_reject_fragmented_pipe_rows(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        plan_path = pathlib.PurePosixPath("docs/03.specs/0001-example/plan.md")
+        task_path = pathlib.PurePosixPath(
+            "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+        )
+        plan_header = (
+            "| Work Unit | Criteria | Work | Dependencies | Task | Verification |\n"
+            "| --- | --- | --- | --- | --- | --- |\n"
+        )
+        plan_row = "| W1 | 1 | First | None | TSK-0001 | Unit |"
+        evidence_header = (
+            "| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |\n"
+            "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+        )
+        evidence_row = (
+            "| First check | 1 | W1 | Unit | fixture | PASS | test | accepted |"
+        )
+        cases = (
+            (
+                "plan-orphan-before-header",
+                "plan",
+                f"## Work Breakdown\n\n{plan_row}\n\n{plan_header}{plan_row}\n",
+            ),
+            (
+                "plan-blank-split",
+                "plan",
+                f"## Work Breakdown\n\n{plan_header}{plan_row}\n\n"
+                "| W2 | 1 | Hidden | W1 | TSK-0001 | Unit |\n",
+            ),
+            (
+                "plan-prose-split",
+                "plan",
+                f"## Work Breakdown\n\n{plan_header}{plan_row}\n\n"
+                "A narrative break.\n"
+                "| W2 | 1 | Hidden | W1 | TSK-0001 | Unit |\n",
+            ),
+            (
+                "plan-headerless-fragment",
+                "plan",
+                f"## Work Breakdown\n\n{plan_row}\n",
+            ),
+            (
+                "plan-malformed-width-orphan",
+                "plan",
+                f"## Work Breakdown\n\n| orphan | row |\n\n{plan_header}{plan_row}\n",
+            ),
+            (
+                "evidence-orphan-before-header",
+                "task",
+                f"## Evidence\n\n{evidence_row}\n\n{evidence_header}{evidence_row}\n",
+            ),
+            (
+                "evidence-blank-split",
+                "task",
+                f"## Evidence\n\n{evidence_header}{evidence_row}\n\n"
+                "| Hidden failure | 1 | W1 | Unit | fixture | FAIL | test | rejected |\n",
+            ),
+            (
+                "evidence-prose-split",
+                "task",
+                f"## Evidence\n\n{evidence_header}{evidence_row}\n\n"
+                "A narrative break.\n"
+                "| Hidden failure | 1 | W1 | Unit | fixture | FAIL | test | rejected |\n",
+            ),
+            (
+                "evidence-headerless-fragment",
+                "task",
+                f"## Evidence\n\n{evidence_row}\n",
+            ),
+            (
+                "evidence-malformed-width-fragment",
+                "task",
+                f"## Evidence\n\n{evidence_header}{evidence_row}\n\n"
+                "| hidden | malformed |\n",
+            ),
+            (
+                "evidence-indented-fragment",
+                "task",
+                f"## Evidence\n\n{evidence_header}{evidence_row}\n\n"
+                "Narrative break.\n"
+                "  | hidden | malformed |\n",
+            ),
+        )
+        for label, document_type, body in cases:
+            with self.subTest(case=label):
+                if document_type == "plan":
+                    document = module.SpecDocument(
+                        plan_path,
+                        "plan",
+                        "SPEC-0001-PLAN-0001",
+                        "in-progress",
+                        ("SPEC-0001",),
+                        body,
+                    )
+                    reader = module._v5_plan_rows
+                else:
+                    document = module.SpecDocument(
+                        task_path,
+                        "task",
+                        "SPEC-0001-TSK-0001",
+                        "in-progress",
+                        ("SPEC-0001-PLAN-0001",),
+                        body,
+                    )
+                    reader = module._v5_evidence_rows
+                with self.assertRaises(module.SpecPackageError):
+                    reader(document, registry)
+
+    def test_v5_strict_tables_preserve_examples_prose_and_legacy_default(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        row = (
+            "First check",
+            "1",
+            "W1",
+            "Unit",
+            "fixture",
+            "PASS",
+            "test",
+            "accepted",
+        )
+        body = """## Evidence
+
+Narrative before the registered table.
+
+```markdown
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Fenced example | 9 | W9 | Example | fixture | FAIL | nowhere | rejected |
+```
+
+<!--
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Comment example | 9 | W9 | Example | fixture | FAIL | nowhere | rejected |
+-->
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| First check | 1 | W1 | Unit | fixture | PASS | test | accepted |
+
+Narrative after the registered table.
+"""
+        task = module.SpecDocument(
+            pathlib.PurePosixPath(
+                "docs/03.specs/0001-example/tasks/tsk-0001-implement.md"
+            ),
+            "task",
+            "SPEC-0001-TSK-0001",
+            "in-progress",
+            ("SPEC-0001-PLAN-0001",),
+            body,
+        )
+        self.assertEqual((row,), module._v5_evidence_rows(task, registry))
+
+        legacy_lines = (
+            "| Legacy | Result |",
+            "| --- | --- |",
+            "| visible | PASS |",
+            "",
+            "| ignored by the legacy default | FAIL |",
+        )
+        self.assertEqual(
+            (("visible", "PASS"),),
+            module._registered_table_rows(legacy_lines, ("Legacy", "Result")),
+        )
+
     def test_v5_cancellation_requires_authorization_and_criterion_disposition(
         self,
     ) -> None:
