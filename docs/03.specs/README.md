@@ -46,6 +46,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0208 | [Stage 99 frontmatter·Task 수명주기](./0208-stage99-frontmatter-and-task-lifecycle/) | Stage 99 완료 증거와 Task 수명주기 기록의 기계 계약 |
 | SPEC-0209 | [0209-common-document-contract-adoption/](./0209-common-document-contract-adoption/) | 공통 문서 계약의 Registry, 현재 문서, 소비자 정합화 |
 | SPEC-0210 | [Task 증거 표 무결성](./0210-task-evidence-table-integrity/) | generation 5 Plan과 Task 증거 표의 분절 누락 방지 |
+| SPEC-0211 | [QA 범위·전달 정합화](./0211-qa-scope-and-delivery-rationalization/) | 일회성 QA 폐기, 원격 변경 영향 검사, commit·SemVer 릴리스 단일 소유권 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
