@@ -195,11 +195,13 @@ for the operator to remove.
 | Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | accepted |
 | HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | accepted |
 | Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | accepted |
+| Remote candidate | 2, 3, 4 | W2, W3 | PR #370 `candidate-quality` run 37628494658 | Head `26d2e9717` | PASS | PR #370 | accepted |
 | HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | pending |
 
 ## Review and Completion
 
-Source and isolated work is complete; the remote PR candidate is pending.
+Source and isolated work is complete, and the remote PR candidate passed on
+`26d2e9717`.
 HOME restore, WAL/PITR, data purge and isolated-resource cleanup stay
 separate and are not claimed.
 
