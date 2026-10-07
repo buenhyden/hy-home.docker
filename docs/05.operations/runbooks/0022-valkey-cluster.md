@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -37,6 +37,8 @@ static validation은 이 문서화 task에서 안전하게 수행할 수 있다.
 ### Execution and stop boundary
 
 대상: `valkey-cluster-exporter`, `valkey-cluster-init`, `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+LAB 기동·정지는 `scripts/operations/lab.py`만 사용한다(`up valkey-cluster --purpose ... --lease ...`, `down valkey-cluster`, 만료 lease는 `reap`). 이 명령은 다른 LAB·HOME과의 충돌, 선언 한도 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/valkey-cluster.json`에 정리 대상을 남기며, 정지는 이 project만 `-v` 없이 수행한다(SPEC-0215). 2026-10-08 합성 data·secret root로 `up`·`check`·`reap`을 실제 실행해 6 node `cluster_state:ok`, 동시 LAB 거부, container·network 0개 정리와 data 보존을 확인했다.
 
 기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 

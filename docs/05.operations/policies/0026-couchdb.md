@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -28,7 +28,7 @@ created: "2026-05-17"
 - `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`
 - `couchdb1-data`, `couchdb2-data`, `couchdb3-data`
 - `lab_couchdb_password`, `lab_couchdb_cookie`, `LAB_COUCHDB_USERNAME`
-- 기존 Traefik label은 남지만 독립 LAB network에 HOME gateway 연결은 없음
+- HOME Traefik label과 gateway 연결 없음; `couchdb-1`만 loopback host port 게시
 - Linked guide and runbook under `docs/05.operations`
 
 ### Traceability
@@ -49,7 +49,7 @@ created: "2026-05-17"
   승인된 credential custody에서 입력하며 password를 URL·argv·환경 변수·history·로그에
   넣거나 화면에 출력해서는 안 된다. Custody/TTY 또는 native prompt를 확보하지 못하면
   중단한다. 보호된 secret 파일과 기존 접근 통제 요구사항은 유지한다.
-- **Required**: LAB 외부 접근을 현재 route로 주장해서는 안 된다. Compose에는 direct host port가 없고 HOME Traefik network에도 연결되지 않는다.
+- **Required**: LAB 접근은 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}` loopback port뿐이다. HOME Traefik label이나 HOME domain route를 추가하지 않는다.
 - **Required**: 모든 서비스는 정확한 `couchdb` profile을 사용하며, 동일 host의
   세 node를 host-level HA로 표현해서는 안 된다.
 - **Required**: 복구 가능한 세트는 database/shard 파일 또는 replication target,

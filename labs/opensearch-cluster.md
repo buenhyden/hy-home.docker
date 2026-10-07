@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -31,7 +31,7 @@ OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint
 
 | 경계 | LAB 계약 |
 | --- | --- |
-| 상태 | `lab-opensearch-node1-data`, `node2-data`, `node3-data`, `dashboards-data`의 프로젝트별 새 named volume |
+| 상태 | `node1`, `node2`, `node3`, `dashboards` 상태를 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
 | 네트워크 | `lab_opensearch_core_net`만 사용; 정상 `edge_net`·`obs_net`에 접속하지 않음 |
 | 노출 | 호스트 publish 포트와 Traefik 라우터 없음; API 9200, 모니터링 9600, Dashboards 5601은 내부 expose만 |
 | 비밀 | `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password`, `lab_opensearch_dashboard_password`, `lab_opensearch_exporter_password`, `lab_opensearch_security_cookie`; 정상 비밀을 재사용하지 않음 |
@@ -63,11 +63,13 @@ runtime 승인은 막혀 있습니다. 이 LAB의 데이터 보존과 삭제는 
 기동에는 승인된 LAB 전용 경로를 별도로 지정합니다.
 
 ```bash
-LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
+LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet
-LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
+LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --services
 ```
+
+기동과 종료는 `python3 scripts/operations/lab.py up opensearch-cluster --purpose "<목적>" --lease <기간>`과 `lab.py down opensearch-cluster`로 하며, 충돌·예산 검사와 정리 대상 ledger는 `POL-0078`을 따른다.
 
 기동 전 Docker context, 별도 프로젝트 이름, 모든 내부/호스트 포트, 네트워크,
 볼륨, 인증서·secret 참조, 호스트 CPU/메모리/디스크와 정확한 정리 범위를

@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.0.7"
+version: "1.0.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2025-11-12"
 ---
 
@@ -38,7 +38,7 @@ created: "2025-11-12"
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
 | Compose | [mongodb.yml](./mongodb.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}` 또는 project-scoped named volume | HOME 상태와 미공유 |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
 | Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
 
@@ -56,7 +56,7 @@ labs/
 | --- | --- |
 | Entry point | [mongodb.yml](./mongodb.yml) |
 | Project | `hy-home-lab-mongodb` |
-| State | Compose project-scoped `mongo-key`, `mongodb{1,2,3}-data` named volumes |
+| State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
 | Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net`, `lab_mongodb_obs_net` |
 | Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |
 | Host exposure | host port 없음; normal ingress와 network를 공유하지 않음 |
@@ -68,7 +68,7 @@ labs/
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
-4. 컨테이너 실행·정지·삭제와 실제 복구는 별도 운영 승인을 따른다.
+4. 기동은 `python3 scripts/operations/lab.py up mongodb --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/mongodb.json`에 정리 대상을 기록한다. 종료는 `lab.py down mongodb`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
 ## Available Scripts
 

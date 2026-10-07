@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -97,7 +97,7 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
    | --- | --- | --- | --- |
    | Write | `${LAB_HOST_BIND_IP:-127.0.0.1}` | `${LAB_PG_WRITE_HOST_PORT:-35432}` → 내부 `15432` | Patroni primary backend |
    | Read | `${LAB_HOST_BIND_IP:-127.0.0.1}` | `${LAB_PG_READ_HOST_PORT:-35433}` → 내부 `15433` | Patroni replica backends |
-   | Stats | `pg-router`의 LAB network | 내부 `7000`; host 미게시 | Traefik label은 남았으나 HOME gateway 경로 없음 |
+   | Stats | `pg-router` | `127.0.0.1:${LAB_PG_HAPROXY_STATS_HOST_PORT:-37000}` → `7000` | HOME Traefik label 없음; HAProxy basic auth |
 
 2. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
 

@@ -90,5 +90,44 @@ class RootClosureTests(unittest.TestCase):
                 self.assertIn("no such service", result.stderr.lower())
 
 
+class LabBoundaryTests(RootClosureTests):
+    def test_every_lab_volume_binds_under_a_required_lab_input(self) -> None:
+        roots = tuple(value + "/" for value in LAB_INPUTS.values())
+        for name, lab in self.labs.items():
+            for volume, spec in (lab.get("volumes") or {}).items():
+                with self.subTest(lab=name, volume=volume):
+                    device = (spec.get("driver_opts") or {}).get("device", "")
+                    self.assertTrue((device + "/").startswith(roots), device)
+
+    def test_labs_are_tiered_lab_and_never_routed_by_home_traefik(self) -> None:
+        for name, lab in self.labs.items():
+            for service, spec in lab["services"].items():
+                with self.subTest(lab=name, service=service):
+                    # HOME Traefik has exposedByDefault false, so an absent
+                    # label is not routed; an explicit "true" would be.
+                    labels = spec.get("labels") or {}
+                    self.assertIn(labels.get("hy-home.tier", "lab"), {"lab"})
+                    self.assertNotEqual("true", labels.get("traefik.enable"))
+                    self.assertFalse(
+                        [key for key in labels if key.startswith("traefik.http")]
+                    )
+
+    def test_default_lab_host_ports_collide_with_nothing(self) -> None:
+        def published(model: dict) -> list[str]:
+            return [
+                port["published"]
+                for spec in model["services"].values()
+                for port in spec.get("ports", []) or []
+                if port.get("published")
+            ]
+
+        seen = {port: "root" for port in published(self.root)}
+        for name, lab in self.labs.items():
+            for port in published(lab):
+                with self.subTest(lab=name, port=port):
+                    self.assertNotIn(port, seen, f"also used by {seen.get(port)}")
+                    seen[port] = name
+
+
 if __name__ == "__main__":
     unittest.main()

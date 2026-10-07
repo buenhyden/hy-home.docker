@@ -101,6 +101,12 @@ def interpolation_references(text):
     ]
 
 
+def lab_controller_inputs():
+    # scripts/operations/lab.py is the only non-Compose consumer of LAB inputs.
+    source = (ROOT / "scripts/operations/lab.py").read_text(encoding="utf-8")
+    return set(re.findall(r'env(?:\.get\(|\[)"(LAB_[A-Z0-9_]+)"', source))
+
+
 def environment_contract(compose_texts, env_text, supplemental_ids=HTPASSWD_ID_INPUTS):
     public = set(env_assignments(env_text))
     references = defaultdict(list)
@@ -1023,7 +1029,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
         cls.lab_environment = environment_contract(
             cls.lab_compose_texts,
             (ROOT / "labs/.env.example").read_text(),
-            supplemental_ids=set(),
+            supplemental_ids=lab_controller_inputs(),
         )
         cls.registry_text = (ROOT / "secrets/SENSITIVE_ENV_VARS.md.example").read_text()
 
@@ -1048,9 +1054,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
             contract["required"] | contract["optional"] | contract["orphan"],
         )
         lab = self.lab_environment
-        self.assertEqual(49, len(lab["public"]))
-        self.assertEqual(11, len(lab["required"]))
-        self.assertEqual(38, len(lab["optional"]))
+        self.assertEqual(55, len(lab["public"]))
+        self.assertEqual(14, len(lab["required"]))
+        self.assertEqual(41, len(lab["optional"]))
         self.assertEqual(set(), lab["missing"] | lab["orphan"])
         self.assertEqual(set(), contract["public"] & lab["public"])
         self.assertFalse(any(name.startswith("LAB_") for name in contract["public"]))

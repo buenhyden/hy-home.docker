@@ -16,7 +16,7 @@ secrets:
     file: ${LAB_SECRET_DIR:?set isolated LAB secret root}/opensearch-cluster/security_cookie.txt
 
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: lab
 
 x-lab-node-environment: &lab-node-environment
   cluster.name: ${LAB_OPENSEARCH_CLUSTER_NAME:-hyhome-lab-opensearch}
@@ -107,9 +107,29 @@ x-lab-node: &lab-node
 
 volumes:
   lab-opensearch-node1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/opensearch-cluster/node1
   lab-opensearch-node2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/opensearch-cluster/node2
   lab-opensearch-node3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/opensearch-cluster/node3
   lab-opensearch-dashboards-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/opensearch-cluster/dashboards
 
 services:
   opensearch-node1:

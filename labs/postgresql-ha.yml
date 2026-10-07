@@ -1,6 +1,6 @@
 name: hy-home-lab-postgresql-ha
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: lab
 
 x-pg-common-env: &pg-common-env
   SCOPE: 'pg-ha'
@@ -184,6 +184,7 @@ services:
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_PG_WRITE_HOST_PORT:-35432}:15432'
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_PG_READ_HOST_PORT:-35433}:15433'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_PG_HAPROXY_STATS_HOST_PORT:-37000}:7000'
     expose:
       - '8404'
     command:
@@ -220,12 +221,7 @@ services:
       start_period: 15s
     labels:
       <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.routers.haproxy-stats.rule: Host(`pg-haproxy.${LAB_BASE_DOMAIN}`)
-      traefik.http.routers.haproxy-stats.entrypoints: websecure
-      traefik.http.routers.haproxy-stats.tls: 'true'
-      traefik.http.services.haproxy-stats.loadbalancer.server.port: 7000
-      traefik.http.routers.haproxy-stats.middlewares: gateway-standard-chain@file
+      traefik.enable: 'false'
     networks:
       lab_pg_edge_net: {}
       lab_pg_core_net: {}

@@ -709,6 +709,8 @@
         "tests.validation.test_quality_object_store",
         "tests.validation.test_quality_raw_points",
         "tests.validation.test_locust_telemetry",
+        "tests.validation.test_lab_isolation",
+        "tests.validation.test_lab_controller",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -1293,6 +1295,7 @@
           "docker-compose.yml",
           "examples/",
           "infra/",
+          "labs/",
           "secrets/"
         ],
         "suites": [
@@ -1360,6 +1363,7 @@
           "scripts/operations/check-compose-core-readiness.sh",
           "scripts/operations/check-config-mount-hashes.py",
           "scripts/operations/gen-secrets.sh",
+          "scripts/operations/lab.py",
           "scripts/operations/rehearse-postgres-logical-upgrade.sh",
           "scripts/operations/rehearse-sample-service-delivery.sh"
         ],
@@ -1414,7 +1418,9 @@
           "tests/validation/test_quality_observability.py",
           "tests/validation/test_quality_object_store.py",
           "tests/validation/test_quality_raw_points.py",
-          "tests/validation/test_locust_telemetry.py"
+          "tests/validation/test_locust_telemetry.py",
+          "tests/validation/test_lab_isolation.py",
+          "tests/validation/test_lab_controller.py"
         ],
         "suites": [
           "operations",

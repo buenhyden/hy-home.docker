@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -49,7 +49,7 @@ created: "2026-05-17"
 - **Required**: Credential 가이드는 Docker Secret mount와 secret-aware
   entrypoint를 참조해야 한다. Secret 값은 문서나 evidence에 절대 복사해서는
   안 된다.
-- **Required**: HAProxy stats label `pg-haproxy.${LAB_BASE_DOMAIN}`는 HOME Traefik과 network가 분리되어 현재 외부 route가 아니다. 내부 stats port와 `lab_pg_haproxy_stats_password`를 구분한다.
+- **Required**: HAProxy stats는 `127.0.0.1:${LAB_PG_HAPROXY_STATS_HOST_PORT:-37000}` loopback port로만 게시하고 HOME Traefik label을 두지 않는다. stats 접근은 `lab_pg_haproxy_stats_password`로 인증한다.
 - **Required**: 서비스/init 가이드는 `pg-cluster-init`을 `init_users_dbs.sql`을
   통해 exporter role, service role, service database를 동기화하는 compose
   job으로 기술해야 한다.

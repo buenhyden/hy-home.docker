@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -38,7 +38,7 @@ created: "2026-05-10"
 | Source·update 책임 | [Compose](../../../labs/mongodb.yml)가 image source를 소유한다. dependency 자동화 제안은 호환성 검토가 필요하다. |
 | 서비스·profile | key generator, data member 2개, arbiter, init, UI, exporter; 정확한 profile은 `mongodb`. |
 | 흐름·의존성 | `mongo-init`이 `MyReplicaSet`을 생성한다. client는 두 data member에 접속하며 arbiter는 data 없이 투표한다. |
-| 노출·영속성 | Mongo Express에는 이전 Traefik label이 남지만 HOME gateway network와 분리되어 있다. member는 내부에 둔다. data/key는 named volume에 저장한다. |
+| 노출·영속성 | Mongo Express만 loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시하고 HOME Traefik label은 없다. member는 내부에 둔다. data/key는 `${LAB_DATA_DIR}/mongodb/` bind에 저장한다. |
 | 환경 설정·secret | root/UI username은 환경 식별자이고 root/UI password는 Docker Secret이다. keyfile은 `mongo-key`에 생성한다. |
 | Health·자원 | member healthcheck, `rs.status()`, init/exporter log; data member는 `template-stateful-high`를 확장한다. |
 | 보안 | 내부 keyfile 인증과 secret 기반 root/UI password를 사용한다. 같은 host의 topology는 DR이 아니다. |
@@ -47,7 +47,7 @@ created: "2026-05-10"
 
 ### Identity-specific behavior
 
-rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 아니다. mongo-key 는 Docker named volume 이며 key-generator 는 공식 mongo 이미지의 Node crypto로 내부 key를 만들거나 보존한다. mongo-init 는 두 data node와 arbiter health를 기다린 뒤 replica set을 확인한다. ping health 는 credential/replica readiness 가 아니다. express 와 exporter 는 별도 image/client 이고 자체 healthcheck 는 없다.선언 release tag 의 전체 integration 은 미검증이다. source의 credential 전달은 argv를 피하지만 실제 인증은 미검증이다.
+rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 아니다. mongo-key 는 `${LAB_DATA_DIR}/mongodb/mongo-key` bind volume 이며 key-generator 는 공식 mongo 이미지의 Node crypto로 내부 key를 만들거나 보존한다. mongo-init 는 두 data node와 arbiter health를 기다린 뒤 replica set을 확인한다. ping health 는 credential/replica readiness 가 아니다. express 와 exporter 는 별도 image/client 이고 자체 healthcheck 는 없다.선언 release tag 의 전체 integration 은 미검증이다. source의 credential 전달은 argv를 피하지만 실제 인증은 미검증이다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -93,12 +93,12 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
    mongodb://<user>:<password>@mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin
    ```
 
-2. 관리 UI `mongo-express`는 독립 LAB network에만 있다. 기존 Traefik label의 `https://mongo-express.${LAB_BASE_DOMAIN}`는 현재 접속 경로가 아니다. `ME_CONFIG_BASICAUTH=true`로 basic auth가 켜져 있어야 하며(mongo-express 1.x는 이 값 없이 자격 증명을 무시한다), 직접 host port publish는 현재 compose에 없다.
+2. 관리 UI `mongo-express`는 독립 LAB network에만 있다. HOME Traefik route는 없고 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`가 유일한 접속 경로다. `ME_CONFIG_BASICAUTH=true`로 basic auth가 켜져 있어야 하며(mongo-express 1.x는 이 값 없이 자격 증명을 무시한다).
 
 ### Common Pitfalls
 
 - `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
-- keyfile은 `mongo-key-generator`가 `mongo-key` named volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
+- keyfile은 `mongo-key-generator`가 `mongo-key` bind volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
 - `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`에 compose healthcheck가 있다. `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
 - replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
