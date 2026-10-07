@@ -108,6 +108,38 @@ these tests, and RUN-0022 names the controller as its runtime authority. The
 earlier run also stopped on six links from `labs/*.md` to a stage policy; the
 LAB guides now name `POL-0078` without linking it.
 
+### W3 Budget, Selection and Disposition Rules
+
+POL-0078 gains two sections. "LAB lifecycle and budget" states the following:
+
+- A profile is a selection, not a security boundary, and naming a root service
+  selects it regardless of profile (0212 conflict C10). A LAB cannot be
+  selected that way.
+- LABs on one host do not give host fault tolerance.
+- `lab.py` is the only start and stop path, and the policy lists its
+  collision, budget, concurrency and lease rules.
+- Declared HOME ceilings already exceed the host, so operators set an explicit
+  overcommit budget.
+- GPU is not in declared limits. ComfyUI and Ollama concurrency follows the
+  DCGM VRAM headroom.
+- No savings figure is published without measurement.
+- AI and workflow residency is kept.
+
+"Optional service disposition" assigns each optional, DEV and LAB group a
+role, consumer, decision and the host state from one read-only `docker ps`
+on 2026-10-08:
+
+- Loki and Dozzle, Airflow and n8n, and Mailpit and Stalwart are judged
+  separately rather than as duplicates.
+- Schema Registry stays because the Debezium Avro connector uses it.
+- Crawl4AI has no consumer and is marked for retirement review, not deleted.
+- No `hy-home-lab-*` project was running.
+
+The `lab-kafka` companion row now distinguishes the HOME single broker
+(replication factor 1, no fault tolerance) from the LAB (three brokers,
+replication factor 3, `min.insync.replicas=2`, one broker loss on the same
+host).
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -115,7 +147,7 @@ LAB guides now name `POL-0078` without linking it.
 | Root closure | 1 | W1 | Root render test RED then GREEN; clean-worktree gate | Working tree at `a5aecc629` | PASS | W1 Root Closure and `lab_net` Retirement | accepted |
 | LAB boundary | 2 | W2 | Boundary tests RED then GREEN; LAB renders | Working tree | PASS | W2 LAB Boundaries and Lease Controller | accepted |
 | Controller | 3 | W2 | Unit tests, mutations, real Docker run of `valkey-cluster` | Synthetic LAB roots | PASS | W2 LAB Boundaries and Lease Controller | accepted |
-| Selection rules | 4 | W3 | Policy and catalog checks | Pending | NOT_RUN | Pending | pending |
+| Selection rules | 4 | W3 | Policy text; catalog and link checks; changed-profile gate | Working tree | PASS | W3 Budget, Selection and Disposition Rules | accepted |
 | Records | 5 | W4 | Local gate and review | Pending | NOT_RUN | Pending | pending |
 
 ## Review and Completion

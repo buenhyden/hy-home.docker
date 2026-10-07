@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.11.1"
+version: "1.12.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -175,7 +175,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | --- | --- |
 | nginx with core/local/dev | 기본 ingress 80/443 중복을 해소하거나 gateway 하나만 선택 |
 | dedicated-valkey with application profiles | HOST·secret 매핑도 전환; profile만 추가하면 broker가 자동 선택되지 않음 |
-| lab-kafka | `labs/kafka-cluster.yml`의 별도 project·cluster ID·data directory가 필요하며 물리 HA가 아님 |
+| lab-kafka | `labs/kafka-cluster.yml`의 별도 project·cluster ID·data directory가 필요하다. 3 broker, replication factor 3, `min.insync.replicas=2`로 같은 host의 broker 하나 손실을 견디지만 host HA가 아니다. HOME `kafka-1`은 replication factor 1의 단일 broker이며 장애 내성이 없다 |
 | lab-locust | `labs/locust.yml`의 별도 project·network·scenario/result volume을 사용하며 root `testing` profile에 포함되지 않음 |
 | opensearch with opensearch-cluster | 서로 다른 Compose project의 대체 토폴로지; LAB은 별도 network·state·credential을 사용 |
 | dependency-update | Renovate 전용 작업; tooling/HOME의 암묵적 기동 대상이 아님 |
@@ -193,6 +193,61 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
 | experience | Storybook은 `internal: true`인 `experience_ingress_net`에만 연결; Traefik만 이 망과 `edge_net`을 함께 사용. HOME 기본 선택과 원격 MCP는 포함하지 않음. 브라우저는 기존 `/admins` 인증을 먼저 수행 |
 | api-mock load mode | root Compose와 `infra/11-quality/wiremock/wiremock.load.yml`을 같은 model로 결합해 같은 `api-mock` profile의 `wiremock` 설정을 대체; host port와 request journal이 없으며 mock performance만 판정 |
+
+### LAB lifecycle and budget
+
+- profile은 서비스 선택일 뿐 보안 경계가 아니다. 정상 root에서 서비스 이름을 직접
+  지정하면 profile과 무관하게 그 서비스가 선택된다. LAB은 root에 없으므로 root의
+  `--profile '*'`나 서비스 이름 지정으로 선택되지 않으며 `tests/validation/test_lab_isolation.py`가
+  이를 검사한다. 같은 host의 LAB은 network와 data를 분리할 뿐 host 장애 내성은 없다.
+- LAB 기동·종료는 `python3 scripts/operations/lab.py`만 사용한다. `up`은 목적과
+  `LAB_MAX_LEASE_MINUTES` 이하의 lease를 요구하고, 실행 전 rendered root, 함께 선택한
+  LAB, 실행 중 container와의 container·network·host port·쓰기 data 경로 충돌을 거부한다.
+  LAB data root가 HOME data 경로와 겹쳐도 거부한다.
+- 예산은 실행 중 container의 선언 CPU·memory 한도와 선택 LAB의 선언 한도 합계를
+  `LAB_HOST_BUDGET_CPUS`·`LAB_HOST_BUDGET_MEMORY_MIB`와 비교하고, 동시 LAB 수를
+  `LAB_MAX_CONCURRENT`(기본 1)로 제한한다. 값이 비어 있으면 거부한다. 선언 한도는
+  실측이 아니며, 2026-10-08 HOME은 선언 한도만으로 host(12 CPU, 31 GiB)를 초과했다.
+  따라서 운영자는 overcommit을 명시한 예산을 정한다. 한도 없는 container는 합산하지
+  않고 목록으로 보고한다. GPU는 선언 한도에 없으므로 ComfyUI·Ollama 동시 사용은
+  DCGM의 VRAM 여유를 확인한 뒤 결정한다. 실측 없이 절감량을 발표하지 않는다.
+- `down`은 그 LAB project만 `-v` 없이 정지한다. LAB data와 volume 삭제는 ledger
+  (`${LAB_DATA_DIR}/.ledger/<lab>.json`)에 기록된 경로만 대상으로 별도 승인 후 수행하며
+  `docker volume prune`·`system prune`은 사용하지 않는다. 만료 lease는 `lab.py reap`이
+  정지한다.
+- AI·workflow HOME 상주 결정은 유지한다. LAB, lakehouse·analytics 대량 작업, GPU 이미지
+  생성은 위 예산 검사와 별도 승인으로 켠다.
+
+### Optional service disposition
+
+2026-10-08 host 관찰은 `docker ps`의 `hy-home-infra` 서비스 목록 한 번이며 이후
+상태를 보장하지 않는다. "미실행"은 그 시점 관찰이다.
+
+| Service group | Role | Consumer | Decision | Host 2026-10-08 |
+| --- | --- | --- | --- | --- |
+| Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | HOME 유지 | 실행 |
+| Dozzle | 실시간 container 로그 UI | 운영자 | OPTIONAL `admin`; 상주는 소유자 선택 | 실행 |
+| OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | OPTIONAL on-demand; 상주하지 않음 | 미실행 |
+| Airflow | 예약 batch DAG | DAG, Flower | HOME 유지 | 실행 |
+| n8n | 이벤트·webhook 통합 | workflow | HOME 유지 | 실행 |
+| Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | DEV on-demand | 미실행 |
+| Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | OPTIONAL; 보존 | 미실행 |
+| Kafka `kafka-1`, Schema Registry, Connect, REST Proxy, kafbat UI | 메시징·CDC | Debezium Avro connector, kafbat | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | 실행 |
+| Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | OPTIONAL on-demand; one-shot·예산 검사 | 미실행 |
+| Superset | BI | 운영자 | OPTIONAL `bi` | 미실행 |
+| Neo4j | graph | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
+| Supabase (11 services) | BaaS 실험 | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
+| RedisInsight | Valkey UI | 운영자 | OPTIONAL `admin` | 실행 |
+| Terrakube | IaC server | 운영자 | DEV; 상주 금지 | 미실행 |
+| JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | OPTIONAL | 미실행 |
+| Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
+| Crawl4AI | crawling API | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 미실행 |
+| ComfyUI | GPU 이미지 생성 | HOME `ai-image` | HOME 유지; GPU를 Ollama와 공유 | 실행 |
+| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
+| `labs/*.yml` 8개 | HA·replica·부하 실습 | 실습 목적별 | LAB; `lab.py`로만 실행 | `hy-home-lab-*` project 없음 |
+
+이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
+source·문서·secret을 함께 제거한다.
 
 ### Verification
 
