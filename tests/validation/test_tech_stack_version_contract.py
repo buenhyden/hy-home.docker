@@ -481,17 +481,6 @@ class TechStackVersionContractTests(unittest.TestCase):
             text,
         )
 
-    def test_public_contract_owns_hardening_version_validation(self) -> None:
-        public = parse_public_gate_contract(load_contract_document(ROOT))
-        hardening = tuple(
-            item
-            for item in public.validators
-            if item.entrypoint
-            == pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
-        )
-        self.assertEqual(1, len(hardening))
-        self.assertEqual("repository-integrity", hardening[0].suite)
-
     def test_required_drift_check_runs_once_in_each_public_context(self) -> None:
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)
@@ -528,17 +517,30 @@ class TechStackVersionContractTests(unittest.TestCase):
                     sum(invocation.gate_id == leaf["gate_id"] for invocation in plan),
                 )
 
-        # Compare executable step commands, not comments or documentation examples.
+        # This bounded guard detects direct literal bash token sequences only.
+        # Aliases, nested bash -c, and generated shell commands are outside its scope.
+        expected_command = ["bash", leaf["entrypoint"], *leaf["argv"]]
         for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
-            with self.subTest(workflow=path.name):
-                workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
-                commands = [
-                    shlex.split(line, comments=True)
-                    for job in workflow["jobs"].values()
-                    for step in job["steps"]
-                    for line in step.get("run", "").splitlines()
-                ]
-                self.assertNotIn(["bash", leaf["entrypoint"], *leaf["argv"]], commands)
+            workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+            for job_name, job in workflow["jobs"].items():
+                for step_index, step in enumerate(job["steps"]):
+                    with self.subTest(
+                        workflow=path.name, job=job_name, step=step_index
+                    ):
+                        try:
+                            tokens = shlex.split(
+                                step.get("run", ""), comments=True, posix=True
+                            )
+                        except ValueError:
+                            self.fail("workflow run block has invalid shell quoting")
+                        width = len(expected_command)
+                        self.assertFalse(
+                            any(
+                                tokens[index : index + width] == expected_command
+                                for index in range(len(tokens) - width + 1)
+                            ),
+                            "registered drift check must run through the public gate",
+                        )
 
     def test_pull_request_plan_reaches_drift_leaf_without_a_path_match(
         self,

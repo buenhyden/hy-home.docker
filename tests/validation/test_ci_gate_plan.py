@@ -512,6 +512,176 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.docs-traceability", {item.gate_id for item in hosted_full}
         )
 
+    def test_implementation_regressions_are_local_only_with_remote_owners(
+        self,
+    ) -> None:
+        cases = {
+            "scripts/lib/document_governance/spec_packages.py": (
+                "leaf.document-governance-library-regressions",
+                "leaf.repo-document-metadata",
+            ),
+            ".github/workflow-contract.yml": (
+                "leaf.workflow-contract-regressions",
+                "leaf.workflow-contract",
+            ),
+            "scripts/hooks/hook_rules.py": (
+                "leaf.local-hook-rule-tests",
+                "leaf.local-agent-governance-contract",
+            ),
+            "scripts/validation/check-script-manifest.py": (
+                "leaf.repository-integrity-regressions",
+                "leaf.local-script-manifest",
+            ),
+        }
+        for path, (local_only, remote_owner) in cases.items():
+            with self.subTest(path=path):
+                local_ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
+                    )
+                }
+                remote_ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                    )
+                }
+                self.assertIn(local_only, local_ids)
+                self.assertNotIn(local_only, remote_ids)
+                self.assertIn(remote_owner, remote_ids)
+
+    def test_local_only_plan_intersects_normal_changed_selection(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+
+        document_plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.LOCAL,
+            ("docs/03.specs/0211-qa-scope-and-delivery-rationalization/spec.md",),
+        )
+        self.assertEqual(
+            ("leaf.docs-traceability",),
+            tuple(
+                invocation.gate_id
+                for invocation in runner.build_local_only_validation_plan(
+                    document_plan,
+                    public,
+                    runner.ExecutionContext.LOCAL,
+                )
+            ),
+        )
+
+        implementation_plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.LOCAL,
+            (".github/workflow-contract.yml",),
+        )
+        local_only_ids = {
+            invocation.gate_id
+            for invocation in runner.build_local_only_validation_plan(
+                implementation_plan,
+                public,
+                runner.ExecutionContext.LOCAL,
+            )
+        }
+        self.assertIn("leaf.workflow-contract-regressions", local_only_ids)
+        self.assertNotIn("leaf.workflow-contract", local_only_ids)
+        self.assertNotIn("leaf.changed-style", local_only_ids)
+        self.assertNotIn("leaf.commit-message-contract", local_only_ids)
+
+    def test_local_only_cli_rejects_authenticated_hosted_context_before_execution(
+        self,
+    ) -> None:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+            "GITHUB_ACTIONS": "true",
+            "EVENT_NAME": "pull_request",
+            "PR_BASE_SHA": "a" * 40,
+            "PR_HEAD_SHA": "b" * 40,
+        }
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(runner, "collect_changed_paths", return_value=()),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            self.assertEqual(
+                1,
+                runner.main(["--profile", "changed", "--local-only"]),
+            )
+        execute.assert_not_called()
+        self.assertIn("ci-gate-local-only-context", stderr.getvalue())
+
+    def test_local_only_cli_executes_and_explains_only_the_selected_local_slice(
+        self,
+    ) -> None:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+        }
+        selected_plans: list[tuple[runner.GateInvocation, ...]] = []
+
+        def capture_execution(
+            root: pathlib.Path,
+            plan: tuple[runner.GateInvocation, ...],
+            environ: dict[str, str],
+        ) -> int:
+            self.assertEqual(ROOT, root)
+            self.assertEqual(os.defpath, environ["PATH"])
+            selected_plans.append(plan)
+            return 0
+
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=(".github/workflow-contract.yml",),
+            ),
+            mock.patch.object(
+                runner,
+                "execute_execution_plan",
+                side_effect=capture_execution,
+            ),
+        ):
+            self.assertEqual(
+                0,
+                runner.main(["--profile", "changed", "--local-only"]),
+            )
+
+        self.assertEqual(1, len(selected_plans))
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        selected_ids = {invocation.gate_id for invocation in selected_plans[0]}
+        self.assertLessEqual(selected_ids, set(public.local_only_gate_ids))
+        self.assertIn("leaf.workflow-contract-regressions", selected_ids)
+        self.assertNotIn("leaf.workflow-contract", selected_ids)
+
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=(".github/workflow-contract.yml",),
+            ),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            self.assertEqual(
+                0,
+                runner.main(["--profile", "changed", "--local-only", "--explain"]),
+            )
+        execute.assert_not_called()
+        lines = tuple(stdout.getvalue().splitlines())
+        self.assertTrue(lines)
+        self.assertTrue(all(line.startswith("local-only\t") for line in lines))
+        self.assertTrue(
+            any("leaf.workflow-contract-regressions" in line for line in lines)
+        )
+
     def test_document_owner_changes_select_regressions(self) -> None:
         owners = (
             "scripts/lib/document_governance/metadata/reference.py",
@@ -525,7 +695,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for path in owners:
             with self.subTest(path=path):
                 plan = build_public_plan(
-                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
                 )
                 self.assertLessEqual(targets, {item.gate_id for item in plan})
 
@@ -545,7 +715,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 plan = build_public_plan(
-                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
                 )
                 self.assertFalse(targets & {item.gate_id for item in plan})
 
@@ -629,22 +799,26 @@ class CiGateRunnerContractTests(unittest.TestCase):
         }
         for path, expected_gate_ids in cases.items():
             with self.subTest(path=path):
-                plan = build_public_plan(
+                local_plan = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                remote_plan = build_public_plan(
                     "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
                 )
-                ids = {item.gate_id for item in plan}
-                self.assertLessEqual(expected_gate_ids, ids)
+                local_ids = {item.gate_id for item in local_plan}
+                remote_ids = {item.gate_id for item in remote_plan}
+                self.assertLessEqual(expected_gate_ids, local_ids | remote_ids)
                 if path == "scripts/operations/provider_surface_renderer.py":
-                    self.assertNotIn("leaf.compose-validation", ids)
-                    self.assertNotIn("leaf.compose-baseline-regressions", ids)
+                    self.assertNotIn("leaf.compose-validation", remote_ids)
+                    self.assertNotIn("leaf.compose-baseline-regressions", remote_ids)
                     self.assertFalse(
-                        runner.selected_prerequisites(plan, (path,)).docker
+                        runner.selected_prerequisites(remote_plan, (path,)).docker
                     )
                 if path == "scripts/operations/use-qa-ci-tools.sh":
-                    self.assertNotIn("leaf.compose-validation", ids)
-                    self.assertNotIn("leaf.compose-baseline-regressions", ids)
+                    self.assertNotIn("leaf.compose-validation", remote_ids)
+                    self.assertNotIn("leaf.compose-baseline-regressions", remote_ids)
                     self.assertFalse(
-                        runner.selected_prerequisites(plan, (path,)).docker
+                        runner.selected_prerequisites(remote_plan, (path,)).docker
                     )
 
         document = contract.load_contract_document(ROOT)
@@ -679,7 +853,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 ids = {
                     item.gate_id
                     for item in build_public_plan(
-                        "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
                     )
                 }
                 self.assertIn("leaf.ci-precommit-regressions", ids)
@@ -712,7 +886,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 actual_gate_ids = {
                     item.gate_id
                     for item in build_public_plan(
-                        "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
                     )
                 }
                 self.assertTrue(
@@ -770,12 +944,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
         ):
             with self.subTest(paths=paths):
                 plan = build_public_plan(
-                    "changed", runner.ExecutionContext.PULL_REQUEST, paths
+                    "changed", runner.ExecutionContext.LOCAL, paths
                 )
                 self.assertLessEqual(targets, {item.gate_id for item in plan})
 
     def test_full_plan_keeps_document_regressions_once(self) -> None:
-        plan = build_public_plan("full", runner.ExecutionContext.PULL_REQUEST)
+        plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
         ids = [item.gate_id for item in plan]
         self.assertEqual(1, ids.count("leaf.local-document-metadata-tests"))
         self.assertEqual(1, ids.count("leaf.document-governance-library-regressions"))

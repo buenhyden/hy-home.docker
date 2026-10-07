@@ -596,6 +596,249 @@ This input's remote acceptance remains pending; earlier FAIL and timing
 observations are preserved. The retirement does not establish a speedup or a
 ten-minute outcome.
 
+### Local-only implementation verification ownership
+
+The user's current instruction excludes local QA from `Run changed candidate
+validation`. This is a new ownership slice following the previously submitted
+test-retirement input; it does not relabel that input's failed result. Current
+source began clean at `549aee5c2850e7a519c20a7462718f7e0719f0ac`.
+Numeric execution budget and native remaining allocation are UNKNOWN.
+
+The user separately authorized only the validation output for
+run37560655770/job112596913297. Its candidate failed on the obsolete
+`test_active_workflows_do_not_route_local_public_profiles` expectation that
+remote changed QA is absent. The method is removed under the user's current
+obsolete-fixed-expectation retirement instruction. Current workflow contract
+and routing regressions own the remote candidate guarantee; the remaining
+hook safety assertions are retained. Exact AST comparison confirms the other
+61 methods are unchanged; registered Ruff check and format check pass this
+single changed test file. This failure does not justify removal of current
+production validators.
+
+That approved diagnostic records 140 metadata implementation tests PASS in
+323.839 seconds and 664 document-library tests PASS in 391.793 seconds on the
+old submitted input. Their combined 715.632 seconds is an observation of that
+input, not a new-input speedup or ten-minute compliance claim. The validation
+step ran from 02:10:26Z to 02:33:06Z (22 minutes 40 seconds) on 2026-10-07.
+Later unobserved candidate checks remain NOT_RUN. Value-free failure names and suite summaries
+are retained in
+`/tmp/hy-home-spec0211-approved-retirement-hosted-diagnostic.json`; raw output,
+environment values and secrets are neither recorded nor printed.
+
+The typed local-only set retains links and document, hook, gate/controller and
+repository unit/fixture regressions through existing LOCAL changed/full
+registration. Every hosted execution context excludes these leaves. Actual
+document content, relationships, lifecycle and catalog, diff/style/commit,
+provider/agent and machine contract validators, selected Docker/security,
+frontend and release regression remain remote. The `local-` name alone is
+not classification evidence. The registered shared runner supplies a local-only
+mode so before-submission implementation QA does not replay the remote bundle.
+Focused RED/GREEN, registered style, selected local-only execution and
+independent exact-input review remain required. The source change does not
+alter hosted timeout, actual protection, npm acceptance, runtime authority or
+release publication. This slice is in progress and its acceptance is pending.
+
+The writer's exact eight-file patch SHA-256 is
+`ea0e8fbe443c6dc2dc0ba1288dd608f17b583c055723fd6d78582d17cee86445`.
+The initial five-case RED observed eight failed assertions and one missing-field
+error; the two-case CLI RED observed one failed assertion and one missing-helper
+error. The final nine focused tests passed in 0.568 seconds. Four affected
+modules ran 81 tests: 80 passed and one obsolete single-context owner assertion
+failed. Its correction compares the complementary LOCAL and remote owners;
+that affected test passed in 0.398 seconds. These results are preserved as
+separate inputs rather than reported as a rerun of all 81 final tests.
+
+The workflow checker passed (five workflows, seven jobs, eight pinned actions).
+The writer's standalone Ruff 0.16.10 result is diagnostic, not the registered
+tool receipt. Root then ran the registered Ruff 0.15.12 check and format check
+once on the exact six changed Python files; both passed without writes.
+Independent policy and security readers reviewed the actual ownership transfer;
+the final eight-file security review matched the receipt hashes and found no
+Important finding. Final document/result recording still requires minimum
+checks and exact-input review.
+
+Before submission, Root will stage only the 13 owned files and inspect the
+canonical changed local-only plan. Its typed leaves require Python, Git and
+Bash; no Node/Docker setup is selected. Available Python/PyYAML and registered
+tool paths are observed, numeric and native budgets remain UNKNOWN, and each
+registered timeout and failure owner is preserved. This is one selected
+local-only execution, not a local full profile or replay of the remote bundle.
+Source/index/base/history and observed outcome will be recorded separately from
+the next remote candidate. No new performance result or hosted PASS exists yet.
+
+### Local-only validation failure and narrow consumer repair
+
+Root executed the canonical changed local-only plan once on frozen index
+`c341179beb7e7e404cc9a8cab3a300021979327e`, HEAD `549aee5c` and
+base `main@849ef009a` and history `origin/main@849ef009a`. The staged plan equalled the
+whole-branch-plus-staged local-only plan. Its twelve registered invocations
+required no Node/Docker setup. Source hashes remained unchanged.
+
+The final repository-integrity regression leaf returned FAIL (178 tests:
+four failures and one error). Its preceding eleven registered invocations
+returned zero under the shared fail-fast executor. Observed suite summaries
+include metadata 140/581.759 seconds, document library 664/622.964 seconds and
+controller 49/18.370 seconds, all OK. The whole command returned one after
+1461.659 seconds; this is local wall time, not hosted cost or an improvement
+rate. The failure is preserved in
+`/tmp/hy-home-spec0211-local-only-execution-result.json`.
+
+The failing expectations cover universal library test mirroring, fixed
+authority README wording, removed evaluator manifest-root wording, and
+hardening/drift ownership in old public-validator contexts. Current consumer
+and typed-DAG guarantees must be inspected before retiring an expectation;
+a failure alone is not a deletion reason. Spec, Plan and Task are physically
+set to blocked. No commit, push or new hosted run was performed for this input.
+The already-authorized obsolete-expectation retirement and local ownership
+slice permits one narrow consumer correction, focused diagnosis and independent
+review. Production validators, timeout values, local-only field, selected
+commands and safety guards remain frozen; unavailable evidence is not accepted.
+
+### Narrow integrity consumer repair and resume
+
+Independent read-only reviewer `qa_retirement_patch_review` verified the exact
+three-file proposal SHA-256
+`718aefe2c5a326801c0f71011333160861ca4996c03ca0db2b327825424a475f`,
+its clean application and continuing owners, with no Important finding. The
+current user instruction authorizes obsolete-expectation retirement; Root
+resumes this narrow slice after recording the failed input. Spec, Plan and
+Task were physically written and read back as in-progress. Historical FAIL
+and blocked transitions remain preserved.
+
+The additional writer owns only `tests/lib/test_surface_ownership.py`,
+`tests/validation/test_script_manifest.py` and
+`tests/validation/test_tech_stack_version_contract.py`. Four retired methods
+assumed universal same-directory library tests, three fixed authority/script
+wording pairs, retired evaluator README tokens and an obsolete hardening
+suite name. Current script inventory, semantic consumer/test evidence,
+mandatory shared-library tests, authority semantics, tracked/regular-file
+mirror negatives and typed public-validator ownership remain their owners.
+The corrected drift test retains exact argv and one invocation in all five
+contexts. Its invalid physical-line shell parser is removed: a quoted
+multi-line release command caused the observed ValueError. Universal detection
+of arbitrary future direct workflow shell invocations is not claimed.
+
+Focused surviving boundaries and registered Ruff are followed by one retry of
+only the changed registered repository-integrity leaf through the unchanged
+shared executor and timeout. The preceding eleven frozen local-only
+invocations are not repeated. Result-only current documents receive minimum
+metadata, style and local-link checks. No production validator, gate inventory,
+permissions, timeout, npm, runtime or release behavior is changed here.
+The exact three-file patch was applied after matching prehashes. Four focused
+surviving boundaries passed in 0.304 seconds; registered Ruff 0.15.12 check
+and format check passed all three files. The application receipt is
+`/tmp/hy-home-spec0211-final-integrity-application-receipt.json`; source hashes
+match the reviewed proposal. Acceptance and remote validation remain pending.
+
+### Narrow integrity retry result
+
+The one changed registered repository-integrity leaf retry returned one on
+frozen16 index `41c3da3ed3105669dd89464a63760facf653bcd8`, unchanged HEAD/base,
+source and executor. Its 174 tests ran in 48.647 seconds with one failure:
+`test_consumer_successor_and_test_references_are_evidenced`, for the retained
+`.agents/evaluations/README.md` record. Command wall time was 49.376 seconds;
+source hashes remained unchanged. Receipt:
+`/tmp/hy-home-spec0211-integrity-narrow-retry.json`. The preceding eleven leaves
+were not repeated. Focused GREEN did not establish aggregate acceptance.
+
+The generic current-consumer proof remains required and is not deleted because
+it failed. Spec, Plan and Task are physically blocked again. No commit, push,
+new hosted run or merge occurred. Read-only diagnosis may identify the stale
+registration or actual missing consumer; further source correction and retry
+must resolve the exhausted narrow retry boundary before execution.
+
+### Independent finding and remaining consumer boundary
+
+The integrated policy reviewer identified an Important finding: the removed
+workflow scan was the only direct-command duplicate drift check outside the
+typed DAG. Exact once-per-context plan assertions do not replace that separate
+guarantee. Root accepts the finding. The per-physical-line implementation was
+invalid for multi-line shell quotes; a bounded whole-run-block literal-command
+check must be reviewed before replacing it. No arbitrary shell aliases or
+universal future-command detection is claimed.
+
+The remaining manifest failure concerns a retained contract README whose
+declared test reference lost its direct use when its obsolete README-literal
+test was removed. Current metadata and actual consumer links remain owners;
+the generic consumer-proof test stays required. A read-only concrete proposal
+will reconcile only that stale reference and the direct drift guard. The
+workflow retry bound is exhausted, so source application and another registered
+leaf execution require escalation. This is a blocked local ownership slice,
+not a remotely accepted or integrated delivery.
+
+### Approved final consumer and drift repair
+
+The trusted user explicitly approves the independently reviewed two-file patch
+SHA-256 `cce83c93e77903c0d709d1f8cf36a99e9b78ca2a8233cddb8b036878ade556fd`
+after the exhausted retry boundary. Total current writer scope is seventeen
+files: the prior sixteen plus `scripts/manifest.yaml`. Only the stale optional
+test reference of the retained evaluation README and the existing drift test
+change in this corrective patch. The current consumer, authority, generic
+manifest proof and five context-once assertions remain. The restored guard
+lexes each complete run block, fails explicitly on invalid quotes and detects
+only exact direct literal registered bash tokens. Alias, nested or generated
+shell equivalence is outside its declared scope.
+
+Actual independent policy reviewer `qa_current_policy_review` found no Important
+finding in the exact corrective patch and blocked record. No tests or source
+mutations were performed by that reviewer. Root physically writes and reads
+back Spec, Plan and Task in-progress under the new user authorization. Prior
+FAIL, Important finding and blocked transitions are retained as history.
+The authorized followup consists of focused and registered static checks,
+one changed repository-integrity leaf execution, document minimum and exact
+independent review. Only PASS permits commit/push of PR368 and one new hosted
+candidate observation; another failure stops the work. Production, timeouts,
+permissions, actual protection, npm, runtime and publication remain unchanged.
+
+The earlier blocked five-document minimum passed: metadata selected four,
+zero violations; isolated registered Markdown style five files zero errors;
+scoped local links five documents, twenty-eight links, zero findings. Source
+bytes remained unchanged. Its receipt is
+`/tmp/hy-home-spec0211-local-only-document-minimum.json`. The two current policy
+and scripts README bytes remain unchanged; subsequent result/status edits are
+checked only on the three package documents before submission. No full corpus,
+local full profile or replay of the remote bundle is performed.
+
+The exact approved patch was applied after matching source and patch hashes.
+The current consumer-proof and corrected drift tests passed once (two tests,
+7.951 seconds). Registered Ruff 0.15.12 check and format check passed the one
+changed Python file; registered yamllint 1.38.0 passed the manifest. Receipt:
+`/tmp/hy-home-spec0211-final-consumer-and-drift-applied-receipt.json`.
+Source/index preservation was observed; the new registered leaf result is
+separate and not inferred from focused GREEN.
+
+### Final local ownership result and submission input
+
+The user-approved final registered repository-integrity leaf passed on frozen
+seventeen-file index `9542ed9fb0697fe6779d5b943b60d0678bcddb5a`: 174 tests,
+48.436 seconds, exit zero; command wall time 49.175 seconds. HEAD `549aee5c`,
+base/history `849ef009a`, source hashes, registered argv and 1200-second timeout
+were unchanged. Receipt:
+`/tmp/hy-home-spec0211-final-consumer-and-drift-retry.json`. The preceding eleven
+local-only invocations were not rerun. Their preserved results plus this
+corrected affected leaf establish the selected local prerequisite evidence;
+neither earlier failed execution is relabelled PASS.
+
+Independent policy reviewer `qa_current_policy_review` read the exact frozen
+seventeen-file diff, approved patch/application receipt and non-executing
+remote plan, reporting no Important finding. The direct literal drift guard
+finding is resolved. Final result-document readback remains separately required.
+The remote plan derived from the branch and staged union contains thirty-three
+invocations, none in the typed twelve-leaf local-only list, and retains the
+release regression. Its receipt is
+`/tmp/hy-home-spec0211-final-remote-ownership-plan.json`; no hosted execution or
+performance improvement is inferred from that plan.
+
+Only Spec/Plan/Task result and status text changed after the frozen leaf input.
+Their final metadata, lifecycle/parent projection, isolated read-only Markdown
+style and scoped local links use
+`/tmp/hy-home-spec0211-final-package-document-minimum.json` to capture exact
+input hashes and actual outcomes. The two policy/README inputs passed their
+prior unchanged minimum. Root may commit and push only if the final minimum
+and exact independent readback pass. PR368's next actual candidate acceptance
+remains pending; this package remains in-progress and is not completed,
+merged or runtime-activated. No new full local or remote-bundle replay runs.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -612,6 +855,18 @@ ten-minute outcome.
 | SPEC-0211 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
 | SPEC-0211-PLAN-0001 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
 | SPEC-0211-TSK-0001 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211 | in-progress | blocked | #local-only-validation-failure-and-narrow-consumer-repair |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #local-only-validation-failure-and-narrow-consumer-repair |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #local-only-validation-failure-and-narrow-consumer-repair |
+| SPEC-0211 | blocked | in-progress | #narrow-integrity-consumer-repair-and-resume |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #narrow-integrity-consumer-repair-and-resume |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #narrow-integrity-consumer-repair-and-resume |
+| SPEC-0211 | in-progress | blocked | #narrow-integrity-retry-result |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #narrow-integrity-retry-result |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #narrow-integrity-retry-result |
+| SPEC-0211 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
 
 ### Official research inputs
 
@@ -638,13 +893,18 @@ ten-minute outcome.
 | Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | pending |
 | Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | pending |
 | Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | pending |
+| Retirement hosted result | 3 | W4 | Actual remote validation and approved value-free diagnosis | PR368 549aee5c; run37560655770/job112596913297 | FAIL | Local-only implementation verification ownership | pending |
+| Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | pending |
+| Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | pending |
+| Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | pending |
 
 ## Review and Completion
 
-Only initial contract issuance W1 is accepted for final promotion; the scoped W6
-acceptance requires revalidation. Required hosted candidate validation failed.
-Implementation criteria and overall candidate acceptance remain pending. Missing remote
-results, operational observations and release publication remain unexecuted;
+Only initial contract issuance W1 is accepted for final promotion. Prior hosted
+inputs failed and remain recorded. The corrected selected local prerequisite
+passed; final document/readback checks gate submission, and the new remote
+candidate result remains pending. Overall package criteria are not completed.
+Missing operational observations and release publication remain unexecuted;
 source structure and mocked publication are not runtime activation.
 
 ## Related Documents

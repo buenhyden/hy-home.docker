@@ -52,6 +52,68 @@ class NpmAuditAcceptanceTests(unittest.TestCase):
 
 
 class PublicSuiteRegistryTests(unittest.TestCase):
+    def test_local_only_gate_ids_are_typed_current_leaves(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        expected = (
+            "leaf.ci-gate-adapter-regressions",
+            "leaf.ci-gate-contract-regressions",
+            "leaf.ci-gate-runner-regressions",
+            "leaf.ci-precommit-regressions",
+            "leaf.document-governance-library-regressions",
+            "leaf.docs-traceability",
+            "leaf.local-hook-rule-tests",
+            "leaf.local-document-metadata-tests",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.repository-integrity-regressions",
+            "leaf.repo-contracts-control-plane-regressions",
+            "leaf.workflow-contract-regressions",
+        )
+        self.assertEqual(
+            expected,
+            tuple(document["public_gate"].get("local_only_gate_ids", ())),
+        )
+        self.assertEqual(
+            expected,
+            contract.parse_public_gate_contract(document).local_only_gate_ids,
+        )
+
+    def test_local_only_gate_ownership_fails_closed_on_invalid_drift(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: list[tuple[str, dict[str, object]]] = []
+
+        duplicate = json.loads(json.dumps(baseline))
+        duplicate["public_gate"]["local_only_gate_ids"].append(
+            duplicate["public_gate"]["local_only_gate_ids"][0]
+        )
+        cases.append(("duplicate", duplicate))
+
+        unknown = json.loads(json.dumps(baseline))
+        unknown["public_gate"]["local_only_gate_ids"][0] = "leaf.unknown-local"
+        cases.append(("unknown", unknown))
+
+        nonleaf = json.loads(json.dumps(baseline))
+        nonleaf["public_gate"]["local_only_gate_ids"][0] = "ci.docs-traceability"
+        cases.append(("aggregate", nonleaf))
+
+        unordered = json.loads(json.dumps(baseline))
+        unordered["public_gate"]["local_only_gate_ids"].reverse()
+        cases.append(("order", unordered))
+
+        remote_context = json.loads(json.dumps(baseline))
+        links = next(
+            row
+            for row in remote_context["public_gate"]["validators"]
+            if row["gate_id"] == "leaf.docs-traceability"
+        )
+        links["contexts"].append("pull_request")
+        cases.append(("validator-context", remote_context))
+
+        for label, document in cases:
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.parse_public_gate_contract(document)
+                self.assertEqual("ci-gate-local-only-gates", caught.exception.code)
+
     def test_retired_job_roots_are_rejected_by_the_strict_contract(self) -> None:
         document = contract.load_contract_document(ROOT)
         document["job_roots"] = []

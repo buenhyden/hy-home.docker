@@ -64,6 +64,68 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
         planned = {invocation.gate_id for invocation in plan}
         self.assertEqual(set(), planned & runner._LOCAL_EXCLUDED_GATE_IDS)
 
+    def test_local_only_leaves_are_withheld_from_every_hosted_context(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document,
+            ".github/workflow-contract.yml",
+        )
+        public = contract.parse_public_gate_contract(document)
+        suites = contract.select_public_suites(public, "full", ())
+        roots = contract.public_root_gate_ids(public, suites)
+        local_ids = {
+            invocation.gate_id
+            for invocation in runner.build_public_validation_plan(
+                registry,
+                roots,
+                public,
+                suites,
+                runner.ExecutionContext.LOCAL,
+                profile="full",
+                root=ROOT,
+            )
+        }
+        self.assertLessEqual(set(public.local_only_gate_ids), local_ids)
+        local_only_plan = runner.build_local_only_validation_plan(
+            runner.build_public_validation_plan(
+                registry,
+                roots,
+                public,
+                suites,
+                runner.ExecutionContext.LOCAL,
+                profile="full",
+                root=ROOT,
+            ),
+            public,
+            runner.ExecutionContext.LOCAL,
+        )
+        local_only_plan_ids = tuple(
+            invocation.gate_id for invocation in local_only_plan
+        )
+        self.assertEqual(set(public.local_only_gate_ids), set(local_only_plan_ids))
+        self.assertEqual(len(local_only_plan_ids), len(set(local_only_plan_ids)))
+
+        for context in (
+            runner.ExecutionContext.PULL_REQUEST,
+            runner.ExecutionContext.PUSH,
+            runner.ExecutionContext.PUSH_INITIAL,
+            runner.ExecutionContext.WORKFLOW_DISPATCH,
+        ):
+            with self.subTest(context=context):
+                hosted_ids = {
+                    invocation.gate_id
+                    for invocation in runner.build_public_validation_plan(
+                        registry,
+                        roots,
+                        public,
+                        suites,
+                        context,
+                        profile="full",
+                        root=ROOT,
+                    )
+                }
+                self.assertFalse(set(public.local_only_gate_ids) & hosted_ids)
+
 
 class DescriptorExecutionTests(unittest.TestCase):
     def setUp(self) -> None:

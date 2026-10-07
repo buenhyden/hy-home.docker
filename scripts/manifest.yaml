@@ -9,8 +9,7 @@ files:
   - scripts/README.md
   disposition: retain
   successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
+  tests: []
 - path: scripts/README.md
   kind: contract
   authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md

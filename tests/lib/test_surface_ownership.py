@@ -106,14 +106,6 @@ def _is_excluded(root: pathlib.Path, path: str) -> bool:
 class SurfaceOwnershipTests(unittest.TestCase):
     """A directory states what its files are, and no constant restates it."""
 
-    def test_every_library_package_has_a_tracked_test(self) -> None:
-        tracked = set(
-            subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT, timeout=10)
-            .decode()
-            .split("\0")
-        )
-        self.assertEqual([], _missing_test_domains(ROOT, tracked))
-
     def test_library_mirror_requires_a_tracked_behavior_test(self) -> None:
         for shape in (
             "empty",

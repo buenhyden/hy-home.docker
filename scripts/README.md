@@ -213,6 +213,15 @@ standalone validator 계획을 출력하며 parity 테스트는 이 계획이 �
 push·workflow dispatch는 비교 base를 임의로 만들지 않고 명시적인
 active-corpus metadata 모드를 사용합니다.
 
+구현 변경에 연결된 로컬 회귀만 선택할 때는
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only --explain`으로
+현재 로컬 변경 계획을 확인한 뒤 같은 명령에서 `--explain`만 제거해 한 번
+실행합니다. `--local-only`는 정상 changed 선택 결과와
+`.github/workflow-contract.yml`의 typed `local_only_gate_ids`가 겹치는 leaf만 공용
+executor로 전달합니다. 인증된 hosted
+context에서는 거부되며 원격 후보의 content·infra·release 검증을 대체하지
+않습니다.
+
 `scripts/validation/check-document-metadata.py`는 Stage 99 typed profile
 계약과 중복 키를 거부하는 PyYAML safe loading을 사용합니다. `--mode report`는
 항상 정렬된 대상 문서 인벤토리를 렌더링하고 의미적 gap은 advisory로

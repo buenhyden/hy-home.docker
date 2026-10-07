@@ -1015,6 +1015,20 @@
       "changed",
       "full"
     ],
+    "local_only_gate_ids": [
+      "leaf.ci-gate-adapter-regressions",
+      "leaf.ci-gate-contract-regressions",
+      "leaf.ci-gate-runner-regressions",
+      "leaf.ci-precommit-regressions",
+      "leaf.document-governance-library-regressions",
+      "leaf.docs-traceability",
+      "leaf.local-hook-rule-tests",
+      "leaf.local-document-metadata-tests",
+      "leaf.local-document-corpus-lifecycle-tests",
+      "leaf.repository-integrity-regressions",
+      "leaf.repo-contracts-control-plane-regressions",
+      "leaf.workflow-contract-regressions"
+    ],
     "suite_roots": {
       "agent-governance": [
         "leaf.local-provider-surface-drift",

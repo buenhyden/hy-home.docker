@@ -67,7 +67,13 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    checks for operations documents and local-only document-link validation.
    Unrelated hook, tool, whole-library, frontend and Compose checks follow
    their actual changed owners. Implementation changes select their
-   relevant regressions; rename, delete and unknown input fail closed.
+   relevant regressions through registered LOCAL path owners. A typed
+   local-only leaf list excludes document-library, gate/controller, hook and
+   repository fixture/unit regressions and links from every hosted context.
+   The existing runner's local-only mode executes that complementary selected
+   lane before submission. Actual candidate content, machine validators,
+   Docker/security and release checks remain remote. Rename, delete and
+   unknown input fail closed before execution-context eligibility.
 5. Execute each identical invocation once per declared input, base, history,
    configuration, tool, mode and trust context. Formatting writes are explicit
    authoring actions; required validation is read-only. Reuse cannot cross a

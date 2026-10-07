@@ -396,6 +396,7 @@ class PublicGateContract:
     changed_rules: tuple[ChangedSuiteRule, ...]
     changed_root_rules: tuple[ChangedRootRule, ...]
     changed_fallback_suites: tuple[str, ...]
+    local_only_gate_ids: tuple[str, ...]
 
     @property
     def suite_names(self) -> tuple[str, ...]:
@@ -679,6 +680,7 @@ def parse_public_gate_contract(
                 "changed_path_rules",
                 "changed_root_rules",
                 "changed_fallback_suites",
+                "local_only_gate_ids",
             }
         ),
         frozenset(
@@ -689,6 +691,7 @@ def parse_public_gate_contract(
                 "changed_path_rules",
                 "changed_root_rules",
                 "changed_fallback_suites",
+                "local_only_gate_ids",
             }
         ),
         "ci-gate-public-contract",
@@ -798,6 +801,63 @@ def parse_public_gate_contract(
         validators.append(
             PublicValidatorRoute(suite, gate_id, entrypoint, argv, contexts)
         )
+
+    local_only_gate_ids = _strings(
+        raw["local_only_gate_ids"],
+        "ci-gate-local-only-gates",
+        "public_gate/local_only_gate_ids",
+    )
+    raw_nodes = tuple(
+        record
+        for record in document.get("gate_nodes", ())
+        if isinstance(record, Mapping)
+    )
+    node_by_id = {
+        record.get("gate_id"): record
+        for record in raw_nodes
+        if isinstance(record.get("gate_id"), str)
+    }
+    canonical_local_only_order = tuple(
+        record.get("gate_id")
+        for record in raw_nodes
+        if record.get("gate_id") in local_only_gate_ids
+    )
+    reachable: set[str] = set()
+    pending = list(assigned_roots)
+    while pending:
+        gate_id = pending.pop()
+        if gate_id in reachable:
+            continue
+        reachable.add(gate_id)
+        record = node_by_id.get(gate_id)
+        if record is not None:
+            children = record.get("children", ())
+            if isinstance(children, list):
+                pending.extend(child for child in children if isinstance(child, str))
+    if (
+        not local_only_gate_ids
+        or local_only_gate_ids != canonical_local_only_order
+        or any(
+            gate_id not in reachable
+            or node_by_id.get(gate_id, {}).get("kind") != "leaf"
+            for gate_id in local_only_gate_ids
+        )
+    ):
+        raise GateContractError(
+            "ci-gate-local-only-gates",
+            "public_gate/local_only_gate_ids",
+            "local-only gates must be reachable leaves in canonical registry order",
+        )
+    local_only_set = set(local_only_gate_ids)
+    for validator in validators:
+        contexts_are_local_only = validator.contexts == ("local",)
+        gate_is_local_only = validator.gate_id in local_only_set
+        if contexts_are_local_only != gate_is_local_only:
+            raise GateContractError(
+                "ci-gate-local-only-gates",
+                "public_gate/validators",
+                "local-only validator contexts and typed gate ownership must agree",
+            )
 
     raw_rules = _require_records(
         raw["changed_path_rules"],
@@ -927,6 +987,7 @@ def parse_public_gate_contract(
         tuple(rules),
         tuple(root_rules),
         fallback,
+        local_only_gate_ids,
     )
 
 

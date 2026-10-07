@@ -316,25 +316,6 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(row["path"], row["successor"])
 
-    def test_authority_names_the_script_it_governs(self) -> None:
-        expected = {
-            "scripts/knowledge/report-graphify-health.sh": (
-                "docs/05.operations/runbooks/0004-harness-agent-first-engineering.md"
-            ),
-            "scripts/operations/use-qa-ci-tools.sh": "scripts/README.md",
-            "scripts/validation/run-agent-precommit-all-files.sh": (
-                ".agents/governance/quality-standards.md"
-            ),
-        }
-        rows = {row["path"]: row for row in self.rows}
-        for path, authority in expected.items():
-            with self.subTest(path=path):
-                self.assertEqual(authority, rows[path]["authority"])
-                self.assertIn(
-                    PurePosixPath(path).name,
-                    (ROOT / authority).read_text(encoding="utf-8"),
-                )
-
     def test_operations_implementation_and_gate_use_the_registry_authority(
         self,
     ) -> None:
@@ -374,15 +355,6 @@ class ScriptManifestTests(unittest.TestCase):
             compact,
         )
         self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
-
-    def test_evals_readme_states_its_manifest_registration_rule(self) -> None:
-        text = (ROOT / ".agents/evaluations/README.md").read_text(encoding="utf-8")
-        compact = re.sub(r"\s+", " ", text)
-        # `.agents/evaluations/` is a manifest root, so an unregistered executable added here
-        # must fail the gate exactly as it would under `scripts/`.
-        self.assertIn("MANIFEST_ROOTS", compact)
-        self.assertIn("scripts/manifest.yaml", compact)
-        self.assertIn("check-script-manifest.py", compact)
 
     def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"

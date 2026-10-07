@@ -119,10 +119,22 @@ main-push security remains a post-merge observation.
   RED/GREEN and selected read-only lint help diagnose a change. Observe actual
   installed Git hooks separately; tracked configuration does not change a
   user-global hook. Never use SKIP, fake CI variables or `--no-verify`.
+- **Local implementation verification**: the workflow contract's typed
+  `public_gate.local_only_gate_ids` owns document, gate/controller, hook and
+  repository implementation unit/fixture regressions and local links. Use
+  `scripts/validation/run-ci-gate.py --profile changed --local-only --explain`
+  to inspect the selected plan, then the same command without `--explain`
+  once on the final implementation input before submission. The shared runner
+  and registered path owners remain the execution route; no parallel wrapper
+  or command inventory is created. Result-only Task additions receive minimum
+  document checks. Do not repeat the local full profile after commit or push.
 - **Candidate acceptance**: the public repository uses remote PR QA through
   `scripts/validation/run-ci-gate.py --profile changed`. Inspect the selected
-  plan and prerequisites before execution. Local development does not repeat
-  the candidate aggregate or a full profile after every commit or push.
+  plan and prerequisites before execution. Every hosted context excludes the
+  typed local-only leaves. Remote QA retains actual document content and
+  catalog, diff/style/commit, machine contracts, selected Docker/security,
+  frontend and release checks. Local implementation PASS is separate evidence
+  and does not satisfy or bypass the remote candidate.
 - **Document links**: `check-document-links.py --mode all` owns local-only
   read-only link validation on the final source input before result-only Task
   evidence recording. Record the bound source/base/history and result before
@@ -153,7 +165,8 @@ main-push security remains a post-merge observation.
 | Commit | Commitizen message grammar; installed cheap authoring hooks only | Staged message/bytes and actual hook installation |
 | Feature push | No repeated public QA | New commits become PR candidate input |
 | Agent Stop | Diagnostics only | Working tree; no second aggregate run |
-| PR to main | One changed-profile candidate job | PR base/head/merge input, selected prerequisites and actual hosted result |
+| Before submission | Selected local-only implementation and link leaves once | Final source/index, base/history, tools and actual local result |
+| PR to main | One changed-profile candidate job excluding local-only leaves | PR base/head/merge input, selected prerequisites and actual hosted result |
 | Main push | Separate security/SARIF observation | Merged SHA and hosted security trust; no candidate suite repeat |
 | Release preparation PR | Same candidate owner selects changelog/release checks | Main-targeted CHANGELOG and reviewed source |
 | Approved release dispatch | Sole main-only SemVer producer | Exact commit, create-only tag, complete draft assets, publication receipt |
@@ -183,8 +196,8 @@ providers; Task evidence names each input, result, acceptance and unexecuted lan
 | Change | Focused authoring feedback | Remote candidate or distinct observation |
 | --- | --- | --- |
 | Ordinary documents/templates | Local-only registered links; scoped metadata and read-only style feedback | Profile, relationships and lifecycle; operations catalog when applicable; no link or implementation regression rerun |
-| Validator/parser/Registry implementation | Changed behavior RED/GREEN and relevant style | Content checks plus affected implementation regression |
-| Gate/workflow/style controller | Selection, trust, failure and cleanup regressions | Same changed entrypoint; exact hosted job/event evidence |
+| Validator/parser/Registry implementation | RED/GREEN, relevant style and selected local-only implementation regressions | Actual content checks; no local implementation suite repeat |
+| Gate/workflow/style controller | Selected local-only selection, trust, failure and cleanup regressions | Actual workflow/contract validators; exact hosted job/event evidence |
 | Docker/Compose/service configuration | Relevant syntax/render/hardening feedback | Selected configuration checks; live HOME/smoke/restore only separately authorized |
 | Commit/changelog/release implementation | Commitizen and SemVer/changelog/draft-asset regression | PR candidate checks; release publication only for its approved exact version |
 | Historical QA retirement | Caller/registration closure and continuing-owner proof | Applicable current document/archive/runner checks; frozen bytes preserved |

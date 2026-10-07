@@ -82,7 +82,6 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
     }
 )
 _PR_ONLY_GATE_IDS = frozenset({"leaf.changed-style", "leaf.commit-message-contract"})
-_REMOTE_EXCLUDED_GATE_IDS = frozenset({"leaf.docs-traceability"})
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -342,7 +341,9 @@ def build_public_validation_plan(
             "selected public suites must be unique and registered",
         )
     base_plan = _filter_execution_context(
-        build_public_execution_plan(registry, root_gate_ids), context
+        build_public_execution_plan(registry, root_gate_ids),
+        context,
+        public_contract.local_only_gate_ids,
     )
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
@@ -436,6 +437,25 @@ def build_public_validation_plan(
             )
         seen_keys[key] = invocation.gate_id
     return result
+
+
+def build_local_only_validation_plan(
+    plan: tuple[GateInvocation, ...],
+    public_contract: PublicGateContract,
+    context: ExecutionContext,
+) -> tuple[GateInvocation, ...]:
+    """Select typed local-only leaves from an already selected public plan."""
+
+    if context is not ExecutionContext.LOCAL:
+        raise GateContractError(
+            "ci-gate-local-only-context",
+            "local-only",
+            "local-only gates require the unauthenticated local execution context",
+        )
+    local_only_gate_ids = set(public_contract.local_only_gate_ids)
+    return tuple(
+        invocation for invocation in plan if invocation.gate_id in local_only_gate_ids
+    )
 
 
 def canonical_invocation_key(
@@ -597,13 +617,8 @@ def render_public_validation_plan(
 def _filter_execution_context(
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
+    local_only_gate_ids: tuple[str, ...],
 ) -> tuple[GateInvocation, ...]:
-    if context is ExecutionContext.PULL_REQUEST:
-        return tuple(
-            invocation
-            for invocation in plan
-            if invocation.gate_id not in _REMOTE_EXCLUDED_GATE_IDS
-        )
     if context is ExecutionContext.LOCAL:
         return tuple(
             invocation
@@ -611,7 +626,9 @@ def _filter_execution_context(
             if invocation.gate_id not in _LOCAL_EXCLUDED_GATE_IDS
             and not invocation.gate_id.startswith("setup.")
         )
-    excluded = _PR_ONLY_GATE_IDS | _REMOTE_EXCLUDED_GATE_IDS
+    excluded = set(local_only_gate_ids)
+    if context is not ExecutionContext.PULL_REQUEST:
+        excluded.update(_PR_ONLY_GATE_IDS)
     return tuple(
         invocation for invocation in plan if invocation.gate_id not in excluded
     )
@@ -696,6 +713,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", required=True)
     parser.add_argument("--explain", action="store_true")
     parser.add_argument("--requirements", action="store_true")
+    parser.add_argument("--local-only", action="store_true")
     try:
         arguments = parser.parse_args(argv)
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
@@ -719,6 +737,12 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         public_contract = parse_public_gate_contract(document)
         context = derive_execution_context(os.environ)
+        if arguments.local_only and context is not ExecutionContext.LOCAL:
+            raise GateContractError(
+                "ci-gate-local-only-context",
+                "local-only",
+                "local-only gates require the unauthenticated local execution context",
+            )
         changed_paths = (
             ()
             if arguments.profile == "full"
@@ -744,19 +768,33 @@ def main(argv: list[str] | None = None) -> int:
             profile=arguments.profile,
             root=root,
         )
+        if arguments.local_only:
+            plan = build_local_only_validation_plan(
+                plan,
+                public_contract,
+                context,
+            )
         if arguments.explain and arguments.requirements:
             raise argparse.ArgumentError(
                 None,
                 "--explain and --requirements are mutually exclusive",
             )
         if arguments.explain:
-            for line in render_public_validation_plan(
-                plan,
-                public_contract,
-                selected_suites,
-                context,
-                profile=arguments.profile,
-            ):
+            lines = (
+                tuple(
+                    f"local-only\t{invocation.gate_id}\t{invocation.entrypoint}"
+                    for invocation in plan
+                )
+                if arguments.local_only
+                else render_public_validation_plan(
+                    plan,
+                    public_contract,
+                    selected_suites,
+                    context,
+                    profile=arguments.profile,
+                )
+            )
+            for line in lines:
                 print(line)
             return 0
         if arguments.requirements:

@@ -187,6 +187,21 @@ class PublicSuiteModelTests(unittest.TestCase):
             ),
             runner.public_suite_names(),
         )
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        self.assertEqual(
+            (
+                "profile_names",
+                "suites",
+                "validators",
+                "changed_rules",
+                "changed_root_rules",
+                "changed_fallback_suites",
+                "local_only_gate_ids",
+            ),
+            tuple(field.name for field in dataclasses.fields(public)),
+        )
 
     def test_lifecycle_aggregate_routes_only_current_owners(self) -> None:
         registry = contract.parse_gate_registry(
@@ -270,7 +285,10 @@ class PublicSuiteModelTests(unittest.TestCase):
                         and invocation.argv[-1:] == ("-v",)
                         for module in invocation.argv[1:-1]
                     }
-                    self.assertEqual(expected, actual & current_modules)
+                    context_expected = expected if context == "local" else set()
+                    if suite == "operations":
+                        context_expected = expected
+                    self.assertEqual(context_expected, actual & current_modules)
 
     def test_validator_ownership_is_derived_from_the_workflow_contract(self) -> None:
         document = contract.load_contract_document(ROOT)
