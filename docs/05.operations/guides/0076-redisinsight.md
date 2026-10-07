@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -41,7 +41,7 @@ history, 로그를 영속화한다.
 - [RedisInsight Compose](../../../infra/04-data/redisinsight/docker-compose.yml)가
   profile, 볼륨, 라우트, CIDR, middleware, healthcheck를 정의한다.
 - gateway 경로에는 admin CIDR와 OAuth2 Proxy ForwardAuth가 적용되며 호스트
-  포트는 없다. 그러나 `edge_net`, `mng_data_net`, `lab_net`, `n8n_net`,
+  포트는 없다. 그러나 `edge_net`, `mng_data_net`, `n8n_net`,
   `airflow_net` peer는 직접 listener에 연결할 수 있다. 네이티브 UI 인증 선언이
   없어 gateway만이 유일한 접근 경로라고 볼 수 없다.
 - 현재 소스는 `RI_ENCRYPTION_KEY`를 선언하지 않는다. 업스트림은 이 키가 로컬에

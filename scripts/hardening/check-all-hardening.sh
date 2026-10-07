@@ -471,7 +471,6 @@ check_04_data() {
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight middleware chain mismatch"
   check_contains "$redisinsight_compose" "traefik.http.routers.redisinsight-static.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file" "redisinsight static middleware chain mismatch"
   check_service_network "$redisinsight_compose" "redisinsight" "mng_data_net"
-  check_service_network "$redisinsight_compose" "redisinsight" "lab_net"
 
   check_service_healthcheck "$redisinsight_compose" "redisinsight"
 }

@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2026-10-03"
 ---
 
@@ -32,7 +32,7 @@ OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint
 | 경계 | LAB 계약 |
 | --- | --- |
 | 상태 | `lab-opensearch-node1-data`, `node2-data`, `node3-data`, `dashboards-data`의 프로젝트별 새 named volume |
-| 네트워크 | `lab_opensearch_core_net`만 사용; 정상 `edge_net`·`obs_net`·`lab_net`에 접속하지 않음 |
+| 네트워크 | `lab_opensearch_core_net`만 사용; 정상 `edge_net`·`obs_net`에 접속하지 않음 |
 | 노출 | 호스트 publish 포트와 Traefik 라우터 없음; API 9200, 모니터링 9600, Dashboards 5601은 내부 expose만 |
 | 비밀 | `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password`, `lab_opensearch_dashboard_password`, `lab_opensearch_exporter_password`, `lab_opensearch_security_cookie`; 정상 비밀을 재사용하지 않음 |
 | 인증서 | `${LAB_OPENSEARCH_CERT_DIR}`의 별도 CA/node 인증서를 읽기 전용 mount; 값이 없으면 정적 render도 실패 |

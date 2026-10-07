@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2026-03-26"
 ---
 
@@ -43,7 +43,7 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 | Config files | `docker-compose.yml` |
 | Config values | 프로필: `admin`, `admin-data` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/04-data/redisinsight/docker-compose.yml` 경로로 루트 include가 활성화됨 |
-| Networks | `edge_net`, `mng_data_net`, `lab_net`, `n8n_net`, `airflow_net` |
+| Networks | `edge_net`, `mng_data_net`, `n8n_net`, `airflow_net` |
 | Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
 | Ports | 선언되지 않음 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, 외 7개 |
