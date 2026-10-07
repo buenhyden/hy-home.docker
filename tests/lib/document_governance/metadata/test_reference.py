@@ -5,7 +5,6 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import io
-import json
 import pathlib
 import shutil
 import subprocess
@@ -475,14 +474,6 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
         self.assertEqual((None, None), nonregular)
         self.assertEqual((None, None), oversized)
         self.assertEqual((None, None), missing_source)
-
-    def test_repository_contracts_validate_canonical_spec_packages(self) -> None:
-        profiles = current_profiles()
-        findings = metadata.validate_repository_contracts(ROOT, profiles)
-        self.assertNotIn(
-            "spec-package-invalid",
-            {finding.code for finding in findings},
-        )
 
     def test_repository_contracts_reject_fragmented_in_progress_task_evidence(
         self,
@@ -1177,29 +1168,6 @@ class IndexMembershipTests(unittest.TestCase):
 class ReadmeSectionProfileTests(unittest.TestCase):
     """Sections come from the document's own profile, not from `readme`."""
 
-    def test_every_readme_profile_that_declares_sections_is_satisfied(self) -> None:
-        registry = metadata.load_registry()
-        checked = 0
-        for path in ROOT.glob("**/README.md"):
-            relative = path.relative_to(ROOT).as_posix()
-            if relative.startswith((".git/", ".worktrees/", "node_modules/")):
-                continue
-            profile_id = classify_registered_path(relative, registry)
-            if profile_id is None:
-                continue
-            required = registry.profiles.get(profile_id, {}).get(
-                "required_sections", ()
-            )
-            if not required:
-                continue
-            checked += 1
-            _, h2 = extract_markdown_headings(path.read_text(encoding="utf-8"))
-            for section in required:
-                with self.subTest(path=relative, section=section):
-                    self.assertIn(f"## {section}", h2)
-        # A profile-driven check that inspects nothing passes vacuously.
-        self.assertGreater(checked, 100, "too few READMEs carry a section contract")
-
     def test_profiles_beyond_readme_declare_sections(self) -> None:
         """The rule is only worth enforcing if other profiles use it."""
 
@@ -1284,21 +1252,6 @@ class ArchiveContractDiagnosticTests(unittest.TestCase):
 
 class TemplateRoutingTests(unittest.TestCase):
     """SPEC-0184 rule 7: `template_roles` alone maps a type to its template."""
-
-    def test_registry_carries_no_template_catalog(self) -> None:
-        raw = json.loads(
-            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
-        )
-        self.assertNotIn("template_catalog", raw)
-        self.assertFalse(hasattr(metadata.load_registry(), "template_catalog"))
-        self.assertFalse(hasattr(reference_module, "_template_catalog_findings"))
-
-    def test_every_role_still_names_an_existing_source(self) -> None:
-        registry = metadata.load_registry()
-        self.assertGreater(len(registry.template_roles), 30)
-        for role_id, role in registry.template_roles.items():
-            with self.subTest(role=role_id):
-                self.assertTrue((ROOT / str(role["source"])).is_file())
 
     def test_templates_readme_routes_only_to_category_directories(self) -> None:
         from scripts.lib.document_governance.links import (

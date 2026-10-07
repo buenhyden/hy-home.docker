@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import pathlib
-import stat
 import subprocess
 import tempfile
 import unittest
@@ -16,44 +15,6 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
 class OperationsAuthorityTests(unittest.TestCase):
-    def test_operations_checker_is_executable_and_has_one_complete_route(
-        self,
-    ) -> None:
-        checker = ROOT / "scripts/validation/check-operations-catalog.py"
-        self.assertTrue(checker.stat().st_mode & stat.S_IXUSR)
-        result = subprocess.run(
-            [str(checker), "--help"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        for retired in ("--mode", "--domains"):
-            with self.subTest(option=retired):
-                self.assertNotIn(retired, result.stdout)
-
-        # The default route runs both validations, which is what --mode
-        # complete did; the other four modes were subsets of it.
-        default = subprocess.run(
-            [str(checker)], cwd=ROOT, capture_output=True, text=True, check=False
-        )
-        self.assertEqual(0, default.returncode, default.stdout + default.stderr)
-        self.assertIn("operations-catalog:", default.stdout)
-        rejected = subprocess.run(
-            [str(checker), "--mode", "complete"],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        self.assertNotEqual(0, rejected.returncode)
-
-    def test_active_corpus_has_no_generic_predecessor_or_release_role_routes(
-        self,
-    ) -> None:
-        self.assertEqual((), validate_active_operations_references(ROOT))
-
     def test_active_reference_scan_excludes_evidence_but_not_current_authority(
         self,
     ) -> None:

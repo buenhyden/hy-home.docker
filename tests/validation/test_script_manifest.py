@@ -16,13 +16,11 @@ from tests.validation._script_manifest_support import (
     FORBIDDEN_EVIDENCE_PREFIXES,
     KINDS,
     LIFECYCLES,
-    MANDATORY_DISPOSITIONS,
     MUTATION_OVERRIDES,
     MUTATIONS,
     OPERATIONS_MANIFEST_PATHS,
     REQUIRED_FIELDS,
     ROOT,
-    TASK12_RETIRED_SCRIPTS,
     is_runbook_authority,
     reference_proves_use,
     tracked_paths,
@@ -100,14 +98,6 @@ class ScriptManifestTests(unittest.TestCase):
                     violations.append(path.relative_to(ROOT).as_posix())
 
         self.assertEqual([], violations)
-
-    def test_task12_retires_only_the_proven_successor_scripts(self) -> None:
-        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.tracked))
-        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.rows_by_path))
-        self.assertIn(
-            "scripts/operations/rehearse-sample-service-delivery.sh",
-            self.tracked,
-        )
 
     def test_records_are_sorted_and_use_the_complete_schema(self) -> None:
         paths = [row["path"] for row in self.rows]
@@ -210,21 +200,6 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual([], offenders)
 
-    def test_taxonomy_library_declares_exact_real_consumers_and_tests(self) -> None:
-        row = self.rows_by_path["scripts/lib/document_governance/taxonomy.py"]
-        self.assertEqual("retain", row["disposition"])
-        self.assertEqual(
-            [
-                "scripts/lib/document_governance/metadata/lifecycle.py",
-                "scripts/lib/document_governance/metadata/profile.py",
-            ],
-            row["consumers"],
-        )
-        self.assertEqual(
-            ["tests/lib/document_governance/test_taxonomy.py"],
-            row["tests"],
-        )
-
     def test_python_import_evidence_recognizes_package_member_imports(self) -> None:
         adapter = "scripts/validation/check-document-metadata.py"
         for member in (
@@ -246,40 +221,6 @@ class ScriptManifestTests(unittest.TestCase):
                     and "check_command" in row
                 ):
                     self.assertEqual(row["path"], row["check_command"][1])
-
-    def test_plan_mandatory_dispositions_and_high_risk_operations(self) -> None:
-        for path, disposition in MANDATORY_DISPOSITIONS.items():
-            with self.subTest(path=path):
-                self.assertEqual(disposition, self.rows_by_path[path]["disposition"])
-
-        for path in (
-            "scripts/operations/gen-secrets.sh",
-            "scripts/security/seed-grype-db-cache.sh",
-        ):
-            with self.subTest(path=path):
-                row = self.rows_by_path[path]
-                if row["disposition"] == "retain":
-                    self.assertTrue(row["consumers"])
-                    self.assertTrue(row["tests"])
-                    self.assertTrue(is_runbook_authority(row["authority"]))
-
-    def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
-        postgres = self.rows_by_path[
-            "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-        ]
-        self.assertEqual("retain", postgres["disposition"])
-        self.assertEqual(
-            "docs/05.operations/runbooks/0032-postgresql-logical-upgrade-restore-rehearsal.md",
-            postgres["authority"],
-        )
-        self.assertEqual(
-            [".github/workflow-contract.yml", postgres["authority"]],
-            postgres["consumers"],
-        )
-        self.assertEqual(
-            ["tests/validation/test_postgres_logical_upgrade_rehearsal.py"],
-            postgres["tests"],
-        )
 
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
@@ -496,14 +437,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn(
             "authority-untracked", self.codes(self.row(authority="docs/unknown.md"))
         )
-
-    def test_manifest_rejects_retired_operations_authority_fields(self) -> None:
-        for field in ("current_authorities", "semantic_witnesses"):
-            with self.subTest(field=field):
-                self.assertIn(
-                    "fields-unknown",
-                    self.codes(self.row(**{field: ["docs/authority.md"]})),
-                )
 
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
         self.assertIn(

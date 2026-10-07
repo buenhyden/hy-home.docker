@@ -783,20 +783,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 )
                 self.assertIn(expected, {finding.code for finding in findings})
 
-    def test_public_profiles_share_one_validator_definition(self) -> None:
-        document = self.load_contract_document(ROOT)
-        public = self.module.parse_public_gate_contract(document)
-        self.assertEqual(
-            public.suite_names,
-            self.module.select_public_suites(public, "full", ()),
-        )
-        self.assertEqual(
-            len(public.validators),
-            len({route.entrypoint for route in public.validators}),
-        )
-        self.assertNotIn("profile_roots", document)
-        self.assertTrue(all("profiles" not in node for node in document["gate_nodes"]))
-
     def test_legacy_profile_root_substitution_fails_closed(self) -> None:
         with self.workflow_fixture() as root:
             document = self.load_contract_document(root)

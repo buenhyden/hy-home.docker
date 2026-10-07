@@ -20,7 +20,6 @@ from scripts.lib.document_governance.metadata_validator import (
     build_manifest,
     build_registry_profiles,
     infer_artifact_type,
-    parse_frontmatter,
     validate_body_contract,
     validate_record,
 )
@@ -1170,76 +1169,6 @@ class DocumentRegistryTests(unittest.TestCase):
             ("resolved", "investigating"),
             registry.transitions["incident"]["mitigated"],
         )
-
-    def test_active_corpus_uses_migrated_statuses_and_common_six(self) -> None:
-        registry = load_registry()
-        common_six = ["title", "version", "type", "status", "owner", "updated"]
-        legacy_statuses = {
-            "requirements-package": {"active"},
-            "adr": {"draft", "active"},
-            "task": {"active"},
-            "incident": {"open", "closed"},
-            "postmortem": {"active"},
-            "research": {"active"},
-            "audit": {"active"},
-            "data": {"active"},
-            "research-member": {"active"},
-            "audit-member": {"active"},
-            "generated": {"active"},
-            "migration": {"completed"},
-            "tombstone": {"completed"},
-        }
-        listed = subprocess.run(
-            [
-                "git",
-                "ls-files",
-                "--cached",
-                "--others",
-                "--exclude-standard",
-                "--",
-                "*.md",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        checked = 0
-        for relative in listed.stdout.splitlines():
-            if not (ROOT / relative).is_file():
-                continue
-            if relative.startswith(
-                (
-                    "docs/98.archive/completed/",
-                    "docs/98.archive/superseded/",
-                    "docs/98.archive/retired/",
-                    "docs/99.templates/templates/",
-                )
-            ):
-                continue
-            profile_id = classify_path(relative, registry)
-            if profile_id is None:
-                continue
-            profile = registry.profiles[profile_id]
-            if profile.get(
-                "frontmatter_policy"
-            ) != "required" or _declares_provider_binding(profile):
-                continue
-            with self.subTest(path=relative, profile_id=profile_id):
-                values = registry_module.normalize_profile_frontmatter(
-                    parse_frontmatter(ROOT / relative), profile, relative
-                )
-                if declares_frozen_legacy_status(
-                    profile, relative, values.get("status")
-                ):
-                    continue
-                self.assertEqual(common_six, list(values)[:6])
-                self.assertNotIn(
-                    values.get("status"), legacy_statuses.get(profile_id, set())
-                )
-            checked += 1
-
-        self.assertGreaterEqual(checked, 600)
 
     def test_frozen_legacy_status_exception_is_exact(self) -> None:
         registry = load_registry()
@@ -2925,35 +2854,6 @@ class FreeFormProfileTests(unittest.TestCase):
             ),
         )
         self.assertIn("body-heading-forbidden", codes)
-
-    def test_every_governance_policy_document_satisfies_its_own_contract(self) -> None:
-        policies = sorted(
-            path
-            for path in (ROOT / ".agents").rglob("*.md")
-            if re.search(
-                r'^type:\s*"?governance/policy"?\s*$',
-                path.read_text(encoding="utf-8"),
-                re.M,
-            )
-        )
-        self.assertTrue(policies)
-        adapted = self._adapted()
-        offenders: list[str] = []
-        for path in policies:
-            record = Record(
-                path=path.relative_to(ROOT),
-                metadata={"profile_id": "governance-policy", "status": "active"},
-                artifact_type="governance-policy",
-            )
-            findings = validate_body_contract(
-                record, path.read_text(encoding="utf-8"), adapted, True
-            )
-            offenders.extend(
-                f"{path.relative_to(ROOT)}: {finding.message}"
-                for finding in findings
-                if finding.code == "body-heading-forbidden"
-            )
-        self.assertEqual([], offenders)
 
 
 class ExecutionLifecycleTests(unittest.TestCase):

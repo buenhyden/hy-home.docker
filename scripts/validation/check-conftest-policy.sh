@@ -2,9 +2,23 @@
 set -euo pipefail
 
 # Runs the Conftest job exactly as declared in
-# infra/11-quality/conftest/docker-compose.yml (POL-0095): policy unit tests,
-# then every Compose leaf and Dockerfile under infra/. Exit 0 only when no
-# deny fires. The job has no network and mounts infra/ read-only.
+# infra/11-quality/conftest/docker-compose.yml (POL-0095). The default preserves
+# the combined policy-unit and corpus check; CI selects their closed modes.
+
+mode="all"
+if [[ $# -eq 2 && $1 == "--mode" ]]; then
+  mode=$2
+elif [[ $# -ne 0 ]]; then
+  echo "usage: $0 [--mode verify|corpus|all]" >&2
+  exit 2
+fi
+case "$mode" in
+  verify|corpus|all) ;;
+  *)
+    echo "usage: $0 [--mode verify|corpus|all]" >&2
+    exit 2
+    ;;
+esac
 
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
@@ -16,6 +30,6 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 status=0
-"${compose[@]}" run --rm conftest || status=$?
+"${compose[@]}" run --rm conftest "$mode" || status=$?
 "${compose[@]}" down --remove-orphans >/dev/null 2>&1 || true
 exit "$status"

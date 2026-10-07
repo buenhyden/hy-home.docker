@@ -839,6 +839,487 @@ and exact independent readback pass. PR368's next actual candidate acceptance
 remains pending; this package remains in-progress and is not completed,
 merged or runtime-activated. No new full local or remote-bundle replay runs.
 
+### Submitted local-only candidate and unit followup
+
+The exact locally verified seventeen-file input was committed as
+`076b97641476c1263c768cde1c18451f9b94d00c`, tree
+`dfb08b18e2c1cd411438132082f1dd24dfcc185e`, and pushed normally to PR368.
+Commitizen message validation and actual installed hooks ran; source/index
+hashes matched the frozen input and the worktree was clean. The final three
+package document minimum passed metadata selected three/violations zero,
+registered isolated style three/errors zero and local links three documents,
+eleven links, zero findings. Actual final independent reviewer reported no
+Important finding on the matching input. These local results do not replace
+remote candidate acceptance.
+
+Actual run37568286266 attempt one, head076b976, job112620932425 returned failure.
+The candidate step ran from 03:46:33Z to 03:57:34Z on 2026-10-07, eleven minutes
+one second; job completed at 03:57:37Z. Only status/time metadata was observed.
+Raw validation output requires its separate scoped approval; no failure cause
+or exact executed leaf count is inferred. No rerun or merge was performed.
+Spec, Plan and Task are physically blocked pending diagnosis.
+
+The latest user additionally directs necessary unit checks to the LOCAL-only
+lane and obsolete/duplicate unit retirement. Separate actual read-only agents
+map remaining registered invocations by actual code and fixture behavior and
+prepare exact deletion/continuing-owner proposals. This does not delete a
+required check just because the preceding candidate failed. Current corpus,
+configuration, archive integrity, Docker behavior and live/runtime authority
+remain distinct. Unit source changes, command splits and validation begin only
+after the concrete current-owner mapping is reconciled; numeric/native budgets
+remain UNKNOWN. Read-only proposals neither change source nor claim acceptance.
+
+### Approved output diagnosis and independent unit scope
+
+The user separately approved only job112620932425's candidate validation
+output. Root inspected only the approved ZIP step member in memory. Sanitized
+receipt `/tmp/hy-home-spec0211-approved-local-only-hosted-diagnostic.json`
+records 239 tests PASS/57.444 seconds, 232 tests PASS/18.510 seconds with twenty-three
+skipped, observed registered style hooks PASS, and rejection code
+`ci-gate-adapter-audit`. The consumer reports that bounded npm acceptance is
+unavailable; this output does not identify the exact rejected condition. Raw
+output, tokens and environment values are not printed or persisted. No audit
+rerun, exception extension or failing-check deletion follows this diagnosis.
+
+The npm boundary remains with SPEC-0204 Task1; risk expiry is unchanged. Official
+[GitHub advisory](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm) was actually
+rechecked and still lists no patched version. That fact alone does not prove
+why this run rejected acceptance. The current security prerequisite remains
+FAIL and prevents overall integration acceptance.
+
+The latest explicit user answer authorizes necessary unit checks LOCAL-only and
+obsolete/duplicate unit retirement. This is an independent unit ownership slice
+on head076b976, not a retry of or waiver for the npm rejection. Whole-leaf
+candidates are release helper mocks, default Compose/service fixture regressions
+and synthetic supply-chain fixture policy. Actual corpus and browser/HTTP/build
+integration remain remote. Conftest Rego unit verify separates from actual
+Compose/Dockerfile corpus validation with closed modes and unchanged direct
+all-mode compatibility, network isolation, read-only mounts and cleanup.
+
+The retirement writer owns only four proposed test/support files: surface
+ownership, script manifest tests/support and tech-stack tests. Its independently
+reviewed formatted patch SHA-256
+`16f7f37b3c901214ef9052e908874427f9bdb63ed7a342aa383e104d1a238c73`
+removes twelve completed-event/fixed-census/test-helper methods and their exclusive
+helpers. Current semantic evidence, runtime authority, Docker/archive/identity
+behavior, direct drift duplicate guard and 116 other method ASTs remain.
+Exact retired metadata snapshots are not claimed preserved as current rules.
+
+The pipeline writer owns typed gate registration/consumer/prerequisite handling,
+the Conftest wrapper and container entrypoint, their contract/plan/context/Compose
+focused regressions, tier cutover test retirement and Gatus whitespace-boundary
+movement to the existing local controller test. Root owns current Spec/Plan,
+policy/README/Task alignment, staging, selected validation and logical commit.
+W2 covers retired unit semantics, W3 local execution selection, W4 remote corpus
+ownership, W6 current guidance and W7 exact-input review. No profile, lifecycle,
+Registry/schema generation, provider, actual protection, npm, runtime or archive
+payload is changed. Unit execution starts only after security/design readback;
+its current budget/native remainder is UNKNOWN. Overall candidate acceptance
+remains blocked by the independent security prerequisite.
+
+### Independent unit implementation start
+
+Security/design reviewer `qa_delivery_security_review` read the actual unit
+classification proposal. The user's explicit all-unit-LOCAL policy changes
+assurance location: mocked release/supply-chain/service boundary cases remain
+intact and selected locally, while hosted PRs no longer execute those mocks.
+Remote retains actual corpus, source/configuration/permission and browser/HTTP
+checks. Release production guards, network isolation and required independent
+local review remain. This scope grants no publication or npm waiver.
+
+One concrete Conftest implementation hazard was identified and included before
+writing: public-plan joining/emission by entrypoint alone would collapse two
+registered leaves sharing a wrapper. The pipeline must use registered gate ID
+ownership and keep argv mode in invocation identity. LOCAL includes verify and
+corpus exactly once; hosted includes corpus only. Both IDs declare Docker.
+Closed wrapper/container modes reject extra/unknown arguments before Docker;
+verify does not render or scan corpus, corpus does not execute Rego unit verify,
+and direct default all mode remains compatible. Exact source and outcomes still
+require independent final review.
+
+Root physically resumes Spec, Plan and Task in-progress for this separately
+user-authorized unit slice. The independent npm criterion remains FAIL and
+blocks overall integration acceptance. Writers may change only assigned unit
+registration/mode/test owners; Root owns these current contract and execution
+records. Focused RED/GREEN precedes selected local checks, registered static
+checks, document minimum and read-only final review. No same-input full/remote
+bundle replay or audit rerun is implied. Unit retirement has no production or
+archive changes. A failed required unit check stops this implementation slice.
+
+### Unit boundary implementation review
+
+Root actually observed Docker client/server 29.8.2/29.8.2 reachable before the
+selected local unit execution. This is a prerequisite observation, not HOME,
+service recovery, release or deployment acceptance. Numeric/native budgets
+remain UNKNOWN.
+
+The applied four-file retirement patch preserves 116 retained method ASTs;
+registered Ruff check/format PASS is recorded in
+`/tmp/hy-home-spec0211-applied-local-unit-retirement-receipt.json`. Its removed
+exclusive helper symbols have no remaining references in scripts, tests or
+workflow sources in the actual current search. Five completed tier model-move
+proofs and their exclusive comparator are also retired; current layout and
+service behavior owners remain. The Gatus module's unrelated whitespace guard
+moves to the existing local controller module with its assertions preserved.
+No completed document, archive payload or production runtime is modified.
+
+Initial independent policy readback identified two current unit-boundary defects
+before input freeze. Explain rows must distinguish the shared Conftest entrypoint
+by gate ID and argv/mode, and regression parity must compare the same identity
+rather than unique paths. The contract must also derive LOCAL-only admission
+for registered internal run-unittest commands and the typed Conftest verify leaf,
+so a future isolated unit cannot become hosted through a missing census entry.
+The initial writer batch includes these narrow source/model/parity corrections;
+findings remain unresolved until actual focused GREEN and final independent
+readback. The pipeline writer additionally owns the existing gate-model test
+because its path-only uniqueness expectation no longer represents mode identity.
+No new lifecycle, schema, public runner option or duplicate inventory is added.
+
+Actual source readback additionally requires each public validator gate ID to
+bind its reachable registered leaf path and argv. A unique but mismatched row
+must not replace the leaf command. Security review identified that syntactically
+safe Conftest mode rebinding could otherwise remove hosted corpus scanning.
+The two typed gate capabilities therefore retain exact corpus and verify argv
+respectively, including rejection when both registration and validator rows are
+changed together. These source-boundary fixes and negative regressions stay in
+the initial unit writer slice; no weakened audit or broadened shell capability
+is introduced. Final evidence is still pending.
+
+Security readback then closed the gate capability finding but found an actual
+container cwd calculation error in the new portable mode harness: four parents
+from `/project/infra/11-quality/conftest` select `/`, not `/project`. Correcting
+the parent depth and making the isolated shell fixture use the actual deployed
+three-directory layout is part of this pre-freeze initial batch. No actual
+container verification or corpus PASS is claimed before the corrected selected
+execution. The first bounded focused run also retained two stale model/explain
+expectation failures (99 PASS of 101); their corrected test input is separately
+identified in the writer receipt rather than overwriting the failures.
+
+### Frozen unit source and focused prerequisites
+
+The pipeline writer froze its thirteen assigned files on head076b976.
+`/tmp/spec-0211-unit-localization-focused-receipt.json`, SHA-256
+`72ee5bd04f7746d0090f96781a466cee0a9e7173764a1bfe15c43307ecdb3795`,
+records the actual initial RED boundaries and preserved intermediate 99/101
+result, then corrected bounded 101/101 PASS in 14.931 seconds. The final
+Conftest class is 6/6 PASS in 0.045 seconds on the three-parent cwd and
+omitted-versus-empty mode distinction. Registered Ruff 0.15.12 check/format on
+ten Python paths, yamllint, both shell syntax checks, current workflow checker
+(five workflows, seven jobs, eight actions) and owned diff check passed.
+No aggregate, remote, audit or optional live rehearsal was executed by that
+writer. The final exact explain consumer census uses gate/path/argv identity;
+existing local-only explain has its separate unchanged format.
+
+The retirement writer then ran the ten declared continuing-owner checks once,
+PASS in 8.156 seconds with four owned files and the DAG unchanged before/after.
+Receipt `/tmp/hy-home-spec0211-local-unit-retirement-focused-receipt.json`
+proves library/test reachability, current script inventory and semantic consumer
+references, mandatory behavior evidence, unsafe path rejection and the retained
+drift duplicate guard. Its previous registered static and 116-method AST proof
+remains valid for the same four source hashes.
+
+Root now stages only the twenty-two authorized implementation, regression and
+current policy/package/README files. Canonical changed/local-only explain and a
+nonexecuting full invocation manifest are derived from the actual machine
+contract before the one selected LOCAL execution. No previous configuration
+PASS is substituted for this changed input, and no remote bundle/full audit is
+replayed. Final document results and independent exact-input review are still
+pending; overall npm integration acceptance remains blocked.
+
+### Selected unit failure and bounded retirement proposal
+
+Root ran the canonical changed/local-only gate once on staged twenty-two-file
+tree519ab7b2757acf1a516ade229fb39fa9617c5b92, head076b976 and main849ef009a.
+Receipt `/tmp/hy-home-spec0211-unit-frozen-plan.json` records actual LOCAL16
+invocations, Docker required and Node unnecessary, and a plan-only PR30 manifest
+excluding all sixteen typed local-only leaves. Receipt
+`/tmp/hy-home-spec0211-unit-execution-result.json` records exit1, 1449.183 seconds
+and all owned source unchanged. No raw output is stored.
+
+The first eleven registered leaves returned zero, including local links,
+lifecycle15, metadata140/565.309 seconds, library664/608.792 seconds,
+supply-chain fixtures239, actual isolated Docker Conftest verify, Compose
+fixtures229 with twenty-three optional runtime skips, contract26, runner59 and
+adapter39. The workflow regression leaf ran37 and failed only
+`test_public_profiles_share_one_validator_definition`: its entrypoint-only
+uniqueness expectation is obsolete for the two admitted Conftest mode owners.
+The four subsequent registered leaves were NOT_RUN due fail-fast. This is a
+failed selected execution, not overall PASS or integration acceptance.
+
+Root physically blocks Spec, Plan and Task pending the one narrower unit retry.
+The same QA writer proposed retiring just this obsolete/duplicate method,
+patch SHA-256 `0e00ad340709f6d31de673dad3be6abf978cc86cc260eba48ed090694118af69`.
+Full-suite selection, closed legacy fields and exact gate/path/argv identity
+retain current positive/negative contract, model and workflow loader owners.
+The user's necessary-local/stale-unit retirement scope covers this method;
+no production, config, schema, audit or required gate is weakened. Independent
+review of the concrete one-method proposal precedes apply. The remaining
+four leaves and corrected workflow leaf require actual execution; the preceding
+unchanged implementation evidence is preserved without another aggregate run.
+Final result-only documentation receives its scoped minimum checks.
+
+### Reviewed narrow unit retirement and continuation
+
+Actual read-only reviewer `qa_current_policy_review` inspected the concrete
+one-method patch0e00ad34 and every continuing assertion owner, returning PASS
+with no Important finding. Full profile selection remains in current contract
+and Storybook-plan tests. Closed retired fields retain actual parser/loader
+negative tests. Exact gate/path/argv uniqueness and explain parity replace the
+invalid entrypoint-only expectation. This retirement is covered by the user's
+explicit obsolete/duplicate unit request; review is not a new approval source.
+
+The existing QA writer owns this additional workflow test file and applies only
+that method deletion. Root resumes this one narrower unit continuation on the
+same head/base/tool/context and unchanged implementation/config. Only the
+corrected workflow leaf and the four previously NOT_RUN registered leaves are
+executed through the shared executor, in their original order and timeouts.
+The historical failed aggregate remains FAIL. Prior eleven implementation
+results remain recorded; result-only Task changes are checked through the
+scoped document minimum. No entire aggregate/full/remote/audit is replayed.
+A further required failure stops the unit continuation and commit. Overall npm
+acceptance remains blocked independently of this bounded local unit work.
+
+### Narrow unit prerequisite result and metadata-library extension
+
+The one-method retirement was actually applied by the same QA writer, with
+registered Ruff check/format and diff check PASS. Receipt
+`/tmp/spec-0211-stale-validator-unit-retirement-receipt.json`, SHA-256
+`cd73c4fe7a85c89956dad6a1e9a6f54b0e078b51449d3152036f32a390413ef0`,
+records exactly one removed method and preserved remaining method order/body.
+Workflow test source becomes717dc4685a63611470083b9bdef0a306f0c0b6136b02d455277a33381c4e3bd8.
+
+Root derived the narrow five-leaf continuation from the actual canonical public
+roots and LOCAL plan, using the original shared executor, order and timeouts.
+Receipt `/tmp/hy-home-spec0211-unit-narrow-continuation.json` records staged
+23-file treee4e3d66420abc646b19c37ec636c163c98655585, exit0 in75.417 seconds,
+all sources unchanged: workflow36 PASS, controller50 PASS, precommit regression
+leaf PASS, mocked release18 PASS and repository integrity162 PASS. The corrected
+workflow input replaces only that failed leaf's prerequisite. The initial
+aggregate FAIL is preserved, its prior eleven zero exits remain scoped evidence,
+and its four NOT_RUN leaves now have actual results. The entire aggregate was
+not replayed. Independent final result/source readback and document minimum
+still gate the logical local-only implementation commit.
+
+The user's subsequent explicit request extends the same obsolete/duplicate
+unit analysis to the metadata140 and library664 regressions. Both are already
+LOCAL-only; their latest observed PASS is historical input evidence, not proof
+of a cleanup that has not yet occurred. Two read-only classifiers inspect the
+six registered metadata modules and seventeen library modules with disjoint
+ownership. Only concrete obsolete/fixed-event/duplicate candidates and exclusive
+helpers may be proposed after current consumer and replacement-owner proof.
+No numerical deletion target, source mutation, test or aggregate execution is
+performed by that classification. Actual generation3–5 readers, raw bytes,
+CRLF/symlink/size/ancestry proof, current identity/profile/relationship/lifecycle
+and meaningful mutation/integration negatives remain current guarantees.
+
+This extension remains within SPEC-0211 AC1/W2, selection AC2/W3 and final
+review AC5/W7 under the same Task. Current unit source is logically complete;
+package execution remains in-progress for the separately requested metadata and
+library cleanup, while overall integration acceptance remains unaccepted due
+the independent npm prerequisite. No remote candidate, push, merge, archive
+or actual runtime promotion is claimed by the local source results.
+
+### Unit result authoring correction
+
+The first five-document minimum on Task input25f90057 returned FAIL in148.726
+seconds: Root had written multiple work units in the new evidence row, although
+the existing eight-column contract requires one. The package diagnostic reports
+an unknown Work Unit; without valid package context, initial-status and historical
+MIG/TMB diagnostics also appeared (149 violations). Receipt
+`/tmp/hy-home-spec0211-unit-final-document-minimum.json` preserves this result;
+style and links were NOT_RUN after that failure. Root corrects only its new row
+to W7, the existing aggregate review unit assigned those criteria. Spec/Plan
+mapping, historical lifecycle events, validator, Registry and frozen originals
+are unchanged. A new document-input minimum must confirm whether the downstream
+diagnostics clear; no historical type or state validation is waived.
+
+### Corrected document semantics and style followup
+
+The corrected five-document input e3d2a897 passed metadata in171.396 seconds,
+selected4 with zero violations, legacy exceptions or transition overrides.
+All initial-status and historical MIG/TMB diagnostics cleared without changing
+history, consumers, Registry or schema. Its scoped LOCAL link graph is five
+documents/twenty-eight links with no findings. Receipt
+`/tmp/hy-home-spec0211-unit-corrected-document-minimum.json` preserves these
+actual results. Isolated read-only Markdown style reported six MD012 multiple
+blank-line errors in Root's new Task sections; source and copied bytes remained
+unchanged during inspection. Root removes only the redundant authored blank
+lines. Final affected-document style and final result-only minimum remain to be
+checked; source implementation tests are not rerun for this formatting change.
+
+### Metadata regression retirement application
+
+The user explicitly authorized applying the same obsolete/duplicate unit
+classification to metadata and document-library regressions. The six registered
+metadata modules were inspected. The reviewed two-file proposal SHA-256
+`dd069eebf137dde3e3d15aa7249fd202c969f49c36acf5502c272224162e78cd`
+removes ten methods and the exclusive unused `json` import from
+`metadata/test_profile.py` and `metadata/test_reference.py`. Exact current
+owners and individual dispositions are recorded in
+`/tmp/hy-home-spec0211-proposed-metadata-unit-retirement-receipt.json`.
+The independent security reviewer verified that exact proposal and current
+owners, returning PASS with no Important findings before application.
+
+The removed expectations concern completed memory/progress/harness/Release
+routing, fixed prose/heading/catalog inventories, retired API names, arbitrary
+README/role count thresholds and duplicate live corpus positives. Registered
+profile/template section tests, the retained whole `check-contracts` CLI test,
+current Registry/schema/source binding and public changed document metadata
+remain the continuing owners. The public changed route uses trusted history;
+it is not claimed identical to the retired corpus unit's input. Whole template
+contract coverage is retained because it has a distinct current responsibility.
+Generation3–5, current identity/lifecycle/native envelopes, raw Git blobs,
+CRLF/symlink/size/ancestry and fragmented Evidence negatives remain unchanged.
+
+The same metadata writer applied only the two reviewed files after all six
+source hashes matched. Applied receipt
+`/tmp/hy-home-spec0211-applied-metadata-unit-retirement-receipt.json` proves
+53 retained method ASTs unchanged and the other four module hashes unchanged.
+Actual registered Ruff0.15.12 check/format and scoped diff check PASS. Exact
+removed method-name searches in scripts/tests/GitHub settings found no callers.
+These are application/static results; the changed metadata leaf has not yet
+executed and is not accepted based on the earlier140-test result. Root will
+execute only the two affected registered LOCAL leaves after library review and
+application, using the original shared executor, selection identity and timeout.
+Unchanged local leaves and remote corpus/audit are not replayed for this extension.
+
+### Reviewed library regression retirement
+
+The seventeen registered library modules were classified separately from the
+metadata writer. The exact six-file proposal SHA-256
+`ce6b0e47a5463eb19d12fa2981a4866029c610fc9486bb34f6ad64f535b7aa43`
+removes seventeen methods, exclusive imports/constants and one single-method
+callable-smoke class. Its corrected disposition receipt
+`/tmp/hy-home-spec0211-proposed-library-unit-retirement-receipt.json`
+records664 before,647 after and all647 retained method ASTs identical.
+The first proposal accounting had two class-name typos; those were corrected
+before application. Its earlier false AST/accounting result was not acceptance.
+The final proposal's six isolated registered Ruff0.15.12 check/format pairs and
+apply-check passed. These are proposal checks, not library test execution.
+
+The independent policy reviewer read the exact final patch and current owners,
+returning PASS with no Important findings. Removed expectations comprise the
+completed four-digit/path/module-split/catalog migrations, retired validator
+basenames or CLI-option tokens, fixed prose routes and current corpus positives
+already assigned to registered metadata, LOCAL links and operations catalog.
+The removed common-six/status census and its minimum600 threshold do not own
+that live rule: Registry common-six/lifecycle validation, retained contract
+mutation tests and per-record `validate_record` keep field order, required
+metadata and allowed status checks. The current public metadata route applies
+those checks with its actual changed-input/history semantics. Exact retired
+string/fixed-document/minimum-count censuses are deliberately retired, not
+claimed reimplemented elsewhere.
+
+Changes are confined to `test_architecture.py`, `test_links.py`,
+`test_metadata_validator.py`, `test_operations_catalog.py`,
+`test_operations_taxonomy.py` and `test_registry.py` in the library test folder.
+Archive/capture/assessment/snapshot, promoted evidence, identity history,
+Requirement, Spec package and taxonomy boundary modules remain unchanged.
+Raw Git bytes, generation3–5, ancestry/identity/current status, frozen content,
+symlinks and size bounds, native profiles and operations mutation negatives
+remain current contracts. Actual application and affected-leaf results must
+still be observed before accepting this retirement prerequisite.
+
+### Library application and affected execution input
+
+The library writer applied the exact independently reviewed six-file patch
+`ce6b0e47a5463eb19d12fa2981a4866029c610fc9486bb34f6ad64f535b7aa43`
+after all seventeen registered module prehashes and the current workflow
+contract matched. Applied receipt
+`/tmp/hy-home-spec0211-library-unit-retirement-applied-receipt.json`, SHA-256
+`7c885d43ed7da206b9f7d0cfe88378c22540297aa89d541f33e635d45ddb484e`,
+proves the six actual after-images match the statically verified proposal,
+the other eleven module hashes and excluded metadata input are unchanged,
+and all647 retained method ASTs remain identical. Existing staging was preserved.
+The isolated Ruff check/format results are reused only for exact after-image
+bytes, registered canonical filenames, the same config and tool version;
+no affected library test has yet run on this input.
+
+Root freezes the resulting31 owned files and derives the actual changed LOCAL
+plan from the registered public roots. Only
+`leaf.local-document-metadata-tests` and
+`leaf.document-governance-library-regressions` are selected for this newly
+changed test input, through `execute_execution_plan` with its original executor,
+order and600/900-second leaf timeouts. The other previously validated local
+leaves retain their scoped results; the historical aggregate failure is not
+rewritten. No hosted candidate, npm audit, full profile or runtime is executed
+by this affected-leaf validation.
+
+### Metadata-library actual result and narrow expectation closeout
+
+Root actually executed the two affected registered LOCAL invocations through
+`execute_execution_plan` on staged tree878ca39fbd07b6695e206249e042aee1696d101f,
+HEAD076b976 and base849ef009a. Metadata130 PASS in483.563 seconds; library647
+PASS in599.335 seconds. Controller wall time was1084.405 seconds, exit0,
+no failure names and all31 sources unchanged. Receipt
+`/tmp/hy-home-spec0211-metadata-library-retirement-execution.json` records the
+exact registered argv, original600/900-second timeouts and source hashes.
+The actual non-executing plan in
+`/tmp/hy-home-spec0211-metadata-library-frozen-plan.json` has16 LOCAL-only and30
+remote invocations with all16 excluded remotely. That count is a routing plan;
+this execution observed only the two changed leaves, not hosted speedup.
+
+Root's final readback found one mixed metadata test retaining an obsolete
+physical-absence assertion for the retired harness template. The narrower
+proposal2823daa03a9debae71776c55ffcb254650477f359f7776f82bd3e681afb8f714
+removes only that assertion and renames the test to
+`test_task_has_one_registered_source`. Its exact current Registry-owned single
+Task-source assertion remains identical; the other129 metadata test ASTs remain
+identical. The independent policy reviewer read that final proposal and returned
+PASS with no Important findings before application. Applied receipt
+`/tmp/hy-home-spec0211-applied-task-source-expectation-retirement-receipt.json`
+proves exact after-imagea7bb7970 and preserved other module/Registry bytes;
+Ruff check/format evidence is reused only for exact verified proposed bytes,
+canonical path and unchanged config/tool. This retires a literal historical
+filename expectation while keeping the continuing authority invariant.
+
+The first focused adapter attempt inherited an environment it did not admit
+and returned exit2 before executing tests. Receipt
+`/tmp/hy-home-spec0211-task-source-expectation-focused-environment-rejection.json`
+preserves that result without recording environment keys or values. Root supplied
+only the admitted PATH/LANG/LC_ALL local environment, keeping the adapter's
+validation unchanged. The actual registered adapter `run-unittest` executed
+only the changed method once: one test PASS in0.454 seconds, wall0.865 seconds,
+exit0 and input unchanged on staged tree3c2638472756093265ae4358884503e8785e1279.
+Receipt `/tmp/hy-home-spec0211-task-source-expectation-focused-result.json`
+records that command and exact source/Registry hashes. The full metadata130 and
+library647 inputs are not replayed for this one-clause deletion. Their prior
+results remain bound to their earlier tree and the unchanged129-method proof.
+
+Exact retired method-name scans across scripts/tests/GitHub configuration found
+no callers, recorded in
+`/tmp/hy-home-spec0211-metadata-library-retired-caller-scan.json`. Twenty-seven
+whole obsolete/duplicate methods plus the mixed test's historical assertion
+are retired; these counts describe the diff rather than an acceptance target.
+No production document consumer, Registry/schema/lifecycle model, frozen bytes,
+audit exception, actual protection setting or runtime is changed by this
+extension. Continuing owners and reviewed dispositions are recorded above.
+The final result-only Task metadata/style/LOCAL links and independent exact
+readback still gate the logical commit. Overall integration remains unaccepted
+because the separate hosted npm prerequisite failed on the submitted input.
+
+### Local unit closeout document evidence
+
+The result-only Task input3b327b2a passed its registered changed metadata check
+in146.241 seconds: selected1, violations0, legacy exceptions0 and transition
+overrides0 against explicit base849ef009a. Isolated read-only Markdown style
+passed with zero errors and unchanged copied bytes. The scoped LOCAL graph has
+one Task/two links and no findings. Receipt
+`/tmp/hy-home-spec0211-metadata-library-final-task-minimum.json` preserves these
+actual results; the other four policy/contract documents remain byte-identical
+to their earlier passing metadata/link input. The earlier authoring/style
+failures and their fixes remain historical evidence.
+
+This last result record changes only the mutable Task. Its final exact input
+must receive Task-only minimum validation, recorded at
+`/tmp/hy-home-spec0211-unit-final-record-minimum.json`, and independent source/
+result readback before the logical commit. That external check receipt closes
+the record without changing the Task merely to copy its own final SHA. There is
+no further unit/aggregate replay. Local source validation is independent from
+candidate acceptance; the npm prerequisite and overall package integration
+remain unaccepted. No completion transition, actual protection mutation,
+release publication or runtime acceptance is added by this closeout.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -867,6 +1348,18 @@ merged or runtime-activated. No new full local or remote-bundle replay runs.
 | SPEC-0211 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
 | SPEC-0211-PLAN-0001 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
 | SPEC-0211-TSK-0001 | blocked | in-progress | #approved-final-consumer-and-drift-repair |
+| SPEC-0211 | in-progress | blocked | #submitted-local-only-candidate-and-unit-followup |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #submitted-local-only-candidate-and-unit-followup |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #submitted-local-only-candidate-and-unit-followup |
+| SPEC-0211 | blocked | in-progress | #independent-unit-implementation-start |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #independent-unit-implementation-start |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #independent-unit-implementation-start |
+| SPEC-0211 | in-progress | blocked | #selected-unit-failure-and-bounded-retirement-proposal |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #selected-unit-failure-and-bounded-retirement-proposal |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #selected-unit-failure-and-bounded-retirement-proposal |
+| SPEC-0211 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
 
 ### Official research inputs
 
@@ -897,13 +1390,23 @@ merged or runtime-activated. No new full local or remote-bundle replay runs.
 | Local-only ownership validation | 2 | W3 | Canonical local-only execution, typed plan and independent review | Frozen13 treec341179b; twelve selected invocations | FAIL | Local-only validation failure and narrow consumer repair | pending |
 | Narrow integrity retry | 2 | W3 | Changed registered leaf only | Frozen16 tree41c3da3e; 174 tests | FAIL | Narrow integrity retry result | pending |
 | Corrected local ownership prerequisite | 2 | W3 | Preserved eleven leaves plus approved changed registered leaf | Frozen17 tree9542ed9f; final174 tests | PASS | Final local ownership result and submission input | pending |
+| Submitted local-only candidate | 3 | W4 | Actual hosted candidate status and time | PR368 head076b976; run37568286266/job112620932425 | FAIL | Submitted local-only candidate and unit followup | pending |
+| Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | pending |
+| Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | pending |
+| Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | pending |
 
 ## Review and Completion
 
 Only initial contract issuance W1 is accepted for final promotion. Prior hosted
-inputs failed and remain recorded. The corrected selected local prerequisite
-passed; final document/readback checks gate submission, and the new remote
-candidate result remains pending. Overall package criteria are not completed.
+inputs failed and remain recorded. The corrected previous local prerequisite
+passed and was submitted as head076b976; that hosted candidate failed the npm
+adapter and is not accepted. The isolated-unit source prerequisite is
+locally validated through recorded focused, selected and bounded continuation
+results; final document/readback checks gate its logical commit. The explicitly
+extended metadata/library retirement prerequisite passed its affected leaves
+and reviewed narrow-case check. Final result-only document/readback checks
+still gate its logical commit. Overall package
+criteria and npm integration acceptance are not completed.
 Missing operational observations and release publication remain unexecuted;
 source structure and mocked publication are not runtime activation.
 

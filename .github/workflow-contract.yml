@@ -859,12 +859,29 @@
       "gate_id": "leaf.conftest-policy",
       "kind": "leaf",
       "entrypoint": "scripts/validation/check-conftest-policy.sh",
-      "argv": [],
+      "argv": [
+        "--mode",
+        "corpus"
+      ],
       "cwd": ".",
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "conftest-policy"
+    },
+    {
+      "gate_id": "leaf.conftest-policy-tests",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-conftest-policy.sh",
+      "argv": [
+        "--mode",
+        "verify"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "conftest-policy-tests"
     },
     {
       "gate_id": "leaf.template-security-baseline",
@@ -965,6 +982,7 @@
       "children": [
         "leaf.template-security-baseline",
         "leaf.conftest-policy",
+        "leaf.conftest-policy-tests",
         "leaf.compose-baseline-regressions"
       ]
     },
@@ -1025,8 +1043,12 @@
       "leaf.local-hook-rule-tests",
       "leaf.local-document-metadata-tests",
       "leaf.local-document-corpus-lifecycle-tests",
+      "leaf.compose-baseline-regressions",
+      "leaf.release-regressions",
       "leaf.repository-integrity-regressions",
       "leaf.repo-contracts-control-plane-regressions",
+      "leaf.supply-chain-fixture-policy",
+      "leaf.conftest-policy-tests",
       "leaf.workflow-contract-regressions"
     ],
     "suite_roots": {
@@ -1185,12 +1207,27 @@
         "suite": "operations",
         "gate_id": "leaf.conftest-policy",
         "entrypoint": "scripts/validation/check-conftest-policy.sh",
-        "argv": [],
+        "argv": [
+          "--mode",
+          "corpus"
+        ],
         "contexts": [
           "local",
           "pull_request",
           "push",
           "workflow_dispatch"
+        ]
+      },
+      {
+        "suite": "operations",
+        "gate_id": "leaf.conftest-policy-tests",
+        "entrypoint": "scripts/validation/check-conftest-policy.sh",
+        "argv": [
+          "--mode",
+          "verify"
+        ],
+        "contexts": [
+          "local"
         ]
       },
       {

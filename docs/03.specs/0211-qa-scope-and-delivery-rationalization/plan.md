@@ -36,9 +36,13 @@ independent writer slices with a shared registration owner and read-only review.
 Use focused RED/GREEN only for changed behavior and scoped registered style
 checks. Derive final changed selection from the machine contract. The remote
 PR run owns candidate validation excluding typed local-only leaves. The shared
-runner selects implementation fixtures and links once in its local-only lane
-before submission; local development does not repeat the remote bundle or full
-profile. Record each actual input, result and review separately in the Task.
+runner selects necessary units, implementation fixtures and links once in its
+local-only lane before submission; local development does not repeat the remote bundle or full
+profile. Separate Conftest unit verify from actual corpus commands while preserving
+one invocation per registered gate ID/mode and Docker prerequisite ownership.
+Retire completed cutover, fixed corpus and test-only helper units only after
+current semantic owners are verified. Record each actual input, result and
+review separately in the Task.
 Initial draft publication and final evidence-only records use document-minimum
 checks. Generic preserved-source compatibility remains separate from historical
 cutover completion evidence.

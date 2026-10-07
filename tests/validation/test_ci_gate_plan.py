@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import io
+import json
 import os
 import pathlib
 import shutil
@@ -82,6 +83,17 @@ def build_public_plan(
         context,
         profile=profile,
     )
+
+
+def _explained_identity(line: str) -> tuple[str, str, tuple[str, ...]]:
+    _, entrypoint, gate_id, argv = line.split("\t")
+    return gate_id, entrypoint, tuple(json.loads(argv))
+
+
+def _invocation_identity(
+    invocation: runner.GateInvocation,
+) -> tuple[str, str, tuple[str, ...]]:
+    return invocation.gate_id, invocation.entrypoint.as_posix(), invocation.argv
 
 
 def _rebind_diff_gate(
@@ -719,7 +731,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 self.assertFalse(targets & {item.gate_id for item in plan})
 
-    def test_release_owner_changes_select_only_the_release_regression(self) -> None:
+    def test_release_owner_changes_select_release_regression_only_locally(self) -> None:
         release_inputs = (
             "scripts/operations/release.py",
             "tests/validation/test_release.py",
@@ -730,11 +742,16 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
         for path in release_inputs:
             with self.subTest(path=path):
-                plan = build_public_plan(
+                hosted = build_public_plan(
                     "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
                 )
-                ids = {item.gate_id for item in plan}
-                self.assertIn("leaf.release-regressions", ids)
+                local = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                hosted_ids = {item.gate_id for item in hosted}
+                local_ids = {item.gate_id for item in local}
+                self.assertNotIn("leaf.release-regressions", hosted_ids)
+                self.assertIn("leaf.release-regressions", local_ids)
                 self.assertFalse(
                     {
                         "leaf.compose-validation",
@@ -743,9 +760,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         "leaf.template-security-baseline",
                         "leaf.quickwin-baseline",
                     }
-                    & ids
+                    & hosted_ids
                 )
-                self.assertFalse(runner.selected_prerequisites(plan, (path,)).docker)
+                self.assertFalse(runner.selected_prerequisites(hosted, (path,)).docker)
 
         ordinary_document = build_public_plan(
             "changed",
@@ -756,6 +773,66 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.release-regressions",
             {item.gate_id for item in ordinary_document},
         )
+
+    def test_changed_unit_owners_run_locally_while_conftest_corpus_stays_hosted(
+        self,
+    ) -> None:
+        cases = {
+            "tests/validation/test_compose_baseline_gates.py": (
+                "leaf.compose-baseline-regressions",
+                None,
+            ),
+            "tests/validation/test_supply_chain_wrapper.py": (
+                "leaf.supply-chain-fixture-policy",
+                None,
+            ),
+            "infra/11-quality/conftest/policy/compose.rego": (
+                "leaf.conftest-policy-tests",
+                "leaf.conftest-policy",
+            ),
+        }
+        conftest_entrypoint = pathlib.PurePosixPath(
+            "scripts/validation/check-conftest-policy.sh"
+        )
+        for path, (local_unit, hosted_corpus) in cases.items():
+            with self.subTest(path=path):
+                local = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                hosted = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                local_ids = [item.gate_id for item in local]
+                hosted_ids = [item.gate_id for item in hosted]
+                self.assertEqual(1, local_ids.count(local_unit))
+                self.assertNotIn(local_unit, hosted_ids)
+                if hosted_corpus is not None:
+                    self.assertEqual(1, hosted_ids.count(hosted_corpus))
+                    self.assertEqual(
+                        [
+                            ("--mode", "corpus"),
+                            ("--mode", "verify"),
+                        ],
+                        [
+                            item.argv
+                            for item in local
+                            if item.entrypoint == conftest_entrypoint
+                        ],
+                    )
+                    self.assertEqual(
+                        [("--mode", "corpus")],
+                        [
+                            item.argv
+                            for item in hosted
+                            if item.entrypoint == conftest_entrypoint
+                        ],
+                    )
+                    self.assertTrue(
+                        runner.selected_prerequisites(local, (path,)).docker
+                    )
+                    self.assertTrue(
+                        runner.selected_prerequisites(hosted, (path,)).docker
+                    )
 
     def test_changed_implementation_owners_are_explicit_and_unknown_code_fails_closed(
         self,
@@ -1079,12 +1156,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
-        plan = _real_public_plan(public.suite_names, {})
+        plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
         expected = runner.render_public_validation_plan(
             plan,
             public,
             public.suite_names,
             runner.ExecutionContext.LOCAL,
+            profile="full",
         )
         with (
             mock.patch.object(runner, "execute_execution_plan") as execute,
@@ -1135,28 +1213,31 @@ class CiGateRunnerContractTests(unittest.TestCase):
         explained = runner.render_public_validation_plan(
             plan, suites, selected, runner.ExecutionContext.LOCAL
         )
-        explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
-        executed: list[pathlib.PurePosixPath] = []
+        explained_identities = tuple(_explained_identity(line) for line in explained)
+        executed: list[runner.GateInvocation] = []
         result = runner.execute_execution_plan(
             root,
             plan,
             {"PATH": os.defpath},
-            executor=lambda invocation: executed.append(invocation.entrypoint) or 0,
+            executor=lambda invocation: executed.append(invocation) or 0,
         )
-        validator_paths = {
-            item.entrypoint
+        validator_gate_ids = {
+            item.gate_id
             for item in suites.validators
             if item.suite in selected and "local" in item.contexts
         }
         executed_validators = tuple(
-            path.as_posix() for path in executed if path in validator_paths
+            _invocation_identity(invocation)
+            for invocation in executed
+            if invocation.gate_id in validator_gate_ids
         )
         self.assertEqual(0, result)
-        self.assertEqual(explained_paths, executed_validators)
+        self.assertEqual(explained_identities, executed_validators)
         self.assertEqual(
             1,
-            executed_validators.count(
-                "scripts/validation/check-agent-governance-contract.py"
+            sum(
+                identity[1] == "scripts/validation/check-agent-governance-contract.py"
+                for identity in executed_validators
             ),
         )
 
@@ -1258,25 +1339,29 @@ class CiGateRunnerContractTests(unittest.TestCase):
             explained = runner.render_public_validation_plan(
                 plans[name], suites, selected, context
             )
-            executed: list[pathlib.PurePosixPath] = []
+            executed: list[runner.GateInvocation] = []
             self.assertEqual(
                 0,
                 runner.execute_execution_plan(
                     root,
                     plans[name],
                     {"PATH": os.defpath},
-                    executor=lambda invocation: (
-                        executed.append(invocation.entrypoint) or 0
-                    ),
+                    executor=lambda invocation: executed.append(invocation) or 0,
                 ),
             )
-            explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
-            # Count every validator path, not only eligible paths: otherwise a
+            explained_identities = tuple(
+                _explained_identity(line) for line in explained
+            )
+            # Count every validator gate, not only eligible gates: otherwise a
             # hidden ineligible invocation can evade this explain comparison.
-            validator_paths = {item.entrypoint for item in suites.validators}
+            validator_gate_ids = {item.gate_id for item in suites.validators}
             self.assertEqual(
-                explained_paths,
-                tuple(path.as_posix() for path in executed if path in validator_paths),
+                explained_identities,
+                tuple(
+                    _invocation_identity(invocation)
+                    for invocation in executed
+                    if invocation.gate_id in validator_gate_ids
+                ),
             )
         # Parsed for its assertion that the registry is well formed; the result
         # is unused because the checks below read the plans, not the registry.

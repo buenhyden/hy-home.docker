@@ -1170,11 +1170,6 @@ assert parse_local_markdown_links(source, "<a " + " " * 100_000) == ()
         with self.assertRaises(dataclasses.FrozenInstanceError):
             links[0].line = 99  # type: ignore[misc]
 
-    def test_retired_catalog_root_has_no_current_inputs(self) -> None:
-        # ADR-0043 retired the domain catalog; the role directories replace it.
-        catalog = ROOT / "docs/05.operations/catalog"
-        self.assertFalse(catalog.exists())
-
     def test_graph_ignores_fences_and_resolves_relative_links_and_anchors(self) -> None:
         from scripts.lib.document_governance.links import build_document_graph
 
@@ -2147,45 +2142,6 @@ class DocumentLinksCliTests(unittest.TestCase):
                 table.replace("| --- | --- |", "invalid separator")
             ),
         )
-
-    def test_active_publications_do_not_instruct_deleted_shell_validators(self) -> None:
-        from scripts.lib.agent_governance.agent_governance_contract import (
-            current_markdown_authority,
-        )
-        from scripts.lib.document_governance.frontmatter import read_frontmatter_values
-
-        candidates = [ROOT / "README.md"]
-        for root in (
-            ROOT / ".agents/governance",
-            ROOT / ".agents/roles",
-            ROOT / "docs/01.requirements",
-            ROOT / "docs/02.architecture",
-            ROOT / "docs/03.specs",
-            ROOT / "docs/05.operations",
-            ROOT / "infra",
-        ):
-            self.assertTrue(root.is_dir(), f"publication scan root is missing: {root}")
-            candidates.extend(root.rglob("*.md"))
-        failures: list[str] = []
-        retired_names = (
-            "check-doc-" + "traceability.sh",
-            "check-doc-" + "implementation-alignment.sh",
-        )
-        for path in sorted(set(candidates)):
-            if path.name in {"plan.md", "task.md"}:
-                continue
-            metadata = read_frontmatter_values(path)
-            if metadata.get("status") in {
-                "completed",
-                "archived",
-                "deprecated",
-                "retired",
-            }:
-                continue
-            text = current_markdown_authority(path.read_text(encoding="utf-8"))
-            if any(name in text for name in retired_names):
-                failures.append(path.relative_to(ROOT).as_posix())
-        self.assertEqual([], failures)
 
     def test_entrypoint_mode_allows_readme_and_directory_navigation(
         self,

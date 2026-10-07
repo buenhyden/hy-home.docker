@@ -1,9 +1,25 @@
 #!/bin/sh
-# Verify the policies against their own tests, then test every tracked Compose
-# leaf and Dockerfile under infra/. Any deny fails the job; warnings are shown.
+# Verify the policies, scan the tracked corpus, or preserve the combined default.
 set -eu
-cd /project
+script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$script_dir/../../.."
 policy=infra/11-quality/conftest/policy
-conftest verify --policy "$policy"
-find infra -name 'docker-compose*.yml' -type f | sort | xargs conftest test --policy "$policy" --namespace compose
-find infra -name 'Dockerfile*' -type f | sort | xargs conftest test --parser dockerfile --policy "$policy" --namespace dockerfile
+mode=${1-all}
+[ "$#" -le 1 ] || {
+  echo "usage: $0 [verify|corpus|all]" >&2
+  exit 2
+}
+case "$mode" in
+  verify|corpus|all) ;;
+  *)
+    echo "usage: $0 [verify|corpus|all]" >&2
+    exit 2
+    ;;
+esac
+if [ "$mode" != corpus ]; then
+  conftest verify --policy "$policy"
+fi
+if [ "$mode" != verify ]; then
+  find infra -name 'docker-compose*.yml' -type f | sort | xargs conftest test --policy "$policy" --namespace compose
+  find infra -name 'Dockerfile*' -type f | sort | xargs conftest test --parser dockerfile --policy "$policy" --namespace dockerfile
+fi

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import pathlib
 import subprocess
 import unittest
@@ -229,14 +230,25 @@ class PublicSuiteModelTests(unittest.TestCase):
             public.suite_names,
             runner.ExecutionContext.LOCAL,
         )
-        rendered_paths = tuple(line.split("\t", 1)[1] for line in lines)
-        expected_paths = tuple(
-            validator.entrypoint.as_posix()
+        rendered = tuple(tuple(line.split("\t")) for line in lines)
+        plan_by_gate_id = {item.gate_id: item for item in plan}
+        expected = tuple(
+            (
+                validator.suite,
+                validator.entrypoint.as_posix(),
+                validator.gate_id,
+                json.dumps(
+                    list(plan_by_gate_id[validator.gate_id].argv),
+                    separators=(",", ":"),
+                ),
+            )
             for validator in public.validators
             if "local" in validator.contexts
         )
-        self.assertCountEqual(expected_paths, rendered_paths)
-        self.assertEqual(len(expected_paths), len(set(rendered_paths)))
+        self.assertTrue(all(len(row) == 4 for row in rendered))
+        self.assertCountEqual(expected, rendered)
+        identities = tuple((row[2], row[1], row[3]) for row in rendered)
+        self.assertEqual(len(identities), len(set(identities)))
 
     def test_full_plan_routes_current_regressions_through_their_public_owner(
         self,
@@ -286,8 +298,6 @@ class PublicSuiteModelTests(unittest.TestCase):
                         for module in invocation.argv[1:-1]
                     }
                     context_expected = expected if context == "local" else set()
-                    if suite == "operations":
-                        context_expected = expected
                     self.assertEqual(context_expected, actual & current_modules)
 
     def test_validator_ownership_is_derived_from_the_workflow_contract(self) -> None:

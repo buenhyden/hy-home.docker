@@ -64,8 +64,12 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "leaf.local-hook-rule-tests",
             "leaf.local-document-metadata-tests",
             "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.compose-baseline-regressions",
+            "leaf.release-regressions",
             "leaf.repository-integrity-regressions",
             "leaf.repo-contracts-control-plane-regressions",
+            "leaf.supply-chain-fixture-policy",
+            "leaf.conftest-policy-tests",
             "leaf.workflow-contract-regressions",
         )
         self.assertEqual(
@@ -349,7 +353,10 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         duplicate["public_gate"]["validators"][1]["entrypoint"] = duplicate[
             "public_gate"
         ]["validators"][0]["entrypoint"]
-        cases.append(("duplicate-entrypoint", duplicate, "ci-gate-public-validators"))
+        duplicate["public_gate"]["validators"][1]["argv"] = duplicate["public_gate"][
+            "validators"
+        ][0]["argv"]
+        cases.append(("duplicate-invocation", duplicate, "ci-gate-public-validators"))
 
         contexts = json.loads(json.dumps(baseline))
         contexts["public_gate"]["validators"][0]["contexts"].reverse()
@@ -369,6 +376,65 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_public_gate_contract(document)
                 self.assertEqual(expected_code, caught.exception.code)
+
+    def test_public_validators_bind_registered_leaves_and_closed_conftest_modes(
+        self,
+    ) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: list[tuple[str, dict[str, object]]] = []
+
+        wrong_path = json.loads(json.dumps(baseline))
+        quickwin = next(
+            row
+            for row in wrong_path["public_gate"]["validators"]
+            if row["gate_id"] == "leaf.quickwin-baseline"
+        )
+        quickwin["entrypoint"] = "scripts/validation/check-secret-contract.py"
+        cases.append(("row-path-does-not-match-leaf", wrong_path))
+
+        both_all = json.loads(json.dumps(baseline))
+        for owner in (
+            both_all["gate_nodes"],
+            both_all["public_gate"]["validators"],
+        ):
+            corpus = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy"
+            )
+            corpus["argv"] = ["--mode", "all"]
+        cases.append(("corpus-owner-cannot-register-all", both_all))
+
+        swapped = json.loads(json.dumps(baseline))
+        for owner in (
+            swapped["gate_nodes"],
+            swapped["public_gate"]["validators"],
+        ):
+            corpus = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy"
+            )
+            verify = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy-tests"
+            )
+            corpus["argv"], verify["argv"] = verify["argv"], corpus["argv"]
+        cases.append(("conftest-modes-cannot-swap-owners", swapped))
+
+        for label, document in cases:
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as raised:
+                    contract.parse_public_gate_contract(document)
+                self.assertEqual("ci-gate-public-validators", raised.exception.code)
+
+    def test_every_registered_unit_leaf_is_typed_local_only(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+        registered_units = {
+            node["gate_id"]
+            for node in document["gate_nodes"]
+            if node["kind"] == "leaf"
+            and node.get("entrypoint") == "scripts/lib/gate/ci_gate_adapters.py"
+            and node.get("argv", ())[:1] == ["run-unittest"]
+        }
+        registered_units.add("leaf.conftest-policy-tests")
+        self.assertLessEqual(registered_units, set(public.local_only_gate_ids))
 
     def test_manifest_reader_rejects_ambiguous_unbounded_and_nonregular_inputs(
         self,

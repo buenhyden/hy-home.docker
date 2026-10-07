@@ -5,6 +5,7 @@ import collections.abc
 import dataclasses
 import enum
 import errno
+import json
 import os
 import pathlib
 import re
@@ -353,16 +354,16 @@ def build_public_validation_plan(
         for item in public_contract.validators
         if item.suite in selected and manifest_context in item.contexts
     )
-    selected_paths = {item.entrypoint for item in selected_ownership}
-    templates: dict[pathlib.PurePosixPath, GateInvocation] = {}
+    selected_gate_ids = {item.gate_id for item in selected_ownership}
+    templates: dict[str, GateInvocation] = {}
     for invocation in base_plan:
-        if invocation.entrypoint in selected_paths:
-            templates.setdefault(invocation.entrypoint, invocation)
+        if invocation.gate_id in selected_gate_ids:
+            templates.setdefault(invocation.gate_id, invocation)
 
     def canonical_invocation(
         item: PublicValidatorRoute,
     ) -> GateInvocation:
-        template = templates.get(item.entrypoint)
+        template = templates.get(item.gate_id)
         return GateInvocation(
             gate_id=item.gate_id,
             entrypoint=item.entrypoint,
@@ -384,25 +385,25 @@ def build_public_validation_plan(
         )
 
     canonical = {
-        item.entrypoint: canonical_invocation(item) for item in selected_ownership
+        item.gate_id: canonical_invocation(item) for item in selected_ownership
     }
     plan: list[GateInvocation] = []
-    emitted: set[pathlib.PurePosixPath] = set()
-    standalone_validator_paths = {
-        item.entrypoint for item in public_contract.validators
+    emitted: set[str] = set()
+    standalone_validator_gate_ids = {
+        item.gate_id for item in public_contract.validators
     }
     for invocation in base_plan:
-        path = invocation.entrypoint
-        if path in standalone_validator_paths:
-            if path in canonical and path not in emitted:
-                plan.append(canonical[path])
-                emitted.add(path)
+        gate_id = invocation.gate_id
+        if gate_id in standalone_validator_gate_ids:
+            if gate_id in canonical and gate_id not in emitted:
+                plan.append(canonical[gate_id])
+                emitted.add(gate_id)
             continue
         plan.append(invocation)
     for item in selected_ownership:
-        if item.entrypoint not in emitted:
-            plan.append(canonical[item.entrypoint])
-            emitted.add(item.entrypoint)
+        if item.gate_id not in emitted:
+            plan.append(canonical[item.gate_id])
+            emitted.add(item.gate_id)
     result = tuple(plan)
     if context in {
         ExecutionContext.LOCAL,
@@ -494,6 +495,7 @@ def selected_prerequisites(
         {
             "leaf.compose-validation",
             "leaf.conftest-policy",
+            "leaf.conftest-policy-tests",
         }
         & gate_ids
     ) or any(
@@ -536,13 +538,13 @@ def validate_public_execution_parity(
     """Fail unless selected validators occur exactly once and others not at all."""
 
     selected = set(selected_suites)
-    ownership_paths = tuple(item.entrypoint for item in public_contract.validators)
+    ownership_gate_ids = tuple(item.gate_id for item in public_contract.validators)
     for item in public_contract.validators:
         validate_public_execution_argv(item.entrypoint, item.argv)
     if (
         len(selected) != len(selected_suites)
         or not selected.issubset(public_contract.suite_names)
-        or len(ownership_paths) != len(set(ownership_paths))
+        or len(ownership_gate_ids) != len(set(ownership_gate_ids))
     ):
         raise GateContractError(
             "ci-gate-public-execution-parity",
@@ -553,32 +555,33 @@ def validate_public_execution_parity(
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
     expected = {
-        item.entrypoint
+        item.gate_id: item
         for item in public_contract.validators
         if item.suite in selected and manifest_context in item.contexts
     }
-    ownership_by_path = {item.entrypoint: item for item in public_contract.validators}
-    counts: collections.Counter[pathlib.PurePosixPath] = collections.Counter()
+    counts: collections.Counter[str] = collections.Counter()
     for invocation in plan:
         if _is_admitted_internal_invocation(invocation, context):
             continue
-        if invocation.entrypoint not in expected:
+        if invocation.gate_id not in expected:
             raise GateContractError(
                 "ci-gate-public-execution-parity",
                 invocation.gate_id,
                 "every invocation requires selected validator or exact internal admission",
             )
-        expected_argv = _context_validator_argv(
-            ownership_by_path[invocation.entrypoint], context, profile
-        )
-        if invocation.argv != expected_argv:
+        ownership = expected[invocation.gate_id]
+        expected_argv = _context_validator_argv(ownership, context, profile)
+        if (
+            invocation.entrypoint != ownership.entrypoint
+            or invocation.argv != expected_argv
+        ):
             raise GateContractError(
                 "ci-gate-public-execution-parity",
                 invocation.gate_id,
                 "validator arguments must match their canonical context invocation",
             )
-        counts[invocation.entrypoint] += 1
-    if any(counts[path] != 1 for path in expected):
+        counts[invocation.gate_id] += 1
+    if any(counts[gate_id] != 1 for gate_id in expected):
         raise GateContractError(
             "ci-gate-public-execution-parity",
             "public_gate",
@@ -602,15 +605,20 @@ def render_public_validation_plan(
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
-    suite_by_path = {
-        item.entrypoint: item.suite
+    suite_by_gate_id = {
+        item.gate_id: item.suite
         for item in public_contract.validators
         if item.suite in selected_suites and manifest_context in item.contexts
     }
     return tuple(
-        f"{suite_by_path[item.entrypoint]}\t{item.entrypoint.as_posix()}"
+        "{}\t{}\t{}\t{}".format(
+            suite_by_gate_id[item.gate_id],
+            item.entrypoint.as_posix(),
+            item.gate_id,
+            json.dumps(list(item.argv), separators=(",", ":")),
+        )
         for item in plan
-        if item.entrypoint in suite_by_path
+        if item.gate_id in suite_by_gate_id
     )
 
 

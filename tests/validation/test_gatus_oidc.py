@@ -55,16 +55,6 @@ class GatusOidcComposeTests(unittest.TestCase):
             service["labels"]["traefik.http.routers.gatus.rule"],
         )
 
-    def test_diff_artifacts_keep_context_whitespace_without_skipping_other_hooks(self):
-        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
-        hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
-        for hook in hooks:
-            if hook["id"] == "trailing-whitespace":
-                self.assertIn("diff", hook.get("exclude_types", []))
-            else:
-                self.assertNotIn("diff", hook.get("exclude_types", []))
-        self.assertNotIn("diff", config.get("exclude_types", []))
-
     def test_native_oidc_configuration_is_exact_and_fail_closed(self):
         oidc = yaml.safe_load(CONFIG.read_text())["security"]["oidc"]
 

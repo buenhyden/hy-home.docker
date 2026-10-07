@@ -4,13 +4,11 @@ import contextlib
 import dataclasses
 import io
 import pathlib
-import re
 import subprocess
 import tempfile
 import unittest
 from unittest import mock
 
-from scripts.lib.document_governance import metadata_contract
 from scripts.lib.document_governance.metadata_validator import (
     _write_or_check_output,
     validate_repository_contracts,
@@ -18,52 +16,11 @@ from scripts.lib.document_governance.metadata_validator import (
 from scripts.lib.document_governance.taxonomy import (
     is_valid_incident_path,
     is_valid_internal_requirement_id,
-    requirement_package_identity,
     validate_stable_identity,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
-INCIDENT_ROUTE = "docs/05.operations/incidents/<year>/inc-####-<slug>/"
-THREE_DIGIT_COMPONENT = re.compile(
-    r"^(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}-"
-)
-THREE_DIGIT_ARTIFACT_ID = re.compile(
-    r"^artifact_id:\s*(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit)-[0-9]{3}\s*$",
-    re.MULTILINE,
-)
-
-
-class ResponsibilityModuleTests(unittest.TestCase):
-    def test_split_modules_expose_their_declared_responsibilities(self) -> None:
-        from scripts.lib.document_governance.lifecycle import (
-            contract,
-            promoted,
-            public,
-            recovery,
-        )
-        from scripts.lib.document_governance.metadata import (
-            heading,
-            identity,
-            lifecycle,
-            profile,
-            reference,
-        )
-
-        responsibilities = (
-            (profile, "load_profiles"),
-            (heading, "validate_body_contract"),
-            (identity, "_allocation_findings"),
-            (lifecycle, "validate_record"),
-            (reference, "validate_repository_contracts"),
-            (contract, "load_migration_manifest"),
-            (promoted, "_historical_promoted_findings"),
-            (public, "_spec_package_lifecycle_findings"),
-            (recovery, "run"),
-        )
-        for module, name in responsibilities:
-            with self.subTest(module=module.__name__, name=name):
-                self.assertTrue(callable(getattr(module, name)))
 
 
 class FourDigitDocumentIdentityTests(unittest.TestCase):
@@ -360,51 +317,12 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             ),
         )
 
-    def test_metadata_contract_uses_the_canonical_registry(self) -> None:
-        self.assertEqual(
-            PROFILES,
-            metadata_contract.DEFAULT_REGISTRY,
-        )
-
     @classmethod
     def setUpClass(cls) -> None:
         from scripts.lib.document_governance.registry import load_registry
 
         cls.registry = load_registry(PROFILES)
         cls.profiles = cls.registry.profiles
-
-    def test_every_tracked_typed_document_path_uses_four_digits(self) -> None:
-        tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            capture_output=True,
-        ).stdout.splitlines()
-        invalid = sorted(
-            path
-            for path in tracked
-            if path.startswith(
-                (
-                    "docs/01.requirements/",
-                    "docs/02.architecture/",
-                    "docs/03.specs/",
-                    "docs/05.operations/",
-                    "docs/90.references/",
-                    "docs/98.archive/",
-                )
-            )
-            if any(THREE_DIGIT_COMPONENT.match(part) for part in path.split("/"))
-        )
-        self.assertEqual([], invalid)
-
-    def test_every_tracked_typed_document_frontmatter_uses_four_digits(self) -> None:
-        invalid: list[str] = []
-        for path in sorted((ROOT / "docs").rglob("*.md")):
-            text = path.read_text(encoding="utf-8", errors="ignore")
-            if THREE_DIGIT_ARTIFACT_ID.search(text):
-                invalid.append(path.relative_to(ROOT).as_posix())
-        self.assertEqual([], invalid)
 
     def test_profiles_parse_and_publish_exact_incident_selector(self) -> None:
         incident = self.profiles["incident"]
@@ -543,26 +461,6 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
                     },
                 )
 
-    def test_current_requirement_package_paths_own_their_ids(self) -> None:
-        paths = sorted(
-            (ROOT / "docs/01.requirements").glob("[0-9][0-9][0-9][0-9]-*.md")
-        )
-        identities = tuple(
-            requirement_package_identity(path.relative_to(ROOT)) for path in paths
-        )
-        self.assertTrue(paths)
-        self.assertTrue(all(identity is not None for identity in identities))
-        self.assertEqual(len(paths), len(set(identities)))
-
-    def test_requirement_template_publishes_all_owned_child_id_patterns(self) -> None:
-        text = (
-            ROOT
-            / "docs/99.templates/templates/requirements/requirement-package.template.md"
-        ).read_text(encoding="utf-8")
-        for kind in ("FR", "NFR", "IF"):
-            with self.subTest(kind=kind):
-                self.assertIn(f"REQ-####-{kind}-####", text)
-
     def test_metadata_validator_write_and_check_modes_are_explicit(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = pathlib.Path(directory) / "inventory.md"
@@ -571,57 +469,6 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             self.assertTrue(_write_or_check_output(output, "current\n", True))
             self.assertFalse(_write_or_check_output(output, "stale\n", True))
             self.assertEqual("current\n", output.read_text(encoding="utf-8"))
-
-    def test_active_contracts_publish_no_ambiguous_typed_id_routes(self) -> None:
-        tracked = subprocess.run(
-            [
-                "git",
-                "ls-files",
-                ".agents",
-                "docs/99.templates",
-                ".claude/skills",
-            ],
-            cwd=ROOT,
-            check=True,
-            text=True,
-            capture_output=True,
-        ).stdout.splitlines()
-        ambiguous = re.compile(
-            r"\b(?:prd|srs|interface|ad|adr|spec|ops|inc|rel|chg|mig|ref|audit|plan|task)-<id>"
-        )
-        violations: list[str] = []
-        for relative in tracked:
-            path = ROOT / relative
-            if not path.exists():
-                continue
-            if path.suffix not in {".md", ".yaml", ".yml", ".graphql", ".proto"}:
-                continue
-            for line_number, line in enumerate(
-                path.read_text(encoding="utf-8").splitlines(), 1
-            ):
-                if ambiguous.search(line):
-                    violations.append(f"{relative}:{line_number}:{line.strip()}")
-        self.assertEqual([], violations)
-
-    def test_active_human_contracts_publish_only_the_canonical_incident_route(
-        self,
-    ) -> None:
-        contracts = (
-            ".agents/skills/ops-runbook-agent/SKILL.md",
-            ".agents/skills/incident-response/SKILL.md",
-            ".agents/governance/documentation-protocol.md",
-            "docs/05.operations/incidents/README.md",
-        )
-        missing: list[str] = []
-        stale: list[str] = []
-        for relative in contracts:
-            text = (ROOT / relative).read_text(encoding="utf-8")
-            if INCIDENT_ROUTE not in text:
-                missing.append(relative)
-            if "INC-###" in text or "inc-<id>" in text:
-                stale.append(relative)
-        self.assertEqual([], missing)
-        self.assertEqual([], stale)
 
 
 if __name__ == "__main__":

@@ -121,7 +121,8 @@ main-push security remains a post-merge observation.
   user-global hook. Never use SKIP, fake CI variables or `--no-verify`.
 - **Local implementation verification**: the workflow contract's typed
   `public_gate.local_only_gate_ids` owns document, gate/controller, hook and
-  repository implementation unit/fixture regressions and local links. Use
+  repository implementation regressions, all isolated unit tests and local
+  links. Use
   `scripts/validation/run-ci-gate.py --profile changed --local-only --explain`
   to inspect the selected plan, then the same command without `--explain`
   once on the final implementation input before submission. The shared runner
@@ -133,8 +134,13 @@ main-push security remains a post-merge observation.
   plan and prerequisites before execution. Every hosted context excludes the
   typed local-only leaves. Remote QA retains actual document content and
   catalog, diff/style/commit, machine contracts, selected Docker/security,
-  frontend and release checks. Local implementation PASS is separate evidence
-  and does not satisfy or bypass the remote candidate.
+  frontend build/HTTP/browser integration and actual release configuration checks.
+  Mocked release/service/supply-chain negative cases stay intact and selected
+  locally; hosted PRs no longer execute those unit behaviors. Production guards
+  and independent exact-source review still apply. Mixed unit/corpus commands
+  must have distinct registered gate IDs and closed modes; invocation identity
+  includes argv, and actual corpus checks cannot be discarded with a unit leaf.
+  Local implementation PASS is separate evidence and does not satisfy or bypass the remote candidate.
 - **Document links**: `check-document-links.py --mode all` owns local-only
   read-only link validation on the final source input before result-only Task
   evidence recording. Record the bound source/base/history and result before

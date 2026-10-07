@@ -43,6 +43,15 @@ def _invocation(
 
 
 class LocalExecutionBoundaryTests(unittest.TestCase):
+    LOCAL_UNIT_GATE_IDS = frozenset(
+        {
+            "leaf.compose-baseline-regressions",
+            "leaf.conftest-policy-tests",
+            "leaf.release-regressions",
+            "leaf.supply-chain-fixture-policy",
+        }
+    )
+
     def test_a_local_plan_reaches_no_withheld_leaf(self) -> None:
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT),
@@ -63,6 +72,50 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
         )
         planned = {invocation.gate_id for invocation in plan}
         self.assertEqual(set(), planned & runner._LOCAL_EXCLUDED_GATE_IDS)
+
+    def test_unit_regressions_are_local_and_conftest_corpus_remains_hosted(
+        self,
+    ) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document,
+            ".github/workflow-contract.yml",
+        )
+        public = contract.parse_public_gate_contract(document)
+        suites = contract.select_public_suites(public, "full", ())
+        roots = contract.public_root_gate_ids(public, suites)
+
+        def selected(context: runner.ExecutionContext):
+            return runner.build_public_validation_plan(
+                registry,
+                roots,
+                public,
+                suites,
+                context,
+                profile="full",
+                root=ROOT,
+            )
+
+        local = selected(runner.ExecutionContext.LOCAL)
+        hosted = selected(runner.ExecutionContext.PULL_REQUEST)
+        local_ids = {item.gate_id for item in local}
+        hosted_ids = {item.gate_id for item in hosted}
+        self.assertLessEqual(self.LOCAL_UNIT_GATE_IDS, local_ids)
+        self.assertFalse(self.LOCAL_UNIT_GATE_IDS & hosted_ids)
+        self.assertIn("leaf.conftest-policy", hosted_ids)
+
+        entrypoint = pathlib.PurePosixPath(
+            "scripts/validation/check-conftest-policy.sh"
+        )
+        local_modes = [item.argv for item in local if item.entrypoint == entrypoint]
+        hosted_modes = [item.argv for item in hosted if item.entrypoint == entrypoint]
+        self.assertCountEqual(
+            (("--mode", "corpus"), ("--mode", "verify")),
+            local_modes,
+        )
+        self.assertEqual([("--mode", "corpus")], hosted_modes)
+        self.assertTrue(runner.selected_prerequisites(local, ()).docker)
+        self.assertTrue(runner.selected_prerequisites(hosted, ()).docker)
 
     def test_local_only_leaves_are_withheld_from_every_hosted_context(self) -> None:
         document = contract.load_contract_document(ROOT)

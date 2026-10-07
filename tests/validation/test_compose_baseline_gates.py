@@ -3668,6 +3668,143 @@ class ConftestPolicyGateTests(unittest.TestCase):
         self.assertIn(f"-f {self.COMPOSE}", script)
         self.assertIn("run --rm conftest", script)
 
+    def test_gate_modes_are_closed_and_preserve_the_combined_default(self) -> None:
+        gate = (ROOT / "scripts/validation/check-conftest-policy.sh").read_text(
+            encoding="utf-8"
+        )
+        runner = (ROOT / "infra/11-quality/conftest/run.sh").read_text(encoding="utf-8")
+        self.assertIn("--mode", gate)
+        self.assertIn("verify|corpus|all", gate)
+        self.assertIn('mode="all"', gate)
+        self.assertIn("mode=${1-all}", runner)
+        self.assertIn("verify|corpus|all", runner)
+        self.assertIn('if [ "$mode" != corpus ]', runner)
+        self.assertIn('if [ "$mode" != verify ]', runner)
+
+    def test_invalid_gate_mode_is_rejected_before_docker(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            marker = root / "docker-called"
+            docker = root / "docker"
+            docker.write_text(
+                '#!/bin/sh\n: >"$DOCKER_MARKER"\nexit 0\n',
+                encoding="utf-8",
+            )
+            docker.chmod(0o755)
+            result = subprocess.run(
+                [
+                    str(ROOT / "scripts/validation/check-conftest-policy.sh"),
+                    "--mode",
+                    "invalid",
+                ],
+                cwd=ROOT,
+                env={
+                    "DOCKER_MARKER": str(marker),
+                    "PATH": f"{root}:{os.defpath}",
+                },
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            docker_called = marker.exists()
+        self.assertEqual(2, result.returncode)
+        self.assertIn("verify|corpus|all", result.stderr)
+        self.assertFalse(docker_called)
+
+    def test_container_modes_execute_only_their_owned_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            command_log = root / "conftest.log"
+            find_log = root / "find.log"
+            conftest = root / "conftest"
+            conftest.write_text(
+                '#!/bin/sh\nprintf "%s|%s\\n" "$PWD" "$*" >>"$CONFTEST_LOG"\n',
+                encoding="utf-8",
+            )
+            find = root / "find"
+            find.write_text(
+                '#!/bin/sh\nprintf "%s\\n" "$*" >>"$FIND_LOG"\n',
+                encoding="utf-8",
+            )
+            conftest.chmod(0o755)
+            find.chmod(0o755)
+            environment = {
+                "CONFTEST_LOG": str(command_log),
+                "FIND_LOG": str(find_log),
+                "PATH": f"{root}:{os.defpath}",
+            }
+            script = ROOT / "infra/11-quality/conftest/run.sh"
+
+            verify = subprocess.run(
+                ["/bin/sh", str(script), "verify"],
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, verify.returncode, verify.stderr)
+            self.assertEqual(
+                f"{ROOT}|verify --policy infra/11-quality/conftest/policy\n",
+                command_log.read_text(encoding="utf-8"),
+            )
+            self.assertFalse(find_log.exists())
+
+            command_log.unlink()
+            corpus = subprocess.run(
+                ["/bin/sh", str(script), "corpus"],
+                cwd=ROOT,
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            self.assertEqual(0, corpus.returncode, corpus.stderr)
+            commands = command_log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(2, len(commands))
+            self.assertTrue(
+                all(command.startswith(f"{ROOT}|test ") for command in commands)
+            )
+            self.assertNotIn("verify", "\n".join(commands))
+            self.assertEqual(2, len(find_log.read_text(encoding="utf-8").splitlines()))
+
+            command_log.unlink()
+            find_log.unlink()
+            for arguments in (("all",), ()):
+                combined = subprocess.run(
+                    ["/bin/sh", str(script), *arguments],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(0, combined.returncode, combined.stderr)
+                commands = command_log.read_text(encoding="utf-8").splitlines()
+                self.assertEqual(3, len(commands))
+                self.assertTrue(commands[0].startswith(f"{ROOT}|verify "))
+                self.assertTrue(
+                    all(command.startswith(f"{ROOT}|test ") for command in commands[1:])
+                )
+                self.assertEqual(
+                    2, len(find_log.read_text(encoding="utf-8").splitlines())
+                )
+                command_log.unlink()
+                find_log.unlink()
+
+            for arguments in (("",), ("unknown",), ("verify", "extra")):
+                rejected = subprocess.run(
+                    ["/bin/sh", str(script), *arguments],
+                    cwd=ROOT,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                self.assertEqual(2, rejected.returncode)
+                self.assertFalse(command_log.exists())
+                self.assertFalse(find_log.exists())
+
     def test_every_policy_has_unit_tests(self) -> None:
         policy = ROOT / "infra/11-quality/conftest/policy"
         rules = {p.stem for p in policy.glob("*.rego") if not p.stem.endswith("_test")}

@@ -208,7 +208,9 @@ profile을 선택하고, `--explain`은 실행하지 않습니다. PR 후보가 
 standalone validator 계획을 출력하며 parity 테스트는 이 계획이 같은 profile에서
 실행되는 validator와 일치하는지 확인합니다. profile은 등록된 regression leaf도
 실행하지만 explain은 이를 나열하지 않으므로, explain 출력은 validator
-계획으로만 읽고 실행의 전체 내용이나 비용으로 읽지 않습니다. PR과 초기 push가
+계획으로만 읽고 실행의 전체 내용이나 비용으로 읽지 않습니다. 일반 explain의
+행은 기존 suite·entrypoint 뒤에 gate ID와 JSON argv를 붙여 같은 스크립트의
+서로 다른 mode도 구별합니다. PR과 초기 push가
 아닌 push의 base는 검증되어 `TEMPLATE_GATE_BASE`로 전달되며, 로컬·초기
 push·workflow dispatch는 비교 base를 임의로 만들지 않고 명시적인
 active-corpus metadata 모드를 사용합니다.
@@ -219,8 +221,17 @@ active-corpus metadata 모드를 사용합니다.
 실행합니다. `--local-only`는 정상 changed 선택 결과와
 `.github/workflow-contract.yml`의 typed `local_only_gate_ids`가 겹치는 leaf만 공용
 executor로 전달합니다. 인증된 hosted
-context에서는 거부되며 원격 후보의 content·infra·release 검증을 대체하지
-않습니다.
+context에서는 거부되며 원격 후보의 content·infra·릴리스 구성 검증을 대체하지
+않습니다. 릴리스 helper mock, 서비스 fixture와 합성 공급망 unit도 이 로컬
+목록이 소유합니다. 실제 구성·corpus·빌드·HTTP·브라우저 통합 검사는 원격에
+남으므로 로컬 unit의 PASS를 원격 수용으로 표시하지 않습니다.
+
+Conftest는 같은 `scripts/validation/check-conftest-policy.sh`의 닫힌
+`--mode verify`와 `--mode corpus`를 서로 다른 gate ID로 등록합니다.
+`verify`는 로컬 Rego unit만, `corpus`는 원격의 현재 Compose·Dockerfile 내용만
+검사합니다. 옵션이 없는 직접 실행과 `--mode all`은 두 검사를 유지합니다.
+잘못된 mode나 추가 인자는 Docker 접근 전에 거부합니다. 실행 동일성은 gate ID와
+argv의 mode를 함께 사용하며 격리·읽기 전용 mount·cleanup 경계를 유지합니다.
 
 `scripts/validation/check-document-metadata.py`는 Stage 99 typed profile
 계약과 중복 키를 거부하는 PyYAML safe loading을 사용합니다. `--mode report`는
