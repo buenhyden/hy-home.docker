@@ -4848,15 +4848,15 @@
     "adr": {
       "prefix": "ADR-",
       "width": 4,
-      "high_water": 46,
-      "next_number": 47,
+      "high_water": 47,
+      "next_number": 48,
       "child_spaces": {}
     },
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 211,
-      "next_number": 212,
+      "high_water": 212,
+      "next_number": 213,
       "child_spaces": {}
     },
     "operations-subject": {
