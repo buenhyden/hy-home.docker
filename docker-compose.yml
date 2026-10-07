@@ -263,8 +263,6 @@ secrets:
   surreal_db_password:
     file: ./secrets/db/surrealdb/surreal_db_password.txt
 
-  # ── InfluxDB ─────────────────────────────────────────────
-
   # ── CouchDB ──────────────────────────────────────────────
   # ── Open Notebook ──────────────────────────────────────────────
   open_notebook_password:
@@ -348,7 +346,6 @@ include:
   - infra/03-security/openbao/docker-compose.yml
   # 04-data
   - infra/04-data/dev-db/docker-compose.yml
-  - infra/04-data/influxdb/docker-compose.yml
   - infra/04-data/mng-db/docker-compose.yml
   - infra/04-data/neo4j/docker-compose.yml
   - infra/04-data/opensearch/docker-compose.yml

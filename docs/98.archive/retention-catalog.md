@@ -1,10 +1,10 @@
 ---
 title: "Retention Catalog"
-version: "1.1.16"
+version: "1.1.17"
 type: "archive/catalog"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Retention Catalog
@@ -63,6 +63,9 @@ reads this table.
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/guide.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/guide.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/policy.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/policy.md` |
 | `retired/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` | retired | Syncthing was removed from the active service inventory; no successor exists. | `d1e6ded52808b02392c52472d5416518a3b959d6:docs/05.operations/catalog/09-tooling/0067-syncthing/runbook.md` |
+| `retired/05.operations/guides/0017-influxdb.md` | retired | InfluxDB was removed from the active service inventory by ADR-0047 (SPEC-0213); no successor exists. | `e6ca3c030a070b85c6a2ee308e92d16c6979386b:docs/05.operations/guides/0017-influxdb.md` |
+| `retired/05.operations/policies/0017-influxdb.md` | retired | InfluxDB was removed from the active service inventory by ADR-0047 (SPEC-0213); no successor exists. | `e6ca3c030a070b85c6a2ee308e92d16c6979386b:docs/05.operations/policies/0017-influxdb.md` |
+| `retired/05.operations/runbooks/0017-influxdb.md` | retired | InfluxDB was removed from the active service inventory by ADR-0047 (SPEC-0213); no successor exists. | `e6ca3c030a070b85c6a2ee308e92d16c6979386b:docs/05.operations/runbooks/0017-influxdb.md` |
 | `superseded/05.operations/catalog/04-data/0023-minio/guide.md` | superseded | GDE-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/guide.md` |
 | `superseded/05.operations/catalog/04-data/0023-minio/policy.md` | superseded | POL-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/policy.md` |
 | `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | RUN-0024 | `988059fe898fe739a2eb420f5370eba346568295:docs/05.operations/catalog/04-data/0023-minio/runbook.md` |

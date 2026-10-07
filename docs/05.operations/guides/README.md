@@ -1,10 +1,10 @@
 ---
 title: "운영 가이드"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 layer: "operations"
 ---
 
@@ -81,7 +81,6 @@ Guide는 서비스와 작업 공간을 이해하고 정상 상태를 확인하�
 
 | Guide | ID | 관련 문서 |
 | --- | --- | --- |
-| [Analytics — InfluxDB](0017-influxdb.md) | `GDE-0017` | [Policy](../policies/0017-influxdb.md), [Runbook](../runbooks/0017-influxdb.md) |
 | [Analytics — OpenSearch](0019-opensearch.md) | `GDE-0019` | [Policy](../policies/0019-opensearch.md), [Runbook](../runbooks/0019-opensearch.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `GDE-0022` | [Policy](../policies/0022-valkey-cluster.md), [Runbook](../runbooks/0022-valkey-cluster.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `GDE-0024` | [Policy](../policies/0024-seaweedfs.md), [Runbook](../runbooks/0024-seaweedfs.md) |

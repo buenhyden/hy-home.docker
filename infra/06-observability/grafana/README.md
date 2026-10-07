@@ -122,7 +122,6 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `functions` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `great-expectations` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `imgproxy` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `influxdb` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `kong` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `meta` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |

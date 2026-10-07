@@ -4008,7 +4008,6 @@ ROUTES_WITHOUT_SSO = {
     "oauth2-proxy": "identity-provider",
     # Application or gateway credentials
     "dashboard": "gateway-basic-auth",
-    "influxdb": "app-token",
     "neo4j": "app-credentials",
     "open-notebook": "app-password-and-ip-allowlist",
     "opensearch": "security-plugin",

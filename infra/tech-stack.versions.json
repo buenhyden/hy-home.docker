@@ -1109,28 +1109,6 @@
       ]
     },
     {
-      "component": "Compose image: influxdb",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "influxdb": "external"
-      },
-      "images": [
-        "influxdb:3.11.5-core"
-      ],
-      "compose_files": [
-        "infra/04-data/influxdb/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/04-data/influxdb/docker-compose.yml",
-          "images": [
-            "influxdb:3.11.5-core"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: kong",
       "tier": "04-data",
       "classification": "external",

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import subprocess
 import tempfile
 import unittest
@@ -15,7 +16,6 @@ DATA = (
     "dev-db",
     "supabase",
     "seaweedfs",
-    "influxdb",
     "opensearch",
     "neo4j",
     "qdrant",
@@ -24,6 +24,20 @@ ANALYTICS = ("flink", "spark", "trino", "great-expectations", "superset", "dbt")
 
 
 class TierLayoutTests(unittest.TestCase):
+    def test_retired_influxdb_has_no_active_deployment(self):
+        # ADR-0047: absence from the deployable model, not a repository-wide
+        # string ban; history and research keep their wording.
+        includes = yaml.safe_load((ROOT / "docker-compose.yml").read_text())["include"]
+        self.assertFalse(any("influxdb" in str(path) for path in includes))
+        self.assertFalse((ROOT / "infra/04-data/influxdb").exists())
+        for path in includes:
+            # Leaves use Compose-only tags (!override), so scan the source text.
+            text = (ROOT / path).read_text()
+            with self.subTest(path=path):
+                self.assertIsNone(re.search(r"^  influxdb[\w-]*:", text, re.M))
+                self.assertIsNone(re.search(r"^\s+image:\s*['\"]?influxdb", text, re.M))
+                self.assertIsNone(re.search(r"^\s+- influxdb\s*$", text, re.M))
+
     def test_additional_packages_and_exact_labels(self):
         placements = {
             "11-quality": (

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -139,8 +139,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 #### 04-data
 
 - Analytics
-  - [influxdb](../../../infra/04-data/influxdb/README.md): retention tiering(핫/웜) 정책과 shard compaction 기준 명문화
-    ([OPER](../guides/0017-influxdb.md), [RUN](../runbooks/0017-influxdb.md))
   - [opensearch](../../../infra/04-data/opensearch/README.md): 인덱스 lifecycle(rollover/ISM) 표준화, 쿼리 가드레일(검색 폭주 제한) 추가
     ([OPER](../guides/0019-opensearch.md), [RUN](../runbooks/0019-opensearch.md))
 - Cache & KV

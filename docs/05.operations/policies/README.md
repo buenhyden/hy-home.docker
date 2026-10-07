@@ -1,10 +1,10 @@
 ---
 title: "운영 정책"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 layer: "operations"
 ---
 
@@ -78,7 +78,6 @@ Policy는 무엇이 허용되고 금지되는지, 누가 승인하는지, 예외
 
 | Policy | ID | 관련 문서 |
 | --- | --- | --- |
-| [Analytics — InfluxDB](0017-influxdb.md) | `POL-0017` | [Guide](../guides/0017-influxdb.md), [Runbook](../runbooks/0017-influxdb.md) |
 | [Analytics — OpenSearch](0019-opensearch.md) | `POL-0019` | [Guide](../guides/0019-opensearch.md), [Runbook](../runbooks/0019-opensearch.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `POL-0022` | [Guide](../guides/0022-valkey-cluster.md), [Runbook](../runbooks/0022-valkey-cluster.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `POL-0024` | [Guide](../guides/0024-seaweedfs.md), [Runbook](../runbooks/0024-seaweedfs.md) |

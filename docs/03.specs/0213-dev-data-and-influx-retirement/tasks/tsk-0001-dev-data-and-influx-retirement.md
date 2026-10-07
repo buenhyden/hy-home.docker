@@ -83,6 +83,63 @@ authentication and is void. The network-client rerun above replaces it.
 Network clients use `scram-sha-256`. The loopback trust is the upstream
 image default and is reachable only inside the container.
 
+### W3 InfluxDB Retirement
+
+Removed from the active surface: `infra/04-data/influxdb/` (Compose leaf with
+its Traefik route labels and profile, README, `migration/validate_mapping.py`),
+the root include and its empty secret-section header, `INFLUXDB_PORT` in
+`.env.example` and, key-only, in the private `.env` (key sets compared equal
+afterwards without printing values), the `influxdb` profile row in POL-0078,
+the `app-token` row in the gateway auth inventory test and GUIDE-0079, the
+`test_influx_mapping` registration in `.github/workflow-contract.yml` and its
+gate test, the tier-layout `DATA` entry, the Grafana README row, the Grafana
+mixin note in GUIDE-0041, POL-0006 targets, the GDE-0017 identity in
+POL/RUN-0030 and RUN-0035, the three operations README rows,
+`infra/04-data/README.md`, and the research inventory row the operations
+catalog check binds to current services. `sync-tech-stack-versions.sh --write`
+regenerated the projection (remove=1). The generator also picked up another
+worker's unstaged `ollama` tag change in the working tree; that hunk was
+reverted so this commit carries only the InfluxDB removal.
+
+The migration helper is retired with the leaf, without a successor. The
+continuing guarantee it held, a verified mapping before data movement, is not
+needed: see the data check below. GDE/POL/RUN-0017 moved byte-identical to
+`docs/98.archive/retired/05.operations/{guides,policies,runbooks}/` with
+`retired` catalog rows sourced from `e6ca3c030`. History, research text other
+than the bound inventory row, and the archive keep their wording. The new
+`test_retired_influxdb_has_no_active_deployment` checks absence from the
+deployable model; it is not a repository-wide string ban. It failed against
+the previous root include (RED) and passes now.
+
+Render after removal: `--profile '*'` has 118 services with no InfluxDB
+service, and `docker compose config influxdb` exits 1 (`no such service`).
+
+The local-only gate (with the pinned pre-commit 4.6.1 exposed alone on
+`PATH`; global 4.6.2 fails the pin check) first failed two tests. The public
+environment count fell from 212 to 211, and the optional count from 164 to
+163, because `INFLUXDB_PORT` was an optional key; the fixture counts now
+match. `test_registry_matches_compose_image_declarations` failed only on
+`Ollama` because another worker's unstaged working-tree tag
+(`ollama/ollama:0.40.0`) differs from the tracked `0.35.0`; this commit does
+not carry that file.
+
+### HOME Data Check
+
+Read-only, value-free inspection on 2026-10-07 at the HOME host (Compose
+project `hy-home-infra`, 40 running containers): no `influxdb` container,
+volume or image exists. The former bind root
+`<DATA_ROOT>/data/influxdb` exists (13 MiB, 897 files, newest 2026-09-19).
+Its contents by name and type are one catalog snapshot
+(`data/node0/catalog/v3/snapshot`), a table-index marker, and a plugin
+Python virtual environment. There are no Parquet files and no WAL files.
+This matches the owner statement of 2026-10-02 (no stored data) recorded in
+the retired README. The no-data path applies: there is nothing to export or
+convert.
+
+The directory is preserved. Purging it is a destructive operation and needs a
+separate owner instruction naming the path. Without a container, no restart
+blocking is needed: no root profile or service can recreate it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -90,8 +147,8 @@ image default and is reachable only inside the container.
 | Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | `violations=0`; links 0 failures | accepted |
 | Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | accepted |
 | Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | accepted |
-| Influx source absence | 4 | W3 | Root render and reference scan | Pending | NOT_RUN | Pending | pending |
-| HOME data check | 5 | W3 | Value-free data directory inspection | Pending | NOT_RUN | Pending | pending |
+| Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | accepted |
+| HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | accepted |
 | Backup chain and canary | 6 | W4 | Isolated offline backup/restore | Pending | NOT_RUN | Pending | pending |
 
 ## Review and Completion
