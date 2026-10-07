@@ -1,8 +1,8 @@
 ---
 title: "DEV Timescale, InfluxDB Retirement and Load Tools"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
-status: "proposed"
+status: "accepted"
 owner: "@buenhyden"
 updated: "2026-10-07"
 layer: "architecture"
@@ -85,8 +85,10 @@ and a standalone render for each LAB file.
 
 ### Follow-up
 
-Accept this decision when the retirement and LAB packages from SPEC-0212's
-dependency order land. Real data export, purge and HOME container removal
+Accepted on 2026-10-07 with SPEC-0213, which implements decisions 1-3 and
+retires InfluxDB. Decisions 4 and 5 describe the current source (k6 default,
+Locust and HA topologies in standalone LAB files); the live load metric path
+is completed by the follow-on quality package. Real data export, purge and HOME container removal
 need a confirmed target and recovery path; until then they stay `NOT_RUN`.
 
 ## Related Documents

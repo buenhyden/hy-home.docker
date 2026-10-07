@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.0.7"
+version: "1.0.8"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -59,7 +59,6 @@ No package is split solely to make a folder taxonomy more uniform.
 | seaweedfs | shared S3 storage and Iceberg REST catalog | HOME |
 | qdrant | vector persistence for AI consumers | HOME |
 | supabase | separate application data platform | OPTIONAL |
-| influxdb | existing time-series source retained pending an approved disposition | OPTIONAL |
 | neo4j | optional single-node graph persistence | OPTIONAL |
 | opensearch | optional single-node search/index storage; independent cluster rehearsal | OPTIONAL / LAB |
 | postgresql-cluster, valkey-cluster | independent cluster rehearsals | LAB |

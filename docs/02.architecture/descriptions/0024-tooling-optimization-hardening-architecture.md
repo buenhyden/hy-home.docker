@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "2.0.5"
+version: "2.0.6"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -59,7 +59,7 @@ non-goals, and constraints already recorded in the current document.
 - **Consumes**:
   - `01-gateway` middleware chain
   - `02-auth` SSO middleware
-  - `04-data` PostgreSQL/Valkey/SeaweedFS/InfluxDB
+  - `04-data` PostgreSQL/Valkey/SeaweedFS
 - **Does Not Own**:
   - each tool's business domain logic
   - full implementation-complete status of catalog items
@@ -89,7 +89,7 @@ as the view for that concern.
   - terrakube api/ui/executor
   - locust master/worker, k6 service
 - **Shared dependencies**:
-  - PostgreSQL, Valkey, SeaweedFS, InfluxDB, Keycloak
+  - PostgreSQL, Valkey, SeaweedFS, Keycloak
 
 ### Data Flow
 

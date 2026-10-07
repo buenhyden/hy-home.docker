@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -45,7 +45,7 @@ lifecycle/recovery procedure separately.
 
 ### Components
 
-- Analytics: InfluxDB, OpenSearch
+- Analytics: OpenSearch
 - Cache and KV: Valkey cluster
 - Object storage: SeaweedFS
 - NoSQL: Cassandra, CouchDB, MongoDB

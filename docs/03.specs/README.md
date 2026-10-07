@@ -48,6 +48,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0210 | [Task 증거 표 무결성](./0210-task-evidence-table-integrity/) | generation 5 Plan과 Task 증거 표의 분절 누락 방지 |
 | SPEC-0211 | [QA 범위·전달 정합화](./0211-qa-scope-and-delivery-rationalization/) | 일회성 QA 폐기, 원격 변경 영향 검사, commit·SemVer 릴리스 단일 소유권 |
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
+| SPEC-0213 | [DEV 데이터 경계·InfluxDB 퇴역](./0213-dev-data-and-influx-retirement/) | DEV/MNG 변수 분리, role별 연결 예산, InfluxDB 활성 표면 퇴역 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
