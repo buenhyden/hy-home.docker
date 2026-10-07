@@ -16,25 +16,49 @@ class QualityObservabilityContractTest(unittest.TestCase):
         cls.config = ALLOY.read_text(encoding="utf-8")
         cls.dashboard = json.loads(K6_DASHBOARD.read_text(encoding="utf-8"))
 
-    def test_otlp_metrics_reuse_receiver_without_changing_trace_path(self) -> None:
+    def test_quality_metrics_use_only_the_authenticated_receiver(self) -> None:
+        receiver = self.config.index('otelcol.receiver.otlp "quality" {')
+        block = self.config[receiver : self.config.index("\n}\n", receiver)]
+        self.assertIn("auth     = otelcol.auth.bearer.quality.handler", block)
+        self.assertIn('endpoint = "0.0.0.0:4319"', block)
         self.assertIn(
-            "metrics = [otelcol.processor.transform.quality_metrics.input]",
-            self.config,
+            "metrics = [otelcol.processor.transform.quality_metrics.input]", block
         )
-        self.assertIn("traces  = [otelcol.processor.batch.default.input]", self.config)
+        self.assertEqual(
+            1,
+            self.config.count(
+                "metrics = [otelcol.processor.transform.quality_metrics.input]"
+            ),
+        )
+        self.assertIn('filename  = "/run/secrets/quality_otlp_token"', self.config)
+        default = self.config.index('otelcol.receiver.otlp "default" {')
+        default_block = self.config[default : self.config.index("\n}\n", default)]
+        self.assertNotIn("metrics", default_block.split("output {")[1])
+        self.assertIn("traces = [otelcol.processor.batch.default.input]", default_block)
         self.assertIn("traces = [otelcol.exporter.otlp.tempo.input]", self.config)
+        compose = (ROOT / "infra/06-observability/docker-compose.yml").read_text()
+        self.assertNotIn(
+            "4319", compose.split("    ports:")[1].split("    depends_on:")[0]
+        )
 
     def test_metric_labels_are_allowlisted_and_required(self) -> None:
+        # Rate condition, response class and producer instance must reach
+        # delta-to-cumulative; unbounded names and URLs must not (SPEC-0214).
         self.assertIn(
-            'keep_keys(attributes, ["project_id", "environment", "service_name"])',
+            'keep_keys(attributes, ["project_id", "environment", "service_name", '
+            '"condition", "expected_response", "method", "status", "scenario"])',
             self.config,
         )
+        self.assertIn('"service.instance.id"])', self.config)
+        for unbounded in ('"name"', '"url"', '"user_id"'):
+            self.assertNotIn(unbounded + ",", self.config.split("keep_keys")[2])
         self.assertIn(
             'source_labels = ["project_id", "environment", "service_name"]',
             self.config,
         )
         self.assertIn(
-            'regex  = "__name__|project_id|environment|service_name|le|quantile"',
+            'regex  = "__name__|project_id|environment|service_name|instance|'
+            'condition|expected_response|method|status|scenario|le|quantile"',
             self.config,
         )
         self.assertNotIn("resource_to_telemetry_conversion = true", self.config)

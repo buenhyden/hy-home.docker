@@ -37,6 +37,11 @@ services:
         target: /etc/alloy/metrics.alloy
         read_only: true
         bind: {create_host_path: false}
+      - type: bind
+        source: ${METRICS_ALLOY_TOKEN:?synthetic token file required}
+        target: /run/secrets/quality_otlp_token
+        read_only: true
+        bind: {create_host_path: false}
     networks: [metrics]
   probe:
     image: ${METRICS_PROBE_IMAGE:?cached Python digest required}

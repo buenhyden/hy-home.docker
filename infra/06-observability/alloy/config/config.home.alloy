@@ -91,16 +91,17 @@ loki.write "local_loki" {
 // remote-write here sent the same series a second time as job
 // "integrations/self", so it was removed (SPEC-0193).
 
-// OTLP application metrics use a separate path. Only stable ownership labels
-// survive; request paths, user IDs and arbitrary producer attributes do not
-// become Prometheus labels (SPEC-0203).
+// Only stable ownership labels and bounded k6 attributes survive; request
+// names, URLs, user IDs and other producer attributes are dropped. The Rate
+// `condition`, response class and producer instance must survive here,
+// before delta-to-cumulative, or distinct streams would merge (SPEC-0214).
 otelcol.processor.transform "quality_metrics" {
   error_mode = "ignore"
 
   metric_statements {
     context = "resource"
     statements = [
-      `keep_keys(attributes, ["project.id", "deployment.environment.name", "service.name"])`,
+      `keep_keys(attributes, ["project.id", "deployment.environment.name", "service.name", "service.instance.id"])`,
     ]
   }
 
@@ -110,7 +111,7 @@ otelcol.processor.transform "quality_metrics" {
       `set(attributes["project_id"], resource.attributes["project.id"])`,
       `set(attributes["environment"], resource.attributes["deployment.environment.name"])`,
       `set(attributes["service_name"], resource.attributes["service.name"])`,
-      `keep_keys(attributes, ["project_id", "environment", "service_name"])`,
+      `keep_keys(attributes, ["project_id", "environment", "service_name", "condition", "expected_response", "method", "status", "scenario"])`,
     ]
   }
 
@@ -160,7 +161,7 @@ prometheus.relabel "quality_metrics" {
 
   rule {
     action = "labelkeep"
-    regex  = "__name__|project_id|environment|service_name|le|quantile"
+    regex  = "__name__|project_id|environment|service_name|instance|condition|expected_response|method|status|scenario|le|quantile"
   }
 }
 
@@ -178,6 +179,30 @@ prometheus.remote_write "local_prometheus" {
   }
 }
 
+// OTLP application metrics use a separate, authenticated path (SPEC-0214).
+// The quality executor alone holds the token; it sets the project and
+// environment resource attributes from a validated run manifest. This
+// receiver is not published to the host.
+local.file "quality_otlp_token" {
+  filename  = "/run/secrets/quality_otlp_token"
+  is_secret = true
+}
+
+otelcol.auth.bearer "quality" {
+  token = local.file.quality_otlp_token.content
+}
+
+otelcol.receiver.otlp "quality" {
+  http {
+    endpoint = "0.0.0.0:4319"
+    auth     = otelcol.auth.bearer.quality.handler
+  }
+
+  output {
+    metrics = [otelcol.processor.transform.quality_metrics.input]
+  }
+}
+
 /*****************************************************************
  * 3. TRACING PIPELINE (Tempo)
  *****************************************************************/
@@ -191,9 +216,9 @@ otelcol.receiver.otlp "default" {
     endpoint = "0.0.0.0:4318"
   }
 
+  // Metrics arrive only through the authenticated quality receiver.
   output {
-    metrics = [otelcol.processor.transform.quality_metrics.input]
-    traces  = [otelcol.processor.batch.default.input]
+    traces = [otelcol.processor.batch.default.input]
   }
 }
 

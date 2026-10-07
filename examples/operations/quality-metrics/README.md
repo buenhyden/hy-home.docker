@@ -1,10 +1,10 @@
 ---
 title: "합성 OTLP 메트릭 전달 인수"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # 합성 OTLP 메트릭 전달 인수
@@ -22,7 +22,7 @@ HOME root가 include하지 않는 일회성 회귀 시험이며 상주 collector
 ## Scope
 
 delta/cumulative counter와 histogram의 count·sum·bucket, 정확한 delta replay,
-project identity 없는 표본 거절, Prometheus 중단 중 queue 재시도, Alloy 재시작 뒤
+project identity 없는 표본 거절, k6 Rate `condition`(zero/nonzero)과 producer instance의 별도 series 유지, 인증 없는 producer의 401 거부, Prometheus 중단 중 queue 재시도, Alloy 재시작 뒤
 동일 metric·resource identity의 새 source epoch에서 counter 4 → 6을 검증합니다. 실제 Grafana datasource·프로젝트 계정·HOME 트래픽은
 이 fixture의 입력이 아니며 별도 승인과 실제 소비자가 필요합니다.
 
@@ -45,7 +45,7 @@ digest를 사용합니다. 캐시 tag의 정확한 입력은 [controller의 TAGS
 현재 tag의 image ID와 digest의 image ID가 일치해야 합니다. 승인된 `default` context의
 local Unix socket만 사용하며 별도 UUID project/network의 기존 상태가 없어야 합니다.
 
-host port·secret·named volume은 0개입니다. 모든 container는 비특권·read-only이며
+host port·Compose secret·named volume은 0개입니다. controller가 만든 합성 bearer token 파일만 `/run/secrets/quality_otlp_token`에 읽기 전용으로 bind합니다. `--source <path>`로 다른 Alloy 설정(예: 변경 전 설정)에 같은 인수를 적용할 수 있습니다. 모든 container는 비특권·read-only이며
 CPU 합계 1.25, 메모리 제한 합계 832 MiB입니다. controller가 생성한 합성 설정 파일만
 읽기 전용으로 bind합니다. 저장과 WAL은 tmpfs이므로 프로세스/컨테이너 종료 뒤 영속
 복구를 증명하지 않습니다. 재시작 검사는 동일 identity의 새 source epoch 초기화와 다음 delta의 누적 범위입니다.

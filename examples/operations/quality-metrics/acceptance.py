@@ -20,14 +20,22 @@ TAGS = {
 }
 
 
+TOKEN_PATH = "/run/secrets/quality_otlp_token"
+
+
 def metrics_config(source):
-    """Use the actual bounded transform-to-remote-write source, not a parallel implementation."""
+    """Use the actual bounded receiver-to-remote-write source, not a parallel implementation."""
     start = source.index('otelcol.processor.transform "quality_metrics" {')
     end = source.index(
         "/*****************************************************************", start
     )
+    block = source[start:end]
+    if 'otelcol.receiver.otlp "quality"' in block:
+        return block
+    # Pre-SPEC-0214 sources had no authenticated receiver; keep them runnable
+    # so the same harness can show the previous behaviour (RED).
     return (
-        source[start:end]
+        block
         + """
 otelcol.receiver.otlp "synthetic" {
   http { endpoint = "0.0.0.0:4318" }
@@ -49,20 +57,39 @@ def command(args, **kwargs):
     return result.stdout
 
 
-PROBE = """import json,sys,urllib.request,urllib.parse
+PROBE = """import json,sys,urllib.request,urllib.parse,urllib.error
 op=json.load(sys.stdin)
 if op["kind"]=="send":
- url="http://alloy:4318/v1/metrics"
- request=urllib.request.Request(url,json.dumps(op["body"]).encode(),{"Content-Type":"application/json"})
+ url=op["url"]
+ headers={"Content-Type":"application/json"}
+ if op.get("token"):
+  headers["Authorization"]="Bearer "+op["token"]
+ request=urllib.request.Request(url,json.dumps(op["body"]).encode(),headers)
 else:
  url="http://prometheus:9090/api/v1/query?"+urllib.parse.urlencode({"query":op["query"]})
  request=urllib.request.Request(url)
-with urllib.request.urlopen(request,timeout=5) as response:
- print(response.read().decode())
+try:
+ with urllib.request.urlopen(request,timeout=5) as response:
+  body=response.read().decode()
+  print(body if op["kind"]!="send" else json.dumps({"status":response.status}))
+except urllib.error.HTTPError as error:
+ print(json.dumps({"status":error.code}))
 """
 
 
-def payload(name, delta, value, timestamp, start, *, histogram=False, identity=True):
+def payload(
+    name,
+    delta,
+    value,
+    timestamp,
+    start,
+    *,
+    histogram=False,
+    identity=True,
+    instance=None,
+    points=None,
+):
+    """Build one OTLP/JSON metric; `points` gives extra (attributes, value) pairs."""
     point = {
         "startTimeUnixNano": str(start),
         "timeUnixNano": str(timestamp),
@@ -83,11 +110,26 @@ def payload(name, delta, value, timestamp, start, *, histogram=False, identity=T
         }
     else:
         point["asInt"] = str(value)
+        series = [point]
+        for attributes, extra in points or ():
+            series.append(
+                {
+                    "startTimeUnixNano": str(start),
+                    "timeUnixNano": str(timestamp),
+                    "asInt": str(extra),
+                    "attributes": [
+                        {"key": key, "value": {"stringValue": item}}
+                        for key, item in attributes.items()
+                    ],
+                }
+            )
+        if points:
+            series = series[1:]
         data = {
             "sum": {
                 "aggregationTemporality": 1 if delta else 2,
                 "isMonotonic": True,
-                "dataPoints": [point],
+                "dataPoints": series,
             }
         }
     attrs = [
@@ -98,6 +140,8 @@ def payload(name, delta, value, timestamp, start, *, histogram=False, identity=T
         attrs.append(
             {"key": "project.id", "value": {"stringValue": "metrics-rehearsal"}}
         )
+    if instance:
+        attrs.append({"key": "service.instance.id", "value": {"stringValue": instance}})
     return {
         "resourceMetrics": [
             {
@@ -117,6 +161,7 @@ def main():
     parser = argparse.ArgumentParser()
     for role in TAGS:
         parser.add_argument(f"--{role}-image", required=True)
+    parser.add_argument("--source", type=Path, default=SOURCE)
     args = parser.parse_args()
     images = {role: getattr(args, role + "_image") for role in TAGS}
     context = command(["docker", "context", "show"]).strip()
@@ -167,8 +212,20 @@ def main():
     }
     for role, image in images.items():
         env[f"METRICS_{role.upper()}_IMAGE"] = image
+    alloy_config = metrics_config(args.source.read_text())
+    authenticated = 'otelcol.receiver.otlp "quality"' in alloy_config
+    endpoint = (
+        "http://alloy:4319/v1/metrics"
+        if authenticated
+        else "http://alloy:4318/v1/metrics"
+    )
+    token = uuid.uuid4().hex
+    token_file = scratch / "quality_otlp_token"
+    token_file.write_text(token)
+    token_file.chmod(0o644)
+    env["METRICS_ALLOY_TOKEN"] = str(token_file)
     configs = {
-        "ALLOY": metrics_config(SOURCE.read_text()),
+        "ALLOY": alloy_config,
         "PROM": "global:\n  scrape_interval: 1s\nscrape_configs: []\n",
     }
     for role, text in configs.items():
@@ -225,6 +282,8 @@ def main():
         probe = compose("ps", "-q", "probe").strip()
 
         def request(op):
+            if op["kind"] == "send":
+                op = {"url": endpoint, "token": token if authenticated else "", **op}
             return json.loads(
                 command(
                     ["docker", "exec", "-i", probe, "python", "-c", PROBE],
@@ -292,6 +351,68 @@ def main():
             if histogram:
                 expect(name + "_sum", 125)
                 expect(name + '_bucket{le="100"}', 5)
+
+        def expect_value(expression, expected, timeout=35):
+            deadline = time.monotonic() + timeout
+            while time.monotonic() < deadline:
+                rows = query(expression)
+                if rows and float(rows[0]["value"][1]) == expected:
+                    print(f"PASS {expression}={expected}", flush=True)
+                    return
+                time.sleep(1)
+            raise AssertionError(f"Mismatch: {expression} expected {expected}")
+
+        # SPEC-0214: a k6 Rate exports one counter split by `condition`, and
+        # several runners share metric names; neither identity may collapse.
+        request(
+            {
+                "kind": "send",
+                "body": payload(
+                    "synthetic_rate",
+                    False,
+                    0,
+                    timestamp,
+                    start,
+                    points=[({"condition": "zero"}, 3), ({"condition": "nonzero"}, 2)],
+                ),
+            }
+        )
+        expect('synthetic_rate_total{condition="zero"}', 3)
+        expect('synthetic_rate_total{condition="nonzero"}', 2)
+        for instance, value in (("runner-a", 4), ("runner-b", 6)):
+            request(
+                {
+                    "kind": "send",
+                    "body": payload(
+                        "synthetic_instances",
+                        False,
+                        value,
+                        timestamp,
+                        start,
+                        instance=instance,
+                    ),
+                }
+            )
+        expect_value("count(synthetic_instances_total)", 2)
+        expect_value("sum(synthetic_instances_total)", 10)
+        if authenticated:
+            status = request(
+                {
+                    "kind": "send",
+                    "token": "",
+                    "body": payload(
+                        "synthetic_unauthenticated", False, 1, time.time_ns(), start
+                    ),
+                }
+            )["status"]
+            if status != 401:
+                raise AssertionError(f"Unauthenticated producer got HTTP {status}")
+            time.sleep(3)
+            if query("synthetic_unauthenticated_total"):
+                raise AssertionError("Unauthenticated metric was stored")
+            print("PASS unauthenticated producer rejected with 401", flush=True)
+        else:
+            print("NOT_RUN authentication: source has no quality receiver", flush=True)
         # Exact transport replay must not double count a delta stream.
         duplicate = payload(
             "synthetic_delta_counter", True, 3, timestamp + 1_000_000_000, timestamp

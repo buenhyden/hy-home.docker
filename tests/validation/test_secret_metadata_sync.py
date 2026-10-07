@@ -1108,8 +1108,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
-        self.assertEqual(101, len(contract["declarations"]))
-        self.assertEqual(138, len(contract["rows"]))
+        self.assertEqual(102, len(contract["declarations"]))
+        self.assertEqual(139, len(contract["rows"]))
         areas = Counter(
             row["path"].split("/")[1]
             for row in contract["rows"].values()
@@ -1124,7 +1124,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 "data": 15,
                 "db": 26,
                 "labs": 14,
-                "observability": 2,
+                "observability": 3,
                 "security": 2,
                 "storage": 8,
                 "tools": 9,
