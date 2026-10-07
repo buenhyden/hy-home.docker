@@ -22,6 +22,8 @@ PROJECT_ID = re.compile(r"[a-z][a-z0-9-]{0,62}\Z")
 SECRET = re.compile(r"[a-z][a-z0-9_]{0,90}\Z")
 KINDS = ("owner", "migrator", "runtime", "reader")
 LOGIN_KINDS = KINDS[1:]
+# Per-role connection budgets inside dev-pg max_connections=100.
+CONNECTION_LIMITS = {"migrator": 2, "runtime": 10, "reader": 5}
 FIELDS = {
     "schema_version",
     "project_id",
@@ -128,6 +130,7 @@ def sql_for(project):
                 (f"ALTER ROLE {role} WITH PASSWORD :'{kind}_password' LOGIN;"),
                 f"\\unset {kind}_password",
                 "\\endif",
+                f"ALTER ROLE {role} CONNECTION LIMIT {CONNECTION_LIMITS[kind]};",
             ]
     owner = roles["owner"]
     lines += [

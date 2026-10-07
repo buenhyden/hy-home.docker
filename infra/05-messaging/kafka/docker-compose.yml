@@ -264,9 +264,9 @@ services:
       - /provision/run-feature-provision.sh
     environment:
       PGHOST: dev-pg
-      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGPORT: '5432'
       PGUSER: '${DEV_PG_ADMIN_USER:-postgres}'
-      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PGDATABASE: postgres
       PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
       PROVISION_SQL: /provision/dev-pg.sql
       PROVISION_IDENTIFIERS: DEBEZIUM_DB_USER DEBEZIUM_DB_NAME DEBEZIUM_SCHEMA DEBEZIUM_HEARTBEAT_SCHEMA DEBEZIUM_PUBLICATION DEBEZIUM_SOURCE_OWNER
