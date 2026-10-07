@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -36,7 +36,8 @@ created: "2026-05-17"
 
 - Alloy UI or `/-/healthy` endpoint가 실패할 때.
 - Docker logs, metrics, or traces가 backend에 도착하지 않을 때.
-- OTLP clients가 `alloy:4317` or `alloy:4318`로 전송하지 못할 때.
+- OTLP trace clients가 `alloy:4317` or `alloy:4318`로 전송하지 못할 때. 이 두 port는 trace만 전달하며, 여기에 보낸 metric은 오류 없이 버려진다.
+- k6 품질 metric(`k6_*`)이 Prometheus에 없을 때. 품질 metric은 `config.home.alloy`의 인증 수신기 `alloy:4319`로만 들어온다(SPEC-0214).
 - 특정 backend exporter에서 connection refused or timeout이 보일 때.
 - `config.alloy` 변경 후 component graph, label, or exporter 상태 검증이 필요할 때.
 
@@ -101,6 +102,17 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    rg -n 'ALLOY_OTLP_GRPC_HOST_PORT|ALLOY_OTLP_HTTP_HOST_PORT|4317|4318' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.alloy
    ```
 
+   k6 품질 metric이 없으면 `config.home.alloy`가 선택되었는지, `alloy`에 secret
+   `quality_otlp_token`이 부여되었는지, run별 `metrics-ingress` relay가 같은 token으로
+   `alloy:4319`에 보내는지 확인한다. token 파일이 비어 있으면 Alloy는 요청을 받지 않고
+   연결을 끊으므로, HOME Alloy를 다시 만들기 전에 파일이 비어 있지 않은지 확인한다. 값은
+   출력하지 않는다.
+
+   ```bash
+   rg -n 'quality_otlp_token|4319|otelcol.auth.bearer' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.home.alloy
+   test -s secrets/observability/alloy/quality_otlp_token.txt && echo non-empty
+   ```
+
 6. Label drift or discovery gap이 의심되면 relabel rules와 Compose project filter를 확인한다.
 
    ```bash
@@ -128,6 +140,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] `docker compose --profile obs ps alloy`에서 `alloy` service가 running이다.
 - [ ] Alloy UI `https://alloy.${DEFAULT_URL}`에서 pipeline graph에 failed component가 없다.
 - [ ] Logs appear in Loki, Alloy self metrics appear in Prometheus, and OTLP traces appear in Tempo for affected paths.
+- [ ] k6 품질 metric이 영향 범위라면 Prometheus에 해당 `instance=<run_id>-a<attempt>`의 `k6_*` series가 있고, token 없는 요청은 4319에서 401을 받는다.
 - [ ] Pyroscope writer endpoint remains configured, and profile ingestion is only claimed when a profile source is explicitly connected.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 

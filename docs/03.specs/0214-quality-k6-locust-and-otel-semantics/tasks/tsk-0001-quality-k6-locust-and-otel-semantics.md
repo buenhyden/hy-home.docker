@@ -58,7 +58,8 @@ application target, load budget or HOME recreation, so those lanes stay
 public 4317/4318 receiver now forwards traces only. The transform keeps the
 resource `service.instance.id` and the datapoint attributes `condition`,
 `expected_response`, `method`, `status` and `scenario` next to the three
-ownership labels. The relabel allowlist keeps the same set plus `instance`.
+ownership labels. The relabel allowlist keeps the same set plus `instance`,
+`__name__`, and the histogram and summary labels `le` and `quantile`.
 The Alloy service mounts the new Compose secret `quality_otlp_token`
 (registry `OBS-014`, `secrets/observability/alloy/quality_otlp_token.txt`).
 It already joins `SECRETS_GID` 1000 and can read the `0640` file. The
@@ -88,7 +89,8 @@ Grafana are `NOT_RUN`.
 
 ### W2 Manifest Telemetry and Metrics Ingress
 
-`quality_run.py` now writes `hyhome.quality-run/v2` and accepts both schemas.
+`quality_run.py` now accepts `hyhome.quality-run/v2` as well as v1; `prepare`
+copies the operator-supplied manifest unchanged.
 v2 requires `telemetry` with exactly `mode` in `none` or `otlp`. v1 keeps its
 exact key set and means `none`. An endpoint, unknown mode, non-object value or
 a `telemetry` key on v1 is rejected.
@@ -129,7 +131,8 @@ The harness printed the metric names and labels that real k6 OTLP output
 produces through the relay. Before the prefix setting the names were
 `http_reqs_total`, `http_req_failed_total`, `data_sent_bytes_total`,
 `iterations_total` and `*_milliseconds_bucket/_count/_sum` for every trend,
-and there was no `vus` series. The labels were `environment`,
+and the short first probe run had no `vus` series; the 20 s dashboard run
+below did report `k6_vus`. The labels were `environment`,
 `expected_response`, `instance`, `method`, `project_id`, `scenario`,
 `service_name` and `status`. The `Infrastructure/k6` dashboard expected
 `k6_*_rate`, `_p95`-style quantile gauges and `run_id`/`attempt`/`testid`
@@ -182,6 +185,30 @@ non-zero, and its workers stopped. Locust OTel export stays unsupported
 because the image has no OpenTelemetry SDK. Locust results stay file-based
 in the LAB, and k6 remains the default load path.
 
+### W4 Documents, Review and Final Validation
+
+The k6 guide, policy and runbook, the Alloy guide, policy and runbook, and
+AD-0006 now describe the OTLP metric path. The operations catalog showed one
+stale cell: the Alloy row of the m0021 service inventory listed no secret
+after W1. It now lists `["quality_otlp_token"]`.
+
+An independent read-only review of the branch returned eleven findings. They
+were handled as follows:
+
+| Finding | Disposition |
+| --- | --- |
+| Latency panels used `s` for millisecond histograms | Fixed: nine units set to `ms`; new dashboard test RED then GREEN |
+| Legends kept `$quantile_stat` | Fixed: eleven legends use `$quantile`; same test |
+| RUN-0040 still pointed metric producers at 4317/4318 | Fixed: 4319 receiver, token and verification steps |
+| k6 documents claimed the executor never starts a container | Fixed: guard-config path documented; live target traffic stays `BLOCKED` under SPEC-0204 |
+| Task said there was no `vus` series | Fixed: the short probe lacked it; the 20 s run reported it |
+| Relay second network was unconstrained | Fixed: `--metrics-egress-network` is required with the relay, and the relay must join exactly the run network and that network; `test_k6_results` RED then GREEN |
+| Empty token file | Checked in an isolated Alloy: with an empty token, a request with no header gets 401 and an empty or a wrong bearer token gets the connection closed without a response; none is accepted. RUN-0040 requires a non-empty file before HOME recreation |
+| POL-0040 scope excluded `config.home.alloy` | Fixed: scope, systems and verification name it |
+| Task allowlist and v2 wording | Fixed |
+| No tracked procedure creates the per-run relay | Deferred: forward dependency recorded in RUN-0061; HOME relay `NOT_RUN` |
+| Per-attempt `instance` values grow Prometheus series | Accepted by contract 5; retention follows the existing Prometheus retention, no new rule |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -190,7 +217,7 @@ in the LAB, and k6 remains the default load path.
 | Manifest v2 | 1 | W2 | `test_k6_results` RED then GREEN | Working tree | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
 | Executor peer | 2 | W2 | Unit tests; isolated k6 OTLP E2E | Pinned k6, Alloy, Prometheus digests | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
 | Locust bounds | 4 | W3 | `test_locust_telemetry` RED then GREEN; isolated 1/2/3-worker and shortage runs | Pinned Locust 2.46.6 image, synthetic scenario | PASS | W3 Locust Worker Bounds | accepted |
-| Records | 5 | W4 | Local gate and review | Pending | NOT_RUN | Pending | pending |
+| Records | 5 | W4 | Changed-profile local gate, staged lint, operations catalog, metadata, independent review | Working tree at the W4 commit | PASS | W4 Documents, Review and Final Validation | accepted |
 
 ## Review and Completion
 

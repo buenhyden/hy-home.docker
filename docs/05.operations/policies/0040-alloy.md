@@ -1,10 +1,10 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -27,9 +27,9 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 ### Policy Scope
 
 이 정책은 current `infra/06-observability/alloy` compose와
-`config/config.alloy`에 선언된 Alloy 운영 기준을 다룬다.
+`config/config.alloy`·`config/config.home.alloy`에 선언된 Alloy 운영 기준을 다룬다.
 
-- **Systems**: compose service `alloy`, container `infra-alloy`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alloy/config/config.alloy`, volume `alloy-data`, Docker socket/container log read-only mounts
+- **Systems**: compose service `alloy`, container `infra-alloy`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alloy/config/config.alloy`와 `config.home.alloy`, secret `quality_otlp_token`, volume `alloy-data`, Docker socket/container log read-only mounts
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability
@@ -48,7 +48,12 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
   - Alloy service는 `template-infra-med`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml),
     tmpfs `/tmp` and `/run`, read-only config mount, read-only Docker
     container/socket mounts, persistent `alloy-data` volume을 유지한다.
-  - OTLP ingress는 gRPC `4317`과 HTTP `4318`을 사용한다.
+  - OTLP ingress는 gRPC `4317`과 HTTP `4318`을 사용하며 trace만 받는다.
+    `config.home.alloy`의 품질 metric 수신기는 HTTP `4319`, bearer token
+    secret `quality_otlp_token`을 쓰고 host에 publish하지 않는다. 식별 속성
+    (`project_id`, `environment`, `service_name`, `instance`)과 k6 `condition` 등
+    허용 label만 남긴다. per-run relay에서 `alloy:4319`까지는 내부 Docker
+    network의 평문 HTTP hop이며, 이 수신기를 host나 다른 tier로 노출하지 않는다.
   - Alloy UI/health endpoint는 `${ALLOY_PORT:-12345}`와 `/-/healthy`
     healthcheck를 기준으로 한다.
   - Docker discovery는 Compose project `hy-home-infra` label의 targets만 유지한다. Network-name matching으로 이 경계를 대체하지 않는다.
@@ -94,6 +99,8 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
   `rg -n 'service: template-infra-med|image: grafana/alloy:|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
 - Alloy pipeline config:
   `rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
+- Quality metric receiver:
+  `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 

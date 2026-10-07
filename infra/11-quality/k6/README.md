@@ -1,10 +1,10 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 created: "2026-03-26"
 ---
 
@@ -98,7 +98,8 @@ bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행
 `otlp`이면 executor가 `--metrics-ingress-container`로 지정한 run별 relay를 추가
 피어로 검증합니다. relay는 front 네트워크의 `metrics-ingress` alias, 동일 `run_id`와
 `hyhome.quality.role=metrics-ingress` label, digest 고정 `grafana/alloy` image,
-read-only rootfs, `CapDrop=[ALL]`, host port 없음이어야 합니다. 설정은
+read-only rootfs, `CapDrop=[ALL]`, host port 없음이어야 하고, 연결 network는 run
+network와 `--metrics-egress-network`로 지정한 HOME Alloy 도달 network 둘뿐이어야 합니다. 설정은
 [`metrics-ingress.alloy`](metrics-ingress.alloy)이며 relay만 HOME Alloy bearer token을
 가집니다. executor가 k6에 OTLP HTTP endpoint와 `project.id`·환경·
 `service.instance.id=<run_id>-a<attempt>` resource 속성을 주입하고

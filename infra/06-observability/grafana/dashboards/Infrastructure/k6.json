@@ -183,7 +183,7 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "s"
+                "value": "ms"
               },
               {
                 "id": "custom.axisPlacement",
@@ -243,7 +243,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_duration_$quantile_stat",
+          "legendFormat": "http_req_duration_$quantile",
           "range": true,
           "refId": "C"
         },
@@ -524,7 +524,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "ms"
         },
         "overrides": []
       },
@@ -732,7 +732,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "ms"
         },
         "overrides": [
           {
@@ -779,7 +779,7 @@
           "editorMode": "code",
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_iteration_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "instant": false,
-          "legendFormat": "iteration_duration_$quantile_stat",
+          "legendFormat": "iteration_duration_$quantile",
           "range": true,
           "refId": "A"
         },
@@ -866,7 +866,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "ms"
         },
         "overrides": [
           {
@@ -915,7 +915,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_blocked_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_blocked_$quantile_stat",
+          "legendFormat": "http_req_blocked_$quantile",
           "range": true,
           "refId": "B"
         },
@@ -928,7 +928,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_tls_handshaking_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_tls_handshaking_$quantile_stat",
+          "legendFormat": "http_req_tls_handshaking_$quantile",
           "range": true,
           "refId": "C"
         },
@@ -941,7 +941,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_sending_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_sending_$quantile_stat",
+          "legendFormat": "http_req_sending_$quantile",
           "range": true,
           "refId": "D"
         },
@@ -954,7 +954,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_waiting_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_waiting_$quantile_stat",
+          "legendFormat": "http_req_waiting_$quantile",
           "range": true,
           "refId": "E"
         },
@@ -967,7 +967,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_receiving_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_receiving_$quantile_stat",
+          "legendFormat": "http_req_receiving_$quantile",
           "range": true,
           "refId": "F"
         },
@@ -980,7 +980,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_duration_$quantile_stat",
+          "legendFormat": "http_req_duration_$quantile",
           "range": true,
           "refId": "A"
         }
@@ -1041,7 +1041,7 @@
               }
             ]
           },
-          "unit": "s"
+          "unit": "ms"
         },
         "overrides": [
           {
@@ -1135,7 +1135,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "http_req_duration_$quantile_stat",
+          "legendFormat": "http_req_duration_$quantile",
           "range": true,
           "refId": "A"
         },
@@ -1147,7 +1147,7 @@
           "editorMode": "code",
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"true\"}[$__rate_interval])))",
           "instant": false,
-          "legendFormat": "success_http_req_duration_$quantile_stat",
+          "legendFormat": "success_http_req_duration_$quantile",
           "range": true,
           "refId": "C"
         },
@@ -1160,7 +1160,7 @@
           "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"false\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
-          "legendFormat": "errors_http_req_duration_$quantile_stat",
+          "legendFormat": "errors_http_req_duration_$quantile",
           "range": true,
           "refId": "B"
         }
@@ -1436,7 +1436,7 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "s"
+                "value": "ms"
               }
             ]
           },
@@ -1448,7 +1448,7 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "s"
+                "value": "ms"
               }
             ]
           },
@@ -1460,7 +1460,7 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "s"
+                "value": "ms"
               }
             ]
           },
@@ -1472,7 +1472,7 @@
             "properties": [
               {
                 "id": "unit",
-                "value": "s"
+                "value": "ms"
               }
             ]
           }

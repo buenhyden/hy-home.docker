@@ -119,6 +119,13 @@ class QualityObservabilityContractTest(unittest.TestCase):
                 self.assertIn('instance=~"$instance"', expression)
                 self.assertNotIn("run_id", expression)
 
+    def test_k6_dashboard_shows_millisecond_trends_with_live_variables(self) -> None:
+        # OTLP trends arrive as *_milliseconds histograms, so a seconds unit
+        # would mislabel every latency panel by 1000x.
+        text = json.dumps(self.dashboard)
+        self.assertNotIn("$quantile_stat", text)
+        self.assertNotRegex(text, r'"(unit|value)": "s"')
+
     def test_k6_dashboard_does_not_average_reported_percentiles(self) -> None:
         for _, expression in self.k6_expressions():
             with self.subTest(expression=expression):

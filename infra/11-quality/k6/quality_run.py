@@ -666,6 +666,7 @@ def _parser() -> argparse.ArgumentParser:
     runner.add_argument("--backend-network")
     runner.add_argument("--backend-container")
     runner.add_argument("--metrics-ingress-container")
+    runner.add_argument("--metrics-egress-network")
     guard = subparsers.add_parser("prepare-guard")
     guard.add_argument("--manifest", required=True, type=pathlib.Path)
     guard.add_argument("--output", required=True, type=pathlib.Path)
@@ -714,6 +715,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.backend_network,
                     args.backend_container,
                     args.metrics_ingress_container,
+                    args.metrics_egress_network,
                 )
             except ExecutorError as exc:
                 raise ContractError(str(exc)) from exc

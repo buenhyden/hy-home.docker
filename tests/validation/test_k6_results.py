@@ -523,7 +523,7 @@ class K6ResultContractTests(unittest.TestCase):
 
         guard = types.SimpleNamespace(validate=lambda *args: None)
 
-        def execute(attempt, metrics_peer="metrics-ingress"):
+        def execute(attempt, metrics_peer="metrics-ingress", egress="obs-relay"):
             quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
             with mock.patch.dict(sys.modules, {"http_guard": guard}):
                 with mock.patch.object(
@@ -541,6 +541,7 @@ class K6ResultContractTests(unittest.TestCase):
                         "backend-test",
                         "backend",
                         metrics_peer,
+                        egress,
                     )
 
         self.assertEqual(0, execute(self.root / "otlp"))
@@ -580,6 +581,16 @@ class K6ResultContractTests(unittest.TestCase):
                 ),
             ),
             (
+                "egress",
+                lambda: ingress["NetworkSettings"]["Networks"].update(
+                    {
+                        "edge-net": ingress["NetworkSettings"]["Networks"].pop(
+                            "obs-relay"
+                        )
+                    }
+                ),
+            ),
+            (
                 "alias",
                 lambda: ingress["NetworkSettings"]["Networks"][network["Name"]].update(
                     Aliases=[]
@@ -597,6 +608,10 @@ class K6ResultContractTests(unittest.TestCase):
                 ingress.update(saved)
         with self.assertRaises(container_executor.ExecutorError):
             execute(self.root / "no-peer", metrics_peer=None)
+        with self.assertRaises(container_executor.ExecutorError):
+            execute(self.root / "no-egress", egress=None)
+        with self.assertRaises(container_executor.ExecutorError):
+            execute(self.root / "egress-is-run-net", egress=network["Name"])
         self.manifest["telemetry"] = {"mode": "none"}
         with self.assertRaises(container_executor.ExecutorError):
             execute(self.root / "unexpected-peer")

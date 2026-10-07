@@ -173,6 +173,7 @@ def _metrics_peer_contract(
     peer: dict[str, Any],
     network_name: str,
     peer_name: str,
+    egress_network: str,
 ) -> None:
     """Admit only the per-run OTLP relay; it, not k6, holds the Alloy token."""
     config = peer.get("Config")
@@ -201,7 +202,7 @@ def _metrics_peer_contract(
         or not isinstance(aliases, list)
         or "metrics-ingress" not in aliases
         or not isinstance(networks, dict)
-        or len(networks) > 2
+        or set(networks) != {network_name, egress_network}
     ):
         raise ExecutorError("metrics ingress peer contract is invalid")
 
@@ -346,13 +347,22 @@ def execute(
     backend_network: str | None = None,
     backend_peer: str | None = None,
     metrics_peer: str | None = None,
+    metrics_network: str | None = None,
 ) -> int:
     telemetry = manifest.get("telemetry", {"mode": "none"})["mode"]
-    if (telemetry == "otlp") != bool(metrics_peer) or (
-        metrics_peer
-        and (
-            not NAME.fullmatch(metrics_peer)
-            or metrics_peer in {peer_name, backend_peer}
+    # The relay bridges the internal run network to exactly one named
+    # egress network that reaches HOME Alloy; any other network is refused.
+    if (
+        (telemetry == "otlp") != bool(metrics_peer)
+        or (bool(metrics_peer) != bool(metrics_network))
+        or (
+            metrics_peer
+            and (
+                not NAME.fullmatch(metrics_peer)
+                or not NAME.fullmatch(metrics_network)
+                or metrics_peer in {peer_name, backend_peer}
+                or metrics_network in {network_name, backend_network}
+            )
         )
     ):
         raise ExecutorError("metrics ingress must be given exactly for OTLP telemetry")
@@ -393,6 +403,7 @@ def execute(
                 _inspect(docker_binary, docker_context, "container", metrics_peer),
                 network_name,
                 metrics_peer,
+                metrics_network,
             )
         peer = _inspect(docker_binary, docker_context, "container", peer_name)
         if guard_config is None:

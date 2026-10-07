@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -31,7 +31,7 @@ created: "2026-05-10"
 
 ### Overview
 
-이 가이드는 `06-observability` 계층의 Grafana Alloy 사용 맥락과 설정 확인 방법을 설명한다. Alloy는 선택된 설정에서 Docker 로그를 Loki로, OTLP trace를 Tempo로, pprof profile을 Pyroscope로 전달한다. Prometheus는 Alloy 자체 지표를 직접 수집하며 현재 두 설정에는 자체 remote-write 경로가 없다.
+이 가이드는 `06-observability` 계층의 Grafana Alloy 사용 맥락과 설정 확인 방법을 설명한다. Alloy는 선택된 설정에서 Docker 로그를 Loki로, OTLP trace를 Tempo로, pprof profile을 Pyroscope로 전달한다. Prometheus는 Alloy 자체 지표를 직접 수집하며 현재 두 설정에는 자체 remote-write 경로가 없다. `config.home.alloy`만 품질 OTLP metric 전용 인증 수신기(HTTP 4319, host 비공개, secret `quality_otlp_token`)를 두고 그 결과를 Prometheus로 remote write한다(SPEC-0214).
 
 ### Usage Type
 
