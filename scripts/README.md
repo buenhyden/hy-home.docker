@@ -199,6 +199,9 @@ source하지 않습니다. 선택적 QA/CI 도구를 다른 방법으로 사용�
 사용 가능한 디렉터리만 한 번씩 추가됩니다.
 
 `scripts/validation/run-ci-gate.py`는 의존성 없는 typed-gate CLI입니다.
+문서 링크 검사는 로컬의 `python3 scripts/validation/check-document-links.py --mode all`만
+소유하며 원격 PR 계획에서는 제외합니다. 문서의 metadata·관계·상태와 해당 운영 catalog는
+원격에서 유지하고, 일반 문구 변경에 Compose·구현 회귀를 붙이지 않습니다.
 `.github/workflow-contract.yml`을 읽어 닫힌 `changed` 또는 `full` 공개
 profile을 선택하고, `--explain`은 실행하지 않습니다. PR 후보가 aggregate QA를 소유하며 개발 push와 main은 같은 QA를 반복하지 않습니다. Explain과 실제 실행은
 동일한 context-filtered, exact-once canonical 계획을 사용합니다. `--explain`은

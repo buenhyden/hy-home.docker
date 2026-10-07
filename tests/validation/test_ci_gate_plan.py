@@ -421,7 +421,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             & gate_ids
         )
 
-    def test_document_only_plan_keeps_validators_and_omits_implementation_regressions(
+    def test_document_only_plan_keeps_content_and_common_checks_only(
         self,
     ) -> None:
         plan = build_public_plan(
@@ -430,11 +430,14 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/03.specs/0200-path-aware-pr-regressions/spec.md",),
         )
         ids = {item.gate_id for item in plan}
-        self.assertLessEqual(
+        self.assertEqual(
             {
+                "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
-                "leaf.docs-traceability",
+                "leaf.local-diff-hygiene",
+                "leaf.changed-style",
+                "leaf.commit-message-contract",
             },
             ids,
         )
@@ -456,12 +459,15 @@ class CiGateRunnerContractTests(unittest.TestCase):
             paths,
         )
         ids = {item.gate_id for item in plan}
-        self.assertLessEqual(
+        self.assertEqual(
             {
+                "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
-                "leaf.docs-traceability",
                 "leaf.operations-catalog",
+                "leaf.local-diff-hygiene",
+                "leaf.changed-style",
+                "leaf.commit-message-contract",
             },
             ids,
         )
@@ -480,6 +486,30 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual(
             runner.SelectedPrerequisites(node=False, docker=False),
             runner.selected_prerequisites(plan, paths),
+        )
+
+    def test_document_links_are_local_only_for_changed_and_full_plans(self) -> None:
+        paths = ("docs/03.specs/0211-qa-delivery-rationalization/spec.md",)
+        local_changed = build_public_plan(
+            "changed", runner.ExecutionContext.LOCAL, paths
+        )
+        remote_changed = build_public_plan(
+            "changed", runner.ExecutionContext.PULL_REQUEST, paths
+        )
+        local_full = build_public_plan("full", runner.ExecutionContext.LOCAL)
+        hosted_full = build_public_plan(
+            "full", runner.ExecutionContext.WORKFLOW_DISPATCH
+        )
+
+        self.assertIn(
+            "leaf.docs-traceability", {item.gate_id for item in local_changed}
+        )
+        self.assertIn("leaf.docs-traceability", {item.gate_id for item in local_full})
+        self.assertNotIn(
+            "leaf.docs-traceability", {item.gate_id for item in remote_changed}
+        )
+        self.assertNotIn(
+            "leaf.docs-traceability", {item.gate_id for item in hosted_full}
         )
 
     def test_document_owner_changes_select_regressions(self) -> None:
@@ -561,23 +591,49 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self,
     ) -> None:
         cases = {
-            "scripts/hardening/check-all-hardening.sh": "leaf.infrastructure-hardening",
-            "scripts/validation/check-template-security-baseline.sh": "leaf.template-security-baseline",
-            "scripts/validation/check-quickwin-baseline.sh": "leaf.quickwin-baseline",
-            "scripts/validation/check-supply-chain-policy.py": "leaf.supply-chain-deterministic-policy",
-            "tests/validation/test_compose_baseline_gates.py": "leaf.compose-baseline-regressions",
-            "scripts/lib/agent_governance/agent_governance_contract.py": "leaf.local-agent-governance-contract",
-            "scripts/hooks/hook_rules.py": "leaf.local-hook-rule-tests",
-            "scripts/operations/provider_surface_renderer.py": "leaf.local-provider-surface-drift",
-            "scripts/operations/use-qa-ci-tools.sh": "leaf.repo-contracts-control-plane-regressions",
+            "scripts/hardening/check-all-hardening.sh": {
+                "leaf.infrastructure-hardening"
+            },
+            "scripts/validation/check-template-security-baseline.sh": {
+                "leaf.template-security-baseline"
+            },
+            "scripts/validation/check-quickwin-baseline.sh": {"leaf.quickwin-baseline"},
+            "scripts/validation/check-supply-chain-policy.py": {
+                "leaf.supply-chain-deterministic-policy"
+            },
+            "tests/validation/test_compose_baseline_gates.py": {
+                "leaf.compose-baseline-regressions"
+            },
+            "scripts/lib/agent_governance/agent_governance_contract.py": {
+                "leaf.local-agent-governance-contract"
+            },
+            "scripts/hooks/hook_rules.py": {"leaf.local-hook-rule-tests"},
+            "scripts/operations/provider_surface_renderer.py": {
+                "leaf.local-provider-surface-drift"
+            },
+            "scripts/operations/use-qa-ci-tools.sh": {
+                "leaf.repo-contracts-control-plane-regressions"
+            },
+            "scripts/operations/sync-tech-stack-versions.sh": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-script-manifest.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/_script_manifest_support.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
         }
-        for path, expected_gate_id in cases.items():
+        for path, expected_gate_ids in cases.items():
             with self.subTest(path=path):
                 plan = build_public_plan(
                     "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
                 )
                 ids = {item.gate_id for item in plan}
-                self.assertIn(expected_gate_id, ids)
+                self.assertLessEqual(expected_gate_ids, ids)
                 if path == "scripts/operations/provider_surface_renderer.py":
                     self.assertNotIn("leaf.compose-validation", ids)
                     self.assertNotIn("leaf.compose-baseline-regressions", ids)
@@ -1114,7 +1170,21 @@ class CiGateRunnerContractTests(unittest.TestCase):
         admitted_pairs = {
             (runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",)),
             (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-github-workflow-contract.py"
+                ),
+                (),
+            ),
+            (
                 pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/check-script-manifest.py"),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/check-storybook-contract.sh"),
                 (),
             ),
             (pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"), ()),

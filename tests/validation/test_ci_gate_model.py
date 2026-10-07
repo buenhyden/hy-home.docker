@@ -199,10 +199,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             if node.gate_id == "local.document-corpus-lifecycle"
         )
         self.assertEqual(
-            (
-                "leaf.local-hook-rule-tests",
-                "leaf.local-document-corpus-lifecycle",
-            ),
+            ("leaf.local-document-corpus-lifecycle",),
             lifecycle.children,
         )
 

@@ -24,7 +24,7 @@ independent writer slices with a shared registration owner and read-only review.
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
 | W1 | 5 | Publish the initial draft package and issue identity | None | TSK-0001 | Task evidence |
-| W2 | 1 | Classify and retire obsolete QA with continuing owners | W1 | TSK-0001 | Task evidence |
+| W2 | 1 | Classify and retire obsolete QA with continuing owners and bounded historical-link recovery | W1 | TSK-0001 | Task evidence |
 | W3 | 2 | Narrow selection and preserve unique execution/failure boundaries | W2 | TSK-0001 | Task evidence |
 | W4 | 3 | Restore optimized remote PR candidate QA and phase ownership | W3 | TSK-0001 | Task evidence |
 | W5 | 4 | Consolidate commit, changelog and SemVer release production | W2 | TSK-0001 | Task evidence |

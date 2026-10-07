@@ -93,10 +93,14 @@ Current observation on 2026-10-07: the approved retirement input in
 callers. The retained README describes paired Skill evidence, while current quality
 policy owns mandatory QA and agentic policy owns evaluation authority. No paired
 harness outputs or aggregate results were found in the current tree or ref history.
-[The current Task](../../docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/tsk-0001-qa-scope-and-delivery-rationalization.md)
-records exact patch identity and authorization. Historical reads below are provenance.
+Historical reads below are provenance, not a current Task-progress view.
 
 ### Provenance
+
+At commit `a4e928b668bcfbf24eda54b06c47d030a1eb4786`, the Task at
+`docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/tsk-0001-qa-scope-and-delivery-rationalization.md`
+recorded the then-approved patch identity and source authorization. This dated
+citation does not declare current execution status or authenticate a new action.
 
 Derived by reading tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06: the canonical
@@ -107,14 +111,8 @@ documents. The Entry Order was re-read from `bootstrap.md` at `f71449eff` on
 categories this map's own ownership table lists and so routed to neither. The knowledge graph under `graphify-out/` was not used as evidence
 because its build commit differs from HEAD. The `docs/98.archive/**` row was
 re-read from the documentation protocol's Stage 98 dispositions section on
-2026-09-15, in the change that added that section. On 2026-09-29, the active
-Spec and Plan at `b097e11c1ff006c7d504f40937a54b68493e7bc7`,
-`evals/agent_output_eval.py`, and the Provider Registry were re-read to
-corroborate the then-current evaluation source and selected pending target.
-The 2026-09-29 migration working tree based on `567e9ea00` was subsequently
-read at `.agents/evaluations/agent_output_eval.py`, the Provider Registry,
-Stage 99 registry and script manifest to refresh the active ownership row.
-The former path above is historical provenance, not a current loading alias.
+2026-09-15, in the change that added that section. Evaluation-route provenance preceding the current evidence-role alignment is
+preserved in Git history; obsolete scorer paths are no longer loading routes.
 
 ### Knowledge Validity
 

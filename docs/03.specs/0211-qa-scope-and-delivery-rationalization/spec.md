@@ -47,7 +47,15 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    paired Skill evaluation evidence role and its task/output/scoring/aggregate
    relationships without reinstating recurring answer scoring or fabricating
    unavailable harness results. New payload profiles and evaluation runs are
-   separate from this README/policy alignment.
+   separate from this README/policy alignment. Admitted published Research
+   Sources table links
+   use bounded immutable authored-row recovery only when exact table structure,
+   source identity, row bytes, resolved destination and regular target/anchor
+   availability are proven. Historical Markdown anchor bodies require an
+   admitted target profile; unknown/private/fallback targets are not read.
+   Current, adjacent, malformed or unproven links retain current-target failure.
+   This preserves research bytes and availability without reauthenticating past
+   execution claims, adding a research-path exemption or restoring retired QA.
 3. Commit owns the shared Commitizen message grammar. Authoring may format or
    run focused RED/GREEN checks. Feature push does not repeat candidate QA.
    Remote PR QA owns candidate acceptance, with no path-skipped required
@@ -55,8 +63,10 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    rerun the same candidate QA; separately scoped remote observations retain
    their different input and trust boundaries.
 4. Select checks by actual change impact. Ordinary document changes retain
-   profile, relationship, link and lifecycle checks without whole-library,
-   frontend or Compose regressions. Implementation changes select their
+   profile, relationship and lifecycle checks remotely, with operations catalog
+   checks for operations documents and local-only document-link validation.
+   Unrelated hook, tool, whole-library, frontend and Compose checks follow
+   their actual changed owners. Implementation changes select their
    relevant regressions; rename, delete and unknown input fail closed.
 5. Execute each identical invocation once per declared input, base, history,
    configuration, tool, mode and trust context. Formatting writes are explicit

@@ -112,7 +112,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 "branches": ["main"],
-                "types": ["opened", "synchronize", "reopened", "ready_for_review"],
+                "types": ["opened", "synchronize", "reopened"],
             },
             workflow.data["on"]["pull_request"],
         )

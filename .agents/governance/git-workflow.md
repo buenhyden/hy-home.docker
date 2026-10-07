@@ -61,14 +61,20 @@ Use Conventional Commits with explicit scopes where possible.
 2. Run focused authoring checks and inspect the selected prerequisites; the
    remote PR candidate owns aggregate QA. Do not repeat it before push or after
    merge for the same declared input/trust boundary.
-3. For governance work, ensure linked stage docs remain accurate.
-4. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
-5. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
-6. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
+3. Run document-link validation locally on the final source input before
+   result-only Task evidence recording. Record its bound input and result in
+   the Task. Result-only additions use minimum document checks; check new or
+   changed link destinations only in that Task rather than repeating the whole
+   corpus. Remote PR QA excludes the link leaf; metadata, relationship,
+   lifecycle and applicable operations catalog checks remain.
+4. For governance work, ensure linked stage docs remain accurate.
+5. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
+6. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
+7. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
    the recovery-commit and history-rewrite rules it must satisfy are owned by
    `.agents/governance/github-governance.md` section 3.
-7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
-8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
+8. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
+9. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
 ### 4. Operational Best Practices
 
@@ -90,8 +96,8 @@ Use Conventional Commits with explicit scopes where possible.
   moving channel producer. Existing non-SemVer historical refs remain evidence;
   this policy does not authorize deleting or rewriting them.
 - A specific release publication still requires its exact version, commit,
-  approved target and recovery path. Follow the
-  [release runbook](../../docs/05.operations/runbooks/0009-release-management.md).
+  approved target and recovery path. Select `RUN-0009` through the
+  [Operations runbook index](../../docs/05.operations/runbooks/README.md#cross-cutting-workspace).
 
 ### 5. Agent Completion Commit Discipline
 

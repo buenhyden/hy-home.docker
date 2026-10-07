@@ -81,13 +81,15 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.document-governance-library-regressions",
     "leaf.operations-catalog",
     "leaf.release-regressions",
+    "leaf.local-script-manifest",
+    "leaf.local-shell-syntax",
+    "leaf.local-tech-stack-version-drift",
+    "leaf.repository-integrity-regressions",
+    "leaf.storybook-contract",
     "local.workflow-harness",
 )
 _LOCAL_AGGREGATE_CHILDREN = {
-    "local.document-corpus-lifecycle": (
-        "leaf.local-hook-rule-tests",
-        "leaf.local-document-corpus-lifecycle",
-    ),
+    "local.document-corpus-lifecycle": ("leaf.local-document-corpus-lifecycle",),
     "local.workflow-harness": (
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",

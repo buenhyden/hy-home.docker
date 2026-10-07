@@ -30,6 +30,7 @@ remote protection and runtime observations require their own receipts.
 | Purpose | Current owner |
 | --- | --- |
 | Inspect changed selection without execution | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| Local-only document links | `check-document-links.py --mode all`; Task-bound final document input |
 | Remote PR candidate acceptance | `run-ci-gate.py --profile changed`, scheduled by the quality workflow |
 | Explicit comprehensive maintenance/audit | `run-ci-gate.py --profile full`, with Task-bound budget and authorization |
 | Scoped format/lint modes and tool pins | `.pre-commit-config.yaml` and the changed-style controller |
@@ -39,7 +40,8 @@ remote protection and runtime observations require their own receipts.
 ### Current Guarantees and Composition
 
 - Stage 99 Registry owns profile, template, identity and lifecycle contracts.
-  Metadata/link/corpus readers enforce current content and preservation.
+  Metadata/corpus readers enforce current content and preservation remotely;
+  the link reader owns the local-only document-link lane.
 - Compose/service owners define configuration, hardening and operator recovery.
   Preflight, temporary rendering and live runtime have different inputs and effects.
 - The machine [workflow contract](../../.github/workflow-contract.yml) owns suite,

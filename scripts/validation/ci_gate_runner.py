@@ -82,6 +82,7 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
     }
 )
 _PR_ONLY_GATE_IDS = frozenset({"leaf.changed-style", "leaf.commit-message-contract"})
+_REMOTE_EXCLUDED_GATE_IDS = frozenset({"leaf.docs-traceability"})
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -119,7 +120,10 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
     for path, argv in (
         ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
+        ("scripts/validation/check-github-workflow-contract.py", ()),
         ("scripts/validation/check-operations-catalog.py", ()),
+        ("scripts/validation/check-script-manifest.py", ()),
+        ("scripts/validation/check-storybook-contract.sh", ()),
         ("scripts/validation/validate-docker-compose.sh", ()),
         ("scripts/validation/run-ci-precommit.sh", ()),
         ("tests/validation/test_run_ci_precommit.sh", ()),
@@ -595,7 +599,11 @@ def _filter_execution_context(
     context: ExecutionContext,
 ) -> tuple[GateInvocation, ...]:
     if context is ExecutionContext.PULL_REQUEST:
-        return plan
+        return tuple(
+            invocation
+            for invocation in plan
+            if invocation.gate_id not in _REMOTE_EXCLUDED_GATE_IDS
+        )
     if context is ExecutionContext.LOCAL:
         return tuple(
             invocation
@@ -603,8 +611,9 @@ def _filter_execution_context(
             if invocation.gate_id not in _LOCAL_EXCLUDED_GATE_IDS
             and not invocation.gate_id.startswith("setup.")
         )
+    excluded = _PR_ONLY_GATE_IDS | _REMOTE_EXCLUDED_GATE_IDS
     return tuple(
-        invocation for invocation in plan if invocation.gate_id not in _PR_ONLY_GATE_IDS
+        invocation for invocation in plan if invocation.gate_id not in excluded
     )
 
 

@@ -17,8 +17,7 @@
           "types": [
             "opened",
             "synchronize",
-            "reopened",
-            "ready_for_review"
+            "reopened"
           ]
         }
       },
@@ -645,6 +644,17 @@
       "suite_key": "local-tech-stack-version-drift"
     },
     {
+      "gate_id": "leaf.storybook-contract",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-storybook-contract.sh",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "storybook-contract"
+    },
+    {
       "gate_id": "leaf.changed-style",
       "kind": "leaf",
       "entrypoint": "scripts/validation/run-ci-precommit.sh",
@@ -920,7 +930,6 @@
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle"
       ]
     },
@@ -1043,6 +1052,7 @@
         "ci.dependency-vulnerability-audit",
         "ci.commit-message-contract",
         "ci.frontend-quality",
+        "leaf.storybook-contract",
         "ci.storybook-coverage",
         "ci.zizmor",
         "leaf.release-regressions",
@@ -1099,10 +1109,7 @@
           "all"
         ],
         "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
+          "local"
         ]
       },
       {
@@ -1113,18 +1120,6 @@
           "--mode",
           "check-changed"
         ],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "leaf.workflow-contract",
-        "entrypoint": "scripts/validation/check-github-workflow-contract.py",
-        "argv": [],
         "contexts": [
           "local",
           "pull_request",
@@ -1150,30 +1145,6 @@
         "suite": "operations",
         "gate_id": "leaf.quickwin-baseline",
         "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
-        "argv": [],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "leaf.local-script-manifest",
-        "entrypoint": "scripts/validation/check-script-manifest.py",
-        "argv": [],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "repository-integrity",
-        "gate_id": "public.validator.scripts.validation.check-storybook-contract.sh",
-        "entrypoint": "scripts/validation/check-storybook-contract.sh",
         "argv": [],
         "contexts": [
           "local",
@@ -1425,7 +1396,8 @@
           "tests/validation/test_tech_stack_version_contract.py",
           "scripts/operations/release.py",
           "scripts/operations/sync-tech-stack-versions.sh",
-          "scripts/operations/use-qa-ci-tools.sh"
+          "scripts/operations/use-qa-ci-tools.sh",
+          "scripts/manifest.yaml"
         ],
         "suites": [
           "repository-integrity"
@@ -1448,7 +1420,8 @@
         ],
         "root_gate_ids": [
           "ci.frontend-quality",
-          "ci.storybook-coverage"
+          "ci.storybook-coverage",
+          "leaf.storybook-contract"
         ]
       },
       {
@@ -1515,9 +1488,7 @@
           ".gitleaks.toml",
           ".hadolint.yaml",
           ".markdownlint-cli2.yaml",
-          ".pre-commit-config.yaml",
           ".prettierignore",
-          ".shellcheckrc",
           ".yamllint",
           "ruff.toml",
           "scripts/requirements-pre-commit.txt",
@@ -1526,16 +1497,110 @@
           "scripts/lib/gate/",
           "scripts/validation/ci_gate_runner.py",
           "scripts/validation/run-ci-gate.py",
-          "scripts/validation/run-ci-precommit.sh",
           "tests/lib/gate/",
           "tests/validation/test_ci_gate_execution_context.py",
           "tests/validation/test_ci_gate_model.py",
-          "tests/validation/test_ci_gate_plan.py",
+          "tests/validation/test_ci_gate_plan.py"
+        ],
+        "root_gate_ids": [
+          "local.workflow-harness"
+        ]
+      },
+      {
+        "prefixes": [
+          ".pre-commit-config.yaml",
+          ".shellcheckrc",
+          "scripts/validation/run-ci-precommit.sh",
           "tests/validation/test_run_ci_precommit.sh",
           "scripts/operations/use-qa-ci-tools.sh"
         ],
         "root_gate_ids": [
+          "leaf.local-shell-syntax",
           "local.workflow-harness"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/hardening/check-all-hardening.sh",
+          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
+          "scripts/operations/check-compose-core-readiness.sh",
+          "scripts/operations/rehearse-sample-service-delivery.sh",
+          "scripts/operations/gen-secrets.sh",
+          "scripts/hooks/post-tool-validate.sh",
+          "scripts/hooks/agent-event-hook.sh",
+          "scripts/validation/check-template-security-baseline.sh",
+          "scripts/validation/run-agent-precommit-all-files.sh",
+          "scripts/validation/validate-docker-compose.sh",
+          "scripts/validation/check-conftest-policy.sh",
+          "scripts/validation/check-quickwin-baseline.sh"
+        ],
+        "root_gate_ids": [
+          "leaf.local-shell-syntax"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/sync-tech-stack-versions.sh"
+        ],
+        "root_gate_ids": [
+          "leaf.local-shell-syntax",
+          "leaf.local-tech-stack-version-drift",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-storybook-contract.sh"
+        ],
+        "root_gate_ids": [
+          "leaf.local-shell-syntax",
+          "leaf.storybook-contract"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/manifest.yaml",
+          "tests/validation/test_script_manifest.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-script-manifest.py",
+          "tests/validation/_script_manifest_support.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-script-manifest",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "docker-compose.yml",
+          "infra/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-tech-stack-version-drift"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/test_tech_stack_version_contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.local-tech-stack-version-drift",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/test_surface_ownership.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
         ]
       }
     ],

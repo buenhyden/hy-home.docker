@@ -53,6 +53,335 @@ def load_script_manifest_cli():
     return module
 
 
+class DeclaredHistoricalLinkTests(unittest.TestCase):
+    def setUp(self) -> None:
+        from scripts.lib.document_governance import links
+
+        self.links = links
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = pathlib.Path(self.temp.name)
+        self.source = self.root / (
+            "docs/90.references/research/0001-fixture/m0001-source.md"
+        )
+        self.target = self.source.parent / "m0002-target.md"
+        self.source.parent.mkdir(parents=True)
+        self.git("init", "-q")
+        self.git("config", "user.name", "Historical Link Fixture")
+        self.git("config", "user.email", "fixture@example.invalid")
+        self.git("branch", "-m", "main")
+
+    def git(self, *arguments: str) -> str:
+        return subprocess.run(
+            ["git", *arguments],
+            cwd=self.root,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+
+    def capture(
+        self,
+        *,
+        fragment="old-anchor",
+        adjacent=False,
+        target=True,
+        target_symlink=False,
+        newline="\n",
+        identity="RES-0001-m0001",
+        target_body="# Old Anchor\n",
+        reference=False,
+    ):
+        from scripts.lib.agent_governance.agent_governance_contract import (
+            HISTORICAL_TABLE_MARKER,
+        )
+
+        destination = os.path.relpath(self.target, self.source.parent)
+        if fragment:
+            destination += "#" + fragment
+        citation = "[Retired][evidence]" if reference else f"[Retired]({destination})"
+        source_text = (
+            "---\ntitle: Fixture\ntype: reference/research\nstatus: published\n"
+            f"artifact_id: {identity}\n---\n\n# Source\n\n## Sources\n\n"
+            f"> {HISTORICAL_TABLE_MARKER}\n"
+            "> | Source | Observation |\n> | --- | --- |\n"
+            f"> | {citation} | Dated evidence |\n"
+            + (f"\n[Current]({destination.split('#')[0]})\n" if adjacent else "")
+            + (f"\n[evidence]: {destination}\n" if reference else "")
+        )
+        self.source.write_bytes(source_text.replace("\n", newline).encode("utf-8"))
+        if target:
+            self.target.parent.mkdir(parents=True, exist_ok=True)
+            if target_symlink:
+                self.target.symlink_to("untracked.md")
+            else:
+                self.target.write_text(target_body)
+        self.git("add", "-A")
+        self.git("commit", "-qm", "capture")
+        self.git("checkout", "-qb", "feature")
+        if target:
+            self.target.unlink()
+            self.git("add", "-A")
+            self.git("commit", "-qm", "retire target")
+
+    def findings(self):
+        graph = self.links.build_document_graph([self.source], repo_root=self.root)
+        return self.links.check_alignment(graph)
+
+    def test_declared_history_recovers_original_target_and_anchor(self):
+        self.capture()
+        self.assertEqual([], self.findings())
+
+    def test_original_reference_style_history_remains_recoverable(self):
+        self.capture(reference=True)
+        self.assertEqual([], self.findings())
+
+    def test_changed_reference_definition_cannot_redirect_historical_row(self):
+        alternate = self.source.parent / "m0003-alternate.md"
+        alternate.write_text("# Old Anchor\n")
+        self.capture(reference=True)
+        alternate.unlink()
+        self.git("add", "docs")
+        self.git("commit", "-qm", "retire alternate target")
+        original_row = next(
+            line
+            for line in self.source.read_bytes().splitlines(keepends=True)
+            if b"[Retired][evidence]" in line
+        )
+        self.source.write_text(
+            self.source.read_text().replace(
+                self.target.name + "#old-anchor", alternate.name + "#old-anchor"
+            )
+        )
+        self.assertIn(original_row, self.source.read_bytes().splitlines(keepends=True))
+        self.assertEqual(
+            ["historical-evidence-source-invalid"],
+            [item.code for item in self.findings()],
+        )
+
+    def assert_target_body_unread(self, *, fragment="old-anchor", expected):
+        from scripts.lib.document_governance import git_provenance
+
+        self.capture(fragment=fragment)
+        target_oid = self.git(
+            "rev-parse", "main:" + self.target.relative_to(self.root).as_posix()
+        )
+        original = git_provenance._run_git
+        commands = []
+
+        def observe(root, arguments, **kwargs):
+            commands.append(tuple(arguments))
+            return original(root, arguments, **kwargs)
+
+        with mock.patch.object(git_provenance, "_run_git", side_effect=observe):
+            self.assertEqual(expected, [item.code for item in self.findings()])
+        self.assertNotIn(("cat-file", "blob", target_oid), commands)
+
+    def test_unregistered_markdown_anchor_body_is_not_read(self):
+        self.target = self.source.parent / "unknown.md"
+        self.assert_target_body_unread(
+            expected=["historical-evidence-target-unadmitted"]
+        )
+
+    def test_unsupported_markdown_anchor_body_is_not_read(self):
+        self.target = self.root / "docs/unmanaged/notes.md"
+        self.assertEqual(
+            "unsupported", self.links.classify_path(self.target.relative_to(self.root))
+        )
+        self.assert_target_body_unread(
+            expected=["historical-evidence-target-unadmitted"]
+        )
+
+    def test_private_markdown_anchor_body_is_not_read(self):
+        self.target = self.root / "secrets/private.md"
+        self.assert_target_body_unread(
+            expected=["historical-evidence-target-unadmitted"]
+        )
+
+    def test_non_markdown_existence_never_reads_target_body(self):
+        self.target = self.root / "scripts/helper.py"
+        self.assert_target_body_unread(fragment=None, expected=[])
+
+    def test_registered_archive_anchor_remains_admitted(self):
+        self.target = self.root / "docs/98.archive/completed/fixture.md"
+        self.capture()
+        self.assertEqual([], self.findings())
+
+    def test_original_crlf_is_preserved_and_normalization_is_rejected(self):
+        self.capture(newline="\r\n")
+        self.assertEqual([], self.findings())
+        self.source.write_bytes(self.source.read_bytes().replace(b"\r\n", b"\n"))
+        failures = self.findings()
+        self.assertEqual(
+            ["historical-evidence-source-invalid"], [item.code for item in failures]
+        )
+        self.assertTrue(all(item.severity == "error" for item in failures))
+
+    def test_missing_main_and_unsafe_blame_source_remain_failures(self):
+        from scripts.lib.document_governance import git_provenance
+
+        self.capture()
+        original = git_provenance._run_git
+
+        def unsafe_source(root, arguments, **kwargs):
+            result = original(root, arguments, **kwargs)
+            if arguments[0] == "blame":
+                result.stdout = re.sub(
+                    rb"(?m)^filename .*", b"filename ../../outside.md", result.stdout
+                )
+            return result
+
+        with mock.patch.object(git_provenance, "_run_git", side_effect=unsafe_source):
+            self.assertIn(
+                "historical-evidence-source-invalid",
+                {item.code for item in self.findings()},
+            )
+        self.git("branch", "-m", "main", "untrusted-baseline")
+        self.assertIn(
+            "historical-evidence-source-invalid",
+            {item.code for item in self.findings()},
+        )
+
+    def test_historical_source_identity_cannot_be_replaced(self):
+        self.capture(identity="RES-0001-m0002")
+        self.source.write_text(
+            self.source.read_text().replace("RES-0001-m0002", "RES-0001-m0001")
+        )
+        self.assertIn(
+            "historical-evidence-source-invalid",
+            {item.code for item in self.findings()},
+        )
+
+    def test_oversized_historical_target_is_not_admitted(self):
+        self.capture(target_body="# Old Anchor\n" + "x" * 5000)
+        with mock.patch.object(self.links, "_MAX_ANCHOR_BYTES", 4096):
+            self.assertIn(
+                "historical-evidence-target-invalid",
+                {item.code for item in self.findings()},
+            )
+
+    def test_adjacent_current_link_and_tampered_history_remain_failures(self):
+        self.capture(adjacent=True)
+        self.assertEqual(
+            ["missing-link-target"], [item.code for item in self.findings()]
+        )
+        self.source.write_text(self.source.read_text().replace("Retired", "Altered"))
+        self.assertIn(
+            "historical-evidence-source-invalid",
+            {item.code for item in self.findings()},
+        )
+
+    def test_missing_historical_target_and_anchor_are_not_resolved(self):
+        self.capture(fragment="absent", target=False)
+        self.assertIn(
+            "historical-evidence-target-missing",
+            {item.code for item in self.findings()},
+        )
+        self.target.write_text("# Other Heading\n")
+        self.git("add", "docs")
+        self.git("commit", "-qm", "different target")
+        self.target.unlink()
+        self.git("add", "docs")
+        self.git("commit", "-qm", "retire different target")
+        self.assertIn(
+            "historical-evidence-target-missing",
+            {item.code for item in self.findings()},
+        )
+
+    def test_missing_historical_anchor_is_not_resolved(self):
+        self.capture(fragment="absent")
+        self.assertIn(
+            "historical-evidence-anchor-missing",
+            {item.code for item in self.findings()},
+        )
+
+    def test_unmerged_historical_row_cannot_authorize_recovery(self):
+        self.capture()
+        self.target.write_text("# Old Anchor\n")
+        self.source.write_text(self.source.read_text().replace("Retired", "New row"))
+        self.git("add", "docs")
+        self.git("commit", "-qm", "feature evidence")
+        self.target.unlink()
+        self.git("add", "docs")
+        self.git("commit", "-qm", "feature retirement")
+        self.assertIn(
+            "historical-evidence-source-invalid",
+            {item.code for item in self.findings()},
+        )
+
+    def test_current_or_historical_identity_change_is_not_admitted(self):
+        self.capture()
+        text = self.source.read_text()
+        for changed in (
+            text.replace("published", "draft"),
+            text.replace("RES-0001-m0001", "RES-0001-m0002"),
+            text.replace("reference/research", "guide"),
+        ):
+            with self.subTest(changed=changed):
+                self.source.write_text(changed)
+                self.assertIn(
+                    "missing-link-target", {item.code for item in self.findings()}
+                )
+
+    def test_historical_symlink_target_is_not_regular_evidence(self):
+        self.capture(target_symlink=True)
+        self.assertIn(
+            "historical-evidence-target-missing",
+            {item.code for item in self.findings()},
+        )
+
+    def test_current_source_swap_and_ancestor_symlink_reject_proof(self):
+        self.capture()
+        graph = self.links.build_document_graph([self.source], repo_root=self.root)
+        original = self.source.read_bytes()
+        self.source.unlink()
+        outside = self.root / "outside.md"
+        outside.write_bytes(original)
+        self.source.symlink_to(outside)
+        self.assertIn(
+            "historical-evidence-source-invalid",
+            {item.code for item in self.links.check_alignment(graph)},
+        )
+        self.source.unlink()
+        self.source.write_bytes(original)
+        moved = self.root / "moved"
+        self.source.parent.rename(moved)
+        self.source.parent.symlink_to(moved, target_is_directory=True)
+        self.assertIn(
+            "link-target-symlink-ancestor",
+            {item.code for item in self.links.check_alignment(graph)},
+        )
+
+    def test_marker_inside_fence_or_comment_is_not_admitted(self):
+        self.capture()
+        original = self.source.read_text()
+        for text in (
+            original.replace("> <!-- Historical", "> ```text\n> <!-- Historical")
+            + "> ```\n",
+            original.replace("> <!-- Historical", "<!-- surrounding\n> <!-- Historical")
+            + "-->\n",
+            original.replace("## Sources", "## Current Guidance"),
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(
+                    frozenset(), self.links._declared_historical_rows(text)
+                )
+
+    def test_malformed_marker_or_table_retains_current_link_validation(self):
+        self.capture()
+        original = self.source.read_text()
+        for text in (
+            original.replace("Historical evidence table", "Historical table"),
+            original.replace("| --- | --- |", "| --- |"),
+            original.replace("> | [Retired]", ">\n> A new paragraph.\n> | [Retired]"),
+        ):
+            with self.subTest(text=text):
+                self.source.write_text(text)
+                self.assertIn(
+                    "missing-link-target", {item.code for item in self.findings()}
+                )
+
+
 class SharedDocumentGovernanceTests(unittest.TestCase):
     def test_only_exact_registry_frozen_legacy_records_stop_routing(self) -> None:
         from scripts.lib.document_governance.registry import load_registry

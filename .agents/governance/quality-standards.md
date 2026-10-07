@@ -117,6 +117,14 @@ main-push security remains a post-merge observation.
   `scripts/validation/run-ci-gate.py --profile changed`. Inspect the selected
   plan and prerequisites before execution. Local development does not repeat
   the candidate aggregate or a full profile after every commit or push.
+- **Document links**: `check-document-links.py --mode all` owns local-only
+  read-only link validation on the final source input before result-only Task
+  evidence recording. Record the bound source/base/history and result before
+  submission; remote PR and hosted plans exclude this leaf. Result-only Task
+  additions use minimum document checks and scoped validation of any new or
+  changed link destinations, without repeating the whole link corpus.
+  Local focused feedback does not become hosted evidence or trigger another
+  candidate aggregate.
 - **Validation**: the changed-style controller uses registered check modes and
   preserves source bytes. Formatting and validation have separate purposes.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
@@ -145,9 +153,11 @@ main-push security remains a post-merge observation.
 | Approved release dispatch | Sole main-only SemVer producer | Exact commit, create-only tag, complete draft assets, publication receipt |
 
 The machine workflow contract owns exact job identities, DAG and path-to-root
-selection. Ordinary documents retain profile, parent, link and lifecycle/content
-checks; their implementation regression suites run only when relevant owners
-change. Frontend checks follow the frontend project, not every script or workflow
+selection. Ordinary documents retain profile, parent and lifecycle/content
+checks remotely, plus operating catalog checks for operations documents. Link
+validation belongs only to the local lane. Wording changes do not select Compose,
+service, hook, tool or implementation regression suites; these follow their
+actual changed owners. Frontend checks follow the frontend project, not every script or workflow
 edit. Unknown paths fail closed, including rename/delete evidence. `--explain`
 inspects selection without executing a leaf. No wrapper creates a second
 orchestration inventory.
@@ -166,7 +176,7 @@ providers; Task evidence names each input, result, acceptance and unexecuted lan
 
 | Change | Focused authoring feedback | Remote candidate or distinct observation |
 | --- | --- | --- |
-| Ordinary documents/templates | Registered read-only metadata, links and style | Selected content checks, without whole-library regression |
+| Ordinary documents/templates | Local-only registered links; scoped metadata and read-only style feedback | Profile, relationships and lifecycle; operations catalog when applicable; no link or implementation regression rerun |
 | Validator/parser/Registry implementation | Changed behavior RED/GREEN and relevant style | Content checks plus affected implementation regression |
 | Gate/workflow/style controller | Selection, trust, failure and cleanup regressions | Same changed entrypoint; exact hosted job/event evidence |
 | Docker/Compose/service configuration | Relevant syntax/render/hardening feedback | Selected configuration checks; live HOME/smoke/restore only separately authorized |

@@ -271,7 +271,7 @@ GitHub Actions의 PR 후보 job이 public `changed` profile의 aggregate QA를 �
 향후 릴리스는 main의 준비 PR에서 `CHANGELOG.md`를 작성한 뒤, 승인된 정확한
 revision/version에 대해 단일 수동 workflow가 SemVer tag와 완성된 draft Release를
 게시합니다. 개발 push의 changelog 생성이나 moving tag 생산자는 없습니다.
-실제 릴리스 절차는 [release runbook](docs/05.operations/runbooks/0009-release-management.md)을 따릅니다.
+실제 릴리스 절차인 `RUN-0009`은 [운영 Runbook 색인](docs/05.operations/runbooks/README.md#cross-cutting-workspace)에서 찾습니다.
 
 `main-security` job은 main push의 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 triage/community 자동화이며 필수 품질 게이트에는 들지 않습니다.

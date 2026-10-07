@@ -122,7 +122,16 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         dependency = {
             "ci.dependency-vulnerability-audit",
         }
-        optional = frontend | document | catalog | release | workflow | dependency
+        repository = {
+            "leaf.local-shell-syntax",
+            "leaf.local-script-manifest",
+            "leaf.local-tech-stack-version-drift",
+            "leaf.repository-integrity-regressions",
+            "leaf.storybook-contract",
+        }
+        optional = (
+            frontend | document | catalog | release | workflow | dependency | repository
+        )
         self.assertEqual(
             optional,
             {
@@ -134,12 +143,12 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         all_roots = set(contract.public_root_gate_ids(public, public.suite_names))
         self.assertLessEqual(optional, all_roots)
 
-        known_paths = (
-            "docs/03.specs/0173-governance-qa-surface-convergence/plan.md",
-            ".agents/governance/sdlc.md",
-            "infra/monitoring/config.yml",
-        )
-        for path in known_paths:
+        known_paths = {
+            "docs/03.specs/0173-governance-qa-surface-convergence/plan.md": set(),
+            ".agents/governance/sdlc.md": set(),
+            "infra/monitoring/config.yml": {"leaf.local-tech-stack-version-drift"},
+        }
+        for path, expected_optional in known_paths.items():
             with self.subTest(path=path):
                 selected = contract.select_public_suites(public, "changed", (path,))
                 roots = set(
@@ -148,17 +157,22 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     )
                 )
                 self.assertFalse(frontend & roots)
-                self.assertFalse(optional & roots)
-                repository = next(
+                self.assertEqual(expected_optional, optional & roots)
+                repository_route = next(
                     route
                     for route in public.suites
                     if route.name == "repository-integrity"
                 )
-                self.assertLessEqual(set(repository.root_gate_ids) - optional, roots)
+                self.assertLessEqual(
+                    set(repository_route.root_gate_ids) - optional, roots
+                )
 
         cases = {
-            "projects/storybook/nextjs/package-lock.json": frontend | dependency,
-            "projects/storybook/nextjs/src/app/page.tsx": frontend,
+            "projects/storybook/nextjs/package-lock.json": frontend
+            | dependency
+            | {"leaf.storybook-contract"},
+            "projects/storybook/nextjs/src/app/page.tsx": frontend
+            | {"leaf.storybook-contract"},
             "scripts/lib/document_governance/spec_packages.py": document,
             "docs/05.operations/guides/0001-example.md": catalog,
             "scripts/lib/document_governance/operations_catalog.py": document | catalog,
@@ -171,7 +185,32 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "scripts/requirements-pre-commit.txt": harness,
             "scripts/requirements.txt": harness,
             ".github/workflow-contract.yml": workflow,
-            ".pre-commit-config.yaml": harness,
+            ".pre-commit-config.yaml": harness | {"leaf.local-shell-syntax"},
+            "scripts/manifest.yaml": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/test_tech_stack_version_contract.py": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-storybook-contract.sh": {
+                "leaf.local-shell-syntax",
+                "leaf.storybook-contract",
+            },
+            "scripts/operations/sync-tech-stack-versions.sh": {
+                "leaf.local-shell-syntax",
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-script-manifest.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/_script_manifest_support.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
         }
         for path, expected in cases.items():
             with self.subTest(path=path):
