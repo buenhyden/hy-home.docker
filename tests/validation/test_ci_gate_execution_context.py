@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
-import errno
 import os
 import pathlib
-import re
 import select
 import shutil
 import signal
@@ -44,40 +42,8 @@ def _invocation(
     )
 
 
-class LocalExclusionDocumentationTests(unittest.TestCase):
-    """`--profile full` is not the CI surface, and the map must say which leaves.
-
-    The runner withholds nine leaves from the local context. The verification
-    surface map transcribes that set so a reader can predict what a local pass
-    does not cover; a transcription nobody checks is how the map came to
-    describe surfaces the tree no longer had.
-    """
-
-    MAP = ROOT / ".agents/knowledge/verification-surface-map.md"
-
-    def _documented_gate_ids(self) -> set[str]:
-        section = (
-            self.MAP.read_text(encoding="utf-8")
-            .partition("## What the Local Context Withholds")[2]
-            .partition("\n## ")[0]
-        )
-        self.assertTrue(section.strip(), "the local exclusion section is missing")
-        return set(re.findall(r"`(leaf\.[a-z0-9-]+)`", section.partition("| ---")[2]))
-
-    def test_documented_exclusions_match_the_runner_constant(self) -> None:
-        self.assertEqual(
-            set(runner._LOCAL_EXCLUDED_GATE_IDS),
-            self._documented_gate_ids(),
-        )
-
-    def test_every_documented_exclusion_is_a_registered_leaf(self) -> None:
-        document = contract.load_contract_document(ROOT)
-        registered = {node["gate_id"] for node in document["gate_nodes"]}
-        self.assertLessEqual(self._documented_gate_ids(), registered)
-
+class LocalExecutionBoundaryTests(unittest.TestCase):
     def test_a_local_plan_reaches_no_withheld_leaf(self) -> None:
-        """The prose claim is checked against a built plan, not against itself."""
-
         registry = contract.parse_gate_registry(
             contract.load_contract_document(ROOT),
             ".github/workflow-contract.yml",
@@ -96,7 +62,7 @@ class LocalExclusionDocumentationTests(unittest.TestCase):
             root=ROOT,
         )
         planned = {invocation.gate_id for invocation in plan}
-        self.assertEqual(set(), planned & self._documented_gate_ids())
+        self.assertEqual(set(), planned & runner._LOCAL_EXCLUDED_GATE_IDS)
 
 
 class DescriptorExecutionTests(unittest.TestCase):
@@ -177,13 +143,13 @@ class DescriptorExecutionTests(unittest.TestCase):
                     _invocation(
                         "leaf.one",
                         "scripts/validation/one.py",
-                        allowed_env_keys=("HEAD_REF",),
+                        allowed_env_keys=("PR_BASE_SHA",),
                     ),
                     _invocation("leaf.two", "scripts/validation/two.py"),
                 ),
                 {
                     "PATH": "/usr/bin",
-                    "HEAD_REF": "topic/example",
+                    "PR_BASE_SHA": "0123456789abcdef0123456789abcdef01234567",
                     "GIT_DIR": "/tmp/hostile",
                     "GIT_CONFIG": "hostile",
                     "PYTHONPATH": "/tmp/hostile",
@@ -348,162 +314,6 @@ class DescriptorExecutionTests(unittest.TestCase):
                         {"PATH": "/usr/bin"},
                     )
                 self.assertEqual(expected_code, caught.exception.code)
-
-    def test_agent_eval_dependency_is_preflighted_without_second_execution(
-        self,
-    ) -> None:
-        cases = (
-            ("valid", None),
-            ("untracked", "ci-gate-entrypoint-untracked"),
-            ("symlink", "ci-gate-entrypoint-symlink"),
-            ("mode", "ci-gate-entrypoint-mode"),
-            ("identity", "ci-gate-entrypoint-identity"),
-        )
-        for case, expected_code in cases:
-            with (
-                self.subTest(case=case),
-                tempfile.TemporaryDirectory(dir="/tmp") as directory,
-            ):
-                root = pathlib.Path(directory).resolve()
-                REAL_SUBPROCESS_RUN(
-                    ["git", "init", "-q"],
-                    cwd=root,
-                    check=True,
-                )
-
-                def add_entrypoint(
-                    relative: str,
-                    *,
-                    mode: int = 0o755,
-                    tracked: bool = True,
-                ) -> pathlib.Path:
-                    path = root / relative
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    path.write_text(
-                        "#!/usr/bin/env python3\nraise SystemExit(0)\n",
-                        encoding="utf-8",
-                    )
-                    path.chmod(mode)
-                    if tracked:
-                        REAL_SUBPROCESS_RUN(
-                            ["git", "add", "--", relative],
-                            cwd=root,
-                            check=True,
-                        )
-                        if mode & 0o111:
-                            REAL_SUBPROCESS_RUN(
-                                [
-                                    "git",
-                                    "update-index",
-                                    "--chmod=+x",
-                                    "--",
-                                    relative,
-                                ],
-                                cwd=root,
-                                check=True,
-                            )
-                    return path
-
-                add_entrypoint("scripts/lib/gate/ci_gate_adapters.py")
-                dependency = root / ".agents/evaluations/agent_output_eval.py"
-                if case == "untracked":
-                    add_entrypoint(
-                        ".agents/evaluations/agent_output_eval.py",
-                        tracked=False,
-                    )
-                elif case == "symlink":
-                    target = add_entrypoint(".agents/evaluations/target.py")
-                    dependency.parent.mkdir(parents=True, exist_ok=True)
-                    dependency.symlink_to(target.name)
-                    REAL_SUBPROCESS_RUN(
-                        [
-                            "git",
-                            "add",
-                            "--",
-                            ".agents/evaluations/agent_output_eval.py",
-                        ],
-                        cwd=root,
-                        check=True,
-                    )
-                elif case == "mode":
-                    add_entrypoint(
-                        ".agents/evaluations/agent_output_eval.py",
-                        mode=0o644,
-                    )
-                else:
-                    add_entrypoint(".agents/evaluations/agent_output_eval.py")
-                    if case == "identity":
-                        dependency.write_text(
-                            "#!/usr/bin/env python3\nraise SystemExit(9)\n",
-                            encoding="utf-8",
-                        )
-
-                invocation = dataclasses.replace(
-                    _invocation(
-                        "leaf.agent-output-eval-fixture-gate",
-                        "scripts/lib/gate/ci_gate_adapters.py",
-                    ),
-                    argv=("run-agent-output-eval",),
-                )
-                child_calls: list[str] = []
-                dependency_fds: list[int] = []
-                real_open_entrypoint = runner._open_entrypoint_at
-
-                def record_dependency_fd(
-                    root_fd: int,
-                    path: pathlib.PurePosixPath,
-                ) -> int:
-                    descriptor = real_open_entrypoint(root_fd, path)
-                    if path == pathlib.PurePosixPath(
-                        ".agents/evaluations/agent_output_eval.py"
-                    ):
-                        dependency_fds.append(descriptor)
-                    return descriptor
-
-                with (
-                    mock.patch.object(
-                        runner,
-                        "_open_entrypoint_at",
-                        side_effect=record_dependency_fd,
-                    ),
-                    mock.patch.object(
-                        runner,
-                        "_run_verified_child",
-                        side_effect=lambda _root_fd, item, _environment: (
-                            child_calls.append(item.invocation.gate_id) or 0
-                        ),
-                    ),
-                ):
-                    if expected_code is None:
-                        self.assertEqual(
-                            0,
-                            runner.execute_execution_plan(
-                                root,
-                                (invocation,),
-                                {"PATH": os.environ.get("PATH", os.defpath)},
-                            ),
-                        )
-                    else:
-                        with self.assertRaises(contract.GateContractError) as caught:
-                            runner.execute_execution_plan(
-                                root,
-                                (invocation,),
-                                {"PATH": os.environ.get("PATH", os.defpath)},
-                            )
-                        self.assertEqual(expected_code, caught.exception.code)
-
-                self.assertEqual(
-                    (
-                        ["leaf.agent-output-eval-fixture-gate"]
-                        if expected_code is None
-                        else []
-                    ),
-                    child_calls,
-                )
-                for descriptor in dependency_fds:
-                    with self.assertRaises(OSError) as caught:
-                        os.fstat(descriptor)
-                    self.assertEqual(errno.EBADF, caught.exception.errno)
 
     def test_path_replacement_after_open_executes_verified_descriptor(self) -> None:
         path = self.add_entrypoint(

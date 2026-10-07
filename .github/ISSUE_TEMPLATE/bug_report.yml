@@ -8,6 +8,9 @@ body:
       value: |
         Thanks for reporting a bug.
         Please provide enough detail to reproduce and validate the fix.
+        This Issue owns the request and priority. Specs own change contracts;
+        Tasks own execution, results and acceptance. Link those owners instead
+        of copying their evidence or synchronizing lifecycle states.
   - type: input
     id: spec_link
     attributes:
@@ -16,6 +19,25 @@ body:
       placeholder: https://github.com/buenhyden/hy-home.docker/blob/main/docs/03.specs/0001-gateway/spec.md
     validations:
       required: false
+  - type: input
+    id: task_link
+    attributes:
+      label: Related Task Link
+      description: Optional execution owner; do not copy its work log here.
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Requested Priority
+      description: Maintainer triage priority, separate from the impact estimate.
+      options:
+        - low
+        - normal
+        - high
+        - urgent
+    validations:
+      required: true
   - type: textarea
     id: summary
     attributes:

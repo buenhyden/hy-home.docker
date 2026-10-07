@@ -39,7 +39,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         document = contract.load_contract_document(root)
         gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
         public = contract.parse_public_gate_contract(document)
-        selected = ("repository-integrity",)
+        selected = ("operations",)
         plan = runner.build_public_validation_plan(
             gates,
             contract.public_root_gate_ids(public, selected),
@@ -91,7 +91,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                         profile="full",
                     )
 
-    def test_local_public_profiles_remain_registered_without_hosted_jobs(self) -> None:
+    def test_local_profiles_and_hosted_candidate_share_the_public_runner(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2]
         document = contract.load_contract_document(root)
         public = contract.parse_public_gate_contract(document)
@@ -100,14 +100,14 @@ class PublicSuiteModelTests(unittest.TestCase):
         jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
             "jobs"
         ]
-        self.assertEqual({"main-security", "update-main-current"}, set(jobs))
-        self.assertFalse(
-            any(
+        self.assertEqual({"candidate-quality", "main-security"}, set(jobs))
+        self.assertEqual(
+            2,
+            sum(
                 "scripts/validation/run-ci-gate.py" in step.get("run", "")
-                for job in jobs.values()
-                for step in job["steps"]
+                for step in jobs["candidate-quality"]["steps"]
                 if isinstance(step, dict)
-            )
+            ),
         )
         # No package installation: explicitly expose the already-installed site
         # dependencies to an otherwise clean interpreter, then import the runner.
@@ -200,7 +200,6 @@ class PublicSuiteModelTests(unittest.TestCase):
         )
         self.assertEqual(
             (
-                "leaf.local-document-corpus-lifecycle-tests",
                 "leaf.local-hook-rule-tests",
                 "leaf.local-document-corpus-lifecycle",
             ),
@@ -232,10 +231,7 @@ class PublicSuiteModelTests(unittest.TestCase):
     ) -> None:
         expected_by_suite = {
             "agent-governance": {
-                "tests.lib.agent_governance.test_agent_governance_contract",
-                "tests.validation.test_provider_native_surfaces",
-                "tests.validation.test_provider_surface_renderer",
-                "tests.validation.test_stop_gate_deferred_paths",
+                "tests.lib.hooks.test_tool_payload",
             },
             "operations": {
                 "tests.validation.test_postgres_logical_upgrade_rehearsal",
@@ -262,8 +258,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "GITHUB_ACTIONS": "true",
                 "EVENT_NAME": "pull_request",
                 "PR_BASE_SHA": "1" * 40,
-                "PR_TITLE": "P04 current-owner routing",
-                "HEAD_REF": "codex/p04-one-time-migration-qa-retirement",
+                "PR_HEAD_SHA": "2" * 40,
             },
         }
         for context, environ in environments.items():

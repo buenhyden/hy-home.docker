@@ -72,14 +72,19 @@ _TOP_LEVEL_FIELDS = frozenset(
     }
 )
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
+    "ci.dependency-vulnerability-audit",
     "ci.frontend-quality",
     "ci.storybook-coverage",
+    "ci.zizmor",
+    "leaf.local-document-corpus-lifecycle-tests",
     "leaf.local-document-metadata-tests",
     "leaf.document-governance-library-regressions",
+    "leaf.operations-catalog",
+    "leaf.release-regressions",
+    "local.workflow-harness",
 )
 _LOCAL_AGGREGATE_CHILDREN = {
     "local.document-corpus-lifecycle": (
-        "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle",
     ),
@@ -112,10 +117,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
 }
 _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
-    "ci.agent-output-eval-fixture-gate": (
-        "leaf.agent-output-eval-fixture-regressions",
-        "leaf.agent-output-eval-fixture-gate",
-    ),
     "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.frontend-quality": (
@@ -125,7 +126,7 @@ _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
         "leaf.frontend-build",
         "leaf.frontend-quality",
     ),
-    "ci.git-flow-contract": ("leaf.git-flow-contract",),
+    "ci.commit-message-contract": ("leaf.commit-message-contract",),
     "ci.storybook-coverage": (
         "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
@@ -151,13 +152,13 @@ _SECRET_ENV_SHAPE = re.compile(
 _ENV_KEY = re.compile(r"[A-Z_][A-Z0-9_]*\Z")
 _ADMITTED_ENV_KEYS = frozenset(
     # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
-    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # PR_BASE_SHA, PR_HEAD_SHA, and PUSH_BEFORE_SHA from its controller, so
     # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
         "GITHUB_ACTIONS",
-        "HEAD_REF",
-        "PR_TITLE",
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA",
         "TEMPLATE_GATE_BASE",
     }
 )

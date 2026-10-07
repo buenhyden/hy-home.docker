@@ -31,10 +31,11 @@ promotes either: a model can be listed, unentitled, and refused at once.
 
 # regression-comparison
 
-| Fixture | Baseline | Candidate | Delta | Deterministic |
+| Source or schema boundary | Baseline | Candidate | Evidence | Disposition |
 | --- | --- | --- | --- | --- |
-| `<registered synthetic fixture>` | `<value>` | `<value>` | `<value>` | yes / no |
+| `<scoped boundary>` | `<documented fact>` | `<documented fact>` | `<dated official source or native schema>` | unchanged / changed / unverified |
 
-Comparisons run against the registered synthetic fixture and call no provider.
-A non-deterministic row is reported as non-deterministic rather than averaged,
-because an averaged score hides the thing that made it move.
+This manual comparison describes sourced or native-schema differences. It does
+not execute a retired scoring fixture or create a recurring delivery gate.
+Live quality, cost and latency remain unverified without a separately approved
+observation.

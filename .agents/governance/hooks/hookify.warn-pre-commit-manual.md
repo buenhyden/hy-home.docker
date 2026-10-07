@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 action: "warn"
 enabled: true
 event: "bash"
@@ -33,7 +33,8 @@ The declared Bash event and unchanged native pattern identify matching commands.
 - Manual runs can create inconsistent evidence.
 - Installed commit-hook delivery must be observed separately; this warning does
   not claim it ran automatically for a particular commit.
-- CI has its separate pinned pre-commit route and validation responsibilities.
+- Remote candidate validation uses the registered read-only changed-style
+  controller; routine CI does not run an all-files formatter.
 
 **Detected forms and normal commit path:**
 

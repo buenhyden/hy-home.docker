@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.2.6"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # docs
@@ -110,14 +110,18 @@ Requirement 자식 identity는 그 package가 소유하며, Stage 98은 frozen
 
 ### Document Contract Validation
 
-문서 체계와 repository contract는 다음 검증으로 유지합니다.
+문서 체계의 후보 aggregate QA는 원격 PR 경로가 소유합니다. 로컬에서는
+아래 명령으로 선택 계획을 조회하거나 필요한 link 진단만 수행합니다.
+`--explain`은 검사를 실행하지 않으며 PASS 증거가 아닙니다.
 
 ```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
 python3 scripts/validation/check-document-links.py --mode traceability
 ```
 
-`run-ci-gate.py`는 허용된 docs top-level 폴더, required README, template inventory, GitHub Actions YAML, script references, Docker image tag policy, tech-stack version drift, runtime agent/function catalog, LLM Wiki contract 동기화와 generated index freshness를 확인합니다. `check-document-links.py --mode alignment`는 현재 소유자 문서와 operations 문서 간 추적성 동기화를 확인합니다.
+정확한 검사 선택과 실행 단계는 [quality policy](../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)와
+[workflow contract](../.github/workflow-contract.yml)가 소유합니다.
+`check-document-links.py --mode alignment`는 현재 문서의 링크·anchor·archive 경계를 확인합니다.
 
 ### Historical Refresh Evidence
 

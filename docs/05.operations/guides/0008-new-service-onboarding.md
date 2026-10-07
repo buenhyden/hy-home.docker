@@ -1,10 +1,10 @@
 ---
 title: "New Service Onboarding Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
@@ -88,7 +88,7 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 
 - [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의 승인된 공개 입력으로 구성 검증을 수행한다. 전체 private 모델을 출력하지 않는다.
 - 승인된 기동 뒤에는 선택한 daemon의 health와 초기화 작업의 종료 결과, 인증된 기능을 구분해 확인한다. `start_period` 경과는 healthy 보장이 아니다.
-- `python3 scripts/validation/run-ci-gate.py --profile changed` — 서비스를 `infra/`에 편입할 때 contract가 동기화 상태를 유지한다.
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)) — 서비스를 `infra/`에 편입할 때 contract가 동기화 상태를 유지한다.
 
 ### Runbook Handoff
 

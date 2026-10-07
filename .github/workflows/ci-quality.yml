@@ -3,15 +3,56 @@ name: CI Quality Gates
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  candidate-quality:
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EVENT_NAME: pull_request
+      PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.14'
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+      - name: Install validation controller dependencies
+        run: python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt
+      - name: Select candidate prerequisites
+        id: prerequisites
+        run: python3 scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"
+      - name: Set up Node.js
+        if: steps.prerequisites.outputs.node == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24'
+      - name: Verify selected Docker prerequisite
+        if: steps.prerequisites.outputs.docker == 'true'
+        run: docker version
+      - name: Run changed candidate validation
+        run: python3 scripts/validation/run-ci-gate.py --profile changed
+
   main-security:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
@@ -39,19 +80,3 @@ jobs:
         with:
           sarif_file: results.sarif
           category: zizmor
-
-  update-main-current:
-    needs: main-security
-    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: true
-          fetch-depth: 0
-      - name: Move audited channel tag
-        run: bash scripts/operations/update-main-current-tag.sh

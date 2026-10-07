@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -49,9 +49,11 @@ verifies projection drift.
 - The current Task owns the execution result. After completion, Stage 98
   preserves the frozen body, and Git proves the source and recovery history.
 - User-global configuration, credentials, provider availability, and
-  deployment state are outside this architecture. The selected canonical
-  model-free evaluation target is `.agents/evaluations/`; migration and
-  verification evidence belong to the active Spec Package.
+  deployment state are outside this architecture. `.agents/evaluations/README.md`
+  routes paired Skill task, raw output, scoring and aggregate evidence. Current
+  quality policy owns QA admission; agentic policy owns evaluation authority and
+  the current Task owns execution and acceptance. New evidence requires bounded
+  Stage 99 classification; representative scores grant no runtime authority.
 
 ## Architecture
 
@@ -64,7 +66,7 @@ verifies projection drift.
 | canonical agent governance bootstrap and policies | authority resolution, safety, workflow |
 | canonical agent governance roles and skills | reusable provider-neutral behavior |
 | canonical agent governance knowledge | verified surface-to-authority routing and repository vocabulary |
-| canonical evaluation owner | model-free evaluation inputs, distinct from paid or native runtime evidence |
+| paired Skill evaluation evidence | task/output/scoring/aggregate relationship; no recurring scoring or runtime authority |
 | canonical agent governance prompts | reusable input and output contracts for recurring agent work |
 | Provider Registry | provider identity and translation facts |
 | Authored native provider documents | provider-specific loading and syntax |

@@ -1,42 +1,41 @@
-name: Release Changelog Check
+name: Publish SemVer Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Prepared SemVer version without v prefix (for example 1.2.3 or 1.2.3-rc.1)'
+        required: true
+        type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: release-${{ inputs.version }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
 
 jobs:
-  changelog:
-    name: Verify changelog contains release tag
+  release:
+    name: Publish prepared main release
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
-      - name: Checkout
+      - name: Checkout prepared main revision
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
+          ref: ${{ github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Verify CHANGELOG entry
+      - name: Create draft, attach complete assets and publish
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          RELEASE_TAG="${GITHUB_REF_NAME:?missing release tag}"
-
-          if [[ ! -f CHANGELOG.md ]]; then
-            echo "CHANGELOG.md does not exist." >&2
-            echo "Create CHANGELOG.md and add an entry for $RELEASE_TAG before pushing the tag." >&2
-            exit 1
-          fi
-
-          if ! grep -F -- "$RELEASE_TAG" CHANGELOG.md >/dev/null; then
-            echo "CHANGELOG.md does not contain release tag: $RELEASE_TAG" >&2
-            echo "Update CHANGELOG.md through the release branch PR before pushing the tag." >&2
-            exit 1
-          fi
+          python3 scripts/operations/release.py publish \
+            --version "$RELEASE_VERSION" --sha "$GITHUB_SHA" \
+            --repository "$GITHUB_REPOSITORY"

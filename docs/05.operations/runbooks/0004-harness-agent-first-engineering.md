@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -41,7 +41,7 @@ created: "2026-06-04"
 
 - [ ] `git status --short --branch`를 확인한다.
 - [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
-- [ ] `bash scripts/knowledge/report-graphify-health.sh`를 실행한다.
+- [ ] Graphify를 탐색에 사용할 때만 health를 advisory로 확인한다.
 - [ ] 문서를 편집하기 전에 runtime policy 변경이 필요 없는지 확인한다.
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
@@ -49,7 +49,7 @@ created: "2026-06-04"
 
 ### Procedure
 
-1. workspace 상태를 확인한다.
+1. workspace 상태를 확인한다. Graphify report와 health는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다.
 
    ```bash
    git status --short --branch
@@ -63,17 +63,16 @@ created: "2026-06-04"
    - `status=advisory`: Graphify는 계속 읽을 수 있지만, architecture와 codebase 주장은 tracked source 파일, `.agents/`, 그리고 active stage doc과 대조 검증해야 한다.
    - report는 count와 guidance만 출력해야 하며, source 파일 내용을 출력해서는 안 된다.
 
-3. governance와 docs check를 실행한다.
+3. 실제 변경의 선택과 prerequisites를 조회한다. 이 조회는 실행 결과가 아니다.
 
    ```bash
-   python3 -m json.tool .codex/hooks.json >/dev/null
-   python3 -m json.tool .claude/settings.json >/dev/null
-   while IFS= read -r -d '' file; do bash -n "$file" || exit; done < <(git ls-files -z '*.sh')
-   python3 scripts/validation/run-ci-gate.py --profile changed
-   python3 scripts/validation/check-document-links.py --mode traceability
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
-4. hook payload simulation을 실행한다.
+   변경된 JSON/shell의 등록된 read-only style과 문서 content 검사는 원격
+   후보가 소유한다. 모든 shell을 따로 순회하거나 같은 링크 검사를 반복하지 않는다.
+
+4. hook quoting/parsing 자체를 변경했고 해당 수동 관측이 Task에 선택·승인된 경우에만 아래 simulation을 수행한다. 일반 문서 변경에는 적용하지 않는다.
 
    ```bash
    printf '{"tool_input":{"file_path":"infra/10-communication/stalwart/docker-compose.yml"}}' | CLAUDE_PROJECT_DIR="$PWD" bash .claude/hooks/docker-compose-pre.sh
@@ -85,7 +84,7 @@ created: "2026-06-04"
 
    이 command들은 local script 동작과 JSON/system-message 출력을 검증한다. 외부 Claude/Codex platform의 event delivery를 증명하지는 않는다.
 
-5. infrastructure와 baseline check를 실행한다.
+5. 실제 infra 변경으로 선택된 검사만 수행한다. 아래는 각 owner의 진단 명령 예시이며, 후보 gate가 이미 실행한 같은 입력의 leaf를 다시 실행하는 절차가 아니다.
 
    ```bash
    bash scripts/validation/validate-docker-compose.sh
@@ -100,12 +99,9 @@ created: "2026-06-04"
    [RUN-0086](0086-dependency-version-management.md#static-configuration-validation)의
    입력·부작용 경계를 먼저 적용하며 config PASS를 live readiness로 기록하지 않는다.
 
-6. source-label scan을 실행한다.
-
-   ```bash
-   # doc-paths: illustrative
-   ! rg -n "H100|Harness-100|harness-100|h100_pattern|examples/harness-100" AGENTS.md CLAUDE.md .claude .codex .agents
-   ```
+6. 현행 canonical owner와 retired-authority 재도입 방지는 등록된 content
+   validator의 결과로 확인한다. 과거 cutover의 고정 문자열 목록을 별도
+   반복 QA로 실행하지 않는다.
 
 7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
 
@@ -127,43 +123,40 @@ created: "2026-06-04"
    않는다. immutable digest는 별도로 검토된 maintenance path를 거칠 때만
    고려한다. 이 path는 짝지어진 revision, tag, digest, update owner를 어떻게
    최신 상태로 유지할지 명시한다.
-4. focused regression과 workflow-contract check를 실행한 다음, 적용 가능한
-   가장 작은 local gate를 실행한다. 현재 tracked workflow는 hosted public
-   결과를 만들지 않으므로 local evidence는 local로 기록한다. 별도 승인된 실제
-   consumer가 실행된 경우에만 hosted 결과를 기록한다.
-5. 로컬 public `changed`와 `full`을 분리해서 유지한다. 전자는 현재 Task의
-   후보 입력에 대한 명시적 범위 검증이고, 후자는 로컬 전체 검증이다. main
-   push는 별도 `main-security` job이 SARIF를 업로드한다. 공유된 setup은 중복의 증거가
-   아니다. workflow/event/ref concurrency key는 같은 main push 그룹 안의
-   오래된 실행을 취소한다. 이 방식은
-   [GitHub의 concurrency 안내](https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency)를
-   따른다.
-6. trigger, permission, gate node, consumer가 사용되지 않음을 inventory가
-   증명할 때까지는 단순화를 제안으로만 취급한다. 현재 workflow에는 PR trigger와
-   title-dependent hosted validation이 없다. 원격 required-check read-back이 이
-   tracked 상태와 다르면 별도 control-plane 승인 전까지 drift로 기록한다.
+4. 변경된 동작의 focused regression과 등록된 read-only style 검사를 수행한다.
+   원격 PR 후보가 selected changed aggregate를 한 번 실행한다. 로컬 결과를
+   hosted 결과로 표시하거나 push 전·merge 후 같은 QA를 반복하지 않는다.
+5. `changed --explain`으로 선택과 도구·예산을 확인한다. `full`은 별도 승인된
+   전체 감사용이다. main push의 보안/SARIF는 merged revision의 다른 관측이다.
+   PR concurrency는 revision 변경만 대상으로 하며 title edited가 후보 증거를
+   대체하거나 취소하지 않는다.
+6. caller·등록·소유자 조사 후 필요 없어진 QA만 폐기한다. 현재 DAG와 정책에
+   계속되는 보장을 이전하고 전용 helper·fixture·test를 제거한다. 현재 관측과
+   과거 완료 사건의 고정 SHA·수량은 같은 보장이 아니다.
 
-### Model-free Evaluation Maintenance
+### Evaluation and QA Ownership
 
-평가 변경에는 저장소 루트에서 합성 입력만 사용하는 다음 명령을 실행한다.
+agent 답변 점수와 완료된 Spec/Task 사건을 재증명하는 fixture는 정기 workspace
+QA가 아니다. 현재 [품질 정책](../../../.agents/governance/quality-standards.md)이
+허용하는 문서 형태·관계·상태·보존 및 Docker/Compose 보장만 선택한다. provider
+공식 사실·native envelope 검토와 live 실행 관측은 각각의 owner에 남기며,
+합성 점수나 소스 설정으로 실제 provider entitlement/runtime을 수용하지 않는다.
+`.agents/evaluations/README.md`는 별도 평가 주기의 동일 작업 baseline/Skill 출력과
+채점·집계의 소유 관계를 안내한다. 실제 원문과 시행·채점자·기준·보정 상태를
+보존하며 대표 결과를 전체 구성원 PASS로 확대하지 않는다.
 
-```bash
-bash .agents/evaluations/run-agent-output-eval-fixtures.sh --check-fixtures --check-regressions
-```
-
-종료 코드와 fixture·regression 결과를 현재 Task에 기록한다. 이 명령은 모델을
-호출하거나 실제 복구를 수행하지 않는다. 필요한 네 소스와 소비자만 유지하고
-별도 deployment-skeleton·파생 패키지·개인 상태·이전 승인 복사본은 추가하지 않는다.
-
-상위 changed/full 게이트와 infrastructure 단계는 먼저 실제 leaf의 부작용을
-검토한다. Compose 검증은 환경·임시 secret 경로를 만들 수 있고 Conftest는 Docker
-컨테이너를 실행한다. 승인된 비밀 없는 격리 사본과 필요한 도구·이미지를 확보하지
-못하면 해당 검사는 BLOCKED/NOT_RUN으로 기록하고 가능한 정적 검사를 계속한다.
-합성 fixture 성공으로 누락된 전체 게이트나 native 관측을 대체하지 않는다.
+선택된 infrastructure leaf의 부작용은 먼저 확인한다. Compose render는 임시
+입력을 만들 수 있고 Conftest는 격리 Docker 컨테이너를 실행한다. 필요한 도구와
+입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립적인 안전 작업을
+계속한다. static PASS를 HOME capacity·복구·배포 성공으로 확대하지 않는다.
 
 ### Verification Steps
 
-이 runbook은 JSON parsing, hook payload simulation, Graphify health reporting, repository validator, 실제 선택이 기록된 Compose/baseline/hardening check, source-label scan이 모두 예상대로 완료되면 성공이다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
+`--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
+[quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
+원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
+
+이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
 
 ### Observability and Evidence Sources
 

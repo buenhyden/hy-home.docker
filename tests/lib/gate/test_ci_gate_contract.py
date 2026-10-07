@@ -92,7 +92,15 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         self.assertIn("document-contract", selected)
         self.assertIn("document-graph", selected)
         self.assertIn("document-lifecycle", selected)
-        self.assertIn("operations", selected)
+        self.assertNotIn("operations", selected)
+        self.assertIn(
+            "leaf.operations-catalog",
+            contract.public_root_gate_ids(
+                public,
+                selected,
+                changed_paths=("docs/05.operations/guides/README.md",),
+            ),
+        )
         with self.assertRaises(contract.GateContractError) as raised:
             contract.select_public_suites(public, "unknown", ())
         self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
@@ -103,10 +111,18 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         )
         frontend = {"ci.frontend-quality", "ci.storybook-coverage"}
         document = {
+            "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
             "leaf.document-governance-library-regressions",
         }
-        optional = frontend | document
+        catalog = {"leaf.operations-catalog"}
+        release = {"leaf.release-regressions"}
+        harness = {"local.workflow-harness"}
+        workflow = {"ci.zizmor"} | harness
+        dependency = {
+            "ci.dependency-vulnerability-audit",
+        }
+        optional = frontend | document | catalog | release | workflow | dependency
         self.assertEqual(
             optional,
             {
@@ -132,10 +148,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     )
                 )
                 self.assertFalse(frontend & roots)
-                self.assertEqual(
-                    document if path.startswith(".agents/") else set(),
-                    document & roots,
-                )
+                self.assertFalse(optional & roots)
                 repository = next(
                     route
                     for route in public.suites
@@ -143,15 +156,24 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 )
                 self.assertLessEqual(set(repository.root_gate_ids) - optional, roots)
 
-        relevant_paths = (
-            "projects/storybook/nextjs/package-lock.json",
-            "projects/storybook/nextjs/src/app/page.tsx",
-            "scripts/validation/ci_gate_runner.py",
-            "tests/validation/test_ci_gate_plan.py",
-            ".github/workflow-contract.yml",
-            ".pre-commit-config.yaml",
-        )
-        for path in relevant_paths:
+        cases = {
+            "projects/storybook/nextjs/package-lock.json": frontend | dependency,
+            "projects/storybook/nextjs/src/app/page.tsx": frontend,
+            "scripts/lib/document_governance/spec_packages.py": document,
+            "docs/05.operations/guides/0001-example.md": catalog,
+            "scripts/lib/document_governance/operations_catalog.py": document | catalog,
+            "scripts/validation/ci_gate_runner.py": {"local.workflow-harness"},
+            "tests/validation/test_ci_gate_plan.py": {"local.workflow-harness"},
+            "scripts/operations/release.py": release,
+            "tests/validation/test_release.py": release,
+            "CHANGELOG.md": release,
+            ".cz.toml": release | harness,
+            "scripts/requirements-pre-commit.txt": harness,
+            "scripts/requirements.txt": harness,
+            ".github/workflow-contract.yml": workflow,
+            ".pre-commit-config.yaml": harness,
+        }
+        for path, expected in cases.items():
             with self.subTest(path=path):
                 selected = contract.select_public_suites(public, "changed", (path,))
                 roots = set(
@@ -159,13 +181,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                         public, selected, changed_paths=(path,)
                     )
                 )
-                self.assertLessEqual(frontend, roots)
-                if path.startswith(
-                    ("scripts/", "tests/", ".github/", ".pre-commit-config.yaml")
-                ):
-                    self.assertLessEqual(document, roots)
-                else:
-                    self.assertFalse(document & roots)
+                self.assertEqual(expected, optional & roots)
 
         selected = contract.select_public_suites(
             public, "changed", ("docs/03.specs/example.md", "unknown-root.txt")
@@ -193,7 +209,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
     def test_changed_root_rules_reject_mandatory_or_unknown_roots(self) -> None:
         baseline = contract.load_contract_document(ROOT)
         for label, gate_id in (
-            ("mandatory", "ci.dependency-vulnerability-audit"),
+            ("mandatory", "leaf.changed-style"),
             ("unknown", "ci.unknown"),
         ):
             with self.subTest(label=label):
@@ -379,7 +395,7 @@ class CiGateContractTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
 
-    def test_operations_catalog_current_authority_is_an_exact_required_ci_leaf(
+    def test_operations_catalog_is_an_exact_path_bound_document_leaf(
         self,
     ) -> None:
         registry = contract.parse_gate_registry(
@@ -396,10 +412,16 @@ class CiGateContractTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
+        lifecycle_roots = next(
+            route.root_gate_ids
+            for route in public.suites
+            if route.name == "document-lifecycle"
+        )
         operations_roots = next(
             route.root_gate_ids for route in public.suites if route.name == "operations"
         )
-        self.assertIn(leaf.gate_id, operations_roots)
+        self.assertIn(leaf.gate_id, lifecycle_roots)
+        self.assertNotIn(leaf.gate_id, operations_roots)
 
     def test_schema_v2_contract_is_strict_json_and_duplicate_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -1075,8 +1097,8 @@ class CiGateContractTests(unittest.TestCase):
             {
                 "CI",
                 "GITHUB_ACTIONS",
-                "HEAD_REF",
-                "PR_TITLE",
+                "PR_BASE_SHA",
+                "PR_HEAD_SHA",
                 "TEMPLATE_GATE_BASE",
             },
             {key for node in registry.nodes for key in node.allowed_env_keys},

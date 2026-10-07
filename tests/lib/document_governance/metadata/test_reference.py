@@ -192,6 +192,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     ),
                 ) as contracts,
                 mock.patch.object(
+                    reference_module, "collect_records_at_ref", return_value=[]
+                ) as base_records,
+                mock.patch.object(
                     reference_module,
                     "validate_record",
                     return_value=[],
@@ -211,6 +214,8 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     ]
                 )
             contracts.assert_called_once()
+            base_records.assert_called_once()
+            self.assertEqual({}, contracts.call_args.kwargs["previous_records"])
             self.assertTrue(
                 any(
                     call.kwargs.get("actual_lifecycle_transitions") == transitions
@@ -225,6 +230,78 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             )
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
+
+    def test_contracts_share_exact_baseline_and_historical_input_context(self) -> None:
+        profiles = current_profiles()
+        previous = {
+            "docs/03.specs/0001-fixture/spec.md": reference_module.Record(
+                pathlib.Path("docs/03.specs/0001-fixture/spec.md"),
+                {"status": "draft"},
+                "spec",
+            )
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            (root / "docs/03.specs").mkdir(parents=True)
+            authority = (
+                root
+                / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
+            )
+            authority.parent.mkdir(parents=True)
+            authority.write_text("synthetic authority presence")
+            lifecycle = mock.Mock(
+                findings=(),
+                actual_transitions=frozenset(),
+                actual_normalizations=frozenset(),
+                generation_source=None,
+            )
+            with (
+                mock.patch.object(
+                    reference_module, "_tracked_repository_markdown", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_reference_delegation_findings", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_index_membership_findings", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_allocation_findings", return_value=[]
+                ),
+                mock.patch.object(
+                    reference_module, "_changed_paths", return_value=set()
+                ),
+                mock.patch.object(
+                    reference_module,
+                    "collect_records_at_ref",
+                    side_effect=AssertionError("baseline was already parsed"),
+                ),
+                mock.patch.object(
+                    reference_module, "collect_records", return_value=[]
+                ) as current,
+                mock.patch.object(
+                    reference_module, "load_spec_packages", return_value=()
+                ) as packages,
+                mock.patch.object(
+                    reference_module,
+                    "validate_repository_spec_package_lifecycle_details",
+                    return_value=lifecycle,
+                ) as validate,
+            ):
+                findings, _, _, _ = reference_module._validate_repository_contracts(
+                    root,
+                    profiles,
+                    base_ref="a" * 40,
+                    transition_ref="a" * 40,
+                    previous_records=previous,
+                )
+            self.assertEqual([], findings)
+            self.assertIs(previous, current.call_args.kwargs["previous_records"])
+            self.assertIs(
+                packages.call_args.kwargs["_historical_context"],
+                validate.call_args.kwargs["_historical_context"],
+            )
 
     def test_historical_archive_alias_requires_identity_metadata_and_raw_bytes(
         self,

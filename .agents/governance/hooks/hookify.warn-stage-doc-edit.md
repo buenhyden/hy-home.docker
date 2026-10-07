@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
-version: "1.0.1"
+version: "1.1.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -41,11 +41,15 @@ The declared `file` event and structured `conditions` define the matching scope;
 - [ ] The edit is in-place; no parallel replacement file is being created.
 - [ ] This rule applies whether the path arrives as `docs/...` or `/.../docs/...`.
 
-**After editing, verify:**
+**After editing, inspect the selected plan:**
 
 ```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
 ```
+
+The plan inspection does not execute QA. Follow the current
+[quality policy](../quality-standards.md#canonical-delivery-phase-matrix) for
+focused authoring checks and remote PR candidate validation.
 
 ## Exceptions
 

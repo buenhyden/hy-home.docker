@@ -1,8 +1,8 @@
 ---
 title: "QA Scope and Delivery Rationalization"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-07"
 layer: "specs"
@@ -43,7 +43,11 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
 2. Retire obsolete QA by transferring any continuing guarantee, removing its
    callers and registration, then its exclusive helper, fixture and test.
    Record the disposition with a current owner instead of manufacturing an
-   archive-only package or a numerical deletion target.
+   archive-only package or a numerical deletion target. Retain the separate
+   paired Skill evaluation evidence role and its task/output/scoring/aggregate
+   relationships without reinstating recurring answer scoring or fabricating
+   unavailable harness results. New payload profiles and evaluation runs are
+   separate from this README/policy alignment.
 3. Commit owns the shared Commitizen message grammar. Authoring may format or
    run focused RED/GREEN checks. Feature push does not repeat candidate QA.
    Remote PR QA owns candidate acceptance, with no path-skipped required

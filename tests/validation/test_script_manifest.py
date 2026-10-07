@@ -134,6 +134,7 @@ class ScriptManifestTests(unittest.TestCase):
             self.assertIn(row["authority"], self.repository_paths)
 
     def test_consumer_successor_and_test_references_are_evidenced(self) -> None:
+        checker = load_manifest_checker()
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 self.assertIsInstance(row["consumers"], list)
@@ -159,12 +160,13 @@ class ScriptManifestTests(unittest.TestCase):
                 else:
                     self.assertIsInstance(successor, str)
                     self.assertIn(successor, self.repository_paths)
-                if row["disposition"] == "retain" and row["kind"] != "library":
+                if row["disposition"] == "retain" and (
+                    row["kind"] != "library" or checker._is_companion_library(row)
+                ):
                     self.assertTrue(row["consumers"])
-                if row["disposition"] == "retain" and row["kind"] not in {
-                    "contract",
-                    "dependency-manifest",
-                }:
+                if row[
+                    "disposition"
+                ] == "retain" and checker._requires_behavioral_tests(row):
                     self.assertTrue(row["tests"])
 
     def test_nonretained_successor_is_distinct(self) -> None:
@@ -221,19 +223,6 @@ class ScriptManifestTests(unittest.TestCase):
         self.assertEqual(
             ["tests/lib/document_governance/test_taxonomy.py"],
             row["tests"],
-        )
-
-    def test_eval_wrapper_declares_its_gate_adapter_consumer(self) -> None:
-        """The CI gate adapter runs the wrapper, so it is a declared consumer."""
-        row = self.rows_by_path[".agents/evaluations/run-agent-output-eval-fixtures.sh"]
-        self.assertEqual("retain", row["disposition"])
-        self.assertIn("scripts/lib/gate/ci_gate_adapters.py", row["consumers"])
-        self.assertEqual(
-            [
-                "scripts/lib/gate/ci_gate_adapters.py",
-                "tests/validation/test_agent_output_eval_fixtures.py",
-            ],
-            row["consumers"],
         )
 
     def test_python_import_evidence_recognizes_package_member_imports(self) -> None:
@@ -602,6 +591,89 @@ class ScriptManifestValidationTests(unittest.TestCase):
         self.assertIn(
             "mutation-invalid", self.codes(self.row(mutation="default-write"))
         )
+
+    def test_companion_library_uses_current_consumer_without_dedicated_tests(
+        self,
+    ) -> None:
+        companion = self.row(
+            path="scripts/hooks/companion.py", kind="library", tests=[]
+        )
+        tracked = (self.tracked - {"scripts/example.py"}) | {
+            "scripts/hooks/companion.py"
+        }
+        self.assertEqual(set(), self.codes(companion, tracked))
+        self.assertIn(
+            "consumer-missing", self.codes({**companion, "consumers": []}, tracked)
+        )
+        for consumer, code in (
+            ("private.md", "consumers-untracked"),
+            ("../outside.py", "consumers-untracked"),
+            ("docs/98.archive/completed/consumer.md", "consumers-historical"),
+        ):
+            with self.subTest(consumer=consumer):
+                self.assertIn(
+                    code,
+                    self.codes({**companion, "consumers": [consumer]}, tracked),
+                )
+        self.assertIn(
+            "tests-location-invalid",
+            self.codes({**companion, "tests": ["docs/consumer.md"]}, tracked),
+        )
+
+    def test_companion_library_consumer_requires_actual_import(self) -> None:
+        row = self.row(
+            path="scripts/hooks/companion.py",
+            kind="library",
+            consumers=["scripts/consumer.py"],
+            tests=[],
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            consumer = root / "scripts/consumer.py"
+            consumer.parent.mkdir(parents=True)
+            consumer.write_text("from scripts.hooks import companion\n")
+            document = {"schema_version": 1, "files": [row]}
+            self.assertEqual([], self.checker._semantic_findings(root, document))
+            consumer.write_text("# scripts/hooks/companion.py\n")
+            self.assertEqual(
+                {"consumers-unproven"},
+                {item.code for item in self.checker._semantic_findings(root, document)},
+            )
+
+    def test_mutating_companion_and_shared_libraries_require_tests(self) -> None:
+        companion = self.row(
+            path="scripts/hooks/companion.py", kind="library", tests=[]
+        )
+        tracked = self.tracked | {"scripts/hooks/companion.py"}
+        for mutation in ("check-write", "runtime"):
+            with self.subTest(mutation=mutation):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "mutation": mutation}, tracked),
+                )
+                self.assertIn(
+                    "consumer-missing",
+                    self.codes(
+                        {**companion, "mutation": mutation, "consumers": []}, tracked
+                    ),
+                )
+        for path in (
+            "scripts/lib/document_governance/example.py",
+            "scripts/lib/gate/example.py",
+            "scripts/lib/ops/example.py",
+            "scripts/lib/hardening-lib.sh",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "path": path}, self.tracked | {path}),
+                )
+        for kind in ("validator", "runner", "operations", "hook", "generator"):
+            with self.subTest(kind=kind):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "kind": kind}, tracked),
+                )
 
     def test_manifest_rejects_retired_placeholder_test_roots(self) -> None:
         for root in ("docs", "qa", "setup"):

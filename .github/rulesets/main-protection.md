@@ -40,8 +40,8 @@ settings by itself.
   branch pattern restricted to `main`. The workflow did not reference either
   environment or secret. User-supplied App IDs 5156980 and 5156975 are not
   independently mapped to installed Apps by this read-back.
-- Those two App credentials and environments are prepared but not activated by
-  the tracked workflow. The existing `update-main-current` job already updates
+- At that observation, those two App credentials and environments were prepared but not activated by
+  the tracked workflow. The then-existing `update-main-current` job updated
   the channel tag with `GITHUB_TOKEN` after `main-security`. Activating a
   Publisher App in parallel would create a second tag writer. A Verifier App
   would need its own distinct provenance purpose and trusted event boundary;
@@ -49,6 +49,13 @@ settings by itself.
   confirm installation and permissions, decide whether it replaces an existing
   writer, and bind environment access to the intended branch rule. Such a
   control-plane change requires separate approval and read-back.
+
+- On 2026-10-07, the owner explicitly authorized removal of the stale
+  `validation-changed` context. Authenticated before/after read-back verified
+  `contexts=[]`, `checks=[]`, `strict=true`, with every other protection field
+  unchanged; rulesets and effective rules were empty. Receipt and rollback
+  payloads were retained outside tracked source. This is a dated observation,
+  not evidence that a later candidate context is already required.
 
 ## Target Ruleset
 
@@ -63,9 +70,10 @@ settings by itself.
 - Require conversations to be resolved before merge.
 - Block force pushes.
 - Block branch deletion.
-- Configure no required status-check contexts. Pull requests, resolved
-  conversations, force-push denial, and deletion denial remain separate
-  controls.
+- Require the one produced PR candidate context `candidate-quality` from
+  GitHub Actions. Pull requests, resolved conversations, force-push denial and
+  deletion denial remain separate controls. Applying this new target requires
+  its own approved setting change after a real check-run is observed.
 - Do not enforce squash/rebase-only or linear-history settings that would
   discard referenced objects, so delivered history can keep them.
 - Recovery-commit preservation and branch deletion are stated once, in
@@ -74,32 +82,22 @@ settings by itself.
 
 ## Required Status Checks
 
-The desired required-status context set is empty. The tracked quality workflow
-has no hosted public-validation trigger or job;
-`.github/workflow-contract.yml` retains the local `changed` and `full` public
-profiles while owning only the main-push security and channel job identities
-for that workflow.
+The source target is `candidate-quality` alone: one always-present PR job runs
+selected changed validation. Individual leaves are not separate contexts.
+There is no feature-push QA, title-edit validation, or main full-profile repeat.
+Main security/SARIF uses merged input and a different trust purpose; it is not
+candidate acceptance. Manual SemVer publication is a separate approved action.
 
-Main pushes run `main-security` on the merged revision, then
-`update-main-current` only after that audit succeeds. Neither post-merge job is
-a PR pre-merge gate; a failure after a push cannot retroactively prevent that
-merge.
+The current last read-back is the empty context set above. Source implementation
+of the new producer does not activate protection. Before proposing its actual
+setting, verify the PR job's exact name, source App, head/merge revision and
+success/failure behavior, then capture the full before-state and scoped rollback.
+No stale retired `validation-changed` context may be restored from old prose.
 
-GitHub treats a job skipped by a job-level condition as successful for required
-checks. A whole workflow skipped by path/branch filters or a commit-message
-instruction can leave its expected checks pending. A dependent aggregate also
-needs explicit failure propagation: a skipped dependent job alone must not hide
-a failed prerequisite. See the
-[official required-check troubleshooting guide](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
-
-A past merge blockage cannot be attributed to a skipped job without the actual
-check-run, PR head or test-merge SHA, expected source app, and contemporaneous
-protection configuration. The last dated read-back still reports
-`validation-changed` bound to GitHub Actions app ID 15368 with `strict=true`.
-That is stale remote drift from the desired empty set, not evidence that the
-removed job still exists. A current read-back belongs in the active Task,
-separately from the observations above; this tracked change grants no remote
-mutation authority.
+A whole workflow skipped by path/branch filters or commit instructions can leave
+an expected check pending. Selection happens inside the PR workflow; title edits
+do not replace revision evidence. See the
+[required-check troubleshooting guide](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
 
 ## Rollback State
 
@@ -107,11 +105,9 @@ A difference from this desired contract is a prompt to inspect, not permission
 to restore old settings. Obtain a fresh authenticated read-back and bind any
 approved correction to the exact field, before-state, target and recovery.
 
-For required checks, the current desired state is an empty context set. Do not
-restore `validation-changed`, the retired individual-check list, or a previous
-two-context list from historical prose. Those contexts are not produced by the
-tracked PR event. Other protection fields require their own approved
-before-state and must not be reset incidentally.
+Do not restore a retired context or copied historical list. The candidate
+producer and its exact source identity must be observed before any approved
+setting change. Other protection fields must not be reset incidentally.
 
 If reverting a future approved change, use that change's captured before-state
 only after confirming its checks are still produced by the matching workflow

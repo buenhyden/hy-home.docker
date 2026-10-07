@@ -9,40 +9,16 @@
           "branches": [
             "main"
           ]
-        }
-      },
-      "permissions": {
-        "contents": "read"
-      },
-      "concurrency": {
-        "group": "${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}",
-        "cancel-in-progress": true
-      },
-      "jobs": {
-        "main-security": {
-          "permissions": {
-            "contents": "read",
-            "security-events": "write"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 15
         },
-        "update-main-current": {
-          "permissions": {
-            "contents": "write"
-          },
-          "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
-        }
-      }
-    },
-    ".github/workflows/generate-changelog.yml": {
-      "name": "Release Changelog Check",
-      "classification": "non-gating",
-      "triggers": {
-        "push": {
-          "tags": [
-            "v*.*.*"
+        "pull_request": {
+          "branches": [
+            "main"
+          ],
+          "types": [
+            "opened",
+            "synchronize",
+            "reopened",
+            "ready_for_review"
           ]
         }
       },
@@ -50,14 +26,68 @@
         "contents": "read"
       },
       "concurrency": {
-        "group": "${{ github.workflow }}-${{ github.ref }}",
+        "group": "${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}",
         "cancel-in-progress": true
       },
       "jobs": {
-        "changelog": {
-          "permissions": null,
+        "candidate-quality": {
+          "permissions": {
+            "contents": "read"
+          },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
+          "timeout_minutes": 30,
+          "condition": "github.event_name == 'pull_request'",
+          "needs": [],
+          "environment": {
+            "EVENT_NAME": "pull_request",
+            "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+            "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}"
+          }
+        },
+        "main-security": {
+          "permissions": {
+            "contents": "read",
+            "security-events": "write"
+          },
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 15,
+          "condition": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+          "needs": [],
+          "environment": null
+        }
+      }
+    },
+    ".github/workflows/generate-changelog.yml": {
+      "name": "Publish SemVer Release",
+      "classification": "non-gating",
+      "triggers": {
+        "workflow_dispatch": {
+          "inputs": {
+            "version": {
+              "description": "Prepared SemVer version without v prefix (for example 1.2.3 or 1.2.3-rc.1)",
+              "required": true,
+              "type": "string"
+            }
+          }
+        }
+      },
+      "permissions": {
+        "contents": "read"
+      },
+      "concurrency": {
+        "group": "release-${{ inputs.version }}",
+        "cancel-in-progress": false
+      },
+      "jobs": {
+        "release": {
+          "permissions": {
+            "contents": "write"
+          },
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 10,
+          "condition": "github.ref == 'refs/heads/main'",
+          "needs": [],
+          "environment": null
         }
       }
     },
@@ -89,7 +119,10 @@
             "pull-requests": "read"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
+          "timeout_minutes": 5,
+          "condition": "github.event_name == 'issues'",
+          "needs": [],
+          "environment": null
         },
         "pull-request-greeting": {
           "permissions": {
@@ -98,7 +131,10 @@
             "pull-requests": "write"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
+          "timeout_minutes": 5,
+          "condition": "github.event_name == 'pull_request'",
+          "needs": [],
+          "environment": null
         }
       }
     },
@@ -126,7 +162,10 @@
             "pull-requests": "write"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 5
+          "timeout_minutes": 5,
+          "condition": null,
+          "needs": [],
+          "environment": null
         }
       }
     },
@@ -150,21 +189,15 @@
             "contents": "read"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 10
+          "timeout_minutes": 10,
+          "condition": null,
+          "needs": [],
+          "environment": null
         }
       }
     }
   },
   "gate_nodes": [
-    {
-      "gate_id": "ci.agent-output-eval-fixture-gate",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.agent-output-eval-fixture-regressions",
-        "leaf.agent-output-eval-fixture-gate"
-      ]
-    },
     {
       "gate_id": "ci.dependency-vulnerability-audit",
       "kind": "aggregate",
@@ -194,11 +227,11 @@
       ]
     },
     {
-      "gate_id": "ci.git-flow-contract",
+      "gate_id": "ci.commit-message-contract",
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.git-flow-contract"
+        "leaf.commit-message-contract"
       ]
     },
     {
@@ -218,49 +251,6 @@
       "children": [
         "leaf.zizmor"
       ]
-    },
-    {
-      "gate_id": "leaf.agent-governance-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.lib.agent_governance.test_agent_governance_contract",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "agent-governance-regressions"
-    },
-    {
-      "gate_id": "leaf.agent-output-eval-fixture-gate",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-agent-output-eval"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 5,
-      "opaque": true,
-      "suite_key": "agent-output-eval-fixture-gate"
-    },
-    {
-      "gate_id": "leaf.agent-output-eval-fixture-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.validation.test_agent_output_eval_fixtures",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 5,
-      "opaque": true,
-      "suite_key": "agent-output-eval-fixture-regressions"
     },
     {
       "gate_id": "leaf.ci-gate-adapter-regressions",
@@ -343,7 +333,6 @@
         "tests.lib.document_governance.test_requirements",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",
-        "tests.lib.document_governance.test_requirement_allocation_recovery",
         "-v"
       ],
       "cwd": ".",
@@ -483,20 +472,20 @@
       "suite_key": "frontend-typecheck"
     },
     {
-      "gate_id": "leaf.git-flow-contract",
+      "gate_id": "leaf.commit-message-contract",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
-        "check-git-flow"
+        "check-commit-range"
       ],
       "cwd": ".",
       "allowed_env_keys": [
-        "PR_TITLE",
-        "HEAD_REF"
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA"
       ],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "git-flow-contract"
+      "suite_key": "commit-message-contract"
     },
     {
       "gate_id": "leaf.infrastructure-hardening",
@@ -533,7 +522,10 @@
         "check-diff-hygiene"
       ],
       "cwd": ".",
-      "allowed_env_keys": [],
+      "allowed_env_keys": [
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA"
+      ],
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "local-diff-hygiene"
@@ -544,10 +536,7 @@
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
       "argv": [
         "run-unittest",
-        "tests.validation.test_hook_rules",
-        "tests.validation.test_agent_function_routes",
         "tests.lib.hooks.test_tool_payload",
-        "tests.validation.test_provider_native_payloads",
         "-v"
       ],
       "cwd": ".",
@@ -656,35 +645,20 @@
       "suite_key": "local-tech-stack-version-drift"
     },
     {
-      "gate_id": "leaf.pre-commit",
+      "gate_id": "leaf.changed-style",
       "kind": "leaf",
       "entrypoint": "scripts/validation/run-ci-precommit.sh",
       "argv": [],
       "cwd": ".",
       "allowed_env_keys": [
         "CI",
-        "GITHUB_ACTIONS"
+        "GITHUB_ACTIONS",
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA"
       ],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "pre-commit"
-    },
-    {
-      "gate_id": "leaf.provider-governance-regressions",
-      "kind": "leaf",
-      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
-      "argv": [
-        "run-unittest",
-        "tests.validation.test_provider_native_surfaces",
-        "tests.validation.test_provider_surface_renderer",
-        "tests.validation.test_stop_gate_deferred_paths",
-        "-v"
-      ],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 15,
-      "opaque": true,
-      "suite_key": "provider-governance-regressions"
+      "suite_key": "changed-style"
     },
     {
       "gate_id": "leaf.quickwin-baseline",
@@ -736,6 +710,21 @@
       "timeout_minutes": 10,
       "opaque": true,
       "suite_key": "compose-baseline-regressions"
+    },
+    {
+      "gate_id": "leaf.release-regressions",
+      "kind": "leaf",
+      "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
+      "argv": [
+        "run-unittest",
+        "tests.validation.test_release",
+        "-v"
+      ],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 10,
+      "opaque": true,
+      "suite_key": "release-regressions"
     },
     {
       "gate_id": "leaf.repository-integrity-regressions",
@@ -931,7 +920,6 @@
       "kind": "aggregate",
       "opaque": false,
       "children": [
-        "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-hook-rule-tests",
         "leaf.local-document-corpus-lifecycle"
       ]
@@ -1021,10 +1009,8 @@
     "suite_roots": {
       "agent-governance": [
         "leaf.local-provider-surface-drift",
-        "ci.agent-output-eval-fixture-gate",
         "leaf.local-agent-governance-contract",
-        "leaf.agent-governance-regressions",
-        "leaf.provider-governance-regressions"
+        "leaf.local-hook-rule-tests"
       ],
       "document-contract": [
         "leaf.repo-metadata-base",
@@ -1035,11 +1021,12 @@
       ],
       "document-lifecycle": [
         "local.document-corpus-lifecycle",
+        "leaf.local-document-corpus-lifecycle-tests",
         "leaf.local-document-metadata-tests",
-        "leaf.document-governance-library-regressions"
+        "leaf.document-governance-library-regressions",
+        "leaf.operations-catalog"
       ],
       "operations": [
-        "leaf.operations-catalog",
         "local.supply-chain",
         "local.compose-validation",
         "local.infrastructure-hardening",
@@ -1052,18 +1039,19 @@
         "leaf.local-script-manifest",
         "leaf.local-tech-stack-version-drift",
         "local.workflow-harness",
-        "leaf.pre-commit",
+        "leaf.changed-style",
         "ci.dependency-vulnerability-audit",
-        "ci.git-flow-contract",
+        "ci.commit-message-contract",
         "ci.frontend-quality",
         "ci.storybook-coverage",
         "ci.zizmor",
+        "leaf.release-regressions",
         "leaf.repository-integrity-regressions"
       ]
     },
     "validators": [
       {
-        "suite": "repository-integrity",
+        "suite": "operations",
         "gate_id": "leaf.infrastructure-hardening",
         "entrypoint": "scripts/hardening/check-all-hardening.sh",
         "argv": [],
@@ -1146,18 +1134,6 @@
       },
       {
         "suite": "operations",
-        "gate_id": "leaf.operations-catalog",
-        "entrypoint": "scripts/validation/check-operations-catalog.py",
-        "argv": [],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "operations",
         "gate_id": "leaf.postgres-logical-upgrade-config",
         "entrypoint": "scripts/operations/rehearse-postgres-logical-upgrade.sh",
         "argv": [
@@ -1171,7 +1147,7 @@
         ]
       },
       {
-        "suite": "repository-integrity",
+        "suite": "operations",
         "gate_id": "leaf.quickwin-baseline",
         "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
         "argv": [],
@@ -1207,7 +1183,7 @@
         ]
       },
       {
-        "suite": "repository-integrity",
+        "suite": "operations",
         "gate_id": "leaf.supply-chain-deterministic-policy",
         "entrypoint": "scripts/validation/check-supply-chain-policy.py",
         "argv": [
@@ -1221,7 +1197,7 @@
         ]
       },
       {
-        "suite": "repository-integrity",
+        "suite": "operations",
         "gate_id": "leaf.conftest-policy",
         "entrypoint": "scripts/validation/check-conftest-policy.sh",
         "argv": [],
@@ -1233,7 +1209,7 @@
         ]
       },
       {
-        "suite": "repository-integrity",
+        "suite": "operations",
         "gate_id": "leaf.template-security-baseline",
         "entrypoint": "scripts/validation/check-template-security-baseline.sh",
         "argv": [],
@@ -1280,7 +1256,16 @@
       },
       {
         "prefixes": [
-          "docs/05.operations/",
+          "docs/05.operations/"
+        ],
+        "suites": [
+          "document-contract",
+          "document-graph",
+          "document-lifecycle"
+        ]
+      },
+      {
+        "prefixes": [
           "docker-compose.yml",
           "examples/",
           "infra/",
@@ -1295,6 +1280,7 @@
       },
       {
         "prefixes": [
+          "CHANGELOG.md",
           ".cz.toml",
           ".editorconfig",
           ".gitattributes",
@@ -1305,6 +1291,7 @@
           ".graphifyignore",
           ".hadolint.yaml",
           ".markdownlint-cli2.yaml",
+          "package-lock.json",
           ".prettierignore",
           ".rtk/",
           ".shellcheckrc",
@@ -1318,19 +1305,129 @@
       },
       {
         "prefixes": [
-          ".github/",
-          ".pre-commit-config.yaml",
-          ".agents/evaluations/",
-          "projects/",
-          "scripts/",
-          "tests/"
+          ".agents/evaluations/"
         ],
         "suites": [
           "agent-governance",
           "document-contract",
           "document-graph",
           "document-lifecycle",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/",
+          "scripts/validation/check-document-corpus-lifecycle.py",
+          "scripts/validation/check-document-links.py",
+          "scripts/validation/check-document-metadata.py",
+          "tests/lib/document_governance/",
+          "scripts/validation/check-operations-catalog.py"
+        ],
+        "suites": [
+          "document-contract",
+          "document-graph",
+          "document-lifecycle",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/check-compose-core-readiness.sh",
+          "scripts/operations/check-config-mount-hashes.py",
+          "scripts/operations/gen-secrets.sh",
+          "scripts/operations/rehearse-postgres-logical-upgrade.sh",
+          "scripts/operations/rehearse-sample-service-delivery.sh"
+        ],
+        "suites": [
           "operations",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/agent_governance/",
+          "scripts/hooks/",
+          "scripts/lib/hooks/",
+          "scripts/operations/provider_surface_renderer.py",
+          "tests/lib/hooks/",
+          "tests/validation/test_agent_governance_ci_routing.py"
+        ],
+        "suites": [
+          "agent-governance",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/hardening/",
+          "scripts/lib/supply_chain/",
+          "scripts/validation/check-conftest-policy.sh",
+          "scripts/validation/check-quickwin-baseline.sh",
+          "scripts/validation/check-supply-chain-policy.py",
+          "scripts/validation/check-supply-chain.sh",
+          "scripts/validation/check-template-security-baseline.sh",
+          "scripts/validation/validate-docker-compose.sh",
+          "tests/lib/supply_chain/",
+          "tests/validation/test_postgres_logical_upgrade_rehearsal.py",
+          "tests/validation/test_supply_chain_secure_output.py",
+          "tests/validation/test_supply_chain_wrapper.py",
+          "tests/validation/test_compose_baseline_gates.py",
+          "tests/validation/test_dev_data_boundary.py",
+          "tests/validation/test_dev_pg_provision.py",
+          "tests/validation/test_dev_valkey_acl.py",
+          "tests/validation/test_influx_mapping.py",
+          "tests/validation/test_lab_credential_argv.py",
+          "tests/validation/test_infra_tier_layout.py",
+          "tests/validation/test_openwebui_oidc_entrypoint.py",
+          "tests/validation/test_gatus_oidc.py",
+          "tests/validation/test_mng_pg_init_sql.py",
+          "tests/validation/test_config_mount_hashes.py",
+          "tests/validation/test_service_wiring_contracts.py",
+          "tests/validation/test_service_runtime_compatibility.py",
+          "tests/validation/test_perf_db_contract.py",
+          "tests/validation/test_k6_results.py",
+          "tests/validation/test_quality_mock_lab.py",
+          "tests/validation/test_quality_observability.py",
+          "tests/validation/test_quality_object_store.py",
+          "tests/validation/test_quality_raw_points.py",
+          "tests/validation/test_locust_telemetry.py"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          ".github/",
+          ".pre-commit-config.yaml",
+          "projects/",
+          "scripts/lib/gate/",
+          "scripts/requirements-pre-commit.txt",
+          "scripts/requirements.txt",
+          "scripts/validation/check-github-workflow-contract.py",
+          "scripts/validation/check-script-manifest.py",
+          "scripts/validation/check-storybook-contract.sh",
+          "scripts/validation/ci_gate_runner.py",
+          "scripts/validation/run-agent-precommit-all-files.sh",
+          "scripts/validation/run-ci-gate.py",
+          "scripts/validation/run-ci-precommit.sh",
+          "tests/lib/gate/",
+          "tests/lib/test_surface_ownership.py",
+          "tests/validation/_script_manifest_support.py",
+          "tests/validation/test_ci_gate_execution_context.py",
+          "tests/validation/test_ci_gate_model.py",
+          "tests/validation/test_ci_gate_plan.py",
+          "tests/validation/test_release.py",
+          "tests/validation/test_run_ci_precommit.sh",
+          "tests/validation/test_script_manifest.py",
+          "tests/validation/test_tech_stack_version_contract.py",
+          "scripts/operations/release.py",
+          "scripts/operations/sync-tech-stack-versions.sh",
+          "scripts/operations/use-qa-ci-tools.sh"
+        ],
+        "suites": [
           "repository-integrity"
         ]
       }
@@ -1338,21 +1435,16 @@
     "changed_root_rules": [
       {
         "prefixes": [
-          ".github/",
-          ".pre-commit-config.yaml"
+          "package-lock.json",
+          "projects/storybook/nextjs/package-lock.json"
         ],
         "root_gate_ids": [
-          "ci.frontend-quality",
-          "ci.storybook-coverage",
-          "leaf.local-document-metadata-tests",
-          "leaf.document-governance-library-regressions"
+          "ci.dependency-vulnerability-audit"
         ]
       },
       {
         "prefixes": [
-          "projects/storybook/nextjs/",
-          "scripts/",
-          "tests/"
+          "projects/storybook/nextjs/"
         ],
         "root_gate_ids": [
           "ci.frontend-quality",
@@ -1361,33 +1453,89 @@
       },
       {
         "prefixes": [
-          ".agents/",
-          ".claude/",
-          ".codex/",
-          "AGENTS.md",
-          "CLAUDE.md",
-          "README.md",
-          ".gitattributes",
-          ".markdownlint-cli2.yaml",
-          "docs/99.templates/"
+          "docs/05.operations/",
+          "scripts/lib/document_governance/operations_catalog.py",
+          "scripts/validation/check-operations-catalog.py",
+          "tests/lib/document_governance/test_operations_catalog.py",
+          "tests/lib/document_governance/test_operations_taxonomy.py"
         ],
         "root_gate_ids": [
+          "leaf.operations-catalog"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/document_governance/",
+          "scripts/validation/check-document-corpus-lifecycle.py",
+          "scripts/validation/check-document-links.py",
+          "scripts/validation/check-document-metadata.py",
+          "tests/lib/document_governance/"
+        ],
+        "root_gate_ids": [
+          "leaf.local-document-corpus-lifecycle-tests",
           "leaf.local-document-metadata-tests",
           "leaf.document-governance-library-regressions"
         ]
       },
       {
         "prefixes": [
-          "scripts/lib/document_governance/",
-          "scripts/lib/gate/",
-          "scripts/validation/",
-          "tests/lib/document_governance/",
-          "tests/lib/gate/",
-          "tests/validation/"
+          ".github/"
         ],
         "root_gate_ids": [
-          "leaf.local-document-metadata-tests",
-          "leaf.document-governance-library-regressions"
+          "ci.zizmor",
+          "local.workflow-harness"
+        ]
+      },
+      {
+        "prefixes": [
+          "CHANGELOG.md",
+          "cliff.toml",
+          ".github/workflows/generate-changelog.yml",
+          "scripts/operations/release.py",
+          "tests/validation/test_release.py"
+        ],
+        "root_gate_ids": [
+          "leaf.release-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          ".cz.toml"
+        ],
+        "root_gate_ids": [
+          "leaf.release-regressions",
+          "local.workflow-harness"
+        ]
+      },
+      {
+        "prefixes": [
+          ".editorconfig",
+          ".gitattributes",
+          ".gitmessage",
+          ".gitleaks.toml",
+          ".hadolint.yaml",
+          ".markdownlint-cli2.yaml",
+          ".pre-commit-config.yaml",
+          ".prettierignore",
+          ".shellcheckrc",
+          ".yamllint",
+          "ruff.toml",
+          "scripts/requirements-pre-commit.txt",
+          "scripts/requirements.txt",
+          "tests/validation/test_agent_governance_ci_routing.py",
+          "scripts/lib/gate/",
+          "scripts/validation/ci_gate_runner.py",
+          "scripts/validation/run-ci-gate.py",
+          "scripts/validation/run-ci-precommit.sh",
+          "tests/lib/gate/",
+          "tests/validation/test_ci_gate_execution_context.py",
+          "tests/validation/test_ci_gate_model.py",
+          "tests/validation/test_ci_gate_plan.py",
+          "tests/validation/test_run_ci_precommit.sh",
+          "scripts/operations/use-qa-ci-tools.sh"
+        ],
+        "root_gate_ids": [
+          "local.workflow-harness"
         ]
       }
     ],
@@ -1424,6 +1572,16 @@
       "retrieved_at": "2026-09-02",
       "consumers": [
         ".github/workflows/pr-labeler.yml"
+      ],
+      "security_disposition": "approved-node24"
+    },
+    "actions/setup-node": {
+      "sha": "820762786026740c76f36085b0efc47a31fe5020",
+      "runtime": "node24",
+      "manifest_url": "https://raw.githubusercontent.com/actions/setup-node/820762786026740c76f36085b0efc47a31fe5020/action.yml",
+      "retrieved_at": "2026-09-02",
+      "consumers": [
+        ".github/workflows/ci-quality.yml"
       ],
       "security_disposition": "approved-node24"
     },

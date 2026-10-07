@@ -121,6 +121,24 @@ def _string_list(value: object) -> bool:
     )
 
 
+def _is_companion_library(row: Mapping[str, Any]) -> bool:
+    path = row.get("path")
+    return (
+        row.get("kind") == "library"
+        and _safe_repo_path(path)
+        and isinstance(path, str)
+        and path.startswith("scripts/")
+        and not path.startswith("scripts/lib/")
+    )
+
+
+def _requires_behavioral_tests(row: Mapping[str, Any]) -> bool:
+    """Shared implementation and executable contracts retain test evidence."""
+    return row.get("kind") not in {"contract", "dependency-manifest"} and not (
+        _is_companion_library(row) and row.get("mutation") == "none"
+    )
+
+
 def _generator_command_error(row: Mapping[str, Any]) -> str | None:
     command = row.get("check_command")
     if not _string_list(command):
@@ -309,9 +327,10 @@ def validate_manifest_document(
                 and not path.endswith("/__init__.py")
             )
             requires_evidence = (
-                field == "tests"
-                and row.get("kind") not in {"contract", "dependency-manifest"}
-            ) or (field == "consumers" and not is_library)
+                field == "tests" and _requires_behavioral_tests(row)
+            ) or (
+                field == "consumers" and (not is_library or _is_companion_library(row))
+            )
             if disposition == "retain" and requires_evidence and not values:
                 findings.append(
                     _finding(

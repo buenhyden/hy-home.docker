@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Usage Guide"
-version: "1.0.4"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "GDE-0017"
 parent_ids:
@@ -108,7 +108,7 @@ InfluxDB3 Core3.11.5 의 `influxdb3 serve --object-store=file`와 node-id 설정
 - `test -f infra/04-data/influxdb/docker-compose.yml`
 - `/api/v3/write_lp`, operator-selected database name, port `8181` source references가 일치하는지 확인한다. Source-only validation cannot prove authorization.
 - `python3 scripts/validation/check-document-links.py --mode all`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Runbook Handoff
 

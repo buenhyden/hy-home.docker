@@ -1,13 +1,13 @@
 ---
 name: "provider-model-evaluation"
-description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and deterministic model-free regression evidence. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
+description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and explicit observation boundaries. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 metadata:
   title: "provider-model-evaluation"
-  version: "1.3.0"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-05"
+  updated: "2026-10-07"
   function_id: "provider-model-evaluation"
   scope: "qa"
   owner_agent: "eval-engineer"
@@ -22,22 +22,24 @@ metadata:
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
-The provider/model question, official source boundary, repository work profile,
-and synthetic comparison fixture must be explicit before evaluation begins.
+The provider/model question, official source boundary and repository work profile
+must be explicit before evaluation begins. A manual comparison is not a
+recurring workspace scoring gate.
 
 ## Inputs
 
 - Current [provider registry](../../governance/providers/registry.yaml) status axes and work-profile selection.
 - Dated official provider sources and provider-native schema evidence.
-- Deterministic synthetic regression results; no live provider response is
-  required or implied.
+- Scoped source/native-envelope evidence; live response and synthetic scores
+  are not required or implied by ordinary workspace QA.
 
 ## Procedure
 
 1. Separate provider lifecycle, repository disposition, runtime acceptance,
    entitlement, repository-default eligibility, and runtime activation.
 2. Compare the proposed model/profile decision with dated official sources,
-   native schema evidence, and the registered synthetic regression fixture.
+   native schema evidence and an independent sourced comparison. Do not re-add
+   a retired answer-scoring fixture or require it for repository delivery.
 3. Return a sourced disposition and acceptance boundary without promoting
    catalog presence, configured defaults, or synthetic scores into a live-model
    claim.
@@ -62,14 +64,14 @@ and synthetic comparison fixture must be explicit before evaluation begins.
 ## Failure Handling
 
 Return an unverified disposition and stop when a source, native-schema fact,
-fixture result, or approval boundary is missing. Do not infer runtime
+comparison evidence, or approval boundary is missing. Do not infer runtime
 acceptance, entitlement, quality, cost, or latency.
 
 ## References
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)
-- [Agent output evaluation fixtures](../../evaluations/README.md)
+- [Paired Skill evaluation evidence boundaries](../../evaluations/README.md)
 - [Current workspace governance](../../README.md)
 - Historical canonical-home decision: ADR-0032
 - [Documentation index](../../../docs/README.md)

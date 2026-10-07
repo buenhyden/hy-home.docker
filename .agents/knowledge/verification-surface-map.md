@@ -1,12 +1,12 @@
 ---
 title: "Verification Surface Map"
-version: "0.8.1"
+version: "0.9.0"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 created: "2026-09-06"
-observed_at: "2026-10-02"
+observed_at: "2026-10-07"
 review_cycle: "on-gate-change"
 ---
 
@@ -14,202 +14,76 @@ review_cycle: "on-gate-change"
 
 ## Overview
 
-Which check covers which change, and where each check lives. Use it to predict
-what a change will run before running it, and to find the owner of a failure.
-The workflow contract owns the actual composition; this map is navigation.
+Locate the one owner of a quality decision. This navigation map does not copy
+job inventories, exclusion constants, path rules or execution status.
 
 ## Scope
 
-The two public validation profiles, the six public suites, their root gate
-nodes, the prefix rules that select suites for a changed path, and the leaves
-the local context withholds. Hosted job scheduling is routed to the
-[canonical phase matrix](../governance/quality-standards.md#canonical-delivery-phase-matrix);
-remote branch protection and runtime observation are outside this map.
+Current document and Docker/Compose QA plus the supporting selector, style and
+release implementation. Actual execution/acceptance belongs to the current Task;
+remote protection and runtime observations require their own receipts.
 
 ## Rules
 
 ### Public Entrypoints
 
-| Command | Use |
+| Purpose | Current owner |
 | --- | --- |
-| `python3 scripts/validation/run-ci-gate.py --profile changed` | The routine local gate for a working-tree change |
-| `python3 scripts/validation/run-ci-gate.py --profile changed --explain` | Inspect the selected leaves without executing them |
-| `python3 scripts/validation/run-ci-gate.py --profile full` | Every locally admitted suite; nine leaves stay remote, listed below |
-| `python3 scripts/operations/provider_surface_renderer.py --check` | Provider projection drift, a separate direct interface |
-| `scripts/validation/run-agent-precommit-all-files.sh` | The single approved all-files route; direct `pre-commit run` is prohibited |
+| Inspect changed selection without execution | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| Remote PR candidate acceptance | `run-ci-gate.py --profile changed`, scheduled by the quality workflow |
+| Explicit comprehensive maintenance/audit | `run-ci-gate.py --profile full`, with Task-bound budget and authorization |
+| Scoped format/lint modes and tool pins | `.pre-commit-config.yaml` and the changed-style controller |
+| Provider/native document projection | `provider_surface_renderer.py --check`, only when its source is affected |
+| Explicit all-files authoring maintenance | Controlled `run-agent-precommit-all-files.sh`; no routine commit/push/PR invocation |
 
-Inspect with `--explain` before executing when a change touches an unfamiliar
-surface. A leaf may need inputs the current authorization does not cover.
+### Current Guarantees and Composition
 
-### Suites and Their Roots
-
-| Suite | Root gate nodes |
-| --- | --- |
-| `agent-governance` | provider surface drift; agent-output eval fixture gate; agent governance contract; agent governance regressions; provider governance regressions |
-| `document-contract` | repository metadata base; repository document metadata |
-| `document-graph` | documentation traceability |
-| `document-lifecycle` | document corpus lifecycle; document lifecycle regressions; document metadata implementation tests; document governance library regressions |
-| `operations` | operations catalog; supply chain; Compose validation; infrastructure hardening; template security baseline; quickwin baseline |
-| `repository-integrity` | diff hygiene; shell syntax; script manifest; tech stack version drift; workflow harness; dependency vulnerability audit; git-flow contract; frontend quality; Storybook coverage; `zizmor`; pre-commit; repository integrity regressions |
-
-### What the Local Context Withholds
-
-`--profile full` names every suite, not every leaf. `_LOCAL_EXCLUDED_GATE_IDS`
-in `scripts/validation/ci_gate_runner.py` removes nine leaves when the context
-is `local`, so a local pass is not a CI pass and must not be reported as one.
-The suite table above lists these among their roots because CI reaches them.
-
-| Withheld leaf | Why it is not local | Local route |
-| --- | --- | --- |
-| `leaf.pre-commit` | Its entrypoint refuses to run outside GitHub Actions | The same hook suite, through `scripts/validation/run-agent-precommit-all-files.sh` |
-| `leaf.git-flow-contract` | Reads `PR_TITLE` and `HEAD_REF`, and its adapter admits only `pull_request` | None; a real pull request is the input |
-| `leaf.frontend-lint` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
-| `leaf.frontend-typecheck` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
-| `leaf.frontend-build` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
-| `leaf.frontend-quality` | Needs `npm ci` in `projects/storybook/nextjs` | Install the project dependencies, then run the package script directly |
-| `leaf.storybook-coverage` | Needs `npm ci` and a Playwright browser install | Install both, then run the package script directly |
-| `leaf.dependency-vulnerability-audit` | `npm audit` reads a remote advisory database | Run the audit where that network access is approved |
-| `leaf.zizmor` | Runs pinned `zizmor==1.28.0` through `uvx` and writes `results.sarif` | Install the pinned version where that is approved |
-
-Dependency installation is a setup leaf, never part of a local gate run: the
-local gate installs nothing. `run-npm`, `install-playwright` and
-`run-zizmor-sarif` are restricted to CI contexts, and `check-git-flow` to
-`pull_request`, inside the adapter, so removing a leaf from this list alone
-would not make it reachable.
-
-### What a Change Selects
-
-The declared `repository-integrity` fallback is always included. Rows below
-show the suites selected by each matching path rule, not a replacement for
-that fallback. Exact prefixes remain owned by the workflow contract.
-
-| Changed prefix | Suites selected |
-| --- | --- |
-| `.agents/`, `.claude/`, `.codex/`, `AGENTS.md`, `CLAUDE.md` | agent-governance, document-contract, document-graph, document-lifecycle |
-| `README.md`, `_workspace/`, `docs/01.requirements/`, `docs/02.architecture/`, `docs/03.specs/`, `docs/90.references/`, `docs/98.archive/`, `docs/99.templates/` | document-contract, document-graph, document-lifecycle |
-| `docker-compose.yml`, `docs/05.operations/`, `examples/`, `infra/`, `secrets/` | document-contract, document-graph, document-lifecycle, operations |
-| `.github/`, `.pre-commit-config.yaml`, `.agents/evaluations/`, `projects/`, `scripts/`, `tests/` | all six suites |
-| Root tool/commit paths declared in the contract, including `.cz.toml`, `.gitmessage`, and `ruff.toml` | repository-integrity |
-| any path with no matching rule | all six suites and all roots; fail-closed fallback |
-
-A path with no matching rule selects all six suites and all roots. Silence is
-never the result of an unmatched path.
-
-For `changed`, the contract's `changed_root_rules` selects optional
-frontend-quality, Storybook, document metadata implementation and document
-governance library roots within their suites. Frontend roots follow `.github/`,
-`.pre-commit-config.yaml`, `projects/storybook/nextjs/`, `scripts/`, and
-`tests/`. The two document regression roots follow their validator, gate,
-registry, governance and associated test owners; ordinary Stage 03 and Stage 05
-authored documents omit only these regression tests, not content validators.
-Known paths outside a root's prefixes omit that optional root. Unavailable or
-invalid changed-path evidence fails closed before planning. `full` retains
-all suite roots before the execution-context exclusions above apply.
-
-### Changed Route and PR Title Edits
-
-`.github/workflow-contract.yml` `public_gate.changed_path_rules` selects the
-suites for a changed path. The tracked pre-commit declaration no longer
-contains public `changed` or `full` hooks. Operators and Tasks invoke the
-public `changed` or `full` route directly for the exact candidate input; there
-is no hosted producer for either public profile. PR-title and git-flow behavior remains a
-registered leaf of the local selector rather than a workflow trigger. The
-installed `core.hooksPath` can differ from the tracked declaration and must be
-observed separately.
-
-### Generated Outputs and Staging Order
-
-A generator that builds its inventory from `git ls-files --cached` cannot see an
-added file until that file is staged, so a freshness check can pass on an
-unstaged candidate and become stale the moment it is staged. The generators this
-described were retired on 2026-09-10, so no tracked output carries that hazard
-today; the rule is kept because it applies to the next one, and staging order is
-the thing to get right before believing a freshness result. `graphify-out/`
-is not a comparable case: it is untracked local output, so it produces no diff
-to separate and the intermediate-stash race it once caused cannot occur.
+- Stage 99 Registry owns profile, template, identity and lifecycle contracts.
+  Metadata/link/corpus readers enforce current content and preservation.
+- Compose/service owners define configuration, hardening and operator recovery.
+  Preflight, temporary rendering and live runtime have different inputs and effects.
+- The machine [workflow contract](../../.github/workflow-contract.yml) owns suite,
+  leaf, dependency, prefix and prerequisite selection. Inspect its actual plan;
+  this map deliberately maintains no second transcribed inventory.
+- The [quality policy](../governance/quality-standards.md#canonical-delivery-phase-matrix)
+  owns authoring/commit/push/PR/main/release responsibility and check admissibility.
+- Ordinary authored documents select content/form checks. Their implementation
+  suites are selected only for relevant validator/contract changes. Frontend QA
+  follows the frontend project. Unknown inputs fail closed.
+- Identical invocation execution is unique within a declared input/tool/mode/trust
+  context. Raw immutable Git input sharing is not reuse of PASS or acceptance.
+- One-time event-specific counts/hashes and agent answer scores are retired QA;
+  generic frozen-byte, unsafe-path and lifecycle guards remain current.
 
 ### Test Ownership
 
-| Layer | Location | Verifies |
-| --- | --- | --- |
-| Library behavior | `tests/lib/<domain>/` | importable logic in `scripts/lib/<domain>/` |
-| CLI and context | `tests/validation/` | entrypoints, argv, execution context, aggregates |
-| Synthetic input | underscore-prefixed modules beside their suite, such as `tests/lib/<domain>/_support.py` and `tests/validation/_sample_delivery_fixtures.py` | test-only inputs built deterministically; production code never reads them |
-| Operational rehearsal | `examples/operations/` | reusable synthetic operational input |
-| Agent output | `.agents/evaluations/` | deterministic, model-free fixture evaluation |
+| Layer | Location and purpose |
+| --- | --- |
+| Document implementation | `tests/lib/document_governance/`, current parser/contract boundaries |
+| CLI and selector | `tests/lib/gate/`, `tests/validation/`, admitted composition/trust/failure/cleanup |
+| Docker operations | Reusable service tests and `examples/operations/`, separate operator approval |
+| Supporting release/style | Focused regression for current changelog/producer and read-only tool routing |
+| Synthetic helpers | Underscore-prefixed test support; no production imports |
 
 ## Evidence
 
 ### Provenance
 
-Every section was re-read against the tracked sources at repository commit
-`e7ec6e78b` on 2026-09-15. Each source is named with the commit that last
-changed it, because they changed at different times: suite, path, and root
-routing from `.github/workflow-contract.yml` and
-`scripts/lib/gate/ci_gate_contract.py`, both last changed at `83d2e15f6`; hook
-settings from `.pre-commit-config.yaml`, last changed at `8ed7905fb`; and the
-adapter context sets from `scripts/lib/gate/ci_gate_adapters.py`, last changed
-at `0823c0c46`. The 2026-09-08 revalidation named no commit, so this re-read
-replaces it rather than extending it.
-The previous claim that the path rules were unchanged is superseded by the
-explicit root-tool rules and optional-root selection now described above.
-The workflow contract remains the execution authority; a disagreement between
-this navigation map and that source is a defect in this map. On 2026-10-02,
-SPEC-0200 re-read the document root rules and selector in the active worktree.
-It moved the two document implementation regression leaves to optional roots
-and made an unknown path select all suites and roots. This dated observation
-supersedes the earlier fallback and root-selection prose above.
-
-On 2026-10-02, SPEC-0199 re-read the changed-route owner, tracked hooks and quality workflow
-at implementation commit `371f9f3d5`; the prior public-hook admission claim
-was superseded by the PR-owned route above. Dated execution
-and staging-recovery receipts belong to the current Spec Package Task.
-
-The local exclusion table is transcribed from `_LOCAL_EXCLUDED_GATE_IDS` and
-`_PR_ONLY_GATE_IDS` in `scripts/validation/ci_gate_runner.py`, and the reasons
-from the `gate_nodes` entries and adapter context sets those identifiers reach,
-re-read at `e7ec6e78b` on 2026-09-15, where the runner was last changed at
-`78d6b72f6`. The constants and every row were unchanged since the earlier read at
-`6aa4287e2`, although `gate_nodes` had renamed and removed setup nodes. A registered
-test compares the identifiers in that table against the runner constant, so the
-two cannot drift apart silently.
-
-The Test Ownership table has a different source and had no stated one when this
-map was written, which is how it came to describe a `tests/fixtures/` layer that
-a completed convergence had already emptied. Its rows are now read from
-`git ls-files` at `e7ec6e78b` on 2026-09-15, which reports zero tracked paths
-under that prefix, as it did on 2026-09-07. A row here names a location that the
-tracked tree actually contains. On 2026-09-29, the active Spec and Plan at
-`b097e11c1ff006c7d504f40937a54b68493e7bc7` and
-`evals/run-agent-output-eval-fixtures.sh` were re-read to corroborate the
-then-current static evaluator and its selected migration target. The migration
-working tree based on `567e9ea00` was subsequently read on 2026-09-29 at
-`.agents/evaluations/run-agent-output-eval-fixtures.sh`,
-`.github/workflow-contract.yml`, and `scripts/lib/gate/ci_gate_adapters.py`.
-Those sources establish the canonical cutover and retained all-six-suite
-impact; the former path above preserves only the earlier observation.
+The source owners were read on 2026-10-07 in the SPEC-0211 worktree based on
+main `849ef009a`. The current Task owns actual patch inputs, tests, independent
+review and hosted results. This map does not promote source configuration into
+an executed workflow or runtime acceptance.
 
 ### Knowledge Validity
 
-The facts here are valid only while their named sources agree with the stated
-observation range and no refresh trigger has fired. They cover tracked,
-non-secret routing facts only; credential contents, private state, and
-user-global configuration remain excluded. A named source change, deletion,
-correction, or review expiry invalidates the affected fact until it is re-read.
-An obligation or durable decision routes to its canonical owner; this map is
-then refreshed or retired rather than copied.
+Use only while named sources agree. Source changes invalidate affected facts
+until re-read; approval, secrets and user-global configuration are outside this
+navigation record.
 
 ### Refresh Triggers
 
-- A public suite is added, removed, or renamed.
-- A root gate node joins or leaves a suite.
-- A changed-path rule or the declared fallback changes.
-- The public entrypoint set or its normalized arguments change.
-- A leaf joins or leaves the local exclusion set in `ci_gate_runner.py`.
-- The `tests/lib` and `tests/validation` ownership boundary changes, or a test
-  location named in the Test Ownership table is added, moved, or emptied.
-- Evaluation ownership or its changed-path routing changes. The current gate is
-  static and local; native, hosted, and operational observations remain separate.
+Refresh when the public entrypoint, admitted QA purpose, composition owner,
+execution-context boundary, test location or release producer changes.
 
 ## Related Documents
 

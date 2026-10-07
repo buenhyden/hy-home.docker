@@ -21,9 +21,6 @@ providers:
     native_config_path: .codex/hooks.json
 canonical_sources:
   - .agents/evaluations/README.md
-  - .agents/evaluations/agent_output_eval.py
-  - .agents/evaluations/fixture-catalog.md
-  - .agents/evaluations/run-agent-output-eval-fixtures.sh
   - .agents/README.md
   - .agents/governance/agentic.md
   - .agents/governance/approval-boundaries.md
@@ -238,17 +235,4 @@ hook_contracts:
     Stop: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" Stop', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
     PreCompact: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" PreCompact', timeout: 600, matcher: '*', executable: scripts/hooks/agent-event-hook.sh}
     UserPromptSubmit: {command: 'HY_HOME_HOOK_PROVIDER=codex bash "${CODEX_PROJECT_DIR:-$(git rev-parse --show-toplevel)}/scripts/hooks/agent-event-hook.sh" UserPromptSubmit', timeout: 600, matcher: null, executable: scripts/hooks/agent-event-hook.sh}
-agent_output_eval:
-  fixture_thresholds:
-    AOE-RECOVERY-001: 0.50
-    AOE-DOC-001: 0.50
-    AOE-PROVIDER-001: 0.50
-    AOE-INFRA-001: 0.50
-    AOE-ROUTING-001: 0.50
-    AOE-ROLE-001: 0.50
-    AOE-CLOSURE-001: 0.50
-    AOE-HOOK-001: 0.50
-    AOE-ADAPTER-001: 0.50
-    AOE-MODEL-001: 0.50
-    AOE-LOOP-001: 0.50
 generated_roots: [.claude/agents, .claude/skills, .codex/agents]

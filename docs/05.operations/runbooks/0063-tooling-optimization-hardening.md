@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "1.0.4"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -61,7 +61,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 2. 문서 계약과 stale literal guard를 실행한다.
 
    ```bash
-   python3 scripts/validation/run-ci-gate.py --profile changed
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
    python3 scripts/validation/check-document-links.py --mode alignment
    ```
 
@@ -78,10 +78,14 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
    bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality
    bash scripts/validation/check-template-security-baseline.sh
    python3 scripts/validation/check-document-links.py --mode traceability
-   python3 scripts/validation/run-ci-gate.py --profile changed
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
 ### Verification Steps
+
+`--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
+[quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
+원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
 
 - tooling hardening script 실패 0건.
 - repo contracts 실패 0건.
@@ -104,7 +108,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-   - `python3 scripts/validation/run-ci-gate.py --profile changed`
+   - `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
 2. Gateway/SSO 경계 정렬
    - SonarQube/Terrakube 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
 3. 네트워크 경계 표준화

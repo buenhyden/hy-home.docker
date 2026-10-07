@@ -246,111 +246,6 @@ class MigrationStateTests(unittest.TestCase):
         self.assertEqual(completed, self.read(completed))
         self.assertEqual(self.compact(), self.read(self.compact()))
 
-    def test_compact_projection_normalizes_only_five_approved_singular_targets(self):
-        approved = self.archive._approved_migration_document(ROOT)
-        projected = self.archive._compact_mapping_selection(approved)
-        retained = [
-            row
-            for row in approved["rows"]
-            if row["row_id"]
-            not in {"mig-0003-r0842", "mig-0003-r0848", "mig-0003-r0852"}
-        ]
-        # Derived from the frozen ledger this test already read. The digest
-        # tripwire proves that ledger is byte-identical, so a literal count
-        # here would only restate what the digest already guarantees.
-        self.assertEqual(len(retained), len(projected))
-        changed = [
-            row["row_id"]
-            for row, result in zip(retained, projected, strict=True)
-            if row["target_path"] != result["target_path"]
-        ]
-        # mig-0003-r0537 joined the approved retargets on 2026-09-10: emptying the
-        # Stage 90 data category moved the DATA-0067 payload under
-        # `docs/98.archive/retired/` with its bytes unchanged.
-        self.assertEqual(
-            sorted(
-                [f"mig-0003-r{n:04d}" for n in (233, 239, 242, 245, 248)]
-                + ["mig-0003-r0537"]
-            ),
-            sorted(changed),
-        )
-        expected_targets = {
-            "mig-0003-r0233": "docs/03.specs/0123-agentic-engineering-audit-remediation/tasks/tsk-0001-research-pack-extension.md",
-            "mig-0003-r0239": "docs/03.specs/0134-agent-governance-canonical-convergence/tasks/tsk-0001-canonical-convergence.md",
-            "mig-0003-r0242": "docs/03.specs/0135-target-surface-delta-convergence/tasks/tsk-0001-delta-convergence.md",
-            "mig-0003-r0245": "docs/03.specs/0136-sdlc-taxonomy-convergence/tasks/tsk-0001-taxonomy-convergence.md",
-            "mig-0003-r0248": "docs/03.specs/0152-deleted-reference-leaf-disposition/tasks/tsk-0001-reference-disposition.md",
-            "mig-0003-r0537": "docs/98.archive/retired/90.references/data/0067-foundation/data.yaml",
-        }
-        for row, result in zip(retained, projected, strict=True):
-            expected = {
-                key: row[key]
-                for key in ("source_path", "target_path", "artifact_id", "action")
-            }
-            if row["row_id"] in expected_targets:
-                expected["target_path"] = expected_targets[row["row_id"]]
-            self.assertEqual(result, expected)
-
-    def test_compact_projection_has_real_recovery_and_no_retained_owner_deletion(self):
-        approved = self.archive._approved_migration_document(ROOT)
-        rows = self.archive._compact_mapping_selection(approved)
-        sources = [row["source_path"] for row in rows]
-        recoveries = {}
-        for commit in (
-            approved["baseline_commit"],
-            "71f89ba1430245c89d10c36a084fc2fae9cfe98b",
-            self.commit,
-        ):
-            for offset in range(0, len(sources), 512):
-                batch = sources[offset : offset + 512]
-                proofs = self.archive.verify_recovery_blobs_batch(
-                    [(path, commit) for path in batch],
-                    repo_root=ROOT,
-                )
-                for path, proof in zip(batch, proofs, strict=True):
-                    if proof.is_regular_blob:
-                        recoveries.setdefault(path, commit)
-        self.assertEqual(set(sources), set(recoveries))
-        rows = [
-            {**row, "recovery_commit": recoveries[row["source_path"]]} for row in rows
-        ]
-        appended = self.compact()["rows"][1:]
-        expected_rows = len(rows) + len(appended)
-        rows.extend(appended)
-        self.assertEqual(expected_rows, len(rows))
-        compact = {"schema_version": 3, "migration_id": "mig-0003", "rows": rows}
-        raw = ("```yaml\n" + yaml.safe_dump(compact) + "```\n").encode()
-        with mock.patch.object(self.archive, "_read_regular", return_value=raw):
-            self.assertEqual(compact, self.archive._migration_document(ROOT))
-        unexecuted = [
-            row
-            for row in approved["rows"]
-            if row["row_id"] in {"mig-0003-r0848", "mig-0003-r0852"}
-        ]
-        # Both rows are plans the migration never executed, so neither source
-        # may appear among the executed sources. `mig-0003-r0848` still has its
-        # source in the tree. `mig-0003-r0852` no longer does: its source was
-        # `report-provider-hook-parity.sh`, retired on 2026-09-10 with the rest
-        # of the Stage 90 generators, which makes that plan permanently
-        # unexecutable rather than merely unexecuted.
-        moot = {"mig-0003-r0852"}
-        for row in unexecuted:
-            if row["row_id"] not in moot:
-                self.assertTrue((ROOT / row["source_path"]).is_file())
-            else:
-                self.assertFalse((ROOT / row["source_path"]).is_file())
-            self.assertNotIn(row["source_path"], sources)
-        for mutation in (rows[:-1], [*rows, rows[0]], [rows[1], rows[0], *rows[2:]]):
-            raw = (
-                "```yaml\n" + yaml.safe_dump({**compact, "rows": mutation}) + "```\n"
-            ).encode()
-            with (
-                self.subTest(rows=len(mutation)),
-                mock.patch.object(self.archive, "_read_regular", return_value=raw),
-                self.assertRaises(ValueError),
-            ):
-                self.archive._migration_document(ROOT)
-
     def test_live_reader_rejects_multiple_or_unterminated_ledger_fences(self):
         valid = "```yaml\n" + yaml.safe_dump(self.approved) + "```\n"
         for candidate in (valid + valid, valid.removesuffix("```\n")):
@@ -436,36 +331,6 @@ class MigrationStateTests(unittest.TestCase):
         candidate["approval"] = {"status": "draft"}
         with self.assertRaises(ValueError):
             self.read(candidate)
-
-    def test_native_compact_rows_reach_remaining_archive_consumers(self):
-
-        approved = self.archive._approved_migration_document(ROOT)
-        compact = {
-            "schema_version": 3,
-            "migration_id": "mig-0003",
-            "rows": [
-                {
-                    **{
-                        key: row[key]
-                        for key in (
-                            "source_path",
-                            "target_path",
-                            "artifact_id",
-                            "action",
-                        )
-                    },
-                    "recovery_commit": self.commit,
-                }
-                for row in approved["rows"]
-            ],
-        }
-        first = self.archive.TASK10_FIRST_ROW
-        last = self.archive.TASK10_LAST_ROW
-        expected = [row for row in approved["rows"] if first <= row["row_id"] <= last]
-        with mock.patch.object(
-            self.archive, "_migration_document", return_value=compact
-        ):
-            self.assertEqual(len(expected), len(self.archive.task10_rows(ROOT)))
 
 
 class ArchiveMinimizationTests(unittest.TestCase):
@@ -924,24 +789,6 @@ class ArchiveMinimizationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "unapproved missing"):
                 self.archive._legacy_change_recoveries(ROOT, (*approved, unlisted))
 
-    def test_task10_recovery_references_all_resolve_to_regular_blobs(self) -> None:
-        rows = self.archive.load_task10_recovery_references(ROOT)
-        self.assertEqual(len(rows), len(set(rows)))
-        original_paths = {row.original_path for row in rows}
-        retired_paths_on_disk = set()
-        for tombstone_file in (ROOT / "docs/98.archive/tombstones").rglob("*.md"):
-            if tombstone_file.name.upper() == "README.MD":
-                continue
-            match = re.search(
-                r"(?ms)^## Retired Path\s*$\n\s*`([^`]+)`",
-                tombstone_file.read_text(encoding="utf-8"),
-            )
-            self.assertIsNotNone(match, tombstone_file)
-            retired_paths_on_disk.add(pathlib.PurePosixPath(match.group(1)))
-        self.assertTrue(retired_paths_on_disk.issubset(original_paths))
-        self.assertEqual(14, sum(item.commit == TASK10_BASELINE for item in rows))
-        self.assertEqual((), self.archive.validate_recovery_rows(rows, ROOT))
-
     def test_recovery_validator_rejects_unsafe_values_and_non_blobs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -1091,7 +938,7 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     self.archive.parse_recovery_row(mutation)
 
-    def test_archive_yaml_rejects_duplicate_keys_and_unknown_task10_fields(
+    def test_archive_yaml_rejects_duplicate_keys_and_unknown_tombstone_fields(
         self,
     ) -> None:
         for duplicate in ("archived_commit", "archived_from"):
@@ -1118,123 +965,6 @@ class ArchiveMinimizationTests(unittest.TestCase):
                 ),
                 "0001-sample.md",
             )
-
-        original = (
-            ROOT
-            / "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        ).read_text(encoding="utf-8")
-        mutations = (
-            original.replace("\nrows:\n", "\nrows: []\nrows:\n", 1),
-            original.replace(
-                "row_id: mig-0003-r0566,",
-                "row_id: duplicate, row_id: mig-0003-r0566,",
-                1,
-            ),
-            original.replace(
-                "row_id: mig-0003-r0566,",
-                "row_id: mig-0003-r0566, unexpected: true,",
-                1,
-            ),
-        )
-        for index, mutation in enumerate(mutations):
-            with self.subTest(index=index), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                target = root / "docs/98.archive/migrations"
-                target.mkdir(parents=True)
-                (target / "0003-workspace-governance-simplification.md").write_text(
-                    mutation,
-                    encoding="utf-8",
-                )
-                with self.assertRaises(ValueError):
-                    self.archive.task10_rows(root)
-
-    def test_task10_rows_reject_same_shape_semantic_mutations(self) -> None:
-        """Repaired 2026-08-29; it had stopped testing anything.
-
-        Two independent breakages had accumulated. The ledger was projected to
-        the compact schema-3 form, so three of the four mutation strings —
-        `owner_task`, `row_id` — no longer occur in the file and `str.replace`
-        returned it unchanged; the test was feeding the ORIGINAL bytes and
-        asserting they were rejected. And the fixture root held only the ledger
-        with no git repository, so `git cat-file --batch-check` failed before the
-        digest comparison was ever reached, which is the `ValueError` the
-        assertion was actually catching. Together those meant the test would have
-        passed on a clean file and failed on nothing. The mutations below are
-        expressed against the schema-3 row shape, and the root is a shared clone
-        so the recovery commits resolve and the digest check is what answers.
-        """
-
-        approved = self.archive._approved_migration_document(ROOT)
-        ledger_relative = (
-            "docs/98.archive/migrations/0003-workspace-governance-simplification.md"
-        )
-        original = (ROOT / ledger_relative).read_text(encoding="utf-8")
-        row = (
-            "- source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md\n"
-            "  target_path: docs/98.archive/migrations/0001-sdlc-taxonomy-convergence.md\n"
-            "  artifact_id: mig-0001\n"
-            "  action: rename\n"
-        )
-        self.assertEqual(1, original.count(row))
-        # Each mutation is paired with the guard it must trip. Asserting one
-        # shared message would have hidden which defence actually answered, and
-        # two of these are caught by a structural rule BEFORE the digest, which
-        # is a stronger rejection rather than a weaker one.
-        mutations = (
-            # same shape, different executed semantics: a rename becomes a delete
-            (
-                original.replace(
-                    row, row.replace("action: rename", "action: delete"), 1
-                ),
-                "action and target disagree",
-            ),
-            # same shape, different destination: only the digest can see this
-            (
-                original.replace(row, row.replace("0001-sdlc", "0009-sdlc"), 1),
-                "frozen digest",
-            ),
-            # same shape, source escapes the repository
-            (
-                original.replace(
-                    "source_path: docs/98.archive/migrations/mig-0001-sdlc-taxonomy-convergence.md",
-                    "source_path: ../outside.md",
-                    1,
-                ),
-                "path is invalid",
-            ),
-        )
-        for index, (mutation, expected) in enumerate(mutations):
-            with self.subTest(index=index):
-                self.assertNotEqual(original, mutation, "mutation must change the file")
-            with self.subTest(index=index), tempfile.TemporaryDirectory() as directory:
-                root = pathlib.Path(directory)
-                subprocess.run(
-                    (
-                        "git",
-                        "clone",
-                        "--shared",
-                        "--no-checkout",
-                        "--quiet",
-                        str(ROOT),
-                        str(root),
-                    ),
-                    check=True,
-                )
-                target = root / "docs/98.archive/migrations"
-                target.mkdir(parents=True)
-                (target / "0003-workspace-governance-simplification.md").write_text(
-                    mutation,
-                    encoding="utf-8",
-                )
-                with (
-                    mock.patch.object(
-                        self.archive,
-                        "_approved_migration_document",
-                        return_value=approved,
-                    ),
-                    self.assertRaisesRegex(ValueError, expected),
-                ):
-                    self.archive.task10_rows(root)
 
     def test_archive_reads_reject_ancestor_symlink_special_file_and_swap(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

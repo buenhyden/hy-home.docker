@@ -111,7 +111,6 @@
       "doc_type"
     ],
     "inventory_excludes": [
-      ".agents/evaluations/fixture-catalog.md",
       "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
     ],
     "root_exceptions": {

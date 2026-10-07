@@ -1,10 +1,10 @@
 ---
 title: "InfluxDB Operations Policy"
-version: "1.0.4"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0017"
 parent_ids:
@@ -59,7 +59,7 @@ created: "2026-05-17"
 - `test -f infra/04-data/influxdb/docker-compose.yml`
 - operator가 선택한 database 이름, port `8181`, `/api/v3/write_lp`가 source와 active docs 전반에서 일치하는지 확인한다. token provisioning을 주장하지 않는다.
 - `python3 scripts/validation/check-document-links.py --mode all`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Review Cadence
 

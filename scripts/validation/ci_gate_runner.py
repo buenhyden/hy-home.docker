@@ -51,13 +51,13 @@ _SECRET_ENV_SHAPE = re.compile(
 )
 _ADMITTED_ENV_KEYS = frozenset(
     # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
-    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # PR_BASE_SHA, PR_HEAD_SHA, and PUSH_BEFORE_SHA from its controller, so
     # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
         "GITHUB_ACTIONS",
-        "HEAD_REF",
-        "PR_TITLE",
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA",
         "TEMPLATE_GATE_BASE",
     }
 )
@@ -75,13 +75,13 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
         "leaf.frontend-lint",
         "leaf.frontend-quality",
         "leaf.frontend-typecheck",
-        "leaf.git-flow-contract",
-        "leaf.pre-commit",
+        "leaf.changed-style",
+        "leaf.commit-message-contract",
         "leaf.storybook-coverage",
         "leaf.zizmor",
     }
 )
-_PR_ONLY_GATE_IDS = frozenset({"leaf.git-flow-contract"})
+_PR_ONLY_GATE_IDS = frozenset({"leaf.changed-style", "leaf.commit-message-contract"})
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -92,6 +92,12 @@ class GateInvocation:
     cwd: pathlib.PurePosixPath
     allowed_env_keys: tuple[str, ...]
     timeout_seconds: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class SelectedPrerequisites:
+    node: bool
+    docker: bool
 
 
 GateExecutor = collections.abc.Callable[[GateInvocation], int]
@@ -113,6 +119,7 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
     for path, argv in (
         ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
+        ("scripts/validation/check-operations-catalog.py", ()),
         ("scripts/validation/validate-docker-compose.sh", ()),
         ("scripts/validation/run-ci-precommit.sh", ()),
         ("tests/validation/test_run_ci_precommit.sh", ()),
@@ -157,13 +164,14 @@ def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
     if event_name == "pull_request" and (
         not _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", ""))
         or environ.get("PR_BASE_SHA") == "0" * 40
-        or not environ.get("PR_TITLE", "")
-        or not environ.get("HEAD_REF", "")
+        or not _FULL_SHA.fullmatch(environ.get("PR_HEAD_SHA", ""))
+        or environ.get("PR_HEAD_SHA") == "0" * 40
+        or environ.get("PR_BASE_SHA") == environ.get("PR_HEAD_SHA")
     ):
         raise GateContractError(
             "ci-gate-execution-context",
             "pull_request",
-            "pull-request execution requires its validated identity keys",
+            "pull-request execution requires validated base and head SHAs",
         )
     if event_name == "push":
         before = environ.get("PUSH_BEFORE_SHA", "")
@@ -439,6 +447,39 @@ def canonical_invocation_key(
     return resolved, tuple(invocation.argv), profile, context.value
 
 
+def selected_prerequisites(
+    plan: tuple[GateInvocation, ...],
+    changed_paths: tuple[str, ...],
+) -> SelectedPrerequisites:
+    """Return bounded hosted prerequisites derived from the selected plan."""
+
+    gate_ids = {invocation.gate_id for invocation in plan}
+    node = bool(
+        {
+            "setup.frontend-node-dependencies",
+            "setup.storybook-playwright",
+            "leaf.frontend-build",
+            "leaf.frontend-lint",
+            "leaf.frontend-quality",
+            "leaf.frontend-typecheck",
+            "leaf.storybook-coverage",
+        }
+        & gate_ids
+    )
+    docker = bool(
+        {
+            "leaf.compose-validation",
+            "leaf.conftest-policy",
+        }
+        & gate_ids
+    ) or any(
+        pathlib.PurePosixPath(path).name == "Dockerfile"
+        or pathlib.PurePosixPath(path).name.startswith("Dockerfile.")
+        for path in changed_paths
+    )
+    return SelectedPrerequisites(node=node, docker=docker)
+
+
 def _context_validator_argv(
     item: PublicValidatorRoute,
     context: ExecutionContext,
@@ -597,7 +638,6 @@ def execute_execution_plan(
             )
         root_fd = _open_root(canonical_root)
         verified: list[_VerifiedInvocation] = []
-        preflight_only: list[_VerifiedInvocation] = []
         try:
             descriptor_root = f"/proc/self/fd/{root_fd}"
             python_bootstrap = _create_python_bootstrap(
@@ -612,26 +652,6 @@ def execute_execution_plan(
                         path_value,
                     )
                 )
-                if (
-                    invocation.entrypoint == _INTERNAL_ADAPTER_PATH
-                    and invocation.argv == ("run-agent-output-eval",)
-                ):
-                    preflight_only.append(
-                        _verify_invocation(
-                            root_fd,
-                            dataclasses.replace(
-                                invocation,
-                                gate_id=("preflight-only.agent-output-eval-dependency"),
-                                entrypoint=pathlib.PurePosixPath(
-                                    ".agents/evaluations/agent_output_eval.py"
-                                ),
-                                argv=(),
-                                cwd=pathlib.PurePosixPath("."),
-                                allowed_env_keys=(),
-                            ),
-                            path_value,
-                        )
-                    )
             for item in verified:
                 child_environment = _child_environment(
                     root_fd,
@@ -650,7 +670,7 @@ def execute_execution_plan(
                     return result
             return 0
         finally:
-            for item in (*verified, *preflight_only):
+            for item in verified:
                 _close(item.entrypoint_fd)
                 _close(item.cwd_fd)
             _close(root_fd)
@@ -666,6 +686,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--profile", required=True)
     parser.add_argument("--explain", action="store_true")
+    parser.add_argument("--requirements", action="store_true")
     try:
         arguments = parser.parse_args(argv)
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
@@ -714,6 +735,11 @@ def main(argv: list[str] | None = None) -> int:
             profile=arguments.profile,
             root=root,
         )
+        if arguments.explain and arguments.requirements:
+            raise argparse.ArgumentError(
+                None,
+                "--explain and --requirements are mutually exclusive",
+            )
         if arguments.explain:
             for line in render_public_validation_plan(
                 plan,
@@ -723,6 +749,17 @@ def main(argv: list[str] | None = None) -> int:
                 profile=arguments.profile,
             ):
                 print(line)
+            return 0
+        if arguments.requirements:
+            if context is not ExecutionContext.PULL_REQUEST:
+                raise GateContractError(
+                    "ci-gate-requirements-context",
+                    "requirements",
+                    "hosted prerequisites require a pull-request context",
+                )
+            prerequisites = selected_prerequisites(plan, changed_paths)
+            print(f"node={'true' if prerequisites.node else 'false'}")
+            print(f"docker={'true' if prerequisites.docker else 'false'}")
             return 0
         return execute_execution_plan(root, plan, os.environ)
     except (GateContractError, argparse.ArgumentError) as error:
@@ -756,13 +793,20 @@ def collect_changed_paths(
     name_status = ("--name-status", "-z", "--find-renames")
     if event == "pull_request":
         base = environ.get("PR_BASE_SHA", "")
-        if not _FULL_SHA.fullmatch(base) or base == "0" * 40:
+        head = environ.get("PR_HEAD_SHA", "")
+        if (
+            not _FULL_SHA.fullmatch(base)
+            or base == "0" * 40
+            or not _FULL_SHA.fullmatch(head)
+            or head == "0" * 40
+            or base == head
+        ):
             raise GateContractError(
                 "ci-gate-changed-paths",
                 "git",
                 "the pull-request comparison base is unavailable",
             )
-        commands = (("git", "diff", *name_status, f"{base}...HEAD"),)
+        commands = (("git", "diff", *name_status, f"{base}...{head}"),)
     elif event == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(base):

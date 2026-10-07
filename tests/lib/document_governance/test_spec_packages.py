@@ -4310,5 +4310,128 @@ Narrative after the registered table.
         self.assertEqual([], violations)
 
 
+class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
+    def fixture_git(self, revision):
+        module = _spec_packages_module()
+        reads = []
+        tree = b"100644 blob " + b"b" * 40 + b"\tdocs/03.specs/0001-example/spec.md\0"
+        body = _document_text("spec", "SPEC-0001", ("REQ-0001",)).encode()
+
+        def read(root, *arguments, byte_limit):
+            if arguments[0] == "rev-parse":
+                return (revision[0] + "\n").encode()
+            reads.append((pathlib.Path(root).absolute(), revision[0], arguments[0]))
+            return tree if arguments[0] == "ls-tree" else body
+
+        return module, reads, read
+
+    def test_same_committed_snapshot_reads_git_once_but_reparses(self):
+        module, reads, read = self.fixture_git(["a" * 40])
+        context = module.HistoricalSpecSnapshotContext()
+        with mock.patch.object(module, "_bounded_git", side_effect=read):
+            first = module._load_base_spec_packages(
+                ROOT, base_ref="HEAD", context=context
+            )
+            second = module._load_base_spec_packages(
+                ROOT, base_ref="HEAD", context=context
+            )
+        self.assertEqual(first, second)
+        self.assertIsNot(first[0].spec, second[0].spec)
+        self.assertEqual(["ls-tree", "show"], [call[2] for call in reads])
+
+    def test_ref_movement_and_different_roots_cannot_reuse_snapshot(self):
+        revision = ["a" * 40]
+        module, reads, read = self.fixture_git(revision)
+        context = module.HistoricalSpecSnapshotContext()
+        with mock.patch.object(module, "_bounded_git", side_effect=read):
+            module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+            revision[0] = "c" * 40
+            module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+            module._load_base_spec_packages(
+                ROOT / "other", base_ref="HEAD", context=context
+            )
+        self.assertEqual(3, sum(call[2] == "ls-tree" for call in reads))
+
+    def test_context_retains_at_most_four_snapshots(self):
+        revision = ["a" * 40]
+        module, reads, read = self.fixture_git(revision)
+        context = module.HistoricalSpecSnapshotContext()
+        with mock.patch.object(module, "_bounded_git", side_effect=read):
+            for character in "abcde":
+                revision[0] = character * 40
+                module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+            module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+        self.assertEqual(
+            2, sum(call[1] == "e" * 40 and call[2] == "ls-tree" for call in reads)
+        )
+
+    def test_changed_root_alias_and_new_invocation_cannot_reuse_snapshot(self):
+        module, reads, read = self.fixture_git(["a" * 40])
+        context = module.HistoricalSpecSnapshotContext()
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            first = root / "first"
+            second = root / "second"
+            first.mkdir()
+            second.mkdir()
+            alias = root / "alias"
+            alias.symlink_to(first, target_is_directory=True)
+            with mock.patch.object(module, "_bounded_git", side_effect=read):
+                module._load_base_spec_packages(alias, base_ref="HEAD", context=context)
+                alias.unlink()
+                alias.symlink_to(second, target_is_directory=True)
+                module._load_base_spec_packages(alias, base_ref="HEAD", context=context)
+                module._load_base_spec_packages(
+                    alias,
+                    base_ref="HEAD",
+                    context=module.HistoricalSpecSnapshotContext(),
+                )
+        self.assertEqual(3, sum(call[2] == "ls-tree" for call in reads))
+
+    def test_cached_bytes_still_enforce_per_file_budget(self):
+        module, _reads, read = self.fixture_git(["a" * 40])
+        context = module.HistoricalSpecSnapshotContext()
+        with mock.patch.object(module, "_bounded_git", side_effect=read):
+            module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+            with (
+                mock.patch.object(module, "MAX_SPEC_FILE_BYTES", 1),
+                self.assertRaisesRegex(module.SpecPackageError, "byte limit"),
+            ):
+                module._load_base_spec_packages(ROOT, base_ref="HEAD", context=context)
+
+    def test_context_does_not_reuse_worktree_or_completion_options(self):
+        module = _spec_packages_module()
+        context = module.HistoricalSpecSnapshotContext()
+        registry = _generation_4_registry()
+        with tempfile.TemporaryDirectory() as directory:
+            stage = pathlib.Path(directory) / "docs/03.specs"
+            package = _write_package(stage, plan=True, task=True)
+            task = package / "tasks/tsk-0001-implement.md"
+            task.write_text(
+                task.read_text().replace(
+                    "| Acceptance criterion | Plan work unit | Task result | Durable owner |",
+                    "| Acceptance criterion | Plan work unit | Status | Broken |",
+                )
+            )
+            module.load_spec_packages(
+                stage,
+                registry=registry,
+                _completion_evidence=False,
+                _historical_context=context,
+            )
+            with self.assertRaises(module.SpecPackageError):
+                module.load_spec_packages(
+                    stage, registry=registry, _historical_context=context
+                )
+            task.write_text("invalid changed worktree")
+            with self.assertRaises(module.SpecPackageError):
+                module.load_spec_packages(
+                    stage,
+                    registry=registry,
+                    _completion_evidence=False,
+                    _historical_context=context,
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -105,7 +105,7 @@ Dashboard 연결, snapshot/restore는 정적 render로 검증되지 않습니다
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster.yml`
 - `docker compose -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Runbook Handoff
 

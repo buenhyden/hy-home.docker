@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Git Workflow Governance
@@ -44,9 +44,11 @@ Use Conventional Commits with explicit scopes where possible.
 ### 2. Branching Strategy
 
 - Protected baseline: `main`
-- Feature branch naming: `feat/<issue-id>-<short-description>`
-- Fix branch naming: `fix/<issue-id>-<short-description>`
-- Hotfix branch naming: `hotfix/<issue-id>-<short-description>` for emergency production fixes; follows the same issue-ID requirement as `feat/` and `fix/`.
+- Short-lived human branches use `<type>/<short-description>`; an existing
+  intake Issue ID may precede the description. Do not create a duplicate Issue
+  or copy the Spec/Task merely to satisfy a branch name.
+- Emergency hotfix branches use `hotfix/<short-description>` and preserve the
+  same PR, validation and explicit runtime authorization boundaries.
 - Other human-authored branches use `<type>/<short-description>`, where `type`
   is an admitted `.cz.toml` change type other than `feat` or `fix`.
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
@@ -56,7 +58,9 @@ Use Conventional Commits with explicit scopes where possible.
 ### 3. Pull Request Protocol
 
 1. Self-review changes before opening or updating a PR.
-2. Run relevant programmatic checks before requesting review.
+2. Run focused authoring checks and inspect the selected prerequisites; the
+   remote PR candidate owns aggregate QA. Do not repeat it before push or after
+   merge for the same declared input/trust boundary.
 3. For governance work, ensure linked stage docs remain accurate.
 4. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
 5. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
@@ -73,20 +77,21 @@ Use Conventional Commits with explicit scopes where possible.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- Before pushing a `v*.*.*` tag, require `CHANGELOG.md` to contain that exact
-  release-tag string, scoped validation, readiness evidence, and a linked Task.
-  A remote tag or release remains subject to separately approved exact target
-  and action. Follow the Stage 05
-  [operations runbook index](../../docs/05.operations/runbooks/README.md) for
-  executable release procedure details.
-  The `main-current` channel tag is the narrow automation exception: after a
-  protected PR merge, `.github/workflows/ci-quality.yml` moves that one tag
-  only after the merged-SHA security job passes. Its job uses a remote tag
-  lease and checks that `main` still points to the audited SHA. Record the
-  old/new SHA and hosted run in the Task; a stale or failed update requires
-  recovery through `docs/05.operations/runbooks/0009-release-management.md`.
-  This exception does not authorize manual release-tag changes or bypass main
-  protection.
+- `.cz.toml` owns the one Commitizen grammar; `.gitmessage` is an authoring
+  aid. Installed `commit-msg` validation gives immediate feedback. The remote
+  candidate verifies its authenticated contributor commit range because client
+  hook installation is not trusted evidence. Default Merge/fixup prefix escapes
+  are disabled; GitHub's synthetic candidate merge is outside that range. Feature push does not add another public gate.
+- Main-targeted release-preparation PRs maintain `CHANGELOG.md` in Keep a
+  Changelog form. No development push generates or publishes a changelog.
+- Future release tags are `v` plus strict SemVer. The manual main-only release
+  workflow is their sole producer and owns create-only tag plus draft Release,
+  complete assets, then publication. Do not push a tag independently or add a
+  moving channel producer. Existing non-SemVer historical refs remain evidence;
+  this policy does not authorize deleting or rewriting them.
+- A specific release publication still requires its exact version, commit,
+  approved target and recovery path. Follow the
+  [release runbook](../../docs/05.operations/runbooks/0009-release-management.md).
 
 ### 5. Agent Completion Commit Discipline
 

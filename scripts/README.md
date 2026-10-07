@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-02-21"
 ---
 
@@ -103,7 +103,7 @@ direct purpose folders so it does not duplicate that manifest.
 2. 새 스크립트는 해당 동작을 소유하는 기존 purpose 폴더 아래에 둡니다.
 3. purpose-folder 스크립트에 대한 루트 레벨 `scripts/*.sh` 중복 파일을 추가하지 않습니다.
 4. docs, CI, hooks, pre-commit 항목에서는 canonical purpose-folder 경로를 참조합니다.
-5. 여섯 개 공개 suite를 검증하려면 `python3 scripts/validation/run-ci-gate.py --profile full`을 사용합니다.
+5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
 6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
 7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
 
@@ -163,8 +163,8 @@ argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI / quality gate           | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
-| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `.agents/evaluations/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
+| Candidate / explicit audit  | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
+| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
@@ -200,7 +200,7 @@ source하지 않습니다. 선택적 QA/CI 도구를 다른 방법으로 사용�
 
 `scripts/validation/run-ci-gate.py`는 의존성 없는 typed-gate CLI입니다.
 `.github/workflow-contract.yml`을 읽어 닫힌 `changed` 또는 `full` 공개
-profile을 선택하고, `--explain`은 실행 없이 유지합니다. Explain과 실제 실행은
+profile을 선택하고, `--explain`은 실행하지 않습니다. PR 후보가 aggregate QA를 소유하며 개발 push와 main은 같은 QA를 반복하지 않습니다. Explain과 실제 실행은
 동일한 context-filtered, exact-once canonical 계획을 사용합니다. `--explain`은
 standalone validator 계획을 출력하며 parity 테스트는 이 계획이 같은 profile에서
 실행되는 validator와 일치하는지 확인합니다. profile은 등록된 regression leaf도
@@ -276,8 +276,9 @@ wrapper는 프로세스나 파일시스템 샌드박스가 아닙니다. Task ev
 유효합니다. before/after Git snapshot이 실패하면 빈 경로 집합을
 성공으로 처리하지 않고 exit `6`으로 종료합니다.
 
-저장소 로컬 Hookify 검증은 `python3 scripts/validation/run-ci-gate.py --profile changed`로
-선택하며 provider 훅은 atomic validator 명령을 복제하지 않습니다.
+provider 훅은 authoring/status 진단을 제공하며 후보 aggregate QA나 atomic
+validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
+[단계 정책](../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)을 따릅니다.
 
 ---
 
@@ -293,37 +294,17 @@ wrapper는 프로세스나 파일시스템 샌드박스가 아닙니다. Task ev
 
 ```bash
 # doc-paths: illustrative
-# 더미 파일을 만들지 않고 실제 로컬 preflight 점검을 실행합니다
-./scripts/validation/validate-docker-compose.sh --preflight
-
-# 여섯 개 공개 suite를 모두 강제합니다
-python3 scripts/validation/run-ci-gate.py --profile full
-
-# traceability, 구현 정합성, docs entry point 점검을 한 번에 강제합니다
-python3 scripts/validation/check-document-links.py --mode all
-
-# Quick Win baseline을 강제합니다
-./scripts/validation/check-quickwin-baseline.sh
-
-# 명시적 compose profile 집합에 대해 Quick Win baseline을 강제합니다
-# 선택한 profile 중 하나라도 baseline 위반이 있으면 실패합니다.
-HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.sh
-
-# 템플릿 + 보안 baseline을 강제합니다
-./scripts/validation/check-template-security-baseline.sh
-
-# 변경 경로에 대한 공개 suite를 실행합니다
-python3 scripts/validation/run-ci-gate.py --profile changed
-
-# 실행 없이 변경 경로 suite-validator 소유권만 설명합니다
+# 실행 없이 실제 변경 입력의 선택을 확인합니다
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
+# 승인된 운영 입력의 non-mutating preflight입니다; PR QA와 live 수용은 별개입니다
+./scripts/validation/validate-docker-compose.sh --preflight
 
-# 승인된 최종 QA 전용; prefix는 task의 검토 범위와 일치해야 합니다
-bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/03.specs/9999-example-change/tasks/tsk-0001-example.md \
-  --allow-prefix docs/ \
-  --allow-prefix scripts/
+# main 준비 PR에 작성한 CHANGELOG 형식을 검사합니다
+python3 scripts/operations/release.py validate --changelog CHANGELOG.md
+
+# full은 일상 commit/push gate가 아니라 범위·예산을 확정한 전체 감사용입니다
+# all-files formatter 또한 별도 승인된 authoring 작업이며 remote QA가 반복하지 않습니다
 
 # advisory Graphify corpus 상태를 보고합니다
 ./scripts/knowledge/report-graphify-health.sh
@@ -383,10 +364,11 @@ synchronizer는 `mutation: check-write`를 사용합니다: 기본 호출은 저
 argv `check_command`와 자신이 소유하는 정확한 tracked `outputs`를 등록합니다.
 `mutation: runtime` 스크립트는 Operations entrypoint입니다. 문서 마이그레이션
 중에는 실행하지 않으며 명시적으로 호출하려면 먼저 현재 Runbook과 선언된 테스트
-evidence가 필요합니다. 두 all-files pre-commit runner는 fixer 훅이 파일을
-다시 쓰기 때문에 `check-write`입니다. `run-ci-precommit.sh`는 일회용 GitHub
-Actions checkout에서만 실행되고, `run-agent-precommit-all-files.sh`는 격리된
-linked worktree에서만 실행됩니다.
+evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 포함하는
+`check-write` 전체 감사이며 승인된 격리 linked worktree에서만 실행됩니다.
+`run-ci-precommit.sh`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에
+체크아웃하는 changed-ref 검증입니다. fixer를 제외하고 등록된 check 모드를
+사용하므로 source bytes를 보존하는 `mutation: none`입니다.
 
 전환(transition) 행에는 non-retain disposition, 구분되는 tracked successor,
 비어 있지 않은 `removal_condition`이 모두 있어야 합니다. active 행은
@@ -430,7 +412,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
-- [Agent Evaluation Harness](../.agents/evaluations/README.md) - canonical model-free evaluation surface; registry와 manifest가 evaluator consumer를 등록합니다
+- [Evaluation navigation](../.agents/evaluations/README.md) - 폐기된 자동 점수 QA와 현재 수동 관측 경계를 안내합니다
 - [현재 워크스페이스 거버넌스](../.agents/README.md)
 - Canonical home의 과거 결정: ADR-0032
 - Document Profile Registry (`docs/99.templates/registry.json`)

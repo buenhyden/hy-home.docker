@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.1.2"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Environment Constraints
@@ -40,9 +40,10 @@ Local repository work, infrastructure execution, secrets handling, and verificat
   do not authenticate an approval.
 - Session bootstrap is repository-context inspection only. It must not run
   `docker ps`, probe live services, or imply runtime readiness.
-- Agent-output evaluation is deterministic and model-free. Use only synthetic
-  fixture content; never load diagnostics dumps, local logs, auth files,
-  credentials, tokens, secret values, or shell history as evaluation input.
+- Retired answer-scoring fixtures are not delivery prerequisites. Scoped manual
+  provider/model comparison uses dated official provider sources or native-schema facts;
+  never load diagnostics dumps, local logs, auth files, credentials, tokens,
+  secret values or shell history as comparison input.
 
 ### 2. Infrastructure Constraints
 

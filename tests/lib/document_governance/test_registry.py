@@ -13,7 +13,7 @@ import unittest
 from unittest import mock
 
 import scripts.lib.document_governance.registry as registry_module
-from scripts.lib.document_governance import metadata_validator
+from scripts.lib.document_governance import metadata_validator, requirement_recovery
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
@@ -198,7 +198,7 @@ class DocumentRegistryTests(unittest.TestCase):
                     "missing-revision", root=root
                 )
 
-    def test_evaluation_migration_registers_only_exact_sources(self) -> None:
+    def test_evaluation_navigation_registers_only_exact_sources(self) -> None:
         from scripts.lib.agent_governance import agent_governance_contract as contract
 
         registry = load_registry()
@@ -207,20 +207,11 @@ class DocumentRegistryTests(unittest.TestCase):
             classify_path(".agents/evaluations/README.md", registry),
         )
         self.assertIsNone(classify_path("evals/README.md", registry))
-        self.assertIn(
-            ".agents/evaluations/fixture-catalog.md",
-            registry.common["inventory_excludes"],
-        )
         self.assertIsNone(classify_path(".agents/evaluations/unknown.md", registry))
         sources = contract.canonical_source_paths(ROOT)
         expected = {
             pathlib.PurePosixPath(".agents/evaluations") / name
-            for name in (
-                "README.md",
-                "agent_output_eval.py",
-                "fixture-catalog.md",
-                "run-agent-output-eval-fixtures.sh",
-            )
+            for name in ("README.md",)
         }
         self.assertEqual(
             expected,
@@ -2773,6 +2764,64 @@ class DocumentRegistryTests(unittest.TestCase):
             ["frontmatter-schema-invalid", "frontmatter-schema-invalid"],
             sorted(finding.code for finding in findings),
         )
+
+
+class RequirementRecoveryBoundaryTests(unittest.TestCase):
+    def test_regular_reader_preserves_utf8_and_crlf_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            payload = "First\r\n한글\r\n".encode()
+            (root / "body.md").write_bytes(payload)
+            self.assertEqual(
+                payload,
+                requirement_recovery._regular_text(root, "body.md").encode("utf-8"),
+            )
+
+    def test_regular_reader_rejects_links_directories_and_oversized_files(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "body.md").write_bytes(b"body\n")
+            (root / "linked.md").symlink_to("body.md")
+            (root / "nested").mkdir()
+            (root / "nested/body.md").write_bytes(b"body\n")
+            (root / "linked-parent").symlink_to("nested", target_is_directory=True)
+            (root / "oversized.md").write_bytes(b"x" * 17)
+            with mock.patch.object(requirement_recovery, "LIMIT", 16):
+                for path in (
+                    "linked.md",
+                    "linked-parent/body.md",
+                    "nested",
+                    "oversized.md",
+                ):
+                    with self.subTest(path=path), self.assertRaises(ValueError):
+                        requirement_recovery._regular_text(root, path)
+
+    def test_public_recovery_rejects_missing_or_invalid_proof_as_registry_error(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            with self.assertRaises(RegistryError) as missing:
+                requirement_recovery.recover_pinned_requirement_baseline(
+                    "HEAD", root=root
+                )
+            self.assertIsInstance(missing.exception.__cause__, ValueError)
+            task = root / "docs/03.specs/0001-example/tasks/tsk-0001-example.md"
+            task.parent.mkdir(parents=True)
+            task.write_text(
+                "---\ntype: sdlc/task\nstatus: draft\n"
+                "artifact_id: SPEC-0001-TSK-0001\n"
+                f"{requirement_recovery.FIELD}: []\n---\n"
+            )
+            subprocess.run(["git", "add", "docs"], cwd=root, check=True)
+            with self.assertRaises(RegistryError) as invalid:
+                requirement_recovery.recover_pinned_requirement_baseline(
+                    "HEAD", root=root
+                )
+            self.assertIsInstance(invalid.exception.__cause__, ValueError)
 
 
 class ProfileLanguageTests(unittest.TestCase):

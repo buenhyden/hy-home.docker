@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 created: "2025-11-12"
 ---
 
@@ -164,13 +164,16 @@ bash scripts/validation/validate-docker-compose.sh
 
 기본 검증은 선언된 각 profile과 POL-0078의 HOME named selection을 각각 렌더링하여 `docker compose config`가 성공하는지, resolved service count가 0이 아닌지, 그리고 각 선택이 공개하는 host port가 충돌하지 않는지 확인합니다. 따라서 HOME 조합에서만 드러나는 profile 간 port 충돌도 검사합니다. `HYHOME_COMPOSE_PROFILES="core dev"`처럼 지정하면 그 조합 하나만 검증합니다. profile 선언은 Compose 구성에서 확인하고, 운영 문서는 [문서 인덱스](docs/README.md)에서 탐색합니다. POL-0078의 HOME selection은 검증 스크립트가 조합 검사에 필요한 machine section만 읽는 입력이며 agent 실행 규칙을 소유하지 않습니다. 검증 스크립트는 누락된 로컬 `.env` 또는 dummy secret 파일을 임시로 만들 수 있으므로, evidence에는 검증 profile과 임시 파일 cleanup 여부를 함께 기록합니다.
 
-#### 5. Repository contract 검증
+#### 5. 변경 영향 확인
 
 ```bash
-python3 scripts/validation/run-ci-gate.py --profile full
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
 ```
 
-이 검증은 docs taxonomy, required README, template inventory, GitHub Actions YAML, duplicate workflow step, script reference, runtime agent/function catalog, Docker image tag policy, tech-stack version drift를 함께 확인합니다.
+이 명령은 실행 없이 현재 변경의 검사 계획을 보여 줍니다. 일반 문서는
+profile·관계·링크·상태 검사를 유지하고, 구현 변경은 관련 회귀를 선택합니다.
+공개 저장소의 후보 QA는 원격 PR에서 한 번 실행하며 개발 push와 main은 이를
+반복하지 않습니다. `full`은 범위·예산을 정한 별도 전체 감사용입니다.
 
 #### 6. 코어 bootstrap과 HOME 선택
 
@@ -226,13 +229,15 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 
 | Workflow | Start Here | Then Update | Verify |
 | --- | --- | --- | --- |
-| 새 요구사항 정의 | `docs/01.requirements/README.md` | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 아키텍처 선택 기록 | `docs/02.architecture/README.md` | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 구현 명세 작성 | `docs/03.specs/README.md` | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 새 요구사항 정의 | `docs/01.requirements/README.md` | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 아키텍처 선택 기록 | `docs/02.architecture/README.md` | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 구현 명세 작성 | `docs/03.specs/README.md` | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
 | 실행 계획/작업 evidence 갱신 | `docs/03.specs/README.md` | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
-| 운영 지식 갱신 | `docs/05.operations/README.md` | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 참고 지식 추가 | `docs/90.references/README.md` | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed` |
-| 템플릿 변경 | `docs/99.templates/README.md` | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed` |
+| 운영 지식 갱신 | `docs/05.operations/README.md` | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 참고 지식 추가 | `docs/90.references/README.md` | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 템플릿 변경 | `docs/99.templates/README.md` | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+
+표의 `--explain`은 계획 조회이며 검증 PASS가 아닙니다. 후보 검증은 quality policy의 원격 PR 경로가 소유합니다.
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
@@ -248,7 +253,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 로컬 또는 CI에서 자주 사용되는 검증 진입점은 다음과 같습니다.
 
 - `bash scripts/validation/validate-docker-compose.sh --preflight` - 실행 전 필수 파일과 디렉터리 점검
-- `python3 scripts/validation/run-ci-gate.py --profile changed` - 변경 경로가 영향을 주는 public suite 실행
+- `python3 scripts/validation/run-ci-gate.py --profile changed --explain` - 변경 경로의 public suite 계획 조회 (QA 실행 없음)
 - `python3 scripts/validation/run-ci-gate.py --profile full` - six public validation suites 전체 검증
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
@@ -259,14 +264,14 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.
 
-GitHub Actions에는 public 품질 profile을 실행하는 hosted job이 없습니다.
-로컬 검증은 public `changed` 또는 `full` profile을 명시적으로 실행합니다.
-각 경로는 profile만 선택하고 validator 명령을 복사하지 않습니다.
+GitHub Actions의 PR 후보 job이 public `changed` profile의 aggregate QA를 한 번
+실행합니다. 로컬 작성 과정은 영향받는 회귀와 명시적 formatting을 수행하고, 선택은
+`--explain`으로 확인합니다. `full`은 별도 승인된 전체 감사 경로입니다.
 
-추가로 `v*.*.*` 태그 push에는 `Release Changelog Check`가 실행되어
-`CHANGELOG.md`에 해당 release tag 항목이 있는지 확인합니다. 이는 tag-only
-release visibility gate이며, remote required-check enforcement 증거로
-간주하지 않습니다.
+향후 릴리스는 main의 준비 PR에서 `CHANGELOG.md`를 작성한 뒤, 승인된 정확한
+revision/version에 대해 단일 수동 workflow가 SemVer tag와 완성된 draft Release를
+게시합니다. 개발 push의 changelog 생성이나 moving tag 생산자는 없습니다.
+실제 릴리스 절차는 [release runbook](docs/05.operations/runbooks/0009-release-management.md)을 따릅니다.
 
 `main-security` job은 main push의 GitHub Actions 보안 분석 결과를 SARIF로 산출합니다. `stale`, `greetings`,
 `pr-labeler` workflow는 triage/community 자동화이며 필수 품질 게이트에는 들지 않습니다.

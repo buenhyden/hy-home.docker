@@ -115,6 +115,7 @@ from scripts.lib.document_governance.requirements import (
 )
 from scripts.lib.document_governance.spec_packages import (
     MAX_SPEC_FILE_BYTES,
+    HistoricalSpecSnapshotContext,
     SpecPackageError,
     _bounded_git,
     load_spec_packages,
@@ -369,6 +370,7 @@ def _validate_repository_contracts(
     *,
     base_ref: str | None = None,
     transition_ref: str | None = None,
+    previous_records: Mapping[str, Record] | None = None,
 ) -> tuple[
     list[Finding],
     frozenset[tuple[str, str, str]],
@@ -399,14 +401,18 @@ def _validate_repository_contracts(
         active_registry = profiles.get("_registry")
         assert isinstance(active_registry, DocumentRegistry)
         findings.extend(_reference_delegation_findings(root, profiles))
-        # One ls-tree plus batched blob reads, not a `git show` per file.
+        # Changed-mode callers already parsed this exact predecessor corpus.
         previous_records = (
-            {
-                record.path.as_posix(): record
-                for record in collect_records_at_ref(root, profiles, transition_ref)
-            }
-            if transition_ref is not None
-            else None
+            previous_records
+            if previous_records is not None
+            else (
+                {
+                    record.path.as_posix(): record
+                    for record in collect_records_at_ref(root, profiles, transition_ref)
+                }
+                if transition_ref is not None
+                else None
+            )
         )
         records = collect_records(
             root,
@@ -439,8 +445,13 @@ def _validate_repository_contracts(
         )
         if spec_package_authority.is_file():
             try:
+                historical_context = HistoricalSpecSnapshotContext()
                 spec_packages = (
-                    load_spec_packages(spec_root, registry=active_registry)
+                    load_spec_packages(
+                        spec_root,
+                        registry=active_registry,
+                        _historical_context=historical_context,
+                    )
                     if spec_root.exists() or spec_root.is_symlink()
                     else ()
                 )
@@ -449,6 +460,7 @@ def _validate_repository_contracts(
                     spec_packages,
                     base_ref=base_ref,
                     registry=active_registry,
+                    _historical_context=historical_context,
                 )
             except SpecPackageError as error:
                 findings.append(
@@ -1863,6 +1875,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     profiles,
                     base_ref=base.merge_base,
                     transition_ref=base.merge_base,
+                    previous_records=(
+                        base_records_by_path if base.merge_base is not None else None
+                    ),
                 )
                 actual_lifecycle_normalization_sources = {
                     path: source for path, source, _ in actual_lifecycle_normalizations

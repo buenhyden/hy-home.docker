@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -29,7 +29,7 @@ created: "2026-05-10"
 - `infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - `scripts/hardening/check-all-hardening.sh`
 - `scripts/validation/check-template-security-baseline.sh`
-- `.github/workflow-contract.yml` `leaf.infrastructure-hardening` gate (로컬 public `changed` 또는 `full` profile이 실행)
+- `.github/workflow-contract.yml` `leaf.infrastructure-hardening` gate (원격 PR의 selected `changed` 검사 또는 별도 승인된 `full` 감사 경로)
 
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
 - **Environments**: 로컬·개발·홈랩 운영과 운영 환경에 준하는 검증

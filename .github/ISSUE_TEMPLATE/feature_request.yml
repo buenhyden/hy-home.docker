@@ -7,13 +7,41 @@ body:
     attributes:
       value: |
         Thanks for taking the time to suggest a feature!
-        **Remember**: All features must go through the spec-driven development process.
+        This Issue owns the request and its priority. Link the Spec contract and
+        execution Task when they exist; do not copy their acceptance criteria,
+        execution evidence or lifecycle here. Projects may show a filtered view.
   - type: input
     id: prd_link
     attributes:
-      label: PRD / ARD Link
+      label: Requirement / Architecture Link
       description:
         Provide a link to the PRD (`docs/01.requirements`) or ARD (`docs/02.architecture/requirements`) for this feature.
+    validations:
+      required: false
+  - type: input
+    id: spec_link
+    attributes:
+      label: Spec Link
+      description: Optional link to the contract under docs/03.specs.
+    validations:
+      required: false
+  - type: input
+    id: task_link
+    attributes:
+      label: Task Link
+      description: Optional link to the execution and acceptance owner.
+    validations:
+      required: false
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Requested Priority
+      description: Maintainers triage priority independently of Task execution status.
+      options:
+        - low
+        - normal
+        - high
+        - urgent
     validations:
       required: true
   - type: textarea
@@ -38,17 +66,6 @@ body:
       description:
         A clear and concise description of what the feature is and what it aims
         to solve.
-    validations:
-      required: true
-  - type: textarea
-    id: acceptance_criteria
-    attributes:
-      label: Acceptance Criteria (Given-When-Then)
-      description: Provide testable acceptance criteria.
-      placeholder: |
-        Given ...
-        When ...
-        Then ...
     validations:
       required: true
   - type: textarea

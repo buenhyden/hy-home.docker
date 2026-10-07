@@ -72,6 +72,9 @@ class WorkflowJobContract:
     permissions: dict[str, str] | None
     runs_on: str
     timeout_minutes: int
+    condition: str | None
+    needs: tuple[str, ...]
+    environment: dict[str, str] | None
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -92,119 +95,6 @@ class WorkflowContract:
     workflows: tuple[WorkflowSpec, ...]
     actions: tuple[ActionDependency, ...]
     gate_registry: GateRegistry
-
-
-PermissionItems = tuple[tuple[str, str], ...]
-
-
-@dataclasses.dataclass(frozen=True, slots=True)
-class _WorkflowPermissionBaseline:
-    top_level: PermissionItems
-    jobs: tuple[tuple[str, PermissionItems | None], ...]
-
-
-_CONTENTS_READ: Final[PermissionItems] = (("contents", "read"),)
-_WORKFLOW_PERMISSION_BASELINES: Final = (
-    (
-        ".github/workflows/ci-quality.yml",
-        _WorkflowPermissionBaseline(
-            top_level=_CONTENTS_READ,
-            jobs=(
-                ("main-security", (("contents", "read"), ("security-events", "write"))),
-                ("update-main-current", (("contents", "write"),)),
-            ),
-        ),
-    ),
-    (
-        ".github/workflows/generate-changelog.yml",
-        _WorkflowPermissionBaseline(
-            top_level=_CONTENTS_READ,
-            jobs=(("changelog", None),),
-        ),
-    ),
-    (
-        ".github/workflows/greetings.yml",
-        _WorkflowPermissionBaseline(
-            top_level=(),
-            jobs=(
-                (
-                    "issue-greeting",
-                    (
-                        ("contents", "read"),
-                        ("issues", "write"),
-                        ("pull-requests", "read"),
-                    ),
-                ),
-                (
-                    "pull-request-greeting",
-                    (
-                        ("contents", "read"),
-                        ("issues", "read"),
-                        ("pull-requests", "write"),
-                    ),
-                ),
-            ),
-        ),
-    ),
-    (
-        ".github/workflows/pr-labeler.yml",
-        _WorkflowPermissionBaseline(
-            top_level=(),
-            jobs=(
-                (
-                    "triage",
-                    (("contents", "read"), ("pull-requests", "write")),
-                ),
-            ),
-        ),
-    ),
-    (
-        ".github/workflows/stale.yml",
-        _WorkflowPermissionBaseline(
-            top_level=(),
-            jobs=(
-                (
-                    "stale",
-                    (
-                        ("contents", "read"),
-                        ("issues", "write"),
-                        ("pull-requests", "write"),
-                    ),
-                ),
-            ),
-        ),
-    ),
-)
-_ACTION_REGISTRY_BASELINE: Final = (
-    (
-        "actions/checkout",
-        "3d3c42e5aac5ba805825da76410c181273ba90b1",
-    ),
-    (
-        "actions/first-interaction",
-        "1c4688942c71f71d4f5502a26ea67c331730fa4d",
-    ),
-    (
-        "actions/labeler",
-        "bf12e9b00b37c5c0ca2b87b79b2daf7891dbda13",
-    ),
-    (
-        "actions/setup-python",
-        "5fda3b95a4ea91299a34e894583c3862153e4b97",
-    ),
-    (
-        "actions/stale",
-        "4391f3da665fdf50b6810c1a66712fb9ba21aa93",
-    ),
-    (
-        "astral-sh/setup-uv",
-        "bec219d24cd3e171d82865faccec33120bb574f4",
-    ),
-    (
-        "github/codeql-action/upload-sarif",
-        "1c5b675653bb5c22dbe9b12b556ec555138e09fd",
-    ),
-)
 
 
 class WorkflowContractError(ValueError):
@@ -756,12 +646,22 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             )
             _expect_exact_keys(
                 job,
-                {"permissions", "runs_on", "timeout_minutes"},
+                {
+                    "permissions",
+                    "runs_on",
+                    "timeout_minutes",
+                    "condition",
+                    "needs",
+                    "environment",
+                },
                 path=workflow_path,
                 field=f"jobs.{job_id}",
             )
             runs_on = job["runs_on"]
             timeout = job["timeout_minutes"]
+            condition = job["condition"]
+            needs = job["needs"]
+            environment = job["environment"]
             if not isinstance(runs_on, str) or not runs_on:
                 raise WorkflowContractError(
                     "contract-schema-invalid",
@@ -778,6 +678,34 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                     workflow_path,
                     "job timeout_minutes must be a bounded integer",
                 )
+            if condition is not None and (
+                not isinstance(condition, str) or not condition
+            ):
+                raise WorkflowContractError(
+                    "contract-schema-invalid",
+                    workflow_path,
+                    "job condition must be null or a non-empty string",
+                )
+            if not isinstance(needs, list) or any(
+                not isinstance(item, str) or not item for item in needs
+            ):
+                raise WorkflowContractError(
+                    "contract-schema-invalid",
+                    workflow_path,
+                    "job needs must be a string list",
+                )
+            if environment is not None and (
+                not isinstance(environment, dict)
+                or any(
+                    not isinstance(key, str) or not isinstance(value, str) or not key
+                    for key, value in environment.items()
+                )
+            ):
+                raise WorkflowContractError(
+                    "contract-schema-invalid",
+                    workflow_path,
+                    "job environment must be null or a string mapping",
+                )
             jobs[job_id] = WorkflowJobContract(
                 permissions=_permissions(
                     job["permissions"],
@@ -787,6 +715,13 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
                 ),
                 runs_on=runs_on,
                 timeout_minutes=timeout,
+                condition=condition,
+                needs=tuple(needs),
+                environment=(
+                    {str(key): str(value) for key, value in environment.items()}
+                    if isinstance(environment, dict)
+                    else None
+                ),
             )
         workflows.append(
             WorkflowSpec(
@@ -896,13 +831,13 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         if workflow.classification == "required-quality"
     ]
     if len(required_workflows) != 1 or set(required_workflows[0].jobs) != {
+        "candidate-quality",
         "main-security",
-        "update-main-current",
     }:
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "exactly one required-quality workflow with the two owned jobs is required",
+            "exactly one required-quality workflow with candidate and main security jobs is required",
         )
     return WorkflowContract(
         schema_version=2,
@@ -961,37 +896,30 @@ def _workflow_projection_findings(
                 "required workflow defaults.run is forbidden",
             )
         )
-    expected_jobs: dict[str, tuple[str, dict[str, str] | None]] = {
-        "main-security": (
-            "github.event_name == 'push' && github.ref == 'refs/heads/main'",
-            None,
+    required = next(
+        (
+            workflow
+            for workflow in contract.workflows
+            if workflow.path == path and workflow.classification == "required-quality"
         ),
-        "update-main-current": (
-            "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
-            None,
-        ),
-    }
-    checkout = next(
-        (action for action in contract.actions if action.action == "actions/checkout"),
         None,
     )
-    expected_checkout = (
-        {
-            "name": "Checkout repository",
-            "uses": f"actions/checkout@{checkout.sha}",
-            "with": {"persist-credentials": False, "fetch-depth": 0},
-        }
-        if checkout is not None
-        else None
-    )
+    if required is None:
+        return (
+            _finding(
+                "workflow-gate-projection-invalid",
+                path,
+                "required workflow has no typed contract owner",
+            ),
+        )
+    action_shas = {item.action: item.sha for item in contract.actions}
     for raw_job_id, raw_job in raw_jobs.items():
         if not isinstance(raw_job_id, str) or not isinstance(raw_job, dict):
             continue
-        expected_job = expected_jobs.get(raw_job_id)
+        expected_job = required.jobs.get(raw_job_id)
         if expected_job is None:
             continue
-        admitted_job_condition, admitted_job_environment = expected_job
-        if raw_job.get("if") != admitted_job_condition:
+        if raw_job.get("if") != expected_job.condition:
             findings.append(
                 _finding(
                     "workflow-gate-execution-context-invalid",
@@ -1008,7 +936,7 @@ def _workflow_projection_findings(
                     f"job {raw_job_id} defaults.run is forbidden",
                 )
             )
-        if raw_job.get("env") != admitted_job_environment:
+        if raw_job.get("env") != expected_job.environment:
             findings.append(
                 _finding(
                     "workflow-gate-environment-invalid",
@@ -1026,152 +954,129 @@ def _workflow_projection_findings(
                 )
             )
             continue
-        if raw_job_id in {"main-security", "update-main-current"}:
-            expected_keys = {
-                "if",
-                "permissions",
-                "runs-on",
-                "timeout-minutes",
-                "steps",
-            } | ({"needs"} if raw_job_id == "update-main-current" else set())
-            if set(raw_job) != expected_keys:
-                findings.append(
-                    _finding(
-                        "workflow-gate-execution-context-invalid",
-                        path,
-                        f"job {raw_job_id} contains unadmitted execution controls",
-                    )
+        raw_needs = raw_job.get("needs")
+        normalized_needs = (
+            ()
+            if raw_needs is None
+            else (raw_needs,)
+            if isinstance(raw_needs, str)
+            else tuple(raw_needs)
+            if isinstance(raw_needs, list)
+            else None
+        )
+        if normalized_needs != expected_job.needs:
+            findings.append(
+                _finding(
+                    "workflow-gate-dependency-invalid",
+                    path,
+                    f"job {raw_job_id} dependencies differ from the typed contract",
                 )
-            action_shas = {item.action: item.sha for item in contract.actions}
-            if raw_job_id == "main-security":
-                expected_steps = [
-                    expected_checkout,
-                    {
-                        "name": "Set up Python",
-                        "uses": f"actions/setup-python@{action_shas.get('actions/setup-python')}",
-                        "with": {"python-version": "3.14"},
-                    },
-                    {
-                        "name": "Install uv",
-                        "uses": f"astral-sh/setup-uv@{action_shas.get('astral-sh/setup-uv')}",
-                    },
-                    {
-                        "name": "Audit merged workflow revision",
-                        "run": "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
-                    },
-                    {
-                        "name": "Upload SARIF file",
-                        "uses": f"github/codeql-action/upload-sarif@{action_shas.get('github/codeql-action/upload-sarif')}",
-                        "with": {"sarif_file": "results.sarif", "category": "zizmor"},
-                    },
-                ]
-                if "needs" in raw_job:
-                    findings.append(
-                        _finding(
-                            "workflow-gate-dependency-invalid",
-                            path,
-                            "main-security must run independently",
-                        )
-                    )
-            else:
-                expected_steps = [
-                    {
-                        "name": "Checkout repository",
-                        "uses": f"actions/checkout@{action_shas.get('actions/checkout')}",
-                        "with": {"persist-credentials": True, "fetch-depth": 0},
-                    },
-                    {
-                        "name": "Move audited channel tag",
-                        "run": "bash scripts/operations/update-main-current-tag.sh",
-                    },
-                ]
-                if raw_job.get("needs") != "main-security":
-                    findings.append(
-                        _finding(
-                            "workflow-gate-dependency-invalid",
-                            path,
-                            "channel tag must depend on main-security",
-                        )
-                    )
-            if steps != expected_steps:
+            )
+        admitted_keys = {
+            "if",
+            "permissions",
+            "runs-on",
+            "timeout-minutes",
+            "steps",
+        }
+        if expected_job.needs:
+            admitted_keys.add("needs")
+        if expected_job.environment is not None:
+            admitted_keys.add("env")
+        if set(raw_job) != admitted_keys:
+            findings.append(
+                _finding(
+                    "workflow-gate-execution-context-invalid",
+                    path,
+                    f"job {raw_job_id} contains unadmitted execution controls",
+                )
+            )
+
+        steps_by_name = {
+            step.get("name"): step
+            for step in steps
+            if isinstance(step, dict) and isinstance(step.get("name"), str)
+        }
+        checkout = steps_by_name.get("Checkout repository")
+        if checkout != {
+            "name": "Checkout repository",
+            "uses": f"actions/checkout@{action_shas.get('actions/checkout')}",
+            "with": {"persist-credentials": False, "fetch-depth": 0},
+        }:
+            findings.append(
+                _finding(
+                    "workflow-gate-projection-mismatch",
+                    path,
+                    f"job {raw_job_id} checkout differs from the audited projection",
+                )
+            )
+        if raw_job_id == "candidate-quality":
+            commands = {
+                step.get("run")
+                for step in steps
+                if isinstance(step, dict) and isinstance(step.get("run"), str)
+            }
+            required_commands = {
+                'python3 scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
+                "python3 scripts/validation/run-ci-gate.py --profile changed",
+            }
+            if not required_commands <= commands:
                 findings.append(
                     _finding(
                         "workflow-gate-projection-mismatch",
                         path,
-                        f"job {raw_job_id} steps differ from its audited projection",
+                        "candidate job must select prerequisites and run the changed profile once",
                     )
                 )
-            continue
+            node_step = steps_by_name.get("Set up Node.js")
+            if not isinstance(node_step, dict) or node_step.get("if") != (
+                "steps.prerequisites.outputs.node == 'true'"
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "candidate Node setup must be selected by typed prerequisites",
+                    )
+                )
+        elif raw_job_id == "main-security":
+            if tuple(step.get("name") for step in steps if isinstance(step, dict)) != (
+                "Checkout repository",
+                "Set up Python",
+                "Install uv",
+                "Audit merged workflow revision",
+                "Upload SARIF file",
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "main security steps differ from the required audit sequence",
+                    )
+                )
+            commands = [
+                step.get("run")
+                for step in steps
+                if isinstance(step, dict) and isinstance(step.get("run"), str)
+            ]
+            if commands != [
+                "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif"
+            ] or steps_by_name.get("Upload SARIF file", {}).get("uses") != (
+                "github/codeql-action/upload-sarif@"
+                f"{action_shas.get('github/codeql-action/upload-sarif')}"
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "main security job must retain its single audit and SARIF upload",
+                    )
+                )
     return tuple(findings)
 
 
 def _finding(code: str, path: str, message: str) -> WorkflowFinding:
     return WorkflowFinding(code=code, path=path, message=message)
-
-
-def _permission_baseline_findings(
-    documents_by_path: dict[str, WorkflowDocument],
-    specs_by_path: dict[str, WorkflowSpec],
-) -> tuple[WorkflowFinding, ...]:
-    findings: list[WorkflowFinding] = []
-    baselines_by_path = dict(_WORKFLOW_PERMISSION_BASELINES)
-    baseline_paths = set(baselines_by_path)
-    if set(documents_by_path) != baseline_paths or set(specs_by_path) != baseline_paths:
-        findings.append(
-            _finding(
-                "workflow-permission-baseline-invalid",
-                WORKFLOW_CONTRACT.as_posix(),
-                "workflow permission ownership differs from the code baseline",
-            )
-        )
-
-    for path in sorted(baseline_paths & set(documents_by_path) & set(specs_by_path)):
-        baseline = baselines_by_path[path]
-        document = documents_by_path[path]
-        spec = specs_by_path[path]
-        expected_top_level = dict(baseline.top_level)
-        baseline_valid = (
-            spec.permissions == expected_top_level
-            and "permissions" in document.data
-            and document.data["permissions"] == expected_top_level
-        )
-
-        expected_jobs = dict(baseline.jobs)
-        raw_jobs = document.data.get("jobs")
-        if (
-            set(spec.jobs) != set(expected_jobs)
-            or not isinstance(raw_jobs, dict)
-            or set(raw_jobs) != set(expected_jobs)
-        ):
-            baseline_valid = False
-        else:
-            for job_id, permission_items in expected_jobs.items():
-                raw_job = raw_jobs.get(job_id)
-                contract_job = spec.jobs.get(job_id)
-                if not isinstance(raw_job, dict) or contract_job is None:
-                    baseline_valid = False
-                    continue
-                if permission_items is None:
-                    if contract_job.permissions is not None or "permissions" in raw_job:
-                        baseline_valid = False
-                    continue
-                expected_permissions = dict(permission_items)
-                if (
-                    contract_job.permissions != expected_permissions
-                    or "permissions" not in raw_job
-                    or raw_job["permissions"] != expected_permissions
-                ):
-                    baseline_valid = False
-
-        if not baseline_valid:
-            findings.append(
-                _finding(
-                    "workflow-permission-baseline-invalid",
-                    path,
-                    "workflow permissions differ from the code baseline",
-                )
-            )
-    return tuple(findings)
 
 
 def validate_workflows(
@@ -1188,7 +1093,6 @@ def validate_workflows(
         return (_finding(error.code, error.path, error.message),)
     documents_by_path = {document.path: document for document in documents}
     specs_by_path = {spec.path: spec for spec in contract.workflows}
-    findings.extend(_permission_baseline_findings(documents_by_path, specs_by_path))
     for path in sorted(set(specs_by_path) - set(documents_by_path)):
         findings.append(
             _finding("workflow-missing", path, "registered workflow is missing")
@@ -1311,6 +1215,30 @@ def validate_workflows(
                 )
             )
         if spec.classification == "required-quality":
+            if spec.permissions != {"contents": "read"}:
+                findings.append(
+                    _finding(
+                        "workflow-required-permission-invalid",
+                        path,
+                        "required quality workflows must be read-only at top level",
+                    )
+                )
+            for required_job_id, required_job in spec.jobs.items():
+                permissions = required_job.permissions or {}
+                writes = {
+                    scope for scope, level in permissions.items() if level == "write"
+                }
+                admitted_writes = (
+                    {"security-events"} if required_job_id == "main-security" else set()
+                )
+                if writes != admitted_writes:
+                    findings.append(
+                        _finding(
+                            "workflow-required-permission-invalid",
+                            path,
+                            f"job {required_job_id} has unadmitted write permissions",
+                        )
+                    )
             findings.extend(
                 _workflow_projection_findings(
                     path,
@@ -1350,6 +1278,40 @@ def validate_workflows(
                         "workflow-job-timeout-mismatch",
                         path,
                         f"job {job_id} timeout differs from the contract",
+                    )
+                )
+            if raw_job.get("if") != expected_job.condition:
+                findings.append(
+                    _finding(
+                        "workflow-job-condition-mismatch",
+                        path,
+                        f"job {job_id} condition differs from the contract",
+                    )
+                )
+            raw_needs = raw_job.get("needs")
+            normalized_needs = (
+                ()
+                if raw_needs is None
+                else (raw_needs,)
+                if isinstance(raw_needs, str)
+                else tuple(raw_needs)
+                if isinstance(raw_needs, list)
+                else None
+            )
+            if normalized_needs != expected_job.needs:
+                findings.append(
+                    _finding(
+                        "workflow-job-needs-mismatch",
+                        path,
+                        f"job {job_id} dependencies differ from the contract",
+                    )
+                )
+            if raw_job.get("env") != expected_job.environment:
+                findings.append(
+                    _finding(
+                        "workflow-job-environment-mismatch",
+                        path,
+                        f"job {job_id} environment differs from the contract",
                     )
                 )
             steps = raw_job.get("steps")
@@ -1465,17 +1427,6 @@ def validate_workflows(
                     continue
                 action_consumers.setdefault((action, sha), set()).add(path)
 
-    registry_identities = tuple(
-        (action.action, action.sha) for action in contract.actions
-    )
-    if registry_identities != _ACTION_REGISTRY_BASELINE:
-        findings.append(
-            _finding(
-                "action-registry-baseline-invalid",
-                WORKFLOW_CONTRACT.as_posix(),
-                "Action registry identities differ from the code baseline",
-            )
-        )
     registry = {(action.action, action.sha): action for action in contract.actions}
     for action in contract.actions:
         registry_path = WORKFLOW_CONTRACT.as_posix()

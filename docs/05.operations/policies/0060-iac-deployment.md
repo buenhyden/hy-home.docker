@@ -1,10 +1,10 @@
 ---
 title: "IaC Deployment Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0060"
 parent_ids:
@@ -47,7 +47,7 @@ Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [migrat
 ### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 - OpenTofu/Terrakube guide/runbook과 compose service names가 일치하는지 검토한다.
 
 ### Review Cadence

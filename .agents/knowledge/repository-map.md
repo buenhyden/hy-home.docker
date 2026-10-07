@@ -1,12 +1,12 @@
 ---
 title: "Repository Authority Map"
-version: "0.4.0"
+version: "0.5.0"
 type: "governance/control"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-09-06"
-observed_at: "2026-09-29"
+observed_at: "2026-10-07"
 review_cycle: "on-surface-change"
 ---
 
@@ -35,7 +35,7 @@ contents, user-global provider settings, and anything outside this repository.
 | `.agents/skills/**` | `SKILL.md` per skill id | explicit invocation only; discovery grants nothing | agent governance contract, renderer parity |
 | `.agents/knowledge/**` | this category's index | routing only; an obligation here is a defect | document metadata, agent governance contract |
 | `.agents/prompts/**` | this category's index | contract envelope only; no procedure body | document metadata, agent governance contract |
-| `.agents/governance/providers/registry.yaml` | the Provider Registry | provider, model, permission and hook facts, plus the `canonical_sources` inventory every canonical file must appear in, work profiles, projections, evaluation binding and `generated_roots`; it owns no agent governance policy | agent governance contract |
+| `.agents/governance/providers/registry.yaml` | the Provider Registry | provider, model, permission and hook facts, plus the `canonical_sources` inventory every canonical file must appear in, work profiles, projections, and `generated_roots`; it owns no agent governance policy | agent governance contract |
 | `.claude/**`, `.codex/**` | authored `provider.md` per provider; everything else is generated or native mechanics | canonical contract plus authored/native distinction | `provider_surface_renderer.py --check` |
 | `docs/01.requirements/**` | the Requirement Package | solution-independent needs only | metadata, links, traceability |
 | `docs/02.architecture/**` | Description for structure, ADR for one decision | accepted decisions are superseded, never rewritten | metadata, links, taxonomy tests |
@@ -50,7 +50,7 @@ contents, user-global provider settings, and anything outside this repository.
 | `scripts/lib/**` | importable domain logic | focused tests | `tests/lib/**` |
 | `scripts/operations/**`, `scripts/validation/**` | executable entrypoints | focused tests plus harness validation | `tests/validation/**` |
 | `tests/**` | `tests/lib` for library behavior, `tests/validation` for CLI | production code never reads `tests/` | the suites themselves |
-| `.agents/evaluations/**` | deterministic model-free agent-output evaluation | synthetic inputs; data is not automatically loaded as instructions | agent-output eval fixture gate, exact canonical inventory and manifest |
+| `.agents/evaluations/README.md` | paired Skill evaluation evidence boundary | current README only; no recurring scorer or runtime authority | quality policy and canonical document inventory |
 | `infra/**`, `docker-compose.yml` | the Compose layer | scoped Compose validation and Task approval | `validate-docker-compose.sh`, hardening checks |
 | `secrets/**` | path and policy context only | metadata-only evidence; values are never read | template security baseline |
 | `graphify-out/**` | untracked local navigation snapshot | advisory when its commit differs from HEAD, and absent until rebuilt | regenerate with the CLI; never hand-edit or track |
@@ -87,6 +87,14 @@ list restates it; a disagreement between them is a defect here.
   files exist and who consumes them. Neither repeats the other.
 
 ## Evidence
+
+Current observation on 2026-10-07: the approved retirement input in
+`codex/qa-delivery-rationalization` removes the scoring producer and exclusive
+callers. The retained README describes paired Skill evidence, while current quality
+policy owns mandatory QA and agentic policy owns evaluation authority. No paired
+harness outputs or aggregate results were found in the current tree or ref history.
+[The current Task](../../docs/03.specs/0211-qa-scope-and-delivery-rationalization/tasks/tsk-0001-qa-scope-and-delivery-rationalization.md)
+records exact patch identity and authorization. Historical reads below are provenance.
 
 ### Provenance
 
