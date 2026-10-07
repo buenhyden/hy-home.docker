@@ -152,6 +152,8 @@ services:
       traefik.enable: 'false'
 
   couchdb-cluster-init:
+    labels:
+      <<: *tier-label
     profiles:
       - couchdb
     extends:

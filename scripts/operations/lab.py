@@ -70,29 +70,44 @@ def render(docker: str, env_file: pathlib.Path, compose_file: str | None) -> dic
 def footprint(model: dict) -> dict:
     """Names, ports, writable state paths and declared limits of one model."""
     project = model.get("name", "")
-    containers, ports, paths = set(), set(), set()
+    containers, ports, paths, state, written = set(), set(), set(), set(), set()
     cpus = memory = 0.0
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
-        containers.add(service.get("container_name") or f"{project}-{name}-1")
+        if service.get("container_name"):
+            containers.add(service["container_name"])
+        else:
+            containers |= {f"{project}-{name}-{i}" for i in range(1, replicas + 1)}
         for port in service.get("ports", []) or []:
             if port.get("published"):
                 ports.add(f"{port.get('host_ip', '0.0.0.0')}:{port['published']}")
         for mount in service.get("volumes", []) or []:
-            if mount.get("type") == "bind" and not mount.get("read_only"):
-                paths.add(os.path.normpath(mount["source"]))
+            if mount.get("read_only"):
+                continue
+            if mount.get("type") == "bind":
+                # realpath: a symlinked root must not hide an overlap.
+                path = os.path.realpath(mount["source"])
+                paths.add(path)
+                state.add(path)
+            elif mount.get("type") == "volume":
+                written.add(mount.get("source"))
         cpus += float(service.get("cpus") or 0) * replicas
         memory += int(service.get("mem_limit") or 0) * replicas
-    for volume in (model.get("volumes") or {}).values():
+    for key, volume in (model.get("volumes") or {}).items():
         device = (volume.get("driver_opts") or {}).get("device")
         if device:
-            paths.add(os.path.normpath(device))
+            path = os.path.realpath(device)
+            paths.add(path)
+            # Read-only inputs (a scenario source) are never cleanup targets.
+            if key in written:
+                state.add(path)
     networks = {net.get("name") for net in (model.get("networks") or {}).values()}
     return {
         "project": project,
         "containers": containers,
         "ports": ports,
         "paths": paths,
+        "state": state,
         "networks": networks - {None},
         "cpus": cpus,
         "memory": memory,
@@ -268,8 +283,9 @@ def cmd_up(args, env) -> int:
         print(json.dumps(report, indent=2))
         return 3
     lab = selected[args.lab]
-    for path in lab["paths"]:
-        if pathlib.Path(path).is_relative_to(ledger.parent):
+    data_root = pathlib.Path(os.path.realpath(ledger.parent))
+    for path in lab["state"]:
+        if pathlib.Path(path).is_relative_to(data_root):
             pathlib.Path(path).mkdir(parents=True, exist_ok=True)
     now = dt.datetime.now(dt.UTC)
     entry = {
@@ -283,7 +299,7 @@ def cmd_up(args, env) -> int:
         "cleanup": {
             "containers": sorted(lab["containers"]),
             "networks": sorted(lab["networks"]),
-            "paths": sorted(lab["paths"]),
+            "paths": sorted(lab["state"]),
         },
     }
     ledger.mkdir(parents=True, exist_ok=True)
@@ -305,13 +321,12 @@ def stop(args, env, name: str) -> int:
     if not target.is_file():
         raise LabError(f"no ledger entry for {name}; it was not started by lab.py")
     entry = json.loads(target.read_text(encoding="utf-8"))
-    # Only this project and no -v: data and volumes stay for review.
-    command = [
-        *compose_command(args, name, entry["project"]),
-        "down",
-        "--timeout",
-        "30",
-    ]
+    if not str(entry.get("project", "")).startswith(LAB_PROJECT_PREFIX):
+        raise LabError(f"ledger for {name} names a non-LAB project")
+    # By project label only (no render, so lost inputs cannot block a stop),
+    # and no -v: data and volumes stay for review.
+    command = [args.docker, "compose", "-p", entry["project"], "down"]
+    command += ["--timeout", "30"]
     result = run(command)
     entry["state"] = "stopped" if result.returncode == 0 else "stop-failed"
     entry["stopped_at"] = dt.datetime.now(dt.UTC).isoformat()
@@ -337,7 +352,12 @@ def cmd_reap(args, env) -> int:
     code = 0
     for entry in entries(env):
         expired = dt.datetime.fromisoformat(entry["expires_at"]) <= now
-        if expired and entry["state"] in {"starting", "running", "failed"}:
+        if expired and entry["state"] in {
+            "starting",
+            "running",
+            "failed",
+            "stop-failed",
+        }:
             code = max(code, stop(args, env, entry["lab"]))
     return code
 
@@ -377,6 +397,10 @@ def main(argv: list[str] | None = None) -> int:
     except LabError as exc:
         print(f"lab.py: {exc}", file=sys.stderr)
         return exc.code
+    except (KeyError, TypeError, ValueError) as exc:
+        # Bad env values or a hand-edited ledger are invalid input, not a crash.
+        print(f"lab.py: invalid input: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

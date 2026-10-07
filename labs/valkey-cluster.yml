@@ -73,7 +73,7 @@ services:
       PORT: 6379
       NODE_NAME: valkey-node-0
     ports:
-      - '127.0.0.1:${LAB_VALKEY0_HOST_PORT:-17379}:6379'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY0_HOST_PORT:-17379}:6379'
     expose:
       - 16379
     volumes:
@@ -91,7 +91,7 @@ services:
       PORT: 6380
       NODE_NAME: valkey-node-1
     ports:
-      - '127.0.0.1:${LAB_VALKEY1_HOST_PORT:-17380}:6380'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY1_HOST_PORT:-17380}:6380'
     expose:
       - 16380
     volumes:
@@ -109,7 +109,7 @@ services:
       PORT: 6381
       NODE_NAME: valkey-node-2
     ports:
-      - '127.0.0.1:${LAB_VALKEY2_HOST_PORT:-17381}:6381'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY2_HOST_PORT:-17381}:6381'
     expose:
       - 16381
     volumes:
@@ -127,7 +127,7 @@ services:
       PORT: 6382
       NODE_NAME: valkey-node-3
     ports:
-      - '127.0.0.1:${LAB_VALKEY3_HOST_PORT:-17382}:6382'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY3_HOST_PORT:-17382}:6382'
     expose:
       - 16382
     volumes:
@@ -145,7 +145,7 @@ services:
       PORT: 6383
       NODE_NAME: valkey-node-4
     ports:
-      - '127.0.0.1:${LAB_VALKEY4_HOST_PORT:-17383}:6383'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY4_HOST_PORT:-17383}:6383'
     expose:
       - 16383
     volumes:
@@ -163,7 +163,7 @@ services:
       PORT: 6384
       NODE_NAME: valkey-node-5
     ports:
-      - '127.0.0.1:${LAB_VALKEY5_HOST_PORT:-17384}:6384'
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_VALKEY5_HOST_PORT:-17384}:6384'
     expose:
       - 16384
     volumes:

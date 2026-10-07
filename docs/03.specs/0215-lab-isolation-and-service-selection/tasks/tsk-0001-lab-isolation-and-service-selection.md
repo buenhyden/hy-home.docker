@@ -169,6 +169,39 @@ not changed here because another worker is editing
 `infra/tech-stack.versions.json`. The bind-volume ownership of the MongoDB
 LAB therefore stays unverified at runtime.
 
+### Independent Review and Fixes
+
+A read-only review of the branch found eight important and eight minor
+items. Each change below has a test that failed against the previous code
+(RED) and passes now, except where stated:
+
+| Item | Change |
+| --- | --- |
+| Tier test passed a missing label | The test now requires `hy-home.tier: lab`; four labelless services (`mongo-key-generator`, `mongo-init`, `mongodb-exporter`, `couchdb-cluster-init`) got the label |
+| `min.insync.replicas=2` was documented but unset | `KAFKA_MIN_INSYNC_REPLICAS: 2` on the LAB brokers; a test pins it and HOME replication factor 1 |
+| MongoDB guide said no host port | Names the Mongo Express loopback port |
+| Symlinks defeated the HOME overlap check | `footprint` resolves real paths; the mkdir guard compares with the resolved data root |
+| mkdir guard was untested | A volume outside `LAB_DATA_DIR` is not created |
+| `reap` skipped `stop-failed` | `reap` retries it |
+| A read-only input was a cleanup target | Only volumes mounted read-write and writable binds enter the ledger cleanup list; read-only inputs still count for collisions |
+| REQ-0004 use case still promised an HA cluster | STORY-01/02, scope and risks now describe single nodes recovered by backup |
+| Ledger could name any project | `down` refuses a non-`hy-home-lab-` project |
+| Replica names stopped at `-1` | Every replica name is listed |
+| Valkey ignored `LAB_HOST_BIND_IP` | All six ports use it |
+| Bad env or ledger values crashed | Exit 2 |
+| `down` re-rendered the LAB | `down` stops by project label, so lost inputs cannot block it |
+| Ledger-before-start and own-project budget exclusion were untested | Both are pinned |
+| Bind ownership for MongoDB and OpenSearch | Recorded as unverified in both LAB guides with the uid each process writes as |
+
+Not changed: port ranges are compared as strings (no LAB or root service
+publishes a range), the manifest names one consumer (one proving reference
+is required), and the `$(` in `labs/postgresql-ha.yml` predates this change
+and renders.
+
+The Valkey LAB was run again with the fixed controller: `up` exit 0,
+`cluster_state:ok`, ledger with 6 state paths and 8 containers, `down` by
+project label exit 0, no container or network left, 6 data directories kept.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -177,7 +210,7 @@ LAB therefore stays unverified at runtime.
 | LAB boundary | 2 | W2 | Boundary tests RED then GREEN; LAB renders | Working tree | PASS | W2 LAB Boundaries and Lease Controller | accepted |
 | Controller | 3 | W2 | Unit tests, mutations, real Docker run of `valkey-cluster` | Synthetic LAB roots | PASS | W2 LAB Boundaries and Lease Controller | accepted |
 | Selection rules | 4 | W3 | Policy text; catalog and link checks; changed-profile gate | Working tree | PASS | W3 Budget, Selection and Disposition Rules | accepted |
-| Records | 5 | W4 | Local gate and review | Pending | NOT_RUN | Pending | pending |
+| Records | 5 | W4 | Clean-worktree changed-profile gate and staged lint per unit; independent review; HOME, data moves and MongoDB runtime stay `NOT_RUN` | Working tree at each unit | PASS | W4 HA Wording, Handoffs and Final Validation | accepted |
 
 ## Review and Completion
 

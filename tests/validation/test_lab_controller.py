@@ -50,16 +50,24 @@ class FootprintTests(unittest.TestCase):
                 "a": service("lab-a", [("127.0.0.1", "35000")], ["/lab/x/a"]),
                 "b": service(cpus=0.5, memory=2**20, replicas=3),
             },
-            volumes={"v": {"driver_opts": {"device": "/lab/x/v"}}},
+            volumes={
+                "v": {"driver_opts": {"device": "/lab/x/v"}},
+                "s": {"driver_opts": {"device": "/lab/x/scenario"}},
+            },
             networks={"n": {"name": "hy-home-lab-x-core"}},
         )
-        rendered["services"]["a"]["volumes"].append(
-            {"type": "bind", "source": "/repo/config", "read_only": True}
-        )
+        rendered["services"]["a"]["volumes"] += [
+            {"type": "bind", "source": "/repo/config", "read_only": True},
+            {"type": "volume", "source": "v"},
+            {"type": "volume", "source": "s", "read_only": True},
+        ]
         found = lab.footprint(rendered)
-        self.assertEqual({"lab-a", "hy-home-lab-x-b-1"}, found["containers"])
+        replicas = {f"hy-home-lab-x-b-{i}" for i in (1, 2, 3)}
+        self.assertEqual({"lab-a"} | replicas, found["containers"])
         self.assertEqual({"127.0.0.1:35000"}, found["ports"])
-        self.assertEqual({"/lab/x/a", "/lab/x/v"}, found["paths"])
+        self.assertEqual({"/lab/x/a", "/lab/x/v", "/lab/x/scenario"}, found["paths"])
+        # A read-only input collides like state but is never a cleanup target.
+        self.assertEqual({"/lab/x/a", "/lab/x/v"}, found["state"])
         self.assertEqual({"hy-home-lab-x-core"}, found["networks"])
         self.assertEqual(2.5, found["cpus"])
         self.assertEqual(2**30 + 3 * 2**20, found["memory"])
@@ -118,6 +126,23 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertIn("host port 127.0.0.1:5432 also in root", text)
         self.assertIn("data path /data/home overlaps root", text)
 
+    def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            home = pathlib.Path(tmp) / "home-data"
+            home.mkdir()
+            alias = pathlib.Path(tmp) / "lab-data"
+            alias.symlink_to(home)
+            root = lab.footprint(
+                model("hy-home-infra", {"pg": service("mng-pg", binds=[str(home)])})
+            )
+            sneaky = lab.footprint(
+                model(
+                    "hy-home-lab-s", {"x": service("lab-s", binds=[str(alias / "x")])}
+                )
+            )
+            text = "\n".join(lab.collisions({"s": sneaky}, root, []))
+            self.assertIn("overlaps root", text)
+
     def test_running_name_and_port_are_refused_but_own_project_is_not(self) -> None:
         running = [
             {"name": "lab-one-x", "project": "other", "ports": {"0.0.0.0:35001"}},
@@ -144,6 +169,11 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertEqual(2, len(lab.budget({"one": self.lab1}, running, env)))
         with self.assertRaises(lab.LabError):
             lab.budget({"one": self.lab1}, running, {"LAB_HOST_BUDGET_CPUS": ""})
+        # The selected LAB's own running containers are not counted twice.
+        own = [{"project": "hy-home-lab-one", "cpus": 50.0, "memory": 2**40}]
+        env["LAB_HOST_BUDGET_CPUS"] = "1"
+        env["LAB_HOST_BUDGET_MEMORY_MIB"] = "1024"
+        self.assertEqual([], lab.budget({"one": self.lab1}, own, env))
 
 
 class LifecycleTests(unittest.TestCase):
@@ -157,11 +187,19 @@ class LifecycleTests(unittest.TestCase):
             encoding="utf-8",
         )
         self.calls: list[list[str]] = []
+        self.outside = pathlib.Path(self.tmp.name) / "outside"
         self.rendered = model(
             "hy-home-lab-cassandra",
             {"c": service("lab-cassandra-c", [("127.0.0.1", "39042")])},
-            volumes={"v": {"driver_opts": {"device": str(self.data / "cassandra")}}},
+            volumes={
+                "v": {"driver_opts": {"device": str(self.data / "cassandra")}},
+                "o": {"driver_opts": {"device": str(self.outside)}},
+            },
         )
+        self.rendered["services"]["c"]["volumes"] += [
+            {"type": "volume", "source": "v"},
+            {"type": "volume", "source": "o"},
+        ]
         self.compose_rc = 0
 
     def tearDown(self) -> None:
@@ -169,6 +207,9 @@ class LifecycleTests(unittest.TestCase):
 
     def fake_run(self, command, **kwargs):
         self.calls.append(command)
+        if command[-3:] == ["up", "-d", "--wait"]:
+            # The ledger must exist before anything starts.
+            self.assertEqual("starting", self.ledger()["state"])
         if "config" in command:
             payload = self.rendered if "-f" in command else model("hy-home-infra", {})
             return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
@@ -203,16 +244,22 @@ class LifecycleTests(unittest.TestCase):
         entry = self.ledger()
         self.assertEqual("running", entry["state"])
         self.assertEqual("hy-home-lab-cassandra", entry["project"])
-        self.assertEqual([str(self.data / "cassandra")], entry["cleanup"]["paths"])
+        self.assertEqual(
+            sorted([str(self.data / "cassandra"), str(self.outside)]),
+            entry["cleanup"]["paths"],
+        )
         self.assertTrue((self.data / "cassandra").is_dir())
+        # Only paths under LAB_DATA_DIR are created.
+        self.assertFalse(self.outside.exists())
         up = self.calls[-1]
         self.assertEqual(["-p", "hy-home-lab-cassandra"], up[2:4])
         self.assertEqual(["up", "-d", "--wait"], up[-3:])
 
         self.assertEqual(0, self.main("down", "cassandra"))
         down = self.calls[-1]
-        self.assertEqual(["-p", "hy-home-lab-cassandra"], down[2:4])
+        self.assertEqual(["-p", "hy-home-lab-cassandra", "down"], down[2:5])
         self.assertEqual(["down", "--timeout", "30"], down[-3:])
+        self.assertNotIn("-f", down)
         self.assertFalse({"-v", "--volumes", "--rmi"} & set(down))
         self.assertEqual("stopped", self.ledger()["state"])
 
@@ -229,6 +276,31 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(3, self.up())
         self.assertFalse(self.started())
         self.assertFalse((self.data / ".ledger/cassandra.json").exists())
+
+    def test_reap_retries_a_failed_stop_and_refuses_non_lab_ledgers(self) -> None:
+        self.assertEqual(0, self.up())
+        self.compose_rc = 1
+        self.assertEqual(1, self.main("down", "cassandra"))
+        self.assertEqual("stop-failed", self.ledger()["state"])
+        entry = self.ledger()
+        past = dt.datetime.now(dt.UTC) - dt.timedelta(minutes=1)
+        entry["expires_at"] = past.isoformat()
+        path = self.data / ".ledger/cassandra.json"
+        path.write_text(json.dumps(entry))
+        self.compose_rc = 0
+        self.assertEqual(0, self.main("reap"))
+        self.assertEqual("stopped", self.ledger()["state"])
+        entry["project"] = "hy-home-infra"
+        path.write_text(json.dumps(entry))
+        self.calls.clear()
+        self.assertEqual(2, self.main("down", "cassandra"))
+        self.assertFalse(any("down" in call for call in self.calls))
+
+    def test_bad_inputs_exit_two_instead_of_crashing(self) -> None:
+        with self.env_file.open("a", encoding="utf-8") as handle:
+            handle.write('LAB_MAX_LEASE_MINUTES="soon"\n')
+        self.assertEqual(2, self.up())
+        self.assertFalse(self.started())
 
     def test_reap_stops_only_expired_leases(self) -> None:
         self.assertEqual(0, self.up())

@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -77,6 +77,10 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 비밀 발급은 별도 승인입니다. 운영 정책은 [문서 진입점](../docs/README.md)에서
 찾습니다. 공식 자료: [OpenSearch Docker 설치](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/),
 [Dashboards Docker 설정](https://docs.opensearch.org/latest/install-and-configure/install-dashboards/docker/).
+
+## Bind State Ownership
+
+`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 1000 (`opensearch`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. SPEC-0215에서 이 LAB의 bind 상태 기동은 실제로 검증하지 못했다(MongoDB는 exporter image 고정값이 존재하지 않아 기동 전 실패). 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
 ## Related Documents
 

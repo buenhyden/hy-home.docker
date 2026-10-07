@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.0.8"
+version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -59,7 +59,7 @@ labs/
 | State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
 | Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net`, `lab_mongodb_obs_net` |
 | Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |
-| Host exposure | host port 없음; normal ingress와 network를 공유하지 않음 |
+| Host exposure | `mongo-express`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시; HOME Traefik label 없음 (SPEC-0215) |
 | Helper assets | 없음 |
 | Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
 
@@ -105,6 +105,10 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer와 e
 - `LAB_DATA_DIR` unset 오류는 안전한 fail-fast 동작이다. HOME data path를 대입하지 않는다.
 - keyfile 소유자·0400 권한이 맞지 않으면 원인을 확인하고 기존 key를 보존한다. secret file 누락은 LAB secret reference를 준비해야 하는 상태이며 값의 공개나 root secret 재사용 사유가 아니다.
 - 실제 cluster 재초기화·volume 삭제·restore는 별도 승인 없이는 실행하지 않는다.
+
+## Bind State Ownership
+
+`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 999 (`mongodb`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. SPEC-0215에서 이 LAB의 bind 상태 기동은 실제로 검증하지 못했다(MongoDB는 exporter image 고정값이 존재하지 않아 기동 전 실패). 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
 ## Related Documents
 

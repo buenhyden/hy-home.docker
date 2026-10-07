@@ -106,11 +106,24 @@ class LabBoundaryTests(RootClosureTests):
                     # HOME Traefik has exposedByDefault false, so an absent
                     # label is not routed; an explicit "true" would be.
                     labels = spec.get("labels") or {}
-                    self.assertIn(labels.get("hy-home.tier", "lab"), {"lab"})
+                    self.assertEqual("lab", labels.get("hy-home.tier"))
                     self.assertNotEqual("true", labels.get("traefik.enable"))
                     self.assertFalse(
                         [key for key in labels if key.startswith("traefik.http")]
                     )
+
+    def test_kafka_lab_tolerates_one_broker_loss_and_home_does_not(self) -> None:
+        brokers = {
+            name: spec["environment"]
+            for name, spec in self.labs["kafka-cluster.yml"]["services"].items()
+            if name.startswith("lab-kafka-") and name[-1].isdigit()
+        }
+        self.assertEqual(3, len(brokers))
+        for env in brokers.values():
+            self.assertEqual("2", str(env["KAFKA_MIN_INSYNC_REPLICAS"]))
+            self.assertEqual("3", str(env["KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR"]))
+        home = self.root["services"]["kafka-1"]["environment"]
+        self.assertEqual("1", str(home["KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR"]))
 
     def test_default_lab_host_ports_collide_with_nothing(self) -> None:
         def published(model: dict) -> list[str]:
