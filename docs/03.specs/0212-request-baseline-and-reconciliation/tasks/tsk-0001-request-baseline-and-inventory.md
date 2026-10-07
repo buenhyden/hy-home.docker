@@ -2,7 +2,7 @@
 title: "Request Baseline and Inventory Task"
 version: "0.1.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "draft"
 owner: "@buenhyden"
 updated: "2026-10-07"
 layer: "specs"
@@ -94,10 +94,10 @@ Source facts that drive follow-on work:
   have no `cap_drop`. `cadvisor` is privileged.
 - `nginx` and `traefik` both publish `<HOST_IP>:80` and `:443`, so they cannot
   run together. `alloy`, `loki`, `tempo` and `mng-valkey` publish on the LAN
-  IP. Every other published port, including all seven LAB ones, binds
-  `127.0.0.1`.
+  IP. Every other published port, including all eight mappings on seven LAB
+  keys, binds `127.0.0.1`.
 - Backup owners are `pgBackRest` for `mng-pg` and `dev-pg` and an allowlisted
-  tree copy for nine other keys. `influxdb` has no backup owner, so
+  tree copy for eleven other keys (`infra/09-platform-ops/restic/sets/state-include.txt`). `influxdb` has no backup owner, so
   retirement must check for data before disposal.
 - `labs/mongodb.yml` uses named volumes without a required data root, unlike
   the other seven LAB files.
@@ -111,8 +111,8 @@ Runtime consumers, image digests, actual UID and measured resources are
 | --- | --- | --- | --- | --- |
 | C01 | `bootstrap.md` precedence item 1; `approval-boundaries.md` separate operations | None for source and policy edits; runtime, remote, credential and destructive acts remain per-lane | Confirm only; no rewrite | 12 |
 | C02 | `tests/validation/test_infra_tier_layout.py:42-50,294-314` every infra leaf root-included | Retirement must remove leaf, include and expectation together | Change in one commit | 01 |
-| C03 | REQ-0005-FR-0001 (`0005-data-analytics.md:49`) requires InfluxDB | Items 01 and 15 | Amend REQ-0005, AD-0004/0012/0019/0024, ADR-0045 list | 01 |
-| C04 | POL-0078 profile row `influxdb` (`0078-compose-profile-vocabulary.md:79`) | Item 15 | Remove row and its validator input | 01 |
+| C03 | REQ-0005-FR-0001 (`docs/01.requirements/0005-data-analytics.md:49`) requires InfluxDB | Items 01 and 15 | Amend REQ-0005, AD-0004/0012/0019/0024, ADR-0045 list | 01 |
+| C04 | POL-0078 profile row `influxdb` (`docs/05.operations/policies/0078-compose-profile-vocabulary.md:79`) | Item 15 | Remove row and its validator input | 01 |
 | C05 | GUIDE/POL/RUNBOOK-0017 InfluxDB, GUIDE-0041 Grafana, `infra/04-data/README.md`, Grafana README row | Item 15 | Retire under the retention policy; update catalogs | 01 |
 | C06 | `.github/workflow-contract.yml:697,1404`, `test_influx_mapping.py`, `migration/validate_mapping.py` | Item 15 | Transfer any continuing guarantee, then retire | 01 |
 | C07 | `infra/tech-stack.versions.json:1112-1128`, `.env.example` Influx keys | Item 15 | Regenerate with the registered generator | 01 |
@@ -121,8 +121,8 @@ Runtime consumers, image digests, actual UID and measured resources are
 | C10 | Probe P6 explicit target selects profiled service | Profile is not isolation | Keep LAB out of root; state it in POL-0078 | 03 |
 | C11 | Probe P5 unknown profile accepted silently | Typo selects nothing | Profile vocabulary check in the gate wrapper | 05 |
 | C12 | `labs/mongodb.yml` without required data root | Inconsistent fail-closed LAB data | Require root or record exception | 03 |
-| C13 | Storybook MCP loopback only (`mcp/server.ts:77`) | Remote use only with proven consumer | Keep default; remote transport needs auth/TLS design | 06 |
-| C14 | `infra/common-optimizations.exceptions.json` policy-level fields | Item 14 per-service exceptions | Schema, reader and Conftest per file/service/control | 05 |
+| C13 | Storybook MCP loopback only (`projects/storybook/nextjs/mcp/server.ts:77`) | Remote use only with proven consumer | Keep default; remote transport needs auth/TLS design | 06 |
+| C14 | `infra/common-optimizations.exceptions.json` has per-service entries but `template_adoption.file_exceptions` is empty | Item 14 per-file/per-control exceptions | Schema, reader and Conftest per file/service/control | 05 |
 | C15 | Inventory: PIDs 2/161, `cap_drop` gaps, privileged `cadvisor`, duplicate gateway ports | Item 13 | Tiered budgets with exact exceptions | 05, 03 |
 
 ### QA and Remote Baseline
@@ -147,6 +147,17 @@ required conversation resolution true, force push and deletion disabled,
 Gates and CodeQL succeeded. Empty required contexts mean candidate checks are
 not merge-blocking by protection; they are not a missing workflow. This
 package does not change protection.
+
+The first PR #369 candidate run (head `69958e2c2`, run 37612764550) failed:
+`metadata check-changed` reported 147 violations. Two were in this package:
+a new Task must start at `draft`, and a draft package cannot hold an active
+Task. The other 145 were archive `type-mismatch` findings that cascade when
+the package is invalid: the spec-lifecycle load fails and the legacy archive
+type binding is skipped. The same Registry-triggered check on clean `main`
+reports 0. After the Task returned to `draft`, a local
+`check-document-metadata.py --mode check-changed` against base `23b0e6959`
+reported `violations=0`. An independent read-only review confirmed the
+spot-checked facts and raised six wording corrections, all applied.
 
 ### Dependencies and Spec Bundles
 
@@ -232,7 +243,7 @@ whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 | `oauth2-proxy` | 02-auth/oauth2-proxy | root | core, auth, dev +1 | -/ro | ALL / - | edge_net, mng_data_net, obs_net | - | 4 | - / - | yes | 1/512M/- | oauth2-proxy | - | keep | 04 |
 | `oauth2-proxy-valkey` | 02-auth/oauth2-proxy | root | dedicated-valkey | 999:999/rw | ALL / - | mng_data_net | - | 1 | - / oauth2-proxy-valkey-exporter | yes | 0.5/256M/- | - | - | keep | 04 |
 | `oauth2-proxy-valkey-exporter` | 02-auth/oauth2-proxy | root | dedicated-valkey | -/ro | ALL / - | mng_data_net, obs_net | - | 1 | oauth2-proxy-valkey / - | no | 0.5/256M/- | - | - | keep | 04 |
-| `ollama` | 08-ai/ollama | root | ai, ai-llm, ollama | -/rw | - / - | ai_net, edge_net | 127.0.0.1:11434->11434 | 0 | - / ollama-exporter, open-webui | yes | 4/8589934592/- | ollama | - | keep | 05 |
+| `ollama` | 08-ai/ollama | root | ai, ai-llm, ollama | -/rw | - / - | ai_net, edge_net | 127.0.0.1:11434->11434 | 0 | - / ollama-exporter, open-webui | yes | 4/8192M/- | ollama | - | keep | 05 |
 | `ollama-exporter` | 08-ai/ollama | root | ai, ai-llm, ollama | -/ro | ALL / - | ai_net, obs_net | - | 0 | ollama / - | yes | 0.5/256M/- | - | - | keep | 05 |
 | `open-webui` | 08-ai/open-webui | root | ai, ai-llm | -/rw | ALL / - | ai_net, edge_net | - | 1 | ollama / - | yes | 2/2048M/- | open-webui | tree(uploads) | keep | 05 |
 | `open_notebook` | 08-ai/open-notebook | root | notebook | -/rw | ALL / - | ai_net, edge_net | 127.0.0.1:5055->5055 | 3 | surrealdb / - | yes | 0.5/256M/- | open-notebook | - | optional | 05 |
@@ -334,8 +345,9 @@ whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 | Profile probes | 4 | W3 | P1-P10 | `.env.example` | PASS | Profile Probes | accepted |
 | Conflict map and ADR | 5 | W4 | `git grep` and source reads | main `23b0e6959` | PASS | Conflict Map; ADR-0047 | accepted |
 | QA and remote baseline | 6 | W5 | Gate explain; branch protection; rulesets | main `23b0e6959` | PASS | QA and Remote Baseline | accepted |
-| Local change validation | 6 | W5 | `run-ci-gate.py --profile changed --local-only`; `run-ci-precommit.sh --mode local-staged` | This diff, seven files | PASS | QA and Remote Baseline | accepted |
-| Remote candidate | 6 | W5 | PR `candidate-quality` | This diff | NOT_RUN | Pending PR | pending |
+| Local change validation | 6 | W5 | `run-ci-gate.py --profile changed --local-only`; `run-ci-precommit.sh --mode local-staged` with pinned pre-commit 4.6.1 (global 4.6.2 exits 2) | This diff, seven files | PASS | QA and Remote Baseline | accepted |
+| Remote candidate | 6 | W5 | PR `candidate-quality` | Head `69958e2c2` | FAIL | QA and Remote Baseline | rejected |
+| Remote candidate rerun | 6 | W5 | PR `candidate-quality` | Corrected head | NOT_RUN | Pending PR rerun | pending |
 | HOME runtime state | 3 | W3 | Container, digest, UID and resource observation | No target authorized | NOT_RUN | Not observed | pending |
 
 ## Review and Completion
