@@ -503,6 +503,99 @@ FAIL/input-drift evidence, pending source acceptance and the bounded hosted
 retry remain intact. No new full local QA, remote run, merge or cleanup has
 occurred.
 
+### Corrective candidate failure and user-directed test retirement
+
+The final two-document metadata, isolated read-only style and scoped links
+passed without source changes in
+`/tmp/hy-home-spec0211-pre-submit-minimum.json`. Root committed the reviewed
+19-file input as `2732b47de044ba46f6e8b8e3a9026aa79c3368fa` and pushed PR368.
+The committed tree `ba47cfd3aad0440651cccdfa623484ce594ba333` matches the
+staged receipt; earlier source and initial contract commits remain ancestors.
+
+Hosted run `37557391324`, job `112586668864` failed its changed validation
+step from 01:30:19Z to 01:47:43Z on 2026-10-07 (17 minutes 24 seconds).
+Root stopped the bounded corrective attempt and wrote/read back package
+`blocked`. The user's concrete approval then allowed only this step's log
+inspection. The value-free receipt is
+`/tmp/hy-home-spec0211-approved-corrective-hosted-diagnostic.json`.
+Metadata selected 45 documents with zero violations. Two implementation
+regression suites reported 140 tests in 397.159 seconds and 684 tests in
+434.171 seconds; the latter had four assertion failures in old public
+operations routing tests. This does not prove any later leaf passed. CodeQL,
+GitGuardian and triage passed; PR main-security was skipped, not passed.
+
+The user then observed the step exceeded ten minutes and explicitly directed
+removal of unnecessary tests. This is the new resume authority for one narrow
+retirement slice: identify obsolete or duplicate routing assertions, prove
+which current registered tests own their invariants, retire only the redundant
+checks, and retain any unique current safety assertion. Root wrote/read back
+package `in-progress` under this instruction. No assertion is removed merely
+because it failed. Focused checks and independent review precede one new
+changed-input candidate submission; a further failure stops this slice. No
+local aggregate, runtime acceptance, protection bypass or release action is
+added. The two observed suite durations are current cost evidence, not a
+measured speedup; small removals alone do not establish a ten-minute budget.
+
+### Completed-document and retired-file expectation retirement scope
+
+The user further directed removal of fixed expectations outside the current
+contract, duplicate checks whose guarantees are already owned elsewhere,
+tests depending on a specific completed document's current state, and contract
+checks coupled to retired files. The single QA writer owns only five test
+modules for this slice: metadata validator, operations taxonomy, taxonomy,
+Registry and references. Root owns this Task and the existing quality policy.
+The modules and their public registrations remain; production behavior, CLI,
+archive bytes and Registry/schema semantics are unchanged.
+
+The proposed disposition removes obsolete routing snapshots and archived
+SPEC-0095 wording, fixed SPEC-0153 Task inventory, past taxonomy migration
+rows/maps, and retired Task9/Stage04/loader-symbol surveillance. Exclusive
+helpers and constants are removed with their callers. The rehearsal manifest's
+unique operations-kind assertion remains. Generic requirement allocation,
+profile, identity, parent relationship, unknown-path, infra Compose, Stage90
+membership and archive byte/recovery/compatibility boundaries remain with
+their current consumers and meaningful positive/negative regressions.
+Focused checks and independent proof review must complete before submission.
+No test-count target, changed performance result or ten-minute compliance is
+claimed by this disposition.
+
+### Test retirement application and focused verification
+
+The independently reviewed five-file patch SHA-256 is
+`2f54ea472ddbc6d3ba229822ee12233a4d1d62268db9b073f8fe5099d378e8c6`.
+The single writer applied it once after verifying the source commit, all five
+before hashes and the patch digest. Applied bytes equal reviewed proposed
+bytes. Twenty-one event, snapshot and retired-symbol methods and their
+exclusive helpers were removed; one unique rehearsal operations-kind assertion
+remains. The 167 other retained test ASTs are unchanged. Registered modules,
+production behavior, CLI and the public DAG remain unchanged.
+
+Current replacement proof includes requirement loader live/tombstoned union
+and disjointness, with both the canonical-run and unexplained-gap tests;
+current metadata parent/type/lifecycle and Registry identity/profile/schema;
+current selector unknown/delete/rename and infra Compose; manifest runtime
+mutation and forbidden composition; protected reference identity/authority and
+missing/extra declarations; generic archive preserved-byte and generation
+3-5 recovery proofs. These owners replace the retired event-specific scans,
+fixed AD/ADR maps, removed-API token bans and archived wording expectations.
+
+Independent policy/code and security reviewers found no Important finding on
+the exact patch, and security read back matching applied hashes. Registered
+Ruff check and format check passed the exact proposed bytes using canonical
+filenames and repository configuration; the applied hashes match those inputs.
+Root then ran the 18 selected surviving boundary and unique-kind tests once:
+PASS, exit zero. Unittest stdout reports 15.545 seconds; the controller's
+separate command wall-time observation is 15.939 seconds. Source hashes were
+unchanged. Both observations are preserved in the actual receipt:
+`/tmp/hy-home-spec0211-retirement-focused.json`. No aggregate was run locally.
+The existing policy now explicitly rejects completed-document event snapshots
+and retired-only file/helper/symbol expectations while preserving generic
+compatibility and byte proofs. These two final authored documents receive only
+metadata, isolated read-only style and scoped local links before submission.
+This input's remote acceptance remains pending; earlier FAIL and timing
+observations are preserved. The retirement does not establish a speedup or a
+ten-minute outcome.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -513,6 +606,12 @@ occurred.
 | SPEC-0211 | approved | in-progress | #implementation-start |
 | SPEC-0211-PLAN-0001 | approved | in-progress | #implementation-start |
 | SPEC-0211-TSK-0001 | ready | in-progress | #implementation-start |
+| SPEC-0211 | in-progress | blocked | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #corrective-candidate-failure-and-user-directed-test-retirement |
 
 ### Official research inputs
 
@@ -537,6 +636,8 @@ occurred.
 | Commit and release validation | 4 | W5 | Grammar, SemVer, draft assets and read-back regressions | Frozen helper; all remote commands mocked | PASS | Focused implementation evidence | pending |
 | Governance | 5 | W6 | Current policy, evaluation role and alignment | Scoped 16-document PASS; hosted all-mode found 3 new routing failures | FAIL | First hosted candidate and bounded correction; scoped evidence retained | pending |
 | Final review | 1, 2, 3, 4, 5 | W7 | Exact source diff, contract and actual independent reviews | Reviewed source slices; first hosted FAIL, corrective acceptance pending | PASS | Final selector and evaluation-role alignment; candidate validation pending | pending |
+| Corrective hosted validation | 3 | W4 | Actual candidate job result | PR368 2732b47de; run37557391324/job112586668864 | FAIL | Corrective candidate failure and user-directed test retirement | pending |
+| Current test retirement | 1 | W2 | Exact deletion/proof review and focused current boundaries | Reviewed five-file patch 2f54ea47; 18 focused tests | PASS | Test retirement application and focused verification | pending |
 
 ## Review and Completion
 

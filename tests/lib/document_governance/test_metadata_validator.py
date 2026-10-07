@@ -21,11 +21,6 @@ from scripts.lib.document_governance.taxonomy import (
     requirement_package_identity,
     validate_stable_identity,
 )
-from scripts.lib.gate.ci_gate_contract import (
-    load_contract_document,
-    parse_public_gate_contract,
-    select_public_suites,
-)
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 PROFILES = ROOT / "docs/99.templates/registry.json"
@@ -576,40 +571,6 @@ class FourDigitDocumentIdentityTests(unittest.TestCase):
             self.assertTrue(_write_or_check_output(output, "current\n", True))
             self.assertFalse(_write_or_check_output(output, "stale\n", True))
             self.assertEqual("current\n", output.read_text(encoding="utf-8"))
-
-    def test_public_gate_routes_incident_packets_through_operations(self) -> None:
-        contract = parse_public_gate_contract(load_contract_document(ROOT))
-        operations = tuple(
-            item.entrypoint
-            for item in contract.validators
-            if item.suite == "operations"
-        )
-        self.assertEqual(
-            (
-                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
-                pathlib.PurePosixPath(
-                    "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-                ),
-            ),
-            operations,
-        )
-        self.assertEqual(
-            (
-                "document-contract",
-                "document-graph",
-                "document-lifecycle",
-                "operations",
-                "repository-integrity",
-            ),
-            select_public_suites(
-                contract,
-                "changed",
-                (
-                    "docs/05.operations/incidents/2026/"
-                    "inc-0001-empty-packet/incident.md",
-                ),
-            ),
-        )
 
     def test_active_contracts_publish_no_ambiguous_typed_id_routes(self) -> None:
         tracked = subprocess.run(

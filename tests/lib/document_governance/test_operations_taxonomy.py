@@ -11,18 +11,8 @@ import yaml
 from scripts.lib.document_governance.operations_catalog import (
     validate_active_operations_references,
 )
-from scripts.lib.gate.ci_gate_contract import (
-    load_contract_document,
-    parse_public_gate_contract,
-    select_public_suites,
-)
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
-
-
-def _public_suites_for(*changed_paths: str) -> tuple[str, ...]:
-    contract = parse_public_gate_contract(load_contract_document(ROOT))
-    return select_public_suites(contract, "changed", changed_paths)
 
 
 class OperationsAuthorityTests(unittest.TestCase):
@@ -187,24 +177,7 @@ class OperationsAuthorityTests(unittest.TestCase):
             with self.subTest(path=relative):
                 self.assertTrue((ROOT / relative).is_file())
 
-    def test_public_operations_suite_owns_focused_validators_exactly_once(
-        self,
-    ) -> None:
-        contract = parse_public_gate_contract(load_contract_document(ROOT))
-        operations = tuple(
-            item.entrypoint
-            for item in contract.validators
-            if item.suite == "operations"
-        )
-        self.assertEqual(
-            (
-                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
-                pathlib.PurePosixPath(
-                    "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-                ),
-            ),
-            operations,
-        )
+    def test_postgres_rehearsal_keeps_operations_manifest_kind(self) -> None:
         manifest = yaml.safe_load(
             (ROOT / "scripts/manifest.yaml").read_text(encoding="utf-8")
         )
@@ -214,57 +187,6 @@ class OperationsAuthorityTests(unittest.TestCase):
             if row["path"] == "scripts/operations/rehearse-postgres-logical-upgrade.sh"
         )
         self.assertEqual("operations", rehearsal["kind"])
-        self.assertEqual("runtime", rehearsal["mutation"])
-        self.assertFalse(
-            {"public_suites", "execution_argv", "execution_contexts"} & set(rehearsal)
-        )
-
-    def test_public_changed_profile_routes_operations_paths_fail_closed(
-        self,
-    ) -> None:
-        expected = (
-            "document-contract",
-            "document-graph",
-            "document-lifecycle",
-            "operations",
-            "repository-integrity",
-        )
-        self.assertEqual(
-            expected,
-            _public_suites_for("docs/05.operations/guides/0013-traefik.md"),
-        )
-        self.assertEqual(
-            expected,
-            _public_suites_for("infra/01-gateway/traefik/docker-compose.yml"),
-        )
-
-    def test_selected_spec_role_links_use_exact_current_role_leaves(self) -> None:
-        # The twelve domain packages that also carried role links were retired:
-        # they described a steady state the catalog owns, so their links moved
-        # with them. What remains are bounded change packages.
-        # The package is completed, so it is preserved under the archive; its
-        # role links are relative to that location.
-        expected = {
-            "docs/98.archive/completed/03.specs/0095-infra-secrets-docs-refresh/spec.md": {
-                role: (
-                    "../../../../05.operations/catalog/03-security/0016-vault/"
-                    f"{role.lower()}.md"
-                )
-                for role in ("Guide", "Policy", "Runbook")
-            },
-        }
-        for relative, roles in expected.items():
-            text = (ROOT / relative).read_text(encoding="utf-8")
-            for role, href in roles.items():
-                with self.subTest(path=relative, role=role):
-                    self.assertIn(f"- **{role}**: [{href}]({href})", text)
-
-    def test_public_script_changes_select_every_registered_suite(self) -> None:
-        contract = parse_public_gate_contract(load_contract_document(ROOT))
-        self.assertEqual(
-            contract.suite_names,
-            _public_suites_for("scripts/lib/gate/ci_gate_contract.py"),
-        )
 
 
 if __name__ == "__main__":

@@ -1741,36 +1741,6 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual((), requirement.child_spaces["REQ-0001.IF"].current_issued)
         self.assertEqual((1,), requirement.child_spaces["REQ-0001.IF"].reserved_history)
 
-    def test_spec_0153_package_uses_registered_paths_and_identities(self) -> None:
-        registry = load_registry()
-        package = pathlib.Path("docs/03.specs/0153-workspace-governance-simplification")
-        expected_profiles = {
-            ".github/repository-surface.md": "repository-readme",
-            package / "spec.md": "spec",
-            package / "plan.md": "plan",
-            **{
-                package / "tasks" / f"tsk-{number:04d}-example.md": "task"
-                for number in range(1, 14)
-            },
-        }
-
-        for path, profile_id in expected_profiles.items():
-            with self.subTest(path=path):
-                self.assertEqual(profile_id, classify_path(path, registry))
-
-        self.assertEqual(
-            "SPEC-0153",
-            registry.profiles["spec"]["artifact_id_pattern"].replace(
-                "{number:4}", "0153"
-            ),
-        )
-        self.assertEqual(
-            "SPEC-0153-PLAN-0001",
-            registry.profiles["plan"]["artifact_id_pattern"]
-            .replace("{package_number:4}", "0153")
-            .replace("{member_number:4}", "0001"),
-        )
-
     def test_specific_profile_wins_over_unsupported_fallback(self) -> None:
         registry = load_registry()
 
@@ -3319,61 +3289,6 @@ class ActualTaskLifecycleTransitionTests(unittest.TestCase):
             "parent-cardinality",
             {finding.code for finding in validate_record(record, profiles, {})},
         )
-
-
-class ResurrectedMigrationContractTests(unittest.TestCase):
-    """A completed migration's contract is not resurrected on every load.
-
-    `DEFAULT_MIGRATION_CONTRACT` was a `HistoricalDocument`, not a path: every
-    `load_profiles()` read `docs/99.templates/support/document-corpus-migration-contract.yaml`
-    out of the pinned commit `49406580` and validated its 384-line shape,
-    including eight named migration waves whose source document, SPEC-0153, was
-    deleted. The file is absent from the working tree. The only caller that
-    consumed the result, `load_promoted_transition_witnesses`, returned `{}` on
-    every CLI route because the profiles the CLI builds always carry
-    `_registry`; the other caller discarded the value.
-    """
-
-    def test_the_migration_contract_loader_is_gone(self) -> None:
-        for name in (
-            "load_migration_contract",
-            "DEFAULT_MIGRATION_CONTRACT",
-            "SDLC_TAXONOMY_BASELINE",
-            "SDLC_TAXONOMY_MANIFEST_PATH",
-            "SDLC_TAXONOMY_SOURCE_ROOTS",
-            "load_promoted_transition_witnesses",
-            "PromotedTransitionWitness",
-        ):
-            with self.subTest(name=name):
-                self.assertFalse(
-                    hasattr(metadata_validator, name),
-                    f"{name} still resurrects a completed migration's contract",
-                )
-
-    def test_no_stage_04_route_is_pinned_in_the_validator(self) -> None:
-        facade = pathlib.Path(metadata_validator.__file__)
-        sources = (facade, *sorted((facade.parent / "metadata").glob("*.py")))
-        for path in sources:
-            with self.subTest(path=path.name):
-                self.assertNotIn(
-                    "docs/04.execution",
-                    path.read_text(encoding="utf-8"),
-                )
-
-    def test_profiles_still_load_without_the_resurrected_contract(self) -> None:
-        """`load_profiles()` no longer takes a contract path and still works.
-
-        It used to accept `migration_contract_path` and call the loader purely
-        for its side effect, discarding the result, so every profile load in
-        the repository paid for a Git read of a deleted file.
-        """
-
-        import inspect
-
-        signature = inspect.signature(metadata_validator.load_profiles)
-        self.assertNotIn("migration_contract_path", signature.parameters)
-        profiles = metadata_validator.load_profiles()
-        self.assertIn("governance-policy", profiles)
 
 
 class RegistryIndexContractTests(unittest.TestCase):

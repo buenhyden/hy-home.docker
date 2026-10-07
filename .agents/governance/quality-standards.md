@@ -80,6 +80,12 @@ main-push security remains a post-merge observation.
 - A supporting parser, selector, style controller or release regression must
   prove one of those current contracts. An agent answer score, a past migration
   census or a completed Task's fixed hash is not a recurring quality contract.
+- Remove event-specific expectations for a completed document's current
+  status, wording or inventory, and contract assertions coupled only to a
+  retired file, helper or symbol. Current Registry validators and meaningful
+  boundary regressions own continuing guarantees; do not replace obsolete
+  expectations with another permanent forbidden-name list. Generic preserved
+  byte, recovery and compatibility proofs remain current contracts.
 - Explicit Skill evaluation may retain paired task/output/scoring/aggregate
   evidence outside recurring repository QA. The evaluation README routes that
   evidence; agentic policy owns authority and stop conditions. A representative
