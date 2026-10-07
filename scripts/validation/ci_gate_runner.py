@@ -115,6 +115,10 @@ class ExecutionContext(enum.Enum):
 _ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
 _CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
 _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
+_PR_STYLE_INVOCATION = (
+    pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
+    ("--mode", "pr-merge"),
+)
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
@@ -125,7 +129,7 @@ _INTERNAL_CHECK_INVOCATIONS = frozenset(
         ("scripts/validation/check-script-manifest.py", ()),
         ("scripts/validation/check-storybook-contract.sh", ()),
         ("scripts/validation/validate-docker-compose.sh", ()),
-        ("scripts/validation/run-ci-precommit.sh", ()),
+        ("scripts/validation/run-ci-precommit.sh", ("--mode", "pr-merge")),
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
 )
@@ -139,7 +143,10 @@ def _is_admitted_internal_invocation(
         return ci_gate_adapters.admits_adapter_invocation(
             invocation.argv, context.value
         )
-    return (invocation.entrypoint, invocation.argv) in _INTERNAL_CHECK_INVOCATIONS
+    identity = (invocation.entrypoint, invocation.argv)
+    if identity == _PR_STYLE_INVOCATION:
+        return context is ExecutionContext.PULL_REQUEST
+    return identity in _INTERNAL_CHECK_INVOCATIONS
 
 
 def public_suite_names() -> tuple[str, ...]:

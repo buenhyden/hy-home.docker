@@ -36,8 +36,10 @@ The message does not follow Commit Standards in
 ```
 
 Allowed types are the keys in `.cz.toml`'s `change_type_map`. This warning's
-pattern is a lightweight translation of that map; the `commit-msg` hook applies
-the complete executable grammar.
+pattern is a lightweight translation of that map. Explicit Commitizen checks
+the complete grammar before commit, and the remote candidate checks its
+authenticated contributor range. A `commit-msg` hook enforces that grammar only
+when its installation and delivery are actually observed.
 
 **Correct examples:**
 

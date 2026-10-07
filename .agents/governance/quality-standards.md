@@ -155,8 +155,24 @@ main-push security remains a post-merge observation.
   changed link destinations, without repeating the whole link corpus.
   Local focused feedback does not become hosted evidence or trigger another
   candidate aggregate.
-- **Validation**: the changed-style controller uses registered check modes and
-  preserves source bytes. Formatting and validation have separate purposes.
+- **Before local commit**: run
+  `scripts/validation/run-ci-precommit.sh --mode local-staged` immediately after
+  staging the reviewed candidate and before the ordinary commit. It reads the
+  index's configuration and staged paths, derives read-only lint/format checks
+  from the shared registered pins, and fails on source/index drift. Formatting
+  defects require an explicit reviewed fix and restaging. Any subsequent index
+  change requires a new check. Keep the effective secret guard; do not install
+  or replace a user-global hook as part of this route.
+- **Server final defense**: the PR candidate runs the same controller with
+  `--mode pr-merge` on its authenticated merge input before accepting selected
+  builds. Local staged PASS cannot replace that server result. Build steps in
+  the same candidate consume its result rather than calling style twice.
+  A future deployment must require successful server lint/format evidence for
+  its exact promoted revision and configuration before deployment; changed
+  inputs require a new server check. The repository currently has no deployment
+  workflow, so this rule supplies no deployment execution or acceptance.
+- **Validation**: both style-controller modes use registered check modes and
+  preserve source bytes. Formatting and validation have separate purposes.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
   is an explicitly approved authoring/maintenance lane, never routine PR QA.
 - **Execution identity**: deduplicate an identical leaf within one run using
@@ -174,14 +190,15 @@ main-push security remains a post-merge observation.
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
-| Commit | Commitizen message grammar; installed cheap authoring hooks only | Staged message/bytes and actual hook installation |
+| Commit | Explicit local-staged lint/format immediately before commit; Commitizen; observed installed hooks | Exact index/config and message; effective secret guard |
 | Feature push | No repeated public QA | New commits become PR candidate input |
 | Agent Stop | Diagnostics only | Working tree; no second aggregate run |
 | Before submission | Selected local-only implementation and link leaves once | Final source/index, base/history, tools and actual local result |
-| PR to main | One changed-profile candidate job excluding local-only leaves | PR base/head/merge input, selected prerequisites and actual hosted result |
+| PR to main | One candidate job including pr-merge lint/format before selected builds; excludes local-only leaves | Authenticated base/head/merge, pins, prerequisites and hosted result |
 | Main push | Separate security/SARIF observation | Merged SHA and hosted security trust; no candidate suite repeat |
 | Release preparation PR | Same candidate owner selects changelog/release checks | Main-targeted CHANGELOG and reviewed source |
 | Approved release dispatch | Sole main-only SemVer producer | Exact commit, create-only tag, complete draft assets, publication receipt |
+| Future deployment | Server lint/format evidence for exact promoted inputs, then deployment-specific checks | Distinct deployment authority/result; no deployment workflow currently |
 
 The machine workflow contract owns exact job identities, DAG and path-to-root
 selection. Ordinary documents retain profile, parent and lifecycle/content
@@ -270,8 +287,10 @@ The local runner validates `.github/workflow-contract.yml` and the registered
 workflow definitions through
 `scripts/validation/check-github-workflow-contract.py`. The required
 `leaf.local-tech-stack-version-drift` owns version drift detection in every
-public context. Local QA never runs real pre-commit through the CI-only entry
-point and exercises that wrapper only with the fake-binary regression.
+public context. The public runner admits only the authenticated `--mode pr-merge` invocation.
+The explicit `--mode local-staged` route is separate from aggregate QA and runs
+real staged checks immediately before commit. Isolated wrapper regressions do
+not substitute for an observed local or hosted execution.
 
 #### Explicit Full Audit
 

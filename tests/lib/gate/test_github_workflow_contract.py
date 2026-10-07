@@ -170,6 +170,13 @@ class GithubWorkflowContractTests(unittest.TestCase):
         document = self.load_contract_document(ROOT)
         public = gate_contract.parse_public_gate_contract(document)
         registry = self.module.load_workflow_contract(ROOT).gate_registry
+        changed_style = next(
+            node for node in registry.nodes if node.gate_id == "leaf.changed-style"
+        )
+        self.assertEqual(
+            ("--mode", "pr-merge"),
+            changed_style.argv,
+        )
         changed_paths = (".github/workflows/ci-quality.yml",)
         suites = gate_contract.select_public_suites(public, "changed", changed_paths)
         changed = gate_contract.expand_public_gate_ids(

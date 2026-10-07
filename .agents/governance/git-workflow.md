@@ -38,8 +38,24 @@ Use Conventional Commits with explicit scopes where possible.
   policy governs commit usage and workflow.
 - Validate a draft with
   `cz check --message-length-limit 75 --message "feat(auth): Add login guard"`
-  before starting the commit. The `commit-msg` hook remains the final local
-  enforcement point.
+  before starting the commit. Observe whether a `commit-msg` hook is actually
+  installed; the configuration alone is not enforcement evidence. The remote
+  candidate also validates the authenticated contributor commit range.
+
+Immediately before an ordinary commit, stage the reviewed changes and run:
+
+```bash
+cz check --message-length-limit 75 --commit-msg-file /tmp/commit-message.txt
+scripts/validation/run-ci-precommit.sh --mode local-staged
+git commit -F /tmp/commit-message.txt
+```
+
+Prepare the message file before those commands. The style controller checks the
+index with the registered tool pins and read-only modes. It installs no Git
+hook and preserves the effective secret guard. A failed check stops the commit;
+fix, review and restage changed bytes before checking again. A change to the
+index after PASS invalidates that result. Do not replace a user-global hook or
+claim automatic lint enforcement from tracked configuration alone.
 
 ### 2. Branching Strategy
 
@@ -84,7 +100,8 @@ Use Conventional Commits with explicit scopes where possible.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
 - `.cz.toml` owns the one Commitizen grammar; `.gitmessage` is an authoring
-  aid. Installed `commit-msg` validation gives immediate feedback. The remote
+  aid. Explicit Commitizen validation gives local feedback; hook delivery is
+  claimed only when actually observed. The remote
   candidate verifies its authenticated contributor commit range because client
   hook installation is not trusted evidence. Default Merge/fixup prefix escapes
   are disabled; GitHub's synthetic candidate merge is outside that range. Feature push does not add another public gate.

@@ -46,7 +46,12 @@ review separately in the Task. W2 retires remaining historical source-census
 and retired-file expectations with continuing owners. W3 removes the manifest's
 path-only mirror requirement, closes direct unittest admission to LOCAL, and
 corrects per-file shell syntax validation. Scoped lint-only corrections retain
-Conftest mode and command behavior and use registered one-file lint/syntax checks. W6 aligns full-audit and review-delta
+Conftest mode and command behavior and use registered one-file lint/syntax checks.
+W4 connects isolated local-staged lint/format immediately before commit and
+exact authenticated pr-merge server checks before selected builds, sharing
+candidate tool pins. W6 reconciles policy, authoring prompts and hook-warning
+consumers without installing or replacing user-global hooks. Future deployment
+promotion is a policy boundary only, not a new deployment workflow. W6 aligns full-audit and review-delta
 policy. W7 validates only affected cases, manifest and read-only static/document
 checks; it does not replay unchanged metadata/library aggregates or full QA.
 Initial draft publication and final evidence-only records use document-minimum

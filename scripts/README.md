@@ -52,7 +52,7 @@ scripts/
 ├── operations/          # 로컬 운영, 배포 rehearsal, 생성된 evidence 소유
 ├── security/            # 로컬 supply-chain 검증과 생성된 요약 소유
 ├── requirements.txt     # 저장소 검증 스크립트에 필요한 Python 모듈
-├── requirements-pre-commit.txt # CI 전용 pre-commit 도구의 정확한 pin
+├── requirements-pre-commit.txt # 로컬 staged·서버 PR 공통 pre-commit 도구 pin
 ├── lib/<domain>/        # import 전용 도메인 모듈; 공개 entrypoint 아님
 ├── lib/hardening-lib.sh # tier 하드닝 점검의 공유 구현
 └── README.md            # 이 문서
@@ -196,6 +196,16 @@ archive payload는 바이트 그대로 유지됩니다. 이 훅은 호출자가 
 source하지 않습니다. 선택적 QA/CI 도구를 다른 방법으로 사용할 수 없을 때는 이
 헬퍼를 명시적으로 source합니다. 반복 source해도 기존 PATH 순서는 유지되고
 사용 가능한 디렉터리만 한 번씩 추가됩니다.
+
+`scripts/validation/run-ci-precommit.sh --mode local-staged`는 검토한 파일을 staging한
+직후, 로컬 commit 직전에 실행하는 lint·format 검사 경로입니다. index의 설정과 staged
+파일을 사용하며 원문과 index를 변경하지 않습니다. 실패하면 명시적으로 수정·검토·restaging한
+뒤 다시 검사합니다. Git hook을 설치하거나 기존 ECC secret 검사를 대체하지 않습니다.
+같은 도구 pin과 read-only 검사 규칙을 서버 PR의 `--mode pr-merge`가 인증된 merge
+입력에 적용합니다. 로컬 결과와 서버 결과는 별개이며, PR 후보의 선택된 빌드는 이 서버
+검사 결과를 사용합니다. 개발 push와 main에서 같은 style 검사를 다시 실행하지 않습니다.
+배포 workflow는 현재 없으며, 향후 배포는 정확한 revision·설정의 서버 검사 증거와 별도
+배포 검사를 요구합니다. 설정 파일만으로 hook 실행이나 배포 완료를 주장하지 않습니다.
 
 `scripts/validation/run-ci-gate.py`는 의존성 없는 typed-gate CLI입니다.
 문서 링크 검사는 로컬의 `python3 scripts/validation/check-document-links.py --mode all`만
@@ -388,9 +398,11 @@ argv `check_command`와 자신이 소유하는 정확한 tracked `outputs`를 �
 중에는 실행하지 않으며 명시적으로 호출하려면 먼저 현재 Runbook과 선언된 테스트
 evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 포함하는
 `check-write` 전체 감사이며 승인된 격리 linked worktree에서만 실행됩니다.
-`run-ci-precommit.sh`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에
-체크아웃하는 changed-ref 검증입니다. fixer를 제외하고 등록된 check 모드를
-사용하므로 source bytes를 보존하는 `mutation: none`입니다.
+`run-ci-precommit.sh --mode local-staged`는 commit 직전 index의 staged 검증이며,
+`--mode pr-merge`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에 체크아웃하는
+changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하고 등록된 check 모드를
+사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지
+않습니다.
 
 전환(transition) 행에는 non-retain disposition, 구분되는 tracked successor,
 비어 있지 않은 `removal_condition`이 모두 있어야 합니다. active 행은

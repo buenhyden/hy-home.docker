@@ -57,7 +57,13 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    This preserves research bytes and availability without reauthenticating past
    execution claims, adding a research-path exemption or restoring retired QA.
 3. Commit owns the shared Commitizen message grammar. Authoring may format or
-   run focused RED/GREEN checks. Feature push does not repeat candidate QA.
+   run focused RED/GREEN checks. Immediately before local commit, the shared
+   read-only style controller checks the exact staged tree in isolation. Its
+   authenticated PR merge mode is the server lint/format defense before selected
+   builds. Both enforce the candidate's registered tool pin. A future deployment
+   requires server evidence for its exact promoted revision/configuration and
+   distinct deployment checks; no deployment workflow is introduced here.
+   Feature push does not repeat candidate QA.
    Remote PR QA owns candidate acceptance, with no path-skipped required
    summary and no title-edit cancellation of revision evidence. Main does not
    rerun the same candidate QA; separately scoped remote observations retain

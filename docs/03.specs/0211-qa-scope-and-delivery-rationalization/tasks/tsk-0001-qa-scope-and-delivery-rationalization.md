@@ -1665,6 +1665,95 @@ that bounded implementation. It does not enlarge this four-file correction,
 change user-global hooks, or claim unimplemented local hook enforcement. Build,
 deployment and remote artifact evidence remain distinct from local checks.
 
+### Local commit and server lint/format ownership
+
+The current user explicitly requires lint/format immediately before local commit
+and server PR/build/deployment final defense, reflected in governance and rules.
+This later source request authorizes the separate W4/W6/W7 slice; it does not
+expand the earlier four-file Conftest correction or grant deployment authority.
+The six-file pipeline writer and Root's eight guidance files are the current
+writer scope, plus this existing Spec/Plan/Task. Numeric/native budgets remain
+UNKNOWN. No all-files wrapper, global hook/config installation, deployment,
+release publication, npm extension or archive disposition is included.
+
+The existing style controller now accepts two closed modes. local-staged
+materializes the exact index tree into a disposable linked worktree and checks
+staged files there. pr-merge retains the authenticated two-parent hosted merge
+and contributor range. Both derive check-only settings from the same registered
+hook pins and require the candidate's single exact pre-commit tool pin before
+hook execution. Only pr-merge is publicly admitted in the PR context. The local
+route is explicit immediately before commit; it is not another aggregate leaf,
+pre-push/full ritual or an installed Git hook. The effective ECC secret guard
+remains active on the subsequent ordinary commit.
+
+Initial RED demonstrated rejected explicit modes, missing typed PR argv and
+old no-argv public admission. Initial focused GREEN was not accepted after
+independent review found live-repository mutation could survive failure and
+ambient tool version did not match the candidate pin. The writer corrected
+only the controller and shell regression. A further test-only review finding
+removed a predictable temporary tool path from committed tests. These findings
+and superseded receipts remain history; none was hidden by deleting assertions.
+
+Final source receipt
+`/tmp/spec-0211-local-staged-style-portable-repair-receipt.json`
+SHA506263eaf730cbb58617ce9416941133ef5acd5e8cbf8cf2713eab4d0b152672
+binds wrapper5b5936f5 and shelltestf2ed816f plus the unchanged four source hashes.
+Focused shell GREEN used real pinned pre-commit4.6.1 and proved exact staged
+content/config, source index/tracked/unstaged/untracked preservation without
+fixture-side restoration, mutation rejection in scratch, missing/wrong version
+rejection before hooks, empty/error index fail-closed, PR authentication and
+original exits. Per-file bash -n, registered ShellCheck and diff checks passed.
+Unchanged focused plan/workflow two-case GREEN, registered Ruff0.15.12 check
+and format-check and actual workflow checker PASS5workflows/7jobs/8actions
+remain bound to unchanged implementation inputs. No full/aggregate QA ran.
+
+Actual independent security source review and current-policy source readback
+passed with no Important finding after those repairs. A separate rules review
+of eight guidance files found and closed three consistency findings: message
+validation precedes staged style, automatic commit-msg installation is not
+claimed, and Invocation Safety describes both modes. Eight-file document
+minimum receipt `/tmp/hy-home-spec0211-lint-phase-guidance-minimum.json`
+confirms metadata selected7/violations0 in146.209746s, style8files/0errors and
+LOCAL42links/0findings with bytes unchanged. These are scoped source/policy
+results, not a hosted candidate or deployment acceptance.
+
+The approved Conftest correction was submitted as a separate normal local
+commit after explicit Commitizen4.15.1 and the new pinned local-staged controller.
+Receipt `/tmp/hy-home-spec0211-conftest-correction-commit-receipt.json` binds
+exact four-file index treeb4dd0a178 and local-staged PASS in3.327240s, unchanged
+source/index, and ordinary commit bc6c64aa9. This is an earlier logical commit,
+not this Task's final self-SHA. Required hooks with no matching paths were
+SKIPPED, not promoted to PASS. The separate lint-phase commit still requires
+its final package-document minimum and exact-index style check. One combined
+PR submission will preserve distinct logical commits and produce one new
+candidate observation; further required failure remains visible and stops.
+
+The first package-document minimum failed because Root wrote several work unit
+IDs in the Evidence Work Unit cell, which is scalar. Receipt
+`/tmp/hy-home-spec0211-lint-phase-package-minimum.json` preserves that actual
+FAIL and the secondary proof/type diagnostics. Root corrected only that cell
+to W7, whose Plan assignment covers the recorded criteria; no validator,
+Registry or historical source was changed. Corrected input receipt
+`/tmp/hy-home-spec0211-lint-phase-package-corrected-minimum.json` passed metadata
+selected3/violations0 in146.569866s, style3files/0errors and LOCAL11links/0findings,
+with bytes unchanged. The original 149 violations therefore remain a failed
+input observation, not current unresolved archive defects or a rewritten history.
+Actual registered manifest validation also passed; its receipt is
+`/tmp/hy-home-spec0211-lint-phase-manifest-check.json`, elapsed UNKNOWN. Final
+result-only Task minimum and the immediate exact-index style check bind the
+submission without another source/aggregate/full QA run.
+
+Shared quality policy owns phase routing. Git workflow, completion checklist,
+style Skill, commit-message prompt, two hook warnings and scripts README consume
+it. Commit order is message validation, staged style, then ordinary commit
+without index changes. Server candidate style precedes selected builds; feature
+push/main do not replay it. No deployment workflow exists. Future deployment
+requires successful server checks for exact promoted revision/configuration
+and separate deployment evidence. Review/source PASS is not deployment approval.
+Primary [pre-commit documentation](https://pre-commit.com/#pre-commit-run)
+confirms staged execution is distinct from explicit all-files/ref-range modes;
+shared pins do not make different local/PR trust identities interchangeable.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -1761,6 +1850,7 @@ deployment and remote artifact evidence remain distinct from local checks.
 | Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | pending |
 | Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | accepted |
 | Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | pending |
+| Lint phase ownership | 2, 3, 5 | W7 | Focused RED/GREEN, pinned staged isolation, exact-source security/policy review and guidance minimum | Final source receipt506263ea; eight guidance hashes; no aggregate replay | PASS | Local commit and server lint/format ownership | accepted |
 | Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | accepted |
 
 ## Review and Completion

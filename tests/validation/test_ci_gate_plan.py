@@ -1423,9 +1423,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         )
         # These exact pairs are registered internal gate invocations rather than
-        # validator rebinds, so the parity check admits them by design. Every
-        # other (path, argv) combination below must still be rejected, which is
-        # what keeps `run-ci-precommit.sh` from being reachable with arguments.
+        # validator rebinds, so the parity check admits them by design. The
+        # staged authoring mode remains outside the public gate; only the exact
+        # authenticated PR mode is reachable here.
         admitted_pairs = {
             (runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",)),
             (
@@ -1446,22 +1446,34 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 pathlib.PurePosixPath("scripts/validation/check-storybook-contract.sh"),
                 (),
             ),
-            (pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"), ()),
+            (
+                pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
+                ("--mode", "pr-merge"),
+            ),
         }
+        candidate_argv = (
+            (),
+            ("check-diff-hygiene",),
+            ("--mode", "pr-merge"),
+            ("--mode", "local-staged"),
+            ("--mode", "unknown"),
+        )
         self.assertTrue(
             admitted_pairs.issubset(
-                {
-                    (path, argv)
-                    for path in forbidden_paths
-                    for argv in ((), ("check-diff-hygiene",))
-                }
+                {(path, argv) for path in forbidden_paths for argv in candidate_argv}
                 | {(runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",))}
             )
         )
         for context in runner.ExecutionContext:
             for path in forbidden_paths:
-                for argv in ((), ("check-diff-hygiene",)):
-                    if (path, argv) in admitted_pairs:
+                for argv in candidate_argv:
+                    if (path, argv) in admitted_pairs and (
+                        path
+                        != pathlib.PurePosixPath(
+                            "scripts/validation/run-ci-precommit.sh"
+                        )
+                        or context is runner.ExecutionContext.PULL_REQUEST
+                    ):
                         continue
                     with self.subTest(context=context, path=path, argv=argv):
                         with self.assertRaises(contract.GateContractError) as raised:
