@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.0.5"
+version: "1.0.6"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -78,6 +78,7 @@ Data and control flows include only the interactions specified in this section a
   - **Metrics Flow**: cAdvisor/Exporters/Services -> Prometheus; Alloy self-metrics -> Prometheus scrape
   - **Logs Flow**: Docker Logs -> Alloy -> Loki -> SeaweedFS
   - **Traces Flow**: App (OTLP) -> Alloy -> Tempo -> SeaweedFS
+  - **Quality Metrics Flow**: k6 (OTLP) -> per-run metrics ingress -> authenticated Alloy receiver -> Prometheus; HOME delivery remains unverified (SPEC-0214)
   - **Profiles Flow**: declared Alloy pprof sources -> Pyroscope; collection success remains unverified
 - **Storage Strategy**:
   - Metrics: Prometheus local TSDB

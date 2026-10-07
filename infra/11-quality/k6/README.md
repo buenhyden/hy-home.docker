@@ -1,10 +1,10 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.4.1"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2026-03-26"
 ---
 
@@ -90,7 +90,22 @@ bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행
 
 ### 실행 manifest
 
-`hyhome.quality-run/v1` manifest는 `run_id` UUID, 양의 `attempt`,
+현재 스키마는 `hyhome.quality-run/v2`이며 v1과 같은 필드에 `telemetry`
+객체(`{"mode": "none"}` 또는 `{"mode": "otlp"}`) 하나를 더 요구합니다. v1 manifest는
+그대로 유효하고 `none`으로 해석합니다. telemetry에 endpoint·자격 증명·속성을 넣으면
+거부합니다(SPEC-0214).
+
+`otlp`이면 executor가 `--metrics-ingress-container`로 지정한 run별 relay를 추가
+피어로 검증합니다. relay는 front 네트워크의 `metrics-ingress` alias, 동일 `run_id`와
+`hyhome.quality.role=metrics-ingress` label, digest 고정 `grafana/alloy` image,
+read-only rootfs, `CapDrop=[ALL]`, host port 없음이어야 하고, 연결 network는 run
+network와 `--metrics-egress-network`로 지정한 HOME Alloy 도달 network 둘뿐이어야 합니다. 설정은
+[`metrics-ingress.alloy`](metrics-ingress.alloy)이며 relay만 HOME Alloy bearer token을
+가집니다. executor가 k6에 OTLP HTTP endpoint와 `project.id`·환경·
+`service.instance.id=<run_id>-a<attempt>` resource 속성을 주입하고
+`--out opentelemetry`를 JSON 출력과 함께 켭니다. 시나리오는 이 값을 바꿀 수 없습니다.
+
+v1 기준 manifest는 `run_id` UUID, 양의 `attempt`,
 `project_id`, 환경, source revision, digest로 고정한 tool image, 시나리오
 SHA-256, mock mode, 정확한 target origin, private CIDR, 요청 경로, 임계값과
 부하·자원 예산을 모두 요구합니다. 알 수 없는 필드와 중복 JSON key를 거부합니다.

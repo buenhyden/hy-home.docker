@@ -37,6 +37,11 @@ services:
         target: /etc/alloy/metrics.alloy
         read_only: true
         bind: {create_host_path: false}
+      - type: bind
+        source: ${METRICS_ALLOY_TOKEN:?synthetic token file required}
+        target: /run/secrets/quality_otlp_token
+        read_only: true
+        bind: {create_host_path: false}
     networks: [metrics]
   probe:
     image: ${METRICS_PROBE_IMAGE:?cached Python digest required}
@@ -49,6 +54,53 @@ services:
     pids_limit: 32
     restart: 'no'
     command: [python, -c, 'import time; time.sleep(300)']
+    networks: [metrics]
+  # Optional k6 stage: k6 -> per-run relay -> Alloy quality receiver.
+  relay:
+    profiles: [k6]
+    image: ${METRICS_ALLOY_IMAGE:?cached Alloy digest required}
+    user: '1000:1000'
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: '0.25'
+    pids_limit: 64
+    restart: 'no'
+    tmpfs: ['/tmp:rw,nosuid,nodev,size=64m,uid=1000,gid=1000']
+    command: [run, --storage.path=/tmp/alloy, /etc/alloy/relay.alloy]
+    volumes:
+      - type: bind
+        source: ${METRICS_RELAY_CONFIG:-/dev/null}
+        target: /etc/alloy/relay.alloy
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${METRICS_ALLOY_TOKEN:?synthetic token file required}
+        target: /run/secrets/quality_otlp_token
+        read_only: true
+        bind: {create_host_path: false}
+    networks:
+      metrics:
+        aliases: [metrics-ingress]
+  k6:
+    profiles: [k6]
+    image: ${METRICS_K6_IMAGE:-unused}
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 256m
+    cpus: '0.5'
+    pids_limit: 64
+    restart: 'no'
+    env_file: [{path: '${METRICS_K6_ENV:-/dev/null}', required: false}]
+    command: [run, --no-color, --quiet, --out, opentelemetry, /scripts/scenario.js]
+    volumes:
+      - type: bind
+        source: ${METRICS_K6_SCENARIO:-/dev/null}
+        target: /scripts/scenario.js
+        read_only: true
+        bind: {create_host_path: false}
     networks: [metrics]
 networks:
   metrics:

@@ -147,6 +147,8 @@ secrets:
   # ── Observability ───────────────────────────────────────
   grafana_admin_password:
     file: ./secrets/observability/grafana/grafana_admin_password.txt
+  quality_otlp_token:
+    file: ./secrets/observability/alloy/quality_otlp_token.txt
 
   # ── PostgreSQL ─────────────────────────────────────
   mng_postgres_password:

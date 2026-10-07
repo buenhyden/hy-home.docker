@@ -16,25 +16,49 @@ class QualityObservabilityContractTest(unittest.TestCase):
         cls.config = ALLOY.read_text(encoding="utf-8")
         cls.dashboard = json.loads(K6_DASHBOARD.read_text(encoding="utf-8"))
 
-    def test_otlp_metrics_reuse_receiver_without_changing_trace_path(self) -> None:
+    def test_quality_metrics_use_only_the_authenticated_receiver(self) -> None:
+        receiver = self.config.index('otelcol.receiver.otlp "quality" {')
+        block = self.config[receiver : self.config.index("\n}\n", receiver)]
+        self.assertIn("auth     = otelcol.auth.bearer.quality.handler", block)
+        self.assertIn('endpoint = "0.0.0.0:4319"', block)
         self.assertIn(
-            "metrics = [otelcol.processor.transform.quality_metrics.input]",
-            self.config,
+            "metrics = [otelcol.processor.transform.quality_metrics.input]", block
         )
-        self.assertIn("traces  = [otelcol.processor.batch.default.input]", self.config)
+        self.assertEqual(
+            1,
+            self.config.count(
+                "metrics = [otelcol.processor.transform.quality_metrics.input]"
+            ),
+        )
+        self.assertIn('filename  = "/run/secrets/quality_otlp_token"', self.config)
+        default = self.config.index('otelcol.receiver.otlp "default" {')
+        default_block = self.config[default : self.config.index("\n}\n", default)]
+        self.assertNotIn("metrics", default_block.split("output {")[1])
+        self.assertIn("traces = [otelcol.processor.batch.default.input]", default_block)
         self.assertIn("traces = [otelcol.exporter.otlp.tempo.input]", self.config)
+        compose = (ROOT / "infra/06-observability/docker-compose.yml").read_text()
+        self.assertNotIn(
+            "4319", compose.split("    ports:")[1].split("    depends_on:")[0]
+        )
 
     def test_metric_labels_are_allowlisted_and_required(self) -> None:
+        # Rate condition, response class and producer instance must reach
+        # delta-to-cumulative; unbounded names and URLs must not (SPEC-0214).
         self.assertIn(
-            'keep_keys(attributes, ["project_id", "environment", "service_name"])',
+            'keep_keys(attributes, ["project_id", "environment", "service_name", '
+            '"condition", "expected_response", "method", "status", "scenario"])',
             self.config,
         )
+        self.assertIn('"service.instance.id"])', self.config)
+        for unbounded in ('"name"', '"url"', '"user_id"'):
+            self.assertNotIn(unbounded + ",", self.config.split("keep_keys")[2])
         self.assertIn(
             'source_labels = ["project_id", "environment", "service_name"]',
             self.config,
         )
         self.assertIn(
-            'regex  = "__name__|project_id|environment|service_name|le|quantile"',
+            'regex  = "__name__|project_id|environment|service_name|instance|'
+            'condition|expected_response|method|status|scenario|le|quantile"',
             self.config,
         )
         self.assertNotIn("resource_to_telemetry_conversion = true", self.config)
@@ -66,49 +90,62 @@ class QualityObservabilityContractTest(unittest.TestCase):
         )
         self.assertIn("--stability.level=experimental", compose)
 
+    def k6_expressions(self):
+        stack = list(self.dashboard["panels"])
+        while stack:
+            panel = stack.pop()
+            stack.extend(panel.get("panels", []))
+            for target in panel.get("targets", []) or []:
+                if "k6_" in target.get("expr", ""):
+                    yield panel, target["expr"]
+
     def test_k6_dashboard_filters_every_query_by_run_identity(self) -> None:
+        # The OTLP path carries the run as instance "<run_id>-a<attempt>"
+        # (executor resource attributes); run_id/attempt/testid tags are
+        # dropped by the bounded label allowlist (SPEC-0214).
         variables = {
             item["name"]: item
             for item in self.dashboard["templating"]["list"]
             if "name" in item
         }
-        self.assertTrue(
-            {"project_id", "run_id", "attempt", "testid"} <= variables.keys()
-        )
-        for name in ("project_id", "run_id", "attempt", "testid"):
-            self.assertEqual(".*", variables[name].get("allValue"))
-
-        expressions = [
-            target["expr"]
-            for panel in self.dashboard["panels"]
-            for target in panel.get("targets", [])
-            if "k6_" in target.get("expr", "")
-        ]
+        self.assertTrue({"project_id", "instance", "quantile"} <= variables.keys())
+        self.assertFalse({"run_id", "attempt", "testid"} & variables.keys())
+        self.assertEqual(".*", variables["instance"].get("allValue"))
+        expressions = [expression for _, expression in self.k6_expressions()]
         self.assertTrue(expressions)
         for expression in expressions:
             with self.subTest(expression=expression):
                 self.assertIn('project_id=~"$project_id"', expression)
-                self.assertIn('run_id=~"$run_id"', expression)
-                self.assertIn('attempt=~"$attempt"', expression)
-                self.assertIn('testid=~"$testid"', expression)
+                self.assertIn('instance=~"$instance"', expression)
+                self.assertNotIn("run_id", expression)
+
+    def test_k6_dashboard_shows_millisecond_trends_with_live_variables(self) -> None:
+        # OTLP trends arrive as *_milliseconds histograms, so a seconds unit
+        # would mislabel every latency panel by 1000x.
+        text = json.dumps(self.dashboard)
+        self.assertNotIn("$quantile_stat", text)
+        self.assertNotRegex(text, r'"(unit|value)": "s"')
 
     def test_k6_dashboard_does_not_average_reported_percentiles(self) -> None:
-        expressions = [
-            target["expr"]
-            for panel in self.dashboard["panels"]
-            for target in panel.get("targets", [])
-            if "k6_" in target.get("expr", "")
-        ]
-
-        for expression in expressions:
+        for _, expression in self.k6_expressions():
             with self.subTest(expression=expression):
                 self.assertNotIn("avg(k6_http_req_duration_", expression)
-                self.assertNotIn("avg by(name, method, status)", expression)
-
+                self.assertNotIn("_$quantile_stat", expression)
+                if "_milliseconds_bucket" in expression:
+                    self.assertTrue(expression.startswith("histogram_quantile("))
+                    self.assertIn("sum by (le", expression)
+        failed = [
+            expression
+            for _, expression in self.k6_expressions()
+            if "k6_http_req_failed_total" in expression
+        ]
+        self.assertTrue(failed)
+        for expression in failed:
+            self.assertIn('condition="nonzero"', expression)
         requests_panel = next(
             panel
-            for panel in self.dashboard["panels"]
-            if panel.get("title") == "Requests by URL"
+            for panel, _ in self.k6_expressions()
+            if panel.get("title") == "Requests by method and status"
         )
         group_by = next(
             item
@@ -116,19 +153,9 @@ class QualityObservabilityContractTest(unittest.TestCase):
             if item["id"] == "groupBy"
         )
         fields = group_by["options"]["fields"]
-        for field in ("Value #D", "Value #E"):
+        self.assertNotIn("name", fields)
+        for field in ("Value #B", "Value #C", "Value #D", "Value #E"):
             self.assertEqual(["lastNotNull"], fields[field]["aggregations"])
-
-        organize = next(
-            item
-            for item in requests_panel["transformations"]
-            if item["id"] == "organize"
-        )
-        renames = organize["options"]["renameByName"]
-        self.assertNotIn("Value #D (mean)", renames)
-        self.assertNotIn("Value #E (mean)", renames)
-        self.assertEqual("p95", renames["Value #D (lastNotNull)"])
-        self.assertEqual("p99", renames["Value #E (lastNotNull)"])
 
     def test_perf_results_use_rls_view_and_sql_literal_filters(self) -> None:
         dashboard = json.loads((K6_DASHBOARD.parent / "perf-results.json").read_text())

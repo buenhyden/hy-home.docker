@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-10-03"
 ---
 
@@ -26,10 +26,10 @@ created: "2026-10-03"
 
 ### In Scope
 
-- master 한 개와 worker 두 개의 독립 LAB closure
+- master 한 개와 `LAB_LOCUST_EXPECT_WORKERS`개 worker의 독립 LAB closure
 - 승인된 scenario의 읽기 전용 mount
 - fresh result directory의 CSV summary와 full-history 출력
-- worker 수, 사용자 수, 생성률, 실행 시간, 종료 코드 제한
+- worker 수, 사용자 수, 생성률, 실행 시간, 종료 코드 제한. 전체 상한은 worker 대기 상한 + `--run-time` + `--stop-timeout`이며, master가 끝나면 worker는 quit 메시지로 종료한다. pin된 image에는 OpenTelemetry SDK가 없어 `--otel`은 사용하지 않는다(SPEC-0214).
 
 ### Out of Scope
 
@@ -69,7 +69,8 @@ labs/
 | **LAB_LOCUST_SCENARIO_DIR** | Yes | 검토된 locustfile.py가 있는 read-only source |
 | **LAB_LOCUST_RESULT_DIR** | Yes | 비어 있는 실행별 결과 directory |
 | **LAB_LOCUST_NETWORK_NAME** | No | LAB 전용 network 이름 |
-| **LAB_LOCUST_EXPECT_WORKERS** | No | master가 기다릴 worker 수; 기본값 2 |
+| **LAB_LOCUST_EXPECT_WORKERS** | No | worker replica 수이자 master가 기다릴 worker 수(한 입력); 기본값 2 |
+| **LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT** | No | worker 접속 대기 상한(초); 부족하면 부하 없이 non-zero로 종료; 기본값 60 |
 | **LAB_LOCUST_USERS** | No | 최대 동시 사용자 수; 기본값 10 |
 | **LAB_LOCUST_SPAWN_RATE** | No | 초당 사용자 생성률; 기본값 1 |
 | **LAB_LOCUST_RUN_TIME** | No | bounded 실행 시간; 기본값 30s |

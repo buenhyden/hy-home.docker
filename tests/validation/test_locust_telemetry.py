@@ -34,6 +34,23 @@ class LocustTelemetryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             module.record_event({}, "authorization", "health", 1, None, 200)
 
+    def test_lab_workers_and_expected_count_share_one_bounded_input(self):
+        import yaml
+
+        lab = yaml.safe_load((PATH.parents[3] / "labs/locust.yml").read_text())
+        master = lab["services"]["lab-locust-master"]["command"]
+        worker = lab["services"]["lab-locust-worker"]
+        expected = master[master.index("--expect-workers") + 1]
+        self.assertEqual("${LAB_LOCUST_EXPECT_WORKERS:-2}", expected)
+        self.assertEqual(expected, worker["deploy"]["replicas"])
+        self.assertEqual(
+            "${LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT:-60}",
+            master[master.index("--expect-workers-max-wait") + 1],
+        )
+        for key in ("--run-time", "--stop-timeout", "--exit-code-on-error"):
+            self.assertIn(key, master)
+        self.assertNotIn("--otel", master)
+
     def test_lab_readiness_uses_image_python_not_external_pgrep(self):
         import yaml
 

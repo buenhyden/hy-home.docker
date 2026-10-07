@@ -1,10 +1,10 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-01-12"
 ---
 
@@ -27,10 +27,10 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
 
 ### In Scope
 
-- **Ingestion**: OTLP(gRPC/HTTP), Docker 소켓 디스커버리.
+- **Ingestion**: OTLP(gRPC/HTTP), Docker 소켓 디스커버리. 공개 4317/4318은 trace만 받고, 품질 metrics는 `config.home.alloy`의 인증된 OTLP HTTP 수신기(4319, host 비공개, secret `quality_otlp_token`)로만 받습니다(SPEC-0214).
 - **Processing**: 대상 재레이블링, 메타데이터 보강, 배치 처리.
 - **Exporting**:
-  - Metrics -> Prometheus가 Alloy `/metrics`를 직접 scrape함; self remote-write는 제거됨
+  - Metrics -> Prometheus가 Alloy `/metrics`를 직접 scrape함; self remote-write는 제거됨. 품질 OTLP metrics는 project·environment·service와 k6의 `condition`·`expected_response`·`method`·`status`·`scenario`·producer `instance`만 남긴 뒤 delta→cumulative 변환과 remote write로 전달합니다.
   - Logs -> Loki
   - Traces -> Tempo
   - Profiling -> 선언된 Go pprof/SeaweedFS scrape 소스에서 Pyroscope writer로 전달
