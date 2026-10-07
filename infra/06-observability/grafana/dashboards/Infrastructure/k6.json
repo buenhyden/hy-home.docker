@@ -228,7 +228,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(k6_vus{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "sum(k6_vus{project_id=~\"$project_id\", instance=~\"$instance\"})",
           "instant": false,
           "legendFormat": "vus",
           "range": true,
@@ -240,7 +240,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_duration_$quantile_stat",
@@ -253,7 +253,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_s",
@@ -266,7 +266,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "avg(round(k6_http_req_failed_rate{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}, 0.1)*100)",
+          "expr": "100 * sum(rate(k6_http_req_failed_total{project_id=~\"$project_id\", instance=~\"$instance\", condition=\"nonzero\"}[$__rate_interval])) / sum(rate(k6_http_req_failed_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "hide": true,
           "instant": false,
           "legendFormat": "http_req_failed",
@@ -279,7 +279,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"false\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"false\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_s_errors",
@@ -357,7 +357,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "sum(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -422,7 +422,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"false\"})",
+          "expr": "sum(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"false\"})",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -486,7 +486,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "instant": false,
           "interval": "",
           "legendFormat": "__auto",
@@ -558,7 +558,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -654,7 +654,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "avg(irate(k6_data_sent_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}[$__rate_interval]))",
+          "expr": "avg(irate(k6_data_sent_bytes_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "data_sent",
           "range": true,
@@ -667,7 +667,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "avg(irate(k6_data_received_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}[$__rate_interval]))",
+          "expr": "avg(irate(k6_data_received_bytes_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "data_received",
@@ -777,7 +777,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_iteration_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_iteration_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "instant": false,
           "legendFormat": "iteration_duration_$quantile_stat",
           "range": true,
@@ -790,7 +790,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(k6_dropped_iterations_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "sum(k6_dropped_iterations_total{project_id=~\"$project_id\", instance=~\"$instance\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "dropped_iterations",
@@ -912,7 +912,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_blocked_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_blocked_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_blocked_$quantile_stat",
@@ -925,7 +925,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_tls_handshaking_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_tls_handshaking_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_tls_handshaking_$quantile_stat",
@@ -938,7 +938,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_sending_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_sending_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_sending_$quantile_stat",
@@ -951,7 +951,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_waiting_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_waiting_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_waiting_$quantile_stat",
@@ -964,7 +964,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_receiving_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_receiving_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_receiving_$quantile_stat",
@@ -977,7 +977,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_duration_$quantile_stat",
@@ -1132,7 +1132,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_duration_$quantile_stat",
@@ -1145,7 +1145,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"true\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"true\"}[$__rate_interval])))",
           "instant": false,
           "legendFormat": "success_http_req_duration_$quantile_stat",
           "range": true,
@@ -1157,7 +1157,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max(k6_http_req_duration_$quantile_stat{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"false\"})",
+          "expr": "histogram_quantile($quantile, sum by (le) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"false\"}[$__rate_interval])))",
           "hide": false,
           "instant": false,
           "legendFormat": "errors_http_req_duration_$quantile_stat",
@@ -1327,7 +1327,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "http_req_s",
           "range": true,
@@ -1339,7 +1339,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"false\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"false\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_s_errors",
@@ -1352,7 +1352,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\", expected_response=\"true\"}[$__rate_interval]))",
+          "expr": "sum(irate(k6_http_reqs_total{project_id=~\"$project_id\", instance=~\"$instance\", expected_response=\"true\"}[$__rate_interval]))",
           "hide": false,
           "instant": false,
           "legendFormat": "http_req_s_success",
@@ -1506,11 +1506,11 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "min by(name, method, status) (k6_http_req_duration_min{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile(0.5, sum by (le, method, status) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__range])))",
           "format": "table",
           "hide": false,
           "instant": false,
-          "legendFormat": "min",
+          "legendFormat": "p50",
           "range": true,
           "refId": "B"
         },
@@ -1520,11 +1520,11 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max by(name, method, status) (k6_http_req_duration_max{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile(0.9, sum by (le, method, status) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__range])))",
           "format": "table",
           "hide": false,
           "instant": false,
-          "legendFormat": "max",
+          "legendFormat": "p90",
           "range": true,
           "refId": "C"
         },
@@ -1534,7 +1534,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max by(name, method, status) (k6_http_req_duration_p95{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile(0.95, sum by (le, method, status) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__range])))",
           "format": "table",
           "hide": false,
           "instant": false,
@@ -1548,16 +1548,16 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "max by(name, method, status) (k6_http_req_duration_p99{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"})",
+          "expr": "histogram_quantile(0.99, sum by (le, method, status) (rate(k6_http_req_duration_milliseconds_bucket{project_id=~\"$project_id\", instance=~\"$instance\"}[$__range])))",
           "format": "table",
           "hide": false,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "p99",
           "range": true,
           "refId": "E"
         }
       ],
-      "title": "Requests by URL",
+      "title": "Requests by method and status",
       "transformations": [
         {
           "id": "merge",
@@ -1569,13 +1569,13 @@
             "fields": {
               "Value #B": {
                 "aggregations": [
-                  "min"
+                  "lastNotNull"
                 ],
                 "operation": "aggregate"
               },
               "Value #C": {
                 "aggregations": [
-                  "max"
+                  "lastNotNull"
                 ],
                 "operation": "aggregate"
               },
@@ -1595,10 +1595,6 @@
                 "aggregations": [],
                 "operation": "groupby"
               },
-              "name": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
               "status": {
                 "aggregations": [],
                 "operation": "groupby"
@@ -1614,19 +1610,18 @@
             },
             "indexByName": {
               "Time": 0,
-              "Value #B": 4,
-              "Value #C": 5,
-              "Value #D": 6,
-              "Value #E": 7,
-              "method": 2,
-              "name": 1,
-              "status": 3
+              "Value #B": 3,
+              "Value #C": 4,
+              "Value #D": 5,
+              "Value #E": 6,
+              "method": 1,
+              "status": 2
             },
             "renameByName": {
-              "Value #B": "min",
-              "Value #B (min)": "min",
-              "Value #C": "max",
-              "Value #C (max)": "max",
+              "Value #B": "p50",
+              "Value #B (lastNotNull)": "p50",
+              "Value #C": "p90",
+              "Value #C (lastNotNull)": "p90",
               "Value #D": "p95",
               "Value #D (lastNotNull)": "p95",
               "Value #E": "p99",
@@ -1649,181 +1644,6 @@
       "panels": [],
       "title": "Checks",
       "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Success Rate"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": false
-              },
-              {
-                "id": "unit",
-                "value": "%"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Value (mean)"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "check"
-            },
-            "properties": [
-              {
-                "id": "filterable",
-                "value": false
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 40
-      },
-      "id": 12,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "frameIndex": 2,
-        "showHeader": true,
-        "sortBy": [
-          {
-            "desc": true,
-            "displayName": "Value (count)"
-          }
-        ]
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "round(k6_checks_rate{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}, 0.1)",
-          "format": "table",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Checks list",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {
-            "keepLabels": [
-              "__name__",
-              "check"
-            ],
-            "mode": "columns"
-          }
-        },
-        {
-          "id": "groupBy",
-          "options": {
-            "fields": {
-              "Value": {
-                "aggregations": [
-                  "mean"
-                ],
-                "operation": "aggregate"
-              },
-              "check": {
-                "aggregations": [],
-                "operation": "groupby"
-              },
-              "k6_checks_rate": {
-                "aggregations": [
-                  "sum",
-                  "count"
-                ],
-                "operation": "aggregate"
-              }
-            }
-          }
-        },
-        {
-          "id": "calculateField",
-          "options": {
-            "alias": "Success Rate",
-            "binary": {
-              "left": "Value (mean)",
-              "operator": "*",
-              "reducer": "sum",
-              "right": "100"
-            },
-            "mode": "binary",
-            "reduce": {
-              "reducer": "sum"
-            }
-          }
-        },
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [],
-            "fields": {}
-          }
-        }
-      ],
-      "type": "table"
     },
     {
       "datasource": {
@@ -1909,7 +1729,7 @@
             "uid": "Prometheus"
           },
           "editorMode": "code",
-          "expr": "avg(round(k6_checks_rate{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\", testid=~\"$testid\"}, 0.1)*100)",
+          "expr": "100 * sum(rate(k6_checks_total{project_id=~\"$project_id\", instance=~\"$instance\", condition=\"nonzero\"}[$__rate_interval])) / sum(rate(k6_checks_total{project_id=~\"$project_id\", instance=~\"$instance\"}[$__rate_interval]))",
           "instant": false,
           "legendFormat": "k6_checks_rate",
           "range": true,
@@ -1995,103 +1815,64 @@
         "type": "query"
       },
       {
+        "name": "instance",
+        "label": "Run attempt",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "query": {
+          "query": "label_values(k6_http_reqs_total{project_id=~\"$project_id\"}, instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "definition": "label_values(k6_http_reqs_total{project_id=~\"$project_id\"}, instance)",
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
         "current": {
           "text": "All",
           "value": "$__all"
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "definition": "label_values(k6_http_reqs_total{project_id=~\"$project_id\"}, run_id)",
-        "description": "불변 실행 식별자로 결과를 제한합니다.",
-        "allValue": ".*",
-        "includeAll": true,
-        "label": "Run ID",
-        "multi": true,
-        "name": "run_id",
         "options": [],
-        "query": {
-          "query": "label_values(k6_http_reqs_total{project_id=~\"$project_id\"}, run_id)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
         "refresh": 2,
-        "regex": "",
-        "type": "query"
+        "hide": 0,
+        "sort": 2
       },
       {
+        "name": "quantile",
+        "label": "Quantile",
+        "type": "custom",
+        "query": "0.5,0.9,0.95,0.99",
         "current": {
-          "text": "All",
-          "value": "$__all"
+          "text": "0.95",
+          "value": "0.95"
         },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "definition": "label_values(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\"}, attempt)",
-        "description": "같은 실행의 재시도 번호로 결과를 제한합니다.",
-        "allValue": ".*",
-        "includeAll": true,
-        "label": "Attempt",
-        "multi": true,
-        "name": "attempt",
-        "options": [],
-        "query": {
-          "query": "label_values(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\"}, attempt)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "definition": "label_values(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\"}, testid)",
-        "description": "run_id와 같은 값인 호환성 testid 태그로 결과를 제한합니다.",
-        "allValue": ".*",
-        "includeAll": true,
-        "label": "Test ID",
-        "multi": true,
-        "name": "testid",
-        "options": [],
-        "query": {
-          "query": "label_values(k6_http_reqs_total{project_id=~\"$project_id\", run_id=~\"$run_id\", attempt=~\"$attempt\"}, testid)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "",
-        "type": "query"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "datasource": {
-          "type": "prometheus",
-          "uid": "Prometheus"
-        },
-        "definition": "metrics(k6_http_req_duration_)",
-        "description": "Statistic for Trend Metrics Queries. The available options depend on the values of the K6_PROMETHEUS_RW_TREND_STATS setting.",
-        "includeAll": false,
-        "label": "Trend Metrics Query",
-        "name": "quantile_stat",
-        "options": [],
-        "query": {
-          "query": "metrics(k6_http_req_duration_)",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/http_req_duration_(min|max|count|sum|avg|med|p[0-9]+)/g",
-        "sort": 2,
-        "type": "query"
+        "options": [
+          {
+            "selected": false,
+            "text": "0.5",
+            "value": "0.5"
+          },
+          {
+            "selected": false,
+            "text": "0.9",
+            "value": "0.9"
+          },
+          {
+            "selected": true,
+            "text": "0.95",
+            "value": "0.95"
+          },
+          {
+            "selected": false,
+            "text": "0.99",
+            "value": "0.99"
+          }
+        ],
+        "hide": 0,
+        "multi": false,
+        "includeAll": false
       },
       {
         "baseFilters": [],

@@ -557,6 +557,7 @@ class K6ResultContractTests(unittest.TestCase):
             "metrics-ingress:4318", settings["K6_OTEL_HTTP_EXPORTER_ENDPOINT"]
         )
         self.assertEqual("http/protobuf", settings["K6_OTEL_EXPORTER_PROTOCOL"])
+        self.assertEqual("k6_", settings["K6_OTEL_METRIC_PREFIX"])
         self.assertEqual(
             "project.id=sample-a,deployment.environment.name=test,"
             "service.instance.id=12345678-1234-4abc-8def-1234567890ab-a1",

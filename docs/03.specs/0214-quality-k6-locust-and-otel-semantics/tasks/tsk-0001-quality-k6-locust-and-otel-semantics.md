@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0214-TSK-0001"
 parent_ids:
@@ -122,6 +122,38 @@ own `compose down`, and the rerun reported exact cleanup.
 
 The real-target executor run (guard plus WireMock plus ingress on HOME), the
 HOME relay and HOME Alloy recreation are `NOT_RUN`.
+
+### W1 Follow-up: Dashboard on the Verified OTLP Shape
+
+The harness printed the metric names and labels that real k6 OTLP output
+produces through the relay. Before the prefix setting the names were
+`http_reqs_total`, `http_req_failed_total`, `data_sent_bytes_total`,
+`iterations_total` and `*_milliseconds_bucket/_count/_sum` for every trend,
+and there was no `vus` series. The labels were `environment`,
+`expected_response`, `instance`, `method`, `project_id`, `scenario`,
+`service_name` and `status`. The `Infrastructure/k6` dashboard expected
+`k6_*_rate`, `_p95`-style quantile gauges and `run_id`/`attempt`/`testid`
+labels. That is the Prometheus remote-write output shape, so no panel could
+match this path, and with the previous transform none could match at all.
+
+The executor now sets `K6_OTEL_METRIC_PREFIX=k6_`. The dashboard filters by
+`project_id` and `instance` (`<run_id>-a<attempt>`). Trends use
+`histogram_quantile($quantile, sum by (le) (rate(..._milliseconds_bucket…)))`,
+the failure and check ratios use `condition="nonzero"` over the total, and
+the data metrics use `_bytes_total`. "Requests by URL" became "Requests by
+method and status" (p50/p90/p95/p99). "Checks list" was removed because
+check names are dropped as unbounded. The JSON formatting is unchanged, so the
+diff shows only substantive changes.
+
+The harness substitutes the variables and runs every k6 dashboard query
+against the isolated Prometheus after a 20 s k6 run. 28 of 30 queries return
+data. The two empty ones are `k6_checks_total` and
+`k6_dropped_iterations_total`; the synthetic scenario has no checks and drops
+no iterations. A first attempt with `$__rate_interval=1m` returned empty
+`rate()` results because the run's last samples aged out of the window. The
+harness uses `5m`, since the check concerns query shape, not timing. Failed
+requests equal Rate `nonzero` (40). The dashboard tests failed 14 times
+against the previous JSON (RED) and pass now. Live Grafana is `NOT_RUN`.
 
 ## Evidence
 

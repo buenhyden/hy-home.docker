@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2026-01-12"
 ---
 
@@ -286,7 +286,7 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 | `Infrastructure/etcd-cluster` | `hyhome-etcd` | monitoring-mixins etcd/etcd.json (2026-09-24) |
 | `Infrastructure/haproxy-overview` | `hyhome-haproxy` | grafana.com dashboard 12693 revision 14 (2026-04-11) |
 | `Infrastructure/perf-results` | `hyhome-perf-results` | Local dashboard: `perf_db.quality.run_results` security-invoker view와 프로젝트 RLS; datasource·실제 조회 미승인 |
-| `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30); SPEC-0203에서 `project_id`/`run_id`/`attempt` 필터와 기존 `testid` 계열을 유지하는 명시적 `All=.*` 호환값을 로컬 적용 |
+| `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30)을 SPEC-0214에서 k6 OTLP 출력 형태로 재지정: `project_id`와 run attempt `instance`(`<run_id>-a<attempt>`, `All=.*`) 필터, `k6_` 접두사, millisecond histogram의 `histogram_quantile($quantile, sum by (le) …)`, `condition="nonzero"` 기반 실패율. URL·check 이름은 무한 label이라 버리므로 URL별·check별 panel 대신 method/status별 분위수와 집계 check 비율만 둡니다. 격리 harness가 실제 k6 출력에서 30개 중 28개 query의 데이터를 확인(나머지 2개는 check·dropped iteration이 없는 시나리오) |
 | `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
 | `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |
 | `Infrastructure/kafka-consumer-lag` | `hyhome-kafka-consumer-lag` | grafana.com dashboard 7589 revision 5 (2018-08-21) |

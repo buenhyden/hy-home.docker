@@ -90,49 +90,55 @@ class QualityObservabilityContractTest(unittest.TestCase):
         )
         self.assertIn("--stability.level=experimental", compose)
 
+    def k6_expressions(self):
+        stack = list(self.dashboard["panels"])
+        while stack:
+            panel = stack.pop()
+            stack.extend(panel.get("panels", []))
+            for target in panel.get("targets", []) or []:
+                if "k6_" in target.get("expr", ""):
+                    yield panel, target["expr"]
+
     def test_k6_dashboard_filters_every_query_by_run_identity(self) -> None:
+        # The OTLP path carries the run as instance "<run_id>-a<attempt>"
+        # (executor resource attributes); run_id/attempt/testid tags are
+        # dropped by the bounded label allowlist (SPEC-0214).
         variables = {
             item["name"]: item
             for item in self.dashboard["templating"]["list"]
             if "name" in item
         }
-        self.assertTrue(
-            {"project_id", "run_id", "attempt", "testid"} <= variables.keys()
-        )
-        for name in ("project_id", "run_id", "attempt", "testid"):
-            self.assertEqual(".*", variables[name].get("allValue"))
-
-        expressions = [
-            target["expr"]
-            for panel in self.dashboard["panels"]
-            for target in panel.get("targets", [])
-            if "k6_" in target.get("expr", "")
-        ]
+        self.assertTrue({"project_id", "instance", "quantile"} <= variables.keys())
+        self.assertFalse({"run_id", "attempt", "testid"} & variables.keys())
+        self.assertEqual(".*", variables["instance"].get("allValue"))
+        expressions = [expression for _, expression in self.k6_expressions()]
         self.assertTrue(expressions)
         for expression in expressions:
             with self.subTest(expression=expression):
                 self.assertIn('project_id=~"$project_id"', expression)
-                self.assertIn('run_id=~"$run_id"', expression)
-                self.assertIn('attempt=~"$attempt"', expression)
-                self.assertIn('testid=~"$testid"', expression)
+                self.assertIn('instance=~"$instance"', expression)
+                self.assertNotIn("run_id", expression)
 
     def test_k6_dashboard_does_not_average_reported_percentiles(self) -> None:
-        expressions = [
-            target["expr"]
-            for panel in self.dashboard["panels"]
-            for target in panel.get("targets", [])
-            if "k6_" in target.get("expr", "")
-        ]
-
-        for expression in expressions:
+        for _, expression in self.k6_expressions():
             with self.subTest(expression=expression):
                 self.assertNotIn("avg(k6_http_req_duration_", expression)
-                self.assertNotIn("avg by(name, method, status)", expression)
-
+                self.assertNotIn("_$quantile_stat", expression)
+                if "_milliseconds_bucket" in expression:
+                    self.assertTrue(expression.startswith("histogram_quantile("))
+                    self.assertIn("sum by (le", expression)
+        failed = [
+            expression
+            for _, expression in self.k6_expressions()
+            if "k6_http_req_failed_total" in expression
+        ]
+        self.assertTrue(failed)
+        for expression in failed:
+            self.assertIn('condition="nonzero"', expression)
         requests_panel = next(
             panel
-            for panel in self.dashboard["panels"]
-            if panel.get("title") == "Requests by URL"
+            for panel, _ in self.k6_expressions()
+            if panel.get("title") == "Requests by method and status"
         )
         group_by = next(
             item
@@ -140,19 +146,9 @@ class QualityObservabilityContractTest(unittest.TestCase):
             if item["id"] == "groupBy"
         )
         fields = group_by["options"]["fields"]
-        for field in ("Value #D", "Value #E"):
+        self.assertNotIn("name", fields)
+        for field in ("Value #B", "Value #C", "Value #D", "Value #E"):
             self.assertEqual(["lastNotNull"], fields[field]["aggregations"])
-
-        organize = next(
-            item
-            for item in requests_panel["transformations"]
-            if item["id"] == "organize"
-        )
-        renames = organize["options"]["renameByName"]
-        self.assertNotIn("Value #D (mean)", renames)
-        self.assertNotIn("Value #E (mean)", renames)
-        self.assertEqual("p95", renames["Value #D (lastNotNull)"])
-        self.assertEqual("p99", renames["Value #E (lastNotNull)"])
 
     def test_perf_results_use_rls_view_and_sql_literal_filters(self) -> None:
         dashboard = json.loads((K6_DASHBOARD.parent / "perf-results.json").read_text())

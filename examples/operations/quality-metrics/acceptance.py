@@ -23,11 +23,27 @@ TAGS = {
 TOKEN_PATH = "/run/secrets/quality_otlp_token"
 K6_TAG = "grafana/k6:2.2.0"
 RELAY = ROOT / "infra/11-quality/k6/metrics-ingress.alloy"
+DASHBOARD = ROOT / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
+
+
+def dashboard_expressions(dashboard):
+    stack = list(dashboard["panels"])
+    while stack:
+        panel = stack.pop()
+        stack.extend(panel.get("panels", []))
+        for target in panel.get("targets", []) or []:
+            if "k6_" in target.get("expr", ""):
+                yield target["expr"]
+
+
 K6_SCENARIO = """import http from 'k6/http';
-export const options = { vus: 1, iterations: 12 };
+import { sleep } from 'k6';
+// Long enough for several 5 s OTLP exports, so rate() has two samples.
+export const options = { vus: 1, duration: '20s' };
 export default function () {
   http.get('http://prometheus:9090/-/healthy');
   http.get('http://prometheus:9090/synthetic-missing');
+  sleep(0.5);
 }
 """
 
@@ -466,10 +482,24 @@ def main():
                 2,
                 timeout=60,
             )
-            expect_value(
+            # Every 404 is an unexpected response and a nonzero Rate sample.
+            failed = query(
                 'sum({__name__=~".*http_reqs.*",project_id="metrics-rehearsal",'
-                'expected_response="false"})',
-                12,
+                'expected_response="false"})'
+            )
+            nonzero = query(
+                'sum({__name__=~".*http_req_failed.*",project_id="metrics-rehearsal",'
+                'condition="nonzero"})'
+            )
+            if (
+                not failed
+                or not nonzero
+                or failed[0]["value"][1] != nonzero[0]["value"][1]
+            ):
+                raise AssertionError("Failed request count and Rate nonzero disagree")
+            print(
+                f"PASS failed requests = Rate nonzero = {failed[0]['value'][1]}",
+                flush=True,
             )
             labels = query('{__name__=~".*http_reqs.*",project_id="metrics-rehearsal"}')
             for row in labels:
@@ -479,6 +509,44 @@ def main():
                 "PASS k6 OTel through relay keeps condition, instance and status",
                 flush=True,
             )
+            # The shared k6 dashboard must return data on this exact shape.
+            dashboard = json.loads(DASHBOARD.read_text())
+            empty = []
+            checked = 0
+            for expression in dashboard_expressions(dashboard):
+                concrete = (
+                    expression.replace("$project_id", "metrics-rehearsal")
+                    .replace("$instance", ".*")
+                    .replace("$quantile", "0.95")
+                    .replace("$__rate_interval", "5m")
+                    .replace("$__range", "5m")
+                )
+                checked += 1
+                if not query(concrete):
+                    empty.append(expression)
+            required = (
+                "k6_http_reqs_total",
+                "k6_http_req_failed_total",
+                "k6_http_req_duration_milliseconds_bucket",
+            )
+            answered = [
+                item for item in dashboard_expressions(dashboard) if item not in empty
+            ]
+            missing = [
+                name for name in required if not any(name in item for item in answered)
+            ]
+            if missing:
+                raise AssertionError(f"Dashboard returns no data for {missing}")
+            print(
+                f"PASS k6 dashboard queries: {checked - len(empty)}/{checked} return data",
+                flush=True,
+            )
+            for expression in empty:
+                print(
+                    "INFO empty dashboard query (no matching k6 metric in this run):",
+                    expression[:120],
+                    flush=True,
+                )
 
         # Exact transport replay must not double count a delta stream.
         duplicate = payload(

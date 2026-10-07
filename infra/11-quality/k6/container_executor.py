@@ -221,6 +221,7 @@ def _telemetry_arguments(manifest: dict[str, Any]) -> list[str]:
         "K6_OTEL_HTTP_EXPORTER_URL_PATH": "/v1/metrics",
         "K6_OTEL_HTTP_EXPORTER_INSECURE": "true",
         "K6_OTEL_SERVICE_NAME": "k6",
+        "K6_OTEL_METRIC_PREFIX": "k6_",
         "K6_OTEL_EXPORT_INTERVAL": "5s",
         "OTEL_RESOURCE_ATTRIBUTES": resource,
     }

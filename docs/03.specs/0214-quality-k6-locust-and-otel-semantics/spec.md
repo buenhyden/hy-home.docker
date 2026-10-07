@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0214"
 parent_ids:
@@ -66,7 +66,12 @@ which the pinned image cannot export.
 6. Locust worker replicas and `--expect-workers` derive from one input.
    `--expect-workers-max-wait` bounds the wait, and a run that cannot reach the
    expected count exits non-zero without starting load.
-7. Run, attempt, verdict, artifact and checksum records stay relational. A
+7. The shared k6 Grafana dashboard reads the OTLP shape that reaches
+   Prometheus: `k6_` names, run attempt as `instance`, millisecond histograms
+   through `histogram_quantile` and the failure ratio from the `condition`
+   counter. Panels that need URL or check names, which are dropped as
+   unbounded, are replaced or removed.
+8. Run, attempt, verdict, artifact and checksum records stay relational. A
    `perf_db` time-series table is added only for a named query consumer, with
    its time axis, precision, unique key, retention and replay rules decided
    first.
@@ -78,8 +83,9 @@ which the pinned image cannot export.
 2. Executor unit tests prove the OTLP peer contract, the injected environment
    and rejection before traffic.
 3. The isolated metrics harness shows separate `condition` and instance series,
-   rejects an unauthenticated producer, and keeps the existing temporality,
-   histogram, replay, outage and restart results.
+   rejects an unauthenticated producer, keeps the existing temporality,
+   histogram, replay, outage and restart results, and answers the dashboard's
+   own queries from real k6 output.
 4. The Locust LAB renders one worker input for replicas and expected workers,
    and an isolated run with too few workers exits non-zero within the bound.
 5. Configuration, documents and the Task agree on what was observed, and
