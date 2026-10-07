@@ -1,10 +1,10 @@
 ---
 title: "Data Storage and Analytics Tier Boundary"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "ADR-0045"
 parent_ids:
@@ -46,7 +46,8 @@ root Compose and existing operations/verification contracts.
 ### Decision
 
 Adopt the third option. Data keeps mng-db, Supabase, PostgreSQL/Valkey clusters,
-Cassandra, CouchDB, MongoDB, SeaweedFS, InfluxDB, OpenSearch, Neo4j and Qdrant.
+Cassandra, CouchDB, MongoDB, SeaweedFS, OpenSearch, Neo4j and Qdrant.
+ADR-0047 retired InfluxDB from this list.
 Analytics owns Flink, Spark, Trino, Great Expectations, Superset and dbt.
 Each package is a direct tier child and retains its helper/provisioning jobs.
 SeaweedFS stays shared across consumers; dbt stays on PostgreSQL.

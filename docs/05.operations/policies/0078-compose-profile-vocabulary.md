@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.11.0"
+version: "1.11.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -76,7 +76,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `experience` | capability | 관리자 전용 공유 Storybook 정적 UI 검토 | `storybook` | No | 정적 origin startup; `unless-stopped` 재시작 정책은 명시적 중지 전 reboot에도 유지 | current |
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
-| `influxdb` | capability | 시계열 데이터 API | `influxdb` | No | normal service startup | current |
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
 | `lab-locust` | topology | root에서 분리된 Locust master/worker headless 부하 LAB | `lab-locust-master`, `lab-locust-worker` | No | `labs/locust.yml`의 별도 project/network/volume; target 승인 후에만 트래픽 생성 | current |
 | `lakehouse` | capability | Iceberg 테이블 batch·유지보수 작업, SQL 조회, streaming 적재, 데이터 품질 검사와 SeaweedFS REST catalog 저장소 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `seaweedfs-table-bucket`, `spark`, `trino`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations` | No | initialization: seaweedfs-buckets, seaweedfs-table-bucket (table bucket·policy·namespace); 기본 `spark` 명령은 namespace 조회만, 쓰기는 명시적 `run` | current |

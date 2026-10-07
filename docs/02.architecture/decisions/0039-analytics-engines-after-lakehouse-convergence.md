@@ -1,10 +1,10 @@
 ---
 title: "Analytics Engines after Lakehouse Convergence"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "ADR-0039"
 parent_ids:
@@ -40,8 +40,8 @@ configuration. Unrecorded runtime state is not claimed.
 
 ## Decision
 
-- **Time series**: Keep the single InfluxDB 3 Core deployment (same as
-  ADR-0015).
+- **Time series**: ADR-0047 replaces this bullet. InfluxDB is retired and DEV
+  TimescaleDB owns time-series history.
 - **Log/search**: Keep OpenSearch 3.x (same as ADR-0015).
 - **Stream processing**: Flink handles SQL stream processing between Kafka
   topics and Iceberg tables. It is the `lakehouse` profile's JobManager and

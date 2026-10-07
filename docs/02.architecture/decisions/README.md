@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.6.1"
+version: "1.6.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 layer: "architecture"
 ---
 
@@ -85,8 +85,8 @@ docs/02.architecture/decisions/
   OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는
   proposed decision.
 - [`ADR-0039`](./0039-analytics-engines-after-lakehouse-convergence.md):
-  InfluxDB와 OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의
-  Trino가 맡는 accepted decision. ADR-0015를 supersede한다.
+  OpenSearch를 유지하고 스트림 처리는 Flink, OLAP은 Iceberg 위의 Trino가 맡는
+  accepted decision. ADR-0015를 supersede하며, 시계열 항목은 ADR-0047이 대체한다.
 - [`ADR-0040`](./0040-data-hardening-gate-and-staged-expansion.md):
   04-data 하드닝 gate와 단계적 확장을 현재 서비스 기준으로 다시 적은 accepted
   decision. ADR-0019를 supersede한다.
@@ -108,7 +108,7 @@ docs/02.architecture/decisions/
 - [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
   Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
 - [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
-  DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 proposed decision(SPEC-0212).
+  DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision(SPEC-0212, SPEC-0213).
 
 ## Usage
 

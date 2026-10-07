@@ -1,10 +1,10 @@
 ---
 title: "Analytics Services Product Requirements"
-version: "1.1.2"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -17,11 +17,11 @@ created: "2026-03-26"
 
 ### Problem and Goals
 
-This document defines the platform's analytics requirements. Time-series and log search are handled by dedicated storage engines in `04-data` (InfluxDB, OpenSearch), while stream processing and SQL/OLAP analysis are handled by engines in `12-analytics` (Flink, Trino) on top of Iceberg tables (ADR-0039).
+This document defines the platform's analytics requirements. Time-series history is owned by the DEV TimescaleDB engine (ADR-0047), log search by OpenSearch in `04-data`, while stream processing and SQL/OLAP analysis are handled by engines in `12-analytics` (Flink, Trino) on top of Iceberg tables (ADR-0039).
 
 ### Problem Statement
 
-The current implementation holds InfluxDB and OpenSearch compose under `infra/04-data`, and Flink and Trino compose under `infra/12-analytics`. This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
+The current implementation holds OpenSearch compose under `infra/04-data`, and Flink and Trino compose under `infra/12-analytics`. This PRD defines the requirement that these engines remain an optional tier separate from core transactional data: even though the root compose unconditionally includes the files, they do not belong to the `core` profile and do not start without a separate profile selection. ksqlDB and StarRocks, which previously handled stream processing and OLAP, were removed in SPEC-0180 S19 after the Flink and Trino live acceptance (2026-09-24).
 
 ## Requirements
 
@@ -46,7 +46,7 @@ No separately numbered solution-independent external interface requirement was i
 
 ## Acceptance Criteria
 
-- **REQ-0005-FR-0001**: The InfluxDB 3 Core single compose, database name, port `8181`, `/api/v3/write_lp` endpoint/schema, and current healthcheck must match between the documentation and the static source. Token provisioning and authenticated write acceptance are not considered verified until a separate runtime approval.
+- **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213). No root profile, route, environment key, version projection or active operations document may deploy it. Time-series history uses DEV TimescaleDB tables; a hypertable is created only for a named consumer.
 - **REQ-0005-FR-0003**: The OpenSearch documentation must describe, without exaggeration, the single primary stack the current compose proves, the cluster topology selected by the profile, and the secret/volume/healthcheck boundary. Live performance figures (P95, indexing latency) are recorded as success evidence only when separate runtime benchmark evidence exists.
 - **REQ-0005-FR-0005**: Flink must write to the Iceberg table via batch INSERT and checkpointed streaming INSERT, with checkpoints recorded to the host directory. This passed live acceptance on 2026-09-24 (SPEC-0180 Task 0008).
 - **REQ-0005-FR-0006**: Trino must read the same table that Flink wrote, and the Great Expectations suite must pass through Trino. This passed live acceptance on 2026-09-24. Interactive performance figures are recorded only when separate benchmark evidence exists.
@@ -67,13 +67,13 @@ Build a high-performance analytics hub that collects, processes, and analyzes al
 
 ### Key Use Cases
 
-- **STORY-01**: A user wants to query the trend of smart home sensor data over the past year through a dashboard with sub-second latency (InfluxDB).
+- **STORY-01**: A user wants to query the trend of smart home sensor data over the past year through a dashboard with sub-second latency (DEV TimescaleDB).
 - **STORY-02**: An operator wants to perform fast, second-level keyword search over collected microservice logs (OpenSearch).
 - **STORY-03**: A data engineer wants to process Kafka events with SQL, accumulate them into a table, and query the same table with SQL (Flink, Trino).
 
 ### Constraints
 
-- **In Scope**: Analytics requirements, interfaces, and optional-compose execution boundary definitions for InfluxDB, OpenSearch, Flink, and Trino.
+- **In Scope**: Analytics requirements, interfaces, and optional-compose execution boundary definitions for OpenSearch, Flink, and Trino, plus the InfluxDB retirement.
 - **Owned elsewhere**: SPEC-0180 and POL-0094 own the Iceberg catalog, table bucket, and SeaweedFS storage operations.
 - **Out of Scope**: Detailed dashboard design for individual data visualization tools (Grafana).
 - **Non-goals**: Real-time transactional SQL data processing (owned by core PostgreSQL).

@@ -1,10 +1,10 @@
 ---
 title: "데이터 계층 (04-data)"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2025-11-12"
 ---
 
@@ -37,7 +37,6 @@ HOME 공유 상태와 개발 DB, 오브젝트·벡터 저장소, OPTIONAL 데이
 | [couchdb](../../labs/couchdb.md) | 문서 동기화 저장소 | LAB | `couchdb` |
 | [mongodb](../../labs/mongodb.md) | 문서 저장소·replica set | LAB | `mongodb` |
 | [seaweedfs](seaweedfs/) | 공유 S3·Iceberg REST catalog | HOME | `storage`; 관측·AI·Analytics가 함께 사용 |
-| [influxdb](influxdb/) | 시계열 저장소 | OPTIONAL | `influxdb` |
 | [opensearch](opensearch/) | 단일 검색·인덱스 저장소 | OPTIONAL | `opensearch` |
 | [opensearch-cluster](../../labs/opensearch-cluster.md) | 세 노드 검색 토폴로지 | LAB | `opensearch-cluster`; HOME 단일 노드와 별개 |
 | [neo4j](neo4j/) | 그래프 저장소 | OPTIONAL | `graph` |

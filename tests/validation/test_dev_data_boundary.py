@@ -64,6 +64,28 @@ class DevDataBoundaryTests(unittest.TestCase):
             "http://schema-registry:8081",
         )
 
+    def test_dev_consumers_do_not_read_management_postgres_variables(self):
+        # dev-pg listens on a fixed internal 5432 with admin database postgres;
+        # MNG POSTGRES_PORT/POSTGRES_DEFAULT_DB must not steer DEV consumers.
+        consumers = 0
+        for path in sorted((ROOT / "infra").rglob("docker-compose.yml")):
+            text = path.read_text(encoding="utf-8")
+            if "dev-pg" not in text:
+                continue
+            for name, service in (yaml.safe_load(text).get("services") or {}).items():
+                env = service.get("environment") or {}
+                if not isinstance(env, dict) or "dev-pg" not in (
+                    env.get("PGHOST"),
+                    env.get("DBT_DB_HOST"),
+                ):
+                    continue
+                consumers += 1
+                for key, value in env.items():
+                    with self.subTest(service=name, key=key):
+                        self.assertNotIn("POSTGRES_PORT", str(value))
+                        self.assertNotIn("POSTGRES_DEFAULT_DB", str(value))
+        self.assertGreaterEqual(consumers, 3)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -16,9 +16,9 @@ services:
       - /provision/run-feature-provision.sh
     environment:
       PGHOST: dev-pg
-      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGPORT: '5432'
       PGUSER: '${DEV_PG_ADMIN_USER:-postgres}'
-      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PGDATABASE: postgres
       PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/dev_pg_admin_password
       PROVISION_SQL: /provision/dev-pg.sql
       PROVISION_IDENTIFIERS: DBT_DB_USER DBT_DB_NAME DBT_SCHEMA DBT_SOURCE_SCHEMA DBT_SOURCE_OWNER
@@ -62,7 +62,7 @@ services:
     environment:
       DBT_PROFILES_DIR: /config
       DBT_DB_HOST: dev-pg
-      DBT_DB_PORT: '${POSTGRES_PORT:-5432}'
+      DBT_DB_PORT: '5432'
       DBT_DB_USER: '${DBT_DB_USER:-dbt}'
       DBT_DB_NAME: platform_dev
       DBT_SCHEMA: '${DBT_SCHEMA:-analytics}'

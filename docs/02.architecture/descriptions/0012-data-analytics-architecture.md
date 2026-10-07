@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.1.3"
+version: "1.1.4"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:
@@ -27,7 +27,7 @@ created: "2026-03-26"
 `infra/12-analytics` groups stream/batch processing, SQL queries, transformation,
 data quality and BI for data engineers and analysts. The former description
 covered only `04-data/analytics` storage engines; ADR-0045 makes the storage
-versus processing boundary explicit. InfluxDB and OpenSearch remain in Data.
+versus processing boundary explicit. OpenSearch remains in Data; InfluxDB is retired (ADR-0047).
 
 ### System Boundaries
 

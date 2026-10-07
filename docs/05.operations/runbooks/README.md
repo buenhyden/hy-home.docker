@@ -1,10 +1,10 @@
 ---
 title: "운영 런북"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 layer: "operations"
 ---
 
@@ -78,7 +78,6 @@ Runbook은 언제 쓰는지, 어디서 무엇을 입력해 어떤 순서로 실�
 
 | Runbook | ID | 관련 문서 |
 | --- | --- | --- |
-| [Analytics — InfluxDB](0017-influxdb.md) | `RUN-0017` | [Guide](../guides/0017-influxdb.md), [Policy](../policies/0017-influxdb.md) |
 | [Analytics — OpenSearch](0019-opensearch.md) | `RUN-0019` | [Guide](../guides/0019-opensearch.md), [Policy](../policies/0019-opensearch.md) |
 | [Cache and KV — Valkey Cluster](0022-valkey-cluster.md) | `RUN-0022` | [Guide](../guides/0022-valkey-cluster.md), [Policy](../policies/0022-valkey-cluster.md) |
 | [Lake and Object — SeaweedFS](0024-seaweedfs.md) | `RUN-0024` | [Guide](../guides/0024-seaweedfs.md), [Policy](../policies/0024-seaweedfs.md) |

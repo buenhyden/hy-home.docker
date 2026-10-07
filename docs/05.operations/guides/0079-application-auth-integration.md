@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.0"
+version: "0.7.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -422,7 +422,6 @@ TCP router는 두지 않는다.
 | `airflow`, `dozzle`, `gatus`, `grafana`, `kafka-ui`, `open-webui`, `openbao`, `superset` | native OIDC(Dozzle은 IP allowlist도 적용) |
 | `keycloak`, `oauth2-proxy` | identity provider와 ForwardAuth 서비스 자체 |
 | `couchdb`, `haproxy-stats`, `neo4j` | application 관리자 credential |
-| `influxdb` | InfluxDB token(인증은 기본 활성화) |
 | `mongo-express` | mongo-express basic auth(`ME_CONFIG_BASICAUTH=true`) |
 | `open-notebook` | application password와 IP allowlist |
 | `opensearch`(두 variant), `opensearch-dashboards` | OpenSearch security plugin |

@@ -63,7 +63,7 @@ HOME에는 포함되지 않습니다.
 | Profile | `analytics-engineering` (`dev-pg`, `dev-platform-provision`도 함께 선택) |
 | Default command | `debug` — 프로필과 연결을 검증하며 `/tmp`에만 기록 |
 | Side effects | `compile`은 SQL만 렌더링(데이터베이스 기록 없음); `run`/`build`는 `DBT_SCHEMA`에 뷰/테이블을 생성 또는 교체; `--full-refresh`는 증분 모델을 재구성; `test`는 읽기 쿼리만 실행 |
-| Environment keys | `DBT_DB_HOST`와 `DBT_DB_NAME`(필수), `DBT_DB_USER`, `DBT_SCHEMA`, `DBT_THREADS`, `POSTGRES_PORT`; 대상 DB는 `platform_dev`, source schema는 `app`, source owner는 `platform_owner` |
+| Environment keys | `DBT_DB_HOST`와 `DBT_DB_NAME`(필수), `DBT_DB_USER`, `DBT_SCHEMA`, `DBT_THREADS`; `dev-pg` 내부 포트 `5432` 고정; 대상 DB는 `platform_dev`, source schema는 `app`, source owner는 `platform_owner` |
 | Secret | `dbt_db_password` (PG-023); 프로비저닝은 `dev_pg_admin_password`도 읽음 |
 | Grants | 데이터베이스에 대한 `CONNECT`, 소스 스키마에 대한 `USAGE`와 `SELECT`(애플리케이션 소유자가 나중에 생성하는 테이블에 대한 기본 권한 포함), 대상 스키마의 소유권; 데이터베이스에 대한 `CREATE`는 없음 |
 | Writable paths | tmpfs의 `/tmp/dbt/{target,logs,packages}`; 프로젝트와 프로필은 읽기 전용 마운트 |

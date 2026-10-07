@@ -35,6 +35,22 @@ def manifest():
 
 
 class ProjectProvisionTests(unittest.TestCase):
+    def test_login_roles_get_connection_budgets_on_every_run(self):
+        sql = MODULE.sql_for(MODULE.validate(manifest()))
+        for role, limit in (
+            ("platform_migrator", 2),
+            ("platform_runtime", 10),
+            ("platform_reader", 5),
+        ):
+            statement = f"ALTER ROLE {role} CONNECTION LIMIT {limit};"
+            self.assertEqual(1, sql.count(statement))
+            # Outside the activation branch, so reruns reapply the budget.
+            self.assertLess(
+                sql.index("\\endif", sql.index(f"activate_{role.split('_')[1]}")),
+                sql.index(statement),
+            )
+        self.assertNotIn("platform_owner CONNECTION LIMIT", sql)
+
     def test_fixture_has_distinct_roles_and_no_default_business_database(self):
         project = MODULE.validate(manifest())
         sql = MODULE.sql_for(project)
