@@ -33,10 +33,11 @@ is one reviewable commit.
 
 Use focused unit tests for the provisioner and the variable boundary, a
 non-interference render, an isolated `dev-pg` container on a private network
-with synthetic secrets and tmpfs data, and the registered changed-profile
+with synthetic secrets and dedicated named volumes, and the registered changed-profile
 local gate with the pinned staged lint. Remote PR `candidate-quality` owns
 candidate acceptance. The isolated containers use their own project name and
-are removed after the run; no HOME service is touched.
+are removed after the run (the Task records that removal was denied and
+left to the operator); no HOME service is touched.
 
 ## Risks and Rollback
 

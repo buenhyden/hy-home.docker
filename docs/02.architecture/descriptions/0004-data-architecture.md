@@ -68,6 +68,7 @@ No package is split solely to make a folder taxonomy more uniform.
 The PostgreSQL cluster retains Patroni, etcd, pg-router and exporters. Those
 components do not describe HOME's mng-pg topology. SurrealDB stays with its
 sole consumer Open Notebook in `08-ai`. RedisInsight owns only its administration metadata; target engine backups remain owned by the corresponding Data service. Restic stays in `09-platform-ops` as cross-platform orchestration.
+InfluxDB is retired (ADR-0047); DEV TimescaleDB owns time-series history.
 
 ### Data Flow
 

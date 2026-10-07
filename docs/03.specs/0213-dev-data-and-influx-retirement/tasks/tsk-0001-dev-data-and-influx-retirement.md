@@ -43,6 +43,18 @@ existing password. dbt and Debezium already target `dev-pg`/`platform_dev`.
 The Debezium publication is schema-scoped (`app`, `debezium_heartbeat`), not
 `FOR ALL TABLES`. None of this is re-described as a migration.
 
+### W1 Decision and Documents
+
+ADR-0047 moved from `proposed` to `accepted` (0.2.0). REQ-0005 FR-0001 now
+states the retirement, and its problem statement, STORY-01 and scope name DEV
+TimescaleDB. ADR-0039's time-series bullet and ADR-0045's Data list point to
+ADR-0047. AD-0004 drops the `influxdb` package row and states the retirement.
+AD-0012 states it. AD-0019 and AD-0024 drop InfluxDB from their component and
+dependency lists. The ADR index describes ADR-0047 as accepted and notes that
+it replaces ADR-0039's time-series item. `check-document-metadata.py --mode
+check-changed` at commit `12aeec76b` reported `selected=13 violations=0`, and
+the link gate passed.
+
 ### W2 Variable Boundary and Provisioning
 
 `dbt-db-provision`, `dbt` and `debezium-db-provision` read the MNG variables
@@ -105,7 +117,10 @@ The migration helper is retired with the leaf, without a successor. The
 continuing guarantee it held, a verified mapping before data movement, is not
 needed: see the data check below. GDE/POL/RUN-0017 moved byte-identical to
 `docs/98.archive/retired/05.operations/{guides,policies,runbooks}/` with
-`retired` catalog rows sourced from `e6ca3c030`. History, research text other
+`retired` catalog rows sourced from `e6ca3c030`. `git diff -M100%` shows
+three pure renames, and `git cat-file -e` confirms each source path. The
+bodies keep their frozen bytes, including `status: "active"`; the catalog row,
+not the body, records the withdrawal. History, research text other
 than the bound inventory row, and the archive keep their wording. The new
 `test_retired_influxdb_has_no_active_deployment` checks absence from the
 deployable model; it is not a repository-wide string ban. It failed against
@@ -174,7 +189,7 @@ for the operator to remove.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | `violations=0`; links 0 failures | accepted |
+| Decision and documents | 1 | W1 | `check-document-metadata.py --mode check-changed`; link gate | Commit `12aeec76b` | PASS | W1 Decision and Documents | accepted |
 | Variable boundary | 2 | W2 | Non-interference renders; RED/GREEN unit test | `.env.example` with synthetic overrides | PASS | W2 Variable Boundary and Provisioning | accepted |
 | Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | accepted |
 | Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | accepted |
