@@ -96,6 +96,22 @@ tag objects, npm acceptance expiry, and unrelated user configuration.
    credential changes, release publication or historical tag deletion. Actual
    remote settings and results are separately observed or authorized.
 
+### Remaining QA and Review Boundaries
+
+Retained library evidence requires an admitted tracked test and actual API or
+fixture use, regardless of whether the owner resides under tests/lib or
+tests/validation. The directory mirror convention is organizational rather
+than a second proof requirement. Current nonempty, path-safety, semantic-use
+and registration requirements remain.
+
+Keep isolated unittest execution LOCAL even through direct adapter admission.
+Shell syntax validation parses every selected tracked file individually,
+without execution, and preserves inventory failure and the first nonzero code.
+Retire fixed historical filename/count and test-of-test expectations only after
+identifying their continuing behavior owners. Full QA remains an explicitly
+scoped audit; final review covers the frozen logical diff and affected evidence,
+with only changed slices revalidated after correction or result-only records.
+
 ## Acceptance Criteria
 
 1. Removed QA has no remaining active caller; every retained recurring guarantee

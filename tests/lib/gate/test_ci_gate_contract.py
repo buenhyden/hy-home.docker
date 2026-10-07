@@ -118,13 +118,6 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     contract.parse_public_gate_contract(document)
                 self.assertEqual("ci-gate-local-only-gates", caught.exception.code)
 
-    def test_retired_job_roots_are_rejected_by_the_strict_contract(self) -> None:
-        document = contract.load_contract_document(ROOT)
-        document["job_roots"] = []
-        with self.assertRaises(contract.GateContractError) as caught:
-            contract.parse_gate_registry(document, ".github/workflow-contract.yml")
-        self.assertEqual("ci-gate-document-fields", caught.exception.code)
-
     def test_workflow_contract_owns_the_immutable_public_suite_registry(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
@@ -1056,32 +1049,7 @@ class CiGateContractTests(unittest.TestCase):
                 findings = contract.validate_gate_registry(ROOT, candidate)
             self.assert_codes(findings, "ci-gate-entrypoint-invalid")
 
-    def test_retired_profile_grammar_is_rejected_and_local_children_are_exact(
-        self,
-    ) -> None:
-        live = contract.load_contract_document(ROOT)
-        self.assertNotIn("profile_roots", live)
-        self.assertTrue(all("profiles" not in node for node in live["gate_nodes"]))
-        retired_root = json.loads(json.dumps(live))
-        retired_root["profile_roots"] = []
-        with self.subTest(boundary="retired-profile-roots"):
-            with self.assertRaises(contract.GateContractError) as caught:
-                contract.parse_gate_registry(
-                    retired_root,
-                    ".github/workflow-contract.yml",
-                )
-            self.assertEqual("ci-gate-document-fields", caught.exception.code)
-
-        retired_node = json.loads(json.dumps(live))
-        retired_node["gate_nodes"][0]["profiles"] = ["ci"]
-        with self.subTest(boundary="retired-node-profiles"):
-            with self.assertRaises(contract.GateContractError) as caught:
-                contract.parse_gate_registry(
-                    retired_node,
-                    ".github/workflow-contract.yml",
-                )
-            self.assertEqual("ci-gate-kind-fields", caught.exception.code)
-
+    def test_local_aggregate_children_preserve_registered_order(self) -> None:
         candidate = complete_registry()
         wrong_local_children = tuple(
             dataclasses.replace(

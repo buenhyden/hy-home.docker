@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import ast
 import collections
 import copy
 import os
@@ -336,75 +335,6 @@ class MigrationStateTests(unittest.TestCase):
 class ArchiveMinimizationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.archive = archive_api()
-
-    def test_no_census_literal_pins_archive_content(self) -> None:
-        """A count that describes repository content is computed from it.
-
-        Authoring one tombstone during SPEC-0157's design broke eleven
-        hand-maintained counts, one of them encoded in a test's name. Each had
-        to be found and advanced by hand, and finding them was the expensive
-        part.
-        """
-
-        sources = (
-            pathlib.Path("scripts/lib/document_governance/archive.py"),
-            pathlib.Path("tests/lib/document_governance/test_archive.py"),
-            *(
-                path.relative_to(ROOT)
-                for path in sorted((ROOT / "tests/validation/lifecycle").glob("*.py"))
-            ),
-        )
-        offenders = []
-        for source in sources:
-            text = (ROOT / source).read_text(encoding="utf-8")
-            for pattern in (
-                r"tombstones\s*=\s*\d+",
-                r"recovery_rows\s*=\s*\d+",
-                r"decisions\s*=\s*\d+",
-                r"TASK10_RECOVERY_REFERENCE_COUNT\s*=\s*\d+",
-                r"assertEqual\(\s*\d+\s*,\s*len\(inventory\.tombstones\)\)",
-                r"(?:load_task10_recovery_references\(ROOT\)"
-                r"|item\.recovery for item in inventory\.tombstones)"
-                r"[\s\S]{0,240}?assertEqual\(\s*\d+\s*,\s*len\(rows\)\)",
-            ):
-                offenders.extend(
-                    f"{source}:{match}" for match in re.findall(pattern, text)
-                )
-        self.assertEqual([], offenders)
-
-    def test_no_current_repository_spec_package_cardinality_pin(self) -> None:
-        """The current repository surface is derived from its spec directories."""
-
-        source = ROOT / "tests/lib/document_governance/test_spec_packages.py"
-        tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-        offenders = []
-        for method in ast.walk(tree):
-            if not isinstance(method, ast.FunctionDef) or not method.name.startswith(
-                "test_current_repository_"
-            ):
-                continue
-            for call in ast.walk(method):
-                if not (
-                    isinstance(call, ast.Call)
-                    and isinstance(call.func, ast.Attribute)
-                    and call.func.attr == "assertEqual"
-                    and len(call.args) >= 2
-                ):
-                    continue
-                for literal, candidate in (call.args[:2], call.args[1::-1]):
-                    if not (
-                        isinstance(literal, ast.Constant)
-                        and isinstance(literal.value, int)
-                        and isinstance(candidate, ast.Call)
-                        and isinstance(candidate.func, ast.Name)
-                        and candidate.func.id == "len"
-                        and len(candidate.args) == 1
-                        and isinstance(candidate.args[0], ast.Name)
-                        and candidate.args[0].id == "packages"
-                    ):
-                        continue
-                    offenders.append(f"{method.name}:{literal.value}")
-        self.assertEqual([], offenders)
 
     def test_preservation_boundary_is_total_and_exclusive(self) -> None:
         """The two kinds of Stage 98 record must not be conflated.

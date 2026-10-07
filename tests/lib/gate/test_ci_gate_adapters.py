@@ -54,16 +54,6 @@ class ChildRecorder:
 
 
 class CiGateAdapterTests(unittest.TestCase):
-    def test_retired_setup_commands_are_rejected_by_the_argv_contract(self) -> None:
-        for argv in (
-            ("install-python-requirements", "scripts/requirements.txt"),
-            ("prepare-compose-env",),
-        ):
-            with self.subTest(argv=argv):
-                with self.assertRaises(adapters.AdapterError) as caught:
-                    adapters.validate_adapter_argv(argv)
-                self.assertEqual("ci-gate-adapter-command", caught.exception.code)
-
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = pathlib.Path(self.temporary.name).resolve()
@@ -249,7 +239,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 "ci-gate-adapter-pull-request-range", caught.exception.code
             )
 
-    def test_check_shell_syntax_uses_nul_tracked_paths_and_one_bash_call(
+    def test_check_shell_syntax_checks_each_nul_tracked_path_once(
         self,
     ) -> None:
         result, recorder = self.run_with_recorder(
@@ -262,29 +252,109 @@ class CiGateAdapterTests(unittest.TestCase):
                     b"",
                 ),
                 subprocess.CompletedProcess(("bash",), 0, b"", b""),
+                subprocess.CompletedProcess(("bash",), 0, b"", b""),
             ],
         )
         self.assertEqual(0, result)
         self.assertEqual(
-            (
-                "git",
-                "ls-files",
-                "-z",
-                "--",
-                "scripts/**/*.sh",
-                ".claude/hooks/*.sh",
-            ),
-            recorder.calls[0][0],
+            [
+                (
+                    "git",
+                    "ls-files",
+                    "-z",
+                    "--",
+                    "scripts/**/*.sh",
+                    ".claude/hooks/*.sh",
+                ),
+                ("bash", "-n", "scripts/b.sh"),
+                ("bash", "-n", ".claude/hooks/c.sh"),
+            ],
+            [call[0] for call in recorder.calls],
         )
+
+    def test_check_shell_syntax_preserves_empty_and_inventory_failure(self) -> None:
+        for label, inventory, expected in (
+            ("empty", subprocess.CompletedProcess(("git",), 0, b"", b""), 0),
+            ("git-failure", subprocess.CompletedProcess(("git",), 9, b"", b""), 9),
+        ):
+            with self.subTest(label=label):
+                result, recorder = self.run_with_recorder(
+                    ("check-shell-syntax",), results=[inventory]
+                )
+                self.assertEqual(expected, result)
+                self.assertEqual(1, len(recorder.calls))
+
+    def test_check_shell_syntax_fails_on_a_later_real_bash_input(self) -> None:
+        scripts = self.root / "scripts"
+        scripts.mkdir()
+        (scripts / "valid.sh").write_text("touch syntax-ran\n", encoding="utf-8")
+        (scripts / "invalid.sh").write_text("if true; then\n", encoding="utf-8")
+
+        def tracked_then_real_bash(
+            argv: tuple[str, ...], **_kwargs: object
+        ) -> subprocess.CompletedProcess[bytes]:
+            if argv[0] == "git":
+                return subprocess.CompletedProcess(
+                    argv,
+                    0,
+                    b"scripts/valid.sh\0scripts/invalid.sh\0",
+                    b"",
+                )
+            return REAL_SUBPROCESS_RUN(
+                argv,
+                cwd=self.root,
+                env={"PATH": "/usr/bin", "LANG": "C"},
+                capture_output=True,
+            )
+
+        with mock.patch.object(
+            adapters, "_run_child", side_effect=tracked_then_real_bash
+        ):
+            result = adapters.run_adapter(
+                self.root,
+                ("check-shell-syntax",),
+                {"PATH": "/usr/bin", "LANG": "C"},
+            )
+        self.assertNotEqual(0, result)
+        self.assertFalse((self.root / "syntax-ran").exists())
+
+    def test_check_shell_syntax_stops_after_the_first_failure(self) -> None:
+        result, recorder = self.run_with_recorder(
+            ("check-shell-syntax",),
+            results=[
+                subprocess.CompletedProcess(
+                    ("git",),
+                    0,
+                    b"scripts/a.sh\0scripts/b.sh\0scripts/c.sh\0",
+                    b"",
+                ),
+                subprocess.CompletedProcess(("bash",), 0, b"", b""),
+                subprocess.CompletedProcess(("bash",), 7, b"", b"invalid"),
+            ],
+        )
+        self.assertEqual(7, result)
         self.assertEqual(
-            (
-                "bash",
-                "-n",
-                "scripts/b.sh",
-                ".claude/hooks/c.sh",
-            ),
-            recorder.calls[1][0],
+            [
+                (
+                    "git",
+                    "ls-files",
+                    "-z",
+                    "--",
+                    "scripts/**/*.sh",
+                    ".claude/hooks/*.sh",
+                ),
+                ("bash", "-n", "scripts/a.sh"),
+                ("bash", "-n", "scripts/b.sh"),
+            ],
+            [call[0] for call in recorder.calls],
         )
+
+    def test_run_unittest_is_admitted_only_in_the_local_context(self) -> None:
+        argv = ("run-unittest", "tests.validation.test_one", "-v")
+        self.assertTrue(adapters.admits_adapter_invocation(argv, "local"))
+        for context in ("pull_request", "push", "push_initial", "workflow_dispatch"):
+            with self.subTest(context=context):
+                self.assertFalse(adapters.admits_adapter_invocation(argv, context))
 
     def test_run_unittest_rejects_zero_tests_and_missing_execution_summary(self):
         for output in (b"Ran 0 tests in 0.000s\n\nOK\n", b"", b"OK\n"):

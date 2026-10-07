@@ -141,7 +141,7 @@ ADAPTER_CONTEXTS = MappingProxyType(
     {
         "check-diff-hygiene": _ALL_CONTEXTS,
         "check-shell-syntax": _ALL_CONTEXTS,
-        "run-unittest": _ALL_CONTEXTS,
+        "run-unittest": frozenset({"local"}),
         "verify-metadata-base": frozenset({"pull_request", "push"}),
         "check-commit-range": frozenset({"pull_request"}),
         "install-playwright": _CI_CONTEXTS,
@@ -695,15 +695,17 @@ def _check_shell_syntax(
             "ci-gate-adapter-output",
             "the tracked shell path list is invalid",
         )
-    if not paths:
-        return 0
-    return _returncode(
-        _run_child(
-            ("bash", "-n", *paths),
-            root=root,
-            environ=environ,
+    for path in paths:
+        result = _returncode(
+            _run_child(
+                ("bash", "-n", path),
+                root=root,
+                environ=environ,
+            )
         )
-    )
+        if result != 0:
+            return result
+    return 0
 
 
 def _npm_arguments(arguments: tuple[str, ...]) -> tuple[str, ...]:

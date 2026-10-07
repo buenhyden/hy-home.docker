@@ -1265,7 +1265,7 @@ def render_report(
         f"- **Current records**: {len(records)}",
         f"- **Records with findings**: {semantic_count}",
         f"- **Frontmatter parser failures**: {parse_count}",
-        "- **Enforcement state**: full inventory advisory; changed/new pre-push selection blocking",
+        "- **Enforcement state**: full inventory advisory; changed/new selection blocking",
         "",
         "### Profile Summary",
         "",

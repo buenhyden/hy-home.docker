@@ -3119,25 +3119,10 @@ Narrative after the registered table.
                 },
             )
 
-    def test_lifecycle_authority_is_free_of_archive_and_fixed_count_coupling(
-        self,
-    ) -> None:
+    def test_lifecycle_validator_accepts_injected_disposition_sets(self) -> None:
         spec_packages = _spec_packages_module()
-        source = ROOT.joinpath(
-            "scripts/lib/document_governance/spec_packages.py"
-        ).read_text(encoding="utf-8")
-        for token in (
-            "_read_migration_authority",
-            "_approved_migration_document",
-            "one_time_package_ids",
-            "recovery_commits",
-            "source_to_final",
-        ):
-            self.assertNotIn(token, source)
-        self.assertIsNone(re.search(r"!=\s*(?:49|46)\b", source))
         signature = inspect.signature(spec_packages.validate_spec_package_lifecycle)
-        # Both path sets are facts the caller injects. The validator still
-        # reads no archive of its own, which is what this test guards.
+        # Both disposition path sets are caller-injected facts in the public API.
         self.assertEqual(
             ["previous", "current", "retired_paths", "preserved_paths", "registry"],
             list(signature.parameters),

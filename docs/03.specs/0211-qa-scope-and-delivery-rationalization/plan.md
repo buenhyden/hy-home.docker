@@ -42,7 +42,12 @@ profile. Separate Conftest unit verify from actual corpus commands while preserv
 one invocation per registered gate ID/mode and Docker prerequisite ownership.
 Retire completed cutover, fixed corpus and test-only helper units only after
 current semantic owners are verified. Record each actual input, result and
-review separately in the Task.
+review separately in the Task. W2 retires remaining historical source-census
+and retired-file expectations with continuing owners. W3 removes the manifest's
+path-only mirror requirement, closes direct unittest admission to LOCAL, and
+corrects per-file shell syntax validation. W6 aligns full-audit and review-delta
+policy. W7 validates only affected cases, manifest and read-only static/document
+checks; it does not replay unchanged metadata/library aggregates or full QA.
 Initial draft publication and final evidence-only records use document-minimum
 checks. Generic preserved-source compatibility remains separate from historical
 cutover completion evidence.

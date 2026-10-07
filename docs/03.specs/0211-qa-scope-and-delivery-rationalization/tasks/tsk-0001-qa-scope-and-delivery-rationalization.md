@@ -1320,6 +1320,266 @@ candidate acceptance; the npm prerequisite and overall package integration
 remain unaccepted. No completion transition, actual protection mutation,
 release publication or runtime acceptance is added by this closeout.
 
+### Submitted unit candidate manifest failure
+
+The logical31-file unit/metadata/library source commit2cf46fb97a34bc6b86df892ed2b8349bc9767a44
+was created after final Task-only minimum validation and actual independent
+policy/security review PASS on tree68129dfca01463227f46c8192eabf31555c12eda.
+A normal push submitted that exact source to PR368 without repeating the local
+aggregate. The final source results and previously failed inputs remain bound
+to their recorded revisions; none is promoted to overall candidate acceptance.
+
+Actual hosted run37579620261/job112656063347 on head2cf46fb failed its
+`Run changed candidate validation` step in512 seconds (8 minutes32 seconds),
+2026-10-07T06:05:45Z to06:14:17Z. The user explicitly approved this exact step's
+value-free raw-log diagnosis and supplied its eight manifest diagnostics.
+Root inspected only that approved validation ZIP member in memory. Sanitized
+receipt `/tmp/hy-home-spec0211-approved-metadata-library-hosted-diagnostic.json`
+confirms eight `tests-unproven` findings: lifecycle contract/public/recovery,
+metadata heading/identity/lifecycle/profile and metadata_contract still declare
+`test_metadata_validator.py` as proof after its obsolete module-split callable
+smoke was retired. This is a stale manifest association, not an observed failure
+of the preserved130/647 local regressions. No new npm failure or exact audit
+condition is inferred from this run.
+
+The candidate is FAIL and unaccepted. SPEC/Plan status projects the owning
+Task's blocked execution; AC3/W4 and aggregate acceptance remain pending.
+The metadata/library/local-unit PASS and commit2cf are preserved. A read-only
+classifier prepares a narrow manifest-only proposal with actual continuing
+registered test owners; the checker, schema, production consumers and tests
+remain unchanged. Additional source application, validation retry, submission
+or merge requires a bounded followup decision after the already consumed
+candidate attempt. No hosted rerun, main merge, actual protection change,
+release/runtime action or branch/worktree cleanup is claimed.
+
+### Approved manifest owner repair and resume
+
+The current user explicitly approved the independently reviewed manifest patch
+7e7f0bf23cca41df2931587ac28b4534f5c381003390853d33062f207f8791fd
+and existing profile-fixture patch
+48223086ab6015071bacf3c1cb0c6b2d618139eb87a5197c23d6c4ad25cedffa
+as one bounded followup after the failed head2cf candidate. The maximum writer
+scope is `scripts/manifest.yaml`, `metadata/test_profile.py` and these existing
+Spec/Plan/Task documents. This trusted user decision, not the proposal receipt
+or review verdict, supplies the new application/retry/submission authority.
+Numeric and native remaining budgets are still UNKNOWN.
+
+The manifest retires eight obsolete associations to the deleted module-split
+smoke. Seven modules retain their existing dedicated behavioral test owners.
+The current metadata_contract facade is bound to the existing
+TemplateRoleInferenceTests fixture, which calls its exported `load_registry`
+and `build_registry_profiles` APIs. Test methods, boundary assertions, checker
+logic, required evidence rules, production consumers and Registry/schema remain
+unchanged. The two source patches are atomic. The proposal receipt's old
+source_head076 label is historical draft provenance; application must observe
+actual HEAD2cf and exact approved source/patch hashes rather than reuse that
+label as current state.
+
+The existing QA writer owns only those two source files; Root owns package
+records, focused execution, staging and commit. Root validates only the changed
+fixture, manifest, registered Ruff/YAML checks and document minimum. Exact
+independent readback and PASS precede commit/push of PR368, followed by one
+new hosted candidate observation. The130/647 suites, local aggregate and full
+profile are not replayed. Any additional required failure stops this followup;
+there is no authorization for another correction or retry. Prior failure and
+local PASS evidence remain recorded on their actual inputs. No main merge,
+protection mutation, release/runtime action or branch/worktree deletion is
+claimed by this bounded submission.
+
+### Manifest owner focused result and wider QA request
+
+The writer applied both exact approved source patches at observed HEAD2cf,
+with after-images matching the proposal and all test-method ASTs preserved.
+Applied receipt `/tmp/hy-home-spec0211-manifest-test-owner-repair-applied-receipt.json`
+records the actual current head, unchanged protected checker/schema/contracts,
+no source staging and preservation of Root's package records. Its current
+provenance supersedes the proposal's historical source_head076 label without
+rewriting that proposal receipt.
+
+Root ran the approved existing TemplateRoleInferenceTests through the registered
+unittest adapter:3 PASS in0.244 seconds. Registered Ruff check/format, yamllint
+and diff checks passed. Actual manifest validation failed with two
+`tests-mirror-missing` findings for lifecycle/public.py and lifecycle/recovery.py.
+The current checker additionally demands a tests/lib/document_governance path,
+even though both retained dedicated behavioral owners are tracked under
+`tests/validation/lifecycle/` and their direct target use is proven. Receipt
+`/tmp/hy-home-spec0211-manifest-owner-focused-checks.json` binds all source hashes,
+commands, exits and unchanged input. The proposal's narrow8-to0 import-proof
+result did not validate every manifest rule and is not treated as aggregate PASS.
+
+This bounded followup is FAIL and stops before staging, commit, push or hosted
+candidate execution. The two approved source patches remain unstaged; no new
+remote candidate attempt has been consumed. The earlier130/647 local PASS and
+committed2cf source remain preserved, with no aggregate or full replay.
+
+The user's newer explicit request extends the same retirement analysis to
+metadata, library, manifest, existing fixture/manifest/static checks, entire
+QA/full profile and independent QA review. Read-only classifiers inspect the
+full invocation/consumer graph, stale expected locations or completed events,
+current behavioral proof and duplicate review/verification paths. The observed
+mirror-location requirement is a concrete candidate for that broader analysis;
+no mirror guard, genuine test-use rule or other checker is weakened merely to
+clear this FAIL. Current approved test prefixes, tracked references, non-empty
+behavioral evidence, product/document guarantees and history/trust boundaries
+remain continuing responsibilities. Further source changes require a coherent
+bounded followup after this stop; the wider investigation does not claim QA
+acceptance, remote success, integration, release/runtime action or cleanup.
+
+### Current user-directed remaining QA cleanup
+
+The newer trusted user requests explicitly extend cleanup to metadata, library,
+manifest, existing fixture/manifest/static checks, full QA and independent QA
+review, and specifically instruct removal of the tests/lib-only path rule after
+the two observed manifest blockers. These current instructions authorize the
+matching reversible source and policy correction after the stopped narrow
+followup; the prior FAIL remains history. This is a fresh bounded batch rather
+than an implicit repeat of that failed five-file attempt. Numeric and native
+budgets remain UNKNOWN.
+
+The maximum writer ledger is21files: the two already applied manifest/profile
+sources; checker, adapters, tracked hook configuration, manifest/adapter tests
+and metadata report wording; four retained-test expectation cleanups; six
+current policy/prompt/README documents; and these three package documents.
+Pipeline and retirement writers own disjoint source slices, Root owns policy
+and package records, and independent reviewers remain read-only. No workflow,
+Registry/schema, provider, npm exception, frozen/completed body or runtime
+source is changed by this batch. The default-hook declaration does not remove
+an existing user/global hook. Recovery is revert of this logical source change.
+
+The document-governance mirror rule is removed while nonempty tracked test
+references, admitted path prefixes, actual API/import use and all other manifest
+negatives remain. The retained tests/validation/lifecycle owners prove actual
+behavior. Shell syntax's continuing producer is corrected before any smoke is
+considered redundant: bash reads only the first filename of a multi-path
+invocation, so each bounded tracked path receives its own read-only bash -n.
+Direct isolated unittest admission is LOCAL-only. Historical census scans,
+retired filenames and copied README sentence expectations may be retired only
+with their current behavioral owners retained.
+
+A read-only full graph scan found13LOCAL unittest groups and71distinct module
+arguments. AST inference found1,663unique IDs and no imported TestCase alias or
+custom loader; actual runtime IDs remain UNKNOWN because no module loader or
+test body was executed. This does not justify deleting a module as duplicate.
+Receipt `/tmp/hy-home-spec0211-full-qa-static-test-id-audit.json` preserves exact
+source hashes. The full model has no automatic full workflow caller; graph
+analysis is NOT_RUN evidence for actual full QA, not a passing audit.
+
+Execute test-first RED, then affected GREEN cases and preserved behavioral
+owners, actual manifest, registered Ruff/YAML/diff and document-minimum checks.
+Do not replay130metadata or647library tests, local aggregate or full QA.
+One final exact applied-diff review includes the protected source boundary;
+policy expertise covers only affected policy text. Result-only records receive
+minimum document checks and evidence-delta readback, not another full review.
+One successful source commit/push may update PR368 and consume one new hosted
+candidate observation under the user's continuing remote-QA/submission request.
+A first owned defect permits one narrower correction within this ledger; a
+further required failure stops this batch before another mutation or replay.
+No main integration, release/runtime acceptance or branch deletion is inferred
+from focused PASS or a proposal review.
+
+### Remaining QA actual result and caller correction
+
+The test-first patch181ef421 and implementation0f93fdf8 were applied separately
+on observed HEAD2cf. Root ran the five focused selectors against unchanged
+production: all five failed with eight subtest failures and no errors. The real
+valid-first/invalid-second Bash case incorrectly returned0 before the fix.
+Receipt `/tmp/hy-home-spec0211-remaining-qa-red.json` preserves the actual RED.
+
+After implementation,26focused tests passed in1.309 seconds through the
+registered LOCAL adapter. These cover the new path-independent actual API
+proof, each-shell-file parsing, no script-body execution, original failure7 and
+no third-file call, empty inventory and Git failure9, non-LOCAL unittest denial,
+current generator/runtime/unsafe-path negatives, existing profile API fixture,
+strict fields, ordered local children, canonical closed schema, injected
+lifecycle disposition API and archive preservation exclusivity. Ruff check and
+format passed on10changed Python files; changed YAML and diff passed. The
+actual tracked shell producer passed on every selected file. Source hashes
+were unchanged by all checks. Receipt
+`/tmp/hy-home-spec0211-remaining-qa-focused.json` binds those results.
+
+The same actual manifest check initially FAILed only two scripts/README.md
+associations to the deleted fixed-prose test. Root stopped that run and prepared
+one narrower same-file caller correction under the user's explicit request to
+clean references to retired tests. The independent source reviewer approved
+patch73fe09c4: scripts README is a contract, behavioral tests are optional,
+and root README has actual links at201and299. Its consumer is now README.md
+and its obsolete tests association is empty; library evidence remains required.
+No checker or meaningful negative is relaxed. Only manifest/YAML/diff reran
+on the changed manifest: all PASS, actual manifest7.574 seconds. The26unchanged
+GREEN cases and unchanged Python statics were not replayed. Receipt
+`/tmp/hy-home-spec0211-remaining-qa-caller-checks.json` preserves the earlier
+FAIL and exact corrected manifest input. This consumes the one narrower
+correction; any further required failure stops this batch.
+
+| Disposition | Retired expectation or route | Continuing owner |
+| --- | --- | --- |
+| retire | Document-governance tests/lib mirror-only requirement | Tracked admitted owner, actual semantic API/import proof and nonempty behavioral tests |
+| retire | Two archive test-of-test census scans | Generic archive preservation, byte/recovery/unsafe-input and exclusivity behavior |
+| retire | Lifecycle historical helper names and fixed corpus numbers | Current disposition behavior and exact injected lifecycle API |
+| retire | Old schema filename absence assertion | Canonical schema existence, identity, closed fields and real validation |
+| retire | Retired job/profile grammar clauses | Generic strict unknown fields/kinds and current ordered local-child negative |
+| retire | Retired adapter command names and exact Korean README prose | Closed command catalog, unknown/unsafe argv and executable generator/runtime/semantic negatives |
+| retire | Default pre-push installation without a configured owner | Pre-commit authoring, Commitizen commit-msg and one hosted PR candidate |
+| maintain | Necessary metadata/library/manifest/unit checks | LOCAL implementation lane and actual remote content/manifest validators |
+| correct | Multi-path bash -n inspected only first file | Per-file bounded syntax producer with fail-fast and no execution |
+| clarify | Full audit and independent review replay | Explicit full scope/budget and one frozen-diff review with affected-delta reuse |
+
+The production non-executing plan API passed25context/input combinations,
+including full, Task, operations README, current batch and unknown fallback.
+LOCAL full has33invocations including13unit groups; PR full has30and no units;
+other hosted contexts likewise have no units. All canonical invocation keys
+are unique and each adapter invocation is admitted by its actual context.
+Task plans remain4LOCAL/6PR, operations documents5LOCAL/7PR with no Compose.
+Unknown input still expands to its context's full model. No full leaf, fake CI
+environment, local aggregate, remote job or runtime was executed for this
+model evidence. An initial controller TypeError omitted required canonical-key
+arguments and stopped before any leaf; corrected argument use completed the
+first model scan. Receipt
+`/tmp/hy-home-spec0211-remaining-qa-plan-readback.json` records exact inputs.
+The earlier static1,663-ID audit belongs to its recorded pre-batch source;
+actual runtime collection remains UNKNOWN.
+
+Actual proposal reviews found no remaining Important source/policy findings.
+Policy wording findings were resolved by limiting specialist review to explicit
+obligations and LOCAL registration to unit/implementation fixtures; actual
+hosted corpus/browser/HTTP owners remain. Final applied-input review and
+nine-document minimum validation are pending at this record. They determine
+local source acceptance; hosted candidate and aggregate SPEC acceptance remain
+pending. No local PASS is promoted to remote, integration, release or runtime.
+Official Bash reference is the [GNU Bash manual](https://www.gnu.org/s/bash/manual/bash.html),
+including Invoking Bash and -n semantics.
+
+### Remaining QA local source closeout
+
+The final applied21-file source diff received actual independent review from
+qa_delivery_security_review: PASS with no Important finding. The separately
+required canonical-policy readback by qa_full_scope_policy_review passed the
+six exact after-images and closed both earlier wording findings. The source
+review covers implementation and actual verification; the policy reviewer
+covers only the protected policy boundary, with no duplicate whole-diff review.
+
+The nine-document minimum receipt
+`/tmp/hy-home-spec0211-remaining-qa-document-minimum.json` passed: actual metadata
+check-changed selected6with violations0, legacy exceptions0and transition
+overrides0against explicit base849ef009a,146.250 seconds; read-only isolated
+Markdown style covered9files with errors0; LOCAL links covered9documents and
+51links with no findings. All source and copied bytes were unchanged. The
+metadata selector's six records are not claimed as nine metadata executions.
+No implementation aggregate,130/647regressions or full QA was repeated.
+
+This result-only Task delta records the observed closeout and does not change
+contract, approval or source. Its final metadata/style/LOCAL-link receipt at
+`/tmp/hy-home-spec0211-remaining-qa-final-task-minimum.json` and independent
+evidence-delta readback close the exact record without further implementation
+or whole-source review. All other eight documents remain byte-identical to
+their passing input. The affected local source slice is accepted for logical
+commit and one PR update once that final record check passes; AC3/W4, aggregate
+Spec acceptance and integration remain pending the new actual hosted candidate.
+Prior failures remain preserved. The metadata provenance minimum's146second
+cost is a measured remaining cost candidate under its current consumer owner,
+not justification to remove byte/history/identity guarantees or invent a
+performance improvement. Main/security/release/runtime remain unobserved.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -1360,6 +1620,18 @@ release publication or runtime acceptance is added by this closeout.
 | SPEC-0211 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
 | SPEC-0211-PLAN-0001 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
 | SPEC-0211-TSK-0001 | blocked | in-progress | #reviewed-narrow-unit-retirement-and-continuation |
+| SPEC-0211 | in-progress | blocked | #submitted-unit-candidate-manifest-failure |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #submitted-unit-candidate-manifest-failure |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #submitted-unit-candidate-manifest-failure |
+| SPEC-0211 | blocked | in-progress | #approved-manifest-owner-repair-and-resume |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #approved-manifest-owner-repair-and-resume |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #approved-manifest-owner-repair-and-resume |
+| SPEC-0211 | in-progress | blocked | #manifest-owner-focused-result-and-wider-qa-request |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #manifest-owner-focused-result-and-wider-qa-request |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #manifest-owner-focused-result-and-wider-qa-request |
+| SPEC-0211 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
 
 ### Official research inputs
 
@@ -1394,6 +1666,9 @@ release publication or runtime acceptance is added by this closeout.
 | Isolated unit ownership prerequisite | 1, 2, 5 | W7 | Exact retirement owners, canonical LOCAL run and bounded continuation | tree519ab7b2 failed workflow; corrected treee4e3d664 five leaves PASS | PASS | Narrow unit prerequisite result and metadata-library extension | pending |
 | Metadata-library retirement prerequisite | 1 | W2 | Exact current-owner disposition, affected LOCAL leaves and one narrow case | tree878ca39f130/647 PASS; tree3c263847 changed case PASS | PASS | Metadata-library actual result and narrow expectation closeout | pending |
 | Local unit closeout documents | 5 | W7 | Result-only Task metadata, read-only style and LOCAL links | Task3b327b2a; other four docs unchanged | PASS | Local unit closeout document evidence | pending |
+| Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | pending |
+| Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | pending |
+| Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | accepted |
 
 ## Review and Completion
 
@@ -1404,9 +1679,13 @@ adapter and is not accepted. The isolated-unit source prerequisite is
 locally validated through recorded focused, selected and bounded continuation
 results; final document/readback checks gate its logical commit. The explicitly
 extended metadata/library retirement prerequisite passed its affected leaves
-and reviewed narrow-case check. Final result-only document/readback checks
-still gate its logical commit. Overall package
-criteria and npm integration acceptance are not completed.
+and reviewed narrow-case check. The final exact document/readback checks passed and logical commit2cf46fb
+was submitted. Its hosted candidate failed eight stale manifest proof
+associations. The user approved the bounded owner repair and execution resumed,
+then the actual focused manifest check failed two mirror-location rules. The
+followup stopped before submission; overall criteria and integration remain
+pending while the final result-only Task record is checked before one new hosted submission. Previous
+npm findings remain historical evidence.
 Missing operational observations and release publication remain unexecuted;
 source structure and mocked publication are not runtime activation.
 

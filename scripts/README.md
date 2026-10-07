@@ -1,6 +1,6 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.3.0"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -68,9 +68,10 @@ wrapper를 다시 만들지 않습니다.
 `scripts/lib/<domain>/`은 import 전용 도메인 동작을 소유하며 공개 entrypoint를
 정의하지 않습니다. `scripts/validation/`, `scripts/security/`,
 `scripts/operations/` 같은 purpose 폴더가 entrypoint를 소유하고 도메인 로직을
-라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임을 그대로
-반영하고, `tests/validation/`은 CLI, entrypoint, 실행 컨텍스트 테스트를
-유지합니다.
+라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임의 기본 테스트 위치이고,
+`tests/validation/`은 CLI·entrypoint·실행 context와 여러 모듈을 함께 검증하는
+동작을 소유합니다. 실제 test owner와 API/fixture 사용 증명은 Script Manifest를
+따르며, 같은 보장을 위한 별도 mirror smoke를 추가하지 않습니다.
 
 하드닝 표면은 의도적으로 `scripts/hardening/check-all-hardening.sh` 하나로
 통합했습니다. tier별 wrapper entrypoint는 2026-05-17 정리에서
@@ -157,9 +158,7 @@ argv, context 필드를 두지 않습니다. 최종 계획 승인은 상속된 �
 argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 예외가
 아닙니다. Explain은 같은 완전한 계획을 먼저 검증한 뒤 canonical validator
 행을 렌더링합니다. workflow contract는 구성과 실행 정책의 drift를
-거부합니다. 세부적인 document-governance 테스트는
-`tests/lib/document_governance/` 아래에서 각 모듈을 그대로 반영하고, CLI와
-통합 계약은 `tests/validation/`에 남습니다.
+거부합니다. 세부 unit은 LOCAL suite에 등록하며, CLI·통합 동작은 `tests/validation/`의 현재 소유자에 연결합니다. 배정은 디렉터리 고정 기대값보다 실제 동작 증명을 따릅니다.
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -243,7 +242,7 @@ argv의 mode를 함께 사용하며 격리·읽기 전용 mount·cleanup 경계�
 Markdown 템플릿 매핑이 완전하고 타입이 일관되어야 합니다. 전체 레지스트리 배열은
 단일 기계 소유권 아래 있어야 하며 docs 인벤토리 추론에서는 `_workspace`를
 제외해야 합니다. `check-changed`는 안전하게 선택된 diff에 대한
-pre-push 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
+선택된 changed 입력의 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
 점검입니다. base를 정할 때는 명시적 참조, CI, 안전한 로컬 참조를 우선하며 그
 다음에는 전체 corpus를 선택하지 않고 working-tree 전용 fallback을
 보고합니다. base가 존재하는 좁은 legacy 예외는 새 문서나 부분적인 typed

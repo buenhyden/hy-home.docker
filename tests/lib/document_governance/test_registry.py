@@ -1422,10 +1422,6 @@ class DocumentRegistryTests(unittest.TestCase):
             ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
         )
         self.assertTrue(schema_path.is_file())
-        self.assertFalse(
-            (schema_path.parent / "frontmatter.schema.json").exists(),
-            "the retired ambiguous schema name must not remain as a compatibility copy",
-        )
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertEqual(
             "https://hy-home.invalid/schemas/document-frontmatter.schema.json",

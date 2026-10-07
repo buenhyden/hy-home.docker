@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -108,6 +108,12 @@ main-push security remains a post-merge observation.
   consumer without creating a dedicated purpose-excluded QA suite. Mutation,
   missing consumers, unsafe paths and invalid import claims remain rejected
   by the manifest contract; this grants no runtime acceptance.
+- A library's behavioral evidence is judged by its tracked, admitted test owner
+  and actual API/fixture use. Directory mirroring is the default organization,
+  not a second mandatory evidence source. A registered cross-module or
+  entrypoint test may own that behavior without a duplicate library smoke.
+  Source-token bans, test-of-test census scans and retired filename assertions
+  do not substitute for current mutation, preservation or parser behavior.
 - Age, filenames, test counts and failing results alone are not deletion
   criteria. A removed check must have a disposition and any continuing owner.
   Failed required checks remain failures until repaired or deliberately retired
@@ -266,6 +272,21 @@ workflow definitions through
 `leaf.local-tech-stack-version-drift` owns version drift detection in every
 public context. Local QA never runs real pre-commit through the CI-only entry
 point and exercises that wrapper only with the fake-binary regression.
+
+#### Explicit Full Audit
+
+`full` is an explicitly scoped comprehensive audit, not a commit, feature-push,
+PR, main or release completion ritual. Record its selected context, tools,
+budget or UNKNOWN and approval before executing it. LOCAL full includes the
+registered local units and content checks; hosted contexts exclude local-only
+units and links. A modeled full plan does not prove a workflow executes it.
+Unknown changed inputs still expand fail-closed within their actual context.
+Do not follow successful selected verification with an unconditional full run.
+
+Final review and evidence-update reuse follow
+[Workflows](workflows.md#review-scope-and-evidence-updates), including affected
+slice revalidation and mandatory protected-surface expertise. An evidence-only
+Task update does not create another independent source-review gate.
 
 #### Gate and Fixture Ownership
 

@@ -16,11 +16,10 @@ files:
   lifecycle: active
   mutation: none
   consumers:
-  - tests/validation/test_script_manifest.py
+  - README.md
   disposition: retain
   successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
+  tests: []
 - path: scripts/hardening/check-all-hardening.sh
   kind: validator
   authority: .github/workflow-contract.yml
@@ -220,7 +219,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_links.py
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_contract.py
 - path: scripts/lib/document_governance/lifecycle/promoted.py
   kind: library
@@ -243,7 +241,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_public.py
 - path: scripts/lib/document_governance/lifecycle/recovery.py
   kind: library
@@ -255,7 +252,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_recovery.py
 - path: scripts/lib/document_governance/links.py
   kind: library
@@ -282,7 +278,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_heading.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/identity.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -295,7 +290,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_identity.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/lifecycle.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -308,7 +302,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_lifecycle.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/profile.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -323,7 +316,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_profile.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/reference.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -347,7 +339,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/lib/document_governance/metadata/test_profile.py
 - path: scripts/lib/document_governance/metadata_validator.py
   kind: library
   authority: docs/99.templates/registry.json

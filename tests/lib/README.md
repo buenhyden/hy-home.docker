@@ -1,10 +1,10 @@
 ---
 title: "Library Tests"
-version: "1.0.0"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-09-27"
 ---
 
@@ -37,10 +37,13 @@ library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 �
 
 ## Usage
 
-1. 짝이 되는 디렉터리에는 추적되는 동작 테스트가 최소 하나 있어야 하며
-   그 테스트는 public full profile에 등록되어야 합니다. 빈 디렉터리,
-   로컬 bytecode cache, placeholder, 추적되지 않은 테스트는 소유 근거가
-   되지 않습니다.
+1. 유지하는 library 동작에는 추적되고 등록된 테스트 소유자가 있어야 합니다.
+   `tests/lib/<domain>/`이 기본 위치이며, 여러 모듈이나 entrypoint를 함께
+   검증하는 현재 테스트는 `tests/validation/`에서 그 동작을 소유할 수 있습니다.
+   Script Manifest는 허용 경로·추적 여부·실제 API/fixture 사용을 검사하며,
+   같은 보장을 위한 별도 mirror smoke를 요구하지 않습니다. 빈 디렉터리,
+   bytecode cache, placeholder는 테스트 근거가 아닙니다.
+   unit 모듈은 LOCAL full 계획에서 도달 가능해야 하며 hosted 계획에서는 제외됩니다.
 2. 새 library 모듈을 추가하면 같은 변경에서 Script Manifest의 `tests`에
    테스트를 연결합니다.
 3. 등록된 suite는 정확한 dotted module 이름으로 실행되므로, 모듈 경로를

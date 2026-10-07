@@ -7,6 +7,7 @@ import re
 import tempfile
 import unittest
 
+from scripts.lib.document_governance import metadata_contract
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
@@ -91,10 +92,8 @@ class CurrentRegistryContractTests(unittest.TestCase):
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        from scripts.lib.document_governance.registry import load_registry
-
-        cls.profiles = current_profiles()
-        cls.registry = load_registry(REGISTRY)
+        cls.registry = metadata_contract.load_registry(REGISTRY)
+        cls.profiles = metadata_contract.build_registry_profiles(cls.registry)
 
     def test_registered_targets_have_one_exact_role(self) -> None:
         token_values = {

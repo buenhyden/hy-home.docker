@@ -1,5 +1,4 @@
 import importlib.util
-import re
 import subprocess
 import sys
 import tempfile
@@ -286,16 +285,6 @@ class ScriptManifestTests(unittest.TestCase):
         for path in rejected:
             with self.subTest(path=path):
                 self.assertFalse(is_runbook_authority(path))
-
-    def test_scripts_readme_preserves_invocation_warnings(self) -> None:
-        text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
-        compact = re.sub(r"\s+", " ", text)
-        self.assertIn("`mutation: runtime` 행을 호출하지 않습니다", compact)
-        self.assertIn(
-            "non-mutating check 옵션 없이 default-write generator를 호출하지 않습니다",
-            compact,
-        )
-        self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
 
     def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"
@@ -592,20 +581,40 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     ),
                 )
 
-    def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(
+    def test_manifest_requires_meaningful_registered_library_tests(
         self,
     ) -> None:
+        source_path = "scripts/lib/document_governance/example.py"
+        test_path = "tests/validation/test_example.py"
         library = self.row(
-            path="scripts/lib/document_governance/example.py",
+            path=source_path,
             kind="library",
             consumers=[],
             tests=[],
         )
-        tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
+        tracked = (self.tracked - {"scripts/example.py"}) | {source_path}
         self.assertIn("tests-missing", self.codes(library, tracked))
 
-        library["tests"] = ["tests/validation/test_example.py"]
-        self.assertIn("tests-mirror-missing", self.codes(library, tracked))
+        library["tests"] = [test_path]
+        self.assertEqual(set(), self.codes(library, tracked))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / source_path
+            source.parent.mkdir(parents=True)
+            source.write_text("VALUE = 1\n", encoding="utf-8")
+            test = root / test_path
+            test.parent.mkdir(parents=True)
+            test.write_text(
+                "from scripts.lib.document_governance import example\n"
+                "assert example.VALUE == 1\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                [],
+                self.checker._semantic_findings(
+                    root, {"schema_version": 1, "files": [library]}
+                ),
+            )
 
     def test_manifest_rejects_invalid_generated_check_command(self) -> None:
         generator = self.row(
