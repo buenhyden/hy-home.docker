@@ -21,6 +21,36 @@ TAGS = {
 
 
 TOKEN_PATH = "/run/secrets/quality_otlp_token"
+K6_TAG = "grafana/k6:2.2.0"
+RELAY = ROOT / "infra/11-quality/k6/metrics-ingress.alloy"
+K6_SCENARIO = """import http from 'k6/http';
+export const options = { vus: 1, iterations: 12 };
+export default function () {
+  http.get('http://prometheus:9090/-/healthy');
+  http.get('http://prometheus:9090/synthetic-missing');
+}
+"""
+
+
+def k6_environment():
+    """Reuse the executor's exact k6 OTLP settings rather than a parallel copy."""
+    import importlib.util
+
+    path = ROOT / "infra/11-quality/k6/container_executor.py"
+    spec = importlib.util.spec_from_file_location("container_executor", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    manifest = {
+        "project_id": "metrics-rehearsal",
+        "environment": "test",
+        "run_id": "00000000-0000-4000-8000-000000000214",
+        "attempt": 1,
+    }
+    arguments = module._telemetry_arguments(manifest)
+    return "".join(
+        value + "\n"
+        for flag, value in zip(arguments[::2], arguments[1::2], strict=True)
+    )
 
 
 def metrics_config(source):
@@ -162,8 +192,14 @@ def main():
     for role in TAGS:
         parser.add_argument(f"--{role}-image", required=True)
     parser.add_argument("--source", type=Path, default=SOURCE)
+    parser.add_argument(
+        "--k6-image", help="cached grafana/k6 digest; enables the k6 stage"
+    )
     args = parser.parse_args()
     images = {role: getattr(args, role + "_image") for role in TAGS}
+    if args.k6_image:
+        TAGS["k6"] = K6_TAG
+        images["k6"] = args.k6_image
     context = command(["docker", "context", "show"]).strip()
     endpoint = json.loads(command(["docker", "context", "inspect", context]))[0][
         "Endpoints"
@@ -228,11 +264,16 @@ def main():
         "ALLOY": alloy_config,
         "PROM": "global:\n  scrape_interval: 1s\nscrape_configs: []\n",
     }
+    if args.k6_image:
+        configs["RELAY"] = RELAY.read_text()
+        configs["K6_SCENARIO"] = K6_SCENARIO
+        configs["K6_ENV"] = k6_environment()
     for role, text in configs.items():
         path = scratch / (role.lower() + ".config")
         path.write_text(text)
         path.chmod(0o644)
-        env[f"METRICS_{role}_CONFIG"] = str(path)
+        key = role if role.startswith("K6_") else role + "_CONFIG"
+        env[f"METRICS_{key}"] = str(path)
     empty_env = scratch / "empty.env"
     empty_env.touch()
     base = [
@@ -413,6 +454,32 @@ def main():
             print("PASS unauthenticated producer rejected with 401", flush=True)
         else:
             print("NOT_RUN authentication: source has no quality receiver", flush=True)
+        if args.k6_image:
+            compose("--profile", "k6", "up", "-d", "--pull", "never", "relay")
+            time.sleep(3)
+            compose("--profile", "k6", "run", "--rm", "--no-deps", "k6")
+            # k6 Rate: one counter split by condition, with the run instance.
+            expect_value(
+                'count(count by (condition) ({__name__=~".*http_req_failed.*",'
+                'project_id="metrics-rehearsal",'
+                'instance="00000000-0000-4000-8000-000000000214-a1"}))',
+                2,
+                timeout=60,
+            )
+            expect_value(
+                'sum({__name__=~".*http_reqs.*",project_id="metrics-rehearsal",'
+                'expected_response="false"})',
+                12,
+            )
+            labels = query('{__name__=~".*http_reqs.*",project_id="metrics-rehearsal"}')
+            for row in labels:
+                if {"url", "name"} & set(row["metric"]):
+                    raise AssertionError("Unbounded k6 tag reached Prometheus")
+            print(
+                "PASS k6 OTel through relay keeps condition, instance and status",
+                flush=True,
+            )
+
         # Exact transport replay must not double count a delta stream.
         duplicate = payload(
             "synthetic_delta_counter", True, 3, timestamp + 1_000_000_000, timestamp
@@ -486,7 +553,7 @@ def main():
             flush=True,
         )
     finally:
-        compose("down", "--timeout", "10")
+        compose("--profile", "k6", "down", "--timeout", "10")
         if command(
             [
                 "docker",

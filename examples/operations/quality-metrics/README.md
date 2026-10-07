@@ -1,6 +1,6 @@
 ---
 title: "합성 OTLP 메트릭 전달 인수"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -45,7 +45,7 @@ digest를 사용합니다. 캐시 tag의 정확한 입력은 [controller의 TAGS
 현재 tag의 image ID와 digest의 image ID가 일치해야 합니다. 승인된 `default` context의
 local Unix socket만 사용하며 별도 UUID project/network의 기존 상태가 없어야 합니다.
 
-host port·Compose secret·named volume은 0개입니다. controller가 만든 합성 bearer token 파일만 `/run/secrets/quality_otlp_token`에 읽기 전용으로 bind합니다. `--source <path>`로 다른 Alloy 설정(예: 변경 전 설정)에 같은 인수를 적용할 수 있습니다. 모든 container는 비특권·read-only이며
+host port·Compose secret·named volume은 0개입니다. controller가 만든 합성 bearer token 파일만 `/run/secrets/quality_otlp_token`에 읽기 전용으로 bind합니다. `--source <path>`로 다른 Alloy 설정(예: 변경 전 설정)에 같은 인수를 적용할 수 있습니다. `--k6-image <cached grafana/k6 digest>`를 주면 `k6` profile의 relay([`metrics-ingress.alloy`](../../../infra/11-quality/k6/metrics-ingress.alloy))와 k6를 추가로 띄워, executor와 같은 OTLP 환경으로 k6 → relay → 인증 수신기 → Prometheus를 검증합니다. 모든 container는 비특권·read-only이며
 CPU 합계 1.25, 메모리 제한 합계 832 MiB입니다. controller가 생성한 합성 설정 파일만
 읽기 전용으로 bind합니다. 저장과 WAL은 tmpfs이므로 프로세스/컨테이너 종료 뒤 영속
 복구를 증명하지 않습니다. 재시작 검사는 동일 identity의 새 source epoch 초기화와 다음 delta의 누적 범위입니다.

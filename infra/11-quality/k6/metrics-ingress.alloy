@@ -1,0 +1,33 @@
+// Per-run metrics ingress for one isolated k6 attempt (SPEC-0214).
+// k6 reaches only this relay on the internal quality network; the relay alone
+// holds the HOME Alloy bearer token and forwards to its unpublished receiver.
+// Resource attributes come from the executor, not from the scenario.
+otelcol.receiver.otlp "k6" {
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    metrics = [otelcol.exporter.otlphttp.home_alloy.input]
+  }
+}
+
+local.file "quality_otlp_token" {
+  filename  = "/run/secrets/quality_otlp_token"
+  is_secret = true
+}
+
+otelcol.auth.bearer "home_alloy" {
+  token = local.file.quality_otlp_token.content
+}
+
+otelcol.exporter.otlphttp "home_alloy" {
+  client {
+    endpoint = "http://alloy:4319"
+    auth     = otelcol.auth.bearer.home_alloy.handler
+
+    tls {
+      insecure = true
+    }
+  }
+}

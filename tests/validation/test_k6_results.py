@@ -1,5 +1,6 @@
 import hashlib
 import importlib.util
+import itertools
 import json
 import pathlib
 import sys
@@ -438,6 +439,166 @@ class K6ResultContractTests(unittest.TestCase):
                     "CapDrop": ["ALL"],
                     "CapAdd": [],
                 }
+
+    def test_manifest_v2_telemetry_is_closed_and_v1_stays_valid(self) -> None:
+        self.assertEqual(
+            "none",
+            quality_run.validate_manifest(self.manifest).get(
+                "telemetry", {"mode": "none"}
+            )["mode"],
+        )
+        v2 = dict(self.manifest, schema_version="hyhome.quality-run/v2")
+        for telemetry, accepted in (
+            ({"mode": "none"}, True),
+            ({"mode": "otlp"}, True),
+            ({"mode": "prometheus-rw"}, False),
+            ({"mode": "otlp", "endpoint": "http://alloy:4319"}, False),
+            ("otlp", False),
+            (None, False),
+        ):
+            with self.subTest(telemetry=telemetry):
+                candidate = dict(v2)
+                if telemetry is not None:
+                    candidate["telemetry"] = telemetry
+                if accepted:
+                    quality_run.validate_manifest(candidate)
+                else:
+                    with self.assertRaises(quality_run.ContractError):
+                        quality_run.validate_manifest(candidate)
+        with self.assertRaises(quality_run.ContractError):
+            quality_run.validate_manifest(
+                dict(self.manifest, telemetry={"mode": "none"})
+            )
+
+    def test_otlp_runs_only_through_the_approved_metrics_ingress(self) -> None:
+        self.manifest.update(
+            schema_version="hyhome.quality-run/v2",
+            telemetry={"mode": "otlp"},
+            mock_mode="load",
+        )
+        network = self.network_record()[0]
+        network["Containers"]["ingress-id"] = {
+            "Name": "metrics-ingress",
+            "IPv4Address": "10.250.11.20/24",
+        }
+        peer = self.peer_record()[0]
+        ingress = {
+            "Id": "ingress-id",
+            "Name": "/metrics-ingress",
+            "State": {"Running": True},
+            "Config": {
+                "Image": "grafana/alloy@sha256:" + "d" * 64,
+                "Labels": {
+                    "hyhome.quality.run_id": self.manifest["run_id"],
+                    "hyhome.quality.role": "metrics-ingress",
+                },
+            },
+            "HostConfig": {
+                "ReadonlyRootfs": True,
+                "Privileged": False,
+                "CapDrop": ["ALL"],
+                "CapAdd": [],
+                "PortBindings": {},
+            },
+            "NetworkSettings": {
+                "Networks": {
+                    network["Name"]: {"Aliases": ["metrics-ingress"]},
+                    "obs-relay": {"Aliases": []},
+                }
+            },
+        }
+        runs: list[list[str]] = []
+
+        def fake_run(command, **kwargs):
+            if command[3:5] == ["network", "inspect"]:
+                record = network
+            elif command[3:5] == ["container", "inspect"]:
+                record = ingress if command[-1] == "metrics-ingress" else peer
+            else:
+                runs.append(command)
+                return types.SimpleNamespace(returncode=0)
+            return types.SimpleNamespace(
+                returncode=0, stdout=json.dumps([record]), stderr=""
+            )
+
+        guard = types.SimpleNamespace(validate=lambda *args: None)
+
+        def execute(attempt, metrics_peer="metrics-ingress"):
+            quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
+            with mock.patch.dict(sys.modules, {"http_guard": guard}):
+                with mock.patch.object(
+                    container_executor.subprocess, "run", side_effect=fake_run
+                ):
+                    return container_executor.execute(
+                        self.manifest,
+                        self.scenarios,
+                        attempt,
+                        network["Name"],
+                        "wiremock",
+                        "/synthetic/docker",
+                        "default",
+                        self.root / "routes.json",
+                        "backend-test",
+                        "backend",
+                        metrics_peer,
+                    )
+
+        self.assertEqual(0, execute(self.root / "otlp"))
+        command = runs[-1]
+        pairs = list(itertools.pairwise(command))
+        self.assertIn(("--out", "opentelemetry"), pairs)
+        self.assertIn(("--out", "json=/results/raw-points.json"), pairs)
+        settings = {
+            value.split("=", 1)[0]: value.split("=", 1)[1]
+            for flag, value in itertools.pairwise(command)
+            if flag == "--env"
+        }
+        self.assertEqual(
+            "metrics-ingress:4318", settings["K6_OTEL_HTTP_EXPORTER_ENDPOINT"]
+        )
+        self.assertEqual("http/protobuf", settings["K6_OTEL_EXPORTER_PROTOCOL"])
+        self.assertEqual(
+            "project.id=sample-a,deployment.environment.name=test,"
+            "service.instance.id=12345678-1234-4abc-8def-1234567890ab-a1",
+            settings["OTEL_RESOURCE_ATTRIBUTES"],
+        )
+        self.assertFalse(any("token" in item.lower() for item in command))
+        self.assertFalse(any("Authorization" in item for item in command))
+
+        for name, mutate in (
+            (
+                "published",
+                lambda: ingress["HostConfig"].update(PortBindings={"4318/tcp": [{}]}),
+            ),
+            ("writable", lambda: ingress["HostConfig"].update(ReadonlyRootfs=False)),
+            ("image", lambda: ingress["Config"].update(Image="otel/collector:latest")),
+            (
+                "role",
+                lambda: ingress["Config"]["Labels"].update(
+                    {"hyhome.quality.role": "wiremock"}
+                ),
+            ),
+            (
+                "alias",
+                lambda: ingress["NetworkSettings"]["Networks"][network["Name"]].update(
+                    Aliases=[]
+                ),
+            ),
+        ):
+            with self.subTest(mutation=name):
+                saved = json.loads(json.dumps(ingress))
+                mutate()
+                before = len(runs)
+                with self.assertRaises(container_executor.ExecutorError):
+                    execute(self.root / f"bad-{name}")
+                self.assertEqual(before, len(runs))
+                ingress.clear()
+                ingress.update(saved)
+        with self.assertRaises(container_executor.ExecutorError):
+            execute(self.root / "no-peer", metrics_peer=None)
+        self.manifest["telemetry"] = {"mode": "none"}
+        with self.assertRaises(container_executor.ExecutorError):
+            execute(self.root / "unexpected-peer")
 
     def test_container_executor_prepares_limits_but_blocks_without_path_guard(
         self,

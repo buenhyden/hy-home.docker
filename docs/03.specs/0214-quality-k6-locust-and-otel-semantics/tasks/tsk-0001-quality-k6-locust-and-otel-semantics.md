@@ -86,13 +86,50 @@ token and an unauthenticated case. It used the pinned digests: Alloy
 `alloy fmt` accepted the configuration. HOME Alloy recreation and live
 Grafana are `NOT_RUN`.
 
+### W2 Manifest Telemetry and Metrics Ingress
+
+`quality_run.py` now writes `hyhome.quality-run/v2` and accepts both schemas.
+v2 requires `telemetry` with exactly `mode` in `none` or `otlp`. v1 keeps its
+exact key set and means `none`. An endpoint, unknown mode, non-object value or
+a `telemetry` key on v1 is rejected.
+
+`container_executor.execute` takes `metrics_peer`
+(`--metrics-ingress-container`). OTLP mode without it, or the peer without
+OTLP, is rejected before any Docker call. The front network must then hold
+exactly the target and the ingress. The ingress must carry the run label and
+`hyhome.quality.role=metrics-ingress` and use a digest-pinned
+`grafana/alloy@sha256:` image. It must have a read-only rootfs, be
+unprivileged with `CapDrop=[ALL]`, have no port bindings, carry the alias
+`metrics-ingress` and join at most two networks. k6 then gets
+`--out opentelemetry` beside the JSON output and executor-owned
+`K6_OTEL_*`/`OTEL_RESOURCE_ATTRIBUTES` values. k6 never gets the token. The
+new relay configuration `infra/11-quality/k6/metrics-ingress.alloy` holds it
+and forwards to `alloy:4319`.
+
+Unit tests: two new tests. They failed against the previous code (3
+failures, RED) and pass with it. 23 `test_k6_results` tests pass.
+
+Isolated E2E: the harness with `--k6-image
+grafana/k6@sha256:9bd01d69…ace6` exited 0 with 24 PASS lines. k6 used the
+executor's own `_telemetry_arguments` and ran 12 iterations against a 200
+and a 404 path through the relay and the authenticated receiver. Prometheus
+held `http_req_failed` split into two `condition` series for instance
+`…0214-a1` and `expected_response="false"` request count 12, with no `url` or
+`name` label. The first k6 run passed its checks but left the profile-scoped
+relay because `down` omitted `--profile k6`. The harness now passes the
+profile. The leftover project and its scratch were removed with the fixture's
+own `compose down`, and the rerun reported exact cleanup.
+
+The real-target executor run (guard plus WireMock plus ingress on HOME), the
+HOME relay and HOME Alloy recreation are `NOT_RUN`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Metric identity | 3 | W1 | Isolated metrics harness RED then GREEN | Pinned Alloy, Prometheus, Python digests | PASS | W1 Authenticated Receiver and Metric Identity | accepted |
-| Manifest v2 | 1 | W2 | Unit tests | Pending | NOT_RUN | Pending | pending |
-| Executor peer | 2 | W2 | Unit tests | Pending | NOT_RUN | Pending | pending |
+| Manifest v2 | 1 | W2 | `test_k6_results` RED then GREEN | Working tree | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
+| Executor peer | 2 | W2 | Unit tests; isolated k6 OTLP E2E | Pinned k6, Alloy, Prometheus digests | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
 | Locust bounds | 4 | W3 | Render and isolated run | Pending | NOT_RUN | Pending | pending |
 | Records | 5 | W4 | Local gate and review | Pending | NOT_RUN | Pending | pending |
 

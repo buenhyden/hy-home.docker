@@ -110,6 +110,7 @@ def _network_contract(
     network: dict[str, Any],
     requested_name: str,
     peer_name: str,
+    metrics_peer: str | None = None,
 ) -> tuple[str, str]:
     labels = network.get("Labels")
     containers = network.get("Containers")
@@ -125,7 +126,7 @@ def _network_contract(
         or labels.get("hyhome.quality.run_id") != manifest["run_id"]
         or labels.get("hyhome.quality.purpose") != "k6-wiremock"
         or not isinstance(containers, dict)
-        or len(containers) != 1
+        or len(containers) != (2 if metrics_peer else 1)
         or not isinstance(configs, list)
     ):
         raise ExecutorError("network is not a dedicated internal quality network")
@@ -136,7 +137,14 @@ def _network_contract(
     }
     if subnets != set(manifest["target"]["allowed_networks"]):
         raise ExecutorError("network subnets differ from the approved manifest")
-    peer_id, endpoint = next(iter(containers.items()))
+    endpoints = {
+        item.get("Name"): (key, item)
+        for key, item in containers.items()
+        if isinstance(item, dict)
+    }
+    if metrics_peer and set(endpoints) != {peer_name, metrics_peer}:
+        raise ExecutorError("network peers are not the approved target and ingress")
+    peer_id, endpoint = endpoints.get(peer_name, next(iter(containers.items())))
     if (
         not isinstance(endpoint, dict)
         or endpoint.get("Name") != peer_name
@@ -158,6 +166,68 @@ def _network_contract(
     if not isinstance(network_id, str) or not NAME.fullmatch(network_id):
         raise ExecutorError("network has no usable immutable identifier")
     return network_id, peer_id
+
+
+def _metrics_peer_contract(
+    manifest: dict[str, Any],
+    peer: dict[str, Any],
+    network_name: str,
+    peer_name: str,
+) -> None:
+    """Admit only the per-run OTLP relay; it, not k6, holds the Alloy token."""
+    config = peer.get("Config")
+    host = peer.get("HostConfig")
+    labels = config.get("Labels") if isinstance(config, dict) else None
+    settings = peer.get("NetworkSettings")
+    networks = settings.get("Networks") if isinstance(settings, dict) else None
+    endpoint = networks.get(network_name) if isinstance(networks, dict) else None
+    aliases = endpoint.get("Aliases") if isinstance(endpoint, dict) else None
+    image = config.get("Image") if isinstance(config, dict) else None
+    if (
+        peer.get("Name") != f"/{peer_name}"
+        or peer.get("State", {}).get("Running") is not True
+        or not isinstance(labels, dict)
+        or labels.get("hyhome.quality.run_id") != manifest["run_id"]
+        or labels.get("hyhome.quality.role") != "metrics-ingress"
+        or not isinstance(image, str)
+        or not image.startswith("grafana/alloy@sha256:")
+        or not IMAGE.fullmatch(image)
+        or not isinstance(host, dict)
+        or host.get("ReadonlyRootfs") is not True
+        or host.get("Privileged") is not False
+        or host.get("CapDrop") != ["ALL"]
+        or host.get("CapAdd") not in ([], None)
+        or host.get("PortBindings") not in ({}, None)
+        or not isinstance(aliases, list)
+        or "metrics-ingress" not in aliases
+        or not isinstance(networks, dict)
+        or len(networks) > 2
+    ):
+        raise ExecutorError("metrics ingress peer contract is invalid")
+
+
+def _telemetry_arguments(manifest: dict[str, Any]) -> list[str]:
+    """k6 OTLP settings come from the executor and the validated manifest only."""
+    resource = ",".join(
+        (
+            f"project.id={manifest['project_id']}",
+            f"deployment.environment.name={manifest['environment']}",
+            f"service.instance.id={manifest['run_id']}-a{manifest['attempt']}",
+        )
+    )
+    settings = {
+        "K6_OTEL_EXPORTER_PROTOCOL": "http/protobuf",
+        "K6_OTEL_HTTP_EXPORTER_ENDPOINT": "metrics-ingress:4318",
+        "K6_OTEL_HTTP_EXPORTER_URL_PATH": "/v1/metrics",
+        "K6_OTEL_HTTP_EXPORTER_INSECURE": "true",
+        "K6_OTEL_SERVICE_NAME": "k6",
+        "K6_OTEL_EXPORT_INTERVAL": "5s",
+        "OTEL_RESOURCE_ATTRIBUTES": resource,
+    }
+    arguments = []
+    for key, value in settings.items():
+        arguments.extend(("--env", f"{key}={value}"))
+    return arguments
 
 
 def _peer_contract(
@@ -274,7 +344,17 @@ def execute(
     guard_config: pathlib.Path | None = None,
     backend_network: str | None = None,
     backend_peer: str | None = None,
+    metrics_peer: str | None = None,
 ) -> int:
+    telemetry = manifest.get("telemetry", {"mode": "none"})["mode"]
+    if (telemetry == "otlp") != bool(metrics_peer) or (
+        metrics_peer
+        and (
+            not NAME.fullmatch(metrics_peer)
+            or metrics_peer in {peer_name, backend_peer}
+        )
+    ):
+        raise ExecutorError("metrics ingress must be given exactly for OTLP telemetry")
     if (
         not NAME.fullmatch(network_name)
         or not NAME.fullmatch(peer_name)
@@ -304,8 +384,15 @@ def execute(
         snapshot = _snapshot_scenario(manifest, scenario_root, attempt_dir)
         network = _inspect(docker_binary, docker_context, "network", network_name)
         network_id, peer_id = _network_contract(
-            manifest, network, network_name, peer_name
+            manifest, network, network_name, peer_name, metrics_peer
         )
+        if metrics_peer:
+            _metrics_peer_contract(
+                manifest,
+                _inspect(docker_binary, docker_context, "container", metrics_peer),
+                network_name,
+                metrics_peer,
+            )
         peer = _inspect(docker_binary, docker_context, "container", peer_name)
         if guard_config is None:
             _peer_contract(manifest, peer, network_name, peer_name, peer_id)
@@ -412,11 +499,13 @@ def execute(
         f"type=bind,src={wrapper},dst=/scripts/runner.js,readonly,bind-propagation=rprivate",
         "--env",
         "HYHOME_TARGET_ORIGIN=http://wiremock:8080",
+        *(_telemetry_arguments(manifest) if metrics_peer else []),
         manifest["tool_image"],
         "run",
         "--no-color",
         "--out",
         "json=/results/raw-points.json",
+        *(("--out", "opentelemetry") if metrics_peer else ()),
         "--summary-trend-stats",
         "avg,min,med,max,p(90),p(95),p(99),count",
         "--max-redirects",

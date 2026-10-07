@@ -18,7 +18,10 @@ import urllib.parse
 import uuid
 from typing import Any
 
-MANIFEST_SCHEMA = "hyhome.quality-run/v1"
+MANIFEST_SCHEMA = "hyhome.quality-run/v2"
+# v1 stays readable and means telemetry mode "none" (compatible change).
+MANIFEST_SCHEMAS = ("hyhome.quality-run/v1", MANIFEST_SCHEMA)
+TELEMETRY_MODES = ("none", "otlp")
 EXIT_SCHEMA = "hyhome.quality-exit/v2"
 FINAL_SCHEMA = "hyhome.quality-final/v1"
 IMPORT_SCHEMA = "hyhome.quality-import/v1"
@@ -174,9 +177,18 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         "budget",
         "thresholds",
     }
+    if manifest.get("schema_version") == MANIFEST_SCHEMA:
+        expected.add("telemetry")
     _exact_keys(manifest, expected, "manifest")
-    if manifest["schema_version"] != MANIFEST_SCHEMA:
-        raise ContractError(f"schema_version must be {MANIFEST_SCHEMA}")
+    if manifest["schema_version"] not in MANIFEST_SCHEMAS:
+        raise ContractError(f"schema_version must be one of {MANIFEST_SCHEMAS}")
+    telemetry = manifest.get("telemetry", {"mode": "none"})
+    if not isinstance(telemetry, dict):
+        raise ContractError("telemetry must be an object")
+    # The executor owns the endpoint, credential and resource attributes.
+    _exact_keys(telemetry, {"mode"}, "telemetry")
+    if telemetry["mode"] not in TELEMETRY_MODES:
+        raise ContractError("telemetry mode is not allowed")
     try:
         run_id = str(uuid.UUID(str(manifest["run_id"])))
     except (ValueError, AttributeError) as exc:
@@ -653,6 +665,7 @@ def _parser() -> argparse.ArgumentParser:
     runner.add_argument("--guard-config", type=pathlib.Path)
     runner.add_argument("--backend-network")
     runner.add_argument("--backend-container")
+    runner.add_argument("--metrics-ingress-container")
     guard = subparsers.add_parser("prepare-guard")
     guard.add_argument("--manifest", required=True, type=pathlib.Path)
     guard.add_argument("--output", required=True, type=pathlib.Path)
@@ -700,6 +713,7 @@ def main(argv: list[str] | None = None) -> int:
                     args.guard_config,
                     args.backend_network,
                     args.backend_container,
+                    args.metrics_ingress_container,
                 )
             except ExecutorError as exc:
                 raise ContractError(str(exc)) from exc
