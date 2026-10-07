@@ -347,12 +347,13 @@ whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 | QA and remote baseline | 6 | W5 | Gate explain; branch protection; rulesets | main `23b0e6959` | PASS | QA and Remote Baseline | accepted |
 | Local change validation | 6 | W5 | `run-ci-gate.py --profile changed --local-only`; `run-ci-precommit.sh --mode local-staged` with pinned pre-commit 4.6.1 (global 4.6.2 exits 2) | This diff, seven files | PASS | QA and Remote Baseline | accepted |
 | Remote candidate | 6 | W5 | PR `candidate-quality` | Head `69958e2c2` | FAIL | QA and Remote Baseline | rejected |
-| Remote candidate rerun | 6 | W5 | PR `candidate-quality` | Corrected head | NOT_RUN | Pending PR rerun | pending |
+| Remote candidate rerun | 6 | W5 | PR `candidate-quality` run 37613874942 | Head `464837076` | PASS | QA and Remote Baseline | accepted |
 | HOME runtime state | 3 | W3 | Container, digest, UID and resource observation | No target authorized | NOT_RUN | Not observed | pending |
 
 ## Review and Completion
 
-Not complete. Local validation passed; the remote PR candidate result is pending.
+Source baseline work is done: local validation and the remote PR candidate
+rerun passed. The package stays `draft` until its follow-on owners pick it up.
 HOME runtime observation is outside this package and stays `NOT_RUN`.
 
 ## Related Documents
