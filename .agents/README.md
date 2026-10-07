@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Governance"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 layer: "agent-governance"
 ---
 
@@ -39,9 +39,10 @@ canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source�
   vocabulary, verification coverage를 소유합니다.
 - `prompts/`는 반복 작업을 위한 재사용 가능한 input/output contract를
   소유합니다.
-- `evaluations/`는 결정론적이고 model-free인 fixture 평가 input을 소유합니다.
-  이 data는 실행 지침으로 자동 로드되지 않으며 evaluator, registry와 manifest가
-  각각의 소비 경계를 소유합니다.
+- `evaluations/`는 같은 작업의 Skill 없는 출력과 명시적 Skill 호출 출력을
+  비교하는 평가 증거 영역입니다. 실제 작업·출력·채점·집계만 보존하며 runtime과
+  구성원 authority가 아닙니다. 현재는 역할 안내만 있고 새 증거 분류·등록은 별도
+  평가 계약에서 수행합니다. 자동 로드되지 않으며 quality policy가 필수 QA를 소유합니다.
 - `governance/providers/registry.yaml`은 provider identity, model/permission
   translation, projection route, hook fact를 소유합니다.
 - [Claude](../.claude/provider.md)와 [Codex](../.codex/provider.md)는 각자의
@@ -67,12 +68,12 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 | [skills/](skills/) | 명시적으로 호출하는 절차 |
 | [knowledge/](knowledge/) | 소유 표면과 검증 경로 |
 | [prompts/](prompts/) | 재사용하는 입력과 출력 계약 |
-| [evaluations/](evaluations/) | 결정론적 model-free 평가 입력 |
+| [evaluations/](evaluations/) | Skill 비교 평가 증거와 작성·보존 안내 |
 
 ```text
 .agents/
 ├── README.md
-├── evaluations/ # deterministic model-free evaluation inputs
+├── evaluations/ # paired Skill evaluation evidence; current README only
 ├── governance/  # policy, SDLC, hooks, provider registry
 ├── knowledge/   # 검증된 routing과 vocabulary
 ├── prompts/     # 재사용 가능한 input/output contract

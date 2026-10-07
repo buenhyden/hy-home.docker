@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import io
+import json
 import os
 import pathlib
 import shutil
@@ -82,6 +83,17 @@ def build_public_plan(
         context,
         profile=profile,
     )
+
+
+def _explained_identity(line: str) -> tuple[str, str, tuple[str, ...]]:
+    _, entrypoint, gate_id, argv = line.split("\t")
+    return gate_id, entrypoint, tuple(json.loads(argv))
+
+
+def _invocation_identity(
+    invocation: runner.GateInvocation,
+) -> tuple[str, str, tuple[str, ...]]:
+    return invocation.gate_id, invocation.entrypoint.as_posix(), invocation.argv
 
 
 def _rebind_diff_gate(
@@ -268,17 +280,18 @@ class CiGateRunnerContractTests(unittest.TestCase):
             target.parent.mkdir()
             self._git(repo, "mv", "rename-old.txt", target.relative_to(repo).as_posix())
             self._git(repo, "commit", "-qm", "rename")
+            head = self._git(repo, "rev-parse", "HEAD").stdout.strip()
             for event, key in (
                 ("pull_request", "PR_BASE_SHA"),
                 ("push", "PUSH_BEFORE_SHA"),
             ):
                 with self.subTest(event=event):
+                    environment = {"EVENT_NAME": event, key: base, "PATH": os.defpath}
+                    if event == "pull_request":
+                        environment["PR_HEAD_SHA"] = head
                     self.assertEqual(
                         ("rename-old.txt", "scripts/rename-new.txt"),
-                        runner.collect_changed_paths(
-                            repo,
-                            {"EVENT_NAME": event, key: base, "PATH": os.defpath},
-                        ),
+                        runner.collect_changed_paths(repo, environment),
                     )
             with self.assertRaises(contract.GateContractError) as missing:
                 runner.collect_changed_paths(
@@ -286,6 +299,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     {
                         "EVENT_NAME": "pull_request",
                         "PR_BASE_SHA": "f" * 40,
+                        "PR_HEAD_SHA": head,
                         "PATH": os.defpath,
                     },
                 )
@@ -305,11 +319,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 check=True,
             )
             with self.assertRaises(contract.GateContractError) as raised:
+                shallow_head = self._git(shallow, "rev-parse", "HEAD").stdout.strip()
                 runner.collect_changed_paths(
                     shallow,
                     {
                         "EVENT_NAME": "pull_request",
                         "PR_BASE_SHA": missing_base,
+                        "PR_HEAD_SHA": shallow_head,
                         "PATH": os.defpath,
                     },
                 )
@@ -375,13 +391,22 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "unstaged remainder\n", (repo / "modified.txt").read_text()
             )
 
-    def test_changed_plan_omits_only_irrelevant_frontend_roots(self) -> None:
+    def test_changed_document_plan_omits_irrelevant_expensive_roots(self) -> None:
         document = contract.load_contract_document(ROOT)
         registry = contract.parse_gate_registry(
             document, ".github/workflow-contract.yml"
         )
         public = contract.parse_public_gate_contract(document)
-        optional = {"ci.frontend-quality", "ci.storybook-coverage"}
+        optional = {
+            "ci.dependency-vulnerability-audit",
+            "ci.frontend-quality",
+            "ci.storybook-coverage",
+            "ci.zizmor",
+            "leaf.document-governance-library-regressions",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.local-document-metadata-tests",
+            "local.workflow-harness",
+        }
         paths = ("docs/03.specs/0173-governance-qa-surface-convergence/plan.md",)
         selected = contract.select_public_suites(public, "changed", paths)
         roots = contract.public_root_gate_ids(public, selected, changed_paths=paths)
@@ -394,7 +419,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
             runner.ExecutionContext.PULL_REQUEST,
         )
         gate_ids = {invocation.gate_id for invocation in plan}
-        self.assertIn("leaf.dependency-vulnerability-audit", gate_ids)
+        self.assertIn("leaf.changed-style", gate_ids)
+        self.assertIn("leaf.commit-message-contract", gate_ids)
+        self.assertNotIn("leaf.dependency-vulnerability-audit", gate_ids)
         self.assertFalse(
             {
                 "leaf.frontend-lint",
@@ -406,7 +433,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             & gate_ids
         )
 
-    def test_document_only_plan_keeps_validators_and_omits_implementation_regressions(
+    def test_document_only_plan_keeps_content_and_common_checks_only(
         self,
     ) -> None:
         plan = build_public_plan(
@@ -415,52 +442,263 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/03.specs/0200-path-aware-pr-regressions/spec.md",),
         )
         ids = {item.gate_id for item in plan}
-        self.assertLessEqual(
+        self.assertEqual(
             {
+                "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
-                "leaf.docs-traceability",
-                "leaf.local-document-corpus-lifecycle-tests",
+                "leaf.local-diff-hygiene",
+                "leaf.changed-style",
+                "leaf.commit-message-contract",
             },
             ids,
         )
         self.assertFalse(
             {
+                "leaf.local-document-corpus-lifecycle-tests",
                 "leaf.local-document-metadata-tests",
                 "leaf.document-governance-library-regressions",
+                "leaf.operations-catalog",
             }
             & ids
         )
 
     def test_operations_doc_plan_keeps_catalog(self) -> None:
+        paths = ("docs/05.operations/guides/0001-example.md",)
         plan = build_public_plan(
             "changed",
             runner.ExecutionContext.PULL_REQUEST,
-            ("docs/05.operations/guides/0001-example.md",),
+            paths,
         )
         ids = {item.gate_id for item in plan}
-        self.assertLessEqual(
+        self.assertEqual(
             {
+                "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
-                "leaf.docs-traceability",
                 "leaf.operations-catalog",
+                "leaf.local-diff-hygiene",
+                "leaf.changed-style",
+                "leaf.commit-message-contract",
             },
             ids,
         )
         self.assertNotIn("leaf.local-document-metadata-tests", ids)
         self.assertNotIn("leaf.document-governance-library-regressions", ids)
+        self.assertFalse(
+            {
+                "leaf.compose-validation",
+                "leaf.compose-baseline-regressions",
+                "leaf.infrastructure-hardening",
+                "leaf.template-security-baseline",
+                "leaf.quickwin-baseline",
+            }
+            & ids
+        )
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=False, docker=False),
+            runner.selected_prerequisites(plan, paths),
+        )
+
+    def test_document_links_are_local_only_for_changed_and_full_plans(self) -> None:
+        paths = ("docs/03.specs/0211-qa-delivery-rationalization/spec.md",)
+        local_changed = build_public_plan(
+            "changed", runner.ExecutionContext.LOCAL, paths
+        )
+        remote_changed = build_public_plan(
+            "changed", runner.ExecutionContext.PULL_REQUEST, paths
+        )
+        local_full = build_public_plan("full", runner.ExecutionContext.LOCAL)
+        hosted_full = build_public_plan(
+            "full", runner.ExecutionContext.WORKFLOW_DISPATCH
+        )
+
+        self.assertIn(
+            "leaf.docs-traceability", {item.gate_id for item in local_changed}
+        )
+        self.assertIn("leaf.docs-traceability", {item.gate_id for item in local_full})
+        self.assertNotIn(
+            "leaf.docs-traceability", {item.gate_id for item in remote_changed}
+        )
+        self.assertNotIn(
+            "leaf.docs-traceability", {item.gate_id for item in hosted_full}
+        )
+
+    def test_implementation_regressions_are_local_only_with_remote_owners(
+        self,
+    ) -> None:
+        cases = {
+            "scripts/lib/document_governance/spec_packages.py": (
+                "leaf.document-governance-library-regressions",
+                "leaf.repo-document-metadata",
+            ),
+            ".github/workflow-contract.yml": (
+                "leaf.workflow-contract-regressions",
+                "leaf.workflow-contract",
+            ),
+            "scripts/hooks/hook_rules.py": (
+                "leaf.local-hook-rule-tests",
+                "leaf.local-agent-governance-contract",
+            ),
+            "scripts/validation/check-script-manifest.py": (
+                "leaf.repository-integrity-regressions",
+                "leaf.local-script-manifest",
+            ),
+        }
+        for path, (local_only, remote_owner) in cases.items():
+            with self.subTest(path=path):
+                local_ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
+                    )
+                }
+                remote_ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                    )
+                }
+                self.assertIn(local_only, local_ids)
+                self.assertNotIn(local_only, remote_ids)
+                self.assertIn(remote_owner, remote_ids)
+
+    def test_local_only_plan_intersects_normal_changed_selection(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+
+        document_plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.LOCAL,
+            ("docs/03.specs/0211-qa-scope-and-delivery-rationalization/spec.md",),
+        )
+        self.assertEqual(
+            ("leaf.docs-traceability",),
+            tuple(
+                invocation.gate_id
+                for invocation in runner.build_local_only_validation_plan(
+                    document_plan,
+                    public,
+                    runner.ExecutionContext.LOCAL,
+                )
+            ),
+        )
+
+        implementation_plan = build_public_plan(
+            "changed",
+            runner.ExecutionContext.LOCAL,
+            (".github/workflow-contract.yml",),
+        )
+        local_only_ids = {
+            invocation.gate_id
+            for invocation in runner.build_local_only_validation_plan(
+                implementation_plan,
+                public,
+                runner.ExecutionContext.LOCAL,
+            )
+        }
+        self.assertIn("leaf.workflow-contract-regressions", local_only_ids)
+        self.assertNotIn("leaf.workflow-contract", local_only_ids)
+        self.assertNotIn("leaf.changed-style", local_only_ids)
+        self.assertNotIn("leaf.commit-message-contract", local_only_ids)
+
+    def test_local_only_cli_rejects_authenticated_hosted_context_before_execution(
+        self,
+    ) -> None:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+            "GITHUB_ACTIONS": "true",
+            "EVENT_NAME": "pull_request",
+            "PR_BASE_SHA": "a" * 40,
+            "PR_HEAD_SHA": "b" * 40,
+        }
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(runner, "collect_changed_paths", return_value=()),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            self.assertEqual(
+                1,
+                runner.main(["--profile", "changed", "--local-only"]),
+            )
+        execute.assert_not_called()
+        self.assertIn("ci-gate-local-only-context", stderr.getvalue())
+
+    def test_local_only_cli_executes_and_explains_only_the_selected_local_slice(
+        self,
+    ) -> None:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+        }
+        selected_plans: list[tuple[runner.GateInvocation, ...]] = []
+
+        def capture_execution(
+            root: pathlib.Path,
+            plan: tuple[runner.GateInvocation, ...],
+            environ: dict[str, str],
+        ) -> int:
+            self.assertEqual(ROOT, root)
+            self.assertEqual(os.defpath, environ["PATH"])
+            selected_plans.append(plan)
+            return 0
+
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=(".github/workflow-contract.yml",),
+            ),
+            mock.patch.object(
+                runner,
+                "execute_execution_plan",
+                side_effect=capture_execution,
+            ),
+        ):
+            self.assertEqual(
+                0,
+                runner.main(["--profile", "changed", "--local-only"]),
+            )
+
+        self.assertEqual(1, len(selected_plans))
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        selected_ids = {invocation.gate_id for invocation in selected_plans[0]}
+        self.assertLessEqual(selected_ids, set(public.local_only_gate_ids))
+        self.assertIn("leaf.workflow-contract-regressions", selected_ids)
+        self.assertNotIn("leaf.workflow-contract", selected_ids)
+
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=(".github/workflow-contract.yml",),
+            ),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            self.assertEqual(
+                0,
+                runner.main(["--profile", "changed", "--local-only", "--explain"]),
+            )
+        execute.assert_not_called()
+        lines = tuple(stdout.getvalue().splitlines())
+        self.assertTrue(lines)
+        self.assertTrue(all(line.startswith("local-only\t") for line in lines))
+        self.assertTrue(
+            any("leaf.workflow-contract-regressions" in line for line in lines)
+        )
 
     def test_document_owner_changes_select_regressions(self) -> None:
         owners = (
-            ".github/workflow-contract.yml",
-            ".agents/governance/quality-standards.md",
-            "docs/99.templates/registry.json",
             "scripts/lib/document_governance/metadata/reference.py",
-            "scripts/lib/gate/ci_gate_contract.py",
             "scripts/validation/check-document-metadata.py",
             "tests/lib/document_governance/metadata/test_reference.py",
-            "tests/validation/test_ci_gate_plan.py",
         )
         targets = {
             "leaf.local-document-metadata-tests",
@@ -469,9 +707,305 @@ class CiGateRunnerContractTests(unittest.TestCase):
         for path in owners:
             with self.subTest(path=path):
                 plan = build_public_plan(
-                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
                 )
                 self.assertLessEqual(targets, {item.gate_id for item in plan})
+
+    def test_gate_and_workflow_implementation_changes_omit_document_regressions(
+        self,
+    ) -> None:
+        targets = {
+            "leaf.local-document-metadata-tests",
+            "leaf.document-governance-library-regressions",
+        }
+        for path in (
+            ".github/workflow-contract.yml",
+            "scripts/lib/gate/ci_gate_contract.py",
+            "scripts/validation/ci_gate_runner.py",
+            "tests/lib/gate/test_ci_gate_contract.py",
+            "tests/validation/test_ci_gate_plan.py",
+        ):
+            with self.subTest(path=path):
+                plan = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                self.assertFalse(targets & {item.gate_id for item in plan})
+
+    def test_release_owner_changes_select_release_regression_only_locally(self) -> None:
+        release_inputs = (
+            "scripts/operations/release.py",
+            "tests/validation/test_release.py",
+            ".github/workflows/generate-changelog.yml",
+            ".cz.toml",
+            "cliff.toml",
+            "CHANGELOG.md",
+        )
+        for path in release_inputs:
+            with self.subTest(path=path):
+                hosted = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                local = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                hosted_ids = {item.gate_id for item in hosted}
+                local_ids = {item.gate_id for item in local}
+                self.assertNotIn("leaf.release-regressions", hosted_ids)
+                self.assertIn("leaf.release-regressions", local_ids)
+                self.assertFalse(
+                    {
+                        "leaf.compose-validation",
+                        "leaf.compose-baseline-regressions",
+                        "leaf.infrastructure-hardening",
+                        "leaf.template-security-baseline",
+                        "leaf.quickwin-baseline",
+                    }
+                    & hosted_ids
+                )
+                self.assertFalse(runner.selected_prerequisites(hosted, (path,)).docker)
+
+        ordinary_document = build_public_plan(
+            "changed",
+            runner.ExecutionContext.PULL_REQUEST,
+            ("docs/03.specs/0211-qa-delivery-rationalization/spec.md",),
+        )
+        self.assertNotIn(
+            "leaf.release-regressions",
+            {item.gate_id for item in ordinary_document},
+        )
+
+    def test_changed_unit_owners_run_locally_while_conftest_corpus_stays_hosted(
+        self,
+    ) -> None:
+        cases = {
+            "tests/validation/test_compose_baseline_gates.py": (
+                "leaf.compose-baseline-regressions",
+                None,
+            ),
+            "tests/validation/test_supply_chain_wrapper.py": (
+                "leaf.supply-chain-fixture-policy",
+                None,
+            ),
+            "infra/11-quality/conftest/policy/compose.rego": (
+                "leaf.conftest-policy-tests",
+                "leaf.conftest-policy",
+            ),
+        }
+        conftest_entrypoint = pathlib.PurePosixPath(
+            "scripts/validation/check-conftest-policy.sh"
+        )
+        for path, (local_unit, hosted_corpus) in cases.items():
+            with self.subTest(path=path):
+                local = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                hosted = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                local_ids = [item.gate_id for item in local]
+                hosted_ids = [item.gate_id for item in hosted]
+                self.assertEqual(1, local_ids.count(local_unit))
+                self.assertNotIn(local_unit, hosted_ids)
+                if hosted_corpus is not None:
+                    self.assertEqual(1, hosted_ids.count(hosted_corpus))
+                    self.assertEqual(
+                        [
+                            ("--mode", "corpus"),
+                            ("--mode", "verify"),
+                        ],
+                        [
+                            item.argv
+                            for item in local
+                            if item.entrypoint == conftest_entrypoint
+                        ],
+                    )
+                    self.assertEqual(
+                        [("--mode", "corpus")],
+                        [
+                            item.argv
+                            for item in hosted
+                            if item.entrypoint == conftest_entrypoint
+                        ],
+                    )
+                    self.assertTrue(
+                        runner.selected_prerequisites(local, (path,)).docker
+                    )
+                    self.assertTrue(
+                        runner.selected_prerequisites(hosted, (path,)).docker
+                    )
+
+    def test_changed_implementation_owners_are_explicit_and_unknown_code_fails_closed(
+        self,
+    ) -> None:
+        cases = {
+            "scripts/hardening/check-all-hardening.sh": {
+                "leaf.infrastructure-hardening"
+            },
+            "scripts/validation/check-template-security-baseline.sh": {
+                "leaf.template-security-baseline"
+            },
+            "scripts/validation/check-quickwin-baseline.sh": {"leaf.quickwin-baseline"},
+            "scripts/validation/check-supply-chain-policy.py": {
+                "leaf.supply-chain-deterministic-policy"
+            },
+            "tests/validation/test_compose_baseline_gates.py": {
+                "leaf.compose-baseline-regressions"
+            },
+            "scripts/lib/agent_governance/agent_governance_contract.py": {
+                "leaf.local-agent-governance-contract"
+            },
+            "scripts/hooks/hook_rules.py": {"leaf.local-hook-rule-tests"},
+            "scripts/operations/provider_surface_renderer.py": {
+                "leaf.local-provider-surface-drift"
+            },
+            "scripts/operations/use-qa-ci-tools.sh": {
+                "leaf.repo-contracts-control-plane-regressions"
+            },
+            "scripts/operations/sync-tech-stack-versions.sh": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-script-manifest.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/_script_manifest_support.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+        }
+        for path, expected_gate_ids in cases.items():
+            with self.subTest(path=path):
+                local_plan = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                remote_plan = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                local_ids = {item.gate_id for item in local_plan}
+                remote_ids = {item.gate_id for item in remote_plan}
+                self.assertLessEqual(expected_gate_ids, local_ids | remote_ids)
+                if path == "scripts/operations/provider_surface_renderer.py":
+                    self.assertNotIn("leaf.compose-validation", remote_ids)
+                    self.assertNotIn("leaf.compose-baseline-regressions", remote_ids)
+                    self.assertFalse(
+                        runner.selected_prerequisites(remote_plan, (path,)).docker
+                    )
+                if path == "scripts/operations/use-qa-ci-tools.sh":
+                    self.assertNotIn("leaf.compose-validation", remote_ids)
+                    self.assertNotIn("leaf.compose-baseline-regressions", remote_ids)
+                    self.assertFalse(
+                        runner.selected_prerequisites(remote_plan, (path,)).docker
+                    )
+
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+        for path in (
+            "scripts/future_domain/unmapped.py",
+            "tests/validation/test_future_unmapped.py",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(
+                    public.suite_names,
+                    contract.select_public_suites(public, "changed", (path,)),
+                )
+
+    def test_style_controller_inputs_select_their_harness_without_npm_audit(
+        self,
+    ) -> None:
+        controller_inputs = (
+            ".pre-commit-config.yaml",
+            ".markdownlint-cli2.yaml",
+            ".cz.toml",
+            ".hadolint.yaml",
+            ".shellcheckrc",
+            ".yamllint",
+            "ruff.toml",
+            "scripts/requirements-pre-commit.txt",
+            "scripts/requirements.txt",
+            "tests/validation/test_agent_governance_ci_routing.py",
+        )
+        for path in controller_inputs:
+            with self.subTest(path=path):
+                ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
+                    )
+                }
+                self.assertIn("leaf.ci-precommit-regressions", ids)
+                self.assertIn("leaf.repo-contracts-control-plane-regressions", ids)
+                if path.startswith("scripts/requirements"):
+                    self.assertNotIn("leaf.dependency-vulnerability-audit", ids)
+
+    def test_registered_test_sources_select_their_own_leaf(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        expected_by_path: dict[str, set[str]] = {}
+        for node in registry.nodes:
+            if node.entrypoint is not None:
+                entrypoint = node.entrypoint.as_posix()
+                if entrypoint.startswith("tests/") and (ROOT / entrypoint).is_file():
+                    expected_by_path.setdefault(entrypoint, set()).add(node.gate_id)
+            if not node.argv or node.argv[0] != "run-unittest":
+                continue
+            for module in node.argv[1:]:
+                if module.startswith("-"):
+                    break
+                source = f"{module.replace('.', '/')}.py"
+                if (ROOT / source).is_file():
+                    expected_by_path.setdefault(source, set()).add(node.gate_id)
+
+        for path, expected_gate_ids in sorted(expected_by_path.items()):
+            with self.subTest(path=path):
+                actual_gate_ids = {
+                    item.gate_id
+                    for item in build_public_plan(
+                        "changed", runner.ExecutionContext.LOCAL, (path,)
+                    )
+                }
+                self.assertTrue(
+                    expected_gate_ids & actual_gate_ids,
+                    f"{path} does not select one of {sorted(expected_gate_ids)}",
+                )
+
+    def test_prerequisites_follow_the_selected_plan(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        registry = contract.parse_gate_registry(
+            document, ".github/workflow-contract.yml"
+        )
+        public = contract.parse_public_gate_contract(document)
+
+        def requirements(paths: tuple[str, ...]):
+            selected = contract.select_public_suites(public, "changed", paths)
+            plan = runner.build_public_validation_plan(
+                registry,
+                contract.public_root_gate_ids(public, selected, changed_paths=paths),
+                public,
+                selected,
+                runner.ExecutionContext.PULL_REQUEST,
+                root=ROOT,
+            )
+            return runner.selected_prerequisites(plan, paths)
+
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=False, docker=False),
+            requirements(("docs/03.specs/0211-example/spec.md",)),
+        )
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=False, docker=False),
+            requirements(("README.md",)),
+        )
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=True, docker=False),
+            requirements(("projects/storybook/nextjs/package.json",)),
+        )
+        self.assertEqual(
+            runner.SelectedPrerequisites(node=False, docker=True),
+            requirements(("infra/01-gateway/docker-compose.yml",)),
+        )
 
     def test_mixed_unknown_path_keeps_document_regressions(self) -> None:
         targets = {
@@ -487,12 +1021,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
         ):
             with self.subTest(paths=paths):
                 plan = build_public_plan(
-                    "changed", runner.ExecutionContext.PULL_REQUEST, paths
+                    "changed", runner.ExecutionContext.LOCAL, paths
                 )
                 self.assertLessEqual(targets, {item.gate_id for item in plan})
 
     def test_full_plan_keeps_document_regressions_once(self) -> None:
-        plan = build_public_plan("full", runner.ExecutionContext.PULL_REQUEST)
+        plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
         ids = [item.gate_id for item in plan]
         self.assertEqual(1, ids.count("leaf.local-document-metadata-tests"))
         self.assertEqual(1, ids.count("leaf.document-governance-library-regressions"))
@@ -543,41 +1077,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     for item in plan
                 ]
                 self.assertEqual(len(keys), len(set(keys)))
-
-    def test_full_plan_runs_the_agent_eval_once_through_the_adapter(self) -> None:
-        fixture_module = "tests.validation.test_agent_output_eval_fixtures"
-        for context in (
-            runner.ExecutionContext.LOCAL,
-            runner.ExecutionContext.PULL_REQUEST,
-            runner.ExecutionContext.PUSH,
-            runner.ExecutionContext.PUSH_INITIAL,
-            runner.ExecutionContext.WORKFLOW_DISPATCH,
-        ):
-            with self.subTest(context=context.value):
-                plan = build_public_plan("full", context)
-                self.assertEqual(
-                    1,
-                    sum(
-                        item.entrypoint
-                        == pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
-                        and item.argv == ("run-agent-output-eval",)
-                        for item in plan
-                    ),
-                )
-                self.assertEqual(
-                    0,
-                    sum(
-                        item.entrypoint
-                        == pathlib.PurePosixPath(
-                            ".agents/evaluations/agent_output_eval.py"
-                        )
-                        for item in plan
-                    ),
-                )
-                self.assertEqual(
-                    1,
-                    sum(fixture_module in item.argv for item in plan),
-                )
 
     def test_required_runner_interfaces_are_exact(self) -> None:
         self.assertEqual(
@@ -657,12 +1156,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
-        plan = _real_public_plan(public.suite_names, {})
+        plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
         expected = runner.render_public_validation_plan(
             plan,
             public,
             public.suite_names,
             runner.ExecutionContext.LOCAL,
+            profile="full",
         )
         with (
             mock.patch.object(runner, "execute_execution_plan") as execute,
@@ -674,6 +1174,32 @@ class CiGateRunnerContractTests(unittest.TestCase):
             self.assertEqual(0, runner.main(["--profile", "full", "--explain"]))
         execute.assert_not_called()
         self.assertEqual(expected, tuple(stdout.getvalue().splitlines()))
+
+    def test_requirements_reports_prerequisites_without_executing(self) -> None:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+            "GITHUB_ACTIONS": "true",
+            "EVENT_NAME": "pull_request",
+            "PR_BASE_SHA": "a" * 40,
+            "PR_HEAD_SHA": "b" * 40,
+        }
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=("docs/03.specs/example.md",),
+            ),
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+        ):
+            self.assertEqual(
+                0,
+                runner.main(["--profile", "changed", "--requirements"]),
+            )
+        execute.assert_not_called()
+        self.assertEqual("node=false\ndocker=false\n", stdout.getvalue())
 
     def test_standalone_validator_explain_and_fake_execution_have_exact_parity(
         self,
@@ -687,28 +1213,31 @@ class CiGateRunnerContractTests(unittest.TestCase):
         explained = runner.render_public_validation_plan(
             plan, suites, selected, runner.ExecutionContext.LOCAL
         )
-        explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
-        executed: list[pathlib.PurePosixPath] = []
+        explained_identities = tuple(_explained_identity(line) for line in explained)
+        executed: list[runner.GateInvocation] = []
         result = runner.execute_execution_plan(
             root,
             plan,
             {"PATH": os.defpath},
-            executor=lambda invocation: executed.append(invocation.entrypoint) or 0,
+            executor=lambda invocation: executed.append(invocation) or 0,
         )
-        validator_paths = {
-            item.entrypoint
+        validator_gate_ids = {
+            item.gate_id
             for item in suites.validators
             if item.suite in selected and "local" in item.contexts
         }
         executed_validators = tuple(
-            path.as_posix() for path in executed if path in validator_paths
+            _invocation_identity(invocation)
+            for invocation in executed
+            if invocation.gate_id in validator_gate_ids
         )
         self.assertEqual(0, result)
-        self.assertEqual(explained_paths, executed_validators)
+        self.assertEqual(explained_identities, executed_validators)
         self.assertEqual(
             1,
-            executed_validators.count(
-                "scripts/validation/check-agent-governance-contract.py"
+            sum(
+                identity[1] == "scripts/validation/check-agent-governance-contract.py"
+                for identity in executed_validators
             ),
         )
 
@@ -772,8 +1301,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     "GITHUB_ACTIONS": "true",
                     "EVENT_NAME": "pull_request",
                     "PR_BASE_SHA": "a" * 40,
-                    "PR_TITLE": "Task 12",
-                    "HEAD_REF": "task-12",
+                    "PR_HEAD_SHA": "b" * 40,
                 },
             ),
             "push": (
@@ -811,25 +1339,29 @@ class CiGateRunnerContractTests(unittest.TestCase):
             explained = runner.render_public_validation_plan(
                 plans[name], suites, selected, context
             )
-            executed: list[pathlib.PurePosixPath] = []
+            executed: list[runner.GateInvocation] = []
             self.assertEqual(
                 0,
                 runner.execute_execution_plan(
                     root,
                     plans[name],
                     {"PATH": os.defpath},
-                    executor=lambda invocation: (
-                        executed.append(invocation.entrypoint) or 0
-                    ),
+                    executor=lambda invocation: executed.append(invocation) or 0,
                 ),
             )
-            explained_paths = tuple(line.split("\t", 1)[1] for line in explained)
-            # Count every validator path, not only eligible paths: otherwise a
+            explained_identities = tuple(
+                _explained_identity(line) for line in explained
+            )
+            # Count every validator gate, not only eligible gates: otherwise a
             # hidden ineligible invocation can evade this explain comparison.
-            validator_paths = {item.entrypoint for item in suites.validators}
+            validator_gate_ids = {item.gate_id for item in suites.validators}
             self.assertEqual(
-                explained_paths,
-                tuple(path.as_posix() for path in executed if path in validator_paths),
+                explained_identities,
+                tuple(
+                    _invocation_identity(invocation)
+                    for invocation in executed
+                    if invocation.gate_id in validator_gate_ids
+                ),
             )
         # Parsed for its assertion that the registry is well formed; the result
         # is unused because the checks below read the plans, not the registry.
@@ -844,12 +1376,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     {item.entrypoint for item in plans[name]},
                 )
         self.assertIn(
-            "leaf.git-flow-contract",
+            "leaf.commit-message-contract",
             {item.gate_id for item in plans["pull_request"]},
         )
         for name in ("push", "initial_push", "workflow_dispatch"):
             self.assertNotIn(
-                "leaf.git-flow-contract",
+                "leaf.commit-message-contract",
                 {item.gate_id for item in plans[name]},
             )
 
@@ -891,27 +1423,57 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         )
         # These exact pairs are registered internal gate invocations rather than
-        # validator rebinds, so the parity check admits them by design. Every
-        # other (path, argv) combination below must still be rejected, which is
-        # what keeps `run-ci-precommit.sh` from being reachable with arguments.
+        # validator rebinds, so the parity check admits them by design. The
+        # staged authoring mode remains outside the public gate; only the exact
+        # authenticated PR mode is reachable here.
         admitted_pairs = {
             (runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",)),
-            (pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"), ()),
+            (
+                pathlib.PurePosixPath(
+                    "scripts/validation/check-github-workflow-contract.py"
+                ),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/check-operations-catalog.py"),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/check-script-manifest.py"),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/check-storybook-contract.sh"),
+                (),
+            ),
+            (
+                pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
+                ("--mode", "pr-merge"),
+            ),
         }
+        candidate_argv = (
+            (),
+            ("check-diff-hygiene",),
+            ("--mode", "pr-merge"),
+            ("--mode", "local-staged"),
+            ("--mode", "unknown"),
+        )
         self.assertTrue(
             admitted_pairs.issubset(
-                {
-                    (path, argv)
-                    for path in forbidden_paths
-                    for argv in ((), ("check-diff-hygiene",))
-                }
+                {(path, argv) for path in forbidden_paths for argv in candidate_argv}
                 | {(runner._INTERNAL_ADAPTER_PATH, ("check-diff-hygiene",))}
             )
         )
         for context in runner.ExecutionContext:
             for path in forbidden_paths:
-                for argv in ((), ("check-diff-hygiene",)):
-                    if (path, argv) in admitted_pairs:
+                for argv in candidate_argv:
+                    if (path, argv) in admitted_pairs and (
+                        path
+                        != pathlib.PurePosixPath(
+                            "scripts/validation/run-ci-precommit.sh"
+                        )
+                        or context is runner.ExecutionContext.PULL_REQUEST
+                    ):
                         continue
                     with self.subTest(context=context, path=path, argv=argv):
                         with self.assertRaises(contract.GateContractError) as raised:
@@ -940,7 +1502,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             (runner.ExecutionContext.LOCAL, ("run-unittest", "-v")),
             (runner.ExecutionContext.LOCAL, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.LOCAL, ("install-playwright",)),
-            (runner.ExecutionContext.PUSH, ("check-git-flow",)),
+            (runner.ExecutionContext.PUSH, ("check-commit-range",)),
             (runner.ExecutionContext.WORKFLOW_DISPATCH, ("verify-metadata-base",)),
             (runner.ExecutionContext.PULL_REQUEST, ("publish-qa-recommendations",)),
         ):
@@ -957,7 +1519,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     "ci-gate-public-execution-parity", raised.exception.code
                 )
         duplicate_invocations = (
-            (runner.ExecutionContext.PULL_REQUEST, ("check-git-flow",)),
+            (runner.ExecutionContext.PULL_REQUEST, ("check-commit-range",)),
             (runner.ExecutionContext.PUSH, ("run-zizmor-sarif",)),
             (runner.ExecutionContext.WORKFLOW_DISPATCH, ("install-playwright",)),
         )
@@ -1059,18 +1621,23 @@ class CiGateRunnerContractTests(unittest.TestCase):
         invalid = (
             {"EVENT_NAME": "push"},
             {"GITHUB_ACTIONS": "true", "EVENT_NAME": "schedule"},
+            {"GITHUB_ACTIONS": "true", "EVENT_NAME": "push"},
             {
                 "GITHUB_ACTIONS": "true",
                 "EVENT_NAME": "pull_request",
                 "PR_BASE_SHA": "a" * 40,
             },
-            {"GITHUB_ACTIONS": "true", "EVENT_NAME": "push"},
             {
                 "GITHUB_ACTIONS": "true",
                 "EVENT_NAME": "pull_request",
                 "PR_BASE_SHA": "0" * 40,
-                "PR_TITLE": "Task 12",
-                "HEAD_REF": "task-12",
+                "PR_HEAD_SHA": "b" * 40,
+            },
+            {
+                "GITHUB_ACTIONS": "true",
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "a" * 40,
+                "PR_HEAD_SHA": "a" * 40,
             },
             {
                 "GITHUB_ACTIONS": "true",
@@ -1100,8 +1667,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     "GITHUB_ACTIONS": "true",
                     "EVENT_NAME": "pull_request",
                     "PR_BASE_SHA": "a" * 40,
-                    "PR_TITLE": "Task 12",
-                    "HEAD_REF": "task-12",
+                    "PR_HEAD_SHA": "b" * 40,
                     "PATH": os.defpath,
                 },
                 "a" * 40,
@@ -1201,40 +1767,3 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 self.assertEqual(("--mode", "check-active"), metadata.argv)
                 self.assertEqual((), metadata.allowed_env_keys)
-
-
-class EditedPRRoutingTests(unittest.TestCase):
-    def test_title_only_edit_still_runs_required_changed_gate(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            event = pathlib.Path(directory) / "event.json"
-            event.write_text(
-                '{"action":"edited","changes":{"title":{"from":"old"}}}',
-                encoding="utf-8",
-            )
-            environment = {
-                "HYHOME_CI_GATE_ROOT": str(ROOT),
-                "PATH": os.defpath,
-                "GITHUB_ACTIONS": "true",
-                "EVENT_NAME": "pull_request",
-                "PR_ACTION": "edited",
-                "GITHUB_EVENT_PATH": str(event),
-                "PR_BASE_SHA": "a" * 40,
-                "PR_TITLE": "docs: Valid title",
-                "HEAD_REF": "codex/topic",
-            }
-            with (
-                mock.patch.dict(os.environ, environment, clear=True),
-                mock.patch.object(
-                    runner,
-                    "collect_changed_paths",
-                    return_value=("docs/03.specs/example.md",),
-                ) as changed,
-                mock.patch.object(
-                    runner, "execute_execution_plan", return_value=0
-                ) as execute,
-            ):
-                self.assertEqual(0, runner.main(["--profile", "changed"]))
-            self.assertEqual(1, changed.call_count)
-            gate_ids = {item.gate_id for item in execute.call_args.args[1]}
-            self.assertIn("leaf.git-flow-contract", gate_ids)
-            self.assertIn("leaf.repo-document-metadata", gate_ids)

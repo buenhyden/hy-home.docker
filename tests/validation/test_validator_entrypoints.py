@@ -13,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[2]
 PYTHON_ENTRYPOINTS = (
     "scripts/operations/provider_surface_renderer.py",
     "scripts/lib/agent_governance/agent_governance_contract.py",
-    ".agents/evaluations/agent_output_eval.py",
     "scripts/validation/check-agent-governance-contract.py",
     "scripts/validation/check-document-corpus-lifecycle.py",
     "scripts/validation/check-document-metadata.py",
@@ -35,7 +34,6 @@ SHELL_ENTRYPOINTS = (
     "scripts/operations/rehearse-postgres-logical-upgrade.sh",
     "scripts/operations/sync-tech-stack-versions.sh",
     "scripts/operations/use-qa-ci-tools.sh",
-    ".agents/evaluations/run-agent-output-eval-fixtures.sh",
     "scripts/validation/run-agent-precommit-all-files.sh",
     "scripts/validation/validate-docker-compose.sh",
 )

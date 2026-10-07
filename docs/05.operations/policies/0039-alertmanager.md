@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -94,7 +94,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 - Alert routing config:
   `rg -n 'group_by: \\[\"alertname\", \"job\", \"domain\", \"severity\"\\]|repeat_interval: 4h|receiver: \"team-notifications-slack\"|receiver: \"critical-notifications\"|severity=\"critical\"|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - Repository contracts:
-  `python3 scripts/validation/run-ci-gate.py --profile changed`
+  원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 

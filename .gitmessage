@@ -25,6 +25,9 @@
 # 예) release: Publish v1.0.0
 # 예) feat(api)!: Require authentication
 # breaking 변경은 ! 또는 마지막 BREAKING CHANGE: 설명으로 표시합니다.
+# CHANGELOG.md는 main 대상 release 준비 PR에서 작성합니다.
+# cz는 메시지/SCM 버전 조회만 담당합니다. cz bump로 태그를 생성하지 않습니다.
+# 향후 v<SemVer> 태그와 GitHub Release는 승인된 단일 release workflow가 생성합니다.
 # ------------------
 # Remember me ~
 #   Capitalize the subject line

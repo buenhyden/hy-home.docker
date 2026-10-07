@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -112,7 +112,7 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 - Dashboard count:
   `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`
 - Repository contracts:
-  `python3 scripts/validation/run-ci-gate.py --profile changed`
+  원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 

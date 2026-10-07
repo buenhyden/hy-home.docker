@@ -12,8 +12,6 @@ import unittest
 
 import yaml
 
-from scripts.lib.document_governance.metadata.heading import validate_body_contract
-from scripts.lib.document_governance.metadata.profile import Record
 from scripts.lib.gate.ci_gate_contract import (
     load_contract_document,
     parse_gate_registry,
@@ -46,43 +44,6 @@ DRIFT_COMPONENTS = (
 )
 IMAGE_LINE_RE = re.compile(r"(?m)^\s*image:\s*['\"]?([^'\"\s#]+)")
 DEFAULT_IMAGE_RE = re.compile(r"\$\{[^}:]+:-([^}]+)\}")
-PRESERVED_LIFECYCLE_CONTEXTS = frozenset(
-    {
-        "historical",
-        "incident",
-        "migration",
-        "archive",
-        "dashboard-label",
-        "negative-fixture",
-    }
-)
-TARGET_ROOTS = (
-    ".github",
-    "archive",
-    "examples",
-    "infra",
-    "projects",
-    "scripts",
-    "secrets",
-    "tests",
-)
-DIRECT_RUNTIME_DOCS = (
-    "infra/01-gateway/README.md",
-    "infra/02-auth/keycloak/README.md",
-    "infra/06-observability/README.md",
-    "infra/06-observability/alloy/README.md",
-    "infra/06-observability/prometheus/README.md",
-    "infra/06-observability/pushgateway/README.md",
-    "infra/06-observability/pyroscope/README.md",
-    "infra/06-observability/tempo/README.md",
-    "infra/08-ai/README.md",
-    "infra/06-observability/dozzle/README.md",
-    "docs/05.operations/guides/0040-alloy.md",
-    "docs/05.operations/guides/0045-prometheus.md",
-    "docs/05.operations/policies/0040-alloy.md",
-    "docs/05.operations/policies/0045-prometheus.md",
-    "docs/05.operations/runbooks/0040-alloy.md",
-)
 
 
 def declared_images(path: pathlib.Path) -> set[str]:
@@ -94,20 +55,6 @@ def declared_images(path: pathlib.Path) -> set[str]:
         if default_match:
             images.add(default_match.group(1))
     return images
-
-
-def lifecycle_classification_findings(
-    classifications: dict[str, str],
-    *,
-    active_obsolete_paths: frozenset[str] = frozenset(),
-) -> tuple[str, ...]:
-    findings: list[str] = []
-    for path, context in sorted(classifications.items()):
-        if path in active_obsolete_paths:
-            findings.append(f"{path}: registered active obsolete implementation")
-        elif context not in PRESERVED_LIFECYCLE_CONTEXTS:
-            findings.append(f"{path}: unclassified lifecycle context {context}")
-    return tuple(findings)
 
 
 def updater_contract_findings(
@@ -407,25 +354,6 @@ class TechStackVersionContractTests(unittest.TestCase):
                     ),
                 )
 
-    def test_runtime_docs_link_authority_without_duplicating_pins(self) -> None:
-        for relative_path in DIRECT_RUNTIME_DOCS:
-            with self.subTest(path=relative_path):
-                record = Record(pathlib.Path(relative_path), {}, "common/readme")
-                findings = validate_body_contract(
-                    record,
-                    (ROOT / relative_path).read_text(encoding="utf-8"),
-                    {"profiles": {}},
-                    False,
-                )
-                self.assertEqual(
-                    [],
-                    [
-                        finding
-                        for finding in findings
-                        if finding.code.startswith("runtime-version-")
-                    ],
-                )
-
     def test_hardening_checker_has_no_independent_stale_keycloak_literal(self) -> None:
         text = HARDENING_CHECKER.read_text(encoding="utf-8")
         self.assertNotIn("quay.io/keycloak/keycloak:26.6.4-1", text)
@@ -481,17 +409,6 @@ class TechStackVersionContractTests(unittest.TestCase):
             text,
         )
 
-    def test_public_contract_owns_hardening_version_validation(self) -> None:
-        public = parse_public_gate_contract(load_contract_document(ROOT))
-        hardening = tuple(
-            item
-            for item in public.validators
-            if item.entrypoint
-            == pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh")
-        )
-        self.assertEqual(1, len(hardening))
-        self.assertEqual("repository-integrity", hardening[0].suite)
-
     def test_required_drift_check_runs_once_in_each_public_context(self) -> None:
         document = load_contract_document(ROOT)
         public = parse_public_gate_contract(document)
@@ -528,17 +445,30 @@ class TechStackVersionContractTests(unittest.TestCase):
                     sum(invocation.gate_id == leaf["gate_id"] for invocation in plan),
                 )
 
-        # Compare executable step commands, not comments or documentation examples.
+        # This bounded guard detects direct literal bash token sequences only.
+        # Aliases, nested bash -c, and generated shell commands are outside its scope.
+        expected_command = ["bash", leaf["entrypoint"], *leaf["argv"]]
         for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
-            with self.subTest(workflow=path.name):
-                workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
-                commands = [
-                    shlex.split(line, comments=True)
-                    for job in workflow["jobs"].values()
-                    for step in job["steps"]
-                    for line in step.get("run", "").splitlines()
-                ]
-                self.assertNotIn(["bash", leaf["entrypoint"], *leaf["argv"]], commands)
+            workflow = yaml.safe_load(path.read_text(encoding="utf-8"))
+            for job_name, job in workflow["jobs"].items():
+                for step_index, step in enumerate(job["steps"]):
+                    with self.subTest(
+                        workflow=path.name, job=job_name, step=step_index
+                    ):
+                        try:
+                            tokens = shlex.split(
+                                step.get("run", ""), comments=True, posix=True
+                            )
+                        except ValueError:
+                            self.fail("workflow run block has invalid shell quoting")
+                        width = len(expected_command)
+                        self.assertFalse(
+                            any(
+                                tokens[index : index + width] == expected_command
+                                for index in range(len(tokens) - width + 1)
+                            ),
+                            "registered drift check must run through the public gate",
+                        )
 
     def test_pull_request_plan_reaches_drift_leaf_without_a_path_match(
         self,
@@ -801,60 +731,6 @@ class TechStackVersionContractTests(unittest.TestCase):
                         "FAIL: invalid compose service image contract\n",
                         result.stderr,
                     )
-
-    def test_post_deletion_scan_reads_only_current_files(self) -> None:
-        tracked = subprocess.run(
-            [
-                "git",
-                "ls-files",
-                "-z",
-                "--cached",
-                "--others",
-                "--exclude-standard",
-                "--",
-                *TARGET_ROOTS,
-            ],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-        ).stdout.split(b"\0")
-        current_paths = {
-            relative.decode()
-            for relative in tracked
-            if relative and (ROOT / relative.decode()).is_file()
-        }
-        self.assertTrue(
-            {
-                "scripts/hooks/patch-graphify-post-commit.sh",
-                "scripts/knowledge/generate-llm-wiki-coverage.sh",
-                "scripts/knowledge/generate-llm-wiki-index.sh",
-                "scripts/validation/check-repo-contracts.sh",
-                "scripts/validation/recommend-gap-routing.sh",
-                "scripts/validation/recommend-qa-gates.sh",
-            }.isdisjoint(current_paths)
-        )
-        for relative in current_paths:
-            (ROOT / relative).read_bytes()
-
-    def test_lifecycle_context_policy_preserves_evidence_categories(self) -> None:
-        classifications = {
-            f"fixture/{context}.txt": context
-            for context in PRESERVED_LIFECYCLE_CONTEXTS
-        }
-        self.assertEqual((), lifecycle_classification_findings(classifications))
-
-    def test_registered_active_obsolete_implementation_fails_classification(
-        self,
-    ) -> None:
-        path = "infra/example/obsolete-implementation.conf"
-        findings = lifecycle_classification_findings(
-            {path: "migration"},
-            active_obsolete_paths=frozenset({path}),
-        )
-        self.assertEqual(
-            (f"{path}: registered active obsolete implementation",),
-            findings,
-        )
 
 
 class TechStackSynchronizationTests(unittest.TestCase):

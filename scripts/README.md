@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.2.0"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-02-21"
 ---
 
@@ -52,7 +52,7 @@ scripts/
 ├── operations/          # 로컬 운영, 배포 rehearsal, 생성된 evidence 소유
 ├── security/            # 로컬 supply-chain 검증과 생성된 요약 소유
 ├── requirements.txt     # 저장소 검증 스크립트에 필요한 Python 모듈
-├── requirements-pre-commit.txt # CI 전용 pre-commit 도구의 정확한 pin
+├── requirements-pre-commit.txt # 로컬 staged·서버 PR 공통 pre-commit 도구 pin
 ├── lib/<domain>/        # import 전용 도메인 모듈; 공개 entrypoint 아님
 ├── lib/hardening-lib.sh # tier 하드닝 점검의 공유 구현
 └── README.md            # 이 문서
@@ -68,9 +68,10 @@ wrapper를 다시 만들지 않습니다.
 `scripts/lib/<domain>/`은 import 전용 도메인 동작을 소유하며 공개 entrypoint를
 정의하지 않습니다. `scripts/validation/`, `scripts/security/`,
 `scripts/operations/` 같은 purpose 폴더가 entrypoint를 소유하고 도메인 로직을
-라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임을 그대로
-반영하고, `tests/validation/`은 CLI, entrypoint, 실행 컨텍스트 테스트를
-유지합니다.
+라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임의 기본 테스트 위치이고,
+`tests/validation/`은 CLI·entrypoint·실행 context와 여러 모듈을 함께 검증하는
+동작을 소유합니다. 실제 test owner와 API/fixture 사용 증명은 Script Manifest를
+따르며, 같은 보장을 위한 별도 mirror smoke를 추가하지 않습니다.
 
 하드닝 표면은 의도적으로 `scripts/hardening/check-all-hardening.sh` 하나로
 통합했습니다. tier별 wrapper entrypoint는 2026-05-17 정리에서
@@ -103,7 +104,7 @@ direct purpose folders so it does not duplicate that manifest.
 2. 새 스크립트는 해당 동작을 소유하는 기존 purpose 폴더 아래에 둡니다.
 3. purpose-folder 스크립트에 대한 루트 레벨 `scripts/*.sh` 중복 파일을 추가하지 않습니다.
 4. docs, CI, hooks, pre-commit 항목에서는 canonical purpose-folder 경로를 참조합니다.
-5. 여섯 개 공개 suite를 검증하려면 `python3 scripts/validation/run-ci-gate.py --profile full`을 사용합니다.
+5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
 6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
 7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
 
@@ -157,14 +158,12 @@ argv, context 필드를 두지 않습니다. 최종 계획 승인은 상속된 �
 argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 예외가
 아닙니다. Explain은 같은 완전한 계획을 먼저 검증한 뒤 canonical validator
 행을 렌더링합니다. workflow contract는 구성과 실행 정책의 drift를
-거부합니다. 세부적인 document-governance 테스트는
-`tests/lib/document_governance/` 아래에서 각 모듈을 그대로 반영하고, CLI와
-통합 계약은 `tests/validation/`에 남습니다.
+거부합니다. 세부 unit은 LOCAL suite에 등록하며, CLI·통합 동작은 `tests/validation/`의 현재 소유자에 연결합니다. 배정은 디렉터리 고정 기대값보다 실제 동작 증명을 따릅니다.
 
 | Lifecycle                   | Scripts                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 | :-------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI / quality gate           | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
-| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `.agents/evaluations/run-agent-output-eval-fixtures.sh`, `scripts/knowledge/report-graphify-health.sh` |
+| Candidate / explicit audit  | `python3 scripts/validation/run-ci-gate.py --profile changed`, `python3 scripts/validation/run-ci-gate.py --profile full` |
+| Advisory evidence           | `scripts/validation/check-document-metadata.py --mode report`, `scripts/knowledge/report-graphify-health.sh` |
 | Runtime hook                | `scripts/hooks/agent-event-hook.sh`, `scripts/hooks/post-tool-validate.sh`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | Tier hardening              | `scripts/hardening/check-all-hardening.sh <tier>`                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Manual operations           | `scripts/validation/validate-docker-compose.sh --preflight`, `scripts/operations/check-compose-core-readiness.sh --preflight`, `scripts/operations/rehearse-postgres-logical-upgrade.sh --check-config-only`, `scripts/security/seed-grype-db-cache.sh --preflight`, `scripts/security/seed-grype-db-cache.sh --seed`, `scripts/security/verify-sample-service-supply-chain.sh --preflight`, `scripts/security/verify-sample-service-supply-chain.sh --fixture-only`, `scripts/security/verify-sample-service-supply-chain.sh --advisory`, `scripts/operations/gen-secrets.sh`, `scripts/operations/rehearse-sample-service-delivery.sh preflight`, `scripts/operations/rehearse-sample-service-delivery.sh rehearse`, `scripts/operations/rehearse-sample-service-delivery.sh cleanup` |
@@ -198,17 +197,50 @@ source하지 않습니다. 선택적 QA/CI 도구를 다른 방법으로 사용�
 헬퍼를 명시적으로 source합니다. 반복 source해도 기존 PATH 순서는 유지되고
 사용 가능한 디렉터리만 한 번씩 추가됩니다.
 
+`scripts/validation/run-ci-precommit.sh --mode local-staged`는 검토한 파일을 staging한
+직후, 로컬 commit 직전에 실행하는 lint·format 검사 경로입니다. index의 설정과 staged
+파일을 사용하며 원문과 index를 변경하지 않습니다. 실패하면 명시적으로 수정·검토·restaging한
+뒤 다시 검사합니다. Git hook을 설치하거나 기존 ECC secret 검사를 대체하지 않습니다.
+같은 도구 pin과 read-only 검사 규칙을 서버 PR의 `--mode pr-merge`가 인증된 merge
+입력에 적용합니다. 로컬 결과와 서버 결과는 별개이며, PR 후보의 선택된 빌드는 이 서버
+검사 결과를 사용합니다. 개발 push와 main에서 같은 style 검사를 다시 실행하지 않습니다.
+배포 workflow는 현재 없으며, 향후 배포는 정확한 revision·설정의 서버 검사 증거와 별도
+배포 검사를 요구합니다. 설정 파일만으로 hook 실행이나 배포 완료를 주장하지 않습니다.
+
 `scripts/validation/run-ci-gate.py`는 의존성 없는 typed-gate CLI입니다.
+문서 링크 검사는 로컬의 `python3 scripts/validation/check-document-links.py --mode all`만
+소유하며 원격 PR 계획에서는 제외합니다. 문서의 metadata·관계·상태와 해당 운영 catalog는
+원격에서 유지하고, 일반 문구 변경에 Compose·구현 회귀를 붙이지 않습니다.
 `.github/workflow-contract.yml`을 읽어 닫힌 `changed` 또는 `full` 공개
-profile을 선택하고, `--explain`은 실행 없이 유지합니다. Explain과 실제 실행은
+profile을 선택하고, `--explain`은 실행하지 않습니다. PR 후보가 aggregate QA를 소유하며 개발 push와 main은 같은 QA를 반복하지 않습니다. Explain과 실제 실행은
 동일한 context-filtered, exact-once canonical 계획을 사용합니다. `--explain`은
 standalone validator 계획을 출력하며 parity 테스트는 이 계획이 같은 profile에서
 실행되는 validator와 일치하는지 확인합니다. profile은 등록된 regression leaf도
 실행하지만 explain은 이를 나열하지 않으므로, explain 출력은 validator
-계획으로만 읽고 실행의 전체 내용이나 비용으로 읽지 않습니다. PR과 초기 push가
+계획으로만 읽고 실행의 전체 내용이나 비용으로 읽지 않습니다. 일반 explain의
+행은 기존 suite·entrypoint 뒤에 gate ID와 JSON argv를 붙여 같은 스크립트의
+서로 다른 mode도 구별합니다. PR과 초기 push가
 아닌 push의 base는 검증되어 `TEMPLATE_GATE_BASE`로 전달되며, 로컬·초기
 push·workflow dispatch는 비교 base를 임의로 만들지 않고 명시적인
 active-corpus metadata 모드를 사용합니다.
+
+구현 변경에 연결된 로컬 회귀만 선택할 때는
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only --explain`으로
+현재 로컬 변경 계획을 확인한 뒤 같은 명령에서 `--explain`만 제거해 한 번
+실행합니다. `--local-only`는 정상 changed 선택 결과와
+`.github/workflow-contract.yml`의 typed `local_only_gate_ids`가 겹치는 leaf만 공용
+executor로 전달합니다. 인증된 hosted
+context에서는 거부되며 원격 후보의 content·infra·릴리스 구성 검증을 대체하지
+않습니다. 릴리스 helper mock, 서비스 fixture와 합성 공급망 unit도 이 로컬
+목록이 소유합니다. 실제 구성·corpus·빌드·HTTP·브라우저 통합 검사는 원격에
+남으므로 로컬 unit의 PASS를 원격 수용으로 표시하지 않습니다.
+
+Conftest는 같은 `scripts/validation/check-conftest-policy.sh`의 닫힌
+`--mode verify`와 `--mode corpus`를 서로 다른 gate ID로 등록합니다.
+`verify`는 로컬 Rego unit만, `corpus`는 원격의 현재 Compose·Dockerfile 내용만
+검사합니다. 옵션이 없는 직접 실행과 `--mode all`은 두 검사를 유지합니다.
+잘못된 mode나 추가 인자는 Docker 접근 전에 거부합니다. 실행 동일성은 gate ID와
+argv의 mode를 함께 사용하며 격리·읽기 전용 mount·cleanup 경계를 유지합니다.
 
 `scripts/validation/check-document-metadata.py`는 Stage 99 typed profile
 계약과 중복 키를 거부하는 PyYAML safe loading을 사용합니다. `--mode report`는
@@ -220,7 +252,7 @@ active-corpus metadata 모드를 사용합니다.
 Markdown 템플릿 매핑이 완전하고 타입이 일관되어야 합니다. 전체 레지스트리 배열은
 단일 기계 소유권 아래 있어야 하며 docs 인벤토리 추론에서는 `_workspace`를
 제외해야 합니다. `check-changed`는 안전하게 선택된 diff에 대한
-pre-push 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
+선택된 changed 입력의 차단 모드이고, `check-active`는 base 없이 동작하는 active-corpus
 점검입니다. base를 정할 때는 명시적 참조, CI, 안전한 로컬 참조를 우선하며 그
 다음에는 전체 corpus를 선택하지 않고 working-tree 전용 fallback을
 보고합니다. base가 존재하는 좁은 legacy 예외는 새 문서나 부분적인 typed
@@ -276,8 +308,9 @@ wrapper는 프로세스나 파일시스템 샌드박스가 아닙니다. Task ev
 유효합니다. before/after Git snapshot이 실패하면 빈 경로 집합을
 성공으로 처리하지 않고 exit `6`으로 종료합니다.
 
-저장소 로컬 Hookify 검증은 `python3 scripts/validation/run-ci-gate.py --profile changed`로
-선택하며 provider 훅은 atomic validator 명령을 복제하지 않습니다.
+provider 훅은 authoring/status 진단을 제공하며 후보 aggregate QA나 atomic
+validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
+[단계 정책](../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)을 따릅니다.
 
 ---
 
@@ -293,37 +326,17 @@ wrapper는 프로세스나 파일시스템 샌드박스가 아닙니다. Task ev
 
 ```bash
 # doc-paths: illustrative
-# 더미 파일을 만들지 않고 실제 로컬 preflight 점검을 실행합니다
-./scripts/validation/validate-docker-compose.sh --preflight
-
-# 여섯 개 공개 suite를 모두 강제합니다
-python3 scripts/validation/run-ci-gate.py --profile full
-
-# traceability, 구현 정합성, docs entry point 점검을 한 번에 강제합니다
-python3 scripts/validation/check-document-links.py --mode all
-
-# Quick Win baseline을 강제합니다
-./scripts/validation/check-quickwin-baseline.sh
-
-# 명시적 compose profile 집합에 대해 Quick Win baseline을 강제합니다
-# 선택한 profile 중 하나라도 baseline 위반이 있으면 실패합니다.
-HYHOME_COMPOSE_PROFILES="core dev" ./scripts/validation/check-quickwin-baseline.sh
-
-# 템플릿 + 보안 baseline을 강제합니다
-./scripts/validation/check-template-security-baseline.sh
-
-# 변경 경로에 대한 공개 suite를 실행합니다
-python3 scripts/validation/run-ci-gate.py --profile changed
-
-# 실행 없이 변경 경로 suite-validator 소유권만 설명합니다
+# 실행 없이 실제 변경 입력의 선택을 확인합니다
 python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
+# 승인된 운영 입력의 non-mutating preflight입니다; PR QA와 live 수용은 별개입니다
+./scripts/validation/validate-docker-compose.sh --preflight
 
-# 승인된 최종 QA 전용; prefix는 task의 검토 범위와 일치해야 합니다
-bash scripts/validation/run-agent-precommit-all-files.sh \
-  --task docs/03.specs/9999-example-change/tasks/tsk-0001-example.md \
-  --allow-prefix docs/ \
-  --allow-prefix scripts/
+# main 준비 PR에 작성한 CHANGELOG 형식을 검사합니다
+python3 scripts/operations/release.py validate --changelog CHANGELOG.md
+
+# full은 일상 commit/push gate가 아니라 범위·예산을 확정한 전체 감사용입니다
+# all-files formatter 또한 별도 승인된 authoring 작업이며 remote QA가 반복하지 않습니다
 
 # advisory Graphify corpus 상태를 보고합니다
 ./scripts/knowledge/report-graphify-health.sh
@@ -383,10 +396,13 @@ synchronizer는 `mutation: check-write`를 사용합니다: 기본 호출은 저
 argv `check_command`와 자신이 소유하는 정확한 tracked `outputs`를 등록합니다.
 `mutation: runtime` 스크립트는 Operations entrypoint입니다. 문서 마이그레이션
 중에는 실행하지 않으며 명시적으로 호출하려면 먼저 현재 Runbook과 선언된 테스트
-evidence가 필요합니다. 두 all-files pre-commit runner는 fixer 훅이 파일을
-다시 쓰기 때문에 `check-write`입니다. `run-ci-precommit.sh`는 일회용 GitHub
-Actions checkout에서만 실행되고, `run-agent-precommit-all-files.sh`는 격리된
-linked worktree에서만 실행됩니다.
+evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 포함하는
+`check-write` 전체 감사이며 승인된 격리 linked worktree에서만 실행됩니다.
+`run-ci-precommit.sh --mode local-staged`는 commit 직전 index의 staged 검증이며,
+`--mode pr-merge`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에 체크아웃하는
+changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하고 등록된 check 모드를
+사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지
+않습니다.
 
 전환(transition) 행에는 non-retain disposition, 구분되는 tracked successor,
 비어 있지 않은 `removal_condition`이 모두 있어야 합니다. active 행은
@@ -430,7 +446,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
 - 📘 Runbooks (`docs/05.operations/runbooks/README.md`)
 - [Public Suite Ownership Manifest](manifest.yaml)
-- [Agent Evaluation Harness](../.agents/evaluations/README.md) - canonical model-free evaluation surface; registry와 manifest가 evaluator consumer를 등록합니다
+- [Evaluation navigation](../.agents/evaluations/README.md) - 폐기된 자동 점수 QA와 현재 수동 관측 경계를 안내합니다
 - [현재 워크스페이스 거버넌스](../.agents/README.md)
 - Canonical home의 과거 결정: ADR-0032
 - Document Profile Registry (`docs/99.templates/registry.json`)

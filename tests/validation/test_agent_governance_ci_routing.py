@@ -24,6 +24,18 @@ INFRA_STATIC = ROOT / ".agents/skills/infra-validate/scripts/static-checks.sh"
 
 
 class AgentGovernanceCiRoutingTests(unittest.TestCase):
+    def test_diff_artifacts_keep_context_whitespace_without_skipping_other_hooks(
+        self,
+    ) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        hooks = [hook for repo in config["repos"] for hook in repo["hooks"]]
+        for hook in hooks:
+            if hook["id"] == "trailing-whitespace":
+                self.assertIn("diff", hook.get("exclude_types", []))
+            else:
+                self.assertNotIn("diff", hook.get("exclude_types", []))
+        self.assertNotIn("diff", config.get("exclude_types", []))
+
     def test_hadolint_docker_image_matches_hook_revision(self) -> None:
         document = yaml.safe_load(
             (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
@@ -362,14 +374,6 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             self.assertIn("Session ending", result.stdout)
             self.assertFalse((repo / ".timeout-arguments").exists())
             self.assertFalse((repo / ".gate-calls").exists())
-
-    def test_active_workflows_do_not_route_local_public_profiles(self) -> None:
-        workflow_text = (ROOT / ".github/workflows/ci-quality.yml").read_text(
-            encoding="utf-8"
-        )
-        self.assertEqual(0, workflow_text.count("run-ci-gate.py --profile changed"))
-        self.assertEqual(0, workflow_text.count("run-ci-gate.py --profile full"))
-        self.assertNotIn("--gate", workflow_text)
 
     def test_post_tool_rejects_unsafe_paths_before_any_write(self) -> None:
         cases = (

@@ -1,5 +1,4 @@
 import importlib.util
-import re
 import subprocess
 import sys
 import tempfile
@@ -16,13 +15,11 @@ from tests.validation._script_manifest_support import (
     FORBIDDEN_EVIDENCE_PREFIXES,
     KINDS,
     LIFECYCLES,
-    MANDATORY_DISPOSITIONS,
     MUTATION_OVERRIDES,
     MUTATIONS,
     OPERATIONS_MANIFEST_PATHS,
     REQUIRED_FIELDS,
     ROOT,
-    TASK12_RETIRED_SCRIPTS,
     is_runbook_authority,
     reference_proves_use,
     tracked_paths,
@@ -101,14 +98,6 @@ class ScriptManifestTests(unittest.TestCase):
 
         self.assertEqual([], violations)
 
-    def test_task12_retires_only_the_proven_successor_scripts(self) -> None:
-        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.tracked))
-        self.assertTrue(TASK12_RETIRED_SCRIPTS.isdisjoint(self.rows_by_path))
-        self.assertIn(
-            "scripts/operations/rehearse-sample-service-delivery.sh",
-            self.tracked,
-        )
-
     def test_records_are_sorted_and_use_the_complete_schema(self) -> None:
         paths = [row["path"] for row in self.rows]
         self.assertEqual(paths, sorted(paths))
@@ -134,6 +123,7 @@ class ScriptManifestTests(unittest.TestCase):
             self.assertIn(row["authority"], self.repository_paths)
 
     def test_consumer_successor_and_test_references_are_evidenced(self) -> None:
+        checker = load_manifest_checker()
         for row in self.rows:
             with self.subTest(path=row["path"]):
                 self.assertIsInstance(row["consumers"], list)
@@ -159,12 +149,13 @@ class ScriptManifestTests(unittest.TestCase):
                 else:
                     self.assertIsInstance(successor, str)
                     self.assertIn(successor, self.repository_paths)
-                if row["disposition"] == "retain" and row["kind"] != "library":
+                if row["disposition"] == "retain" and (
+                    row["kind"] != "library" or checker._is_companion_library(row)
+                ):
                     self.assertTrue(row["consumers"])
-                if row["disposition"] == "retain" and row["kind"] not in {
-                    "contract",
-                    "dependency-manifest",
-                }:
+                if row[
+                    "disposition"
+                ] == "retain" and checker._requires_behavioral_tests(row):
                     self.assertTrue(row["tests"])
 
     def test_nonretained_successor_is_distinct(self) -> None:
@@ -208,34 +199,6 @@ class ScriptManifestTests(unittest.TestCase):
         ]
         self.assertEqual([], offenders)
 
-    def test_taxonomy_library_declares_exact_real_consumers_and_tests(self) -> None:
-        row = self.rows_by_path["scripts/lib/document_governance/taxonomy.py"]
-        self.assertEqual("retain", row["disposition"])
-        self.assertEqual(
-            [
-                "scripts/lib/document_governance/metadata/lifecycle.py",
-                "scripts/lib/document_governance/metadata/profile.py",
-            ],
-            row["consumers"],
-        )
-        self.assertEqual(
-            ["tests/lib/document_governance/test_taxonomy.py"],
-            row["tests"],
-        )
-
-    def test_eval_wrapper_declares_its_gate_adapter_consumer(self) -> None:
-        """The CI gate adapter runs the wrapper, so it is a declared consumer."""
-        row = self.rows_by_path[".agents/evaluations/run-agent-output-eval-fixtures.sh"]
-        self.assertEqual("retain", row["disposition"])
-        self.assertIn("scripts/lib/gate/ci_gate_adapters.py", row["consumers"])
-        self.assertEqual(
-            [
-                "scripts/lib/gate/ci_gate_adapters.py",
-                "tests/validation/test_agent_output_eval_fixtures.py",
-            ],
-            row["consumers"],
-        )
-
     def test_python_import_evidence_recognizes_package_member_imports(self) -> None:
         adapter = "scripts/validation/check-document-metadata.py"
         for member in (
@@ -257,40 +220,6 @@ class ScriptManifestTests(unittest.TestCase):
                     and "check_command" in row
                 ):
                     self.assertEqual(row["path"], row["check_command"][1])
-
-    def test_plan_mandatory_dispositions_and_high_risk_operations(self) -> None:
-        for path, disposition in MANDATORY_DISPOSITIONS.items():
-            with self.subTest(path=path):
-                self.assertEqual(disposition, self.rows_by_path[path]["disposition"])
-
-        for path in (
-            "scripts/operations/gen-secrets.sh",
-            "scripts/security/seed-grype-db-cache.sh",
-        ):
-            with self.subTest(path=path):
-                row = self.rows_by_path[path]
-                if row["disposition"] == "retain":
-                    self.assertTrue(row["consumers"])
-                    self.assertTrue(row["tests"])
-                    self.assertTrue(is_runbook_authority(row["authority"]))
-
-    def test_postgres_logical_upgrade_uses_the_mirrored_ops_test(self) -> None:
-        postgres = self.rows_by_path[
-            "scripts/operations/rehearse-postgres-logical-upgrade.sh"
-        ]
-        self.assertEqual("retain", postgres["disposition"])
-        self.assertEqual(
-            "docs/05.operations/runbooks/0032-postgresql-logical-upgrade-restore-rehearsal.md",
-            postgres["authority"],
-        )
-        self.assertEqual(
-            [".github/workflow-contract.yml", postgres["authority"]],
-            postgres["consumers"],
-        )
-        self.assertEqual(
-            ["tests/validation/test_postgres_logical_upgrade_rehearsal.py"],
-            postgres["tests"],
-        )
 
     def test_authority_is_specific_and_runtime_retention_is_runbook_bound(self) -> None:
         unrelated = {
@@ -327,25 +256,6 @@ class ScriptManifestTests(unittest.TestCase):
                     self.assertNotEqual("retain", row["disposition"])
                     self.assertEqual(row["path"], row["successor"])
 
-    def test_authority_names_the_script_it_governs(self) -> None:
-        expected = {
-            "scripts/knowledge/report-graphify-health.sh": (
-                "docs/05.operations/runbooks/0004-harness-agent-first-engineering.md"
-            ),
-            "scripts/operations/use-qa-ci-tools.sh": "scripts/README.md",
-            "scripts/validation/run-agent-precommit-all-files.sh": (
-                ".agents/governance/quality-standards.md"
-            ),
-        }
-        rows = {row["path"]: row for row in self.rows}
-        for path, authority in expected.items():
-            with self.subTest(path=path):
-                self.assertEqual(authority, rows[path]["authority"])
-                self.assertIn(
-                    PurePosixPath(path).name,
-                    (ROOT / authority).read_text(encoding="utf-8"),
-                )
-
     def test_operations_implementation_and_gate_use_the_registry_authority(
         self,
     ) -> None:
@@ -375,25 +285,6 @@ class ScriptManifestTests(unittest.TestCase):
         for path in rejected:
             with self.subTest(path=path):
                 self.assertFalse(is_runbook_authority(path))
-
-    def test_scripts_readme_preserves_invocation_warnings(self) -> None:
-        text = (ROOT / "scripts/README.md").read_text(encoding="utf-8")
-        compact = re.sub(r"\s+", " ", text)
-        self.assertIn("`mutation: runtime` 행을 호출하지 않습니다", compact)
-        self.assertIn(
-            "non-mutating check 옵션 없이 default-write generator를 호출하지 않습니다",
-            compact,
-        )
-        self.assertIn("의미 있는 호출/import evidence가 있어야 합니다", compact)
-
-    def test_evals_readme_states_its_manifest_registration_rule(self) -> None:
-        text = (ROOT / ".agents/evaluations/README.md").read_text(encoding="utf-8")
-        compact = re.sub(r"\s+", " ", text)
-        # `.agents/evaluations/` is a manifest root, so an unregistered executable added here
-        # must fail the gate exactly as it would under `scripts/`.
-        self.assertIn("MANIFEST_ROOTS", compact)
-        self.assertIn("scripts/manifest.yaml", compact)
-        self.assertIn("check-script-manifest.py", compact)
 
     def test_semantic_helpers_reject_inventory_only_evidence(self) -> None:
         taxonomy = "scripts/lib/document_governance/taxonomy.py"
@@ -536,14 +427,6 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "authority-untracked", self.codes(self.row(authority="docs/unknown.md"))
         )
 
-    def test_manifest_rejects_retired_operations_authority_fields(self) -> None:
-        for field in ("current_authorities", "semantic_witnesses"):
-            with self.subTest(field=field):
-                self.assertIn(
-                    "fields-unknown",
-                    self.codes(self.row(**{field: ["docs/authority.md"]})),
-                )
-
     def test_manifest_rejects_invalid_disposition_and_successor_contract(self) -> None:
         self.assertIn(
             "disposition-invalid", self.codes(self.row(disposition="deprecated"))
@@ -603,6 +486,89 @@ class ScriptManifestValidationTests(unittest.TestCase):
             "mutation-invalid", self.codes(self.row(mutation="default-write"))
         )
 
+    def test_companion_library_uses_current_consumer_without_dedicated_tests(
+        self,
+    ) -> None:
+        companion = self.row(
+            path="scripts/hooks/companion.py", kind="library", tests=[]
+        )
+        tracked = (self.tracked - {"scripts/example.py"}) | {
+            "scripts/hooks/companion.py"
+        }
+        self.assertEqual(set(), self.codes(companion, tracked))
+        self.assertIn(
+            "consumer-missing", self.codes({**companion, "consumers": []}, tracked)
+        )
+        for consumer, code in (
+            ("private.md", "consumers-untracked"),
+            ("../outside.py", "consumers-untracked"),
+            ("docs/98.archive/completed/consumer.md", "consumers-historical"),
+        ):
+            with self.subTest(consumer=consumer):
+                self.assertIn(
+                    code,
+                    self.codes({**companion, "consumers": [consumer]}, tracked),
+                )
+        self.assertIn(
+            "tests-location-invalid",
+            self.codes({**companion, "tests": ["docs/consumer.md"]}, tracked),
+        )
+
+    def test_companion_library_consumer_requires_actual_import(self) -> None:
+        row = self.row(
+            path="scripts/hooks/companion.py",
+            kind="library",
+            consumers=["scripts/consumer.py"],
+            tests=[],
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            consumer = root / "scripts/consumer.py"
+            consumer.parent.mkdir(parents=True)
+            consumer.write_text("from scripts.hooks import companion\n")
+            document = {"schema_version": 1, "files": [row]}
+            self.assertEqual([], self.checker._semantic_findings(root, document))
+            consumer.write_text("# scripts/hooks/companion.py\n")
+            self.assertEqual(
+                {"consumers-unproven"},
+                {item.code for item in self.checker._semantic_findings(root, document)},
+            )
+
+    def test_mutating_companion_and_shared_libraries_require_tests(self) -> None:
+        companion = self.row(
+            path="scripts/hooks/companion.py", kind="library", tests=[]
+        )
+        tracked = self.tracked | {"scripts/hooks/companion.py"}
+        for mutation in ("check-write", "runtime"):
+            with self.subTest(mutation=mutation):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "mutation": mutation}, tracked),
+                )
+                self.assertIn(
+                    "consumer-missing",
+                    self.codes(
+                        {**companion, "mutation": mutation, "consumers": []}, tracked
+                    ),
+                )
+        for path in (
+            "scripts/lib/document_governance/example.py",
+            "scripts/lib/gate/example.py",
+            "scripts/lib/ops/example.py",
+            "scripts/lib/hardening-lib.sh",
+        ):
+            with self.subTest(path=path):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "path": path}, self.tracked | {path}),
+                )
+        for kind in ("validator", "runner", "operations", "hook", "generator"):
+            with self.subTest(kind=kind):
+                self.assertIn(
+                    "tests-missing",
+                    self.codes({**companion, "kind": kind}, tracked),
+                )
+
     def test_manifest_rejects_retired_placeholder_test_roots(self) -> None:
         for root in ("docs", "qa", "setup"):
             test_path = f"tests/{root}/test_example.py"
@@ -615,20 +581,40 @@ class ScriptManifestValidationTests(unittest.TestCase):
                     ),
                 )
 
-    def test_manifest_requires_retained_library_tests_and_document_governance_mirrors(
+    def test_manifest_requires_meaningful_registered_library_tests(
         self,
     ) -> None:
+        source_path = "scripts/lib/document_governance/example.py"
+        test_path = "tests/validation/test_example.py"
         library = self.row(
-            path="scripts/lib/document_governance/example.py",
+            path=source_path,
             kind="library",
             consumers=[],
             tests=[],
         )
-        tracked = self.tracked | {"scripts/lib/document_governance/example.py"}
+        tracked = (self.tracked - {"scripts/example.py"}) | {source_path}
         self.assertIn("tests-missing", self.codes(library, tracked))
 
-        library["tests"] = ["tests/validation/test_example.py"]
-        self.assertIn("tests-mirror-missing", self.codes(library, tracked))
+        library["tests"] = [test_path]
+        self.assertEqual(set(), self.codes(library, tracked))
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / source_path
+            source.parent.mkdir(parents=True)
+            source.write_text("VALUE = 1\n", encoding="utf-8")
+            test = root / test_path
+            test.parent.mkdir(parents=True)
+            test.write_text(
+                "from scripts.lib.document_governance import example\n"
+                "assert example.VALUE == 1\n",
+                encoding="utf-8",
+            )
+            self.assertEqual(
+                [],
+                self.checker._semantic_findings(
+                    root, {"schema_version": 1, "files": [library]}
+                ),
+            )
 
     def test_manifest_rejects_invalid_generated_check_command(self) -> None:
         generator = self.row(

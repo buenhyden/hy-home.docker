@@ -53,13 +53,9 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "scripts/validation/check-document-corpus-lifecycle.py" = ["F401"]
 "scripts/lib/gate/github_workflow_contract.py" = ["F401"]
 
-# `B023` fires 59 times and every one is in a test, none in `scripts/` or
-# `.agents/evaluations/`. Each is the same shape: a closure built inside a `subTest` loop and
-# consumed within that same iteration, which is the benign case the rule cannot
-# distinguish from the harmful one. Binding each loop variable would change the
-# signature of nested helpers in nine files to no behavioural effect, so the
-# rule is suppressed where it only reports that shape and stays active over
-# production code, where an escaping closure would be a real defect.
+# These test closures are created inside a subTest loop and consumed within the
+# same iteration. The suppression is scoped to that reviewed fixture pattern;
+# production code retains B023 because an escaping closure is a real defect.
 "tests/lib/document_governance/metadata/test_heading.py" = ["B023"]  # 2 occurrences
 "tests/lib/document_governance/test_references.py" = ["B023"]  # 5 occurrences
 "tests/lib/document_governance/test_registry.py" = ["B023"]  # 3 occurrences
@@ -67,5 +63,4 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 "tests/lib/gate/test_ci_gate_adapters.py" = ["B023"]  # 6 occurrences
 "tests/validation/test_ci_gate_execution_context.py" = ["B023"]  # 29 occurrences
 "tests/validation/test_ci_gate_plan.py" = ["B023"]  # 1 occurrences
-"tests/validation/test_provider_surface_renderer.py" = ["B023"]  # 2 occurrences
 "tests/validation/test_sample_service_delivery_rehearsal.py" = ["B023"]  # 2 occurrences

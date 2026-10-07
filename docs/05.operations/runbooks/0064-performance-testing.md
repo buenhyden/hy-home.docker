@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Incident Runbook"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "RUN-0064"
 parent_ids:
@@ -71,7 +71,7 @@ created: "2026-05-17"
 
    ```bash
    bash scripts/hardening/check-all-hardening.sh 11-quality
-   python3 scripts/validation/run-ci-gate.py --profile changed
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
 5. 대상 SLI, 오류율, 지연, 영향 시간과 발생기 포화·dropped iteration·
@@ -81,6 +81,10 @@ created: "2026-05-17"
    같은 run_id/attempt의 다른 파일은 충돌로 격리한다.
 
 ### Verification Steps
+
+`--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
+[quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
+원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
 
 - 실행 중이던 부하 생성 서비스가 중지되었다. UI의 idle 표시만으로 중단 완료를 판정하지 않는다.
 - target SLI와 shared tier health가 정상 범위로 회복됐다.

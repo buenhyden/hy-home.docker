@@ -81,7 +81,10 @@ cz check --message-length-limit 75 \
   --message "docs(governance): Align commit contract"
 ```
 
-The `commit-msg` hook remains the final local enforcement point.
+Explicit Commitizen validation checks the full grammar before the staged style
+check and ordinary commit. Claim `commit-msg` hook enforcement only when its
+installation and delivery are observed; the remote candidate validates the
+authenticated contributor commit range separately.
 
 Alongside the draft, list any staged path the message does not account for. That
 list being empty is part of the output.

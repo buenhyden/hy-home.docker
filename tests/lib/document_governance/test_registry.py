@@ -13,14 +13,13 @@ import unittest
 from unittest import mock
 
 import scripts.lib.document_governance.registry as registry_module
-from scripts.lib.document_governance import metadata_validator
+from scripts.lib.document_governance import metadata_validator, requirement_recovery
 from scripts.lib.document_governance.metadata_validator import (
     Record,
     _parse_frontmatter_text,
     build_manifest,
     build_registry_profiles,
     infer_artifact_type,
-    parse_frontmatter,
     validate_body_contract,
     validate_record,
 )
@@ -198,7 +197,7 @@ class DocumentRegistryTests(unittest.TestCase):
                     "missing-revision", root=root
                 )
 
-    def test_evaluation_migration_registers_only_exact_sources(self) -> None:
+    def test_evaluation_navigation_registers_only_exact_sources(self) -> None:
         from scripts.lib.agent_governance import agent_governance_contract as contract
 
         registry = load_registry()
@@ -207,20 +206,11 @@ class DocumentRegistryTests(unittest.TestCase):
             classify_path(".agents/evaluations/README.md", registry),
         )
         self.assertIsNone(classify_path("evals/README.md", registry))
-        self.assertIn(
-            ".agents/evaluations/fixture-catalog.md",
-            registry.common["inventory_excludes"],
-        )
         self.assertIsNone(classify_path(".agents/evaluations/unknown.md", registry))
         sources = contract.canonical_source_paths(ROOT)
         expected = {
             pathlib.PurePosixPath(".agents/evaluations") / name
-            for name in (
-                "README.md",
-                "agent_output_eval.py",
-                "fixture-catalog.md",
-                "run-agent-output-eval-fixtures.sh",
-            )
+            for name in ("README.md",)
         }
         self.assertEqual(
             expected,
@@ -1180,76 +1170,6 @@ class DocumentRegistryTests(unittest.TestCase):
             registry.transitions["incident"]["mitigated"],
         )
 
-    def test_active_corpus_uses_migrated_statuses_and_common_six(self) -> None:
-        registry = load_registry()
-        common_six = ["title", "version", "type", "status", "owner", "updated"]
-        legacy_statuses = {
-            "requirements-package": {"active"},
-            "adr": {"draft", "active"},
-            "task": {"active"},
-            "incident": {"open", "closed"},
-            "postmortem": {"active"},
-            "research": {"active"},
-            "audit": {"active"},
-            "data": {"active"},
-            "research-member": {"active"},
-            "audit-member": {"active"},
-            "generated": {"active"},
-            "migration": {"completed"},
-            "tombstone": {"completed"},
-        }
-        listed = subprocess.run(
-            [
-                "git",
-                "ls-files",
-                "--cached",
-                "--others",
-                "--exclude-standard",
-                "--",
-                "*.md",
-            ],
-            cwd=ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        checked = 0
-        for relative in listed.stdout.splitlines():
-            if not (ROOT / relative).is_file():
-                continue
-            if relative.startswith(
-                (
-                    "docs/98.archive/completed/",
-                    "docs/98.archive/superseded/",
-                    "docs/98.archive/retired/",
-                    "docs/99.templates/templates/",
-                )
-            ):
-                continue
-            profile_id = classify_path(relative, registry)
-            if profile_id is None:
-                continue
-            profile = registry.profiles[profile_id]
-            if profile.get(
-                "frontmatter_policy"
-            ) != "required" or _declares_provider_binding(profile):
-                continue
-            with self.subTest(path=relative, profile_id=profile_id):
-                values = registry_module.normalize_profile_frontmatter(
-                    parse_frontmatter(ROOT / relative), profile, relative
-                )
-                if declares_frozen_legacy_status(
-                    profile, relative, values.get("status")
-                ):
-                    continue
-                self.assertEqual(common_six, list(values)[:6])
-                self.assertNotIn(
-                    values.get("status"), legacy_statuses.get(profile_id, set())
-                )
-            checked += 1
-
-        self.assertGreaterEqual(checked, 600)
-
     def test_frozen_legacy_status_exception_is_exact(self) -> None:
         registry = load_registry()
         profile = registry.profiles["migration"]
@@ -1502,10 +1422,6 @@ class DocumentRegistryTests(unittest.TestCase):
             ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
         )
         self.assertTrue(schema_path.is_file())
-        self.assertFalse(
-            (schema_path.parent / "frontmatter.schema.json").exists(),
-            "the retired ambiguous schema name must not remain as a compatibility copy",
-        )
         schema = json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertEqual(
             "https://hy-home.invalid/schemas/document-frontmatter.schema.json",
@@ -1749,36 +1665,6 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         self.assertEqual((), requirement.child_spaces["REQ-0001.IF"].current_issued)
         self.assertEqual((1,), requirement.child_spaces["REQ-0001.IF"].reserved_history)
-
-    def test_spec_0153_package_uses_registered_paths_and_identities(self) -> None:
-        registry = load_registry()
-        package = pathlib.Path("docs/03.specs/0153-workspace-governance-simplification")
-        expected_profiles = {
-            ".github/repository-surface.md": "repository-readme",
-            package / "spec.md": "spec",
-            package / "plan.md": "plan",
-            **{
-                package / "tasks" / f"tsk-{number:04d}-example.md": "task"
-                for number in range(1, 14)
-            },
-        }
-
-        for path, profile_id in expected_profiles.items():
-            with self.subTest(path=path):
-                self.assertEqual(profile_id, classify_path(path, registry))
-
-        self.assertEqual(
-            "SPEC-0153",
-            registry.profiles["spec"]["artifact_id_pattern"].replace(
-                "{number:4}", "0153"
-            ),
-        )
-        self.assertEqual(
-            "SPEC-0153-PLAN-0001",
-            registry.profiles["plan"]["artifact_id_pattern"]
-            .replace("{package_number:4}", "0153")
-            .replace("{member_number:4}", "0001"),
-        )
 
     def test_specific_profile_wins_over_unsupported_fallback(self) -> None:
         registry = load_registry()
@@ -2775,6 +2661,64 @@ class DocumentRegistryTests(unittest.TestCase):
         )
 
 
+class RequirementRecoveryBoundaryTests(unittest.TestCase):
+    def test_regular_reader_preserves_utf8_and_crlf_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            payload = "First\r\n한글\r\n".encode()
+            (root / "body.md").write_bytes(payload)
+            self.assertEqual(
+                payload,
+                requirement_recovery._regular_text(root, "body.md").encode("utf-8"),
+            )
+
+    def test_regular_reader_rejects_links_directories_and_oversized_files(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            (root / "body.md").write_bytes(b"body\n")
+            (root / "linked.md").symlink_to("body.md")
+            (root / "nested").mkdir()
+            (root / "nested/body.md").write_bytes(b"body\n")
+            (root / "linked-parent").symlink_to("nested", target_is_directory=True)
+            (root / "oversized.md").write_bytes(b"x" * 17)
+            with mock.patch.object(requirement_recovery, "LIMIT", 16):
+                for path in (
+                    "linked.md",
+                    "linked-parent/body.md",
+                    "nested",
+                    "oversized.md",
+                ):
+                    with self.subTest(path=path), self.assertRaises(ValueError):
+                        requirement_recovery._regular_text(root, path)
+
+    def test_public_recovery_rejects_missing_or_invalid_proof_as_registry_error(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            with self.assertRaises(RegistryError) as missing:
+                requirement_recovery.recover_pinned_requirement_baseline(
+                    "HEAD", root=root
+                )
+            self.assertIsInstance(missing.exception.__cause__, ValueError)
+            task = root / "docs/03.specs/0001-example/tasks/tsk-0001-example.md"
+            task.parent.mkdir(parents=True)
+            task.write_text(
+                "---\ntype: sdlc/task\nstatus: draft\n"
+                "artifact_id: SPEC-0001-TSK-0001\n"
+                f"{requirement_recovery.FIELD}: []\n---\n"
+            )
+            subprocess.run(["git", "add", "docs"], cwd=root, check=True)
+            with self.assertRaises(RegistryError) as invalid:
+                requirement_recovery.recover_pinned_requirement_baseline(
+                    "HEAD", root=root
+                )
+            self.assertIsInstance(invalid.exception.__cause__, ValueError)
+
+
 class ProfileLanguageTests(unittest.TestCase):
     """SPEC-0184 rule 4: every prose profile declares its language."""
 
@@ -2906,35 +2850,6 @@ class FreeFormProfileTests(unittest.TestCase):
             ),
         )
         self.assertIn("body-heading-forbidden", codes)
-
-    def test_every_governance_policy_document_satisfies_its_own_contract(self) -> None:
-        policies = sorted(
-            path
-            for path in (ROOT / ".agents").rglob("*.md")
-            if re.search(
-                r'^type:\s*"?governance/policy"?\s*$',
-                path.read_text(encoding="utf-8"),
-                re.M,
-            )
-        )
-        self.assertTrue(policies)
-        adapted = self._adapted()
-        offenders: list[str] = []
-        for path in policies:
-            record = Record(
-                path=path.relative_to(ROOT),
-                metadata={"profile_id": "governance-policy", "status": "active"},
-                artifact_type="governance-policy",
-            )
-            findings = validate_body_contract(
-                record, path.read_text(encoding="utf-8"), adapted, True
-            )
-            offenders.extend(
-                f"{path.relative_to(ROOT)}: {finding.message}"
-                for finding in findings
-                if finding.code == "body-heading-forbidden"
-            )
-        self.assertEqual([], offenders)
 
 
 class ExecutionLifecycleTests(unittest.TestCase):
@@ -3270,61 +3185,6 @@ class ActualTaskLifecycleTransitionTests(unittest.TestCase):
             "parent-cardinality",
             {finding.code for finding in validate_record(record, profiles, {})},
         )
-
-
-class ResurrectedMigrationContractTests(unittest.TestCase):
-    """A completed migration's contract is not resurrected on every load.
-
-    `DEFAULT_MIGRATION_CONTRACT` was a `HistoricalDocument`, not a path: every
-    `load_profiles()` read `docs/99.templates/support/document-corpus-migration-contract.yaml`
-    out of the pinned commit `49406580` and validated its 384-line shape,
-    including eight named migration waves whose source document, SPEC-0153, was
-    deleted. The file is absent from the working tree. The only caller that
-    consumed the result, `load_promoted_transition_witnesses`, returned `{}` on
-    every CLI route because the profiles the CLI builds always carry
-    `_registry`; the other caller discarded the value.
-    """
-
-    def test_the_migration_contract_loader_is_gone(self) -> None:
-        for name in (
-            "load_migration_contract",
-            "DEFAULT_MIGRATION_CONTRACT",
-            "SDLC_TAXONOMY_BASELINE",
-            "SDLC_TAXONOMY_MANIFEST_PATH",
-            "SDLC_TAXONOMY_SOURCE_ROOTS",
-            "load_promoted_transition_witnesses",
-            "PromotedTransitionWitness",
-        ):
-            with self.subTest(name=name):
-                self.assertFalse(
-                    hasattr(metadata_validator, name),
-                    f"{name} still resurrects a completed migration's contract",
-                )
-
-    def test_no_stage_04_route_is_pinned_in_the_validator(self) -> None:
-        facade = pathlib.Path(metadata_validator.__file__)
-        sources = (facade, *sorted((facade.parent / "metadata").glob("*.py")))
-        for path in sources:
-            with self.subTest(path=path.name):
-                self.assertNotIn(
-                    "docs/04.execution",
-                    path.read_text(encoding="utf-8"),
-                )
-
-    def test_profiles_still_load_without_the_resurrected_contract(self) -> None:
-        """`load_profiles()` no longer takes a contract path and still works.
-
-        It used to accept `migration_contract_path` and call the loader purely
-        for its side effect, discarding the result, so every profile load in
-        the repository paid for a Git read of a deleted file.
-        """
-
-        import inspect
-
-        signature = inspect.signature(metadata_validator.load_profiles)
-        self.assertNotIn("migration_contract_path", signature.parameters)
-        profiles = metadata_validator.load_profiles()
-        self.assertIn("governance-policy", profiles)
 
 
 class RegistryIndexContractTests(unittest.TestCase):

@@ -66,8 +66,15 @@ Changed authored files and their language/document style contracts must be ident
 
 Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
 
-A prohibition without its permitted counterpart is what makes a caller
-improvise, so the counterpart is named here: the one approved all-files route is
+Immediately before local commit, use
+`scripts/validation/run-ci-precommit.sh --mode local-staged` on the reviewed
+index. The controller derives check-only modes from staged shared configuration;
+it does not install or replace Git hooks. Fix and restage defects explicitly,
+then check the changed candidate again. The server PR route uses
+`--mode pr-merge` on its separately authenticated input; local PASS is not its
+acceptance. Quality policy owns build/deployment promotion boundaries.
+
+The separately approved all-files authoring route is
 `scripts/validation/run-agent-precommit-all-files.sh`. It is not a free
 substitute. The [execution boundary](../../governance/quality-standards.md#4-execution-boundary)
 owns the conditions it carries, and those conditions decide whether an all-files

@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.2.1"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 ---
 
 # GitHub Governance Policy
@@ -42,9 +42,11 @@ Repository protection, pull requests, hosted workflows, and separately authorize
 
 Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing a stale Issue does not
-transition a Task. Projects is the preferred future coordination option and
-Linear is an alternative; neither is adopted here and neither receives a sync
-job. A remote Issue, tag, or release mutation requires approval naming the exact
+transition a Task. Projects provides a filtered work view when an owner configures it; its
+fields are coordination data, not Task execution authority. Keep Issue intake
+and priority plus Spec/Task links, without copying their full bodies or
+bidirectional state synchronization. No Project resource or credential is
+created by this source change. A remote Issue, tag, or release mutation requires approval naming the exact
 target and action.
 
 - A PR is complete only when: (a) all required status checks pass, (b) all required code reviews are approved, (c) no unresolved BLOCK-severity findings remain.
@@ -91,18 +93,16 @@ ruleset file records the observed remote state and issues no rule of its own.
 
 ### 5. Execution Boundary (Local vs Remote)
 
-- **Local Responsibility**: Follow the shared
-  [execution boundary](quality-standards.md#4-execution-boundary) for focused
-  local validation, direct pre-commit prohibition, anti-duplication, and the
-  only approved all-files route. Routine commit and push hooks do not invoke
-  public profiles.
-- **GitHub Responsibility**: Observe post-merge security/SARIF and execute only
-  separately registered remote work that has an actual workflow consumer.
-  Task-bound local validation and review own candidate acceptance.
-- **Implementation**: The CI pre-commit runner rejects caller `SKIP` and runs
-  the pinned all-files command without a skip list. The tracked declaration
-  contains only cheap hooks; dedicated public gate leaves are separate. Callers
-  must not introduce a second orchestration path.
+- **Local**: explicit formatting, focused RED/GREEN, message validation and
+  read-only diagnostic checks. The shared
+  [execution boundary](quality-standards.md#4-execution-boundary) owns their
+  selection and prohibits direct Agent pre-commit/all-files bypass.
+- **Remote PR**: the public changed entrypoint owns aggregate candidate QA once.
+  Feature push does not repeat it; required selection is inside an always-present
+  PR workflow rather than path-skipping its required check.
+- **Main**: merged-revision security/SARIF is a distinct observation, not a
+  second candidate run. The sole manual release producer is separately approved
+  for its exact version and trusted main revision.
 
 #### 5.0 Approved Remote Mutation Protocol
 
@@ -167,53 +167,40 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ### 8. CI/CD Job Taxonomy
 
-`ci-quality.yml` defines two jobs with distinct event and permission boundaries.
 The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
-owns when each check runs. `.github/workflow-contract.yml` owns the six-suite
-composition, changed-path impact rules, gate DAG, admitted environment keys,
-and pinned Actions; the focused checker enforces triggers, permissions, timeouts,
-steps and dependencies. Archive, metadata, lifecycle and repository-contract
-checks remain leaves behind the two public profiles, not separate required
-status contexts.
+owns stage responsibility. `.github/workflow-contract.yml` owns exact job
+identities, event/permission boundaries, selected prerequisites, gate DAG,
+change impact and immutable Action provenance. The generic focused checker
+compares workflow definitions to that one typed source instead of maintaining
+another copied job/action census.
 
-#### Quality Jobs and Required Status
+The PR candidate invokes `changed` once with read-only permissions and validated
+base/head context. No feature-push, title-edit or main full-profile rerun is
+registered. The separate main security job writes only its SARIF result. Release
+publication is a main-only manual workflow, with `contents: write` restricted to
+its producer. It creates a SemVer tag and complete draft assets before publish;
+there is no second tag-push or moving-channel producer.
 
-| Job ID | Route | Event |
-| :--- | :--- | :--- |
-| `main-security` | registered Zizmor adapter and SARIF upload | main push |
-| `update-main-current` | leased channel tag update after successful `main-security` | main push |
+Greetings, stale-thread handling and PR labels are non-QA coordination jobs.
+Their pin, permission and event safety remain checked; they do not own candidate
+acceptance. External automatic security integrations require their own actual
+remote observation and are not disabled by editing tracked YAML.
 
-The tracked quality workflow has no pull-request or manual trigger and no
-hosted public quality job. Candidate evidence comes from the exact local Task-bound validation and
-review required by the approved change; it is not a global administrative
-bypass. Protected-branch settings remain a remote fact that must be read back
-before a control-plane claim. Main security observes the merged SHA. The tag job alone receives
-`contents: write`; quality jobs remain read-only except the SARIF permission.
-Release tags remain governed by the release procedure. A failed main-security
-job must leave the tag job skipped, and a stale or rejected tag push must leave
-the existing pointer intact.
+When job identity or required context changes, update workflow-contract,
+workflow YAML and tracked protection target together, then observe the remote
+state separately. A proposed required context is not effective protection.
+Never introduce an administrative bypass when source and remote state differ.
 
-#### Non-Gating GitHub Automation
+#### Issues and Projects
 
-| Workflow                 | Purpose                    |
-| ------------------------ | -------------------------- |
-| `greetings.yml`          | welcome new contributors   |
-| `stale.yml`              | manage stale issues and PRs |
-| `pr-labeler.yml`         | apply PR labels            |
-| `generate-changelog.yml` | verify that an existing release tag has a CHANGELOG entry |
-
-Agent all-files execution remains limited to the separately approved controlled
-wrapper; neither required profile grants Agent authorization.
-
-**Coupling constraint:** when changing quality jobs or required status identity,
-update all three tracked surfaces together:
-
-1. `.github/workflow-contract.yml`
-2. `.github/workflows/ci-quality.yml`
-3. `.github/rulesets/main-protection.md` Required Status Checks
-
-Then update this explanatory table. Local validation does not prove that any
-of these checks ran remotely or that GitHub applies the proposed protection.
+Issue forms collect problem/request, priority and optional contract/execution
+links. Specs retain AC/contracts; Tasks retain actual commands, results,
+acceptance and authorization. A Project may show owner, priority and linked
+Issue/PR state as a view; it must not overwrite document lifecycle or duplicate
+an execution ledger. Use manual views until a specific Project and automation
+permission is approved. GitHub's repository token cannot access Projects; do
+not add an App/PAT just to mirror Task state. See
+[Project automation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/automating-projects-using-actions).
 
 ### References
 

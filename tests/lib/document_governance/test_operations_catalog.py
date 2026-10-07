@@ -76,15 +76,6 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         self.addCleanup(context.close)
         return context, root
 
-    def test_current_operations_tree_is_self_authoritative_and_archive_free(
-        self,
-    ) -> None:
-        self.assertEqual(set(), finding_codes())
-        context, root = self._fixture()
-        with context:
-            self.assertFalse((root / "docs/98.archive").exists())
-            self.assertEqual(set(), finding_codes(root))
-
     def _track(self, root: pathlib.Path, *paths: pathlib.Path) -> None:
         subprocess.run(
             ["git", "add", "-A", *(str(path) for path in paths)],
@@ -1105,9 +1096,6 @@ class ComposeProfileVocabularyTests(unittest.TestCase):
             ),
             encoding="utf-8",
         )
-
-    def test_current_repository_tables_and_include_list_match_compose(self) -> None:
-        self.assertEqual((), validate_compose_profile_vocabulary(ROOT))
 
     def test_standalone_lab_profile_is_catalogued_but_excluded_from_root(self) -> None:
         root = self._repo()

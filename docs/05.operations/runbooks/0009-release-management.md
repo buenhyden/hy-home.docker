@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -14,34 +14,20 @@ created: "2026-06-04"
 
 ## Overview
 
+main 대상 릴리스 준비 PR과 승인된 SemVer 게시 절차를 소유한다. 일반 후보
+QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 전체 QA를
+실행하지 않는다. 배포·secret·HOME 복구 수용은 해당 운영 Task의 별도 작업이다.
+
 ## Trigger and Preconditions
 
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
-이 런북은 `hy-home.docker`의 수동 release/tag readiness, evidence capture, rollback evidence 확인 절차를 정의한다. 이 문서는 release/tag 준비 절차와 `main-current` 채널 태그 운영을 설명한다. GitHub branch protection, Docker runtime, secret, `.env`, port의 변경 권한은 부여하지 않는다.
-
-> 범위: Release Management Runbook의 실행 절차
-
-### Purpose
-
-- Release Management Runbook 작업을 반복 가능하고 검증 가능한 절차로 수행한다.
-- 실행 전후 evidence, rollback 또는 escalation 기준을 명확히 남긴다.
-
-**`main-current` 채널 태그**
-
-`main` push가 완료되면 `.github/workflows/ci-quality.yml`의 `main-security`가 병합된 SHA에서 Zizmor SARIF를 생성한다. 이 작업이 성공한 경우에만 종속 작업 `update-main-current`가 `bash scripts/operations/update-main-current-tag.sh`를 실행한다. 스크립트는 원격 `main`이 감사한 `GITHUB_SHA`와 일치하는지 확인하고, 기존 태그에 lease를 걸어 경량 `refs/tags/main-current`만 갱신한다. 원격 `main`이 앞서갔거나 태그가 주석 태그이거나 다른 실행이 먼저 태그를 바꿨다면 실패하며 태그를 강제로 덮어쓰지 않는다. 기존 릴리스 태그와 수동 릴리스 절차는 별도로 유지한다.
-
-실패 시에는 GitHub Actions의 `main-security`와 `update-main-current` 상태, 원격 `refs/heads/main` 및 `refs/tags/main-current`의 SHA를 확인한다. 재실행은 해당 SHA의 보안 검사가 성공했고 원격 `main`이 여전히 그 SHA일 때만 허용한다. 태그를 수동으로 이동하기 전에 실패 원인과 승인 범위를 Task에 기록한다.
-
-### When to Use
-
-- Release 또는 tag 생성 전에 local documentation, validation, changelog readiness를 확인해야 할 때.
-- PR 또는 local branch가 release candidate로 승격되기 전에 어떤 evidence를 남겨야 하는지 확인할 때.
-- Rollback 가능성을 주장하기 전에 실제로 남겨야 할 local evidence를 확인해야 할 때.
+- main 대상 준비 PR에서 `CHANGELOG.md`의 실제 변경을 작성한다. 개발 push마다
+  자동 생성하거나 이미 게시된 릴리스 이력을 덮어쓰지 않는다.
+- `.cz.toml`의 Commitizen 문법과 [Git 정책](../../../.agents/governance/git-workflow.md)을 따른다.
+- 최종 후보의 원격 QA, 독립 리뷰, 실제 main 통합과 revision을 확인한다.
+- 게시할 정확한 SemVer와 main commit, 대상 저장소, 승인 및 실패 복구 소유자를
+  실행 Task에 기록한다. 이 런북의 명령 예시는 실행 승인이 아니다.
+- 기존 `main-current`와 과거 릴리스 ref는 역사로 보존한다. moving tag 생산자는
+  폐기하며, 소비자는 main의 immutable SHA 또는 SemVer Release를 사용한다.
 
 ## Procedure
 
@@ -68,53 +54,68 @@ created: "2026-06-04"
    git diff --check
    ```
 
-3. candidate에 해당하는 문서·검증 gate를 선택한다. 먼저 명령이 읽는 입력과 side effect를 확인한다. 문서 작업 승인은 환경·secret 읽기 승인이 아니다.
+3. 선택된 검사와 필요한 도구·예산을 확인한다. 집중 authoring 검사와 원격
+   후보 aggregate 결과는 서로 다른 목적이다. 같은 입력의 leaf를 다시 실행하지
+   않고 Task의 실제 PR base/head/merge revision과 결과를 확인한다.
 
    ```bash
-   python3 scripts/validation/run-ci-gate.py --profile changed
-   python3 scripts/validation/check-document-links.py --mode traceability
+   python3 scripts/validation/run-ci-gate.py --profile changed --explain
    ```
 
-4. 해당 작업에서 입력과 임시 파일 생성까지 승인한 경우에만 Compose readiness를 점검한다. preflight는 실제 `.env`를 source하고 일반 검증도 dummy 입력을 만들 수 있다. [RUN-0086](0086-dependency-version-management.md#static-configuration-validation)의 범위를 먼저 확인한다.
+4. 준비 PR에서 Keep a Changelog의 dated SemVer heading과 실질적인 변경 내용을
+   작성한다. 버전 문자열이 본문 어딘가에 있다는 이유만으로 수용하지 않는다.
+   선택된 후보 검사에 포함되면 다음 read-only 검사를 별도로 반복하지 않는다.
 
    ```bash
-   bash scripts/validation/validate-docker-compose.sh --preflight
-   bash scripts/validation/validate-docker-compose.sh
+   python3 scripts/operations/release.py validate --changelog CHANGELOG.md
    ```
 
-   격리된 five-service runtime harness는 별도 operator 작업이다. preflight는
-   service를 시작하지 않지만 입력·도구 사용 범위는 확인한다. scenario는 Task별
-   runtime 승인이 필요하며 validation profile이 자동 선택하지 않는다.
+5. PR과 승인된 코드가 main에 통합되면 정확한 commit과 아직 존재하지 않는
+   `v` + SemVer를 확인한다. `generate-changelog.yml`의 main-only 수동 dispatch가
+   유일한 태그·Release 생산자다. 태그를 따로 push하거나 다른 writer를 추가하지
+   않는다. 실제 dispatch에는 정확한 version·repository·commit의 별도 승인이 필요하다.
 
-   ```bash
-   bash scripts/operations/check-compose-core-readiness.sh --preflight
-   ```
+6. 생산자는 main ancestry와 CHANGELOG를 확인한 후 create-only tag를 만든다.
+   draft Release에 `CHANGELOG.md`, `SOURCE_REVISION.txt`, `SHA256SUMS`를 붙이고
+   tag SHA와 업로드 manifest를 확인한 후 게시한다. 필요 자산을 모두 올린 뒤
+   Release를 게시한다. immutable 설정을 사용하는 경우에도 이 순서를 지키고,
+   실제 게시 후 draft 여부·tag SHA·자산 digest·immutable 상태를 read-back한다.
+   설정 활성화는 별도 승인 대상이며 소스만으로 적용됐다고 표시하지 않는다. GitHub 공식
+   [릴리스 관리](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)와
+   [immutable release 계약](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases)을 따른다.
 
-5. 추적된 release 소스에서 changelog와 tag 준비 상태를 확인한다.
+7. 실패하면 재시도·force update·태그 삭제를 자동으로 하지 않는다. 생성된 tag나
+   draft가 있다면 그 정확한 대상과 자산 상태를 Task에 남기고 소유자에게 복구를
+   요청한다. 이미 게시된 버전은 수정하지 않는다. 실제 배포·backup·rollback 수용은
+   해당 service Task에 별도로 기록하며 Release 게시를 배포 성공으로 표현하지 않는다.
 
-   ```bash
-   git log --oneline --decorate -n 20
-   git tag --list
-   ```
+### Optional Compose service observation
 
-   `v*.*.*` tag를 push하기 전에 `CHANGELOG.md`에 정확한 tag 문자열이 있는지
-   확인한다. `.github/workflows/generate-changelog.yml`은 문자열이 없으면
-   실패한다. 아래 placeholder를 승인된 tag로 바꾸고 fixed-string으로 검사한다.
+이 runbook은 다음 기존 운영 명령의 수동 실행 경계를 유지한다. 일반 Release의
+추가 필수 gate가 아니다. 입력·환경·권한은 해당 service Task에서 먼저 승인한다.
+준비 파일만 확인하는 경로는 다음과 같다.
 
-   ```bash
-   rg -n -F "vX.Y.Z" CHANGELOG.md
-   ```
+```bash
+bash scripts/validation/validate-docker-compose.sh --preflight
+bash scripts/operations/check-compose-core-readiness.sh --preflight
+```
 
-6. release 또는 deploy 준비 완료를 선언하기 전에 다음 항목을 확인한다.
+승인된 Task가 구조 렌더나 선택한 daemon의 실제 관측을 요구할 때만 기본 경로를
+실행한다. 렌더는 임시 환경·dummy secret을 만들 수 있고 readiness는 live
+Docker 관측이므로 같은 결과나 승인으로 취급하지 않는다. 각각의 결과와 입력을
+해당 Task에 남기며 구조 PASS를 배포·복구 수용으로 승격하지 않는다.
 
-   - 영향을 받는 각 stateful surface의 backup 증거 또는 명시적인 N/A 근거.
-   - 변경한 각 service·workflow·deployment의 rollback/recovery runbook 링크.
-   - 차단·실패·rollback한 release 판단의 incident 기록 경로 또는 escalation 채널.
-   - branch protection·required check·release workflow의 현재 강제를 주장할 때 remote gate 검증 증거.
+```bash
+bash scripts/validation/validate-docker-compose.sh
+bash scripts/operations/check-compose-core-readiness.sh
+```
 
-7. 실행 Task 또는 PR 설명에 준비 상태와 증거를 남긴다. secret·`.env` 값, credential이 있는 원문 로그, shell history, deployment token을 붙여넣지 않는다.
+### Optional service delivery rehearsal
 
-8. `sample-web-service`의 local promotion/rollback 계약을 확인할 때는 먼저
+아래 재사용 가능한 Docker 운영 예제는 해당 service의 승인된 변경에만 적용한다.
+문서·commit·일반 릴리스의 필수 gate가 아니며 후보 QA와 live 운영 수용을 합치지 않는다.
+
+1. `sample-web-service`의 local promotion/rollback 계약을 확인할 때는 먼저
    Docker를 시작하지 않는 fixture-only preflight를 실행한다.
 
    ```bash
@@ -141,7 +142,7 @@ created: "2026-06-04"
    bash scripts/operations/gen-secrets.sh --check
    ```
 
-9. 정적 delivery 계약은 다음 operation-owned 예제 세 개로 검증한다.
+2. 정적 delivery 계약은 다음 operation-owned 예제 세 개로 검증한다.
    verdict schema v2와 pair schema/generation v3의 형식을 설명하는 fixture이며,
    실제 local rehearsal 입력이나 실행 승인은 아니다.
 
@@ -161,7 +162,7 @@ created: "2026-06-04"
    cleanup 증거는 해당 변경의 실제 Task가 소유하며 이 런북이 실행 성공을
    선언하지 않는다.
 
-10. 실제 rehearsal의 positive/negative 순서와 횟수는 해당 실행 Task에서
+3. 실제 rehearsal의 positive/negative 순서와 횟수는 해당 실행 Task에서
     승인한다. Baseline/canary는
     `hyhome-dre-20260719-<decimal-pid>-baseline|canary`, loopback
     `18080`/`18081`, exact ownership labels로 제한된다. Canary 실패 시 previous
@@ -207,7 +208,7 @@ created: "2026-06-04"
 - 현재 branch와 clean/예상된 작업 트리 상태.
 - 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
 - 선택한 저장소 계약·문서 traceability 검사와 승인 범위에 해당하는 Compose 검증 결과. 등록에서 폐기된 surface의 freshness를 현재 gate로 요구하지 않는다.
-- release/tag 판단에 사용한 changelog의 정확한 tag 문자열과 commit 범위 증거.
+- main 준비 PR의 dated CHANGELOG heading, 정확한 SemVer와 commit, draft 자산 hash 및 실제 게시/미실행 구분.
 - release/deploy 주장이 의존하는 backup/N/A, rollback/recovery 링크, incident 경로, remote gate 증거.
 - 별도 승인하여 실제 실행한 runtime 배포·secret 값·`.env` sync·port·permission·remote branch-protection 변경과 실행하지 않은 범위의 구분.
 - Local delivery evidence에는 revision, digest/verdict reference, project,

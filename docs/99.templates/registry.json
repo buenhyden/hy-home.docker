@@ -111,7 +111,6 @@
       "doc_type"
     ],
     "inventory_excludes": [
-      ".agents/evaluations/fixture-catalog.md",
       "docs/90.references/audits/0023-frontmatter-semantic-inventory/README.md"
     ],
     "root_exceptions": {
@@ -4856,8 +4855,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 210,
-      "next_number": 211,
+      "high_water": 211,
+      "next_number": 212,
       "child_spaces": {}
     },
     "operations-subject": {

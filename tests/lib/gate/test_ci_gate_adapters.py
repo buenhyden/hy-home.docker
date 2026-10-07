@@ -25,10 +25,9 @@ EXPECTED_SUBCOMMANDS = (
     "check-diff-hygiene",
     "check-shell-syntax",
     "run-unittest",
-    "run-agent-output-eval",
     "run-npm",
     "run-approved-npm-audit",
-    "check-git-flow",
+    "check-commit-range",
     "install-playwright",
     "run-zizmor-sarif",
 )
@@ -55,16 +54,6 @@ class ChildRecorder:
 
 
 class CiGateAdapterTests(unittest.TestCase):
-    def test_retired_setup_commands_are_rejected_by_the_argv_contract(self) -> None:
-        for argv in (
-            ("install-python-requirements", "scripts/requirements.txt"),
-            ("prepare-compose-env",),
-        ):
-            with self.subTest(argv=argv):
-                with self.assertRaises(adapters.AdapterError) as caught:
-                    adapters.validate_adapter_argv(argv)
-                self.assertEqual("ci-gate-adapter-command", caught.exception.code)
-
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = pathlib.Path(self.temporary.name).resolve()
@@ -96,6 +85,33 @@ class CiGateAdapterTests(unittest.TestCase):
                 environ or {"PATH": "/usr/bin"},
             )
         return result, recorder
+
+    def git(self, *arguments: str) -> str:
+        result = REAL_SUBPROCESS_RUN(
+            ("git", *arguments),
+            cwd=self.root,
+            env={**os.environ, "GIT_CONFIG_GLOBAL": "/dev/null"},
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return result.stdout.strip()
+
+    def synthetic_merge_with_whitespace(self) -> tuple[str, str]:
+        self.git("init", "-q", "-b", "main")
+        self.git("config", "user.name", "Diagnostic")
+        self.git("config", "user.email", "diagnostic@example.invalid")
+        self.git("commit", "--allow-empty", "-qm", "chore: Establish common base")
+        self.git("switch", "-q", "-c", "feature")
+        (self.root / "candidate.txt").write_text("trailing whitespace \n")
+        self.git("add", "candidate.txt")
+        self.git("commit", "-qm", "fix(ci): Preserve candidate range")
+        head = self.git("rev-parse", "HEAD")
+        self.git("switch", "-q", "main")
+        self.git("commit", "--allow-empty", "-qm", "chore: Advance target")
+        base = self.git("rev-parse", "HEAD")
+        self.git("merge", "--no-ff", "feature", "-qm", f"Merge {head} into {base}")
+        return base, head
 
     def test_closed_subcommand_catalog_is_exact(self) -> None:
         self.assertEqual(EXPECTED_SUBCOMMANDS, adapters.SUBCOMMANDS)
@@ -139,17 +155,91 @@ class CiGateAdapterTests(unittest.TestCase):
         )
         self._assert_descriptor_root_is_passed_to_adapter_children()
 
-    def test_shell_syntax_git_pathspec_selects_evaluation_runner(self) -> None:
-        _, recorder = self.run_with_recorder(("check-shell-syntax",))
-        selected = REAL_SUBPROCESS_RUN(
-            recorder.calls[0][0], cwd=ROOT, capture_output=True, check=True
+    def test_pr_diff_hygiene_checks_the_authenticated_candidate_range(self) -> None:
+        base = "1" * 40
+        head = "2" * 40
+        merge = "3" * 40
+        common = "4" * 40
+        result, recorder = self.run_with_recorder(
+            ("check-diff-hygiene",),
+            environ={"PATH": "/usr/bin", "PR_BASE_SHA": base, "PR_HEAD_SHA": head},
+            results=[
+                subprocess.CompletedProcess(
+                    (), 0, f"{merge} {base} {head}\n".encode(), b""
+                ),
+                subprocess.CompletedProcess((), 0, f"{common}\n".encode(), b""),
+                subprocess.CompletedProcess((), 0, b"1\n", b""),
+                subprocess.CompletedProcess((), 0, b"", b""),
+            ],
         )
-        self.assertIn(
-            b".agents/evaluations/run-agent-output-eval-fixtures.sh",
-            selected.stdout.split(b"\0"),
+        self.assertEqual(0, result)
+        self.assertEqual(
+            [
+                ("git", "rev-list", "--parents", "--max-count=1", "HEAD"),
+                ("git", "merge-base", base, head),
+                ("git", "rev-list", "--count", f"{base}..{head}"),
+                ("git", "diff", "--check", f"{common}..{head}"),
+            ],
+            [call[0] for call in recorder.calls],
         )
 
-    def test_check_shell_syntax_uses_nul_tracked_paths_and_one_bash_call(
+    def test_pr_range_rejects_wrong_merge_parents_and_empty_history(self) -> None:
+        base = "1" * 40
+        head = "2" * 40
+        merge = "3" * 40
+        common = "4" * 40
+        cases = (
+            (
+                "swapped-parents",
+                [
+                    subprocess.CompletedProcess(
+                        (), 0, f"{merge} {head} {base}\n".encode(), b""
+                    )
+                ],
+            ),
+            (
+                "third-parent",
+                [
+                    subprocess.CompletedProcess(
+                        (), 0, f"{merge} {base} {head} {'5' * 40}\n".encode(), b""
+                    )
+                ],
+            ),
+            (
+                "empty-range",
+                [
+                    subprocess.CompletedProcess(
+                        (), 0, f"{merge} {base} {head}\n".encode(), b""
+                    ),
+                    subprocess.CompletedProcess((), 0, f"{common}\n".encode(), b""),
+                    subprocess.CompletedProcess((), 0, b"0\n", b""),
+                ],
+            ),
+        )
+        for label, results in cases:
+            with (
+                self.subTest(label=label),
+                mock.patch.object(
+                    adapters,
+                    "_run_child",
+                    side_effect=ChildRecorder(results),
+                ),
+                self.assertRaises(adapters.AdapterError) as caught,
+            ):
+                adapters.run_adapter(
+                    self.root,
+                    ("check-diff-hygiene",),
+                    {
+                        "PATH": "/usr/bin",
+                        "PR_BASE_SHA": base,
+                        "PR_HEAD_SHA": head,
+                    },
+                )
+            self.assertEqual(
+                "ci-gate-adapter-pull-request-range", caught.exception.code
+            )
+
+    def test_check_shell_syntax_checks_each_nul_tracked_path_once(
         self,
     ) -> None:
         result, recorder = self.run_with_recorder(
@@ -158,35 +248,113 @@ class CiGateAdapterTests(unittest.TestCase):
                 subprocess.CompletedProcess(
                     ("git",),
                     0,
-                    b".agents/evaluations/a.sh\0scripts/b.sh\0.claude/hooks/c.sh\0",
+                    b"scripts/b.sh\0.claude/hooks/c.sh\0",
                     b"",
                 ),
+                subprocess.CompletedProcess(("bash",), 0, b"", b""),
                 subprocess.CompletedProcess(("bash",), 0, b"", b""),
             ],
         )
         self.assertEqual(0, result)
         self.assertEqual(
-            (
-                "git",
-                "ls-files",
-                "-z",
-                "--",
-                ".agents/evaluations/*.sh",
-                "scripts/**/*.sh",
-                ".claude/hooks/*.sh",
-            ),
-            recorder.calls[0][0],
+            [
+                (
+                    "git",
+                    "ls-files",
+                    "-z",
+                    "--",
+                    "scripts/**/*.sh",
+                    ".claude/hooks/*.sh",
+                ),
+                ("bash", "-n", "scripts/b.sh"),
+                ("bash", "-n", ".claude/hooks/c.sh"),
+            ],
+            [call[0] for call in recorder.calls],
         )
+
+    def test_check_shell_syntax_preserves_empty_and_inventory_failure(self) -> None:
+        for label, inventory, expected in (
+            ("empty", subprocess.CompletedProcess(("git",), 0, b"", b""), 0),
+            ("git-failure", subprocess.CompletedProcess(("git",), 9, b"", b""), 9),
+        ):
+            with self.subTest(label=label):
+                result, recorder = self.run_with_recorder(
+                    ("check-shell-syntax",), results=[inventory]
+                )
+                self.assertEqual(expected, result)
+                self.assertEqual(1, len(recorder.calls))
+
+    def test_check_shell_syntax_fails_on_a_later_real_bash_input(self) -> None:
+        scripts = self.root / "scripts"
+        scripts.mkdir()
+        (scripts / "valid.sh").write_text("touch syntax-ran\n", encoding="utf-8")
+        (scripts / "invalid.sh").write_text("if true; then\n", encoding="utf-8")
+
+        def tracked_then_real_bash(
+            argv: tuple[str, ...], **_kwargs: object
+        ) -> subprocess.CompletedProcess[bytes]:
+            if argv[0] == "git":
+                return subprocess.CompletedProcess(
+                    argv,
+                    0,
+                    b"scripts/valid.sh\0scripts/invalid.sh\0",
+                    b"",
+                )
+            return REAL_SUBPROCESS_RUN(
+                argv,
+                cwd=self.root,
+                env={"PATH": "/usr/bin", "LANG": "C"},
+                capture_output=True,
+            )
+
+        with mock.patch.object(
+            adapters, "_run_child", side_effect=tracked_then_real_bash
+        ):
+            result = adapters.run_adapter(
+                self.root,
+                ("check-shell-syntax",),
+                {"PATH": "/usr/bin", "LANG": "C"},
+            )
+        self.assertNotEqual(0, result)
+        self.assertFalse((self.root / "syntax-ran").exists())
+
+    def test_check_shell_syntax_stops_after_the_first_failure(self) -> None:
+        result, recorder = self.run_with_recorder(
+            ("check-shell-syntax",),
+            results=[
+                subprocess.CompletedProcess(
+                    ("git",),
+                    0,
+                    b"scripts/a.sh\0scripts/b.sh\0scripts/c.sh\0",
+                    b"",
+                ),
+                subprocess.CompletedProcess(("bash",), 0, b"", b""),
+                subprocess.CompletedProcess(("bash",), 7, b"", b"invalid"),
+            ],
+        )
+        self.assertEqual(7, result)
         self.assertEqual(
-            (
-                "bash",
-                "-n",
-                ".agents/evaluations/a.sh",
-                "scripts/b.sh",
-                ".claude/hooks/c.sh",
-            ),
-            recorder.calls[1][0],
+            [
+                (
+                    "git",
+                    "ls-files",
+                    "-z",
+                    "--",
+                    "scripts/**/*.sh",
+                    ".claude/hooks/*.sh",
+                ),
+                ("bash", "-n", "scripts/a.sh"),
+                ("bash", "-n", "scripts/b.sh"),
+            ],
+            [call[0] for call in recorder.calls],
         )
+
+    def test_run_unittest_is_admitted_only_in_the_local_context(self) -> None:
+        argv = ("run-unittest", "tests.validation.test_one", "-v")
+        self.assertTrue(adapters.admits_adapter_invocation(argv, "local"))
+        for context in ("pull_request", "push", "push_initial", "workflow_dispatch"):
+            with self.subTest(context=context):
+                self.assertFalse(adapters.admits_adapter_invocation(argv, context))
 
     def test_run_unittest_rejects_zero_tests_and_missing_execution_summary(self):
         for output in (b"Ran 0 tests in 0.000s\n\nOK\n", b"", b"OK\n"):
@@ -363,7 +531,7 @@ class CiGateAdapterTests(unittest.TestCase):
     def test_run_unittest_accepts_exact_test_surfaces(self) -> None:
         modules = (
             "tests.validation.test_one",
-            "tests.lib.agent_governance.test_agent_governance_contract",
+            "tests.lib.hooks.test_tool_payload",
             "tests.lib.document_governance.test_metadata_validator",
             "tests.lib.gate.test_ci_gate_adapters",
             "tests.lib.gate.test_ci_gate_contract",
@@ -403,118 +571,6 @@ class CiGateAdapterTests(unittest.TestCase):
                     )
                 self.assertEqual("ci-gate-adapter-arguments", caught.exception.code)
 
-    def test_run_agent_output_eval_checks_markers_and_emits_output_once(
-        self,
-    ) -> None:
-        recorder = ChildRecorder(
-            [
-                subprocess.CompletedProcess(
-                    ("bash",),
-                    0,
-                    b"fixtures_check=pass\nregressions_check=pass\n",
-                    b"",
-                )
-            ]
-        )
-        with (
-            mock.patch.object(
-                adapters,
-                "_run_child",
-                side_effect=recorder,
-                create=True,
-            ),
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            result = adapters.run_adapter(
-                self.root,
-                ("run-agent-output-eval",),
-                {"PATH": "/usr/bin"},
-            )
-        self.assertEqual(0, result)
-        self.assertEqual(
-            1,
-            stdout.getvalue().count("fixtures_check=pass"),
-        )
-        self.assertEqual(
-            1,
-            stdout.getvalue().count("regressions_check=pass"),
-        )
-        self.assertEqual(
-            (
-                "bash",
-                ".agents/evaluations/run-agent-output-eval-fixtures.sh",
-                "--check-fixtures",
-                "--check-regressions",
-            ),
-            recorder.calls[0][0],
-        )
-
-    def test_run_agent_output_eval_propagates_child_and_rejects_bad_output(
-        self,
-    ) -> None:
-        invalid_outputs = (
-            ("missing-fixtures", b"regressions_check=pass\n"),
-            ("missing-regressions", b"fixtures_check=pass\n"),
-            (
-                "nul",
-                b"fixtures_check=pass\nregressions_check=pass\n\0",
-            ),
-            (
-                "oversize",
-                b"fixtures_check=pass\nregressions_check=pass\n"
-                + b"x" * (adapters._MAX_CAPTURE_BYTES + 1),
-            ),
-            (
-                "invalid-utf8",
-                b"fixtures_check=pass\nregressions_check=pass\n\xff",
-            ),
-        )
-        expected_argv = (
-            "bash",
-            ".agents/evaluations/run-agent-output-eval-fixtures.sh",
-            "--check-fixtures",
-            "--check-regressions",
-        )
-        nonzero = ChildRecorder(
-            [subprocess.CompletedProcess(("bash",), 23, b"", b"failure")]
-        )
-        with (
-            mock.patch.object(adapters, "_run_child", side_effect=nonzero),
-            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-        ):
-            self.assertEqual(
-                23,
-                adapters.run_adapter(
-                    self.root,
-                    ("run-agent-output-eval",),
-                    {"PATH": "/usr/bin"},
-                ),
-            )
-        self.assertEqual("", stdout.getvalue())
-        self.assertEqual(expected_argv, nonzero.calls[0][0])
-
-        for label, output in invalid_outputs:
-            recorder = ChildRecorder(
-                [subprocess.CompletedProcess(("bash",), 0, output, b"")]
-            )
-            with (
-                self.subTest(case=label),
-                mock.patch.object(adapters, "_run_child", side_effect=recorder),
-                mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
-                self.assertRaises(adapters.AdapterError) as caught,
-            ):
-                adapters.run_adapter(
-                    self.root,
-                    ("run-agent-output-eval",),
-                    {"PATH": "/usr/bin"},
-                )
-            self.assertEqual(
-                "ci-gate-adapter-eval-output",
-                caught.exception.code,
-            )
-            self.assertEqual("", stdout.getvalue())
-            self.assertEqual(expected_argv, recorder.calls[0][0])
-
     def test_run_npm_accepts_only_three_closed_grammar_shapes(self) -> None:
         commands = (
             (
@@ -537,58 +593,99 @@ class CiGateAdapterTests(unittest.TestCase):
                 self.assertEqual(0, result)
                 self.assertEqual(("npm", *command), recorder.calls[0][0])
 
-    def test_check_git_flow_validates_without_shell_or_child_process(
+    def test_check_commit_range_delegates_to_commitizen_with_bounded_base(
         self,
     ) -> None:
         (self.root / ".cz.toml").write_bytes((ROOT / ".cz.toml").read_bytes())
-        accepted = (
-            ("feat(api v2)!: Remove legacy endpoint", "feat/135-typed-gates"),
-            ("fix: Correct typed gate", "fix/135-typed-gates"),
-            ("fix!: Patch production gate", "hotfix/135-patch-gate"),
-            ("docs: Update guide", "docs/update-guide"),
-            ("style: Format sources", "style/format-sources"),
-            ("refactor: Simplify parser", "refactor/simplify-parser"),
-            ("perf: Reduce parsing cost", "perf/reduce-cost"),
-            ("test: Cover commit grammar", "test/commit-grammar"),
-            ("build: Update build image", "build/update-image"),
-            ("ci: Align workflow checks", "ci/align-checks"),
-            ("chore: Maintain repository", "chore/maintenance"),
-            ("revert: Restore prior behavior", "revert/restore-behavior"),
-            ("release: Publish v1.2.3", "release/publish-v1.2.3"),
-            ("deps: Update dependency pins", "deps/update-pins"),
-            ("feat: Add automation", "codex/commit-contract"),
-            ("deps: Update dependency pins", "dependabot/pip/requests-3"),
+        base = "1" * 40
+        head = "2" * 40
+        merge = "3" * 40
+        common = "4" * 40
+        result, recorder = self.run_with_recorder(
+            ("check-commit-range",),
+            environ={"PATH": "/usr/bin", "PR_BASE_SHA": base, "PR_HEAD_SHA": head},
+            results=[
+                subprocess.CompletedProcess(
+                    (), 0, f"{merge} {base} {head}\n".encode(), b""
+                ),
+                subprocess.CompletedProcess((), 0, f"{common}\n".encode(), b""),
+                subprocess.CompletedProcess((), 0, b"1\n", b""),
+                subprocess.CompletedProcess((), 0, b"", b""),
+            ],
         )
-        for title, branch in accepted:
-            with self.subTest(title=title, branch=branch):
-                result, recorder = self.run_with_recorder(
-                    ("check-git-flow",),
-                    environ={
-                        "PATH": "/usr/bin",
-                        "PR_TITLE": title,
-                        "HEAD_REF": branch,
-                    },
-                )
-                self.assertEqual(0, result)
-                self.assertEqual([], recorder.calls)
-
-        rejected = (
-            ("feat: lower case subject", "feat/135-typed-gates"),
-            ("feat: Subject ends with period.", "feat/135-typed-gates"),
-            (f"feat: {'A' * 70}", "feat/135-typed-gates"),
-            ("unknown: Add typed gate", "feat/135-typed-gates"),
-            ("feat: Add typed gate", "feat/missingissue"),
-            ("feat: Add typed gate", "unknown/topic"),
+        self.assertEqual(0, result)
+        self.assertEqual(
+            [
+                ("git", "rev-list", "--parents", "--max-count=1", "HEAD"),
+                ("git", "merge-base", base, head),
+                ("git", "rev-list", "--count", f"{base}..{head}"),
+                (
+                    "cz",
+                    "check",
+                    "--rev-range",
+                    f"{base}..{head}",
+                    "--message-length-limit",
+                    "75",
+                ),
+            ],
+            [call[0] for call in recorder.calls],
         )
-        for title, branch in rejected:
-            with self.subTest(title=title, branch=branch):
-                with self.assertRaises(adapters.AdapterError) as caught:
+        for key in ("PR_BASE_SHA", "PR_HEAD_SHA"):
+            for invalid in ("", "0" * 40, "main", "a" * 39):
+                environment = {
+                    "PATH": "/usr/bin",
+                    "PR_BASE_SHA": base,
+                    "PR_HEAD_SHA": head,
+                    key: invalid,
+                }
+                with (
+                    self.subTest(key=key, revision=invalid),
+                    self.assertRaises(adapters.AdapterError) as caught,
+                ):
                     adapters.run_adapter(
-                        self.root,
-                        ("check-git-flow",),
-                        {"PATH": "/usr/bin", "PR_TITLE": title, "HEAD_REF": branch},
+                        self.root, ("check-commit-range",), environment
                     )
-                self.assertEqual("ci-gate-adapter-git-flow", caught.exception.code)
+                self.assertEqual(
+                    "ci-gate-adapter-pull-request-range", caught.exception.code
+                )
+        with self.assertRaises(adapters.AdapterError) as identical:
+            adapters.run_adapter(
+                self.root,
+                ("check-commit-range",),
+                {"PATH": "/usr/bin", "PR_BASE_SHA": base, "PR_HEAD_SHA": base},
+            )
+        self.assertEqual("ci-gate-adapter-pull-request-range", identical.exception.code)
+
+    def test_synthetic_merge_checks_head_commits_and_committed_whitespace(
+        self,
+    ) -> None:
+        (self.root / ".cz.toml").write_bytes((ROOT / ".cz.toml").read_bytes())
+        base, head = self.synthetic_merge_with_whitespace()
+        environment = {
+            "PATH": os.defpath,
+            "PR_BASE_SHA": base,
+            "PR_HEAD_SHA": head,
+        }
+        self.assertNotEqual(
+            0,
+            adapters.run_adapter(self.root, ("check-diff-hygiene",), environment),
+        )
+        actual_child = adapters._run_child
+        commitizen_calls: list[tuple[str, ...]] = []
+
+        def execute(argv: tuple[str, ...], **kwargs: object):
+            if argv[:2] == ("cz", "check"):
+                commitizen_calls.append(argv)
+                return subprocess.CompletedProcess(argv, 0, b"", b"")
+            return actual_child(argv, **kwargs)  # type: ignore[arg-type]
+
+        with mock.patch.object(adapters, "_run_child", side_effect=execute):
+            self.assertEqual(
+                0,
+                adapters.run_adapter(self.root, ("check-commit-range",), environment),
+            )
+        self.assertEqual(1, len(commitizen_calls))
+        self.assertEqual(f"{base}..{head}", commitizen_calls[0][3])
 
     def test_commit_contract_translations_cover_every_canonical_type(self) -> None:
         commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
@@ -710,7 +807,7 @@ class CiGateAdapterTests(unittest.TestCase):
         ):
             with self.subTest(footer=footer):
                 breaking = first_parser("feat: Remove legacy endpoint", footer)
-                self.assertEqual("Breaking Changes", breaking.get("group"))
+                self.assertEqual("Changed", breaking.get("group"))
         nonbreaking = first_parser(
             "feat: Keep legacy endpoint",
             "BREAKING-CHANGED: This is an ordinary custom footer",
@@ -739,7 +836,7 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertIsNotNone(commit_warning.search('git commit -m "unknown: Subject"'))
         self.assertIsNotNone(branch_warning.search("git switch -c unknown/topic"))
 
-    def test_check_git_flow_fails_closed_for_invalid_commit_contract(self) -> None:
+    def test_check_commit_range_fails_closed_for_invalid_commit_contract(self) -> None:
         config = self.root / ".cz.toml"
         target = self.root / "target.toml"
         cases = ("missing", "malformed", "symlink")
@@ -755,11 +852,10 @@ class CiGateAdapterTests(unittest.TestCase):
                 with self.assertRaises(adapters.AdapterError) as caught:
                     adapters.run_adapter(
                         self.root,
-                        ("check-git-flow",),
+                        ("check-commit-range",),
                         {
                             "PATH": "/usr/bin",
-                            "PR_TITLE": "feat: Add typed gate",
-                            "HEAD_REF": "feat/135-typed-gates",
+                            "PR_BASE_SHA": "0123456789abcdef0123456789abcdef01234567",
                         },
                     )
                 self.assertEqual("ci-gate-adapter-git-flow", caught.exception.code)

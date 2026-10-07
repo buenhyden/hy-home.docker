@@ -1,10 +1,10 @@
 ---
 title: "Diff Review Prompt"
-version: "0.2.0"
+version: "0.3.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-09-06"
 ---
 
@@ -24,6 +24,10 @@ repository's own guards, not against a general sense of code quality.
 - The governing Spec's `Acceptance Contract` and the Plan work unit the diff
   claims to satisfy.
 - The verification results the contributor recorded, with their exit codes.
+- The frozen logical review scope, assigned expertise and any exact prior slice
+  reused under [Workflows](../governance/workflows.md#review-scope-and-evidence-updates).
+  Review the affected delta after a correction; do not replay an unchanged
+  source review or full QA for a result-only Task record.
 - The protected-surface table in
   [approval boundaries](../governance/approval-boundaries.md).
 - The current worktree, base and HEAD, approval state, and partial-results

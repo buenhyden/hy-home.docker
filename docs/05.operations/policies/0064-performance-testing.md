@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -84,7 +84,7 @@ created: "2026-05-17"
 ### Verification
 
 - 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
-- 정책이나 연결된 운영 문서를 변경하면 `python3 scripts/validation/run-ci-gate.py --profile changed`로 검증한다.
+- 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
 - 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
 
 ### Review Cadence

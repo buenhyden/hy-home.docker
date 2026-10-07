@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.2.0"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Git Workflow Governance
@@ -38,15 +38,33 @@ Use Conventional Commits with explicit scopes where possible.
   policy governs commit usage and workflow.
 - Validate a draft with
   `cz check --message-length-limit 75 --message "feat(auth): Add login guard"`
-  before starting the commit. The `commit-msg` hook remains the final local
-  enforcement point.
+  before starting the commit. Observe whether a `commit-msg` hook is actually
+  installed; the configuration alone is not enforcement evidence. The remote
+  candidate also validates the authenticated contributor commit range.
+
+Immediately before an ordinary commit, stage the reviewed changes and run:
+
+```bash
+cz check --message-length-limit 75 --commit-msg-file /tmp/commit-message.txt
+scripts/validation/run-ci-precommit.sh --mode local-staged
+git commit -F /tmp/commit-message.txt
+```
+
+Prepare the message file before those commands. The style controller checks the
+index with the registered tool pins and read-only modes. It installs no Git
+hook and preserves the effective secret guard. A failed check stops the commit;
+fix, review and restage changed bytes before checking again. A change to the
+index after PASS invalidates that result. Do not replace a user-global hook or
+claim automatic lint enforcement from tracked configuration alone.
 
 ### 2. Branching Strategy
 
 - Protected baseline: `main`
-- Feature branch naming: `feat/<issue-id>-<short-description>`
-- Fix branch naming: `fix/<issue-id>-<short-description>`
-- Hotfix branch naming: `hotfix/<issue-id>-<short-description>` for emergency production fixes; follows the same issue-ID requirement as `feat/` and `fix/`.
+- Short-lived human branches use `<type>/<short-description>`; an existing
+  intake Issue ID may precede the description. Do not create a duplicate Issue
+  or copy the Spec/Task merely to satisfy a branch name.
+- Emergency hotfix branches use `hotfix/<short-description>` and preserve the
+  same PR, validation and explicit runtime authorization boundaries.
 - Other human-authored branches use `<type>/<short-description>`, where `type`
   is an admitted `.cz.toml` change type other than `feat` or `fix`.
 - Automation branch exceptions: `dependabot/**` and `codex/**` are allowed for
@@ -56,15 +74,23 @@ Use Conventional Commits with explicit scopes where possible.
 ### 3. Pull Request Protocol
 
 1. Self-review changes before opening or updating a PR.
-2. Run relevant programmatic checks before requesting review.
-3. For governance work, ensure linked stage docs remain accurate.
-4. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
-5. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
-6. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
+2. Run focused authoring checks and inspect the selected prerequisites; the
+   remote PR candidate owns aggregate QA. Do not repeat it before push or after
+   merge for the same declared input/trust boundary.
+3. Run document-link validation locally on the final source input before
+   result-only Task evidence recording. Record its bound input and result in
+   the Task. Result-only additions use minimum document checks; check new or
+   changed link destinations only in that Task rather than repeating the whole
+   corpus. Remote PR QA excludes the link leaf; metadata, relationship,
+   lifecycle and applicable operations catalog checks remain.
+4. For governance work, ensure linked stage docs remain accurate.
+5. Apply the Completion Gate from `.agents/governance/github-governance.md` before declaring the PR done.
+6. Mark incomplete work as Draft/WIP and do not request final review until the PR is ready. Merge readiness and branch lifecycle belong to `.agents/governance/github-governance.md` section 3.
+7. Keep commits atomic and reviewable. Document any cleanup proposal in the PR;
    the recovery-commit and history-rewrite rules it must satisfy are owned by
    `.agents/governance/github-governance.md` section 3.
-7. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
-8. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
+8. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
+9. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
 ### 4. Operational Best Practices
 
@@ -73,20 +99,22 @@ Use Conventional Commits with explicit scopes where possible.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Never commit plaintext secrets.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- Before pushing a `v*.*.*` tag, require `CHANGELOG.md` to contain that exact
-  release-tag string, scoped validation, readiness evidence, and a linked Task.
-  A remote tag or release remains subject to separately approved exact target
-  and action. Follow the Stage 05
-  [operations runbook index](../../docs/05.operations/runbooks/README.md) for
-  executable release procedure details.
-  The `main-current` channel tag is the narrow automation exception: after a
-  protected PR merge, `.github/workflows/ci-quality.yml` moves that one tag
-  only after the merged-SHA security job passes. Its job uses a remote tag
-  lease and checks that `main` still points to the audited SHA. Record the
-  old/new SHA and hosted run in the Task; a stale or failed update requires
-  recovery through `docs/05.operations/runbooks/0009-release-management.md`.
-  This exception does not authorize manual release-tag changes or bypass main
-  protection.
+- `.cz.toml` owns the one Commitizen grammar; `.gitmessage` is an authoring
+  aid. Explicit Commitizen validation gives local feedback; hook delivery is
+  claimed only when actually observed. The remote
+  candidate verifies its authenticated contributor commit range because client
+  hook installation is not trusted evidence. Default Merge/fixup prefix escapes
+  are disabled; GitHub's synthetic candidate merge is outside that range. Feature push does not add another public gate.
+- Main-targeted release-preparation PRs maintain `CHANGELOG.md` in Keep a
+  Changelog form. No development push generates or publishes a changelog.
+- Future release tags are `v` plus strict SemVer. The manual main-only release
+  workflow is their sole producer and owns create-only tag plus draft Release,
+  complete assets, then publication. Do not push a tag independently or add a
+  moving channel producer. Existing non-SemVer historical refs remain evidence;
+  this policy does not authorize deleting or rewriting them.
+- A specific release publication still requires its exact version, commit,
+  approved target and recovery path. Select `RUN-0009` through the
+  [Operations runbook index](../../docs/05.operations/runbooks/README.md#cross-cutting-workspace).
 
 ### 5. Agent Completion Commit Discipline
 

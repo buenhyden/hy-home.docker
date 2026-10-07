@@ -9,55 +9,17 @@ files:
   - scripts/README.md
   disposition: retain
   successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
-- path: .agents/evaluations/agent_output_eval.py
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - .agents/evaluations/run-agent-output-eval-fixtures.sh
-  - tests/validation/test_validator_entrypoints.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agent_output_eval_fixtures.py
-  - tests/validation/test_validator_entrypoints.py
-- path: .agents/evaluations/fixture-catalog.md
-  kind: contract
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - .agents/evaluations/README.md
-  disposition: retain
-  successor: null
   tests: []
-- path: .agents/evaluations/run-agent-output-eval-fixtures.sh
-  kind: runner
-  authority: .agents/evaluations/README.md
-  lifecycle: active
-  mutation: none
-  consumers:
-  - scripts/lib/gate/ci_gate_adapters.py
-  - tests/validation/test_agent_output_eval_fixtures.py
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_agent_output_eval_fixtures.py
-  - tests/validation/test_validator_entrypoints.py
 - path: scripts/README.md
   kind: contract
   authority: docs/02.architecture/decisions/0032-canonical-agent-governance-home.md
   lifecycle: active
   mutation: none
   consumers:
-  - tests/validation/test_script_manifest.py
+  - README.md
   disposition: retain
   successor: null
-  tests:
-  - tests/validation/test_script_manifest.py
+  tests: []
 - path: scripts/hardening/check-all-hardening.sh
   kind: validator
   authority: .github/workflow-contract.yml
@@ -89,9 +51,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_agent_function_routes.py
   - tests/validation/test_agent_governance_ci_routing.py
-  - tests/validation/test_stop_gate_deferred_paths.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/hooks/hook_rules.py
   kind: library
@@ -102,8 +62,7 @@ files:
   - scripts/hooks/agent-event-hook.sh
   disposition: retain
   successor: null
-  tests:
-  - tests/validation/test_hook_rules.py
+  tests: []
 - path: scripts/hooks/post-tool-validate.sh
   kind: hook
   authority: docs/99.templates/registry.json
@@ -140,7 +99,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/agent_governance/test_agent_governance_contract.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/lib/document_governance/__init__.py
   kind: library
@@ -261,7 +219,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_links.py
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_contract.py
 - path: scripts/lib/document_governance/lifecycle/promoted.py
   kind: library
@@ -284,7 +241,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_public.py
 - path: scripts/lib/document_governance/lifecycle/recovery.py
   kind: library
@@ -296,7 +252,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
   - tests/validation/lifecycle/test_recovery.py
 - path: scripts/lib/document_governance/links.py
   kind: library
@@ -323,7 +278,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_heading.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/identity.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -336,7 +290,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_identity.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/lifecycle.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -349,7 +302,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_lifecycle.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/profile.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -364,7 +316,6 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/metadata/test_profile.py
-  - tests/lib/document_governance/test_metadata_validator.py
 - path: scripts/lib/document_governance/metadata/reference.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -388,7 +339,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_metadata_validator.py
+  - tests/lib/document_governance/metadata/test_profile.py
 - path: scripts/lib/document_governance/metadata_validator.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -451,7 +402,7 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/lib/document_governance/test_requirement_allocation_recovery.py
+  - tests/lib/document_governance/test_registry.py
 - path: scripts/lib/document_governance/requirements.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -631,8 +582,6 @@ files:
   disposition: retain
   successor: null
   tests:
-  - tests/validation/test_provider_native_surfaces.py
-  - tests/validation/test_provider_surface_renderer.py
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/rehearse-postgres-logical-upgrade.sh
   kind: operations
@@ -657,6 +606,19 @@ files:
   successor: null
   tests:
   - tests/validation/test_sample_service_delivery_rehearsal.py
+- path: scripts/operations/release.py
+  kind: operations
+  authority: docs/05.operations/runbooks/0009-release-management.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - .github/workflows/generate-changelog.yml
+  - docs/05.operations/runbooks/0009-release-management.md
+  - scripts/README.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_release.py
 - path: scripts/operations/sync-tech-stack-versions.sh
   kind: operations
   authority: .github/workflow-contract.yml
@@ -668,18 +630,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
-- path: scripts/operations/update-main-current-tag.sh
-  kind: operations
-  authority: docs/05.operations/runbooks/0009-release-management.md
-  lifecycle: active
-  mutation: runtime
-  consumers:
-  - .github/workflows/ci-quality.yml
-  - docs/05.operations/runbooks/0009-release-management.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_update_main_current_tag.sh
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
   authority: scripts/README.md
@@ -931,7 +881,7 @@ files:
   kind: runner
   authority: .github/workflow-contract.yml
   lifecycle: active
-  mutation: check-write
+  mutation: none
   consumers:
   - .github/workflow-contract.yml
   disposition: retain

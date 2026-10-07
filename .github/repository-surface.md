@@ -1,10 +1,10 @@
 ---
 title: "GitHub Control Surface"
-version: "1.0.4"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 created: "2026-02-14"
 ---
 
@@ -55,30 +55,29 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 
 ## Navigation / Inventory
 
-- [CI 품질 워크플로](./workflows/ci-quality.yml): main push 보안 검사와 성공 후 `main-current` 갱신
-- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 로컬 변경 경로별 검사와 로컬 전체 검사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
+- [CI 품질 워크플로](./workflows/ci-quality.yml): PR 변경 영향 검사와 별도 main 보안 관측
+- [타입 지정 워크플로 및 게이트 레지스트리](./workflow-contract.yml): 단일 공개 entrypoint의 변경 영향 검사와 명시적인 전체 감사 구성. 일반 문서 변경은 본문 검증을 유지하고 문서 검사기 회귀 테스트만 생략한다. 검사기·게이트·레지스트리 변경과 미등록 경로는 필요한 회귀 테스트를 포함한다.
 - [기여자 환영 워크플로](./workflows/greetings.yml)
 - [풀 리퀘스트 라벨러 워크플로](./workflows/pr-labeler.yml)
 - [스테일 스레드 워크플로](./workflows/stale.yml)
-- [릴리스 체인지로그 워크플로](./workflows/generate-changelog.yml)
+- [단일 SemVer 릴리스 생산자](./workflows/generate-changelog.yml)
 - [코드 소유권](./CODEOWNERS)
 - [풀 리퀘스트 템플릿](./PULL_REQUEST_TEMPLATE.md)
 - [라벨 라우팅](./labeler.yml)
 
 ## Verification and Quality Gates
 
-이 서피스를 변경하기 전에 저장소 루트에서 다음을 실행한다.
+변경한 입력의 검사 선택을 먼저 확인한다. 후보 aggregate QA는 원격 PR에서 한 번 실행한다.
 
 ```bash
-python3 scripts/validation/run-ci-gate.py --profile changed
-python3 scripts/validation/check-github-workflow-contract.py
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
 ```
 
 - [타입 지정 게이트 CLI](../scripts/validation/run-ci-gate.py)는 프로필이
   선택한 공개 스위트를 실행한다.
 - [전용 워크플로 검사기](../scripts/validation/check-github-workflow-contract.py)는
   `workflow-contract.yml`을 추적 대상 워크플로 정의 전체와 대조해 검증한다.
-  main 보안 작업 이름, 이벤트 조건과 태그 작업의 종속성도 검사한다.
+  typed owner가 선언한 이벤트·권한·단계 조건도 검사한다. 공개 gate에 선택되면 별도로 중복 실행하지 않는다.
 - [타입 지정 로컬 QA 게이트](../scripts/validation/run-ci-gate.py)에
   `--explain`을 붙이면 선택된 스위트-검증기 매핑을 보여 준다.
 
@@ -91,8 +90,7 @@ python3 scripts/validation/check-github-workflow-contract.py
    [workflow-contract.yml](./workflow-contract.yml)에 변경 사항을 선언한다 →
    계약이 새 형태를 명시한다.
 3. 선언에 맞춰 워크플로 정의를 편집한다 → 워크플로와 계약이 필드 단위로 일치한다.
-4. `python3 scripts/validation/check-github-workflow-contract.py`를 실행한다 →
-   종료 상태 `0`.
+4. 변경된 동작의 집중 회귀와 정적 검사를 실행하고, 원격 PR 후보의 선택된 결과를 Task에 기록한다.
 5. 새 정의를 위 인벤토리에 추가한다 → 이 문서에서 이 폴더의 추적 대상 파일
    전체로 갈 수 있다.
 

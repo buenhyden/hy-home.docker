@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -85,7 +85,7 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - Pyroscope의 고정 retention 미선언 경계:
   `rg -n 'fixed retention period is not declared|고정 7일 retention 설정이 없다' infra/06-observability/pyroscope/README.md docs/05.operations/guides/0047-pyroscope.md`
 - Documentation contracts:
-  `python3 scripts/validation/run-ci-gate.py --profile changed`
+  원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 

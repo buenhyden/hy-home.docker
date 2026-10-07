@@ -79,6 +79,39 @@ class SpecPackageError(ValueError):
 
 
 @dataclasses.dataclass(frozen=True)
+class _HistoricalSpecSnapshot:
+    root: pathlib.Path
+    commit: str
+    tree: bytes
+    blobs: tuple[tuple[str, bytes], ...]
+
+
+class HistoricalSpecSnapshotContext:
+    """Bounded raw Git inputs shared only by one validation invocation.
+
+    Never retain working files, symbolic ref resolutions, parsed mutable
+    metadata, or validation results. Each consumer still parses and validates.
+    """
+
+    def __init__(self) -> None:
+        self._snapshots: tuple[_HistoricalSpecSnapshot, ...] = ()
+
+    def lookup(self, root: pathlib.Path, commit: str) -> _HistoricalSpecSnapshot | None:
+        return next(
+            (
+                snapshot
+                for snapshot in self._snapshots
+                if snapshot.root == root.resolve() and snapshot.commit == commit
+            ),
+            None,
+        )
+
+    def remember(self, snapshot: _HistoricalSpecSnapshot) -> None:
+        if len(self._snapshots) < 4:
+            self._snapshots = (*self._snapshots, snapshot)
+
+
+@dataclasses.dataclass(frozen=True)
 class BranchIntegrationReceipt:
     """One typed handoff for an exact divergent historical package."""
 
@@ -1955,6 +1988,7 @@ def load_spec_packages(
     registry: DocumentRegistry | None = None,
     _completion_evidence: bool = True,
     _current_contracts: bool = True,
+    _historical_context: HistoricalSpecSnapshotContext | None = None,
 ) -> tuple[SpecPackage, ...]:
     """Load and validate the complete canonical Stage 03 package surface."""
 
@@ -2055,6 +2089,7 @@ def load_spec_packages(
             source_packages = _load_base_spec_packages(
                 stage_root.parent.parent,
                 base_ref=proof.source_revision,
+                context=_historical_context,
             )
             source_contract = load_registry_at_revision(
                 proof.source_revision,
@@ -2068,10 +2103,12 @@ def load_spec_packages(
             main_packages = _load_base_spec_packages(
                 stage_root.parent.parent,
                 base_ref=integration.main_revision,
+                context=_historical_context,
             )
             integrated_packages = _load_base_spec_packages(
                 stage_root.parent.parent,
                 base_ref=integration.revision,
+                context=_historical_context,
             )
             mainline_historical_tasks = _mainline_historical_terminal_tasks(
                 source_packages,
@@ -2827,6 +2864,7 @@ def _load_base_spec_packages(
     root: pathlib.Path,
     *,
     base_ref: str,
+    context: HistoricalSpecSnapshotContext | None = None,
 ) -> tuple[SpecPackage, ...]:
     commit = (
         _bounded_git(
@@ -2841,18 +2879,24 @@ def _load_base_spec_packages(
     )
     if _RECOVERY_COMMIT.fullmatch(commit) is None:
         raise SpecPackageError("Spec Package base ref did not resolve to a commit")
-    tree = _bounded_git(
-        root,
-        "ls-tree",
-        "-r",
-        "-z",
-        commit,
-        "--",
-        "docs/03.specs",
-        "docs/04.execution",
-        byte_limit=4 * 1024 * 1024,
+    snapshot = context.lookup(root, commit) if context is not None else None
+    tree = (
+        snapshot.tree
+        if snapshot is not None
+        else _bounded_git(
+            root,
+            "ls-tree",
+            "-r",
+            "-z",
+            commit,
+            "--",
+            "docs/03.specs",
+            "docs/04.execution",
+            byte_limit=4 * 1024 * 1024,
+        )
     )
     documents: dict[pathlib.PurePosixPath, SpecDocument] = {}
+    blobs = dict(snapshot.blobs) if snapshot is not None else {}
     total_bytes = 0
     for raw in tree.split(b"\0"):
         if not raw:
@@ -2878,16 +2922,22 @@ def _load_base_spec_packages(
             raise SpecPackageError(
                 f"base Spec Package member is not a regular blob: {source}"
             )
-        payload = _bounded_git(
-            root,
-            "show",
-            f"{commit}:{source}",
-            byte_limit=MAX_SPEC_FILE_BYTES,
+        payload = (
+            blobs[source]
+            if snapshot is not None
+            else _bounded_git(
+                root,
+                "show",
+                f"{commit}:{source}",
+                byte_limit=MAX_SPEC_FILE_BYTES,
+            )
         )
         if len(payload) > MAX_SPEC_FILE_BYTES:
             raise SpecPackageError(
                 f"base Spec Package member exceeds the byte limit: {source}"
             )
+        if snapshot is None and context is not None:
+            blobs = {**blobs, source: payload}
         total_bytes += len(payload)
         if total_bytes > MAX_TOTAL_FILE_BYTES:
             raise SpecPackageError("base Spec Package snapshot exceeds aggregate bytes")
@@ -2935,6 +2985,10 @@ def _load_base_spec_packages(
                 tasks,
                 (),
             )
+        )
+    if context is not None and snapshot is None:
+        context.remember(
+            _HistoricalSpecSnapshot(root.resolve(), commit, tree, tuple(blobs.items()))
         )
     return tuple(packages)
 
@@ -4196,6 +4250,7 @@ def validate_repository_spec_package_lifecycle_details(
     *,
     base_ref: str | None = None,
     registry: DocumentRegistry | None = None,
+    _historical_context: HistoricalSpecSnapshotContext | None = None,
 ) -> SpecPackageLifecycleValidation:
     """Validate current package lifecycle and return exact observed transitions."""
 
@@ -4204,6 +4259,7 @@ def validate_repository_spec_package_lifecycle_details(
     previous = _load_base_spec_packages(
         root,
         base_ref=base_commit,
+        context=_historical_context,
     )
     registry = registry if registry is not None else load_registry()
     generation = registry.common.get("lifecycle_generation")
@@ -4292,6 +4348,7 @@ def validate_repository_spec_package_lifecycle_details(
             source_packages = _load_base_spec_packages(
                 root,
                 base_ref=generation_source,
+                context=_historical_context,
             )
             integration = _generation_integration(
                 root,
@@ -4302,6 +4359,7 @@ def validate_repository_spec_package_lifecycle_details(
                 integrated_packages = _load_base_spec_packages(
                     root,
                     base_ref=integration.revision,
+                    context=_historical_context,
                 )
                 mainline_historical_tasks = _mainline_historical_terminal_tasks(
                     source_packages,

@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -55,14 +55,13 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 현재 Hadolint는 짝지어진 revision과 image tag를 사용하지만 image byte까지
 고정한 것은 아니다. digest 도입에는 별도 검토된 update/rollback 경계가 필요하다.
 
-PR용 hosted 품질 job은 없다. 변경 범위와 git-flow 검사는 현재 Task의 정확한
-후보 입력에 대해 로컬 public `changed` profile로 실행하고, 그 결과를 hosted
-실행으로 승격하지 않는다. 전체 점검도 로컬 public `full` profile로 실행한다. main push에서는
-병합된 SHA의 Zizmor/SARIF 검사를 수행하고 성공하면 `main-current` 채널 태그를
-갱신한다. event/ref별 concurrency는 같은 main push 그룹의 이전 실행을
-취소한다.
-공유 setup만으로 중복 gate라고 판단하거나 local 성공을 hosted 재실행으로
-기록하지 않는다. 정확한 진단·검증 순서는 Runbook의 CI 절로 전달한다.
+현재 PR 후보의 aggregate QA는 원격 public `changed` profile이 소유한다.
+로컬은 작성 중 한정 회귀와 읽기 전용 진단을 수행하며 동일 후보의 aggregate를
+반복하지 않는다. main security는 병합된 SHA의 별도 관측이며, 릴리스는 승인된
+main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확한 단계·선택·권한은
+[quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)와
+[release runbook](../runbooks/0009-release-management.md)이 소유한다.
+소스 설정을 실제 hosted 성공이나 릴리스 게시로 기록하지 않는다.
 
 > Historical evidence (not current authority; source: Git history):
 > Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, GDE-0004 CI quality-gate version alignment.
@@ -105,12 +104,13 @@ PR용 hosted 품질 job은 없다. 변경 범위와 git-flow 검사는 현재 Ta
 
 ### Evaluation Maintenance
 
-현재 maintenance 대상은 `.agents/evaluations/`의 model-free 평가 소스 네 파일과
-실제 registry·manifest·gate 소비자다. 합성 입력으로 평가하고 테스트 코드는
-`tests/`에 유지한다. 이 저장소에는 별도 deployment-skeleton 또는 derived-mode
-배포 패키지가 없으므로 이번 maintenance에서 만들지 않는다. 향후 파생 배포는
-필요한 자산만 선별하는 별도 범위이며 개인 상태나 기존 실행 승인을 상속하지 않는다.
-정확한 실행 명령과 승인 경계는 연결된 runbook의 평가 단계에서 확인한다.
+자동 답변 점수 evaluator와 과거 사건을 재증명하는 전용 QA는 폐기됐다.
+현재 QA 적용 범위는 quality policy가 소유하며 `.agents/evaluations/README.md`는
+동일 작업의 baseline/Skill 출력·채점·집계 증거와 작성·보존 경계를 안내한다.
+새 평가 주기는 기존 원문을 보존하고 별도 Task·권한·예산·profile을 확정한다.
+대표 점수는 모든 Skill의 PASS나 native 실행 증거가 아니다. provider/model의 수동 비교에는 현재 skill과
+날짜가 있는 공식 근거를 사용하며 native 실행이나 모델 품질을 추정하지 않는다.
+구체적인 live 관측과 파생 배포는 별도 Task·승인 범위로 둔다.
 
 ### Troubleshooting
 

@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Workflows
@@ -58,6 +58,25 @@ uncertainty remains, a new or out-of-scope operation is needed, or a canonical
 or protected-branch rule requires human review. Existing approval remains
 applicable only while its recorded scope is unchanged; review and delegation
 cannot broaden it.
+
+### Review Scope and Evidence Updates
+
+One final independent review covers one frozen logical diff and its applicable
+check evidence. Assign its owner and required expertise before execution. A
+specialist review is added for an actual security, infrastructure or policy
+boundary; it covers that boundary rather than replaying the whole diff. Any specialist review explicitly required by the protected-surface table or
+another governing policy remains mandatory. A proposal review can
+inform a protected change decision but does not replace final applied-input
+review or supply authorization.
+
+A correction invalidates only the affected source/evidence slice. Reuse a prior
+review only when its exact bytes, contract, input and trust remain applicable;
+changed dependencies, authority or criteria require affected revalidation.
+Result-only Task updates receive document-minimum validation and evidence-delta
+readback. They do not restart implementation tests, full QA or an unchanged
+source review. A result update that changes contract meaning, acceptance or
+approval is reviewed for that change. Preserve actual failures and review
+history; do not manufacture a new approval from an existing verdict.
 
 Static validation and independent review precede a separately approved
 operational action. An implementation that fails validation or independent

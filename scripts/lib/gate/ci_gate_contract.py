@@ -61,6 +61,16 @@ _COMPLETE_CAPABILITY_ARGV = {
     "check-supply-chain-policy.py": ("--check",),
     "rehearse-postgres-logical-upgrade.sh": ("--check-config-only",),
 }
+_REQUIRED_PUBLIC_VALIDATOR_BINDINGS = {
+    "leaf.conftest-policy": (
+        "scripts/validation/check-conftest-policy.sh",
+        ("--mode", "corpus"),
+    ),
+    "leaf.conftest-policy-tests": (
+        "scripts/validation/check-conftest-policy.sh",
+        ("--mode", "verify"),
+    ),
+}
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "schema_version",
@@ -72,17 +82,24 @@ _TOP_LEVEL_FIELDS = frozenset(
     }
 )
 _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
+    "ci.dependency-vulnerability-audit",
     "ci.frontend-quality",
     "ci.storybook-coverage",
+    "ci.zizmor",
+    "leaf.local-document-corpus-lifecycle-tests",
     "leaf.local-document-metadata-tests",
     "leaf.document-governance-library-regressions",
+    "leaf.operations-catalog",
+    "leaf.release-regressions",
+    "leaf.local-script-manifest",
+    "leaf.local-shell-syntax",
+    "leaf.local-tech-stack-version-drift",
+    "leaf.repository-integrity-regressions",
+    "leaf.storybook-contract",
+    "local.workflow-harness",
 )
 _LOCAL_AGGREGATE_CHILDREN = {
-    "local.document-corpus-lifecycle": (
-        "leaf.local-document-corpus-lifecycle-tests",
-        "leaf.local-hook-rule-tests",
-        "leaf.local-document-corpus-lifecycle",
-    ),
+    "local.document-corpus-lifecycle": ("leaf.local-document-corpus-lifecycle",),
     "local.workflow-harness": (
         "leaf.ci-gate-contract-regressions",
         "leaf.ci-gate-runner-regressions",
@@ -105,6 +122,7 @@ _LOCAL_AGGREGATE_CHILDREN = {
         "leaf.template-security-baseline",
         # Added 2026-09-23. Rego policy tests over infra/ (POL-0095).
         "leaf.conftest-policy",
+        "leaf.conftest-policy-tests",
         # Added 2026-08-29. Carries the failing-case suite for both Compose
         # baseline gates into the local profiles.
         "leaf.compose-baseline-regressions",
@@ -112,10 +130,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
     "local.quickwin-baseline": ("leaf.quickwin-baseline",),
 }
 _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
-    "ci.agent-output-eval-fixture-gate": (
-        "leaf.agent-output-eval-fixture-regressions",
-        "leaf.agent-output-eval-fixture-gate",
-    ),
     "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),
     "ci.docs-traceability": ("leaf.docs-traceability",),
     "ci.frontend-quality": (
@@ -125,7 +139,7 @@ _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
         "leaf.frontend-build",
         "leaf.frontend-quality",
     ),
-    "ci.git-flow-contract": ("leaf.git-flow-contract",),
+    "ci.commit-message-contract": ("leaf.commit-message-contract",),
     "ci.storybook-coverage": (
         "setup.frontend-node-dependencies",
         "setup.storybook-playwright",
@@ -151,13 +165,13 @@ _SECRET_ENV_SHAPE = re.compile(
 _ENV_KEY = re.compile(r"[A-Z_][A-Z0-9_]*\Z")
 _ADMITTED_ENV_KEYS = frozenset(
     # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
-    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # PR_BASE_SHA, PR_HEAD_SHA, and PUSH_BEFORE_SHA from its controller, so
     # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
         "GITHUB_ACTIONS",
-        "HEAD_REF",
-        "PR_TITLE",
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA",
         "TEMPLATE_GATE_BASE",
     }
 )
@@ -393,6 +407,7 @@ class PublicGateContract:
     changed_rules: tuple[ChangedSuiteRule, ...]
     changed_root_rules: tuple[ChangedRootRule, ...]
     changed_fallback_suites: tuple[str, ...]
+    local_only_gate_ids: tuple[str, ...]
 
     @property
     def suite_names(self) -> tuple[str, ...]:
@@ -676,6 +691,7 @@ def parse_public_gate_contract(
                 "changed_path_rules",
                 "changed_root_rules",
                 "changed_fallback_suites",
+                "local_only_gate_ids",
             }
         ),
         frozenset(
@@ -686,6 +702,7 @@ def parse_public_gate_contract(
                 "changed_path_rules",
                 "changed_root_rules",
                 "changed_fallback_suites",
+                "local_only_gate_ids",
             }
         ),
         "ci-gate-public-contract",
@@ -743,7 +760,7 @@ def parse_public_gate_contract(
     )
     validators: list[PublicValidatorRoute] = []
     seen_gate_ids: set[str] = set()
-    seen_entrypoints: set[pathlib.PurePosixPath] = set()
+    seen_invocations: set[tuple[pathlib.PurePosixPath, tuple[str, ...]]] = set()
     for index, record in enumerate(raw_validators):
         validator_path = f"public_gate/validators[{index}]"
         fields = frozenset({"suite", "gate_id", "entrypoint", "argv", "contexts"})
@@ -782,19 +799,115 @@ def parse_public_gate_contract(
             or not contexts
             or contexts != expected_contexts
             or gate_id in seen_gate_ids
-            or entrypoint in seen_entrypoints
+            or (entrypoint, argv) in seen_invocations
         ):
             raise GateContractError(
                 "ci-gate-public-validators",
                 validator_path,
-                "public validators require one suite, gate, entrypoint, and canonical contexts",
+                "public validators require one gate and one canonical entrypoint/argv invocation",
             )
         validate_public_execution_argv(entrypoint, argv)
         seen_gate_ids.add(gate_id)
-        seen_entrypoints.add(entrypoint)
+        seen_invocations.add((entrypoint, argv))
         validators.append(
             PublicValidatorRoute(suite, gate_id, entrypoint, argv, contexts)
         )
+
+    local_only_gate_ids = _strings(
+        raw["local_only_gate_ids"],
+        "ci-gate-local-only-gates",
+        "public_gate/local_only_gate_ids",
+    )
+    raw_nodes = tuple(
+        record
+        for record in document.get("gate_nodes", ())
+        if isinstance(record, Mapping)
+    )
+    node_by_id = {
+        record.get("gate_id"): record
+        for record in raw_nodes
+        if isinstance(record.get("gate_id"), str)
+    }
+    canonical_local_only_order = tuple(
+        record.get("gate_id")
+        for record in raw_nodes
+        if record.get("gate_id") in local_only_gate_ids
+    )
+    reachable: set[str] = set()
+    pending = list(assigned_roots)
+    while pending:
+        gate_id = pending.pop()
+        if gate_id in reachable:
+            continue
+        reachable.add(gate_id)
+        record = node_by_id.get(gate_id)
+        if record is not None:
+            children = record.get("children", ())
+            if isinstance(children, list):
+                pending.extend(child for child in children if isinstance(child, str))
+    for validator in validators:
+        node = node_by_id.get(validator.gate_id)
+        if (
+            validator.gate_id not in reachable
+            or node is None
+            or node.get("kind") != "leaf"
+            or node.get("entrypoint") != validator.entrypoint.as_posix()
+            or tuple(node.get("argv", ())) != validator.argv
+        ):
+            raise GateContractError(
+                "ci-gate-public-validators",
+                "public_gate/validators",
+                "public validators must bind one reachable leaf's exact entrypoint and argv",
+            )
+        required = _REQUIRED_PUBLIC_VALIDATOR_BINDINGS.get(validator.gate_id)
+        if required is not None and required != (
+            validator.entrypoint.as_posix(),
+            validator.argv,
+        ):
+            raise GateContractError(
+                "ci-gate-public-validators",
+                validator.gate_id,
+                "the Conftest corpus and policy-test owners require their closed modes",
+            )
+    if (
+        not local_only_gate_ids
+        or local_only_gate_ids != canonical_local_only_order
+        or any(
+            gate_id not in reachable
+            or node_by_id.get(gate_id, {}).get("kind") != "leaf"
+            for gate_id in local_only_gate_ids
+        )
+    ):
+        raise GateContractError(
+            "ci-gate-local-only-gates",
+            "public_gate/local_only_gate_ids",
+            "local-only gates must be reachable leaves in canonical registry order",
+        )
+    local_only_set = set(local_only_gate_ids)
+    registered_unit_gate_ids = {
+        record.get("gate_id")
+        for record in raw_nodes
+        if record.get("kind") == "leaf"
+        and record.get("entrypoint") == "scripts/lib/gate/ci_gate_adapters.py"
+        and isinstance(record.get("argv"), list)
+        and record.get("argv", ())[:1] == ["run-unittest"]
+    }
+    registered_unit_gate_ids.add("leaf.conftest-policy-tests")
+    if not registered_unit_gate_ids.issubset(local_only_set):
+        raise GateContractError(
+            "ci-gate-local-only-gates",
+            "public_gate/local_only_gate_ids",
+            "every registered isolated unit leaf must be typed local-only",
+        )
+    for validator in validators:
+        contexts_are_local_only = validator.contexts == ("local",)
+        gate_is_local_only = validator.gate_id in local_only_set
+        if contexts_are_local_only != gate_is_local_only:
+            raise GateContractError(
+                "ci-gate-local-only-gates",
+                "public_gate/validators",
+                "local-only validator contexts and typed gate ownership must agree",
+            )
 
     raw_rules = _require_records(
         raw["changed_path_rules"],
@@ -924,6 +1037,7 @@ def parse_public_gate_contract(
         tuple(rules),
         tuple(root_rules),
         fallback,
+        local_only_gate_ids,
     )
 
 

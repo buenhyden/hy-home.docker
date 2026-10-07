@@ -26,6 +26,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     ARCHIVE_MODEL_ADOPTED,
+    FALLBACK_PROFILE_IDS,
     admitted_preserved_dispositions,
     archive_disposition_model,
     classify_path,
@@ -1076,11 +1077,267 @@ def _archive_link_context(root):
     return registry, assessment_lookup(root, registry), capture_sources(root, registry)
 
 
+def _declared_historical_rows(text: str) -> frozenset[int]:
+    """Recognize only an exact marked, contiguous Markdown evidence table."""
+    from scripts.lib.agent_governance.agent_governance_contract import (
+        HISTORICAL_TABLE_MARKER,
+    )
+
+    lines = text.splitlines()
+    selected: set[int] = set()
+    fence = None
+    comment = False
+    sources = False
+    for index, raw in enumerate(lines):
+        line = raw.removeprefix("> ").removeprefix(">")
+        stripped = line.strip()
+        marker = re.match(r"^(`{3,}|~{3,})", stripped)
+        if not comment and marker:
+            delimiter = marker.group(1)[0]
+            if fence is None:
+                fence = delimiter
+            elif fence == delimiter:
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        if not comment and re.match(r"^#{1,2}\s", stripped):
+            sources = stripped == "## Sources"
+        if sources and not comment and stripped == HISTORICAL_TABLE_MARKER:
+            prefix = "> " if raw.startswith("> ") else ""
+            if raw != prefix + HISTORICAL_TABLE_MARKER:
+                continue
+
+            def cells(position, prefix=prefix):
+                if position >= len(lines):
+                    return None
+                candidate = lines[position]
+                if prefix and not candidate.startswith(prefix):
+                    return None
+                candidate = candidate.removeprefix(prefix).strip()
+                if not candidate.startswith("|") or not candidate.endswith("|"):
+                    return None
+                return tuple(cell.strip() for cell in candidate[1:-1].split("|"))
+
+            header, separator = cells(index + 1), cells(index + 2)
+            if (
+                not header
+                or not all(header)
+                or separator is None
+                or len(separator) != len(header)
+                or not all(re.fullmatch(r":?-{3,}:?", cell) for cell in separator)
+            ):
+                continue
+            rows = set()
+            position = index + 3
+            valid = True
+            while (row := cells(position)) is not None:
+                if len(row) != len(header) or all(
+                    re.fullmatch(r":?-{3,}:?", cell) for cell in row
+                ):
+                    valid = False
+                rows.add(position + 1)
+                position += 1
+            if valid:
+                selected.update(rows)
+            continue
+        _, comment = _without_html_comments(line, comment)
+    return frozenset(selected)
+
+
+class _HistoricalEvidenceLinks:
+    """Invocation-local immutable Git observations for missing marked links."""
+
+    def __init__(self, graph: DocumentGraph, nodes):
+        self.graph = graph
+        self.nodes = nodes
+        self.rows = {}
+        self.observations = {}
+        self.origins = {}
+        self.origin_links = {}
+        self.targets = {}
+
+    def _admitted_source(self, node):
+        profile = classify_path(node.path)
+        source_type = {
+            "research-member": "reference/research",
+            "research": "reference/research-pack",
+        }.get(profile)
+        if source_type is None or node.metadata.get("type") != source_type:
+            return False
+        package = node.path.parts[-2].split("-", 1)[0]
+        identity = f"RES-{package}"
+        if profile == "research-member":
+            identity += "-" + node.path.name.split("-", 1)[0]
+        return (
+            node.metadata.get("status") == "published"
+            and node.metadata.get("artifact_id") == identity
+        )
+
+    def _git(self, *arguments):
+        from scripts.lib.document_governance.git_provenance import _run_git
+
+        if arguments not in self.observations:
+            self.observations[arguments] = _run_git(
+                self.graph.repo_root, list(arguments)
+            )
+        return self.observations[arguments]
+
+    def _regular_blob(self, commit, path):
+        from scripts.lib.document_governance.git_provenance import (
+            verify_recovery_blob,
+        )
+
+        key = (commit, path)
+        if key not in self.targets:
+            self.targets[key] = verify_recovery_blob(
+                path, commit, repo_root=self.graph.repo_root
+            )
+        return self.targets[key]
+
+    def _origin(self, node, line):
+        key = (node.path, line)
+        if key in self.origins:
+            return self.origins[key]
+        self.origins[key] = None
+        current = read_bounded_regular(
+            self.graph.repo_root, node.path, max_bytes=_MAX_ANCHOR_BYTES
+        )
+        if current != node.text.encode("utf-8"):
+            return None
+        head = self._git("rev-parse", "--verify", "HEAD^{commit}")
+        oid = head.stdout.strip().decode("ascii")
+        if head.returncode or not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", oid):
+            return None
+        blame = self._git(
+            "blame",
+            "--line-porcelain",
+            "-L",
+            f"{line},{line}",
+            oid,
+            "--",
+            node.path.as_posix(),
+        )
+        records = blame.stdout.splitlines()
+        if blame.returncode or not records:
+            return None
+        fields = records[0].split()
+        if len(fields) != 4 or not fields[1].isdigit() or not fields[2].isdigit():
+            return None
+        commit = fields[0].decode("ascii")
+        if not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", commit):
+            return None
+        filenames = [row[9:] for row in records if row.startswith(b"filename ")]
+        if filenames != [node.path.as_posix().encode("utf-8")]:
+            return None
+        if int(fields[2]) != line:
+            return None
+        main = None
+        for ref in ("refs/remotes/origin/main", "refs/heads/main"):
+            observed = self._git("rev-parse", "--verify", f"{ref}^{{commit}}")
+            if observed.returncode == 0:
+                candidate = observed.stdout.strip().decode("ascii")
+                if re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", candidate):
+                    main = candidate
+                    break
+        if main is None or any(
+            self._git("merge-base", "--is-ancestor", commit, tip).returncode
+            for tip in (main, oid)
+        ):
+            return None
+        source = self._regular_blob(commit, node.path)
+        if not source.is_regular_blob:
+            return None
+        blob = self._git("cat-file", "blob", source.object_id)
+        if blob.returncode or len(blob.stdout) > _MAX_ANCHOR_BYTES:
+            return None
+        old_lines = blob.stdout.splitlines(keepends=True)
+        original = int(fields[1])
+        current_lines = current.splitlines(keepends=True)
+        if not 1 <= original <= len(old_lines) or not 1 <= line <= len(current_lines):
+            return None
+        if old_lines[original - 1] != current_lines[line - 1]:
+            return None
+        historic_text = blob.stdout.decode("utf-8")
+        historic = frontmatter_record_from_text(
+            self.graph.repo_root / node.path, historic_text
+        ).metadata
+        if any(
+            historic.get(field) != node.metadata.get(field)
+            for field in ("artifact_id", "type", "status")
+        ):
+            return None
+        if original not in _declared_historical_rows(historic_text):
+            return None
+        self.origin_links[key] = tuple(
+            dataclasses.replace(link, line=line)
+            for link in parse_local_markdown_links(node.path, historic_text)
+            if link.line == original
+        )
+        self.origins[key] = commit
+        return commit
+
+    def missing_finding(self, link):
+        node = self.nodes.get(link.source)
+        if node is None or link.has_unsafe_target or not self._admitted_source(node):
+            return False, None
+        if node.path not in self.rows:
+            self.rows[node.path] = _declared_historical_rows(node.text)
+        if link.line not in self.rows[node.path]:
+            return False, None
+        try:
+            commit = self._origin(node, link.line)
+            if commit is None or link not in self.origin_links[(node.path, link.line)]:
+                code = "historical-evidence-source-invalid"
+            else:
+                target = self._regular_blob(commit, link.target)
+                if not target.is_regular_blob:
+                    code = "historical-evidence-target-missing"
+                else:
+                    size = self._git("cat-file", "-s", target.object_id)
+                    if size.returncode or int(size.stdout) > _MAX_ANCHOR_BYTES:
+                        code = "historical-evidence-target-invalid"
+                    elif (
+                        link.fragment
+                        and link.target.suffix == ".md"
+                        and classify_path(link.target) in {None, *FALLBACK_PROFILE_IDS}
+                    ):
+                        code = "historical-evidence-target-unadmitted"
+                    elif link.fragment:
+                        headings = ()
+                        if link.target.suffix == ".md":
+                            shown = self._git("cat-file", "blob", target.object_id)
+                            headings = (
+                                _headings(shown.stdout.decode("utf-8"))
+                                if shown.returncode == 0
+                                and len(shown.stdout) <= _MAX_ANCHOR_BYTES
+                                else None
+                            )
+                        code = (
+                            None
+                            if headings is not None and link.fragment in headings
+                            else "historical-evidence-anchor-missing"
+                        )
+                    else:
+                        code = None
+        except (
+            OSError,
+            ValueError,
+            TypeError,
+            UnicodeError,
+            FrontmatterError,
+            OperationsAuthorityError,
+        ):
+            code = "historical-evidence-source-invalid"
+        return True, _finding(link, code, link.raw_target) if code else None
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     """Validate current local links, archive boundaries, anchors, and old templates."""
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
+    evidence_links = _HistoricalEvidenceLinks(graph, nodes)
     preserved_prefixes = _preserved_link_prefixes(graph)
     try:
         registry, assessments, sources = _archive_link_context(graph.repo_root)
@@ -1181,6 +1438,12 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             findings.append(_finding(link, "active-archive-link", link.raw_target))
         target_path, target_error = _regular_target(graph, link.target)
         if target_path is None:
+            if target_error == "missing-link-target":
+                historical, finding = evidence_links.missing_finding(link)
+                if historical:
+                    if finding is not None:
+                        findings.append(finding)
+                    continue
             findings.append(
                 _finding(link, target_error or "missing-link-target", link.raw_target)
             )

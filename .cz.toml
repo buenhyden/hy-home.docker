@@ -1,7 +1,13 @@
 [tool.commitizen]
   name            ="cz_customize"
   message_length_limit=75
+  allowed_prefixes=[]
   version_provider="scm"
+  version_scheme="semver2"
+  tag_format="v$version"
+  legacy_tag_formats=["$version"]
+  ignored_tag_formats=["main-current"]
+  update_changelog_on_bump=false
 
   [tool.commitizen.customize]
     example  ="feat(auth): Add login guard"

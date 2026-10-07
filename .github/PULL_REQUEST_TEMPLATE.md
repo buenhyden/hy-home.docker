@@ -6,7 +6,12 @@
 ## Related Specification
 
 - **Spec File:** [Link to the file in `docs/03.specs`]
+- **Execution Task:** [Link to the Task that owns checks, results and acceptance]
 - **Issue:** Resolves #
+
+Issues own requests and priority; Specs own contracts; Tasks own execution.
+Link those owners rather than copying Spec criteria or a Task work log here.
+Projects may show a filtered work view without changing Task lifecycle.
 
 ## Change Type
 
@@ -36,17 +41,16 @@
 
 ## Validation Evidence
 
-List exact commands used and outcome.
+Link the Task evidence and summarize the checks relevant to this change.
 
 ```bash
 # Example:
-# npm test
-# npm run lint
+# Focused regression or explicit formatting command and result, when applicable
 ```
 
-- Coverage target: [90% applicable / N/A]
-- Coverage rationale: [Explain coverage result or why this PR is docs/infra/config-only]
 - Fix/Refactor evidence: [For bug fixes, list regression evidence. For refactors, state behavior-preserving checks.]
+- Remote candidate: [PR head/base, workflow run, selected checks and conclusion]
+- Unexecuted lanes: [Check, reason and next owner; source changes are not runtime proof]
 
 ## Harness Impact
 
@@ -60,6 +64,12 @@ List exact commands used and outcome.
 - [ ] `.agents/**` changed
 - [ ] `docs/05.operations/**` changed
 - [ ] `docs/99.templates/**` changed
+- [ ] Main release preparation changes `CHANGELOG.md`
+
+For release preparation, provide the proposed bare SemVer version and exact
+dated `## [version] - YYYY-MM-DD` entry. Release tags and GitHub Releases are
+created only by the separately authorized main release producer after merging;
+this PR does not publish a release or move historical refs.
 
 For affected surfaces, select checks from the
 [shared change-type verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix).
@@ -76,14 +86,13 @@ Secret handling:
 - [ ] No secret values, tokens, private keys, or certificate contents are included
 - [ ] Secret-related changes record only path, ID, registry, and redacted evidence
 
-Agent-loop evidence (only when lifecycle or semantic-evaluation behavior is
-affected; otherwise record N/A and the reason in Validation Evidence):
+Current contract evidence (when lifecycle, permission, parser or gate behavior
+changes; otherwise record N/A and the reason in Validation Evidence):
 
-- [ ] Loop owner and independent reviewer differ
-- [ ] Retry, stop, escalation, permission, and controlled-wrapper bounds match the typed contract
-- [ ] Evidence contains only command, result, rollback, and skipped-check fields
-- [ ] Both `fixtures_check=pass` and `regressions_check=pass` were recorded when lifecycle or semantic-evaluation behavior changed
-- [ ] Provider configuration is not presented as proof of live native-event execution
+- [ ] The implementation owner and independent reviewer differ
+- [ ] Focused regression evidence covers the changed current invariant and failure boundary
+- [ ] Registered candidate results and required acceptance are linked in the Task
+- [ ] Source/provider configuration is not presented as live native-event execution
 
 See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for protected surfaces.
 
@@ -103,7 +112,7 @@ See [Approval Boundaries](../.agents/governance/approval-boundaries.md) for prot
 - [ ] CODEOWNERS-triggered reviewers have been requested for owned paths, or marked N/A because remote protection does not enforce owner review.
 - [ ] Commits are small, logical, and reviewable.
 - [ ] Draft/WIP state is accurate and remaining work is listed when applicable.
-- [ ] I have run tests locally.
+- [ ] Applicable focused development checks are recorded; aggregate candidate QA is owned by the remote PR.
 - [ ] I have listed exact validation commands and outcomes above.
 - [ ] No secrets or credentials are included in this PR.
 - [ ] If operational behavior changed, runbook updates were added under `docs/05.operations`.

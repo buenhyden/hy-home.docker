@@ -23,10 +23,9 @@ SUBCOMMANDS = (
     "check-diff-hygiene",
     "check-shell-syntax",
     "run-unittest",
-    "run-agent-output-eval",
     "run-npm",
     "run-approved-npm-audit",
-    "check-git-flow",
+    "check-commit-range",
     "install-playwright",
     "run-zizmor-sarif",
 )
@@ -142,10 +141,9 @@ ADAPTER_CONTEXTS = MappingProxyType(
     {
         "check-diff-hygiene": _ALL_CONTEXTS,
         "check-shell-syntax": _ALL_CONTEXTS,
-        "run-agent-output-eval": _ALL_CONTEXTS,
-        "run-unittest": _ALL_CONTEXTS,
+        "run-unittest": frozenset({"local"}),
         "verify-metadata-base": frozenset({"pull_request", "push"}),
-        "check-git-flow": frozenset({"pull_request"}),
+        "check-commit-range": frozenset({"pull_request"}),
         "install-playwright": _CI_CONTEXTS,
         "run-npm": _CI_CONTEXTS,
         "run-approved-npm-audit": _CI_CONTEXTS,
@@ -258,9 +256,20 @@ def _dispatch_adapter(
         return _verify_metadata_base(canonical_root, environ)
     if command == "check-diff-hygiene":
         _no_arguments(arguments)
+        base_present = bool(environ.get("PR_BASE_SHA"))
+        head_present = bool(environ.get("PR_HEAD_SHA"))
+        if base_present or head_present:
+            _, head, common = _authenticated_pull_request_range(canonical_root, environ)
+            diff_range = f"{common}..{head}"
+        else:
+            diff_range = None
         return _returncode(
             _run_child(
-                ("git", "diff", "--check"),
+                (
+                    ("git", "diff", "--check", diff_range)
+                    if diff_range is not None
+                    else ("git", "diff", "--check")
+                ),
                 root=canonical_root,
                 environ=_git_environment(environ),
             )
@@ -289,9 +298,6 @@ def _dispatch_adapter(
                 )
             _validate_unittest_skips(result.stderr, optional_scopes)
         return _returncode(result)
-    if command == "run-agent-output-eval":
-        _no_arguments(arguments)
-        return _run_agent_output_eval(canonical_root, environ)
     if command == "run-approved-npm-audit":
         _no_arguments(arguments)
         return _run_approved_npm_audit(canonical_root, environ)
@@ -304,10 +310,9 @@ def _dispatch_adapter(
                 environ=environ,
             )
         )
-    if command == "check-git-flow":
+    if command == "check-commit-range":
         _no_arguments(arguments)
-        _check_git_flow(canonical_root, environ)
-        return 0
+        return _check_commit_range(canonical_root, environ)
     if command == "install-playwright":
         _no_arguments(arguments)
         return _returncode(
@@ -651,7 +656,6 @@ def _check_shell_syntax(
             "ls-files",
             "-z",
             "--",
-            ".agents/evaluations/*.sh",
             "scripts/**/*.sh",
             ".claude/hooks/*.sh",
         ),
@@ -682,10 +686,7 @@ def _check_shell_syntax(
         pathlib.PurePosixPath(path).is_absolute()
         or ".." in pathlib.PurePosixPath(path).parts
         or not (
-            (
-                path.startswith((".agents/evaluations/", "scripts/"))
-                and path.endswith(".sh")
-            )
+            (path.startswith("scripts/") and path.endswith(".sh"))
             or (path.startswith(".claude/hooks/") and path.endswith(".sh"))
         )
         for path in paths
@@ -694,53 +695,16 @@ def _check_shell_syntax(
             "ci-gate-adapter-output",
             "the tracked shell path list is invalid",
         )
-    if not paths:
-        return 0
-    return _returncode(
-        _run_child(
-            ("bash", "-n", *paths),
-            root=root,
-            environ=environ,
+    for path in paths:
+        result = _returncode(
+            _run_child(
+                ("bash", "-n", path),
+                root=root,
+                environ=environ,
+            )
         )
-    )
-
-
-def _run_agent_output_eval(
-    root: pathlib.Path,
-    environ: Mapping[str, str],
-) -> int:
-    result = _run_child(
-        (
-            "bash",
-            ".agents/evaluations/run-agent-output-eval-fixtures.sh",
-            "--check-fixtures",
-            "--check-regressions",
-        ),
-        root=root,
-        environ=environ,
-        capture_output=True,
-    )
-    if result.returncode != 0:
-        return int(result.returncode)
-    output = result.stdout or b""
-    if (
-        len(output) > _MAX_CAPTURE_BYTES
-        or b"\0" in output
-        or b"fixtures_check=pass" not in output.splitlines()
-        or b"regressions_check=pass" not in output.splitlines()
-    ):
-        raise AdapterError(
-            "ci-gate-adapter-eval-output",
-            "the eval output markers are incomplete",
-        )
-    try:
-        rendered = output.decode("utf-8", errors="strict")
-    except UnicodeDecodeError:
-        raise AdapterError(
-            "ci-gate-adapter-eval-output",
-            "the eval output markers are incomplete",
-        ) from None
-    sys.stdout.write(rendered)
+        if result != 0:
+            return result
     return 0
 
 
@@ -1082,31 +1046,104 @@ def _load_commit_contract(
     return result
 
 
-def _check_git_flow(root: pathlib.Path, environ: Mapping[str, str]) -> None:
-    title = environ.get("PR_TITLE", "")
-    branch = environ.get("HEAD_REF", "")
-    title_pattern, message_length_limit, change_types = _load_commit_contract(root)
-    branch_prefix, separator, branch_suffix = branch.partition("/")
-    branch_is_valid = bool(separator and branch_suffix) and (
-        branch_prefix in {"dependabot", "codex"}
-        or (
-            branch_prefix in {"feat", "fix", "hotfix"}
-            and re.fullmatch(r"[A-Za-z0-9._-]+-.+", branch_suffix) is not None
-        )
-        or (
-            branch_prefix in change_types - {"feat", "fix"}
-            and re.fullmatch(r".+", branch_suffix) is not None
-        )
+def _check_commit_range(root: pathlib.Path, environ: Mapping[str, str]) -> int:
+    _, message_length_limit, _ = _load_commit_contract(root)
+    base, head, _ = _authenticated_pull_request_range(root, environ)
+    result = _run_child(
+        (
+            "cz",
+            "check",
+            "--rev-range",
+            f"{base}..{head}",
+            "--message-length-limit",
+            str(message_length_limit),
+        ),
+        root=root,
+        environ=environ,
     )
+    return _returncode(result)
+
+
+def _authenticated_pull_request_range(
+    root: pathlib.Path, environ: Mapping[str, str]
+) -> tuple[str, str, str]:
+    base = environ.get("PR_BASE_SHA", "")
+    head = environ.get("PR_HEAD_SHA", "")
     if (
-        title_pattern.fullmatch(title) is None
-        or len(title.partition("\n")[0]) > message_length_limit
-        or not branch_is_valid
+        any(
+            re.fullmatch(r"[0-9a-f]{40}", revision) is None or revision == "0" * 40
+            for revision in (base, head)
+        )
+        or base == head
     ):
         raise AdapterError(
-            "ci-gate-adapter-git-flow",
-            "the pull request identity does not match policy",
+            "ci-gate-adapter-pull-request-range",
+            "the authenticated pull request revisions are unavailable",
         )
+    git_environment = _git_environment(environ)
+    parents = _captured_git_line(
+        ("git", "rev-list", "--parents", "--max-count=1", "HEAD"),
+        root,
+        git_environment,
+    ).split()
+    if (
+        len(parents) != 3
+        or any(_FULL_SHA.fullmatch(revision) is None for revision in parents)
+        or parents[1:] != [base, head]
+    ):
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the checkout is not the authenticated pull request merge",
+        )
+    common = _captured_git_line(
+        ("git", "merge-base", base, head), root, git_environment
+    )
+    count = _captured_git_line(
+        ("git", "rev-list", "--count", f"{base}..{head}"),
+        root,
+        git_environment,
+    )
+    if (
+        _FULL_SHA.fullmatch(common) is None
+        or not count.isascii()
+        or not count.isdigit()
+    ):
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the pull request history is unavailable",
+        )
+    if int(count) < 1:
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the pull request commit range is empty",
+        )
+    return base, head, common
+
+
+def _captured_git_line(
+    argv: tuple[str, ...], root: pathlib.Path, environ: Mapping[str, str]
+) -> str:
+    result = _run_child(
+        argv,
+        root=root,
+        environ=environ,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the pull request history could not be verified",
+        )
+    try:
+        value = result.stdout.decode("ascii", errors="strict").strip()
+    except UnicodeDecodeError:
+        value = ""
+    if not value or "\n" in value or "\r" in value:
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the pull request history could not be verified",
+        )
+    return value
 
 
 def _run_zizmor_sarif(

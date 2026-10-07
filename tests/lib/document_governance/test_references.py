@@ -650,17 +650,6 @@ class ProtectedResearchDeclarationTests(unittest.TestCase):
                 self.assertLessEqual({f"## {section}" for section in required}, set(h2))
                 self.assertRegex(text, r"https?://")
 
-    def test_current_reference_topology_ignores_the_archive_migration(self) -> None:
-        references = self._references()
-        source = pathlib.Path(references.__file__).read_text(encoding="utf-8")
-        for token in (
-            "load_task9_migration",
-            "Task9Migration",
-            "migration_rows_for_task",
-        ):
-            self.assertNotIn(token, source)
-        self.assertNotIn("98.archive", source)
-
 
 if __name__ == "__main__":
     unittest.main()

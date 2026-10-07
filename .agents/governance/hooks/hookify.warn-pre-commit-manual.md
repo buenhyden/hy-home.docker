@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 action: "warn"
 enabled: true
 event: "bash"
@@ -22,7 +22,10 @@ pattern: "pre-commit\\s+run"
 
 `.agents/governance/quality-standards.md#4-execution-boundary` owns this
 boundary: agents never run `pre-commit run` directly. An explicitly approved
-all-files gate uses only its controlled route and conditions.
+all-files gate uses only its controlled route and conditions. The admitted
+scoped route immediately before local commit is
+`scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
+use its authenticated `--mode pr-merge` route.
 
 The declared Bash event and unchanged native pattern identify matching commands.
 
@@ -33,7 +36,8 @@ The declared Bash event and unchanged native pattern identify matching commands.
 - Manual runs can create inconsistent evidence.
 - Installed commit-hook delivery must be observed separately; this warning does
   not claim it ran automatically for a particular commit.
-- CI has its separate pinned pre-commit route and validation responsibilities.
+- Remote candidate validation uses the registered read-only changed-style
+  controller; routine CI does not run an all-files formatter.
 
 **Detected forms and normal commit path:**
 
@@ -42,7 +46,8 @@ The declared Bash event and unchanged native pattern identify matching commands.
 pre-commit run --all-files
 pre-commit run --files myfile.py
 
-# A normal commit does not bypass configured checks.
+# Check the reviewed index immediately before an ordinary commit.
+scripts/validation/run-ci-precommit.sh --mode local-staged
 git commit -m "feat(scope): My change"
 ```
 

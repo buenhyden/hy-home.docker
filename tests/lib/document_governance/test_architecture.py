@@ -11,8 +11,6 @@ import tempfile
 import unittest
 from unittest import mock
 
-from scripts.lib.document_governance.frontmatter import read_frontmatter_values
-
 
 def _child_env() -> dict[str, str]:
     """Environment for a CLI this test spawns itself.
@@ -122,32 +120,6 @@ def _write_minimal_corpus(stage_root: pathlib.Path) -> None:
 
 
 class ArchitectureDocumentTests(unittest.TestCase):
-    def test_current_architecture_corpus_is_prefixless_and_uppercase(self) -> None:
-        stage_root = ROOT / "docs/02.architecture"
-        paths = tuple(
-            sorted(
-                path
-                for directory in ("descriptions", "decisions")
-                for path in stage_root.joinpath(directory).glob("*.md")
-                if path.name != "README.md"
-            )
-        )
-        problems: list[str] = []
-        for path in paths:
-            metadata = read_frontmatter_values(path)
-            artifact_id = metadata.get("artifact_id")
-            if path.name.startswith(("ad-", "adr-")):
-                problems.append(f"prefixed path: {path.relative_to(ROOT)}")
-            if not isinstance(artifact_id, str) or not artifact_id.startswith(
-                ("AD-", "ADR-")
-            ):
-                problems.append(
-                    f"noncanonical artifact_id: {path.relative_to(ROOT)}: {artifact_id!r}"
-                )
-        self.assertTrue(paths)
-        self.assertFalse(stage_root.joinpath("requirements").exists())
-        self.assertEqual([], problems)
-
     def test_loads_frozen_canonical_documents_and_validates_graph(self) -> None:
         architecture = _architecture_module()
         with tempfile.TemporaryDirectory() as directory:

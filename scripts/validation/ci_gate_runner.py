@@ -5,6 +5,7 @@ import collections.abc
 import dataclasses
 import enum
 import errno
+import json
 import os
 import pathlib
 import re
@@ -51,13 +52,13 @@ _SECRET_ENV_SHAPE = re.compile(
 )
 _ADMITTED_ENV_KEYS = frozenset(
     # Exactly the keys some gate node declares. The runner reads EVENT_NAME,
-    # PR_BASE_SHA, and PUSH_BEFORE_SHA from its own controller environment, so
+    # PR_BASE_SHA, PR_HEAD_SHA, and PUSH_BEFORE_SHA from its controller, so
     # they are not admitted here; a node that needs one is added deliberately.
     {
         "CI",
         "GITHUB_ACTIONS",
-        "HEAD_REF",
-        "PR_TITLE",
+        "PR_BASE_SHA",
+        "PR_HEAD_SHA",
         "TEMPLATE_GATE_BASE",
     }
 )
@@ -75,13 +76,13 @@ _LOCAL_EXCLUDED_GATE_IDS = frozenset(
         "leaf.frontend-lint",
         "leaf.frontend-quality",
         "leaf.frontend-typecheck",
-        "leaf.git-flow-contract",
-        "leaf.pre-commit",
+        "leaf.changed-style",
+        "leaf.commit-message-contract",
         "leaf.storybook-coverage",
         "leaf.zizmor",
     }
 )
-_PR_ONLY_GATE_IDS = frozenset({"leaf.git-flow-contract"})
+_PR_ONLY_GATE_IDS = frozenset({"leaf.changed-style", "leaf.commit-message-contract"})
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -92,6 +93,12 @@ class GateInvocation:
     cwd: pathlib.PurePosixPath
     allowed_env_keys: tuple[str, ...]
     timeout_seconds: int
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class SelectedPrerequisites:
+    node: bool
+    docker: bool
 
 
 GateExecutor = collections.abc.Callable[[GateInvocation], int]
@@ -108,13 +115,21 @@ class ExecutionContext(enum.Enum):
 _ALL_EXECUTION_CONTEXTS = frozenset(ExecutionContext)
 _CI_EXECUTION_CONTEXTS = _ALL_EXECUTION_CONTEXTS - {ExecutionContext.LOCAL}
 _INTERNAL_ADAPTER_PATH = pathlib.PurePosixPath("scripts/lib/gate/ci_gate_adapters.py")
+_PR_STYLE_INVOCATION = (
+    pathlib.PurePosixPath("scripts/validation/run-ci-precommit.sh"),
+    ("--mode", "pr-merge"),
+)
 _INTERNAL_CHECK_INVOCATIONS = frozenset(
     (pathlib.PurePosixPath(path), argv)
     for path, argv in (
         ("scripts/operations/provider_surface_renderer.py", ("--check",)),
         ("scripts/operations/sync-tech-stack-versions.sh", ("--check",)),
+        ("scripts/validation/check-github-workflow-contract.py", ()),
+        ("scripts/validation/check-operations-catalog.py", ()),
+        ("scripts/validation/check-script-manifest.py", ()),
+        ("scripts/validation/check-storybook-contract.sh", ()),
         ("scripts/validation/validate-docker-compose.sh", ()),
-        ("scripts/validation/run-ci-precommit.sh", ()),
+        ("scripts/validation/run-ci-precommit.sh", ("--mode", "pr-merge")),
         ("tests/validation/test_run_ci_precommit.sh", ()),
     )
 )
@@ -128,7 +143,10 @@ def _is_admitted_internal_invocation(
         return ci_gate_adapters.admits_adapter_invocation(
             invocation.argv, context.value
         )
-    return (invocation.entrypoint, invocation.argv) in _INTERNAL_CHECK_INVOCATIONS
+    identity = (invocation.entrypoint, invocation.argv)
+    if identity == _PR_STYLE_INVOCATION:
+        return context is ExecutionContext.PULL_REQUEST
+    return identity in _INTERNAL_CHECK_INVOCATIONS
 
 
 def public_suite_names() -> tuple[str, ...]:
@@ -157,13 +175,14 @@ def derive_execution_context(environ: Mapping[str, str]) -> ExecutionContext:
     if event_name == "pull_request" and (
         not _FULL_SHA.fullmatch(environ.get("PR_BASE_SHA", ""))
         or environ.get("PR_BASE_SHA") == "0" * 40
-        or not environ.get("PR_TITLE", "")
-        or not environ.get("HEAD_REF", "")
+        or not _FULL_SHA.fullmatch(environ.get("PR_HEAD_SHA", ""))
+        or environ.get("PR_HEAD_SHA") == "0" * 40
+        or environ.get("PR_BASE_SHA") == environ.get("PR_HEAD_SHA")
     ):
         raise GateContractError(
             "ci-gate-execution-context",
             "pull_request",
-            "pull-request execution requires its validated identity keys",
+            "pull-request execution requires validated base and head SHAs",
         )
     if event_name == "push":
         before = environ.get("PUSH_BEFORE_SHA", "")
@@ -330,7 +349,9 @@ def build_public_validation_plan(
             "selected public suites must be unique and registered",
         )
     base_plan = _filter_execution_context(
-        build_public_execution_plan(registry, root_gate_ids), context
+        build_public_execution_plan(registry, root_gate_ids),
+        context,
+        public_contract.local_only_gate_ids,
     )
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
@@ -340,16 +361,16 @@ def build_public_validation_plan(
         for item in public_contract.validators
         if item.suite in selected and manifest_context in item.contexts
     )
-    selected_paths = {item.entrypoint for item in selected_ownership}
-    templates: dict[pathlib.PurePosixPath, GateInvocation] = {}
+    selected_gate_ids = {item.gate_id for item in selected_ownership}
+    templates: dict[str, GateInvocation] = {}
     for invocation in base_plan:
-        if invocation.entrypoint in selected_paths:
-            templates.setdefault(invocation.entrypoint, invocation)
+        if invocation.gate_id in selected_gate_ids:
+            templates.setdefault(invocation.gate_id, invocation)
 
     def canonical_invocation(
         item: PublicValidatorRoute,
     ) -> GateInvocation:
-        template = templates.get(item.entrypoint)
+        template = templates.get(item.gate_id)
         return GateInvocation(
             gate_id=item.gate_id,
             entrypoint=item.entrypoint,
@@ -371,25 +392,25 @@ def build_public_validation_plan(
         )
 
     canonical = {
-        item.entrypoint: canonical_invocation(item) for item in selected_ownership
+        item.gate_id: canonical_invocation(item) for item in selected_ownership
     }
     plan: list[GateInvocation] = []
-    emitted: set[pathlib.PurePosixPath] = set()
-    standalone_validator_paths = {
-        item.entrypoint for item in public_contract.validators
+    emitted: set[str] = set()
+    standalone_validator_gate_ids = {
+        item.gate_id for item in public_contract.validators
     }
     for invocation in base_plan:
-        path = invocation.entrypoint
-        if path in standalone_validator_paths:
-            if path in canonical and path not in emitted:
-                plan.append(canonical[path])
-                emitted.add(path)
+        gate_id = invocation.gate_id
+        if gate_id in standalone_validator_gate_ids:
+            if gate_id in canonical and gate_id not in emitted:
+                plan.append(canonical[gate_id])
+                emitted.add(gate_id)
             continue
         plan.append(invocation)
     for item in selected_ownership:
-        if item.entrypoint not in emitted:
-            plan.append(canonical[item.entrypoint])
-            emitted.add(item.entrypoint)
+        if item.gate_id not in emitted:
+            plan.append(canonical[item.gate_id])
+            emitted.add(item.gate_id)
     result = tuple(plan)
     if context in {
         ExecutionContext.LOCAL,
@@ -426,6 +447,25 @@ def build_public_validation_plan(
     return result
 
 
+def build_local_only_validation_plan(
+    plan: tuple[GateInvocation, ...],
+    public_contract: PublicGateContract,
+    context: ExecutionContext,
+) -> tuple[GateInvocation, ...]:
+    """Select typed local-only leaves from an already selected public plan."""
+
+    if context is not ExecutionContext.LOCAL:
+        raise GateContractError(
+            "ci-gate-local-only-context",
+            "local-only",
+            "local-only gates require the unauthenticated local execution context",
+        )
+    local_only_gate_ids = set(public_contract.local_only_gate_ids)
+    return tuple(
+        invocation for invocation in plan if invocation.gate_id in local_only_gate_ids
+    )
+
+
 def canonical_invocation_key(
     root: pathlib.Path,
     invocation: GateInvocation,
@@ -437,6 +477,40 @@ def canonical_invocation_key(
 
     resolved = (root / invocation.entrypoint).resolve(strict=True)
     return resolved, tuple(invocation.argv), profile, context.value
+
+
+def selected_prerequisites(
+    plan: tuple[GateInvocation, ...],
+    changed_paths: tuple[str, ...],
+) -> SelectedPrerequisites:
+    """Return bounded hosted prerequisites derived from the selected plan."""
+
+    gate_ids = {invocation.gate_id for invocation in plan}
+    node = bool(
+        {
+            "setup.frontend-node-dependencies",
+            "setup.storybook-playwright",
+            "leaf.frontend-build",
+            "leaf.frontend-lint",
+            "leaf.frontend-quality",
+            "leaf.frontend-typecheck",
+            "leaf.storybook-coverage",
+        }
+        & gate_ids
+    )
+    docker = bool(
+        {
+            "leaf.compose-validation",
+            "leaf.conftest-policy",
+            "leaf.conftest-policy-tests",
+        }
+        & gate_ids
+    ) or any(
+        pathlib.PurePosixPath(path).name == "Dockerfile"
+        or pathlib.PurePosixPath(path).name.startswith("Dockerfile.")
+        for path in changed_paths
+    )
+    return SelectedPrerequisites(node=node, docker=docker)
 
 
 def _context_validator_argv(
@@ -471,13 +545,13 @@ def validate_public_execution_parity(
     """Fail unless selected validators occur exactly once and others not at all."""
 
     selected = set(selected_suites)
-    ownership_paths = tuple(item.entrypoint for item in public_contract.validators)
+    ownership_gate_ids = tuple(item.gate_id for item in public_contract.validators)
     for item in public_contract.validators:
         validate_public_execution_argv(item.entrypoint, item.argv)
     if (
         len(selected) != len(selected_suites)
         or not selected.issubset(public_contract.suite_names)
-        or len(ownership_paths) != len(set(ownership_paths))
+        or len(ownership_gate_ids) != len(set(ownership_gate_ids))
     ):
         raise GateContractError(
             "ci-gate-public-execution-parity",
@@ -488,32 +562,33 @@ def validate_public_execution_parity(
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
     expected = {
-        item.entrypoint
+        item.gate_id: item
         for item in public_contract.validators
         if item.suite in selected and manifest_context in item.contexts
     }
-    ownership_by_path = {item.entrypoint: item for item in public_contract.validators}
-    counts: collections.Counter[pathlib.PurePosixPath] = collections.Counter()
+    counts: collections.Counter[str] = collections.Counter()
     for invocation in plan:
         if _is_admitted_internal_invocation(invocation, context):
             continue
-        if invocation.entrypoint not in expected:
+        if invocation.gate_id not in expected:
             raise GateContractError(
                 "ci-gate-public-execution-parity",
                 invocation.gate_id,
                 "every invocation requires selected validator or exact internal admission",
             )
-        expected_argv = _context_validator_argv(
-            ownership_by_path[invocation.entrypoint], context, profile
-        )
-        if invocation.argv != expected_argv:
+        ownership = expected[invocation.gate_id]
+        expected_argv = _context_validator_argv(ownership, context, profile)
+        if (
+            invocation.entrypoint != ownership.entrypoint
+            or invocation.argv != expected_argv
+        ):
             raise GateContractError(
                 "ci-gate-public-execution-parity",
                 invocation.gate_id,
                 "validator arguments must match their canonical context invocation",
             )
-        counts[invocation.entrypoint] += 1
-    if any(counts[path] != 1 for path in expected):
+        counts[invocation.gate_id] += 1
+    if any(counts[gate_id] != 1 for gate_id in expected):
         raise GateContractError(
             "ci-gate-public-execution-parity",
             "public_gate",
@@ -537,24 +612,28 @@ def render_public_validation_plan(
     manifest_context = (
         "push" if context is ExecutionContext.PUSH_INITIAL else context.value
     )
-    suite_by_path = {
-        item.entrypoint: item.suite
+    suite_by_gate_id = {
+        item.gate_id: item.suite
         for item in public_contract.validators
         if item.suite in selected_suites and manifest_context in item.contexts
     }
     return tuple(
-        f"{suite_by_path[item.entrypoint]}\t{item.entrypoint.as_posix()}"
+        "{}\t{}\t{}\t{}".format(
+            suite_by_gate_id[item.gate_id],
+            item.entrypoint.as_posix(),
+            item.gate_id,
+            json.dumps(list(item.argv), separators=(",", ":")),
+        )
         for item in plan
-        if item.entrypoint in suite_by_path
+        if item.gate_id in suite_by_gate_id
     )
 
 
 def _filter_execution_context(
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
+    local_only_gate_ids: tuple[str, ...],
 ) -> tuple[GateInvocation, ...]:
-    if context is ExecutionContext.PULL_REQUEST:
-        return plan
     if context is ExecutionContext.LOCAL:
         return tuple(
             invocation
@@ -562,8 +641,11 @@ def _filter_execution_context(
             if invocation.gate_id not in _LOCAL_EXCLUDED_GATE_IDS
             and not invocation.gate_id.startswith("setup.")
         )
+    excluded = set(local_only_gate_ids)
+    if context is not ExecutionContext.PULL_REQUEST:
+        excluded.update(_PR_ONLY_GATE_IDS)
     return tuple(
-        invocation for invocation in plan if invocation.gate_id not in _PR_ONLY_GATE_IDS
+        invocation for invocation in plan if invocation.gate_id not in excluded
     )
 
 
@@ -597,7 +679,6 @@ def execute_execution_plan(
             )
         root_fd = _open_root(canonical_root)
         verified: list[_VerifiedInvocation] = []
-        preflight_only: list[_VerifiedInvocation] = []
         try:
             descriptor_root = f"/proc/self/fd/{root_fd}"
             python_bootstrap = _create_python_bootstrap(
@@ -612,26 +693,6 @@ def execute_execution_plan(
                         path_value,
                     )
                 )
-                if (
-                    invocation.entrypoint == _INTERNAL_ADAPTER_PATH
-                    and invocation.argv == ("run-agent-output-eval",)
-                ):
-                    preflight_only.append(
-                        _verify_invocation(
-                            root_fd,
-                            dataclasses.replace(
-                                invocation,
-                                gate_id=("preflight-only.agent-output-eval-dependency"),
-                                entrypoint=pathlib.PurePosixPath(
-                                    ".agents/evaluations/agent_output_eval.py"
-                                ),
-                                argv=(),
-                                cwd=pathlib.PurePosixPath("."),
-                                allowed_env_keys=(),
-                            ),
-                            path_value,
-                        )
-                    )
             for item in verified:
                 child_environment = _child_environment(
                     root_fd,
@@ -650,7 +711,7 @@ def execute_execution_plan(
                     return result
             return 0
         finally:
-            for item in (*verified, *preflight_only):
+            for item in verified:
                 _close(item.entrypoint_fd)
                 _close(item.cwd_fd)
             _close(root_fd)
@@ -666,6 +727,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--profile", required=True)
     parser.add_argument("--explain", action="store_true")
+    parser.add_argument("--requirements", action="store_true")
+    parser.add_argument("--local-only", action="store_true")
     try:
         arguments = parser.parse_args(argv)
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
@@ -689,6 +752,12 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         public_contract = parse_public_gate_contract(document)
         context = derive_execution_context(os.environ)
+        if arguments.local_only and context is not ExecutionContext.LOCAL:
+            raise GateContractError(
+                "ci-gate-local-only-context",
+                "local-only",
+                "local-only gates require the unauthenticated local execution context",
+            )
         changed_paths = (
             ()
             if arguments.profile == "full"
@@ -714,15 +783,45 @@ def main(argv: list[str] | None = None) -> int:
             profile=arguments.profile,
             root=root,
         )
-        if arguments.explain:
-            for line in render_public_validation_plan(
+        if arguments.local_only:
+            plan = build_local_only_validation_plan(
                 plan,
                 public_contract,
-                selected_suites,
                 context,
-                profile=arguments.profile,
-            ):
+            )
+        if arguments.explain and arguments.requirements:
+            raise argparse.ArgumentError(
+                None,
+                "--explain and --requirements are mutually exclusive",
+            )
+        if arguments.explain:
+            lines = (
+                tuple(
+                    f"local-only\t{invocation.gate_id}\t{invocation.entrypoint}"
+                    for invocation in plan
+                )
+                if arguments.local_only
+                else render_public_validation_plan(
+                    plan,
+                    public_contract,
+                    selected_suites,
+                    context,
+                    profile=arguments.profile,
+                )
+            )
+            for line in lines:
                 print(line)
+            return 0
+        if arguments.requirements:
+            if context is not ExecutionContext.PULL_REQUEST:
+                raise GateContractError(
+                    "ci-gate-requirements-context",
+                    "requirements",
+                    "hosted prerequisites require a pull-request context",
+                )
+            prerequisites = selected_prerequisites(plan, changed_paths)
+            print(f"node={'true' if prerequisites.node else 'false'}")
+            print(f"docker={'true' if prerequisites.docker else 'false'}")
             return 0
         return execute_execution_plan(root, plan, os.environ)
     except (GateContractError, argparse.ArgumentError) as error:
@@ -756,13 +855,20 @@ def collect_changed_paths(
     name_status = ("--name-status", "-z", "--find-renames")
     if event == "pull_request":
         base = environ.get("PR_BASE_SHA", "")
-        if not _FULL_SHA.fullmatch(base) or base == "0" * 40:
+        head = environ.get("PR_HEAD_SHA", "")
+        if (
+            not _FULL_SHA.fullmatch(base)
+            or base == "0" * 40
+            or not _FULL_SHA.fullmatch(head)
+            or head == "0" * 40
+            or base == head
+        ):
             raise GateContractError(
                 "ci-gate-changed-paths",
                 "git",
                 "the pull-request comparison base is unavailable",
             )
-        commands = (("git", "diff", *name_status, f"{base}...HEAD"),)
+        commands = (("git", "diff", *name_status, f"{base}...{head}"),)
     elif event == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(base):

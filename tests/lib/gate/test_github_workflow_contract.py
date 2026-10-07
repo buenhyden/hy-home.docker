@@ -21,8 +21,8 @@ MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 
 REQUIRED_CI_JOBS = frozenset(
     {
+        "candidate-quality",
         "main-security",
-        "update-main-current",
     }
 )
 
@@ -101,7 +101,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.module = load_contract_module()
 
-    def test_quality_workflow_has_no_hosted_public_validation_route(self) -> None:
+    def test_quality_workflow_has_one_remote_candidate_route(self) -> None:
         workflow = next(
             workflow
             for workflow in self.module.load_workflows(ROOT)
@@ -109,20 +109,48 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         document = self.load_contract_document(ROOT)
 
-        self.assertNotIn("pull_request", workflow.data["on"])
+        self.assertEqual(
+            {
+                "branches": ["main"],
+                "types": ["opened", "synchronize", "reopened"],
+            },
+            workflow.data["on"]["pull_request"],
+        )
         self.assertNotIn("workflow_dispatch", workflow.data["on"])
-        self.assertNotIn("validation-changed", workflow.data["jobs"])
-        self.assertNotIn("validation-full", workflow.data["jobs"])
+        self.assertEqual(REQUIRED_CI_JOBS, set(workflow.data["jobs"]))
+        candidate = workflow.data["jobs"]["candidate-quality"]
+        self.assertEqual({"contents": "read"}, candidate["permissions"])
+        self.assertEqual(
+            "github.event_name == 'pull_request'",
+            candidate["if"],
+        )
+        self.assertEqual(
+            {
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+                "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
+            },
+            candidate["env"],
+        )
+        self.assertEqual(
+            1,
+            sum(
+                step.get("run")
+                == "python3 scripts/validation/run-ci-gate.py --profile changed"
+                for step in candidate["steps"]
+                if isinstance(step, dict)
+            ),
+        )
         quality_contract = document["workflows"][".github/workflows/ci-quality.yml"]
-        self.assertNotIn("pull_request", quality_contract["triggers"])
+        self.assertEqual(
+            workflow.data["on"]["pull_request"],
+            quality_contract["triggers"]["pull_request"],
+        )
         self.assertNotIn("workflow_dispatch", quality_contract["triggers"])
-        self.assertNotIn("validation-changed", quality_contract["jobs"])
-        self.assertNotIn("validation-full", quality_contract["jobs"])
+        self.assertEqual(REQUIRED_CI_JOBS, set(quality_contract["jobs"]))
 
     def test_quality_workflow_concurrency_separates_event_types(self) -> None:
-        expected_group = (
-            "${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}"
-        )
+        expected_group = "${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}"
         workflow = next(
             workflow
             for workflow in self.module.load_workflows(ROOT)
@@ -139,91 +167,39 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_public_plans_run_precommit_before_expensive_gates_without_loss(
         self,
     ) -> None:
-        expected_gate_ids = frozenset(
-            {
-                "leaf.agent-governance-regressions",
-                "leaf.agent-output-eval-fixture-gate",
-                "leaf.agent-output-eval-fixture-regressions",
-                "leaf.ci-gate-adapter-regressions",
-                "leaf.ci-gate-contract-regressions",
-                "leaf.ci-gate-runner-regressions",
-                "leaf.ci-precommit-regressions",
-                "leaf.compose-baseline-regressions",
-                "leaf.conftest-policy",
-                "leaf.compose-validation",
-                "leaf.dependency-vulnerability-audit",
-                "leaf.docs-traceability",
-                "leaf.document-governance-library-regressions",
-                "leaf.frontend-build",
-                "leaf.frontend-lint",
-                "leaf.frontend-quality",
-                "leaf.frontend-typecheck",
-                "leaf.git-flow-contract",
-                "leaf.infrastructure-hardening",
-                "leaf.local-agent-governance-contract",
-                "leaf.local-diff-hygiene",
-                "leaf.local-document-corpus-lifecycle",
-                "leaf.local-document-corpus-lifecycle-tests",
-                "leaf.local-document-metadata-tests",
-                "leaf.local-hook-rule-tests",
-                "leaf.local-provider-surface-drift",
-                "leaf.local-script-manifest",
-                "leaf.local-shell-syntax",
-                "leaf.local-tech-stack-version-drift",
-                "leaf.operations-catalog",
-                "leaf.postgres-logical-upgrade-config",
-                "leaf.pre-commit",
-                "leaf.provider-governance-regressions",
-                "leaf.quickwin-baseline",
-                "leaf.repo-contracts-control-plane-regressions",
-                "leaf.repo-document-metadata",
-                "leaf.repo-metadata-base",
-                "leaf.repository-integrity-regressions",
-                "leaf.storybook-coverage",
-                "leaf.supply-chain-deterministic-policy",
-                "leaf.supply-chain-fixture-policy",
-                "leaf.template-security-baseline",
-                "leaf.workflow-contract",
-                "leaf.workflow-contract-regressions",
-                "leaf.zizmor",
-                "setup.frontend-node-dependencies",
-                "setup.storybook-playwright",
-            }
-        )
-        expensive_gate_ids = (
-            "leaf.dependency-vulnerability-audit",
-            "setup.frontend-node-dependencies",
-            "leaf.frontend-lint",
-            "leaf.frontend-typecheck",
-            "leaf.frontend-build",
-            "leaf.frontend-quality",
-            "setup.storybook-playwright",
-            "leaf.storybook-coverage",
-            "leaf.zizmor",
-        )
         document = self.load_contract_document(ROOT)
         public = gate_contract.parse_public_gate_contract(document)
         registry = self.module.load_workflow_contract(ROOT).gate_registry
+        changed_style = next(
+            node for node in registry.nodes if node.gate_id == "leaf.changed-style"
+        )
+        self.assertEqual(
+            ("--mode", "pr-merge"),
+            changed_style.argv,
+        )
+        changed_paths = (".github/workflows/ci-quality.yml",)
+        suites = gate_contract.select_public_suites(public, "changed", changed_paths)
+        changed = gate_contract.expand_public_gate_ids(
+            registry,
+            gate_contract.public_root_gate_ids(
+                public, suites, changed_paths=changed_paths
+            ),
+        )
+        self.assertIn("leaf.changed-style", changed)
+        self.assertIn("leaf.commit-message-contract", changed)
+        self.assertIn("leaf.zizmor", changed)
+        self.assertNotIn("leaf.dependency-vulnerability-audit", changed)
+        self.assertNotIn("leaf.frontend-build", changed)
 
-        for profile, changed_paths in (
-            ("changed", (".github/workflows/ci-quality.yml",)),
-            ("full", ()),
+        full = gate_contract.expand_public_gate_ids(registry, registry.public_roots)
+        positions = {gate_id: index for index, gate_id in enumerate(full)}
+        for gate_id in (
+            "leaf.dependency-vulnerability-audit",
+            "leaf.frontend-build",
+            "leaf.storybook-coverage",
+            "leaf.zizmor",
         ):
-            with self.subTest(profile=profile):
-                suites = gate_contract.select_public_suites(
-                    public, profile, changed_paths
-                )
-                roots = gate_contract.public_root_gate_ids(
-                    public,
-                    suites,
-                    changed_paths=changed_paths if profile == "changed" else None,
-                )
-                planned = gate_contract.expand_public_gate_ids(registry, roots)
-                positions = {gate_id: index for index, gate_id in enumerate(planned)}
-
-                self.assertEqual(expected_gate_ids, frozenset(planned))
-                for gate_id in expensive_gate_ids:
-                    self.assertLess(positions["leaf.pre-commit"], positions[gate_id])
+            self.assertLess(positions["leaf.changed-style"], positions[gate_id])
 
     def test_storybook_shell_accepts_typed_full_route_direct_and_held(self) -> None:
         script = ROOT / "scripts/validation/check-storybook-contract.sh"
@@ -332,7 +308,10 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 "python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif",
-                "bash scripts/operations/update-main-current-tag.sh",
+                "python3 -m pip install -r scripts/requirements.txt -r scripts/requirements-pre-commit.txt",
+                'python3 scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
+                "docker version",
+                "python3 scripts/validation/run-ci-gate.py --profile changed",
             },
             set(run_values),
         )
@@ -459,8 +438,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertEqual(REQUIRED_CI_JOBS, set(workflow.data["jobs"]))
         self.assertNotIn("env", workflow.data)
-        for job in workflow.data["jobs"].values():
-            self.assertNotIn("env", job)
+        self.assertEqual(
+            {
+                "EVENT_NAME": "pull_request",
+                "PR_BASE_SHA": "${{ github.event.pull_request.base.sha }}",
+                "PR_HEAD_SHA": "${{ github.event.pull_request.head.sha }}",
+            },
+            workflow.data["jobs"]["candidate-quality"]["env"],
+        )
+        self.assertNotIn("HYHOME_COMPOSE_PROFILES", str(workflow.data))
 
     def test_required_workflow_rejects_inherited_compose_selection(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
@@ -586,7 +572,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
 
     def test_action_registry_and_ci_precommit_wiring_are_exact(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
-        self.assertEqual(7, len(contract.actions))
+        self.assertEqual(8, len(contract.actions))
         self.assertEqual(
             {"node24"},
             {action.runtime for action in contract.actions},
@@ -629,7 +615,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertIn("github/codeql-action/upload-sarif@", security_steps[4]["uses"])
         self.assertEqual(
-            "pre-commit==4.6.1\n",
+            "pre-commit==4.6.1\ncommitizen==4.15.1\n",
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
 
@@ -671,8 +657,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
         jobs = self._required_quality_jobs(self.module, ROOT)
         self.assertEqual(
             {
+                "candidate-quality": "github.event_name == 'pull_request'",
                 "main-security": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
-                "update-main-current": "success() && github.event_name == 'push' && github.ref == 'refs/heads/main'",
             },
             {job_id: job["if"] for job_id, job in jobs.items()},
         )
@@ -682,7 +668,16 @@ class GithubWorkflowContractTests(unittest.TestCase):
             for step in job.get("steps", [])
             if isinstance(step, dict) and "run" in step and "if" in step
         ]
-        self.assertEqual([], conditioned_steps)
+        self.assertEqual(
+            [
+                (
+                    "candidate-quality",
+                    "Verify selected Docker prerequisite",
+                    "steps.prerequisites.outputs.docker == 'true'",
+                )
+            ],
+            conditioned_steps,
+        )
 
     def test_required_quality_jobs_have_exact_registered_checkout(self) -> None:
         contract = self.module.load_workflow_contract(ROOT)
@@ -697,27 +692,29 @@ class GithubWorkflowContractTests(unittest.TestCase):
         }
         for job_id, job in jobs.items():
             with self.subTest(job_id=job_id):
-                checkout = dict(expected_checkout)
-                if job_id == "update-main-current":
-                    checkout["with"] = {"persist-credentials": True, "fetch-depth": 0}
-                self.assertEqual(checkout, job["steps"][0])
+                self.assertEqual(expected_checkout, job["steps"][0])
 
-    def test_main_security_precedes_leased_channel_update(self) -> None:
+    def test_main_security_is_independent_from_candidate_validation(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
         security = jobs["main-security"]
-        channel = jobs["update-main-current"]
-        self.assertEqual("main-security", channel["needs"])
+        candidate = jobs["candidate-quality"]
+        self.assertNotIn("needs", security)
+        self.assertNotIn("needs", candidate)
         self.assertEqual(
             {"contents": "read", "security-events": "write"}, security["permissions"]
         )
-        self.assertEqual({"contents": "write"}, channel["permissions"])
+        self.assertEqual({"contents": "read"}, candidate["permissions"])
         self.assertEqual(
             ["python3 scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif"],
             [step["run"] for step in security["steps"] if "run" in step],
         )
         self.assertEqual(
-            ["bash scripts/operations/update-main-current-tag.sh"],
-            [step["run"] for step in channel["steps"] if "run" in step],
+            1,
+            sum(
+                step.get("run")
+                == "python3 scripts/validation/run-ci-gate.py --profile changed"
+                for step in candidate["steps"]
+            ),
         )
         self.assertTrue(
             any("upload-sarif@" in step.get("uses", "") for step in security["steps"])
@@ -730,9 +727,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         contract = self.module.load_workflow_contract(ROOT)
         cases = (
             (
-                "channel-dependency",
-                "update-main-current",
-                lambda job: job.pop("needs"),
+                "candidate-dependency",
+                "candidate-quality",
+                lambda job: job.update({"needs": "main-security"}),
                 "workflow-gate-dependency-invalid",
             ),
             (
@@ -760,10 +757,16 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "workflow-gate-execution-context-invalid",
             ),
             (
-                "channel-continue-on-error",
-                "update-main-current",
+                "candidate-continue-on-error",
+                "candidate-quality",
                 lambda job: job.update({"continue-on-error": True}),
                 "workflow-gate-execution-context-invalid",
+            ),
+            (
+                "candidate-validation",
+                "candidate-quality",
+                lambda job: job["steps"].pop(),
+                "workflow-gate-projection-mismatch",
             ),
             (
                 "security-checkout-order",
@@ -786,20 +789,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     document.path, data, data["jobs"], contract
                 )
                 self.assertIn(expected, {finding.code for finding in findings})
-
-    def test_public_profiles_share_one_validator_definition(self) -> None:
-        document = self.load_contract_document(ROOT)
-        public = self.module.parse_public_gate_contract(document)
-        self.assertEqual(
-            public.suite_names,
-            self.module.select_public_suites(public, "full", ()),
-        )
-        self.assertEqual(
-            len(public.validators),
-            len({route.entrypoint for route in public.validators}),
-        )
-        self.assertNotIn("profile_roots", document)
-        self.assertTrue(all("profiles" not in node for node in document["gate_nodes"]))
 
     def test_legacy_profile_root_substitution_fails_closed(self) -> None:
         with self.workflow_fixture() as root:
@@ -836,26 +825,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "leaf.storybook-coverage",
             ),
             expanded,
-        )
-
-    def test_task5_agent_governance_regression_leaf_has_fixed_topology(
-        self,
-    ) -> None:
-        document = self.load_contract_document(ROOT)
-        nodes = {node["gate_id"]: node for node in document["gate_nodes"]}
-        gate_id = "leaf.agent-governance-regressions"
-        self.assertEqual(
-            [
-                "run-unittest",
-                "tests.lib.agent_governance.test_agent_governance_contract",
-                "-v",
-            ],
-            nodes[gate_id]["argv"],
-        )
-        self.assertNotIn("profiles", nodes[gate_id])
-        self.assertIn(
-            gate_id,
-            document["public_gate"]["suite_roots"]["agent-governance"],
         )
 
     @contextlib.contextmanager
@@ -1100,7 +1069,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 contract = self.module.load_workflow_contract(root)
                 findings = self.module.validate_workflows(root, contract)
                 self.assertIn(
-                    "workflow-permission-baseline-invalid",
+                    "workflow-required-permission-invalid",
                     {finding.code for finding in findings},
                 )
 
@@ -1124,7 +1093,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 )
 
     def test_action_registry_and_local_action_policy_fail_closed(self) -> None:
-        cases = ("eighth-registered-action", "local-action")
+        cases = ("local-action",)
         for label in cases:
             with self.subTest(label=label), self.workflow_fixture() as root:
                 workflow = root / ".github/workflows/ci-quality.yml"
@@ -1150,7 +1119,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         sorted(contract_data["actions"].items())
                     )
                     self.write_contract_document(root, contract_data)
-                    expected = "action-registry-baseline-invalid"
+                    expected = "workflow-gate-projection-mismatch"
                 else:
                     step += "./.github/actions/private-probe\n"
                     expected = "action-local-reference-forbidden"
@@ -1175,7 +1144,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         expected = {
             ".github/workflows/generate-changelog.yml": (
                 {"contents": "read"},
-                {"changelog": None},
+                {"release": {"contents": "write"}},
             ),
             ".github/workflows/greetings.yml": (
                 {},
@@ -1248,6 +1217,11 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             {
                 (
+                    ".github/workflows/generate-changelog.yml",
+                    "release",
+                    "contents",
+                ),
+                (
                     ".github/workflows/greetings.yml",
                     "issue-greeting",
                     "issues",
@@ -1271,165 +1245,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             },
             actual_write_owners,
         )
-
-    def test_non_gating_permission_co_mutations_fail_baseline(self) -> None:
-        cases = (
-            (
-                "generate-changelog",
-                ".github/workflows/generate-changelog.yml",
-                (
-                    "  changelog:\n"
-                    "    name: Verify changelog contains release tag\n"
-                    "    runs-on: ubuntu-latest\n"
-                ),
-                (
-                    "  changelog:\n"
-                    "    name: Verify changelog contains release tag\n"
-                    "    permissions:\n"
-                    "      issues: write\n"
-                    "    runs-on: ubuntu-latest\n"
-                ),
-                "      changelog:\n        permissions: null\n",
-                ("      changelog:\n        permissions: {issues: write}\n"),
-            ),
-            (
-                "greetings",
-                ".github/workflows/greetings.yml",
-                (
-                    "  issue-greeting:\n"
-                    "    if: github.event_name == 'issues'\n"
-                    "    permissions:\n"
-                    "      issues: write\n"
-                    "      pull-requests: read\n"
-                    "      contents: read\n"
-                ),
-                (
-                    "  issue-greeting:\n"
-                    "    if: github.event_name == 'issues'\n"
-                    "    permissions:\n"
-                    "      issues: write\n"
-                    "      pull-requests: write\n"
-                    "      contents: read\n"
-                ),
-                (
-                    "      issue-greeting:\n"
-                    "        permissions:\n"
-                    "          issues: write\n"
-                    "          contents: read\n"
-                    "          pull-requests: read\n"
-                ),
-                (
-                    "      issue-greeting:\n"
-                    "        permissions:\n"
-                    "          issues: write\n"
-                    "          pull-requests: write\n"
-                    "          contents: read\n"
-                ),
-            ),
-            (
-                "pr-labeler",
-                ".github/workflows/pr-labeler.yml",
-                (
-                    "    permissions:\n"
-                    "      contents: read\n"
-                    "      pull-requests: write\n"
-                ),
-                (
-                    "    permissions:\n"
-                    "      contents: read\n"
-                    "      pull-requests: write\n"
-                    "      issues: write\n"
-                ),
-                (
-                    "      triage:\n"
-                    "        permissions:\n"
-                    "          contents: read\n"
-                    "          pull-requests: write\n"
-                ),
-                (
-                    "      triage:\n"
-                    "        permissions:\n"
-                    "          contents: read\n"
-                    "          pull-requests: write\n"
-                    "          issues: write\n"
-                ),
-            ),
-            (
-                "stale",
-                ".github/workflows/stale.yml",
-                (
-                    "    permissions:\n"
-                    "      issues: write\n"
-                    "      pull-requests: write\n"
-                    "      contents: read\n"
-                ),
-                (
-                    "    permissions:\n"
-                    "      issues: write\n"
-                    "      pull-requests: write\n"
-                    "      contents: read\n"
-                    "      actions: write\n"
-                ),
-                (
-                    "      stale:\n"
-                    "        permissions:\n"
-                    "          issues: write\n"
-                    "          pull-requests: write\n"
-                    "          contents: read\n"
-                ),
-                (
-                    "      stale:\n"
-                    "        permissions:\n"
-                    "          issues: write\n"
-                    "          pull-requests: write\n"
-                    "          contents: read\n"
-                    "          actions: write\n"
-                ),
-            ),
-        )
-
-        for (
-            label,
-            relative,
-            workflow_old,
-            workflow_new,
-            _contract_old,
-            _contract_new,
-        ) in cases:
-            with self.subTest(label=label), self.workflow_fixture() as root:
-                workflow = root / relative
-                workflow_text = workflow.read_text(encoding="utf-8")
-                self.assertIn(workflow_old, workflow_text)
-                workflow.write_text(
-                    workflow_text.replace(workflow_old, workflow_new, 1),
-                    encoding="utf-8",
-                )
-                document = self.load_contract_document(root)
-                job_id, scope = {
-                    "generate-changelog": ("changelog", "issues"),
-                    "greetings": ("issue-greeting", "pull-requests"),
-                    "pr-labeler": ("triage", "issues"),
-                    "stale": ("stale", "actions"),
-                }[label]
-                job = document["workflows"][relative]["jobs"][job_id]
-                if job["permissions"] is None:
-                    job["permissions"] = {}
-                job["permissions"][scope] = "write"
-                self.write_contract_document(root, document)
-                findings = self.module.validate_workflows(
-                    root,
-                    self.module.load_workflow_contract(root),
-                )
-                baseline_findings = [
-                    finding
-                    for finding in findings
-                    if finding.code == "workflow-permission-baseline-invalid"
-                ]
-                self.assertTrue(baseline_findings)
-                self.assertEqual(
-                    {"workflow permissions differ from the code baseline"},
-                    {finding.message for finding in baseline_findings},
-                )
 
     def test_yaml_parser_fails_closed_on_duplicate_unsafe_and_bounded_inputs(
         self,

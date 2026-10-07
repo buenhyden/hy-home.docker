@@ -39,7 +39,8 @@ Approved repository edits, ongoing implementation, and completion evidence.
 ### Before Completion
 
 - [ ] Follow the [execution boundary](quality-standards.md#4-execution-boundary)
-      for direct pre-commit prohibition and the sole approved all-files route.
+      for staged lint/format immediately before local commit, server PR final
+      defense, direct pre-commit prohibition and the separate all-files route.
 - [ ] Run focused tests and validators for each changed authority surface.
 - [ ] Regenerate registered projections and prove byte-for-byte freshness.
 - [ ] Inspect `git diff --check`, status, and the exact task-owned diff.

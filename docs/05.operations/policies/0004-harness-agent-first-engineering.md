@@ -73,21 +73,22 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 | Infra validation scope | 적용 gate의 현재 선택 범위를 기록한다. Compose validator와 baseline script의 기본 범위가 다르며 범위 밖 remediation은 별도 승인한다. |
 | AI Agent limits | [Agentic Engineering Policy](../../../.agents/governance/agentic.md#execution-rules)가 소유하며, Graphify의 경우 [Environment Constraints](../../../.agents/governance/environment-constraints.md#4-graphify)가 소유한다. |
 
-평가 maintenance는 `.agents/evaluations/`의 합성 입력과 등록된 소비자에 한정한다.
-평가 데이터는 자동 실행 지침이 아니다. 현재 존재하지 않는 deployment-skeleton과
-파생 배포 패키지는 별도 설계·승인 범위로 두며, 필요한 자산만 포함하고 개인 상태와
-이전 실행 승인을 복제하지 않는다. 정적 평가 성공을 native 호출이나 복구 성공으로
-기록하지 않는다. Docker·실제 환경 접근을 포함한 게이트는 해당 범위의 승인이 있어야
-실행하며, 실행 불가 상태는 검증 성공으로 바꾸지 않는다.
+자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다.
+현재 문서·Docker 계약과 이를 지원하는 회귀의 허용 범위, 폐기 순서, 단계별 실행은
+[quality policy](../../../.agents/governance/quality-standards.md)가 소유한다.
+정적 source나 수동 비교를 native 호출·복구 성공으로 기록하지 않는다.
+Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 미실행은 성공이 아니다.
 
 ### Verification
 
-[Runbook §Procedure](../runbooks/0004-harness-agent-first-engineering.md#procedure)에 나열된 hook, runtime, repository contract check는 harness 또는 Agent-first change를 승인하기 전에 모두 통과해야 한다.
+변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
+[Runbook](../runbooks/0004-harness-agent-first-engineering.md#procedure)은 승인된
+관측의 실행 경로를 안내하며 모든 변경에 전체 hook/runtime bundle을 요구하지 않는다.
 
 ### Review Cadence
 
-- root, governance, runtime, provider, script, stage documentation change 이후 repository contract check를 실행한다.
-- 광범위한 harness 또는 Agent-first migration 완료를 선언하기 전에 전체 verification bundle을 다시 실행한다.
+- 현재 owner나 계약이 바뀌면 영향받는 소비자와 필요한 회귀를 검토한다.
+- 완료 여부는 현재 Task의 실제 필수 증거와 독립 검토로 판정하며 같은 입력의 aggregate QA를 반복하지 않는다.
 - `.claude`, `.codex`, 또는 canonical agent governance role/skill catalog가 바뀌면 이 policy를 검토한다.
 - scope 밖 infra profile 실패는 HAFE acceptance criteria를 조용히 확장하는 대신 별도로 기록한다.
 

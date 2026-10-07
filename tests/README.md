@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.2.0"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 created: "2026-02-21"
 ---
 
@@ -65,7 +65,7 @@ tests/
 3. `scripts/lib/<domain>/`의 주 책임을 검증하는 테스트는 같은 이름의
    `tests/lib/<domain>/`에 두고, CLI·entrypoint·실행 context 검증은
    `tests/validation/`에 둡니다.
-4. 새 테스트 파일을 추가하면 실행 명령, 기대 결과, CI 연결 여부를 이 README 또는 관련 stage 문서에 기록합니다.
+4. 새 unit·implementation fixture 테스트 파일은 workflow contract의 해당 LOCAL suite에 등록합니다. 실제 corpus·브라우저·HTTP 통합 검증은 등록된 hosted owner가 유지합니다. 실행·결과·미실행 범위는 소유 Task에 기록하며 CLI/API·README에 별도 명령 목록이나 결과 원장을 복제하지 않습니다.
 5. 테스트가 특정 service 또는 package에만 해당하면 해당 디렉터리 README에 위치와 실행법을 기록합니다.
 
 ### 통합 테스트 (opt-in)
@@ -91,32 +91,26 @@ suite는 사유와 함께 skip하므로, daemon이 없는 환경에서도 전체
 등록된 suite에서도 skip으로 보고되고 게이트를 막지 않습니다. `requirements-integration.txt`는
 Renovate 범위 밖이고 `scripts/requirements.txt`와 같은 수동 갱신 대상입니다.
 
-필수 gate는 전체 테스트 모듈을 계속 선택합니다. 기존 opt-in TestCase는
-`.github/workflow-contract.yml`의 `--optional-runtime-skips` 뒤에 정확한 클래스
-범위로 등록합니다. adapter는 실제 생략된 테스트 ID와 요약의 개수를 대조하고,
-등록되지 않은 생략은 실패 처리합니다. 이 선언은 실서비스 실행이나 환경변수
-전달을 허용하지 않으며, 테스트 0개와 필수 검사 생략을 통과시키지 않습니다.
+전체 테스트 모듈의 도달 가능성과 중복 등록은 LOCAL full 계획이 소유합니다.
+모든 hosted context는 unit·구현 fixture·문서 링크 검사를 제외하며, 원격 PR은
+현재 입력의 내용·구성 검증을 한 번 수행합니다. 실제 실행하지 않은 opt-in
+runtime은 skip/NOT_RUN이며 live 서비스 성공으로 표현하지 않습니다.
 
-운영 rehearsal의 재사용 입력은 `examples/operations/`가 소유합니다.
-단일 필드 오류 입력은 테스트 builder로 만들며, production은 `tests/`를
-읽지 않습니다. 전체 Python discovery는
-`PYTHONPATH=. python3 -m unittest discover -s tests -p 'test_*.py'`로 실행합니다.
+일반 개발에서는 canonical runner의 `--profile changed --local-only --explain`으로
+선택과 prerequisites를 먼저 확인한 뒤 필요한 unit·링크만 실행합니다. 각 테스트의
+현재 호출과 배정은 Script Manifest와 workflow contract가 소유하며, 과거 mode·모듈
+수량이나 완료 Spec 상태를 기대값으로 복사하지 않습니다.
 
-문서 메타데이터 검증 테스트는
-`PYTHONPATH=. python3 -m unittest discover -s tests/lib/document_governance/metadata -p 'test_*.py'`로
-실행합니다. lifecycle entrypoint 검증은
-`PYTHONPATH=. python3 -m unittest discover -s tests/validation/lifecycle -p 'test_*.py'`로
-실행합니다. 두 inventory는 각각 5개 production 책임과 4개 등록 mode를
-mirroring하며, 공통 fixture는 discovery 대상이 아닌 `_support.py`만 사용합니다.
+`--profile full`은 별도 승인·예산을 기록한 전체 감사입니다. 현재 자동 workflow의
+commit→push→PR→main 단계에 full 실행을 덧붙이지 않습니다. 실행 context와 실제
+base/history에 따라 선택·문서 mode가 달라지므로, full 모델이나 로컬 PASS를 hosted
+PASS로 대체하지 않습니다. 정확한 mode·argv는 canonical `--explain`과 실행 계약을
+확인합니다. 전체 discovery는 일상 필수 gate나 추가 완료 조건이 아닙니다.
 
-changed/new blocking gate는 활성 상태입니다. 로컬 `changed` profile은
-`check-document-metadata.py --mode check-active`로 active corpus를 base 없이
-검사합니다. pull request의 `changed` profile은 신뢰된 `PR_BASE_SHA`를
-`TEMPLATE_GATE_BASE`로 전달해 `--mode check-changed` 비교를 수행합니다.
-push와 수동 실행의 `full` profile은 `--mode check-contracts --history-scope full`로
-문서 계약과 전체 history를 검사합니다. push에서는 유효한 이전 SHA가 있으면
-lifecycle/ID 할당의 기준으로 사용하고, 수동 실행에는 이벤트 비교 기준이 없습니다.
-인자 없이 실행하면 `report` mode로 advisory inventory를 출력합니다.
+운영 rehearsal의 재사용 입력은 `examples/operations/`가 소유합니다. 단일 필드 오류
+입력은 현재 동작을 검증하는 fixture builder로 만들며 production은 `tests/`를
+읽지 않습니다. 과거 사건의 문자열·수량·폐기 파일 부재만을 검사하는 fixture는
+현재 보장 이전과 caller 정리 후 폐기합니다.
 
 ## Related Documents
 

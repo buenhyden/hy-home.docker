@@ -58,7 +58,6 @@ REGISTRY_KEYS = {
     "semantic_events",
     "hook_contracts",
     "projections",
-    "agent_output_eval",
     "generated_roots",
 }
 MAX_TEXT_BYTES = 4 * 1024 * 1024
@@ -1322,9 +1321,6 @@ def _canonical_source_paths(
         PROVIDERS / "README.md",
         GOVERNANCE / "governance/sdlc.md",
         GOVERNANCE / "evaluations/README.md",
-        GOVERNANCE / "evaluations/agent_output_eval.py",
-        GOVERNANCE / "evaluations/fixture-catalog.md",
-        GOVERNANCE / "evaluations/run-agent-output-eval-fixtures.sh",
     }
     patterns = (
         r"[.]agents/governance/[a-z][a-z0-9-]*[.]md",

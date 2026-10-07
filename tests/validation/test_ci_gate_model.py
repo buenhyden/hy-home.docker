@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import dataclasses
+import json
 import pathlib
 import subprocess
 import unittest
@@ -39,7 +40,7 @@ class PublicSuiteModelTests(unittest.TestCase):
         document = contract.load_contract_document(root)
         gates = contract.parse_gate_registry(document, ".github/workflow-contract.yml")
         public = contract.parse_public_gate_contract(document)
-        selected = ("repository-integrity",)
+        selected = ("operations",)
         plan = runner.build_public_validation_plan(
             gates,
             contract.public_root_gate_ids(public, selected),
@@ -91,7 +92,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                         profile="full",
                     )
 
-    def test_local_public_profiles_remain_registered_without_hosted_jobs(self) -> None:
+    def test_local_profiles_and_hosted_candidate_share_the_public_runner(self) -> None:
         root = pathlib.Path(__file__).resolve().parents[2]
         document = contract.load_contract_document(root)
         public = contract.parse_public_gate_contract(document)
@@ -100,14 +101,14 @@ class PublicSuiteModelTests(unittest.TestCase):
         jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
             "jobs"
         ]
-        self.assertEqual({"main-security", "update-main-current"}, set(jobs))
-        self.assertFalse(
-            any(
+        self.assertEqual({"candidate-quality", "main-security"}, set(jobs))
+        self.assertEqual(
+            2,
+            sum(
                 "scripts/validation/run-ci-gate.py" in step.get("run", "")
-                for job in jobs.values()
-                for step in job["steps"]
+                for step in jobs["candidate-quality"]["steps"]
                 if isinstance(step, dict)
-            )
+            ),
         )
         # No package installation: explicitly expose the already-installed site
         # dependencies to an otherwise clean interpreter, then import the runner.
@@ -187,6 +188,21 @@ class PublicSuiteModelTests(unittest.TestCase):
             ),
             runner.public_suite_names(),
         )
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        self.assertEqual(
+            (
+                "profile_names",
+                "suites",
+                "validators",
+                "changed_rules",
+                "changed_root_rules",
+                "changed_fallback_suites",
+                "local_only_gate_ids",
+            ),
+            tuple(field.name for field in dataclasses.fields(public)),
+        )
 
     def test_lifecycle_aggregate_routes_only_current_owners(self) -> None:
         registry = contract.parse_gate_registry(
@@ -199,11 +215,7 @@ class PublicSuiteModelTests(unittest.TestCase):
             if node.gate_id == "local.document-corpus-lifecycle"
         )
         self.assertEqual(
-            (
-                "leaf.local-document-corpus-lifecycle-tests",
-                "leaf.local-hook-rule-tests",
-                "leaf.local-document-corpus-lifecycle",
-            ),
+            ("leaf.local-document-corpus-lifecycle",),
             lifecycle.children,
         )
 
@@ -218,24 +230,32 @@ class PublicSuiteModelTests(unittest.TestCase):
             public.suite_names,
             runner.ExecutionContext.LOCAL,
         )
-        rendered_paths = tuple(line.split("\t", 1)[1] for line in lines)
-        expected_paths = tuple(
-            validator.entrypoint.as_posix()
+        rendered = tuple(tuple(line.split("\t")) for line in lines)
+        plan_by_gate_id = {item.gate_id: item for item in plan}
+        expected = tuple(
+            (
+                validator.suite,
+                validator.entrypoint.as_posix(),
+                validator.gate_id,
+                json.dumps(
+                    list(plan_by_gate_id[validator.gate_id].argv),
+                    separators=(",", ":"),
+                ),
+            )
             for validator in public.validators
             if "local" in validator.contexts
         )
-        self.assertCountEqual(expected_paths, rendered_paths)
-        self.assertEqual(len(expected_paths), len(set(rendered_paths)))
+        self.assertTrue(all(len(row) == 4 for row in rendered))
+        self.assertCountEqual(expected, rendered)
+        identities = tuple((row[2], row[1], row[3]) for row in rendered)
+        self.assertEqual(len(identities), len(set(identities)))
 
     def test_full_plan_routes_current_regressions_through_their_public_owner(
         self,
     ) -> None:
         expected_by_suite = {
             "agent-governance": {
-                "tests.lib.agent_governance.test_agent_governance_contract",
-                "tests.validation.test_provider_native_surfaces",
-                "tests.validation.test_provider_surface_renderer",
-                "tests.validation.test_stop_gate_deferred_paths",
+                "tests.lib.hooks.test_tool_payload",
             },
             "operations": {
                 "tests.validation.test_postgres_logical_upgrade_rehearsal",
@@ -262,8 +282,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "GITHUB_ACTIONS": "true",
                 "EVENT_NAME": "pull_request",
                 "PR_BASE_SHA": "1" * 40,
-                "PR_TITLE": "P04 current-owner routing",
-                "HEAD_REF": "codex/p04-one-time-migration-qa-retirement",
+                "PR_HEAD_SHA": "2" * 40,
             },
         }
         for context, environ in environments.items():
@@ -278,7 +297,8 @@ class PublicSuiteModelTests(unittest.TestCase):
                         and invocation.argv[-1:] == ("-v",)
                         for module in invocation.argv[1:-1]
                     }
-                    self.assertEqual(expected, actual & current_modules)
+                    context_expected = expected if context == "local" else set()
+                    self.assertEqual(context_expected, actual & current_modules)
 
     def test_validator_ownership_is_derived_from_the_workflow_contract(self) -> None:
         document = contract.load_contract_document(ROOT)

@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.0.0"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-07"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -58,7 +58,7 @@ created: "2026-05-17"
 
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster.yml`
-- `python3 scripts/validation/run-ci-gate.py --profile changed`
+- 원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Review Cadence
 

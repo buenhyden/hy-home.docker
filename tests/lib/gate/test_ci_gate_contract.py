@@ -52,12 +52,71 @@ class NpmAuditAcceptanceTests(unittest.TestCase):
 
 
 class PublicSuiteRegistryTests(unittest.TestCase):
-    def test_retired_job_roots_are_rejected_by_the_strict_contract(self) -> None:
+    def test_local_only_gate_ids_are_typed_current_leaves(self) -> None:
         document = contract.load_contract_document(ROOT)
-        document["job_roots"] = []
-        with self.assertRaises(contract.GateContractError) as caught:
-            contract.parse_gate_registry(document, ".github/workflow-contract.yml")
-        self.assertEqual("ci-gate-document-fields", caught.exception.code)
+        expected = (
+            "leaf.ci-gate-adapter-regressions",
+            "leaf.ci-gate-contract-regressions",
+            "leaf.ci-gate-runner-regressions",
+            "leaf.ci-precommit-regressions",
+            "leaf.document-governance-library-regressions",
+            "leaf.docs-traceability",
+            "leaf.local-hook-rule-tests",
+            "leaf.local-document-metadata-tests",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.compose-baseline-regressions",
+            "leaf.release-regressions",
+            "leaf.repository-integrity-regressions",
+            "leaf.repo-contracts-control-plane-regressions",
+            "leaf.supply-chain-fixture-policy",
+            "leaf.conftest-policy-tests",
+            "leaf.workflow-contract-regressions",
+        )
+        self.assertEqual(
+            expected,
+            tuple(document["public_gate"].get("local_only_gate_ids", ())),
+        )
+        self.assertEqual(
+            expected,
+            contract.parse_public_gate_contract(document).local_only_gate_ids,
+        )
+
+    def test_local_only_gate_ownership_fails_closed_on_invalid_drift(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: list[tuple[str, dict[str, object]]] = []
+
+        duplicate = json.loads(json.dumps(baseline))
+        duplicate["public_gate"]["local_only_gate_ids"].append(
+            duplicate["public_gate"]["local_only_gate_ids"][0]
+        )
+        cases.append(("duplicate", duplicate))
+
+        unknown = json.loads(json.dumps(baseline))
+        unknown["public_gate"]["local_only_gate_ids"][0] = "leaf.unknown-local"
+        cases.append(("unknown", unknown))
+
+        nonleaf = json.loads(json.dumps(baseline))
+        nonleaf["public_gate"]["local_only_gate_ids"][0] = "ci.docs-traceability"
+        cases.append(("aggregate", nonleaf))
+
+        unordered = json.loads(json.dumps(baseline))
+        unordered["public_gate"]["local_only_gate_ids"].reverse()
+        cases.append(("order", unordered))
+
+        remote_context = json.loads(json.dumps(baseline))
+        links = next(
+            row
+            for row in remote_context["public_gate"]["validators"]
+            if row["gate_id"] == "leaf.docs-traceability"
+        )
+        links["contexts"].append("pull_request")
+        cases.append(("validator-context", remote_context))
+
+        for label, document in cases:
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.parse_public_gate_contract(document)
+                self.assertEqual("ci-gate-local-only-gates", caught.exception.code)
 
     def test_workflow_contract_owns_the_immutable_public_suite_registry(self) -> None:
         public = contract.parse_public_gate_contract(
@@ -92,7 +151,15 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         self.assertIn("document-contract", selected)
         self.assertIn("document-graph", selected)
         self.assertIn("document-lifecycle", selected)
-        self.assertIn("operations", selected)
+        self.assertNotIn("operations", selected)
+        self.assertIn(
+            "leaf.operations-catalog",
+            contract.public_root_gate_ids(
+                public,
+                selected,
+                changed_paths=("docs/05.operations/guides/README.md",),
+            ),
+        )
         with self.assertRaises(contract.GateContractError) as raised:
             contract.select_public_suites(public, "unknown", ())
         self.assertEqual("ci-gate-profile-unknown", raised.exception.code)
@@ -103,10 +170,27 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         )
         frontend = {"ci.frontend-quality", "ci.storybook-coverage"}
         document = {
+            "leaf.local-document-corpus-lifecycle-tests",
             "leaf.local-document-metadata-tests",
             "leaf.document-governance-library-regressions",
         }
-        optional = frontend | document
+        catalog = {"leaf.operations-catalog"}
+        release = {"leaf.release-regressions"}
+        harness = {"local.workflow-harness"}
+        workflow = {"ci.zizmor"} | harness
+        dependency = {
+            "ci.dependency-vulnerability-audit",
+        }
+        repository = {
+            "leaf.local-shell-syntax",
+            "leaf.local-script-manifest",
+            "leaf.local-tech-stack-version-drift",
+            "leaf.repository-integrity-regressions",
+            "leaf.storybook-contract",
+        }
+        optional = (
+            frontend | document | catalog | release | workflow | dependency | repository
+        )
         self.assertEqual(
             optional,
             {
@@ -118,12 +202,12 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         all_roots = set(contract.public_root_gate_ids(public, public.suite_names))
         self.assertLessEqual(optional, all_roots)
 
-        known_paths = (
-            "docs/03.specs/0173-governance-qa-surface-convergence/plan.md",
-            ".agents/governance/sdlc.md",
-            "infra/monitoring/config.yml",
-        )
-        for path in known_paths:
+        known_paths = {
+            "docs/03.specs/0173-governance-qa-surface-convergence/plan.md": set(),
+            ".agents/governance/sdlc.md": set(),
+            "infra/monitoring/config.yml": {"leaf.local-tech-stack-version-drift"},
+        }
+        for path, expected_optional in known_paths.items():
             with self.subTest(path=path):
                 selected = contract.select_public_suites(public, "changed", (path,))
                 roots = set(
@@ -132,26 +216,62 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                     )
                 )
                 self.assertFalse(frontend & roots)
-                self.assertEqual(
-                    document if path.startswith(".agents/") else set(),
-                    document & roots,
-                )
-                repository = next(
+                self.assertEqual(expected_optional, optional & roots)
+                repository_route = next(
                     route
                     for route in public.suites
                     if route.name == "repository-integrity"
                 )
-                self.assertLessEqual(set(repository.root_gate_ids) - optional, roots)
+                self.assertLessEqual(
+                    set(repository_route.root_gate_ids) - optional, roots
+                )
 
-        relevant_paths = (
-            "projects/storybook/nextjs/package-lock.json",
-            "projects/storybook/nextjs/src/app/page.tsx",
-            "scripts/validation/ci_gate_runner.py",
-            "tests/validation/test_ci_gate_plan.py",
-            ".github/workflow-contract.yml",
-            ".pre-commit-config.yaml",
-        )
-        for path in relevant_paths:
+        cases = {
+            "projects/storybook/nextjs/package-lock.json": frontend
+            | dependency
+            | {"leaf.storybook-contract"},
+            "projects/storybook/nextjs/src/app/page.tsx": frontend
+            | {"leaf.storybook-contract"},
+            "scripts/lib/document_governance/spec_packages.py": document,
+            "docs/05.operations/guides/0001-example.md": catalog,
+            "scripts/lib/document_governance/operations_catalog.py": document | catalog,
+            "scripts/validation/ci_gate_runner.py": {"local.workflow-harness"},
+            "tests/validation/test_ci_gate_plan.py": {"local.workflow-harness"},
+            "scripts/operations/release.py": release,
+            "tests/validation/test_release.py": release,
+            "CHANGELOG.md": release,
+            ".cz.toml": release | harness,
+            "scripts/requirements-pre-commit.txt": harness,
+            "scripts/requirements.txt": harness,
+            ".github/workflow-contract.yml": workflow,
+            ".pre-commit-config.yaml": harness | {"leaf.local-shell-syntax"},
+            "scripts/manifest.yaml": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/test_tech_stack_version_contract.py": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-storybook-contract.sh": {
+                "leaf.local-shell-syntax",
+                "leaf.storybook-contract",
+            },
+            "scripts/operations/sync-tech-stack-versions.sh": {
+                "leaf.local-shell-syntax",
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "scripts/validation/check-script-manifest.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+            "tests/validation/_script_manifest_support.py": {
+                "leaf.local-script-manifest",
+                "leaf.repository-integrity-regressions",
+            },
+        }
+        for path, expected in cases.items():
             with self.subTest(path=path):
                 selected = contract.select_public_suites(public, "changed", (path,))
                 roots = set(
@@ -159,13 +279,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                         public, selected, changed_paths=(path,)
                     )
                 )
-                self.assertLessEqual(frontend, roots)
-                if path.startswith(
-                    ("scripts/", "tests/", ".github/", ".pre-commit-config.yaml")
-                ):
-                    self.assertLessEqual(document, roots)
-                else:
-                    self.assertFalse(document & roots)
+                self.assertEqual(expected, optional & roots)
 
         selected = contract.select_public_suites(
             public, "changed", ("docs/03.specs/example.md", "unknown-root.txt")
@@ -193,7 +307,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
     def test_changed_root_rules_reject_mandatory_or_unknown_roots(self) -> None:
         baseline = contract.load_contract_document(ROOT)
         for label, gate_id in (
-            ("mandatory", "ci.dependency-vulnerability-audit"),
+            ("mandatory", "leaf.changed-style"),
             ("unknown", "ci.unknown"),
         ):
             with self.subTest(label=label):
@@ -232,7 +346,10 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         duplicate["public_gate"]["validators"][1]["entrypoint"] = duplicate[
             "public_gate"
         ]["validators"][0]["entrypoint"]
-        cases.append(("duplicate-entrypoint", duplicate, "ci-gate-public-validators"))
+        duplicate["public_gate"]["validators"][1]["argv"] = duplicate["public_gate"][
+            "validators"
+        ][0]["argv"]
+        cases.append(("duplicate-invocation", duplicate, "ci-gate-public-validators"))
 
         contexts = json.loads(json.dumps(baseline))
         contexts["public_gate"]["validators"][0]["contexts"].reverse()
@@ -252,6 +369,65 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 with self.assertRaises(contract.GateContractError) as caught:
                     contract.parse_public_gate_contract(document)
                 self.assertEqual(expected_code, caught.exception.code)
+
+    def test_public_validators_bind_registered_leaves_and_closed_conftest_modes(
+        self,
+    ) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: list[tuple[str, dict[str, object]]] = []
+
+        wrong_path = json.loads(json.dumps(baseline))
+        quickwin = next(
+            row
+            for row in wrong_path["public_gate"]["validators"]
+            if row["gate_id"] == "leaf.quickwin-baseline"
+        )
+        quickwin["entrypoint"] = "scripts/validation/check-secret-contract.py"
+        cases.append(("row-path-does-not-match-leaf", wrong_path))
+
+        both_all = json.loads(json.dumps(baseline))
+        for owner in (
+            both_all["gate_nodes"],
+            both_all["public_gate"]["validators"],
+        ):
+            corpus = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy"
+            )
+            corpus["argv"] = ["--mode", "all"]
+        cases.append(("corpus-owner-cannot-register-all", both_all))
+
+        swapped = json.loads(json.dumps(baseline))
+        for owner in (
+            swapped["gate_nodes"],
+            swapped["public_gate"]["validators"],
+        ):
+            corpus = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy"
+            )
+            verify = next(
+                row for row in owner if row["gate_id"] == "leaf.conftest-policy-tests"
+            )
+            corpus["argv"], verify["argv"] = verify["argv"], corpus["argv"]
+        cases.append(("conftest-modes-cannot-swap-owners", swapped))
+
+        for label, document in cases:
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as raised:
+                    contract.parse_public_gate_contract(document)
+                self.assertEqual("ci-gate-public-validators", raised.exception.code)
+
+    def test_every_registered_unit_leaf_is_typed_local_only(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        public = contract.parse_public_gate_contract(document)
+        registered_units = {
+            node["gate_id"]
+            for node in document["gate_nodes"]
+            if node["kind"] == "leaf"
+            and node.get("entrypoint") == "scripts/lib/gate/ci_gate_adapters.py"
+            and node.get("argv", ())[:1] == ["run-unittest"]
+        }
+        registered_units.add("leaf.conftest-policy-tests")
+        self.assertLessEqual(registered_units, set(public.local_only_gate_ids))
 
     def test_manifest_reader_rejects_ambiguous_unbounded_and_nonregular_inputs(
         self,
@@ -379,7 +555,7 @@ class CiGateContractTests(unittest.TestCase):
     ) -> None:
         self.assertEqual(set(codes), {finding.code for finding in findings})
 
-    def test_operations_catalog_current_authority_is_an_exact_required_ci_leaf(
+    def test_operations_catalog_is_an_exact_path_bound_document_leaf(
         self,
     ) -> None:
         registry = contract.parse_gate_registry(
@@ -396,10 +572,16 @@ class CiGateContractTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
+        lifecycle_roots = next(
+            route.root_gate_ids
+            for route in public.suites
+            if route.name == "document-lifecycle"
+        )
         operations_roots = next(
             route.root_gate_ids for route in public.suites if route.name == "operations"
         )
-        self.assertIn(leaf.gate_id, operations_roots)
+        self.assertIn(leaf.gate_id, lifecycle_roots)
+        self.assertNotIn(leaf.gate_id, operations_roots)
 
     def test_schema_v2_contract_is_strict_json_and_duplicate_safe(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -867,32 +1049,7 @@ class CiGateContractTests(unittest.TestCase):
                 findings = contract.validate_gate_registry(ROOT, candidate)
             self.assert_codes(findings, "ci-gate-entrypoint-invalid")
 
-    def test_retired_profile_grammar_is_rejected_and_local_children_are_exact(
-        self,
-    ) -> None:
-        live = contract.load_contract_document(ROOT)
-        self.assertNotIn("profile_roots", live)
-        self.assertTrue(all("profiles" not in node for node in live["gate_nodes"]))
-        retired_root = json.loads(json.dumps(live))
-        retired_root["profile_roots"] = []
-        with self.subTest(boundary="retired-profile-roots"):
-            with self.assertRaises(contract.GateContractError) as caught:
-                contract.parse_gate_registry(
-                    retired_root,
-                    ".github/workflow-contract.yml",
-                )
-            self.assertEqual("ci-gate-document-fields", caught.exception.code)
-
-        retired_node = json.loads(json.dumps(live))
-        retired_node["gate_nodes"][0]["profiles"] = ["ci"]
-        with self.subTest(boundary="retired-node-profiles"):
-            with self.assertRaises(contract.GateContractError) as caught:
-                contract.parse_gate_registry(
-                    retired_node,
-                    ".github/workflow-contract.yml",
-                )
-            self.assertEqual("ci-gate-kind-fields", caught.exception.code)
-
+    def test_local_aggregate_children_preserve_registered_order(self) -> None:
         candidate = complete_registry()
         wrong_local_children = tuple(
             dataclasses.replace(
@@ -1075,8 +1232,8 @@ class CiGateContractTests(unittest.TestCase):
             {
                 "CI",
                 "GITHUB_ACTIONS",
-                "HEAD_REF",
-                "PR_TITLE",
+                "PR_BASE_SHA",
+                "PR_HEAD_SHA",
                 "TEMPLATE_GATE_BASE",
             },
             {key for node in registry.nodes for key in node.allowed_env_keys},

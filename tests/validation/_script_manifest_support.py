@@ -55,25 +55,11 @@ MUTATION_OVERRIDES = {
     "scripts/security/verify-sample-service-supply-chain.sh": "runtime",
     "scripts/validation/check-document-metadata.py": "check-write",
     "scripts/operations/rehearse-postgres-logical-upgrade.sh": "runtime",
-    "scripts/operations/update-main-current-tag.sh": "runtime",
+    "scripts/operations/release.py": "runtime",
     "scripts/validation/run-agent-precommit-all-files.sh": "check-write",
-    "scripts/validation/run-ci-precommit.sh": "check-write",
     "scripts/operations/check-compose-core-readiness.sh": "runtime",
     "scripts/validation/validate-docker-compose.sh": "runtime",
 }
-MANDATORY_DISPOSITIONS = {
-    "scripts/hooks/post-tool-validate.sh": "retain",
-}
-TASK12_RETIRED_SCRIPTS = frozenset(
-    {
-        "scripts/hooks/patch-graphify-post-commit.sh",
-        "scripts/knowledge/generate-llm-wiki-coverage.sh",
-        "scripts/knowledge/generate-llm-wiki-index.sh",
-        "scripts/validation/check-repo-contracts.sh",
-        "scripts/validation/recommend-gap-routing.sh",
-        "scripts/validation/recommend-qa-gates.sh",
-    }
-)
 
 
 def tracked_paths(*pathspecs: str) -> set[str]:

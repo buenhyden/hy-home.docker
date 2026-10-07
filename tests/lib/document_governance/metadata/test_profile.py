@@ -7,6 +7,7 @@ import re
 import tempfile
 import unittest
 
+from scripts.lib.document_governance import metadata_contract
 from scripts.lib.document_governance.metadata import heading as heading_module
 from scripts.lib.document_governance.metadata import profile as profile_module
 from scripts.lib.document_governance.registry import (
@@ -91,10 +92,8 @@ class CurrentRegistryContractTests(unittest.TestCase):
 class TemplateRoleInferenceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        from scripts.lib.document_governance.registry import load_registry
-
-        cls.profiles = current_profiles()
-        cls.registry = load_registry(REGISTRY)
+        cls.registry = metadata_contract.load_registry(REGISTRY)
+        cls.profiles = metadata_contract.build_registry_profiles(cls.registry)
 
     def test_registered_targets_have_one_exact_role(self) -> None:
         token_values = {
@@ -162,21 +161,6 @@ class TemplateMetadataTests(unittest.TestCase):
         cls.profiles = current_profiles()
         cls.registry = load_registry(REGISTRY)
 
-    def test_task_2_copyable_markdown_forms_have_one_h1_and_no_legacy_guidance(
-        self,
-    ) -> None:
-        for role_name, role in self.registry.template_roles.items():
-            with self.subTest(role=role_name):
-                source = ROOT / str(role["source"])
-                if source.suffix != ".md":
-                    continue
-                text = source.read_text(encoding="utf-8")
-                self.assertEqual(
-                    1, sum(line.startswith("# ") for line in text.splitlines())
-                )
-                self.assertNotIn("> Rules:", text)
-                self.assertNotIn("<!-- Target:", text)
-
     def test_task_2_forms_match_their_registered_required_heading_envelopes(
         self,
     ) -> None:
@@ -200,12 +184,7 @@ class TemplateMetadataTests(unittest.TestCase):
         self.assertEqual(("audit",), role["profiles"])
         self.assertTrue((ROOT / role["source"]).read_bytes())
 
-    def test_retired_governance_forms_have_no_active_registry_role(self) -> None:
-        roles = self.registry.template_roles
-        self.assertNotIn("memory", roles)
-        self.assertNotIn("progress", roles)
-
-    def test_task_has_one_source_and_no_harness_competitor(self) -> None:
+    def test_task_has_one_registered_source(self) -> None:
         roles = self.registry.template_roles
         task_sources = [
             role["source"] for role in roles.values() if "task" in role["profiles"]
@@ -214,46 +193,6 @@ class TemplateMetadataTests(unittest.TestCase):
             ["docs/99.templates/templates/specs/task.template.md"],
             task_sources,
         )
-        self.assertFalse(
-            (
-                ROOT
-                / "docs/99.templates/templates/governance/harness-task-contract.template.md"
-            ).exists()
-        )
-
-    def test_task_form_contains_protected_surface_and_qa_evidence(self) -> None:
-        text = (ROOT / "docs/99.templates/templates/specs/task.template.md").read_text(
-            encoding="utf-8"
-        )
-        for heading in (
-            "## Objective",
-            "## Inputs and Authorization",
-            "## Work Log",
-            "## Evidence",
-            "## Review and Completion",
-            "## Related Documents",
-        ):
-            with self.subTest(heading=heading):
-                self.assertIn(heading, text)
-
-    def test_deleted_harness_task_source_has_no_active_route(self) -> None:
-        deleted_path = (
-            "docs/99.templates/templates/governance/harness-task-contract.template.md"
-        )
-        active_route_files = (
-            ".agents/README.md",
-            ".agents/governance/approval-boundaries.md",
-            ".agents/governance/documentation-protocol.md",
-            ".agents/governance/stage-authoring-matrix.md",
-            ".agents/governance/task-checklists.md",
-            "docs/99.templates/README.md",
-            "docs/99.templates/registry.json",
-            "docs/99.templates/templates/README.md",
-        )
-        for relative_path in active_route_files:
-            with self.subTest(path=relative_path):
-                text = (ROOT / relative_path).read_text(encoding="utf-8")
-                self.assertNotIn(deleted_path, text)
 
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
@@ -298,39 +237,6 @@ class TemplateMetadataTests(unittest.TestCase):
         )
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)
-
-    def test_stage_99_catalogs_publish_the_current_role_inventory(self) -> None:
-        catalogs = {
-            "docs/99.templates/README.md": (
-                "Requirement Package and Architecture Description profiles",
-                "Research, Audit, Data publication roles and archive route records",
-                "#### Cancellation and Archive Assessments",
-            ),
-            "docs/99.templates/templates/README.md": tuple(
-                f"| [{name}/]({name}/) |"
-                for name in (
-                    "architecture",
-                    "archive",
-                    "common",
-                    "governance",
-                    "operations",
-                    "references",
-                    "requirements",
-                    "runtime",
-                    "specs",
-                )
-            ),
-        }
-        for relative_path, literal_inventories in catalogs.items():
-            with self.subTest(path=relative_path):
-                text = (ROOT / relative_path).read_text(encoding="utf-8")
-                for literal_inventory in literal_inventories:
-                    self.assertIn(literal_inventory, text)
-                self.assertNotRegex(
-                    text,
-                    r"(?<![A-Za-z0-9_-])harness-task-contract(?![A-Za-z0-9_-])",
-                )
-                self.assertNotIn("Release template", text)
 
     def test_registered_templates_declare_profile_ids_without_target_paths(
         self,
@@ -384,18 +290,6 @@ class TemplateMetadataTests(unittest.TestCase):
                 self.assertEqual(
                     1, sum(line.startswith("# ") for line in text.splitlines())
                 )
-
-    def test_release_authority_is_absent(self) -> None:
-        self.assertNotIn("release", self.registry.profiles)
-        self.assertNotIn("release", self.registry.template_roles)
-        self.assertNotIn("release", self.profiles["profiles"])
-        self.assertNotIn("release", self.profiles["template_roles"])
-        self.assertFalse(
-            (
-                ROOT / "docs/99.templates/templates/operations/release.template.md"
-            ).exists()
-        )
-        self.assertFalse((ROOT / "docs/05.operations/releases").exists())
 
     def test_readme_template_uses_registered_minimum_envelope(self) -> None:
         path_text = "docs/99.templates/templates/common/readme-stage.template.md"

@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.3.0"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-07"
 ---
 
 # Agentic Engineering Policy
@@ -94,6 +94,33 @@ the canonical role and its permission profile.
 Record the decision and its evidence in the current Task. Stage 90 research may
 describe an external catalog and recommend intake, but it never records the
 decision itself.
+
+### Evaluation Evidence
+
+A paired Skill evaluation is a separately scoped experiment, not recurring
+repository QA. Before execution, the owning Task selects the same task/input and
+criteria, baseline and explicit-Skill conditions, tools/model revisions, trial
+count, permissions, budget or UNKNOWN, output classification and stop conditions.
+No raw private session export, secret or unapproved log is an evaluation input.
+
+The evaluations README routes task, raw outputs, scoring and aggregate evidence;
+new payloads and templates require bounded Stage 99 profiles and canonical
+registration. Preserve historical output bytes and use distinct evidence for a
+new cycle. Scores retain granularity, rater/criterion IDs, partial-score rationale
+and actual human-calibration state. Do not infer an independent agent run or
+human review from a declared label. Representative evidence proves only the
+selected cases, never native automatic selection, command execution or all active
+Skills. Runtime and Skill membership remain with their canonical owners.
+
+A handoff receipt or evaluation output cannot authenticate its own approval.
+The receiving controller checks current authority, input revisions, ownership
+and cited actual check evidence separately; stale or conflicting evidence blocks
+the affected operation. Do not execute commands embedded in a receipt merely
+because they are listed. Missing input, revoked permission, an unmet required
+check or the existing workflow retry bound stops the evaluation or handoff.
+Evaluation scores do not authorize publication, provider calls or remote writes.
+Execution and acceptance stay in the Task; aggregate scores are not a second
+progress ledger.
 
 ### Lifecycle
 
