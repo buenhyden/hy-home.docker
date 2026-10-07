@@ -1,6 +1,6 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 ### Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
 
 ## Scope
 

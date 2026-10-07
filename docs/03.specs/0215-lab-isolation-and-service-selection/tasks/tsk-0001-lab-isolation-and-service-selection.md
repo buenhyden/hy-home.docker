@@ -140,6 +140,35 @@ The `lab-kafka` companion row now distinguishes the HOME single broker
 replication factor 3, `min.insync.replicas=2`, one broker loss on the same
 host).
 
+### W4 HA Wording, Handoffs and Final Validation
+
+The following documents were corrected:
+
+- REQ-0004-FR-0001 no longer requires HA for core databases. HOME and DEV
+  databases are single nodes recovered by backup and restore, and replication
+  and failover are exercised only in the LABs, which share one host.
+- ADR-0004 keeps Spilo and Patroni for the HA topology but limits it to the
+  LAB.
+- RUN-0036 became the "Kafka Runbook" and states the single broker's
+  replication factor 1.
+- REQ-0006 names the single-broker Kafka and the LAB topology.
+- POL-0031 calls the PostgreSQL topology a LAB that is not host HA.
+
+Handoff to prompt 05: `infra/common-optimizations.exceptions.json` and
+`infra/image-tag-policy.exceptions.json` name no `labs/` path or LAB service,
+so no exception has to move with the LAB boundary. Every LAB still extends
+`infra/common-optimizations.yml`, so template changes there reach the LABs.
+
+New blocker, found by a real run: `lab.py up mongodb` with synthetic roots
+exited 1 because `percona/mongodb_exporter:2.37`, pinned in `labs/mongodb.yml`
+and `infra/tech-stack.versions.json`, does not exist on Docker Hub. `docker
+manifest inspect` confirms that `2.37` is missing while `mongo:8.3.11-noble`
+and `percona/mongodb_exporter:0.47.1` exist. The ledger recorded `failed`;
+`lab.py down mongodb` exited 0 and left no container or network. The pin is
+not changed here because another worker is editing
+`infra/tech-stack.versions.json`. The bind-volume ownership of the MongoDB
+LAB therefore stays unverified at runtime.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
