@@ -107,6 +107,8 @@ docs/02.architecture/decisions/
   Data 저장소와 Analytics 처리 패키지의 경계를 정한 proposed decision(SPEC-0197).
 - [`ADR-0046`](./0046-capability-tiers-and-quality-boundary.md):
   Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 proposed decision(SPEC-0197).
+- [`ADR-0047`](./0047-dev-timescale-influx-retirement-and-load-tools.md):
+  DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 proposed decision(SPEC-0212).
 
 ## Usage
 
