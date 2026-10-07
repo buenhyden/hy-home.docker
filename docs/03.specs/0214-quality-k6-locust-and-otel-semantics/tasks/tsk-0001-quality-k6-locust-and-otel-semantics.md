@@ -155,6 +155,33 @@ harness uses `5m`, since the check concerns query shape, not timing. Failed
 requests equal Rate `nonzero` (40). The dashboard tests failed 14 times
 against the previous JSON (RED) and pass now. Live Grafana is `NOT_RUN`.
 
+### W3 Locust Worker Bounds
+
+`labs/locust.yml` took the expected worker count from
+`LAB_LOCUST_EXPECT_WORKERS` but fixed the worker replicas at 2 and waited for
+workers without a limit. Both now come from the same input, and
+`--expect-workers-max-wait` reads `LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT`
+(default 60 s) from `labs/.env.example`. Combined with the existing
+`--run-time` and `--stop-timeout`, a run now has a deadline. The new
+`test_locust_telemetry` contract failed against the previous file (RED) and
+passes now. The lab public environment count fixture moved from 48 to 49
+(38 optional).
+
+An isolated run used project names `s0214loc-*`, a synthetic target and
+scenario, 4 users for 8 s, and the pinned Locust 2.46.6 image:
+
+| Run | Workers | Expected | Max wait | Exit | Requests | Leftovers |
+| --- | --- | --- | --- | --- | --- | --- |
+| w1 | 1 | 1 | 30 s | 0 | 156 | 0 |
+| w2 | 2 | 2 | 30 s | 0 | 156 | 0 |
+| w3 | 3 | 3 | 30 s | 0 | 156 | 0 |
+| short | 2 | 3 | 10 s | 1 | 0 | 0 |
+
+The shortage run logged "Gave up waiting for workers to connect", exited
+non-zero, and its workers stopped. Locust OTel export stays unsupported
+because the image has no OpenTelemetry SDK. Locust results stay file-based
+in the LAB, and k6 remains the default load path.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -162,7 +189,7 @@ against the previous JSON (RED) and pass now. Live Grafana is `NOT_RUN`.
 | Metric identity | 3 | W1 | Isolated metrics harness RED then GREEN | Pinned Alloy, Prometheus, Python digests | PASS | W1 Authenticated Receiver and Metric Identity | accepted |
 | Manifest v2 | 1 | W2 | `test_k6_results` RED then GREEN | Working tree | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
 | Executor peer | 2 | W2 | Unit tests; isolated k6 OTLP E2E | Pinned k6, Alloy, Prometheus digests | PASS | W2 Manifest Telemetry and Metrics Ingress | accepted |
-| Locust bounds | 4 | W3 | Render and isolated run | Pending | NOT_RUN | Pending | pending |
+| Locust bounds | 4 | W3 | `test_locust_telemetry` RED then GREEN; isolated 1/2/3-worker and shortage runs | Pinned Locust 2.46.6 image, synthetic scenario | PASS | W3 Locust Worker Bounds | accepted |
 | Records | 5 | W4 | Local gate and review | Pending | NOT_RUN | Pending | pending |
 
 ## Review and Completion

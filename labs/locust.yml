@@ -49,8 +49,12 @@ services:
       - /mnt/locust/scenario/locustfile.py
       - --master
       - --headless
+      # Workers and the expected count come from one input; a shortage ends the
+      # run non-zero after the bounded wait instead of waiting forever.
       - --expect-workers
       - '${LAB_LOCUST_EXPECT_WORKERS:-2}'
+      - --expect-workers-max-wait
+      - '${LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT:-60}'
       - --users
       - '${LAB_LOCUST_USERS:-10}'
       - --spawn-rate
@@ -97,4 +101,4 @@ services:
       retries: 6
       start_period: 5s
     deploy:
-      replicas: 2
+      replicas: ${LAB_LOCUST_EXPECT_WORKERS:-2}
