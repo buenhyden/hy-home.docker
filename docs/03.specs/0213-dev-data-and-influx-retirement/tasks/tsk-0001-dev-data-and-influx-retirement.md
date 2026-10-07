@@ -140,6 +140,36 @@ The directory is preserved. Purging it is a destructive operation and needs a
 separate owner instruction naming the path. Without a container, no restart
 blocking is needed: no root profile or service can recreate it.
 
+### W4 Backup Chain and Restore Canary
+
+The DEV chain is already linked; no source change was needed. `dev-pg` mounts
+`${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` (`create_host_path: false`) with the
+encrypted `dev` stanza and a cipher passed only through the entrypoint include
+file. `infra/09-platform-ops/restic/bin/hyhome-backup.sh` runs `pgbackrest
+check`, then a diff or weekly full backup and globals/schema exports with
+image and revision metadata. It does this only when the check passes. With
+`archive_mode=off` the check fails, so HOME DEV backups do not run until WAL
+activation is separately approved. `backup.sh` adds `state/dev-pgbackrest` to
+the Restic source list, and RUN-0021 owns the restore procedure (`--set`
+label, empty target, no `latest`, no PGDATA reuse). Without continuous WAL
+there is no PITR claim.
+
+Isolated canary in project `s0213iso`: 100 owner-owned rows in
+`proj_a.app.canary` were hashed. Then the source was stopped,
+`pgbackrest --no-online stanza-create` and `--no-online --force --type=full
+backup` ran (exit 0), and label `20261007-120930F` was restored with `--set`
+from a read-only repository mount into an empty volume (exit 0). The restored
+instance started and matched the row count and hash. It kept Timescale
+`2.30.2` and the role budgets 2/10/5, and accepted the special-character
+password over the network. This is offline synthetic evidence. It is not
+HOME backup, WAL, PITR, offsite or RPO/RTO evidence.
+
+Cleanup is incomplete: removal of the isolated containers
+(`s0213iso-pg`, `s0213iso-restored`), networks (`s0213iso-net`,
+`s0213iso-net2`) and volumes (`s0213iso-data`, `-repo`, `-restore`) was denied
+by the session permission policy. They hold synthetic data only and remain
+for the operator to remove.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -149,11 +179,14 @@ blocking is needed: no root profile or service can recreate it.
 | Isolated provisioning | 3 | W2 | Isolated dev-pg run, network-client auth | Project `s0213iso`, synthetic secrets | PASS | W2 Variable Boundary and Provisioning | accepted |
 | Influx source absence | 4 | W3 | Root render, explicit target, reference scan, RED/GREEN absence test | `.env.example`; working tree | PASS | W3 InfluxDB Retirement | accepted |
 | HOME data check | 5 | W3 | `docker ps -a`/volume/image list; directory size, count and file-type scan | HOME host, 2026-10-07 | PASS | HOME Data Check | accepted |
-| Backup chain and canary | 6 | W4 | Isolated offline backup/restore | Pending | NOT_RUN | Pending | pending |
+| Backup chain and canary | 6 | W4 | Source chain read; isolated offline full backup, `--set` restore, row/hash match | Project `s0213iso`, label `20261007-120930F` | PASS | W4 Backup Chain and Restore Canary | accepted |
+| HOME restore, WAL and PITR | 6 | W4 | HOME stanza, WAL archive and restore | No approved target | NOT_RUN | W4 Backup Chain and Restore Canary | pending |
 
 ## Review and Completion
 
-Not complete.
+Source and isolated work is complete; the remote PR candidate is pending.
+HOME restore, WAL/PITR, data purge and isolated-resource cleanup stay
+separate and are not claimed.
 
 ## Related Documents
 
