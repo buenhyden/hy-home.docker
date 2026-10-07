@@ -107,6 +107,8 @@ and registration requirements remain.
 Keep isolated unittest execution LOCAL even through direct adapter admission.
 Shell syntax validation parses every selected tracked file individually,
 without execution, and preserves inventory failure and the first nonzero code.
+Shell lint corrections preserve the registered Conftest mode, command and
+root-resolution contracts; they do not grant runtime execution.
 Retire fixed historical filename/count and test-of-test expectations only after
 identifying their continuing behavior owners. Full QA remains an explicitly
 scoped audit; final review covers the frozen logical diff and affected evidence,

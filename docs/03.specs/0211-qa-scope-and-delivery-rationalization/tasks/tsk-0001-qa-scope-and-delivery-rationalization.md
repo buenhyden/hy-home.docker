@@ -1580,6 +1580,91 @@ cost is a measured remaining cost candidate under its current consumer owner,
 not justification to remove byte/history/identity guarantees or invent a
 performance improvement. Main/security/release/runtime remain unobserved.
 
+### Submitted remaining-QA candidate failure
+
+After the final Task-only minimum and actual independent evidence-delta review
+passed, Root created normal logical commitd46f1968548ef529996af44299dd8714a1efe231,
+tree500e98343d98bd4a5ea95cd3f731f99ae1d55767, containing only the reviewed21files.
+Normal push -u submitted it to PR368. The existing user-global ECC pre-push
+hook reported no supported root checks; no hook was disabled, skipped or edited.
+The tracked default-hook change does not claim removal of that global hook.
+PR description was updated through REST after the installed gh edit path failed
+on deprecated Projects classic GraphQL; the source head remained unchanged and
+edited is not a candidate workflow trigger. These are actual submission facts,
+not integration evidence.
+
+The one new hosted candidate run37586857030/job112678882658 failed its
+Run changed candidate validation step. Actual job duration is8minutes20seconds,
+2026-10-07T07:21:53Z to07:30:13Z. Status receipt
+`/tmp/hy-home-spec0211-remaining-qa-hosted-failure-status.json` preserves the exact
+source head, timestamps and failed step. Root observed job/step status only;
+no raw validation output has been read, so the failing leaf and cause remain
+UNKNOWN. This is not inferred to be npm, manifest or a defect in the26passing
+local cases. It is an actual required hosted FAIL and AC3/W4 remains pending.
+
+This bounded batch stops further source correction, QA retry and submission.
+The accepted local source commit and all prior failures remain preserved.
+Task status is blocked and Spec/Plan project it. These three result/status files
+remain unstaged for scoped metadata/style/LOCAL-link validation and independent
+evidence-delta readback; no new commit or hosted rerun is authorized by this
+record. The controller requested the concrete single-step raw-log approval
+under current approval policy. That request does not authorize another patch,
+retry, main merge, protection change or runtime operation. Remote candidate
+failure prevents overall acceptance/integration. Root main remains clean at
+849ef009a; branch/worktree and these records are retained for diagnosis.
+
+### Approved Conftest ShellCheck correction
+
+The current user approved raw diagnosis of run37586857030/job112678882658's
+Run changed candidate validation output only. Root inspected exactly that
+validation ZIP member in memory and stored only structured code/severity/path,
+result identifiers and its digest. Receipt
+`/tmp/hy-home-spec0211-approved-shellcheck-diagnostic.json` confirms SC1007,
+warning, infra/11-quality/conftest/run.sh line4. Raw payload, credentials,
+environment values and other log members were neither printed nor stored.
+The failed job remains FAIL; parsed diagnostics are not a claim that every
+unparsed output line or all other leaves passed.
+
+After the proposal and isolated checks were concrete, the user separately
+approved patch13f1d0fb6060f3dd88dc2e28e2cc5956964e8fe5494f49061fd6991eac3c1478
+as a four-file followup: run.sh and this existing Spec/Plan/Task. The maximum
+submission is one normal commit/push and one new remote candidate observation,
+after scoped checks and independent affected-delta review. Numeric/native
+budgets are UNKNOWN. Further required failure stops this followup. That trusted
+source request supplies authority; raw diagnosis and review did not authorize
+application or retry by themselves.
+
+The assigned pipeline writer prepared the one-line proposal; Root applied its
+exact bytes on observed HEADd46f19685. Source before40b3a2d4 and after6dd6d3d8
+are bound in `/tmp/spec-0211-conftest-cdpath-shellcheck-proposal.json`.
+CDPATH= cd becomes CDPATH='' cd: both assign an empty CDPATH for the subshell's
+cd, while the latter explicitly states that intent for ShellCheck. All other
+lines, default omitted mode, verify/corpus/all selection, one-argument bound,
+quoted dirname, root ../../.., Conftest commands and permissions are unchanged.
+No warning suppression, runtime mode or deployment permission is added.
+
+Isolated original ShellCheck0.11 with registered --severity=warning failed
+SC1007; proposed copy passed. The applied original path then passed the same
+registered one-file ShellCheck, bash -n, sh -n and diff hygiene. Receipt
+`/tmp/hy-home-spec0211-conftest-cdpath-applied-checks.json` confirms exit0 and
+unchanged source bytes. Those syntax checks do not execute the body; no
+Conftest, Docker, new unit test, full QA or unrelated source check ran. Actual
+independent proposal review found no Important security/behavior finding;
+final applied delta review also passed on the exact four files. The three-document
+minimum passed metadata selected=3/violations=0 in 146.347559 seconds, isolated
+style 0 errors and LOCAL links 11/0 findings, with bytes unchanged. Receipts
+`/tmp/hy-home-spec0211-conftest-shellcheck-document-minimum.json` and the actual
+qa_delivery_security_review bind that source input. This accepts the local
+quote-only correction slice; overall hosted acceptance remains pending. The GNU/ShellCheck intent is independently supported
+by [SC1007 guidance](https://www.shellcheck.net/wiki/SC1007).
+
+The user also directs lint/format ownership to immediately before local commit
+and server-side final PR/build/deployment checks. A separate read-only pipeline
+owner inspects actual staged-style and installed-hook wiring before proposing
+that bounded implementation. It does not enlarge this four-file correction,
+change user-global hooks, or claim unimplemented local hook enforcement. Build,
+deployment and remote artifact evidence remain distinct from local checks.
+
 ### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -1632,6 +1717,12 @@ performance improvement. Main/security/release/runtime remain unobserved.
 | SPEC-0211 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
 | SPEC-0211-PLAN-0001 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
 | SPEC-0211-TSK-0001 | blocked | in-progress | #current-user-directed-remaining-qa-cleanup |
+| SPEC-0211 | in-progress | blocked | #submitted-remaining-qa-candidate-failure |
+| SPEC-0211-PLAN-0001 | in-progress | blocked | #submitted-remaining-qa-candidate-failure |
+| SPEC-0211-TSK-0001 | in-progress | blocked | #submitted-remaining-qa-candidate-failure |
+| SPEC-0211 | blocked | in-progress | #approved-conftest-shellcheck-correction |
+| SPEC-0211-PLAN-0001 | blocked | in-progress | #approved-conftest-shellcheck-correction |
+| SPEC-0211-TSK-0001 | blocked | in-progress | #approved-conftest-shellcheck-correction |
 
 ### Official research inputs
 
@@ -1669,6 +1760,8 @@ performance improvement. Main/security/release/runtime remain unobserved.
 | Submitted unit candidate | 3 | W4 | Actual hosted result and approved value-free diagnosis | PR368 head2cf46fb; run37579620261/job112656063347 | FAIL | Submitted unit candidate manifest failure | pending |
 | Manifest owner focused followup | 1, 2, 5 | W7 | Existing fixture, actual manifest and registered read-only statics | HEAD2cf; exact approved two-source after-images | FAIL | Manifest owner focused result and wider QA request | pending |
 | Remaining QA source guarantees | 1, 2, 5 | W7 | Focused RED/GREEN, actual shell, manifest, registered statics and independent review | HEAD2cf; reviewed21file batch, corrected manifest364899b9 | PASS | Remaining QA local source closeout | accepted |
+| Remaining-QA hosted candidate | 3 | W4 | Actual remote job/step status only | PR368 headd46f19685; run37586857030/job112678882658 | FAIL | Submitted remaining-QA candidate failure | pending |
+| Conftest lint correction | 2, 5 | W7 | Registered one-file ShellCheck and bash/sh syntax, exact source/proposal review | HEADd46; applied6dd6d3d8, quote-only patch13f1d0fb | PASS | Approved Conftest ShellCheck correction | accepted |
 
 ## Review and Completion
 
@@ -1684,7 +1777,7 @@ was submitted. Its hosted candidate failed eight stale manifest proof
 associations. The user approved the bounded owner repair and execution resumed,
 then the actual focused manifest check failed two mirror-location rules. The
 followup stopped before submission; overall criteria and integration remain
-pending while the final result-only Task record is checked before one new hosted submission. Previous
+pending because the new d46f19685 hosted candidate failed; the bounded batch stopped and the approved diagnostic and one-line followup are recorded below. Previous
 npm findings remain historical evidence.
 Missing operational observations and release publication remain unexecuted;
 source structure and mocked publication are not runtime activation.

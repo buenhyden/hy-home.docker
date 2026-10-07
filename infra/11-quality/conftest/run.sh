@@ -1,7 +1,7 @@
 #!/bin/sh
 # Verify the policies, scan the tracked corpus, or preserve the combined default.
 set -eu
-script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 cd "$script_dir/../../.."
 policy=infra/11-quality/conftest/policy
 mode=${1-all}

@@ -45,7 +45,8 @@ current semantic owners are verified. Record each actual input, result and
 review separately in the Task. W2 retires remaining historical source-census
 and retired-file expectations with continuing owners. W3 removes the manifest's
 path-only mirror requirement, closes direct unittest admission to LOCAL, and
-corrects per-file shell syntax validation. W6 aligns full-audit and review-delta
+corrects per-file shell syntax validation. Scoped lint-only corrections retain
+Conftest mode and command behavior and use registered one-file lint/syntax checks. W6 aligns full-audit and review-delta
 policy. W7 validates only affected cases, manifest and read-only static/document
 checks; it does not replay unchanged metadata/library aggregates or full QA.
 Initial draft publication and final evidence-only records use document-minimum
