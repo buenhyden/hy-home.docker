@@ -1,10 +1,10 @@
 ---
 title: "Traefik Edge Router"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2025-11-12"
 ---
 
@@ -119,8 +119,8 @@ healthcheck:
 Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OAuth2 Proxy에 위임합니다.
 
 1. Entrypoint: `websecure`(포트 443).
-2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/oauth2/auth`.
-3. Error Redirect: `sso-errors@file`이 401/403 리다이렉트를 `/oauth2/sign_in`으로 처리.
+2. Middleware: `sso-auth@file` -> `http://oauth2-proxy:4180/`. session이 없으면 브라우저는 Keycloak으로 302, `Accept: application/json` 요청은 401을 받습니다.
+3. Error page: `sso-errors@file`은 403만 `/oauth2/sign_in` 응답으로 바꿉니다. 401은 machine client에게 그대로 전달합니다.
 
 ## Validation
 

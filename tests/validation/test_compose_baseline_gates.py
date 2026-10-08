@@ -12,6 +12,8 @@ from __future__ import annotations
 import json
 import os
 import re
+import secrets
+import shutil
 import sqlite3
 import subprocess
 import tempfile
@@ -2310,6 +2312,287 @@ def _cdc_after(record):
     return row
 
 
+SSO_MIDDLEWARE = Path(
+    os.environ.get(
+        "SSO_MIDDLEWARE", ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
+    )
+)
+SSO_PROXY_CFG = ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg"
+SSO_SUBNET, SSO_TRAEFIK_IP = "10.250.199.0/24", "10.250.199.2"
+
+
+def _sso_docker(*args, check=True, timeout=180, **kw):
+    return subprocess.run(["docker", *args], capture_output=True, text=True,
+                          check=check, timeout=timeout, **kw)  # fmt: skip
+
+
+def _sso_image(compose, service):
+    import yaml
+
+    spec = yaml.safe_load((ROOT / compose).read_text())["services"][service]
+    return spec["image"]
+
+
+SSO_REALM = {
+    "realm": "r",
+    "enabled": True,
+    "groups": [{"name": "admins"}],
+    "clients": [{
+        "clientId": "proxy", "enabled": True, "publicClient": False,
+        "standardFlowEnabled": True, "implicitFlowEnabled": False,
+        "directAccessGrantsEnabled": False, "serviceAccountsEnabled": False,
+        "redirectUris": ["https://auth.hy.test/oauth2/callback"],
+        "attributes": {"pkce.code.challenge.method": "S256",
+                       "post.logout.redirect.uris": "https://app.hy.test/*"},
+    }],
+    "users": [
+        {"username": name, "enabled": True, "email": f"{name}@example.test",
+         "emailVerified": True, "firstName": name, "lastName": "Synthetic",
+         "credentials": [{"type": "password", "value": f"{name}-synthetic",
+                          "temporary": False}],
+         "groups": groups}
+        for name, groups in (("alice", ["/admins"]), ("bob", []))
+    ],
+}  # fmt: skip
+
+SSO_ROUTERS = """
+http:
+  routers:
+    app:
+      rule: Host(`app.hy.test`)
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [sso-protected-chain@file]
+      service: app-svc
+    oauth2:
+      rule: Host(`auth.hy.test`) && PathPrefix(`/oauth2`)
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [gateway-standard-chain@file]
+      service: oauth2-proxy-svc
+  services:
+    app-svc:
+      loadBalancer:
+        servers:
+          - url: "http://upstream:8000"
+"""
+
+SSO_UPSTREAM = """
+import http.server, json
+class H(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = json.dumps({"user": self.headers.get("X-Auth-Request-User"),
+                           "email": self.headers.get("X-Auth-Request-Email")}).encode()
+        self.send_response(200); self.send_header("Content-Type", "application/json")
+        self.end_headers(); self.wfile.write(body)
+http.server.HTTPServer(("0.0.0.0", 8000), H).serve_forever()
+"""
+
+# Runs inside the client container: one browser-like session per invocation.
+SSO_CLIENT = r"""
+import http.cookiejar, json, re, ssl, sys, urllib.parse, urllib.request
+ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+jar = http.cookiejar.CookieJar()
+opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx),
+                                     urllib.request.HTTPCookieProcessor(jar), NoRedirect())
+def req(url, data=None, accept="text/html"):
+    r = urllib.request.Request(url, data=data, headers={"Accept": accept})
+    try:
+        resp = opener.open(r, timeout=20)
+    except urllib.error.HTTPError as e:
+        resp = e
+    return (resp.status, resp.headers.get("Location") or "",
+            resp.headers.get("Content-Type") or "", resp.read().decode("utf-8", "replace"))
+def login(user):
+    status, loc, _, _ = req("https://app.hy.test/")
+    assert status == 302 and "/protocol/openid-connect/auth" in loc, (status, loc)
+    query = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(loc).query))
+    status, _, _, page = req(loc)
+    action = re.search(r'action="([^"]+)"', page).group(1).replace("&amp;", "&")
+    form = urllib.parse.urlencode({"username": user, "password": user + "-synthetic"}).encode()
+    status, loc, _, _ = req(action, form)
+    assert status == 302 and loc.startswith("https://auth.hy.test/oauth2/callback"), (status, loc)
+    callback = req(loc)[0]
+    cookies = {c.name: {"domain": c.domain, "secure": c.secure,
+                        "httponly": c.has_nonstandard_attr("HttpOnly")}
+               for c in jar}
+    return query, cookies, callback
+mode = sys.argv[1]
+out = {}
+if mode == "anonymous":
+    for accept in ("text/html", "application/json"):
+        status, loc, ctype, _ = req("https://app.hy.test/api/v1/data", accept=accept)
+        out[accept] = {"status": status, "location": loc.split("?")[0], "type": ctype}
+else:
+    query, cookies, callback = login(mode)
+    out["callback"] = callback
+    keys = ("client_id", "redirect_uri", "code_challenge_method", "response_type")
+    out["authorize"] = {k: query.get(k) for k in keys}
+    out["state_and_challenge"] = bool(query.get("state")) and bool(query.get("code_challenge"))
+    out["cookies"] = cookies
+    status, _, _, body = req("https://app.hy.test/", accept="application/json")
+    out["app"] = {"status": status, "body": body[:300]}
+    status, _, _, _ = req("https://auth.hy.test/oauth2/sign_out?rd=https%3A%2F%2Fapp.hy.test%2F")
+    out["sign_out"] = status
+    status, loc, _, _ = req("https://app.hy.test/")
+    out["after_sign_out"] = {"status": status, "location": loc.split("?")[0]}
+print(json.dumps(out))
+"""
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_SSO_REHEARSAL") == "1",
+    "set HYHOME_SSO_REHEARSAL=1 to run the disposable SSO rehearsal (needs Docker)",
+)
+class SsoRehearsalTests(unittest.TestCase):
+    """Traefik, oauth2-proxy and Keycloak on an internal network: synthetic
+    realm, two users and the tracked middleware and proxy config."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tag = f"hysso{os.getpid()}"
+        cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
+        _sso_docker("build", "-q", "-t", cls.proxy_image, "-f",
+                    str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
+                    str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
+        cls.addClassCleanup(_sso_docker, "image", "rm", cls.proxy_image, check=False)
+        cls.tmp = Path(tempfile.mkdtemp(prefix="hysso"))
+        cls.addClassCleanup(shutil.rmtree, cls.tmp, True)
+        (cls.tmp / "dynamic").mkdir()
+        shutil.copy(SSO_MIDDLEWARE, cls.tmp / "dynamic/middleware.yml")
+        (cls.tmp / "dynamic/routers.yml").write_text(SSO_ROUTERS)
+        (cls.tmp / "import").mkdir()
+        client_secret = secrets.token_hex(16)
+        realm = json.loads(json.dumps(SSO_REALM))
+        realm["clients"][0]["secret"] = client_secret
+        (cls.tmp / "import/r.json").write_text(json.dumps(realm))
+        (cls.tmp / "secrets").mkdir()
+        (cls.tmp / "secrets/client").write_text(client_secret)
+        (cls.tmp / "secrets/cookie").write_text(secrets.token_hex(16))
+        for path in [cls.tmp, *cls.tmp.rglob("*")]:
+            path.chmod(0o755 if path.is_dir() else 0o644)
+        _sso_docker("network", "create", "--internal", "--subnet", SSO_SUBNET, cls.tag)
+        cls.addClassCleanup(_sso_docker, "network", "rm", cls.tag, check=False)
+        for name in ("keycloak", "upstream", "proxy", "traefik", "client"):
+            cls.addClassCleanup(
+                _sso_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
+            )
+        net = ["--network", cls.tag]
+        # Traefik first, so no dynamic address takes its fixed one.
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
+               "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
+               "-v", f"{cls.tmp}/dynamic:/dynamic:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
+               "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
+               "--log.level=ERROR")  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-keycloak", *net, "--network-alias", "keycloak",
+               "-e", "KC_BOOTSTRAP_ADMIN_USERNAME=admin",
+               "-e", "KC_BOOTSTRAP_ADMIN_PASSWORD=synthetic-admin",
+               "-v", f"{cls.tmp}/import:/opt/keycloak/data/import:ro",
+               _sso_image("infra/02-auth/keycloak/docker-compose.yml", "keycloak"),
+               "start-dev", "--import-realm", "--http-port=8080",
+               "--hostname=http://keycloak:8080")  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-upstream", *net, "--network-alias", "upstream",
+               "python:3.13.15-alpine", "python", "-c", SSO_UPSTREAM)  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-client", *net,
+               "python:3.13.15-alpine", "sleep", "infinity")  # fmt: skip
+        cls.wait(cls.fetch_ok("http://keycloak:8080/realms/r"), "keycloak", tries=150)
+        cls.add_group_mapper()
+        # The tracked config; only deployment-specific values are replaced.
+        env = {
+            "OAUTH2_PROXY_CLIENT_ID": "proxy",
+            "OAUTH2_PROXY_OIDC_ISSUER_URL": "http://keycloak:8080/realms/r",
+            "OAUTH2_PROXY_REDIRECT_URL": "https://auth.hy.test/oauth2/callback",
+            "OAUTH2_PROXY_COOKIE_DOMAINS": ".hy.test",
+            "OAUTH2_PROXY_WHITELIST_DOMAINS": ".hy.test",
+            "OAUTH2_PROXY_TRUSTED_PROXY_IPS": f"{SSO_TRAEFIK_IP}/32",
+            "OAUTH2_PROXY_SESSION_STORE_TYPE": "cookie",
+            "OAUTH2_PROXY_SCOPE": "openid email profile",
+        }
+        args = [x for key, value in env.items() for x in ("-e", f"{key}={value}")]
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-proxy", *net, "--network-alias", "oauth2-proxy",
+               *args, "-v", f"{SSO_PROXY_CFG}:/etc/oauth2-proxy.cfg:ro",
+               "-v", f"{cls.tmp}/secrets/client:/run/secrets/oauth2_proxy_client_secret:ro",
+               "-v", f"{cls.tmp}/secrets/cookie:/run/secrets/oauth2_proxy_cookie_secret:ro",
+               cls.proxy_image)  # fmt: skip
+        cls.wait(
+            cls.fetch_ok("http://oauth2-proxy:4180/ping"), "oauth2-proxy", tries=60
+        )
+
+    @classmethod
+    def fetch_ok(cls, url):
+        code = f"import urllib.request;urllib.request.urlopen({url!r},timeout=5)"
+        return lambda: _sso_docker("exec", f"{cls.tag}-client", "python", "-c", code,
+                              check=False).returncode == 0  # fmt: skip
+
+    @classmethod
+    def add_group_mapper(cls):
+        # Group paths in the tokens, as the HOME realm gives allowed_groups.
+        script = (
+            "cd /tmp && export HOME=/tmp && K=/opt/keycloak/bin/kcadm.sh && "
+            "$K config credentials --server http://localhost:8080 --realm master "
+            "--user admin --password synthetic-admin >/dev/null && "
+            "ID=$($K get clients -r r -q clientId=proxy --fields id --format csv --noquotes) && "
+            "$K create clients/$ID/protocol-mappers/models -r r -s name=groups "
+            "-s protocol=openid-connect -s protocolMapper=oidc-group-membership-mapper "
+            "-s 'config.\"full.path\"=true' -s 'config.\"id.token.claim\"=true' "
+            "-s 'config.\"access.token.claim\"=true' -s 'config.\"userinfo.token.claim\"=true' "
+            "-s 'config.\"claim.name\"=groups' >/dev/null"
+        )
+        _sso_docker("exec", f"{cls.tag}-keycloak", "bash", "-c", script)
+
+    @classmethod
+    def wait(cls, probe, what, tries=60):
+        for _ in range(tries):
+            if probe():
+                return
+            time.sleep(2)
+        logs = _sso_docker("logs", "--tail", "20", f"{cls.tag}-proxy", check=False)
+        raise AssertionError(
+            f"{what} not ready\n{logs.stdout[-2000:]}{logs.stderr[-2000:]}"
+        )
+
+    def browse(self, mode):
+        out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", SSO_CLIENT, mode,
+                     check=False, timeout=120)  # fmt: skip
+        self.assertEqual(0, out.returncode, out.stderr[-2000:])
+        print(mode, out.stdout.strip())
+        return json.loads(out.stdout)
+
+    def test_anonymous_browser_is_redirected_and_machine_client_is_refused(self):
+        out = self.browse("anonymous")
+        browser = out["text/html"]
+        self.assertEqual(302, browser["status"])
+        self.assertTrue(
+            browser["location"].endswith("/realms/r/protocol/openid-connect/auth")
+        )
+        # A login page is not an API answer: a JSON client gets 401.
+        self.assertEqual(401, out["application/json"]["status"], out)
+
+    def test_member_signs_in_with_pkce_and_signs_out(self):
+        out = self.browse("alice")
+        self.assertEqual("S256", out["authorize"]["code_challenge_method"])
+        self.assertEqual(
+            "https://auth.hy.test/oauth2/callback", out["authorize"]["redirect_uri"]
+        )
+        self.assertTrue(out["state_and_challenge"])
+        cookie = out["cookies"]["__Secure-sso-cookie"]
+        self.assertEqual(".hy.test", cookie["domain"])
+        self.assertTrue(cookie["secure"] and cookie["httponly"])
+        self.assertEqual(200, out["app"]["status"])
+        self.assertIn("alice", out["app"]["body"])
+        self.assertEqual(302, out["after_sign_out"]["status"])
+
+    def test_non_member_is_denied(self):
+        # oauth2-proxy refuses the session at the callback (allowed_groups), so
+        # no SSO cookie exists and the application never answers.
+        out = self.browse("bob")
+        self.assertEqual(403, out["callback"], out)
+        self.assertNotIn("__Secure-sso-cookie", out["cookies"])
+        self.assertNotEqual(200, out["app"]["status"])
+
+
 @unittest.skipUnless(
     os.environ.get("HYHOME_CDC_REHEARSAL") == "1",
     "set HYHOME_CDC_REHEARSAL=1 to run the disposable CDC stream rehearsal (needs Docker)",
@@ -4485,15 +4768,26 @@ class RouteAuthContractTests(unittest.TestCase):
         )
         self.assertEqual([], bare)
 
-    def test_sso_sign_in_redirect_reaches_the_browser_as_302(self) -> None:
-        """A 401 keeps oauth2-proxy's Location, but browsers only follow a 3xx."""
+    def test_sso_redirects_browsers_and_refuses_machine_clients(self) -> None:
+        """The proxy root sends a browser to Keycloak and answers an
+        Accept: application/json client with 401; a login page is never a
+        machine answer. SsoRehearsalTests proves this at runtime."""
         import yaml
 
         path = ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
-        errors = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
+        middlewares = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
             "middlewares"
-        ]["sso-errors"]["errors"]
-        self.assertEqual({"401": 302}, errors.get("statusRewrites"))
+        ]
+        self.assertEqual(
+            "http://oauth2-proxy:4180/",
+            middlewares["sso-auth"]["forwardAuth"]["address"],
+        )
+        errors = middlewares["sso-errors"]["errors"]
+        self.assertEqual(["403"], errors["status"])
+        self.assertNotIn("statusRewrites", errors)
+        cfg = (ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg").read_text()
+        self.assertIn('upstreams = [ "static://200" ]', cfg)
+        self.assertIn("skip_provider_button = true", cfg)
 
 
 class QdrantApiKeyContractTests(unittest.TestCase):

@@ -20,7 +20,10 @@ http:
     # 1. 기존 SSO 인증 (앱 보호용)
     sso-auth:
       forwardAuth:
-        address: "http://oauth2-proxy:4180/oauth2/auth"
+        # The proxy root (static upstream) decides per request: a browser gets
+        # its 302 to Keycloak, an Accept: application/json client gets 401, and
+        # a valid session gets 200 with the identity headers below.
+        address: "http://oauth2-proxy:4180/"
         maxResponseBodySize: 65536
         trustForwardHeader: false
         # Identity only. Forwarding Authorization/access/ID tokens to every
@@ -34,12 +37,10 @@ http:
 
     sso-errors:
       errors:
+        # Only a refused session gets the sign-in page. A 401 now reaches only
+        # machine clients and must stay a 401, never a login page.
         status:
-          - "401-403"
-        # oauth2-proxy answers sign_in with a redirect; browsers ignore Location
-        # on a 401, so only that status becomes a 302. 403 keeps its page.
-        statusRewrites:
-          "401": 302
+          - "403"
         service: oauth2-proxy-svc
         query: "/oauth2/sign_in?rd={url}"
 
@@ -49,15 +50,6 @@ http:
           - gateway-standard-chain
           - sso-errors
           - sso-auth
-
-    sso-auth-open-webui:
-      forwardAuth:
-        address: "http://oauth2-proxy:4180/oauth2/auth"
-        maxResponseBodySize: 65536
-        trustForwardHeader: false
-        authResponseHeaders:
-          - "X-Auth-Request-User"
-          - "X-Auth-Request-Email"
 
     # 2. 대시보드용 Basic Auth (Docker Secret 기반)
     dashboard-auth:
