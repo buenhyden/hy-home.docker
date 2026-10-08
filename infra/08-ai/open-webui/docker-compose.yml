@@ -17,7 +17,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-med
-    image: ghcr.io/open-webui/open-webui:v0.11.3-cuda
+    image: ghcr.io/open-webui/open-webui:v0.11.4-cuda
     container_name: open-webui
     mem_limit: 2g
     cpus: "2.00"
