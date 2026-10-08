@@ -26,6 +26,14 @@ mkdir -p "$include"
 printf '[global]\nrepo1-cipher-pass=%s\n' "$pass" > "$include/cipher.conf"
 unset pass
 chown -R postgres:postgres /tmp/pgbackrest
+# The host repository root is a pre-created bind (create_host_path: false);
+# only its top directory is handed to pgBackRest, never its contents. A restore
+# mounts it read-only, so nothing is changed when it is already correct.
+repo=/var/lib/pgbackrest
+if [ "$(stat -c '%u:%g %a' "$repo")" != "$(id -u postgres):$(id -g postgres) 750" ]; then
+  chown postgres:postgres "$repo"
+  chmod 0750 "$repo"
+fi
 chmod 0700 /tmp/pgbackrest "$include"
 chmod 0600 "$include/cipher.conf"
 umask 022

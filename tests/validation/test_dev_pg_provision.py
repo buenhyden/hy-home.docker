@@ -2,6 +2,7 @@
 
 import importlib.util
 import json
+import sys
 import unittest
 from pathlib import Path
 
@@ -89,14 +90,24 @@ class ProjectProvisionTests(unittest.TestCase):
         self.assertNotIn("create_hypertable", sql)
         self.assertNotIn("add_retention_policy", sql)
 
-    def test_backup_remains_inert_until_separate_activation(self):
+    def test_wal_archive_is_bounded_and_retained(self):
         compose = (SOURCE.parents[2] / "docker-compose.yml").read_text()
         backup = (SOURCE.parents[1] / "backup/pgbackrest.conf").read_text()
-        self.assertIn("archive_mode=off", compose)
-        self.assertNotIn("archive_mode=on", compose)
-        self.assertNotIn("repo1-retention-full=", backup)
-        self.assertNotIn("repo1-retention-diff=", backup)
-        self.assertNotIn("archive-push-queue-max=", backup)
+        entrypoint = (SOURCE.parents[1] / "backup/entrypoint.sh").read_text()
+        self.assertIn("archive_mode=on", compose)
+        self.assertNotIn("archive_mode=off", compose)
+        self.assertIn(
+            "archive_command=pgbackrest --stanza=dev archive-push %p", compose
+        )
+        self.assertIn("repo1-retention-full=2", backup)
+        self.assertIn("repo1-retention-diff=6", backup)
+        self.assertIn("archive-push-queue-max=2GiB", backup)
+        self.assertNotIn("repo1-cipher-pass", backup)
+        # Only the repository root changes owner; existing backups are untouched.
+        self.assertIn('chown postgres:postgres "$repo"', entrypoint)
+        self.assertNotIn('chown -R postgres:postgres "$repo"', entrypoint)
+        # A read-only restore mount must start: change only when it differs.
+        self.assertIn('if [ "$(stat -c', entrypoint)
 
     def test_tracked_fixture_matches_validated_contract(self):
         fixture = SOURCE.parent / "platform.json"
@@ -188,6 +199,30 @@ class ProjectProvisionTests(unittest.TestCase):
         self.assertIn("schema ownership mismatch", sql)
         self.assertIn("\\connect platform_dev", sql)
         self.assertIn("CREATE EXTENSION IF NOT EXISTS timescaledb", sql)
+
+
+class MonitorProvisionTests(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, str(SOURCE.parent))
+        self.addCleanup(sys.path.remove, str(SOURCE.parent))
+        spec = importlib.util.spec_from_file_location(
+            "dev_pg_monitor", SOURCE.parent / "monitor.py"
+        )
+        self.module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(self.module)
+
+    def test_monitor_role_is_pg_monitor_only_and_never_rotated(self):
+        sql = self.module.sql()
+        self.assertIn("GRANT pg_monitor TO dev_pg_monitor;", sql)
+        self.assertIn("CONNECTION LIMIT 3", sql)
+        self.assertIn("NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION", sql)
+        self.assertIn("'dev-pg:development:monitor'", sql)
+        self.assertIn("RAISE EXCEPTION 'role ownership mismatch'", sql)
+        # The password is set only while the role cannot log in yet.
+        activate = sql.index("\\if :activate")
+        self.assertLess(activate, sql.index("WITH PASSWORD"))
+        self.assertNotIn("GRANT CONNECT", sql)
+        self.assertLess(sql.index("\\getenv"), sql.index("WITH PASSWORD"))
 
 
 if __name__ == "__main__":

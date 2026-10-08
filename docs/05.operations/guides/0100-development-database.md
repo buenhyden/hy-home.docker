@@ -4,7 +4,7 @@ version: "0.1.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -14,7 +14,10 @@ implementation_services:
   - "dev-pg"
   - "dev-platform-provision"
   - "dev-perf-provision"
+  - "dev-pg-monitor-provision"
+  - "dev-pg-exporter"
   - "dev-valkey"
+  - "dev-valkey-exporter"
 created: "2026-10-03"
 ---
 
@@ -40,7 +43,7 @@ created: "2026-10-03"
 [`infra/04-data/dev-db/docker-compose.yml`](../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
 `dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
-`dev-valkey`를 소유한다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`dev-valkey`를 소유한다. 지표는 `dev-pg-monitor-provision`이 만든 `pg_monitor` 전용 `dev_pg_monitor` role의 `dev-pg-exporter`와 읽기 전용 `devmonitor` ACL 사용자의 `dev-valkey-exporter`가 Prometheus에 제공하며, 두 exporter는 관리자 비밀을 받지 않는다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 
@@ -86,6 +89,11 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 `dev-data`는 HOME의 기존 `dev` profile과 별도다. 현재 root candidate 선택에 새 엔진을
 포함하거나 profile을 변경하지 않는다. `dev-pg` readiness는 연결 수락만 확인하며 extension,
 project grant, 백업 또는 application readiness를 증명하지 않는다.
+
+`dev-pg`는 `archive_mode=on`으로 시작한다. 새 호스트에서 `dev-data`를 처음 올리기 전에
+RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로 두고 `dev` stanza를
+만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고
+`pg_wal`이 2 GiB 한도까지 자란 뒤 WAL이 버려진다.
 
 ### Runbook Handoff
 

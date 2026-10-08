@@ -1,10 +1,10 @@
 ---
 title: "DEV Data Boundary and InfluxDB Retirement"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0213"
 parent_ids:
@@ -34,9 +34,13 @@ removal of the InfluxDB service and its consumers, retirement of its
 operations documents, a value-free data check, and the DEV backup/restore
 linkage record.
 
-Excluded: purging the preserved InfluxDB data directory, enabling WAL archive
-or PITR, HOME container recreation, hypertable creation without a consumer,
-direct hypertable CDC, and n8n or other unrelated upgrades.
+The 2026-10-08 extension adds least-privilege accounts and scrape jobs for
+the DEV exporters, a guard against empty or overlapping data paths, and the
+DEV WAL archive with its retention, activation order and restore canary.
+
+Excluded: purging the preserved InfluxDB data directory, hypertable creation
+without a consumer query, direct hypertable CDC, offsite (R2) restore, and n8n
+or other unrelated upgrades.
 
 ## Contracts
 
@@ -64,8 +68,25 @@ direct hypertable CDC, and n8n or other unrelated upgrades.
    is preserved until an owner names it for purge. A purge first proves
    whether user data exists (no-data path) or exports and verifies it before
    removal (data path).
-6. Backup recovery claims stay within proven evidence. With `archive_mode=off`
-   no PITR is claimed. Each restore claim names its environment.
+6. Backup recovery claims stay within proven evidence. No PITR is claimed for
+   an environment until a restore to a chosen time has been checked there.
+   Each restore claim names its environment.
+7. DEV exporters never hold an administrator credential. `dev-pg-exporter`
+   logs in as `dev_pg_monitor`, a marked `pg_monitor` member with a connection
+   budget of 3 and no project database access. `dev-valkey-exporter` logs in
+   as `devmonitor`, an ACL user with no key or channel pattern. Prometheus
+   scrapes both.
+8. A named volume's host path is never empty, relative, top-level, shared with
+   another named volume or nested in one. The Compose validation rejects each
+   case, preflight checks resolved paths, and DEV/MNG data roots fail at render
+   when empty.
+9. `dev-pg` archives WAL continuously to the `dev` stanza with full retention 2,
+   differential retention 6 and a 2 GiB archive queue limit. The stanza exists
+   before `archive_mode=on` takes effect. A hypertable is added only for a
+   named consumer query and must state its time column, unique key, run
+   idempotency, late-arrival rule, chunk interval and indexes, aggregate
+   refresh, retention and backfill. Run, attempt, verdict and artifact rows stay
+   relational.
 
 ## Acceptance Criteria
 
@@ -84,11 +105,22 @@ direct hypertable CDC, and n8n or other unrelated upgrades.
    claiming purge or migration.
 6. The Task records the DEV backup chain and an isolated offline
    backup/restore canary result, keeping HOME restore and PITR `NOT_RUN`.
+7. An isolated run proves both exporters report the engine up through their
+   monitor accounts, and that those accounts are denied writes, key reads and
+   project database connections.
+8. A regression test fails the Compose validation for nested, shared, empty
+   and relative named-volume paths, and the full selection set passes.
+9. An isolated run proves stanza creation with archiving off, `check` passing
+   only after `archive_mode=on`, full and differential backups, and a restore
+   to a chosen time that matches the row count and hash at that time.
+10. The HOME activation (stanza, WAL, first full backup, restore canary) is
+    recorded with its exact steps, or kept `NOT_RUN` with the reason.
 
 ## Related Documents
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-dev-data-and-influx-retirement.md)
+- [Task 0002](tasks/tsk-0002-dev-backup-activation-and-monitoring.md)
 - [ADR-0047](../../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
 - [SPEC-0212](../0212-request-baseline-and-reconciliation/spec.md)
 - [Data architecture](../../02.architecture/descriptions/0004-data-architecture.md)
