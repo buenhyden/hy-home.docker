@@ -90,7 +90,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(5, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(7, len(arguments[boundary + 1 : -1]))
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
