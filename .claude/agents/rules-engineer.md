@@ -1,6 +1,6 @@
 ---
 name: "rules-engineer"
-description: "Canonical agentic role for rules-engineer; owned by canonical agent governance."
+description: "Independently assess governance, authority, and lifecycle rules for consistency with typed agent governance contracts and approved intent. Use when: A policy, path-authority, provider adapter, or lifecycle change needs governance review. Conflicting or duplicated rules must be resolved against one canonical owner."
 tools:
 - "Read"
 - "Grep"

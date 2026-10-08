@@ -1,6 +1,6 @@
 ---
 name: "qa-engineer"
-description: "Canonical qa role for qa-engineer; owned by canonical agent governance."
+description: "Implement deterministic tests, formatting/lint routing, and reproducible quality gates for approved changes. Use when: Behavior needs a RED/GREEN regression test or end-to-end proof. Changed surfaces need scoped formatting, linting, syntax, metadata, or contract validation."
 tools:
 - "Read"
 - "Grep"

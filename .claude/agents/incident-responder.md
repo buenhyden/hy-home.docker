@@ -1,6 +1,6 @@
 ---
 name: "incident-responder"
-description: "Canonical ops role for incident-responder; owned by canonical agent governance."
+description: "Coordinate bounded incident response, evidence preservation, recovery guidance, and lifecycle handoff without exposing confidential payloads. Use when: A service disruption, security event, or operational anomaly requires an incident record. A runbook must be followed, adapted, or escalated using current evidence. A proposed stateful recovery needs independent contract review before any separately approved action."
 tools:
 - "Read"
 - "Grep"

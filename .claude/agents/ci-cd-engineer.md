@@ -1,6 +1,6 @@
 ---
 name: "ci-cd-engineer"
-description: "Canonical ops role for ci-cd-engineer; owned by canonical agent governance."
+description: "Design and maintain reproducible delivery gates while keeping deployment authority, credentials, and remote state outside unapproved work. Use when: A workflow, pipeline, release gate, or delivery policy must be changed. Local and CI checks need one traceable ordering and failure contract."
 tools:
 - "Read"
 - "Grep"

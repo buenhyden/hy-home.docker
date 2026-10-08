@@ -54,6 +54,22 @@ class ValidatorEntrypointTests(unittest.TestCase):
                 )
                 self.assertEqual(0, completed.returncode, completed.stderr)
 
+    def test_claude_agent_descriptions_carry_role_routing_text(self) -> None:
+        for role in sorted((ROOT / ".agents/roles").glob("*.md")):
+            with self.subTest(role=role.stem):
+                source = role.read_text(encoding="utf-8")
+                overview = source.split("## Overview\n\n", 1)[1].split("\n\n", 1)[0]
+                agent = (ROOT / ".claude/agents" / role.name).read_text(
+                    encoding="utf-8"
+                )
+                description = next(
+                    line
+                    for line in agent.splitlines()
+                    if line.startswith("description: ")
+                )
+                self.assertIn(" ".join(overview.split()), description)
+                self.assertIn("Use when: ", description)
+
     def test_ci_gate_adapter_rejects_unadmitted_commands(self) -> None:
         completed = subprocess.run(
             [sys.executable, "scripts/lib/gate/ci_gate_adapters.py", "unadmitted"],

@@ -1,6 +1,6 @@
 ---
 name: "code-reviewer"
-description: "Canonical common role for code-reviewer; owned by canonical agent governance."
+description: "Provide independent, evidence-backed review of exact changes without editing the reviewed implementation. Use when: A task needs specification compliance, correctness, maintainability, or risk review. A fix range must be re-reviewed after material findings."
 tools:
 - "Read"
 - "Grep"
