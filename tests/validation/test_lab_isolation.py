@@ -142,5 +142,84 @@ class LabBoundaryTests(RootClosureTests):
                     seen[port] = name
 
 
+class LabInventoryAndSelectionTests(RootClosureTests):
+    def test_each_lab_guide_names_exactly_its_project_and_services(self) -> None:
+        import re
+
+        for name, lab in self.labs.items():
+            guide = (
+                (ROOT / "labs" / name).with_suffix(".md").read_text(encoding="utf-8")
+            )
+            with self.subTest(lab=name):
+                project = re.search(
+                    r"^\| Project \| [`*]+([^`*]+)[`*]+ \|$", guide, re.M
+                )
+                services = re.search(r"^\| Services \| (.+) \|$", guide, re.M)
+                self.assertIsNotNone(project, "guide lacks a Project row")
+                self.assertIsNotNone(services, "guide lacks a Services row")
+                self.assertEqual(lab["name"], project[1])
+                self.assertEqual(
+                    set(lab["services"]),
+                    set(re.findall(r"[`*]+([^`*,]+)[`*]+", services[1])),
+                )
+
+    def test_home_prometheus_scrapes_no_lab_container(self) -> None:
+        import re
+
+        lab_hosts = {
+            host
+            for lab in self.labs.values()
+            for name, spec in lab["services"].items()
+            for host in (name, spec.get("container_name"), spec.get("hostname"))
+            if host
+        }
+        for config in (ROOT / "infra/06-observability/prometheus/config").glob(
+            "prometheus*.yml"
+        ):
+            targets = re.findall(
+                r"""["']([A-Za-z0-9_.-]+):\d+["']""", config.read_text(encoding="utf-8")
+            )
+            with self.subTest(config=config.name):
+                self.assertTrue(targets)
+                self.assertEqual(set(), lab_hosts & set(targets))
+
+    def test_no_document_or_script_starts_the_root_with_every_profile(self) -> None:
+        import re
+
+        # `--profile '*'` may render (config) a model; it must never start one.
+        start = re.compile(
+            r"""--profile[ =]+['"]?\*['"]?(?:\s+-[-\w]+(?:\s+\S+)?)*\s+(?:up|start|run|restart)\b"""
+            r"""|COMPOSE_PROFILES=['"]?\*"""
+        )
+        tracked = subprocess.run(
+            ["git", "ls-files", "--", "*.md", "*.sh", "*.py", "*.service", "Makefile"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()  # fmt: skip
+        offenders = [
+            path
+            for path in tracked
+            if not path.startswith(("docs/98.archive/", "docs/03.specs/", "tests/"))
+            and path != "scripts/operations/lab.py"
+            and start.search((ROOT / path).read_text(encoding="utf-8", errors="ignore"))
+        ]
+        self.assertEqual([], offenders)
+
+    def test_home_selection_starts_no_lab_or_alternate_gateway(self) -> None:
+        import re
+
+        policy = (
+            ROOT / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+        ).read_text(encoding="utf-8")
+        row = next(line for line in policy.splitlines() if line.startswith("| HOME |"))
+        profiles = re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", row)
+        self.assertTrue(profiles)
+        self.assertNotIn("nginx", profiles)
+        arguments = [item for name in profiles for item in ("--profile", name)]
+        home = render("--env-file", ".env.example", *arguments)
+        self.assertNotIn("nginx", home["services"])
+        lab_services = {s for lab in self.labs.values() for s in lab["services"]}
+        self.assertEqual(set(), lab_services & set(home["services"]))
+
+
 if __name__ == "__main__":
     unittest.main()

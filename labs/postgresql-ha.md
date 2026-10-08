@@ -1,6 +1,6 @@
 ---
 title: "PostgreSQL HA LAB"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,6 +57,7 @@ labs/
 | --- | --- |
 | Entry point | [postgresql-ha.yml](./postgresql-ha.yml) |
 | Project | `hy-home-lab-postgresql-ha` |
+| Services | `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-1`, `pg-2`, `pg-cluster-init`, `pg-router`, `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/postgresql-ha/...` |
 | Networks | `lab_pg_core_net`, `lab_pg_edge_net`, `lab_pg_obs_net` |
 | Secret refs | `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_replication_password`, `lab_pg_exporter_password`, `lab_pg_service_password` |

@@ -1,6 +1,6 @@
 ---
 title: "CouchDB LAB"
-version: "1.0.8"
+version: "1.0.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,6 +57,7 @@ labs/
 | --- | --- |
 | Entry point | [couchdb.yml](./couchdb.yml) |
 | Project | `hy-home-lab-couchdb` |
+| Services | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/couchdb/data-{1..3}` |
 | Networks | `lab_couchdb_core_net`, `lab_couchdb_edge_net` |
 | Secret refs | `lab_couchdb_password`, `lab_couchdb_cookie` |

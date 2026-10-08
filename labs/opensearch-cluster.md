@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.3"
+version: "0.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -36,6 +36,8 @@ OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint
 | 노출 | 호스트 publish 포트와 Traefik 라우터 없음; API 9200, 모니터링 9600, Dashboards 5601은 내부 expose만 |
 | 비밀 | `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password`, `lab_opensearch_dashboard_password`, `lab_opensearch_exporter_password`, `lab_opensearch_security_cookie`; 정상 비밀을 재사용하지 않음 |
 | 인증서 | `${LAB_OPENSEARCH_CERT_DIR}`의 별도 CA/node 인증서를 읽기 전용 mount; 값이 없으면 정적 render도 실패 |
+| Project | `hy-home-lab-opensearch` |
+| Services | `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `lab-opensearch-dashboards` |
 | 인증 | LAB 노드는 내부 basic 인증만 구성하고, LAB Dashboards는 LAB 노드만 사용; 정상 Keycloak/OIDC와 게이트웨이 라우트를 사용하지 않음 |
 
 LAB Dashboard에는 검증용 `rootCA.pem`만 파일로 mount하고 node 개인키는

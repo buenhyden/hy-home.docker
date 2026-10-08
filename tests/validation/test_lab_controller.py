@@ -126,6 +126,19 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertIn("host port 127.0.0.1:5432 also in root", text)
         self.assertIn("data path /data/home overlaps root", text)
 
+    def test_lab_reusing_the_home_kafka_cluster_id_is_refused(self) -> None:
+        def kafka(project, container, cluster_id):
+            spec = service(container)
+            spec["environment"] = {"CLUSTER_ID": cluster_id}
+            return lab.footprint(model(project, {"broker": spec}))
+
+        home = kafka("hy-home-infra", "kafka-1", "home-kraft-id")
+        same = kafka("hy-home-lab-kafka", "lab-kafka-1", "home-kraft-id")
+        own = kafka("hy-home-lab-kafka", "lab-kafka-1", "lab-kraft-id")
+        text = "\n".join(lab.collisions({"kafka": same}, home, []))
+        self.assertIn("cluster_id home-kraft-id also in root", text)
+        self.assertEqual([], lab.collisions({"kafka": own}, home, []))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"

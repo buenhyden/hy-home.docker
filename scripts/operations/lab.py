@@ -76,6 +76,7 @@ def footprint(model: dict) -> dict:
     """Names, ports, writable state paths and declared limits of one model."""
     project = model.get("name", "")
     containers, ports, paths, state, written = set(), set(), set(), set(), set()
+    cluster_ids = set()
     cpus = memory = 0.0
     for name, service in model.get("services", {}).items():
         replicas = int((service.get("deploy") or {}).get("replicas") or 1)
@@ -96,6 +97,11 @@ def footprint(model: dict) -> dict:
                 state.add(path)
             elif mount.get("type") == "volume":
                 written.add(mount.get("source"))
+        # A KRaft cluster ID shared with HOME would let a LAB broker join or
+        # confuse HOME metadata; every LAB needs its own.
+        environment = service.get("environment") or {}
+        if isinstance(environment, dict) and environment.get("CLUSTER_ID"):
+            cluster_ids.add(str(environment["CLUSTER_ID"]))
         cpus += float(service.get("cpus") or 0) * replicas
         memory += int(service.get("mem_limit") or 0) * replicas
     for key, volume in (model.get("volumes") or {}).items():
@@ -114,6 +120,7 @@ def footprint(model: dict) -> dict:
         "paths": paths,
         "state": state,
         "networks": networks - {None},
+        "cluster_ids": cluster_ids,
         "cpus": cpus,
         "memory": memory,
     }
@@ -138,7 +145,7 @@ def collisions(selected: dict[str, dict], root: dict, running: list[dict]) -> li
         for other_name, other in others:
             if other is lab:
                 continue
-            for key in ("containers", "networks"):
+            for key in ("containers", "networks", "cluster_ids"):
                 for clash in sorted(lab[key] & other[key]):
                     problems.append(f"{name}: {key[:-1]} {clash} also in {other_name}")
             for port in sorted(lab["ports"]):

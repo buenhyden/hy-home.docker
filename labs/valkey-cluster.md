@@ -1,6 +1,6 @@
 ---
 title: "Valkey Cluster LAB"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,6 +57,7 @@ labs/
 | --- | --- |
 | Entry point | [valkey-cluster.yml](./valkey-cluster.yml) |
 | Project | `hy-home-lab-valkey-cluster` |
+| Services | `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`, `valkey-cluster-init`, `valkey-cluster-exporter` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/valkey-cluster/data-{0..5}` |
 | Networks | `lab_valkey_core_net`, `lab_valkey_obs_net` |
 | Secret refs | `lab_valkey_password` |

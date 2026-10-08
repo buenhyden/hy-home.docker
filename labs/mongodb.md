@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -56,6 +56,7 @@ labs/
 | --- | --- |
 | Entry point | [mongodb.yml](./mongodb.yml) |
 | Project | `hy-home-lab-mongodb` |
+| Services | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` |
 | State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
 | Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net` |
 | Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |

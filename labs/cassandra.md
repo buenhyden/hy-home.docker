@@ -1,6 +1,6 @@
 ---
 title: "Cassandra LAB"
-version: "1.0.4"
+version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -56,6 +56,7 @@ labs/
 | --- | --- |
 | Entry point | [cassandra.yml](./cassandra.yml) |
 | Project | `hy-home-lab-cassandra` |
+| Services | `cassandra-node1` |
 | State | `${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1` → `/var/lib/cassandra` |
 | Networks | `lab_cassandra_core_net` |
 | Secret refs | 없음; 공식 이미지가 이전 Bitnami password-file 입력을 소비하지 않음 |
