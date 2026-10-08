@@ -98,8 +98,9 @@ x-lab-node: &lab-node
       - CMD-SHELL
       - >-
         PASS=$$(cat /run/secrets/opensearch_admin_password);
-        case "$$PASS" in ''|*[!A-Za-z0-9_+./=:@#%-]*) exit 1 ;; esac;
-        printf 'user = "admin:%s"\n' "$$PASS" |
+        [ -n "$$PASS" ] && [ "$$(printf %s "$$PASS" | wc -l)" -eq 0 ] || exit 1;
+        ESC=$$(printf %s "$$PASS" | sed 's/[\\"]/\\&/g');
+        printf 'user = "admin:%s"\n' "$$ESC" |
         curl -fsSk --config - 'https://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=30s' >/dev/null
     interval: 15s
     timeout: 10s
@@ -207,13 +208,6 @@ services:
       file: ../infra/common-optimizations.yml
       service: template-infra-med
     image: opensearchproject/opensearch-dashboards:3.8.0
-    environment:
-      OPENSEARCH_HOSTS: '["https://opensearch-node1:9200","https://opensearch-node2:9200","https://opensearch-node3:9200"]'
-      OPENSEARCH_USERNAME: kibanaserver
-      OPENSEARCH_SSL_VERIFICATIONMODE: certificate
-      OPENSEARCH_SSL_CERTIFICATEAUTHORITIES: '["/usr/share/opensearch-dashboards/config/certs/rootCA.pem"]'
-      OPENSEARCH_SECURITY_AUTH_TYPE: basicauth
-      SERVER_SSL_ENABLED: 'false'
     command:
       - /bin/bash
       - -ec
@@ -226,6 +220,7 @@ services:
       - lab_opensearch_security_cookie
     volumes:
       - lab-opensearch-dashboards-data:/usr/share/opensearch-dashboards/data:rw
+      - ./opensearch-cluster-dashboards.config:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro
       - type: bind
         source: ${LAB_OPENSEARCH_CERT_DIR:?set isolated LAB certificate directory}/rootCA.pem
         target: /usr/share/opensearch-dashboards/config/certs/rootCA.pem
