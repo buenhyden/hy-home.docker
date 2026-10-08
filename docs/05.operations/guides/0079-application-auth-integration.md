@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.1"
+version: "0.7.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -77,16 +77,17 @@ sequenceDiagram
     participant K as Keycloak
     participant A as Protected app
     B->>T: HTTPS app request + proxy cookie if present
-    T->>P: /oauth2/auth
+    T->>P: / (static upstream)
     alt Valid proxy session
-        P-->>T: 2xx + configured identity headers
+        P-->>T: 200 + configured identity headers
         T->>A: Original request + selected headers
         A-->>B: App response through Traefik
-    else Session missing or rejected
-        P-->>T: 401/403
-        T-->>B: Sign-in response via sso-errors
-        B->>P: Start login
-        P-->>B: Redirect to Keycloak
+    else Machine client without a session (Accept: application/json)
+        P-->>T: 401 JSON
+        T-->>B: 401, never a login page
+    else Browser without a session
+        P-->>T: 302 to Keycloak (PKCE S256, state)
+        T-->>B: 302
         B->>K: Login or existing SSO session
         K-->>B: Redirect with one-use authorization code
         B->>P: /oauth2/callback
@@ -96,8 +97,13 @@ sequenceDiagram
 ```
 
 실제 앱 요청은 Traefik이 전달한다. `static://200`인 OAuth2 Proxy가 모든 앱의
-본문을 대신 프록시하는 구성이 아니다. 현재 `sso-auth`는 내부
-`/oauth2/auth`를 호출하고, `sso-errors`는401–403에서 sign-in 응답 본문을 사용한다. 현재 status rewrite는401→302뿐이며403은 그대로 유지한다. 설정 근거는
+본문을 대신 프록시하는 구성이 아니다. `sso-auth`는 OAuth2 Proxy의 root(`/`)를
+ForwardAuth로 호출한다. session이 없으면 브라우저는 Keycloak으로 가는 302를,
+`Accept: application/json` 요청은 401 JSON을 받는다. 로그인 HTML의 HTTP 200은
+machine API 성공이 아니므로 machine client에는 로그인 화면을 주지 않는다.
+`sso-errors`는 403만 sign-in 응답으로 바꾸고 401은 그대로 둔다. 이 동작은
+`HYHOME_SSO_REHEARSAL=1`인 `SsoRehearsalTests`가 같은 이미지와 추적 설정으로
+확인한다(브라우저 302, JSON 401, 그룹 구성원 200, 비구성원 거부, 로그아웃). 설정 근거는
 [Traefik middleware](../../../infra/01-gateway/traefik/dynamic/middleware.yml)이며,
 2xx일 때 원래 요청을 진행하는 동작은 [공식 ForwardAuth 문서](https://doc.traefik.io/traefik/reference/routing-configuration/http/middlewares/forwardauth/)에서 확인했다.
 

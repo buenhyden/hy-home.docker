@@ -1,6 +1,6 @@
 ---
 title: "Twenty-Item Reconciliation Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -52,7 +52,7 @@ showed on 2026-10-08; it is not an acceptance of the owning prompt.
 | 01 | SPEC-0213 | DEV TimescaleDB and MNG PostgreSQL kept; DEV WAL archive, first full backup and restore canary on HOME | HOME PITR and R2 restore |
 | 02 | SPEC-0214 | k6 default, Locust LAB, authenticated OTLP relay merged (#371); SPEC-0214 TSK-0002 adds the relay controller, `quality_otlp_net`, an isolated target-to-dashboard run and the supervised Locust lifecycle (#384); a HOME relay canary reached HOME Prometheus and the live Grafana dashboard | Real-target load; per-project producer credentials and quota |
 | 03 | SPEC-0215 | Root `lab_net` retired, LAB lease controller merged (#376); TSK-0002 adds inventory, cluster-ID and selection tests, cost and retirement columns, and HOME runs where all seven LABs reach readiness and leave nothing behind (#386; OpenSearch LAB fixed after the disk was freed) | Scratch LAB volume records (owner) |
-| 04 | SPEC-0204 TSK-0005 | HOME OIDC, n8n, Airflow, CDC and backup observed; dev-valkey snapshot with isolated replay; per-image `_FILE`/`_CMD` verdicts; Keycloak empty-secret refusal; Bitnami guard; mail outcome states | Supabase, SonarQube and Terrakube secret wiring; realm grants and PKCE; A-to-B, n8n path and CDC replay fixtures; Airflow DAG target; OpenBao and OpenSearch snapshots |
+| 04 | SPEC-0204 TSK-0005 | HOME OIDC, n8n, Airflow, CDC and backup observed; dev-valkey snapshot with isolated replay; per-image `_FILE`/`_CMD` verdicts; Keycloak and SonarQube secret wrappers; Bitnami guard; mail outcome states; OpenBao Raft snapshot; Open WebUI key persisted; CDC and SSO rehearsals; gateway answers machine clients 401 | Supabase and Terrakube secret wiring; OpenBao snapshot token; realm grants and PKCE; n8n paths with an upgrade; Airflow DAG target |
 | 05 | new at execution | Existing Storybook static origin and MCP preserved | All |
 | 06 | SPEC-0212 | Root inventory equals the rendered set (W7) | Role, cost and duplication review per service key |
 | 07 | new at execution, reusing SPEC-0204 | Not started this round | All |

@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -76,10 +76,11 @@ rate limit이 적용된 것은 아니다. route에 chain 이름이 있다는 사
 문자열 검사 통과로 준수를 주장하지 않는다. 근거는 소스와
 [선언 릴리스 계열의 Chain 동작](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/chain/)이다.
 
-`sso-auth`는 `http://oauth2-proxy:4180/oauth2/auth`를 호출하며 성공 시 사용자·
+`sso-auth`는 `http://oauth2-proxy:4180/`(static upstream)을 호출하며 성공 시 사용자·
 이메일·preferred username 헤더만 앱에 전달한다. 공통 체인은 Authorization이나
-access token을 전달하지 않는다. `sso-errors`는 401–403 응답의 본문을 sign-in
-서비스에서 가져오지만 **401만 302로 변환하고 403은 유지**한다.
+access token을 전달하지 않는다. session이 없으면 브라우저는 Keycloak으로 가는
+302를, `Accept: application/json` 요청은 401을 받는다. `sso-errors`는 **403만**
+sign-in 서비스의 응답으로 바꾸며 401은 machine client에게 그대로 간다.
 [Errors statusRewrites](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/errorpages/#statusrewrites)와
 [인증 통합 Guide](0079-application-auth-integration.md)를 함께 확인한다.
 

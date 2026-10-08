@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.7"
+version: "1.4.9"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -154,6 +154,30 @@ RDB를 빈 data 디렉터리에 `dump.rdb`로 두고 `--save ''`, `--appendonly 
 따라서 복구된 queue는 최소 한 번(at-least-once) 재처리되며 소비자는 멱등이어야
 한다. 2026-10-08 합성 데이터로 시험했을 때 key, stream 2건, pending 1건이 그대로
 돌아왔고 `XAUTOCLAIM`이 pending 항목을 넘겨받았다. HOME 복구는 별도 승인이다.
+
+Open WebUI는 세 부분을 함께 복구해야 한다. `webui.db`는 SQLite online backup
+export로, `uploads/`와 `.webui_secret_key`는 state 허용 목록으로 백업한다. 이 key가
+없으면 기존 session과 key로 암호화된 값을 쓸 수 없다. 이전에는 key가 container
+layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`이 data volume을
+가리키므로 이 변경 뒤 첫 재생성에서 한 번 새 key가 생기고(사용자 재로그인 1회),
+그 뒤로는 유지된다.
+
+OpenBao는 Raft snapshot으로 백업한다. 최초 1회 운영자가 unseal된 OpenBao에서
+`infra/03-security/openbao/config/policies/backup-snapshot.hcl`을 `backup-snapshot`
+정책으로 등록한다. 그다음 `bao token create -orphan -period=720h -policy=backup-snapshot`으로
+token을 만들어 `secrets/backup/openbao/snapshot_token.txt`(mode 600)에 둔다. 이
+token은 snapshot 읽기만 할 수 있고 secret은 읽지 못한다.
+
+매 run은 token을 stdin으로 넘겨 갱신한 뒤 snapshot을 staging에 받는다. token
+파일이 없으면 "OpenBao snapshot token absent: snapshot skipped (recovery gap)"만
+남기고 run을 실패시키지 않는다. sealed, 잘못된 token, 300초 초과 시에는 파일을
+지우고 exit 1로 끝난다. run이 30일 넘게 멈추면 token이 만료되므로 다시 만든다.
+
+snapshot은 barrier 암호화된 상태라 원래 unseal key 없이는 열 수 없다. 따라서
+unseal key는 snapshot과 다른 곳에 따로 보관한다. 복구는 새로 초기화한 OpenBao에서
+`bao operator raft snapshot restore -force`로 하고, 복구 직후 sealed가 되면 원래
+unseal key로 연다. 2026-10-08 격리 시험에서 이 순서로 합성 secret과 원래 root
+token이 돌아왔다. HOME 복구는 별도 승인이다.
 
 SeaweedFS가 실행 중이면 run은 vacuum도 일시 정지하고 filer metadata를
 export한다. `weed shell`이 오류 텍스트를 내거나, export가 비었거나, master와 filer 중 하나만

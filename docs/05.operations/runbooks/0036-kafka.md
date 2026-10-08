@@ -1,6 +1,6 @@
 ---
 title: "Kafka Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -60,6 +60,7 @@ LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 
 3. 승인된 등록 이후 `GET /connectors/<approved-name>/status`에서 connector/task `RUNNING`, snapshot 완료, 승인된 테스트 변경의 `hyhome.platform.*` topic 도착을 각각 확인한다. JSON 파일 존재나 등록 성공만으로 CDC PASS라고 기록하지 않는다.
 4. `dev-pg`의 `pg_replication_slots`에서 `hyhome_platform_slot`의 `active`, `wal_status`, `confirmed_flush_lsn` 지연과 WAL 디스크 여유를 확인한다. `wal_status=lost`이면 snapshot/offset 복구 계획 없이 slot만 재생성하지 않는다.
 5. maintenance pause 중에도 slot이 WAL을 유지한다. 재동기화에는 downstream 경계, 새 snapshot, 중복 처리와 rollback을 함께 승인받는다. secret rotation도 별도 승인과 소비자 재시작 검증이 필요하다.
+6. 격리 시험은 `HYHOME_CDC_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests`로 한다. 내부 network에 합성 데이터만 쓰는 dev-pg·Kafka·Schema Registry·Connect를 띄우고 다음을 확인한다. 추적 중인 provisioning SQL과 connector JSON이 그대로 동작하는지, Properties 특수문자와 비ASCII가 든 비밀번호로 인증하는지, snapshot과 stream 행이 Avro로 decode되는지, 열 추가가 schema version 2가 되는지, worker 재시작 뒤 중복 snapshot 없이 offset에서 이어지는지, heartbeat가 행을 쓰고 slot을 전진시키는지. topic은 partition 3개라 순서는 key 단위로만 보장된다. 2026-10-08에 통과했다(약 260초).
 
 ### Planned backup or replication capture
 

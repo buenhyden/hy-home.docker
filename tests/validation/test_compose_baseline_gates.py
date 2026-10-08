@@ -12,10 +12,14 @@ from __future__ import annotations
 import json
 import os
 import re
+import secrets
+import shutil
 import sqlite3
 import subprocess
 import tempfile
+import time
 import unittest
+import uuid
 from pathlib import Path
 
 from scripts.lib.document_governance.operations_catalog import _ComposeLoader
@@ -2079,6 +2083,26 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("timeout 300 valkey-cli --no-auth-warning", dev)
         self.assertIn('rm -f "$staging/dev-valkey.rdb"', dev)
         self.assertIn("status=1", dev)
+        # OpenBao: a snapshot-only token on stdin (never argv), renewed each
+        # run; a failed or empty snapshot is dropped and fails the run.
+        bao = script[
+            script.index("# OpenBao Raft snapshot") : script.index(
+                "backup-sqlite-export"
+            )
+        ]
+        self.assertIn('<"$bao_token"', bao)
+        self.assertNotIn("BAO_TOKEN=$(cat", bao)
+        self.assertNotIn("-token=", bao)
+        self.assertIn("bao token renew", bao)
+        self.assertIn('rm -f "$staging/openbao-raft.snap"', bao)
+        self.assertIn('[[ ! -s "$staging/openbao-raft.snap" ]]', bao)
+        policy = (
+            ROOT / "infra/03-security/openbao/config/policies/backup-snapshot.hcl"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(
+            ['"sys/storage/raft/snapshot"'], re.findall(r"path (\S+)", policy)
+        )
+        self.assertIn('capabilities = ["read"]', policy)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
         )
@@ -2261,6 +2285,572 @@ docker() {
         self.assertIn("hyhome_backup_offsite_repo_bytes > 8e9", rules)
         # Plaintext exports are gone and SeaweedFS vacuum resumes before upload.
         self.assertLess(script.rindex("\ncleanup\n"), copy)
+
+
+CDC_KAFKA_COMPOSE = ROOT / "infra/05-messaging/kafka/docker-compose.yml"
+CDC_CONNECTOR = (
+    ROOT / "infra/05-messaging/kafka/connect/debezium/postgres-connector.json"
+)
+
+
+def _cdc_docker(*args, check=True, timeout=180, **kw):
+    return subprocess.run(
+        ["docker", *args],
+        capture_output=True,
+        text=True,
+        check=check,
+        timeout=timeout,
+        **kw,
+    )
+
+
+def _cdc_after(record):
+    # Avro JSON wraps the nullable row in its union branch, named after the
+    # record ("hyhome.platform.app.orders.Value").
+    ((branch, row),) = record["after"].items()
+    assert branch.endswith(".Value"), branch
+    return row
+
+
+SSO_MIDDLEWARE = Path(
+    os.environ.get(
+        "SSO_MIDDLEWARE", ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
+    )
+)
+SSO_PROXY_CFG = ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg"
+SSO_SUBNET, SSO_TRAEFIK_IP = "10.250.199.0/24", "10.250.199.2"
+
+
+def _sso_docker(*args, check=True, timeout=180, **kw):
+    return subprocess.run(["docker", *args], capture_output=True, text=True,
+                          check=check, timeout=timeout, **kw)  # fmt: skip
+
+
+def _sso_image(compose, service):
+    import yaml
+
+    spec = yaml.safe_load((ROOT / compose).read_text())["services"][service]
+    return spec["image"]
+
+
+SSO_REALM = {
+    "realm": "r",
+    "enabled": True,
+    "groups": [{"name": "admins"}],
+    "clients": [{
+        "clientId": "proxy", "enabled": True, "publicClient": False,
+        "standardFlowEnabled": True, "implicitFlowEnabled": False,
+        "directAccessGrantsEnabled": False, "serviceAccountsEnabled": False,
+        "redirectUris": ["https://auth.hy.test/oauth2/callback"],
+        "attributes": {"pkce.code.challenge.method": "S256",
+                       "post.logout.redirect.uris": "https://app.hy.test/*"},
+    }],
+    "users": [
+        {"username": name, "enabled": True, "email": f"{name}@example.test",
+         "emailVerified": True, "firstName": name, "lastName": "Synthetic",
+         "credentials": [{"type": "password", "value": f"{name}-synthetic",
+                          "temporary": False}],
+         "groups": groups}
+        for name, groups in (("alice", ["/admins"]), ("bob", []))
+    ],
+}  # fmt: skip
+
+SSO_ROUTERS = """
+http:
+  routers:
+    app:
+      rule: Host(`app.hy.test`)
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [sso-protected-chain@file]
+      service: app-svc
+    oauth2:
+      rule: Host(`auth.hy.test`) && PathPrefix(`/oauth2`)
+      entryPoints: [websecure]
+      tls: {}
+      middlewares: [gateway-standard-chain@file]
+      service: oauth2-proxy-svc
+  services:
+    app-svc:
+      loadBalancer:
+        servers:
+          - url: "http://upstream:8000"
+"""
+
+SSO_UPSTREAM = """
+import http.server, json
+class H(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        body = json.dumps({"user": self.headers.get("X-Auth-Request-User"),
+                           "email": self.headers.get("X-Auth-Request-Email")}).encode()
+        self.send_response(200); self.send_header("Content-Type", "application/json")
+        self.end_headers(); self.wfile.write(body)
+http.server.HTTPServer(("0.0.0.0", 8000), H).serve_forever()
+"""
+
+# Runs inside the client container: one browser-like session per invocation.
+SSO_CLIENT = r"""
+import http.cookiejar, json, re, ssl, sys, urllib.parse, urllib.request
+ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *a, **k): return None
+jar = http.cookiejar.CookieJar()
+opener = urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx),
+                                     urllib.request.HTTPCookieProcessor(jar), NoRedirect())
+def req(url, data=None, accept="text/html"):
+    r = urllib.request.Request(url, data=data, headers={"Accept": accept})
+    try:
+        resp = opener.open(r, timeout=20)
+    except urllib.error.HTTPError as e:
+        resp = e
+    return (resp.status, resp.headers.get("Location") or "",
+            resp.headers.get("Content-Type") or "", resp.read().decode("utf-8", "replace"))
+def login(user):
+    status, loc, _, _ = req("https://app.hy.test/")
+    assert status == 302 and "/protocol/openid-connect/auth" in loc, (status, loc)
+    query = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(loc).query))
+    status, _, _, page = req(loc)
+    action = re.search(r'action="([^"]+)"', page).group(1).replace("&amp;", "&")
+    form = urllib.parse.urlencode({"username": user, "password": user + "-synthetic"}).encode()
+    status, loc, _, _ = req(action, form)
+    assert status == 302 and loc.startswith("https://auth.hy.test/oauth2/callback"), (status, loc)
+    callback = req(loc)[0]
+    cookies = {c.name: {"domain": c.domain, "secure": c.secure,
+                        "httponly": c.has_nonstandard_attr("HttpOnly")}
+               for c in jar}
+    return query, cookies, callback
+mode = sys.argv[1]
+out = {}
+if mode == "anonymous":
+    for accept in ("text/html", "application/json"):
+        status, loc, ctype, _ = req("https://app.hy.test/api/v1/data", accept=accept)
+        out[accept] = {"status": status, "location": loc.split("?")[0], "type": ctype}
+else:
+    query, cookies, callback = login(mode)
+    out["callback"] = callback
+    keys = ("client_id", "redirect_uri", "code_challenge_method", "response_type")
+    out["authorize"] = {k: query.get(k) for k in keys}
+    out["state_and_challenge"] = bool(query.get("state")) and bool(query.get("code_challenge"))
+    out["cookies"] = cookies
+    status, _, _, body = req("https://app.hy.test/", accept="application/json")
+    out["app"] = {"status": status, "body": body[:300]}
+    status, _, _, _ = req("https://auth.hy.test/oauth2/sign_out?rd=https%3A%2F%2Fapp.hy.test%2F")
+    out["sign_out"] = status
+    status, loc, _, _ = req("https://app.hy.test/")
+    out["after_sign_out"] = {"status": status, "location": loc.split("?")[0]}
+print(json.dumps(out))
+"""
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_SSO_REHEARSAL") == "1",
+    "set HYHOME_SSO_REHEARSAL=1 to run the disposable SSO rehearsal (needs Docker)",
+)
+class SsoRehearsalTests(unittest.TestCase):
+    """Traefik, oauth2-proxy and Keycloak on an internal network: synthetic
+    realm, two users and the tracked middleware and proxy config."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tag = f"hysso{os.getpid()}"
+        cls.proxy_image = f"hy-home/oauth2-proxy:rehearsal-{cls.tag}"
+        _sso_docker("build", "-q", "-t", cls.proxy_image, "-f",
+                    str(ROOT / "infra/02-auth/oauth2-proxy/dev.Dockerfile"),
+                    str(ROOT / "infra/02-auth/oauth2-proxy"), timeout=900)  # fmt: skip
+        cls.addClassCleanup(_sso_docker, "image", "rm", cls.proxy_image, check=False)
+        cls.tmp = Path(tempfile.mkdtemp(prefix="hysso"))
+        cls.addClassCleanup(shutil.rmtree, cls.tmp, True)
+        (cls.tmp / "dynamic").mkdir()
+        shutil.copy(SSO_MIDDLEWARE, cls.tmp / "dynamic/middleware.yml")
+        (cls.tmp / "dynamic/routers.yml").write_text(SSO_ROUTERS)
+        (cls.tmp / "import").mkdir()
+        client_secret = secrets.token_hex(16)
+        realm = json.loads(json.dumps(SSO_REALM))
+        realm["clients"][0]["secret"] = client_secret
+        (cls.tmp / "import/r.json").write_text(json.dumps(realm))
+        (cls.tmp / "secrets").mkdir()
+        (cls.tmp / "secrets/client").write_text(client_secret)
+        (cls.tmp / "secrets/cookie").write_text(secrets.token_hex(16))
+        for path in [cls.tmp, *cls.tmp.rglob("*")]:
+            path.chmod(0o755 if path.is_dir() else 0o644)
+        _sso_docker("network", "create", "--internal", "--subnet", SSO_SUBNET, cls.tag)
+        cls.addClassCleanup(_sso_docker, "network", "rm", cls.tag, check=False)
+        for name in ("keycloak", "upstream", "proxy", "traefik", "client"):
+            cls.addClassCleanup(
+                _sso_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
+            )
+        net = ["--network", cls.tag]
+        # Traefik first, so no dynamic address takes its fixed one.
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
+               "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
+               "-v", f"{cls.tmp}/dynamic:/dynamic:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
+               "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
+               "--log.level=ERROR")  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-keycloak", *net, "--network-alias", "keycloak",
+               "-e", "KC_BOOTSTRAP_ADMIN_USERNAME=admin",
+               "-e", "KC_BOOTSTRAP_ADMIN_PASSWORD=synthetic-admin",
+               "-v", f"{cls.tmp}/import:/opt/keycloak/data/import:ro",
+               _sso_image("infra/02-auth/keycloak/docker-compose.yml", "keycloak"),
+               "start-dev", "--import-realm", "--http-port=8080",
+               "--hostname=http://keycloak:8080")  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-upstream", *net, "--network-alias", "upstream",
+               "python:3.13.15-alpine", "python", "-c", SSO_UPSTREAM)  # fmt: skip
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-client", *net,
+               "python:3.13.15-alpine", "sleep", "infinity")  # fmt: skip
+        cls.wait(cls.fetch_ok("http://keycloak:8080/realms/r"), "keycloak", tries=150)
+        cls.add_group_mapper()
+        # The tracked config; only deployment-specific values are replaced.
+        env = {
+            "OAUTH2_PROXY_CLIENT_ID": "proxy",
+            "OAUTH2_PROXY_OIDC_ISSUER_URL": "http://keycloak:8080/realms/r",
+            "OAUTH2_PROXY_REDIRECT_URL": "https://auth.hy.test/oauth2/callback",
+            "OAUTH2_PROXY_COOKIE_DOMAINS": ".hy.test",
+            "OAUTH2_PROXY_WHITELIST_DOMAINS": ".hy.test",
+            "OAUTH2_PROXY_TRUSTED_PROXY_IPS": f"{SSO_TRAEFIK_IP}/32",
+            "OAUTH2_PROXY_SESSION_STORE_TYPE": "cookie",
+            "OAUTH2_PROXY_SCOPE": "openid email profile",
+        }
+        args = [x for key, value in env.items() for x in ("-e", f"{key}={value}")]
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-proxy", *net, "--network-alias", "oauth2-proxy",
+               *args, "-v", f"{SSO_PROXY_CFG}:/etc/oauth2-proxy.cfg:ro",
+               "-v", f"{cls.tmp}/secrets/client:/run/secrets/oauth2_proxy_client_secret:ro",
+               "-v", f"{cls.tmp}/secrets/cookie:/run/secrets/oauth2_proxy_cookie_secret:ro",
+               cls.proxy_image)  # fmt: skip
+        cls.wait(
+            cls.fetch_ok("http://oauth2-proxy:4180/ping"), "oauth2-proxy", tries=60
+        )
+
+    @classmethod
+    def fetch_ok(cls, url):
+        code = f"import urllib.request;urllib.request.urlopen({url!r},timeout=5)"
+        return lambda: _sso_docker("exec", f"{cls.tag}-client", "python", "-c", code,
+                              check=False).returncode == 0  # fmt: skip
+
+    @classmethod
+    def add_group_mapper(cls):
+        # Group paths in the tokens, as the HOME realm gives allowed_groups.
+        script = (
+            "cd /tmp && export HOME=/tmp && K=/opt/keycloak/bin/kcadm.sh && "
+            "$K config credentials --server http://localhost:8080 --realm master "
+            "--user admin --password synthetic-admin >/dev/null && "
+            "ID=$($K get clients -r r -q clientId=proxy --fields id --format csv --noquotes) && "
+            "$K create clients/$ID/protocol-mappers/models -r r -s name=groups "
+            "-s protocol=openid-connect -s protocolMapper=oidc-group-membership-mapper "
+            "-s 'config.\"full.path\"=true' -s 'config.\"id.token.claim\"=true' "
+            "-s 'config.\"access.token.claim\"=true' -s 'config.\"userinfo.token.claim\"=true' "
+            "-s 'config.\"claim.name\"=groups' >/dev/null"
+        )
+        _sso_docker("exec", f"{cls.tag}-keycloak", "bash", "-c", script)
+
+    @classmethod
+    def wait(cls, probe, what, tries=60):
+        for _ in range(tries):
+            if probe():
+                return
+            time.sleep(2)
+        logs = _sso_docker("logs", "--tail", "20", f"{cls.tag}-proxy", check=False)
+        raise AssertionError(
+            f"{what} not ready\n{logs.stdout[-2000:]}{logs.stderr[-2000:]}"
+        )
+
+    def browse(self, mode):
+        out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", SSO_CLIENT, mode,
+                     check=False, timeout=120)  # fmt: skip
+        self.assertEqual(0, out.returncode, out.stderr[-2000:])
+        print(mode, out.stdout.strip())
+        return json.loads(out.stdout)
+
+    def test_anonymous_browser_is_redirected_and_machine_client_is_refused(self):
+        out = self.browse("anonymous")
+        browser = out["text/html"]
+        self.assertEqual(302, browser["status"])
+        self.assertTrue(
+            browser["location"].endswith("/realms/r/protocol/openid-connect/auth")
+        )
+        # A login page is not an API answer: a JSON client gets 401.
+        self.assertEqual(401, out["application/json"]["status"], out)
+
+    def test_member_signs_in_with_pkce_and_signs_out(self):
+        out = self.browse("alice")
+        self.assertEqual("S256", out["authorize"]["code_challenge_method"])
+        self.assertEqual(
+            "https://auth.hy.test/oauth2/callback", out["authorize"]["redirect_uri"]
+        )
+        self.assertTrue(out["state_and_challenge"])
+        cookie = out["cookies"]["__Secure-sso-cookie"]
+        self.assertEqual(".hy.test", cookie["domain"])
+        self.assertTrue(cookie["secure"] and cookie["httponly"])
+        self.assertEqual(200, out["app"]["status"])
+        self.assertIn("alice", out["app"]["body"])
+        self.assertEqual(302, out["after_sign_out"]["status"])
+
+    def test_non_member_is_denied(self):
+        # oauth2-proxy refuses the session at the callback (allowed_groups), so
+        # no SSO cookie exists and the application never answers.
+        out = self.browse("bob")
+        self.assertEqual(403, out["callback"], out)
+        self.assertNotIn("__Secure-sso-cookie", out["cookies"])
+        self.assertNotEqual(200, out["app"]["status"])
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_CDC_REHEARSAL") == "1",
+    "set HYHOME_CDC_REHEARSAL=1 to run the disposable CDC stream rehearsal (needs Docker)",
+)
+class CdcStreamRehearsalTests(unittest.TestCase):
+    """Rehearse the tracked connector end to end on synthetic data only.
+
+    Every container joins one temporary internal network under the aliases the
+    tracked connector names, publishes no port, and is removed afterwards.
+    """
+
+    # A password with Properties-significant characters proves the renderer.
+    SPECIAL_VALUE = " lead\\back#hash=eq:colon!é"
+
+    @classmethod
+    def image(cls, service):
+        import yaml
+
+        return yaml.safe_load(CDC_KAFKA_COMPOSE.read_text())["services"][service][
+            "image"
+        ]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.tag = f"hycdc{os.getpid()}"
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.addClassCleanup(cls.tmp.cleanup)
+        secret = Path(cls.tmp.name) / "debezium_postgres_password"
+        secret.write_text(cls.SPECIAL_VALUE)
+        secret.chmod(0o644)
+        _cdc_docker("network", "create", "--internal", cls.tag)
+        cls.addClassCleanup(_cdc_docker, "network", "rm", cls.tag, check=False)
+        dev_image = re.search(
+            r"^FROM (\S+)",
+            (ROOT / "infra/04-data/dev-db/pg/Dockerfile").read_text(),
+            re.M,
+        ).group(1)
+        run = ["run", "-d", "--network", cls.tag]
+        specs = {
+            "pg": (["--network-alias", "dev-pg", "-e", "POSTGRES_USER=admin",
+                    "-e", "POSTGRES_PASSWORD=synthetic-admin", dev_image, "postgres",
+                    "-c", "wal_level=logical", "-c", "shared_preload_libraries=timescaledb"]),
+            "kafka": (["--network-alias", "kafka-1",
+                       "-e", "CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qg",
+                       "-e", "KAFKA_NODE_ID=1",
+                       "-e", "KAFKA_PROCESS_ROLES=broker,controller",
+                       "-e", "KAFKA_CONTROLLER_QUORUM_VOTERS=1@kafka-1:9093",
+                       "-e", "KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:19092,CONTROLLER://0.0.0.0:9093",
+                       "-e", "KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:19092",
+                       "-e", "KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT",
+                       "-e", "KAFKA_CONTROLLER_LISTENER_NAMES=CONTROLLER",
+                       "-e", "KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT",
+                       "-e", "KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1",
+                       "-e", "KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1",
+                       "-e", "KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1",
+                       "-e", "KAFKA_AUTO_CREATE_TOPICS_ENABLE=false",
+                       "-e", "KAFKA_HEAP_OPTS=-Xms256M -Xmx512M",
+                       cls.image("kafka-1")]),
+            "sr": (["--network-alias", "schema-registry",
+                    "-e", "SCHEMA_REGISTRY_HOST_NAME=schema-registry",
+                    "-e", "SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081",
+                    "-e", "SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS=PLAINTEXT://kafka-1:19092",
+                    "-e", "SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR=1",
+                    cls.image("schema-registry")]),
+            "client": (["python:3.13.15-alpine", "sleep", "infinity"]),
+        }  # fmt: skip
+        for name, args in specs.items():
+            cls.addClassCleanup(
+                _cdc_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
+            )
+            _cdc_docker(*run, "--name", f"{cls.tag}-{name}", *args)
+        cls.addClassCleanup(_cdc_docker, "rm", "-f", f"{cls.tag}-connect", check=False)
+        cls.start_connect(secret)
+        cls.wait(
+            lambda: cls.sql("SELECT 1", db="postgres") == "1",
+            "postgres",
+            tries=150,
+            container="pg",
+        )
+        cls.provision()
+        cls.wait(cls.connect_ready, "kafka connect", tries=120)
+
+    @classmethod
+    def start_connect(cls, secret):
+        import yaml
+
+        env = yaml.safe_load(CDC_KAFKA_COMPOSE.read_text())["services"][
+            "kafka-connect"
+        ]["environment"]
+        args = []
+        for key, value in env.items():
+            if key == "KAFKA_OPTS":
+                continue  # the JMX agent jar is not mounted here
+            value = re.sub(r"\$\{[A-Z_]+:-([^}]*)\}", r"\1", str(value))
+            args += ["-e", f"{key}={value}"]
+        _cdc_docker(
+            "run", "-d", "--name", f"{cls.tag}-connect", "--network", cls.tag,
+            "--network-alias", "kafka-connect",
+            "-v", f"{secret}:/run/secrets/debezium_postgres_password:ro",
+            "-v", f"{ROOT}/infra/05-messaging/kafka/connect/render-connect-secrets.sh:/usr/local/bin/render-connect-secrets.sh:ro",
+            *args, cls.image("kafka-connect"),
+            "/bin/bash", "/usr/local/bin/render-connect-secrets.sh",
+        )  # fmt: skip
+
+    @classmethod
+    def wait(cls, probe, what, tries=60, container="connect"):
+        for _ in range(tries):
+            try:
+                if probe():
+                    return
+            except Exception:
+                pass
+            time.sleep(2)
+        logs = _cdc_docker(
+            "logs", "--tail", "25", f"{cls.tag}-{container}", check=False
+        )
+        raise AssertionError(
+            f"{what} not ready\n{logs.stdout[-3000:]}{logs.stderr[-3000:]}"
+        )
+
+    @classmethod
+    def sql(cls, query, db="platform_dev"):
+        out = _cdc_docker(
+            "exec", f"{cls.tag}-pg", "psql", "-h", "127.0.0.1", "-v", "ON_ERROR_STOP=1", "-U", "admin",
+            "-d", db, "-Atc", query,
+        )  # fmt: skip
+        return out.stdout.strip()
+
+    CLIENT = """
+import sys, urllib.request
+method, url = sys.argv[1], sys.argv[2]
+data = sys.stdin.buffer.read() or None
+req = urllib.request.Request(url, data=data, method=method,
+                             headers={"Content-Type": "application/json"})
+try:
+    print(urllib.request.urlopen(req, timeout=20).read().decode())
+except urllib.error.HTTPError as error:
+    print(error.read().decode())
+"""
+
+    @classmethod
+    def http(cls, method, url, body=None):
+        # Neither the Connect nor the Registry image ships curl.
+        return _cdc_docker(
+            "exec", "-i", f"{cls.tag}-client", "python", "-c", cls.CLIENT, method, url,
+            input=body or "", check=False,
+        ).stdout  # fmt: skip
+
+    @classmethod
+    def connect_ready(cls):
+        return cls.http("GET", "http://kafka-connect:8083/connectors").startswith("[")
+
+    @classmethod
+    def provision(cls):
+        cls.sql("CREATE ROLE platform_owner NOLOGIN", db="postgres")
+        cls.sql("CREATE DATABASE platform_dev OWNER platform_owner", db="postgres")
+        cls.sql("CREATE SCHEMA app AUTHORIZATION platform_owner")
+        cls.sql(
+            "CREATE TABLE app.orders (id int PRIMARY KEY, item text NOT NULL);"
+            "ALTER TABLE app.orders OWNER TO platform_owner;"
+            "INSERT INTO app.orders VALUES (1, 'snapshot-a'), (2, 'snapshot-b')"
+        )
+        env = {
+            "DEBEZIUM_DB_USER": "debezium",
+            "DEBEZIUM_DB_NAME": "platform_dev",
+            "DEBEZIUM_SCHEMA": "app",
+            "DEBEZIUM_HEARTBEAT_SCHEMA": "debezium_heartbeat",
+            "DEBEZIUM_PUBLICATION": "hyhome_platform_publication",
+            "DEBEZIUM_SOURCE_OWNER": "platform_owner",
+            "DEBEZIUM_DB_PASSWORD": cls.SPECIAL_VALUE,
+        }
+        args = ["exec", "-i"]
+        for key, value in env.items():
+            args += ["-e", f"{key}={value}"]
+        sql = ROOT / "infra/05-messaging/kafka/connect/debezium/provisioning/dev-pg.sql"
+        _cdc_docker(
+            *args, f"{cls.tag}-pg", "psql", "-h", "127.0.0.1", "-q", "-U", "admin", "-d", "postgres",
+            "-f", "-", input=sql.read_text(),
+        )  # fmt: skip
+
+    def consume(self, count):
+        out = _cdc_docker(
+            "exec", f"{self.tag}-sr", "kafka-avro-console-consumer",
+            "--bootstrap-server", "kafka-1:19092", "--topic", "hyhome.platform.app.orders",
+            "--from-beginning", "--max-messages", str(count), "--timeout-ms", "60000",
+            "--property", "schema.registry.url=http://localhost:8081",
+            "--group", f"rehearsal-{uuid.uuid4().hex[:8]}",
+            check=False, timeout=120,
+        ).stdout  # fmt: skip
+        return [json.loads(line) for line in out.splitlines() if line.startswith("{")]
+
+    def running(self):
+        status = json.loads(
+            self.http(
+                "GET", "http://kafka-connect:8083/connectors/hyhome-platform/status"
+            )
+        )
+        tasks = status.get("tasks") or [{}]
+        return status["connector"]["state"] == tasks[0].get("state") == "RUNNING"
+
+    def slot(self, column):
+        return self.sql(
+            f"SELECT {column} FROM pg_replication_slots"
+            " WHERE slot_name = 'hyhome_platform_slot'"
+        )
+
+    def test_1_stream_decode_evolve_and_resume(self):
+        config = json.loads(CDC_CONNECTOR.read_text())
+        config = config.get("config", config)
+        body = self.http(
+            "PUT",
+            "http://kafka-connect:8083/connectors/hyhome-platform/config",
+            json.dumps(config),
+        )
+        self.assertIn('"name":"hyhome-platform"', body.replace(" ", ""), body[:400])
+        self.wait(self.running, "connector RUNNING", tries=90)
+        # The connector created the slot; provisioning never does.
+        self.wait(lambda: self.slot("active") == "t", "active slot")
+
+        rows = self.consume(2)
+        self.assertEqual(
+            ["snapshot-a", "snapshot-b"], sorted(_cdc_after(r)["item"] for r in rows)
+        )
+
+        # A streamed row, then an additive column: a second registered version.
+        self.sql("INSERT INTO app.orders VALUES (3, 'stream-c')")
+        self.sql("ALTER TABLE app.orders ADD COLUMN note text")
+        self.sql("INSERT INTO app.orders VALUES (4, 'stream-d', 'evolved')")
+        # Three partitions (topic.creation.default.partitions) order only per
+        # key, so rows are compared by primary key.
+        rows = {_cdc_after(r)["id"]: _cdc_after(r) for r in self.consume(4)}
+        self.assertEqual({1, 2, 3, 4}, set(rows))
+        self.assertEqual("stream-d", rows[4]["item"])
+        self.assertIn("evolved", json.dumps(rows[4]["note"]))
+        versions = self.http(
+            "GET",
+            "http://schema-registry:8081/subjects/hyhome.platform.app.orders-value/versions",
+        )
+        self.assertEqual([1, 2], json.loads(versions))
+
+        # A restarted worker resumes from its stored offset without a second
+        # snapshot: exactly one new event follows the four already read.
+        _cdc_docker("restart", f"{self.tag}-connect")
+        self.wait(self.connect_ready, "kafka connect after restart", tries=120)
+        self.wait(self.running, "connector RUNNING after restart", tries=90)
+        self.sql("INSERT INTO app.orders VALUES (5, 'after-restart', NULL)")
+        ids = sorted(_cdc_after(r)["id"] for r in self.consume(6))
+        self.assertEqual([1, 2, 3, 4, 5], ids)
+
+    def test_2_heartbeat_writes_and_advances_the_slot(self):
+        before = self.slot("confirmed_flush_lsn")
+        time.sleep(75)  # the tracked heartbeat.interval.ms is 60000
+        beats = self.sql(
+            "SELECT count(*) FROM debezium_heartbeat.heartbeat"
+            " WHERE beat_at > now() - interval '2 minutes'"
+        )
+        self.assertEqual("1", beats)
+        self.assertNotEqual(before, self.slot("confirmed_flush_lsn"))
 
 
 @unittest.skipUnless(
@@ -4178,15 +4768,26 @@ class RouteAuthContractTests(unittest.TestCase):
         )
         self.assertEqual([], bare)
 
-    def test_sso_sign_in_redirect_reaches_the_browser_as_302(self) -> None:
-        """A 401 keeps oauth2-proxy's Location, but browsers only follow a 3xx."""
+    def test_sso_redirects_browsers_and_refuses_machine_clients(self) -> None:
+        """The proxy root sends a browser to Keycloak and answers an
+        Accept: application/json client with 401; a login page is never a
+        machine answer. SsoRehearsalTests proves this at runtime."""
         import yaml
 
         path = ROOT / "infra/01-gateway/traefik/dynamic/middleware.yml"
-        errors = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
+        middlewares = yaml.safe_load(path.read_text(encoding="utf-8"))["http"][
             "middlewares"
-        ]["sso-errors"]["errors"]
-        self.assertEqual({"401": 302}, errors.get("statusRewrites"))
+        ]
+        self.assertEqual(
+            "http://oauth2-proxy:4180/",
+            middlewares["sso-auth"]["forwardAuth"]["address"],
+        )
+        errors = middlewares["sso-errors"]["errors"]
+        self.assertEqual(["403"], errors["status"])
+        self.assertNotIn("statusRewrites", errors)
+        cfg = (ROOT / "infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg").read_text()
+        self.assertIn('upstreams = [ "static://200" ]', cfg)
+        self.assertIn("skip_provider_button = true", cfg)
 
 
 class QdrantApiKeyContractTests(unittest.TestCase):

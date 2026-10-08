@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -56,6 +56,12 @@ and acceptance gates before any service declaration was changed.
 | W10 | 4, 9 | Secret file support matrix and wrapper refusal | W8 | TSK-0005 | Task evidence |
 | W11 | 3, 6 | Image namespace residue and mail outcome states | W8 | TSK-0005 | Task evidence |
 | W12 | 8, 9 | Validation and handoff | W9, W10, W11 | TSK-0005 | Task evidence |
+| W13 | 7, 9 | OpenBao Raft snapshot with a snapshot-only token | W12 | TSK-0005 | Task evidence |
+| W14 | 7, 9 | Open WebUI key kept in its backed-up volume | W12 | TSK-0005 | Task evidence |
+| W15 | 6 | CDC stream rehearsal from dev-pg to decoded Avro | W12 | TSK-0005 | Task evidence |
+| W16 | 4 | Gateway answers machine clients 401; SSO rehearsal | W12 | TSK-0005 | Task evidence |
+| W17 | 4, 9 | SonarQube JDBC password from its secret | W12 | TSK-0005 | Task evidence |
+| W18 | 8, 9 | Third-round validation | W13, W14, W15, W16, W17 | TSK-0005 | Task evidence |
 
 ### Work Details
 
@@ -129,6 +135,20 @@ and acceptance gates before any service declaration was changed.
     and 6.
 12. **W12: validation and handoff.** Run the changed gate and record the
     remaining gaps with owner actions. Maps 8 and 9.
+13. **W13: OpenBao snapshot.** Add a Raft snapshot to the nightly run with
+    a periodic token limited to the snapshot path, and prove save, restore
+    and unseal in isolation. Maps 7 and 9.
+14. **W14: Open WebUI key.** Keep the generated key in the data volume and
+    back it up with the uploads. Maps 7 and 9.
+15. **W15: CDC rehearsal.** Run the tracked provisioning and connector end
+    to end with decode, evolution, resume and heartbeat checks. Maps 6.
+16. **W16: gateway machine path.** Answer an unauthenticated JSON client
+    with 401 instead of a login page, proven by an SSO rehearsal before the
+    HOME change. Maps 4.
+17. **W17: SonarQube secret.** Replace the ignored `_FILE` key with a
+    wrapper. Maps 4 and 9.
+18. **W18: third-round validation.** Run the changed gate and record what
+    stays open. Maps 8 and 9.
 
 ### Rulings
 

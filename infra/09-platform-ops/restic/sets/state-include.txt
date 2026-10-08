@@ -7,6 +7,8 @@ ai/comfyui/input
 ai/comfyui/output
 ai/comfyui/user
 ai/open-webui/uploads
+# Open WebUI's session/encryption key; webui.db comes from the SQLite export.
+ai/open-webui/.webui_secret_key
 auth/keycloak
 management/jupyterlab
 # Airflow logs follow their own retention and airflow-valkey is a live broker.
