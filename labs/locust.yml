@@ -41,6 +41,11 @@ networks:
 services:
   lab-locust-master:
     <<: *locust
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+      # `lab.py run` waits for this job and stops it at the deadline.
+      hy-home.lab.job: 'true'
     volumes:
       - lab-locust-scenario:/mnt/locust/scenario:ro
       - lab-locust-results:/mnt/locust/results:rw

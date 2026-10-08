@@ -302,6 +302,63 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(2, self.up())
         self.assertFalse(self.started())
 
+    def run_job(self, wait_result, deadline: str = "5m", jobs: str = "job-1\n"):
+        """`lab.py run` with a fake job container and a scripted `docker wait`."""
+        original = self.fake_run
+
+        def fake_run(command, **kwargs):
+            if command[1:3] == ["ps", "--all"]:
+                self.calls.append(command)
+                return subprocess.CompletedProcess(command, 0, jobs, "")
+            if command[1] == "wait":
+                self.calls.append(command)
+                self.assertEqual(300 if deadline == "5m" else 60, kwargs["timeout"])
+                if isinstance(wait_result, BaseException):
+                    raise wait_result
+                return subprocess.CompletedProcess(command, 0, f"{wait_result}\n", "")
+            return original(command, **kwargs)
+
+        with mock.patch.object(lab, "run", side_effect=fake_run):
+            with mock.patch("sys.stdout"), mock.patch("sys.stderr"):
+                return lab.main(
+                    ["--env-file", str(self.env_file), "run", "cassandra",
+                     "--purpose", "drill", "--lease", "1h", "--deadline", deadline,
+                     "--grace", "7"]
+                )  # fmt: skip
+
+    def test_run_propagates_the_job_exit_code_and_always_stops(self) -> None:
+        self.assertEqual(3, self.run_job(3))
+        self.assertTrue(any(call[-2:] == ["up", "-d"] for call in self.calls))
+        self.assertFalse(any("--wait" in call for call in self.calls))
+        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        entry = self.ledger()
+        self.assertEqual(
+            ("failed", 3, "stopped"),
+            (entry["outcome"], entry["job_exit_code"], entry["state"]),
+        )
+        self.assertFalse(any(call[1] == "stop" for call in self.calls))
+
+    def test_run_stops_the_job_at_the_deadline_or_on_cancel(self) -> None:
+        for raised, code, outcome in (
+            (subprocess.TimeoutExpired("docker wait", 60), 124, "deadline_exceeded"),
+            (KeyboardInterrupt(), 130, "cancelled"),
+        ):
+            with self.subTest(outcome=outcome):
+                self.calls.clear()
+                self.assertEqual(code, self.run_job(raised, deadline="1m"))
+                stops = [call for call in self.calls if call[1] == "stop"]
+                # SIGTERM with grace lets Locust flush its CSV before `down`.
+                self.assertEqual([["docker", "stop", "--time", "7", "job-1"]], stops)
+                self.assertLess(self.calls.index(stops[0]), len(self.calls) - 1)
+                self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+                self.assertEqual(outcome, self.ledger()["outcome"])
+
+    def test_run_refuses_a_deadline_beyond_the_lease_or_no_single_job(self) -> None:
+        self.assertEqual(2, self.run_job(0, deadline="2h"))
+        self.assertFalse(self.started())
+        self.assertEqual(1, self.run_job(0, jobs="job-1\njob-2\n"))
+        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+
     def test_reap_stops_only_expired_leases(self) -> None:
         self.assertEqual(0, self.up())
         self.calls.clear()
