@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload or restart를 수행하며, 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리하도록 돕는다.
+운영자가 `prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload or restart를 수행하며, 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
@@ -74,15 +74,15 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs ps prometheus
-   docker logs --tail=200 infra-prometheus
-   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+   docker logs --tail=200 prometheus
+   docker exec prometheus wget -qO- http://localhost:9090/-/healthy
    ```
 
 2. Config와 rule syntax를 검증한다.
 
    ```bash
-   docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
+   docker exec prometheus promtool check config /etc/prometheus/prometheus.yml
+   docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
    ```
 
    두 번째 명령은 container 내부 `/bin/sh`가 rule glob을 확장하도록 shell program을 따옴표로 감싼다. `/run/secrets/openbao_token` 미준비로 config 검사가 멈추면 그 전제를 별도 실패로 기록한다. Rule 검사는 문법 증거일 뿐 credential이나 scrape readiness를 증명하지 않는다.
@@ -90,7 +90,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 3. Scrape target 장애는 Prometheus `Targets` page에서 failing job을 확인하고, Prometheus container에서 target endpoint를 직접 확인한다.
 
    ```bash
-   docker exec infra-prometheus wget -qO- http://<target-service-name>:<metrics-port>/metrics
+   docker exec prometheus wget -qO- http://<target-service-name>:<metrics-port>/metrics
    ```
 
    Target이 `/metrics`가 아닌 custom path를 사용하면 `prometheus.yml`의 `metrics_path`를 기준으로 endpoint를 바꾼다.
@@ -98,7 +98,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 4. Config or rule 변경이 검증을 통과했고 service가 healthy하면 lifecycle reload를 수행한다.
 
    ```bash
-   docker exec infra-prometheus wget -qO- --post-data='' http://localhost:9090/-/reload
+   docker exec prometheus wget -qO- --post-data='' http://localhost:9090/-/reload
    ```
 
 5. Reload 후에도 service가 unhealthy하거나 runtime state가 회복되지 않으면 profile 포함 compose 명령으로 restart한다.
@@ -110,7 +110,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 6. TSDB corruption, compaction failure, WAL 관련 로그가 보이면 삭제 조치를 하지 말고 evidence를 수집한다.
 
    ```bash
-   docker logs --tail=500 infra-prometheus | grep -Ei 'tsdb|wal|compact|corrupt|block'
+   docker logs --tail=500 prometheus | grep -Ei 'tsdb|wal|compact|corrupt|block'
    rg -n 'prometheus-data|/prometheus|web.enable-(lifecycle|admin-api)' infra/06-observability/docker-compose.yml
    ```
 
@@ -118,7 +118,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Verification Steps
 
-- [ ] `docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy`가 healthy response를 반환한다.
+- [ ] `docker exec prometheus wget -qO- http://localhost:9090/-/healthy`가 healthy response를 반환한다.
 - [ ] Prometheus `Targets` page에서 affected critical target이 `UP`이다.
 - [ ] `promtool check config` and `promtool check rules`가 성공한다.
 - [ ] Grafana dashboard에서 새 metrics timestamp가 갱신된다.
@@ -126,7 +126,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-prometheus`
+- **Logs**: `docker logs --tail=200 prometheus`
 - **Health**: `/-/healthy`, Prometheus UI `Targets`, Grafana dashboards
 - **Validation**: `promtool check config`, `promtool check rules`
 - **Metrics**: `prometheus_rule_evaluation_failures_total`, `prometheus_tsdb_compactions_failed_total`, target `up`

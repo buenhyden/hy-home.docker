@@ -30,7 +30,7 @@ procedure는 해당 runbook에 있다.
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
 
-- **Systems**: compose service `prometheus`, container `infra-prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
+- **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

@@ -150,7 +150,7 @@ stat -c '%n %s %a' secrets/observability/prometheus/prometheus_api_password.txt 
 
 ```bash
 docker compose up -d --no-deps --no-build --pull never --force-recreate traefik prometheus
-docker ps --format '{{.Names}} {{.Status}}' | grep -E '^(traefik|infra-prometheus) '
+docker ps --format '{{.Names}} {{.Status}}' | grep -E '^(traefik|prometheus) '
 ```
 
 예상 결과: 승인된 두 consumer가 각 healthcheck 기준을 통과한다. 고정된 1분

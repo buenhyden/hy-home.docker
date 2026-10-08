@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-`infra/06-observability/grafana`에는 `06-observability` 티어의 Grafana 구현이 들어 있습니다. Grafana는 compose 서비스 `grafana`, 컨테이너 `infra-grafana`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 런타임 상태를 `grafana-data`에 저장하고 프로비저닝 및 대시보드 트리를 읽기 전용으로 마운트하며 접근 제어에는 Keycloak Generic OAuth 역할 매핑을 사용합니다.
+`infra/06-observability/grafana`에는 `06-observability` 티어의 Grafana 구현이 들어 있습니다. Grafana는 compose 서비스 `grafana`, 컨테이너 `grafana`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 런타임 상태를 `grafana-data`에 저장하고 프로비저닝 및 대시보드 트리를 읽기 전용으로 마운트하며 접근 제어에는 Keycloak Generic OAuth 역할 매핑을 사용합니다.
 
 ## Audience
 
@@ -56,7 +56,7 @@ grafana/
 | Purpose | `06-observability` 티어의 메트릭, 로그, 트레이스, 알림, 프로파일 시각화 허브 |
 | Compose service | `infra/06-observability/docker-compose.yml`의 `grafana` |
 | Compose linkage | `infra/06-observability/docker-compose.yml`에 선언됨 |
-| Container | `infra-grafana` |
+| Container | `grafana` |
 | Image | [declared runtime image](../../tech-stack.versions.json) |
 | Config files | `provisioning/datasources/datasource.yml`, `provisioning/dashboards/dashboards.yml`, 대시보드 JSON 파일 |
 | Config values | 데이터소스 UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`; Pyroscope 데이터소스 타입 `grafana-pyroscope-datasource`; 대시보드 프로바이더 `editable: false`; `/admins`, `/editors` 역할 매핑 |
@@ -336,7 +336,7 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 인프라 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `docker compose --profile obs ps grafana`와 `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`로 준비 상태를 확인합니다.
+- `docker compose --profile obs ps grafana`와 `docker exec grafana wget -q --spider http://localhost:3000/api/health`로 준비 상태를 확인합니다.
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`로 데이터소스 프로비저닝을 확인합니다.
 - `rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`로 대시보드 프로비저닝을 확인합니다.
 - `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`로 대시보드 보유 현황을 확인합니다.

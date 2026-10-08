@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
@@ -56,7 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Checklist
 
-- [ ] `grafana` service, `infra-grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
+- [ ] `grafana` service, `grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
 - [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
 - [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version 변경이 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
@@ -67,21 +67,21 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs ps grafana
-   docker logs --tail=200 infra-grafana
-   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   docker logs --tail=200 grafana
+   docker exec grafana wget -q --spider http://localhost:3000/api/health
    ```
 
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
    ```
 
 3. OAuth or role mapping failure이면 role mapping과 OAuth endpoint references만 확인한다.
 
    ```bash
    rg -n 'GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_AUTH_URL|GF_AUTH_GENERIC_OAUTH_TOKEN_URL|GF_AUTH_GENERIC_OAUTH_API_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT|GF_AUTH_GENERIC_OAUTH_USE_PKCE|GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD' infra/06-observability/docker-compose.yml
-   docker logs --tail=300 infra-grafana | grep -Ei 'oauth|role|login|token|keycloak|auth'
+   docker logs --tail=300 grafana | grep -Ei 'oauth|role|login|token|keycloak|auth'
    ```
 
    Secret value나 token payload가 포함된 줄은 그대로 복사하지 말고 redaction summary로 기록한다.
@@ -102,9 +102,9 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 6. Backend dependency issue가 의심되면 dependent services의 readiness를 확인한다.
 
    ```bash
-   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
-   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
-   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   docker exec prometheus wget -qO- http://localhost:9090/-/healthy
+   docker exec loki wget -qO- http://127.0.0.1:3100/ready
+   docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
    docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}
    ```
 
@@ -112,8 +112,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs restart grafana
-   docker logs --tail=100 infra-grafana
-   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   docker logs --tail=100 grafana
+   docker exec grafana wget -q --spider http://localhost:3000/api/health
    ```
 
 8. Provisioning·dashboard의 bind-mounted 파일만 바뀌었으면 아래 `git diff`로 후보를 확인하고 승인된 정상 revision의 해당 파일만 복원한다. `git diff`는 복원 명령이 아니다. 같은 파일 bind가 기존 컨테이너에서도 복원 내용을 읽는지 확인한 뒤에만 아래 restart를 사용한다. 파일 교체로 inode가 달라졌거나 Compose 환경변수·secret 참조·mount·image가 바뀌었으면 이 restart 분기를 사용하지 말고 중단한다. [RUN-0086](0086-dependency-version-management.md)에서 이전 image/build와 선언을 복원하고 대상·backup·의존성 영향을 검토한 승인된 recreate 계획으로 넘긴다. Secret 내용·참조 복구는 [RUN-0085](0085-openbao.md)가 소유한다.
@@ -121,7 +121,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```bash
    git diff -- infra/06-observability/grafana/provisioning infra/06-observability/grafana/dashboards
    docker compose --profile obs restart grafana
-   docker exec infra-grafana wget -q --spider http://localhost:3000/api/health
+   docker exec grafana wget -q --spider http://localhost:3000/api/health
    ```
 
    이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
@@ -132,8 +132,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    `deleteDatasources`를 사용한 SPEC-0193 Pyroscope 이력이 있다. 먼저 해당 UID 충돌을 확인하고 데이터/참조 영향, backup, migration 승인을 확보한다. 승인 없이 항목을 추가하거나 삭제하지 않는다; 승인된 변경 뒤 재시작한다.
 
    ```bash
-   docker logs --since 5m infra-grafana 2>&1 | grep 'Failed to provision data sources'
-   docker restart infra-grafana
+   docker logs --since 5m grafana 2>&1 | grep 'Failed to provision data sources'
+   docker restart grafana
    ```
 
 10. 로그에 `failed to save dashboard ... deprecatedInternalID=... is already in
@@ -165,7 +165,7 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 ### Verification Steps
 
 - [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
-- [ ] `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
+- [ ] `docker exec grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
 - [ ] Provisioned datasource identity가 변경되지 않았다: UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`.
 - [ ] Dashboard provider가 여전히 `editable: false`이고, tracked dashboard JSON 개수가 예상값과 일치한다.
 - [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, `/viewers`를 `Viewer`로 매핑하고 이 그룹들에 속하지 않은 사용자는 strict mapping으로 거부한다. `Admin`은 organization role이며 server-admin 승격 증거가 아니다.
@@ -173,7 +173,7 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-grafana`
+- **Logs**: `docker logs --tail=200 grafana`
 - **Health**: Grafana `/api/health`, UI `https://grafana.${DEFAULT_URL}`
 - **Config**: Compose 환경변수·secret 참조, datasource provisioning, dashboard provider YAML과 dashboard JSON 경로
 - **Backends**: Prometheus·Loki·Tempo·Pyroscope의 준비 상태

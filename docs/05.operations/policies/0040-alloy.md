@@ -29,7 +29,7 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
 이 정책은 current `infra/06-observability/alloy` compose와
 `config/config.alloy`·`config/config.home.alloy`에 선언된 Alloy 운영 기준을 다룬다.
 
-- **Systems**: compose service `alloy`, container `infra-alloy`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alloy/config/config.alloy`와 `config.home.alloy`, secret `quality_otlp_token`, volume `alloy-data`, Docker socket/container log read-only mounts
+- **Systems**: compose service `alloy`, container `alloy`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alloy/config/config.alloy`와 `config.home.alloy`, secret `quality_otlp_token`, volume `alloy-data`, Docker socket/container log read-only mounts
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

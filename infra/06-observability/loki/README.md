@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-`infra/06-observability/loki`에는 `06-observability` 티어의 Loki 구현이 들어 있습니다. Loki는 compose 서비스 `loki`, 컨테이너 `infra-loki`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 작업 데이터를 `loki-data`에 저장하고 로그 청크와 인덱스에는 SeaweedFS S3 버킷 `loki-bucket`을 사용합니다. 커스텀 이미지는 Loki의 업스트림 바이너리를 유지하면서 Docker Secret `seaweedfs_s3_loki_secret_key`에서 `S3_SECRET_KEY`를 내보내는 작은 엔트리포인트를 거쳐 `-config.expand-env=true` 옵션으로 Loki를 시작합니다.
+`infra/06-observability/loki`에는 `06-observability` 티어의 Loki 구현이 들어 있습니다. Loki는 compose 서비스 `loki`, 컨테이너 `loki`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 작업 데이터를 `loki-data`에 저장하고 로그 청크와 인덱스에는 SeaweedFS S3 버킷 `loki-bucket`을 사용합니다. 커스텀 이미지는 Loki의 업스트림 바이너리를 유지하면서 Docker Secret `seaweedfs_s3_loki_secret_key`에서 `S3_SECRET_KEY`를 내보내는 작은 엔트리포인트를 거쳐 `-config.expand-env=true` 옵션으로 Loki를 시작합니다.
 
 ## Audience
 
@@ -56,7 +56,7 @@ loki/
 | Purpose | `06-observability` 티어의 로그 수집 및 LogQL 쿼리 백엔드 |
 | Compose service | `infra/06-observability/docker-compose.yml`의 `loki` |
 | Compose linkage | `infra/06-observability/docker-compose.yml`에 선언됨 |
-| Container | `infra-loki` |
+| Container | `loki` |
 | Image | [declared runtime image](../../tech-stack.versions.json) |
 | Runtime user | `10001:10001` |
 | Config files | `config/loki-config.yaml`, `Dockerfile`, `docker-entrypoint.sh` |
@@ -110,7 +110,7 @@ loki/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 인프라 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `docker compose --profile obs ps loki`와 `docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready`로 준비 상태를 확인합니다.
+- `docker compose --profile obs ps loki`와 `docker exec loki wget -qO- http://127.0.0.1:3100/ready`로 준비 상태를 확인합니다.
 - `rg -n 'bucketnames: loki-bucket|retention_enabled: true|retention_period: 168h|compaction_interval: 10m' infra/06-observability/loki/config/loki-config.yaml`로 저장소/보존 설정을 확인합니다.
 - `rg -n 'loki.source.docker|loki.write|http://loki:3100/loki/api/v1/push' infra/06-observability/alloy/config/config.alloy`로 수집 연결을 확인합니다.
 

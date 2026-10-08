@@ -30,7 +30,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 이 정책은 current `infra/06-observability/pyroscope` compose와
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
 
-- **Systems**: compose service `pyroscope`, container `infra-pyroscope`, image [grafana/pyroscope image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
+- **Systems**: compose service `pyroscope`, container `pyroscope`, image [grafana/pyroscope image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

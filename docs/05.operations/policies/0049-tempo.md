@@ -30,7 +30,7 @@ storage, block retention, metrics generator, secret boundary, protected route를
 이 정책은 current `infra/06-observability/tempo` compose와
 `config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
 
-- **Systems**: compose service `tempo`, container `infra-tempo`, image [hy/tempo image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
+- **Systems**: compose service `tempo`, container `tempo`, image [hy/tempo image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

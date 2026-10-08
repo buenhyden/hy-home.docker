@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-alloy` 상태를 확인하고 Docker discovery, Loki/Prometheus/Tempo/Pyroscope exporter 경로, OTLP ports, route, config boundary를 검증하며, mount 권한이나 pipeline 구조 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `alloy` 상태를 확인하고 Docker discovery, Loki/Prometheus/Tempo/Pyroscope exporter 경로, OTLP ports, route, config boundary를 검증하며, mount 권한이나 pipeline 구조 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
@@ -57,7 +57,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Checklist
 
-- [ ] `alloy` service, `infra-alloy` container, `alloy-data` volume, and read-only Docker mounts 상태를 확인한다.
+- [ ] `alloy` service, `alloy` container, `alloy-data` volume, and read-only Docker mounts 상태를 확인한다.
 - [ ] 문제 유형을 readiness, Docker discovery/logs, OTLP ingress, downstream exporter, relabel/label drift, config regression 중 하나로 분류한다.
 - [ ] Docker socket/container mounts를 read-write로 바꾸거나 exporter endpoint/port를 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
 - [ ] Secret-bearing labels or high-cardinality labels가 발견되면 원문 값을 기록하지 않는다.
@@ -70,14 +70,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs ps alloy
-   docker logs --tail=200 infra-alloy
-   docker exec infra-alloy bash -lc 'exec 3<>/dev/tcp/localhost/12345; printf "HEAD /-/healthy HTTP/1.1\r\nHost: localhost\r\n\r\n" >&3; timeout 2 head -1 <&3'
+   docker logs --tail=200 alloy
+   docker exec alloy bash -lc 'exec 3<>/dev/tcp/localhost/12345; printf "HEAD /-/healthy HTTP/1.1\r\nHost: localhost\r\n\r\n" >&3; timeout 2 head -1 <&3'
    ```
 
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: infra-alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    rg -n '/var/lib/docker/containers:/var/lib/docker/containers:ro|/var/run/docker.sock:/var/run/docker.sock:ro|alloy-data:/var/lib/alloy:rw' infra/06-observability/docker-compose.yml
    ```
 
@@ -90,10 +90,10 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 4. Downstream exporter failure가 의심되면 현재 선택한 backend만 확인한다. Optional dependency가 없어도 collector는 시작할 수 있으며 health는 delivery 증거가 아니다.
 
    ```bash
-   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
-   docker exec infra-loki wget -qO- http://127.0.0.1:3100/ready
-   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
-   docker exec infra-pyroscope profilecli ready --url=http://localhost:4040
+   docker exec prometheus wget -qO- http://localhost:9090/-/healthy
+   docker exec loki wget -qO- http://127.0.0.1:3100/ready
+   docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   docker exec pyroscope profilecli ready --url=http://localhost:4040
    ```
 
 5. OTLP ingress 장애가 의심되면 Compose port binding과 Alloy config를 확인한다.
@@ -130,7 +130,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```bash
    git diff -- infra/06-observability/alloy/config/config.alloy
    docker compose --profile obs restart alloy
-   docker logs --tail=100 infra-alloy
+   docker logs --tail=100 alloy
    ```
 
    이 런북은 mount permission relaxation, Docker socket read-write access, exporter endpoint change, OTLP port change, or high-cardinality relabel expansion을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
@@ -146,7 +146,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-alloy`
+- **Logs**: `docker logs --tail=200 alloy`
 - **Health**: Alloy `/-/healthy`, Alloy UI graph
 - **Config**: `config.alloy`, Docker discovery·relabel rule과 exporter endpoint
 - **Backends**: Loki·Prometheus·Tempo·Pyroscope의 준비 상태

@@ -279,7 +279,7 @@ mv secrets/security/.openbao_token.new secrets/security/openbao/openbao_token.tx
 rm -f /tmp/bao-k8s/metrics.token
 docker compose --profile obs up -d --no-deps --force-recreate --wait prometheus
 sleep 45   # one scrape interval after the recreate
-docker exec infra-prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22openbao%22%7D' | grep -o '"value":\[[^]]*\]'
+docker exec prometheus wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22openbao%22%7D' | grep -o '"value":\[[^]]*\]'
 ```
 
 예상 결과: 값 `"1"`. Prometheus는 host port를 게시하지 않으므로 점검은 컨테이너 내부에서

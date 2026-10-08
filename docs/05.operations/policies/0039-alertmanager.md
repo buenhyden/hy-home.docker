@@ -29,7 +29,7 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 이 정책은 current `infra/06-observability/alertmanager` compose와
 `config/config.yml`에 선언된 Alertmanager 운영 기준을 다룬다.
 
-- **Systems**: compose service `alertmanager`, container `infra-alertmanager`, image [prom/alertmanager image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
+- **Systems**: compose service `alertmanager`, container `alertmanager`, image [prom/alertmanager image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

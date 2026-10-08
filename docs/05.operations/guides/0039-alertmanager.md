@@ -62,7 +62,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-low|image: prom/alertmanager:|container_name: infra-alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:|container_name: alertmanager|smtp_username|smtp_password|slack_webhook|alertmanager-data|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Alertmanager config template boundary를 확인한다.
@@ -115,7 +115,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 ### Common Checks
 
 - `docker compose --profile obs ps alertmanager`
-- `docker logs --tail=100 infra-alertmanager`
+- `docker logs --tail=100 alertmanager`
 - `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - `rg -n 'alertmanagers:|targets: \\[\"alertmanager:9093\"\\]' infra/06-observability/prometheus/config/prometheus.yml`
 
