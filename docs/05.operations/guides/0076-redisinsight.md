@@ -1,6 +1,6 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -75,6 +75,35 @@ history, 로그를 영속화한다.
 보증하지 않는다. 메모리·연결 수·설정 저장소 사용량은 Compose 자원 제한과 함께
 검토한다. 현재 이미지의 실제 저장 형식을 조사하지 않았으므로 암호화 키 미선언만으로
 모든 저장값이 평문이라고 단정하지 않지만, 암호화 보장도 주장하지 않는다.
+
+### dev-valkey 연결
+
+RedisInsight는 `dev_data_net`으로 `dev-valkey`에 닿는다. 연결을 추가할 때는
+다음 값을 쓴다.
+
+| 항목 | 값 |
+| --- | --- |
+| Host | `dev-valkey` |
+| Port | `6379` |
+| Username | `devadmin` |
+| Password | `secrets/db/dev-valkey/admin_password.txt`의 내용 |
+
+- Username을 비워 두면 RedisInsight는 `default` 사용자로 인증한다. `dev-valkey`의
+  ACL은 `user default off`로 시작하므로 이 경우 `Authentication failed`가 난다.
+- 비밀번호는 secret 파일에서 직접 붙여 넣는다. 문서, 채팅, 로그, 스크린샷에
+  남기지 않는다.
+- `devmonitor`는 지표 수집 전용 계정이라 키를 읽지 못한다. RedisInsight 연결에
+  쓰지 않는다.
+- 프로젝트 사용자(`projects.tsv`)는 자기 키 prefix만 다룬다. 특정 프로젝트 범위로만
+  보려면 그 사용자와 해당 secret으로 연결한다.
+- `devadmin`은 모든 키와 명령을 다룰 수 있다. Workbench에서 쓰기나 삭제를 하기
+  전에 대상 프로젝트 소유자의 승인을 받는다.
+- admin 비밀번호를 바꾸면 RedisInsight에 저장한 연결의 비밀번호도 함께 고친다.
+  ACL은 `dev-valkey`를 다시 시작할 때 secret에서 새로 만들어진다.
+
+연결이 실패하면 `dev-valkey` 컨테이너 안에서 secret 파일로 `devadmin` 인증이
+`PONG`을 돌려주는지 먼저 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로
+시도했는지 본다.
 
 ### 소스 검토의 한계
 
