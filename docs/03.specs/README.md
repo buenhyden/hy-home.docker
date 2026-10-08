@@ -52,6 +52,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0214 | [품질 부하 도구·OTel 의미](./0214-quality-k6-locust-and-otel-semantics/) | k6 기본·Locust LAB, 인증된 품질 metrics 경로, 속성 보존 |
 | SPEC-0215 | [LAB 격리·서비스 선택](./0215-lab-isolation-and-service-selection/) | root 폐포, LAB 경계·lease controller·예산, 선택 서비스 처분 |
 | SPEC-0216 | [Compose container·host 이름 규칙](./0216-compose-container-and-host-naming/) | infra 서비스 `container_name`·`hostname` = 서비스 이름, 등록 예외만 허용 |
+| SPEC-0217 | [하위 에이전트 모델·위임 설명](./0217-subagent-model-and-routing-text/) | 하위 에이전트 모델을 Opus 5.5·Sonnet 5.5로 갱신, 역할 Overview·Use When에서 위임 설명 생성 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
