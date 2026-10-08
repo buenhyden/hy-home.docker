@@ -1,6 +1,6 @@
 ---
 title: "Compose Container and Host Naming Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -63,6 +63,31 @@ Seven guides, seven policies, nine runbooks and eight READMEs named the
 now use the service names. A search afterwards found no active reference to a
 retired container name; history and archives keep theirs.
 
+### W3 HOME Recreation
+
+Run on 2026-10-08 from the HOME checkout at merge `948fd7e3b`. The 51 running
+`hy-home-infra` services were recreated with `docker compose up -d --no-deps`
+after pulling the new Ollama and Open WebUI images. Seven of them (`comfyui`,
+`dev-pg`, `kafka-1`, `keycloak`, `mng-pg`, `mng-valkey`, `traefik`) already
+had a matching hostname and container name, so Compose left them unchanged.
+
+`up` exited 1. Recreating `openbao` restarted it sealed (`initialized`,
+`sealed`, Shamir, raft), so it reports unhealthy and `openbao-agent` was not
+recreated; the old agent container keeps running healthy. Unsealing needs the
+owner-held key shares, and RUN-0085 forbids restarting OpenBao without a ready
+unseal administrator. Including `openbao` in the bulk recreation was the
+error: the next recreation of a restartable stack must exclude it and handle
+OpenBao through RUN-0085.
+
+Afterwards 48 containers were healthy, two ran without a health check and only
+`openbao` was unhealthy. Recreated containers report their service name as
+container name and hostname (`prometheus`, `grafana`, `alloy`). Prometheus had
+27 targets up and 7 down; six of those services (`airflow-valkey-exporter`,
+`cadvisor`, `n8n-valkey-exporter`, `oauth2-proxy-valkey-exporter`,
+`opensearch`, `pyroscope`) were not running before the recreation, and the
+seventh is `openbao`. The never-started `infra-pyroscope` container
+(`Created`) predates this change and is replaced on the next `pyroscope` start.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -70,11 +95,15 @@ retired container name; history and archives keep theirs.
 | Naming test | 1 | W1 | RED with previous Compose files, GREEN after | Working tree | PASS | W1 Rule, Exceptions, Test and Compose Edits | accepted |
 | Render and catalog | 3 | W1 | Root render; `check-operations-catalog.py`; projection check | `.env.example` | PASS | W1 Rule, Exceptions, Test and Compose Edits | accepted |
 | Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | accepted |
-| HOME recreation | 4 | W3 | Recreate running services; health, volumes, scrape targets | Merged source | NOT_RUN | Review and Completion | pending |
+| HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | accepted |
+| OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | rejected |
+| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent` | Owner key shares | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-W1 and W2 are complete in source. W3 runs after the merge.
+W1 and W2 are complete in source. W3 recreated HOME under the new names, but
+OpenBao is sealed until the owner unseals it, and `openbao-agent` waits for
+that.
 
 ## Related Documents
 
