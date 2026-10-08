@@ -4357,7 +4357,10 @@ class ConftestPolicyGateTests(unittest.TestCase):
                 all(command.startswith(f"{ROOT}|test ") for command in commands)
             )
             self.assertNotIn("verify", "\n".join(commands))
-            self.assertEqual(2, len(find_log.read_text(encoding="utf-8").splitlines()))
+            # infra Compose files, LAB entrypoints (SPEC-0218) and Dockerfiles.
+            finds = find_log.read_text(encoding="utf-8").splitlines()
+            self.assertEqual(3, len(finds))
+            self.assertTrue(any(line.startswith("labs ") for line in finds), finds)
 
             command_log.unlink()
             find_log.unlink()
@@ -4378,7 +4381,7 @@ class ConftestPolicyGateTests(unittest.TestCase):
                     all(command.startswith(f"{ROOT}|test ") for command in commands[1:])
                 )
                 self.assertEqual(
-                    2, len(find_log.read_text(encoding="utf-8").splitlines())
+                    3, len(find_log.read_text(encoding="utf-8").splitlines())
                 )
                 command_log.unlink()
                 find_log.unlink()
