@@ -18,6 +18,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: dozzle
+    hostname: dozzle
     image: amir20/dozzle:v11.1.1
     secrets:
       - dozzle_client_secret

@@ -61,6 +61,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: seaweedfs-master
+    hostname: seaweedfs-master
     expose:
       - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
       - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
@@ -94,6 +95,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-high
     container_name: seaweedfs-volume
+    hostname: seaweedfs-volume
     expose:
       - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
       - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
@@ -130,6 +132,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     container_name: seaweedfs-filer
+    hostname: seaweedfs-filer
     expose:
       - ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
       - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
@@ -168,6 +171,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-infra-med
     container_name: seaweedfs-s3
+    hostname: seaweedfs-s3
     environment:
       SEAWEEDFS_S3_ADMIN_ACCESS_KEY: ${SEAWEEDFS_S3_ADMIN_ACCESS_KEY:-}
     secrets:
@@ -227,6 +231,7 @@ services:
       service: template-job-low
     image: amazon/aws-cli:2.36.50
     container_name: seaweedfs-buckets
+    hostname: seaweedfs-buckets
     restart: 'no'
     entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-buckets.sh' ]
     environment:
@@ -257,6 +262,7 @@ services:
       service: template-job-low
     image: amazon/aws-cli:2.36.50
     container_name: seaweedfs-table-bucket
+    hostname: seaweedfs-table-bucket
     restart: 'no'
     entrypoint: [ '/bin/bash', '/opt/hyhome/seaweedfs-table-bucket.sh' ]
     environment:

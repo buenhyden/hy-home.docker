@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -42,10 +42,12 @@ created: "2026-06-04"
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json) 단일 파일로 유지
   - `scripts/validation/check-quickwin-baseline.sh`는 해당 레지스트리를 직접 읽어 검증
   - 신규 예외 추가 시 `reason`, `owner_role`, `review_cadence`와 함께 갱신
+  - `infra/` Compose의 모든 서비스는 `container_name`과 `hostname`을 선언하며, 둘 다 서비스 이름과 같아야 한다. Docker container 이름은 호스트 전체에서 유일해야 하므로 다른 `container_name`은 `naming_exceptions`에 `container_name`과 `reason`으로만 등록한다(`tests.validation.test_infra_tier_layout`가 검사).
 - **Allowed**:
   - one-shot init job의 `healthcheck` 생략
   - auth-disabled bootstrap 모드 서비스의 `secrets` 생략
   - DB 템플릿의 capability 관련 제한적 예외(`cap_drop`)
+  - 일반 업스트림 서비스 키(Supabase `db`, `auth` 등)의 `container_name`에 `supabase-` 접두어 유지; `hostname`은 서비스 이름
 - **Disallowed**:
   - 레지스트리 미등록 상태의 임의 예외 적용
   - 문서와 레지스트리 간 불일치 상태로 배포 진행

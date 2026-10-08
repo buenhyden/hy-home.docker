@@ -11,6 +11,7 @@ services:
       service: template-infra-med
     image: azbuilder/api-server:2.33.2
     container_name: terrakube-api
+    hostname: terrakube-api
     secrets:
       - terrakube_db_password
       - seaweedfs_s3_terrakube_secret_key
@@ -78,6 +79,7 @@ services:
       service: template-infra-med
     image: azbuilder/terrakube-ui:2.33.2
     container_name: terrakube-ui
+    hostname: terrakube-ui
     environment:
       REACT_APP_TERRAKUBE_API_URL: https://terrakube-api.${DEFAULT_URL}/api/v1/
       REACT_APP_AUTHORITY: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
@@ -114,6 +116,7 @@ services:
       service: template-infra-high
     image: azbuilder/executor:2.33.2
     container_name: terrakube-executor
+    hostname: terrakube-executor
     secrets:
       - terrakube_internal_secret
       - seaweedfs_s3_terrakube_secret_key

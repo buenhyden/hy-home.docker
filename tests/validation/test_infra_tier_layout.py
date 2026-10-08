@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import tempfile
@@ -9,6 +10,8 @@ import unittest
 from pathlib import Path
 
 import yaml
+
+from scripts.lib.document_governance.operations_catalog import _ComposeLoader
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = (
@@ -24,6 +27,32 @@ ANALYTICS = ("flink", "spark", "trino", "great-expectations", "superset", "dbt")
 
 
 class TierLayoutTests(unittest.TestCase):
+    def test_every_infra_service_names_its_container_and_host(self):
+        # container_name and hostname equal the service key; a different
+        # container_name needs a registered reason (Docker names are host-wide).
+        registry = json.loads(
+            (ROOT / "infra/common-optimizations.exceptions.json").read_text()
+        )
+        exceptions = {
+            row["service"]: row["container_name"]
+            for row in registry["naming_exceptions"]
+            if row.get("reason")
+        }
+        seen = set()
+        for path in sorted((ROOT / "infra").rglob("docker-compose*.yml")):
+            text = path.read_text(encoding="utf-8")
+            services = (yaml.load(text, Loader=_ComposeLoader) or {}).get(
+                "services"
+            ) or {}
+            for name, service in services.items():
+                seen.add(name)
+                with self.subTest(file=str(path.relative_to(ROOT)), service=name):
+                    self.assertEqual(name, service.get("hostname"))
+                    self.assertEqual(
+                        exceptions.get(name, name), service.get("container_name")
+                    )
+        self.assertLessEqual(set(exceptions), seen)
+
     def test_retired_influxdb_has_no_active_deployment(self):
         # ADR-0047: absence from the deployable model, not a repository-wide
         # string ban; history and research keep their wording.

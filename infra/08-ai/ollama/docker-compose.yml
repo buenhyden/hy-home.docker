@@ -25,6 +25,7 @@ services:
       service: template-stateful-ai-high
     image: ollama/ollama:0.40.0
     container_name: ollama
+    hostname: ollama
     read_only: false
     environment:
       - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434} # 컨테이너 인터페이스에서 수신
@@ -76,6 +77,7 @@ services:
       service: template-infra-low
     image: lucabecker42/ollama-exporter:1.0.3
     container_name: ollama-exporter
+    hostname: ollama-exporter
     read_only: true
     tmpfs:
       - /tmp

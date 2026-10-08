@@ -24,6 +24,7 @@ services:
     image: hy-home/opentofu:1.12.6-local
     pull_policy: build
     container_name: opentofu
+    hostname: opentofu
     restart: 'no'
     read_only: false
     tmpfs:

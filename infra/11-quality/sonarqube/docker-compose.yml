@@ -24,6 +24,7 @@ services:
     extends: { file: ../../common-optimizations.yml, service: template-stateful-high }
     image: sonarqube:26.9.0.129388-community
     container_name: sonarqube
+    hostname: sonarqube
     read_only: false
     expose: ['${SONARQUBE_PORT:-9000}']
     healthcheck:

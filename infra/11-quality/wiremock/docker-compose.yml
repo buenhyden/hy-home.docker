@@ -22,6 +22,8 @@ x-wiremock: &wiremock
 
 services:
   wiremock:
+    container_name: wiremock
+    hostname: wiremock
     <<: *wiremock
     # Function mode keeps a bounded journal for assertions. Reset it through
     # DELETE /__admin/requests before each approved run.

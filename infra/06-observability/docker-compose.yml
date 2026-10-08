@@ -64,7 +64,8 @@ services:
       file: ../common-optimizations.yml
       service: template-stateful-high
     image: prom/prometheus:v3.14.0
-    container_name: infra-prometheus
+    container_name: prometheus
+    hostname: prometheus
     tmpfs:
       - /tmp
       - /etc/prometheus:size=10M
@@ -119,7 +120,8 @@ services:
     build:
       context: ./loki
       dockerfile: Dockerfile
-    container_name: infra-loki
+    container_name: loki
+    hostname: loki
     user: '10001:10001'
     volumes:
       - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
@@ -165,7 +167,8 @@ services:
       context: ./tempo
       dockerfile: Dockerfile
     image: hy/tempo:3.0.3-seaweedfs
-    container_name: infra-tempo
+    container_name: tempo
+    hostname: tempo
     user: '10001:10001'
     volumes:
       - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
@@ -210,7 +213,8 @@ services:
       file: ../common-optimizations.yml
       service: template-infra-med
     image: grafana/alloy:v1.19.2
-    container_name: infra-alloy
+    container_name: alloy
+    hostname: alloy
     # The image runs as root, but its state directory (and the bind-backed
     # alloy-data volume) belongs to the image's alloy user (UID 473, mode 770).
     # With every capability dropped, root cannot write there, so run as alloy
@@ -285,7 +289,8 @@ services:
       file: ../common-optimizations.yml
       service: template-stateful-med
     image: grafana/grafana:13.2.2
-    container_name: infra-grafana
+    container_name: grafana
+    hostname: grafana
     # 512 MiB (template) peaked at 97% in the SPEC-0182 W8 window; SPEC-0193 W7
     # confirms the value from the final W8 figures.
     mem_limit: ${GRAFANA_MEM_LIMIT:-1g}
@@ -409,6 +414,7 @@ services:
       service: template-job-low
     image: postgres:18.6-alpine
     container_name: grafana-db-provision
+    hostname: grafana-db-provision
     entrypoint:
       - /bin/sh
       - /provision/run-feature-provision.sh
@@ -450,6 +456,7 @@ services:
       service: template-infra-readonly-low
     image: quay.io/prometheus/node-exporter:v1.12.1
     container_name: node-exporter
+    hostname: node-exporter
     pid: host
     command:
       - '--path.rootfs=/host/root'
@@ -499,6 +506,7 @@ services:
     mem_limit: ${CADVISOR_MEM_LIMIT:-1g}
     image: gcr.io/cadvisor/cadvisor:v0.55.1
     container_name: cadvisor
+    hostname: cadvisor
     privileged: true
     devices:
       - /dev/kmsg
@@ -553,6 +561,7 @@ services:
       dockerfile: Dockerfile
     image: hy/gatus:local
     container_name: gatus
+    hostname: gatus
     user: '${GATUS_UID:-1000}:${GATUS_GID:-1000}'
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
@@ -598,7 +607,8 @@ services:
       file: ../common-optimizations.yml
       service: template-infra-med
     image: grafana/pyroscope:2.3.1
-    container_name: infra-pyroscope
+    container_name: pyroscope
+    hostname: pyroscope
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
       - -config.expand-env=true
@@ -634,7 +644,8 @@ services:
       file: ../common-optimizations.yml
       service: template-stateful-low
     image: prom/alertmanager:v0.34.1
-    container_name: infra-alertmanager
+    container_name: alertmanager
+    hostname: alertmanager
     tmpfs:
       - /tmp
       - /etc/alertmanager:size=1M
@@ -680,6 +691,7 @@ services:
       service: template-infra-readonly-low
     image: prom/pushgateway:v1.11.3
     container_name: pushgateway
+    hostname: pushgateway
     expose:
       - '${PUSHGATEWAY_PORT:-9091}'
     depends_on:
@@ -715,6 +727,7 @@ services:
 
     image: nvcr.io/nvidia/k8s/dcgm-exporter:4.8.4
     container_name: dcgm-exporter
+    hostname: dcgm-exporter
 
     # SYS_ADMIN is needed only for DCP profiling fields, which consumer
     # Pascal GPUs do not support; keep the default capability set dropped.

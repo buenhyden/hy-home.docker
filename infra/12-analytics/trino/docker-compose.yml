@@ -12,6 +12,7 @@ services:
       service: template-infra-readonly-high
     image: trinodb/trino:483
     container_name: trino
+    hostname: trino
     entrypoint:
       - /bin/bash
       - /opt/hyhome/hyhome-trino.sh

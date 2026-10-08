@@ -96,6 +96,7 @@ services:
       service: template-stateful-high
     <<: *airflow-common
     container_name: airflow-apiserver
+    hostname: airflow-apiserver
     read_only: false
     environment:
       <<: *airflow-common-env
@@ -161,6 +162,7 @@ services:
       service: template-stateful-high
     <<: *airflow-common
     container_name: airflow-scheduler
+    hostname: airflow-scheduler
     read_only: false
     command: scheduler
     networks:
@@ -185,6 +187,7 @@ services:
       service: template-stateful-high
     <<: *airflow-common
     container_name: airflow-dag-processor
+    hostname: airflow-dag-processor
     read_only: false
     command: dag-processor
     networks:
@@ -209,6 +212,7 @@ services:
       service: template-stateful-high
     <<: *airflow-common
     container_name: airflow-worker
+    hostname: airflow-worker
     read_only: false
     command: celery worker
     networks:
@@ -238,6 +242,7 @@ services:
       service: template-stateful-low
     <<: *airflow-common
     container_name: airflow-triggerer
+    hostname: airflow-triggerer
     mem_limit: 384m
     read_only: false
     command: triggerer
@@ -263,6 +268,7 @@ services:
       - workflow
       - workflow-airflow
     container_name: airflow-init
+    hostname: airflow-init
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -378,6 +384,7 @@ services:
       service: template-stateful-low
     <<: *airflow-common
     container_name: flower
+    hostname: flower
     mem_limit: 384m
     read_only: false
     command: celery flower
@@ -417,6 +424,7 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
     container_name: airflow-valkey
+    hostname: airflow-valkey
     user: '999:999'
     secrets:
       - airflow_valkey_password
@@ -446,6 +454,7 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: airflow-valkey-exporter
+    hostname: airflow-valkey-exporter
     read_only: true
     tmpfs:
       - /tmp
@@ -480,6 +489,7 @@ services:
       service: template-infra-low
     image: prom/statsd-exporter:v0.31.0
     container_name: airflow-statsd-exporter
+    hostname: airflow-statsd-exporter
     read_only: true
     tmpfs:
       - /tmp

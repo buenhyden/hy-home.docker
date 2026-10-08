@@ -105,6 +105,8 @@ services:
       service: template-job-med
     restart: 'no'
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
+    container_name: dev-platform-provision
+    hostname: dev-platform-provision
     platform: linux/amd64
     entrypoint: ['python3', '/work/project.py', '/work/platform.json']
     environment:
@@ -132,6 +134,8 @@ services:
       service: template-job-low
     restart: 'no'
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
+    container_name: dev-perf-provision
+    hostname: dev-perf-provision
     platform: linux/amd64
     entrypoint: ['python3', '/work/perf/provision.py']
     environment:
@@ -157,6 +161,8 @@ services:
       service: template-job-low
     restart: 'no'
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
+    container_name: dev-pg-monitor-provision
+    hostname: dev-pg-monitor-provision
     platform: linux/amd64
     entrypoint: ['python3', '/work/monitor.py']
     environment:
@@ -185,6 +191,7 @@ services:
       service: template-infra-readonly-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: dev-pg-exporter
+    hostname: dev-pg-exporter
     environment:
       DATA_SOURCE_URI: dev-pg:5432/postgres?sslmode=disable
       DATA_SOURCE_USER: dev_pg_monitor
@@ -217,6 +224,8 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
+    container_name: dev-valkey
+    hostname: dev-valkey
     user: '999:999'
     read_only: true
     tmpfs:
@@ -264,6 +273,7 @@ services:
       service: template-infra-readonly-low
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: dev-valkey-exporter
+    hostname: dev-valkey-exporter
     expose:
       - '9121'
     entrypoint: ['/bin/sh', '-c']

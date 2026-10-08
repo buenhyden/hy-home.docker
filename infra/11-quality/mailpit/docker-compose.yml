@@ -19,6 +19,7 @@ services:
       service: template-stateful-med
     image: axllent/mailpit:v1.31.2
     container_name: mailpit
+    hostname: mailpit
     restart: unless-stopped
     user: '${MAILPIT_UID:-1000}:${MAILPIT_GID:-1000}'
     volumes:
