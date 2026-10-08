@@ -384,12 +384,12 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         cases: list[tuple[str, dict[str, object]]] = []
 
         wrong_path = json.loads(json.dumps(baseline))
-        quickwin = next(
+        template = next(
             row
             for row in wrong_path["public_gate"]["validators"]
-            if row["gate_id"] == "leaf.quickwin-baseline"
+            if row["gate_id"] == "leaf.template-security-baseline"
         )
-        quickwin["entrypoint"] = "scripts/validation/check-secret-contract.py"
+        template["entrypoint"] = "scripts/validation/check-secret-contract.py"
         cases.append(("row-path-does-not-match-leaf", wrong_path))
 
         both_all = json.loads(json.dumps(baseline))

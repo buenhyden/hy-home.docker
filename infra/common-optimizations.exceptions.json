@@ -1,126 +1,619 @@
 {
+  "schema_version": 2,
   "policy_id": "OPS-TPL-EXCEPTIONS-001",
-  "effective_date": "2026-09-19",
   "template_source": "infra/common-optimizations.yml",
   "owner_role": "Infra Lead",
   "review_cadence": "monthly",
-  "template_exceptions": [
+  "description": "Exceptions to the effective Compose controls of root and LAB services (SPEC-0218). scripts/validation/compose_controls.py renders every model and accepts a deviation only through an entry naming its exact scope, compose_file, service, control and allowed_value. Jobs (restart: no) need no healthcheck and a service that reads no secret needs no Docker secret; those are lifecycle facts, not exceptions.",
+  "controls": {
+    "no_new_privileges": "security_opt contains no-new-privileges:true",
+    "cap_drop_all": "cap_drop contains ALL",
+    "cap_add": "cap_add is empty; an exception names the exact capability list",
+    "privileged": "privileged is false",
+    "restart": "a daemon restarts unless-stopped or always; a job uses no",
+    "healthcheck": "a daemon declares a healthcheck",
+    "cpus": "a CPU limit is set",
+    "mem_limit": "a memory limit is set"
+  },
+  "exceptions": [
     {
-      "template": "template-stateful-db-med",
-      "control": "cap_drop",
-      "reason": "DB and related runtime compatibility constraints"
+      "scope": "root",
+      "compose_file": "infra/08-ai/ollama/docker-compose.yml",
+      "service": "ollama",
+      "control": "no_new_privileges",
+      "allowed_value": false,
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "template-stateful-ai-high carries no security fields",
+      "impact": "A process in the GPU container could gain privileges through setuid binaries",
+      "mitigation": "Not routed by Traefik; reachable only on the internal AI network",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds no-new-privileges after an exact-image GPU run"
     },
     {
-      "template": "template-stateful-db-high",
-      "control": "cap_drop",
-      "reason": "DB and related runtime compatibility constraints"
+      "scope": "root",
+      "compose_file": "infra/08-ai/ollama/docker-compose.yml",
+      "service": "ollama",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "template-stateful-ai-high carries no security fields",
+      "impact": "The container keeps the default capability set",
+      "mitigation": "Not routed by Traefik; reachable only on the internal AI network",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 drops all capabilities after an exact-image GPU run"
     },
     {
-      "template": "template-job-low",
-      "control": "restart",
-      "value": "no",
-      "reason": "One-shot initialization and migration jobs"
+      "scope": "root",
+      "compose_file": "infra/08-ai/open-notebook/docker-compose.yml",
+      "service": "surrealdb",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "template-stateful-db-med omits cap_drop for DB entrypoints",
+      "impact": "The container keeps the default capability set",
+      "mitigation": "Outside the HOME selection (notebook profile)",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with leaf cap_add"
     },
     {
-      "template": "template-job-med",
-      "control": "restart",
-      "value": "no",
-      "reason": "One-shot initialization and migration jobs"
+      "scope": "lab:cassandra",
+      "compose_file": "labs/cassandra.yml",
+      "service": "cassandra-node1",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
     },
     {
-      "template": "template-dev-tiny",
+      "scope": "lab:couchdb",
+      "compose_file": "labs/couchdb.yml",
+      "service": "couchdb-1",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:couchdb",
+      "compose_file": "labs/couchdb.yml",
+      "service": "couchdb-2",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:couchdb",
+      "compose_file": "labs/couchdb.yml",
+      "service": "couchdb-3",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:mongodb",
+      "compose_file": "labs/mongodb.yml",
+      "service": "mongodb-arbiter",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:mongodb",
+      "compose_file": "labs/mongodb.yml",
+      "service": "mongodb-rep1",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:mongodb",
+      "compose_file": "labs/mongodb.yml",
+      "service": "mongodb-rep2",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node1",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node2",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node3",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:postgresql-ha",
+      "compose_file": "labs/postgresql-ha.yml",
+      "service": "pg-0",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:postgresql-ha",
+      "compose_file": "labs/postgresql-ha.yml",
+      "service": "pg-1",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "lab:postgresql-ha",
+      "compose_file": "labs/postgresql-ha.yml",
+      "service": "pg-2",
+      "control": "cap_drop_all",
+      "allowed_value": [],
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "The LAB DB template omits cap_drop so the image entrypoint can chown and switch user",
+      "impact": "The LAB container keeps the default capability set",
+      "mitigation": "LAB only; started through lab.py with synthetic data and its own network",
+      "verification": "SPEC-0215 TSK-0002 real LAB runs",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 moves the DB templates to cap_drop ALL with verified leaf cap_add"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/04-data/dev-db/docker-compose.yml",
+      "service": "dev-pg",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "SETGID",
+        "SETUID"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The official postgres entrypoint chowns the data and socket directories, then drops to the postgres user with gosu",
+      "impact": "Root in the container can change file ownership and switch user until the entrypoint drops privileges",
+      "mitigation": "cap_drop ALL first; no-new-privileges; the server runs as postgres",
+      "verification": "HOME container healthy with this set on 2026-10-09",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when the data directory is pre-owned and the image starts directly as postgres"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/04-data/mng-db/docker-compose.yml",
+      "service": "mng-pg",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "SETGID",
+        "SETUID"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The official postgres entrypoint chowns the data and socket directories, then drops to the postgres user with gosu",
+      "impact": "Root in the container can change file ownership and switch user until the entrypoint drops privileges",
+      "mitigation": "cap_drop ALL first; no-new-privileges; the server runs as postgres",
+      "verification": "HOME container healthy with this set on 2026-10-09",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when the data directory is pre-owned and the image starts directly as postgres"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/04-data/neo4j/docker-compose.yml",
+      "service": "neo4j",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER",
+        "SETGID",
+        "SETUID"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The neo4j entrypoint wrapper chowns its data and switches to the neo4j user",
+      "impact": "Root in the container can change file ownership and switch user until the entrypoint drops privileges",
+      "mitigation": "cap_drop ALL first; no-new-privileges",
+      "verification": "Declared with cap_drop ALL; outside the HOME selection, not run in SPEC-0218",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when the image starts directly as the neo4j user on pre-owned data"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
+      "service": "restic",
+      "control": "cap_add",
+      "allowed_value": [
+        "DAC_OVERRIDE"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "Restic reads data volumes owned by many service users and the pgBackRest repository owned by UID 70",
+      "impact": "The backup process can read every mounted file regardless of mode",
+      "mitigation": "Read-only source mounts; no network for the backup run; run only by the backup timer",
+      "verification": "Nightly hyhome-backup runs (RUN-0021)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when every backed-up tree is readable through a backup group"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
+      "service": "restic-offsite",
+      "control": "cap_add",
+      "allowed_value": [
+        "DAC_READ_SEARCH"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The offsite copy reads both local repositories whose files are owned by root and UID 70",
+      "impact": "The process can read any mounted file",
+      "mitigation": "Read-only repository mounts; egress only to the configured R2 endpoint",
+      "verification": "Offsite copy contract (ADR-0041, RUN-0021)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when the repositories are readable through a backup group"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
+      "service": "backup-sqlite-export",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN",
+        "DAC_OVERRIDE"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The export reads SQLite stores owned by other service users and writes staging files owned for Restic",
+      "impact": "The export can read and re-own mounted files",
+      "mitigation": "Networkless one-shot job; only the SQLite stores and staging are mounted",
+      "verification": "Nightly hyhome-backup runs (RUN-0021)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove when the stores and staging share a backup group"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/10-communication/stalwart/docker-compose.yml",
+      "service": "stalwart",
+      "control": "cap_add",
+      "allowed_value": [
+        "NET_BIND_SERVICE"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "Stalwart binds SMTP 25 and submission 587 inside the container as a non-root user",
+      "impact": "The process can bind ports below 1024 inside its network namespace",
+      "mitigation": "No host port is published; internal mail network only",
+      "verification": "StalwartRehearsalTests (opt-in)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if the listeners move to ports above 1024"
+    },
+    {
+      "scope": "lab:mongodb",
+      "compose_file": "labs/mongodb.yml",
+      "service": "mongo-key-generator",
+      "control": "cap_add",
+      "allowed_value": [
+        "CHOWN",
+        "DAC_OVERRIDE",
+        "FOWNER"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "The one-shot job writes the replica-set keyfile and hands it to UID 999",
+      "impact": "The job can re-own files on its mounted key volume",
+      "mitigation": "LAB only; one-shot; only the key volume is mounted",
+      "verification": "SPEC-0215 TSK-0002 MongoDB LAB run",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if the keyfile is generated by a job running as UID 999"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node1",
+      "control": "cap_add",
+      "allowed_value": [
+        "IPC_LOCK"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "bootstrap.memory_lock keeps the JVM heap out of swap",
+      "impact": "The process can lock memory pages",
+      "mitigation": "LAB only; bounded by the container memory limit",
+      "verification": "SPEC-0215 TSK-0002 OpenSearch LAB run (green, 3 nodes)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if memory locking is turned off for the LAB"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node2",
+      "control": "cap_add",
+      "allowed_value": [
+        "IPC_LOCK"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "bootstrap.memory_lock keeps the JVM heap out of swap",
+      "impact": "The process can lock memory pages",
+      "mitigation": "LAB only; bounded by the container memory limit",
+      "verification": "SPEC-0215 TSK-0002 OpenSearch LAB run (green, 3 nodes)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if memory locking is turned off for the LAB"
+    },
+    {
+      "scope": "lab:opensearch-cluster",
+      "compose_file": "labs/opensearch-cluster.yml",
+      "service": "opensearch-node3",
+      "control": "cap_add",
+      "allowed_value": [
+        "IPC_LOCK"
+      ],
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "bootstrap.memory_lock keeps the JVM heap out of swap",
+      "impact": "The process can lock memory pages",
+      "mitigation": "LAB only; bounded by the container memory limit",
+      "verification": "SPEC-0215 TSK-0002 OpenSearch LAB run (green, 3 nodes)",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if memory locking is turned off for the LAB"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/06-observability/docker-compose.yml",
+      "service": "cadvisor",
+      "control": "privileged",
+      "allowed_value": true,
+      "kind": "compatibility",
+      "owner": "@buenhyden",
+      "reason": "cAdvisor reads host cgroups, devices and the Docker state to export container metrics",
+      "impact": "The container has host-level access",
+      "mitigation": "Read-only host mounts; not routed by Traefik; Conftest allows only this service",
+      "verification": "HOME cAdvisor metrics in Prometheus",
+      "reviewed": "2026-10-09",
+      "review_by": "2027-04-07",
+      "release_condition": "Remove if a cgroup v2 exporter without privileged mode replaces cAdvisor"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+      "service": "airflow-statsd-exporter",
       "control": "healthcheck",
-      "reason": "Developer bootstrap preset"
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
     },
     {
-      "template": "template-dev-small",
+      "scope": "root",
+      "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
+      "service": "airflow-valkey-exporter",
       "control": "healthcheck",
-      "reason": "Developer bootstrap preset"
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/06-observability/docker-compose.yml",
+      "service": "dcgm-exporter",
+      "control": "healthcheck",
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/12-analytics/flink/docker-compose.yml",
+      "service": "flink-taskmanager",
+      "control": "healthcheck",
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
+      "service": "n8n-valkey-exporter",
+      "control": "healthcheck",
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
+    },
+    {
+      "scope": "root",
+      "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+      "service": "oauth2-proxy-valkey-exporter",
+      "control": "healthcheck",
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "Docker cannot report the service unhealthy; only the scrape target can",
+      "mitigation": "Prometheus up alert on the scrape target",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
+    },
+    {
+      "scope": "lab:mongodb",
+      "compose_file": "labs/mongodb.yml",
+      "service": "mongo-express",
+      "control": "healthcheck",
+      "allowed_value": "absent",
+      "kind": "weakening",
+      "owner": "@buenhyden",
+      "reason": "No healthcheck was declared",
+      "impact": "lab.py readiness cannot see a broken UI",
+      "mitigation": "LAB only",
+      "verification": "compose_controls.py report",
+      "reviewed": "2026-10-09",
+      "review_by": "2026-10-31",
+      "release_condition": "SPEC-0218 W2 adds a healthcheck the image can run"
     }
   ],
-  "quickwin_baseline": {
-    "healthcheck_exceptions": [
-      {
-        "service": "pg-cluster-init",
-        "reason": "One-shot init job"
-      },
-      {
-        "service": "valkey-cluster-init",
-        "reason": "One-shot init job"
-      },
-      {
-        "service": "mng-pg-init",
-        "reason": "One-shot psql initialization; completion must exit 0 and dependent services require successful completion.",
-        "owner": "@buenhyden",
-        "risk": "An exited job has no daemon health endpoint; readiness relies on its exit status.",
-        "exit_condition": "Remove if converted into a long-running service.",
-        "review_cadence": "monthly"
-      }
-    ],
-    "secrets_exceptions": [
-      {
-        "service": "etcd-1",
-        "reason": "Auth-disabled etcd cluster bootstrap mode"
-      },
-      {
-        "service": "etcd-2",
-        "reason": "Auth-disabled etcd cluster bootstrap mode"
-      },
-      {
-        "service": "etcd-3",
-        "reason": "Auth-disabled etcd cluster bootstrap mode"
-      },
-      {
-        "service": "openbao",
-        "reason": "Secret control plane uses owner-held initialization/unseal material and persistent Raft state, not a Docker Secret.",
-        "owner": "@buenhyden",
-        "risk": "Sealed health is not application secret readiness.",
-        "exit_condition": "Review when bootstrap or auto-unseal mechanism changes.",
-        "review_cadence": "monthly"
-      },
-      {
-        "service": "openbao-agent",
-        "reason": "AppRole identity and token sink use dedicated protected bind mounts.",
-        "owner": "@buenhyden",
-        "risk": "Mounted bootstrap credentials and rendered output require restrictive filesystem permissions.",
-        "exit_condition": "Remove when bootstrap credentials are delivered through Compose Secret grants.",
-        "review_cadence": "monthly"
-      },
-      {
-        "service": "storybook",
-        "reason": "The approved static UI documentation origin consumes no application credentials or Docker Secrets.",
-        "owner": "@buenhyden",
-        "risk": "A future dynamic feature could require a secret, and Docker daemon operators can join the dedicated ingress network.",
-        "exit_condition": "Remove or replace this exception before Storybook begins consuming credentials or serving dynamic data.",
-        "review_cadence": "monthly"
-      }
-    ]
-  },
-  "template_adoption": {
-    "required_reference": "common-optimizations.yml",
-    "file_exceptions": []
-  },
-  "security_baseline": {
-    "required_controls": [
-      "no-new-privileges:true",
-      "cap_drop:ALL"
-    ],
-    "no_new_privileges_exceptions": [],
-    "cap_drop_all_exceptions": [
-      {
-        "service": "pg-0",
-        "reason": "Patroni/Spilo runtime compatibility in DB template"
-      },
-      {
-        "service": "pg-1",
-        "reason": "Patroni/Spilo runtime compatibility in DB template"
-      },
-      {
-        "service": "pg-2",
-        "reason": "Patroni/Spilo runtime compatibility in DB template"
-      }
-    ]
-  },
   "naming_exceptions": [
     {
       "service": "analytics",

@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.0.2"
+version: "2.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -242,7 +242,6 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 ### Verification
 
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
-- Quick Win 기준선 점검: `bash scripts/validation/check-quickwin-baseline.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
 - 문서 추적성 점검: `python3 scripts/validation/check-document-links.py --mode traceability`
 - 단일 파일 config mount는 RUN-0086의 coverage와 결과 분기로 검증한다. helper 사용은 container 실행이다.

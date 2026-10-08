@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 created: "2025-11-12"
 ---
 
@@ -258,8 +258,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 - `bash scripts/validation/validate-docker-compose.sh` - profile-aware Compose 구조 검증
 - `python3 scripts/validation/check-document-links.py --mode traceability` - 문서 추적성 검사
 - `python3 scripts/validation/check-document-links.py --mode alignment` - 문서 링크·anchor·archive 경계·폐기 템플릿 검사
-- `bash scripts/validation/check-quickwin-baseline.sh` - QuickWin baseline 검사
-- `bash scripts/validation/check-template-security-baseline.sh` - 템플릿 채택 및 필수 보안 baseline 검사
+- `bash scripts/validation/check-template-security-baseline.sh` - root·LAB 모든 서비스의 최종 control(템플릿 채택, 보안·lifecycle·자원)과 정확한 예외 검사
 - `bash scripts/hardening/check-all-hardening.sh` - 계층별 하드닝 기준 검사
 
 `pre-commit`은 CI와 hook 정책에서 관리하며, 이 저장소 지시가 바뀌지 않는 한 수동 실행을 기본 절차로 두지 않습니다.

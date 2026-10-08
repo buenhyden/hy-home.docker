@@ -674,17 +674,6 @@
       "suite_key": "changed-style"
     },
     {
-      "gate_id": "leaf.quickwin-baseline",
-      "kind": "leaf",
-      "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
-      "argv": [],
-      "cwd": ".",
-      "allowed_env_keys": [],
-      "timeout_minutes": 10,
-      "opaque": true,
-      "suite_key": "quickwin-baseline"
-    },
-    {
       "gate_id": "leaf.compose-baseline-regressions",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -965,14 +954,6 @@
       ]
     },
     {
-      "gate_id": "local.quickwin-baseline",
-      "kind": "aggregate",
-      "opaque": false,
-      "children": [
-        "leaf.quickwin-baseline"
-      ]
-    },
-    {
       "gate_id": "local.supply-chain",
       "kind": "aggregate",
       "opaque": false,
@@ -1081,8 +1062,7 @@
         "local.supply-chain",
         "local.compose-validation",
         "local.infrastructure-hardening",
-        "local.template-security-baseline",
-        "local.quickwin-baseline"
+        "local.template-security-baseline"
       ],
       "repository-integrity": [
         "leaf.local-diff-hygiene",
@@ -1176,18 +1156,6 @@
         "argv": [
           "--check-config-only"
         ],
-        "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
-        ]
-      },
-      {
-        "suite": "operations",
-        "gate_id": "leaf.quickwin-baseline",
-        "entrypoint": "scripts/validation/check-quickwin-baseline.sh",
-        "argv": [],
         "contexts": [
           "local",
           "pull_request",
@@ -1394,8 +1362,8 @@
           "scripts/hardening/",
           "scripts/lib/supply_chain/",
           "scripts/validation/check-conftest-policy.sh",
-          "scripts/validation/check-quickwin-baseline.sh",
           "scripts/validation/check-supply-chain-policy.py",
+          "scripts/validation/compose_controls.py",
           "scripts/validation/check-supply-chain.sh",
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
@@ -1592,8 +1560,7 @@
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/run-agent-precommit-all-files.sh",
           "scripts/validation/validate-docker-compose.sh",
-          "scripts/validation/check-conftest-policy.sh",
-          "scripts/validation/check-quickwin-baseline.sh"
+          "scripts/validation/check-conftest-policy.sh"
         ],
         "root_gate_ids": [
           "leaf.local-shell-syntax"
