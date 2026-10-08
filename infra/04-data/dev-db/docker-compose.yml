@@ -29,6 +29,8 @@ services:
       dockerfile: Dockerfile
     container_name: dev-pg
     hostname: dev-pg
+    group_add:
+      - '${SECRETS_GID:-1000}'
     cap_drop: [ALL]
     cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETGID, SETUID]
     cpus: '2.00'
@@ -107,6 +109,8 @@ services:
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     container_name: dev-platform-provision
     hostname: dev-platform-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     platform: linux/amd64
     entrypoint: ['python3', '/work/project.py', '/work/platform.json']
     environment:
@@ -136,6 +140,8 @@ services:
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     container_name: dev-perf-provision
     hostname: dev-perf-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     platform: linux/amd64
     entrypoint: ['python3', '/work/perf/provision.py']
     environment:
@@ -163,6 +169,8 @@ services:
     image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     container_name: dev-pg-monitor-provision
     hostname: dev-pg-monitor-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     platform: linux/amd64
     entrypoint: ['python3', '/work/monitor.py']
     environment:
@@ -192,6 +200,8 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: dev-pg-exporter
     hostname: dev-pg-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       DATA_SOURCE_URI: dev-pg:5432/postgres?sslmode=disable
       DATA_SOURCE_USER: dev_pg_monitor
@@ -226,6 +236,8 @@ services:
     image: valkey/valkey:9.1.2-alpine
     container_name: dev-valkey
     hostname: dev-valkey
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '999:999'
     read_only: true
     tmpfs:
@@ -274,6 +286,8 @@ services:
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: dev-valkey-exporter
     hostname: dev-valkey-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     expose:
       - '9121'
     entrypoint: ['/bin/sh', '-c']

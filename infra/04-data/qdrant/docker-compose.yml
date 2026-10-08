@@ -22,6 +22,8 @@ services:
     image: qdrant/qdrant:v1.19.1-unprivileged
     container_name: qdrant
     hostname: qdrant
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     tmpfs:
       - /tmp

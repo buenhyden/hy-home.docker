@@ -17,6 +17,8 @@ services:
     container_name: renovate
     hostname: renovate
 
+    group_add:
+      - '${SECRETS_GID:-1000}'
     restart: 'no'
     read_only: false
 

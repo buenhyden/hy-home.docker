@@ -13,7 +13,8 @@
     "restart": "a daemon restarts unless-stopped or always; a job uses no",
     "healthcheck": "a daemon declares a healthcheck",
     "cpus": "a CPU limit is set",
-    "mem_limit": "a memory limit is set"
+    "mem_limit": "a memory limit is set",
+    "secrets_group": "group_add carries SECRETS_GID exactly when the service reads a Docker secret or a bind under a secrets directory"
   },
   "exceptions": [
     {

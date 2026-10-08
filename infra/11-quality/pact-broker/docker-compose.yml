@@ -13,6 +13,8 @@ services:
     image: postgres:18.6-alpine
     container_name: pact-broker-db-provision
     hostname: pact-broker-db-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint:
       - /bin/sh
       - /provision/run-feature-provision.sh
@@ -53,6 +55,8 @@ services:
     image: pactfoundation/pact-broker:3.0.0-pactbroker2.121.2
     container_name: pact-broker
     hostname: pact-broker
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PACT_BROKER_PORT: '9292'
       PACT_BROKER_DATABASE_ADAPTER: postgres

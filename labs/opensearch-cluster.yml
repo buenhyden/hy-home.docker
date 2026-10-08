@@ -142,6 +142,8 @@ services:
   opensearch-node1:
     <<: *lab-node
     hostname: opensearch-node1
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       <<: *lab-node-environment
       node.name: opensearch-node1
@@ -163,6 +165,8 @@ services:
   opensearch-node2:
     <<: *lab-node
     hostname: opensearch-node2
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       <<: *lab-node-environment
       node.name: opensearch-node2
@@ -184,6 +188,8 @@ services:
   opensearch-node3:
     <<: *lab-node
     hostname: opensearch-node3
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       <<: *lab-node-environment
       node.name: opensearch-node3
@@ -208,6 +214,8 @@ services:
       file: ../infra/common-optimizations.yml
       service: template-infra-med
     image: opensearchproject/opensearch-dashboards:3.8.0
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - /bin/bash
       - -ec

@@ -26,6 +26,7 @@ services:
     hostname: oauth2-proxy
     group_add:
       - '${CERT_GROUP_GID:-1000}'
+      - '${SECRETS_GID:-1000}'
     environment:
       - SSL_CERT_FILE=/etc/ssl/certs/rootCA.pem
       - OAUTH2_PROXY_SESSION_STORE_TYPE=redis
@@ -75,6 +76,8 @@ services:
     image: valkey/valkey:9.1.2-alpine
     container_name: oauth2-proxy-valkey
     hostname: oauth2-proxy-valkey
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '999:999'
     secrets:
       - oauth2_valkey_password
@@ -107,6 +110,8 @@ services:
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: oauth2-proxy-valkey-exporter
     hostname: oauth2-proxy-valkey-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     healthcheck:
       test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9121/metrics' ]
       interval: 30s

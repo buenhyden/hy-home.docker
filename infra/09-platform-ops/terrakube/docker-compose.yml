@@ -12,6 +12,8 @@ services:
     image: azbuilder/api-server:2.33.2
     container_name: terrakube-api
     hostname: terrakube-api
+    group_add:
+      - '${SECRETS_GID:-1000}'
     secrets:
       - terrakube_db_password
       - seaweedfs_s3_terrakube_secret_key
@@ -117,6 +119,8 @@ services:
     image: azbuilder/executor:2.33.2
     container_name: terrakube-executor
     hostname: terrakube-executor
+    group_add:
+      - '${SECRETS_GID:-1000}'
     secrets:
       - terrakube_internal_secret
       - seaweedfs_s3_terrakube_secret_key

@@ -25,6 +25,8 @@ services:
     image: stalwartlabs/stalwart:v0.16.22
     container_name: stalwart
     hostname: stalwart
+    group_add:
+      - '${SECRETS_GID:-1000}'
     # The image user (UID 2000) owns the datastore. The binary carries cap_net_bind_service for ports below 1024; with
     # no-new-privileges it cannot start unless that one capability is kept.
     cap_add:
@@ -74,6 +76,8 @@ services:
     image: hy-home/stalwart-config:0.16.22-cli1.0.12-local
     container_name: stalwart-config
     hostname: stalwart-config
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '1000:1000'
     entrypoint:
       - /bin/sh

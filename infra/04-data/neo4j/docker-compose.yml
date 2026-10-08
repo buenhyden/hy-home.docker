@@ -27,6 +27,8 @@ services:
     image: neo4j:5.26.30-community
     container_name: neo4j
     hostname: neo4j
+    group_add:
+      - '${SECRETS_GID:-1000}'
     restart: unless-stopped
     read_only: false
     expose:

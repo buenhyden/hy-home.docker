@@ -174,6 +174,8 @@ services:
       service: template-infra-med
     image: haproxy:3.4.4
     container_name: lab-pg-pg-router
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -236,6 +238,8 @@ services:
     restart: 'no'
     image: postgres:18.6-alpine
     container_name: lab-pg-pg-cluster-init
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       POSTGRES_ROUTER_HOSTNAME: pg-router
       POSTGRES_WRITE_PORT: 15432
@@ -294,6 +298,8 @@ services:
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-0
     hostname: pg-0
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -336,6 +342,8 @@ services:
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-1
     hostname: pg-1
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -378,6 +386,8 @@ services:
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-2
     hostname: pg-2
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -419,6 +429,8 @@ services:
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-0-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -454,6 +466,8 @@ services:
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-1-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -489,6 +503,8 @@ services:
       service: template-infra-low
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-2-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp

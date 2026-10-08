@@ -57,6 +57,8 @@ services:
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-1
+    group_add:
+      - '${SECRETS_GID:-1000}'
     # LAB access is loopback only; HOME Traefik does not route LABs (SPEC-0215).
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}:5984'
@@ -93,6 +95,8 @@ services:
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-2
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     environment:
       - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
@@ -126,6 +130,8 @@ services:
       service: template-stateful-db-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-3
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     environment:
       - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
@@ -162,6 +168,8 @@ services:
     restart: 'no'
     image: curlimages/curl:8.22.0
     container_name: lab-couchdb-couchdb-cluster-init
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp

@@ -19,6 +19,8 @@ services:
     container_name: jupyterlab
     hostname: jupyterlab
 
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       # Internal SDK path; it bypasses the browser SSO route (see GDE-0089).
       MLFLOW_TRACKING_URI: 'http://mlflow:${MLFLOW_PORT:-5000}'

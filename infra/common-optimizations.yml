@@ -9,11 +9,10 @@ x-logging: &default-logging
 x-labels-managed: &labels-managed
   hy-home.managed: "true"
 
+# Secret files are 0640 owner:SECRETS_GID. A leaf that reads one declares
+# group_add: ['${SECRETS_GID:-1000}'] itself; no template grants it.
 x-security-base: &security-base
   init: true
-  # Secret files are 0640 owner:SECRETS_GID; non-owner containers read them via this group.
-  group_add:
-    - '${SECRETS_GID:-1000}'
   security_opt:
     - no-new-privileges:true
   cap_drop:
@@ -110,8 +109,6 @@ services:
     read_only: false
 
   template-stateful-ai-high:
-    group_add:
-      - '${SECRETS_GID:-1000}'
     restart: unless-stopped
     logging: *default-logging
     read_only: false
@@ -145,8 +142,6 @@ services:
     <<: [*service-defaults, *resource-obs-high]
 
   template-stateful-db-med:
-    group_add:
-      - '${SECRETS_GID:-1000}'
     init: true
     restart: unless-stopped
     logging: *default-logging
@@ -160,8 +155,6 @@ services:
     read_only: false
 
   template-stateful-db-high:
-    group_add:
-      - '${SECRETS_GID:-1000}'
     init: true
     restart: unless-stopped
     logging: *default-logging

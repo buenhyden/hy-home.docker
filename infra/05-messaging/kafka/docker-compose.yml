@@ -154,6 +154,8 @@ services:
     image: hy-home/kafka-connect:8.3.2-debezium-3.6.3
     container_name: kafka-connect
     hostname: kafka-connect
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -262,6 +264,8 @@ services:
     image: postgres:18.6-alpine
     container_name: debezium-db-provision
     hostname: debezium-db-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint:
       - /bin/sh
       - /provision/run-feature-provision.sh
@@ -359,6 +363,8 @@ services:
     image: kafbat/kafka-ui:v1.5.0
     container_name: kafbat-ui
     hostname: kafbat-ui
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp

@@ -69,6 +69,8 @@ services:
   valkey-node-0:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-0
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6379
       NODE_NAME: valkey-node-0
@@ -87,6 +89,8 @@ services:
   valkey-node-1:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-1
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6380
       NODE_NAME: valkey-node-1
@@ -105,6 +109,8 @@ services:
   valkey-node-2:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-2
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6381
       NODE_NAME: valkey-node-2
@@ -123,6 +129,8 @@ services:
   valkey-node-3:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-3
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6382
       NODE_NAME: valkey-node-3
@@ -141,6 +149,8 @@ services:
   valkey-node-4:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-4
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6383
       NODE_NAME: valkey-node-4
@@ -159,6 +169,8 @@ services:
   valkey-node-5:
     <<: *valkey-node-base
     container_name: lab-valkey-valkey-node-5
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       PORT: 6384
       NODE_NAME: valkey-node-5
@@ -183,6 +195,8 @@ services:
     restart: 'no'
     image: valkey/valkey:9.1.2-alpine
     container_name: lab-valkey-valkey-cluster-init
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/valkey-cluster-init.sh' ]
     volumes:
       - ../infra/04-data/valkey-cluster/scripts/valkey-cluster-init.sh:/usr/local/bin/valkey-cluster-init.sh:ro
@@ -213,6 +227,8 @@ services:
       service: template-infra-readonly-low
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: lab-valkey-valkey-cluster-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
     expose:
       - '${LAB_VALKEY_EXPORTER_PORT:-9121}'
     entrypoint: [ /bin/sh, -ec ]
