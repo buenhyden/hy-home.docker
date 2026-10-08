@@ -8,7 +8,7 @@ tools:
 - "Edit"
 - "Write"
 - "Bash"
-model: "claude-sonnet-5"
+model: "claude-sonnet-5-5"
 effort: "low"
 permissionMode: "acceptEdits"
 skills:

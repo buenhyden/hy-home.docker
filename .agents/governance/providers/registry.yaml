@@ -142,16 +142,16 @@ projections:
     source: .codex/provider.md
 work_profiles:
   adversarial-review:
-    claude: {model: claude-opus-5, control: effort, value: high}
+    claude: {model: claude-opus-5-5, control: effort, value: high}
     codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
   complex-implementation:
-    claude: {model: claude-sonnet-5, control: effort, value: high}
+    claude: {model: claude-sonnet-5-5, control: effort, value: high}
     codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: high}
   evidence-research:
-    claude: {model: claude-sonnet-5, control: effort, value: low}
+    claude: {model: claude-sonnet-5-5, control: effort, value: low}
     codex: {model: gpt-5.6-terra, control: model_reasoning_effort, value: medium}
   long-horizon-supervision:
-    claude: {model: claude-opus-5, control: effort, value: xhigh}
+    claude: {model: claude-opus-5-5, control: effort, value: xhigh}
     codex: {model: gpt-5.6-sol, control: model_reasoning_effort, value: xhigh}
   routine-validation:
     claude: {model: claude-haiku-4-5-20251001, control: effort, value: null}
@@ -165,7 +165,7 @@ models:
     control: unsupported
     work_profiles: [routine-validation]
     source_url: https://platform.claude.com/docs/en/about-claude/models/overview
-  claude-opus-5:
+  claude-opus-5-5:
     provider: claude
     lifecycle: stable
     entitlement: needs_revalidation
@@ -174,7 +174,7 @@ models:
     supported_values: [high, low, max, medium, xhigh]
     work_profiles: [adversarial-review, long-horizon-supervision]
     source_url: https://platform.claude.com/docs/en/about-claude/models/overview
-  claude-sonnet-5:
+  claude-sonnet-5-5:
     provider: claude
     lifecycle: stable
     entitlement: needs_revalidation
