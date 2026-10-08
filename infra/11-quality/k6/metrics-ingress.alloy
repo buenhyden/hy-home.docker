@@ -6,7 +6,26 @@
 // scenario that posts its own OTLP cannot claim another project or run.
 otelcol.receiver.otlp "k6" {
   http {
-    endpoint = "0.0.0.0:4318"
+    endpoint              = "0.0.0.0:4318"
+    max_request_body_size = "4MiB"
+  }
+
+  output {
+    metrics = [otelcol.processor.filter.k6_names.input]
+  }
+}
+
+// The executor sets K6_OTEL_METRIC_PREFIX=k6_, so every k6 metric, custom
+// ones included, carries it (Rate metrics as `k6_<name>.total`). Other
+// names are dropped; this bounds what a scenario can add by posting OTLP
+// itself to k6-shaped names.
+otelcol.processor.filter "k6_names" {
+  error_mode = "propagate"
+
+  metrics {
+    metric = [
+      `not IsMatch(name, "^k6_[a-zA-Z0-9_.]{1,128}$")`,
+    ]
   }
 
   output {

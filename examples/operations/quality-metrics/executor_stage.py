@@ -36,13 +36,15 @@ export default function () {
   check(http.get('http://wiremock:8080/__admin/requests'), {'admin 404': (r) => r.status === 404});
   http.get('http://wiremock:8080/slow');
   if (__VU === 1 && __ITER === 0) {
-    // A scenario posting its own OTLP may not claim another project or run.
+    // A scenario posting its own OTLP may not claim another project or run,
+    // and only k6_ names pass the relay.
+    const sum = {aggregationTemporality: 2, isMonotonic: true,
+      dataPoints: [{asInt: '1', timeUnixNano: String(Date.now() * 1e6)}]};
     const body = JSON.stringify({resourceMetrics: [{resource: {attributes: [
       {key: 'project.id', value: {stringValue: 'FORGED_PROJECT'}},
       {key: 'service.instance.id', value: {stringValue: 'forged'}}]},
-      scopeMetrics: [{metrics: [{name: 'forged_counter', sum: {
-        aggregationTemporality: 2, isMonotonic: true,
-        dataPoints: [{asInt: '1', timeUnixNano: String(Date.now() * 1e6)}]}}]}]}]});
+      scopeMetrics: [{metrics: [{name: 'k6_forged_counter', sum: sum},
+                                {name: 'outside_counter', sum: sum}]}]}]});
     http.post('http://metrics-ingress:4318/v1/metrics', body,
       {headers: {'Content-Type': 'application/json'}});
   }
@@ -250,7 +252,7 @@ class Fixture:
         expected = [
             (f"sum(k6_http_reqs_total{{{selector}}})", summary["http_reqs"]["values"]["count"]),
             (f'sum(k6_checks_total{{{selector},condition="nonzero"}})', summary["checks"]["values"]["passes"]),
-            (f"sum(forged_counter_total{{{selector}}})", 1),
+            (f"sum(k6_forged_counter_total{{{selector}}})", 1),
         ]  # fmt: skip
         if "dropped_iterations" in summary:
             expected.append(
@@ -259,10 +261,15 @@ class Fixture:
             )  # fmt: skip
         for expression, value in expected:
             expect_value(expression, value, timeout=60)
-        for forged in (f'{{project_id="{FORGED}"}}', '{instance="forged"}'):
+        for forged in (
+            f'{{project_id="{FORGED}"}}',
+            '{instance="forged"}',
+            '{__name__=~"outside_counter.*"}',
+        ):
             if query(forged):
                 raise AssertionError(f"forged identity reached Prometheus: {forged}")
-        print("PASS relay replaced the forged project and instance", flush=True)
+        print("PASS relay replaced the forged project and instance and dropped "
+              "a non-k6 name", flush=True)  # fmt: skip
         return manifest, instance
 
 

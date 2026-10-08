@@ -490,6 +490,9 @@ class K6ResultContractTests(unittest.TestCase):
             f"{key}={value}"
             for key, value in relay_module.environment(self.manifest).items()
         ]
+        token = self.root / "relay-token"
+        token.write_text("token-value-0214\n", encoding="utf-8")
+        token.chmod(0o640)
         relay = {
             "Id": "ingress-id",
             "Name": "/" + name,
@@ -497,8 +500,9 @@ class K6ResultContractTests(unittest.TestCase):
             "Config": {
                 "Image": "grafana/alloy@sha256:" + "d" * 64,
                 "Cmd": list(relay_module.COMMAND),
+                "Entrypoint": ["/bin/alloy"],
                 "User": f"{os.geteuid()}:{os.getegid()}",
-                "Env": ["PATH=/bin", *identity],
+                "Env": ["PATH=/bin", "ALLOY_DEPLOY_MODE=docker", *identity],
                 "Labels": {
                     "hyhome.quality.run_id": self.manifest["run_id"],
                     "hyhome.quality.attempt": str(self.manifest["attempt"]),
@@ -513,6 +517,12 @@ class K6ResultContractTests(unittest.TestCase):
                 "PortBindings": {},
                 "ExtraHosts": [],
                 "SecurityOpt": ["no-new-privileges"],
+                "NanoCpus": 250_000_000,
+                "Memory": 268435456,
+                "MemorySwap": 268435456,
+                "PidsLimit": 64,
+                "RestartPolicy": {"Name": "no", "MaximumRetryCount": 0},
+                "Tmpfs": {"/tmp": "rw,noexec,nosuid,nodev,size=64m"},
             },
             "Mounts": [
                 {
@@ -523,7 +533,7 @@ class K6ResultContractTests(unittest.TestCase):
                 },
                 {
                     "Type": "bind",
-                    "Source": "/synthetic/token",
+                    "Source": str(token),
                     "Destination": relay_module.TOKEN_TARGET,
                     "RW": False,
                 },
@@ -631,6 +641,15 @@ class K6ResultContractTests(unittest.TestCase):
             ("egress", lambda: ingress["NetworkSettings"]["Networks"].update({"edge-net": ingress["NetworkSettings"]["Networks"].pop("quality-otlp")})),
             ("public-egress", lambda: egress.update(Internal=False)),
             ("alias", lambda: ingress["NetworkSettings"]["Networks"][network["Name"]].update(Aliases=[])),
+            ("no-pid-limit", lambda: ingress["HostConfig"].update(PidsLimit=None)),
+            ("more-memory", lambda: ingress["HostConfig"].update(Memory=2**30)),
+            ("more-cpu", lambda: ingress["HostConfig"].update(NanoCpus=2_000_000_000)),
+            ("restart", lambda: ingress["HostConfig"].update(RestartPolicy={"Name": "always"})),
+            ("entrypoint", lambda: ingress["Config"].update(Entrypoint=["/bin/sh"])),
+            ("extra-env", lambda: ingress["Config"]["Env"].append("HTTPS_PROXY=http://elsewhere")),
+            ("extra-tmpfs", lambda: ingress["HostConfig"].update(Tmpfs={"/tmp": "rw", "/run": "rw"})),
+            ("public-token", lambda: (self.root / "relay-token").chmod(0o644)),
+            ("other-token", lambda: ingress["Mounts"][1].update(Source="/etc/hostname")),
         ):  # fmt: skip
             with self.subTest(mutation=mutation):
                 saved = json.loads(json.dumps(ingress)), dict(egress)
@@ -642,6 +661,7 @@ class K6ResultContractTests(unittest.TestCase):
                 ingress.clear()
                 ingress.update(saved[0])
                 egress.update(saved[1])
+                (self.root / "relay-token").chmod(0o640)
         with self.assertRaises(container_executor.ExecutorError):
             execute(self.root / "foreign-relay", metrics_peer="metrics-ingress")
         with self.assertRaises(container_executor.ExecutorError):
@@ -727,6 +747,25 @@ class K6ResultContractTests(unittest.TestCase):
                 )  # fmt: skip
         self.assertTrue(any(command[3:5] == ["rm", "--force"] for command in calls))
 
+        # A cancel while waiting stays a cancel even if removal then fails.
+        def cancel_then_fail(command, **kwargs):
+            if "{{.State.Health.Status}}" in command:
+                raise KeyboardInterrupt
+            if "{{json .Config.Labels}}" in command:
+                return types.SimpleNamespace(
+                    returncode=0, stdout='{"other": "run"}', stderr=""
+                )
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        with mock.patch.object(
+            relay_module.subprocess, "run", side_effect=cancel_then_fail
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                relay_module.start(
+                    self.manifest, "/synthetic/docker", "default", "run-net",
+                    "quality-otlp", image, token,
+                )  # fmt: skip
+
         for mode, content in ((0o644, "synthetic\n"), (0o640, ""), (0o640, "a\nb\n")):
             with self.subTest(mode=oct(mode), content=content):
                 token.chmod(0o600)
@@ -742,6 +781,24 @@ class K6ResultContractTests(unittest.TestCase):
                 self.manifest, "/synthetic/docker", "default", "run-net",
                 "run-net", image, token,
             )  # fmt: skip
+
+    def test_relay_config_bounds_names_and_keeps_k6_rate_metrics(self) -> None:
+        import re
+
+        config = sys.modules["metrics_relay"].CONFIG.read_text(encoding="utf-8")
+        self.assertIn('max_request_body_size = "4MiB"', config)
+        pattern = re.search(r'not IsMatch\(name, "([^"]+)"\)', config)[1]
+        # k6 exports Rate metrics such as checks as `k6_checks.total`.
+        for name in (
+            "k6_checks.total",
+            "k6_http_req_failed.total",
+            "k6_http_reqs",
+            "k6_vus",
+        ):
+            self.assertRegex(name, pattern)
+        for name in ("outside_counter", "http_reqs", "k6_", "k6_bad name"):
+            self.assertNotRegex(name, pattern)
+        self.assertIn('delete_matching_keys(resource.attributes, ".*")', config)
 
     def test_relay_stop_and_cleanup_remove_only_this_run(self) -> None:
         relay_module = sys.modules["metrics_relay"]
@@ -872,6 +929,19 @@ class K6ResultContractTests(unittest.TestCase):
             "runner_cancelled",
             json.loads((self.root / "cli/exit.json").read_bytes())["error_class"],
         )
+        # A relay that cannot be removed is reported (exit 2), not a traceback.
+        argv[argv.index("--attempt-dir") + 1] = str(self.root / "cli-stop")
+
+        def stop_fails(*args, **kwargs):
+            raise relay_module.RelayError("relay could not be removed")
+
+        with (
+            mock.patch.object(relay_module, "start", return_value="relay"),
+            mock.patch.object(relay_module, "stop", side_effect=stop_fails),
+            mock.patch.object(container_executor, "execute", return_value=0),
+            mock.patch("sys.stderr"),
+        ):
+            self.assertEqual(2, quality_run.main(argv))
         # A relay without OTLP telemetry is refused before anything starts.
         self.manifest["telemetry"] = {"mode": "none"}
         self.write_manifest()

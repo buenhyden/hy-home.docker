@@ -765,6 +765,9 @@ def _run(args: argparse.Namespace) -> int:
         try:
             if owns_relay:
                 stop(manifest, args.docker_binary, args.docker_context)
+        except RelayError as exc:
+            # Reported as a contract failure (exit 2), not a traceback.
+            raise ContractError(f"{exc}; run cleanup --run-id") from exc
         finally:
             signal.signal(signal.SIGTERM, previous)
 

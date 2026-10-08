@@ -28,6 +28,16 @@ ROLE = "metrics-ingress"
 IMAGE = re.compile(r"grafana/alloy@sha256:[0-9a-f]{64}")
 NAME = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_.-]{0,127}")
 MAX_TOKEN_BYTES = 4096
+ENTRYPOINT = ["/bin/alloy"]
+# The image's own environment; anything else beside the identity is refused.
+IMAGE_ENV = {"PATH", "ALLOY_DEPLOY_MODE"}
+TMPFS = {"/tmp": "rw,noexec,nosuid,nodev,size=64m"}
+LIMITS = {
+    "NanoCpus": 250_000_000,
+    "Memory": 256 * 2**20,
+    "MemorySwap": 256 * 2**20,
+    "PidsLimit": 64,
+}
 # Alloy serves /-/ready on its loopback HTTP server; the image ships bash.
 HEALTH = (
     "exec 3<>/dev/tcp/127.0.0.1/12345 && "
@@ -136,7 +146,7 @@ def start(
         "--cpus", "0.250",
         "--memory", "256m",
         "--memory-swap", "256m",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev,size=64m",
+        "--tmpfs", f"/tmp:{TMPFS['/tmp']}",
         "--restart", "no",
         "--network", run_network,
         "--network-alias", ALIAS,
@@ -149,9 +159,9 @@ def start(
         image,
         *COMMAND,
     ]  # fmt: skip
-    if _docker(docker, context, *command).returncode != 0:
-        raise RelayError("relay could not be created; run cleanup for this run")
     try:
+        if _docker(docker, context, *command).returncode != 0:
+            raise RelayError("relay could not be created; run cleanup for this run")
         for step in (
             ("network", "connect", egress_network, name),
             ("start", name),
@@ -167,7 +177,12 @@ def start(
             sleep(1)
         raise RelayError("relay did not become ready")
     except BaseException:
-        stop(manifest, docker, context)
+        # Keep the original error (a cancel stays a cancel); a relay that
+        # cannot be removed here is left to `cleanup --run-id`.
+        try:
+            stop(manifest, docker, context)
+        except RelayError:
+            pass
         raise
 
 
@@ -239,17 +254,31 @@ def contract(
         if isinstance(item, dict)
     }
     source = pathlib.Path(str(mounts.get(CONFIG_TARGET, {}).get("Source", "")))
+    token = pathlib.Path(str(mounts.get(TOKEN_TARGET, {}).get("Source", "")))
+    try:
+        _token(token)
+    except RelayError as exc:
+        raise RelayError("metrics ingress peer contract is invalid") from exc
+    env = config.get("Env") or []
+    restart = host.get("RestartPolicy") or {}
     if (
         relay.get("Name") != f"/{relay_name(manifest)}"
         or relay.get("State", {}).get("Running") is not True
         or any(labels.get(key) != value for key, value in _labels(manifest).items())
         or not IMAGE.fullmatch(str(config.get("Image")))
         or config.get("Cmd") != COMMAND
+        or config.get("Entrypoint") != ENTRYPOINT
         or config.get("User") != f"{os.geteuid()}:{os.getegid()}"
-        or sorted(
-            item for item in config.get("Env") or [] if item.startswith("HYHOME_")
-        )
+        or sorted(item for item in env if item.startswith("HYHOME_"))
         != sorted(identity)
+        or any(
+            item.split("=", 1)[0] not in IMAGE_ENV
+            for item in env
+            if not item.startswith("HYHOME_")
+        )
+        or any(host.get(key) != value for key, value in LIMITS.items())
+        or restart.get("Name") not in ("no", "")
+        or host.get("Tmpfs") != TMPFS
         or host.get("ReadonlyRootfs") is not True
         or host.get("Privileged") is not False
         or host.get("CapDrop") != ["ALL"]
