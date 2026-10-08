@@ -83,6 +83,14 @@ networks:
     ipam:
       config:
         - subnet: 10.250.16.0/24
+  # Per-run k6 metrics relays reach only HOME Alloy's authenticated 4319
+  # receiver here; internal, so a relay has no other egress (SPEC-0214).
+  quality_otlp_net:
+    name: quality_otlp_net
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.17.0/24
   project_net:
     external: true
     name: ${PROJECT_NET_NAME:-project_net}
