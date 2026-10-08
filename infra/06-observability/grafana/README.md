@@ -151,10 +151,13 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `dev-pg` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
+| 04-data | `dev-pg` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` | `pg_monitor`-only `dev_pg_monitor` role |
+| 04-data | `dev-pg-exporter` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
+| 04-data | `dev-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-perf-provision` | none | `Infrastructure/containers`, `Infrastructure/perf-results` | 소스 선언만; reader datasource 활성화·실제 결과 조회 미실행 |
 | 04-data | `dev-platform-provision` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
-| 04-data | `dev-valkey` | none | `Infrastructure/containers` | source only; metrics scrape not declared |
+| 04-data | `dev-valkey` | `dev-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` | read-only `devmonitor` ACL user |
+| 04-data | `dev-valkey-exporter` | `dev-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 05-messaging | `debezium-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafbat-ui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 05-messaging | `kafka-1` | `kafka-broker` | `Infrastructure/kafka-cluster`, `Infrastructure/kafka-topics`, `Infrastructure/containers` |  |

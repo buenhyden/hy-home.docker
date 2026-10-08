@@ -26,8 +26,8 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 서비스는 새 `${DEFAULT_DATA_DIR}/dev-valkey/data` 영속 경로와
 `dev_data_net`을 사용하고 호스트 포트를 게시하지 않습니다. 관리자 자격 증명은
 `dev_valkey_admin_password` Docker secret으로만 전달합니다. 기본
-`config/projects.tsv`에는 프로젝트 행이 없고 관리자 ACL 외에는 계정이
-생성되지 않습니다.
+`config/projects.tsv`에는 프로젝트 행이 없고 관리자와 지표 수집용
+`devmonitor` ACL 외에는 계정이 생성되지 않습니다.
 
 승인된 프로젝트 행은
 `project_id|acl_user|key_prefix|secret_filename`의 네 필드를 명시합니다.
@@ -51,6 +51,7 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
   정기 RDB snapshot.
 - `config/projects.tsv`: 명시적 프로젝트 ACL metadata; 기본은 빈 목록.
 - `config/empty-project-secrets/`: 미등록 상태에서 사용하는 빈 bind 소스.
+- `scripts/render-acl.sh`: 관리자 `devadmin`, 지표 수집용 `devmonitor`(key·channel 패턴 없이 `PING`·`INFO`·`CONFIG GET`·`SLOWLOG`·`LATENCY`·`CLIENT LIST|INFO|SETNAME`만 허용, 관리자와 같은 비밀 거부), 프로젝트 사용자를 만듭니다.
 - `scripts/render-acl.sh`: 비밀 파일을 읽어 해시 기반 ACL을 `/run/valkey`
   tmpfs에 원자적으로 생성합니다. 영속 `/data`에는 ACL 파일을 두지 않습니다.
 - `scripts/start.sh`: ACL 생성이 성공한 뒤 Valkey를 시작합니다.

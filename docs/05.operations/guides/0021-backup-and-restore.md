@@ -100,8 +100,9 @@ schema export는 DB별 extension 선언과 권한을, physical backup의 catalog
 설치된 extension version과 적용 migration 이력을 보존합니다. 별도 image ID와
 infra revision도 staging에 기록합니다. 외부 앱의 정확한 migration source revision과
 restore 후 역할/extension/migration 대조는 앱 소유자가 제공합니다. infra revision이
-앱 revision을 대신하지 않습니다. 현재 `archive_mode=off`이므로 online backup/PITR
-활성화와 HOME 실제 복구는 아직 검증되지 않았습니다.
+앱 revision을 대신하지 않습니다. 소스는 `archive_mode=on`으로 연속 WAL을
+보내며, `dev` stanza가 먼저 있어야 합니다(RUN-0021). HOME online backup, PITR,
+실제 복구의 검증 여부는 SPEC-0213 TSK-0002가 기록합니다.
 2026-10-04 합성 offline full→현재 Restic state snapshot→선택한 snapshot의
 repository→새 빈 볼륨 복구에서 row·extension·migration·role 비교와 reader
 쓰기/DDL 거절은 통과했습니다. 이 격리 결과는 online WAL/PITR·HOME·R2 복구

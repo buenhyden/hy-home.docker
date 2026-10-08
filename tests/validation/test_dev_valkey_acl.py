@@ -23,12 +23,14 @@ class DevValkeyAclTests(unittest.TestCase):
         self.secret_dir = self.root / "secrets"
         self.secret_dir.mkdir()
         (self.root / "admin").write_text("synthetic-admin\n", encoding="utf-8")
+        (self.root / "monitor").write_text("synthetic-monitor\n", encoding="utf-8")
         (self.root / "projects.tsv").write_text("# empty\n", encoding="utf-8")
 
     def render(self) -> subprocess.CompletedProcess[str]:
         env = {
             **os.environ,
             "DEV_VALKEY_ADMIN_SECRET_FILE": str(self.root / "admin"),
+            "DEV_VALKEY_MONITOR_SECRET_FILE": str(self.root / "monitor"),
             "DEV_VALKEY_PROJECTS_FILE": str(self.root / "projects.tsv"),
             "DEV_VALKEY_PROJECT_SECRETS_DIR": str(self.secret_dir),
             "DEV_VALKEY_ACL_FILE": str(self.root / "users.acl"),
@@ -45,16 +47,33 @@ class DevValkeyAclTests(unittest.TestCase):
         self.assertIn("dev_data_net: {}", compose)
         self.assertIn("user default off", SCRIPT.read_text(encoding="utf-8"))
 
-    def test_empty_metadata_creates_admin_only_without_plaintext(self) -> None:
+    def test_empty_metadata_creates_admin_and_monitor_only_without_plaintext(
+        self,
+    ) -> None:
         result = self.render()
         self.assertEqual(result.returncode, 0, result.stderr)
         acl = (self.root / "users.acl").read_text(encoding="utf-8")
         digest = hashlib.sha256(b"synthetic-admin").hexdigest()
+        monitor = hashlib.sha256(b"synthetic-monitor").hexdigest()
         self.assertEqual(
-            acl, f"user default off\nuser devadmin on #{digest} ~* &* +@all\n"
+            acl,
+            f"user default off\nuser devadmin on #{digest} ~* &* +@all\n"
+            f"user devmonitor on #{monitor} -@all +ping +info +config|get "
+            "+client|list +client|info +client|setname +slowlog|get +slowlog|len "
+            "+latency|latest +latency|histogram +cluster|info\n",
         )
         self.assertNotIn("synthetic-admin", acl)
+        self.assertNotIn("synthetic-monitor", acl)
+        # No key or channel pattern: the monitor cannot read application data.
+        self.assertNotIn("~", acl.splitlines()[2])
+        self.assertNotIn("&", acl.splitlines()[2])
         self.assertEqual((self.root / "users.acl").stat().st_mode & 0o777, 0o600)
+
+    def test_monitor_secret_must_differ_from_admin_secret(self) -> None:
+        (self.root / "monitor").write_text("synthetic-admin\n", encoding="utf-8")
+        result = self.render()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.root / "users.acl").exists())
 
     def test_project_user_is_limited_to_declared_prefix(self) -> None:
         (self.root / "projects.tsv").write_text(

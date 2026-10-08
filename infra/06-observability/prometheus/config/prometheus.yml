@@ -192,6 +192,22 @@ scrape_configs:
           namespace: "hy-home"
           domain: "datastores"
 
+  - job_name: "dev-pg-exporter"
+    static_configs:
+      - targets: ["dev-pg-exporter:9187"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "datastores"
+
+  - job_name: "dev-valkey-exporter"
+    static_configs:
+      - targets: ["dev-valkey-exporter:9121"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "datastores"
+
   - job_name: "qdrant"
     metrics_path: /metrics
     bearer_token_file: /run/secrets/qdrant_read_only_api_key
