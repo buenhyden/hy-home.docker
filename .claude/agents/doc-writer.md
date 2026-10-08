@@ -1,6 +1,6 @@
 ---
 name: "doc-writer"
-description: "Canonical docs role for doc-writer; owned by canonical agent governance."
+description: "Author and maintain canonical documentation, including generated knowledge-map freshness, without creating duplicate policy owners. Use when: A typed lifecycle document, operations document, catalog index, or knowledge map changes; Cross-links or README navigation must be reconciled."
 tools:
 - "Read"
 - "Grep"
@@ -8,7 +8,7 @@ tools:
 - "Edit"
 - "Write"
 - "Bash"
-model: "claude-sonnet-5"
+model: "claude-sonnet-5-5"
 effort: "low"
 permissionMode: "acceptEdits"
 skills:

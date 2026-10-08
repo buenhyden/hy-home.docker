@@ -1,6 +1,6 @@
 ---
 name: "hook-developer"
-description: "Canonical agentic role for hook-developer; owned by canonical agent governance."
+description: "Implement the provider surface renderer and hook adapters that map typed agent governance authority and native events without overstating unsupported interception. Use when: A tracked hook, dispatcher, matcher, timeout, or event mapping changes; The provider surface renderer or generated provider projection changes; Provider capability must be separated from repository adoption and runtime acceptance; A registered canonical skill needs a narrow native prompt route and deterministic projection."
 tools:
 - "Read"
 - "Grep"
@@ -8,7 +8,7 @@ tools:
 - "Edit"
 - "Write"
 - "Bash"
-model: "claude-sonnet-5"
+model: "claude-sonnet-5-5"
 effort: "high"
 permissionMode: "acceptEdits"
 skills:

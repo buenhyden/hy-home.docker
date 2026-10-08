@@ -145,7 +145,20 @@ def _rebase_links(
 
 
 def _description(role: RoleRecord) -> str:
-    return f"Canonical {role.scope} role for {role.agent_id}; owned by canonical agent governance."
+    """Routing text: the role's Overview paragraph plus its Use When cases."""
+
+    text = role.source_text
+    overview = re.search(r"^## Overview\n\n(.+?)(?:\n\n|\Z)", text, re.M | re.S)
+    use_when = re.search(r"^### Use When\n\n(.+?)(?:\n\n|\Z)", text, re.M | re.S)
+    if overview is None or use_when is None:
+        raise ValueError(f"role lacks Overview or Use When: {role.source_path}")
+    # A bullet may wrap onto indented continuation lines.
+    cases = [
+        " ".join(case.split()).rstrip(".")
+        for case in re.split(r"^- ", use_when.group(1), flags=re.M)
+        if case.strip()
+    ]
+    return f"{' '.join(overview.group(1).split())} Use when: {'; '.join(cases)}."
 
 
 def _yaml_scalar(value: str) -> str:
@@ -615,14 +628,7 @@ def _is_codex_agent_projection(payload: bytes) -> bool:
     name = document["name"]
     if re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name) is None:
         return False
-    if (
-        re.fullmatch(
-            rf"Canonical .+ role for {re.escape(name)}; owned by canonical agent governance\.",
-            document["description"],
-            flags=re.DOTALL,
-        )
-        is None
-    ):
+    if not document["description"].strip():
         return False
     instructions = document["developer_instructions"].splitlines()
     marker = instructions[0].encode("ascii", errors="strict") if instructions else b""

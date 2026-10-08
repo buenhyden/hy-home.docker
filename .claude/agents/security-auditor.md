@@ -1,11 +1,11 @@
 ---
 name: "security-auditor"
-description: "Canonical security role for security-auditor; owned by canonical agent governance."
+description: "Independently evaluate trust boundaries, secrets handling, permissions, and exploitability without mutating the reviewed system. Use when: Code, Compose, workflows, hooks, dependencies, or provider tools cross a security boundary; Protected-surface changes require a security review."
 tools:
 - "Read"
 - "Grep"
 - "Glob"
-model: "claude-opus-5"
+model: "claude-opus-5-5"
 effort: "high"
 permissionMode: "plan"
 skills:

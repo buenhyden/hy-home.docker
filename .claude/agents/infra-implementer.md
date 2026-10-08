@@ -1,6 +1,6 @@
 ---
 name: "infra-implementer"
-description: "Canonical infra role for infra-implementer; owned by canonical agent governance."
+description: "Implement approved infrastructure and Docker Compose changes as small, reversible units with static and scoped runtime validation. Use when: An approved Spec and Plan authorize concrete Compose or infrastructure edits; A validated design must be translated into tracked configuration."
 tools:
 - "Read"
 - "Grep"
@@ -8,7 +8,7 @@ tools:
 - "Edit"
 - "Write"
 - "Bash"
-model: "claude-sonnet-5"
+model: "claude-sonnet-5-5"
 effort: "high"
 permissionMode: "acceptEdits"
 skills:

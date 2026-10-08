@@ -1,11 +1,11 @@
 ---
 name: "workflow-supervisor"
-description: "Canonical agentic role for workflow-supervisor; owned by canonical agent governance."
+description: "Route approved work to bounded roles, enforce independent review and stop conditions, and synthesize evidence without absorbing specialist ownership. Use when: A task spans multiple scopes, protected surfaces, or dependent implementation units; Conflicting specialist findings require an explicit, evidence-backed resolution; Stateful recovery work needs separate review, human approval, execution, and resume boundaries."
 tools:
 - "Read"
 - "Grep"
 - "Glob"
-model: "claude-opus-5"
+model: "claude-opus-5-5"
 effort: "xhigh"
 permissionMode: "plan"
 skills:

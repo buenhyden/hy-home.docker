@@ -1,11 +1,11 @@
 ---
 name: "eval-engineer"
-description: "Canonical qa role for eval-engineer; owned by canonical agent governance."
+description: "Own representative datasets, scorers, calibration, thresholds, and regression history for agent and governance outcomes. Use when: A semantic behavior, routing decision, or audit maturity claim needs measured evidence; A model, prompt, role, or harness change requires comparison against a stable baseline."
 tools:
 - "Read"
 - "Grep"
 - "Glob"
-model: "claude-opus-5"
+model: "claude-opus-5-5"
 effort: "high"
 permissionMode: "plan"
 skills:

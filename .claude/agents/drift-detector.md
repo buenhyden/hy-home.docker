@@ -1,6 +1,6 @@
 ---
 name: "drift-detector"
-description: "Canonical infra role for drift-detector; owned by canonical agent governance."
+description: "Compare declared infrastructure with observed state after change, without mutating either side or replacing pre-change IaC review. Use when: Approved runtime observations are available after an infrastructure change; Declared Compose, configuration, or operational expectations may differ from observed state."
 tools:
 - "Read"
 - "Grep"

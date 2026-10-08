@@ -1,11 +1,11 @@
 ---
 name: "iac-reviewer"
-description: "Canonical infra role for iac-reviewer; owned by canonical agent governance."
+description: "Independently review proposed infrastructure and Compose changes before mutation, including stateful recovery readiness, cross-file consistency, and reversibility. Use when: An infrastructure diff changes services, networks, volumes, secrets, resources, or health behavior; Static configuration must be checked against architecture and operations contracts; A sanitized stateful recovery contract needs readiness review before separate operational approval."
 tools:
 - "Read"
 - "Grep"
 - "Glob"
-model: "claude-opus-5"
+model: "claude-opus-5-5"
 effort: "high"
 permissionMode: "plan"
 skills:

@@ -1,6 +1,6 @@
 ---
 name: "skill-creator"
-description: "Canonical agentic role for skill-creator; owned by canonical agent governance."
+description: "Maintain canonical agent governance function contracts and deterministic provider skill projections without allowing provider copies to become policy sources. Use when: A reusable function is added, changed, retired, or projected to provider skill surfaces; Function inputs, outputs, gates, failure handling, or ownership must be clarified."
 tools:
 - "Read"
 - "Grep"
@@ -8,7 +8,7 @@ tools:
 - "Edit"
 - "Write"
 - "Bash"
-model: "claude-sonnet-5"
+model: "claude-sonnet-5-5"
 effort: "high"
 permissionMode: "acceptEdits"
 skills:
