@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.0.5"
+version: "1.1.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -51,6 +51,11 @@ and acceptance gates before any service declaration was changed.
 | W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
 | W6 | 8 | Retire completed migration-only QA while preserving current lifecycle and archive owners | None | TSK-0001 | Task evidence |
 | W7 | 8 | Retire hosted public QA while preserving local changed/full selectors, main security, and historical evidence | W6 | TSK-0001 | Task evidence |
+| W8 | 1, 9 | Second-round baseline, owner map and HOME observations | None | TSK-0005 | Task evidence |
+| W9 | 7, 9 | Dev-valkey snapshot and isolated queue replay | W8 | TSK-0005 | Task evidence |
+| W10 | 4, 9 | Secret file support matrix and wrapper refusal | W8 | TSK-0005 | Task evidence |
+| W11 | 3, 6 | Image namespace residue and mail outcome states | W8 | TSK-0005 | Task evidence |
+| W12 | 8, 9 | Validation and handoff | W9, W10, W11 | TSK-0005 | Task evidence |
 
 ### Work Details
 
@@ -109,6 +114,21 @@ and acceptance gates before any service declaration was changed.
    review own W7 candidate acceptance. Remote integration follows its
    separately approved delivery boundary and actual readback; local success is
    not a merge receipt, and no hosted PASS is inferred. Maps 8.
+
+8. **W8: second-round baseline.** Recheck main, map which file each of
+   SPEC-0213, 0214 and 0215 owns, and observe HOME authentication, CDC,
+   workflow and backup state read-only. Maps 1 and 9.
+9. **W9: dev-valkey snapshot.** Add the bounded RDB export to the nightly
+   run and prove restore and queue replay in an isolated container. Maps 7
+   and 9.
+10. **W10: secret file support.** Record a verdict per rendered key and image,
+    keep unsupported services out of HOME by test, and make the Keycloak
+    wrapper refuse empty secrets. Maps 4 and 9.
+11. **W11: residue and mail.** Refuse Bitnami images across active Compose
+    and Dockerfiles, and separate mail outcome states in RUN-0070. Maps 3
+    and 6.
+12. **W12: validation and handoff.** Run the changed gate and record the
+    remaining gaps with owner actions. Maps 8 and 9.
 
 ### Rulings
 
@@ -188,3 +208,4 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 - [Task 0002](tasks/tsk-0002-external-project-integration.md)
 - [Task 0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 - [Task 0004](tasks/tsk-0004-secret-layout-and-environment-parity.md)
+- [Task 0005](tasks/tsk-0005-cross-tier-contracts-second-round.md)
