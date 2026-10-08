@@ -372,6 +372,10 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    `/tmp/pgbackrest/conf.d`를 쓰지 않으면 복원된 인스턴스가 WAL을 읽지 못해
    시작하지 못합니다. repository는 read-only로 mount하며, r2 entrypoint는 이미
    `70:70 0750`인 repository를 바꾸지 않습니다.
+   복구 컨테이너는 `0640` cipher secret을 읽도록 group 1000에 들어가야 하고,
+   복원한 서버는 `dev-pg`와 같은 `max_connections=100`, `max_wal_senders=4`,
+   `max_replication_slots=4`로 시작해야 합니다. 이미지 기본값(연결 25)으로
+   시작하면 `insufficient parameter settings`로 recovery가 중단됩니다.
    연속 WAL 범위로 선택 시점을 복원해 확인하기 전에는 PITR를 주장하지 않습니다.
 5. physical catalog의 extension version과 migration 이력, 별도 globals/schema,
    외부 앱 migration source revision을 대조하고 runtime/reader 권한 거절·업무

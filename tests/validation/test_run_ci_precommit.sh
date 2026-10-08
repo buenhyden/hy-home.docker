@@ -41,7 +41,7 @@ expect_rejected() {
 printf '%s\n' \
   '#!/usr/bin/env bash' \
   'set -euo pipefail' \
-  'if [[ "${1:-}" == "--version" ]]; then printf "pre-commit %s\n" "${FAKE_PRECOMMIT_VERSION:-4.6.1}"; exit 0; fi' \
+  'if [[ "${1:-}" == "--version" ]]; then printf "pre-commit %s\n" "${FAKE_PRECOMMIT_VERSION:-4.6.2}"; exit 0; fi' \
   'readonly_config=""' \
   'previous=""' \
   'for argument in "$@"; do if [[ "$previous" == "--config" ]]; then readonly_config="$argument"; break; fi; previous="$argument"; done' \
