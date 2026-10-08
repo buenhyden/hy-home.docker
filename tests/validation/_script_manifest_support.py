@@ -47,6 +47,7 @@ FORBIDDEN_EVIDENCE_PREFIXES = (
 MUTATION_OVERRIDES = {
     "scripts/hooks/post-tool-validate.sh": "check-write",
     "scripts/operations/gen-secrets.sh": "runtime",
+    "scripts/operations/lab.py": "runtime",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",

@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Product Requirements"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-08"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -72,7 +72,7 @@ Provide a robust, dedicated messaging infrastructure that lowers coupling betwee
 ### Constraints
 
 - **In Scope**:
-  - Kafka Cluster (KRaft)
+  - Single-broker Kafka (KRaft, replication factor 1); the three-broker topology is the LAB `labs/kafka-cluster.yml` (SPEC-0215)
   - Schema Registry & Kafka Connect
   - RabbitMQ Broker
   - Kafka REST Proxy

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -36,7 +36,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 
 - 한 개 이상의 CouchDB 노드가 unhealthy, stopped, or missing 상태일 때
 - `couchdb-cluster-init`가 실패했거나 membership이 세 노드를 표시하지 않을 때
-- 이전 Traefik route가 더 이상 LAB에 연결되지 않는지 확인해야 할 때
+- LAB에 HOME Traefik label이 다시 생기지 않았는지 확인해야 할 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ### Execution and stop boundary
@@ -114,7 +114,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 - **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb.yml logs --tail=120 couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`
 - **Health**: `/_up`, `/_membership`, `/_scheduler/docs`
-- **Route**: label은 선언되어 있지만 HOME Traefik과 network가 분리되어 실제 ingress는 `NOT_RUN`
+- **Route**: HOME Traefik label 없음; `couchdb-1` loopback port `${LAB_COUCHDB_HOST_PORT:-35984}`만 게시 (SPEC-0215)
 
 ### Safe Rollback or Recovery Procedure
 

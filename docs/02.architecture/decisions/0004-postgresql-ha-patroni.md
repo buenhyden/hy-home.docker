@@ -1,10 +1,10 @@
 ---
 title: "Choice of Spilo/Patroni for PostgreSQL HA"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-09-29"
+updated: "2026-10-08"
 layer: "architecture"
 artifact_id: "ADR-0004"
 parent_ids:
@@ -27,7 +27,11 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 ## Decision
 
-**Spilo (Zalando's PostgreSQL + Patroni)** is selected as the core database engine.
+**Spilo (Zalando's PostgreSQL + Patroni)** is selected for the PostgreSQL HA
+topology. SPEC-0215 narrows where it runs: the topology exists only in the
+standalone LAB `labs/postgresql-ha.yml`. HOME `mng-pg` and DEV `dev-pg` are
+single nodes without failover, and the LAB nodes share one host, so the LAB
+exercises replication and failover but is not host HA.
 
 - **Patroni**: works with Etcd to provide stable leader election and automatic failover.
 - **Spilo Image**: uses the proven PostgreSQL HA image maintained by Zalando.

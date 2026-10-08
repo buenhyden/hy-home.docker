@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.0"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2026-10-03"
 ---
 
@@ -31,8 +31,8 @@ OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint
 
 | 경계 | LAB 계약 |
 | --- | --- |
-| 상태 | `lab-opensearch-node1-data`, `node2-data`, `node3-data`, `dashboards-data`의 프로젝트별 새 named volume |
-| 네트워크 | `lab_opensearch_core_net`만 사용; 정상 `edge_net`·`obs_net`·`lab_net`에 접속하지 않음 |
+| 상태 | `node1`, `node2`, `node3`, `dashboards` 상태를 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
+| 네트워크 | `lab_opensearch_core_net`만 사용; 정상 `edge_net`·`obs_net`에 접속하지 않음 |
 | 노출 | 호스트 publish 포트와 Traefik 라우터 없음; API 9200, 모니터링 9600, Dashboards 5601은 내부 expose만 |
 | 비밀 | `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password`, `lab_opensearch_dashboard_password`, `lab_opensearch_exporter_password`, `lab_opensearch_security_cookie`; 정상 비밀을 재사용하지 않음 |
 | 인증서 | `${LAB_OPENSEARCH_CERT_DIR}`의 별도 CA/node 인증서를 읽기 전용 mount; 값이 없으면 정적 render도 실패 |
@@ -63,11 +63,13 @@ runtime 승인은 막혀 있습니다. 이 LAB의 데이터 보존과 삭제는 
 기동에는 승인된 LAB 전용 경로를 별도로 지정합니다.
 
 ```bash
-LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
+LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --quiet
-LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
+LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic-lab-certs \
   docker compose --env-file labs/.env.example -f labs/opensearch-cluster.yml --profile opensearch-cluster config --services
 ```
+
+기동과 종료는 `python3 scripts/operations/lab.py up opensearch-cluster --purpose "<목적>" --lease <기간>`과 `lab.py down opensearch-cluster`로 하며, 충돌·예산 검사와 정리 대상 ledger는 `POL-0078`을 따른다.
 
 기동 전 Docker context, 별도 프로젝트 이름, 모든 내부/호스트 포트, 네트워크,
 볼륨, 인증서·secret 참조, 호스트 CPU/메모리/디스크와 정확한 정리 범위를
@@ -75,6 +77,10 @@ LAB_SECRET_DIR=/tmp/synthetic-lab-secrets LAB_OPENSEARCH_CERT_DIR=/tmp/synthetic
 비밀 발급은 별도 승인입니다. 운영 정책은 [문서 진입점](../docs/README.md)에서
 찾습니다. 공식 자료: [OpenSearch Docker 설치](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/),
 [Dashboards Docker 설정](https://docs.opensearch.org/latest/install-and-configure/install-dashboards/docker/).
+
+## Bind State Ownership
+
+`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 1000 (`opensearch`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. SPEC-0215에서 이 LAB의 bind 상태 기동은 실제로 검증하지 못했다(MongoDB는 exporter image 고정값이 존재하지 않아 기동 전 실패). 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
 ## Related Documents
 

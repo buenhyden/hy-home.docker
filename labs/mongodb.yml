@@ -1,15 +1,37 @@
 name: hy-home-lab-mongodb
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: lab
 
 volumes:
   mongo-key:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/mongodb/mongo-key
   mongodb1-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/mongodb/mongodb1-data
   mongodb2-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/mongodb/mongodb2-data
   mongodb3-data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ${LAB_DATA_DIR:?set isolated LAB data root}/mongodb/mongodb3-data
 
 services:
   mongo-key-generator:
+    labels:
+      <<: *tier-label
     profiles:
       - mongodb
     extends:
@@ -141,6 +163,8 @@ services:
       <<: *tier-label
 
   mongo-init:
+    labels:
+      <<: *tier-label
     profiles:
       - mongodb
     extends:
@@ -189,6 +213,9 @@ services:
       service: template-infra-low
     image: mongo-express:1-18-alpine3.19
     container_name: lab-mongodb-mongo-express
+    # LAB access is loopback only; HOME Traefik does not route LABs (SPEC-0215).
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}:8081'
     hostname: mongo-express
     restart: unless-stopped
     read_only: true
@@ -209,12 +236,7 @@ services:
       - 8081
     labels:
       <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.routers.mongo-express.rule: Host(`mongo-express.${LAB_BASE_DOMAIN}`)
-      traefik.http.routers.mongo-express.entrypoints: websecure
-      traefik.http.routers.mongo-express.tls: 'true'
-      traefik.http.services.mongo-express.loadbalancer.server.port: 8081
-      traefik.http.routers.mongo-express.middlewares: gateway-standard-chain@file
+      traefik.enable: 'false'
     networks:
       lab_mongodb_edge_net: {}
       lab_mongodb_core_net: {}
@@ -226,6 +248,8 @@ services:
       - lab_mongo_express_basicauth_password
 
   mongodb-exporter:
+    labels:
+      <<: *tier-label
     profiles:
       - mongodb
     extends:

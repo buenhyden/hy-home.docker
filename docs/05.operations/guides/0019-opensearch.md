@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -42,7 +42,7 @@ created: "2026-05-10"
 | --- | --- | --- |
 | 선택 | root `opensearch` profile: `opensearch`, `opensearch-dashboards` | standalone `labs/opensearch-cluster.yml`의 `opensearch-cluster` profile: node1–3, `lab-opensearch-dashboards` |
 | 네트워크 | `edge_net`, `obs_net`; 기존 Traefik HTTPS API/Dashboard route | `lab_opensearch_core_net`만 사용; gateway 및 host port 없음 |
-| 데이터 | 기존 bind-backed `opensearch-data`, `opensearch-dashboards-data` 보존 | 새 LAB project named volume 4개; 정상 데이터 미공유 |
+| 데이터 | 기존 bind-backed `opensearch-data`, `opensearch-dashboards-data` 보존 | `${LAB_DATA_DIR}/opensearch-cluster/` bind 4개; 정상 데이터 미공유 |
 | 인증 | 기존 정상 secret, `${DEFAULT_CERT_DIR}`, OIDC 연동 | 별도 LAB secret과 `${LAB_OPENSEARCH_CERT_DIR}`; 기본 내부 인증만 |
 | 구현 | [정상 Compose](../../../infra/04-data/opensearch/docker-compose.yml) | [LAB Compose](../../../labs/opensearch-cluster.yml)와 [LAB 설명](../../../labs/opensearch-cluster.md) |
 

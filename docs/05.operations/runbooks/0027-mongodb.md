@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Replica Set Triage Runbook"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0027"
 parent_ids:
@@ -94,7 +94,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    # STOP: approve one daemon target; do not rerun mongo-key-generator or mongo-init during triage
    ```
 
-6. Mongo Express의 label은 선언값으로만 확인한다. 현재 독립 LAB network에 HOME Traefik route가 없으므로 접속 성공을 기대하지 않는다. Password 값은 출력하지 않는다.
+6. Mongo Express는 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}` loopback port로만 확인한다. HOME Traefik route는 없다. Password 값은 출력하지 않는다.
 
    ```bash
    docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=80 mongo-express
@@ -112,7 +112,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 - **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter mongodb-exporter`
 - **Replica evidence**: sanitized `rs.status()` member summary
-- **Route**: 이전 Traefik label은 선언값이며 HOME gateway 경로는 없음
+- **Route**: HOME gateway 경로 없음; Mongo Express loopback port만 게시 (SPEC-0215)
 - **Metrics**: `mongodb-exporter` exposed port `${LAB_MONGO_EXPORTER_PORT:-9216}`
 
 ### Safe Rollback or Recovery Procedure

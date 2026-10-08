@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0019"
 parent_ids:
@@ -26,7 +26,7 @@ created: "2026-05-17"
 
 - **Systems**: 정상 `opensearch`/`opensearch-dashboards`; 별도 LAB의 `opensearch-node1..3`/`lab-opensearch-dashboards`
 - **Secrets**: 정상은 기존 `opensearch_*` 및 `oauth2_proxy_client_secret`; LAB는 `${LAB_SECRET_DIR}/opensearch-cluster/`의 별도 `lab_opensearch_*`만 사용
-- **Persistence**: 정상 bind-backed `opensearch-data`/`opensearch-dashboards-data`; LAB는 별도 프로젝트의 네 새 named volume
+- **Persistence**: 정상 bind-backed `opensearch-data`/`opensearch-dashboards-data`; LAB는 `${LAB_DATA_DIR}/opensearch-cluster/` 아래 네 bind volume
 - **Environments**: repo-local, development, homelab, production-like rehearsal
 
 ### Traceability

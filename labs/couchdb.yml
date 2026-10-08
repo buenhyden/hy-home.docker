@@ -1,6 +1,6 @@
 name: hy-home-lab-couchdb
 x-tier-label: &tier-label
-  hy-home.tier: data
+  hy-home.tier: lab
 
 x-couch-start: &couch-start
   - /bin/sh
@@ -57,6 +57,9 @@ services:
       service: template-stateful-med
     image: couchdb:3.5.2
     container_name: lab-couchdb-couchdb-1
+    # LAB access is loopback only; HOME Traefik does not route LABs (SPEC-0215).
+    ports:
+      - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}:5984'
     read_only: false
     environment:
       - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
@@ -80,15 +83,7 @@ services:
     healthcheck: *couch-health
     labels:
       <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.routers.couchdb.rule: Host(`couchdb.${LAB_BASE_DOMAIN}`)
-      traefik.http.routers.couchdb.entrypoints: websecure
-      traefik.http.routers.couchdb.tls: 'true'
-      traefik.http.routers.couchdb.service: couchdb-cluster
-      traefik.http.routers.couchdb.middlewares: gateway-standard-chain@file
-      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+      traefik.enable: 'false'
 
   couchdb-2:
     profiles:
@@ -121,10 +116,7 @@ services:
     healthcheck: *couch-health
     labels:
       <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+      traefik.enable: 'false'
 
   couchdb-3:
     profiles:
@@ -157,12 +149,11 @@ services:
     healthcheck: *couch-health
     labels:
       <<: *tier-label
-      traefik.enable: 'true'
-      traefik.http.services.couchdb-cluster.loadbalancer.server.port: 5984
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie: 'true'
-      traefik.http.services.couchdb-cluster.loadbalancer.sticky.cookie.name: couchdb_sticky
+      traefik.enable: 'false'
 
   couchdb-cluster-init:
+    labels:
+      <<: *tier-label
     profiles:
       - couchdb
     extends:

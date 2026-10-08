@@ -47,13 +47,6 @@ networks:
     ipam:
       config:
         - subnet: 10.250.8.0/24
-  lab_net:
-    name: lab_net
-    ipam:
-      config:
-        - subnet: 10.250.9.0/24
-          # Dynamic addresses stay above .127; OpenSearch nodes announce fixed .11-.13.
-          ip_range: 10.250.9.128/25
   airflow_net:
     name: airflow_net
     ipam:

@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -26,9 +26,9 @@ created: "2026-05-17"
 
 - `labs/mongodb.yml`
 - `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`
-- `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data`
+- `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` (`${LAB_DATA_DIR}/mongodb/` bind)
 - `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`, `LAB_MONGODB_ROOT_USERNAME`, `LAB_MONGO_EXPRESS_USERNAME`
-- 기존 Traefik label은 HOME gateway에 연결되지 않음; exporter 내부 port `${LAB_MONGO_EXPORTER_PORT:-9216}`
+- HOME Traefik label 없음; Mongo Express loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`; exporter 내부 port `${LAB_MONGO_EXPORTER_PORT:-9216}`
 - Linked guide and runbook under `docs/05.operations`
 
 ### Traceability
@@ -47,7 +47,7 @@ created: "2026-05-17"
 - **Required**: Root와 Mongo Express password 가이드는 plaintext 값이 아니라
   Docker Secret mount를 참조해야 한다.
 - **Required**: Keyfile 가이드는 `mongo-key-generator`가 생성하는 `mongo-key`
-  named volume을 참조해야 한다.
+  bind volume(`${LAB_DATA_DIR}/mongodb/mongo-key`)을 참조해야 한다.
 - **Required**: 일곱 개 서비스 모두 정확한 `mongodb` profile을 사용하며, 동일
   host topology를 host-level HA로 기술해서는 안 된다.
 - **Required**: Backup은 data-bearing replica-set member에 대해 인증된

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL HA LAB"
-version: "1.0.2"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 created: "2025-11-12"
 ---
 
@@ -39,7 +39,7 @@ created: "2025-11-12"
 | Category | Source of truth | Boundary |
 | --- | --- | --- |
 | Compose | [postgresql-ha.yml](./postgresql-ha.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}` 또는 project-scoped named volume | HOME 상태와 미공유 |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
 | Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
 | Networks | LAB 전용 network declarations | root network와 미공유 |
 
@@ -69,7 +69,7 @@ labs/
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-postgresql-ha-static docker compose --env-file labs/.env.example -f labs/postgresql-ha.yml --profile '*' config --quiet`로 렌더링한다.
 3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
-4. 컨테이너 실행·정지·삭제와 실제 복구는 별도 운영 승인을 따른다.
+4. 기동은 `python3 scripts/operations/lab.py up postgresql-ha --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/postgresql-ha.json`에 정리 대상을 기록한다. 종료는 `lab.py down postgresql-ha`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
 
 ## Available Scripts
 

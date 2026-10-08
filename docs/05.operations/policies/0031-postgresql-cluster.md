@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "2.1.0"
+version: "2.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 ### Overview
 
-이 정책은 `hy-home.docker`의 선택 relational service인 PostgreSQL HA cluster 운영 기준을 정의한다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
+이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../labs/postgresql-ha.yml) tag, HAProxy [haproxy image declaration](../../../labs/postgresql-ha.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../labs/postgresql-ha.yml), init job [postgres image declaration](../../../labs/postgresql-ha.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../labs/postgresql-ha.yml), Docker Secret 기반 credential 구성이다.
 
 ## Scope
 
@@ -49,7 +49,7 @@ created: "2026-05-17"
 - **Required**: Credential 가이드는 Docker Secret mount와 secret-aware
   entrypoint를 참조해야 한다. Secret 값은 문서나 evidence에 절대 복사해서는
   안 된다.
-- **Required**: HAProxy stats label `pg-haproxy.${LAB_BASE_DOMAIN}`는 HOME Traefik과 network가 분리되어 현재 외부 route가 아니다. 내부 stats port와 `lab_pg_haproxy_stats_password`를 구분한다.
+- **Required**: HAProxy stats는 `127.0.0.1:${LAB_PG_HAPROXY_STATS_HOST_PORT:-37000}` loopback port로만 게시하고 HOME Traefik label을 두지 않는다. stats 접근은 `lab_pg_haproxy_stats_password`로 인증한다.
 - **Required**: 서비스/init 가이드는 `pg-cluster-init`을 `init_users_dbs.sql`을
   통해 exporter role, service role, service database를 동기화하는 compose
   job으로 기술해야 한다.

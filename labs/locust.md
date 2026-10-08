@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 created: "2026-10-03"
 ---
 
@@ -111,7 +111,7 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
    정리 대상을 먼저 기록한다.
 2. scenario directory를 읽기 전용으로 검토하고 새로운 빈 result directory를
    실행마다 지정한다.
-3. target 소유자의 승인 뒤에만 두 서비스를 시작한다.
+3. target 소유자의 승인 뒤에만 `python3 scripts/operations/lab.py up locust --purpose "<목적>" --lease <기간>`으로 시작한다. 종료는 `lab.py down locust`이다.
 4. master 종료 코드, worker 수와 CSV 산출물을 함께 보존한다.
 5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
    prune을 사용하지 않는다.

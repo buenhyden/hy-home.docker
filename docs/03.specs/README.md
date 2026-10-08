@@ -50,6 +50,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0212 | [요청 기준선·정합화](./0212-request-baseline-and-reconciliation/) | 2026-10-07 요청의 기준선, 서비스 키 인벤토리, 충돌 지도, 후속 package 순서 |
 | SPEC-0213 | [DEV 데이터 경계·InfluxDB 퇴역](./0213-dev-data-and-influx-retirement/) | DEV/MNG 변수 분리, role별 연결 예산, InfluxDB 활성 표면 퇴역 |
 | SPEC-0214 | [품질 부하 도구·OTel 의미](./0214-quality-k6-locust-and-otel-semantics/) | k6 기본·Locust LAB, 인증된 품질 metrics 경로, 속성 보존 |
+| SPEC-0215 | [LAB 격리·서비스 선택](./0215-lab-isolation-and-service-selection/) | root 폐포, LAB 경계·lease controller·예산, 선택 서비스 처분 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
