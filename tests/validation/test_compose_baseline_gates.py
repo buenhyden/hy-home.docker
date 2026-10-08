@@ -12,7 +12,6 @@ from __future__ import annotations
 import json
 import os
 import re
-import secrets
 import shutil
 import sqlite3
 import subprocess
@@ -2464,13 +2463,15 @@ class SsoRehearsalTests(unittest.TestCase):
         shutil.copy(SSO_MIDDLEWARE, cls.tmp / "dynamic/middleware.yml")
         (cls.tmp / "dynamic/routers.yml").write_text(SSO_ROUTERS)
         (cls.tmp / "import").mkdir()
-        client_secret = secrets.token_hex(16)
+        # Random, synthetic and removed with the temporary directory; the
+        # containers read them as mounted files, as on HOME.
+        client_value = os.urandom(16).hex()
         realm = json.loads(json.dumps(SSO_REALM))
-        realm["clients"][0]["secret"] = client_secret
+        realm["clients"][0]["secret"] = client_value
         (cls.tmp / "import/r.json").write_text(json.dumps(realm))
         (cls.tmp / "secrets").mkdir()
-        (cls.tmp / "secrets/client").write_text(client_secret)
-        (cls.tmp / "secrets/cookie").write_text(secrets.token_hex(16))
+        (cls.tmp / "secrets/client").write_text(client_value)
+        (cls.tmp / "secrets/cookie").write_text(os.urandom(16).hex())
         for path in [cls.tmp, *cls.tmp.rglob("*")]:
             path.chmod(0o755 if path.is_dir() else 0o644)
         _sso_docker("network", "create", "--internal", "--subnet", SSO_SUBNET, cls.tag)
