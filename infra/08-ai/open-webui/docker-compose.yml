@@ -27,6 +27,9 @@ services:
     environment:
       OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
       RAG_EMBEDDING_ENGINE: ollama
+      # The image leaves WEBUI_SECRET_KEY empty, so start.sh keeps a generated key
+      # in this file; in the volume it survives recreation and is backed up.
+      WEBUI_SECRET_KEY_FILE: /app/backend/data/.webui_secret_key
       RAG_EMBEDDING_MODEL: qwen3-embedding:4b
       WEBUI_URL: https://chat.${DEFAULT_URL}
       OAUTH_CLIENT_ID: home-openwebui

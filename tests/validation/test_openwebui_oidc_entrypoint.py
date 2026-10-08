@@ -17,6 +17,18 @@ ENTRYPOINT = ROOT / "infra/08-ai/open-webui/docker-entrypoint.sh"
 
 
 class OpenWebUiOidcComposeTests(unittest.TestCase):
+    def test_secret_key_lives_in_the_backed_up_volume(self):
+        # The image sets WEBUI_SECRET_KEY empty, so start.sh would generate the
+        # key in the container layer and lose it on every recreation.
+        service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
+        key = service["environment"]["WEBUI_SECRET_KEY_FILE"]
+        self.assertEqual("/app/backend/data/.webui_secret_key", key)
+        self.assertIn("open-webui:/app/backend/data:rw", service["volumes"])
+        include = (
+            ROOT / "infra/09-platform-ops/restic/sets/state-include.txt"
+        ).read_text()
+        self.assertIn("\nai/open-webui/.webui_secret_key\n", include)
+
     def test_service_uses_native_oidc_after_verified_cutover(self):
         service = yaml.safe_load(COMPOSE.read_text())["services"]["open-webui"]
         environment = service["environment"]

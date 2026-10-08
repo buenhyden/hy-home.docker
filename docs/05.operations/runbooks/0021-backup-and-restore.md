@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.8"
+version: "1.4.9"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -154,6 +154,13 @@ RDB를 빈 data 디렉터리에 `dump.rdb`로 두고 `--save ''`, `--appendonly 
 따라서 복구된 queue는 최소 한 번(at-least-once) 재처리되며 소비자는 멱등이어야
 한다. 2026-10-08 합성 데이터로 시험했을 때 key, stream 2건, pending 1건이 그대로
 돌아왔고 `XAUTOCLAIM`이 pending 항목을 넘겨받았다. HOME 복구는 별도 승인이다.
+
+Open WebUI는 세 부분을 함께 복구해야 한다. `webui.db`는 SQLite online backup
+export로, `uploads/`와 `.webui_secret_key`는 state 허용 목록으로 백업한다. 이 key가
+없으면 기존 session과 key로 암호화된 값을 쓸 수 없다. 이전에는 key가 container
+layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`이 data volume을
+가리키므로 이 변경 뒤 첫 재생성에서 한 번 새 key가 생기고(사용자 재로그인 1회),
+그 뒤로는 유지된다.
 
 OpenBao는 Raft snapshot으로 백업한다. 최초 1회 운영자가 unseal된 OpenBao에서
 `infra/03-security/openbao/config/policies/backup-snapshot.hcl`을 `backup-snapshot`
