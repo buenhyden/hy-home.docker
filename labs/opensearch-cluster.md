@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.5"
+version: "0.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -54,10 +54,13 @@ LAB node healthcheck는 Docker secret을 curl 설정 stdin으로 전달하며, �
 exporter plugin은 OpenSearch 기본 이미지와 같은 `3.8.0.0`이어야 이미지가 빌드됩니다.
 node 인증서 subject는 `CN=opensearch-node*`에 맞아야 합니다(`plugins.security.nodes_dn`).
 LAB 인증서가 IP SAN만 가질 수 있어 transport hostname 검증은 끕니다.
-SPEC-0215 TSK-0002에서 세 노드가 결성되고 cluster manager를 선출한 것까지 확인했습니다.
-하지만 HOME 디스크 사용률이 90%로 OpenSearch high disk watermark에 걸려
-`.opendistro_security` primary shard를 배치하지 못했고, 건강 상태는 `BLOCKED`입니다.
-watermark를 끄지 않고 디스크 여유를 먼저 확보해야 합니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
+Dashboards는 `labs/opensearch-cluster-dashboards.config`를 설정 파일로 읽습니다.
+이미지의 env→옵션 변환을 거치지 않으므로 비밀번호는 환경 변수 참조로만 들어가고
+명령 인자에 남지 않습니다. node healthcheck는 비밀번호를 curl 설정 문법에 맞게
+escape하므로 특수문자가 있어도 동작합니다. 빈 값과 줄바꿈만 거부합니다.
+SPEC-0215 TSK-0002에서 HOME 호스트로 기동해 green, node 3개, Dashboards healthy를
+확인했고, `down` 뒤 container·network는 0개였습니다. 호스트 디스크가 OpenSearch
+high watermark(90%)를 넘으면 보안 index를 배치하지 못하므로 디스크 여유를 먼저 확인합니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
 데이터와 별도로 승인받아야 합니다.
 
 ## Usage

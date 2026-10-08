@@ -1,6 +1,6 @@
 ---
 title: "LAB Closure and HOME LAB Run Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -112,7 +112,7 @@ Final run on the fixed code (`results6`, `results7` and the Valkey rerun):
 | couchdb | 0 (18 s) | 3 of 3 cluster nodes | 0 | 0 / 0 |
 | cassandra | 0 (20 s) | 1 node `UN` | 0 | 0 / 0 |
 | valkey-cluster | 0 | `cluster_state:ok`, 6 nodes | 0 | 0 / 0 |
-| opensearch-cluster | 1 (200 s) | `FAIL`, blocked by host disk, see below | 0 | 0 / 0 |
+| opensearch-cluster | 1 (200 s); 0 (141 s) on the rerun | First `FAIL` on host disk; rerun green, 3 nodes, 14 active shards, Dashboards healthy | 0 | 0 / 0 |
 
 The HOME project held 54 containers before and after every run.
 
@@ -121,8 +121,25 @@ the host disk is 90% used. That is OpenSearch's default high disk watermark,
 so the cluster put an index-create block on and could not allocate the
 `.opendistro_security` primary shard. Security stayed uninitialized and the
 nodes stayed unhealthy. The watermark is not disabled, because that would
-hide a real capacity risk. The LAB needs free disk first; this is a HOME
-capacity condition, not a LAB configuration defect.
+hide a real capacity risk.
+
+After the owner freed the disk to 66%, the rerun showed that the disk was not
+the only cause. Two LAB defects surfaced, both fixed in `e0e19cdcf`:
+
+- The node healthcheck refused an admin password with any character outside
+  a short allowlist, so a green cluster stayed unhealthy. It now escapes the
+  value for curl's config syntax and refuses only an empty value or a line
+  break.
+- Dashboards execs its binary directly, which skips the image's
+  env-to-option mapping, so it connected to `127.0.0.1:9200`. A tracked
+  config file (`labs/opensearch-cluster-dashboards.config`) now names the
+  three nodes and reads its passwords from the environment, so none reaches
+  argv.
+
+The rerun on 2026-10-08 exited 0 after 141 s with the cluster green, three
+nodes and 14 active shards; `down` left no container or network, and the HOME
+project held 55 containers before and after. A new test fails against the
+previous LAB file and passes now.
 
 The first Valkey attempt on the final code exited 3 on the stale-volume
 check, because its volume records point at an earlier scratch data root.
@@ -151,19 +168,17 @@ not declared. After commits `d341b75c8` and `137650df8` the gate exited 0
 | HOME residue audit | 5 | W8 | Read-only `docker ps`, restart policies, systemd units, crontab | HOME host 2026-10-08 | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 | Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | accepted |
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
-| OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 90% | FAIL | W8 HOME Residue Audit and Real LAB Runs | pending |
+| OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 66%; `e0e19cdcf` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 
 ## Review and Completion
 
-Not complete. The OpenSearch row stays pending until the host has free disk.
+Every evidence row is accepted. The volume cleanup below stays with the owner.
 
 Owner actions, which this session may not take:
 
 - Remove the 27 `hy-home-lab-*` volume records that point into session
   scratch directories, with `docker volume rm` on each name that
   `lab.py check` reports. They hold no HOME data.
-- Free host disk below 90% before starting the OpenSearch LAB again. HOME
-  OpenSearch is subject to the same watermark.
 
 ## Related Documents
 

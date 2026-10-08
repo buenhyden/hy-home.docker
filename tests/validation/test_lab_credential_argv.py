@@ -123,6 +123,36 @@ class LabCredentialArgvTest(unittest.TestCase):
         self.assertNotIn("curl -fsSk -u", opensearch)
         self.assertIn("curl -fsSk --config -", opensearch)
 
+    def test_opensearch_lab_escapes_its_password_and_configures_dashboards(self):
+        import yaml
+
+        lab = yaml.safe_load((ROOT / "labs/opensearch-cluster.yml").read_text())
+        services = lab["services"]
+        # Escaped for curl's config syntax instead of refusing characters, so
+        # a strong password cannot leave a green cluster marked unhealthy.
+        check = services["opensearch-node1"]["healthcheck"]["test"][1]
+        self.assertIn("sed 's/[\\\\\"]/\\\\&/g'", check)
+        self.assertNotIn("A-Za-z0-9", check)
+        dashboards = services["lab-opensearch-dashboards"]
+        # A direct exec skips the image's env-to-option mapping; the config
+        # file reads the secrets from the environment, never from argv.
+        self.assertFalse(
+            [
+                k
+                for k in dashboards.get("environment") or {}
+                if k.startswith("OPENSEARCH_")
+            ]
+        )
+        mount = "./opensearch-cluster-dashboards.config:/usr/share/opensearch-dashboards/config/opensearch_dashboards.yml:ro"
+        self.assertIn(mount, dashboards["volumes"])
+        config = (ROOT / "labs/opensearch-cluster-dashboards.config").read_text()
+        self.assertIn("opensearch.password: ${OPENSEARCH_PASSWORD}", config)
+        self.assertIn(
+            "opensearch_security.cookie.password: ${OPENSEARCH_SECURITY_COOKIE_PASSWORD}",
+            config,
+        )
+        self.assertIn("https://opensearch-node3:9200", config)
+
     def test_couch_system_database_replay_accepts_existing_and_fails_other_errors(self):
         source = (ROOT / "labs/couchdb-cluster-init.sh").read_text()
         function = (
