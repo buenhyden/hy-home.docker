@@ -19,6 +19,11 @@ services:
       service: template-stateful-db-high
     image: cassandra:5.0.9
     container_name: lab-cassandra-cassandra-node1
+    cap_add:
+      - CHOWN
+      - FOWNER
+      - SETGID
+      - SETUID
     hostname: cassandra-node1
     read_only: false
     expose:

@@ -149,7 +149,10 @@ services:
       hy-home.managed: "true"
     security_opt:
       - no-new-privileges:true
-    # cap_drop 생략
+    # Entrypoints that re-own data and switch user add exactly the
+    # capabilities they need at the leaf (SPEC-0218).
+    cap_drop:
+      - ALL
     cpus: "1.00"
     mem_limit: 512m
     read_only: false
@@ -162,7 +165,10 @@ services:
       hy-home.managed: "true"
     security_opt:
       - no-new-privileges:true
-    # cap_drop 생략
+    # Entrypoints that re-own data and switch user add exactly the
+    # capabilities they need at the leaf (SPEC-0218).
+    cap_drop:
+      - ALL
     cpus: "2.00"
     mem_limit: 2g
     read_only: false

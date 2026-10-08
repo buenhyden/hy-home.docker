@@ -623,6 +623,9 @@ services:
     image: grafana/pyroscope:2.3.1
     container_name: pyroscope
     hostname: pyroscope
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
       - -config.expand-env=true

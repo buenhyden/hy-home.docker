@@ -60,6 +60,9 @@ services:
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-1
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-1
@@ -98,6 +101,9 @@ services:
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-2
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-2
@@ -136,6 +142,9 @@ services:
       service: template-stateful-low
     image: quay.io/coreos/etcd:v3.7.1
     container_name: lab-pg-etcd-3
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-3
@@ -297,6 +306,12 @@ services:
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-0
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     hostname: pg-0
     group_add:
       - '${SECRETS_GID:-1000}'
@@ -341,6 +356,12 @@ services:
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-1
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     hostname: pg-1
     group_add:
       - '${SECRETS_GID:-1000}'
@@ -385,6 +406,12 @@ services:
       service: template-stateful-db-high
     image: ghcr.io/zalando/spilo-17:4.0-p3
     container_name: lab-pg-pg-2
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     hostname: pg-2
     group_add:
       - '${SECRETS_GID:-1000}'

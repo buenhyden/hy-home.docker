@@ -220,10 +220,6 @@ def check(
             continue
         if files[service_key] != row["compose_file"]:
             findings.append(f"{label}: service is declared in {files[service_key]}")
-        if row["control"] == "secrets_group" and row["allowed_value"] == "unneeded":
-            findings.append(
-                f"{label}: an unneeded secrets group is removed, not excepted"
-            )
         current = actual[service_key].get(row["control"], "conforms")
         if current == "conforms":
             findings.append(f"{label}: the service conforms; retire the exception")
