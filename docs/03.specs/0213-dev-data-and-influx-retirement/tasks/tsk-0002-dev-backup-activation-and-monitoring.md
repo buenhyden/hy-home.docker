@@ -1,6 +1,6 @@
 ---
 title: "DEV Backup Activation and Monitoring Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -186,6 +186,37 @@ queue-limit WAL drop, which `pg_stat_archiver` does not count; preflight
 reported a render failure as a path overlap; and the runbook's ownership step
 omitted `chmod 0750`, which a read-only restore container would then fail on.
 
+### W8 HOME Activation
+
+Run on 2026-10-08 after PR #372 merged (`2e484a940`), from the HOME checkout.
+The owner chose to merge `main` into the local SPEC-0215 branch that HOME runs
+from. Before that, the uncommitted working tree was saved as a patch in the
+session scratch directory, and only the two files PR #372 supersedes
+(`dev-db` and RedisInsight Compose) plus the version projection were restored.
+The projection was regenerated after the merge, so the owner's Ollama and Open
+WebUI pins stay as uncommitted changes. At the owner's choice the session
+generated the two monitor secrets (32 random bytes, mode `0640` like the other
+DEV secrets, values not printed).
+
+| Step | Result |
+| --- | --- |
+| Repository root ownership and mode | `70:70 0750` |
+| `stanza-create` with `archive_mode=off` | exit 0; `info` reports no valid backups, `aes-256-cbc` |
+| `check` before recreation | exit 87, `archive_mode must be enabled` |
+| Build and recreate `dev-data` | image `sha256:db7edba6…` (`-r2`); five services healthy, provisioner exit 0 |
+| `archive_mode`; `check` | `on`; exit 0 |
+| First full backup | exit 0, `20261008-013323F`, 25.8 MB, WAL `…16`–`…19` |
+| Exporters | `pg_up 1`, `redis_up 1`; `dev_pg_monitor` limit 3, `pg_monitor` member |
+| Prometheus | The merge replaced the bind-mounted config file, so `/-/reload` kept the old inode; after a container restart `up` was 1 for `dev-pg-exporter`, `dev-valkey-exporter` and `manage-postgres` |
+| Restore canary | `--set=20261008-013323F --type=immediate` into a labelled empty volume, network none, repository read-only: `restore-ok`; promoted on timeline 2; roles, databases and Timescale 2.30.2 equal to the source |
+
+The canary needed two corrections, now in RUN-0021. The restore container must
+join group 1000 to read the `0640` cipher secret, and the restored server must
+start with the source's `max_connections=100`, `max_wal_senders=4` and
+`max_replication_slots=4`. With the image default of 25 connections, recovery
+aborted with `insufficient parameter settings`. The canary container and volume
+were removed by label with zero remaining.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -197,17 +228,16 @@ omitted `chmod 0750`, which a read-only restore container would then fail on.
 | HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | rejected |
 | HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | accepted |
 | WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | accepted |
-| HOME activation | 10 | W8 | Stanza, WAL, first full backup, restore canary | Merged source | NOT_RUN | Review and Completion | pending |
+| HOME activation | 10 | W8 | Stanza, `check`, first full backup, exporters, scrape, restore canary | Merged `2e484a940`; HOME 2026-10-08 | PASS | W8 HOME Activation | accepted |
+| HOME PITR and R2 restore | 10 | W8 | Restore to a chosen time; offsite copy restore | No approved target | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-W5–W7 are complete in source and isolation. HOME preflight is a recorded
-failure from the private `.env` format, not from this change; its replacement
-check passed. W8 waits for the merge so HOME runs the reviewed source, in the
-RUN-0021 order: repository root ownership, `stanza-create` with archiving off,
-recreation with `archive_mode=on`, `check`, first full backup, then the
-isolated restore canary. PITR on HOME and offsite (R2) restore stay
-`NOT_RUN` until recorded here.
+W5–W8 are complete. HOME now archives DEV WAL to the `dev` stanza, holds a
+first full backup that restored into an isolated volume, and scrapes both DEV
+exporters through monitor accounts. HOME preflight is a recorded failure from
+the private `.env` format, not from this change; its replacement check passed.
+PITR on HOME and offsite (R2) restore stay `NOT_RUN`.
 
 ## Related Documents
 
