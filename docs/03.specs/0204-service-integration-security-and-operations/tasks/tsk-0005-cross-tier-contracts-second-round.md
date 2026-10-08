@@ -126,7 +126,14 @@ capture only. Commit `841bf4eb6`.
 
 ### W12 Validation and Handoff
 
-Pending.
+The changed-profile local gate ran in a throwaway worktree holding the
+branch diff against `670b39e53` as staged changes, with the checkout's group
+write bits cleared. It selected the docs-traceability, supply-chain fixture,
+conftest, Compose baseline and repository integrity leaves and exited 0
+(689 tests, including the four new ones). Its 23 skips are the opt-in Docker
+rehearsals; the backup rehearsal covers pgBackRest and Restic round trips,
+not the Valkey export, so it was not run for this change.
+`pre-commit run --from-ref origin/main --to-ref HEAD` exited 0.
 
 ## Evidence
 
@@ -137,7 +144,7 @@ Pending.
 | Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `abcc1d7a7` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
 | Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `e1ee268b0` | PASS | W10 Secret File Support Matrix | accepted |
 | Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `841bf4eb6` | PASS | W11 Image Residue and Mail Outcomes | accepted |
-| Validation | 8 | W12 | Changed gate | Pending | NOT_RUN | W12 Validation and Handoff | pending |
+| Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `8dc35b198` | PASS | W12 Validation and Handoff | accepted |
 
 ## Review and Completion
 
