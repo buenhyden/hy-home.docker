@@ -159,6 +159,20 @@ else
     status=1
 fi
 
+# dev-valkey holds DEV queues and caches; the same bounded RDB export gives a
+# point-in-time snapshot, and a DEV that is not running is not a backup failure.
+if running dev-valkey; then
+    docker exec dev-valkey sh -c \
+        'REDISCLI_AUTH="$(tr -d "\n" </run/secrets/dev_valkey_admin_password)" timeout 300 valkey-cli --no-auth-warning --user devadmin --rdb -' \
+        >"$staging/dev-valkey.rdb" || {
+        echo "dev-valkey RDB export failed or timed out; export dropped" >&2
+        rm -f "$staging/dev-valkey.rdb"
+        status=1
+    }
+else
+    echo "dev-valkey not running: RDB export skipped"
+fi
+
 "${compose[@]}" run --rm --no-deps backup-sqlite-export || status=1
 
 # SeaweedFS: needles are append-only, so filer metadata saved before Restic
