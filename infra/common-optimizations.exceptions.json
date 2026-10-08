@@ -16,7 +16,8 @@
     "mem_limit": "a memory limit is set",
     "secrets_group": "group_add carries SECRETS_GID exactly when the service reads a Docker secret or a bind under a secrets directory",
     "init": "init is true so a signal-forwarding init reaps child processes",
-    "gpu": "a GPU device reservation needs an exception naming the service"
+    "gpu": "a GPU device reservation needs an exception naming the service",
+    "pids_limit": "a PID limit is set (template tier budget or leaf override)"
   },
   "exceptions": [
     {

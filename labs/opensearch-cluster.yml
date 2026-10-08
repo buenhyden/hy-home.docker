@@ -44,6 +44,9 @@ x-lab-node-environment: &lab-node-environment
   plugins.security.allow_unsafe_democertificates: 'false'
 
 x-lab-node: &lab-node
+  # JVM search and transport pools reached about 420 threads per node in the
+  # LAB; the DB template's 1024 leaves too little headroom (initial budget).
+  pids_limit: 2048
   profiles: [opensearch-cluster]
   extends:
     file: ../infra/common-optimizations.yml

@@ -24,13 +24,17 @@ x-healthcheck-dev: &healthcheck-dev
   retries: 3
   start_period: 5s
 
+# pids_limit values are initial budgets (SPEC-0218): about four times the
+# highest idle count measured in each tier on 2026-10-09, not load-tested optima.
 x-resource-dev-tiny: &resource-dev-tiny
   cpus: "0.10"
   mem_limit: 64m
+  pids_limit: 128
 
 x-resource-dev-small: &resource-dev-small
   cpus: "0.20"
   mem_limit: 128m
+  pids_limit: 128
 
 x-restart-default: &restart-default
   restart: unless-stopped
@@ -51,22 +55,27 @@ x-service-readonly: &service-readonly
 x-resource-low: &resource-low
   cpus: "0.50"
   mem_limit: 256m
+  pids_limit: 256
 
 x-resource-med: &resource-med
   cpus: "1.00"
   mem_limit: 512m
+  pids_limit: 512
 
 x-resource-obs-high: &resource-obs-high
   cpus: "1.50"
   mem_limit: 1g
+  pids_limit: 1024
 
 x-resource-high: &resource-high
   cpus: "2.00"
   mem_limit: 2g
+  pids_limit: 1024
 
 x-resource-db: &resource-db
   cpus: "2.00"
   mem_limit: 2g
+  pids_limit: 1024
 
 services:
   base-security:
@@ -156,6 +165,7 @@ services:
       - ALL
     cpus: "1.00"
     mem_limit: 512m
+    pids_limit: 512
     read_only: false
 
   template-stateful-db-high:
@@ -172,6 +182,7 @@ services:
       - ALL
     cpus: "2.00"
     mem_limit: 2g
+    pids_limit: 1024
     read_only: false
 
   template-dev-tiny:
