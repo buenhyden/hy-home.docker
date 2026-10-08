@@ -614,7 +614,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertIn("github/codeql-action/upload-sarif@", security_steps[4]["uses"])
         self.assertEqual(
-            "pre-commit==4.6.1\ncommitizen==4.15.1\n",
+            "pre-commit==4.6.2\ncommitizen==4.15.1\n",
             (ROOT / "scripts/requirements-pre-commit.txt").read_text(encoding="utf-8"),
         )
 
