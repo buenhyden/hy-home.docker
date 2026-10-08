@@ -109,8 +109,9 @@ services:
     read_only: false
 
   template-stateful-ai-high:
-    restart: unless-stopped
-    logging: *default-logging
+    # GPU services keep the security base; an exact-image GPU run with it
+    # loaded a model onto CUDA (SPEC-0218).
+    <<: [*service-defaults]
     read_only: false
 
   template-job-low:

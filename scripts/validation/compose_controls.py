@@ -98,7 +98,11 @@ def deviations(service: dict, secret_roots: tuple[str, ...]) -> dict[str, object
     devices = ((service.get("deploy") or {}).get("resources") or {}).get(
         "reservations", {}
     ).get("devices") or []
-    if any("gpu" in (device.get("capabilities") or []) for device in devices):
+    if (
+        any("gpu" in (device.get("capabilities") or []) for device in devices)
+        or service.get("gpus")
+        or service.get("runtime") == "nvidia"
+    ):
         found["gpu"] = "reserved"
     return found
 

@@ -588,6 +588,20 @@ class ComposeControlsTests(unittest.TestCase):
             self.module.deviations({**COMPLIANT, "secrets": [{}]}, ())["secrets_group"],
         )
 
+    def test_every_gpu_grant_form_is_seen(self) -> None:
+        reservation = {
+            "deploy": {
+                "resources": {"reservations": {"devices": [{"capabilities": ["gpu"]}]}}
+            }
+        }
+        for grant in (reservation, {"gpus": [{"count": -1}]}, {"runtime": "nvidia"}):
+            with self.subTest(grant=grant):
+                self.assertEqual(
+                    "reserved",
+                    self.module.deviations({**COMPLIANT, **grant}, ())["gpu"],
+                )
+        self.assertNotIn("gpu", self.module.deviations(dict(COMPLIANT), ()))
+
     def test_the_gate_entrypoint_runs_this_validator(self) -> None:
         script = TEMPLATE_SECURITY.read_text(encoding="utf-8")
         self.assertIn("scripts/validation/compose_controls.py", script)
