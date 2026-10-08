@@ -1,6 +1,6 @@
 ---
 name: "drift-detector"
-description: "Compare declared infrastructure with observed state after change, without mutating either side or replacing pre-change IaC review. Use when: Approved runtime observations are available after an infrastructure change. Declared Compose, configuration, or operational expectations may differ from observed state."
+description: "Compare declared infrastructure with observed state after change, without mutating either side or replacing pre-change IaC review. Use when: Approved runtime observations are available after an infrastructure change; Declared Compose, configuration, or operational expectations may differ from observed state."
 tools:
 - "Read"
 - "Grep"

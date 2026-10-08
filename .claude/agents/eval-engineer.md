@@ -1,6 +1,6 @@
 ---
 name: "eval-engineer"
-description: "Own representative datasets, scorers, calibration, thresholds, and regression history for agent and governance outcomes. Use when: A semantic behavior, routing decision, or audit maturity claim needs measured evidence. A model, prompt, role, or harness change requires comparison against a stable baseline."
+description: "Own representative datasets, scorers, calibration, thresholds, and regression history for agent and governance outcomes. Use when: A semantic behavior, routing decision, or audit maturity claim needs measured evidence; A model, prompt, role, or harness change requires comparison against a stable baseline."
 tools:
 - "Read"
 - "Grep"

@@ -149,11 +149,16 @@ def _description(role: RoleRecord) -> str:
 
     text = role.source_text
     overview = re.search(r"^## Overview\n\n(.+?)(?:\n\n|\Z)", text, re.M | re.S)
-    use_when = re.search(r"^### Use When\n\n((?:- .+\n?)+)", text, re.M)
+    use_when = re.search(r"^### Use When\n\n(.+?)(?:\n\n|\Z)", text, re.M | re.S)
     if overview is None or use_when is None:
         raise ValueError(f"role lacks Overview or Use When: {role.source_path}")
-    cases = (line[2:].strip() for line in use_when.group(1).splitlines())
-    return f"{' '.join(overview.group(1).split())} Use when: {' '.join(cases)}"
+    # A bullet may wrap onto indented continuation lines.
+    cases = [
+        " ".join(case.split()).rstrip(".")
+        for case in re.split(r"^- ", use_when.group(1), flags=re.M)
+        if case.strip()
+    ]
+    return f"{' '.join(overview.group(1).split())} Use when: {'; '.join(cases)}."
 
 
 def _yaml_scalar(value: str) -> str:

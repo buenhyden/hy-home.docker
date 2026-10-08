@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import json
+import pathlib
 import subprocess
 import sys
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -54,21 +57,50 @@ class ValidatorEntrypointTests(unittest.TestCase):
                 )
                 self.assertEqual(0, completed.returncode, completed.stderr)
 
-    def test_claude_agent_descriptions_carry_role_routing_text(self) -> None:
+    def test_agent_descriptions_carry_role_routing_text(self) -> None:
         for role in sorted((ROOT / ".agents/roles").glob("*.md")):
             with self.subTest(role=role.stem):
                 source = role.read_text(encoding="utf-8")
                 overview = source.split("## Overview\n\n", 1)[1].split("\n\n", 1)[0]
-                agent = (ROOT / ".claude/agents" / role.name).read_text(
+                use_when = source.split("### Use When\n\n", 1)[1].split("\n\n", 1)[0]
+                claude = (ROOT / ".claude/agents" / role.name).read_text(
                     encoding="utf-8"
                 )
-                description = next(
-                    line
-                    for line in agent.splitlines()
-                    if line.startswith("description: ")
+                codex = (ROOT / ".codex/agents" / f"{role.stem}.toml").read_text(
+                    encoding="utf-8"
                 )
-                self.assertIn(" ".join(overview.split()), description)
-                self.assertIn("Use when: ", description)
+                descriptions = (
+                    json.loads(claude.split("\ndescription: ", 1)[1].split("\n", 1)[0]),
+                    tomllib.loads(codex)["description"],
+                )
+                for description in descriptions:
+                    self.assertIn(" ".join(overview.split()), description)
+                    for case in use_when.split("\n- "):
+                        case = " ".join(case.removeprefix("- ").split()).rstrip(".")
+                        self.assertIn(case, description)
+
+    def test_agent_description_keeps_wrapped_use_when_bullets(self) -> None:
+        from scripts.operations import provider_surface_renderer as renderer
+
+        text = (
+            "# r\n\n## Overview\n\nDo the work.\n\n### Use When\n\n"
+            "- First case wraps\n  onto a second line.\n- Second case.\n\n## Next\n"
+        )
+        role = renderer.RoleRecord(
+            agent_id="r",
+            scope="common",
+            tier="worker",
+            work_profile="adversarial-review",
+            permission_profile="read-only",
+            tool_profile="inspection",
+            skill_ids=(),
+            source_path=pathlib.PurePosixPath(".agents/roles/r.md"),
+            source_text=text,
+        )
+        self.assertEqual(
+            "Do the work. Use when: First case wraps onto a second line; Second case.",
+            renderer._description(role),
+        )
 
     def test_ci_gate_adapter_rejects_unadmitted_commands(self) -> None:
         completed = subprocess.run(
