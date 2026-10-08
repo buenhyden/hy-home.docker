@@ -353,6 +353,27 @@ class LifecycleTests(unittest.TestCase):
                 self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
                 self.assertEqual(outcome, self.ledger()["outcome"])
 
+    def test_run_stops_a_project_whose_start_failed_or_was_cancelled(self) -> None:
+        # `up -d` can exit non-zero after starting some services.
+        self.compose_rc = 1
+        self.assertEqual(1, self.run_job(0))
+        self.compose_rc = 0
+        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual("start_failed", self.ledger()["outcome"])
+        original = self.fake_run
+
+        def cancelled_up(command, **kwargs):
+            if command[-2:] == ["up", "-d"]:
+                self.calls.append(command)
+                raise KeyboardInterrupt
+            return original(command, **kwargs)
+
+        self.calls.clear()
+        with mock.patch.object(self, "fake_run", side_effect=cancelled_up):
+            self.assertEqual(130, self.run_job(0))
+        self.assertEqual(["down", "--timeout", "30"], self.calls[-1][-3:])
+        self.assertEqual("cancelled", self.ledger()["outcome"])
+
     def test_run_refuses_a_deadline_beyond_the_lease_or_no_single_job(self) -> None:
         self.assertEqual(2, self.run_job(0, deadline="2h"))
         self.assertFalse(self.started())

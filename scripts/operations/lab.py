@@ -375,7 +375,10 @@ def supervise(docker: str, project: str, deadline: int, grace: int) -> tuple[str
             outcome, code = "deadline_exceeded", 124
         except KeyboardInterrupt:
             outcome, code = "cancelled", 130
-        run([docker, "stop", "--time", str(grace), jobs[0]], timeout=grace + 30)
+        try:
+            run([docker, "stop", "--time", str(grace), jobs[0]], timeout=grace + 30)
+        except subprocess.TimeoutExpired:
+            pass  # the caller's `down` still removes the project
         return outcome, code
     finally:
         signal.signal(signal.SIGTERM, previous)
@@ -390,28 +393,39 @@ def cmd_run(args, env) -> int:
     deadline_seconds = int(deadline[1]) * seconds[deadline[2]]
     if deadline_seconds > int(lease[1]) * seconds[lease[2]] or args.grace < 1:
         raise LabError("the deadline must fit inside the lease")
-    code = cmd_up(args, env, wait=False)
-    if code != 0:
-        return code
     target = ledger_dir(env) / f"{args.lab}.json"
-    entry = json.loads(target.read_text(encoding="utf-8"))
+    before = target.stat().st_mtime_ns if target.exists() else None
     outcome, code = "failed", 1
+    # Installed before anything starts, so a SIGTERM during `up` still stops
+    # the project below instead of leaving it unsupervised.
+    previous = signal.signal(signal.SIGTERM, _cancel)
     try:
-        outcome, code = supervise(
-            args.docker, entry["project"], deadline_seconds, args.grace
-        )
-    finally:
-        stopped = stop(args, env, args.lab)
-        entry = json.loads(target.read_text(encoding="utf-8"))
-        entry.update(
-            outcome=outcome, job_exit_code=code, deadline_seconds=deadline_seconds
-        )
-        write_entry(target, entry)
-        print(
-            json.dumps(
-                {k: entry[k] for k in ("lab", "state", "outcome", "job_exit_code")}
+        code = cmd_up(args, env, wait=False)
+        if code == 0:
+            entry = json.loads(target.read_text(encoding="utf-8"))
+            outcome, code = supervise(
+                args.docker, entry["project"], deadline_seconds, args.grace
             )
-        )
+        else:
+            outcome = "start_failed"
+    except KeyboardInterrupt:
+        outcome, code = "cancelled", 130
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+        # Stop only a project this call recorded; a refused start writes none.
+        started = target.exists() and target.stat().st_mtime_ns != before
+        stopped = stop(args, env, args.lab) if started else 0
+        if started:
+            entry = json.loads(target.read_text(encoding="utf-8"))
+            entry.update(
+                outcome=outcome, job_exit_code=code, deadline_seconds=deadline_seconds
+            )
+            write_entry(target, entry)
+            print(
+                json.dumps(
+                    {k: entry[k] for k in ("lab", "state", "outcome", "job_exit_code")}
+                )
+            )
     return code or stopped
 
 
