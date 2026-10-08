@@ -62,7 +62,7 @@ services:
     container_name: lab-pg-etcd-1
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-1
@@ -103,7 +103,7 @@ services:
     container_name: lab-pg-etcd-2
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-2
@@ -144,7 +144,7 @@ services:
     container_name: lab-pg-etcd-3
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     command:
       - /usr/local/bin/etcd
       - --name=etcd-3
@@ -184,7 +184,7 @@ services:
     image: haproxy:3.4.4
     container_name: lab-pg-pg-router
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -248,7 +248,7 @@ services:
     image: postgres:18.6-alpine
     container_name: lab-pg-pg-cluster-init
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     environment:
       POSTGRES_ROUTER_HOSTNAME: pg-router
       POSTGRES_WRITE_PORT: 15432
@@ -314,7 +314,7 @@ services:
       - SETUID
     hostname: pg-0
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -364,7 +364,7 @@ services:
       - SETUID
     hostname: pg-1
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -414,7 +414,7 @@ services:
       - SETUID
     hostname: pg-2
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/bin/spilo-entrypoint-with-secrets.sh' ]
     environment:
       <<: *pg-common-env
@@ -457,7 +457,7 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-0-exporter
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -494,7 +494,7 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-1-exporter
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -531,7 +531,7 @@ services:
     image: prometheuscommunity/postgres-exporter:v0.20.1
     container_name: lab-pg-pg-2-exporter
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp

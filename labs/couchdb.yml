@@ -64,7 +64,7 @@ services:
       - SETGID
       - SETUID
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     # LAB access is loopback only; HOME Traefik does not route LABs (SPEC-0215).
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}:5984'
@@ -108,7 +108,7 @@ services:
       - SETGID
       - SETUID
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: false
     environment:
       - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
@@ -149,7 +149,7 @@ services:
       - SETGID
       - SETUID
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: false
     environment:
       - COUCHDB_USER=${LAB_COUCHDB_USERNAME}
@@ -187,7 +187,7 @@ services:
     image: curlimages/curl:8.22.0
     container_name: lab-couchdb-couchdb-cluster-init
     group_add:
-      - '${SECRETS_GID:-1000}'
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
