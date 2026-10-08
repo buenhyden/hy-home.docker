@@ -129,6 +129,18 @@ check, because its volume records point at an earlier scratch data root.
 That is the W8 guard working. Removing those records with `docker volume rm`
 was denied to this session, so the rerun used the recorded data root.
 
+### Validation
+
+The changed-profile local gate ran in a throwaway worktree holding the
+branch diff against `f88eb6601` as staged changes, because the local gate
+selects only uncommitted paths. Its first run failed three tests: two
+permission tests failed only because that checkout was made under umask 002,
+and `test_lab_credential_argv` still required the retired exporter's
+`MONGODB_PASSWORD`. The second run failed on the LAB public key count, which
+the retirement had lowered, and showed that `LAB_READY_TIMEOUT_SECONDS` was
+not declared. After commits `d341b75c8` and `137650df8` the gate exited 0
+(161 tests). `pre-commit run --from-ref origin/main --to-ref HEAD` exited 0.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -137,6 +149,7 @@ was denied to this session, so the rerun used the recorded data root.
 | Inventory and selection tests | 6 | W6 | New tests RED then GREEN; changed-profile gate | `5a16f1844` | PASS | W6 Inventory, Cluster ID, Observability and Selection Tests | accepted |
 | Disposition columns | 4 | W7 | Policy text; HOME selection test; link and metadata checks | `add4cc598` | PASS | W7 Disposition Columns | accepted |
 | HOME residue audit | 5 | W8 | Read-only `docker ps`, restart policies, systemd units, crontab | HOME host 2026-10-08 | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
+| Local gate | 6 | W6 | Changed-profile gate in a clean worktree; pre-commit over the range | `137650df8` | PASS | Validation | accepted |
 | Real LAB runs | 7 | W8 | `lab.py up`, probe, `down`, leftover count for six LABs | Synthetic roots; `231e070ac` | PASS | W8 HOME Residue Audit and Real LAB Runs | accepted |
 | OpenSearch LAB run | 7 | W8 | `lab.py up`, cluster health, `down`, leftover count | Synthetic roots; host disk 90% | FAIL | W8 HOME Residue Audit and Real LAB Runs | pending |
 
