@@ -292,6 +292,12 @@ services:
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: n8n-valkey-exporter
     hostname: n8n-valkey-exporter
+    healthcheck:
+      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9121/metrics' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     read_only: true
     networks:
       n8n_net: {}

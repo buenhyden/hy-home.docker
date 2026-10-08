@@ -237,6 +237,12 @@ services:
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}:8081'
     hostname: mongo-express
+    healthcheck:
+      test: [ 'CMD', 'nc', '-z', '127.0.0.1', '8081' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     read_only: true
     tmpfs:

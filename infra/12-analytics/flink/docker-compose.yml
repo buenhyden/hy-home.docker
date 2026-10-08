@@ -95,6 +95,12 @@ services:
     mem_limit: 2g
     container_name: flink-taskmanager
     hostname: flink-taskmanager
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -fsS http://flink-jobmanager:8081/taskmanagers | grep -q "\"id\""' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     command:
       - /opt/flink/bin/taskmanager.sh
       - start-foreground
