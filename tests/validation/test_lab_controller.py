@@ -126,6 +126,43 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertIn("host port 127.0.0.1:5432 also in root", text)
         self.assertIn("data path /data/home overlaps root", text)
 
+    def test_lab_reusing_the_home_kafka_cluster_id_is_refused(self) -> None:
+        def kafka(project, container, cluster_id):
+            spec = service(container)
+            spec["environment"] = {"CLUSTER_ID": cluster_id}
+            return lab.footprint(model(project, {"broker": spec}))
+
+        home = kafka("hy-home-infra", "kafka-1", "home-kraft-id")
+        same = kafka("hy-home-lab-kafka", "lab-kafka-1", "home-kraft-id")
+        own = kafka("hy-home-lab-kafka", "lab-kafka-1", "lab-kraft-id")
+        text = "\n".join(lab.collisions({"kafka": same}, home, []))
+        self.assertIn("cluster_id home-kraft-id also in root", text)
+        self.assertEqual([], lab.collisions({"kafka": own}, home, []))
+
+    def test_a_kept_volume_for_another_data_root_is_refused(self) -> None:
+        rendered = model(
+            "hy-home-lab-x",
+            {"x": service("lab-x")},
+            volumes={
+                "v": {"name": "hy-home-lab-x_v", "driver_opts": {"device": "/new/v"}}
+            },
+        )
+        selected = {"x": lab.footprint(rendered)}
+
+        def inspect(device):
+            def fake(command, **kwargs):
+                self.assertEqual(subprocess.DEVNULL, kwargs.get("stdin"))
+                options = json.dumps({"device": device, "o": "bind"})
+                return subprocess.CompletedProcess(command, 0, options, "")
+
+            return fake
+
+        with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/old/v")):
+            text = "\n".join(lab.stale_volumes("docker", selected))
+        self.assertIn("docker volume rm hy-home-lab-x_v", text)
+        with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/new/v")):
+            self.assertEqual([], lab.stale_volumes("docker", selected))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
@@ -201,18 +238,29 @@ class LifecycleTests(unittest.TestCase):
             {"type": "volume", "source": "o"},
         ]
         self.compose_rc = 0
+        self.ready = [
+            {"Id": "node", "Name": "/lab-node",
+             "State": {"Status": "running", "Health": {"Status": "healthy"}}},
+            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 0}},
+        ]  # fmt: skip
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
 
     def fake_run(self, command, **kwargs):
         self.calls.append(command)
-        if command[-3:] == ["up", "-d", "--wait"]:
+        if command[-2:] == ["up", "-d"]:
             # The ledger must exist before anything starts.
             self.assertEqual("starting", self.ledger()["state"])
         if "config" in command:
             payload = self.rendered if "-f" in command else model("hy-home-infra", {})
             return subprocess.CompletedProcess(command, 0, json.dumps(payload), "")
+        if command[1:3] == ["ps", "--all"]:
+            # Readiness poll of the started project.
+            ids = "\n".join(record["Id"] for record in self.ready)
+            return subprocess.CompletedProcess(command, 0, ids, "")
+        if command[1] == "inspect":
+            return subprocess.CompletedProcess(command, 0, json.dumps(self.ready), "")
         if command[1] == "ps":
             return subprocess.CompletedProcess(command, 0, "", "")
         return subprocess.CompletedProcess(command, self.compose_rc, "", "boom")
@@ -249,11 +297,13 @@ class LifecycleTests(unittest.TestCase):
             entry["cleanup"]["paths"],
         )
         self.assertTrue((self.data / "cassandra").is_dir())
+        # Group-writable whatever the umask, for LAB processes in that group.
+        self.assertEqual(0o770, (self.data / "cassandra").stat().st_mode & 0o777)
         # Only paths under LAB_DATA_DIR are created.
         self.assertFalse(self.outside.exists())
-        up = self.calls[-1]
+        up = next(call for call in self.calls if call[-2:] == ["up", "-d"])
         self.assertEqual(["-p", "hy-home-lab-cassandra"], up[2:4])
-        self.assertEqual(["up", "-d", "--wait"], up[-3:])
+        self.assertEqual(["up", "-d"], up[-2:])
 
         self.assertEqual(0, self.main("down", "cassandra"))
         down = self.calls[-1]
@@ -262,6 +312,30 @@ class LifecycleTests(unittest.TestCase):
         self.assertNotIn("-f", down)
         self.assertFalse({"-v", "--volumes", "--rmi"} & set(down))
         self.assertEqual("stopped", self.ledger()["state"])
+
+    def test_up_waits_for_health_and_accepts_a_finished_init_job(self) -> None:
+        # compose `up --wait` fails when an init job exits 0; lab.py does not.
+        self.assertEqual(0, self.up())
+        self.assertEqual("running", self.ledger()["state"])
+        # A one-shot job that is still running is not ready yet.
+        self.ready = [
+            {"Id": "init", "Name": "/lab-init", "State": {"Status": "running"},
+             "HostConfig": {"RestartPolicy": {"Name": "no"}}},
+        ]  # fmt: skip
+        with (
+            mock.patch.object(lab.time, "sleep"),
+            mock.patch.dict(lab.os.environ, {"LAB_READY_TIMEOUT_SECONDS": "0"}),
+        ):
+            self.assertEqual(1, self.up())
+        for bad in (
+            {"Id": "init", "Name": "/lab-init", "State": {"Status": "exited", "ExitCode": 2}},
+            {"Id": "node", "Name": "/lab-node",
+             "State": {"Status": "running", "Health": {"Status": "unhealthy"}}},
+        ):  # fmt: skip
+            with self.subTest(state=bad["State"]):
+                self.ready = [bad]
+                self.assertEqual(1, self.up())
+                self.assertEqual("failed", self.ledger()["state"])
 
     def test_failed_start_and_stop_exit_non_zero(self) -> None:
         self.compose_rc = 1

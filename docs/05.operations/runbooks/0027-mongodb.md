@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set Triage Runbook"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -24,7 +24,7 @@ created: "2026-05-17"
 
 ### Overview
 
-> Scope: Triage MongoDB replica set health, init job results, Mongo Express route, and exporter readiness without destructive data actions.
+> Scope: Triage MongoDB replica set health, init job results, and the Mongo Express route without destructive data actions.
 
 이 런북은 현재 compose에 맞는 점검 순서와, 별도 승인 후 수행할 oplog-consistent dump의 격리 복원 rehearsal 계약을 제공한다. 이번 문서 변경에서 MongoDB data command는 실행하지 않았다.
 
@@ -36,12 +36,12 @@ MongoDB replica set의 현재 member 상태와 init job evidence를 수집하고
 
 - `mongodb-rep1` 또는 `mongodb-rep2`가 unhealthy, stopped, or missing 상태일 때
 - `mongo-init`가 replica set 초기화를 완료하지 못했거나 `rs.status()`가 실패할 때
-- `mongo-express` route 또는 `mongodb-exporter` readiness를 확인해야 할 때
+- `mongo-express` 접속을 확인해야 할 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
 ### Execution and stop boundary
 
-대상: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-exporter`, `mongodb-rep1`, `mongodb-rep2`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+대상: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-rep1`, `mongodb-rep2`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../guides/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
@@ -68,10 +68,10 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet
    ```
 
-2. key generator, replica member, init job, UI, exporter 상태를 확인한다.
+2. key generator, replica member, init job, UI 상태를 확인한다.
 
    ```bash
-   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express mongodb-exporter
+   docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps mongo-key-generator mongodb-rep1 mongodb-rep2 mongodb-arbiter mongo-init mongo-express
    ```
 
 3. init job과 replica nodes 로그를 확인한다.
@@ -100,20 +100,20 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=80 mongo-express
    ```
 
-현재 key/init/exporter 경로는 비밀값을 argv에 싣지 않도록 수정했다. 실제 key 생성·replica 결성·exporter 인증은 격리 실행 전까지 NOT_RUN이다. member name/state만 기록한다.
+현재 key/init 경로는 비밀값을 argv에 싣지 않는다. 실제 key 생성·replica 결성 결과는 SPEC-0215 TSK-0002의 LAB 실행 기록을 따른다. member name/state만 기록한다.
 
 ### Verification Steps
 
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml ps ...`에서 `mongodb-rep1`과 `mongodb-rep2`가 healthy 또는 running 상태인지 확인한다.
 - `rs.status()` member summary가 `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`를 포함하는지 확인한다.
-- `mongo-init`가 completed 상태인지, `mongodb-exporter`가 running 상태인지 확인한다.
+- `mongo-init`가 completed 상태인지 확인한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter mongodb-exporter`
+- **Logs**: `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb.yml logs --tail=120 mongo-init mongodb-rep1 mongodb-rep2 mongodb-arbiter`
 - **Replica evidence**: sanitized `rs.status()` member summary
 - **Route**: HOME gateway 경로 없음; Mongo Express loopback port만 게시 (SPEC-0215)
-- **Metrics**: `mongodb-exporter` exposed port `${LAB_MONGO_EXPORTER_PORT:-9216}`
+- **Metrics**: 이 LAB에는 exporter가 없다. 고정했던 exporter image가 존재하지 않았고, 현재 image에는 secret을 읽을 shell이 없으며, LAB은 HOME Prometheus에 수집되지 않아 소비자가 없었다(SPEC-0215).
 
 ### Safe Rollback or Recovery Procedure
 

@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.1.1"
+version: "2.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -36,11 +36,11 @@ created: "2026-05-10"
 | --- | --- |
 | Consumer와 data 근거 | 확인된 HOME consumer는 없음; LAB replica-set과 document-database 평가용. |
 | Source·update 책임 | [Compose](../../../labs/mongodb.yml)가 image source를 소유한다. dependency 자동화 제안은 호환성 검토가 필요하다. |
-| 서비스·profile | key generator, data member 2개, arbiter, init, UI, exporter; 정확한 profile은 `mongodb`. |
+| 서비스·profile | key generator, data member 2개, arbiter, init, UI; 정확한 profile은 `mongodb`. exporter는 소비자가 없어 퇴역했다(SPEC-0215). |
 | 흐름·의존성 | `mongo-init`이 `MyReplicaSet`을 생성한다. client는 두 data member에 접속하며 arbiter는 data 없이 투표한다. |
 | 노출·영속성 | Mongo Express만 loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시하고 HOME Traefik label은 없다. member는 내부에 둔다. data/key는 `${LAB_DATA_DIR}/mongodb/` bind에 저장한다. |
 | 환경 설정·secret | root/UI username은 환경 식별자이고 root/UI password는 Docker Secret이다. keyfile은 `mongo-key`에 생성한다. |
-| Health·자원 | member healthcheck, `rs.status()`, init/exporter log; data member는 `template-stateful-high`를 확장한다. |
+| Health·자원 | member healthcheck, `rs.status()`, init log; data member는 `template-stateful-high`를 확장한다. |
 | 보안 | 내부 keyfile 인증과 secret 기반 root/UI password를 사용한다. 같은 host의 topology는 DR이 아니다. |
 | Backup·upgrade | `mongodump --oplog`와 격리된 `--oplogReplay`를 사용한다. upgrade/제거 전에 tool/server 호환성과 restore evidence가 필요하다. |
 | License·edition | MongoDB Community에는 SSPL 조건이 적용된다. 이 topology는 Enterprise backup이나 관리 기능을 제공한다고 주장하지 않는다. |
@@ -55,7 +55,6 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 | `mongo-init` | replica initialization job; data node와 arbiter health 대기, membership mutation | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
 | `mongo-key-generator` | 내부 인증 key 생성/permission 변경 job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
 | `mongodb-arbiter` | 투표용 arbiter; data backup member 아님 | healthcheck 선언; replica 투표 기능 별도 확인 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
-| `mongodb-exporter` | Mongo metrics; password env와 credential-free URI | 자체 healthcheck 없음; process와 해당 기능/metrics 별도 확인 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
 | `mongodb-rep1` | data-bearing replica 1; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
 | `mongodb-rep2` | data-bearing replica 2; 각각 named data, shared internal key | ping; 인증/replica 상태 별도 | [선택·의존·접속·입력·mount](../../../labs/mongodb.yml) |
 
@@ -73,7 +72,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 ### Purpose
 
-MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express route, exporter 경계를 현재 compose와 맞춰 사용하도록 한다.
+MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express 접속 경계를 현재 compose와 맞춰 사용하도록 한다.
 
 ### Prerequisites
 
@@ -99,7 +98,7 @@ MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express rou
 
 - `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
 - keyfile은 `mongo-key-generator`가 `mongo-key` bind volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
-- `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`에 compose healthcheck가 있다. `mongo-init`, `mongo-express`, `mongodb-exporter`의 readiness는 logs와 dependency 상태로 확인한다.
+- `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`에 compose healthcheck가 있다. `mongo-init`, `mongo-express`의 readiness는 logs와 dependency 상태로 확인한다.
 - replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
 ### Common Checks

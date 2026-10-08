@@ -42,10 +42,15 @@ services:
     read_only: false
     restart: 'no'
     network_mode: none
+    # Root writes the key into the operator-owned bind and hands it to the
+    # mongodb user (999); only these capabilities are added back.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
     volumes:
       - mongo-key:/data/configdb:rw
+    # The image entrypoint switches to `mongodb` before any command, which
+    # needs SETUID; the key job does not need it.
+    entrypoint: [mongosh]
     command:
-      - mongosh
       - --nodb
       - --quiet
       - --norc
@@ -55,11 +60,12 @@ services:
         const path = '/data/configdb/mongodb.key';
         if (!fs.existsSync(path)) {
           fs.writeFileSync(path, require('crypto').randomBytes(384).toString('base64'), {mode: 0o400, flag: 'wx'});
+          fs.chownSync(path, 999, 999);
         }
         const stat = fs.lstatSync(path);
         const content = fs.readFileSync(path, 'utf8');
         const key = content.replace(/\s/g, '');
-        if (!stat.isFile() || process.getuid() !== 999 || stat.uid !== 999 ||
+        if (!stat.isFile() || stat.uid !== 999 ||
             (stat.mode & 0o400) === 0 || (stat.mode & 0o077) !== 0 ||
             !/^[A-Za-z0-9+/=]+$/.test(key) || key.length < 6 || key.length > 1024) {
           throw new Error('Invalid LAB MongoDB key file ownership, mode or format');
@@ -70,10 +76,14 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
     container_name: lab-mongodb-mongodb-rep1
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-rep1
     read_only: false
     environment:
@@ -104,10 +114,14 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
     container_name: lab-mongodb-mongodb-rep2
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-rep2
     read_only: false
     environment:
@@ -138,9 +152,13 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-low
+      service: template-stateful-db-med
     image: mongo:8.3.11-noble
     container_name: lab-mongodb-mongodb-arbiter
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-arbiter
     restart: unless-stopped
     read_only: false
@@ -187,6 +205,7 @@ services:
         condition: service_healthy
     environment:
       LAB_MONGODB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+      HOME: /tmp
     entrypoint: [ /bin/bash, -ec ]
     command:
       - |
@@ -194,7 +213,8 @@ services:
         [ -n "$$MONGO_ROOT_PASSWORD" ] || exit 1
         mongosh --host mongodb-rep1 --quiet --eval '
           const admin = db.getSiblingDB("admin");
-          if (admin.auth(process.env.LAB_MONGODB_ROOT_USERNAME, process.env.MONGO_ROOT_PASSWORD) !== 1) {
+          // mongosh returns { ok: 1 } (legacy shell returned 1) and throws on bad credentials.
+          if (admin.auth(process.env.LAB_MONGODB_ROOT_USERNAME, process.env.MONGO_ROOT_PASSWORD).ok !== 1) {
             throw new Error("LAB MongoDB authentication failed");
           }
           try { rs.status(); } catch (e) {
@@ -247,47 +267,13 @@ services:
       - lab_mongodb_root_password
       - lab_mongo_express_basicauth_password
 
-  mongodb-exporter:
-    labels:
-      <<: *tier-label
-    profiles:
-      - mongodb
-    extends:
-      file: ../infra/common-optimizations.yml
-      service: template-infra-low
-    image: percona/mongodb_exporter:2.37
-    container_name: lab-mongodb-mongodb-exporter
-    read_only: true
-    tmpfs:
-      - /tmp
-    expose:
-      - ${LAB_MONGO_EXPORTER_PORT:-9216}
-    entrypoint: [ '/bin/sh', '-c' ]
-    environment:
-      MONGODB_USER: ${LAB_MONGODB_ROOT_USERNAME}
-    command:
-      - |
-        export MONGODB_PASSWORD=$$(cat /run/secrets/lab_mongodb_root_password)
-        [ -n "$$MONGODB_PASSWORD" ] || exit 1
-        exec mongodb_exporter --mongodb.uri="mongodb://mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
-    depends_on:
-      mongo-init:
-        condition: service_completed_successfully
-    secrets:
-      - lab_mongodb_root_password
-    networks:
-      lab_mongodb_core_net: {}
-      lab_mongodb_obs_net: {}
-
 networks:
   lab_mongodb_core_net:
     name: ${LAB_MONGODB_CORE_NETWORK_NAME:-hy-home-lab-mongodb-core}
     internal: true
   lab_mongodb_edge_net:
     name: ${LAB_MONGODB_EDGE_NETWORK_NAME:-hy-home-lab-mongodb-edge}
-  lab_mongodb_obs_net:
-    name: ${LAB_MONGODB_OBS_NETWORK_NAME:-hy-home-lab-mongodb-obs}
-    internal: true
+
 secrets:
   lab_mongodb_root_password:
     file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/root_password.txt

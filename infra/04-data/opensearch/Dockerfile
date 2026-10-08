@@ -4,7 +4,7 @@
 
 FROM opensearchproject/opensearch:3.8.0
 
-LABEL version="0.1" description="OpenSearch 3.5 with custom plugins and secret-based internal users injection"
+LABEL version="0.1" description="OpenSearch 3.8 with custom plugins and secret-based internal users injection"
 
 SHELL ["/bin/bash", "-c"]
 
@@ -21,8 +21,10 @@ RUN /usr/share/opensearch/bin/opensearch-plugin install --batch \
   mapper-murmur3 \
   mapper-size
 
+# The exporter release must equal the OpenSearch base version, or the
+# install fails; update both together.
 RUN /usr/share/opensearch/bin/opensearch-plugin install \
-  https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.5.0.0/prometheus-exporter-3.5.0.0.zip
+  https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/download/3.8.0.0/prometheus-exporter-3.8.0.0.zip
 
 
 COPY ./opensearch/opensearch-entrypoint.sh /usr/local/bin/opensearch-entrypoint.sh

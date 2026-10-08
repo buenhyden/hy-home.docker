@@ -1,6 +1,6 @@
 ---
 title: "LAB Isolation and Service Selection Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
@@ -28,6 +28,10 @@ one commit.
 | W2 | 2, 3 | LAB boundaries and the lease controller | W1 | TSK-0001 | Task evidence |
 | W3 | 4 | Budget, selection and disposition rules | W2 | TSK-0001 | Task evidence |
 | W4 | 4, 5 | HA wording, LAB guides and final validation | W3 | TSK-0001 | Task evidence |
+| W5 | 6 | Retire the MongoDB LAB exporter that never ran | W4 | TSK-0002 | Task evidence |
+| W6 | 6 | LAB inventory, cluster ID, observability and selection checks | W4 | TSK-0002 | Task evidence |
+| W7 | 4 | Disposition cost, retained data and retirement columns | W3 | TSK-0002 | Task evidence |
+| W8 | 5, 7 | HOME residue audit and real LAB runs on the HOME host | W5, W6 | TSK-0002 | Task evidence |
 
 ## Verification Plan
 
@@ -49,3 +53,4 @@ LAB service.
 
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-lab-isolation-and-service-selection.md)
+- [Closure and HOME LAB run Task](tasks/tsk-0002-lab-closure-and-home-runs.md)

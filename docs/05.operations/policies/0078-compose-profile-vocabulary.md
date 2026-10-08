@@ -1,6 +1,6 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.12.0"
+version: "1.12.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -91,7 +91,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `messaging-schema` | role | Kafka schema registry | `kafka-1`, `schema-registry` | No | normal service startup | current |
 | `mlops` | capability | MLflow 추적 서버와 feature 소유 DB·bucket 준비 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
 | `mng` | role | HOME 관리 DB·공유 broker·exporter | `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter` | No | initialization: mng-pg-init | current |
-| `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter` | No | initialization: mongo-key-generator, mongo-init | current |
+| `mongodb` | topology | 독립 LAB MongoDB replica set과 초기화·관리 UI | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` | No | initialization: mongo-key-generator, mongo-init | current |
 | `nginx` | topology | Traefik 대체 gateway; 기본 ingress port 중복 금지 | `nginx`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` | No | initialization: seaweedfs-buckets | current |
 | `notebook` | capability | Open Notebook과 SurrealDB 저장소 | `surrealdb`, `open_notebook` | No | normal service startup | current |
 | `obs` | domain | 전체 관측 기능; HOME에 필요한 하위 선택만 권장 | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway` | No | initialization: seaweedfs-buckets, grafana-db-provision | current |
@@ -220,31 +220,40 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 
 ### Optional service disposition
 
-2026-10-08 host 관찰은 `docker ps`의 `hy-home-infra` 서비스 목록 한 번이며 이후
-상태를 보장하지 않는다. "미실행"은 그 시점 관찰이다.
+2026-10-08 host 관찰은 `docker ps`의 `hy-home-infra` 서비스 목록이며 이후 상태를
+보장하지 않는다. "미실행"은 그 시점 관찰이다. 비용은 `.env.example`로 렌더링한 root의
+선언 상한(CPU 합계 / 메모리 MiB 합계)이며 측정값이 아니다. 보존 데이터는 그 그룹의
+named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 
-| Service group | Role | Consumer | Decision | Host 2026-10-08 |
-| --- | --- | --- | --- | --- |
-| Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | HOME 유지 | 실행 |
-| Dozzle | 실시간 container 로그 UI | 운영자 | OPTIONAL `admin`; 상주는 소유자 선택 | 실행 |
-| OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | OPTIONAL on-demand; 상주하지 않음 | 미실행 |
-| Airflow | 예약 batch DAG | DAG, Flower | HOME 유지 | 실행 |
-| n8n | 이벤트·webhook 통합 | workflow | HOME 유지 | 실행 |
-| Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | DEV on-demand | 미실행 |
-| Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | OPTIONAL; 보존 | 미실행 |
-| Kafka `kafka-1`, Schema Registry, Connect, REST Proxy, kafbat UI | 메시징·CDC | Debezium Avro connector, kafbat | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | 실행 |
-| Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | OPTIONAL on-demand; one-shot·예산 검사 | 미실행 |
-| Superset | BI | 운영자 | OPTIONAL `bi` | 미실행 |
-| Neo4j | graph | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
-| Supabase (11 services) | BaaS 실험 | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
-| RedisInsight | Valkey UI | 운영자 | OPTIONAL `admin` | 실행 |
-| Terrakube | IaC server | 운영자 | DEV; 상주 금지 | 미실행 |
-| JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | OPTIONAL | 미실행 |
-| Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
-| Crawl4AI | crawling API | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 미실행 |
-| ComfyUI | GPU 이미지 생성 | HOME `ai-image` | HOME 유지; GPU를 Ollama와 공유 | 실행 |
-| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | OPTIONAL | 미실행 |
-| `labs/*.yml` 8개 | HA·replica·부하 실습 | 실습 목적별 | LAB; `lab.py`로만 실행 | `hy-home-lab-*` project 없음 |
+| Service group | Role | Consumer | 비용(CPU / MiB) | 보존 데이터 | Decision | 퇴역 조건 | Host 2026-10-08 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Traefik | 기본 ingress·TLS·ForwardAuth | 모든 routed UI | 1 / 512 | 없음(설정은 Git) | HOME 유지 | 대체하지 않음 | 실행 |
+| Nginx | 대체 gateway 실습 | 이름 있는 소비자 없음 | 0.5 / 256 | 없음 | OPTIONAL `nginx`; 80/443을 Traefik과 공유하므로 HOME 선택에 넣지 않음 | 실습 수요가 없으면 퇴역 검토 | 미실행 |
+| Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
+| Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
+| OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
+| Airflow | 예약 batch·backfill DAG | DAG, Flower | 11 / 9984 | `airflow-dags`·`-config`·`-plugins`·`-logs`, `airflow-valkey-data` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
+| n8n | 외부 이벤트·webhook·알림 | workflow | 6 / 5120 | `n8n-data`, task runner·Valkey volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
+| Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
+| Stalwart | 실제 메일 서버 | 이름 있는 소비자 없음 | 1.5 / 768 | `stalwart-data` | OPTIONAL; 보존 | 메일 수신 계획이 없으면 퇴역 검토 | 미실행 |
+| Kafka `kafka-1`, Schema Registry, Connect, REST Proxy, kafbat UI | 단일 broker 메시징·CDC | Debezium Avro connector, kafbat | 8 / 6144 | `kafka-1-data`, `kafka-connect-data` | OPTIONAL `messaging`·`cdc`; Avro 소비자가 있으므로 Schema Registry 유지 | CDC·메시징 소비자가 없어질 때 | 실행 |
+| Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`; 데이터는 object store | OPTIONAL on-demand; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
+| Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | OPTIONAL `bi` | 대시보드 소비자가 없을 때 | 미실행 |
+| Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |
+| Supabase (13 services) | BaaS 실험 | 이름 있는 소비자 없음 | 14.5 / 10496 | `${DEFAULT_DATA_DIR}/supabase` bind | OPTIONAL | BaaS 시나리오가 없으면 퇴역 검토 | 미실행 |
+| RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
+| Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | DEV; 상주 금지 | IaC 실습이 없을 때 | 미실행 |
+| JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | OPTIONAL | 실험 추적 수요가 없을 때 | 미실행 |
+| Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | OPTIONAL | 소비자가 없으면 퇴역 검토 | 미실행 |
+| Crawl4AI | crawling API | 없음 | 2 / 4096 | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 다음 검토까지 소비자가 없을 때 | 미실행 |
+| ComfyUI | GPU 이미지 생성 | HOME `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | HOME 유지; GPU를 Ollama와 공유 | 이미지 생성 수요가 없을 때 | 실행 |
+| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | OPTIONAL | 계약·SAST 소비자가 없을 때 | 미실행 |
+| `labs/*.yml` 8개 | HA·replica·부하 실습 | 실습 목적별 | LAB별 렌더 | `LAB_DATA_DIR` 아래 LAB별 경로 | LAB; `lab.py`로만 실행 | 실습 목적이 없어지면 해당 LAB 퇴역 | `hy-home-lab-*` project 없음 |
+
+LAB 안의 exporter(`pg-*-exporter`, `valkey-cluster-exporter`, `lab-kafka-exporter`)는 LAB
+내부 network에만 있으며 HOME Prometheus가 수집하지 않는다(`test_lab_isolation`). 실습 중
+`docker exec`로 직접 조회하는 용도다. 소비자도 실행 가능한 image도 없던 MongoDB LAB
+exporter는 퇴역했다(SPEC-0215).
 
 이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
 source·문서·secret을 함께 제거한다.

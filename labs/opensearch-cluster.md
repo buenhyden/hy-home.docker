@@ -1,6 +1,6 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.3"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -36,6 +36,8 @@ OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint
 | 노출 | 호스트 publish 포트와 Traefik 라우터 없음; API 9200, 모니터링 9600, Dashboards 5601은 내부 expose만 |
 | 비밀 | `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password`, `lab_opensearch_dashboard_password`, `lab_opensearch_exporter_password`, `lab_opensearch_security_cookie`; 정상 비밀을 재사용하지 않음 |
 | 인증서 | `${LAB_OPENSEARCH_CERT_DIR}`의 별도 CA/node 인증서를 읽기 전용 mount; 값이 없으면 정적 render도 실패 |
+| Project | `hy-home-lab-opensearch` |
+| Services | `opensearch-node1`, `opensearch-node2`, `opensearch-node3`, `lab-opensearch-dashboards` |
 | 인증 | LAB 노드는 내부 basic 인증만 구성하고, LAB Dashboards는 LAB 노드만 사용; 정상 Keycloak/OIDC와 게이트웨이 라우트를 사용하지 않음 |
 
 LAB Dashboard에는 검증용 `rootCA.pem`만 파일로 mount하고 node 개인키는
@@ -49,11 +51,13 @@ Dashboard는 정상 Dashboard 설정 파일을 mount하지 않으며 LAB backend
 LAB node healthcheck는 Docker secret을 curl 설정 stdin으로 전달하며, 비밀번호를
 명령 인자에 넣지 않습니다. Node 시작 스크립트는 Bash 단일 인자로 렌더합니다.
 
-현재 Dockerfile은 OpenSearch 기본 이미지와 exporter plugin의 선언 버전 호환성이 검증되지 않아
-이미지 빌드 호환성은 해결되지 않았습니다. LAB 인증서의 SAN, node DN,
-서로의 신뢰, 관리자 DN, Dashboards 인증 및 클러스터 결성도 실제 검증 전입니다.
-따라서 소스 분리의 정적 검사를 통과해도 LAB 기동·건강·복구는 `NOT_RUN`이고
-runtime 승인은 막혀 있습니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
+exporter plugin은 OpenSearch 기본 이미지와 같은 `3.8.0.0`이어야 이미지가 빌드됩니다.
+node 인증서 subject는 `CN=opensearch-node*`에 맞아야 합니다(`plugins.security.nodes_dn`).
+LAB 인증서가 IP SAN만 가질 수 있어 transport hostname 검증은 끕니다.
+SPEC-0215 TSK-0002에서 세 노드가 결성되고 cluster manager를 선출한 것까지 확인했습니다.
+하지만 HOME 디스크 사용률이 90%로 OpenSearch high disk watermark에 걸려
+`.opendistro_security` primary shard를 배치하지 못했고, 건강 상태는 `BLOCKED`입니다.
+watermark를 끄지 않고 디스크 여유를 먼저 확보해야 합니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
 데이터와 별도로 승인받아야 합니다.
 
 ## Usage
@@ -80,7 +84,7 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 
 ## Bind State Ownership
 
-`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 1000 (`opensearch`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. SPEC-0215에서 이 LAB의 bind 상태 기동은 실제로 검증하지 못했다(MongoDB는 exporter image 고정값이 존재하지 않아 기동 전 실패). 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
+`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 1000 (`opensearch`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
 ## Related Documents
 

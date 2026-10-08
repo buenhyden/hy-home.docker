@@ -1277,28 +1277,6 @@
       ]
     },
     {
-      "component": "Compose image: percona/mongodb_exporter",
-      "tier": "04-data",
-      "classification": "external",
-      "repository_classifications": {
-        "percona/mongodb_exporter": "external"
-      },
-      "images": [
-        "percona/mongodb_exporter:2.37"
-      ],
-      "compose_files": [
-        "labs/mongodb.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "labs/mongodb.yml",
-          "images": [
-            "percona/mongodb_exporter:2.37"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: postgrest/postgrest",
       "tier": "04-data",
       "classification": "external",

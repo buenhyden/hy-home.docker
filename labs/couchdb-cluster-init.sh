@@ -29,8 +29,25 @@ ensure_system_databases() {
   done
 }
 
-curl -fsS --config /tmp/couch-auth.conf "$base/_cluster_setup" > /tmp/couch-state.json
-if grep -Eq '"state"[[:space:]]*:[[:space:]]*"cluster_finished"' /tmp/couch-state.json; then
+# 409 means a node is already enabled or added, as after an interrupted run.
+setup() {
+  status=$(curl -sS --output /dev/null --write-out '%{http_code}' \
+    --config /tmp/couch-auth.conf -X POST -H 'Content-Type: application/json' \
+    --data-binary @/tmp/couch-request.json "$base/_cluster_setup")
+  case "$status" in
+    2??|409) : ;;
+    *) echo "LAB CouchDB cluster setup step failed (HTTP $status)" >&2; exit 1 ;;
+  esac
+}
+
+# Three cluster members is the finished state. `finish_cluster` is not used:
+# it fails while syncing admin hashes that each node salted differently, and
+# its other effect, the system databases, is done below.
+members() {
+  curl -fsS --config /tmp/couch-auth.conf "$base/_membership" |
+    grep -o '"cluster_nodes":\[[^]]*\]' | grep -o 'couchdb@' | wc -l
+}
+if [ "$(members)" -eq 3 ]; then
   ensure_system_databases
   echo 'LAB CouchDB cluster is already configured'
   exit 0
@@ -39,17 +56,16 @@ fi
 for node in 2 3; do
   printf '{"action":"enable_cluster","bind_address":"0.0.0.0","username":"%s","password":"%s","port":%s,"node_count":"3","remote_node":"couchdb@couchdb-%s.infra_net","remote_current_user":"%s","remote_current_password":"%s"}\n' \
     "$LAB_COUCHDB_USERNAME" "$password" "$COUCHDB_PORT" "$node" "$LAB_COUCHDB_USERNAME" "$password" > /tmp/couch-request.json
-  curl -fsS --config /tmp/couch-auth.conf -X POST -H 'Content-Type: application/json' \
-    --data-binary @/tmp/couch-request.json "$base/_cluster_setup" > /dev/null
+  setup
   printf '{"action":"add_node","host":"couchdb-%s.infra_net","port":%s,"username":"%s","password":"%s"}\n' \
     "$node" "$COUCHDB_PORT" "$LAB_COUCHDB_USERNAME" "$password" > /tmp/couch-request.json
-  curl -fsS --config /tmp/couch-auth.conf -X POST -H 'Content-Type: application/json' \
-    --data-binary @/tmp/couch-request.json "$base/_cluster_setup" > /dev/null
+  setup
 done
 
-printf '{"action":"finish_cluster"}\n' > /tmp/couch-request.json
-curl -fsS --config /tmp/couch-auth.conf -X POST -H 'Content-Type: application/json' \
-  --data-binary @/tmp/couch-request.json "$base/_cluster_setup" > /dev/null
+if [ "$(members)" -ne 3 ]; then
+  echo 'LAB CouchDB cluster did not reach three members' >&2
+  exit 1
+fi
 ensure_system_databases
-rm -f /tmp/couch-auth.conf /tmp/couch-request.json /tmp/couch-state.json
+rm -f /tmp/couch-auth.conf /tmp/couch-request.json
 printf '%s\n' 'LAB CouchDB cluster setup completed'

@@ -1,6 +1,6 @@
 ---
 title: "Kafka Cluster LAB"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -31,6 +31,11 @@ created: "2026-10-03"
 `kafka-cluster.yml`이 전체 LAB closure를 정의하고 이 문서가 사용·복구 경계를 소유한다.
 
 ## 상태와 접근 계약
+
+| Field | Evidence |
+| --- | --- |
+| Project | `hy-home-lab-kafka` |
+| Services | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-init`, `lab-kafka-exporter` |
 
 - 필수 `LAB_KAFKA_CLUSTER_ID`는 정상 `KAFKA_CLUSTER_ID`와 달라야 하며 KRaft 형식에 맞아야 합니다. 기존 cluster의 metadata·offset·broker 디렉터리를 재사용하지 않습니다.
 - broker별 bind 상태는 `${LAB_DATA_DIR}/kafka/{1,2,3}`이고 정상 `${DEFAULT_MESSAGE_BROKER_DIR}`와 분리합니다. 호스트 디렉터리를 미리 만들고 실제 UID/GID와 용량을 확인한 뒤에만 실행합니다.
