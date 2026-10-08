@@ -173,6 +173,12 @@ local changed gate did not select it. GDE-0100 and POL-0078 now bind them and
 the inventory was re-rendered with `render_service_inventory`; the local
 `check-operations-catalog.py` then passed.
 
+The rerun of run 37710173068 first failed on a `proxy.golang.org` 403 while
+installing a hook toolchain, then on commit-message schema: four commits had
+two body paragraphs where `.cz.toml` allows one. Their messages were joined
+into one paragraph with identical trees, `cz check` over the branch passed, and
+the hashes cited here were updated.
+
 An independent read-only review found no critical or important defect and
 five minor ones, all fixed: GDE-0021 still said `archive_mode=off`; GDE-0100
 lacked the stanza-first step for a new host; the runbook named no signal for a
@@ -186,8 +192,8 @@ omitted `chmod 0750`, which a read-only restore container would then fail on.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | HOME backup boundary | 10 | W8 | `pgbackrest info`/`check`; journal of `hyhome-backup.service` | HOME 2026-10-08 | PASS | HOME Observation | accepted |
 | Exporter accounts | 7 | W5 | Isolated monitor provision, exporter and ACL denial run | Label `s0213mon`, synthetic secrets | PASS | W5 Exporter Monitor Accounts | accepted |
-| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `7150c829b` | PASS | W5 Exporter Monitor Accounts | accepted |
-| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `5045bf7d1`; `.env.example` | PASS | W6 Data Path Guard | accepted |
+| Exporter unit tests | 7 | W5 | `test_dev_pg_provision`, `test_dev_valkey_acl`, `test_dev_data_boundary` | Commit `e5a813e3d` | PASS | W5 Exporter Monitor Accounts | accepted |
+| Data path guard | 8 | W6 | RED/GREEN overlap regression; `validate-docker-compose.sh` | Commit `6fbc3bf99`; `.env.example` | PASS | W6 Data Path Guard | accepted |
 | HOME preflight | 8 | W6 | `validate-docker-compose.sh --preflight` | HOME `.env` | FAIL | W6 Data Path Guard | rejected |
 | HOME resolved-path check | 8 | W6 | `report_storage_overlaps realpath` on the HOME model | HOME `.env` | PASS | W6 Data Path Guard | accepted |
 | WAL and PITR rehearsal | 9 | W7 | Isolated stanza, archive, full/diff backup, time restore | Label `s0213wal`, image `sha256:d2999910…` | PASS | W7 WAL Archive and PITR | accepted |
