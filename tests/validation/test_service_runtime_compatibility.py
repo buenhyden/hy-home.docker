@@ -244,6 +244,22 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         )
         self.assertTrue(lab["networks"]["lab_cassandra_core_net"]["internal"])
 
+    def test_no_active_compose_or_dockerfile_uses_a_bitnami_image(self):
+        # Bitnami stopped publishing free versioned images; a namespace swap
+        # alone would keep its env, UID and data path, so none may remain.
+        tracked = subprocess.run(
+            ["git", "ls-files", "--", "*docker-compose*.yml", "labs/*.yml",
+             "*Dockerfile", "infra/tech-stack.versions.json"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()  # fmt: skip
+        self.assertTrue(tracked)
+        offenders = [
+            path
+            for path in tracked
+            if re.search(r"\bbitnami/|/bitnami\b", (ROOT / path).read_text())
+        ]
+        self.assertEqual([], offenders)
+
 
 if __name__ == "__main__":
     unittest.main()
