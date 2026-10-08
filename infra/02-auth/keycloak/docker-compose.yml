@@ -46,6 +46,8 @@ services:
       - |
         KC_BOOTSTRAP_ADMIN_PASSWORD="$$(tr -d '\r\n' </run/secrets/keycloak_admin_password)"
         KC_DB_PASSWORD="$$(tr -d '\r\n' </run/secrets/keycloak_db_password)"
+        [ -n "$$KC_BOOTSTRAP_ADMIN_PASSWORD" ] || { echo 'keycloak_admin_password is empty' >&2; exit 1; }
+        [ -n "$$KC_DB_PASSWORD" ] || { echo 'keycloak_db_password is empty' >&2; exit 1; }
         export KC_BOOTSTRAP_ADMIN_PASSWORD
         export KC_DB_PASSWORD
         exec /opt/keycloak/bin/kc.sh start

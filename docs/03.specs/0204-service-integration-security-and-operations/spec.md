@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.0.4"
+version: "1.1.0"
 type: "sdlc/spec"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-06"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -221,6 +221,16 @@ those effects.
     Mailpit remains development capture; Stalwart distinguishes accepted,
     failed and uncertain delivery. AI/GPU and Flink checkpoint settings are
     budgeted or left unverified rather than asserted from configuration alone.
+11. Every stateful engine is captured by its own consistent method, never a
+    live file copy: pgBackRest for PostgreSQL, a bounded RDB export for each
+    Valkey whose queues matter, the SQLite online backup API, and the
+    engine's snapshot API for OpenBao and OpenSearch. An engine without a
+    tested method is named as a recovery gap. A restored queue replays
+    pending entries at least once, so its consumers stay idempotent.
+12. Every `*_FILE` and `*_CMD` key in the rendered root has a recorded
+    verdict for its exact image: native, repository wrapper or unsupported,
+    with upstream source or runtime evidence. A service whose image ignores
+    a key stays out of the HOME selection until it is fixed.
 
 ## Acceptance Criteria
 
@@ -256,6 +266,10 @@ those effects.
 8. Documentation, generated projections, focused checks and independent
    review match the exact diff. The final report separately records source,
    static, isolation, HOME and migration statuses with SHA and exit evidence.
+9. The second round (TSK-0005) closes contracts 11 and 12 in source with
+   tests that fail against the previous source, records HOME observations
+   for authentication, CDC, workflow and backup without changing HOME
+   data, and names each remaining gap with its owner action.
 
 ## Related Documents
 

@@ -2068,6 +2068,17 @@ class BackupContractTests(unittest.TestCase):
         ]
         self.assertIn("timeout 300 valkey-cli --no-auth-warning --rdb -", export)
         self.assertIn('rm -f "$staging/mng-valkey.rdb"', export)
+        # DEV queues get the same bounded snapshot, as the admin ACL user;
+        # a stopped DEV is skipped, a failed export is dropped and fails.
+        dev = script[
+            script.index("if running dev-valkey; then") : script.index(
+                "backup-sqlite-export"
+            )
+        ]
+        self.assertIn("--user devadmin", dev)
+        self.assertIn("timeout 300 valkey-cli --no-auth-warning", dev)
+        self.assertIn('rm -f "$staging/dev-valkey.rdb"', dev)
+        self.assertIn("status=1", dev)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
         )

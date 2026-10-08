@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.6"
+version: "1.4.7"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -141,6 +141,19 @@ repository가 source와 같은 filesystem 위에 있거나 그 내부에 있다�
 넘기거나 실패하면 "mng-valkey RDB export failed or timed out; export dropped"를
 남기고 불완전한 파일을 지운 뒤 나머지 단계와 Restic을 계속 진행하며, run은
 exit 1로 끝난다.
+
+`dev-valkey`도 같은 방식으로 `devadmin` ACL 사용자가 300초 제한 안에서 RDB를
+내보낸다. DEV가 꺼져 있으면 건너뛰고, 실패하면 "dev-valkey RDB export failed or
+timed out; export dropped"를 남긴 뒤 run을 exit 1로 끝낸다. RDB는 내보낸 시점의
+일관된 snapshot이므로 그 뒤에 들어온 queue 항목은 잃는다.
+
+Valkey 복구는 별도 project의 새 container에서 먼저 시험한다. Restic에서 꺼낸
+RDB를 빈 data 디렉터리에 `dump.rdb`로 두고 `--save ''`, `--appendonly no`로
+기동한 뒤 key 수와 stream 길이를 확인한다. 소비자 group의 미확인(pending)
+항목은 RDB에 남으므로, 새 소비자가 `XAUTOCLAIM`으로 넘겨받아 다시 처리한다.
+따라서 복구된 queue는 최소 한 번(at-least-once) 재처리되며 소비자는 멱등이어야
+한다. 2026-10-08 합성 데이터로 시험했을 때 key, stream 2건, pending 1건이 그대로
+돌아왔고 `XAUTOCLAIM`이 pending 항목을 넘겨받았다. HOME 복구는 별도 승인이다.
 
 SeaweedFS가 실행 중이면 run은 vacuum도 일시 정지하고 filer metadata를
 export한다. `weed shell`이 오류 텍스트를 내거나, export가 비었거나, master와 filer 중 하나만

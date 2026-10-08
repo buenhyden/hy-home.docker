@@ -244,6 +244,76 @@ class RuntimeCompatibilityTests(unittest.TestCase):
         )
         self.assertTrue(lab["networks"]["lab_cassandra_core_net"]["internal"])
 
+    def test_no_active_compose_or_dockerfile_uses_a_bitnami_image(self):
+        # Bitnami stopped publishing free versioned images; a namespace swap
+        # alone would keep its env, UID and data path, so none may remain.
+        tracked = subprocess.run(
+            ["git", "ls-files", "--", "*docker-compose*.yml", "labs/*.yml",
+             "*Dockerfile", "infra/tech-stack.versions.json"],
+            cwd=ROOT, capture_output=True, text=True, check=True,
+        ).stdout.split()  # fmt: skip
+        self.assertTrue(tracked)
+        offenders = [
+            path
+            for path in tracked
+            if re.search(r"\bbitnami/|/bitnami\b", (ROOT / path).read_text())
+        ]
+        self.assertEqual([], offenders)
+
+    def test_every_secret_file_key_names_how_its_image_reads_it(self):
+        import json
+
+        with tempfile.TemporaryDirectory() as home:
+            rendered = subprocess.run(
+                ["docker", "compose", "--env-file", ".env.example",
+                 "--profile", "*", "config", "--format", "json"],
+                cwd=ROOT, env={"PATH": os.environ["PATH"], "HOME": home},
+                capture_output=True, text=True, check=True, timeout=120,
+            )  # fmt: skip
+        services = json.loads(rendered.stdout)["services"]
+        used = {}
+        for name, spec in services.items():
+            for key in spec.get("environment") or {}:
+                if re.search(r"(_FILE|_CMD)$", key) and key not in (
+                    "SSL_CERT_FILE",
+                    "RENOVATE_CONFIG_FILE",
+                ):
+                    image = spec["image"].split(":", 1)[0]
+                    used.setdefault((image, key), set()).add(name)
+        matrix = json.loads((ROOT / "infra/secret-file-support.json").read_text())
+        rows = {(row["image"], row["key"]): row for row in matrix["rows"]}
+        self.assertEqual(set(used), set(rows))
+
+        policy = (
+            ROOT / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+        ).read_text(encoding="utf-8")
+        home_row = next(x for x in policy.splitlines() if x.startswith("| HOME |"))
+        home = set(re.findall(r"`([A-Za-z0-9][A-Za-z0-9_.-]*)`", home_row))
+        for pair, row in rows.items():
+            with self.subTest(pair=pair):
+                self.assertIn(row["support"], {"native", "wrapper", "unsupported"})
+                self.assertTrue(row["evidence"])
+                if row["support"] == "unsupported":
+                    # An ignored key leaves the secret unset: such a service
+                    # stays out of the HOME selection until it is fixed.
+                    self.assertTrue(row.get("blocked"))
+                    for service in used[pair]:
+                        profiles = set(services[service].get("profiles") or [])
+                        self.assertTrue(profiles)
+                        self.assertFalse(profiles & home, service)
+                path = row["evidence"].split()[0]
+                if row["support"] == "wrapper" and path.startswith("infra/"):
+                    wrapper = (ROOT / path).read_text(encoding="utf-8")
+                    self.assertIn(pair[1].removesuffix("_FILE"), wrapper)
+
+    def test_keycloak_wrapper_refuses_empty_secret_files(self):
+        script = compose("infra/02-auth/keycloak/docker-compose.yml")["services"][
+            "keycloak"
+        ]["entrypoint"][2]
+        for name in ("KC_BOOTSTRAP_ADMIN_PASSWORD", "KC_DB_PASSWORD"):
+            self.assertIn(f'[ -n "$${name}" ] ||', script)
+        self.assertLess(script.index("exit 1"), script.index("exec "))
+
 
 if __name__ == "__main__":
     unittest.main()

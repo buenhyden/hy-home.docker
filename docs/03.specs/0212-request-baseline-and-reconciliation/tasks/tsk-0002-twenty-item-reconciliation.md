@@ -1,6 +1,6 @@
 ---
 title: "Twenty-Item Reconciliation Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -51,12 +51,12 @@ showed on 2026-10-08; it is not an acceptance of the owning prompt.
 | --- | --- | --- | --- |
 | 01 | SPEC-0213 | DEV TimescaleDB and MNG PostgreSQL kept; DEV WAL archive, first full backup and restore canary on HOME | HOME PITR and R2 restore |
 | 02 | SPEC-0214 | k6 default, Locust LAB, authenticated OTLP relay merged (#371); SPEC-0214 TSK-0002 adds the relay controller, `quality_otlp_net`, an isolated target-to-dashboard run and the supervised Locust lifecycle (#384); a HOME relay canary reached HOME Prometheus and the live Grafana dashboard | Real-target load; per-project producer credentials and quota |
-| 03 | SPEC-0215 | Root `lab_net` retired, LAB lease controller merged (#376) | HOME LAB runs; persistent LAB inventory check |
-| 04 | new at execution, reusing SPEC-0204 Crawl4AI lanes | Not started this round | All |
+| 03 | SPEC-0215 | Root `lab_net` retired, LAB lease controller merged (#376); TSK-0002 adds inventory, cluster-ID and selection tests, cost and retirement columns, and HOME runs where six LABs reach readiness and leave nothing behind (#386) | OpenSearch LAB waits for host disk below 90%; scratch LAB volume records |
+| 04 | SPEC-0204 TSK-0005 | HOME OIDC, n8n, Airflow, CDC and backup observed; dev-valkey snapshot with isolated replay; per-image `_FILE`/`_CMD` verdicts; Keycloak empty-secret refusal; Bitnami guard; mail outcome states | Supabase, SonarQube and Terrakube secret wiring; realm grants and PKCE; A-to-B, n8n path and CDC replay fixtures; Airflow DAG target; OpenBao and OpenSearch snapshots |
 | 05 | new at execution | Existing Storybook static origin and MCP preserved | All |
 | 06 | SPEC-0212 | Root inventory equals the rendered set (W7) | Role, cost and duplication review per service key |
 | 07 | new at execution, reusing SPEC-0204 | Not started this round | All |
-| 08 | new at execution | DEV consumers no longer read MNG variables (SPEC-0213) | Image `_FILE` support and address/permission review |
+| 08 | new at execution | DEV consumers no longer read MNG variables (SPEC-0213); image `_FILE` support recorded per key in SPEC-0204 TSK-0005 | Address and permission review |
 | 09 | new at execution | Not started this round | All |
 | 10 | new at execution | Not started this round | External application vertical slice |
 | 11 | new at execution | Project-Template baseline confirmed | External workspace and API budget |
@@ -86,13 +86,13 @@ the item 03 owner.
 | Spec | State | Disposition | Reason |
 | --- | --- | --- | --- |
 | SPEC-0182 | blocked; TSK-0003 blocked | keep | Recovery, SSO and R2 evidence waits for owner-held material |
-| SPEC-0204 | blocked; TSK-0001 blocked | keep | Runtime lanes stay; items 04 and 07 reuse its ownership |
+| SPEC-0204 | blocked; TSK-0001 blocked; TSK-0005 draft | keep | Runtime lanes stay; item 04 continues in TSK-0005 and item 07 reuses its ownership |
 | SPEC-0207 | in-progress; Tasks completed | keep | Pending rows belong to the governance owner (prompt 12) |
 | SPEC-0211 | in-progress | keep | QA rationalization continues under prompt 11 |
 | SPEC-0212 | draft | revise | This Task |
 | SPEC-0213 | draft | proceed | Source, isolated and HOME work done; PITR and R2 open |
 | SPEC-0214 | draft | proceed | Merged source; HOME runs open |
-| SPEC-0215 | draft | proceed | Merged source; HOME LAB runs open |
+| SPEC-0215 | draft | proceed | Merged source and HOME LAB runs; OpenSearch LAB pending host disk |
 | SPEC-0216 | draft | proceed | OpenBao waits for the owner's unseal; then `openbao-agent` |
 
 No Spec is superseded. Completed SPEC-0208, SPEC-0209 and SPEC-0210 are not
