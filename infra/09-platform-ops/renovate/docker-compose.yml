@@ -15,6 +15,7 @@ services:
 
     image: renovate/renovate:44.115.12-full
     container_name: renovate
+    hostname: renovate
 
     restart: 'no'
     read_only: false

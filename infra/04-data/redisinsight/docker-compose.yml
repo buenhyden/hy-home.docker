@@ -19,6 +19,7 @@ services:
       service: template-stateful-med
     image: redis/redisinsight:3.8.0
     container_name: redisinsight
+    hostname: redisinsight
     volumes:
       - redisinsight-data:/data:rw
     healthcheck:

@@ -63,7 +63,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: infra-grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
    ```
 
 2. Datasource provisioning boundary를 확인한다.
@@ -169,8 +169,8 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 ### Common Checks
 
 - `docker compose --profile obs ps grafana`
-- `docker logs --tail=100 infra-grafana`
-- `docker exec infra-grafana wget -q --spider http://localhost:3000/api/health`
+- `docker logs --tail=100 grafana`
+- `docker exec grafana wget -q --spider http://localhost:3000/api/health`
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests`
 

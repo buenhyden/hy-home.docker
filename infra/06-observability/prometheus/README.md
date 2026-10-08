@@ -62,7 +62,7 @@ infra/06-observability/prometheus/
 - **Validation**:
 
   ```bash
-  docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
+  docker exec prometheus promtool check config /etc/prometheus/prometheus.yml
   ```
 
 ### 2. Traceability
@@ -84,10 +84,10 @@ infra/06-observability/prometheus/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`로 Prometheus 설정을 검증합니다.
-- `docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`로 알림 규칙을 검증합니다. 컨테이너 셸이 컨테이너 전용 경로를 확장한 뒤 `promtool`이 존재하는 파일을 받습니다.
+- `docker exec prometheus promtool check config /etc/prometheus/prometheus.yml`로 Prometheus 설정을 검증합니다.
+- `docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`로 알림 규칙을 검증합니다. 컨테이너 셸이 컨테이너 전용 경로를 확장한 뒤 `promtool`이 존재하는 파일을 받습니다.
 - `prometheus.yml` 변경 후 Prometheus UI의 Targets 페이지에서 스크레이프 대상이 UP 상태인지 확인합니다.
-- 설정이나 규칙 변경 후 `docker logs --tail=200 infra-prometheus`로 알림 규칙이 정상적으로 로드되었는지 확인합니다.
+- 설정이나 규칙 변경 후 `docker logs --tail=200 prometheus`로 알림 규칙이 정상적으로 로드되었는지 확인합니다.
 
 ## Troubleshooting
 

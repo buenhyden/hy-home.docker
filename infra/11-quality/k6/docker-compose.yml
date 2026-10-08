@@ -11,6 +11,8 @@ volumes:
       device: ${DEFAULT_TOOLING_DIR}/k6
 services:
   k6:
+    container_name: k6
+    hostname: k6
     # This inventory job reports the pinned k6 version and sends no traffic.
     # The isolated executor owns any future approved synthetic run.
     profiles:

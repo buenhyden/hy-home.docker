@@ -24,6 +24,7 @@ services:
       service: template-infra-readonly-med
     image: stalwartlabs/stalwart:v0.16.22
     container_name: stalwart
+    hostname: stalwart
     # The image user (UID 2000) owns the datastore. The binary carries cap_net_bind_service for ports below 1024; with
     # no-new-privileges it cannot start unless that one capability is kept.
     cap_add:
@@ -72,6 +73,7 @@ services:
       dockerfile: Dockerfile
     image: hy-home/stalwart-config:0.16.22-cli1.0.12-local
     container_name: stalwart-config
+    hostname: stalwart-config
     user: '1000:1000'
     entrypoint:
       - /bin/sh

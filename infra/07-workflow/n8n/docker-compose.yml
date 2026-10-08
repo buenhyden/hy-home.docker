@@ -70,6 +70,7 @@ services:
         N8N_VERSION: 2.41.6
     image: hyhome/n8n:2.41.6-local
     container_name: n8n
+    hostname: n8n
     read_only: false
     expose:
       - ${N8N_PORT:-5678}
@@ -137,6 +138,7 @@ services:
         N8N_VERSION: 2.41.6
     image: hyhome/n8n:2.41.6-local
     container_name: n8n-worker
+    hostname: n8n-worker
     read_only: false
     expose:
       - ${N8N_PORT:-5678}
@@ -176,6 +178,7 @@ services:
       service: template-stateful-low
     image: n8nio/runners:2.41.6
     container_name: n8n-task-runner
+    hostname: n8n-task-runner
     read_only: false
     depends_on:
       n8n: { condition: service_healthy }
@@ -217,6 +220,7 @@ services:
       service: template-stateful-low
     image: n8nio/runners:2.41.6
     container_name: n8n-task-runner-worker
+    hostname: n8n-task-runner-worker
     read_only: false
     depends_on:
       n8n-worker: { condition: service_healthy }
@@ -256,6 +260,7 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
     container_name: n8n-valkey
+    hostname: n8n-valkey
     user: '999:999'
     networks:
       n8n_net: {}
@@ -286,6 +291,7 @@ services:
       service: template-infra-low
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: n8n-valkey-exporter
+    hostname: n8n-valkey-exporter
     read_only: true
     networks:
       n8n_net: {}

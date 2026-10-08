@@ -17,6 +17,7 @@ services:
 
     image: hy-home/jupyterlab:scipy-local
     container_name: jupyterlab
+    hostname: jupyterlab
 
     environment:
       # Internal SDK path; it bypasses the browser SSO route (see GDE-0089).

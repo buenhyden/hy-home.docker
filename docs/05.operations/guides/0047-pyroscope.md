@@ -61,7 +61,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/pyroscope:|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/pyroscope:|container_name: pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Pyroscope config의 storage, ingestion limit, and privacy boundary를 확인한다.
@@ -103,7 +103,7 @@ created: "2026-05-10"
 ### Common Checks
 
 - `docker compose --profile obs ps pyroscope`
-- `docker logs --tail=100 infra-pyroscope`
+- `docker logs --tail=100 pyroscope`
 - `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
 - `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 

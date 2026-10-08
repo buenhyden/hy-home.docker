@@ -30,13 +30,13 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limits, local storage boundary를 검증하며, 데이터 삭제나 retention/capacity 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limits, local storage boundary를 검증하며, 데이터 삭제나 retention/capacity 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
 - Grafana Pyroscope datasource에서 최근 profile이 보이지 않을 때.
 - Alloy `pyroscope.write` endpoint는 선언되어 있지만 profile ingestion gap이 의심될 때.
-- `infra-pyroscope` 로그에 storage, ingestion limit, label cardinality, or ready failure 관련 오류가 보일 때.
+- `pyroscope` 로그에 storage, ingestion limit, label cardinality, or ready failure 관련 오류가 보일 때.
 - Profile ingestion으로 host or container CPU usage가 비정상적으로 높을 때.
 - `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
 
@@ -56,7 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Checklist
 
-- [ ] `pyroscope` service, `infra-pyroscope` container, and `pyroscope-data` volume 상태를 확인한다.
+- [ ] `pyroscope` service, `pyroscope` container, and `pyroscope-data` volume 상태를 확인한다.
 - [ ] Profile labels에 high-cardinality or secret-bearing values가 들어갔는지 의심되면 ingestion source를 먼저 식별한다.
 - [ ] 문제 유형을 readiness, ingestion, Grafana datasource, storage/capacity, CPU overhead, config regression 중 하나로 분류한다.
 - [ ] Data deletion, retention change, storage backend change, or ingestion limit change가 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
@@ -67,14 +67,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs ps pyroscope
-   docker logs --tail=200 infra-pyroscope
+   docker logs --tail=200 pyroscope
    docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}
    ```
 
 2. Compose and config boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-infra-med|image: grafana/pyroscope:|container_name: infra-pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-infra-med|image: grafana/pyroscope:|container_name: pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
    rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml
    ```
 
@@ -87,8 +87,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 4. Storage or cardinality symptom은 로그와 capacity evidence를 캡처한다. Profile data를 삭제하지 않는다.
 
    ```bash
-   docker logs --tail=500 infra-pyroscope | grep -Ei 'storage|filesystem|label|cardinality|ingestion|limit|error|warn'
-   docker stats --no-stream infra-pyroscope
+   docker logs --tail=500 pyroscope | grep -Ei 'storage|filesystem|label|cardinality|ingestion|limit|error|warn'
+   docker stats --no-stream pyroscope
    rg -n 'pyroscope-data|/var/lib/pyroscope' infra/06-observability/docker-compose.yml infra/06-observability/pyroscope/config/pyroscope.yaml
    ```
 
@@ -117,22 +117,22 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 - [ ] `profilecli ready` command above exits successfully.
 - [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
-- [ ] `docker stats --no-stream infra-pyroscope`에서 CPU/memory 사용량이 정상 범위로 돌아온다.
+- [ ] `docker stats --no-stream pyroscope`에서 CPU/memory 사용량이 정상 범위로 돌아온다.
 - [ ] Storage symptom이면 `pyroscope-data`, `/var/lib/pyroscope`, and filesystem backend boundary가 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-pyroscope`, `docker logs --tail=200 infra-alloy`
+- **Logs**: `docker logs --tail=200 pyroscope`, `docker logs --tail=200 alloy`
 - **Health**: Pyroscope `/ready`, Grafana Pyroscope datasource
 - **Config**: `pyroscope.yaml`, Alloy `pyroscope.scrape "go_services"`, `pyroscope.scrape "seaweedfs"`(block·mutex profile off: SeaweedFS가 scrape timeout 뒤에야 응답한다)와 `pyroscope.write`(HOME은 `config.home.alloy`), Grafana datasource provisioning(UID `Pyroscope`)
 - **Profile sources**: `service_name` label 값을 조회해 수집 중인 서비스를 확인한다. 2026-09-30 기준 11개(alertmanager, alloy, grafana, loki, mng-pg-exporter, node-exporter, prometheus, pyroscope, registry, seaweedfs-s3, tempo)다.
 
   ```bash
-  docker exec infra-grafana sh -c "wget -qO- --header 'Content-Type: application/json' --post-data '{\"name\":\"service_name\",\"start\":$(( ($(date +%s)-600)*1000 )),\"end\":$(( $(date +%s)*1000 ))}' http://pyroscope:4040/querier.v1.QuerierService/LabelValues"
+  docker exec grafana sh -c "wget -qO- --header 'Content-Type: application/json' --post-data '{\"name\":\"service_name\",\"start\":$(( ($(date +%s)-600)*1000 )),\"end\":$(( $(date +%s)*1000 ))}' http://pyroscope:4040/querier.v1.QuerierService/LabelValues"
   ```
 
-- **Runtime**: `docker stats --no-stream infra-pyroscope`, `pyroscope-data` volume 경계
+- **Runtime**: `docker stats --no-stream pyroscope`, `pyroscope-data` volume 경계
 - **Evidence to Capture**: 실패 증상, 로그 발췌, 영향받은 profile source·label, 재시작 시각, 최종 복구 또는 보고 상태
 
 ### Safe Rollback or Recovery Procedure

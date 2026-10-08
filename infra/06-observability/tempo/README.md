@@ -79,9 +79,9 @@ tempo/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- 설정 변경 후 `docker logs --tail=200 infra-tempo`로 트레이스 수집을 확인합니다.
+- 설정 변경 후 `docker logs --tail=200 tempo`로 트레이스 수집을 확인합니다.
 - Grafana Tempo 데이터소스에 트레이스가 나타나는지 보고 Alloy에서 OTLP 엔드포인트에 접근할 수 있는지 확인합니다.
-- `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`로 Tempo 준비 상태를 확인합니다.
+- `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`로 Tempo 준비 상태를 확인합니다.
 
 ## Troubleshooting
 

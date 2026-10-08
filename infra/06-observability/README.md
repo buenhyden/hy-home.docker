@@ -118,10 +118,10 @@ created: "2025-11-12"
 
 ```bash
 # Check service health
-docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+docker exec prometheus wget -qO- http://localhost:9090/-/healthy
 
 # Verify Alloy configuration
-docker exec infra-alloy alloy run --test /etc/alloy/config.alloy
+docker exec alloy alloy run --test /etc/alloy/config.alloy
 ```
 
 ## Change Impact

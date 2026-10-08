@@ -75,7 +75,7 @@ pyroscope/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- 설정 변경 후 `docker logs --tail=200 infra-pyroscope`로 프로파일링 수집을 확인합니다.
+- 설정 변경 후 `docker logs --tail=200 pyroscope`로 프로파일링 수집을 확인합니다.
 - Alloy가 프로파일링 데이터를 전송한 후 Grafana Pyroscope 데이터소스에 프로파일이 나타나는지 확인합니다.
 - `docker compose exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:4040`로 Pyroscope 준비 상태를 확인합니다.
 
@@ -108,5 +108,5 @@ pyroscope/
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **Flamegraph Analysis**: Grafana의 `traceqlEditor` 기능 토글로 프로파일을 트레이스와 연관 짓습니다.
-2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `infra-pyroscope` 컨테이너 통계를 모니터링합니다.
+2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `pyroscope` 컨테이너 통계를 모니터링합니다.
 3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.

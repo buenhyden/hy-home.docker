@@ -23,6 +23,7 @@ services:
       context: .
       dockerfile: ${OAUTH2_PROXY_DOCKERFILE:-dev.Dockerfile}
     container_name: oauth2-proxy
+    hostname: oauth2-proxy
     group_add:
       - '${CERT_GROUP_GID:-1000}'
     environment:
@@ -73,6 +74,7 @@ services:
       service: template-stateful-low
     image: valkey/valkey:9.1.2-alpine
     container_name: oauth2-proxy-valkey
+    hostname: oauth2-proxy-valkey
     user: '999:999'
     secrets:
       - oauth2_valkey_password
@@ -103,7 +105,8 @@ services:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
     image: oliver006/redis_exporter:v1.91.1-alpine
-    container_name: oauth2-proxy-redis-exporter
+    container_name: oauth2-proxy-valkey-exporter
+    hostname: oauth2-proxy-valkey-exporter
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
     networks:

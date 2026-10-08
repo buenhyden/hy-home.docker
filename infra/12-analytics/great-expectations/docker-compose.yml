@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile
     image: hy-home/great-expectations:1.23.1-local
     container_name: great-expectations
+    hostname: great-expectations
     command:
       - list
     environment:

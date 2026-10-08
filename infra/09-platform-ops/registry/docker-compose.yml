@@ -20,6 +20,7 @@ services:
       service: template-stateful-med
     image: registry:3
     container_name: registry
+    hostname: registry
     # Owner of ${DEFAULT_REGISTRY_DIR}; root without capabilities cannot write it.
     user: '1000:1000'
     restart: unless-stopped

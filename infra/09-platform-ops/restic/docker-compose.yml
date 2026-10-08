@@ -19,6 +19,7 @@ services:
       service: template-job-low
     image: restic/restic:0.19.1
     container_name: restic
+    hostname: restic
     # Root with DAC_OVERRIDE reads every source regardless of owner. Every
     # source is a read-only mount, so only the two repositories are writable.
     user: '0:0'
@@ -99,6 +100,7 @@ services:
       service: template-job-low
     image: restic/restic:0.19.1
     container_name: restic-offsite
+    hostname: restic-offsite
     # Root reads the host-user-owned 0700 repository roots; read search only.
     user: '0:0'
     cap_add:
@@ -151,6 +153,7 @@ services:
       service: template-job-low
     image: python:3.13.15-alpine
     container_name: backup-sqlite-export
+    hostname: backup-sqlite-export
     user: '0:0'
     # WAL readers need the -shm file, so sources are writable to this process;
     # the Backup API only reads pages. The copy is handed to the host user.

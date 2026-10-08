@@ -95,7 +95,7 @@ alloy/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `config.alloy` 변경 후 `docker logs --tail=200 infra-alloy`로 OTLP 파이프라인 상태를 확인합니다.
+- `config.alloy` 변경 후 `docker logs --tail=200 alloy`로 OTLP 파이프라인 상태를 확인합니다.
 - Loki/Tempo 전달, Prometheus의 Alloy scrape, 선언된 pprof 소스의 Pyroscope 전달을 각각 확인합니다. 추적 설정 `config/config.alloy`에 scrape 소스가 있어도 실제 수집 성공은 별도 관찰로 검증합니다.
 
 ## Troubleshooting

@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-alertmanager` 상태를 확인하고 Prometheus `alertmanager:9093` delivery, route/receiver config, Docker Secret-rendered runtime boundary, protected UI route를 검증하며, Secret 노출이나 receiver 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `alertmanager` 상태를 확인하고 Prometheus `alertmanager:9093` delivery, route/receiver config, Docker Secret-rendered runtime boundary, protected UI route를 검증하며, Secret 노출이나 receiver 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
@@ -56,7 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Checklist
 
-- [ ] `alertmanager` service, `infra-alertmanager` container, `alertmanager-data` volume, and Docker Secret IDs 상태를 확인한다.
+- [ ] `alertmanager` service, `alertmanager` container, `alertmanager-data` volume, and Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, Prometheus delivery, receiver delivery, silence/inhibition, secret rendering, config regression 중 하나로 분류한다.
 - [ ] Secret value, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
 - [ ] Route/receiver/inhibition/secret rendering을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
@@ -71,14 +71,14 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 
    ```bash
    docker compose --profile obs ps alertmanager
-   docker logs --tail=200 infra-alertmanager
-   docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
+   docker logs --tail=200 alertmanager
+   docker exec alertmanager wget -q --spider http://localhost:9093/-/ready
    ```
 
 2. Compose service boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-low|image: prom/alertmanager:|container_name: infra-alertmanager|alertmanager-data|smtp_username|smtp_password|slack_webhook|ALERTMANAGER_PORT|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-low|image: prom/alertmanager:|container_name: alertmanager|alertmanager-data|smtp_username|smtp_password|slack_webhook|ALERTMANAGER_PORT|/-/ready|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
 3. Secret 값이 아닌 placeholder와 route/receiver config만 확인한다.
@@ -109,7 +109,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 
    ```bash
    docker compose --profile obs restart alertmanager
-   docker logs --tail=100 infra-alertmanager
+   docker logs --tail=100 alertmanager
    ```
 
 8. `config.yml`의 bind-mounted 내용만 바뀌었으면 아래 `git diff`로 후보를 확인하고 승인된 정상 revision의 해당 파일만 복원한다. `git diff`는 복원 명령이 아니다. 기존 컨테이너가 같은 bind의 복원 내용을 읽는지 확인한 경우에만 아래 restart를 사용한다. Compose의 config 선택·환경변수·mount·image나 secret bind 또는 파일 inode가 바뀌면 이 분기를 중단하고 [RUN-0086](0086-dependency-version-management.md)의 이전 image/선언 복원과 승인된 recreate 계획으로 넘긴다. Secret 유지보수는 [RUN-0085](0085-openbao.md)를 따른다.
@@ -117,7 +117,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
    ```bash
    git diff -- infra/06-observability/alertmanager/config/config.yml
    docker compose --profile obs restart alertmanager
-   docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready
+   docker exec alertmanager wget -q --spider http://localhost:9093/-/ready
    ```
 
    이 런북은 Slack webhook rotation, SMTP credential rotation, receiver/channel change, inhibition policy change, protected middleware change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
@@ -133,7 +133,7 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-alertmanager`
+- **Logs**: `docker logs --tail=200 alertmanager`
 - **Health**: Alertmanager `/-/ready`, UI `https://alertmanager.${DEFAULT_URL}`
 - **Config**: `infra/06-observability/alertmanager/config/config.yml`, Prometheus `alertmanagers` target과 Grafana datasource
 - **Metrics**: `alertmanager_notifications_failed_total`, `prometheus_notifications_alertmanagers_discovered`

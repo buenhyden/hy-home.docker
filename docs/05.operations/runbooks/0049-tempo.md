@@ -30,7 +30,7 @@ created: "2026-05-17"
 
 ### Purpose
 
-운영자가 `infra-tempo`의 상태를 확인하고 Alloy → Tempo → SeaweedFS → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
+운영자가 `tempo`의 상태를 확인하고 Alloy → Tempo → SeaweedFS → Prometheus remote write 경로를 검증하며, 데이터 손실 가능성이 있는 WAL or bucket 조치를 별도 승인으로 격리하도록 돕는다.
 
 ### When to Use
 
@@ -56,7 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Checklist
 
-- [ ] `tempo` service, `infra-tempo` container, and `tempo-data` volume 상태를 확인한다.
+- [ ] `tempo` service, `tempo` container, and `tempo-data` volume 상태를 확인한다.
 - [ ] Secret values를 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` ID만 evidence에 기록한다.
 - [ ] 문제 유형을 readiness, ingestion, storage, metrics generator, query, WAL symptom 중 하나로 분류한다.
 - [ ] WAL deletion, bucket mutation, retention change, or secret rotation이 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
@@ -67,14 +67,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile obs ps tempo
-   docker logs --tail=200 infra-tempo
-   docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
+   docker logs --tail=200 tempo
+   docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready
    ```
 
 2. Compose and config boundary가 policy와 일치하는지 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
    rg -n 'endpoint: 0.0.0.0:4317|endpoint: 0.0.0.0:4318|metrics_generator:|remote_write:|url: http://prometheus:9090/api/v1/write|bucket: tempo-bucket|endpoint: seaweedfs-s3:8333|secret_key: \\$\\{S3_SECRET_KEY\\}' infra/06-observability/tempo/config/tempo.yaml
    ```
 
@@ -87,14 +87,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 4. Storage or secret symptom은 로그 문구와 bucket/config boundary만 캡처한다. Secret value를 출력하지 않는다.
 
    ```bash
-   docker logs --tail=500 infra-tempo | grep -Ei 's3|bucket|tempo-bucket|seaweedfs|access denied|secret|wal|compact|block'
+   docker logs --tail=500 tempo | grep -Ei 's3|bucket|tempo-bucket|seaweedfs|access denied|secret|wal|compact|block'
    ```
 
 5. Metrics generator failure가 의심되면 Tempo config의 `remote_write` endpoint와 Prometheus readiness를 확인한다.
 
    ```bash
    rg -n 'metrics_generator:|span_metrics:|service_graphs:|remote_write:|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml
-   docker exec infra-prometheus wget -qO- http://localhost:9090/-/healthy
+   docker exec prometheus wget -qO- http://localhost:9090/-/healthy
    ```
 
 6. Readiness or ingestion state가 config와 맞지만 회복되지 않으면 Tempo를 재시작한다. Alloy exporter state도 함께 의심될 때만 Alloy를 같이 재시작한다.
@@ -107,7 +107,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 7. WAL corruption or local-block corruption이 의심되면 삭제하지 말고 evidence만 수집한다.
 
    ```bash
-   docker logs --tail=500 infra-tempo | grep -Ei 'wal|corrupt|local block|compactor|failed to replay'
+   docker logs --tail=500 tempo | grep -Ei 'wal|corrupt|local block|compactor|failed to replay'
    rg -n 'tempo-data|/var/tempo|tempo-bucket' infra/06-observability/docker-compose.yml infra/06-observability/tempo/config/tempo.yaml
    ```
 
@@ -125,7 +125,7 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 
 ### Verification Steps
 
-- [ ] `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`가 성공한다.
+- [ ] `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`가 성공한다.
 - [ ] Grafana Tempo datasource에서 최근 trace가 조회된다.
 - [ ] Service graph or span metrics가 필요한 경우 Prometheus remote write와 Grafana dashboard timestamp가 갱신된다.
 - [ ] Storage symptom이면 `tempo-bucket`, SeaweedFS endpoint, secret reference boundary가 policy와 일치한다.
@@ -133,7 +133,7 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 
 ### Observability and Evidence Sources
 
-- **Logs**: `docker logs --tail=200 infra-tempo`
+- **Logs**: `docker logs --tail=200 tempo`
 - **Health**: Tempo `/ready`, Grafana Tempo datasource, Grafana service graph dashboards
 - **Config**: `tempo.yaml`, Alloy Tempo exporter, Prometheus `/-/healthy`
 - **Storage**: `tempo-bucket` 경계와 SeaweedFS endpoint `seaweedfs-s3:8333`, `tempo-data` volume

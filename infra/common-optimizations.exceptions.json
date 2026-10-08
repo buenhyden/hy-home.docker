@@ -120,5 +120,72 @@
         "reason": "Patroni/Spilo runtime compatibility in DB template"
       }
     ]
-  }
+  },
+  "naming_exceptions": [
+    {
+      "service": "analytics",
+      "container_name": "supabase-analytics",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "auth",
+      "container_name": "supabase-auth",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "db",
+      "container_name": "supabase-db",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "functions",
+      "container_name": "supabase-edge-functions",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "imgproxy",
+      "container_name": "supabase-imgproxy",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "kong",
+      "container_name": "supabase-kong",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "meta",
+      "container_name": "supabase-meta",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "realtime",
+      "container_name": "realtime-dev.supabase-realtime",
+      "reason": "Supabase Realtime derives its tenant from this upstream host name"
+    },
+    {
+      "service": "rest",
+      "container_name": "supabase-rest",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "storage",
+      "container_name": "supabase-storage",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "studio",
+      "container_name": "supabase-studio",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "supavisor",
+      "container_name": "supabase-pooler",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    },
+    {
+      "service": "vector",
+      "container_name": "supabase-vector",
+      "reason": "Generic upstream Supabase service key; the supabase- prefix keeps the host-wide container name unique"
+    }
+  ]
 }

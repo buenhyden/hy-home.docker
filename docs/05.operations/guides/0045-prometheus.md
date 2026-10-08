@@ -58,7 +58,7 @@ created: "2026-05-10"
 
 - Repository checkout 접근 권한.
 - `infra/06-observability/docker-compose.yml` and `infra/06-observability/prometheus/config/prometheus.yml` 확인 권한.
-- 필요 시 `obs` Docker Compose profile과 `infra-prometheus` container에 대한 read-only inspection 권한.
+- 필요 시 `obs` Docker Compose profile과 `prometheus` container에 대한 read-only inspection 권한.
 - Docker Secret values는 열람하지 않는다. 문서에는 secret ID와 file reference만 기록한다.
 
 ### Step-by-step Instructions
@@ -66,7 +66,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: infra-prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Scrape job과 rule file boundary를 확인한다.
@@ -81,8 +81,8 @@ created: "2026-05-10"
 3. Config or rule 변경 전후로 Prometheus 내장 검증 도구를 사용한다.
 
    ```bash
-   docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
+   docker exec prometheus promtool check config /etc/prometheus/prometheus.yml
+   docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
    ```
 
    Rule glob expansion은 container 내부에서 일어나야 한다. `/etc/prometheus` 아래
@@ -252,8 +252,8 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 
 - `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
 - `rg --files infra/06-observability/prometheus/config/alert_rules`
-- `docker exec infra-prometheus promtool check config /etc/prometheus/prometheus.yml`
-- `docker exec infra-prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
+- `docker exec prometheus promtool check config /etc/prometheus/prometheus.yml`
+- `docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
 
 ### Runbook Handoff
 

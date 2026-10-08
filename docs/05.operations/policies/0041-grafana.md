@@ -30,7 +30,7 @@ provisioning, Keycloak role mapping, secret boundary, protected route를
 이 정책은 current `infra/06-observability/grafana` compose, provisioning,
 dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
-- **Systems**: compose service `grafana`, container `infra-grafana`, image [grafana/grafana image declaration](../../../infra/06-observability/docker-compose.yml), volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
+- **Systems**: compose service `grafana`, container `grafana`, image [grafana/grafana image declaration](../../../infra/06-observability/docker-compose.yml), volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ### Traceability

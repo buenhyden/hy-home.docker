@@ -12,7 +12,7 @@ created: "2026-01-12"
 
 ## Overview
 
-Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하고, 그룹화하고, 억제하고, 무음 처리한 뒤 설정된 수신자(receiver) 통합으로 라우팅합니다. 이 스택에서는 `infra-alertmanager`로 실행되며 [선언된 런타임 이미지](../../tech-stack.versions.json)를 사용합니다. 런타임 상태는 `alertmanager-data`에 저장하고 시작 시 Docker Secret 값을 임시 파일인 `/tmp/config.yml`로 렌더링합니다.
+Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하고, 그룹화하고, 억제하고, 무음 처리한 뒤 설정된 수신자(receiver) 통합으로 라우팅합니다. 이 스택에서는 `alertmanager`로 실행되며 [선언된 런타임 이미지](../../tech-stack.versions.json)를 사용합니다. 런타임 상태는 `alertmanager-data`에 저장하고 시작 시 Docker Secret 값을 임시 파일인 `/tmp/config.yml`로 렌더링합니다.
 
 ## Audience
 
@@ -90,8 +90,8 @@ alertmanager/
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
-- `docker compose --profile obs ps alertmanager`와 `docker exec infra-alertmanager wget -q --spider http://localhost:9093/-/ready`로 서비스 준비 상태를 확인합니다.
-- `config.yml` 변경 후 `docker logs --tail=200 infra-alertmanager`로 라우팅 트리 문법을 확인합니다.
+- `docker compose --profile obs ps alertmanager`와 `docker exec alertmanager wget -q --spider http://localhost:9093/-/ready`로 서비스 준비 상태를 확인합니다.
+- `config.yml` 변경 후 `docker logs --tail=200 alertmanager`로 라우팅 트리 문법을 확인합니다.
 - `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`로 Prometheus 전달 여부를 확인합니다.
 - 테스트 알림을 발생시켜 예상한 Slack 채널에 도달하는지 보고 수신자 연결을 검증합니다.
 

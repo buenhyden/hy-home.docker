@@ -62,7 +62,7 @@ created: "2026-05-10"
 1. Compose service boundary를 확인한다.
 
    ```bash
-   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: infra-tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
+   rg -n 'service: template-stateful-high|image: hy/tempo:|container_name: tempo|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml
    ```
 
 2. Tempo config의 ingestion, retention, storage, metrics generator boundary를 확인한다.
@@ -114,8 +114,8 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 ### Common Checks
 
 - `docker compose --profile obs ps tempo`
-- `docker logs --tail=100 infra-tempo`
-- `docker exec infra-tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
+- `docker logs --tail=100 tempo`
+- `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
 - `rg -n 'bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
 
 ### Runbook Handoff
