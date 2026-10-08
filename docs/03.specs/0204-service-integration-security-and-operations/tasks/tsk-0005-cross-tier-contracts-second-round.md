@@ -114,7 +114,7 @@ unsupported, each fail the test.
 
 The Keycloak wrapper now refuses an empty admin or database password; with
 an empty mounted file the exact image exits 1 before `kc.sh`. Commit
-`e1ee268b0`.
+`4630384fe`.
 
 ### W11 Image Residue and Mail Outcomes
 
@@ -122,7 +122,7 @@ A test refuses any `bitnami/` image across tracked Compose, LAB and
 Dockerfiles; it failed after a Bitnami base was injected. Commit
 `ea6c69d59`. RUN-0070 separates accepted, delivered, failed and unknown per
 recipient, ties retries to a fixed `Message-ID`, and keeps Mailpit as
-capture only. Commit `841bf4eb6`.
+capture only. Commit `b84b2b87c`.
 
 ### W12 Validation and Handoff
 
@@ -142,9 +142,9 @@ not the Valkey export, so it was not run for this change.
 | Ledger rows | 1 | W8 | SPEC-0212 TSK-0002 items 03, 04 and 08 updated | This branch | PASS | W8 Baseline, Owner Map and HOME Observations | accepted |
 | Owner map and HOME observations | 1 | W8 | Read-only probes and file map | HOME host 2026-10-08 | PASS | W8 Baseline, Owner Map and HOME Observations | accepted |
 | Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `abcc1d7a7` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
-| Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `e1ee268b0` | PASS | W10 Secret File Support Matrix | accepted |
-| Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `841bf4eb6` | PASS | W11 Image Residue and Mail Outcomes | accepted |
-| Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `8dc35b198` | PASS | W12 Validation and Handoff | accepted |
+| Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `4630384fe` | PASS | W10 Secret File Support Matrix | accepted |
+| Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `b84b2b87c` | PASS | W11 Image Residue and Mail Outcomes | accepted |
+| Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
 
 ## Review and Completion
 
