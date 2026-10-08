@@ -42,10 +42,15 @@ services:
     read_only: false
     restart: 'no'
     network_mode: none
+    # Root writes the key into the operator-owned bind and hands it to the
+    # mongodb user (999); only these capabilities are added back.
+    cap_add: [CHOWN, DAC_OVERRIDE, FOWNER]
     volumes:
       - mongo-key:/data/configdb:rw
+    # The image entrypoint switches to `mongodb` before any command, which
+    # needs SETUID; the key job does not need it.
+    entrypoint: [mongosh]
     command:
-      - mongosh
       - --nodb
       - --quiet
       - --norc
@@ -55,11 +60,12 @@ services:
         const path = '/data/configdb/mongodb.key';
         if (!fs.existsSync(path)) {
           fs.writeFileSync(path, require('crypto').randomBytes(384).toString('base64'), {mode: 0o400, flag: 'wx'});
+          fs.chownSync(path, 999, 999);
         }
         const stat = fs.lstatSync(path);
         const content = fs.readFileSync(path, 'utf8');
         const key = content.replace(/\s/g, '');
-        if (!stat.isFile() || process.getuid() !== 999 || stat.uid !== 999 ||
+        if (!stat.isFile() || stat.uid !== 999 ||
             (stat.mode & 0o400) === 0 || (stat.mode & 0o077) !== 0 ||
             !/^[A-Za-z0-9+/=]+$/.test(key) || key.length < 6 || key.length > 1024) {
           throw new Error('Invalid LAB MongoDB key file ownership, mode or format');
@@ -70,10 +76,14 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
     container_name: lab-mongodb-mongodb-rep1
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-rep1
     read_only: false
     environment:
@@ -104,10 +114,14 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-high
+      service: template-stateful-db-high
     image: mongo:8.3.11-noble
     restart: unless-stopped
     container_name: lab-mongodb-mongodb-rep2
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-rep2
     read_only: false
     environment:
@@ -138,9 +152,13 @@ services:
       - mongodb
     extends:
       file: ../infra/common-optimizations.yml
-      service: template-stateful-low
+      service: template-stateful-db-med
     image: mongo:8.3.11-noble
     container_name: lab-mongodb-mongodb-arbiter
+    # Run as mongodb directly: the image entrypoint would switch with gosu,
+    # which drops the secrets group and needs SETUID. The state directory is
+    # group-writable (lab.py) and the secret is readable through that group.
+    user: '999:999'
     hostname: mongodb-arbiter
     restart: unless-stopped
     read_only: false

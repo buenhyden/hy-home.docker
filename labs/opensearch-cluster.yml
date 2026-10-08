@@ -34,6 +34,12 @@ x-lab-node-environment: &lab-node-environment
   plugins.security.ssl.http.pemcert_filepath: /usr/share/opensearch/config/certs/cert.pem
   plugins.security.ssl.http.pemkey_filepath: /usr/share/opensearch/config/certs/key.pem
   plugins.security.ssl.http.pemtrustedcas_filepath: /usr/share/opensearch/config/certs/rootCA.pem
+  # Node certificates must carry a subject CN starting `opensearch-node`;
+  # without this list nodes reject one another on the transport layer.
+  plugins.security.nodes_dn: 'CN=opensearch-node*'
+  # Nodes reach each other by container IP, which changes per start, so the
+  # transport checks the CA and nodes_dn rather than the peer's address.
+  plugins.security.ssl.transport.enforce_hostname_verification: 'false'
   plugins.security.allow_default_init_securityindex: 'true'
   plugins.security.allow_unsafe_democertificates: 'false'
 
