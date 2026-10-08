@@ -188,7 +188,7 @@ class LabInventoryAndSelectionTests(RootClosureTests):
 
         # `--profile '*'` may render (config) a model; it must never start one.
         start = re.compile(
-            r"""--profile[ =]+['"]?\*['"]?(?:\s+-[-\w]+(?:\s+\S+)?)*\s+(?:up|start|run|restart)\b"""
+            r"""--profile[ =]+['"]?\*['"]?(?:\s+-[-\w]+(?:\s+[^\s-]\S*)?)*\s+(?:up|start|run|restart)\b"""
             r"""|COMPOSE_PROFILES=['"]?\*"""
         )
         tracked = subprocess.run(
