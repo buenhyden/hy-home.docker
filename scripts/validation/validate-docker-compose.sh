@@ -286,10 +286,17 @@ run_preflight() {
     fail "missing .env (copy from .env.example first)"
   else
     ok "file exists: .env"
-    # shellcheck disable=SC1091
-    set -a
-    . ./.env
-    set +a
+    # Compose parses .env itself (quotes, spaces, interpolation). Sourcing it as
+    # shell fails on unquoted values with spaces, so read only the data roots.
+    local key value
+    while IFS='=' read -r key value; do
+      case "$key" in
+        DEFAULT_MOUNT_VOLUME_PATH | DEFAULT_AUTH_DIR | DEFAULT_DATA_DIR | \
+          DEFAULT_MESSAGE_BROKER_DIR | DEFAULT_OBSERVABILITY_DIR)
+          export "$key=$value"
+          ;;
+      esac
+    done < <(docker compose config --environment 2>/dev/null)
   fi
 
   profile_args_from "$PREFLIGHT_PROFILES"
