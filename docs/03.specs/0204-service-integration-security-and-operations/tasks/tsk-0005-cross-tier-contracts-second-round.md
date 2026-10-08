@@ -28,7 +28,8 @@ across tiers") with per-unit commits and a per-Spec PR merge, reusing
 SPEC-0204. The request takes precedence over this package's earlier
 source-only limits, so read-only HOME observation and isolated containers
 are in scope. HOME data changes, realm changes, credential issuance and
-image pulls onto a 90%-full disk are not. Baseline `main` `f88eb6601`.
+image pulls onto a 90%-full disk are not. Baseline `main` `f88eb6601`; the
+branch was rebased onto `670b39e53` after PR #386 (SPEC-0215) merged.
 
 ## Work Log
 
@@ -44,7 +45,7 @@ Files this round writes, and the owners whose work it must not overwrite:
 | `tests/validation/test_service_runtime_compatibility.py`, `test_compose_baseline_gates.py` | SPEC-0204 | New regressions |
 | RUN-0070 | SPEC-0204 contract 10 | Mail outcome states |
 
-SPEC-0213 (DEV data), SPEC-0214 (quality) and SPEC-0215 (LAB, open as
+SPEC-0213 (DEV data), SPEC-0214 (quality) and SPEC-0215 (LAB, merged as
 PR #386) own none of these files. POL-0078 is read, not written.
 
 HOME observations, read-only, 2026-10-08:
@@ -91,7 +92,7 @@ stream with a consumer group were exported with `--rdb`, loaded into a new
 container, and came back with both stream entries and the one pending
 entry; `XAUTOCLAIM` handed that entry to a new consumer. RUN-0021 states
 that replay is at-least-once. The new assertion failed against the previous
-script (RED) and passes now. Commit `4934d32ab`.
+script (RED) and passes now. Commit `abcc1d7a7`.
 
 ### W10 Secret File Support Matrix
 
@@ -113,15 +114,15 @@ unsupported, each fail the test.
 
 The Keycloak wrapper now refuses an empty admin or database password; with
 an empty mounted file the exact image exits 1 before `kc.sh`. Commit
-`dcba55f8c`.
+`e1ee268b0`.
 
 ### W11 Image Residue and Mail Outcomes
 
 A test refuses any `bitnami/` image across tracked Compose, LAB and
 Dockerfiles; it failed after a Bitnami base was injected. Commit
-`67459a691`. RUN-0070 separates accepted, delivered, failed and unknown per
+`ea6c69d59`. RUN-0070 separates accepted, delivered, failed and unknown per
 recipient, ties retries to a fixed `Message-ID`, and keeps Mailpit as
-capture only. Commit `2b4db454e`.
+capture only. Commit `841bf4eb6`.
 
 ### W12 Validation and Handoff
 
@@ -131,10 +132,11 @@ Pending.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| Ledger rows | 1 | W8 | SPEC-0212 TSK-0002 items 03, 04 and 08 updated | This branch | PASS | W8 Baseline, Owner Map and HOME Observations | accepted |
 | Owner map and HOME observations | 1 | W8 | Read-only probes and file map | HOME host 2026-10-08 | PASS | W8 Baseline, Owner Map and HOME Observations | accepted |
-| Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `4934d32ab` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
-| Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `dcba55f8c` | PASS | W10 Secret File Support Matrix | accepted |
-| Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `67459a691`, `2b4db454e` | PASS | W11 Image Residue and Mail Outcomes | accepted |
+| Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `abcc1d7a7` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
+| Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `e1ee268b0` | PASS | W10 Secret File Support Matrix | accepted |
+| Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `841bf4eb6` | PASS | W11 Image Residue and Mail Outcomes | accepted |
 | Validation | 8 | W12 | Changed gate | Pending | NOT_RUN | W12 Validation and Handoff | pending |
 
 ## Review and Completion
