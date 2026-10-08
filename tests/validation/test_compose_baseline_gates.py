@@ -192,6 +192,66 @@ else:
                 check=False,
             )
 
+    def test_preflight_reads_data_roots_from_compose_not_shell(self) -> None:
+        # An unquoted value with spaces is valid for Compose but not for `. .env`.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            subprocess.run(
+                ["git", "init", "--quiet"], cwd=root, check=True, capture_output=True
+            )
+            (root / ".env").write_text(
+                "COMFYUI_ARGS=--listen 0.0.0.0\n", encoding="utf-8"
+            )
+            for name in ("rootCA.pem", "cert.pem", "key.pem"):
+                path = root / "secrets/certs" / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("synthetic", encoding="utf-8")
+            data = root / "data"
+            for name in ("mount", "auth", "data", "broker", "obs"):
+                (data / name).mkdir(parents=True)
+            fakebin = root / "fakebin"
+            fakebin.mkdir()
+            docker = fakebin / "docker"
+            docker.write_text(
+                f"""#!/usr/bin/env python3
+import json
+import sys
+
+args = sys.argv[1:]
+if args[:1] == ["network"]:
+    raise SystemExit(1)
+if "--environment" in args:
+    for key, name in (
+        ("DEFAULT_MOUNT_VOLUME_PATH", "mount"),
+        ("DEFAULT_AUTH_DIR", "auth"),
+        ("DEFAULT_DATA_DIR", "data"),
+        ("DEFAULT_MESSAGE_BROKER_DIR", "broker"),
+        ("DEFAULT_OBSERVABILITY_DIR", "obs"),
+    ):
+        print(key + "={data}/" + name)
+    print("COMFYUI_ARGS=--listen 0.0.0.0")
+elif "--format" in args:
+    print(json.dumps({{"services": {{"a": {{}}}}, "volumes": {{}}}}))
+""",
+                encoding="utf-8",
+            )
+            docker.chmod(0o755)
+            result = subprocess.run(
+                ["bash", os.fspath(VALIDATE_COMPOSE), "--preflight"],
+                cwd=root,
+                capture_output=True,
+                text=True,
+                env={
+                    **os.environ,
+                    "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
+                },
+                check=False,
+            )
+        output = result.stdout + result.stderr
+        self.assertEqual(0, result.returncode, output)
+        self.assertNotIn("command not found", output)
+        self.assertIn(f"dir exists: {data}/data", output)
+
     def test_named_volume_devices_must_be_distinct_and_not_nested(self) -> None:
         services = {"alpha": {}, "beta": {}}
 
