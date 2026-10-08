@@ -790,7 +790,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(k6_dropped_iterations_total{project_id=~\"$project_id\", instance=~\"$instance\"})",
+          "expr": "sum(k6_dropped_iterations_total{project_id=~\"$project_id\", instance=~\"$instance\"}) or (0 * sum(k6_iterations_total{project_id=~\"$project_id\", instance=~\"$instance\"}))",
           "hide": false,
           "instant": false,
           "legendFormat": "dropped_iterations",
@@ -1650,7 +1650,7 @@
         "type": "prometheus",
         "uid": "Prometheus"
       },
-      "description": "Filter by check name to query a particular check",
+      "description": "Absent, not 0, when the scenario defines no checks or the run sent no samples.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1699,7 +1699,8 @@
               }
             ]
           },
-          "unit": "%"
+          "unit": "%",
+          "noValue": "No checks reported"
         },
         "overrides": []
       },

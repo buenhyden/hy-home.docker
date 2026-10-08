@@ -157,6 +157,22 @@ class QualityObservabilityContractTest(unittest.TestCase):
         for field in ("Value #B", "Value #C", "Value #D", "Value #E"):
             self.assertEqual(["lastNotNull"], fields[field]["aggregations"])
 
+    def test_k6_dashboard_separates_absent_from_zero(self) -> None:
+        # k6 sends dropped_iterations and checks only once one occurs or a
+        # check exists, so "no series" must not read as 0 or as 0% passing.
+        panels = {panel["title"]: panel for panel, _ in self.k6_expressions()}
+        dropped = [
+            expression
+            for _, expression in self.k6_expressions()
+            if "k6_dropped_iterations_total" in expression
+        ]
+        self.assertEqual(1, len(dropped))
+        self.assertIn("or (0 * sum(k6_iterations_total{", dropped[0])
+        checks = panels["Checks Success Rate (aggregate individual checks)"]
+        self.assertEqual(
+            "No checks reported", checks["fieldConfig"]["defaults"]["noValue"]
+        )
+
     def test_perf_results_use_rls_view_and_sql_literal_filters(self) -> None:
         dashboard = json.loads((K6_DASHBOARD.parent / "perf-results.json").read_text())
         variables = {v["name"]: v for v in dashboard["templating"]["list"]}
