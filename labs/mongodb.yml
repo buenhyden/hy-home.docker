@@ -205,6 +205,7 @@ services:
         condition: service_healthy
     environment:
       LAB_MONGODB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
+      HOME: /tmp
     entrypoint: [ /bin/bash, -ec ]
     command:
       - |
@@ -212,7 +213,8 @@ services:
         [ -n "$$MONGO_ROOT_PASSWORD" ] || exit 1
         mongosh --host mongodb-rep1 --quiet --eval '
           const admin = db.getSiblingDB("admin");
-          if (admin.auth(process.env.LAB_MONGODB_ROOT_USERNAME, process.env.MONGO_ROOT_PASSWORD) !== 1) {
+          // mongosh returns { ok: 1 } (legacy shell returned 1) and throws on bad credentials.
+          if (admin.auth(process.env.LAB_MONGODB_ROOT_USERNAME, process.env.MONGO_ROOT_PASSWORD).ok !== 1) {
             throw new Error("LAB MongoDB authentication failed");
           }
           try { rs.status(); } catch (e) {
