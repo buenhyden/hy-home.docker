@@ -111,7 +111,10 @@ class LabCredentialArgvTest(unittest.TestCase):
         self.assertNotIn("-redis.password=", valkey)
         self.assertNotIn(" -p $$MONGO_ROOT_PASSWORD", mongo)
         self.assertNotIn("$${MONGO_ROOT_PASSWORD}@", mongo)
-        self.assertIn("MONGODB_PASSWORD", mongo)
+        # The init reads the password from the secret into env, not argv;
+        # the exporter that took MONGODB_PASSWORD is retired (SPEC-0215).
+        self.assertIn("process.env.MONGO_ROOT_PASSWORD", mongo)
+        self.assertNotIn("mongodb_exporter", mongo)
         self.assertNotIn("-v patroni_exporter_password=", pg)
         self.assertNotIn("-v service_postgres_password=", pg)
         self.assertIn("DATA_SOURCE_PASS_FILE", pg)
