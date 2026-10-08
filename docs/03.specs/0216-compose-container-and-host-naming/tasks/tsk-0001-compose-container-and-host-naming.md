@@ -1,6 +1,6 @@
 ---
 title: "Compose Container and Host Naming Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -88,6 +88,12 @@ container name and hostname (`prometheus`, `grafana`, `alloy`). Prometheus had
 seventh is `openbao`. The never-started `infra-pyroscope` container
 (`Created`) predates this change and is replaced on the next `pyroscope` start.
 
+Later on 2026-10-08 the owner unsealed OpenBao with the held key shares per
+RUN-0085. `bao status` then reported `initialized`, not `sealed`, raft storage
+in HA mode `active`, version 2.6.2, and the `openbao` container was healthy.
+`openbao-agent` was then recreated and runs healthy with container name and
+hostname `openbao-agent`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -97,13 +103,13 @@ seventh is `openbao`. The never-started `infra-pyroscope` container
 | Document references | 2 | W2 | `git grep` for retired names outside history | Working tree | PASS | W2 Documents | accepted |
 | HOME recreation | 4 | W3 | Recreate running services; health, names, scrape targets | Merged `948fd7e3b`; HOME 2026-10-08 | PASS | W3 HOME Recreation | accepted |
 | OpenBao after recreation | 4 | W3 | `bao status`; container health | HOME 2026-10-08 | FAIL | W3 HOME Recreation | rejected |
-| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent` | Owner key shares | NOT_RUN | Review and Completion | pending |
+| OpenBao unseal and agent recreation | 4 | W3 | Owner unseal per RUN-0085, then recreate `openbao-agent`; `bao status`; container health | HOME 2026-10-08 | PASS | W3 HOME Recreation | accepted |
 
 ## Review and Completion
 
-W1 and W2 are complete in source. W3 recreated HOME under the new names, but
-OpenBao is sealed until the owner unseals it, and `openbao-agent` waits for
-that.
+W1 and W2 are complete in source. W3 recreated HOME under the new names. The
+recreation left OpenBao sealed, which remains a recorded FAIL; the owner then
+unsealed it and `openbao-agent` was recreated, so W3 has no open item.
 
 ## Related Documents
 
