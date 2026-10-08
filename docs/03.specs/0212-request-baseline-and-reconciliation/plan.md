@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -29,6 +29,9 @@ order. This package changes documents and the Registry only.
 | W3 | 3, 4 | Render root and LAB models and probe profile selection | W1 | TSK-0001 | Task evidence |
 | W4 | 5 | Map conflicting rules to follow-on owners and publish ADR-0047 | W2, W3 | TSK-0001 | Task evidence |
 | W5 | 6 | Record QA selection and remote protection, then validate this change | W4 | TSK-0001 | Task evidence |
+| W6 | 1, 2 | Re-read main and Project-Template; assign the twenty items | W5 | TSK-0002 | Task evidence |
+| W7 | 3 | Check inventory rows against the rendered root and LAB service sets | W6 | TSK-0002 | Task evidence |
+| W8 | 7 | Dispose of every open Spec and hand off the next prompts | W6 | TSK-0002 | Task evidence |
 
 ## Verification Plan
 
@@ -55,3 +58,4 @@ issued and are not reused.
 
 - [Spec](spec.md)
 - [Task](tasks/tsk-0001-request-baseline-and-inventory.md)
+- [Task 0002](tasks/tsk-0002-twenty-item-reconciliation.md)
