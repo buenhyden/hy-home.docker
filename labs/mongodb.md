@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.0.9"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -26,7 +26,7 @@ created: "2025-11-12"
 
 ### In Scope
 
-- replica set, key generator, initializer, Mongo Express, exporter의 학습·render 계약
+- replica set, key generator, initializer, Mongo Express의 학습·render 계약
 
 ### Out of Scope
 
@@ -57,7 +57,7 @@ labs/
 | Entry point | [mongodb.yml](./mongodb.yml) |
 | Project | `hy-home-lab-mongodb` |
 | State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
-| Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net`, `lab_mongodb_obs_net` |
+| Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net` |
 | Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |
 | Host exposure | `mongo-express`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시; HOME Traefik label 없음 (SPEC-0215) |
 | Helper assets | 없음 |
@@ -96,7 +96,7 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 MongoDB key job은 같은 공식 `mongo:8.3.11-noble` 이미지의 `mongosh --nodb`와
 Node `crypto`로 keyfile을 네트워크 없이 생성합니다. 재실행은 기존 key를
 바꾸지 않고 길이·base64·소유자·권한을 검사합니다. `mongo-init`은 arbiter의
-healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer와 exporter는
+healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 비밀번호를 runtime 환경에서 소비하여 URI나 CLI 인자에 기록하지 않습니다.
 실제 인증과 replica set 결성은 격리 실행 전까지 검증되지 않았습니다.
 

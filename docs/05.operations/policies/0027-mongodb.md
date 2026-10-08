@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -25,10 +25,10 @@ created: "2026-05-17"
 ### Policy Scope
 
 - `labs/mongodb.yml`
-- `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`, `mongodb-exporter`
+- `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`
 - `mongo-key`, `mongodb1-data`, `mongodb2-data`, `mongodb3-data` (`${LAB_DATA_DIR}/mongodb/` bind)
 - `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`, `LAB_MONGODB_ROOT_USERNAME`, `LAB_MONGO_EXPRESS_USERNAME`
-- HOME Traefik label 없음; Mongo Express loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`; exporter 내부 port `${LAB_MONGO_EXPORTER_PORT:-9216}`
+- HOME Traefik label 없음; Mongo Express loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`
 - Linked guide and runbook under `docs/05.operations`
 
 ### Traceability
@@ -60,7 +60,7 @@ created: "2026-05-17"
 - **Required**: Upgrade와 removal은 restore-tested backup, 용량 확인, 호환성
   검토, 명시적 승인을 요구한다. Arbiter를 절대 data 복사본으로 취급하지 않는다.
 - **Allowed**: Evidence 수집을 위한 read-only `rs.status()`, `rs.conf()`, 로그,
-  compose config, exporter readiness 확인.
+  compose config 확인.
 - **Allowed**: 서비스 이름, profile, 링크를 compose와 일치시키는 문서 전용
   수정. Runtime pin은 계속 Compose가 소유한다.
 - **Disallowed**: 별도 승인과 검증된 runbook evidence 없이 수행하는 파괴적
@@ -71,14 +71,14 @@ created: "2026-05-17"
 
 ### Accountable lifecycle boundary
 
-적용 identity: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-exporter`, `mongodb-rep1`, `mongodb-rep2`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+적용 identity: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-rep1`, `mongodb-rep2`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
 ### Verification
 
 - Compose 변경 후 이 정책을 [MongoDB guide](../guides/0027-mongodb.md),
   [MongoDB runbook](../runbooks/0027-mongodb.md),
   [LAB 설명](../../../labs/mongodb.md)와 비교한다.
-- 서비스 이름, replica set, route, secret, keyfile, exporter 문서 갱신을
+- 서비스 이름, replica set, route, secret, keyfile 문서 갱신을
   승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb.yml --profile mongodb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 

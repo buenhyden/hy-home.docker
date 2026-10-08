@@ -247,47 +247,13 @@ services:
       - lab_mongodb_root_password
       - lab_mongo_express_basicauth_password
 
-  mongodb-exporter:
-    labels:
-      <<: *tier-label
-    profiles:
-      - mongodb
-    extends:
-      file: ../infra/common-optimizations.yml
-      service: template-infra-low
-    image: percona/mongodb_exporter:2.37
-    container_name: lab-mongodb-mongodb-exporter
-    read_only: true
-    tmpfs:
-      - /tmp
-    expose:
-      - ${LAB_MONGO_EXPORTER_PORT:-9216}
-    entrypoint: [ '/bin/sh', '-c' ]
-    environment:
-      MONGODB_USER: ${LAB_MONGODB_ROOT_USERNAME}
-    command:
-      - |
-        export MONGODB_PASSWORD=$$(cat /run/secrets/lab_mongodb_root_password)
-        [ -n "$$MONGODB_PASSWORD" ] || exit 1
-        exec mongodb_exporter --mongodb.uri="mongodb://mongodb-rep1:27017,mongodb-rep2:27017/?replicaSet=MyReplicaSet&authSource=admin" --collect.collection --collect.database --collect.indexusage
-    depends_on:
-      mongo-init:
-        condition: service_completed_successfully
-    secrets:
-      - lab_mongodb_root_password
-    networks:
-      lab_mongodb_core_net: {}
-      lab_mongodb_obs_net: {}
-
 networks:
   lab_mongodb_core_net:
     name: ${LAB_MONGODB_CORE_NETWORK_NAME:-hy-home-lab-mongodb-core}
     internal: true
   lab_mongodb_edge_net:
     name: ${LAB_MONGODB_EDGE_NETWORK_NAME:-hy-home-lab-mongodb-edge}
-  lab_mongodb_obs_net:
-    name: ${LAB_MONGODB_OBS_NETWORK_NAME:-hy-home-lab-mongodb-obs}
-    internal: true
+
 secrets:
   lab_mongodb_root_password:
     file: ${LAB_SECRET_DIR:-../secrets/labs}/mongodb/root_password.txt
