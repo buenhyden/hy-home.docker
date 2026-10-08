@@ -1,6 +1,6 @@
 # Community (TSL + Apache components), PostgreSQL 18.6, Alpine 3.23.6,
 # linux/amd64 manifest verified 2026-10-03; synthetic build/load and offline restore passed.
-# HOME activation and operational recovery remain NOT_RUN.
+# r2 (2026-10-08): retention, archive-push-queue-max and repository-root ownership.
 FROM timescale/timescaledb:2.30.2-pg18@sha256:cdf97a4b5be91038b5c1be0ad304c5d5746132992e54f7dd26ec467a6d005755
 
 # Alpine v3.23 community package; build must prove package and PG18 ABI.

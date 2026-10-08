@@ -22,7 +22,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-db-med
-    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     platform: linux/amd64
     build:
       context: ./pg
@@ -49,9 +49,9 @@ services:
       - -c
       - wal_level=logical
       - -c
-      # WAL archiving stays off until stanza/key/repository/schedule verification
-      # and a separately approved restart.
-      - archive_mode=off
+      # Continuous WAL to the separate `dev` stanza. The stanza must exist before
+      # this setting takes effect (RUN-0021); archive-push-queue-max bounds pg_wal.
+      - archive_mode=on
       - -c
       - archive_command=pgbackrest --stanza=dev archive-push %p
       - -c
@@ -104,7 +104,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-med
     restart: 'no'
-    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     platform: linux/amd64
     entrypoint: ['python3', '/work/project.py', '/work/platform.json']
     environment:
@@ -131,7 +131,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     platform: linux/amd64
     entrypoint: ['python3', '/work/perf/provision.py']
     environment:
@@ -156,7 +156,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-job-low
     restart: 'no'
-    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57-r2
     platform: linux/amd64
     entrypoint: ['python3', '/work/monitor.py']
     environment:

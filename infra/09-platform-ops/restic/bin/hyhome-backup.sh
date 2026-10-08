@@ -105,8 +105,8 @@ else
     status=1
 fi
 
-# Development backup contract. Activation still requires the separately
-# approved stanza/key/WAL preflight; archive_mode=off must not pass check.
+# Development stanza `dev`: check proves WAL archiving reaches the repository
+# before a backup runs; a missing stanza or archive_mode=off fails the run.
 rm -f "$staging"/dev-pg-{globals,schema}.sql "$staging"/dev-pg-{image-id,infra-revision}.txt
 if running dev-pg; then
     dev_type="diff"

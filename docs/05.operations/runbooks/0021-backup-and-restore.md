@@ -338,9 +338,21 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    source bind의 `create_host_path: false` 때문에 디렉터리를 미리 승인된 범위로
    준비해야 하며, 관리 repository를 개발 경로에 다시 연결하지 않습니다.
 2. `dev_pgbackrest_cipher_pass`의 읽기 전용 secret mount와 보관 책임자를
-   확인합니다. 운영 stanza-create/check·최초 full backup·WAL 활성화·retention·
-   재시작·예약 백업은 각각 구체적 승인 후 수행합니다. 현재 archive_mode=off
-   상태에서 online check 실패를 우회하거나 synthetic offline 결과로 대체하지 않습니다.
+   확인합니다. 활성화는 아래 순서로만 합니다. 순서를 바꾸면 archive-push가
+   stanza 없이 실패하고 WAL이 `pg_wal`에 쌓입니다.
+   1. repository 최상위 디렉터리를 `70:70`, `0750`으로 둡니다. r2 이미지
+      entrypoint가 시작할 때 이 한 디렉터리만 맞추며, 기존 컨테이너에서는
+      `docker exec -u 0 dev-pg chown postgres:postgres /var/lib/pgbackrest`로 맞춥니다.
+   2. `archive_mode=off`인 상태에서
+      `docker exec -u postgres dev-pg pgbackrest --stanza=dev stanza-create`를
+      실행합니다.
+   3. `archive_mode=on` 소스로 `dev-pg`를 다시 만들고
+      `pgbackrest --stanza=dev check`가 통과하는지 확인합니다.
+   4. `pgbackrest --stanza=dev --type=full backup`으로 최초 full을 만듭니다. 그
+      뒤에야 예약 백업의 differential이 기준을 가집니다.
+   5. 아래 4번의 격리 restore canary를 실행하고 label·WAL 범위·종료 코드를
+      Task에 남깁니다.
+   online check 실패를 우회하거나 synthetic offline 결과로 대체하지 않습니다.
 3. 기존 scheduler는 개발 check 후 backup, globals/schema export와 image/infra
    revision metadata를 생성합니다. globals는 자격 증명 hash를 포함할 수 있으므로
    출력하지 않으며 기존0700 staging·종료 cleanup과 encrypted Restic에만 둡니다.
@@ -350,7 +362,12 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    검토합니다. dev entrypoint의 기본 credential 소비 경로를 유지하며 명령은
    `pgbackrest --stanza=dev --set=<approved-label> restore` 형태로 승인된 빈 target에만
    실행합니다. `latest`, management stanza, 기존 PGDATA 재사용은 금지합니다.
-   archive_mode가 승인되어 연속 WAL을 검증하기 전에는 PITR를 주장하지 않습니다.
+   restore는 `postgresql.auto.conf`의 `restore_command`에 자신의
+   `--config-include-path`를 기록합니다. 복구 컨테이너에서도 entrypoint와 같은
+   `/tmp/pgbackrest/conf.d`를 쓰지 않으면 복원된 인스턴스가 WAL을 읽지 못해
+   시작하지 못합니다. repository는 read-only로 mount하며, r2 entrypoint는 이미
+   `70:70 0750`인 repository를 바꾸지 않습니다.
+   연속 WAL 범위로 선택 시점을 복원해 확인하기 전에는 PITR를 주장하지 않습니다.
 5. physical catalog의 extension version과 migration 이력, 별도 globals/schema,
    외부 앱 migration source revision을 대조하고 runtime/reader 권한 거절·업무
    기능을 검증합니다. 성공 label/WAL 범위·image·시간·종료 코드만 기록합니다.

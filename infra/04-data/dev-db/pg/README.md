@@ -22,8 +22,8 @@ created: "2026-10-02"
 
 - 입력: `DEFAULT_DATA_DIR`의 새로운 `dev-pg` 디렉터리, 별도의 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`, `DEV_PG_HOST_PORT`(기본 25433, localhost), `DEV_PG_ADMIN_USER`(기본 postgres), root의 `dev_data_net`, `dev_pg_admin_password`, `dev_pgbackrest_cipher_pass`, 플랫폼 fixture의 세 역할 비밀번호 secret. 실제 값은 저장소 밖 Docker secret으로 공급합니다.
 - 출력: `dev-pg:5432` endpoint와 `platform_dev`의 `platform_owner`(NOLOGIN), `platform_migrator`, `platform_runtime`, `platform_reader` 역할. DB와 schema `app`의 소유자는 `platform_owner`이며 migrator는 migration 때 `SET ROLE platform_owner`를 실행해야 새 객체에 기본 권한이 적용됩니다. Runtime과 reader는 DDL 권한이 없습니다.
-- 범위: 별도 `dev` pgBackRest stanza, 새 PGDATA `/var/lib/postgresql/18/docker`, 2 CPU/2 GiB RAM/256 MiB SHM, 100 연결(프로젝트 login role 예산: migrator 2, runtime 10, reader 5), WAL archive 명령의 비활성 초안. `archive_mode=off`이며 stanza/키/저장소/일정/관측 검증과 별도 재시작 승인 후에만 활성화합니다. `max_wal_size=2GB`는 PostgreSQL WAL 디스크 사용의 강제 상한이 아닙니다. WAL/저장소 여유를 관측해야 합니다.
-- 검증: 2026-10-03 새 secret 경로 발급, 격리 이미지 빌드, Timescale 확장 로드, 플랫폼 역할의 읽기·쓰기·DDL 권한, pgBackRest 오프라인 전체 백업과 별도 볼륨 복원을 합성 상태에서 확인했습니다. HOME 실행·온라인 WAL 백업·실제 운영 복구·RPO/RTO 실측은 `NOT_RUN`입니다. 두 full chain과 5분 RPO/4시간 RTO는 승인 전 제안값이며 pgBackRest retention/expire는 활성화하지 않았습니다.
+- 범위: 별도 `dev` pgBackRest stanza, 새 PGDATA `/var/lib/postgresql/18/docker`, 2 CPU/2 GiB RAM/256 MiB SHM, 100 연결(프로젝트 login role 예산: migrator 2, runtime 10, reader 5), 연속 WAL archive(`archive_mode=on`, 보존 full 2·differential 6, `archive-push-queue-max=2GiB`). 활성화 순서는 RUN-0021이 소유하며 `dev` stanza가 먼저 있어야 합니다. `max_wal_size=2GB`는 PostgreSQL WAL 디스크 사용의 강제 상한이 아닙니다. WAL/저장소 여유를 관측해야 합니다.
+- 검증: 2026-10-03 새 secret 경로 발급, 격리 이미지 빌드, Timescale 확장 로드, 플랫폼 역할의 읽기·쓰기·DDL 권한, pgBackRest 오프라인 전체 백업과 별도 볼륨 복원을 합성 상태에서 확인했습니다. retention(full 2·differential 6)은 소스에 선언되어 백업마다 만료가 적용됩니다. HOME stanza·WAL 활성화·최초 full·격리 restore canary의 결과는 SPEC-0213 Task가 기록하며, 5분 RPO는 archive 성공 시의 계획값이고 RTO 실측은 없습니다.
 
 ## Structure
 
