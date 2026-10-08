@@ -2079,6 +2079,26 @@ class BackupContractTests(unittest.TestCase):
         self.assertIn("timeout 300 valkey-cli --no-auth-warning", dev)
         self.assertIn('rm -f "$staging/dev-valkey.rdb"', dev)
         self.assertIn("status=1", dev)
+        # OpenBao: a snapshot-only token on stdin (never argv), renewed each
+        # run; a failed or empty snapshot is dropped and fails the run.
+        bao = script[
+            script.index("# OpenBao Raft snapshot") : script.index(
+                "backup-sqlite-export"
+            )
+        ]
+        self.assertIn('<"$bao_token"', bao)
+        self.assertNotIn("BAO_TOKEN=$(cat", bao)
+        self.assertNotIn("-token=", bao)
+        self.assertIn("bao token renew", bao)
+        self.assertIn('rm -f "$staging/openbao-raft.snap"', bao)
+        self.assertIn('[[ ! -s "$staging/openbao-raft.snap" ]]', bao)
+        policy = (
+            ROOT / "infra/03-security/openbao/config/policies/backup-snapshot.hcl"
+        ).read_text(encoding="utf-8")
+        self.assertEqual(
+            ['"sys/storage/raft/snapshot"'], re.findall(r"path (\S+)", policy)
+        )
+        self.assertIn('capabilities = ["read"]', policy)
         service = (ROOT / RESTIC_DIR / "systemd/hyhome-backup.service").read_text(
             encoding="utf-8"
         )

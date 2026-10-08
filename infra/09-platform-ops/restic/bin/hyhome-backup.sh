@@ -173,6 +173,27 @@ else
     echo "dev-valkey not running: RDB export skipped"
 fi
 
+# OpenBao Raft snapshot. The scoped token (policy backup-snapshot: read on
+# sys/storage/raft/snapshot only) goes in on stdin, never in argv. It is a
+# periodic token, renewed by each run, so it lapses only if runs stop for a
+# whole period. The snapshot stays barrier-encrypted: restoring it needs the
+# original unseal keys.
+bao_token="$repo_root/secrets/backup/openbao/snapshot_token.txt"
+if [[ ! -s "$bao_token" ]]; then
+    echo "OpenBao snapshot token absent: snapshot skipped (recovery gap)"
+elif ! running openbao; then
+    echo "openbao not running: snapshot skipped" >&2
+    status=1
+elif ! docker exec -i openbao sh -ec \
+    'BAO_TOKEN="$(tr -d "\r\n")"; export BAO_TOKEN; trap "rm -f /tmp/hyhome.snap" EXIT
+     bao token renew >/dev/null
+     timeout 300 bao operator raft snapshot save /tmp/hyhome.snap >/dev/null; cat /tmp/hyhome.snap' \
+    <"$bao_token" >"$staging/openbao-raft.snap" || [[ ! -s "$staging/openbao-raft.snap" ]]; then
+    echo "OpenBao snapshot failed (sealed, token or timeout); snapshot dropped" >&2
+    rm -f "$staging/openbao-raft.snap"
+    status=1
+fi
+
 "${compose[@]}" run --rm --no-deps backup-sqlite-export || status=1
 
 # SeaweedFS: needles are append-only, so filer metadata saved before Restic
