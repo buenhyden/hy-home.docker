@@ -46,10 +46,21 @@ services:
       edge_net: {}
       mng_data_net: {}
     secrets: [sonarqube_db_password]
+    # The image reads only SONAR_JDBC_PASSWORD, not a _FILE form
+    # (infra/secret-file-support.json); export it from the secret and keep the
+    # image entrypoint.
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        SONAR_JDBC_PASSWORD="$$(cat /run/secrets/sonarqube_db_password)"
+        [ -n "$$SONAR_JDBC_PASSWORD" ] || { echo 'sonarqube_db_password is empty' >&2; exit 1; }
+        export SONAR_JDBC_PASSWORD
+        exec /opt/sonarqube/docker/entrypoint.sh "$$@"
+      - sonarqube
     environment:
       - SONAR_JDBC_URL=jdbc:postgresql://${POSTGRES_MNG_HOSTNAME}:${POSTGRES_PORT:-5432}/${SONARQUBE_DBNAME}
       - SONAR_JDBC_USERNAME=${SONARQUBE_DB_USER}
-      - SONAR_JDBC_PASSWORD_FILE=/run/secrets/sonarqube_db_password
       - SONAR_WEB_JAVAOPTS=-Xmx512m -Xms512m
       - SONAR_SEARCH_JAVAOPTS=-Xmx512m -Xms512m
     labels:
