@@ -163,6 +163,23 @@ session permission policy; both are synthetic and remain for the operator.
 All `s0213wal` containers, volumes and the network were removed by label, with
 zero remaining.
 
+### Review and Remote Candidate
+
+The first PR #372 candidate run (37709112470) failed `operations-catalog` with
+14 findings: the three new services had no Guide binding, POL-0078 did not
+list them under `dev-data`, and the service inventory lacked their rows while
+four rows kept stale cells. This check is a remote candidate leaf, so the
+local changed gate did not select it. GDE-0100 and POL-0078 now bind them and
+the inventory was re-rendered with `render_service_inventory`; the local
+`check-operations-catalog.py` then passed.
+
+An independent read-only review found no critical or important defect and
+five minor ones, all fixed: GDE-0021 still said `archive_mode=off`; GDE-0100
+lacked the stanza-first step for a new host; the runbook named no signal for a
+queue-limit WAL drop, which `pg_stat_archiver` does not count; preflight
+reported a render failure as a path overlap; and the runbook's ownership step
+omitted `chmod 0750`, which a read-only restore container would then fail on.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |

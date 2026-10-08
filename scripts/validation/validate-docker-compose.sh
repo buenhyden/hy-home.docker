@@ -320,7 +320,9 @@ run_preflight() {
   check_dir "${DEFAULT_OBSERVABILITY_DIR:-}"
 
   local overlaps
-  if overlaps="$(report_storage_overlaps realpath)"; then
+  if ! docker compose "${PROFILE_ARGS[@]}" config --quiet; then
+    fail "Compose configuration did not render; named volume paths not checked"
+  elif overlaps="$(report_storage_overlaps realpath)"; then
     ok "named volume host paths are distinct and not nested"
   else
     fail "named volume host paths overlap"

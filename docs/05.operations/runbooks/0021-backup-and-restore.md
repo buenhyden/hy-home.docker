@@ -97,6 +97,9 @@ successfully`로 끝나며, `SHOW archive_mode`가 `on`을 반환한다.
 `archive-push-queue-max`를 넘으면 pgBackRest는 disk 고갈을 피하려고 WAL을
 폐기하고 archive 성공을 보고할 수 있다. 이 경우 연속 WAL chain이 끊어져
 point-in-time recovery에 공백이 생긴다. Queue 한도는 [pgBackRest 설정](../../../infra/04-data/mng-db/pg/backup/pgbackrest.conf)이 소유한다.
+Drop은 `pg_stat_archiver.failed_count`에 나타나지 않는다. 확인 신호는 pgBackRest가
+PostgreSQL log(Loki로 수집)에 남기는 queue 초과 WARN과 `pgbackrest info`의 WAL
+범위 공백이다.
 WAL drop/queue 초과가 확인되면 해당 chain의 복구 가능성 판정을 중단하고
 증거를 보존해 @buenhyden에게 escalation한다. Archive 성공만으로 연속성을
 주장하지 않으며 원인 수정 후 새로운 유효 backup과 그 이후의 연속 WAL을
@@ -342,7 +345,9 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
    stanza 없이 실패하고 WAL이 `pg_wal`에 쌓입니다.
    1. repository 최상위 디렉터리를 `70:70`, `0750`으로 둡니다. r2 이미지
       entrypoint가 시작할 때 이 한 디렉터리만 맞추며, 기존 컨테이너에서는
-      `docker exec -u 0 dev-pg chown postgres:postgres /var/lib/pgbackrest`로 맞춥니다.
+      `docker exec -u 0 dev-pg sh -c 'chown postgres:postgres /var/lib/pgbackrest && chmod 0750 /var/lib/pgbackrest'`로
+      맞춥니다. 소유자와 mode가 모두 맞아야 read-only로 mount하는 복구 컨테이너가
+      시작합니다.
    2. `archive_mode=off`인 상태에서
       `docker exec -u postgres dev-pg pgbackrest --stanza=dev stanza-create`를
       실행합니다.

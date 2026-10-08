@@ -90,6 +90,11 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 포함하거나 profile을 변경하지 않는다. `dev-pg` readiness는 연결 수락만 확인하며 extension,
 project grant, 백업 또는 application readiness를 증명하지 않는다.
 
+`dev-pg`는 `archive_mode=on`으로 시작한다. 새 호스트에서 `dev-data`를 처음 올리기 전에
+RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로 두고 `dev` stanza를
+만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고
+`pg_wal`이 2 GiB 한도까지 자란 뒤 WAL이 버려진다.
+
 ### Runbook Handoff
 
 정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../runbooks/0100-development-database.md)이
