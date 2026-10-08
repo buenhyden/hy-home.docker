@@ -1,6 +1,6 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -135,6 +135,100 @@ rehearsals; the backup rehearsal covers pgBackRest and Restic round trips,
 not the Valkey export, so it was not run for this change.
 `pre-commit run --from-ref origin/main --to-ref HEAD` exited 0.
 
+### Third Round Inputs
+
+The user pasted prompt 04 again on 2026-10-08 after PR #387 merged at
+`b0a72d2e5`, which this round reads as a request to close the open items.
+The owner had freed the host disk to 64%, so image pulls and the OpenSearch
+LAB rerun became possible. Branch `claude/spec-0204-round3` starts at
+`b0a72d2e5`.
+
+### W13 OpenBao Raft Snapshot
+
+The nightly run reads a token from
+`secrets/backup/openbao/snapshot_token.txt`, passes it on stdin, renews it
+and saves a Raft snapshot to staging. Policy `backup-snapshot` grants only
+`read` on `sys/storage/raft/snapshot`. With the exact image in isolation:
+
+| Case | Result |
+| --- | --- |
+| Token absent | Gap message, run not failed, no file |
+| Valid periodic token (`-period=720h`) | Status 0, snapshot written, token renewed |
+| Wrong token | Status 1, file dropped |
+| Sealed vault | Status 1, file dropped |
+| Scoped token reads a secret | Denied |
+| Restore into a fresh node | Comes back sealed; original unseal key and root token return the synthetic secret |
+
+The test fails against the previous script and passes now. HOME OpenBao was
+sealed again when observed, and no token exists yet, so HOME runs report the
+gap until the owner creates one (RUN-0021 gives the steps). Commit
+`233e423d2`.
+
+### W14 Open WebUI Key
+
+The image sets `WEBUI_SECRET_KEY` empty, so `start.sh` generated the key in
+the container layer and each recreation replaced it. `WEBUI_SECRET_KEY_FILE`
+now points into the data volume, and the state allowlist includes the key
+next to `uploads/`; `webui.db` already comes from the SQLite export. In the
+exact image two containers on one volume kept the same key. The first HOME
+recreation after this change logs users out once. Commits `151720c29`,
+`fc519306a` (matrix row).
+
+### W15 CDC Stream Rehearsal
+
+`CdcStreamRehearsalTests` (opt-in `HYHOME_CDC_REHEARSAL=1`) runs dev-pg,
+Kafka, Schema Registry and Connect on an internal network with synthetic
+data. It provisions with the tracked SQL and registers the tracked connector
+with a password holding Properties-significant and non-ASCII characters. It
+passed in 260 s:
+
+- snapshot and streamed rows decode through the registry;
+- an added column registers schema version 2;
+- after a worker restart the stream resumes from its offset, so ids 1 to 5
+  each appear once;
+- the heartbeat writes its row and advances the slot's flushed LSN.
+
+Topics have three partitions, so order holds only per key. Commit
+`d92940e3b`.
+
+### W16 Gateway Machine Path
+
+A machine client with `Accept: application/json` got the same 302 to the
+Keycloak login page as a browser on every route behind `sso-errors`, and a
+client that follows redirects would read a 200 login page as success.
+`SsoRehearsalTests` (opt-in `HYHOME_SSO_REHEARSAL=1`) runs Traefik,
+oauth2-proxy built from its Dockerfile and Keycloak with a synthetic realm,
+the tracked middleware and the tracked proxy config. Against the previous
+middleware the machine client got 302 (RED). ForwardAuth now calls the
+oauth2-proxy root with its static upstream and `sso-errors` handles only
+403. The rehearsal then passed:
+
+- a browser gets 302 with PKCE `S256`, state and the tracked callback;
+- a JSON client gets 401 JSON;
+- the group member gets 200 with the identity header and a `Secure`,
+  `HttpOnly` cookie, and sign-out returns her to the redirect;
+- the non-member is refused at the callback and gets no cookie.
+
+The dynamic directory is live on HOME, so the change applied on write. HOME
+then showed 302 to Keycloak for browsers and 401 for JSON on Qdrant and
+Schema Registry, with the same authorize parameters; Grafana, which has its
+own login, was unchanged. A signed-in HOME session was not exercised. The
+unused `sso-auth-open-webui` middleware is retired. Commit `fefe81b66`.
+
+### W17 SonarQube Secret
+
+The image ignores `SONAR_JDBC_PASSWORD_FILE`. A wrapper now reads the
+secret, refuses an empty one and execs the image entrypoint. In isolation
+with PostgreSQL and a password holding spaces and symbols, SonarQube created
+its JDBC source and passed its UTF-8 charset check against the database,
+which needs a successful login; it had not reported `UP` within 450 s on the
+loaded host. An empty secret stopped the container before start. Commit
+`895cbf719`.
+
+### W18 Validation
+
+Pending.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -144,24 +238,33 @@ not the Valkey export, so it was not run for this change.
 | Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `abcc1d7a7` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
 | Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `4630384fe` | PASS | W10 Secret File Support Matrix | accepted |
 | Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `b84b2b87c` | PASS | W11 Image Residue and Mail Outcomes | accepted |
+| OpenBao snapshot | 7, 9 | W13 | Test RED then GREEN; six isolated cases | `233e423d2` | PASS | W13 OpenBao Raft Snapshot | accepted |
+| Open WebUI key | 7, 9 | W14 | Test; exact-image key reuse | `151720c29` | PASS | W14 Open WebUI Key | accepted |
+| CDC rehearsal | 6 | W15 | Opt-in rehearsal run | `d92940e3b` | PASS | W15 CDC Stream Rehearsal | accepted |
+| Gateway machine path | 4 | W16 | SSO rehearsal RED then GREEN; HOME anonymous probes | `fefe81b66` | PASS | W16 Gateway Machine Path | accepted |
+| SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `895cbf719` | PASS | W17 SonarQube Secret | accepted |
+| Third-round validation | 8 | W18 | Changed gate | Pending | NOT_RUN | W18 Validation | pending |
 | Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
 
 ## Review and Completion
 
 Not complete. These remain open, each with its owner action:
 
-- Fix or retire the Supabase stack, SonarQube and Terrakube secret wiring
-  before any of them is selected.
+- Rebuild or retire the Supabase stack: its images ignore 35 secret keys and
+  it lacks database URLs. Terrakube's 9 keys need Spring `configtree`, not
+  yet verified. Both stay outside the HOME selection by test.
+- Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
+  each run reports the recovery gap.
 - Decide whether `home-airflow` needs the password grant and which service
   accounts are used; enforce server-side PKCE `S256` per client after its
-  login is checked.
-- Run user A to B denial, n8n queue, manual, scheduled, webhook, Code and
-  cancel paths, and CDC Avro decode and replay in isolated fixtures with
-  synthetic users and data.
-- Give Airflow a DEV dataset, connection and DAG before testing watermark,
-  backfill, retry, dead letter and quality gates.
-- Add OpenBao and OpenSearch snapshots with a snapshot identity and
-  repository; free host disk below 90% first.
+  login is checked. Sign in once through a protected route to confirm the
+  new gateway path with a real session.
+- n8n execution paths are verified only with an upgrade, which this round
+  did not make. Airflow needs a DEV dataset, connection and DAG before
+  watermark, backfill, retry, dead letter and quality gates can be tested.
+- OpenSearch is not in the HOME selection and its indexes are rebuildable;
+  a snapshot repository is needed only once a project registers a
+  collection that cannot be rebuilt.
 
 ## Related Documents
 
