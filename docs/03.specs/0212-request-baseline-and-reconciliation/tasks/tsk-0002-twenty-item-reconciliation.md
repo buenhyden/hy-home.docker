@@ -1,6 +1,6 @@
 ---
 title: "Twenty-Item Reconciliation Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -64,7 +64,7 @@ showed on 2026-10-08; it is not an acceptance of the owning prompt.
 | 13 | new at execution | Not started this round | All |
 | 14 | new at execution | `naming_exceptions` added to the exceptions file (SPEC-0216) | Exact exception scope with parser, generator and Rego |
 | 15 | SPEC-0213 | No active InfluxDB surface; HOME has no InfluxDB container | Data directory disposal by the owner |
-| 16 | new at execution | Not done; a working-tree draft adding `dev_data_net` to RedisInsight was not carried | `dev_data_net`, inspector ACL and UI health |
+| 16 | new at execution | RedisInsight joins `dev_data_net` and reaches `dev-valkey` on HOME; the connection uses the `devadmin` ACL user | Inspector ACL and UI health |
 | 17 | SPEC-0213 W5 | `dev_pg_monitor` and `devmonitor` accounts; Prometheus scrapes both on HOME | `db_scope` label and DB failure alerts |
 | 18 | new at execution | Pins merged (#374); HOME runs `ollama/ollama:0.40.0` and `open-webui:v0.11.4-cuda`, both healthy | Manifest digest, wrapper, OIDC, CUDA/VRAM and rollback evidence |
 | 19 | new at execution | Not started this round | All |

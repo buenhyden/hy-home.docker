@@ -53,5 +53,6 @@ services:
       # One client for every HOME Valkey it inspects: management and the
       # application-private stores. LABs run in their own projects (SPEC-0215).
       mng_data_net: {}
+      dev_data_net: {}
       n8n_net: {}
       airflow_net: {}
