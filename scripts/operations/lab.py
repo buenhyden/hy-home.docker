@@ -56,6 +56,9 @@ def read_env(path: pathlib.Path) -> dict[str, str]:
 
 
 def run(command: list[str], **kwargs) -> subprocess.CompletedProcess:
+    # No stdin: a Compose prompt (such as recreating a changed volume) must
+    # fail the command instead of waiting forever.
+    kwargs.setdefault("stdin", subprocess.DEVNULL)
     return subprocess.run(
         command, cwd=ROOT, text=True, capture_output=True, check=False, **kwargs
     )
@@ -105,9 +108,11 @@ def footprint(model: dict) -> dict:
             cluster_ids.add(str(environment["CLUSTER_ID"]))
         cpus += float(service.get("cpus") or 0) * replicas
         memory += int(service.get("mem_limit") or 0) * replicas
+    devices = {}
     for key, volume in (model.get("volumes") or {}).items():
         device = (volume.get("driver_opts") or {}).get("device")
         if device:
+            devices[volume.get("name") or f"{project}_{key}"] = device
             path = os.path.realpath(device)
             paths.add(path)
             # Read-only inputs (a scenario source) are never cleanup targets.
@@ -122,6 +127,7 @@ def footprint(model: dict) -> dict:
         "state": state,
         "networks": networks - {None},
         "cluster_ids": cluster_ids,
+        "volume_devices": devices,
         "cpus": cpus,
         "memory": memory,
     }
@@ -245,6 +251,30 @@ def ledger_dir(env: dict[str, str]) -> pathlib.Path:
     return pathlib.Path(data) / ".ledger"
 
 
+def stale_volumes(docker: str, selected: dict[str, dict]) -> list[str]:
+    """A kept volume record that points at another data root.
+
+    `down` keeps volumes, so after `LAB_DATA_DIR` changes Compose would ask
+    whether to recreate the record; the operator removes it on purpose.
+    """
+    problems = []
+    for name, lab in selected.items():
+        for volume, device in sorted(lab.get("volume_devices", {}).items()):
+            found = run(
+                [docker, "volume", "inspect", "--format", "{{json .Options}}", volume]
+            )
+            if found.returncode != 0:
+                continue
+            options = json.loads(found.stdout or "{}") or {}
+            if options.get("device") not in (None, device):
+                problems.append(
+                    f"{name}: volume {volume} points at {options['device']}, not "
+                    f"{device}; remove the record with `docker volume rm {volume}` "
+                    "(bind data stays on disk)"
+                )
+    return problems
+
+
 def check(args, env) -> tuple[dict, dict[str, dict]]:
     selected = {
         name: footprint(render(args.docker, args.env_file, lab_file(name)))
@@ -266,7 +296,8 @@ def check(args, env) -> tuple[dict, dict[str, dict]]:
             c["name"] for c in running if not c["cpus"] or not c["memory"]
         ),
         "problems": collisions(selected, root, running)
-        + budget(selected, running, env),
+        + budget(selected, running, env)
+        + stale_volumes(args.docker, selected),
     }
     return report, selected
 

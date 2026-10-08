@@ -139,6 +139,30 @@ class CollisionAndBudgetTests(unittest.TestCase):
         self.assertIn("cluster_id home-kraft-id also in root", text)
         self.assertEqual([], lab.collisions({"kafka": own}, home, []))
 
+    def test_a_kept_volume_for_another_data_root_is_refused(self) -> None:
+        rendered = model(
+            "hy-home-lab-x",
+            {"x": service("lab-x")},
+            volumes={
+                "v": {"name": "hy-home-lab-x_v", "driver_opts": {"device": "/new/v"}}
+            },
+        )
+        selected = {"x": lab.footprint(rendered)}
+
+        def inspect(device):
+            def fake(command, **kwargs):
+                self.assertEqual(subprocess.DEVNULL, kwargs.get("stdin"))
+                options = json.dumps({"device": device, "o": "bind"})
+                return subprocess.CompletedProcess(command, 0, options, "")
+
+            return fake
+
+        with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/old/v")):
+            text = "\n".join(lab.stale_volumes("docker", selected))
+        self.assertIn("docker volume rm hy-home-lab-x_v", text)
+        with mock.patch.object(lab.subprocess, "run", side_effect=inspect("/new/v")):
+            self.assertEqual([], lab.stale_volumes("docker", selected))
+
     def test_symlink_into_home_data_is_still_an_overlap(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             home = pathlib.Path(tmp) / "home-data"
