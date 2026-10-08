@@ -42,6 +42,27 @@ test_secret_references_pass if {
 	}})
 }
 
+test_credentials_inside_urls_are_denied_under_any_key if {
+	deny["service s: DATABASE_URL carries a credential in a URL; use a Docker secret"] with input as svc({"environment": {"DATABASE_URL": "postgres://app:hunter2@db:5432/app"}})
+	deny["service s: BROKER_URL carries a credential in a URL; use a Docker secret"] with input as svc({"environment": ["BROKER_URL=redis://:s3cret@valkey:6379/0"]})
+	deny["service s: HOOK carries a credential in a URL; use a Docker secret"] with input as svc({"environment": {"HOOK": "https://hooks.example/notify?token=abc123"}})
+	deny["service s: FEED carries a credential in a URL; use a Docker secret"] with input as svc({"environment": {"FEED": "https://api.example/v1?q=x&API_KEY=k9"}})
+	deny["service s: AUTH_TOKEN_URL carries a credential in a URL; use a Docker secret"] with input as svc({"environment": {"AUTH_TOKEN_URL": "https://u:p@auth.example/token"}})
+}
+
+test_urls_without_their_own_credential_pass if {
+	count(deny) == 0 with input as svc({"environment": {
+		"DATABASE_URL": "postgres://app:${DB_PASSWORD}@db:5432/app",
+		"BROKER_URL": "redis://:${VALKEY_PASSWORD}@valkey:6379/0",
+		"ISSUER_URL": "https://keycloak.${DEFAULT_URL}/realms/r",
+		"USER_ONLY_URL": "postgres://app@db:5432/app",
+		"HOOK": "https://hooks.example/notify?token=${HOOK_TOKEN}",
+		"SEARCH_URL": "https://api.example/v1?q=keyword&page=2",
+		"SECRET_PATH": "/run/secrets/db",
+		"DSN_FILE": "/run/secrets/dsn",
+	}})
+}
+
 test_wide_port_is_denied_and_loopback_is_not if {
 	count(deny) == 1 with input as svc({"ports": ["8080:80"]})
 	count(deny) == 0 with input as svc({"ports": ["127.0.0.1:8080:80", "80"]})
