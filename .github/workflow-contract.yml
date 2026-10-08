@@ -1299,7 +1299,8 @@
           "document-contract",
           "document-graph",
           "document-lifecycle",
-          "operations"
+          "operations",
+          "repository-integrity"
         ]
       },
       {
@@ -1632,10 +1633,12 @@
       {
         "prefixes": [
           "docker-compose.yml",
-          "infra/"
+          "infra/",
+          "secrets/"
         ],
         "root_gate_ids": [
-          "leaf.local-tech-stack-version-drift"
+          "leaf.local-tech-stack-version-drift",
+          "leaf.repository-integrity-regressions"
         ]
       },
       {
