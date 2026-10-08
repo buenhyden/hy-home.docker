@@ -1,6 +1,6 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -235,6 +235,39 @@ still covers the importer; the unit tests for replay, conflict, outage and
 timeout pass. Loading results after the run, not during it, stays the
 default.
 
+### W10 HOME Alloy and HOME Relay Canary
+
+Run on 2026-10-08 from the HOME checkout at merge `f9fd05cae` (PR #384). The
+token file `secrets/observability/alloy/quality_otlp_token.txt` was changed
+from `664` to `640`; Alloy (UID 473) keeps read access through its
+supplementary group 1000, and the relay runs as the file's owner. `docker
+compose up -d --no-deps alloy` recreated Alloy, which became healthy on
+`edge_net`, `obs_net` and `quality_otlp_net`. `quality_otlp_net` is internal,
+`10.250.17.0/24`, with Alloy as its only member. A request without a token to
+`alloy:4319` from that network got HTTP 401, and Alloy logged no token error.
+
+`executor_stage.py --home` (`afb201d3b525f803ecf51333cad82463b7c8699e1b79b078aca00982c9558d2f`)
+then ran the path-guard target and `quality_run.py run` with the
+controller-owned relay, egress `quality_otlp_net` and the HOME token, project
+`hyhome-quality-canary`. Exit 0:
+
+| Step | Result |
+| --- | --- |
+| Run | `passed`/`complete`; relay and runner removed afterwards |
+| HOME Prometheus vs k6 summary | requests 337 = 337, passing checks 252 = 252, dropped iterations 99916 = 99916 |
+| Forged OTLP | `k6_forged_counter_total` stored under the run's own project and instance only; no forged project or instance series; `outside_counter` dropped |
+| Series per attempt | 410 |
+| Live Grafana | the provisioned dashboard `infrastructure-k6`, read through the Grafana API, answered 30 of 30 of its own queries through `/api/ds/query` |
+| Cleanup | guard fixture, probe and scratch removed; no `hyhome-k6*` or probe container left |
+
+The first canary attempt passed every Prometheus step and then failed to find
+the dashboard by the title "k6"; its provisioned title is "k6 Prometheus".
+The canary now reads the uid from the tracked dashboard file. The canary's
+series stay in HOME Prometheus until the 15-day retention removes them.
+
+With 410 series per attempt and `max_streams` 10000, about 24 attempts can
+send within one 5-minute `max_stale` window before streams are dropped.
+
 ### Review
 
 An independent read-only review of the branch returned ten findings:
@@ -262,14 +295,16 @@ An independent read-only review of the branch returned ten findings:
 | Locust lifecycle | 8 | W8 | Unit tests incl. start failure and cancelled start; `lifecycle.py` six cases | Pinned Locust and WireMock digests | PASS | W8 Locust LAB Supervision | accepted |
 | Isolated end-to-end relay | 7 | W9 | `acceptance.py` with the executor stage | Pinned Alloy, Prometheus, Python, k6, Traefik, WireMock digests | PASS | W9 Isolated End-to-End Relay Run | accepted |
 | Import path | 5 | W10 | Hash comparison with SPEC-0203 real-PostgreSQL evidence; unit tests | Same importer, inspection and schema bytes | PASS | W10 Documents and Reused Import Evidence | accepted |
-| HOME Alloy on `quality_otlp_net` and HOME relay canary | 9 | W10 | `executor_stage.py --home`; live Grafana API | Merged source | NOT_RUN | Review and Completion | pending |
+| HOME Alloy on `quality_otlp_net` and HOME relay canary | 9 | W10 | Alloy recreation; 4319 without token; `executor_stage.py --home`; live Grafana API | Merged `f9fd05cae`; HOME 2026-10-08 | PASS | W10 HOME Alloy and HOME Relay Canary | accepted |
 | Real application target load | 5 | W10 | Approved target run | No approved target | NOT_RUN | Inputs and Authorization | pending |
 
 ## Review and Completion
 
-Source, static and isolated work is complete. HOME Alloy recreation, the HOME
-relay canary and the live Grafana query run after the merge and are recorded
-here. Real application target load stays `NOT_RUN` without an approved target.
+Source, static, isolated and HOME work is complete: HOME Alloy joined
+`quality_otlp_net`, and a HOME relay canary reached HOME Prometheus and the
+live Grafana dashboard. Real application target load stays `NOT_RUN` without
+an approved target, and per-project producer credentials, a server-enforced
+project label, token rotation and quota stay with the integration package.
 
 ## Related Documents
 
