@@ -205,7 +205,14 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         known_paths = {
             "docs/03.specs/0173-governance-qa-surface-convergence/plan.md": set(),
             ".agents/governance/sdlc.md": set(),
-            "infra/monitoring/config.yml": {"leaf.local-tech-stack-version-drift"},
+            "infra/monitoring/config.yml": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
+            "secrets/SENSITIVE_ENV_VARS.md.example": {
+                "leaf.local-tech-stack-version-drift",
+                "leaf.repository-integrity-regressions",
+            },
         }
         for path, expected_optional in known_paths.items():
             with self.subTest(path=path):
