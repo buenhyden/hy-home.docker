@@ -1,10 +1,32 @@
 // Per-run metrics ingress for one isolated k6 attempt (SPEC-0214).
 // k6 reaches only this relay on the internal quality network; the relay alone
 // holds the HOME Alloy bearer token and forwards to its unpublished receiver.
-// Resource attributes come from the executor, not from the scenario.
+// metrics_relay.py starts it with the run identity in its environment. Every
+// resource attribute a producer sends is replaced by that identity, so a
+// scenario that posts its own OTLP cannot claim another project or run.
 otelcol.receiver.otlp "k6" {
   http {
     endpoint = "0.0.0.0:4318"
+  }
+
+  output {
+    metrics = [otelcol.processor.transform.run_identity.input]
+  }
+}
+
+// A missing variable yields an empty value, which HOME Alloy drops.
+otelcol.processor.transform "run_identity" {
+  error_mode = "propagate"
+
+  metric_statements {
+    context    = "resource"
+    statements = [
+      `delete_matching_keys(resource.attributes, ".*")`,
+      "set(resource.attributes[\"project.id\"], \"" + sys.env("HYHOME_QUALITY_PROJECT_ID") + "\")",
+      "set(resource.attributes[\"deployment.environment.name\"], \"" + sys.env("HYHOME_QUALITY_ENVIRONMENT") + "\")",
+      "set(resource.attributes[\"service.instance.id\"], \"" + sys.env("HYHOME_QUALITY_INSTANCE") + "\")",
+      `set(resource.attributes["service.name"], "k6")`,
+    ]
   }
 
   output {
