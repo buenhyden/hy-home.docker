@@ -32,6 +32,7 @@ import re
 import signal
 import subprocess
 import sys
+import time
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 LAB_PROJECT_PREFIX = "hy-home-lab-"
@@ -277,6 +278,49 @@ def compose_command(args, name: str, project: str) -> list[str]:
     ]  # fmt: skip
 
 
+def wait_ready(docker: str, project: str, timeout: int) -> str | None:
+    """None once every container is healthy, running without a health check,
+    or a one-shot job (restart `no`) that exited 0; otherwise the first
+    reason it is not. A one-shot job that still runs is not ready yet.
+
+    `compose up --wait` treats an init job that exits 0 as a failure, so the
+    LAB controller judges readiness itself.
+    """
+    deadline = time.monotonic() + timeout
+    while True:
+        listed = run(
+            [docker, "ps", "--all", "--quiet",
+             "--filter", f"label=com.docker.compose.project={project}"]
+        )  # fmt: skip
+        ids = listed.stdout.split()
+        inspected = run([docker, "inspect", *ids]) if ids else None
+        records = json.loads(inspected.stdout) if inspected and inspected.stdout else []
+        pending = []
+        for record in records:
+            state = record.get("State") or {}
+            name = str(record.get("Name", "")).lstrip("/")
+            health = (state.get("Health") or {}).get("Status")
+            restart = ((record.get("HostConfig") or {}).get("RestartPolicy") or {}).get(
+                "Name"
+            )
+            if state.get("Status") == "exited":
+                if state.get("ExitCode") != 0:
+                    return f"{name} exited {state.get('ExitCode')}"
+            elif health == "unhealthy":
+                return f"{name} is unhealthy"
+            elif (
+                state.get("Status") != "running"
+                or health == "starting"
+                or restart == "no"
+            ):
+                pending.append(name)
+        if records and not pending:
+            return None
+        if time.monotonic() >= deadline:
+            return "not ready: " + (", ".join(sorted(pending)[:5]) or "no containers")
+        time.sleep(2)
+
+
 def write_entry(path: pathlib.Path, entry: dict) -> None:
     path.write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8")
 
@@ -298,7 +342,12 @@ def cmd_up(args, env, *, wait: bool = True) -> int:
     data_root = pathlib.Path(os.path.realpath(ledger.parent))
     for path in lab["state"]:
         if pathlib.Path(path).is_relative_to(data_root):
-            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+            state_dir = pathlib.Path(path)
+            if not state_dir.exists():
+                state_dir.mkdir(parents=True)
+                # Group-writable whatever the umask: LAB processes run as their
+                # image user with the operator's group (SECRETS_GID).
+                state_dir.chmod(0o770)
     now = dt.datetime.now(dt.UTC)
     entry = {
         "lab": args.lab,
@@ -318,13 +367,17 @@ def cmd_up(args, env, *, wait: bool = True) -> int:
     target = ledger / f"{args.lab}.json"
     write_entry(target, entry)
     command = [*compose_command(args, args.lab, lab["project"]), "up", "-d"]
+    result = run(command)
+    reason = result.stderr.strip() if result.returncode != 0 else None
     # A job LAB may finish before it reports healthy, so `run` does not wait.
-    result = run([*command, "--wait"] if wait else command)
-    entry["state"] = "running" if result.returncode == 0 else "failed"
+    if reason is None and wait:
+        timeout = int(env.get("LAB_READY_TIMEOUT_SECONDS") or 600)
+        reason = wait_ready(args.docker, lab["project"], timeout)
+    entry["state"] = "running" if reason is None else "failed"
     write_entry(target, entry)
     print(json.dumps({k: entry[k] for k in ("lab", "state", "expires_at")}))
-    if result.returncode != 0:
-        print(result.stderr.strip(), file=sys.stderr)
+    if reason is not None:
+        print(reason, file=sys.stderr)
         return 1
     return 0
 
