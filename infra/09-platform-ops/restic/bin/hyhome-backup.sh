@@ -105,8 +105,8 @@ else
     status=1
 fi
 
-# Development stanza `dev`: check proves WAL archiving reaches the repository
-# before a backup runs; a missing stanza or archive_mode=off fails the run.
+# Development backup contract. `check` proves WAL archiving reaches the `dev`
+# stanza before a backup runs; a missing stanza or archive_mode=off fails it.
 rm -f "$staging"/dev-pg-{globals,schema}.sql "$staging"/dev-pg-{image-id,infra-revision}.txt
 if running dev-pg; then
     dev_type="diff"
