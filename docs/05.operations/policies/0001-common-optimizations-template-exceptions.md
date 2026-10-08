@@ -1,6 +1,6 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -41,7 +41,10 @@ created: "2026-06-04"
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)(schema v2) 단일 파일이다.
   - `scripts/validation/compose_controls.py`는 root를 모든 profile로, `labs/*.yml`을 각각 합성 입력으로 렌더한다. extends·merge 뒤 서비스의 최종 control을 읽는다. gate 진입점은 `scripts/validation/check-template-security-baseline.sh`다.
-  - registry의 `controls`에 등록된 control만 강제한다. 현재 등록된 control은 `no_new_privileges`, `cap_drop_all`, `cap_add`, `privileged`, `restart`, `healthcheck`, `cpus`, `mem_limit`이다. 나머지는 `--report`로 보고만 한다.
+  - registry의 `controls`에 등록된 control만 강제한다. 현재 등록된 control은 `no_new_privileges`, `cap_drop_all`, `cap_add`, `privileged`, `init`, `restart`, `healthcheck`, `cpus`, `mem_limit`, `pids_limit`, `secrets_group`, `gpu`이다. 나머지(예: `read_only`)는 `--report`로 보고만 한다.
+  - 모든 템플릿은 capability를 전부 버린다(`cap_drop: ALL`). 이미지가 필요로 하는 capability는 leaf가 `cap_add`로 더하고 정확한 예외로 남긴다.
+  - `SECRETS_GID`는 secret 또는 secrets 디렉터리 아래 파일을 읽는 leaf만 선언한다. host group 소유 데이터 디렉터리에 쓰는 서비스는 기록된 예외로만 이 group을 유지한다.
+  - `pids_limit`은 등급별 초기 예산이다(dev 128, low 256, med 512, high·DB 1024). 부하 측정 전에는 최적값이 아니다.
   - 예외 한 건은 `scope`(`root` 또는 `lab:<이름>`), `compose_file`, `service`, `control`, `allowed_value`를 정확히 지정한다. `kind`(`weakening` 또는 `compatibility`), `owner`, `reason`, `impact`, `mitigation`, `verification`, `reviewed`, `review_by`, `release_condition`도 필수다.
   - `review_by`는 `reviewed`로부터 1년 이내다. 날짜가 지난 예외는 실패한다.
   - `infra/` Compose의 모든 서비스는 `container_name`과 `hostname`을 선언하며, 둘 다 서비스 이름과 같아야 한다. Docker container 이름은 호스트 전체에서 유일해야 하므로 다른 `container_name`은 `naming_exceptions`에 `container_name`과 `reason`으로만 등록한다(`tests.validation.test_infra_tier_layout`가 검사).
