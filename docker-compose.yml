@@ -161,6 +161,8 @@ secrets:
     file: ./secrets/db/dev-pg/platform_runtime_password.txt
   dev_pg_platform_reader_password:
     file: ./secrets/db/dev-pg/platform_reader_password.txt
+  dev_pg_monitor_password:
+    file: ./secrets/db/dev-pg/monitor_password.txt
   keycloak_db_password:
     file: ./secrets/db/mng-pg/keycloak_password.txt
   airflow_db_password:
@@ -187,6 +189,8 @@ secrets:
     file: ./secrets/db/mng-valkey/mng_password.txt
   dev_valkey_admin_password:
     file: ./secrets/db/dev-valkey/admin_password.txt
+  dev_valkey_monitor_password:
+    file: ./secrets/db/dev-valkey/monitor_password.txt
   oauth2_valkey_password:
     file: ./secrets/db/mng-valkey/oauth2_password.txt
   terrakube_valkey_password:

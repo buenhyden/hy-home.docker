@@ -777,6 +777,7 @@
       ],
       "compose_files": [
         "infra/02-auth/oauth2-proxy/docker-compose.yml",
+        "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
         "infra/07-workflow/airflow/docker-compose.yml",
         "infra/07-workflow/n8n/docker-compose.yml",
@@ -785,6 +786,12 @@
       "sources": [
         {
           "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "images": [
+            "oliver006/redis_exporter:v1.91.1-alpine"
+          ]
+        },
+        {
+          "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
             "oliver006/redis_exporter:v1.91.1-alpine"
           ]
@@ -1346,10 +1353,17 @@
         "prometheuscommunity/postgres-exporter:v0.20.1"
       ],
       "compose_files": [
+        "infra/04-data/dev-db/docker-compose.yml",
         "infra/04-data/mng-db/docker-compose.yml",
         "labs/postgresql-ha.yml"
       ],
       "sources": [
+        {
+          "compose_file": "infra/04-data/dev-db/docker-compose.yml",
+          "images": [
+            "prometheuscommunity/postgres-exporter:v0.20.1"
+          ]
+        },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [

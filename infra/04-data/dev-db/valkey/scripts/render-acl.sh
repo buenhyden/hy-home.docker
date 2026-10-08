@@ -2,6 +2,7 @@
 set -eu
 
 admin_secret=${DEV_VALKEY_ADMIN_SECRET_FILE:-/run/secrets/dev_valkey_admin_password}
+monitor_secret=${DEV_VALKEY_MONITOR_SECRET_FILE:-/run/secrets/dev_valkey_monitor_password}
 projects_file=${DEV_VALKEY_PROJECTS_FILE:-/etc/dev-valkey/projects.tsv}
 project_secrets=${DEV_VALKEY_PROJECT_SECRETS_DIR:-/run/valkey-project-secrets}
 acl_file=${DEV_VALKEY_ACL_FILE:-/run/valkey/users.acl}
@@ -36,9 +37,14 @@ tmp_file=$(mktemp "${acl_file}.XXXXXXXX") || fail
 trap 'rm -f "$tmp_file"' 0 1 2 3 15
 
 admin_hash=$(hash_secret "$admin_secret")
+monitor_hash=$(hash_secret "$monitor_secret")
+[ "$monitor_hash" != "$admin_hash" ] || fail
 printf 'user default off\nuser devadmin on #%s ~* &* +@all\n' "$admin_hash" > "$tmp_file"
+# Metrics only: no key or channel pattern, no command that changes state.
+printf 'user devmonitor on #%s -@all +ping +info +config|get +client|list +client|info +client|setname +slowlog|get +slowlog|len +latency|latest +latency|histogram +cluster|info\n' \
+  "$monitor_hash" >> "$tmp_file"
 seen_projects='|'
-seen_users='|default|devadmin|'
+seen_users='|default|devadmin|devmonitor|'
 seen_prefixes='|'
 seen_secrets='|'
 while IFS='|' read -r project_id acl_user key_prefix secret_name ||

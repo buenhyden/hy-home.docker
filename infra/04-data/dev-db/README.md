@@ -22,7 +22,11 @@ created: "2026-10-02"
 ## Scope
 
 [`docker-compose.yml`](docker-compose.yml)은 `dev-pg`, `dev-platform-provision`,
-`dev-valkey`를 정의합니다. 실제 외부 프로젝트 DB·계정·ACL은 승인된 프로젝트
+`dev-perf-provision`, `dev-valkey`와 지표 수집용 `dev-pg-monitor-provision`,
+`dev-pg-exporter`, `dev-valkey-exporter`를 정의합니다. exporter는 관리자 비밀을
+받지 않고 `pg_monitor` 전용 `dev_pg_monitor` role과 읽기 전용 `devmonitor` ACL
+사용자로만 접속하며, Prometheus `dev-pg-exporter`·`dev-valkey-exporter` job이
+소비합니다. 실제 외부 프로젝트 DB·계정·ACL은 승인된 프로젝트
 명세가 있을 때만 등록합니다. HOME 실행과 기존 데이터 이관은 별도 승인 단계입니다.
 
 ## Structure

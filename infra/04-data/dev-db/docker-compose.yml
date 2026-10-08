@@ -7,13 +7,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_DATA_DIR}/dev-pg
+      device: ${DEFAULT_DATA_DIR:?DEFAULT_DATA_DIR is required}/dev-pg
   dev-valkey-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_DATA_DIR}/dev-valkey/data
+      device: ${DEFAULT_DATA_DIR:?DEFAULT_DATA_DIR is required}/dev-valkey/data
 
 
 services:
@@ -150,6 +150,66 @@ services:
     networks:
       dev_data_net: {}
 
+  dev-pg-monitor-provision:
+    profiles: [dev-data]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    restart: 'no'
+    image: hy-home/dev-pg:18.6-ts2.30.2-pgbackrest2.57
+    platform: linux/amd64
+    entrypoint: ['python3', '/work/monitor.py']
+    environment:
+      DEV_PG_ADMIN_USER: ${DEV_PG_ADMIN_USER:-postgres}
+      PYTHONDONTWRITEBYTECODE: '1'
+    volumes:
+      - ./pg/provision:/work:ro
+    secrets:
+      - dev_pg_admin_password
+      - dev_pg_monitor_password
+    depends_on:
+      dev-pg:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      dev_data_net: {}
+
+  # Metrics read through the pg_monitor-only dev_pg_monitor role on the fixed
+  # internal port; the admin secret is never mounted here.
+  dev-pg-exporter:
+    profiles: [dev-data]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: prometheuscommunity/postgres-exporter:v0.20.1
+    container_name: dev-pg-exporter
+    environment:
+      DATA_SOURCE_URI: dev-pg:5432/postgres?sslmode=disable
+      DATA_SOURCE_USER: dev_pg_monitor
+      DATA_SOURCE_PASS_FILE: /run/secrets/dev_pg_monitor_password
+    command: ['--collector.postmaster']
+    expose:
+      - '9187'
+    secrets:
+      - dev_pg_monitor_password
+    depends_on:
+      dev-pg-monitor-provision:
+        condition: service_completed_successfully
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1']
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    networks:
+      dev_data_net: {}
+      obs_net: {}
+
   dev-valkey:
     profiles:
       - dev-data
@@ -181,6 +241,7 @@ services:
           create_host_path: false
     secrets:
       - dev_valkey_admin_password
+      - dev_valkey_monitor_password
     expose:
       - '6379'
     healthcheck:
@@ -194,3 +255,35 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'false'
+
+  # Authenticates as the read-only devmonitor ACL user; `default` is off.
+  dev-valkey-exporter:
+    profiles: [dev-data]
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: oliver006/redis_exporter:v1.91.1-alpine
+    container_name: dev-valkey-exporter
+    expose:
+      - '9121'
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        export REDIS_PASSWORD="$$(tr -d '\n' < /run/secrets/dev_valkey_monitor_password)"
+        exec /redis_exporter -redis.addr=redis://dev-valkey:6379 -redis.user=devmonitor -web.listen-address=:9121
+    secrets:
+      - dev_valkey_monitor_password
+    depends_on:
+      dev-valkey:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      dev_data_net: {}
+      obs_net: {}

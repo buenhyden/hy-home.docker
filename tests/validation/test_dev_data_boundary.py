@@ -74,9 +74,9 @@ class DevDataBoundaryTests(unittest.TestCase):
                 continue
             for name, service in (yaml.safe_load(text).get("services") or {}).items():
                 env = service.get("environment") or {}
-                if not isinstance(env, dict) or "dev-pg" not in (
-                    env.get("PGHOST"),
-                    env.get("DBT_DB_HOST"),
+                if not isinstance(env, dict) or not (
+                    "dev-pg" in (env.get("PGHOST"), env.get("DBT_DB_HOST"))
+                    or str(env.get("DATA_SOURCE_URI", "")).startswith("dev-pg:")
                 ):
                     continue
                 consumers += 1
@@ -84,7 +84,28 @@ class DevDataBoundaryTests(unittest.TestCase):
                     with self.subTest(service=name, key=key):
                         self.assertNotIn("POSTGRES_PORT", str(value))
                         self.assertNotIn("POSTGRES_DEFAULT_DB", str(value))
-        self.assertGreaterEqual(consumers, 3)
+        self.assertGreaterEqual(consumers, 4)
+
+    def test_dev_exporters_use_monitor_accounts_not_admin(self):
+        services = compose("infra/04-data/dev-db/docker-compose.yml")
+        pg = services["dev-pg-exporter"]
+        valkey = services["dev-valkey-exporter"]
+        self.assertEqual(pg["secrets"], ["dev_pg_monitor_password"])
+        self.assertEqual(pg["environment"]["DATA_SOURCE_USER"], "dev_pg_monitor")
+        self.assertEqual(
+            pg["depends_on"]["dev-pg-monitor-provision"]["condition"],
+            "service_completed_successfully",
+        )
+        self.assertEqual(valkey["secrets"], ["dev_valkey_monitor_password"])
+        command = "".join(valkey["command"])
+        self.assertIn("-redis.user=devmonitor", command)
+        self.assertIn("redis://dev-valkey:6379", command)
+        self.assertNotIn("VALKEY_PORT", command)
+        for job in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
+            for config in ("prometheus.yml", "prometheus.dev.yml"):
+                path = ROOT / "infra/06-observability/prometheus/config" / config
+                with self.subTest(config=config, job=job):
+                    self.assertIn(job, path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
