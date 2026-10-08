@@ -94,7 +94,7 @@ directory. The runs exposed these defects, each fixed and committed:
 
 | Defect | Fix | Commit |
 | --- | --- | --- |
-| `compose up --wait` fails when a one-shot init job exits 0 | `lab.py` polls the project itself: a non-zero exit or `unhealthy` fails, a finished init passes, a running one-shot is pending; `LAB_READY_TIMEOUT_SECONDS` default 600 | `c9b544451` |
+| `compose up --wait` fails when a one-shot init job exits 0 | `lab.py` polls the project itself: a non-zero exit or `unhealthy` fails, a finished init passes, a running one-shot is pending; `LAB_READY_TIMEOUT_SECONDS` default 600, now in `labs/.env.example` (LAB public set 54 keys: 15 required, 39 optional) | `c9b544451` |
 | Cassandra, CouchDB and MongoDB entrypoints chown and `gosu`, which `cap_drop: ALL` forbids | The data nodes use the stateful DB templates; MongoDB nodes run as `999:999` because `gosu` drops the secret group; the key generator runs `mongosh` with `CHOWN`, `DAC_OVERRIDE` and `FOWNER` | `1e9ed644c` |
 | CouchDB `finish_cluster` returns 500 "unable to sync admin passwords" and a rerun returns 409 | The init accepts 2xx or 409, treats 3 cluster members as done and creates the system databases | `1e9ed644c` |
 | OpenSearch image build fails on the exporter plugin | Plugin `3.8.0.0` to match the `3.8.0` base | `1e9ed644c` |

@@ -1054,9 +1054,9 @@ class PublicSecretSchemaTests(unittest.TestCase):
             contract["required"] | contract["optional"] | contract["orphan"],
         )
         lab = self.lab_environment
-        self.assertEqual(55, len(lab["public"]))
-        self.assertEqual(14, len(lab["required"]))
-        self.assertEqual(41, len(lab["optional"]))
+        self.assertEqual(54, len(lab["public"]))
+        self.assertEqual(15, len(lab["required"]))
+        self.assertEqual(39, len(lab["optional"]))
         self.assertEqual(set(), lab["missing"] | lab["orphan"])
         self.assertEqual(set(), contract["public"] & lab["public"])
         self.assertFalse(any(name.startswith("LAB_") for name in contract["public"]))
