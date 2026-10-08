@@ -242,6 +242,40 @@ sys.exit(1 if invalid or collisions else 0)
 '
 }
 
+# Named bind volumes own one host directory each. An empty path variable, two
+# volumes on one directory, or one volume inside another lets one service
+# initialize or overwrite another's data, and Compose only notices at `up`.
+# Preflight passes "realpath" so symlink aliases resolve to the real target.
+report_storage_overlaps() {
+  docker compose "${PROFILE_ARGS[@]}" config --format json |
+    STORAGE_RESOLVE="${1:-}" python3 -c '
+import json, os, sys
+
+model = json.load(sys.stdin)
+resolve = os.path.realpath if os.environ["STORAGE_RESOLVE"] else os.path.normpath
+devices, problems = {}, []
+for name, body in sorted((model.get("volumes") or {}).items()):
+    device = ((body or {}).get("driver_opts") or {}).get("device")
+    if device is None:
+        continue
+    path = resolve(device) if os.path.isabs(str(device)) else ""
+    # A top-level path such as /dev-pg is what an empty data-root variable leaves.
+    if path.count("/") < 2:
+        problems.append(f"volume {name}: device {device!r} is empty, relative or top-level")
+        continue
+    devices[name] = path
+items = sorted(devices.items(), key=lambda item: item[1])
+for index, (left, left_path) in enumerate(items):
+    for right, right_path in items[index + 1 :]:
+        if right_path == left_path:
+            problems.append(f"volumes {left} and {right} share {left_path}")
+        elif right_path.startswith(left_path + "/"):
+            problems.append(f"volume {right} is nested inside volume {left}")
+print("\n".join(problems))
+sys.exit(1 if problems else 0)
+'
+}
+
 run_preflight() {
   echo "Running Docker Compose preflight checks..."
   echo "Preflight mode does not create .env, secret files, cert files, or dummy data."
@@ -284,6 +318,14 @@ run_preflight() {
   check_dir "${DEFAULT_DATA_DIR:-}"
   check_dir "${DEFAULT_MESSAGE_BROKER_DIR:-}"
   check_dir "${DEFAULT_OBSERVABILITY_DIR:-}"
+
+  local overlaps
+  if overlaps="$(report_storage_overlaps realpath)"; then
+    ok "named volume host paths are distinct and not nested"
+  else
+    fail "named volume host paths overlap"
+    printf '  %s\n' "$overlaps"
+  fi
 
   local net
   for net in project_net kind; do
@@ -378,6 +420,13 @@ for selection in "${VALIDATE_SELECTIONS[@]}"; do
   if ! collisions="$(report_port_collisions)"; then
     echo "FAIL: $selection_label: two selected services publish the same host port."
     printf '  %s\n' "$collisions"
+    VALIDATION_FAILED=1
+    continue
+  fi
+
+  if ! overlaps="$(report_storage_overlaps)"; then
+    echo "FAIL: $selection_label: named volume host paths overlap."
+    printf '  %s\n' "$overlaps"
     VALIDATION_FAILED=1
     continue
   fi

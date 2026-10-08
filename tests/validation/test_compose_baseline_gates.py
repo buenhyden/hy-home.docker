@@ -124,7 +124,9 @@ class BaselineGateHarness(unittest.TestCase):
 
 class ComposeSelectionValidationTests(unittest.TestCase):
     def _run_port_matrix(
-        self, services: dict[str, dict[str, object]]
+        self,
+        services: dict[str, dict[str, object]],
+        volumes: dict[str, object] | None = None,
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -167,10 +169,11 @@ profiles = [
 ]
 all_services = json.loads(os.environ["FAKE_COMPOSE_SERVICES"])
 services = {profile: all_services[profile] for profile in profiles}
+volumes = json.loads(os.environ["FAKE_COMPOSE_VOLUMES"])
 if "--services" in args:
     print("\\n".join(services))
 else:
-    print(json.dumps({"services": services}))
+    print(json.dumps({"services": services, "volumes": volumes}))
 """,
                 encoding="utf-8",
             )
@@ -184,9 +187,33 @@ else:
                     **os.environ,
                     "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
                     "FAKE_COMPOSE_SERVICES": json.dumps(services),
+                    "FAKE_COMPOSE_VOLUMES": json.dumps(volumes or {}),
                 },
                 check=False,
             )
+
+    def test_named_volume_devices_must_be_distinct_and_not_nested(self) -> None:
+        services = {"alpha": {}, "beta": {}}
+
+        def bind(path: str) -> dict[str, object]:
+            return {"driver_opts": {"type": "none", "o": "bind", "device": path}}
+
+        cases = {
+            "nested": ({"a": bind("/srv/data/pg"), "b": bind("/srv/data/pg/x")}, 1),
+            "shared": ({"a": bind("/srv/data/pg"), "b": bind("/srv/data/pg/")}, 1),
+            "empty root": ({"a": bind("/dev-pg")}, 1),
+            "relative": ({"a": bind("data/pg")}, 1),
+            "siblings": ({"a": bind("/srv/data/pg"), "b": bind("/srv/data/pg2")}, 0),
+            "named only": ({"a": {"driver": "local"}}, 0),
+        }
+        for label, (volumes, expected) in cases.items():
+            with self.subTest(case=label):
+                result = self._run_port_matrix(services, volumes)
+                self.assertEqual(
+                    expected, result.returncode, result.stdout + result.stderr
+                )
+                if expected:
+                    self.assertIn("named volume host paths overlap", result.stdout)
 
     def test_default_mode_checks_home_union_for_cross_profile_port_collisions(
         self,

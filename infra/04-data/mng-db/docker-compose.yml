@@ -7,13 +7,13 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_MANAGEMENT_DIR}/pg
+      device: ${DEFAULT_MANAGEMENT_DIR:?DEFAULT_MANAGEMENT_DIR is required}/pg
   mng-valkey-data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ${DEFAULT_MANAGEMENT_DIR}/valkey
+      device: ${DEFAULT_MANAGEMENT_DIR:?DEFAULT_MANAGEMENT_DIR is required}/valkey
 services:
   mng-valkey:
     profiles:
