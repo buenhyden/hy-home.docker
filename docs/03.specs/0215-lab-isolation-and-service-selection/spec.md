@@ -1,6 +1,6 @@
 ---
 title: "LAB Isolation and Service Selection"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -66,6 +66,23 @@ or HOME data, and observing which services run on the HOME host.
 8. Exceptions. No common exception names a LAB path or service; the result is
    handed to prompt 05.
 
+9. Inventory. Each `labs/<name>.md` names its Compose project and exactly
+   the services its entrypoint renders; a test keeps them equal.
+10. Cluster identity. A LAB whose `CLUSTER_ID` equals the root's or another
+    selected LAB's is refused before start, like a shared name or path.
+11. Observability boundary. HOME Prometheus scrapes no LAB container, and no
+    LAB joins a root network. A LAB exporter is read only from inside its
+    LAB; an exporter without a runnable image or a reader is retired.
+12. Selection. No current document, script or unit starts the root with
+    every profile. The HOME named selection holds no LAB service and not the
+    Nginx alternate gateway, which shares 80/443 with Traefik.
+13. Disposition columns. Every optional service group also states its
+    declared cost from the rendered root, its retained data and a
+    retirement condition.
+14. Host residue. Containers, restart policies and systemd or cron launchers
+    on the HOME host are read before any cleanup; only exact, confirmed LAB
+    or orphan targets are stopped, and data is kept.
+
 ## Acceptance Criteria
 
 1. A test renders the root and fails if a LAB service appears or a LAB
@@ -79,11 +96,17 @@ or HOME data, and observing which services run on the HOME host.
    documents in contract 7 are corrected.
 5. HOME runs, real LAB starts on the HOME host and data moves stay `NOT_RUN`
    unless observed.
+6. Tests for contracts 9 to 12 fail against the 0.1.0 source or documents
+   and pass now.
+7. Each LAB starts on the HOME host through `lab.py` with synthetic inputs,
+   reaches its own readiness signal or records why not, and stops without
+   leaving containers or networks and without changing the HOME project.
 
 ## Related Documents
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-lab-isolation-and-service-selection.md)
+- [Closure and HOME LAB run Task](tasks/tsk-0002-lab-closure-and-home-runs.md)
 - [Data requirement](../../01.requirements/0004-data.md)
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
 - [Profile vocabulary policy](../../05.operations/policies/0078-compose-profile-vocabulary.md)

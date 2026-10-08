@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -109,7 +109,7 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 
 ## Bind State Ownership
 
-`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 999 (`mongodb`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. SPEC-0215에서 이 LAB의 bind 상태 기동은 실제로 검증하지 못했다(MongoDB는 exporter image 고정값이 존재하지 않아 기동 전 실패). 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
+`lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 999 (`mongodb`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. 그래서 rep1·rep2·arbiter는 `user: '999:999'`로 실행하고, `mongo-key-generator`는 `CHOWN`·`DAC_OVERRIDE`·`FOWNER`만 더해 keyfile을 uid 999 소유로 만든다. `gosu`는 보조 group을 버리므로 root entrypoint 경로로는 secret을 읽지 못한다. SPEC-0215 TSK-0002에서 합성 입력으로 기동해 `PRIMARY,SECONDARY,ARBITER`를 확인했고, `down` 뒤 container·network는 0개였다. 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
 ## Related Documents
 
