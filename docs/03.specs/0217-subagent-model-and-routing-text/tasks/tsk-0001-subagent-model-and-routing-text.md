@@ -1,6 +1,6 @@
 ---
 title: "Subagent Model and Routing Text Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -62,6 +62,22 @@ The four Claude work profiles and their `models` entries now name
 `--write` regenerated the `model:` line of the 13 affected Claude subagents
 and nothing else.
 
+### Review Round 1
+
+An independent `code-reviewer` pass on PR #388 found no Critical issue and one
+Important one: the Use When pattern stopped at the first line that was not a
+`-` bullet, so a wrapped bullet would silently drop its continuation and every
+later case, and the test checked only the `Use when:` literal. The renderer now
+splits the whole Use When block on `-` bullets, collapses wrapped lines and
+joins the cases with semicolons. The description test now checks every case in
+both the Claude and Codex projections, and a synthetic role with a wrapped
+bullet fails against the earlier renderer (RED) and passes after (GREEN).
+Acceptance criterion 3 now excludes this package's own baseline narration,
+which names the earlier models on purpose. The reviewer's other note, that a
+hand-written Codex file carrying the generated marker is now treated as stale
+generated output, is accepted: the marker is itself a claim of generation, and
+`--write` quarantines rather than deletes.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -69,7 +85,9 @@ and nothing else.
 | Description test | 1 | W1 | RED with the earlier renderer (14 failures), GREEN after | Working tree | PASS | W1 Routing Descriptions | accepted |
 | Renderer parity and contract | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W1 Routing Descriptions | accepted |
 | Renderer parity and contract | 2 | W2 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | W2 Model Selections | accepted |
-| Earlier model IDs | 3 | W2 | `git grep` for `claude-opus-5` and `claude-sonnet-5` outside Stage 90 and Stage 98 | Working tree | PASS | W2 Model Selections | accepted |
+| Wrapped Use When bullet | 1 | W1 | Synthetic role test RED with the earlier renderer, GREEN after; every case checked in both projections | Working tree | PASS | Review Round 1 | accepted |
+| Renderer parity after review | 2 | W1 | `provider_surface_renderer.py --check`; `check-agent-governance-contract.py`; entrypoint test module | Working tree | PASS | Review Round 1 | accepted |
+| Earlier model IDs | 3 | W2 | `git grep` for `claude-opus-5` and `claude-sonnet-5` outside Stage 90, Stage 98 and this package | Working tree | PASS | W2 Model Selections | accepted |
 
 ## Review and Completion
 

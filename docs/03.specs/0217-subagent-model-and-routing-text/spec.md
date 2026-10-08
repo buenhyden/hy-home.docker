@@ -1,6 +1,6 @@
 ---
 title: "Subagent Model and Routing Text"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/spec"
 status: "draft"
 owner: "@buenhyden"
@@ -40,8 +40,8 @@ cites the earlier models.
    `claude-opus-5-5`; `complex-implementation` and `evidence-research` use
    `claude-sonnet-5-5`. Effort values are unchanged.
 2. A generated subagent description is the role's `## Overview` paragraph
-   followed by `Use when:` and the role's `### Use When` cases, for Claude and
-   Codex alike.
+   followed by `Use when:` and every `### Use When` case, wrapped lines
+   included, separated by semicolons, for Claude and Codex alike.
 3. The renderer fails when a role lacks either section, instead of emitting a
    description without routing text.
 
@@ -51,8 +51,8 @@ cites the earlier models.
    passes after it.
 2. `provider_surface_renderer.py --check` reports no drift and the agent
    governance contract check passes.
-3. No authored surface outside Stage 90 and Stage 98 still names
-   `claude-opus-5` or `claude-sonnet-5`.
+3. No authored surface outside Stage 90, Stage 98 and this package's own
+   baseline narration still names `claude-opus-5` or `claude-sonnet-5`.
 
 ## Related Documents
 
