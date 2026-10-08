@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -36,7 +36,10 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
-2. 진단 전에 load를 중지한다.
+2. 진단 전에 load를 중지한다. `lab.py run`으로 시작한 실행이면 그 제어기에 SIGTERM
+   (`Ctrl-C`)을 보낸다. 제어기가 master를 grace 기간 동안 멈추고 project를 내린다.
+   제어기가 이미 죽었으면 `python3 scripts/operations/lab.py down locust`를 쓴다. 아래
+   Compose 명령은 제어기 없이 시작한 경우에만 쓴다.
 
    ```bash
    LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
@@ -72,6 +75,24 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
    시작하여 별도로 승인된 소규모 canary를 실행한다. worker 등록에 실패하거나 통계가
    벌어지면 image/build 변경을 롤백한다. 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다. 대상 애플리케이션을
    임의로 중지하지 않는다.
+
+### 실패 유형별 판단
+
+- `deadline_exceeded`(124)·`cancelled`(130): CSV는 멈춘 시점까지의 집계다. 목표 시간을
+  채운 결과로 보고하지 않는다.
+- master 비정상 종료(137 등): CSV는 마지막 주기 저장본이다. worker가 남아 있을 수 있으니
+  project가 내려갔는지 확인한다.
+- worker 탈락: master 종료 코드는 0일 수 있다. 실행 전후 worker 수를 비교한다.
+- worker 부족: `LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT` 안에 다 붙지 않으면 master가 부하 없이
+  non-zero로 끝난다.
+
+격리 재현은 다음 harness가 맡는다.
+
+```bash
+python3 examples/operations/locust-telemetry/lifecycle.py \
+  --locust-image '<approved-locust@sha256:digest>' \
+  --mock-image '<approved-wiremock@sha256:digest>'
+```
 
 ### Verification Steps
 

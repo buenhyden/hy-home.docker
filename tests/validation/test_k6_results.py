@@ -2,6 +2,7 @@ import hashlib
 import importlib.util
 import itertools
 import json
+import os
 import pathlib
 import sys
 import tempfile
@@ -31,6 +32,12 @@ container_executor = importlib.util.module_from_spec(EXECUTOR_SPEC)
 assert EXECUTOR_SPEC.loader is not None
 sys.modules["container_executor"] = container_executor
 EXECUTOR_SPEC.loader.exec_module(container_executor)
+RELAY_PATH = ROOT / "infra/11-quality/k6/metrics_relay.py"
+RELAY_SPEC = importlib.util.spec_from_file_location("metrics_relay", RELAY_PATH)
+metrics_relay = importlib.util.module_from_spec(RELAY_SPEC)
+assert RELAY_SPEC.loader is not None
+sys.modules["metrics_relay"] = metrics_relay
+RELAY_SPEC.loader.exec_module(metrics_relay)
 
 
 def canonical(value: object) -> bytes:
@@ -470,26 +477,35 @@ class K6ResultContractTests(unittest.TestCase):
                 dict(self.manifest, telemetry={"mode": "none"})
             )
 
-    def test_otlp_runs_only_through_the_approved_metrics_ingress(self) -> None:
-        self.manifest.update(
-            schema_version="hyhome.quality-run/v2",
-            telemetry={"mode": "otlp"},
-            mock_mode="load",
-        )
+    def relay_records(self) -> tuple[dict, dict, dict]:
+        """A run network, relay and egress network exactly as the controller builds."""
+        relay_module = sys.modules["metrics_relay"]
+        name = relay_module.relay_name(self.manifest)
         network = self.network_record()[0]
         network["Containers"]["ingress-id"] = {
-            "Name": "metrics-ingress",
+            "Name": name,
             "IPv4Address": "10.250.11.20/24",
         }
-        peer = self.peer_record()[0]
-        ingress = {
+        identity = [
+            f"{key}={value}"
+            for key, value in relay_module.environment(self.manifest).items()
+        ]
+        token = self.root / "relay-token"
+        token.write_text("token-value-0214\n", encoding="utf-8")
+        token.chmod(0o640)
+        relay = {
             "Id": "ingress-id",
-            "Name": "/metrics-ingress",
+            "Name": "/" + name,
             "State": {"Running": True},
             "Config": {
                 "Image": "grafana/alloy@sha256:" + "d" * 64,
+                "Cmd": list(relay_module.COMMAND),
+                "Entrypoint": ["/bin/alloy"],
+                "User": f"{os.geteuid()}:{os.getegid()}",
+                "Env": ["PATH=/bin", "ALLOY_DEPLOY_MODE=docker", *identity],
                 "Labels": {
                     "hyhome.quality.run_id": self.manifest["run_id"],
+                    "hyhome.quality.attempt": str(self.manifest["attempt"]),
                     "hyhome.quality.role": "metrics-ingress",
                 },
             },
@@ -499,21 +515,61 @@ class K6ResultContractTests(unittest.TestCase):
                 "CapDrop": ["ALL"],
                 "CapAdd": [],
                 "PortBindings": {},
+                "ExtraHosts": [],
+                "SecurityOpt": ["no-new-privileges"],
+                "NanoCpus": 250_000_000,
+                "Memory": 268435456,
+                "MemorySwap": 268435456,
+                "PidsLimit": 64,
+                "RestartPolicy": {"Name": "no", "MaximumRetryCount": 0},
+                "Tmpfs": {"/tmp": "rw,noexec,nosuid,nodev,size=64m"},
             },
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": str(relay_module.CONFIG),
+                    "Destination": relay_module.CONFIG_TARGET,
+                    "RW": False,
+                },
+                {
+                    "Type": "bind",
+                    "Source": str(token),
+                    "Destination": relay_module.TOKEN_TARGET,
+                    "RW": False,
+                },
+            ],
             "NetworkSettings": {
                 "Networks": {
                     network["Name"]: {"Aliases": ["metrics-ingress"]},
-                    "obs-relay": {"Aliases": []},
+                    "quality-otlp": {"Aliases": []},
                 }
             },
         }
+        egress = {
+            "Name": "quality-otlp",
+            "Driver": "bridge",
+            "Scope": "local",
+            "Internal": True,
+        }
+        return network, relay, egress
+
+    def test_otlp_runs_only_through_the_approved_metrics_ingress(self) -> None:
+        self.manifest.update(
+            schema_version="hyhome.quality-run/v2",
+            telemetry={"mode": "otlp"},
+            mock_mode="load",
+        )
+        relay_module = sys.modules["metrics_relay"]
+        name = relay_module.relay_name(self.manifest)
+        network, ingress, egress = self.relay_records()
+        peer = self.peer_record()[0]
         runs: list[list[str]] = []
 
         def fake_run(command, **kwargs):
             if command[3:5] == ["network", "inspect"]:
-                record = network
+                record = egress if command[-1] == "quality-otlp" else network
             elif command[3:5] == ["container", "inspect"]:
-                record = ingress if command[-1] == "metrics-ingress" else peer
+                record = ingress if command[-1] == name else peer
             else:
                 runs.append(command)
                 return types.SimpleNamespace(returncode=0)
@@ -523,7 +579,7 @@ class K6ResultContractTests(unittest.TestCase):
 
         guard = types.SimpleNamespace(validate=lambda *args: None)
 
-        def execute(attempt, metrics_peer="metrics-ingress", egress="obs-relay"):
+        def execute(attempt, metrics_peer=name, egress_name="quality-otlp"):
             quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
             with mock.patch.dict(sys.modules, {"http_guard": guard}):
                 with mock.patch.object(
@@ -541,7 +597,7 @@ class K6ResultContractTests(unittest.TestCase):
                         "backend-test",
                         "backend",
                         metrics_peer,
-                        egress,
+                        egress_name,
                     )
 
         self.assertEqual(0, execute(self.root / "otlp"))
@@ -567,54 +623,335 @@ class K6ResultContractTests(unittest.TestCase):
         self.assertFalse(any("token" in item.lower() for item in command))
         self.assertFalse(any("Authorization" in item for item in command))
 
-        for name, mutate in (
-            (
-                "published",
-                lambda: ingress["HostConfig"].update(PortBindings={"4318/tcp": [{}]}),
-            ),
+        tampered = self.root / "tampered.alloy"
+        tampered.write_text('otelcol.receiver.otlp "k6" {}\n', encoding="utf-8")
+        for mutation, mutate in (
+            ("published", lambda: ingress["HostConfig"].update(PortBindings={"4318/tcp": [{}]})),
             ("writable", lambda: ingress["HostConfig"].update(ReadonlyRootfs=False)),
+            ("privileges", lambda: ingress["HostConfig"].update(SecurityOpt=[])),
             ("image", lambda: ingress["Config"].update(Image="otel/collector:latest")),
-            (
-                "role",
-                lambda: ingress["Config"]["Labels"].update(
-                    {"hyhome.quality.role": "wiremock"}
-                ),
-            ),
-            (
-                "egress",
-                lambda: ingress["NetworkSettings"]["Networks"].update(
-                    {
-                        "edge-net": ingress["NetworkSettings"]["Networks"].pop(
-                            "obs-relay"
-                        )
-                    }
-                ),
-            ),
-            (
-                "alias",
-                lambda: ingress["NetworkSettings"]["Networks"][network["Name"]].update(
-                    Aliases=[]
-                ),
-            ),
-        ):
-            with self.subTest(mutation=name):
-                saved = json.loads(json.dumps(ingress))
+            ("command", lambda: ingress["Config"].update(Cmd=["run", "/other.alloy"])),
+            ("root-user", lambda: ingress["Config"].update(User="0:0")),
+            ("forged-identity", lambda: ingress["Config"].update(Env=["HYHOME_QUALITY_PROJECT_ID=other"])),
+            ("role", lambda: ingress["Config"]["Labels"].update({"hyhome.quality.role": "wiremock"})),
+            ("other-attempt", lambda: ingress["Config"]["Labels"].update({"hyhome.quality.attempt": "2"})),
+            ("config-hash", lambda: ingress["Mounts"][0].update(Source=str(tampered))),
+            ("writable-token", lambda: ingress["Mounts"][1].update(RW=True)),
+            ("extra-mount", lambda: ingress["Mounts"].append({"Type": "bind", "Source": "/", "Destination": "/host", "RW": False})),
+            ("egress", lambda: ingress["NetworkSettings"]["Networks"].update({"edge-net": ingress["NetworkSettings"]["Networks"].pop("quality-otlp")})),
+            ("public-egress", lambda: egress.update(Internal=False)),
+            ("alias", lambda: ingress["NetworkSettings"]["Networks"][network["Name"]].update(Aliases=[])),
+            ("no-pid-limit", lambda: ingress["HostConfig"].update(PidsLimit=None)),
+            ("more-memory", lambda: ingress["HostConfig"].update(Memory=2**30)),
+            ("more-cpu", lambda: ingress["HostConfig"].update(NanoCpus=2_000_000_000)),
+            ("restart", lambda: ingress["HostConfig"].update(RestartPolicy={"Name": "always"})),
+            ("entrypoint", lambda: ingress["Config"].update(Entrypoint=["/bin/sh"])),
+            ("extra-env", lambda: ingress["Config"]["Env"].append("HTTPS_PROXY=http://elsewhere")),
+            ("extra-tmpfs", lambda: ingress["HostConfig"].update(Tmpfs={"/tmp": "rw", "/run": "rw"})),
+            ("public-token", lambda: (self.root / "relay-token").chmod(0o644)),
+            ("other-token", lambda: ingress["Mounts"][1].update(Source="/etc/hostname")),
+        ):  # fmt: skip
+            with self.subTest(mutation=mutation):
+                saved = json.loads(json.dumps(ingress)), dict(egress)
                 mutate()
                 before = len(runs)
                 with self.assertRaises(container_executor.ExecutorError):
-                    execute(self.root / f"bad-{name}")
+                    execute(self.root / f"bad-{mutation}")
                 self.assertEqual(before, len(runs))
                 ingress.clear()
-                ingress.update(saved)
+                ingress.update(saved[0])
+                egress.update(saved[1])
+                (self.root / "relay-token").chmod(0o640)
+        with self.assertRaises(container_executor.ExecutorError):
+            execute(self.root / "foreign-relay", metrics_peer="metrics-ingress")
         with self.assertRaises(container_executor.ExecutorError):
             execute(self.root / "no-peer", metrics_peer=None)
         with self.assertRaises(container_executor.ExecutorError):
-            execute(self.root / "no-egress", egress=None)
+            execute(self.root / "no-egress", egress_name=None)
         with self.assertRaises(container_executor.ExecutorError):
-            execute(self.root / "egress-is-run-net", egress=network["Name"])
+            execute(self.root / "egress-is-run-net", egress_name=network["Name"])
         self.manifest["telemetry"] = {"mode": "none"}
         with self.assertRaises(container_executor.ExecutorError):
             execute(self.root / "unexpected-peer")
+
+    def test_relay_controller_creates_only_the_contracted_relay(self) -> None:
+        relay_module = sys.modules["metrics_relay"]
+        self.manifest.update(
+            schema_version="hyhome.quality-run/v2", telemetry={"mode": "otlp"}
+        )
+        token = self.root / "token"
+        token.write_text("token-value-0214\n", encoding="utf-8")
+        token.chmod(0o640)
+        calls: list[list[str]] = []
+
+        def fake_run(command, **kwargs):
+            calls.append(command)
+            stdout = ""
+            if "{{.State.Health.Status}}" in command:
+                stdout = "healthy\n"
+            if "{{json .Config.Labels}}" in command:
+                stdout = json.dumps(
+                    {
+                        "hyhome.quality.run_id": self.manifest["run_id"],
+                        "hyhome.quality.attempt": "1",
+                        "hyhome.quality.role": "metrics-ingress",
+                    }
+                )
+            return types.SimpleNamespace(returncode=0, stdout=stdout, stderr="")
+
+        image = "grafana/alloy@sha256:" + "d" * 64
+        with mock.patch.object(relay_module.subprocess, "run", side_effect=fake_run):
+            name = relay_module.start(
+                self.manifest, "/synthetic/docker", "default", "run-net",
+                "quality-otlp", image, token, sleep=lambda _: None,
+            )  # fmt: skip
+        create = calls[0]
+        self.assertEqual(name, relay_module.relay_name(self.manifest))
+        pairs = list(itertools.pairwise(create))
+        for pair in (
+            ("--network", "run-net"),
+            ("--network-alias", "metrics-ingress"),
+            ("--cap-drop", "ALL"),
+            ("--security-opt", "no-new-privileges"),
+            ("--pull", "never"),
+            ("--env", "HYHOME_QUALITY_PROJECT_ID=sample-a"),
+        ):
+            self.assertIn(pair, pairs)
+        self.assertIn("--read-only", create)
+        self.assertFalse(any(item in {"-p", "--publish"} for item in create))
+        self.assertEqual(create[-3:], relay_module.COMMAND)
+        self.assertIn(
+            ["/synthetic/docker", "--context", "default", "network", "connect",
+             "quality-otlp", name],
+            calls,
+        )  # fmt: skip
+        # Only the file is mounted; its value never reaches an argument.
+        self.assertFalse(any("token-value-0214" in item for item in create))
+
+        # Readiness failure removes the relay it created.
+        calls.clear()
+        with mock.patch.object(
+            relay_module.subprocess,
+            "run",
+            side_effect=lambda command, **kw: types.SimpleNamespace(
+                returncode=0,
+                stdout=fake_run(command).stdout.replace("healthy", "starting"),
+                stderr="",
+            ),
+        ):
+            with self.assertRaises(relay_module.RelayError):
+                relay_module.start(
+                    self.manifest, "/synthetic/docker", "default", "run-net",
+                    "quality-otlp", image, token, ready_seconds=2,
+                    sleep=lambda _: None,
+                )  # fmt: skip
+        self.assertTrue(any(command[3:5] == ["rm", "--force"] for command in calls))
+
+        # A cancel while waiting stays a cancel even if removal then fails.
+        def cancel_then_fail(command, **kwargs):
+            if "{{.State.Health.Status}}" in command:
+                raise KeyboardInterrupt
+            if "{{json .Config.Labels}}" in command:
+                return types.SimpleNamespace(
+                    returncode=0, stdout='{"other": "run"}', stderr=""
+                )
+            return types.SimpleNamespace(returncode=0, stdout="", stderr="")
+
+        with mock.patch.object(
+            relay_module.subprocess, "run", side_effect=cancel_then_fail
+        ):
+            with self.assertRaises(KeyboardInterrupt):
+                relay_module.start(
+                    self.manifest, "/synthetic/docker", "default", "run-net",
+                    "quality-otlp", image, token,
+                )  # fmt: skip
+
+        for mode, content in ((0o644, "synthetic\n"), (0o640, ""), (0o640, "a\nb\n")):
+            with self.subTest(mode=oct(mode), content=content):
+                token.chmod(0o600)
+                token.write_text(content, encoding="utf-8")
+                token.chmod(mode)
+                with self.assertRaises(relay_module.RelayError):
+                    relay_module.start(
+                        self.manifest, "/synthetic/docker", "default", "run-net",
+                        "quality-otlp", image, token,
+                    )  # fmt: skip
+        with self.assertRaises(relay_module.RelayError):
+            relay_module.start(
+                self.manifest, "/synthetic/docker", "default", "run-net",
+                "run-net", image, token,
+            )  # fmt: skip
+
+    def test_relay_config_bounds_names_and_keeps_k6_rate_metrics(self) -> None:
+        import re
+
+        config = sys.modules["metrics_relay"].CONFIG.read_text(encoding="utf-8")
+        self.assertIn('max_request_body_size = "4MiB"', config)
+        pattern = re.search(r'not IsMatch\(name, "([^"]+)"\)', config)[1]
+        # k6 exports Rate metrics such as checks as `k6_checks.total`.
+        for name in (
+            "k6_checks.total",
+            "k6_http_req_failed.total",
+            "k6_http_reqs",
+            "k6_vus",
+        ):
+            self.assertRegex(name, pattern)
+        for name in ("outside_counter", "http_reqs", "k6_", "k6_bad name"):
+            self.assertNotRegex(name, pattern)
+        self.assertIn('delete_matching_keys(resource.attributes, ".*")', config)
+
+    def test_relay_stop_and_cleanup_remove_only_this_run(self) -> None:
+        relay_module = sys.modules["metrics_relay"]
+        other = "99999999-1234-4abc-8def-1234567890ab"
+        containers = {
+            "relay": {"hyhome.quality.run_id": self.manifest["run_id"], "hyhome.quality.role": "metrics-ingress"},
+            "runner": {"hyhome.quality.run_id": self.manifest["run_id"], "hyhome.quality.role": "k6-runner"},
+            "target": {"hyhome.quality.run_id": self.manifest["run_id"], "hyhome.quality.role": "wiremock"},
+            "foreign": {"hyhome.quality.run_id": other, "hyhome.quality.role": "metrics-ingress"},
+        }  # fmt: skip
+        removed: list[str] = []
+
+        def fake_run(command, **kwargs):
+            if command[3:5] == ["ps", "--all"]:
+                # A label filter is a hint; the controller re-checks every label.
+                return types.SimpleNamespace(
+                    returncode=0, stdout="relay runner target foreign\n"
+                )
+            if command[3] == "inspect":
+                labels = containers[command[-1]]
+                record = {
+                    "Id": command[-1],
+                    "Name": "/" + command[-1],
+                    "Config": {"Labels": labels},
+                }
+                return types.SimpleNamespace(returncode=0, stdout=json.dumps([record]))
+            if command[3:5] == ["rm", "--force"]:
+                removed.append(command[-1])
+            return types.SimpleNamespace(returncode=0, stdout="")
+
+        with mock.patch.object(relay_module.subprocess, "run", side_effect=fake_run):
+            self.assertEqual(
+                ["relay", "runner"],
+                relay_module.cleanup(
+                    self.manifest["run_id"], "/synthetic/docker", "default"
+                ),
+            )
+        self.assertEqual(["relay", "runner"], removed)
+
+        def foreign_labels(command, **kwargs):
+            return types.SimpleNamespace(
+                returncode=0, stdout=json.dumps(containers["foreign"]), stderr=""
+            )
+
+        with mock.patch.object(
+            relay_module.subprocess, "run", side_effect=foreign_labels
+        ):
+            with self.assertRaises(relay_module.RelayError):
+                relay_module.stop(self.manifest, "/synthetic/docker", "default")
+
+    def test_cancelled_runner_is_recorded_and_removed(self) -> None:
+        self.manifest["mock_mode"] = "load"
+        attempt = self.root / "cancelled"
+        quality_run.prepare(self.write_manifest(), self.scenarios, attempt)
+        network = self.network_record()[0]
+        peer = self.peer_record()[0]
+        removed: list[str] = []
+        owned = {
+            "Id": "runner-id",
+            "Config": {
+                "Image": self.manifest["tool_image"],
+                "Labels": {
+                    "hyhome.quality.run_id": self.manifest["run_id"],
+                    "hyhome.quality.role": "k6-runner",
+                },
+            },
+        }
+
+        def fake_run(command, **kwargs):
+            if command[3:5] == ["network", "inspect"]:
+                return types.SimpleNamespace(returncode=0, stdout=json.dumps([network]))
+            if command[3:5] == ["container", "inspect"]:
+                record = owned if command[-1].startswith("hyhome-k6-") else peer
+                return types.SimpleNamespace(returncode=0, stdout=json.dumps([record]))
+            if command[3:5] == ["rm", "--force"]:
+                removed.append(command[-1])
+                return types.SimpleNamespace(returncode=0)
+            raise KeyboardInterrupt
+
+        guard = types.SimpleNamespace(validate=lambda *args: None)
+        with mock.patch.dict(sys.modules, {"http_guard": guard}):
+            with mock.patch.object(
+                container_executor.subprocess, "run", side_effect=fake_run
+            ):
+                with self.assertRaises(KeyboardInterrupt):
+                    container_executor.execute(
+                        self.manifest, self.scenarios, attempt, network["Name"],
+                        "wiremock", "/synthetic/docker", "default",
+                        self.root / "routes.json", "backend-test", "backend",
+                    )  # fmt: skip
+        record = json.loads((attempt / "exit.json").read_bytes())
+        self.assertEqual(
+            (record["execution_state"], record["exit_code"], record["error_class"]),
+            ("interrupted", 130, "runner_cancelled"),
+        )
+        self.assertEqual(["runner-id"], removed)
+        final = quality_run.finalize(attempt)
+        self.assertNotEqual("passed", final["verdict"])
+
+    def test_cli_cancel_stops_the_relay_it_started(self) -> None:
+        self.manifest.update(
+            schema_version="hyhome.quality-run/v2", telemetry={"mode": "otlp"}
+        )
+        manifest_path = self.write_manifest()
+        relay_module = sys.modules["metrics_relay"]
+        events: list[str] = []
+        argv = [
+            "run", "--manifest", str(manifest_path), "--scenario-root",
+            str(self.scenarios), "--attempt-dir", str(self.root / "cli"),
+            "--docker-context", "default", "--network", "run-net",
+            "--wiremock-container", "wiremock", "--metrics-egress-network",
+            "quality-otlp", "--relay-image", "grafana/alloy@sha256:" + "d" * 64,
+            "--relay-token-file", str(self.root / "token"),
+        ]  # fmt: skip
+
+        def cancelled(*args, **kwargs):
+            events.append("execute")
+            raise KeyboardInterrupt
+
+        with (
+            mock.patch.object(relay_module, "start", side_effect=lambda *a, **k: events.append("start") or "relay"),
+            mock.patch.object(relay_module, "stop", side_effect=lambda *a, **k: events.append("stop")),
+            mock.patch.object(container_executor, "execute", side_effect=cancelled),
+        ):  # fmt: skip
+            self.assertEqual(130, quality_run.main(argv))
+        self.assertEqual(["start", "execute", "stop"], events)
+        self.assertEqual(
+            "runner_cancelled",
+            json.loads((self.root / "cli/exit.json").read_bytes())["error_class"],
+        )
+        # A relay that cannot be removed is reported (exit 2), not a traceback.
+        argv[argv.index("--attempt-dir") + 1] = str(self.root / "cli-stop")
+
+        def stop_fails(*args, **kwargs):
+            raise relay_module.RelayError("relay could not be removed")
+
+        with (
+            mock.patch.object(relay_module, "start", return_value="relay"),
+            mock.patch.object(relay_module, "stop", side_effect=stop_fails),
+            mock.patch.object(container_executor, "execute", return_value=0),
+            mock.patch("sys.stderr"),
+        ):
+            self.assertEqual(2, quality_run.main(argv))
+        # A relay without OTLP telemetry is refused before anything starts.
+        self.manifest["telemetry"] = {"mode": "none"}
+        self.write_manifest()
+        argv[argv.index("--attempt-dir") + 1] = str(self.root / "cli-none")
+        events.clear()
+        with mock.patch.object(
+            relay_module, "start", side_effect=lambda *a, **k: events.append("start")
+        ):
+            self.assertEqual(2, quality_run.main(argv))
+        self.assertEqual([], events)
 
     def test_container_executor_prepares_limits_but_blocks_without_path_guard(
         self,
@@ -965,6 +1302,7 @@ class K6ResultContractTests(unittest.TestCase):
                 "prepare",
                 "prepare-guard",
                 "run",
+                "cleanup",
                 "finalize",
                 "prepare-import",
                 "import-db",

@@ -168,45 +168,6 @@ def _network_contract(
     return network_id, peer_id
 
 
-def _metrics_peer_contract(
-    manifest: dict[str, Any],
-    peer: dict[str, Any],
-    network_name: str,
-    peer_name: str,
-    egress_network: str,
-) -> None:
-    """Admit only the per-run OTLP relay; it, not k6, holds the Alloy token."""
-    config = peer.get("Config")
-    host = peer.get("HostConfig")
-    labels = config.get("Labels") if isinstance(config, dict) else None
-    settings = peer.get("NetworkSettings")
-    networks = settings.get("Networks") if isinstance(settings, dict) else None
-    endpoint = networks.get(network_name) if isinstance(networks, dict) else None
-    aliases = endpoint.get("Aliases") if isinstance(endpoint, dict) else None
-    image = config.get("Image") if isinstance(config, dict) else None
-    if (
-        peer.get("Name") != f"/{peer_name}"
-        or peer.get("State", {}).get("Running") is not True
-        or not isinstance(labels, dict)
-        or labels.get("hyhome.quality.run_id") != manifest["run_id"]
-        or labels.get("hyhome.quality.role") != "metrics-ingress"
-        or not isinstance(image, str)
-        or not image.startswith("grafana/alloy@sha256:")
-        or not IMAGE.fullmatch(image)
-        or not isinstance(host, dict)
-        or host.get("ReadonlyRootfs") is not True
-        or host.get("Privileged") is not False
-        or host.get("CapDrop") != ["ALL"]
-        or host.get("CapAdd") not in ([], None)
-        or host.get("PortBindings") not in ({}, None)
-        or not isinstance(aliases, list)
-        or "metrics-ingress" not in aliases
-        or not isinstance(networks, dict)
-        or set(networks) != {network_name, egress_network}
-    ):
-        raise ExecutorError("metrics ingress peer contract is invalid")
-
-
 def _telemetry_arguments(manifest: dict[str, Any]) -> list[str]:
     """k6 OTLP settings come from the executor and the validated manifest only."""
     resource = ",".join(
@@ -398,13 +359,22 @@ def execute(
             manifest, network, network_name, peer_name, metrics_peer
         )
         if metrics_peer:
-            _metrics_peer_contract(
-                manifest,
-                _inspect(docker_binary, docker_context, "container", metrics_peer),
-                network_name,
-                metrics_peer,
-                metrics_network,
-            )
+            # Admit only the relay metrics_relay.start builds; it, not k6,
+            # holds the Alloy token and stamps the run identity.
+            from metrics_relay import contract, relay_name
+
+            if metrics_peer != relay_name(manifest):
+                raise ExecutorError("metrics ingress is not this attempt's relay")
+            try:
+                contract(
+                    manifest,
+                    _inspect(docker_binary, docker_context, "container", metrics_peer),
+                    network_name,
+                    metrics_network,
+                    _inspect(docker_binary, docker_context, "network", metrics_network),
+                )
+            except ValueError as exc:
+                raise ExecutorError(str(exc)) from exc
         peer = _inspect(docker_binary, docker_context, "container", peer_name)
         if guard_config is None:
             _peer_contract(manifest, peer, network_name, peer_name, peer_id)
@@ -547,18 +517,14 @@ def execute(
         "--label",
         "hyhome.quality.role=k6-runner",
     ]
-    try:
-        completed = subprocess.run(
-            command,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            check=False,
-            timeout=budget["duration_seconds"] + 30,
-            env=_docker_environment(),
-        )
-    except subprocess.TimeoutExpired:
-        _write_exit(attempt_dir, "interrupted", 124, started_at, "runner_timeout")
-        owned = _inspect(docker_binary, docker_context, "container", container_name)
+
+    def remove_owned_runner() -> None:
+        # `docker run --rm` keeps the container when only its client dies, so
+        # remove it here, and only if it carries this run's labels and image.
+        try:
+            owned = _inspect(docker_binary, docker_context, "container", container_name)
+        except ExecutorError:
+            return
         labels = owned.get("Config", {}).get("Labels", {})
         if (
             labels.get("hyhome.quality.run_id") == manifest["run_id"]
@@ -580,7 +546,25 @@ def execute(
                 check=False,
                 env=_docker_environment(),
             )
+
+    try:
+        completed = subprocess.run(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+            timeout=budget["duration_seconds"] + 30,
+            env=_docker_environment(),
+        )
+    except subprocess.TimeoutExpired:
+        _write_exit(attempt_dir, "interrupted", 124, started_at, "runner_timeout")
+        remove_owned_runner()
         return 124
+    except (KeyboardInterrupt, SystemExit):
+        # SIGINT/SIGTERM to the controller: record the cancel, stop the runner.
+        _write_exit(attempt_dir, "interrupted", 130, started_at, "runner_cancelled")
+        remove_owned_runner()
+        raise
     except OSError:
         _write_exit(attempt_dir, "interrupted", 127, started_at, "runner_unavailable")
         return 127

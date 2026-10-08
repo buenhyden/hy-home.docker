@@ -240,8 +240,8 @@ services:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - alloy-data:/var/lib/alloy:rw
-    # Authenticated quality metrics receiver (4319) stays unpublished; only the
-    # executor-attached quality network reaches it (SPEC-0214).
+    # Authenticated quality metrics receiver (4319) stays unpublished; only
+    # per-run k6 relays on quality_otlp_net reach it (SPEC-0214).
     secrets:
       - quality_otlp_token
     ports:
@@ -274,6 +274,7 @@ services:
     networks:
       edge_net: {}
       obs_net: {}
+      quality_otlp_net: {}
 
   grafana:
     profiles:

@@ -1,6 +1,6 @@
 ---
 title: "Twenty-Item Reconciliation Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -50,7 +50,7 @@ showed on 2026-10-08; it is not an acceptance of the owning prompt.
 | Item | Owner Spec | State | Remaining for the owner |
 | --- | --- | --- | --- |
 | 01 | SPEC-0213 | DEV TimescaleDB and MNG PostgreSQL kept; DEV WAL archive, first full backup and restore canary on HOME | HOME PITR and R2 restore |
-| 02 | SPEC-0214 | k6 default, Locust LAB, authenticated OTLP relay merged (#371) | HOME runs and `perf_db` back-load evidence |
+| 02 | SPEC-0214 | k6 default, Locust LAB, authenticated OTLP relay merged (#371); SPEC-0214 TSK-0002 adds the relay controller, `quality_otlp_net`, an isolated target-to-dashboard run and the supervised Locust lifecycle | HOME relay canary, live Grafana and real-target load |
 | 03 | SPEC-0215 | Root `lab_net` retired, LAB lease controller merged (#376) | HOME LAB runs; persistent LAB inventory check |
 | 04 | new at execution, reusing SPEC-0204 Crawl4AI lanes | Not started this round | All |
 | 05 | new at execution | Existing Storybook static origin and MCP preserved | All |

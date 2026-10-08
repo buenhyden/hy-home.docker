@@ -157,6 +157,38 @@ class QualityObservabilityContractTest(unittest.TestCase):
         for field in ("Value #B", "Value #C", "Value #D", "Value #E"):
             self.assertEqual(["lastNotNull"], fields[field]["aggregations"])
 
+    def test_relay_egress_network_reaches_only_alloy_internally(self) -> None:
+        # A per-run relay joins this network and its run network only; being
+        # internal, it gives the relay no route beyond HOME Alloy.
+        root = (ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+        block = root[root.index("  quality_otlp_net:") :].split("\n  project_net:")[0]
+        self.assertIn("internal: true", block)
+        self.assertIn("subnet: 10.250.17.0/24", block)
+        observability = (ROOT / "infra/06-observability/docker-compose.yml").read_text(
+            encoding="utf-8"
+        )
+        alloy = observability[observability.index("\n  alloy:") :].split(
+            "\n  grafana:"
+        )[0]
+        self.assertIn("quality_otlp_net: {}", alloy)
+        self.assertEqual(1, observability.count("quality_otlp_net: {}"))
+
+    def test_k6_dashboard_separates_absent_from_zero(self) -> None:
+        # k6 sends dropped_iterations and checks only once one occurs or a
+        # check exists, so "no series" must not read as 0 or as 0% passing.
+        panels = {panel["title"]: panel for panel, _ in self.k6_expressions()}
+        dropped = [
+            expression
+            for _, expression in self.k6_expressions()
+            if "k6_dropped_iterations_total" in expression
+        ]
+        self.assertEqual(1, len(dropped))
+        self.assertIn("or (0 * sum(k6_iterations_total{", dropped[0])
+        checks = panels["Checks Success Rate (aggregate individual checks)"]
+        self.assertEqual(
+            "No checks reported", checks["fieldConfig"]["defaults"]["noValue"]
+        )
+
     def test_perf_results_use_rls_view_and_sql_literal_filters(self) -> None:
         dashboard = json.loads((K6_DASHBOARD.parent / "perf-results.json").read_text())
         variables = {v["name"]: v for v in dashboard["templating"]["list"]}

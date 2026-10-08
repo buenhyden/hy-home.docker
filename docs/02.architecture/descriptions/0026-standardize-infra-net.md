@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.3.4"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -69,6 +69,7 @@ automatic address pool cannot take one first.
 | `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Open WebUI, Qdrant, Open Notebook, SurrealDB, JupyterLab, MLflow | AI clients → model, vector and tracking backends |
 | `airflow_net`, `n8n_net`, `supabase_net`, `terrakube_net` | 10.250.10–13.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Stalwart, its config job, Mailpit and SMTP senders | SMTP 25/587 and IMAPS 993 to Stalwart, capture on Mailpit 1025; Stalwart management/JMAP on 8080 is also reachable here without the gateway SSO chain |
+| `quality_otlp_net` | 10.250.17.0/24, internal | Alloy and the per-run k6 metrics relays that `metrics_relay.py` attaches | relay → authenticated Alloy OTLP receiver 4319 (SPEC-0214) |
 | `crawl4ai_net` | leaf-owned | Crawl4AI | isolated SSRF-capable egress (unchanged) |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0041) |
 

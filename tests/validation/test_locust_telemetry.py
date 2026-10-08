@@ -51,6 +51,18 @@ class LocustTelemetryTests(unittest.TestCase):
             self.assertIn(key, master)
         self.assertNotIn("--otel", master)
 
+    def test_only_the_master_is_the_job_lab_run_supervises(self):
+        import yaml
+
+        lab = yaml.safe_load((PATH.parents[3] / "labs/locust.yml").read_text())
+        services = lab["services"]
+        self.assertEqual(
+            "true", services["lab-locust-master"]["labels"]["hy-home.lab.job"]
+        )
+        self.assertNotIn(
+            "hy-home.lab.job", services["lab-locust-worker"].get("labels", {})
+        )
+
     def test_lab_readiness_uses_image_python_not_external_pgrep(self):
         import yaml
 

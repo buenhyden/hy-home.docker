@@ -1,6 +1,6 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.5.1"
+version: "1.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -40,8 +40,8 @@ created: "2026-03-26"
 ### Out of Scope
 
 - **실제 부하**: 실제 앱 target·트래픽 승인이 없는 상태에서는 `BLOCKED`.
-- **실시간 지표**: Prometheus remote write 연결은 현재 executor에 없으며
-  `BLOCKED`.
+- **Prometheus remote write**: executor는 remote write를 쓰지 않습니다. 실시간 지표는
+  아래의 OTLP relay 경로로만 보냅니다.
 - **시각화**: Grafana 대시보드 자체의 소유는 `06-observability`에 있음.
 - **업무 판정 변경**: 공식 판정 변경은 `perf_db` verdict 권한이 소유.
 
@@ -54,6 +54,8 @@ k6/
 ├── quality_run.py      # 실행 전 검증, 격리 실행, 확정, 적재 봉투 CLI
 ├── container_executor.py # 전용 Docker network와 자원 제한 실행기
 ├── http_guard.py       # 기존 Traefik의 정확한 HTTP 경로 계약
+├── metrics_relay.py    # run별 OTLP relay 생성·검사·정리 controller
+├── metrics-ingress.alloy # relay 설정: run identity 덮어쓰기와 인증 전달
 ├── result_import.py    # perf_db 적재와 receipt 계약
 ├── object_store.py     # 승인 endpoint의 불변 객체 업로드·복원 계약
 ├── result_inspection.py # summary/exit 안전성 검사
@@ -95,7 +97,8 @@ bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행
 그대로 유효하고 `none`으로 해석합니다. telemetry에 endpoint·자격 증명·속성을 넣으면
 거부합니다(SPEC-0214).
 
-`otlp`이면 executor가 `--metrics-ingress-container`로 지정한 run별 relay를 추가
+`otlp`이면 `--relay-image`와 `--relay-token-file`을 받은 controller(`metrics_relay.py`)가
+run별 relay를 만들고 실행이 끝나거나 취소·timeout되면 지웁니다. executor는 그 relay를 추가
 피어로 검증합니다. relay는 front 네트워크의 `metrics-ingress` alias, 동일 `run_id`와
 `hyhome.quality.role=metrics-ingress` label, digest 고정 `grafana/alloy` image,
 read-only rootfs, `CapDrop=[ALL]`, host port 없음이어야 하고, 연결 network는 run
@@ -103,7 +106,11 @@ network와 `--metrics-egress-network`로 지정한 HOME Alloy 도달 network 둘
 [`metrics-ingress.alloy`](metrics-ingress.alloy)이며 relay만 HOME Alloy bearer token을
 가집니다. executor가 k6에 OTLP HTTP endpoint와 `project.id`·환경·
 `service.instance.id=<run_id>-a<attempt>` resource 속성을 주입하고
-`--out opentelemetry`를 JSON 출력과 함께 켭니다. 시나리오는 이 값을 바꿀 수 없습니다.
+`--out opentelemetry`를 JSON 출력과 함께 켭니다. relay는 producer가 보낸 resource 속성을
+모두 지우고 같은 run identity를 다시 붙이므로, 시나리오가 relay에 OTLP를 직접 보내도 다른
+project나 run의 값이 되지 않습니다. relay가 붙는 egress network는 Alloy와 relay만 있는
+internal `quality_otlp_net`입니다. 남은 container는 `quality_run.py cleanup --run-id`로 그
+run 것만 지웁니다.
 
 v1 기준 manifest는 `run_id` UUID, 양의 `attempt`,
 `project_id`, 환경, source revision, digest로 고정한 tool image, 시나리오

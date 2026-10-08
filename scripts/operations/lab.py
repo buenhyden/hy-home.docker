@@ -5,6 +5,10 @@ Commands:
   check LAB [LAB...]          refuse collisions, HOME data overlap, budget or
                               concurrency excess; print a JSON report
   up LAB --purpose --lease    check, record a ledger entry, start the project
+  run LAB --purpose --lease --deadline [--grace]
+                              start a job LAB, wait for its `hy-home.lab.job`
+                              container, stop it at the deadline or on
+                              SIGTERM, then stop the project
   down LAB                    stop only that project; never removes volumes
   reap                        stop every LAB whose lease has expired
   status                      print ledger entries and whether each runs
@@ -25,6 +29,7 @@ import json
 import os
 import pathlib
 import re
+import signal
 import subprocess
 import sys
 
@@ -269,7 +274,7 @@ def write_entry(path: pathlib.Path, entry: dict) -> None:
     path.write_text(json.dumps(entry, indent=2) + "\n", encoding="utf-8")
 
 
-def cmd_up(args, env) -> int:
+def cmd_up(args, env, *, wait: bool = True) -> int:
     match = LEASE.fullmatch(args.lease)
     if not match or not args.purpose.strip():
         raise LabError("give --purpose and a --lease such as 30m or 4h")
@@ -305,8 +310,9 @@ def cmd_up(args, env) -> int:
     ledger.mkdir(parents=True, exist_ok=True)
     target = ledger / f"{args.lab}.json"
     write_entry(target, entry)
-    command = [*compose_command(args, args.lab, lab["project"]), "up", "-d", "--wait"]
-    result = run(command)
+    command = [*compose_command(args, args.lab, lab["project"]), "up", "-d"]
+    # A job LAB may finish before it reports healthy, so `run` does not wait.
+    result = run([*command, "--wait"] if wait else command)
     entry["state"] = "running" if result.returncode == 0 else "failed"
     write_entry(target, entry)
     print(json.dumps({k: entry[k] for k in ("lab", "state", "expires_at")}))
@@ -335,6 +341,92 @@ def stop(args, env, name: str) -> int:
         print(result.stderr.strip(), file=sys.stderr)
         return 1
     return 0
+
+
+def _cancel(signum, frame) -> None:
+    raise KeyboardInterrupt
+
+
+def supervise(docker: str, project: str, deadline: int, grace: int) -> tuple[str, int]:
+    """Wait for the project's one job container; stop it at the deadline.
+
+    A deadline or SIGTERM/SIGINT stops the job with SIGTERM and `grace`
+    seconds, so a tool such as Locust can flush its result files, before the
+    caller removes the project. Returns the outcome and the controller code:
+    the job's own exit code, 124 for the deadline or 130 for a cancel.
+    """
+    listed = run(
+        [docker, "ps", "--all", "--quiet",
+         "--filter", f"label=com.docker.compose.project={project}",
+         "--filter", "label=hy-home.lab.job=true"]
+    )  # fmt: skip
+    jobs = listed.stdout.split()
+    if listed.returncode != 0 or len(jobs) != 1:
+        raise LabError(f"{project} has no single job container", 1)
+    previous = signal.signal(signal.SIGTERM, _cancel)
+    try:
+        try:
+            waited = run([docker, "wait", jobs[0]], timeout=deadline)
+            if waited.returncode != 0 or not waited.stdout.strip().isdigit():
+                raise LabError("docker wait failed", 1)
+            code = int(waited.stdout)
+            return ("completed" if code == 0 else "failed"), code
+        except subprocess.TimeoutExpired:
+            outcome, code = "deadline_exceeded", 124
+        except KeyboardInterrupt:
+            outcome, code = "cancelled", 130
+        try:
+            run([docker, "stop", "--time", str(grace), jobs[0]], timeout=grace + 30)
+        except subprocess.TimeoutExpired:
+            pass  # the caller's `down` still removes the project
+        return outcome, code
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+def cmd_run(args, env) -> int:
+    """Start a job LAB, bound it by a deadline inside its lease, then stop it."""
+    lease, deadline = LEASE.fullmatch(args.lease), LEASE.fullmatch(args.deadline)
+    if not lease or not deadline:
+        raise LabError("give --lease and --deadline such as 30m")
+    seconds = {"m": 60, "h": 3600}
+    deadline_seconds = int(deadline[1]) * seconds[deadline[2]]
+    if deadline_seconds > int(lease[1]) * seconds[lease[2]] or args.grace < 1:
+        raise LabError("the deadline must fit inside the lease")
+    target = ledger_dir(env) / f"{args.lab}.json"
+    before = target.stat().st_mtime_ns if target.exists() else None
+    outcome, code = "failed", 1
+    # Installed before anything starts, so a SIGTERM during `up` still stops
+    # the project below instead of leaving it unsupervised.
+    previous = signal.signal(signal.SIGTERM, _cancel)
+    try:
+        code = cmd_up(args, env, wait=False)
+        if code == 0:
+            entry = json.loads(target.read_text(encoding="utf-8"))
+            outcome, code = supervise(
+                args.docker, entry["project"], deadline_seconds, args.grace
+            )
+        else:
+            outcome = "start_failed"
+    except KeyboardInterrupt:
+        outcome, code = "cancelled", 130
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+        # Stop only a project this call recorded; a refused start writes none.
+        started = target.exists() and target.stat().st_mtime_ns != before
+        stopped = stop(args, env, args.lab) if started else 0
+        if started:
+            entry = json.loads(target.read_text(encoding="utf-8"))
+            entry.update(
+                outcome=outcome, job_exit_code=code, deadline_seconds=deadline_seconds
+            )
+            write_entry(target, entry)
+            print(
+                json.dumps(
+                    {k: entry[k] for k in ("lab", "state", "outcome", "job_exit_code")}
+                )
+            )
+    return code or stopped
 
 
 def entries(env) -> list[dict]:
@@ -373,6 +465,12 @@ def main(argv: list[str] | None = None) -> int:
     up.add_argument("lab")
     up.add_argument("--purpose", required=True)
     up.add_argument("--lease", required=True)
+    job = commands.add_parser("run")
+    job.add_argument("lab")
+    job.add_argument("--purpose", required=True)
+    job.add_argument("--lease", required=True)
+    job.add_argument("--deadline", required=True)
+    job.add_argument("--grace", type=int, default=30)
     commands.add_parser("down").add_argument("lab")
     commands.add_parser("reap")
     commands.add_parser("status")
@@ -385,6 +483,8 @@ def main(argv: list[str] | None = None) -> int:
             return 3 if report["problems"] else 0
         if args.command == "up":
             return cmd_up(args, env)
+        if args.command == "run":
+            return cmd_run(args, env)
         if args.command == "down":
             return stop(args, env, args.lab)
         if args.command == "reap":

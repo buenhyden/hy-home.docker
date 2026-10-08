@@ -1,6 +1,6 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -52,8 +52,10 @@ relabeling, exporter, route, health, configuration boundary를 정의한다.
     `config.home.alloy`의 품질 metric 수신기는 HTTP `4319`, bearer token
     secret `quality_otlp_token`을 쓰고 host에 publish하지 않는다. 식별 속성
     (`project_id`, `environment`, `service_name`, `instance`)과 k6 `condition` 등
-    허용 label만 남긴다. per-run relay에서 `alloy:4319`까지는 내부 Docker
-    network의 평문 HTTP hop이며, 이 수신기를 host나 다른 tier로 노출하지 않는다.
+    허용 label만 남긴다. run별 relay는 internal network `quality_otlp_net`으로만
+    `alloy:4319`에 닿는다. 이 구간은 평문 HTTP hop이며, 이 수신기를 host나 다른
+    tier로 노출하지 않는다. `quality_otlp_net`에는 Alloy와 relay controller가 붙인
+    relay만 둔다.
   - Alloy UI/health endpoint는 `${ALLOY_PORT:-12345}`와 `/-/healthy`
     healthcheck를 기준으로 한다.
   - Docker discovery는 Compose project `hy-home-infra` label의 targets만 유지한다. Network-name matching으로 이 경계를 대체하지 않는다.

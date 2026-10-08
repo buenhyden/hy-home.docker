@@ -12,6 +12,7 @@ import math
 import os
 import pathlib
 import re
+import signal
 import stat
 import sys
 import urllib.parse
@@ -667,6 +668,13 @@ def _parser() -> argparse.ArgumentParser:
     runner.add_argument("--backend-container")
     runner.add_argument("--metrics-ingress-container")
     runner.add_argument("--metrics-egress-network")
+    # With these two the controller creates, checks and removes the relay.
+    runner.add_argument("--relay-image")
+    runner.add_argument("--relay-token-file", type=pathlib.Path)
+    cleaner = subparsers.add_parser("cleanup")
+    cleaner.add_argument("--run-id", required=True)
+    cleaner.add_argument("--docker-context", required=True)
+    cleaner.add_argument("--docker-binary", default="docker")
     guard = subparsers.add_parser("prepare-guard")
     guard.add_argument("--manifest", required=True, type=pathlib.Path)
     guard.add_argument("--output", required=True, type=pathlib.Path)
@@ -688,6 +696,82 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _cancel(signum: int, frame: object) -> None:
+    raise KeyboardInterrupt
+
+
+def _run(args: argparse.Namespace) -> int:
+    """One attempt; with a relay image the controller owns the relay lifetime."""
+    from container_executor import ExecutorError, _timestamp, _write_exit, execute
+    from metrics_relay import RelayError, start, stop
+
+    manifest = prepare(args.manifest, args.scenario_root, args.attempt_dir)
+    relay = args.metrics_ingress_container
+    owns_relay = bool(args.relay_image or args.relay_token_file)
+    if owns_relay and (
+        relay
+        or not (args.relay_image and args.relay_token_file)
+        or manifest.get("telemetry", {"mode": "none"})["mode"] != "otlp"
+    ):
+        raise ContractError("a relay needs otlp telemetry, an image and a token file")
+    # SIGTERM takes the same path as Ctrl-C, so cleanup below always runs.
+    previous = signal.signal(signal.SIGTERM, _cancel)
+    started_at = _timestamp()
+    try:
+        if owns_relay:
+            try:
+                relay = start(
+                    manifest,
+                    args.docker_binary,
+                    args.docker_context,
+                    args.network,
+                    args.metrics_egress_network or "",
+                    args.relay_image,
+                    args.relay_token_file,
+                )
+            except RelayError:
+                _write_exit(
+                    args.attempt_dir,
+                    "interrupted",
+                    125,
+                    started_at,
+                    "metrics_ingress_unavailable",
+                )
+                raise
+        return execute(
+            manifest,
+            args.scenario_root,
+            args.attempt_dir,
+            args.network,
+            args.wiremock_container,
+            args.docker_binary,
+            args.docker_context,
+            args.guard_config,
+            args.backend_network,
+            args.backend_container,
+            relay,
+            args.metrics_egress_network,
+        )
+    except (ExecutorError, RelayError) as exc:
+        raise ContractError(str(exc)) from exc
+    except KeyboardInterrupt:
+        if not (args.attempt_dir / "exit.json").exists():
+            _write_exit(
+                args.attempt_dir, "interrupted", 130, started_at, "runner_cancelled"
+            )
+        print("quality-run: cancelled", file=sys.stderr)
+        return 130
+    finally:
+        try:
+            if owns_relay:
+                stop(manifest, args.docker_binary, args.docker_context)
+        except RelayError as exc:
+            # Reported as a contract failure (exit 2), not a traceback.
+            raise ContractError(f"{exc}; run cleanup --run-id") from exc
+        finally:
+            signal.signal(signal.SIGTERM, previous)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
@@ -699,25 +783,17 @@ def main(argv: list[str] | None = None) -> int:
             manifest = validate_manifest(_load_json(args.manifest))
             _write_once(args.output, configuration(manifest))
         elif args.command == "run":
-            from container_executor import ExecutorError, execute
+            return _run(args)
+        elif args.command == "cleanup":
+            from metrics_relay import RelayError, cleanup
 
-            manifest = prepare(args.manifest, args.scenario_root, args.attempt_dir)
             try:
-                return execute(
-                    manifest,
-                    args.scenario_root,
-                    args.attempt_dir,
-                    args.network,
-                    args.wiremock_container,
-                    args.docker_binary,
-                    args.docker_context,
-                    args.guard_config,
-                    args.backend_network,
-                    args.backend_container,
-                    args.metrics_ingress_container,
-                    args.metrics_egress_network,
-                )
-            except ExecutorError as exc:
+                uuid.UUID(args.run_id)
+                for name in cleanup(
+                    args.run_id, args.docker_binary, args.docker_context
+                ):
+                    print(f"removed {name}")
+            except (RelayError, ValueError) as exc:
                 raise ContractError(str(exc)) from exc
         elif args.command == "finalize":
             finalize(args.attempt_dir)

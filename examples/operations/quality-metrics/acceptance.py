@@ -21,8 +21,12 @@ TAGS = {
 
 
 TOKEN_PATH = "/run/secrets/quality_otlp_token"
-K6_TAG = "grafana/k6:2.2.0"
-RELAY = ROOT / "infra/11-quality/k6/metrics-ingress.alloy"
+# The k6 stage runs the real executor, relay controller and path guard.
+STAGE_TAGS = {
+    "k6": "grafana/k6:2.2.0",
+    "guard": "traefik:v3.7.13",
+    "mock": "wiremock/wiremock:3.13.2-alpine",
+}
 DASHBOARD = ROOT / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
 
 
@@ -34,39 +38,6 @@ def dashboard_expressions(dashboard):
         for target in panel.get("targets", []) or []:
             if "k6_" in target.get("expr", ""):
                 yield target["expr"]
-
-
-K6_SCENARIO = """import http from 'k6/http';
-import { sleep } from 'k6';
-// Long enough for several 5 s OTLP exports, so rate() has two samples.
-export const options = { vus: 1, duration: '20s' };
-export default function () {
-  http.get('http://prometheus:9090/-/healthy');
-  http.get('http://prometheus:9090/synthetic-missing');
-  sleep(0.5);
-}
-"""
-
-
-def k6_environment():
-    """Reuse the executor's exact k6 OTLP settings rather than a parallel copy."""
-    import importlib.util
-
-    path = ROOT / "infra/11-quality/k6/container_executor.py"
-    spec = importlib.util.spec_from_file_location("container_executor", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    manifest = {
-        "project_id": "metrics-rehearsal",
-        "environment": "test",
-        "run_id": "00000000-0000-4000-8000-000000000214",
-        "attempt": 1,
-    }
-    arguments = module._telemetry_arguments(manifest)
-    return "".join(
-        value + "\n"
-        for flag, value in zip(arguments[::2], arguments[1::2], strict=True)
-    )
 
 
 def metrics_config(source):
@@ -208,14 +179,20 @@ def main():
     for role in TAGS:
         parser.add_argument(f"--{role}-image", required=True)
     parser.add_argument("--source", type=Path, default=SOURCE)
-    parser.add_argument(
-        "--k6-image", help="cached grafana/k6 digest; enables the k6 stage"
-    )
+    for role in STAGE_TAGS:
+        parser.add_argument(
+            f"--{role}-image", help="cached digest; all three enable the k6 stage"
+        )
     args = parser.parse_args()
     images = {role: getattr(args, role + "_image") for role in TAGS}
-    if args.k6_image:
-        TAGS["k6"] = K6_TAG
-        images["k6"] = args.k6_image
+    stage = [role for role in STAGE_TAGS if getattr(args, role + "_image")]
+    if stage and len(stage) != len(STAGE_TAGS):
+        raise RuntimeError(
+            "the k6 stage needs --k6-image, --guard-image and --mock-image"
+        )
+    for role in stage:
+        TAGS[role] = STAGE_TAGS[role]
+        images[role] = getattr(args, role + "_image")
     context = command(["docker", "context", "show"]).strip()
     endpoint = json.loads(command(["docker", "context", "inspect", context]))[0][
         "Endpoints"
@@ -274,22 +251,18 @@ def main():
     token = uuid.uuid4().hex
     token_file = scratch / "quality_otlp_token"
     token_file.write_text(token)
-    token_file.chmod(0o644)
+    # The relay controller refuses a token other users can read.
+    token_file.chmod(0o640)
     env["METRICS_ALLOY_TOKEN"] = str(token_file)
     configs = {
         "ALLOY": alloy_config,
         "PROM": "global:\n  scrape_interval: 1s\nscrape_configs: []\n",
     }
-    if args.k6_image:
-        configs["RELAY"] = RELAY.read_text()
-        configs["K6_SCENARIO"] = K6_SCENARIO
-        configs["K6_ENV"] = k6_environment()
     for role, text in configs.items():
         path = scratch / (role.lower() + ".config")
         path.write_text(text)
         path.chmod(0o644)
-        key = role if role.startswith("K6_") else role + "_CONFIG"
-        env[f"METRICS_{key}"] = str(path)
+        env[f"METRICS_{role}_CONFIG"] = str(path)
     empty_env = scratch / "empty.env"
     empty_env.touch()
     base = [
@@ -470,83 +443,54 @@ def main():
             print("PASS unauthenticated producer rejected with 401", flush=True)
         else:
             print("NOT_RUN authentication: source has no quality receiver", flush=True)
-        if args.k6_image:
-            compose("--profile", "k6", "up", "-d", "--pull", "never", "relay")
-            time.sleep(3)
-            compose("--profile", "k6", "run", "--rm", "--no-deps", "k6")
-            # k6 Rate: one counter split by condition, with the run instance.
-            expect_value(
-                'count(count by (condition) ({__name__=~".*http_req_failed.*",'
-                'project_id="metrics-rehearsal",'
-                'instance="00000000-0000-4000-8000-000000000214-a1"}))',
-                2,
-                timeout=60,
-            )
-            # Every 404 is an unexpected response and a nonzero Rate sample.
-            failed = query(
-                'sum({__name__=~".*http_reqs.*",project_id="metrics-rehearsal",'
-                'expected_response="false"})'
-            )
-            nonzero = query(
-                'sum({__name__=~".*http_req_failed.*",project_id="metrics-rehearsal",'
-                'condition="nonzero"})'
-            )
-            if (
-                not failed
-                or not nonzero
-                or failed[0]["value"][1] != nonzero[0]["value"][1]
-            ):
-                raise AssertionError("Failed request count and Rate nonzero disagree")
-            print(
-                f"PASS failed requests = Rate nonzero = {failed[0]['value'][1]}",
-                flush=True,
-            )
-            labels = query('{__name__=~".*http_reqs.*",project_id="metrics-rehearsal"}')
-            for row in labels:
-                if {"url", "name"} & set(row["metric"]):
-                    raise AssertionError("Unbounded k6 tag reached Prometheus")
-            print(
-                "PASS k6 OTel through relay keeps condition, instance and status",
-                flush=True,
-            )
-            # The shared k6 dashboard must return data on this exact shape.
+
+        def dashboard_check(instance, require=()):
+            """Every k6 dashboard query, on the real OTLP shape, for one run."""
             dashboard = json.loads(DASHBOARD.read_text())
+            expressions = list(dashboard_expressions(dashboard))
             empty = []
-            checked = 0
-            for expression in dashboard_expressions(dashboard):
+            for expression in expressions:
                 concrete = (
                     expression.replace("$project_id", "metrics-rehearsal")
-                    .replace("$instance", ".*")
+                    .replace("$instance", instance)
                     .replace("$quantile", "0.95")
                     .replace("$__rate_interval", "5m")
                     .replace("$__range", "5m")
                 )
-                checked += 1
                 if not query(concrete):
                     empty.append(expression)
-            required = (
-                "k6_http_reqs_total",
-                "k6_http_req_failed_total",
-                "k6_http_req_duration_milliseconds_bucket",
-            )
-            answered = [
-                item for item in dashboard_expressions(dashboard) if item not in empty
-            ]
             missing = [
-                name for name in required if not any(name in item for item in answered)
+                name
+                for name in (
+                    "k6_http_reqs_total",
+                    "k6_http_req_failed_total",
+                    "k6_http_req_duration_milliseconds_bucket",
+                    *require,
+                )
+                if not any(name in item for item in expressions if item not in empty)
             ]
             if missing:
                 raise AssertionError(f"Dashboard returns no data for {missing}")
             print(
-                f"PASS k6 dashboard queries: {checked - len(empty)}/{checked} return data",
+                f"PASS k6 dashboard queries: {len(expressions) - len(empty)}/"
+                f"{len(expressions)} return data",
                 flush=True,
             )
             for expression in empty:
-                print(
-                    "INFO empty dashboard query (no matching k6 metric in this run):",
-                    expression[:120],
-                    flush=True,
-                )
+                print("INFO empty dashboard query:", expression[:120], flush=True)
+
+        if stage:
+            import executor_stage
+
+            executor_stage.run(
+                images,
+                network,
+                token_file,
+                scratch,
+                query,
+                expect_value,
+                dashboard_check,
+            )
 
         # Exact transport replay must not double count a delta stream.
         duplicate = payload(
@@ -621,7 +565,7 @@ def main():
             flush=True,
         )
     finally:
-        compose("--profile", "k6", "down", "--timeout", "10")
+        compose("down", "--timeout", "10")
         if command(
             [
                 "docker",
