@@ -1,6 +1,6 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -104,6 +104,8 @@ HttpUser.requests worker의 counter·ms histogram·ReadTimeout과 master CSV를
 대조한다. client URL·context·header·body·예외 문자열은 수집하지 않는다.
 이 결과는 해당 client/event 경로의 검증이며 OTel SDK exporter 전달, 모든 Python
 client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로 확대하지 않는다.
+같은 디렉터리의 `lifecycle.py`는 `lab.py`의 감독 아래에서 완료·종료 코드 전달·상한·
+취소·master 비정상 종료·worker 탈락을 재현한다.
 
 ## Usage
 
@@ -111,7 +113,7 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
    정리 대상을 먼저 기록한다.
 2. scenario directory를 읽기 전용으로 검토하고 새로운 빈 result directory를
    실행마다 지정한다.
-3. target 소유자의 승인 뒤에만 `python3 scripts/operations/lab.py up locust --purpose "<목적>" --lease <기간>`으로 시작한다. 종료는 `lab.py down locust`이다.
+3. target 소유자의 승인 뒤에만 `python3 scripts/operations/lab.py run locust --purpose "<목적>" --lease <기간> --deadline <상한>`으로 실행한다. 제어기가 master 종료를 기다리고, 상한이나 SIGTERM에서 master를 멈춘 뒤 project를 내린다. 결과는 ledger의 `outcome`과 제어기 종료 코드(정상은 master 코드, 상한 124, 취소 130)로 남는다.
 4. master 종료 코드, worker 수와 CSV 산출물을 함께 보존한다.
 5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
    prune을 사용하지 않는다.

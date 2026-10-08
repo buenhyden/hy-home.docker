@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -54,6 +54,12 @@ scaling, image upgrade.
 - **Resources:** worker scaling은 명시적이며 승인된 test로 제한된다.
   run 후 worker와 master를 중지한다; host 재시작 후 load를 재생하는
   restart 동작을 절대 추가하지 않는다.
+- **Bounds:** 실행은 `lab.py run`의 `--deadline` 안에서 끝나며, deadline은 lease 안에
+  있어야 한다. 결과 판정에는 제어기의 `outcome`·종료 코드와 CSV를 함께 쓴다. master 종료
+  코드 0만으로 완료로 보지 않는다. 상한·취소로 멈춘 run도 master는 0으로 끝난다.
+- **Results:** 결과는 LAB result directory의 파일로 남는다. `perf_db` 적재는 장기 비교를
+  소비할 named consumer가 생길 때 별도 offline adapter로만 추가한다. 그때도 master/worker
+  중복값, 누적과 구간 통계, percentile의 비가산성, 누락·취소 run을 구분한다.
 - **Backup:** test가 중지된 동안에만 scenario/result 디렉터리를 복사한다.
   Repository-tracked scenario는 Git에서 복원한다; untracked result
   recovery는 overwrite 전에 별도 디렉터리에서 rehearse해야 한다.

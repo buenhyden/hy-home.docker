@@ -1,6 +1,6 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -104,13 +104,15 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    k6 품질 metric이 없으면 `config.home.alloy`가 선택되었는지, `alloy`에 secret
    `quality_otlp_token`이 부여되었는지, run별 `metrics-ingress` relay가 같은 token으로
-   `alloy:4319`에 보내는지 확인한다. token 파일이 비어 있으면 Alloy는 요청을 받지 않고
+   `alloy:4319`에 보내는지 확인한다. relay와 Alloy는 둘 다 internal network
+   `quality_otlp_net`에 있어야 한다. Alloy가 이 network에 없으면 Alloy를 다시 만든다. token 파일이 비어 있으면 Alloy는 요청을 받지 않고
    연결을 끊으므로, HOME Alloy를 다시 만들기 전에 파일이 비어 있지 않은지 확인한다. 값은
    출력하지 않는다.
 
    ```bash
    rg -n 'quality_otlp_token|4319|otelcol.auth.bearer' infra/06-observability/docker-compose.yml infra/06-observability/alloy/config/config.home.alloy
    test -s secrets/observability/alloy/quality_otlp_token.txt && echo non-empty
+   docker network inspect quality_otlp_net --format '{{range .Containers}}{{.Name}} {{end}}'
    ```
 
 6. Label drift or discovery gap이 의심되면 relabel rules와 Compose project filter를 확인한다.

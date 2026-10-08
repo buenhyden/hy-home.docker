@@ -1,10 +1,10 @@
 ---
 title: "Locust 합성 요청 계측 인수"
-version: "0.1.0"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-08"
 ---
 
 # Locust 합성 요청 계측 인수
@@ -31,6 +31,8 @@ OTel exporter 전달과 perf_db import는 이 시험이 증명하지 않습니�
 - `compose.override.yml`: 기존 LAB 정의를 비밀·포트·named volume 없는 internal network로 제한
 - `locustfile.py`: 합성 scenario와 requests client request-event 수집
 - `acceptance.py`: digest·context·자원 확인, 결과 대조, 정확한 정리
+- `lifecycle.py`: `lab.py` 감독 아래의 완료·종료 코드 전달·상한·취소·master 비정상
+  종료·worker 탈락과 CSV 상태·정리 확인
 - `README.md`: 입출력·검증·한계
 
 ## Tech Stack

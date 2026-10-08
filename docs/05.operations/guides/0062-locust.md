@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -46,8 +46,9 @@ target-owner 승인, limit, stop condition이 필요하다.
   Compose dependency에서 빠져 있으며 이미 승인되고 도달 가능해야 한다.
 - Health: master와 worker process 확인은 target이 안전하다거나 test result가
   유효하다는 것을 증명하지 않는다.
-- Resources: LAB는 `template-job-med`를 상속하고 기본 worker replica 2개를 선언한다.
-  승인된 test는 `LAB_LOCUST_EXPECT_WORKERS`와 `--scale lab-locust-worker=N`을 함께 맞춘다.
+- Resources: LAB는 `template-job-med`를 상속한다. worker replica 수와 master가 기다리는
+  worker 수는 `LAB_LOCUST_EXPECT_WORKERS` 하나에서 정해지며 기본값은 2다. worker가
+  `LAB_LOCUST_EXPECT_WORKERS_MAX_WAIT` 안에 다 붙지 않으면 master는 부하 없이 non-zero로 끝난다.
 
 Scenario directory와 result directory에는 target URL, credential, payload, test result가 들어 있을 수
 있다. Credential은 승인된 secret channel에 보관하고, scenario file과 evidence에서
@@ -61,9 +62,36 @@ Scenario directory와 result directory에는 target URL, credential, payload, te
    실행한다.
 3. scenario directory에 있는 `locustfile.py`와 fixture를 검토한다. 정확히 그 effect를
    승인받지 않았다면 production data를 수정할 수 없는지 확인한다.
-4. Runtime 승인을 받은 뒤 `lab-locust-master`와 `lab-locust-worker`만 시작한다. Target abort SLI를 넘으면 즉시 run을 중지한다.
+4. Runtime 승인을 받은 뒤 `python3 scripts/operations/lab.py run locust --purpose "<목적>"
+   --lease <기간> --deadline <상한>`으로 실행한다. 제어기는 master가 끝나기를 기다리고,
+   상한에 닿거나 SIGTERM을 받으면 master를 grace 기간(기본 30초) 동안 SIGTERM으로 멈춘 뒤
+   project를 내린다. Target abort SLI를 넘으면 제어기에 SIGTERM을 보내 즉시 멈춘다.
 5. 설정 커밋·시나리오 digest·정제된 집계 결과·최종 중지 상태를 보존한다. Raw request body, cookie, token, personal data는
    evidence가 아니다.
+
+### 종료 결과 해석
+
+`lab.py run`은 결과를 ledger의 `outcome`과 자신의 종료 코드로 남긴다. 아래는 SPEC-0214
+TSK-0002의 격리 실행에서 관찰한 동작이다.
+
+| outcome | 제어기 코드 | master 종료 코드 | CSV |
+| --- | --- | --- | --- |
+| `completed` | 0 | 0 | 최종 집계 |
+| `failed` | master 코드(예: `--exit-code-on-error` 1) | 같은 값 | 최종 집계 |
+| `deadline_exceeded` | 124 | SIGTERM 뒤 0 | 멈춘 시점까지의 집계 |
+| `cancelled` | 130 | SIGTERM 뒤 0 | 멈춘 시점까지의 집계 |
+| `failed`(master 비정상 종료) | 137 등 | 같은 값 | 마지막 주기 저장본이며 최종 집계가 아님 |
+
+- SIGTERM을 받은 master는 CSV를 쓰고 0으로 끝난다. 상한이나 취소로 멈춘 run은 master
+  종료 코드가 아니라 제어기 코드와 `outcome`으로만 구분된다.
+- 실행 중 worker 하나가 죽어도 master 종료 코드는 0이다. worker 탈락은 종료 코드로
+  드러나지 않으므로 worker 수를 따로 기록한다.
+- master가 비정상 종료하면 worker는 project를 내릴 때까지 남는다. 제어기는 결과와 무관하게
+  project를 내린다.
+
+Locust 결과는 LAB result directory의 CSV로 남는다. 현재 장기 비교를 소비할 named
+consumer가 없어 `perf_db`로 가져오는 adapter는 만들지 않았다. 고정 이미지에 OpenTelemetry
+SDK가 없으므로 `--otel`과 OTLP 전달은 지원하지 않는다.
 
 ### Persistence, backup, and upgrade
 
