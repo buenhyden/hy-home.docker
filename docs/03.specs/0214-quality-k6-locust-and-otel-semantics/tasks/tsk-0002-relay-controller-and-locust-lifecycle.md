@@ -1,6 +1,6 @@
 ---
 title: "Relay Controller and Locust Lifecycle Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
@@ -132,16 +132,23 @@ pinned Locust 2.46.6
 (`locustio/locust@sha256:d43616228012a7d79b883e2ecd42f87640469377f2b666c4ab27e5248dfdf35f`)
 and WireMock 3.13.2-alpine
 (`wiremock/wiremock@sha256:f8c42a38dca3f4a1d7219af11c80438740f39eebb1505b0f029aed743c20e147`),
-two workers each, through `lab.supervise`. Exit 0:
+two workers each, through `lab.supervise`. The final run used `lab.py`
+`09acffd82679267ec44642863268091810f1b90c74ac2434d866fe3e24a5afe1`,
+`lifecycle.py`
+`1423c665d61f89d97c57e2775743a6cda0fdd6812510d3bd7f37eb8578b0e422` and
+`labs/locust.yml`
+`41ec5df9291e8ac37b356df6147f2eaf622132de4539326f2703d3526f6a2e7b`. Exit 0:
 
 | Case | Outcome | Controller code | Master exit | Workers left at stop | CSV | Requests | Leftovers |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | propagated (`--exit-code-on-error 1`) | failed | 1 | 1 | 0 | complete | 180 | 0 |
-| completed | completed | 0 | 0 | 0 | complete | 180 | 0 |
-| deadline (12 s of 120 s) | deadline_exceeded | 124 | 0 | 0 | complete | 346 | 0 |
-| cancelled (SIGTERM at 8 s) | cancelled | 130 | 0 | 0 | complete | 227 | 0 |
-| master crash (SIGKILL at 8 s) | failed | 137 | 137 | 2 | last periodic write | 156 | 0 |
-| worker drop (SIGKILL one worker) | completed | 0 | 0 | 0 | complete | 314 | 0 |
+| completed | completed | 0 | 0 | 0 | complete | 183 | 0 |
+| deadline (12 s of 120 s) | deadline_exceeded | 124 | 0 | 0 | complete | 336 | 0 |
+| cancelled (SIGTERM at 8 s) | cancelled | 130 | 0 | 0 | complete | 213 | 0 |
+| master crash (SIGKILL at 8 s) | failed | 137 | 137 | 2 | last periodic write | 142 | 0 |
+| worker drop (SIGKILL one worker) | completed | 0 | 0 | 0 | complete | 295 | 0 |
+
+A run before the review fixes gave the same outcomes and codes.
 
 Findings: a master stopped by SIGTERM writes its CSV and exits 0, so only the
 controller code and `outcome` distinguish a deadline or cancel from a
@@ -168,28 +175,29 @@ the harness Alloy built from `config.home.alloy` and Prometheus
 k6 is `grafana/k6@sha256:9bd01d6941fca969cb61bb57d2da5ee9b385fe2aa8881df3798c196564d6ace6`.
 The scenario checks that `/health` returns 200 and `/unapproved` and
 `/__admin/requests` return 404 through the guard, and once posts its own OTLP
-with `project.id=forged-project` and instance `forged` to the relay.
+with `project.id=forged-project` and instance `forged` to the relay: one
+metric named `k6_forged_counter` and one named `outside_counter`.
 
-The final run used `acceptance.py`
+The final run, after the review fixes below, used `acceptance.py`
 `b8484bd2e0d6846e81d6503d353e891b2e7022c3bfa47f65317b33492ba0acfd`,
 `executor_stage.py`
-`c18a0ebd002115afe462ba910193c0c8f647a04c67d842e3794a0e0acc6675d9`,
+`46d34ff1be7b37aabf6504ace01415197ccca838475672663e360274e7d67712`,
 `metrics_relay.py`
-`83cb9f9d0aa57414959fa43b6a0bec966a935ffb1531a3dd8e8c3b916d19cacb`,
+`99c0408e170d849b75e451d11db5dd62e7ec37fdb471d79be829f5175492b105`,
 `metrics-ingress.alloy`
-`bf4479f829c51f0c5a9c039bac373954e10dd5fb6c9fc8f7a7fb4818a3ee245c`,
+`5f6fcb5383a0d0172f6fa6473d81a0b9ed4126a87811d3255bcae71c68bcc1f8`,
 `container_executor.py`
 `4227bf534fa53f4b0d82744ed87e9cec0d57b826d373c4f88ac901ad1ba8a249` and
 `quality_run.py`
-`1d0c542e54cc59b82dcb5bf473280087df1ded4a98e5d8a60b738f98eafef660`.
+`99950b162a26a8d0b7bfd7d8a19111fe031a200e8d38faeb425c5ec1adf873d6`.
 It exited 0. Every earlier synthetic case passed unchanged, including the 401
 for a producer without a token. Then:
 
 | Step | Result |
 | --- | --- |
 | a1: 2 VUs, 20 rps, 20 s, 100000 iterations | `passed`/`complete`; relay and runner gone afterwards |
-| Prometheus vs k6 summary (a1) | requests 337 = 337, passing checks 252 = 252, dropped iterations 99916 = 99916 |
-| Forged OTLP | stored only as `forged_counter_total{project_id="metrics-rehearsal",instance="<run>-a1"}` = 1; no series with `project_id="forged-project"` or `instance="forged"` |
+| Prometheus vs k6 summary (a1) | requests 341 = 341, passing checks 255 = 255, dropped iterations 99915 = 99915 |
+| Forged OTLP | stored only as `k6_forged_counter_total{project_id="metrics-rehearsal",instance="<run>-a1"}` = 1; no series with `project_id="forged-project"` or `instance="forged"`; `outside_counter` dropped by the relay |
 | Dashboard queries (a1) | 30 of 30 return data, including checks and dropped iterations |
 | a2: 3 iterations, no drops | `passed`/`complete`; drops query returns 0; the same query for an absent run returns no data |
 | a3: relay with a writable root filesystem | `quality_run.py` exit 2, `isolation_preflight_failed`, no k6 container |
@@ -197,8 +205,13 @@ for a producer without a token. Then:
 | `cleanup --run-id` | removed this run's leftover relay only |
 | Cleanup | guard fixture, harness project, network and scratch removed; no `hyhome-k6*` container left |
 
-An earlier run of the same stage before a refactor gave the same results
-(341 requests, 99915 dropped, 30 of 30 queries). Commit `04d111660`.
+Two runs before the review fixes gave the same results (341 and 337
+requests, 30 of 30 queries). One run during the fixes failed: the first
+name filter, `^k6_[a-zA-Z0-9_]{1,128}$`, dropped k6 Rate metrics, which k6
+exports as `k6_checks.total` and `k6_http_req_failed.total`, so the stored
+check count never reached k6's 255. A debug relay showed the dotted names;
+the pattern now allows `.` and a static test pins both forms. Commit
+`04d111660` and the review-fix commit.
 
 ### W10 Documents and Reused Import Evidence
 
@@ -222,14 +235,31 @@ still covers the importer; the unit tests for replay, conflict, outage and
 timeout pass. Loading results after the run, not during it, stays the
 default.
 
+### Review
+
+An independent read-only review of the branch returned ten findings:
+
+| Finding | Disposition |
+| --- | --- |
+| `lab.py run` returned before its cleanup when `compose up -d` failed after starting services | Fixed: a start failure records `start_failed` and stops the project; new test RED then GREEN |
+| A SIGTERM during `compose up` killed `lab.py run` before any handler existed | Fixed: the handler is installed before anything starts; a cancelled start records `cancelled`, exits 130 and stops the project |
+| The relay contract did not check CPU, memory, PIDs, restart policy, entrypoint, extra environment, tmpfs or the token mount | Fixed: all are pinned to what the controller builds, and the token mount must be a private single-line file; nine new mutations RED then GREEN |
+| A scenario could post unbounded metric names through the relay | Partly fixed: the relay passes only `k6_` names (dots allowed for Rate metrics) and caps a request at 4 MiB. A scenario can still add `k6_` series within its own run; this residual is documented in Spec contract 10 and GDE-0061, and series quota belongs to the integration package |
+| A relay removal failure after the run escaped as a traceback | Fixed: reported as `quality-run: …` with exit 2 |
+| `docker create` sat outside the removal guard | Fixed: create is inside the guard; a create interrupted mid-flight can still leave a container, which `cleanup --run-id` removes |
+| A cancel during relay start could be recorded as a relay failure | Fixed: a failing removal no longer replaces the original cancel |
+| The contract did not check the token mount's source | Fixed with the contract change above |
+| GDE-0061 said the relay could reach only Alloy 4319 | Fixed: the guide now says the network membership is an operating rule, the executor checks only that the network is internal, and the hashed relay configuration sends only to 4319 |
+| A `docker stop` timeout in `supervise` escaped as a traceback | Fixed: the timeout is absorbed and the project is still stopped |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Relay contract and controller | 6 | W5 | `test_k6_results` RED (missing module) then 27 GREEN | Working tree | PASS | W5 Relay Controller, Relay Contract and Cancel Cleanup | accepted |
+| Relay contract and controller | 6 | W5 | `test_k6_results` RED (missing module, then nine review mutations) then 28 GREEN | Working tree | PASS | W5 Relay Controller, Relay Contract and Cancel Cleanup | accepted |
 | Dashboard absent vs zero | 6 | W6 | New dashboard test RED then GREEN; k6 drop probe | Pinned k6 digest | PASS | W6 Dashboard Absent-Versus-Zero Rule | accepted |
 | Egress network | 9 | W7 | Render, catalog, compose tests, hardening | Working tree | PASS | W7 Relay Egress Network | accepted |
-| Locust lifecycle | 8 | W8 | Unit tests; `lifecycle.py` six cases | Pinned Locust and WireMock digests | PASS | W8 Locust LAB Supervision | accepted |
+| Locust lifecycle | 8 | W8 | Unit tests incl. start failure and cancelled start; `lifecycle.py` six cases | Pinned Locust and WireMock digests | PASS | W8 Locust LAB Supervision | accepted |
 | Isolated end-to-end relay | 7 | W9 | `acceptance.py` with the executor stage | Pinned Alloy, Prometheus, Python, k6, Traefik, WireMock digests | PASS | W9 Isolated End-to-End Relay Run | accepted |
 | Import path | 5 | W10 | Hash comparison with SPEC-0203 real-PostgreSQL evidence; unit tests | Same importer, inspection and schema bytes | PASS | W10 Documents and Reused Import Evidence | accepted |
 | HOME Alloy on `quality_otlp_net` and HOME relay canary | 9 | W10 | `executor_stage.py --home`; live Grafana API | Merged source | NOT_RUN | Review and Completion | pending |

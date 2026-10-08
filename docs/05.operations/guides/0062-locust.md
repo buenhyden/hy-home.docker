@@ -81,6 +81,7 @@ TSK-0002의 격리 실행에서 관찰한 동작이다.
 | `deadline_exceeded` | 124 | SIGTERM 뒤 0 | 멈춘 시점까지의 집계 |
 | `cancelled` | 130 | SIGTERM 뒤 0 | 멈춘 시점까지의 집계 |
 | `failed`(master 비정상 종료) | 137 등 | 같은 값 | 마지막 주기 저장본이며 최종 집계가 아님 |
+| `start_failed` | `compose up` 코드 | 시작되지 않았거나 일부만 시작 | 없을 수 있음 |
 
 - SIGTERM을 받은 master는 CSV를 쓰고 0으로 끝난다. 상한이나 취소로 멈춘 run은 master
   종료 코드가 아니라 제어기 코드와 `outcome`으로만 구분된다.
@@ -88,6 +89,8 @@ TSK-0002의 격리 실행에서 관찰한 동작이다.
   드러나지 않으므로 worker 수를 따로 기록한다.
 - master가 비정상 종료하면 worker는 project를 내릴 때까지 남는다. 제어기는 결과와 무관하게
   project를 내린다.
+- `compose up`이 일부 service만 시작하고 실패하거나 시작 도중 SIGTERM을 받아도, 제어기는
+  자기가 시작한 project를 내린다.
 
 Locust 결과는 LAB result directory의 CSV로 남는다. 현재 장기 비교를 소비할 named
 consumer가 없어 `perf_db`로 가져오는 adapter는 만들지 않았다. 고정 이미지에 OpenTelemetry

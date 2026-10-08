@@ -87,18 +87,21 @@ consumer, and Locust OpenTelemetry, which the pinned image cannot export.
 
 9. `metrics_relay.py` is the only tracked way to create a relay. It names the
    relay after the run and attempt, labels it with the run ID, attempt and
-   role, runs a digest-pinned `grafana/alloy` image as the controller's user
-   with a read-only root filesystem, no capabilities, `no-new-privileges`, no
-   host ports and bounded CPU, memory and PIDs, mounts only the tracked relay
-   configuration and the token file read-only, and joins exactly the run
-   network (alias `metrics-ingress`) and one egress network. The token file
-   must be private to its owner. The executor admits a relay only if every one
-   of these properties, the configuration hash and an internal egress network
-   hold.
+   role, runs a digest-pinned `grafana/alloy` image with its own entrypoint
+   and environment as the controller's user with a read-only root filesystem,
+   no capabilities, `no-new-privileges`, no host ports, no restart, one `/tmp`
+   tmpfs and 0.25 CPU, 256 MiB and 64 PIDs, mounts only the tracked relay
+   configuration and a private single-line token file read-only, and joins
+   exactly the run network (alias `metrics-ingress`) and one egress network.
+   The executor admits a relay only if every one of these properties, the
+   configuration hash and an internal egress network hold.
 10. The relay replaces every producer resource attribute with the run's
     project, environment and `<run_id>-a<attempt>` instance, which it receives
     from the controller. A scenario that posts its own OTLP cannot claim
-    another project or run. One shared bearer token authenticates every relay
+    another project or run. The relay passes only metric names that start
+    with `k6_` and caps a request body at 4 MiB; a scenario can still add
+    `k6_` series within its own run, bounded only by the relay's resources
+    and the run's duration. One shared bearer token authenticates every relay
     to HOME Alloy, so any holder of the token can still claim any project;
     per-project credentials, a server-enforced project label, rotation and
     quota remain with the integration package.
@@ -111,11 +114,12 @@ consumer, and Locust OpenTelemetry, which the pinned image cannot export.
 13. The k6 dashboard shows 0 dropped iterations when a run reported iterations
     and none dropped, no data when the run is absent, and "No checks
     reported" instead of a 0% check rate when no check exists.
-14. `lab.py run` starts a job LAB, waits for its single `hy-home.lab.job`
+14. `lab.py run` installs its SIGTERM handler before anything starts, starts a job LAB, waits for its single `hy-home.lab.job`
     container within a deadline that fits the lease, stops that container
     with a grace period at the deadline or on SIGTERM so Locust can write its
-    CSV, always stops the project, and returns the job's exit code, 124 for
-    the deadline or 130 for a cancel. Locust results stay file-based.
+    CSV, always stops a project it started (including after a failed or
+    cancelled start), and returns the job's exit code, 124 for the deadline
+    or 130 for a cancel. Locust results stay file-based.
 15. The metrics path has stated budgets: the remote-write `sample_age_limit`
     of 5 minutes, the delta-to-cumulative `max_stale` of 5 minutes and
     `max_streams` of 10000, Prometheus' default 15-day retention, and a
