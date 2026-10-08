@@ -140,8 +140,8 @@ not the Valkey export, so it was not run for this change.
 The user pasted prompt 04 again on 2026-10-08 after PR #387 merged at
 `b0a72d2e5`, which this round reads as a request to close the open items.
 The owner had freed the host disk to 64%, so image pulls and the OpenSearch
-LAB rerun became possible. Branch `claude/spec-0204-round3` starts at
-`b0a72d2e5`.
+LAB rerun became possible. Branch `claude/spec-0204-round3` started at `b0a72d2e5` and was rebased onto
+`fb468bba5` after PR #389 (SPEC-0215) merged.
 
 ### W13 OpenBao Raft Snapshot
 
@@ -162,7 +162,7 @@ and saves a Raft snapshot to staging. Policy `backup-snapshot` grants only
 The test fails against the previous script and passes now. HOME OpenBao was
 sealed again when observed, and no token exists yet, so HOME runs report the
 gap until the owner creates one (RUN-0021 gives the steps). Commit
-`233e423d2`.
+`4ef6d3f7d`.
 
 ### W14 Open WebUI Key
 
@@ -171,8 +171,8 @@ the container layer and each recreation replaced it. `WEBUI_SECRET_KEY_FILE`
 now points into the data volume, and the state allowlist includes the key
 next to `uploads/`; `webui.db` already comes from the SQLite export. In the
 exact image two containers on one volume kept the same key. The first HOME
-recreation after this change logs users out once. Commits `151720c29`,
-`fc519306a` (matrix row).
+recreation after this change logs users out once. Commits `06d2a8953`,
+`b325dec30` (matrix row).
 
 ### W15 CDC Stream Rehearsal
 
@@ -189,7 +189,7 @@ passed in 260 s:
 - the heartbeat writes its row and advances the slot's flushed LSN.
 
 Topics have three partitions, so order holds only per key. Commit
-`d92940e3b`.
+`619c984cb`.
 
 ### W16 Gateway Machine Path
 
@@ -213,7 +213,7 @@ The dynamic directory is live on HOME, so the change applied on write. HOME
 then showed 302 to Keycloak for browsers and 401 for JSON on Qdrant and
 Schema Registry, with the same authorize parameters; Grafana, which has its
 own login, was unchanged. A signed-in HOME session was not exercised. The
-unused `sso-auth-open-webui` middleware is retired. Commit `fefe81b66`.
+unused `sso-auth-open-webui` middleware is retired. Commit `e342aaa9d`.
 
 ### W17 SonarQube Secret
 
@@ -223,7 +223,7 @@ with PostgreSQL and a password holding spaces and symbols, SonarQube created
 its JDBC source and passed its UTF-8 charset check against the database,
 which needs a successful login; it had not reported `UP` within 450 s on the
 loaded host. An empty secret stopped the container before start. Commit
-`895cbf719`.
+`a677d609c`.
 
 ### W18 Validation
 
@@ -238,11 +238,11 @@ Pending.
 | Dev-valkey snapshot and replay | 7, 9 | W9 | Test RED then GREEN; HOME export; isolated restore | `abcc1d7a7` | PASS | W9 Dev-valkey Snapshot and Queue Replay | accepted |
 | Secret file matrix | 4, 9 | W10 | Matrix test with two mutations; exact-image empty secret run | `4630384fe` | PASS | W10 Secret File Support Matrix | accepted |
 | Residue and mail | 3, 6 | W11 | Mutation of the Bitnami test; runbook text | `ea6c69d59`, `b84b2b87c` | PASS | W11 Image Residue and Mail Outcomes | accepted |
-| OpenBao snapshot | 7, 9 | W13 | Test RED then GREEN; six isolated cases | `233e423d2` | PASS | W13 OpenBao Raft Snapshot | accepted |
-| Open WebUI key | 7, 9 | W14 | Test; exact-image key reuse | `151720c29` | PASS | W14 Open WebUI Key | accepted |
-| CDC rehearsal | 6 | W15 | Opt-in rehearsal run | `d92940e3b` | PASS | W15 CDC Stream Rehearsal | accepted |
-| Gateway machine path | 4 | W16 | SSO rehearsal RED then GREEN; HOME anonymous probes | `fefe81b66` | PASS | W16 Gateway Machine Path | accepted |
-| SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `895cbf719` | PASS | W17 SonarQube Secret | accepted |
+| OpenBao snapshot | 7, 9 | W13 | Test RED then GREEN; six isolated cases | `4ef6d3f7d` | PASS | W13 OpenBao Raft Snapshot | accepted |
+| Open WebUI key | 7, 9 | W14 | Test; exact-image key reuse | `06d2a8953` | PASS | W14 Open WebUI Key | accepted |
+| CDC rehearsal | 6 | W15 | Opt-in rehearsal run | `619c984cb` | PASS | W15 CDC Stream Rehearsal | accepted |
+| Gateway machine path | 4 | W16 | SSO rehearsal RED then GREEN; HOME anonymous probes | `e342aaa9d` | PASS | W16 Gateway Machine Path | accepted |
+| SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `a677d609c` | PASS | W17 SonarQube Secret | accepted |
 | Third-round validation | 8 | W18 | Changed gate | Pending | NOT_RUN | W18 Validation | pending |
 | Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
 
