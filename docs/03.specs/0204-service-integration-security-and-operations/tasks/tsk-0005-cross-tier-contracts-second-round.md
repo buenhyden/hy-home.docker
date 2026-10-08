@@ -227,7 +227,19 @@ loaded host. An empty secret stopped the container before start. Commit
 
 ### W18 Validation
 
-Pending.
+The changed-profile gate ran in a throwaway worktree holding the branch diff
+against `fb468bba5` as staged changes. Its runs exposed three things:
+
+- Before the rebase, the lifecycle check saw SPEC-0217, merged meanwhile, as
+  removed; rebasing onto `fb468bba5` cleared it, and `main` itself has no
+  violation.
+- The compose baseline leaf accepts a skip only from a declared optional
+  runtime class, so the two new rehearsals were added to
+  `.github/workflow-contract.yml` (`5001c7896`).
+- The contract test pins the number of those classes; it now counts seven
+  (`9bf20d195`).
+
+The final run exited 0 with 911 tests across the selected leaves.
 
 ## Evidence
 
@@ -243,7 +255,7 @@ Pending.
 | CDC rehearsal | 6 | W15 | Opt-in rehearsal run | `619c984cb` | PASS | W15 CDC Stream Rehearsal | accepted |
 | Gateway machine path | 4 | W16 | SSO rehearsal RED then GREEN; HOME anonymous probes | `e342aaa9d` | PASS | W16 Gateway Machine Path | accepted |
 | SonarQube secret | 4, 9 | W17 | Isolated database login; empty-secret refusal; test | `a677d609c` | PASS | W17 SonarQube Secret | accepted |
-| Third-round validation | 8 | W18 | Changed gate | Pending | NOT_RUN | W18 Validation | pending |
+| Third-round validation | 8 | W18 | Changed gate in a clean worktree | `9bf20d195` | PASS | W18 Validation | accepted |
 | Validation | 8 | W12 | Changed gate in a clean worktree; pre-commit over the range | `c68df1daa` | PASS | W12 Validation and Handoff | accepted |
 
 ## Review and Completion
