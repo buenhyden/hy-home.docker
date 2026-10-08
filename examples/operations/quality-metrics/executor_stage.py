@@ -435,9 +435,12 @@ def home():
             _, instance = fixture.passed_run(1, 20, 100000, query, expect_value)
             series = query(f'count({{instance="{instance}"}})')
             print("INFO series for one attempt:", series[0]["value"][1], flush=True)
-            found = ask({"kind": "grafana", "user": user,
-                         "path": "/api/search?query=k6&type=dash-db"})  # fmt: skip
-            uid = next(item["uid"] for item in found if item["title"].lower() == "k6")
+            # The provisioned dashboard keeps the tracked file's uid.
+            dashboard_file = (
+                ROOT
+                / "infra/06-observability/grafana/dashboards/Infrastructure/k6.json"
+            )
+            uid = json.loads(dashboard_file.read_text())["uid"]
             dashboard = ask({"kind": "grafana", "user": user,
                              "path": f"/api/dashboards/uid/{uid}"})["dashboard"]  # fmt: skip
             stack, targets = list(dashboard["panels"]), []
