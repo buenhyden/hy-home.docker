@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -16,33 +16,25 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 > Scope: Grafana 준비 상태, OAuth 역할 매핑 진단, datasource·provisioning 증거, dashboard 다시 읽기, 재시작과 설정 rollback.
 
-이 런북은 Grafana readiness failure, OAuth login loop, role mapping drift, datasource query errors, dashboard provisioning failure, trace-to-log link regression, and config regression을 다룬다. Guide와 policy의 설명을 반복하지 않고 실행 가능한 진단, 안전한 restart, evidence capture, escalation 기준을 제공한다.
+이 런북은 Grafana readiness 실패, OAuth 로그인 반복, role mapping 불일치, datasource 쿼리 오류, dashboard provisioning 실패, trace-to-log 링크 회귀, 설정 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
-### Purpose
+운영자가 `grafana` 상태를 확인하고 Keycloak OAuth 환경변수, Docker Secret 참조, datasource provisioning, dashboard provider lock, dashboard JSON 경로, 보호된 route를 검증한다. Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치는 별도 승인으로 분리한다.
 
-운영자가 `grafana` 상태를 확인하고 Keycloak OAuth environment, Docker Secret references, datasource provisioning, dashboard provider locks, dashboard JSON tree, protected route를 검증하며, Secret 노출이나 SSO/route/provisioning 정책 변경 같은 위험 조치를 별도 승인으로 격리하도록 돕는다.
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - Grafana UI `https://grafana.${DEFAULT_URL}` 또는 `/api/health`가 실패할 때.
-- OAuth login loop, `OAuth Login Failed`, or unexpected Viewer/Editor/Admin role이 발생할 때.
+- OAuth login loop, `OAuth Login Failed` 또는 unexpected Viewer/Editor/Admin role이 발생할 때.
 - Dashboard 패널에 `Datasource not found`, `Query error`가 표시되거나 trace/log/profile link가 비어 있을 때.
-- Provisioned dashboard JSON or datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
-- `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider, or route 변경 후 rollback 가능성을 확인해야 할 때.
+- Provisioned dashboard JSON 또는 datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
+- `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider 또는 route 변경 후 rollback 가능성을 확인해야 할 때.
+
+`grafana`의 선택 backend가 없으면 해당 datasource만 실패할 수 있다. `grafana-db-provision`은 DB grant를 변경하는 별도 일회성 작업이며 Grafana 기동 의존성이 아니다. 기존 dashboard 조회를 위해 이 작업을 실행하지 않는다. 승인된 최초 provision·schema 변경 때만 DB 소유자가 표·역할 준비와 secret 참조를 확인하며, 종료 코드와 실제 필요한 표의 읽기 권한을 함께 검증한다. Helper는 자체 영속 데이터·HTTP health·독립 복원 대상이 없고 권한 회수는 DB 소유자 절차로 넘긴다.
 
 ## Procedure
-
-### Procedure
 
 ### Execution Boundary
 
@@ -50,18 +42,14 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Service lifecycle prerequisites
+### Steps
 
-`grafana`의 선택 backend가 없으면 해당 datasource만 실패할 수 있다. `grafana-db-provision`은 DB grant를 변경하는 별도 일회성 작업이며 Grafana 기동 의존성이 아니다. 기존 dashboard 조회를 위해 이 작업을 실행하지 않는다. 승인된 최초 provision·schema 변경 때만 DB 소유자가 표·역할 준비와 secret 참조를 확인하며, 종료 코드와 실제 필요한 표의 읽기 권한을 함께 검증한다. Helper는 자체 영속 데이터·HTTP health·독립 복원 대상이 없고 권한 회수는 DB 소유자 절차로 넘긴다.
+시작 전 점검:
 
-### Checklist
-
-- [ ] `grafana` service, `grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, and Docker Secret IDs 상태를 확인한다.
+- [ ] `grafana` service, `grafana` container, `grafana-data` volume, provisioning mounts, dashboard mounts, Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
 - [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
-- [ ] Route, role mapping, secret reference, provider lock, datasource UID, or image version 변경이 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
-
-### Steps
+- [ ] Route, role mapping, secret reference, provider lock, datasource UID 또는 image version 변경이 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
 
 1. 현재 service 상태, 최근 로그, healthcheck를 캡처한다.
 
@@ -77,7 +65,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    rg -n 'service: template-stateful-med|image: grafana/grafana:|container_name: grafana|GF_SERVER_ROOT_URL|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET__FILE|GF_SECURITY_ADMIN_PASSWORD__FILE|grafana_admin_password|grafana_client_secret|grafana-data|/api/health|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml
    ```
 
-3. OAuth or role mapping failure이면 role mapping과 OAuth endpoint references만 확인한다.
+3. OAuth 또는 role mapping failure이면 role mapping과 OAuth endpoint references만 확인한다.
 
    ```bash
    rg -n 'GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_AUTH_URL|GF_AUTH_GENERIC_OAUTH_TOKEN_URL|GF_AUTH_GENERIC_OAUTH_API_URL|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT|GF_AUTH_GENERIC_OAUTH_USE_PKCE|GF_AUTH_GENERIC_OAUTH_CODE_CHALLENGE_METHOD' infra/06-observability/docker-compose.yml
@@ -86,13 +74,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    Secret value나 token payload가 포함된 줄은 그대로 복사하지 말고 redaction summary로 기록한다.
 
-4. Datasource or dashboard query failure이면 datasource UID와 backend endpoints를 확인한다.
+4. Datasource 또는 dashboard query failure이면 datasource UID와 backend endpoints를 확인한다.
 
    ```bash
    rg -n 'uid: Prometheus|url: http://prometheus:9090|uid: Loki|url: http://loki:3100|uid: Tempo|url: http://tempo:3200|uid: alertmanager|url: http://alertmanager:9093|type: grafana-pyroscope-datasource|url: http://pyroscope:4040|tracesToLogsV2|datasourceUid: .Loki.' infra/06-observability/grafana/provisioning/datasources/datasource.yml
    ```
 
-5. Dashboard provisioning failure이면 provider locks and dashboard inventory를 확인한다.
+5. Dashboard provisioning failure이면 provider locks 및 dashboard inventory를 확인한다.
 
    ```bash
    rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml
@@ -124,7 +112,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    docker exec grafana wget -q --spider http://localhost:3000/api/health
    ```
 
-   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change, or Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
+   이 런북은 role mapping change, secret rotation, datasource UID migration, dashboard provider lock change, protected middleware change 또는 Grafana image change를 검증된 복구 절차로 제공하지 않는다. 해당 변경에는 별도 approval과 rollback evidence가 필요하다.
 
 9. Grafana가 시작 직후 재시작을 반복하고 로그에 `Failed to provision data
    sources ... data source not found`가 있으면, 이미 있는 datasource의 UID를
@@ -158,38 +146,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Authentication and provisioning limits
 
-Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. 선언된 upstream은 Basic auth를 기본 활성화하고 Compose는 비활성화하지 않으므로 SSO-only 요구가 완전히 시행되지 않는다. 유효한 자격 증명은 여전히 필요하다. 임의 break-glass 예외를 만들지 않고 @buenhyden의 별도 수정 결정과 거부 검증을 요구한다. Strict group mapping은 지정 그룹에 organization Admin/Editor/Viewer만 부여한다. `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 선언 버전이 지원하지 않는 필드여서 server-admin 부여 증거가 아니다.
-
-`grafana-db-provision`은 DB 서버가 아닌 HOME 일회성 PostgreSQL 클라이언트다. 마운트된 script/SQL은 `mng-pg`를 기다린 뒤 제한된 읽기 전용 `grafana_reader`와 기존 Airflow/n8n 테이블 권한을 생성·갱신한다. HTTP health, 자체 상태 볼륨, 이 job에 대한 Grafana depends_on은 없다. 없는 테이블을 건너뛰어도 성공 종료하므로 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard를 확인한다. 재실행은 role/grant를 변경하므로 단순 조회 진단이 아니다. DB·자격 증명 복구는 관리 DB·시크릿 소유자가 맡고 helper의 복구 자산은 추적 SQL/script다.
-
-### Verification Steps
-
-- [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
-- [ ] `docker exec grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
-- [ ] Provisioned datasource identity가 변경되지 않았다: UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`.
-- [ ] Dashboard provider가 여전히 `editable: false`이고, tracked dashboard JSON 개수가 예상값과 일치한다.
-- [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, `/viewers`를 `Viewer`로 매핑하고 이 그룹들에 속하지 않은 사용자는 strict mapping으로 거부한다. `Admin`은 organization role이며 server-admin 승격 증거가 아니다.
-- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
-
-### Observability and Evidence Sources
-
-- **Logs**: `docker logs --tail=200 grafana`
-- **Health**: Grafana `/api/health`, UI `https://grafana.${DEFAULT_URL}`
-- **Config**: Compose 환경변수·secret 참조, datasource provisioning, dashboard provider YAML과 dashboard JSON 경로
-- **Backends**: Prometheus·Loki·Tempo·Pyroscope의 준비 상태
-- **Evidence to Capture**: 실패한 panel·로그인 증상, datasource UID, dashboard provider 경로, 정제된 인증 로그, 재시작 시각, 최종 복구 또는 보고 상태
-
-### Safe Rollback or Recovery Procedure
-
-- Git-managed provisioning YAML, dashboard JSON, Compose env/secret reference, or datasource endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Grafana를 재시작한다.
-- Runtime restart는 `obs` profile compose 명령만 사용한다.
-- Role mapping, secret rotation, datasource UID migration, dashboard provider lock, protected middleware, or image version change는 이 런북의 안전 롤백 범위를 벗어난다.
+이 항목은 [POL-0041](../policies/0041-grafana.md#authentication-and-provisioning-limits)이 소유한다. 요약: `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 server-admin 부여 증거가 아니다. `grafana-db-provision`은 일회성 PostgreSQL 클라이언트이고 재실행하면 DB role과 grant가 바뀌므로 단순 조회 진단으로 쓰지 않는다.
 
 ### Planned isolated restore rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
 
-Status: **planned and not executed**. Grafana SQLite restore 성공 사례를 주장하지 않는다.
+상태: **계획됨, 미실행**. Grafana SQLite restore 성공 사례를 주장하지 않는다.
 
 1. image/plugin/schema identity와 object count를 기록하고, user/alert를 quiesce한 뒤 Grafana를 중지하고, provisioning과 secret reference에 맞춰 `grafana-data` 전체를 snapshot한다.
 2. test route와 test Keycloak client를 사용하는 별도 project/network로 복원한다. production datasource는 read-only로 유지하거나 test endpoint로 대체한다.
@@ -198,22 +161,43 @@ Status: **planned and not executed**. Grafana SQLite restore 성공 사례를 �
 
 ## Verification
 
-### Evidence
+- [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
+- [ ] `docker exec grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
+- [ ] Provisioned datasource identity가 변경되지 않았다: UID `Prometheus`, `Loki`, `Tempo`, `alertmanager`, Pyroscope datasource type `grafana-pyroscope-datasource`.
+- [ ] Dashboard provider가 여전히 `editable: false`이고, tracked dashboard JSON 개수가 예상값과 일치한다.
+- [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, `/viewers`를 `Viewer`로 매핑하고 이 그룹들에 속하지 않은 사용자는 strict mapping으로 거부한다. `Admin`은 organization role이며 server-admin 승격 증거가 아니다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-- 실행한 명령, timestamp, operator or agent action을 기록한다.
+수집할 evidence는 다음과 같다.
+
+- **Logs**: `docker logs --tail=200 grafana`
+- **Health**: Grafana `/api/health`, UI `https://grafana.${DEFAULT_URL}`
+- **Config**: Compose 환경변수·secret 참조, datasource provisioning, dashboard provider YAML과 dashboard JSON 경로
+- **Backends**: Prometheus·Loki·Tempo·Pyroscope의 준비 상태
+- **Evidence to Capture**: 실패한 panel·로그인 증상, datasource UID, dashboard provider 경로, 정제된 인증 로그, 재시작 시각, 최종 복구 또는 보고 상태
+
+기록 원칙은 다음과 같다.
+
+- 실행한 명령, timestamp, 운영자나 agent의 조치를 기록한다.
 - Secret 값, token, OAuth payload, rendered secret values는 기록하지 않는다.
-- Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, and provisioning diff를 함께 기록한다.
+- Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, provisioning diff를 함께 기록한다.
 - Role mapping/secret/datasource UID/provider/route 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback and Escalation
 
 ### Rollback or Recovery
 
-이 Runbook의 검증과 동일 bind-mounted provisioning·dashboard 파일 복원 후 재시작만 해당 분기에서 사용한다. Compose·image·secret bind 복원은 restart로 반영되지 않으므로 위의 R0086/R0085 승인된 재생성 경계로 넘긴다. Role mapping, secret rotation, datasource identity migration, dashboard provider lock, protected middleware, or image version 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
+- Git-managed provisioning YAML, dashboard JSON, Compose env/secret reference 또는 datasource endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Grafana를 재시작한다.
+- Runtime restart는 `obs` profile compose 명령만 사용한다.
+- Role mapping, secret rotation, datasource UID migration, dashboard provider lock, protected middleware 또는 image version change는 이 런북의 안전 롤백 범위를 벗어난다.
+
+이 Runbook의 검증과 동일 bind-mounted provisioning·dashboard 파일 복원 후 재시작만 해당 분기에서 사용한다. Compose·image·secret bind 복원은 restart로 반영되지 않으므로 위의 RUN-0086/RUN-0085 승인된 재생성 경계로 넘긴다. Role mapping, secret rotation, datasource identity migration, dashboard provider lock, protected middleware 또는 image version 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Related Documents
 
 ### Traceability
 
@@ -221,10 +205,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, role mapp
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../guides/0041-grafana.md) (`GDE-0041`), [Policy](../policies/0041-grafana.md) (`POL-0041`)
 
-## Related Documents
-
-- Runtime pins: Compose/Dockerfile 선언이 authoritative이며, [derived Compose image projection](../../../infra/tech-stack.versions.json)은 drift 검증을 제공한다.
-
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 - [Operations index](../README.md)
 - [Usage guide](../guides/0041-grafana.md)
 - [Operations policy](../policies/0041-grafana.md)

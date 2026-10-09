@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0042"
 created: "2026-03-25"
@@ -14,44 +14,25 @@ created: "2026-03-25"
 
 ## Overview
 
-### Overview
+이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 더해 metrics, logs, traces, alerts, profiles를 연결한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
-이 가이드는 `hy-home.docker`의 `06-observability` tier가 제공하는 통합 관측성 stack을 설명한다. 현재 stack은 Prometheus, Loki, Tempo, Grafana에 Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 더해 metrics, logs, traces, alerts, profiles를 연결한다.
-
-### Usage Type
-
-`system-guide`
-
-### Target Audience
-
-- Developer
-- Operator
-- SRE
-- AI Agent
-
-### Purpose
+대상 독자: 개발자, 운영자, SRE, AI Agent.
 
 - `06-observability` tier의 service role, data path, storage boundary를 빠르게 파악한다.
 - Grafana에서 metrics/logs/traces/profiles/alerts를 탐색할 때 어떤 datasource와 backend를 확인해야 하는지 연결한다.
 - 개별 서비스 장애 대응은 service별 runbook으로 넘긴다.
 
-### Prerequisites
+## Usage
+
+사용 전에 다음을 확인한다.
 
 - `infra/06-observability/docker-compose.yml`과 service README를 읽을 수 있는 권한.
 - Grafana UI `https://grafana.${DEFAULT_URL}` 접근 권한.
 - Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
 
-### Step-by-step Instructions
+일반 순서는 다음과 같다.
 
 1. Tier service inventory를 확인한다.
 
@@ -68,6 +49,7 @@ created: "2026-03-25"
    - **Alerting**: Prometheus가 `alertmanager:9093`으로 alert를 보낸다.
    - **Batch metrics**: Pushgateway가 단기 job을 위해 metric을 버퍼링한다.
    - **Container metrics**: cAdvisor가 container 리소스 metric을 노출한다.
+   - **Host metrics**: node-exporter는 SPEC-0225부터 host network namespace에서 실행하며 `obs_net` gateway 주소에 listen한다. Prometheus와 Alloy는 `extra_hosts`의 `node-exporter:10.250.5.1`로 접근한다.
    - **Profiles**: Pyroscope가 profile backend와 Grafana datasource를 제공한다.
 
 3. Grafana datasource wiring을 확인한다.
@@ -93,7 +75,7 @@ created: "2026-03-25"
    - Pushgateway: ephemeral/batch metric
    - Pyroscope: profile
 
-### Common Pitfalls
+### 운영 시 주의점
 
 - **Single-pane assumption**: Grafana UI가 정상이어도 backend datasource가 unhealthy이면 일부 panels만 실패할 수 있다.
 - **Retention assumption**: Loki `168h` 요구에는 marker persistence gap이 있고 Tempo `24h` 요구는 source에서 설정되지 않았다. [POL-0048](../policies/0048-telemetry-retention.md)의 미준수 구분과 Pyroscope capacity 경계를 따른다. 다른 항목의 regex match는 retention 검증이 아니다.
@@ -110,17 +92,16 @@ created: "2026-03-25"
 
 ### Runbook Handoff
 
-N/A — 이 가이드는 stack overview이며, 반복 실행 절차와 장애 대응은 service별 runbook을 따른다.
+stack 전체를 다루는 runbook은 없다. 반복 실행 절차와 장애 대응은 서비스별 runbook을 따른다: [Prometheus](../runbooks/0045-prometheus.md), [Loki](../runbooks/0043-loki.md), [Tempo](../runbooks/0049-tempo.md), [Grafana](../runbooks/0041-grafana.md), [Alloy](../runbooks/0040-alloy.md), [Alertmanager](../runbooks/0039-alertmanager.md), [Pushgateway](../runbooks/0046-pushgateway.md), [Pyroscope](../runbooks/0047-pyroscope.md).
 
 ### Traceability
 
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — no Policy or Runbook shares number `0042`.
+- Subject peers: 없음. 번호 `0042`를 공유하는 Policy나 Runbook은 없다.
 
 ## Related Documents
 
-- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
-
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 - [Operations index](../README.md)
 - [Prometheus guide](0045-prometheus.md)
 - [Loki guide](0043-loki.md)

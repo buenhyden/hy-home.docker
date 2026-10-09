@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -16,34 +16,26 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 > Scope: 관측 gateway·SSO middleware, Compose 상태 의존성, 커스텀 이미지 보안 강화, 검사, 재시작과 Git 기반 rollback 증거.
 
-이 런북은 `06-observability` hardening regression을 복구하기 위한 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, and CI hardening baseline failure를 중심으로 점검/복구한다.
+이 런북은 `06-observability` hardening 회귀를 복구하는 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, CI hardening baseline 실패를 중심으로 점검하고 복구한다.
 
-### Purpose
+운영자는 관측 관리 route, Compose 의존성, healthcheck, custom image, hardening 검증 경계를 확인한다. runtime/security 정책 변경이 필요하면 별도 승인으로 분리한다.
 
-운영자가 observability management route, compose dependency, healthcheck, custom image, and hardening validation boundary를 확인하고, runtime/security policy 변경이 필요한 경우 별도 승인으로 격리하도록 돕는다.
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - `infrastructure-hardening` CI가 실패할 때.
 - 관측성 UI/API가 Traefik 경유로 비정상 응답할 때.
 - 스택 부팅 시 Alloy/Grafana dependency 또는 service health race가 반복될 때.
 - Loki/Tempo custom image runtime hardening이 깨졌을 때.
-- Pyroscope or cAdvisor route/healthcheck availability가 회귀했을 때.
-- hardening script, Compose, Dockerfile, or operations docs 변경 후 rollback 가능성을 확인해야 할 때.
+- Pyroscope 또는 cAdvisor route/healthcheck availability가 회귀했을 때.
+- hardening script, Compose, Dockerfile 또는 operations docs 변경 후 rollback 가능성을 확인해야 할 때.
+
+`cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
 
 ## Procedure
-
-### Procedure
 
 ### Execution Boundary
 
@@ -51,19 +43,15 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Service lifecycle prerequisites
-
-`cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
-
-### Checklist
-
-- [ ] 실패 항목을 middleware, depends_on, healthcheck, image, script, workflow, or docs 중 하나로 분류한다.
-- [ ] 최근 변경 커밋과 영향 범위를 확인한다.
-- [ ] telemetry collection, query, alerting, profiling, and UI route 영향도를 평가한다.
-- [ ] Secret value, token, or credential payload는 기록하지 않는다.
-- [ ] Route/middleware, resource cap, secret reference, workflow gate, or runtime hardening rule을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
-
 ### Steps
+
+시작 전 점검:
+
+- [ ] 실패 항목을 middleware, depends_on, healthcheck, image, script, workflow 또는 docs 중 하나로 분류한다.
+- [ ] 최근 변경 커밋과 영향 범위를 확인한다.
+- [ ] telemetry collection, query, alerting, profiling, UI route 영향도를 평가한다.
+- [ ] Secret value, token 또는 credential payload는 기록하지 않는다.
+- [ ] Route/middleware, resource cap, secret reference, workflow gate 또는 runtime hardening rule을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
 
 1. 정적 구성과 hardening baseline을 캡처한다.
 
@@ -72,14 +60,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    bash scripts/hardening/check-all-hardening.sh 06-observability
    ```
 
-2. Native and proxy gateway boundaries를 각각 확인한다.
+2. Native 및 proxy gateway boundaries를 각각 확인한다.
 
    ```bash
    rg -n 'traefik.http.routers.(grafana|gatus).middlewares: gateway-standard-chain@file|GF_AUTH_GENERIC_OAUTH_ENABLED|GATUS_OIDC_CLIENT_ID' infra/06-observability/docker-compose.yml
    rg -n 'traefik.http.routers.(prometheus|alloy|alertmanager|pushgateway|loki|tempo|pyroscope|cadvisor).middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
    ```
 
-3. Health dependency and healthcheck boundary를 확인한다.
+3. Health dependency 및 healthcheck boundary를 확인한다.
 
    ```bash
    rg -n 'condition: service_healthy|/healthz|/api/health|/-/healthy|/ready|/-/ready' infra/06-observability/docker-compose.yml
@@ -91,7 +79,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    rg -n 'USER 10001:10001|S3_SECRET_KEY_FILE|S3_SECRET_KEY|exec /usr/bin/(loki|tempo)' infra/06-observability/loki/Dockerfile infra/06-observability/loki/docker-entrypoint.sh infra/06-observability/tempo/Dockerfile infra/06-observability/tempo/docker-entrypoint.sh
    ```
 
-5. Pyroscope and cAdvisor route availability boundary를 확인한다.
+5. Pyroscope 및 cAdvisor route availability boundary를 확인한다.
 
    ```bash
    rg -n 'pyroscope:|cadvisor:|traefik.http.routers.pyroscope|traefik.http.services.pyroscope.loadbalancer.server.port|traefik.http.routers.cadvisor|traefik.http.services.cadvisor.loadbalancer.server.port|PYROSCOPE_PORT|CADVISOR_PORT' infra/06-observability/docker-compose.yml
@@ -111,32 +99,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    python3 scripts/validation/check-document-links.py --mode traceability
    ```
 
-   이 런북은 route/middleware policy change, resource cap change, secret rotation, workflow gate redesign, or runtime security relaxation을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
+   이 런북은 route/middleware policy change, resource cap change, secret rotation, workflow gate redesign 또는 runtime security relaxation을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
 ### cAdvisor and static-check limits
 
-cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는 privileged 관측기다. 공통 template이 capability를 제거한다고 격리를 보장하지 않는다. Disk metric 등 제외 collector, container label/cardinality와 보호 route를 유지한다. Health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 자체 애플리케이션 데이터나 Docker Secret은 없고 복구 대상은 승인된 image/config와 telemetry 기준이다.
-
-관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
-
-### Verification Steps
-
-- [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
-- [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
-- [ ] `python3 scripts/validation/check-document-links.py --mode traceability`가 통과한다.
-- [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
-- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
-
-### Observability and Evidence Sources
-
-- **Signals**: CI `infrastructure-hardening` 상태, Traefik router labels, container health, hardening script output
-- **Evidence to Capture**: 보안 강화 검사 전후 출력, Compose 검증 결과, 영향받은 router·서비스, 관련 diff, 최종 복구 또는 보고 상태
-
-### Safe Rollback or Recovery Procedure
-
-- Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow, or operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
-- Runtime restart는 affected service의 documented runbook을 따른다.
-- Route/middleware policy, resource cap, secret reference, workflow gate, or runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
+이 항목은 [POL-0044](../policies/0044-observability-optimization-hardening.md#cadvisor-and-static-check-limits)가 소유한다. 요약: cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 쓰는 privileged 관측기이며, health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 관측 hardening 검사는 일부 문자열·파일만 보므로 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
 ### Planned isolated recovery rehearsal
 
@@ -151,22 +118,39 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 ## Verification
 
-### Evidence
+- [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
+- [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
+- [ ] `python3 scripts/validation/check-document-links.py --mode traceability`가 통과한다.
+- [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
+- [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-- 실행한 명령, timestamp, operator or agent action을 기록한다.
+수집할 evidence는 다음과 같다.
+
+- **Signals**: CI `infrastructure-hardening` 상태, Traefik router labels, container health, hardening script output
+- **Evidence to Capture**: 보안 강화 검사 전후 출력, Compose 검증 결과, 영향받은 router·서비스, 관련 diff, 최종 복구 또는 보고 상태
+
+기록 원칙은 다음과 같다.
+
+- 실행한 명령, timestamp, 운영자나 agent의 조치를 기록한다.
 - Secret 값, token, credential payload 원문은 기록하지 않는다.
-- Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, and recovery/escalation state를 함께 기록한다.
+- Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
 ## Rollback and Escalation
 
 ### Rollback or Recovery
 
-이 런북에 명시된 validation, evidence capture, and Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation, or external service 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
+- Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow 또는 operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
+- Runtime restart는 affected service의 documented runbook을 따른다.
+- Route/middleware policy, resource cap, secret reference, workflow gate 또는 runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
+
+이 런북에 명시된 validation, evidence capture, Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation 또는 external service 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
 
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+## Related Documents
 
 ### Traceability
 
@@ -174,10 +158,7 @@ verification이 실패하거나, secret exposure risk가 보이거나, route/res
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Guide](../guides/0044-observability-optimization-hardening.md) (`GDE-0044`), [Policy](../policies/0044-observability-optimization-hardening.md) (`POL-0044`)
 
-## Related Documents
-
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
 - [Operations index](../README.md)
 - [Usage guide](../guides/0044-observability-optimization-hardening.md)
 - [Operations policy](../policies/0044-observability-optimization-hardening.md)
