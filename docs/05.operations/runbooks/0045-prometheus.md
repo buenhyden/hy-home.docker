@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -16,34 +16,33 @@ created: "2026-05-17"
 
 ## Overview
 
+이 런북은 Prometheus 준비 상태, 설정·rule 검증, lifecycle reload, scrape target 진단, 재시작, TSDB 증상 보고를 다룬다. 장애, scrape target 실패, alert rule 평가 실패, reload, TSDB 손상 증상에 대응한다.
+
+운영자가 `prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload나 restart를 수행하게 한다. 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리한다. 정책과 가이드의 설명은 반복하지 않고 실행 가능한 확인 절차와 증거 기준만 둔다.
+
 ## Trigger and Preconditions
 
-### Overview
+다음 중 하나일 때 사용한다.
 
-### Trigger and Preconditions
+- Prometheus UI나 `/-/healthy` endpoint가 실패한다.
+- Grafana dashboard에서 metrics가 비어 있거나 오래된 값으로 보인다.
+- 특정 scrape target이 `DOWN`이거나 `PrometheusAllTargetsMissing` 계열 alert가 발생한다.
+- `PrometheusRuleEvaluationFailures`나 rule loading error가 발생한다.
+- `prometheus.yml`이나 `alert_rules/`를 바꾼 뒤 reload가 필요하다.
+- TSDB 손상, compaction 실패, WAL 관련 로그가 보인다.
 
-### Overview
+시작 전에 다음을 확인한다.
 
-> Scope: 준비 상태, 설정·rule 검증, lifecycle reload, 수집 target 진단, 재시작과 TSDB 증상 보고.
+- [ ] 변경 전 `prometheus.yml`, alert rule files, compose service boundary를 확인한다.
+- [ ] Secret values를 열람하지 않는다. Secret ID and file reference만 evidence에 기록한다.
+- [ ] 문제 유형을 readiness, config/rule, scrape target, route, storage/TSDB 중 하나로 분류한다.
+- [ ] 데이터 삭제, WAL 제거, volume mutation이 필요해 보이면 즉시 중단하고 repository owner @buenhyden approval을 받는다.
 
-이 런북은 Prometheus service disruption, scrape target failure, alert rule evaluation failure, lifecycle reload, and TSDB corruption symptom을 다룬다. Policy와 guide의 설명을 반복하지 않고, 실행 가능한 확인 절차와 evidence 기준만 제공한다.
+### Service lifecycle prerequisites
 
-### Purpose
-
-운영자가 `prometheus` 상태를 안전하게 확인하고, config/rule 변경을 검증한 뒤 reload or restart를 수행하며, 데이터 손실 가능성이 있는 TSDB 조치는 별도 승인으로 격리하도록 돕는다.
-
-### When to Use
-
-- Prometheus UI or `/-/healthy` endpoint가 실패할 때.
-- Grafana dashboards에서 metrics가 비어 있거나 stale하게 보일 때.
-- 특정 scrape target이 `DOWN`이거나 `PrometheusAllTargetsMissing` 계열 alert가 발생할 때.
-- `PrometheusRuleEvaluationFailures` or rule loading error가 발생할 때.
-- `prometheus.yml` or `alert_rules/` 변경 후 reload가 필요할 때.
-- TSDB corruption, compaction failure, WAL 관련 로그가 보일 때.
+`prometheus`의 선택 config, rule 파일과 세 secret mount가 준비되어야 한다. `node-exporter`의 textfile host 경로는 자동 생성되지 않으며 `dcgm-exporter`는 호환되는 GPU runtime이 필요하다. DCGM에는 Compose healthcheck가 없으므로 수집 target과 지원 metric을 확인한다. 두 exporter는 자체 데이터 백업이나 별도 사용자 자격 증명 회전 대상이 아니다. exporter 교체·중지는 관측 공백과 label 연속성을 검토하고 Prometheus TSDB 복구와 구분한다.
 
 ## Procedure
-
-### Procedure
 
 ### Execution Boundary
 
@@ -51,24 +50,17 @@ created: "2026-05-17"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Service lifecycle prerequisites
-
-`prometheus`의 선택 config, rule 파일과 세 secret mount가 준비되어야 한다. `node-exporter`의 textfile host 경로는 자동 생성되지 않으며 `dcgm-exporter`는 호환되는 GPU runtime이 필요하다. DCGM에는 Compose healthcheck가 없으므로 수집 target과 지원 metric을 확인한다. 두 exporter는 자체 데이터 백업이나 별도 사용자 자격 증명 회전 대상이 아니다. exporter 교체·중지는 관측 공백과 label 연속성을 검토하고 Prometheus TSDB 복구와 구분한다.
-
-### Checklist
-
-- [ ] 변경 전 `prometheus.yml`, alert rule files, compose service boundary를 확인한다.
-- [ ] Secret values를 열람하지 않는다. Secret ID and file reference만 evidence에 기록한다.
-- [ ] 문제 유형을 readiness, config/rule, scrape target, route, storage/TSDB 중 하나로 분류한다.
-- [ ] 데이터 삭제, WAL 제거, volume mutation이 필요해 보이면 즉시 중단하고 repository owner @buenhyden approval을 받는다.
-
 ### Host and GPU exporter boundary
 
-`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector(기본 collector에 `processes`, `tcpstat` 추가)를 유지한다. Network·socket collector가 host를 보도록 host network namespace에서 실행하며, listener는 `obs_net`의 host 쪽 주소(기본 gateway `10.250.5.1:9100`)에만 묶는다. 이 주소는 기본적으로 LAN에서 route되지 않지만, LAN host가 직접 route를 추가하면 닿을 수 있고 internal이 아닌 bridge network의 container도 닿는다. Host network의 서비스에는 Compose가 network를 만들지 않으므로, `obs_net`이 없으면 bind가 실패해 재시작을 반복한다. `obs`/`obs-host`/`dev` profile은 Prometheus나 cAdvisor가 `obs_net`을 먼저 만든다. Prometheus는 `extra_hosts`로 이 주소를 `node-exporter` 이름에 연결하므로 scrape target과 `instance` label은 바뀌지 않는다. `obs_net`을 다른 subnet으로 다시 만들면 listen 주소와 Prometheus·Alloy의 `extra_hosts`를 함께 바꾼다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. 통제는 [POL-0045](../policies/0045-prometheus.md#host-and-gpu-exporter-boundary)가 소유하고, 이 절은 운영 전제만 둔다.
 
-`PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
+- 제한된 collector를 유지하고 기본 collector에 `processes`, `tcpstat`을 추가한다. Network·socket collector가 host를 보도록 host network namespace에서 실행하며, listener는 `obs_net`의 host 쪽 주소(기본 gateway `10.250.5.1:9100`)에만 묶는다. 기본적으로 LAN에서 route되지 않지만, LAN host가 직접 route를 추가하면 닿을 수 있고 internal이 아닌 bridge network의 container도 닿는다.
+- Host network 서비스에는 Compose가 network를 만들지 않는다. `obs_net`이 없으면 bind가 실패해 재시작을 반복한다. `obs`/`obs-host`/`dev` profile에서는 Prometheus나 cAdvisor가 `obs_net`을 먼저 만든다.
+- Prometheus와 Alloy는 `extra_hosts`로 이 주소를 `node-exporter` 이름에 연결하므로 scrape target과 `instance` label은 바뀌지 않는다. `obs_net`을 다른 subnet으로 다시 만들면 listen 주소와 두 서비스의 `extra_hosts`를 함께 바꾼다.
+- Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 따로 확인한다.
+- `dcgm-exporter`는 `obs-gpu` 전용이며 Compose healthcheck가 없다. GPU, DCGM metric, scrape 상태를 구분하고, GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
 
-### Steps
+### Diagnosis and reload
 
 1. 현재 service 상태와 최근 로그를 캡처한다.
 
@@ -128,6 +120,13 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 | `DatastoreCollectorFailed` | PostgreSQL에는 접속했지만 collector 일부가 실패함. monitor role에서 `pg_read_all_stats`, `pg_read_all_settings`, `pg_ls_waldir()` 실행 권한이 빠졌으면 provision job을 다시 실행한다. Valkey exporter에는 collector별 신호가 없고 접속 실패는 `redis_up`이 알린다 |
 | `DatastoreScrapeSlow` | 수집이 5초 넘게 걸림(기본 제한 10초). DB 부하와 monitor role의 `statement_timeout`(10초) 근접 여부 |
 
+## Verification
+
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- Secret values는 기록하지 않는다.
+- Target 장애는 job name, endpoint, observed error, final `UP/DOWN` state를 기록한다.
+- TSDB symptom은 로그 발췌, volume 경계, approval state를 기록한다.
+
 ### Verification Steps
 
 - [ ] `docker exec prometheus wget -qO- http://localhost:9090/-/healthy`가 healthy response를 반환한다.
@@ -136,7 +135,7 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 - [ ] Grafana dashboard에서 새 metrics timestamp가 갱신된다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Observability and Evidence Sources
+### Evidence sources
 
 - **Logs**: `docker logs --tail=200 prometheus`
 - **Health**: `/-/healthy`, Prometheus UI `Targets`, Grafana dashboards
@@ -144,13 +143,19 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 - **Metrics**: `prometheus_rule_evaluation_failures_total`, `prometheus_tsdb_compactions_failed_total`, target `up`
 - **Evidence to Capture**: 실패한 job 이름과 target, 명령 출력 요약, reload·재시작 시각, 최종 복구 또는 보고 상태
 
-### Safe Rollback or Recovery Procedure
+## Rollback and Escalation
+
+### Rollback or Recovery
+
+이 런북에 명시된 validation, reload, restart, Git으로 관리하는 config rollback만 사용한다. 데이터 손실 가능성이 있는 TSDB/WAL 조치는 검증된 안전 복구 절차가 아니므로 Escalation으로 넘긴다.
+
+#### Safe rollback
 
 - Git-managed `prometheus.yml` or alert rule 변경이 원인이면 직전 Git diff 단위로 되돌리고 `promtool` 검증 후 lifecycle reload를 다시 수행한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - TSDB/WAL 삭제, volume file mutation, retention flag change는 이 런북의 안전 롤백 범위를 벗어난다. 별도 approval, backup evidence, incident/task 기록 없이 수행하지 않는다.
 
-### Planned isolated restore rehearsal
+#### Planned isolated restore rehearsal
 
 **project 이름만 바꾸어서는 실행할 수 없다.** rehearsal 전에 고정된 container-name,
 host port, bind-path, external-network와 route의 충돌을 제거하고 운영 환경으로의
@@ -165,30 +170,9 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. Prometheus를 시작하고 WAL replay/readiness, 범위를 제한한 과거·현재 조회, target label, rule health, 통제된 Alertmanager 전송과, 사용 중인 경우 remote-write receiver 동작을 검증한다.
 4. 불일치가 있으면 격리된 service를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 TSDB 교체는 별도로 승인받는다.
 
-## Verification
-
-### Evidence
-
-- 실행한 명령, timestamp, operator or agent action을 기록한다.
-- Secret values는 기록하지 않는다.
-- Target 장애는 job name, endpoint, observed error, final `UP/DOWN` state를 기록한다.
-- TSDB symptom은 로그 발췌, volume 경계, approval state를 기록한다.
-
-## Rollback and Escalation
-
-### Rollback or Recovery
-
-이 런북에 명시된 validation, reload, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 TSDB/WAL 조치는 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
-
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, TSDB/WAL 조치가 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
-
-### Traceability
-
-- Declared parent: [Prometheus Usage Guide](../guides/0045-prometheus.md) (`GDE-0045`)
-- Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Policy](../policies/0045-prometheus.md) (`POL-0045`)
 
 ## Related Documents
 
@@ -197,3 +181,9 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 - [Operations index](../README.md)
 - [Usage guide](../guides/0045-prometheus.md)
 - [Operations policy](../policies/0045-prometheus.md)
+
+### Traceability
+
+- Declared parent: [Prometheus Usage Guide](../guides/0045-prometheus.md) (`GDE-0045`)
+- Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Policy](../policies/0045-prometheus.md) (`POL-0045`)

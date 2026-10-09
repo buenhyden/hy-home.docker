@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Runbook"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0037"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+이 런북은 Kafka family hardening baseline을 컨테이너를 시작하지 않고 정적으로 점검하는 절차를 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 현재 Kafka hardening baseline에 대한 승인된 정적 진단에 사용한다. runtime
 변경, restore, 정리, credential rotation은 별도 task가 필요하다.
@@ -36,8 +32,6 @@ HOME 대상: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 현재 selector를 렌더링한다.
 
@@ -58,8 +52,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    상태, 미해결 gap을 기록한다.
 
 ## Verification
-
-### Evidence
 
 통과란 root configuration이 parse되고 현재 profile이 resolve되고 scoped
 hardening script가 통과하고 native OIDC와 standard gateway routing이
@@ -84,17 +76,14 @@ mutation을 중단한 뒤 [RUN-0036](0036-kafka.md)을 사용한다. raw log-dir
 source/profile, persistence, secret, OIDC, listener-security, 또는 recovery
 ownership drift에서 중단하고 messaging @buenhyden에게 escalation한다.
 
-### Traceability
-
-- Artifact: `RUN-0037`; parent guide: `GDE-0037`.
-- 정적 evidence는 runtime이나 restore를 입증하지 않는다.
-
-### References
-
-- [Kafka runbook](0036-kafka.md)
-- [Hardening policy](../policies/0037-messaging-optimization-hardening.md)
-
 ## Related Documents
 
 - [Kafka runbook](0036-kafka.md)
 - [Hardening policy](../policies/0037-messaging-optimization-hardening.md)
+- [Kafka runbook](0036-kafka.md)
+- [Hardening policy](../policies/0037-messaging-optimization-hardening.md)
+
+### Traceability
+
+- Artifact: `RUN-0037`; parent guide: `GDE-0037`.
+- 정적 evidence는 runtime이나 restore를 입증하지 않는다.

@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0072"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+이 런북은 Dozzle의 OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 의심과 승인된 업그레이드를 다루는 절차를 정의한다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 의심 또는 승인된
 업그레이드에 사용한다.
@@ -37,8 +33,6 @@ OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -58,27 +52,19 @@ OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 
 
 ### Settings recovery and upgrade
 
-Dozzle을 중지하고, bind-backed `/data` 전체를 protected storage로 복사하고, 먼저
+`/data`는 설정 연속성을 위해서만 백업하고 컨테이너 로그는 백업하지 않는다. Dozzle을 중지하고, bind-backed `/data` 전체를 protected storage로 복사하고, 먼저
 production socket이 없는 isolated instance로 복원한다. upgrade 시에는 advisory/
 release를 검토하고 해당 copy에서 OIDC, roles/filters, streaming,
 actions/shell 기본값을 테스트한다. 비호환 시 image와 settings copy를 함께 롤백한다.
 
-### 승인된 사용·설정 보존·업그레이드
+### 승인된 사용
 
 `docker compose --profile admin-logs config --quiet`로 검증하고, CIDR와 OIDC
 client/claim을 확인한 다음 Dozzle만 시작한다. 최소 권한 테스트 identity로 로그인을
 검증하고 명시적으로 설정하고 승인하지 않았다면 shell/actions가 비활성 상태로
 유지되는지 확인한다. 증거를 캡처하기 전에 로그를 정제한다.
 
-`/data`는 설정 연속성을 위해서만 백업한다. 컨테이너 로그는 백업하지 않는다. 일관된
-복사를 위해 Dozzle을 중지한다. 프로덕션이 아닌 Docker endpoint에 연결되거나 socket이
-없는 격리된 Dozzle에 설정 사본을 복원한다. 업그레이드 전에는 보안 권고/release
-노트를 검토하고 OIDC와 필터링된 로그 접근을 테스트한다. 여기서는 백업, 복원,
-업그레이드를 실행하지 않았다.
-
 ## Verification
-
-### Evidence
 
 종료 코드·source 커밋·OIDC/CIDR 허용/거부 판정·표시 컨테이너 수·설정 checksum과
 최종 socket/service 상태를 기록한다. log 내용은 redact한다.
@@ -97,12 +83,12 @@ settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태
 socket compromise 의심, auth/CIDR bypass, secret exposure, log authority 누락,
 settings 비호환이 있으면 중단한다.
 
+## Related Documents
+
+- [Dozzle authentication](https://dozzle.dev/guide/authentication)
+
 ### Traceability
 
 - [Guide](../guides/0072-dozzle.md) (`GDE-0072`)
 - [Policy](../policies/0072-dozzle.md) (`POL-0072`)
 - [Dozzle Compose](../../../infra/06-observability/dozzle/docker-compose.yml)
-
-## Related Documents
-
-- [Dozzle authentication](https://dozzle.dev/guide/authentication)

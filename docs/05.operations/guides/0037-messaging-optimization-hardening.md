@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0037"
 parent_ids:
@@ -16,15 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
+이 가이드는 05-messaging 계층의 hardening 점검 범위를 설명한다. 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자다. 목표는 정적 확인으로 무엇을 증명하고 무엇을 증명하지 못하는지 구분하는 것이다. 정확한 명령은 [RUN-0037](../runbooks/0037-messaging-optimization-hardening.md#procedure)이 소유한다.
 
 ## Usage
-
-### Usage
 
 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다. hardening은
 root-rendered Kafka family, Kafbat native OIDC, persistence, health, 리소스,
@@ -68,12 +66,9 @@ secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass
 - Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
 - Runtime authority: `root Kafka Compose plus scripts/hardening/check-all-hardening.sh`.
 
-### References
-
-- [Kafka security](https://kafka.apache.org/documentation/#security)
-- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
-- [Kafka guide](0036-kafka.md)
-
 ## Related Documents
 
 - [Domain catalog](../README.md)
+- [Kafka security](https://kafka.apache.org/documentation/#security)
+- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
+- [Kafka guide](0036-kafka.md)
