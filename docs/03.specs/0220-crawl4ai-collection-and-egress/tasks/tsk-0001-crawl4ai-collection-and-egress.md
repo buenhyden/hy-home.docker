@@ -227,6 +227,15 @@ candidate comparison moved into the Plan's Overview, the documents now point
 to the Compose declaration, and `check-document-metadata.py --mode
 check-changed --base-ref 5f4832a74` reports no violations.
 
+The second run (head `d4443cd53`) failed `leaf.local-tech-stack-version-drift`:
+the gateway's digest pin (`af59f6daf`) had not been synced into
+`infra/tech-stack.versions.json` (`96d076497`). The local changed plan for
+this diff did not select that leaf although a Compose file changed, while
+`candidate-quality` did; that selection gap is left for the CI-path work of
+prompt 12. Run `37886683329` on head `96d076497`, base `5f4832a74`, passed:
+metadata `violations=0`, the tech-stack registry in sync, and the npm audit
+`ACCEPTED_RISK` receipt with its original expiry.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
