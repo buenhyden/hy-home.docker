@@ -259,11 +259,10 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 
 ### LAB Dashboard Coverage
 
-독립 LAB Compose에 속한 다음 대시보드는 파일을 보존하지만 정상 root의 Prometheus는
-해당 LAB 서비스들을 수집하지 않습니다. LAB 관측 연결과 실행 검증은 별도 계약입니다:
-`Infrastructure/cassandra`, `Infrastructure/etcd-cluster`,
-`Infrastructure/haproxy-overview`, `Infrastructure/mongodb`,
-`Infrastructure/valkey-cluster`.
+독립 LAB 전용 대시보드(Cassandra, etcd, HAProxy, MongoDB, Valkey Cluster)는
+[`labs/dashboards/`](../../../labs/dashboards/README.md)로 옮겨 Grafana provisioning에서
+제외했습니다. 정상 root의 Prometheus는 LAB 서비스를 수집하지 않으므로 HOME Grafana에는
+빈 대시보드로만 보였습니다. LAB 관측 연결과 실행 검증은 별도 계약입니다.
 
 `hy-home-lab-locust` 프로젝트의 `lab-locust-master`와
 `lab-locust-worker`도 정상 root 서비스 표에서 제외합니다. HOME Alloy
@@ -285,19 +284,15 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 | `Applications/ollama` | `applications-ollama` | local: no external dashboard matches lucabecker42/ollama-exporter |
 | `Gateway/oauth2-proxy` | `hyhome-oauth2-proxy` | Local dashboard: no external dashboard matches oauth2-proxy |
 | `Gateway/traefik` | `gateway-traefik` | traefik/traefik contrib/grafana/traefik.json at the pinned Traefik release tag (= grafana.com 17346 revision 9) |
-| `Infrastructure/cassandra` | `hyhome-cassandra` | grafana.com dashboard 6400 revision 2 (2018-06-14) |
 | `Infrastructure/containers` | `hyhome-containers` | grafana.com dashboard 19792 revision 6 (2024-11-24) |
 | `Infrastructure/dcgm-exporter` | `Oxed_c6Wz` | NVIDIA/dcgm-exporter grafana/dcgm-exporter-dashboard.json (2023-08-11) |
 | `Infrastructure/docker-registry` | `infrastructure-docker-registry` | grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry |
-| `Infrastructure/etcd-cluster` | `hyhome-etcd` | monitoring-mixins etcd/etcd.json (2026-09-24) |
-| `Infrastructure/haproxy-overview` | `hyhome-haproxy` | grafana.com dashboard 12693 revision 14 (2026-04-11) |
 | `Infrastructure/perf-results` | `hyhome-perf-results` | Local dashboard: `perf_db.quality.run_results` security-invoker view와 프로젝트 RLS; datasource·실제 조회 미승인 |
 | `Infrastructure/k6` | `infrastructure-k6` | grafana.com dashboard 19665 revision 3 (2024-04-30)을 SPEC-0214에서 k6 OTLP 출력 형태로 재지정: `project_id`와 run attempt `instance`(`<run_id>-a<attempt>`, `All=.*`) 필터, `k6_` 접두사, millisecond histogram의 `histogram_quantile($quantile, sum by (le) …)`, `condition="nonzero"` 기반 실패율. URL·check 이름은 무한 label이라 버리므로 URL별·check별 panel 대신 method/status별 분위수와 집계 check 비율만 둡니다. 격리 harness가 실제 k6 출력에서 30개 중 28개 query의 데이터를 확인(나머지 2개는 check·dropped iteration이 없는 시나리오) |
 | `Infrastructure/kafka-cluster` | `hyhome-kafka-cluster` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-cluster-kraft.json |
 | `Infrastructure/kafka-connect` | `hyhome-kafka-connect` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-connect-cluster.json |
 | `Infrastructure/kafka-consumer-lag` | `hyhome-kafka-consumer-lag` | grafana.com dashboard 7589 revision 5 (2018-08-21) |
 | `Infrastructure/kafka-topics` | `hyhome-kafka-topics` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-topics-kraft.json |
-| `Infrastructure/mongodb` | `hyhome-mongodb` | grafana.com dashboard 16490 revision 1 (2022-06-24) |
 | `Infrastructure/node-exporter` | `rYdddlPWk` | grafana.com dashboard 1860 revision 45 (2026-04-11) |
 | `Infrastructure/opensearch-cluster` | `hyhome-opensearch-cluster` | monitoring-mixins opensearch/opensearch-cluster-overview.json (2026-06-11) |
 | `Infrastructure/opensearch-node` | `hyhome-opensearch-node` | monitoring-mixins opensearch/opensearch-node-overview.json (2026-06-11) |
@@ -307,7 +302,6 @@ Docker discovery는 Compose 프로젝트 `hy-home-infra`만 유지하므로 이 
 | `Infrastructure/redis` | `hyhome-redis` | oliver006/redis_exporter contrib/grafana_prometheus_redis_dashboard.json (= grafana.com 763 revision 6) |
 | `Infrastructure/schema-registry` | `hyhome-schema-registry` | confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/schema-registry-cluster.json |
 | `Infrastructure/seaweedfs` | `hyhome-seaweedfs` | seaweedfs/seaweedfs other/metrics/grafana_seaweedfs.json (2026-09-01) |
-| `Infrastructure/valkey-cluster` | `hyhome-valkey-cluster` | grafana.com dashboard 21914 revision 1 (2024-09-14) |
 | `Observability/alertmanager-overview` | `hyhome-alertmanager` | monitoring-mixins alertmanager/alertmanager-overview.json (2026-06-20) |
 | `Observability/alloy-controller` | `hyhome-alloy-controller` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-controller.json |
 | `Observability/alloy-loki` | `hyhome-alloy-loki` | grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-loki.json |
