@@ -43,9 +43,10 @@ sandbox.
 
 Approved local authoring may edit documentation, redacted examples, synthetic
 inputs, and metadata without executing the commands depicted. Reading a secret
-value, acting on a sensitive target, a live mutation, a remote write, a
-credential operation, or destructive recovery remains a separate explicit
-operation under this policy. The secret-specific execution evidence and
+value keeps its own approval rule. Acting on a sensitive target, a live
+mutation, a remote write outside the request's branch and pull request, a
+credential operation, or destructive recovery waits for its exact target under
+this policy. The secret-specific execution evidence and
 redaction boundary are defined by
 [Environment constraints](environment-constraints.md#22-approved-secrets-work-protocol).
 

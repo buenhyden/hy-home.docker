@@ -68,7 +68,8 @@ ruleset file records the observed remote state and issues no rule of its own.
   regardless of how few reviews protection currently requires.
 - Delete a branch only when all of the following hold: its approved change and
   every referenced recovery commit are reachable from the delivered protected
-  branch, its linked worktree is clean, and the owner has approved the deletion.
+  branch, its linked worktree is clean, and the current request or the owner
+  asks for the deletion.
 - Long-lived branches other than `main` require explicit user authorization.
 - Do not rewrite a current Task's named recovery commit before integration. Use
   a merge commit or fast-forward rather than rewriting referenced objects.
@@ -110,9 +111,10 @@ When the user approves remote GitHub mutation, agents must still bind the action
 to a concrete repository and remote surface before changing state. Task evidence
 must include the approval source, target repository, target setting or object,
 command class, before-state evidence, after-state evidence, and rollback or
-recovery path. Do not merge PRs, bypass required checks, weaken protected-branch
-rules, or expose GitHub secrets unless the user separately names that concrete
-action and target.
+recovery path. Merge only a pull request the current request asks to merge,
+after its required checks pass. Do not bypass required checks, weaken
+protected-branch rules, or expose GitHub secrets unless the user names that
+concrete action and target.
 
 Read-only remote checks may be recorded as verification evidence. Remote state
 that was approved but not changed must be reported as verified-only, not as a
@@ -122,10 +124,11 @@ mutation.
 
 A tracked workflow file is a local repository definition, not evidence that a
 remote schedule, manual dispatch, job, or required check ran. Agents may author
-and validate an approved workflow definition locally, but must not dispatch it,
-push it, enable it remotely, or change GitHub checks, rulesets, branch
-protection, environments, deployments, or releases without separate explicit
-approval for that repository and remote surface.
+and validate an approved workflow definition locally and push it with the
+request's branch and pull request, but must not dispatch it, enable it
+remotely, or change GitHub checks, rulesets, branch protection, environments,
+deployments, or releases until the user names that repository and remote
+surface.
 
 #### 5.2 Evidence Boundary by Change Type
 
