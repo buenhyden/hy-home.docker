@@ -126,13 +126,49 @@ deferral, TTL and source deletion, and the extraction checks, including a
 golden case whose text tries to inject an instruction. The example registry
 uses the reserved `example.org` domain. The gate contract runs the module.
 
+### W4 Isolated Rehearsal
+
+`Crawl4AIEgressRehearsalTests` (opt-in with `HYHOME_CRAWL4AI_REHEARSAL=1`,
+registered as an optional runtime skip) ran the pinned image
+(`linux/amd64` pulled by the index digest; `appuser` is uid 999, matching the
+Compose tmpfs owners) with the Compose command, user, tmpfs, memory, pids and
+shm values, behind the real gateway. All four networks were internal: an API
+network with a probe, the gateway network `10.250.201.0/29`, a
+"world" network `11.200.0.0/24` whose fixture `public.fixture` has the
+globally routable form `11.200.0.10`, and a LAN network `10.250.202.0/24` with
+`lan.fixture`; the token was generated per run.
+
+Six tests passed on 2026-10-09:
+
+| Case | Result |
+| --- | --- |
+| `/health` without token; `/crawl` without token | 200; 401 |
+| Allowed page with `check_robots_txt` | 200 with its marker; the gateway logged `GET 11.200.0.10` (the broker sends the pinned address) |
+| `http://lan.fixture/secret`; `http://169.254.169.254/` | 400; 400 |
+| Redirect to the LAN host; redirect to the metadata address | No marker in the result; the LAN fixture logged no request |
+| Page with a LAN image (subresource) | The LAN fixture logged no request for it |
+| Meta refresh to `127.0.0.1:11235/health` | No health document in the result |
+| Caller `proxy_config`; `extra_args` with `--proxy-server` | 400; 400 |
+| Crawler connecting directly to `11.200.0.10:80` or the LAN host | No route (`OSError`) |
+| Crawler `CONNECT` through the gateway to `11.200.0.10:80`; to `lan.fixture:80`; to port 22 | 200; 403; 403 |
+| Crawler container | 4 GiB, 512 pids, 1 GiB shm, read-only root, `cap_drop: ALL`, `appuser` |
+
+The first runs failed in the test itself: the Compose command's `$$` escape
+reached `docker create` unchanged, a class attribute shadowed
+`TestCase.run`, an interrupted run left networks that overlapped the next
+run's subnets (removed), and the gateway logs the pinned address rather than
+the name. No rehearsal container or network remained after the passing run.
+Host firewall rules were not part of this rehearsal; the enforcement shown is
+the network topology plus the gateway.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | accepted |
 | Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | `8cd81db4b` | PASS | W2 Egress Gateway | accepted |
-| Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | W3 commit | PASS | W3 Reference Adapter | accepted |
+| Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | `b72476aed` | PASS | W3 Reference Adapter | accepted |
+| Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | W4 commit | PASS | W4 Isolated Rehearsal | accepted |
 
 ## Review and Completion
 

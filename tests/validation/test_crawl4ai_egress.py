@@ -11,6 +11,7 @@ import secrets
 import socket
 import struct
 import subprocess
+import sys
 import tempfile
 import time
 import unittest
@@ -400,7 +401,7 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
         if not docker("image", "ls", "-q", IMAGE, check=False).strip():
             raise AssertionError(f"missing image {IMAGE}; pull it by digest first")
         run = f"c4a-rehearsal-{secrets.token_hex(3)}"
-        cls.run, cls.names, cls.networks = run, [], []
+        cls.prefix, cls.names, cls.networks = run, [], []
         cls.tmp = tempfile.TemporaryDirectory(prefix=run)
         token = secrets.token_urlsafe(24)
         cls.token = token
@@ -441,7 +442,7 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
                    "--memory", "4g", "--pids-limit", "512", "--shm-size", "1g",
                    "--dns", "10.250.201.2", "-e", "CRAWL4AI_UPSTREAM_PROXY=http://10.250.201.2:3128",
                    "-v", f"{secret}:/run/secrets/crawl4ai_api_token:ro",
-                   IMAGE, *crawler["command"])  # fmt: skip
+                   IMAGE, *(part.replace("$$", "$") for part in crawler["command"]))  # fmt: skip
             cls.names.append(f"{run}-crawl4ai")
             docker(
                 "network",
@@ -456,7 +457,13 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
             while docker("exec", f"{run}-crawl4ai", "curl", "-fsS", "http://127.0.0.1:11235/health",
                          check=False).find("ok") < 0:  # fmt: skip
                 if time.monotonic() > deadline:
-                    raise AssertionError("crawl4ai did not become healthy")
+                    tail = subprocess.run(
+                        ["docker", "logs", "--tail", "25", f"{run}-crawl4ai"],
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    ).stderr
+                    raise AssertionError(f"crawl4ai did not become healthy:\n{tail}")
                 time.sleep(3)
             probe = docker("run", "--rm", "--network", f"{run}-api", "-e", f"TOKEN={token}",
                            *hardened, PYTHON, "python", "-c", PROBE)  # fmt: skip
@@ -467,6 +474,17 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
             cls.lan_hits = docker("logs", f"{run}-lan")
             cls.gateway_log = docker("logs", f"{run}-egress")
             cls.inspect = json.loads(docker("inspect", f"{run}-crawl4ai"))[0]
+            # A safe summary for the Task: statuses and whether a marker leaked.
+            print(
+                json.dumps(
+                    {
+                        name: [status, "public-ok" in body, "lan-secret" in body]
+                        for name, (status, body) in cls.cases.items()
+                    }
+                ),
+                file=sys.stderr,
+            )
+            print(json.dumps(cls.direct), file=sys.stderr)
         except BaseException:
             cls.tearDownClass()
             raise
@@ -492,8 +510,9 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
         status, body = self.result("allowed")
         self.assertEqual(200, status, body[:300])
         self.assertIn("public-ok", body)
+        # The in-image broker sends the address it pinned, not the name.
         self.assertIn(
-            f"egress allowed GET public.fixture {PUBLIC_IP}:80", self.gateway_log
+            f"egress allowed GET {PUBLIC_IP} {PUBLIC_IP}:80", self.gateway_log
         )
 
     def test_private_metadata_and_redirect_targets_are_refused(self):
