@@ -51,6 +51,7 @@ the study app's own planning.
 | W5 | 5 | Operations documents and catalog | W2, W3, W4 | TSK-0001 | Task evidence |
 | W6 | 1, 2, 3 | Independent security and correctness review and its fixes | W5 | TSK-0001 | Task evidence |
 | W7 | 5 | Changed gate, staged style check, candidate quality, merge | W6 | TSK-0001 | Task evidence |
+| W8 | 2, 5 | HOME activation of the target the owner names | W7 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 
