@@ -71,17 +71,37 @@ tests:
         values: '0x40'
       - series: 'scrape_duration_seconds{job="manage-postgres",instance="m",db_scope="mng",db_engine="postgresql",expected_state="on"}'
         values: '7x40'
+      - series: 'pg_up{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}'
+        values: '0x40'
+      - series: 'pg_exporter_last_scrape_error{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}'
+        values: '1x40'
+      - series: 'redis_up{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}'
+        values: '0x40'
+      - series: 'redis_rejected_connections_total{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}'
+        values: '0+1x40'
+      - series: 'up{job="dev-valkey-exporter",instance="dw",db_scope="dev",db_engine="valkey",expected_state="off"}'
+        values: '1x200'
     promql_expr_test:
       - expr: sort(count by (alertname, severity) (ALERTS{alertstate="firing"}))
         eval_time: 15m
         exp_samples:
           - {labels: '{alertname="DatastoreCollectorFailed",severity="warning"}', value: 1}
           - {labels: '{alertname="DatastoreScrapeSlow",severity="warning"}', value: 1}
-          - {labels: '{alertname="DatastoreScrapeTargetMissing",severity="warning"}', value: 2}
+          - {labels: '{alertname="DatastoreScrapeTargetMissing",severity="warning"}', value: 1}
           - {labels: '{alertname="DevDatastoreExporterDown",severity="warning"}', value: 1}
           - {labels: '{alertname="DevPostgresDown",severity="warning"}', value: 1}
+          - {labels: '{alertname="DevValkeyDown",severity="warning"}', value: 1}
           - {labels: '{alertname="MngDatastoreExporterDown",severity="critical"}', value: 1}
+          - {labels: '{alertname="PostgresDown",severity="critical"}', value: 1}
           - {labels: '{alertname="ValkeyDown",severity="critical"}', value: 1}
+          - {labels: '{alertname="ValkeyRejectedConnections",severity="warning"}', value: 1}
+      # A MNG outage pages once: the exporter error is folded into PostgresDown.
+      - expr: count(ALERTS{alertname="PostgresqlExporterError"})
+        eval_time: 15m
+        exp_samples: []
+      - expr: count(ALERTS{alertname="DevDatastoreUpWhileDeclaredOff",alertstate="firing"})
+        eval_time: 90m
+        exp_samples: [{labels: '{}', value: 1}]
 """
 
 
@@ -488,6 +508,18 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
             user = f"{scope}monitor"
             password = self.secret[f"{scope}_valkey_monitor_password"]
             with self.subTest(scope=scope):
+                # Only the exporter talks to the server between the reset and
+                # the read, so the log shows exactly what it is refused.
+                self.valkey_admin(scope, "ACL", "LOG", "RESET")
+                exporter = f"{scope}-valkey-exporter"
+                self.wait(lambda e=exporter: self.metrics(e) != "")
+                self.wait(
+                    lambda s=scope: "object" in self.valkey_admin(s, "ACL", "LOG")
+                )
+                log = self.valkey_admin(scope, "ACL", "LOG", "100")
+                self.assertEqual(
+                    set(re.findall(r"(?m)^object\n(.+)$", log)), {"slowlog|get"}
+                )
                 info = self.valkey(scope, user, password, "INFO", "server")
                 self.assertIn("redis_version", info)
                 for command in refused:
@@ -495,20 +527,6 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
                     self.assertIn("NOPERM", out, command)
                 wrong = self.valkey(scope, user, password + "x", "PING", check=False)
                 self.assertNotIn("PONG", wrong)
-                log = self.valkey_admin(scope, "ACL", "LOG", "100")
-                objects = set(re.findall(r"(?m)^object\n(.+)$", log))
-                # This test's own refusals, including the wrong-password AUTH;
-                # the exporter itself is refused only SLOWLOG GET.
-                ours = {
-                    "get",
-                    "keys",
-                    "scan",
-                    "config|get",
-                    "slowlog|get",
-                    "set",
-                    "AUTH",
-                }
-                self.assertLessEqual(objects - ours, set())
 
     def test_wrong_password_keeps_the_exporter_up_and_reports_the_database_down(
         self,

@@ -34,7 +34,7 @@ groups:
           (redis_memory_used_bytes / (redis_memory_max_bytes > 0)) > 0.9
         for: 2m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'Valkey 메모리 90% 초과: {{ $labels.instance }}'
@@ -46,7 +46,7 @@ groups:
           increase(redis_rejected_connections_total[1m]) > 0
         for: 2m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'Valkey 연결 거부 발생: {{ $labels.instance }}'
@@ -84,7 +84,7 @@ groups:
         expr: time() - pg_postmaster_start_time_seconds < 60
         for: 1m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'PostgreSQL 재시작됨: {{ $labels.instance }}'
@@ -92,7 +92,8 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
 
       - alert: PostgresqlExporterError
-        expr: pg_exporter_last_scrape_error{db_scope="mng"} > 0
+        # A database outage also sets this; PostgresDown reports that case.
+        expr: pg_exporter_last_scrape_error{db_scope="mng"} > 0 unless on (instance) pg_up{db_scope="mng"} == 0
         for: 2m
         labels:
           severity: critical
@@ -211,15 +212,15 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
       - alert: DatastoreCollectorFailed
-        expr: |
-          pg_scrape_collector_success{expected_state="on"} == 0
-          or redis_exporter_last_scrape_error{expected_state="on"} > 0
+        # redis_exporter has no per-collector signal: its scrape error is set
+        # only when it cannot connect, which redis_up already reports.
+        expr: pg_scrape_collector_success{expected_state="on"} == 0
         for: 5m
         labels:
           severity: warning
           domain: datastores
         annotations:
-          summary: '{{ $labels.db_scope }} {{ $labels.db_engine }} 수집 실패: {{ $labels.instance }}'
+          summary: '{{ $labels.db_scope }} PostgreSQL collector 실패: {{ $labels.instance }}'
           description: 'DB에는 접속했지만 일부 지표를 읽지 못했습니다(collector {{ $labels.collector }}). 관측 역할의 권한이 빠졌는지 확인합니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 

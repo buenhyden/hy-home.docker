@@ -57,3 +57,14 @@ GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO mng_pg_monitor;
 SELECT 'REVOKE pg_monitor FROM mng_pg_monitor'
 WHERE pg_catalog.pg_has_role('mng_pg_monitor', 'pg_monitor', 'MEMBER')
 \gexec
+
+-- Fail when another membership was added by hand, or pg_monitor is still
+-- held through another role, instead of reporting a least-privilege role.
+DO $verify$ BEGIN
+  IF pg_has_role('mng_pg_monitor', 'pg_monitor', 'MEMBER') OR EXISTS (
+       SELECT 1 FROM pg_auth_members m JOIN pg_roles g ON g.oid = m.roleid
+       WHERE m.member = 'mng_pg_monitor'::regrole
+         AND g.rolname NOT IN ('pg_read_all_stats', 'pg_read_all_settings')) THEN
+    RAISE EXCEPTION 'monitor role holds memberships beyond its grants';
+  END IF;
+END $verify$;

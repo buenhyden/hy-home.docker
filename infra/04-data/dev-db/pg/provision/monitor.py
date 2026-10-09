@@ -55,6 +55,16 @@ def sql():
                 f"GRANT pg_read_all_stats, pg_read_all_settings TO {ROLE};",
                 f"GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO {ROLE};",
                 f"SELECT 'REVOKE pg_monitor FROM {ROLE}' WHERE pg_has_role('{ROLE}', 'pg_monitor', 'MEMBER') \\gexec",
+                # Any other membership, or pg_monitor held through another
+                # role, fails the job instead of passing as least privilege.
+                "DO $verify$ BEGIN",
+                f"  IF pg_has_role('{ROLE}', 'pg_monitor', 'MEMBER') OR EXISTS (",
+                "       SELECT 1 FROM pg_auth_members m JOIN pg_roles g ON g.oid = m.roleid",
+                f"       WHERE m.member = '{ROLE}'::regrole",
+                "         AND g.rolname NOT IN ('pg_read_all_stats', 'pg_read_all_settings')) THEN",
+                "    RAISE EXCEPTION 'monitor role holds memberships beyond its grants';",
+                "  END IF;",
+                "END $verify$;",
             ]
         )
         + "\n"

@@ -83,7 +83,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "max by (db_scope) (redis_up)",
+          "expr": "max by (db_scope) (redis_up{db_engine=\"valkey\"})",
           "legendFormat": "redis_up {{db_scope}}",
           "refId": "B"
         }
@@ -1673,7 +1673,15 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "Prometheus"
@@ -1690,7 +1698,8 @@
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "allValue": ".*"
       },
       {
         "current": {},

@@ -104,14 +104,60 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertIn("-redis.user=devmonitor", command)
         self.assertIn("redis://dev-valkey:6379", command)
         self.assertNotIn("VALKEY_PORT", command)
-        self.assertIn("-config-command=-", command)
-        self.assertIn("-set-client-name=false", command)
+        for flag in VALKEY_EXPORTER_FLAGS:
+            self.assertIn(flag, command)
+        self.assertNotIn("-redis.password", command)
         start = (ROOT / "infra/06-observability/prometheus/scripts/start.sh").read_text(
             encoding="utf-8"
         )
         for target in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
             with self.subTest(target=target):
                 self.assertIn(target, start)
+
+    def test_mng_monitor_job_wiring_and_sql_order(self):
+        services = compose("infra/04-data/mng-db/docker-compose.yml")
+        job = services["mng-pg-monitor-provision"]
+        env = job["environment"]
+        self.assertEqual(
+            job["entrypoint"], ["/bin/sh", "/provision/run-feature-provision.sh"]
+        )
+        self.assertEqual(
+            set(job["secrets"]), {"mng_postgres_password", "mng_pg_monitor_password"}
+        )
+        self.assertEqual(
+            env["PROVISION_SECRETS"],
+            "MNG_PG_MONITOR_PASSWORD=/run/secrets/mng_pg_monitor_password",
+        )
+        mounts = {m.split(":")[1]: m.split(":")[0] for m in job["volumes"]}
+        base = ROOT / "infra/04-data/mng-db"
+        self.assertEqual(
+            (base / mounts["/provision/run-feature-provision.sh"]).resolve(),
+            (base / "pg/provision/run-feature-provision.sh").resolve(),
+        )
+        sql_path = (base / mounts[env["PROVISION_SQL"]]).resolve()
+        self.assertEqual(sql_path, (base / "pg/provision/monitor.sql").resolve())
+        self.assertEqual(job["depends_on"]["mng-pg"]["condition"], "service_healthy")
+        sql = sql_path.read_text(encoding="utf-8")
+        self.assertIn("\\getenv monitor_secret MNG_PG_MONITOR_PASSWORD", sql)
+        order = [
+            "SET log_statement = 'none';",
+            "AS secret_ok",
+            "CREATE ROLE mng_pg_monitor NOLOGIN;",
+            "'role ownership mismatch'",
+            "ALTER ROLE mng_pg_monitor WITH LOGIN",
+            "GRANT pg_read_all_stats, pg_read_all_settings TO mng_pg_monitor;",
+            "REVOKE pg_monitor FROM mng_pg_monitor",
+            "monitor role holds memberships beyond its grants",
+        ]
+        positions = [sql.index(part) for part in order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn(
+            "GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO mng_pg_monitor;",
+            sql,
+        )
+        self.assertNotIn("GRANT pg_monitor", sql)
+        self.assertNotIn("GRANT CONNECT", sql)
+        self.assertIn("default_transaction_read_only = on", sql)
 
     def test_mng_exporters_use_monitor_accounts_not_admin(self):
         services = compose("infra/04-data/mng-db/docker-compose.yml")
@@ -132,9 +178,16 @@ class DevDataBoundaryTests(unittest.TestCase):
         command = "".join(valkey["command"])
         self.assertIn("-redis.user=mngmonitor", command)
         self.assertNotIn("-redis.password", command)
-        self.assertIn("-config-command=-", command)
-        self.assertIn("-set-client-name=false", command)
+        for flag in VALKEY_EXPORTER_FLAGS:
+            self.assertIn(flag, command)
 
+
+# The narrowed monitor ACL grants nothing these calls would need.
+VALKEY_EXPORTER_FLAGS = (
+    "-config-command=-",
+    "-set-client-name=false",
+    "-exclude-latency-histogram-metrics",
+)
 
 DATASTORE_JOBS = (
     ("manage-postgres", "mng", "postgresql"),

@@ -101,7 +101,7 @@ role과 `mngmonitor` ACL 사용자로 접속한다. 경보는 `db_scope="mng"`�
 monitor 비밀번호 회전은 다음 순서다. 비밀 값은 출력하지 않는다.
 
 1. `secrets/db/mng-pg/monitor_password.txt`를 base64 문자(16자 이상)의 새 값으로
-   바꾼다. 다른 문자가 섞이면 provision job이 접속 전에 거부한다.
+   바꾼다. 다른 문자가 섞이면 provision job이 계정을 바꾸기 전에 거부한다.
 2. `mng-pg-monitor-provision`을 다시 실행해 exit 0을 확인하고 `mng-pg-exporter`를
    재생성한다.
 3. Valkey는 `secrets/db/mng-valkey/monitor_password.txt`를 바꾸고 `mng-valkey`를

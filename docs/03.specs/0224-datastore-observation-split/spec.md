@@ -49,10 +49,11 @@ other Valkey consumers' accounts.
 1. PostgreSQL monitor roles. `dev_pg_monitor` and `mng_pg_monitor` are marked
    LOGIN roles with `pg_read_all_stats`, `pg_read_all_settings` and EXECUTE on
    `pg_ls_waldir()`, measured as what every enabled collector needs; they are
-   not `pg_monitor` members and have no other privilege. Sessions are
+   not `pg_monitor` members and have no other privilege; a run fails if any
+   other membership, direct or through another role, is present. Sessions are
    read-only with a 10 s statement timeout and three connections. Each
    provision run sets the password from the secret (rotation) and refuses a
-   secret outside a 16 to 512 character base64 alphabet before any change,
+   secret outside a 16 to 512 character base64 alphabet before any role change,
    because postgres_exporter logs a malformed DSN with the password in it. The
    role can read server-wide activity and settings, including other sessions'
    query text in `pg_stat_activity`; that is the observation boundary.
@@ -60,7 +61,8 @@ other Valkey consumers' accounts.
    `-@all +ping +info +command|info +slowlog|len +commandlog|len`, each with
    its own secret. The exporters disable `CONFIG`, `CLIENT SETNAME` and the
    latency histogram; `SLOWLOG GET` stays refused and is the only exporter
-   entry in the ACL log.
+   entry in the ACL log. redis_exporter has no per-collector signal, so a lost
+   Valkey grant is caught by the rehearsal's ACL log check, not by an alert.
 3. Exporter inputs. No exporter mounts an administrator secret. The
    PostgreSQL exporters read `DATA_SOURCE_URI`, `DATA_SOURCE_USER` and
    `DATA_SOURCE_PASS_FILE`; the Valkey exporters put the password in their own
@@ -71,10 +73,14 @@ other Valkey consumers' accounts.
    `domain`, and add `db_scope` (`mng`|`dev`), `db_engine`
    (`postgresql`|`valkey`) and `expected_state`. MNG targets are static with
    `expected_state="on"`. DEV targets are rendered at Prometheus start from
-   `PROMETHEUS_DEV_DATA_EXPECTED` (`on`|`off`); any other value stops the start.
+   `PROMETHEUS_DEV_DATA_EXPECTED` (`on`|`off`); any other value stops the start,
+   and Compose supplies `on` when the key is missing, so a forgotten key
+   alerts rather than silences.
 5. Alerts. `up` is the scrape and `pg_up`/`redis_up` the database. MNG down
    alerts are critical; DEV down alerts are warnings that fire only with
-   `expected_state="on"`. A DEV target answering for an hour while declared
+   `expected_state="on"`, and the shared memory, rejected-connection and
+   restart alerts are warnings for DEV. A MNG outage pages once: the exporter
+   error alert stays quiet while `pg_up` is 0. A DEV target answering for an hour while declared
    off, a missing target, a failed collector and a scrape over 5 s are
    reported. No absent alert is removed.
 6. Dashboards. The PostgreSQL and Valkey dashboards select by `db_scope` and

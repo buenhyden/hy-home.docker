@@ -236,6 +236,10 @@ class MonitorProvisionTests(unittest.TestCase):
         self.assertLess(sql.index("ownership mismatch"), password)
         self.assertNotIn("\\if :activate", sql)
         self.assertIn("[A-Za-z0-9+/=_-]{16,}", sql)
+        self.assertLess(
+            sql.index("'REVOKE pg_monitor FROM dev_pg_monitor'"),
+            sql.index("monitor role holds memberships beyond its grants"),
+        )
 
 
 if __name__ == "__main__":

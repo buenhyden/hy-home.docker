@@ -46,6 +46,9 @@ the changed gate, the staged style check and the remote candidate.
   keeps the data and consumers reconnect.
 - A monitor secret outside the base64 alphabet stops the provision job, and
   the exporter then waits on it; the job's message names the rule.
+- MNG Valkey renders its ACL at start, so a missing or malformed
+  `mng_valkey_monitor_password` stops the shared server; create and check the
+  secret before recreating it.
 - Rollback: revert the commits, recreate the four exporters, both Valkey
   servers and Prometheus, and rerun the DEV monitor job. The MNG monitor role
   and its two secrets can stay unused or be dropped by the owner.

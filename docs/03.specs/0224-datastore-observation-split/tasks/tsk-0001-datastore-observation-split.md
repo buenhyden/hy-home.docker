@@ -106,7 +106,8 @@ The four jobs carry `db_scope`, `db_engine` and `expected_state`. The DEV jobs
 use file discovery: `prometheus/scripts/start.sh` validates
 `PROMETHEUS_DEV_DATA_EXPECTED`, writes both target files beside their final
 names and renames them, then execs Prometheus. A missing or unknown value
-exits 64. `PROMETHEUS_DEV_DATA_EXPECTED="on"` was added to `.env.example` and,
+exits 64; Compose supplies `on` when the key is missing, so a forgotten key
+alerts rather than silences. `PROMETHEUS_DEV_DATA_EXPECTED="on"` was added to `.env.example` and,
 key only, to HOME's `.env`. promtool accepts both configurations with the
 rendered targets.
 
@@ -162,6 +163,26 @@ expected state. Runbooks 0028 (MNG alerts and rotation), 0100 (DEV alerts and
 the intentional-stop procedure) and 0045 (observation alerts) gained a
 section each. The changed-document metadata check reports no violation.
 
+### Review
+
+An independent review of `b3d60383b..e34097ed1` found three important and
+nine minor issues; each is resolved or recorded:
+
+| Finding | Resolution |
+| --- | --- |
+| The Valkey half of `DatastoreCollectorFailed` fired with `redis_up 0` and could not see a lost grant | Dropped; redis_exporter has no per-collector signal, so the rehearsal checks the ACL log instead |
+| The Valkey dashboard hid the airflow, n8n and OAuth2 Proxy Valkey exporters, which carry no `db_scope` | `db_scope` "All" is `.*`, matching unlabelled series; comparison panels filter on `db_engine` |
+| No default-gate test read `monitor.sql` or the MNG job wiring | A boundary test checks the job's runner, SQL mount, secret names and the statement order |
+| A missing `.env` key never reaches exit 64 | Recorded: Compose supplies `on`, the alerting direction |
+| Runbook said the secret is refused before connecting | Reworded to before any role change |
+| Extra memberships or an indirect `pg_monitor` survived a run | Both SQL paths end with a check that fails the job; isolated runs exit 3 for both cases and 0 after cleanup |
+| DEV raised critical memory, rejected-connection and restart alerts | Severity is warning when `db_scope="dev"` |
+| One MNG outage raised two criticals | `PostgresqlExporterError` is suppressed while `pg_up` is 0 |
+| Test gaps (flags, ACL allow-list hiding exporter calls, unfired rules) | Flag assertions for both exporters; the ACL log is read after a reset with only the exporter running; promtool scenarios fire `PostgresDown`, `DevValkeyDown`, `DevDatastoreUpWhileDeclaredOff`, the DEV warning severity and the single-page outage |
+| Empty `collector` label in the description | Gone with the Valkey branch |
+| `CONNECTION LIMIT 3` under overlapping scrapes | Measured on HOME: one session at rest; five concurrent `/metrics` calls all returned `pg_up 1` with no failed collector |
+| MNG Valkey now needs its monitor secret to start | Added to the Plan risks |
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -175,6 +196,7 @@ section each. The changed-document metadata check reports no violation.
 | RedisInsight consumer | 2 | W5 | 9 rehearsal tests | `8af637f3f` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
 | HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `8af637f3f` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
 | Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | accepted |
+| Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | accepted |
 
 ## Review and Completion
 
