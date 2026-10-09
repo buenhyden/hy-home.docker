@@ -138,7 +138,19 @@ latency or error target that these limits are shown to miss.
 
 ### W8 Documents and Validation
 
-Pending.
+POL-0001, the operations runbook, the script manifest, the gate contract and
+this package describe the new validator; the Spec index and registry issue
+SPEC-0218. The first changed-profile run failed only in
+`test_secret_metadata_sync`: the LAB entrypoints used `SECRETS_GID`, which
+`labs/.env.example` did not declare, and declaring it broke the rule that LAB
+keys stay disjoint from root keys. The LAB files now use `LAB_SECRETS_GID`
+(commits `66ed30f78`, `3aed94faa`). The rerun of
+`python3 scripts/validation/run-ci-gate.py --profile changed --local-only` in
+a clean worktree at `3aed94faa`, soft-reset to `abfe94cca`, exited 0: 13 test
+runs passed (1,726 tests); 28 tests skipped as the gate contract's declared
+Docker rehearsals (backup, CDC, integration, mail, PostgreSQL, SeaweedFS,
+SSO), which this run did not execute. The SPEC-0212 ledger is unchanged; no
+ledger item maps to this package alone.
 
 ## Evidence
 
@@ -151,7 +163,7 @@ Pending.
 | Capabilities | 2, 3 | W5 | LAB runs with none, four and five capabilities | `6d7026084` | PASS | W5 Capabilities and Data Group | accepted |
 | GPU template | 3 | W6 | Exact-image GPU run | `23b40d548` | PASS | W6 GPU Template | accepted |
 | PID budgets | 3 | W7 | All LABs under the limits; HOME headroom | `e0741bd28` | PASS | W7 Process Limits | accepted |
-| Validation | 5 | W8 | Changed gate | Pending | NOT_RUN | W8 Documents and Validation | pending |
+| Validation | 5 | W8 | Changed gate, exit 0 | `3aed94faa` | PASS | W8 Documents and Validation | accepted |
 
 ## Review and Completion
 
