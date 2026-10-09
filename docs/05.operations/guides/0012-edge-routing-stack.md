@@ -28,8 +28,6 @@ created: "2026-07-06"
 
 ## Usage
 
-gateway 선택과 정적 검증 경계를 이해하기 위한 안내다.
-
 ### Verify the network contract
 
 network를 임의로 만드는 대신 root compose validator를 사용한다. root compose는 flow-scoped network와 external network contract를 선언한다.

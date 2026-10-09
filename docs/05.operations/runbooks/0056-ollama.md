@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 서비스(Open WebUI) 영향도를 최소화한다.
 
-> Scope: Ollama Inference Service
+> 범위: Ollama 추론 서비스
 
 - Ollama 추론 가용성을 빠르게 복구한다.
 - GPU 경로 이상과 리소스 고갈 문제를 표준 절차로 처리한다.
@@ -136,13 +136,14 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
   - `ollama`/`open-webui` 로그
   - 수행 명령과 결과
   - 복구 전후 지표 스냅샷
+  - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
 
 ## Rollback and Escalation
 
 ### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
-- 위 격리 복구 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 증거를 첨부한다.
+- 아래 격리 복구 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 증거를 첨부한다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 아래 Escalation 절에 따라 보고한다.
 
 #### Safe Rollback or Recovery Procedure

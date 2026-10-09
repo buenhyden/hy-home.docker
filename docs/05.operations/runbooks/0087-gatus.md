@@ -107,8 +107,6 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 
 ## Verification
 
-### Evidence
-
 현재 Task에 날짜, 커밋, 서비스 이름, 종료 코드, 정제된 health/프로브 결과를
 기록한다. 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
@@ -130,12 +128,12 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
 대상이 필요하다.
 
+## Related Documents
+
 ### Traceability
 
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Guide](../guides/0087-gatus.md), [Policy](../policies/0087-gatus.md), [Runbook](0087-gatus.md)
-
-## Related Documents
 
 - 런타임 핀은 Compose/Dockerfile 선언이 소유하며,
   [파생 Compose 이미지 프로젝션](../../../infra/tech-stack.versions.json)이

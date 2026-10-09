@@ -97,7 +97,7 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 - timeout·`proxy_next_upstream`·`max_fails/fail_timeout`을 확인하되 단일 upstream을
   다중 노드 failover로 보고하지 않는다. 실패 시 트래픽 전환을 멈춘다.
 
-### Evidence
+### 증거 기록
 
 시각, source revision, 승인 대상, lint 종료 상태, HTTP/HTTPS 구분, route별
 최소 상태 코드, 수행하지 않은 검증을 Task/Incident에 기록한다. 원문 access/error
@@ -127,13 +127,13 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
 전달한다. 여러 앱 영향은 [RUN-0099](0099-system-operations.md)로 연결한다.
 원인 후보, 정제된 결과와 미검증 항목을 남기고 임의 전체 재시작은 하지 않는다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [01-Gateway Nginx Usage Guide](../guides/0011-nginx.md) (`GDE-0011`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](../guides/0011-nginx.md) (`GDE-0011`), [Policy](../policies/0011-nginx.md) (`POL-0011`)
-
-## Related Documents
 
 - [Official upstream operational documentation](https://nginx.org/en/docs/beginners_guide.html)
 

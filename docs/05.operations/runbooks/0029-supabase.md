@@ -96,7 +96,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Access**: compose 변수를 사용한 Kong HTTP/HTTPS host-port 확인
 - **Evidence to Capture**: 명령 이름, timestamp, 서비스 상태 요약, Kong route 결과, 생략한 destructive action
 
-### Evidence
+### 증거 기록
 
 - 실행한 compose 명령, 서비스 상태, Kong route 결과, destructive recovery나 credential rotation을 생략한 이유를 기록한다.
 - 실패한 검증 출력이나 서비스 증상은 secret 값을 복사하지 않고 관련 task나 incident evidence에 첨부한다.

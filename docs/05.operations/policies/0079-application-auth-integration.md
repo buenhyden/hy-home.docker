@@ -32,8 +32,6 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 
 ## Rules
 
-이 정책의 통제 항목은 다음과 같다.
-
 ### Required
 
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.

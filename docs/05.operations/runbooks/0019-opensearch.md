@@ -105,7 +105,7 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 - **Metrics**: 별도 exporter가 실행 중이지 않으면 N/A
 - **Evidence**: health 응답, 선택한 compose file, service log 요약, secret boundary 확인
 
-### Evidence
+### 증거 기록
 
 - compose file, service 이름, health 상태, 로그 요약, escalation 결정을 기록한다.
 - password 값은 기록하지 않는다.

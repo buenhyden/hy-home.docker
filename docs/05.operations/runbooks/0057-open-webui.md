@@ -18,7 +18,7 @@ created: "2026-05-17"
 
 이 런북은 Open WebUI 장애 및 성능 저하 상황에서 즉시 실행 가능한 복구 절차를 제공한다. SQLite 데이터 복구, RAG 인덱스 재동기화, Ollama 연결과 local Chroma 일관성 복구를 표준화한다.
 
-> Scope: Open WebUI Service
+> 범위: Open WebUI 서비스
 
 - Open WebUI 가용성을 신속히 복구한다.
 - RAG 기능(인덱싱/검색) 정상 상태를 재확인한다.
@@ -127,13 +127,14 @@ docker compose restart open-webui
   - `open-webui`/`ollama` 로그의 비식별 스니펫
   - 수행 명령 및 결과
   - 복구 전후 확인 화면/지표
+  - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
 
 ## Rollback and Escalation
 
 ### Rollback or Recovery
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
-- 위 격리 복원 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 WebUI·로컬 index 증거를 첨부한다.
+- 아래 격리 복원 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 WebUI·로컬 index 증거를 첨부한다.
 - 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 아래 Escalation 절에 따라 보고한다.
 
 #### Safe Rollback or Recovery Procedure

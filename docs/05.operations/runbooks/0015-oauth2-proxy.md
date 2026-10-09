@@ -151,7 +151,7 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
   - Keycloak의 정제된 OIDC 오류 요약
   - check-all-hardening.sh 02-auth 출력
 
-### Evidence
+### 증거 기록
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
@@ -207,13 +207,13 @@ rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [02-Auth OAuth2 Proxy Usage Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`), [Policy](../policies/0015-oauth2-proxy.md) (`POL-0015`)
-
-## Related Documents
 
 - [Official OAuth2 Proxy Keycloak OIDC provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)
 - [Official OAuth2 Proxy configuration overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)

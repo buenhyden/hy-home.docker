@@ -33,8 +33,6 @@ created: "2026-10-01"
 
 ## Usage
 
-아래 절은 서비스 선택과 준비 확인, 요청·인증 경로, 데이터 경로, 티어별 영향을 차례로 다룬다.
-
 ### Selection and readiness
 
 HOME의 이름 있는 profile 조합, 각 selector의 목적과 동반 선택·제외 조건은

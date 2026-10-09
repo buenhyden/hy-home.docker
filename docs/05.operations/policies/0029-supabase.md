@@ -23,7 +23,7 @@ created: "2026-05-17"
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
 - **Configs**: `infra/04-data/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
 - **Networks**: `supabase_net`
-- **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, all published on `127.0.0.1` only through compose host-port variables
+- **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, 모두 Compose host-port 변수로 `127.0.0.1`에만 게시한다
 
 ## Rules
 

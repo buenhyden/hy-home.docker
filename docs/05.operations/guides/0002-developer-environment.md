@@ -25,8 +25,6 @@ provider adapter와 현재 Task에서 승인 범위를 먼저 확인한다.
 
 ## Usage
 
-아래 절에서 로컬 도구와 설정, 환경 파일과 인증서, 공통 점검을 차례로 다룬다.
-
 ### Local tools and configuration
 
 저장소 스크립트는 Bash를 사용한다. Windows에서는 WSL2처럼 Bash와 저장소 도구를

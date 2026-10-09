@@ -187,7 +187,7 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
   - Keycloak의 정제된 DB/OIDC 오류 요약
   - `check-all-hardening.sh 02-auth` 실행 결과
 
-### Evidence
+### 증거 기록
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
@@ -216,13 +216,13 @@ image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [02-Auth Keycloak Usage Guide](../guides/0014-keycloak.md) (`GDE-0014`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Policy](../policies/0014-keycloak.md) (`POL-0014`)
-
-## Related Documents
 
 - [Official Keycloak container guide](https://www.keycloak.org/server/containers)
 - [Official Keycloak hostname guide](https://www.keycloak.org/server/hostname)

@@ -89,8 +89,6 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 
 ## Verification
 
-### Evidence
-
 시각·revision·승인 대상, 명령 exit, chain 멤버십, 정제된 health/route/metrics
 결과만 Task/Incident에 남긴다. secret 값, Authorization/Cookie, 원문 access/error
 로그는 첨부하지 않는다. 증거별 static/runtime/NOT_RUN을 구분한다.
@@ -120,13 +118,13 @@ limiter 미준수, 인증 우회·credential 노출 징후, persistent health/ro
 영향 route, 정제된 관찰과 필요한 별도 구현/운영 승인을 기록한다. 여러 티어
 장애는 [RUN-0099](0099-system-operations.md)로 연결한다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [01-Gateway Traefik Usage Guide](../guides/0013-traefik.md) (`GDE-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Policy](../policies/0013-traefik.md) (`POL-0013`)
-
-## Related Documents
 
 - [Official upstream operational documentation](https://doc.traefik.io/traefik/)
 

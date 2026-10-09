@@ -464,7 +464,7 @@ renderer 두 경로 read와 사람 operator의 platform credential create/update
 승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
 결과로 확인하며 불일치 시 중단한다.
 
-### Evidence
+### 증거 기록
 
 날짜, configuration commit, 서비스 이름, exit status, 정제된 health/resource 결과를 현재
 Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
@@ -493,12 +493,12 @@ token을 재확인하고 폐기한다. 임시 root가 폐기된 후 operator 신
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
 
+## Related Documents
+
 ### Traceability
 
 - 관장 architecture: [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](../guides/0085-openbao.md), [Policy](../policies/0085-openbao.md), [Runbook](0085-openbao.md)
-
-## Related Documents
 
 - [운영 인덱스](../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)

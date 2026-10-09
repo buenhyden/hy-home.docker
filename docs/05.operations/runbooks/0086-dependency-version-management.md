@@ -27,8 +27,6 @@ created: "2026-09-19"
 
 ## Procedure
 
-아래 세 절을 필요한 순서로 따른다.
-
 ### Source and updater changes
 
 1. Compose image와 선택된 build context/Dockerfile/args/target, 설치 package,
