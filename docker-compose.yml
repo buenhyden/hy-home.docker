@@ -83,6 +83,14 @@ networks:
     ipam:
       config:
         - subnet: 10.250.16.0/24
+  # RedisInsight has no login of its own; only Traefik shares this network
+  # with it, so every request passes the admin CIDR and SSO (SPEC-0223).
+  redisinsight_ingress_net:
+    name: redisinsight_ingress_net
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.18.0/24
   # Per-run k6 metrics relays reach only HOME Alloy's authenticated 4319
   # receiver here; internal, so a relay has no other egress (SPEC-0214).
   quality_otlp_net:

@@ -24,9 +24,9 @@ services:
       - '${SECRETS_GID:-1000}'
     entrypoint: [ '/bin/sh', '/usr/local/libexec/redisinsight/start.sh' ]
     environment:
-      # Listen on the edge_net address only, so data-network peers cannot
-      # reach the UI around Traefik SSO. RedisInsight has no login of its own.
-      RI_APP_HOST: 10.250.1.3
+      # Listen on the ingress address only, which Traefik alone shares, so
+      # no data-network or edge_net peer reaches the UI around SSO.
+      RI_APP_HOST: 10.250.18.3
       RI_APP_PORT: ${REDIS_INSIGHT_PORT:-5540}
       RI_ACCEPT_TERMS_AND_CONDITIONS: 'true'
       # Pre-setup connection, recreated on every start. The password and the
@@ -49,7 +49,7 @@ services:
       - redisinsight-data:/data:rw
       - ./scripts:/usr/local/libexec/redisinsight:ro
     healthcheck:
-      test: [ 'CMD-SHELL', 'wget -qO- http://10.250.1.3:${REDIS_INSIGHT_PORT:-5540}/api/health/ | grep -q ''"status":"up"''' ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://10.250.18.3:${REDIS_INSIGHT_PORT:-5540}/api/health/ | grep -q ''"status":"up"''' ]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -57,7 +57,7 @@ services:
     labels:
       <<: *tier-label
       traefik.enable: 'true'
-      traefik.docker.network: edge_net
+      traefik.docker.network: redisinsight_ingress_net
       # 1) 정적/부가 요청 전용 라우터
       traefik.http.routers.redisinsight-static.rule: Host(`redisinsight.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`) || PathPrefix(`/assets/`))
       traefik.http.routers.redisinsight-static.entrypoints: websecure
@@ -76,10 +76,9 @@ services:
       # 3) 공통 서비스 포트
       traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
-      edge_net:
-        # Fixed outside the dynamic range (10.250.1.128/25); RI_APP_HOST and
-        # the healthcheck use it.
-        ipv4_address: 10.250.1.3
+      redisinsight_ingress_net:
+        # Fixed; RI_APP_HOST and the healthcheck use it.
+        ipv4_address: 10.250.18.3
       # Data networks of the Valkey stores it inspects: MNG and DEV. The
       # optional n8n and Airflow stores (dedicated-valkey) get a network only
       # when an operator inspects them. LABs run in their own projects.
