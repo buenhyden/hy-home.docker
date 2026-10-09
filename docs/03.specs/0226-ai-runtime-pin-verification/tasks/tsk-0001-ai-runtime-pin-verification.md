@@ -157,7 +157,7 @@ the owner's browser session and were not run.
 | Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | accepted |
 | Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | accepted |
 | Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | accepted |
-| Remote candidate | 6 | W6 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Remote candidate | 6 | W6 | `candidate-quality` run 37965521891, base `c3ce31973` | `9ff118f08` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 
@@ -170,9 +170,12 @@ locally the gate passed (rc 0). The first `candidate-quality` run (run
 37964682882, head `7d74231f9`) failed the operations catalog: the generated
 service inventory still listed the old Ollama environment keys. The local
 `--local-only` gate does not run that check; the re-rendered inventory passes
-`check-operations-catalog.py`. Not complete: `candidate-quality`, the merge,
-the owner's sign-in canary, the restic snapshot listing and the image scan
-(needs the Grype network approval) remain.
+`check-operations-catalog.py`. Run 37965521891 passed on head `9ff118f08`
+and PR #402 merged as `1f552ac78` (recorded with SPEC-0228). The nightly
+backup of 2026-10-10 skipped Restic because the state repository exceeded
+its budget (SPEC-0228), so no snapshot yet holds the key and catalog.
+Not complete: the owner's sign-in canary, the restic snapshot listing and the
+image scan (needs the Grype network approval) remain.
 
 ## Related Documents
 

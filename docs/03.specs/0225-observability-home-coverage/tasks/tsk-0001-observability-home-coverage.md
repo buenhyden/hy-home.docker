@@ -193,6 +193,7 @@ sections; and the Evidence rows below carry the SHAs the HOME steps ran from.
 | Changed gate | 4 | W5 | `run-ci-gate.py --profile changed --local-only`, base `acc191655` | `ad33a5b9f` | PASS | Review and Completion | accepted |
 | Staged style check | 4 | W5 | `run-ci-precommit.sh --mode local-staged` over `acc191655..HEAD`; the first run asked for `ruff format` on two tests, applied in `75f66c8f9` | `75f66c8f9` | PASS | Review and Completion | accepted |
 | OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
+| Remote candidate | 4 | W5 | `candidate-quality` run 37945693271, base `acc191655` | `e26c7d439` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 
@@ -201,14 +202,15 @@ conflicts or content changes: `ff9f2f48c`→`21562bcd0`,
 `a4a3a7dad`→`225894242`, `4420a0514`→`12e187934`,
 `13f629690`→`d347e6e44`, `b2745167d`→`789fbd525` (the Alloy rollout ran
 from `b2745167d`). The changed gate passed on `ad33a5b9f` (rc 0) and the staged
-style check on `75f66c8f9` (rc 0). Not complete: `candidate-quality` and the
-merge remain; OpenBao's restart is the owner's.
+style check on `75f66c8f9` (rc 0).
 
 The first `candidate-quality` run (run 37941854676, head `d6c98311e`) failed
 the hardening baseline: `check-all-hardening.sh` still required OpenBao's
 `prometheus_retention_time` of 30 s. The local `--local-only` gate does not run
 that baseline. The check now requires 24 h; `check-all-hardening.sh` passes
-locally (rc 0).
+locally (rc 0). Run 37945693271 passed on head `e26c7d439` against base
+`acc191655`, and PR #401 merged as `c3ce31973` (recorded with SPEC-0228).
+Complete except OpenBao's restart, which needs the owner's manual unseal.
 
 ## Related Documents
 
