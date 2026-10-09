@@ -50,6 +50,7 @@ MUTATION_OVERRIDES = {
     "scripts/operations/lab.py": "runtime",
     "scripts/operations/provider_surface_renderer.py": "check-write",
     "scripts/operations/rehearse-sample-service-delivery.sh": "runtime",
+    "scripts/operations/storybook_image.py": "runtime",
     "scripts/lib/document_governance/metadata_validator.py": "check-write",
     "scripts/operations/sync-tech-stack-versions.sh": "check-write",
     "scripts/security/seed-grype-db-cache.sh": "runtime",
