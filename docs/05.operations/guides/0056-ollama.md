@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.3"
+version: "2.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -145,6 +145,22 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 ### Model and exporter capacity boundary
 
 `ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.
+
+### Load, queue and GPU memory
+
+이미지는 [Compose](../../../infra/08-ai/ollama/docker-compose.yml)의 tag에 registry index digest를 붙여 고정한다. GTX 1060(compute 6.1)은 `cuda_v13` 빌드에서 제외되고 `cuda_v12` 라이브러리로 동작한다(driver 580, CUDA 13.0).
+
+모델은 여러 DB가 함께 쓰는 HDD에서 읽는다. 2026-10-09 측정에서 디스크 사용률은 99%였고 Ollama가 받은 읽기 속도는 약 3 MB/s였다. 같은 모델의 load 시간도 12-574초로 크게 흔들렸다. 그래서 `OLLAMA_LOAD_TIMEOUT=15m`을 둔다. 기본값 5분에서는 `qwen3:8b` load가 HTTP 500으로 끝났다. 컨테이너 메모리를 12 GiB로 올려도 빨라지지 않았으므로 병목은 메모리가 아니라 디스크다.
+
+| 모델 | 전체 | VRAM | context |
+| --- | --- | --- | --- |
+| `tev1:0.8b` | 0.83 GiB | 0.83 GiB | 2,050 |
+| `qwen3-embedding:4b` | 4.07 GiB | 4.07 GiB | 4,096 |
+| `qwen3:8b` | 6.12 GiB | 4.75 GiB | 4,096 |
+
+`qwen3:8b`는 6 GiB GPU에 다 들어가지 않아 일부가 CPU에서 돈다. `OLLAMA_NUM_PARALLEL=1`로 바꿔도 4.68/5.56 GiB만 GPU에 올라가므로 병렬 2와 loaded model 1을 유지한다. 그 결과 RAG embedding과 chat 모델이 번갈아 load된다. 대기열은 16개(`OLLAMA_MAX_QUEUE`)로 묶어 초과 요청이 오래 쌓이지 않고 바로 거절되게 한다. `OLLAMA_NO_CLOUD=1`은 ollama.com cloud 모델과 sign-in을 꺼서 prompt가 이 호스트 밖으로 나가지 않게 한다. 같은 GPU를 쓰는 ComfyUI(`--lowvram`)와 VRAM을 나누어 쓰는 것은 보장되지 않는다.
+
+모델 blob은 백업하지 않고 digest로 다시 받는다. 대신 `models/manifests`와 `models/manifests-v2`는 restic state set으로 백업해 모델별 정확한 digest 목록을 남긴다. 격리 복원에서 manifest 목록만으로 같은 5개 모델과 digest가 그대로 보였다. `gemma4:e2b-mlx`는 MLX 형식이라 이 CUDA 호스트에서 쓰이지 않는다.
 
 ### Common Checks
 

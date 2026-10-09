@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -122,6 +122,14 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 선언 릴리스는 `DATA_DIR/vector_db`의 Chroma를 기본으로 쓰며 Compose에는 외부 vector-store나 Qdrant 연결이 없다. SQLite·vector·upload·identity와 embedding-model 출처를 함께 보존한다. CUDA image 이름만으로 GPU가 할당되지는 않으며 WebUI에는 GPU 예약이 없다. 로컬 entrypoint는 한 줄 OIDC secret과 검증된 CA bundle을 읽고 인자가 없으면 upstream `bash start.sh`로 시작한다.
 
 `ENABLE_PASSWORD_AUTH=false`는 폼 숨김과 별도로 password 인증을 막는다. `ENABLE_OAUTH_PERSISTENT_CONFIG=false`는 OAuth 설정만 관장하며 모든 저장 설정을 끄지 않는다. 선언 버전의 `key/value`별 schema에 과거 단일 `id/data` 행 SQL 복구를 적용하지 않는다. Native login, signup/password 거부와 identity 연속성은 승인된 별도 검사로 확인하며 health가 대신하지 않는다.
+
+### Pinned image and persisted settings
+
+이미지는 [Compose](../../../infra/08-ai/open-webui/docker-compose.yml)의 CUDA tag에 registry index digest를 붙여 고정한다. 현재 고정 버전은 직전 patch에 있던 공개 advisory 4건을 고쳤다. 두 버전의 migration head(`d4c1a8e37b62`)가 같아서 이미지만 직전 patch로 되돌릴 때는 데이터 복원이 필요 없다. 다만 그 4건은 다시 열린다. 직전 digest는 [SPEC-0226 Task](../../03.specs/0226-ai-runtime-pin-verification/tasks/tsk-0001-ai-runtime-pin-verification.md)에 있다.
+
+CUDA 이미지를 쓰지만 GPU 예약이 없어 `torch.cuda.is_available()`은 `False`다. embedding은 원격 Ollama가 처리하고 로컬 GPU 기능은 쓰지 않는다. GPU는 Ollama와 ComfyUI가 이미 나누어 쓰므로 장치를 추가하지 않는다. `AIOHTTP_CLIENT_TIMEOUT=960`은 Ollama의 15분 load timeout보다 길어서 느린 첫 load가 WebUI 쪽에서 먼저 끊기지 않는다.
+
+`ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가렸으므로 그 행만 지웠다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
 
 ### Common Checks
 
