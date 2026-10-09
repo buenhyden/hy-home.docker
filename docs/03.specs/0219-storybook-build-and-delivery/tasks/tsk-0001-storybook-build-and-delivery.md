@@ -155,7 +155,32 @@ remained. The export now holds the 9 allowlisted files.
 
 ### W7 Validation
 
-Pending.
+The changed-profile local gate ran in a throwaway worktree with the candidate
+staged on base `6011c9f4c`. Its first run failed
+`test_current_repository_spec_packages_cover_spec_directories` because root
+`DESIGN.md` existed. The owner then decided that root `DESIGN.md` is not the
+design Storybook implements and is separate later work; commit `9cd150bfc`
+removed it, its token parity test and its export entry, and restored the
+guard. That changed the Storybook source, so W6 records the rebuild and
+rehearsal at `9cd150bfc`.
+
+CI `candidate-quality` failed twice before passing. One run was a Go toolchain
+download error from `proxy.golang.org`, cleared by a rerun. The other was
+`leaf.dependency-vulnerability-audit`: the GHSA-vfj7 acceptance named
+`eslint-config-next` 16.3.8, and W4 moved it to 16.4.0. The owner approved
+amending the chain to 16.4.0 on 2026-10-09 with the same advisory, the same
+dev-only `braces` 3.0.3 path and the same expiry, `2026-10-10T15:00:00Z`
+(commit `0fe1d933d`). The adapter run printed raw audit FAIL, production audit
+PASS and `ACCEPTED_RISK`; CI matched.
+
+Two later local gate runs exposed two test defects. The design export test
+read `HEAD`, which the gate worktree points at the base; it now exports an
+unreferenced commit of the index (commit `6169a8f1f`). The script manifest
+test did not list `storybook_image.py` as runtime-mutating (commit
+`412ec8298`). At `6169a8f1f` every other suite passed: 13, 15, 130, 645, 239,
+304 (32 optional skips), 25, 59, 42, 36, 50 and 18 tests. CI passed at
+`6169a8f1f`, and the owner merged PR #393 as `d9ed32b54`. The script manifest
+fix and this record follow in a separate PR.
 
 ## Evidence
 
@@ -167,13 +192,16 @@ Pending.
 | Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | accepted |
 | Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | accepted |
 | Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | accepted |
-| Validation | 5 | W7 | Changed gate | Pending | NOT_RUN | W7 Validation | pending |
+| Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | accepted |
 
 ## Review and Completion
 
 Not complete. Open for the owner: create the Keycloak client scope and client
 in GDE-0101, start `experience` on HOME, sign other workspaces' Codex and
 Claude Code in, and run `/design-sync` from an exported bundle.
+The GHSA-vfj7 acceptance expires at `2026-10-10T15:00:00Z` and cannot extend
+itself; after it, any Storybook change fails the audit until `braces` is
+patched or the lint chain changes. `DESIGN.md` is separate later work.
 
 ## Related Documents
 
