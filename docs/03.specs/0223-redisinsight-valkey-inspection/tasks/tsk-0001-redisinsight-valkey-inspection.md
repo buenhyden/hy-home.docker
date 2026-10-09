@@ -160,19 +160,26 @@ Rehearsal with a host check: 9 pass.
 | Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | accepted |
 | HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Review fixes: renderers | 1 | W1 | Signal traps; MNG and DEV ACL tests | `ccfcb4db1` | PASS | Review | accepted |
-| Review fixes: rehearsal | 2 | W4 | Nine rehearsal tests with controls | `f1c3360c2` | PASS | Review | accepted |
-| Review fixes: ingress | 3 | W5 | Compose test; HOME bypass probes from `edge_net`, both data networks and the host | `7220fa247` | PASS | Review | accepted |
-| Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
+| Review fixes: renderers | 1 | W1 | Signal traps; MNG and DEV ACL tests | `601a715f6` | PASS | Review | accepted |
+| Review fixes: rehearsal | 2 | W4 | Nine rehearsal tests with controls | `a92639aa6` | PASS | Review | accepted |
+| Review fixes: ingress | 3 | W5 | Compose test; HOME bypass probes from `edge_net`, both data networks and the host | `8a2285f70` | PASS | Review | accepted |
+| Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | accepted |
+| Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a89bae80f` | PASS | W5 HOME Rollout and Consumer Review | accepted |
+| Validation and merge | 5 | W6 | Changed gate, staged style check, `candidate-quality` | `6746a995a` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 
-Not complete: W6 validation and the merge remain. The owner signed in at
-`https://redisinsight.hy.home.arpa/`, saw only `DEV / dev-valkey` and
-`MNG / mng-valkey`, and confirmed that a non-administrator is refused. The
-owner-only `/data` copy, which held the former plaintext admin passwords, was
-shredded and deleted on 2026-10-09 at the owner's request.
+Complete. The changed gate (preflight base `5e4398b6c`) and the staged style
+check passed on the final tree; the first gate run had found the two new test
+modules unregistered, fixed by registering them. `candidate-quality` first
+failed on two commit subjects over 75 characters, which were reworded with the
+owner's approval without changing the tree; it then passed on head
+`6746a995a` against base `5e4398b6c`, and PR #399 merged as `cee6419d5`. The
+owner signed in at `https://redisinsight.hy.home.arpa/`, saw only
+`DEV / dev-valkey` and `MNG / mng-valkey`, and confirmed that a
+non-administrator is refused. The owner-only `/data` copy, which held the
+former plaintext admin passwords, was shredded and deleted on 2026-10-09 at
+the owner's request.
 
 ## Related Documents
 

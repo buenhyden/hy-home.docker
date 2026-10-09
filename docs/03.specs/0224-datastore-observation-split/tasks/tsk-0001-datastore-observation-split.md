@@ -137,7 +137,7 @@ OAuth2 Proxy, n8n, Airflow, Flower, the k3d clients and Gatus are unaffected;
 RedisInsight uses `mnginspector`. DEV Valkey consumers use project users,
 which this change does not touch. Nothing else uses either monitor account.
 
-HOME rollout from `8af637f3f` (detached checkout):
+HOME rollout from `8af637f3f` (detached checkout; the same tree as `cdbca234c` after the rebase onto `main`):
 
 | Step | Result |
 | --- | --- |
@@ -187,21 +187,21 @@ nine minor issues; each is resolved or recorded:
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Monitor roles | 1 | W1 | Provision, ACL and secret metadata tests | `262801692` | PASS | W1 Monitor Roles | accepted |
-| Exporter inputs | 1 | W2 | Boundary tests | `5fa8a3eb4` | PASS | W2 Exporters | accepted |
-| Scrape labels | 1 | W3 | Label and start-script tests; promtool on both configurations | `5a2733bff` | PASS | W3 Scrape Labels | accepted |
-| Alerts and dashboards | 1 | W4 | Scoping and dashboard contract tests; promtool rule scenarios | `f6a0a64f8` | PASS | W4 Alerts and Dashboards | accepted |
-| Prometheus tmpfs | 2 | W5 | Static test; rehearsal | `183c416e6` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| Isolated rehearsal | 2 | W5 | 11 rehearsal tests | `00fd1ff59` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| RedisInsight consumer | 2 | W5 | 9 rehearsal tests | `8af637f3f` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
-| HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `8af637f3f` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
+| Monitor roles | 1 | W1 | Provision, ACL and secret metadata tests | `e61df0be0` | PASS | W1 Monitor Roles | accepted |
+| Exporter inputs | 1 | W2 | Boundary tests | `9e69fffb9` | PASS | W2 Exporters | accepted |
+| Scrape labels | 1 | W3 | Label and start-script tests; promtool on both configurations | `1543a9d5f` | PASS | W3 Scrape Labels | accepted |
+| Alerts and dashboards | 1 | W4 | Scoping and dashboard contract tests; promtool rule scenarios | `6946bed7f` | PASS | W4 Alerts and Dashboards | accepted |
+| Prometheus tmpfs | 2 | W5 | Static test; rehearsal | `888791520` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
+| Isolated rehearsal | 2 | W5 | 11 rehearsal tests | `917d53fb1` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
+| RedisInsight consumer | 2 | W5 | 9 rehearsal tests | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
+| HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
 | Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | accepted |
 | Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | accepted |
 
 ## Review and Completion
 
-Not complete: W7 validation and the merge remain. The branch is based on the
-SPEC-0223 head, which must merge first.
+Not complete: W7 validation and the merge remain. SPEC-0223 merged as
+`cee6419d5`, and this branch was rebased onto it with unchanged content.
 
 ## Related Documents
 
