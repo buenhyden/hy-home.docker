@@ -5,25 +5,36 @@ groups:
   - name: valkey_alerts
     rules:
       # NOTE: valkey-exporter는 redis_exporter 기반이므로 메트릭 prefix가 redis_* 입니다.
-      # job 라벨로 Valkey 관련 exporter만 필터링합니다.
+      # db_scope로 MNG와 DEV를 나눕니다. exporter 자체의 다운은
+      # datastore_observation 그룹이 다룹니다(SPEC-0224).
       - alert: ValkeyDown
-        expr: |
-          (up{job="mng-valkey-exporter"} == 0) or (redis_up == 0)
+        expr: redis_up{db_scope="mng"} == 0
         for: 2m
         labels:
           severity: critical
           domain: datastores
         annotations:
-          summary: 'Valkey 다운: {{ $labels.instance }}'
-          description: 'Valkey 인스턴스 {{ $labels.instance }} 가 2분 이상 down 상태입니다. (Exporter Down 또는 Database 연결 불가)'
+          summary: 'MNG Valkey 다운: {{ $labels.instance }}'
+          description: 'exporter는 응답하지만 mng-valkey에 2분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 ACL 불일치).'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+
+      - alert: DevValkeyDown
+        expr: redis_up{db_scope="dev", expected_state="on"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: 'DEV Valkey 다운: {{ $labels.instance }}'
+          description: 'DEV를 켜 둔 상태(PROMETHEUS_DEV_DATA_EXPECTED=on)에서 dev-valkey에 5분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 ACL 불일치).'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
 
       - alert: ValkeyMemoryCritical
         expr: |
           (redis_memory_used_bytes / (redis_memory_max_bytes > 0)) > 0.9
         for: 2m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'Valkey 메모리 90% 초과: {{ $labels.instance }}'
@@ -35,7 +46,7 @@ groups:
           increase(redis_rejected_connections_total[1m]) > 0
         for: 2m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'Valkey 연결 거부 발생: {{ $labels.instance }}'
@@ -48,21 +59,32 @@ groups:
   - name: postgres_alerts
     rules:
       - alert: PostgresDown
-        expr: pg_up == 0
+        expr: pg_up{db_scope="mng"} == 0
         for: 2m
         labels:
           severity: critical
           domain: datastores
         annotations:
-          summary: 'PostgreSQL 다운'
-          description: 'PostgreSQL 데이터베이스가 응답하지 않습니다.'
+          summary: 'MNG PostgreSQL 다운: {{ $labels.instance }}'
+          description: 'exporter는 응답하지만 mng-pg에 2분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 pg_hba 거부).'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+
+      - alert: DevPostgresDown
+        expr: pg_up{db_scope="dev", expected_state="on"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: 'DEV PostgreSQL 다운: {{ $labels.instance }}'
+          description: 'DEV를 켜 둔 상태(PROMETHEUS_DEV_DATA_EXPECTED=on)에서 dev-pg에 5분 이상 접속하지 못했습니다(서버 중단, 비밀번호 또는 pg_hba 거부).'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
 
       - alert: PostgresqlRestarted
         expr: time() - pg_postmaster_start_time_seconds < 60
         for: 1m
         labels:
-          severity: critical
+          severity: '{{ if eq $labels.db_scope "dev" }}warning{{ else }}critical{{ end }}'
           domain: datastores
         annotations:
           summary: 'PostgreSQL 재시작됨: {{ $labels.instance }}'
@@ -70,14 +92,15 @@ groups:
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
 
       - alert: PostgresqlExporterError
-        expr: pg_exporter_last_scrape_error > 0
+        # A database outage also sets this; PostgresDown reports that case.
+        expr: pg_exporter_last_scrape_error{db_scope="mng"} > 0 unless on (instance) pg_up{db_scope="mng"} == 0
         for: 2m
         labels:
           severity: critical
           domain: datastores
         annotations:
-          summary: 'PostgreSQL 익스포터 에러: {{ $labels.instance }}'
-          description: 'PostgreSQL 익스포터에서 에러가 발생했습니다.'
+          summary: 'MNG PostgreSQL 익스포터 에러: {{ $labels.instance }}'
+          description: 'mng-pg-exporter의 마지막 수집에서 오류가 났습니다. collector별 결과는 pg_scrape_collector_success로 확인합니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
 
       - alert: PostgresTooManyConnections
@@ -131,6 +154,86 @@ groups:
           summary: 'PostgreSQL 복제 지연: {{ $labels.instance }}'
           description: 'PostgreSQL 복제 지연이 30초를 초과했습니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0031-postgresql-cluster.md'
+
+  # ============================================================================
+  # [5] Datastore observation (SPEC-0224)
+  # ============================================================================
+  # up은 scrape 연결만 뜻합니다. DB 접속은 pg_up/redis_up, 수집 권한은
+  # collector 지표로 따로 봅니다. DEV는 expected_state="on"일 때만 장애로
+  # 다루고, "off"인 의도적 중지는 경보하지 않습니다.
+  - name: datastore_observation
+    rules:
+      - alert: MngDatastoreExporterDown
+        expr: up{db_scope="mng"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          domain: datastores
+        annotations:
+          summary: 'MNG {{ $labels.db_engine }} exporter scrape 실패: {{ $labels.instance }}'
+          description: 'Prometheus가 {{ $labels.job }}를 2분 이상 수집하지 못했습니다. exporter 중지·재시작 반복 또는 obs_net 연결을 확인합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0028-management-database.md'
+
+      - alert: DevDatastoreExporterDown
+        expr: up{db_scope="dev", expected_state="on"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: 'DEV {{ $labels.db_engine }} exporter scrape 실패: {{ $labels.instance }}'
+          description: 'DEV를 켜 둔 상태에서 {{ $labels.job }}를 5분 이상 수집하지 못했습니다. 의도적으로 껐다면 PROMETHEUS_DEV_DATA_EXPECTED=off로 바꾸고 Prometheus를 재생성합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+
+      - alert: DevDatastoreUpWhileDeclaredOff
+        expr: up{db_scope="dev", expected_state="off"} == 1
+        for: 1h
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: 'DEV {{ $labels.db_engine }}가 off 선언 중 실행 중'
+          description: 'PROMETHEUS_DEV_DATA_EXPECTED=off인데 {{ $labels.job }}가 1시간 넘게 응답합니다. 이 상태에서는 DEV 장애가 경보되지 않으므로 선언을 on으로 고칩니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0100-development-database.md'
+
+      - alert: DatastoreScrapeTargetMissing
+        expr: |
+          absent(up{job="manage-postgres"})
+          or absent(up{job="mng-valkey-exporter"})
+          or absent(up{job="dev-pg-exporter"})
+          or absent(up{job="dev-valkey-exporter"})
+        for: 10m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: 'Datastore scrape 대상 없음: {{ $labels.job }}'
+          description: '{{ $labels.job }} job의 대상이 사라졌습니다. 설정 또는 DEV 대상 렌더링(prometheus/scripts/start.sh) 실패를 확인합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
+
+      - alert: DatastoreCollectorFailed
+        # redis_exporter has no per-collector signal: its scrape error is set
+        # only when it cannot connect, which redis_up already reports.
+        expr: pg_scrape_collector_success{expected_state="on"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: '{{ $labels.db_scope }} PostgreSQL collector 실패: {{ $labels.instance }}'
+          description: 'DB에는 접속했지만 일부 지표를 읽지 못했습니다(collector {{ $labels.collector }}). 관측 역할의 권한이 빠졌는지 확인합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
+
+      - alert: DatastoreScrapeSlow
+        expr: scrape_duration_seconds{db_engine=~"postgresql|valkey"} > 5
+        for: 10m
+        labels:
+          severity: warning
+          domain: datastores
+        annotations:
+          summary: '{{ $labels.db_scope }} {{ $labels.db_engine }} scrape 지연: {{ $labels.instance }}'
+          description: '수집 한 번에 5초 넘게 걸립니다(기본 제한 10초). DB 부하나 statement_timeout 근접을 확인합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0045-prometheus.md'
 
   # ============================================================================
   # [6] Vector DB (Qdrant)

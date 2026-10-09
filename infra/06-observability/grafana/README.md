@@ -127,6 +127,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mng-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-valkey` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `mng-valkey-exporter` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `neo4j` | none | `Infrastructure/containers` | Community edition has no metrics endpoint |
@@ -152,7 +153,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `superset-init` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `trino` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `vector` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `dev-pg` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` | `pg_monitor`-only `dev_pg_monitor` role |
+| 04-data | `dev-pg` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` | statistics-and-settings-only `dev_pg_monitor` role |
 | 04-data | `dev-pg-exporter` | `dev-pg-exporter` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `dev-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `dev-perf-provision` | none | `Infrastructure/containers`, `Infrastructure/perf-results` | 소스 선언만; reader datasource 활성화·실제 결과 조회 미실행 |

@@ -6,6 +6,7 @@
 set -eu
 
 default_secret=${MNG_VALKEY_DEFAULT_SECRET_FILE:-/run/secrets/mng_valkey_password}
+monitor_secret=${MNG_VALKEY_MONITOR_SECRET_FILE:-/run/secrets/mng_valkey_monitor_password}
 inspector_secret=${MNG_VALKEY_INSPECTOR_SECRET_FILE:-/run/secrets/mng_valkey_inspector_password}
 acl_file=${MNG_VALKEY_ACL_FILE:-/run/valkey/users.acl}
 
@@ -39,6 +40,8 @@ role_line() {
 }
 : > "$tmp_file"
 role_line default "$default_secret" '~* &* +@all'
+role_line mngmonitor "$monitor_secret" \
+  '-@all +ping +info +command|info +slowlog|len +commandlog|len'
 role_line mnginspector "$inspector_secret" \
   '~* resetchannels -@all +@read +@connection -@dangerous +info'
 chmod 600 "$tmp_file"

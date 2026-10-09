@@ -5352,9 +5352,35 @@ class ObservabilityDashboardContractTests(unittest.TestCase):
             for name in ("prometheus.dev.yml", "prometheus.yml")
         )
         self.assertEqual(dev["scrape_configs"], prod["scrape_configs"])
+        # File-discovered targets are the ones prometheus/scripts/start.sh
+        # renders, so they are checked as rendered.
+        rendered = tempfile.TemporaryDirectory()
+        self.addCleanup(rendered.cleanup)
+        start = subprocess.run(
+            ["sh", str(self.OBS / "prometheus/scripts/start.sh")],
+            env={
+                **os.environ,
+                "PROMETHEUS_DEV_DATA_EXPECTED": "on",
+                "PROMETHEUS_TARGETS_DIR": rendered.name,
+                "PROMETHEUS_BIN": "true",
+            },
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, start.returncode, start.stderr)
         seen: set[str] = set()
         for job in dev["scrape_configs"]:
-            for static in job["static_configs"]:
+            groups = list(job.get("static_configs", []))
+            for discovery in job.get("file_sd_configs", []):
+                for name in discovery["files"]:
+                    self.assertTrue(name.startswith("/etc/prometheus/targets/"), name)
+                    groups += yaml.safe_load(
+                        (Path(rendered.name) / Path(name).name).read_text(
+                            encoding="utf-8"
+                        )
+                    )
+            self.assertTrue(groups, job["job_name"])
+            for static in groups:
                 self.assertEqual(
                     "hy-home", static["labels"]["cluster"], job["job_name"]
                 )

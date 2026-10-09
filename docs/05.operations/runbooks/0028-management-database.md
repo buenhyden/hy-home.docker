@@ -1,10 +1,10 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -85,6 +85,29 @@ docker compose --env-file .env.example --profile mng config --services
    key/type/TTL 개수, disposable 읽기/쓰기/삭제 테스트를 확인한다.
 4. workflow owner의 승인 없이는 복원된 stale queue 상태를 active worker에
    연결하지 않는다.
+
+### 관측 경보와 monitor 계정
+
+`mng-pg-exporter`와 `mng-valkey-exporter`는 관리자 비밀 대신 `mng_pg_monitor`
+role과 `mngmonitor` ACL 사용자로 접속한다. 경보는 `db_scope="mng"`로 구분한다.
+
+| 경보 | 뜻 | 먼저 볼 것 |
+| --- | --- | --- |
+| `MngDatastoreExporterDown` | Prometheus가 exporter를 수집하지 못함(`up=0`) | exporter 컨테이너 상태와 재시작 반복, `obs_net` 연결 |
+| `PostgresDown` | exporter는 응답하지만 `mng-pg` 접속 실패(`pg_up=0`) | `mng-pg` health, monitor 비밀번호 불일치, 연결 한도 3 |
+| `ValkeyDown` | exporter는 응답하지만 `mng-valkey` 접속 실패(`redis_up=0`) | `mng-valkey` health, `mngmonitor` 비밀번호 불일치 |
+| `PostgresqlExporterError` | 마지막 수집에 오류가 있음 | `pg_scrape_collector_success`가 0인 collector와 role 권한 |
+
+monitor 비밀번호 회전은 다음 순서다. 비밀 값은 출력하지 않는다.
+
+1. `secrets/db/mng-pg/monitor_password.txt`를 base64 문자(16자 이상)의 새 값으로
+   바꾼다. 다른 문자가 섞이면 provision job이 계정을 바꾸기 전에 거부한다.
+2. `mng-pg-monitor-provision`을 다시 실행해 exit 0을 확인하고 `mng-pg-exporter`를
+   재생성한다.
+3. Valkey는 `secrets/db/mng-valkey/monitor_password.txt`를 바꾸고 `mng-valkey`를
+   재생성한 뒤(ACL은 시작할 때 렌더링된다; 공유 소비자가 잠시 다시 연결된다)
+   `mng-valkey-exporter`를 재생성한다.
+4. `pg_up{db_scope="mng"}`와 `redis_up{db_scope="mng"}`가 1로 돌아오는지 확인한다.
 
 ## Verification
 

@@ -52,10 +52,16 @@ n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 dat
 PostgreSQL은 `mng_postgres_password`와 `pgbackrest_cipher_pass`를 읽습니다.
 init은 서비스 database password secret을 읽습니다. Valkey는 시작할 때
 `valkey/scripts/render-acl.sh`로 `/run/valkey` tmpfs에 ACL을 만듭니다. `default`
-사용자는 `mng_valkey_password`를 그대로 쓰므로 OAuth2 Proxy·n8n·Airflow·exporter와
+사용자는 `mng_valkey_password`를 그대로 쓰므로 OAuth2 Proxy·n8n·Airflow와
 LAN 포트의 외부 클라이언트는 이전과 같이 인증하고(Gatus는 인증 없는 TCP 검사), RedisInsight 조회용
-`mnginspector`는 `mng_valkey_inspector_password`로 읽기만 합니다. exporter는 아직
-`mng_valkey_password`를 읽습니다. 두 엔진 모두 `mng_data_net`을 사용합니다.
+`mnginspector`는 `mng_valkey_inspector_password`로 읽기만 합니다. 지표 수집용
+`mngmonitor`는 `mng_valkey_monitor_password`로 `PING`·`INFO`와 로그 길이만 읽습니다.
+두 exporter는 관리자 비밀을 받지 않습니다. `mng-pg-monitor-provision`이 만드는
+`mng_pg_monitor` role(통계·설정·WAL 디렉터리 조회만, 읽기 전용, 연결 3개)로
+`mng-pg-exporter`가 접속하고, `mng-valkey-exporter`는 `mngmonitor`로 접속합니다.
+provision job은 실행할 때마다 비밀번호를 비밀 파일에 맞추므로, 회전은 비밀 파일을
+바꾸고 job을 다시 실행한 뒤 exporter를 재생성하는 순서입니다. 두 엔진 모두
+`mng_data_net`을 사용합니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로
 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)에 게시합니다. exporter는

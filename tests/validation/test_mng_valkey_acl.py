@@ -21,12 +21,14 @@ class MngValkeyAclTests(unittest.TestCase):
         self.addCleanup(self.scratch.cleanup)
         self.root = Path(self.scratch.name)
         (self.root / "default").write_text("synthetic-default\n", encoding="utf-8")
+        (self.root / "monitor").write_text("synthetic-monitor\n", encoding="utf-8")
         (self.root / "inspector").write_text("synthetic-inspector\n", encoding="utf-8")
 
     def render(self) -> subprocess.CompletedProcess[str]:
         env = {
             **os.environ,
             "MNG_VALKEY_DEFAULT_SECRET_FILE": str(self.root / "default"),
+            "MNG_VALKEY_MONITOR_SECRET_FILE": str(self.root / "monitor"),
             "MNG_VALKEY_INSPECTOR_SECRET_FILE": str(self.root / "inspector"),
             "MNG_VALKEY_ACL_FILE": str(self.root / "users.acl"),
         }
@@ -34,31 +36,43 @@ class MngValkeyAclTests(unittest.TestCase):
             ["sh", str(SCRIPT)], env=env, capture_output=True, text=True, check=False
         )
 
-    def test_default_user_keeps_shared_secret_and_inspector_is_read_only(self) -> None:
+    def test_default_keeps_shared_secret_and_service_roles_are_read_only(self) -> None:
         result = self.render()
         self.assertEqual(result.returncode, 0, result.stderr)
         acl = (self.root / "users.acl").read_text(encoding="utf-8")
         default = hashlib.sha256(b"synthetic-default").hexdigest()
+        monitor = hashlib.sha256(b"synthetic-monitor").hexdigest()
         inspector = hashlib.sha256(b"synthetic-inspector").hexdigest()
         self.assertEqual(
             acl,
             f"user default on #{default} ~* &* +@all\n"
+            f"user mngmonitor on #{monitor} -@all +ping +info +command|info "
+            "+slowlog|len +commandlog|len\n"
             f"user mnginspector on #{inspector} ~* resetchannels -@all +@read "
             "+@connection -@dangerous +info\n",
         )
         self.assertNotIn("synthetic-", acl)
         self.assertEqual((self.root / "users.acl").stat().st_mode & 0o777, 0o600)
 
-    def test_inspector_cannot_share_the_default_secret(self) -> None:
-        (self.root / "inspector").write_text("synthetic-default\n", encoding="utf-8")
-        result = self.render()
-        self.assertNotEqual(result.returncode, 0)
-        self.assertFalse((self.root / "users.acl").exists())
+    def test_no_two_roles_share_a_secret(self) -> None:
+        for role, other in (
+            ("inspector", "default"),
+            ("monitor", "default"),
+            ("monitor", "inspector"),
+        ):
+            with self.subTest(role=role, other=other):
+                (self.root / role).write_text(f"synthetic-{other}\n", encoding="utf-8")
+                result = self.render()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse((self.root / "users.acl").exists())
+                (self.root / role).write_text(f"synthetic-{role}\n", encoding="utf-8")
 
     def test_missing_or_multiline_secret_fails_closed(self) -> None:
-        for content in (None, "a\nb\n", "\n"):
-            with self.subTest(content=content):
-                path = self.root / "inspector"
+        for name, content in [
+            (n, c) for n in ("monitor", "inspector") for c in (None, "a\nb\n", "\n")
+        ]:
+            with self.subTest(name=name, content=content):
+                path = self.root / name
                 if content is None:
                     path.unlink(missing_ok=True)
                 else:
@@ -66,6 +80,8 @@ class MngValkeyAclTests(unittest.TestCase):
                 result = self.render()
                 self.assertNotEqual(result.returncode, 0)
                 self.assertFalse((self.root / "users.acl").exists())
+                path.write_text(f"synthetic-{name}\n", encoding="utf-8")
+        self.assertEqual(self.render().returncode, 0)
 
     def test_compose_replaces_requirepass_with_the_rendered_acl(self) -> None:
         compose = (SCRIPT.parents[2] / "docker-compose.yml").read_text(encoding="utf-8")

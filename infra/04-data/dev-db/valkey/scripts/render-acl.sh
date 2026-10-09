@@ -41,7 +41,9 @@ trap 'rm -f "$tmp_file"; exit 1' 1 2 3 15
 # Service roles are fixed here, one row each and one secret each; projects
 # come from projects.tsv. No two roles or projects may share a secret.
 #   devadmin     operator superuser
-#   devmonitor   exporter metrics: no key or channel pattern, no state change
+#   devmonitor   exporter metrics: INFO and log lengths only; no key or
+#                channel pattern, no CONFIG, no SLOWLOG GET (it returns
+#                command arguments), no state change
 #   devinspector RedisInsight: read keys and server info, no write, no
 #                @dangerous command (KEYS, CONFIG, ACL, FLUSH*, DEBUG)
 seen_hashes='|'
@@ -54,7 +56,7 @@ role_line() {
 printf 'user default off\n' > "$tmp_file"
 role_line devadmin "$admin_secret" '~* &* +@all'
 role_line devmonitor "$monitor_secret" \
-  '-@all +ping +info +config|get +client|list +client|info +client|setname +slowlog|get +slowlog|len +latency|latest +latency|histogram +cluster|info'
+  '-@all +ping +info +command|info +slowlog|len +commandlog|len'
 role_line devinspector "$inspector_secret" \
   '~* resetchannels -@all +@read +@connection -@dangerous +info'
 seen_projects='|'

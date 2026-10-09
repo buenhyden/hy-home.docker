@@ -1,6 +1,9 @@
 """Static cross-file boundary for management and development data consumers."""
 
 import json
+import os
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -101,11 +104,235 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertIn("-redis.user=devmonitor", command)
         self.assertIn("redis://dev-valkey:6379", command)
         self.assertNotIn("VALKEY_PORT", command)
-        for job in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
-            for config in ("prometheus.yml", "prometheus.dev.yml"):
-                path = ROOT / "infra/06-observability/prometheus/config" / config
-                with self.subTest(config=config, job=job):
-                    self.assertIn(job, path.read_text(encoding="utf-8"))
+        for flag in VALKEY_EXPORTER_FLAGS:
+            self.assertIn(flag, command)
+        self.assertNotIn("-redis.password", command)
+        start = (ROOT / "infra/06-observability/prometheus/scripts/start.sh").read_text(
+            encoding="utf-8"
+        )
+        for target in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
+            with self.subTest(target=target):
+                self.assertIn(target, start)
+
+    def test_mng_monitor_job_wiring_and_sql_order(self):
+        services = compose("infra/04-data/mng-db/docker-compose.yml")
+        job = services["mng-pg-monitor-provision"]
+        env = job["environment"]
+        self.assertEqual(
+            job["entrypoint"], ["/bin/sh", "/provision/run-feature-provision.sh"]
+        )
+        self.assertEqual(
+            set(job["secrets"]), {"mng_postgres_password", "mng_pg_monitor_password"}
+        )
+        self.assertEqual(
+            env["PROVISION_SECRETS"],
+            "MNG_PG_MONITOR_PASSWORD=/run/secrets/mng_pg_monitor_password",
+        )
+        mounts = {m.split(":")[1]: m.split(":")[0] for m in job["volumes"]}
+        base = ROOT / "infra/04-data/mng-db"
+        self.assertEqual(
+            (base / mounts["/provision/run-feature-provision.sh"]).resolve(),
+            (base / "pg/provision/run-feature-provision.sh").resolve(),
+        )
+        sql_path = (base / mounts[env["PROVISION_SQL"]]).resolve()
+        self.assertEqual(sql_path, (base / "pg/provision/monitor.sql").resolve())
+        self.assertEqual(job["depends_on"]["mng-pg"]["condition"], "service_healthy")
+        sql = sql_path.read_text(encoding="utf-8")
+        self.assertIn("\\getenv monitor_secret MNG_PG_MONITOR_PASSWORD", sql)
+        order = [
+            "SET log_statement = 'none';",
+            "AS secret_ok",
+            "CREATE ROLE mng_pg_monitor NOLOGIN;",
+            "'role ownership mismatch'",
+            "ALTER ROLE mng_pg_monitor WITH LOGIN",
+            "GRANT pg_read_all_stats, pg_read_all_settings TO mng_pg_monitor;",
+            "REVOKE pg_monitor FROM mng_pg_monitor",
+            "monitor role holds memberships beyond its grants",
+        ]
+        positions = [sql.index(part) for part in order]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn(
+            "GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO mng_pg_monitor;",
+            sql,
+        )
+        self.assertNotIn("GRANT pg_monitor", sql)
+        self.assertNotIn("GRANT CONNECT", sql)
+        self.assertIn("default_transaction_read_only = on", sql)
+
+    def test_mng_exporters_use_monitor_accounts_not_admin(self):
+        services = compose("infra/04-data/mng-db/docker-compose.yml")
+        pg = services["mng-pg-exporter"]
+        valkey = services["mng-valkey-exporter"]
+        self.assertEqual(pg["secrets"], ["mng_pg_monitor_password"])
+        self.assertEqual(pg["environment"]["DATA_SOURCE_USER"], "mng_pg_monitor")
+        self.assertEqual(
+            pg["environment"]["DATA_SOURCE_PASS_FILE"],
+            "/run/secrets/mng_pg_monitor_password",
+        )
+        self.assertNotIn("entrypoint", pg)
+        self.assertEqual(
+            pg["depends_on"]["mng-pg-monitor-provision"]["condition"],
+            "service_completed_successfully",
+        )
+        self.assertEqual(valkey["secrets"], ["mng_valkey_monitor_password"])
+        command = "".join(valkey["command"])
+        self.assertIn("-redis.user=mngmonitor", command)
+        self.assertNotIn("-redis.password", command)
+        for flag in VALKEY_EXPORTER_FLAGS:
+            self.assertIn(flag, command)
+
+
+# The narrowed monitor ACL grants nothing these calls would need.
+VALKEY_EXPORTER_FLAGS = (
+    "-config-command=-",
+    "-set-client-name=false",
+    "-exclude-latency-histogram-metrics",
+)
+
+DATASTORE_JOBS = (
+    ("manage-postgres", "mng", "postgresql"),
+    ("mng-valkey-exporter", "mng", "valkey"),
+    ("dev-pg-exporter", "dev", "postgresql"),
+    ("dev-valkey-exporter", "dev", "valkey"),
+)
+
+
+class DatastoreScrapeLabelTests(unittest.TestCase):
+    CONFIG = ROOT / "infra/06-observability/prometheus/config"
+    START = ROOT / "infra/06-observability/prometheus/scripts/start.sh"
+
+    def render(self, state):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        env = {
+            **os.environ,
+            "PROMETHEUS_TARGETS_DIR": directory.name,
+            "PROMETHEUS_BIN": "true",
+        }
+        env.pop("PROMETHEUS_DEV_DATA_EXPECTED", None)
+        if state is not None:
+            env["PROMETHEUS_DEV_DATA_EXPECTED"] = state
+        result = subprocess.run(
+            ["sh", str(self.START)],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return result, Path(directory.name)
+
+    def test_both_configs_label_every_datastore_job_by_scope_and_engine(self):
+        for config in ("prometheus.yml", "prometheus.dev.yml"):
+            jobs = {
+                job["job_name"]: job
+                for job in yaml.safe_load(
+                    (self.CONFIG / config).read_text(encoding="utf-8")
+                )["scrape_configs"]
+            }
+            for name, scope, engine in DATASTORE_JOBS:
+                with self.subTest(config=config, job=name):
+                    job = jobs[name]
+                    if scope == "mng":
+                        labels = job["static_configs"][0]["labels"]
+                        self.assertEqual(labels["db_scope"], scope)
+                        self.assertEqual(labels["db_engine"], engine)
+                        self.assertEqual(labels["expected_state"], "on")
+                    else:
+                        self.assertEqual(
+                            job["file_sd_configs"][0]["files"],
+                            [f"/etc/prometheus/targets/{name}.yml"],
+                        )
+
+    def test_start_renders_dev_targets_with_the_declared_state(self):
+        for state in ("on", "off"):
+            result, directory = self.render(state)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                sorted(p.name for p in directory.iterdir()),
+                ["dev-pg-exporter.yml", "dev-valkey-exporter.yml"],
+            )
+            for name, scope, engine in DATASTORE_JOBS:
+                if scope != "dev":
+                    continue
+                with self.subTest(state=state, job=name):
+                    group = yaml.safe_load(
+                        (directory / f"{name}.yml").read_text(encoding="utf-8")
+                    )[0]
+                    self.assertEqual(
+                        group["targets"],
+                        [f"{name}:{9187 if engine == 'postgresql' else 9121}"],
+                    )
+                    self.assertEqual(
+                        group["labels"],
+                        {
+                            "cluster": "hy-home",
+                            "namespace": "hy-home",
+                            "domain": "datastores",
+                            "db_scope": "dev",
+                            "db_engine": engine,
+                            "expected_state": state,
+                        },
+                    )
+
+    def test_prometheus_can_write_the_rendered_targets(self):
+        services = compose("infra/06-observability/docker-compose.yml")
+        prometheus = services["prometheus"]
+        self.assertEqual(
+            prometheus["entrypoint"],
+            ["/bin/sh", "/usr/local/libexec/prometheus/start.sh"],
+        )
+        # The image runs as nobody (65534); a root-owned tmpfs stops start.sh.
+        self.assertIn(
+            "/etc/prometheus:size=10M,uid=65534,gid=65534,mode=0755",
+            prometheus["tmpfs"],
+        )
+
+    def test_start_refuses_a_missing_or_unknown_state(self):
+        for state in (None, "", "ON", "true", "on\n"):
+            with self.subTest(state=state):
+                result, directory = self.render(state)
+                self.assertEqual(result.returncode, 64)
+                self.assertEqual(list(directory.iterdir()), [])
+
+    def test_datastore_down_alerts_are_scoped_and_dev_honours_expected_state(self):
+        path = self.CONFIG / "alert_rules/alert_rules.local.datastores.yml"
+        rules = {
+            rule["alert"]: rule
+            for group in yaml.safe_load(path.read_text(encoding="utf-8"))["groups"]
+            for rule in group["rules"]
+        }
+        expected = {
+            "PostgresDown": ('pg_up{db_scope="mng"}', "critical"),
+            "ValkeyDown": ('redis_up{db_scope="mng"}', "critical"),
+            "MngDatastoreExporterDown": ('up{db_scope="mng"}', "critical"),
+            "DevPostgresDown": (
+                'pg_up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+            "DevValkeyDown": (
+                'redis_up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+            "DevDatastoreExporterDown": (
+                'up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+        }
+        for name, (selector, severity) in expected.items():
+            with self.subTest(alert=name):
+                self.assertIn(selector, rules[name]["expr"])
+                self.assertEqual(rules[name]["labels"]["severity"], severity)
+        for name, rule in rules.items():
+            with self.subTest(alert=name):
+                expr = " ".join(rule["expr"].split())
+                if 'db_scope="dev"' in expr and "DeclaredOff" not in name:
+                    self.assertIn('expected_state="on"', expr)
+                # An unscoped comparison would page for DEV stopped on purpose.
+                for metric in ("pg_up", "redis_up"):
+                    self.assertNotIn(f"{metric} ==", expr)
+        absent = rules["DatastoreScrapeTargetMissing"]["expr"]
+        for job, _, _ in DATASTORE_JOBS:
+            self.assertIn(f'absent(up{{job="{job}"}})', absent)
 
 
 if __name__ == "__main__":

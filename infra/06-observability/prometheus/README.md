@@ -33,8 +33,9 @@ created: "2026-01-12"
 
 ```text
 infra/06-observability/prometheus/
-├── config/  # 하위 구성 영역
-└── README.md  # This file
+├── config/   # 하위 구성 영역
+├── scripts/  # start.sh: DEV 저장소 대상 렌더링 후 Prometheus 실행
+└── README.md # This file
 ```
 
 ## Tech Stack
@@ -51,6 +52,13 @@ infra/06-observability/prometheus/
 
 - **Scrape Configs**: `config/prometheus.yml`에 정의됨(정확한 잡 수는 해당 파일을 기준으로 확인).
 - **Alerting Rules**: `config/alert_rules/`에 도메인별로 모듈화됨.
+- **Datastore Scopes**: PostgreSQL·Valkey job은 `db_scope`(`mng`|`dev`), `db_engine`(`postgresql`|`valkey`),
+  `expected_state` 레이블을 붙입니다. 지표 이름(`pg_*`, `redis_*`)은 바꾸지 않습니다.
+  DEV 대상은 `scripts/start.sh`가 시작할 때 `PROMETHEUS_DEV_DATA_EXPECTED`(`on`|`off`) 값으로
+  `/etc/prometheus/targets/`에 렌더링하며, 그 밖의 값이면 Prometheus가 시작하지 않습니다.
+  DEV를 일부러 내릴 때는 `.env`의 이 값을 `off`로 바꾸고 Prometheus를 재생성합니다. 그동안 DEV
+  대상은 계속 수집되지만 장애 경보는 울리지 않고, `off`인데 1시간 넘게 응답하면 선언을 고치라는
+  경고가 납니다.
 - **Storage**: 영속 TSDB 볼륨. 명시적 보존 플래그는 Compose에 선언되어 있지 않습니다.
 
 ## Management Guide

@@ -176,6 +176,10 @@ scrape_configs:
   # ============================================================================
   # DATASTORES
   # ============================================================================
+  # db_scope separates the MNG and DEV servers and db_engine the engine; the
+  # exporters' own metric names (pg_*, redis_*) are kept. The DEV targets are
+  # rendered at start by prometheus/scripts/start.sh with expected_state from
+  # PROMETHEUS_DEV_DATA_EXPECTED, so an intentional DEV stop is not an alert.
   - job_name: "manage-postgres"
     static_configs:
       - targets: ["mng-pg-exporter:9187"]
@@ -183,6 +187,9 @@ scrape_configs:
           cluster: "hy-home"
           namespace: "hy-home"
           domain: "datastores"
+          db_scope: "mng"
+          db_engine: "postgresql"
+          expected_state: "on"
 
   - job_name: "mng-valkey-exporter"
     static_configs:
@@ -191,22 +198,17 @@ scrape_configs:
           cluster: "hy-home"
           namespace: "hy-home"
           domain: "datastores"
+          db_scope: "mng"
+          db_engine: "valkey"
+          expected_state: "on"
 
   - job_name: "dev-pg-exporter"
-    static_configs:
-      - targets: ["dev-pg-exporter:9187"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/dev-pg-exporter.yml"]
 
   - job_name: "dev-valkey-exporter"
-    static_configs:
-      - targets: ["dev-valkey-exporter:9121"]
-        labels:
-          cluster: "hy-home"
-          namespace: "hy-home"
-          domain: "datastores"
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/dev-valkey-exporter.yml"]
 
   - job_name: "qdrant"
     metrics_path: /metrics

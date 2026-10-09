@@ -43,6 +43,7 @@ services:
       traefik.enable: 'false'
     secrets:
       - mng_valkey_password
+      - mng_valkey_monitor_password
       - mng_valkey_inspector_password
     ports:
       - ${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}
@@ -71,18 +72,16 @@ services:
       - '${SECRETS_GID:-1000}'
     expose:
       - '${VALKEY_EXPORTER_PORT:-9121}'
-    entrypoint:
-      - /bin/sh
-      - -c
+    # mngmonitor reads INFO and log lengths only. The password reaches the
+    # process environment, never argv; CONFIG, CLIENT SETNAME and the latency
+    # histogram are switched off so no wider grant is needed (SPEC-0224).
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
-        export VALKEY_PASSWORD=$$(cat /run/secrets/mng_valkey_password | tr -d '\n')
-        exec /redis_exporter \
-          -redis.addr=redis://mng-valkey:${VALKEY_PORT} \
-          -redis.password="$$VALKEY_PASSWORD" \
-          -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121}
+        export REDIS_PASSWORD="$$(tr -d '\n' < /run/secrets/mng_valkey_monitor_password)"
+        exec /redis_exporter -redis.addr=redis://mng-valkey:${VALKEY_PORT:-6379} -redis.user=mngmonitor -web.listen-address=:${VALKEY_EXPORTER_PORT:-9121} -config-command=- -set-client-name=false -exclude-latency-histogram-metrics
     secrets:
-      - mng_valkey_password
+      - mng_valkey_monitor_password
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1' ]
       interval: 30s
@@ -260,6 +259,46 @@ services:
       <<: *tier-label
       traefik.enable: 'false'
 
+  # Creates or updates mng_pg_monitor, the exporter's read-only metrics role,
+  # and sets its password from the secret on every run (SPEC-0224).
+  mng-pg-monitor-provision:
+    profiles:
+      - mng
+      - dev
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-job-low
+    image: postgres:18.6-alpine
+    container_name: mng-pg-monitor-provision
+    hostname: mng-pg-monitor-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/sh
+      - /provision/run-feature-provision.sh
+    environment:
+      PGHOST: mng-pg
+      PGPORT: '${POSTGRES_PORT:-5432}'
+      PGUSER: '${POSTGRES_DEFAULT_USER}'
+      PGDATABASE: '${POSTGRES_DEFAULT_DB}'
+      PROVISION_ADMIN_PASSWORD_FILE: /run/secrets/mng_postgres_password
+      PROVISION_SQL: /provision/monitor.sql
+      PROVISION_SECRETS: MNG_PG_MONITOR_PASSWORD=/run/secrets/mng_pg_monitor_password
+    volumes:
+      - ./pg/provision/run-feature-provision.sh:/provision/run-feature-provision.sh:ro
+      - ./pg/provision/monitor.sql:/provision/monitor.sql:ro
+    secrets:
+      - mng_postgres_password
+      - mng_pg_monitor_password
+    depends_on:
+      mng-pg:
+        condition: service_healthy
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+    networks:
+      mng_data_net: {}
+
   mng-pg-exporter:
     profiles:
       - mng
@@ -272,25 +311,20 @@ services:
     hostname: mng-pg-exporter
     group_add:
       - '${SECRETS_GID:-1000}'
+    # Reads through mng_pg_monitor; the exporter takes the password from the
+    # file itself, so the administrator secret is never mounted (SPEC-0224).
     environment:
-      POSTGRES_HOSTNAME: mng-pg
-      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
-      POSTGRES_USER: ${POSTGRES_DEFAULT_USER}
-      POSTGRES_DB: ${POSTGRES_DEFAULT_DB}
+      DATA_SOURCE_URI: mng-pg:${POSTGRES_PORT:-5432}/${POSTGRES_DEFAULT_DB}?sslmode=disable
+      DATA_SOURCE_USER: mng_pg_monitor
+      DATA_SOURCE_PASS_FILE: /run/secrets/mng_pg_monitor_password
+    command: ['--collector.postmaster']
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
-    entrypoint:
-      - '/bin/sh'
-      - '-c'
-      - |
-        export PGPASSWORD=$$(cat /run/secrets/mng_postgres_password | tr -d '\n');
-        export DATA_SOURCE_NAME="postgresql://$$POSTGRES_USER:$$PGPASSWORD@$$POSTGRES_HOSTNAME:$$POSTGRES_PORT/$$POSTGRES_DB?sslmode=disable";
-        exec /bin/postgres_exporter --collector.postmaster
     depends_on:
-      mng-pg:
-        condition: service_healthy
+      mng-pg-monitor-provision:
+        condition: service_completed_successfully
     secrets:
-      - mng_postgres_password
+      - mng_pg_monitor_password
     labels:
       <<: *tier-label
       traefik.enable: 'false'

@@ -1043,12 +1043,12 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_public_environment_has_current_consumers_and_four_way_classification(self):
         contract = self.environment
-        self.assertEqual(211, len(contract["public"]))
+        self.assertEqual(212, len(contract["public"]))
         self.assertEqual(set(), contract["missing"])
         self.assertEqual(set(), contract["orphan"])
         self.assertEqual(INDIRECT_DERIVED_INPUTS, contract["derived_only"])
         self.assertEqual(48, len(contract["required"]))
-        self.assertEqual(163, len(contract["optional"]))
+        self.assertEqual(164, len(contract["optional"]))
         self.assertEqual(
             contract["public"],
             contract["required"] | contract["optional"] | contract["orphan"],
@@ -1114,8 +1114,8 @@ class PublicSecretSchemaTests(unittest.TestCase):
 
     def test_literal_secret_references_are_declared_granted_and_registered(self):
         contract = self.scoped_secret_contract(self.compose_texts, self.registry_text)
-        self.assertEqual(107, len(contract["declarations"]))
-        self.assertEqual(144, len(contract["rows"]))
+        self.assertEqual(109, len(contract["declarations"]))
+        self.assertEqual(146, len(contract["rows"]))
         areas = Counter(
             row["path"].split("/")[1]
             for row in contract["rows"].values()
@@ -1128,7 +1128,7 @@ class PublicSecretSchemaTests(unittest.TestCase):
                 "backup": 6,
                 "communication": 5,
                 "data": 16,
-                "db": 30,
+                "db": 32,
                 "labs": 14,
                 "observability": 3,
                 "security": 2,

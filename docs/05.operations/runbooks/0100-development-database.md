@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.1.0"
+version: "0.2.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -59,6 +59,29 @@ volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback 
 외부 project provision은 manifest의 `project_id`, explicit DB/role, Valkey ACL prefix,
 secret reference, quota와 approval state가 승인된 뒤에만 별도 task에서 실행한다. 앱 migration은
 외부 workspace가 소유한다.
+
+### 관측 경보와 의도적 중지
+
+DEV exporter 경보는 `db_scope="dev"`이고 `expected_state="on"`일 때만 울린다.
+`expected_state`는 Prometheus 시작 시 루트 `.env`의
+`PROMETHEUS_DEV_DATA_EXPECTED`(`on`|`off`)에서 온다.
+
+| 경보 | 뜻 |
+| --- | --- |
+| `DevDatastoreExporterDown` | DEV를 켜 둔 상태에서 exporter를 5분 넘게 수집하지 못함 |
+| `DevPostgresDown`, `DevValkeyDown` | exporter는 응답하지만 DEV DB 접속 실패(서버 중단, 비밀번호 또는 ACL 불일치) |
+| `DevDatastoreUpWhileDeclaredOff` | `off`로 선언했는데 DEV가 1시간 넘게 응답함; 이 동안 DEV 장애가 경보되지 않으므로 선언을 `on`으로 고친다 |
+
+DEV를 일부러 내릴 때:
+
+1. `.env`의 `PROMETHEUS_DEV_DATA_EXPECTED`를 `off`로 바꾸고 Prometheus를 재생성한다.
+2. `dev-data` 서비스를 내린다. DEV 대상은 계속 수집되어 그래프에 `off`로 보이고
+   장애 경보는 없다.
+3. 다시 올릴 때는 서비스를 올린 뒤 값을 `on`으로 되돌리고 Prometheus를 재생성한다.
+
+`dev_pg_monitor`와 `devmonitor` 비밀번호 회전은 MNG와 같은 순서다. 비밀 파일을
+바꾸고 `dev-pg-monitor-provision`을 다시 실행하거나 `dev-valkey`를 재생성한 뒤
+exporter를 재생성한다.
 
 ## Verification
 

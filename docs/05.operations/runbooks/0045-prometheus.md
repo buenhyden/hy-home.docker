@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -115,6 +115,18 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```
 
    이 런북은 WAL 삭제나 TSDB file mutation을 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있는 조치는 별도 incident/task approval과 backup evidence가 필요하다.
+
+### Datastore observation alerts
+
+`up`은 scrape 연결만 뜻한다. DB 접속은 `pg_up`·`redis_up`, 수집 권한은
+`pg_scrape_collector_success`·`redis_exporter_last_scrape_error`로 따로 본다.
+MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
+
+| 경보 | 먼저 볼 것 |
+| --- | --- |
+| `DatastoreScrapeTargetMissing` | 네 datastore job 중 대상이 사라짐. DEV 대상이면 `/etc/prometheus/targets/`가 렌더링됐는지, `PROMETHEUS_DEV_DATA_EXPECTED`가 `on`/`off`인지(그 밖의 값이면 Prometheus가 시작하지 않는다) |
+| `DatastoreCollectorFailed` | PostgreSQL에는 접속했지만 collector 일부가 실패함. monitor role에서 `pg_read_all_stats`, `pg_read_all_settings`, `pg_ls_waldir()` 실행 권한이 빠졌으면 provision job을 다시 실행한다. Valkey exporter에는 collector별 신호가 없고 접속 실패는 `redis_up`이 알린다 |
+| `DatastoreScrapeSlow` | 수집이 5초 넘게 걸림(기본 제한 10초). DB 부하와 monitor role의 `statement_timeout`(10초) 근접 여부 |
 
 ### Verification Steps
 
