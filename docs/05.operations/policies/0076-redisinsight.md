@@ -38,9 +38,10 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 
 ### Controls
 
-- `admin`/`admin-data`만 사용한다. HOME 밖에 유지한다.
-- ForwardAuth와 관리자 CIDR을 보존한다. listener는 `edge_net` 고정 주소에만
-  열고, 데이터 망에서 UI로 가는 직접 경로를 두지 않는다.
+- `admin`/`admin-data`만 사용하며 상시 기본 profile에 넣지 않는다.
+- ForwardAuth와 관리자 CIDR을 보존한다. listener는 Traefik만 함께 붙는
+  `redisinsight_ingress_net` 고정 주소에만 열고, `edge_net`이나 데이터 망에서
+  UI로 가는 직접 경로를 두지 않는다.
 - 대상 연결은 사전 등록된 읽기 전용 inspector(`devinspector`, `mnginspector`)만
   쓴다. 관리자·지표 수집·앱 계정과 그 비밀은 RedisInsight에 넣지 않는다. 쓰기가
   필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한다.
@@ -70,7 +71,7 @@ gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspect
 ### 직접 접근 제한
 
 데이터 망 peer는 UI 포트에 닿지 못한다. 새 망을 붙일 때는 listener가 여전히
-`edge_net` 주소에만 열려 있는지 확인한다. CIDR·SSO 성공만으로 안전한 배포나
+`redisinsight_ingress_net` 주소에만 열려 있는지 확인한다. CIDR·SSO 성공만으로 안전한 배포나
 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을 진단 출력으로
 사용하지 않는다.
 

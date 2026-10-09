@@ -62,8 +62,9 @@ multi-line secrets, and the Compose start path.
 
 ### W3 RedisInsight
 
-RedisInsight listens on `10.250.1.3` in `edge_net` only, Traefik uses
-`edge_net`, `n8n_net` and `airflow_net` are gone, `DEV / dev-valkey` and
+RedisInsight first listened on a fixed `edge_net` address; after the review
+(below) it listens on `10.250.18.3` in the internal `redisinsight_ingress_net`,
+which only Traefik shares. `edge_net`, `n8n_net` and `airflow_net` are gone, `DEV / dev-valkey` and
 `MNG / mng-valkey` are pre-set with the inspectors, `start.sh` loads both
 passwords and the encryption key from secrets, and the health check reads
 `/api/health/`. The service inventory was re-rendered; operations catalog,
@@ -108,6 +109,31 @@ servers:
 | `dev-valkey-exporter` | `devmonitor` | None; healthy |
 | Terrakube API and executor (`iac`, not running) | `terrakube_valkey_password` | Pre-existing: that secret differs from the MNG password, so they fail to authenticate before and after this change; review when `iac` is activated |
 
+### Review
+
+The independent review found that the `edge_net` listener still let every
+`edge_net` peer (27 Compose files, including JupyterLab and n8n, which run
+user code or HTTP requests) and the host read MNG and DEV keys through the
+RedisInsight API without SSO. RedisInsight moved to `redisinsight_ingress_net`
+(internal, `10.250.18.0/24`) with Traefik as the only other member; a Compose
+test pins that membership, the listener address and the label. Minor findings
+fixed: the renderers' signal traps now exit instead of continuing to write; the
+rehearsal bypass check has a positive control and covers MNG, the stored-secret
+scan covers both inspectors and the key, the readiness loop sleeps, and a test
+uses the password-only form the MNG consumers send; the MNG port follows
+`VALKEY_PORT`; the MNG healthcheck passes its password through `REDISCLI_AUTH`
+instead of argv; the RedisInsight README, Runbook and Policy match the pre-set
+connections, and the MNG README describes Gatus as an unauthenticated TCP
+check. Rehearsal: 9 pass.
+
+On HOME the network was created, Traefik was attached with
+`docker network connect` (no restart), and RedisInsight was recreated: a
+throwaway `edge_net` container and `dev-valkey` and `mng-valkey` all get a
+refused connection to the UI port while the same probe reaches Traefik on 443;
+unauthenticated requests answer 302 to Keycloak and both connections answer
+200. MNG Valkey still runs the previous healthcheck form until prompt 14
+recreates it for its monitor account; the change does not alter behaviour.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -118,6 +144,7 @@ servers:
 | Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | accepted |
 | HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
+| Review fixes | 1, 2, 3 | W5 | Compose test; nine rehearsal tests; HOME bypass probes from `edge_net` and both data networks | final branch head | PASS | Review | accepted |
 | Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 

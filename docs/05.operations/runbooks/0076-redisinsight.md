@@ -54,8 +54,8 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
    더 시도한다.
 
    ```bash
-   docker exec redisinsight wget -qO- http://10.250.1.3:5540/api/health/
-   docker exec redisinsight node -e 'fetch("http://10.250.1.3:5540/api/databases/1/info").then(r=>console.log(r.status))'
+   docker exec redisinsight wget -qO- http://10.250.18.3:5540/api/health/
+   docker exec redisinsight node -e 'fetch("http://10.250.18.3:5540/api/databases/1/info").then(r=>console.log(r.status))'
    ```
 
    `1`은 `DEV / dev-valkey`, `2`는 `MNG / mng-valkey`다. 424는 대상 Valkey 중단이나
@@ -107,7 +107,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 ### 승인된 사용·설정 보존·업그레이드
 
 `docker compose --profile admin-data config --quiet`로 검증한다. 게이트웨이
-인증/CIDR를 확인한 다음 최소 권한의 대상 credential만 추가한다. Workbench의
+인증/CIDR를 확인한 다음 사전 등록된 inspector 연결만 쓴다. 다른 연결을 수동으로 추가하지 않는다. Workbench의
 파괴적 명령은 대상 소유자 승인이 필요하다. ForwardAuth는 Redis 권한을 제한하지
 않는다.
 
@@ -142,7 +142,7 @@ target reachability가 있으면 중단한다.
 
 ### 직접 접근 제한
 
-listener는 `edge_net`의 `10.250.1.3`에만 열린다. 데이터 망 peer에서
+listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이터 망 peer에서
 `nc -z <redisinsight 데이터망 주소> 5540`이 거부되는지 확인한다. 열려 있으면
 `RI_APP_HOST`가 빠졌거나 바뀐 것이므로 중단하고 보고한다. CIDR·SSO 성공만으로
 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을

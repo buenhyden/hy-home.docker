@@ -41,9 +41,11 @@ history, 로그를 영속화한다.
 - [RedisInsight Compose](../../../infra/04-data/redisinsight/docker-compose.yml)가
   profile, 볼륨, 라우트, CIDR, middleware, healthcheck, 사전 등록 연결을 정의한다.
 - gateway 경로에는 admin CIDR와 OAuth2 Proxy ForwardAuth가 적용되며 호스트
-  포트는 없다. RedisInsight에는 자체 로그인이 없으므로 listener를 `edge_net`의 고정
-  주소(`10.250.1.3`)에만 연다. `mng_data_net`, `dev_data_net` peer가 UI 포트에 직접
-  붙으면 연결이 거부된다. Traefik은 `traefik.docker.network: edge_net`으로 이 주소를 쓴다.
+  포트는 없다. RedisInsight에는 자체 로그인이 없으므로 Traefik만 함께 붙는 internal
+  망 `redisinsight_ingress_net`의 고정 주소(`10.250.18.3`)에만 listener를 연다.
+  `edge_net`에 없으므로 JupyterLab·n8n 같은 edge peer도 닿지 않고,
+  `mng_data_net`, `dev_data_net` peer가 UI 포트에 직접 붙으면 연결이 거부된다.
+  Traefik은 `traefik.docker.network: redisinsight_ingress_net`으로 이 주소를 쓴다.
 - 선택형 n8n·Airflow 전용 Valkey(`dedicated-valkey`)는 운영자가 실제로 조회할 때만
   해당 망을 붙인다. 기본 선언에는 `n8n_net`, `airflow_net`이 없다.
 - `RI_ENCRYPTION_KEY`(`secrets/data/redisinsight/encryption_key.txt`)로 저장된 연결

@@ -48,9 +48,10 @@ dedicated n8n, Airflow and OAuth2 Proxy Valkey stores.
 2. MNG compatibility. MNG Valkey renders its ACL at start; the `default` user
    keeps `mng_valkey_password`, so every existing consumer authenticates as
    before.
-3. Listener scope. RedisInsight listens only on its fixed `edge_net` address,
-   Traefik uses `edge_net`, and data-network peers cannot reach the UI port.
-   `n8n_net` and `airflow_net` are dropped.
+3. Listener scope. RedisInsight listens only on its fixed address in the
+   internal `redisinsight_ingress_net`, which only Traefik shares, and Traefik
+   uses that network. Neither `edge_net` peers nor data-network peers can reach
+   the UI port. `edge_net`, `n8n_net` and `airflow_net` are dropped.
 4. Pre-set connections. `DEV / dev-valkey` and `MNG / mng-valkey` are recreated
    on every start from environment variables; `start.sh` loads the inspector
    passwords and `RI_ENCRYPTION_KEY` from secrets, and stored passwords are
