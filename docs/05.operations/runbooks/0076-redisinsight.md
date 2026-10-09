@@ -143,7 +143,8 @@ target reachability가 있으면 중단한다.
 ### 직접 접근 제한
 
 listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이터 망 peer에서
-`nc -z <redisinsight 데이터망 주소> 5540`이 거부되는지 확인한다. 열려 있으면
+`nc -z <redisinsight 데이터망 주소> 5540`이, 호스트에서
+`curl --max-time 4 http://10.250.18.3:5540/api/health/`가 실패하는지 확인한다. 열려 있으면
 `RI_APP_HOST`가 빠졌거나 바뀐 것이므로 중단하고 보고한다. CIDR·SSO 성공만으로
 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을
 진단 출력으로 사용하지 않는다.

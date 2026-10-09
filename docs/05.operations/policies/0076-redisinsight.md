@@ -40,8 +40,8 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 
 - `admin`/`admin-data`만 사용하며 상시 기본 profile에 넣지 않는다.
 - ForwardAuth와 관리자 CIDR을 보존한다. listener는 Traefik만 함께 붙는
-  `redisinsight_ingress_net` 고정 주소에만 열고, `edge_net`이나 데이터 망에서
-  UI로 가는 직접 경로를 두지 않는다.
+  `redisinsight_ingress_net` 고정 주소에만 열고, `edge_net`·데이터 망·호스트에서
+  UI로 가는 직접 경로를 두지 않는다. 이 망은 isolated gateway 모드를 유지한다.
 - 대상 연결은 사전 등록된 읽기 전용 inspector(`devinspector`, `mnginspector`)만
   쓴다. 관리자·지표 수집·앱 계정과 그 비밀은 RedisInsight에 넣지 않는다. 쓰기가
   필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한다.

@@ -43,7 +43,8 @@ history, 로그를 영속화한다.
 - gateway 경로에는 admin CIDR와 OAuth2 Proxy ForwardAuth가 적용되며 호스트
   포트는 없다. RedisInsight에는 자체 로그인이 없으므로 Traefik만 함께 붙는 internal
   망 `redisinsight_ingress_net`의 고정 주소(`10.250.18.3`)에만 listener를 연다.
-  `edge_net`에 없으므로 JupyterLab·n8n 같은 edge peer도 닿지 않고,
+  이 망은 `gateway_mode_ipv4: isolated`라 호스트 쪽 bridge 주소가 없어 호스트
+  프로세스도 닿지 않는다. `edge_net`에 없으므로 JupyterLab·n8n 같은 edge peer도 닿지 않고,
   `mng_data_net`, `dev_data_net` peer가 UI 포트에 직접 붙으면 연결이 거부된다.
   Traefik은 `traefik.docker.network: redisinsight_ingress_net`으로 이 주소를 쓴다.
 - 선택형 n8n·Airflow 전용 Valkey(`dedicated-valkey`)는 운영자가 실제로 조회할 때만

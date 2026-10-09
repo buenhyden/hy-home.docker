@@ -134,6 +134,18 @@ unauthenticated requests answer 302 to Keycloak and both connections answer
 200. MNG Valkey still runs the previous healthcheck form until prompt 14
 recreates it for its monitor account; the change does not alter behaviour.
 
+The re-review confirmed every finding resolved and raised two Minor ones, and
+a host probe found that host processes still reached the UI through the
+bridge address Docker gives an internal network. The ingress network now uses
+`gateway_mode_ipv4: isolated` (no host address) and `ip_range` `.128/25`, so
+the fixed `.3` stays free while RedisInsight is stopped; the stored-secret scan
+uses `grep -e` so a secret starting with `-` is not read as an option. A
+throwaway network first showed isolated mode refusing the host while a peer
+still connects. On HOME the network was recreated with Traefik detached and
+reattached (no restart): the host now gets no connection, Traefik reaches
+`/api/health/`, and the `edge_net` and both data-network probes are refused.
+Rehearsal with a host check: 9 pass.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -144,7 +156,9 @@ recreates it for its monitor account; the change does not alter behaviour.
 | Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | accepted |
 | HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Review fixes | 1, 2, 3 | W5 | Compose test; nine rehearsal tests; HOME bypass probes from `edge_net` and both data networks | final branch head | PASS | Review | accepted |
+| Review fixes: renderers | 1 | W1 | Signal traps; MNG and DEV ACL tests | `ccfcb4db1` | PASS | Review | accepted |
+| Review fixes: rehearsal | 2 | W4 | Nine rehearsal tests with controls | `f1c3360c2` | PASS | Review | accepted |
+| Review fixes: ingress | 3 | W5 | Compose test; HOME bypass probes from `edge_net`, both data networks and the host | `7220fa247` | PASS | Review | accepted |
 | Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 
