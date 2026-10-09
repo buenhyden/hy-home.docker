@@ -82,7 +82,9 @@ request.
 
 ## Review and Completion
 
-Not complete: `candidate-quality` and the merge remain.
+Complete. `candidate-quality` passed on head `751821989` against base
+`40dcfb349`, and PR #397 merged as `0df98f405` before the earlier acceptance
+expired.
 
 ## Related Documents
 
