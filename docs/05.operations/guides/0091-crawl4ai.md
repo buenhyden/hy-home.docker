@@ -47,7 +47,7 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
   monitor, token route 및 UI/static shell에는 버전별 예외가 있다. `/token`은
   별도 key/email 검증을 수행하므로 공개 토큰 발급으로 해석하지 않는다.
 - `crawl4ai`는 internal인 `crawl4ai_net`(소비자용)과 `crawl4ai_egress_net`에만 참여한다. 호스트 포트와 Traefik 라우트는 없다. 밖으로 나가는 경로는 [egress gateway](../../../infra/08-ai/crawl4ai/egress_gateway.py)를 실행하는 `crawl4ai-egress` 하나다.
-- 이미지는 0.9.4 index digest로 고정한다. 2026-10-09 기준 공개 advisory 중 0.9.4를 포함하는 것은 없고, GHSA-6qhc-x826-342c는 `<=0.8.8`에 해당한다([SPEC-0220](../../03.specs/0220-crawl4ai-collection-and-egress/spec.md)).
+- 이미지는 Compose가 선언한 index digest로 고정한다. 2026-10-09 기준 공개 advisory 중 현재 고정 버전을 포함하는 것은 없고, proxy 설정 우회인 GHSA-6qhc-x826-342c도 그 이전 릴리스에만 해당한다([SPEC-0220](../../03.specs/0220-crawl4ai-collection-and-egress/spec.md)).
 - 이전에 추적되던 빈 `.llm.env`와 사용하지 않던 로컬 빌드 블록은
   제거했다. 프로바이더 키는 절대 커밋해서는 안 된다.
 

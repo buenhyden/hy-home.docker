@@ -219,6 +219,14 @@ head. The pinned Crawl4AI image, the rehearsal and the gateway run only in the
 isolated rehearsal: HOME activation, consumer admission and host firewall
 rules were not run.
 
+The first `candidate-quality` run on PR #395 (head `10a94e3b4`) failed the
+changed-document metadata check, which the local-only gate does not run:
+`plan.md` had a body heading outside its template, and GDE-0091, RUN-0091
+and the service README repeated runtime versions that Compose owns. The
+candidate comparison moved into the Plan's Overview, the documents now point
+to the Compose declaration, and `check-document-metadata.py --mode
+check-changed --base-ref 5f4832a74` reports no violations.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |

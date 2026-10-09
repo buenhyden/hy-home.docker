@@ -56,7 +56,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 5. 이미지나 gateway를 바꾼 뒤에는 시작 전에 격리 리허설을 실행한다. 모든 네트워크가 internal이고 대상은 로컬 fixture뿐이며, 끝나면 컨테이너와 네트워크를 지운다.
 
    ```bash
-   docker pull unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b
+   docker compose --profile crawl4ai pull crawl4ai
    HYHOME_CRAWL4AI_REHEARSAL=1 python3 -m unittest -v tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests
    ```
 

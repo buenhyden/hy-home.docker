@@ -21,21 +21,7 @@ out of the container, then build and test the adapter's job model, then prove
 the whole path against the real image in isolation and update the operations
 documents. Each unit is one commit.
 
-## Work Breakdown
-
-| Work Unit | Criteria | Work | Dependencies | Task | Verification |
-| --- | --- | --- | --- | --- | --- |
-| W1 | 4, 5 | Official baseline, admission and rights contracts, candidates | None | TSK-0001 | Task evidence |
-| W2 | 1 | Egress gateway, internal networks, digest pin, unit tests | W1 | TSK-0001 | Task evidence |
-| W3 | 3 | Reference adapter: source registry, bounded jobs, provenance, extraction checks | W1 | TSK-0001 | Task evidence |
-| W4 | 2 | Isolated rehearsal of the real image with synthetic fixtures | W2 | TSK-0001 | Task evidence |
-| W5 | 5 | Operations documents and catalog | W2, W3, W4 | TSK-0001 | Task evidence |
-| W6 | 1, 2, 3 | Independent security and correctness review and its fixes | W5 | TSK-0001 | Task evidence |
-| W7 | 5 | Changed gate, staged style check, candidate quality, merge | W6 | TSK-0001 | Task evidence |
-
-## Project Candidates
-
-None of these is connected; each needs its own workspace, registry entries
+The three project candidates below are compared for the first consumer. None of these is connected; each needs its own workspace, registry entries
 and an admission change before any collection.
 
 | | A. Public API documentation change watch | B. Permitted notice and statute notes | C. License-checked study material |
@@ -53,6 +39,18 @@ Candidate A has the smallest rights and resource surface and exercises the
 whole path (registry, bounded job, raw hash, review), so it is the
 recommended first consumer when the owner admits one. Candidate C waits for
 the study app's own planning.
+
+## Work Breakdown
+
+| Work Unit | Criteria | Work | Dependencies | Task | Verification |
+| --- | --- | --- | --- | --- | --- |
+| W1 | 4, 5 | Official baseline, admission and rights contracts, candidates | None | TSK-0001 | Task evidence |
+| W2 | 1 | Egress gateway, internal networks, digest pin, unit tests | W1 | TSK-0001 | Task evidence |
+| W3 | 3 | Reference adapter: source registry, bounded jobs, provenance, extraction checks | W1 | TSK-0001 | Task evidence |
+| W4 | 2 | Isolated rehearsal of the real image with synthetic fixtures | W2 | TSK-0001 | Task evidence |
+| W5 | 5 | Operations documents and catalog | W2, W3, W4 | TSK-0001 | Task evidence |
+| W6 | 1, 2, 3 | Independent security and correctness review and its fixes | W5 | TSK-0001 | Task evidence |
+| W7 | 5 | Changed gate, staged style check, candidate quality, merge | W6 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 

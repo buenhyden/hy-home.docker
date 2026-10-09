@@ -41,7 +41,7 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 | Component | Source | Purpose |
 | --- | --- | --- |
 | `crawl4ai` | [Compose](docker-compose.yml)에 선언된 업스트림 이미지 | 헤드리스 Chromium을 사용한 크롤링 API |
-| `crawl4ai-egress` | 저장소의 `python:3.13.15-alpine`과 [egress_gateway.py](egress_gateway.py) | 크롤러의 유일한 외부 경로: DNS 중계와 forward proxy |
+| `crawl4ai-egress` | [Compose](docker-compose.yml)에 선언된 Python alpine 이미지와 [egress_gateway.py](egress_gateway.py) | 크롤러의 유일한 외부 경로: DNS 중계와 forward proxy |
 
 런타임 고정 값은 Compose 선언이 소유하고
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
