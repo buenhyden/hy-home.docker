@@ -2090,7 +2090,7 @@
         "hy-home/storybook": "local-custom"
       },
       "images": [
-        "hy-home/storybook:f9977d1350409854abdbdaec0e224ed743125498"
+        "hy-home/storybook:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1"
       ],
       "compose_files": [
         "infra/13-experience/storybook/docker-compose.yml"
@@ -2099,7 +2099,7 @@
         {
           "compose_file": "infra/13-experience/storybook/docker-compose.yml",
           "images": [
-            "hy-home/storybook:f9977d1350409854abdbdaec0e224ed743125498"
+            "hy-home/storybook:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1"
           ]
         }
       ]
@@ -2112,7 +2112,7 @@
         "hy-home/storybook-mcp": "local-custom"
       },
       "images": [
-        "hy-home/storybook-mcp:f9977d1350409854abdbdaec0e224ed743125498"
+        "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1"
       ],
       "compose_files": [
         "infra/13-experience/storybook/docker-compose.yml"
@@ -2121,7 +2121,7 @@
         {
           "compose_file": "infra/13-experience/storybook/docker-compose.yml",
           "images": [
-            "hy-home/storybook-mcp:f9977d1350409854abdbdaec0e224ed743125498"
+            "hy-home/storybook-mcp:9cd150bfce074a8beaa8e252e01c6d8ba6f2cec1"
           ]
         }
       ]
