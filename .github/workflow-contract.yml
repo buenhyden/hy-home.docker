@@ -789,6 +789,17 @@
       "suite_key": "repo-document-metadata"
     },
     {
+      "gate_id": "leaf.local-candidate-preflight",
+      "kind": "leaf",
+      "entrypoint": "scripts/validation/check-candidate-preflight.sh",
+      "argv": [],
+      "cwd": ".",
+      "allowed_env_keys": [],
+      "timeout_minutes": 15,
+      "opaque": true,
+      "suite_key": "local-candidate-preflight"
+    },
+    {
       "gate_id": "leaf.repo-metadata-base",
       "kind": "leaf",
       "entrypoint": "scripts/lib/gate/ci_gate_adapters.py",
@@ -1039,6 +1050,7 @@
       "leaf.release-regressions",
       "leaf.repository-integrity-regressions",
       "leaf.repo-contracts-control-plane-regressions",
+      "leaf.local-candidate-preflight",
       "leaf.supply-chain-fixture-policy",
       "leaf.conftest-policy-tests",
       "leaf.workflow-contract-regressions"
@@ -1051,7 +1063,8 @@
       ],
       "document-contract": [
         "leaf.repo-metadata-base",
-        "leaf.repo-document-metadata"
+        "leaf.repo-document-metadata",
+        "leaf.local-candidate-preflight"
       ],
       "document-graph": [
         "ci.docs-traceability"
@@ -1152,6 +1165,15 @@
           "pull_request",
           "push",
           "workflow_dispatch"
+        ]
+      },
+      {
+        "suite": "document-contract",
+        "gate_id": "leaf.local-candidate-preflight",
+        "entrypoint": "scripts/validation/check-candidate-preflight.sh",
+        "argv": [],
+        "contexts": [
+          "local"
         ]
       },
       {

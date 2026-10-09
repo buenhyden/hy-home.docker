@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.2.1"
+version: "3.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 ---
 
 # Documentation Protocol
@@ -273,7 +273,8 @@ event. Neither local readiness nor a Runbook proves deployment occurred.
 There is no separate Release Record profile. Add one only if a distinct audit
 consumer requires it, through an approved ADR and a coordinated Registry change.
 Do not change an existing accepted decision silently. Remote release and
-deployment actions require separate authorization.
+deployment actions wait for their exact target under
+[Approval boundaries](approval-boundaries.md).
 
 #### Reference Framework Adoption
 

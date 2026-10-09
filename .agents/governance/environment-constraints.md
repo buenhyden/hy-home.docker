@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-09"
 ---
 
 # Environment Constraints
@@ -143,7 +143,7 @@ This project has a graphify knowledge graph at `graphify-out/`.
 
 ## Exceptions
 
-Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations retain their separate approval requirements.
+Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](approval-boundaries.md).
 
 ## Related Documents
 

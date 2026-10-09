@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
 import subprocess
 import sys
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
@@ -37,6 +39,7 @@ SHELL_ENTRYPOINTS = (
     "scripts/operations/rehearse-postgres-logical-upgrade.sh",
     "scripts/operations/sync-tech-stack-versions.sh",
     "scripts/operations/use-qa-ci-tools.sh",
+    "scripts/validation/check-candidate-preflight.sh",
     "scripts/validation/run-agent-precommit-all-files.sh",
     "scripts/validation/validate-docker-compose.sh",
 )
@@ -127,3 +130,59 @@ class ValidatorEntrypointTests(unittest.TestCase):
                     pass_fds=gate_root_pass_fds(ROOT),
                 )
                 self.assertEqual(0, completed.returncode, completed.stderr)
+
+    def test_candidate_preflight_compares_against_the_origin_main_merge_base(
+        self,
+    ) -> None:
+        """SPEC-0221: the local preflight runs both candidate checks or fails closed."""
+        stub = '#!/usr/bin/env bash\necho "$0 $*" >> "$(dirname "$0")/../../calls"\nexit ${STUB_EXIT:-0}\n'
+
+        def git(repo, *args):
+            subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True,
+                           env={"PATH": "/usr/bin:/bin", "GIT_CONFIG_GLOBAL": "/dev/null",
+                                "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@invalid",
+                                "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@invalid"})  # fmt: skip
+
+        def run(repo, *args, metadata_exit=0, drift_exit=0):
+            for name, code in (("validation/check-document-metadata.py", metadata_exit),
+                               ("operations/sync-tech-stack-versions.sh", drift_exit)):  # fmt: skip
+                path = repo / "scripts" / name
+                path.write_text(stub.replace("${STUB_EXIT:-0}", str(code)))
+                path.chmod(0o755)
+            (repo / "calls").unlink(missing_ok=True)
+            return subprocess.run(
+                ["bash", str(repo / "scripts/validation/check-candidate-preflight.sh"), *args],
+                cwd=repo, capture_output=True, text=True, timeout=30, check=False,
+                env={"PATH": f"{repo}/bin:/usr/bin:/bin", "GIT_CONFIG_GLOBAL": "/dev/null"},
+            )  # fmt: skip
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo = Path(directory)
+            for folder in ("scripts/validation", "scripts/operations", "bin"):
+                (repo / folder).mkdir(parents=True)
+            shutil.copy(ROOT / "scripts/validation/check-candidate-preflight.sh",
+                        repo / "scripts/validation/check-candidate-preflight.sh")  # fmt: skip
+            # python3 resolves to a shell stub so the fake validator runs as is.
+            (repo / "bin/python3").write_text('#!/usr/bin/env bash\nexec bash "$@"\n')
+            (repo / "bin/python3").chmod(0o755)
+            git(repo, "init", "-q")
+            git(repo, "add", ".")
+            git(repo, "commit", "-qm", "base")
+
+            missing = run(repo)
+            self.assertEqual(2, missing.returncode)
+            self.assertIn("no merge-base with origin/main", missing.stderr)
+
+            git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+            refused = run(repo, "--skip")
+            self.assertEqual(2, refused.returncode)
+            self.assertIn("no arguments are accepted", refused.stderr)
+            base = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
+                                  capture_output=True, text=True).stdout.strip()  # fmt: skip
+            passed = run(repo)
+            self.assertEqual(0, passed.returncode, passed.stderr)
+            calls = (repo / "calls").read_text()
+            self.assertIn(f"--mode check-changed --base-ref {base}", calls)
+            self.assertIn("sync-tech-stack-versions.sh --check", calls)
+            self.assertEqual(1, run(repo, metadata_exit=1).returncode)
+            self.assertEqual(1, run(repo, drift_exit=1).returncode)

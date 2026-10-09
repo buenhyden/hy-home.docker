@@ -220,6 +220,23 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 (), runner.collect_changed_paths(repo, {"PATH": os.defpath})
             )
 
+    def test_local_paths_include_committed_branch_work_since_origin_main(self) -> None:
+        # SPEC-0221: CI compares base...head, so committed branch work must
+        # select the same suites locally; without origin/main nothing is added.
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            self._git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+            (repo / "modified.txt").write_text("branch commit\n", encoding="utf-8")
+            self._git(repo, "commit", "-qam", "branch")
+            self.assertEqual(
+                ("modified.txt",),
+                runner.collect_changed_paths(repo, {"PATH": os.defpath}),
+            )
+            self._git(repo, "update-ref", "-d", "refs/remotes/origin/main")
+            self.assertEqual(
+                (), runner.collect_changed_paths(repo, {"PATH": os.defpath})
+            )
+
     def test_initial_repository_collects_staged_and_untracked_paths(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             repo = pathlib.Path(directory)
@@ -572,7 +589,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/03.specs/0211-qa-scope-and-delivery-rationalization/spec.md",),
         )
         self.assertEqual(
-            ("leaf.docs-traceability",),
+            ("leaf.local-candidate-preflight", "leaf.docs-traceability"),
             tuple(
                 invocation.gate_id
                 for invocation in runner.build_local_only_validation_plan(
@@ -598,6 +615,29 @@ class CiGateRunnerContractTests(unittest.TestCase):
         }
         self.assertIn("leaf.workflow-contract-regressions", local_only_ids)
         self.assertNotIn("leaf.workflow-contract", local_only_ids)
+
+        # A representative service change (Compose plus its guide) gets the
+        # candidate preflight locally, which hosted runs never execute twice.
+        service_change = (
+            "infra/08-ai/crawl4ai/docker-compose.yml",
+            "docs/05.operations/guides/0091-crawl4ai.md",
+        )
+        service_plan = build_public_plan(
+            "changed", runner.ExecutionContext.LOCAL, service_change
+        )
+        service_ids = {
+            invocation.gate_id
+            for invocation in runner.build_local_only_validation_plan(
+                service_plan, public, runner.ExecutionContext.LOCAL
+            )
+        }
+        self.assertIn("leaf.local-candidate-preflight", service_ids)
+        hosted = build_public_plan(
+            "changed", runner.ExecutionContext.PULL_REQUEST, service_change
+        )
+        hosted_ids = {invocation.gate_id for invocation in hosted}
+        self.assertNotIn("leaf.local-candidate-preflight", hosted_ids)
+        self.assertIn("leaf.local-tech-stack-version-drift", hosted_ids)
         self.assertNotIn("leaf.changed-style", local_only_ids)
         self.assertNotIn("leaf.commit-message-contract", local_only_ids)
 

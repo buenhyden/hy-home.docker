@@ -729,6 +729,17 @@ files:
   successor: null
   tests:
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/check-candidate-preflight.sh
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - .github/workflow-contract.yml
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_validator_entrypoints.py
 - path: scripts/validation/check-conftest-policy.sh
   kind: validator
   authority: .github/workflow-contract.yml

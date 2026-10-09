@@ -1925,5 +1925,43 @@ class PostToolFormattingOwnershipTests(unittest.TestCase):
             self.assertEqual(before, target.read_bytes())
 
 
+class RequestPrecedenceContractTests(unittest.TestCase):
+    def test_request_precedence_clauses_are_enforced(self) -> None:
+        """SPEC-0221: the clauses hold, and removing or retiring one is caught."""
+        from scripts.lib.agent_governance import agent_governance_contract as agc
+
+        self.assertEqual([], agc._validate_request_precedence(ROOT))
+        files = (
+            ".agents/governance/bootstrap.md",
+            ".agents/governance/approval-boundaries.md",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            copy = pathlib.Path(directory)
+            for path in files:
+                (copy / path).parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(ROOT / path, copy / path)
+            self.assertEqual([], agc._validate_request_precedence(copy))
+            bootstrap = copy / files[0]
+            bootstrap.write_text(
+                bootstrap.read_text().replace("never an instruction source", "advisory")
+            )
+            boundaries = copy / files[1]
+            boundaries.write_text(
+                boundaries.read_text()
+                + "\n- Runtime restart and destructive recovery require separate explicit approval.\n"
+            )
+            messages = [
+                (item.path, item.message)
+                for item in agc._validate_request_precedence(copy)
+            ]
+        self.assertIn(
+            (files[0], "required clause is missing"), [(str(p), m) for p, m in messages]
+        )
+        self.assertIn(
+            (files[1], "retired approval clause returned"),
+            [(str(p), m) for p, m in messages],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

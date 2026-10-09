@@ -837,6 +837,35 @@ def main(argv: list[str] | None = None) -> int:
         return 2 if code == "ci-gate-cli-arguments" else 1
 
 
+def _local_branch_commands(
+    root: pathlib.Path,
+    git_environment: Mapping[str, str],
+    name_status: tuple[str, ...],
+) -> tuple[tuple[str, ...], ...]:
+    """Committed branch work since origin/main, as CI compares base...head.
+
+    Without an origin/main ref the local plan keeps the working-tree view.
+    """
+
+    try:
+        result = subprocess.run(
+            ("git", "merge-base", "HEAD", "refs/remotes/origin/main"),
+            cwd=root,
+            env=git_environment,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=_GIT_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return ()
+    base = result.stdout.decode("ascii", errors="replace").strip()
+    if result.returncode != 0 or not _FULL_SHA.fullmatch(base):
+        return ()
+    return (("git", "diff", *name_status, base, "HEAD"),)
+
+
 def collect_changed_paths(
     root: pathlib.Path,
     environ: Mapping[str, str],
@@ -890,6 +919,7 @@ def collect_changed_paths(
         )
     else:
         commands = (
+            *_local_branch_commands(root, git_environment, name_status),
             ("git", "diff", *name_status),
             ("git", "diff", "--cached", *name_status),
             ("git", "ls-files", "--others", "--exclude-standard", "-z"),

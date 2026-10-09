@@ -68,6 +68,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             "leaf.release-regressions",
             "leaf.repository-integrity-regressions",
             "leaf.repo-contracts-control-plane-regressions",
+            "leaf.local-candidate-preflight",
             "leaf.supply-chain-fixture-policy",
             "leaf.conftest-policy-tests",
             "leaf.workflow-contract-regressions",

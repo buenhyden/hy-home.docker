@@ -1,10 +1,10 @@
 ---
 title: "Task Checklists"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 ---
 
 # Task Checklists
@@ -58,7 +58,7 @@ Approved repository edits, ongoing implementation, and completion evidence.
       mismatched record integrity in fixtures unless actual removal is authorized.
 - [ ] Distinguish worktree, index, commit, and historical-link checks, and report
       missing history or unsupported checkout conversion without claiming success.
-- [ ] Create logical Conventional Commits only after review approval.
+- [ ] Create logical Conventional Commits after the review findings are resolved.
 
 ## Exceptions
 

@@ -38,7 +38,7 @@ Configuration parses, preserves secret and network boundaries, matches the appro
 
 ## Allowed Changes
 
-Workspace writes are allowed in approved infrastructure scope. Runtime deployment, secrets, and remote systems require separate approval.
+Workspace writes are allowed in approved infrastructure scope. Runtime deployment, secrets, and remote systems wait for their exact target under Approval Boundaries.
 
 ## Inputs and Outputs
 
