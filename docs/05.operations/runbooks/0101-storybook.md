@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.0.1"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0101"
 parent_ids:
@@ -54,11 +54,28 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
    수동 로그인 진입점은 기존
    `auth.${DEFAULT_URL}/oauth2/start` router이며 `rd`에 Storybook URL을 인코딩해
    전달한다. 정적 검사 성공만으로 실제 인증·TLS·브라우저 동작을 주장하지 않는다.
-4. image는 TSK-0001의 커밋 SHA로 고정한 `hy-home/storybook:<source-SHA>`만
-   사용하고 Compose는 `pull_policy: never`로 원격 pull을 막는다. 배포 전 image의
-   `org.opencontainers.image.revision` label, 정적 `revision.json.sourceRevision`,
-   승인된 TSK-0001 source SHA가 모두 같은지 확인한다. `uncommitted` 또는 누락된
-   label·manifest는 배포 중단 조건이다.
+4. image는 Storybook 소스를 마지막으로 바꾼 커밋으로만 빌드한다. 무관한 문서
+   커밋에 맞춰 재태깅하지 않는다.
+
+   ```bash
+   python3 scripts/operations/storybook_image.py build          # 로컬 preload
+   python3 scripts/operations/storybook_image.py build --push   # 로컬 registry 배포
+   python3 scripts/operations/storybook_image.py verify --registry
+   ```
+
+   `build`는 `git archive`로 커밋된 `projects/storybook/nextjs`만 context로
+   내보내고, lockfile 기준 `npm ci`로 `hy-home/storybook:<commit>`을 SBOM·max
+   provenance attestation과 함께 만든다. `--push`는 같은 image를
+   `127.0.0.1:${REGISTRY_PORT}/hy-home/storybook:<commit>`에도 올린다.
+   `verify`는 OCI revision label, 정적 `revision.json`의 `sourceRevision`,
+   lockfile SHA-256, UI 패키지 이름·버전, 두 manifest SHA-256이 그 커밋과
+   같은지, 정적 출력에 `.env`·key·source map·`node_modules`가 없는지 확인한다.
+   `--registry`는 registry index digest가 로컬 image와 같고 SBOM과 소스
+   revision을 기록한 provenance가 있는지도 확인한다. Dockerfile은 40자리
+   커밋 SHA가 없으면 빌드를 거부한다. Compose는 `hy-home/storybook:<commit>`을
+   `pull_policy: never`로 고정하므로 image가 없으면 기동이 실패한다.
+   provenance `mode=max`는 build argument를 기록하므로 secret은 build
+   argument로 전달하지 않는다. 이 빌드에는 secret 입력이 없다.
 5. 격리 컨테이너 검사는 Docker context, project, port, network, volume, resource,
    UID/GID와 정확한 정리 대상을 먼저 기록한 뒤 합성 자산으로 수행한다. image의
    index, iframe, JS/CSS, manifest, deep link, 404, cache, CSP/frame과 health를
