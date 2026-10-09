@@ -121,6 +121,7 @@ From the detached checkout `a4a3a7dad`, and `4420a0514` for the dashboards:
 | Keycloak | Recreated at 12:14:37, healthy at 12:15:20; the 0.25 s bucket present; discovery 200 and Grafana redirect 302 through the gateway; scrape back at 12:15:45 |
 | Prometheus rules | Reloaded: 95 rules, `SeaweedFSNodeMetricsDown` present, no HAProxy rule |
 | Grafana | 45 dashboards loaded; none of the five LAB dashboards |
+| Alloy (review fix) | Before: `node-exporter` did not resolve in Alloy. Recreated from the review-fix commit: healthy, `extra_hosts` maps the name to `10.250.5.1`, and Pyroscope again lists 11 `service_name` values including `node-exporter` |
 | OpenBao | Not recreated: restart needs the owner's manual unseal (Shamir 2 of 3); the retention change waits for that restart |
 
 Audit on the same HOME data, `main` dashboards against this branch:
