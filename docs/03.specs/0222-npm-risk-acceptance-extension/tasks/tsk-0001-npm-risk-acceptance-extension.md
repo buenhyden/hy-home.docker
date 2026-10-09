@@ -51,12 +51,25 @@ the copy prepared under the ignored `_workspace/ghsa/` after the auto-mode
 safety check refused it to the agent (`170b1095d`); the agent-governance contract
 and markdownlint pass.
 
+### Review
+
+The independent review found that a future `approved_at` passed the 30-day
+bound while the audit accepted the risk from the current time, and that the
+contract tests named the current dates, so an extension would also have needed
+a test edit. `fcc3245e3` makes the audit require `approved_at <= now < expires_at`
+at both expiry checks, adds a future-approval adapter case, and derives the
+30-day, over-limit, equal and reversed cases from the live record; offset,
+non-string and impossible timestamps are covered. The quality standard lists
+the pinned identity without `advisory_url`; kept, because the code is the
+stricter side. Contract and adapter tests: 69 pass.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Contract window | 1 | W1 | Contract and adapter tests | `ebffea9bb` | PASS | W1 Contract Window | accepted |
 | Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `170b1095d` | PASS | W2 Quality Standard Rule | accepted |
+| Review fixes | 1 | W1 | Contract and adapter tests | `fcc3245e3` | PASS | Review | accepted |
 
 ## Review and Completion
 
