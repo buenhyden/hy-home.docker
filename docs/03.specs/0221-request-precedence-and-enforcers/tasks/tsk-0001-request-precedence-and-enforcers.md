@@ -56,7 +56,7 @@ the new condition, the readers it affects, its regression, and its closure.
 | R9 | Stage 05 and README bodies may not repeat runtime versions; Spec bodies keep template headings | One owner per runtime pin and per document shape | Surfaced locally by the R1 preflight | Document authors | R1 tests | Kept; earlier detection through R1 |
 | R10 | Hosted contexts exclude local-only leaves and a local pass never satisfies the remote candidate | Forged hosted evidence | — | CI and reviewers | Existing gate tests | Kept; R1 adds no hosted leaf |
 | R11 | `docs/01` to `docs/99` are read-only unless the user instructs otherwise | Unrequested document churn | — | All roles | — | Kept: a current request is that instruction |
-| R12 | Found by the independent review: `github-governance.md` §3 and §5.0 to §5.1 keep merge, branch deletion and workflow push behind separate approval; `environment-constraints.md` keeps runtime and destructive acts behind separate approval; `approval-boundaries.md` keeps every remote write a separate operation | Same as R3 | The R3 wording: the request's branch, pull request, merge and cleanup follow its scope; other remote surfaces wait for their exact target | Every agent; reviewers | Contract check; renderer parity | Pending the owner: copies under the ignored `_workspace/r3c/` pass the contract check and renderer parity in a temporary worktree. These are rank-2 policies like Approval Boundaries, so ranking does not settle the conflict |
+| R12 | Found by the independent review: `github-governance.md` §3 and §5.0 to §5.1 keep merge, branch deletion and workflow push behind separate approval; `environment-constraints.md` keeps runtime and destructive acts behind separate approval; `approval-boundaries.md` keeps every remote write a separate operation | Same as R3 | The R3 wording: the request's branch, pull request, merge and cleanup follow its scope; other remote surfaces wait for their exact target | Every agent; reviewers | Contract check; renderer parity | Changed (`de2db1d72`): the owner applied the copies prepared under the ignored `_workspace/r3c/`; the contract check and renderer parity pass. Ranking could not settle it because these are rank-2 policies like Approval Boundaries |
 
 ### W2 Local Candidate Parity
 
@@ -104,6 +104,7 @@ the retired bullet appended. The repository contract reports
 | Stop gate loader removal | 4 | W1 | `test_agent_governance_ci_routing` (51 tests, including Stop cases) | `9f5dd9cd0` | PASS | W1 row R4 | accepted |
 | Role and checklist wording | 4 | W1 | Contract check; renderer `--check` `drift=0` | `146726778` | PASS | W1 row R3b | accepted |
 | Review fixes | 2, 3 | W2 | Preflight pinned to `refs/remotes/origin/main`; argument refusal tested with a base; hosted plan from the same change; 49 tests | `b5aa8571b` | PASS | W2 Local Candidate Parity | accepted |
+| Remaining approval text | 4 | W1 | Contract check; renderer `--check` `drift=0` | `de2db1d72` | PASS | W1 row R12 | accepted |
 
 ## Review and Completion
 
