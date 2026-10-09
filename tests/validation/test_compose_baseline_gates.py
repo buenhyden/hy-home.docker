@@ -20,6 +20,7 @@ import time
 import unittest
 import uuid
 from pathlib import Path
+from typing import ClassVar
 
 from scripts.lib.document_governance.operations_catalog import _ComposeLoader
 
@@ -2334,9 +2335,31 @@ def login(user):
                         "httponly": c.has_nonstandard_attr("HttpOnly")}
                for c in jar}
     return query, cookies, callback
+def fetch(url, accept):
+    r = urllib.request.Request(url, headers={"Accept": accept})
+    try:
+        resp = opener.open(r, timeout=20)
+    except urllib.error.HTTPError as e:
+        resp = e
+    body = resp.read().decode("utf-8", "replace")
+    return {"status": resp.status, "location": (resp.headers.get("Location") or "").split("?")[0],
+            "type": (resp.headers.get("Content-Type") or "").split(";")[0],
+            "cache": resp.headers.get("Cache-Control"),
+            "csp": resp.headers.get("Content-Security-Policy"),
+            "login_page": "kc-form-login" in body or "Sign in with" in body,
+            "body": body[:300] if url.endswith(".json") else ""}
 mode = sys.argv[1]
 out = {}
-if mode == "anonymous":
+if mode.startswith("storybook"):
+    # storybook[:user] path...: every path with a browser, an asset and a
+    # machine Accept header, signed in first when a user is named.
+    user = mode.partition(":")[2]
+    if user:
+        out["callback"] = login(user)[2]
+    for path in sys.argv[2:]:
+        for accept in ("text/html", "*/*", "application/json"):
+            out[f"{path} {accept}"] = fetch("https://storybook.hy.test" + path, accept)
+elif mode == "anonymous":
     for accept in ("text/html", "application/json"):
         status, loc, ctype, _ = req("https://app.hy.test/api/v1/data", accept=accept)
         out[accept] = {"status": status, "location": loc.split("?")[0], "type": ctype}
@@ -2357,13 +2380,12 @@ print(json.dumps(out))
 """
 
 
-@unittest.skipUnless(
-    os.environ.get("HYHOME_SSO_REHEARSAL") == "1",
-    "set HYHOME_SSO_REHEARSAL=1 to run the disposable SSO rehearsal (needs Docker)",
-)
-class SsoRehearsalTests(unittest.TestCase):
+class SsoStack:
     """Traefik, oauth2-proxy and Keycloak on an internal network: synthetic
     realm, two users and the tracked middleware and proxy config."""
+
+    ROUTERS = SSO_ROUTERS
+    EXTRA_DYNAMIC: ClassVar[dict[str, str]] = {}
 
     @classmethod
     def setUpClass(cls):
@@ -2377,7 +2399,9 @@ class SsoRehearsalTests(unittest.TestCase):
         cls.addClassCleanup(shutil.rmtree, cls.tmp, True)
         (cls.tmp / "dynamic").mkdir()
         shutil.copy(SSO_MIDDLEWARE, cls.tmp / "dynamic/middleware.yml")
-        (cls.tmp / "dynamic/routers.yml").write_text(SSO_ROUTERS)
+        (cls.tmp / "dynamic/routers.yml").write_text(cls.ROUTERS)
+        for name, text in cls.EXTRA_DYNAMIC.items():
+            (cls.tmp / "dynamic" / name).write_text(text)
         (cls.tmp / "import").mkdir()
         # Random, synthetic and removed with the temporary directory; the
         # containers read them as mounted files, as on HOME.
@@ -2392,7 +2416,7 @@ class SsoRehearsalTests(unittest.TestCase):
             path.chmod(0o755 if path.is_dir() else 0o644)
         _sso_docker("network", "create", "--internal", "--subnet", SSO_SUBNET, cls.tag)
         cls.addClassCleanup(_sso_docker, "network", "rm", cls.tag, check=False)
-        for name in ("keycloak", "upstream", "proxy", "traefik", "client"):
+        for name in ("keycloak", "upstream", "proxy", "traefik", "client", "storybook"):
             cls.addClassCleanup(
                 _sso_docker, "rm", "-f", f"{cls.tag}-{name}", check=False
             )
@@ -2400,6 +2424,7 @@ class SsoRehearsalTests(unittest.TestCase):
         # Traefik first, so no dynamic address takes its fixed one.
         _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
                "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
+               "--network-alias", "storybook.hy.test",
                "-v", f"{cls.tmp}/dynamic:/dynamic:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
                "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
                "--log.level=ERROR")  # fmt: skip
@@ -2470,13 +2495,19 @@ class SsoRehearsalTests(unittest.TestCase):
             f"{what} not ready\n{logs.stdout[-2000:]}{logs.stderr[-2000:]}"
         )
 
-    def browse(self, mode):
-        out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", SSO_CLIENT, mode,
+    def browse(self, mode, *paths):
+        out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", SSO_CLIENT, mode, *paths,
                      check=False, timeout=120)  # fmt: skip
         self.assertEqual(0, out.returncode, out.stderr[-2000:])
         print(mode, out.stdout.strip())
         return json.loads(out.stdout)
 
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_SSO_REHEARSAL") == "1",
+    "set HYHOME_SSO_REHEARSAL=1 to run the disposable SSO rehearsal (needs Docker)",
+)
+class SsoRehearsalTests(SsoStack, unittest.TestCase):
     def test_anonymous_browser_is_redirected_and_machine_client_is_refused(self):
         out = self.browse("anonymous")
         browser = out["text/html"]
@@ -2508,6 +2539,101 @@ class SsoRehearsalTests(unittest.TestCase):
         self.assertEqual(403, out["callback"], out)
         self.assertNotIn("__Secure-sso-cookie", out["cookies"])
         self.assertNotEqual(200, out["app"]["status"])
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_STORYBOOK_REHEARSAL") == "1",
+    "set HYHOME_STORYBOOK_REHEARSAL=1 to run the disposable Storybook ingress rehearsal (needs Docker and the pinned image)",
+)
+class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
+    """The pinned Storybook image behind the router its Compose labels declare,
+    on the SSO stack: anonymous, admin and non-admin results (SPEC-0219)."""
+
+    COMPOSE = "infra/13-experience/storybook/docker-compose.yml"
+
+    @classmethod
+    def setUpClass(cls):
+        import yaml
+
+        service = _compose_service(cls.COMPOSE, "storybook")
+        cls.image = service["image"]
+        if _sso_docker("image", "inspect", cls.image, check=False).returncode != 0:
+            raise AssertionError(
+                f"{cls.image} is not loaded; build it with "
+                "python3 scripts/operations/storybook_image.py build"
+            )
+        labels = service["labels"]
+        router = "traefik.http.routers.storybook."
+        port = labels["traefik.http.services.storybook.loadbalancer.server.port"]
+        cls.EXTRA_DYNAMIC = {"storybook.yml": yaml.safe_dump({"http": {
+            "routers": {"storybook": {
+                "rule": labels[router + "rule"].replace("${DEFAULT_URL}", "hy.test"),
+                "entryPoints": [labels[router + "entrypoints"]],
+                "tls": {} if labels[router + "tls"] == "true" else None,
+                "middlewares": labels[router + "middlewares"].split(","),
+                "service": "storybook-svc",
+            }},
+            "services": {"storybook-svc": {"loadBalancer": {
+                "servers": [{"url": f"http://storybook:{port}"}]}}},
+        }})}  # fmt: skip
+        super().setUpClass()
+        # The Compose runtime controls: unprivileged, read-only, tmpfs only.
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-storybook", "--network", cls.tag,
+                    "--network-alias", "storybook", "--pull=never", "--read-only",
+                    "--tmpfs", "/tmp", "--tmpfs", "/run", "--user", service["user"],
+                    "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
+                    cls.image)  # fmt: skip
+        cls.wait(cls.fetch_ok("http://storybook:8080/"), "storybook", tries=30)
+        assets = _sso_docker("exec", f"{cls.tag}-storybook", "ls",
+                             "/usr/share/nginx/html/assets").stdout.split()  # fmt: skip
+        cls.js = next(name for name in assets if name.endswith(".js"))
+        cls.css = next(name for name in assets if name.endswith(".css"))
+        cls.paths = ["/", "/iframe.html", f"/assets/{cls.js}", f"/assets/{cls.css}",
+                     "/manifests/components.json", "/manifests/docs.json",
+                     "/revision.json"]  # fmt: skip
+
+    def assert_refused(self, out):
+        for key, result in out.items():
+            if key == "callback":
+                continue
+            with self.subTest(key):
+                # Never the content and never a login page with a 200.
+                self.assertNotEqual(200, result["status"], result)
+                self.assertFalse(result["login_page"], result)
+                if key.endswith(" application/json"):
+                    self.assertEqual(401, result["status"])
+                else:
+                    self.assertEqual(302, result["status"])
+                    self.assertTrue(
+                        result["location"].endswith("/protocol/openid-connect/auth")
+                    )
+
+    def test_anonymous_requests_get_no_content_and_no_login_page(self):
+        self.assert_refused(self.browse("storybook", *self.paths))
+
+    def test_admin_reads_index_iframe_assets_and_manifests(self):
+        out = self.browse("storybook:alice", *self.paths, "/no-such-page")
+        types = {"/": "text/html", "/iframe.html": "text/html",
+                 f"/assets/{self.js}": "application/javascript",
+                 f"/assets/{self.css}": "text/css",
+                 "/manifests/components.json": "application/json",
+                 "/manifests/docs.json": "application/json",
+                 "/revision.json": "application/json"}  # fmt: skip
+        for path, kind in types.items():
+            result = out[f"{path} text/html"]
+            with self.subTest(path):
+                self.assertEqual(200, result["status"], result)
+                self.assertEqual(kind, result["type"])
+                self.assertEqual("no-store", result["cache"])
+                self.assertIn("frame-ancestors 'self'", result["csp"])
+        revision = json.loads(out["/revision.json text/html"]["body"])
+        self.assertEqual(self.image.rsplit(":", 1)[1], revision["sourceRevision"])
+        self.assertEqual(404, out["/no-such-page text/html"]["status"])
+
+    def test_non_admin_never_reaches_the_origin(self):
+        out = self.browse("storybook:bob", *self.paths)
+        self.assertEqual(403, out["callback"])
+        self.assert_refused(out)
 
 
 @unittest.skipUnless(
@@ -4178,6 +4304,24 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             "req-rate-limit@file,gateway-standard-chain@file,sso-auth@file",
             storybook["labels"]["traefik.http.routers.storybook.middlewares"],
         )
+
+    def test_storybook_is_optional_pinned_and_never_pulled(self) -> None:
+        storybook = self._services()["storybook"]
+        # A locally built image named by its source commit (SPEC-0219); a
+        # missing image fails the start instead of pulling another one.
+        self.assertRegex(storybook["image"], r"^hy-home/storybook:[0-9a-f]{40}$")
+        self.assertEqual("never", storybook["pull_policy"])
+        self.assertEqual(["experience"], storybook["profiles"])
+        home = re.search(
+            r"^\| HOME \| (.+?) \|",
+            (
+                ROOT / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
+            ).read_text(encoding="utf-8"),
+            re.M,
+        )
+        self.assertNotIn("experience", re.findall(r"`([a-z-]+)`", home.group(1)))
+        for absent in ("secrets", "volumes", "ports", "environment"):
+            self.assertNotIn(absent, storybook)
 
     def test_prometheus_scrape_targets_are_services_on_obs_net(self) -> None:
         services = self._services()
