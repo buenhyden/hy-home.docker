@@ -365,7 +365,7 @@ permission이 필요하다. bootstrap과 provider 경계의 기존 permission �
 #### DB migration
 
 [POL-0050](../policies/0050-airflow.md)에 따라 schema upgrade 전 schedule과 producer를
-pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../runbooks/0050-airflow.md#steps)을 따른다.
+pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../runbooks/0050-airflow.md#procedure)을 따른다.
 
 #### JWT algorithm/format error
 
