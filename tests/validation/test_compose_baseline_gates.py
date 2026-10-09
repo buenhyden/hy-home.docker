@@ -1946,6 +1946,19 @@ class BackupContractTests(unittest.TestCase):
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         self.assertIn("--files-from-verbatim", script)
 
+    def test_restic_skips_telemetry_and_budgets_eight_gib(self) -> None:
+        # SPEC-0228: Loki and Tempo collections are short-lived telemetry; copying
+        # them pushed the state repository over its budget.
+        exclude = (ROOT / RESTIC_DIR / "sets/state-exclude.txt").read_text(
+            encoding="utf-8"
+        )
+        for collection in ("loki-bucket", "tempo-bucket"):
+            self.assertIn(
+                f"/src/state/volumes/data/seaweedfs/volume/{collection}_*\n", exclude
+            )
+        example = (ROOT / ".env.example").read_text(encoding="utf-8")
+        self.assertIn("\nBACKUP_STATE_MAX_GIB=8\n", example)
+
     def test_destructive_restic_actions_need_explicit_confirmation(self) -> None:
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         prune = script.split("forget-prune)")[1].split(";;")[0]

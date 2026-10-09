@@ -218,13 +218,14 @@ four returned files have their own commit.
 | Review | 5 | W5 | Independent review; fixes | `deaf151f3` | PASS | Review | accepted |
 | Changed gate | 5 | W5 | `run-ci-gate.py --profile changed --local-only`, base `1f552ac78`; hardening; operations catalog | `deaf151f3` | PASS | Review and Completion | accepted |
 | Staged style check | 5 | W5 | `run-ci-precommit.sh --mode local-staged` over `1f552ac78..HEAD` | `deaf151f3` | PASS | Review and Completion | accepted |
-| Remote candidate | 5 | W5 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Remote candidate | 5 | W5 | `candidate-quality` run 37976670835, base `1f552ac78` | `af5cea75f` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 
 The changed gate, the hardening baseline, the operations catalog and the
-staged style check passed on `deaf151f3`. Not complete: `candidate-quality`
-and the merge remain.
+staged style check passed on `deaf151f3`. Run 37976670835 passed on head
+`af5cea75f` and PR #403 merged as `39126d5bf` (recorded with SPEC-0228).
+Complete.
 
 ## Related Documents
 

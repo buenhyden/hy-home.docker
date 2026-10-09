@@ -1,10 +1,10 @@
 ---
 title: "Offsite Backup Target"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "architecture"
 artifact_id: "ADR-0041"
 parent_ids:
@@ -44,6 +44,10 @@ The state repository is bounded by the `BACKUP_STATE_MAX_GIB` budget of 5 GiB
 (control 2). The costs below are therefore estimated against the **5 GiB
 cap**. pgBackRest self-shrinks via `repo1-retention-full=2`, but Restic keeps
 growing until an approved `forget-prune`.
+
+On 2026-10-10 the owner raised the budget to 8 GiB and excluded the Loki and
+Tempo SeaweedFS collections from the state set (SPEC-0228), after a run went
+over 5 GiB; the cost estimates below assume the earlier 5 GiB cap.
 
 ### Follow-up
 

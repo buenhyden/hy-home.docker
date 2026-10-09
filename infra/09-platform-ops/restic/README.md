@@ -1,10 +1,10 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.2.2"
+version: "1.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-10"
 ---
 
 # Restic Backup Jobs
@@ -69,7 +69,7 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   소싱하지 않으며 `flock` 잠금을 사용합니다(사용 중이면 종료 코드 75).
   여유 공간이 20 GiB 미만이거나 저장소가 소스와 같은 파일시스템을
   공유(또는 그 안에 위치)하면 종료 코드 64를 반환하고 pgBackRest 만료 이후
-  `BACKUP_STATE_REPO_DIR`가 `BACKUP_STATE_MAX_GIB`(5) 이상이면 Restic 단계를
+  `BACKUP_STATE_REPO_DIR`가 `BACKUP_STATE_MAX_GIB`(8) 이상이면 Restic 단계를
   건너뛰고 실패 처리하며 종료 시 항상 staging을 비웁니다.
 - `restic-offsite`만 외부로 나가는 네트워크(`restic_offsite_net`)를 가진
   백업 작업입니다. 로컬 저장소 두 개만 읽기 전용(`DAC_READ_SEARCH`)으로
