@@ -208,8 +208,12 @@ refused with `Invalid parameter: redirect_uri`: Codex sends
 `http://127.0.0.1:33419/callback/*`. A later attempt from the owner's shell
 failed before reaching the server (`error sending request`); from the HOME
 shell five Codex logins and fifteen requests reached the server, so the cause
-is in that client environment. GDE-0101 now carries the consumer check, the
-Codex callback and `CODEX_CA_CERTIFICATE`.
+is in that client environment. After the redirect URI change the owner's
+`codex mcp login hyhome_storybook` on the HOME server completed ("Successfully
+logged in"); the browser ran on another device, so the callback reached the
+server by forwarding the redirected URL. GDE-0101 now carries the consumer
+check, the Codex callback, the cross-device callback, and Ubuntu and Windows
+steps for the root CA, `NODE_EXTRA_CA_CERTS` and `CODEX_CA_CERTIFICATE`.
 
 ## Evidence
 
@@ -223,12 +227,13 @@ Codex callback and `CODEX_CA_CERTIFICATE`.
 | Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | accepted |
 | Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | accepted |
 | HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | accepted |
-| Other-workspace MCP login | 2 | W8 | Codex and Claude Code login and `docs-list` | — | NOT_RUN | W8 HOME Activation | pending |
+| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | accepted |
+| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | pending |
 
 ## Review and Completion
 
-Not complete. Open for the owner: sign another workspace's Codex and Claude
-Code in and call the document tools (GDE-0101), and run `/design-sync` from an
+Not complete. Open for the owner: sign in from another device after its DNS
+and root CA are set, call the document tools (GDE-0101), and run `/design-sync` from an
 exported bundle. SPEC-0222 extended the GHSA-vfj7 acceptance to
 `2026-11-08T07:00:00Z` by the owner's approval. `DESIGN.md` is separate later
 work.
