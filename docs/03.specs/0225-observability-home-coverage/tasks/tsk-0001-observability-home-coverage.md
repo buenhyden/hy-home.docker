@@ -204,6 +204,12 @@ from `b2745167d`). The changed gate passed on `ad33a5b9f` (rc 0) and the staged
 style check on `75f66c8f9` (rc 0). Not complete: `candidate-quality` and the
 merge remain; OpenBao's restart is the owner's.
 
+The first `candidate-quality` run (run 37941854676, head `d6c98311e`) failed
+the hardening baseline: `check-all-hardening.sh` still required OpenBao's
+`prometheus_retention_time` of 30 s. The local `--local-only` gate does not run
+that baseline. The check now requires 24 h; `check-all-hardening.sh` passes
+locally (rc 0).
+
 ## Related Documents
 
 - [Spec](../spec.md)
