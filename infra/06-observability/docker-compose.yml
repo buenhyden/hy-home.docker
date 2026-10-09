@@ -66,6 +66,8 @@ services:
     image: prom/prometheus:v3.14.0
     container_name: prometheus
     hostname: prometheus
+    group_add:
+      - '${SECRETS_GID:-1000}'
     tmpfs:
       - /tmp
       - /etc/prometheus:size=10M
@@ -122,6 +124,8 @@ services:
       dockerfile: Dockerfile
     container_name: loki
     hostname: loki
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '10001:10001'
     volumes:
       - ./loki/config/loki-config.yaml:/etc/loki/loki-config.yaml:ro
@@ -169,6 +173,8 @@ services:
     image: hy/tempo:3.0.3-seaweedfs
     container_name: tempo
     hostname: tempo
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '10001:10001'
     volumes:
       - ./tempo/config/tempo.yaml:/etc/tempo.yaml:ro
@@ -222,6 +228,7 @@ services:
     user: '473:473'
     group_add:
       - '${DOCKER_GID:-989}'
+      - '${SECRETS_GID:-1000}'
     tmpfs:
       - /tmp
       - /run
@@ -292,6 +299,8 @@ services:
     image: grafana/grafana:13.2.2
     container_name: grafana
     hostname: grafana
+    group_add:
+      - '${SECRETS_GID:-1000}'
     # 512 MiB (template) peaked at 97% in the SPEC-0182 W8 window; SPEC-0193 W7
     # confirms the value from the final W8 figures.
     mem_limit: ${GRAFANA_MEM_LIMIT:-1g}
@@ -416,6 +425,8 @@ services:
     image: postgres:18.6-alpine
     container_name: grafana-db-provision
     hostname: grafana-db-provision
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint:
       - /bin/sh
       - /provision/run-feature-provision.sh
@@ -563,6 +574,8 @@ services:
     image: hy/gatus:local
     container_name: gatus
     hostname: gatus
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '${GATUS_UID:-1000}:${GATUS_GID:-1000}'
     environment:
       GATUS_CONFIG_PATH: /config/config.yaml
@@ -610,6 +623,9 @@ services:
     image: grafana/pyroscope:2.3.1
     container_name: pyroscope
     hostname: pyroscope
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - -config.file=/etc/pyroscope/pyroscope.yaml
       - -config.expand-env=true
@@ -647,6 +663,8 @@ services:
     image: prom/alertmanager:v0.34.1
     container_name: alertmanager
     hostname: alertmanager
+    group_add:
+      - '${SECRETS_GID:-1000}'
     tmpfs:
       - /tmp
       - /etc/alertmanager:size=1M
@@ -730,6 +748,13 @@ services:
     container_name: dcgm-exporter
     hostname: dcgm-exporter
 
+    healthcheck:
+      # The image has bash but no head, grep, curl or wget.
+      test: [ 'CMD', 'bash', '-c', 'exec 3<>/dev/tcp/127.0.0.1/9400 && printf "GET /metrics HTTP/1.0\r\n\r\n" >&3 && read -r status <&3 && [[ $$status == *" 200 "* ]]' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     # SYS_ADMIN is needed only for DCP profiling fields, which consumer
     # Pascal GPUs do not support; keep the default capability set dropped.
     deploy:

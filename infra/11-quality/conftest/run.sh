@@ -20,6 +20,8 @@ if [ "$mode" != corpus ]; then
   conftest verify --policy "$policy"
 fi
 if [ "$mode" != verify ]; then
-  find infra -name 'docker-compose*.yml' -type f | sort | xargs conftest test --policy "$policy" --namespace compose
+  # An assignment keeps find's status, so a missing labs/ mount fails here.
+  compose_files=$(find infra -name 'docker-compose*.yml' -type f && find labs -maxdepth 1 -name '*.yml' -type f)
+  printf '%s\n' "$compose_files" | sort | xargs conftest test --policy "$policy" --namespace compose
   find infra -name 'Dockerfile*' -type f | sort | xargs conftest test --parser dockerfile --policy "$policy" --namespace dockerfile
 fi

@@ -491,7 +491,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.compose-baseline-regressions",
                 "leaf.infrastructure-hardening",
                 "leaf.template-security-baseline",
-                "leaf.quickwin-baseline",
             }
             & ids
         )
@@ -758,7 +757,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                         "leaf.compose-baseline-regressions",
                         "leaf.infrastructure-hardening",
                         "leaf.template-security-baseline",
-                        "leaf.quickwin-baseline",
                     }
                     & hosted_ids
                 )
@@ -844,7 +842,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "scripts/validation/check-template-security-baseline.sh": {
                 "leaf.template-security-baseline"
             },
-            "scripts/validation/check-quickwin-baseline.sh": {"leaf.quickwin-baseline"},
+            "scripts/validation/compose_controls.py": {
+                "leaf.template-security-baseline"
+            },
             "scripts/validation/check-supply-chain-policy.py": {
                 "leaf.supply-chain-deterministic-policy"
             },

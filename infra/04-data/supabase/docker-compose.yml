@@ -13,6 +13,8 @@ services:
       service: template-infra-med
     container_name: supabase-studio
     hostname: studio
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/studio:2026.09.14-sha-4dd8a95
     restart: unless-stopped
     depends_on:
@@ -53,6 +55,8 @@ services:
       service: template-infra-med
     container_name: supabase-kong
     hostname: kong
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: kong:3.9.3
     tmpfs:
       - /tmp
@@ -91,6 +95,8 @@ services:
       service: template-infra-med
     container_name: supabase-auth
     hostname: auth
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/gotrue:v2.197.0
     tmpfs:
       - /tmp
@@ -127,6 +133,8 @@ services:
       service: template-infra-low
     container_name: supabase-rest
     hostname: rest
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: postgrest/postgrest:v16.3
     tmpfs:
       - /tmp
@@ -161,6 +169,8 @@ services:
       service: template-infra-med
     container_name: realtime-dev.supabase-realtime
     hostname: realtime
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/realtime:v2.138.1
     restart: unless-stopped
     depends_on:
@@ -196,6 +206,8 @@ services:
       service: template-infra-med
     container_name: supabase-storage
     hostname: storage
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/storage-api:v1.79.4
     restart: unless-stopped
     read_only: false
@@ -262,6 +274,8 @@ services:
       service: template-infra-low
     container_name: supabase-meta
     hostname: meta
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/postgres-meta:v0.99.0
     restart: unless-stopped
     depends_on:
@@ -294,6 +308,8 @@ services:
       service: template-infra-high
     container_name: supabase-edge-functions
     hostname: functions
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/edge-runtime:v1.76.2
     restart: unless-stopped
     volumes:
@@ -330,6 +346,8 @@ services:
       service: template-infra-high
     container_name: supabase-analytics
     hostname: analytics
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/logflare:1.50.15
     restart: unless-stopped
     ports:
@@ -362,6 +380,8 @@ services:
       service: template-infra-high
     container_name: supabase-db
     hostname: db
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/postgres:17.6.1.173
     restart: unless-stopped
     read_only: false
@@ -428,6 +448,8 @@ services:
       service: template-infra-med
     container_name: supabase-pooler
     hostname: supavisor
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: supabase/supavisor:2.9.13
     restart: unless-stopped
     ports:

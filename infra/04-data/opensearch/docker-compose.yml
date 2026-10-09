@@ -27,6 +27,8 @@ services:
       dockerfile: Dockerfile
     container_name: opensearch
     hostname: opensearch
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       OPENSEARCH_JAVA_OPTS: '${OPENSEARCH_JAVA_OPTS:--Xms1g -Xmx1g}'
       bootstrap.memory_lock: 'true'
@@ -93,6 +95,8 @@ services:
     image: opensearchproject/opensearch-dashboards:3.8.0
     container_name: opensearch-dashboards
     hostname: opensearch-dashboards
+    group_add:
+      - '${SECRETS_GID:-1000}'
     networks:
       edge_net: {}
     expose:

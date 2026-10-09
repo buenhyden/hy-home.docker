@@ -127,7 +127,6 @@ _LOCAL_AGGREGATE_CHILDREN = {
         # baseline gates into the local profiles.
         "leaf.compose-baseline-regressions",
     ),
-    "local.quickwin-baseline": ("leaf.quickwin-baseline",),
 }
 _REQUIRED_ACTIVE_AGGREGATE_CHILDREN = {
     "ci.dependency-vulnerability-audit": ("leaf.dependency-vulnerability-audit",),

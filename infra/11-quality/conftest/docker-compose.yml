@@ -3,7 +3,8 @@ x-tier-label: &tier-label
 
 services:
   # Policy tests over the infrastructure source (POL-0095). It reads infra/
-  # only, never secrets/ or .env, and has no network.
+  # and the LAB entrypoints in labs/ only, never secrets/ or .env, and has no
+  # network.
   conftest:
     profiles:
       - policy-check
@@ -20,5 +21,6 @@ services:
       - /project/infra/11-quality/conftest/run.sh
     volumes:
       - ../..:/project/infra:ro
+      - ../../../labs:/project/labs:ro
     labels:
       <<: *tier-label

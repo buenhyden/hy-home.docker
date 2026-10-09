@@ -9,11 +9,10 @@ x-logging: &default-logging
 x-labels-managed: &labels-managed
   hy-home.managed: "true"
 
+# Secret files are 0640 owner:SECRETS_GID. A leaf that reads one declares
+# group_add: ['${SECRETS_GID:-1000}'] itself; no template grants it.
 x-security-base: &security-base
   init: true
-  # Secret files are 0640 owner:SECRETS_GID; non-owner containers read them via this group.
-  group_add:
-    - '${SECRETS_GID:-1000}'
   security_opt:
     - no-new-privileges:true
   cap_drop:
@@ -25,13 +24,17 @@ x-healthcheck-dev: &healthcheck-dev
   retries: 3
   start_period: 5s
 
+# pids_limit values are initial budgets (SPEC-0218): about four times the
+# highest idle count measured in each tier on 2026-10-09, not load-tested optima.
 x-resource-dev-tiny: &resource-dev-tiny
   cpus: "0.10"
   mem_limit: 64m
+  pids_limit: 128
 
 x-resource-dev-small: &resource-dev-small
   cpus: "0.20"
   mem_limit: 128m
+  pids_limit: 128
 
 x-restart-default: &restart-default
   restart: unless-stopped
@@ -52,22 +55,27 @@ x-service-readonly: &service-readonly
 x-resource-low: &resource-low
   cpus: "0.50"
   mem_limit: 256m
+  pids_limit: 256
 
 x-resource-med: &resource-med
   cpus: "1.00"
   mem_limit: 512m
+  pids_limit: 512
 
 x-resource-obs-high: &resource-obs-high
   cpus: "1.50"
   mem_limit: 1g
+  pids_limit: 1024
 
 x-resource-high: &resource-high
   cpus: "2.00"
   mem_limit: 2g
+  pids_limit: 1024
 
 x-resource-db: &resource-db
   cpus: "2.00"
   mem_limit: 2g
+  pids_limit: 1024
 
 services:
   base-security:
@@ -110,10 +118,9 @@ services:
     read_only: false
 
   template-stateful-ai-high:
-    group_add:
-      - '${SECRETS_GID:-1000}'
-    restart: unless-stopped
-    logging: *default-logging
+    # GPU services keep the security base; an exact-image GPU run with it
+    # loaded a model onto CUDA (SPEC-0218).
+    <<: [*service-defaults]
     read_only: false
 
   template-job-low:
@@ -145,8 +152,6 @@ services:
     <<: [*service-defaults, *resource-obs-high]
 
   template-stateful-db-med:
-    group_add:
-      - '${SECRETS_GID:-1000}'
     init: true
     restart: unless-stopped
     logging: *default-logging
@@ -154,14 +159,16 @@ services:
       hy-home.managed: "true"
     security_opt:
       - no-new-privileges:true
-    # cap_drop 생략
+    # Entrypoints that re-own data and switch user add exactly the
+    # capabilities they need at the leaf (SPEC-0218).
+    cap_drop:
+      - ALL
     cpus: "1.00"
     mem_limit: 512m
+    pids_limit: 512
     read_only: false
 
   template-stateful-db-high:
-    group_add:
-      - '${SECRETS_GID:-1000}'
     init: true
     restart: unless-stopped
     logging: *default-logging
@@ -169,9 +176,13 @@ services:
       hy-home.managed: "true"
     security_opt:
       - no-new-privileges:true
-    # cap_drop 생략
+    # Entrypoints that re-own data and switch user add exactly the
+    # capabilities they need at the leaf (SPEC-0218).
+    cap_drop:
+      - ALL
     cpus: "2.00"
     mem_limit: 2g
+    pids_limit: 1024
     read_only: false
 
   template-dev-tiny:

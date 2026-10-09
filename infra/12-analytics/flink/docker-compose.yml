@@ -65,6 +65,8 @@ services:
     mem_limit: 1280m
     container_name: flink-jobmanager
     hostname: flink-jobmanager
+    group_add:
+      - '${SECRETS_GID:-1000}'
     command:
       - /opt/flink/bin/jobmanager.sh
       - start-foreground
@@ -95,6 +97,14 @@ services:
     mem_limit: 2g
     container_name: flink-taskmanager
     hostname: flink-taskmanager
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    healthcheck:
+      test: [ 'CMD-SHELL', 'curl -fsS http://flink-jobmanager:8081/taskmanagers | grep -q "\"id\""' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     command:
       - /opt/flink/bin/taskmanager.sh
       - start-foreground

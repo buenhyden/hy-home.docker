@@ -25,6 +25,8 @@ services:
     image: lfnovo/open_notebook:v1-latest-single
     container_name: open_notebook
     hostname: open_notebook
+    group_add:
+      - '${SECRETS_GID:-1000}'
     pull_policy: always
     ports:
       # Host-local API access only; browsers use the Traefik route on the web port.
@@ -106,6 +108,8 @@ services:
       dockerfile: Dockerfile
     container_name: surrealdb
     hostname: surrealdb
+    group_add:
+      - '${SECRETS_GID:-1000}'
     environment:
       SURREALDB_USERNAME: ${SURREALDB_USERNAME}
     expose:

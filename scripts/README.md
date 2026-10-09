@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 created: "2026-02-21"
 ---
 
@@ -45,7 +45,7 @@ created: "2026-02-21"
 
 ```text
 scripts/
-├── validation/          # Compose, 저장소, 문서, 템플릿, quickwin, preflight 검증
+├── validation/          # Compose, 저장소, 문서, 템플릿·최종 control, preflight 검증
 ├── hardening/           # tier 인자를 받는 통합 하드닝 점검
 ├── hooks/               # provider-neutral 훅 디스패처와 post-tool 검증
 ├── knowledge/           # Graphify 참고용 유틸리티

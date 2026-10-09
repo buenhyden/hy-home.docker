@@ -71,6 +71,8 @@ services:
     image: hyhome/n8n:2.41.6-local
     container_name: n8n
     hostname: n8n
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     expose:
       - ${N8N_PORT:-5678}
@@ -139,6 +141,8 @@ services:
     image: hyhome/n8n:2.41.6-local
     container_name: n8n-worker
     hostname: n8n-worker
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     expose:
       - ${N8N_PORT:-5678}
@@ -179,6 +183,8 @@ services:
     image: n8nio/runners:2.41.6
     container_name: n8n-task-runner
     hostname: n8n-task-runner
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     depends_on:
       n8n: { condition: service_healthy }
@@ -221,6 +227,8 @@ services:
     image: n8nio/runners:2.41.6
     container_name: n8n-task-runner-worker
     hostname: n8n-task-runner-worker
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     depends_on:
       n8n-worker: { condition: service_healthy }
@@ -261,6 +269,8 @@ services:
     image: valkey/valkey:9.1.2-alpine
     container_name: n8n-valkey
     hostname: n8n-valkey
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '999:999'
     networks:
       n8n_net: {}
@@ -292,6 +302,14 @@ services:
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: n8n-valkey-exporter
     hostname: n8n-valkey-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    healthcheck:
+      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9121/metrics' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     read_only: true
     networks:
       n8n_net: {}

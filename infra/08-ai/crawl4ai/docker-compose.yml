@@ -21,6 +21,8 @@ services:
     image: unclecode/crawl4ai:0.9.4
     container_name: crawl4ai
     hostname: crawl4ai
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: appuser
     # Chromium needs more memory and processes than the high template allows.
     mem_limit: 4g

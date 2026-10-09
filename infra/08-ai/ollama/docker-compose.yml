@@ -39,6 +39,7 @@ services:
         limits:
           cpus: '4.0'
           memory: 8G
+          pids: 1024
         reservations:
           memory: 4G
           devices:

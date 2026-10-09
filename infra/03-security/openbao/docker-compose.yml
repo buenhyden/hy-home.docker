@@ -35,6 +35,9 @@ services:
     image: openbao/openbao:2.6.2
     container_name: openbao
     hostname: openbao
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     restart: unless-stopped
     expose:
       - '${OPENBAO_PORT:-8200}'
@@ -81,6 +84,9 @@ services:
     image: openbao/openbao:2.6.2
     container_name: openbao-agent
     hostname: openbao-agent
+    # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
+    group_add:
+      - '${SECRETS_GID:-1000}'
     restart: unless-stopped
     depends_on:
       openbao:

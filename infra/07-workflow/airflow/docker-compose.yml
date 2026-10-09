@@ -97,6 +97,8 @@ services:
     <<: *airflow-common
     container_name: airflow-apiserver
     hostname: airflow-apiserver
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     environment:
       <<: *airflow-common-env
@@ -163,6 +165,8 @@ services:
     <<: *airflow-common
     container_name: airflow-scheduler
     hostname: airflow-scheduler
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     command: scheduler
     networks:
@@ -188,6 +192,8 @@ services:
     <<: *airflow-common
     container_name: airflow-dag-processor
     hostname: airflow-dag-processor
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     command: dag-processor
     networks:
@@ -213,6 +219,8 @@ services:
     <<: *airflow-common
     container_name: airflow-worker
     hostname: airflow-worker
+    group_add:
+      - '${SECRETS_GID:-1000}'
     read_only: false
     command: celery worker
     networks:
@@ -243,6 +251,8 @@ services:
     <<: *airflow-common
     container_name: airflow-triggerer
     hostname: airflow-triggerer
+    group_add:
+      - '${SECRETS_GID:-1000}'
     mem_limit: 384m
     read_only: false
     command: triggerer
@@ -269,6 +279,8 @@ services:
       - workflow-airflow
     container_name: airflow-init
     hostname: airflow-init
+    group_add:
+      - '${SECRETS_GID:-1000}'
     extends:
       file: ../../common-optimizations.yml
       service: template-job-low
@@ -385,6 +397,8 @@ services:
     <<: *airflow-common
     container_name: flower
     hostname: flower
+    group_add:
+      - '${SECRETS_GID:-1000}'
     mem_limit: 384m
     read_only: false
     command: celery flower
@@ -425,6 +439,8 @@ services:
     image: valkey/valkey:9.1.2-alpine
     container_name: airflow-valkey
     hostname: airflow-valkey
+    group_add:
+      - '${SECRETS_GID:-1000}'
     user: '999:999'
     secrets:
       - airflow_valkey_password
@@ -455,6 +471,14 @@ services:
     image: oliver006/redis_exporter:v1.91.1-alpine
     container_name: airflow-valkey-exporter
     hostname: airflow-valkey-exporter
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    healthcheck:
+      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9121/metrics' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     read_only: true
     tmpfs:
       - /tmp
@@ -490,6 +514,12 @@ services:
     image: prom/statsd-exporter:v0.31.0
     container_name: airflow-statsd-exporter
     hostname: airflow-statsd-exporter
+    healthcheck:
+      test: [ 'CMD', 'wget', '-q', '-O', '/dev/null', 'http://localhost:9102/metrics' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     read_only: true
     tmpfs:
       - /tmp

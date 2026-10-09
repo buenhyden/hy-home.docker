@@ -34,6 +34,8 @@ services:
     image: quay.io/keycloak/keycloak:26.7.4-0
     container_name: keycloak
     hostname: keycloak
+    group_add:
+      - '${SECRETS_GID:-1000}'
     tmpfs:
       - /tmp
     volumes:

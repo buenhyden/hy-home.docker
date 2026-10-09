@@ -85,6 +85,8 @@ services:
     # group-writable (lab.py) and the secret is readable through that group.
     user: '999:999'
     hostname: mongodb-rep1
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: false
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
@@ -123,6 +125,8 @@ services:
     # group-writable (lab.py) and the secret is readable through that group.
     user: '999:999'
     hostname: mongodb-rep2
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: false
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${LAB_MONGODB_ROOT_USERNAME}
@@ -191,6 +195,8 @@ services:
     restart: 'no'
     image: mongo:8.3.11-noble
     container_name: lab-mongodb-mongo-init
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
     read_only: true
     tmpfs:
       - /tmp
@@ -237,6 +243,14 @@ services:
     ports:
       - '${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}:8081'
     hostname: mongo-express
+    group_add:
+      - '${LAB_SECRETS_GID:-1000}'
+    healthcheck:
+      test: [ 'CMD', 'nc', '-z', '127.0.0.1', '8081' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     restart: unless-stopped
     read_only: true
     tmpfs:

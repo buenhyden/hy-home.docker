@@ -19,6 +19,8 @@ services:
       service: template-stateful-med
     container_name: dozzle
     hostname: dozzle
+    group_add:
+      - '${SECRETS_GID:-1000}'
     image: amir20/dozzle:v11.1.1
     secrets:
       - dozzle_client_secret

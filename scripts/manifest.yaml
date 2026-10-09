@@ -787,18 +787,6 @@ files:
   successor: null
   tests:
   - tests/validation/test_project_registration.py
-- path: scripts/validation/check-quickwin-baseline.sh
-  kind: validator
-  authority: .github/workflow-contract.yml
-  lifecycle: active
-  mutation: none
-  consumers:
-  - .github/workflow-contract.yml
-  - docs/05.operations/policies/0001-common-optimizations-template-exceptions.md
-  disposition: retain
-  successor: null
-  tests:
-  - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/check-script-manifest.py
   kind: validator
   authority: scripts/manifest.yaml
@@ -844,6 +832,7 @@ files:
   mutation: none
   consumers:
   - .github/workflow-contract.yml
+  - docs/05.operations/policies/0001-common-optimizations-template-exceptions.md
   disposition: retain
   successor: null
   tests:
@@ -865,6 +854,18 @@ files:
   - tests/validation/test_ci_gate_model.py
   - tests/validation/test_ci_gate_plan.py
   - tests/validation/test_validator_entrypoints.py
+- path: scripts/validation/compose_controls.py
+  kind: validator
+  authority: .github/workflow-contract.yml
+  lifecycle: active
+  mutation: none
+  consumers:
+  - docs/05.operations/policies/0001-common-optimizations-template-exceptions.md
+  - scripts/validation/check-template-security-baseline.sh
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_compose_baseline_gates.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
   authority: .agents/governance/quality-standards.md

@@ -20,6 +20,8 @@ services:
     image: restic/restic:0.19.1
     container_name: restic
     hostname: restic
+    group_add:
+      - '${SECRETS_GID:-1000}'
     # Root with DAC_OVERRIDE reads every source regardless of owner. Every
     # source is a read-only mount, so only the two repositories are writable.
     user: '0:0'
@@ -101,6 +103,8 @@ services:
     image: restic/restic:0.19.1
     container_name: restic-offsite
     hostname: restic-offsite
+    group_add:
+      - '${SECRETS_GID:-1000}'
     # Root reads the host-user-owned 0700 repository roots; read search only.
     user: '0:0'
     cap_add:

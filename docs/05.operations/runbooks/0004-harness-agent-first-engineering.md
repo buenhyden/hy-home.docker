@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-08"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -89,7 +89,6 @@ created: "2026-06-04"
    ```bash
    bash scripts/validation/validate-docker-compose.sh
    bash scripts/validation/check-template-security-baseline.sh
-   bash scripts/validation/check-quickwin-baseline.sh
    bash scripts/hardening/check-all-hardening.sh
    ```
 

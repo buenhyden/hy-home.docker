@@ -20,6 +20,8 @@ services:
     image: hy-home/spark-iceberg:4.1.3-iceberg1.11.0-local
     container_name: spark
     hostname: spark
+    group_add:
+      - '${SECRETS_GID:-1000}'
     entrypoint:
       - /bin/bash
       - /opt/hyhome/hyhome-spark.sh

@@ -19,7 +19,24 @@ reference(value) if contains(value, "/run/secrets/")
 
 reference(value) if lower(value) in {"true", "false", "yes", "no", "0", "1"}
 
-reference(value) if contains(value, "://")
+# A URL is a reference only when it carries no credential of its own.
+reference(value) if {
+	contains(value, "://")
+	not url_credential(value)
+}
+
+# Literal userinfo password (scheme://user:secret@host) or a secret-named query
+# parameter (?token=..., &password=...). An interpolated value (${VAR}) is a
+# reference, not a credential.
+url_credential(value) if {
+	some match in regex.find_all_string_submatch_n(`[A-Za-z][A-Za-z0-9+.-]*://[^/?#@\s]*:([^/?#@\s]+)@`, value, -1)
+	not startswith(match[1], "$")
+}
+
+url_credential(value) if {
+	some match in regex.find_all_string_submatch_n(`(?i)[?&](token|access_token|api_key|apikey|key|password|passwd|secret|sig|signature)=([^&#\s]+)`, value, -1)
+	not startswith(match[2], "$")
+}
 
 # Keys that name where a secret comes from rather than holding it.
 indirect(key) if endswith(key, "_FILE")
@@ -75,6 +92,15 @@ deny contains msg if {
 	not indirect(key)
 	not reference(value)
 	msg := sprintf("service %s: %s carries a literal value; use a Docker secret", [name, key])
+}
+
+# Any variable may hold a URL; a credential inside one is denied whatever the
+# key is called (DATABASE_URL, BROKER_URL, ...).
+deny contains msg if {
+	some name, svc in input.services
+	some [key, value] in env_pairs(object.get(svc, "environment", {}))
+	url_credential(value)
+	msg := sprintf("service %s: %s carries a credential in a URL; use a Docker secret", [name, key])
 }
 
 # A host publication must name the address it binds (SPEC-0188, a deny once
