@@ -1,10 +1,10 @@
 ---
 title: "infra-implementer"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 agent_id: "infra-implementer"
 scope: "infra"
 tier: "worker"
@@ -36,7 +36,7 @@ Configuration parses, preserves secret and network boundaries, matches the appro
 
 ## Allowed Changes
 
-Workspace writes are allowed in approved infrastructure scope. Runtime deployment, secrets, and remote systems require separate approval.
+Workspace writes are allowed in approved infrastructure scope. Runtime deployment, secrets, and remote systems wait for their exact target under Approval Boundaries.
 
 ## Inputs and Outputs
 

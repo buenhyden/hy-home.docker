@@ -37,7 +37,7 @@ Changed delivery behavior is deterministic, permission-minimal, rollback-capable
 
 ## Allowed Changes
 
-Workspace writes are allowed only inside the approved task. Remote pushes, releases, secrets, environments, and rulesets require separate approval.
+Workspace writes are allowed only inside the approved task. The task's branch push, pull request, and requested merge follow the request scope in Approval Boundaries; releases, secrets, environments, rulesets, and other remote mutations wait for their exact target.
 
 ## Inputs and Outputs
 

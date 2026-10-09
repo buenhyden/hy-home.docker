@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-09"
 ---
 
 # GitHub Governance Policy
@@ -101,8 +101,8 @@ ruleset file records the observed remote state and issues no rule of its own.
   Feature push does not repeat it; required selection is inside an always-present
   PR workflow rather than path-skipping its required check.
 - **Main**: merged-revision security/SARIF is a distinct observation, not a
-  second candidate run. The sole manual release producer is separately approved
-  for its exact version and trusted main revision.
+  second candidate run. The sole manual release producer runs only once the user
+  names its exact version and trusted main revision.
 
 #### 5.0 Approved Remote Mutation Protocol
 

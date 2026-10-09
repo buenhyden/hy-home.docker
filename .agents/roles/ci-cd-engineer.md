@@ -1,10 +1,10 @@
 ---
 title: "ci-cd-engineer"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 agent_id: "ci-cd-engineer"
 scope: "ops"
 tier: "worker"
@@ -35,7 +35,7 @@ Changed delivery behavior is deterministic, permission-minimal, rollback-capable
 
 ## Allowed Changes
 
-Workspace writes are allowed only inside the approved task. Remote pushes, releases, secrets, environments, and rulesets require separate approval.
+Workspace writes are allowed only inside the approved task. The task's branch push, pull request, and requested merge follow the request scope in Approval Boundaries; releases, secrets, environments, rulesets, and other remote mutations wait for their exact target.
 
 ## Inputs and Outputs
 
