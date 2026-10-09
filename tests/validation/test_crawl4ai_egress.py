@@ -4,9 +4,15 @@ from __future__ import annotations
 
 import asyncio
 import importlib.util
+import json
+import os
 import pathlib
+import secrets
 import socket
 import struct
+import subprocess
+import tempfile
+import time
 import unittest
 
 import yaml
@@ -283,3 +289,253 @@ class ComposeContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+IMAGE = "unclecode/crawl4ai@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
+PYTHON = "python:3.13.15-alpine"
+PUBLIC_IP = "11.200.0.10"  # globally routable form, on an internal network only
+FIXTURE = r"""
+import http.server, sys
+PAGES = {
+    "/ok.html": (200, {}, b"<html><head><title>OK</title></head><body><p>public-ok</p>"
+                 b"<img src='http://lan.fixture/pixel.png'></body></html>"),
+    "/redirect-lan": (302, {"Location": "http://lan.fixture/secret"}, b""),
+    "/redirect-meta": (302, {"Location": "http://169.254.169.254/latest/meta-data/"}, b""),
+    "/loopback.html": (200, {}, b"<html><head><meta http-equiv='refresh' "
+                       b"content='0;url=http://127.0.0.1:11235/health'></head><body>start</body></html>"),
+    "/robots.txt": (200, {}, b"User-agent: *\nAllow: /\n"),
+    "/secret": (200, {}, b"lan-secret"),
+    "/pixel.png": (200, {}, b"lan-pixel"),
+}
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        print("hit", self.path, flush=True)
+        code, headers, body = PAGES.get(self.path, (404, {}, b"missing"))
+        self.send_response(code)
+        for key, value in headers.items():
+            self.send_header(key, value)
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+    def log_message(self, *args):
+        pass
+http.server.ThreadingHTTPServer(("0.0.0.0", 80), Handler).serve_forever()
+"""
+PROBE = r"""
+import json, os, urllib.error, urllib.request
+TOKEN = os.environ["TOKEN"]
+def call(path, body=None, token=True):
+    headers = {"Content-Type": "application/json"}
+    if token:
+        headers["Authorization"] = "Bearer " + TOKEN
+    request = urllib.request.Request("http://crawl4ai:11235" + path, method="POST" if body else "GET",
+                                     data=json.dumps(body).encode() if body else None, headers=headers)
+    try:
+        with urllib.request.urlopen(request, timeout=120) as response:
+            return response.status, response.read().decode("utf-8", "replace")
+    except urllib.error.HTTPError as error:
+        return error.code, error.read().decode("utf-8", "replace")
+def crawl(url, **extra):
+    return call("/crawl", {"urls": [url], **extra})
+cases = {
+    "health": call("/health", token=False),
+    "no-token": call("/crawl", {"urls": ["http://public.fixture/ok.html"]}, token=False),
+    "allowed": crawl("http://public.fixture/ok.html",
+                     crawler_config={"type": "CrawlerRunConfig", "params": {"check_robots_txt": True}}),
+    "private": crawl("http://lan.fixture/secret"),
+    "metadata": crawl("http://169.254.169.254/latest/meta-data/"),
+    "redirect-lan": crawl("http://public.fixture/redirect-lan"),
+    "redirect-meta": crawl("http://public.fixture/redirect-meta"),
+    "loopback-refresh": crawl("http://public.fixture/loopback.html"),
+    "caller-proxy": crawl("http://public.fixture/ok.html", browser_config={
+        "type": "BrowserConfig", "params": {"proxy_config": {"server": "http://lan.fixture:80"}}}),
+    "extra-args": crawl("http://public.fixture/ok.html", browser_config={
+        "type": "BrowserConfig", "params": {"extra_args": ["--proxy-server=http://lan.fixture:80"]}}),
+}
+print(json.dumps({name: [status, body[:4000]] for name, (status, body) in cases.items()}))
+"""
+DIRECT = r"""
+import json, socket
+def attempt(command):
+    try:
+        with socket.create_connection(("10.250.201.2", 3128), 5) as s:
+            s.sendall(command)
+            return s.recv(200).split(b"\r\n")[0].decode()
+    except OSError as error:
+        return "error " + type(error).__name__
+def direct(address):
+    try:
+        socket.create_connection((address, 80), 3).close()
+        return "connected"
+    except OSError as error:
+        return "error " + type(error).__name__
+print(json.dumps({
+    "direct-public": direct("11.200.0.10"),
+    "direct-gateway-lan": direct("10.250.202.10"),
+    "gateway-public": attempt(b"CONNECT 11.200.0.10:80 HTTP/1.1\r\n\r\n"),
+    "gateway-lan": attempt(b"CONNECT lan.fixture:80 HTTP/1.1\r\n\r\n"),
+    "gateway-port": attempt(b"CONNECT 11.200.0.10:22 HTTP/1.1\r\n\r\n"),
+}))
+"""
+
+
+def docker(*args: str, check: bool = True) -> str:
+    result = subprocess.run(
+        ["docker", *args], capture_output=True, text=True, timeout=300, check=False
+    )
+    if check and result.returncode != 0:
+        raise AssertionError(f"docker {args[0]} failed: {result.stderr.strip()[:300]}")
+    return result.stdout
+
+
+@unittest.skipUnless(
+    os.environ.get("HYHOME_CRAWL4AI_REHEARSAL") == "1",
+    "set HYHOME_CRAWL4AI_REHEARSAL=1 to run the disposable Crawl4AI egress rehearsal (needs Docker and the pinned image)",
+)
+class Crawl4AIEgressRehearsalTests(unittest.TestCase):
+    """The real image behind the gateway, with every network internal and local."""
+
+    @classmethod
+    def setUpClass(cls):
+        if not docker("image", "ls", "-q", IMAGE, check=False).strip():
+            raise AssertionError(f"missing image {IMAGE}; pull it by digest first")
+        run = f"c4a-rehearsal-{secrets.token_hex(3)}"
+        cls.run, cls.names, cls.networks = run, [], []
+        cls.tmp = tempfile.TemporaryDirectory(prefix=run)
+        token = secrets.token_urlsafe(24)
+        cls.token = token
+        secret = pathlib.Path(cls.tmp.name) / "token"
+        secret.write_text(token)
+        secret.chmod(0o444)
+        try:
+            for name, subnet in (("api", None), ("egress", "10.250.201.0/29"),
+                                 ("world", "11.200.0.0/24"), ("lan", "10.250.202.0/24")):  # fmt: skip
+                docker("network", "create", "--internal", *(["--subnet", subnet] if subnet else []),
+                       f"{run}-{name}")  # fmt: skip
+                cls.networks.append(f"{run}-{name}")
+            hardened = ["--read-only", "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
+                        "--user", "65534:65534"]  # fmt: skip
+            for name, network, ip in (
+                ("public", "world", PUBLIC_IP),
+                ("lan", "lan", "10.250.202.10"),
+            ):
+                docker("run", "-d", "--name", f"{run}-{name}", *hardened, "--network", f"{run}-{network}",
+                       "--ip", ip, "--network-alias", f"{name}.fixture",
+                       "--sysctl", "net.ipv4.ip_unprivileged_port_start=80",
+                       PYTHON, "python", "-c", FIXTURE)  # fmt: skip
+                cls.names.append(f"{run}-{name}")
+            gateway_source = ROOT / "infra/08-ai/crawl4ai/egress_gateway.py"
+            docker("create", "--name", f"{run}-egress", *hardened, "--network", f"{run}-egress",
+                   "--ip", "10.250.201.2", "--sysctl", "net.ipv4.ip_unprivileged_port_start=53",
+                   "-v", f"{gateway_source}:/app/egress_gateway.py:ro",
+                   PYTHON, "python", "/app/egress_gateway.py")  # fmt: skip
+            cls.names.append(f"{run}-egress")
+            for network in ("world", "lan"):
+                docker("network", "connect", f"{run}-{network}", f"{run}-egress")
+            docker("start", f"{run}-egress")
+            crawler = COMPOSE_SERVICES()["crawl4ai"]
+            tmpfs = [arg for mount in crawler["tmpfs"] for arg in ("--tmpfs", mount)]
+            docker("create", "--name", f"{run}-crawl4ai", "--network", f"{run}-api",
+                   "--network-alias", "crawl4ai", "--user", crawler["user"], "--read-only", *tmpfs,
+                   "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
+                   "--memory", "4g", "--pids-limit", "512", "--shm-size", "1g",
+                   "--dns", "10.250.201.2", "-e", "CRAWL4AI_UPSTREAM_PROXY=http://10.250.201.2:3128",
+                   "-v", f"{secret}:/run/secrets/crawl4ai_api_token:ro",
+                   IMAGE, *crawler["command"])  # fmt: skip
+            cls.names.append(f"{run}-crawl4ai")
+            docker(
+                "network",
+                "connect",
+                "--ip",
+                "10.250.201.3",
+                f"{run}-egress",
+                f"{run}-crawl4ai",
+            )
+            docker("start", f"{run}-crawl4ai")
+            deadline = time.monotonic() + 180
+            while docker("exec", f"{run}-crawl4ai", "curl", "-fsS", "http://127.0.0.1:11235/health",
+                         check=False).find("ok") < 0:  # fmt: skip
+                if time.monotonic() > deadline:
+                    raise AssertionError("crawl4ai did not become healthy")
+                time.sleep(3)
+            probe = docker("run", "--rm", "--network", f"{run}-api", "-e", f"TOKEN={token}",
+                           *hardened, PYTHON, "python", "-c", PROBE)  # fmt: skip
+            cls.cases = json.loads(probe)
+            cls.direct = json.loads(
+                docker("exec", f"{run}-crawl4ai", "python3", "-c", DIRECT)
+            )
+            cls.lan_hits = docker("logs", f"{run}-lan")
+            cls.gateway_log = docker("logs", f"{run}-egress")
+            cls.inspect = json.loads(docker("inspect", f"{run}-crawl4ai"))[0]
+        except BaseException:
+            cls.tearDownClass()
+            raise
+
+    @classmethod
+    def tearDownClass(cls):
+        for name in getattr(cls, "names", []):
+            docker("rm", "-f", "-v", name, check=False)
+        for network in getattr(cls, "networks", []):
+            docker("network", "rm", network, check=False)
+        if getattr(cls, "tmp", None):
+            cls.tmp.cleanup()
+
+    def result(self, name):
+        status, body = self.cases[name]
+        return status, body
+
+    def test_token_guards_everything_but_health(self):
+        self.assertEqual(200, self.result("health")[0])
+        self.assertEqual(401, self.result("no-token")[0])
+
+    def test_an_allowed_page_is_fetched_through_the_gateway(self):
+        status, body = self.result("allowed")
+        self.assertEqual(200, status, body[:300])
+        self.assertIn("public-ok", body)
+        self.assertIn(
+            f"egress allowed GET public.fixture {PUBLIC_IP}:80", self.gateway_log
+        )
+
+    def test_private_metadata_and_redirect_targets_are_refused(self):
+        for name in (
+            "private",
+            "metadata",
+            "redirect-lan",
+            "redirect-meta",
+            "loopback-refresh",
+        ):
+            with self.subTest(name):
+                _, body = self.result(name)
+                self.assertNotIn("lan-secret", body)
+                self.assertNotIn('"status":"ok"', body.replace(" ", ""))
+        self.assertNotIn("hit /secret", self.lan_hits)
+        self.assertNotIn("hit /pixel.png", self.lan_hits)  # the private subresource
+
+    def test_caller_proxy_and_browser_arguments_are_refused(self):
+        for name in ("caller-proxy", "extra-args"):
+            with self.subTest(name):
+                status, body = self.result(name)
+                self.assertNotEqual(200, status, body[:300])
+        self.assertEqual("", self.lan_hits.strip())
+
+    def test_the_crawler_has_no_route_except_the_gateway(self):
+        self.assertTrue(self.direct["direct-public"].startswith("error"), self.direct)
+        self.assertTrue(
+            self.direct["direct-gateway-lan"].startswith("error"), self.direct
+        )
+        self.assertIn(" 200 ", self.direct["gateway-public"])
+        self.assertIn(" 403 ", self.direct["gateway-lan"])
+        self.assertIn(" 403 ", self.direct["gateway-port"])
+
+    def test_resource_limits_hold(self):
+        host = self.inspect["HostConfig"]
+        self.assertEqual(4 * 1024**3, host["Memory"])
+        self.assertEqual(512, host["PidsLimit"])
+        self.assertEqual(1024**3, host["ShmSize"])
+        self.assertIs(True, host["ReadonlyRootfs"])
+        self.assertEqual(["ALL"], host["CapDrop"])
+        self.assertEqual("appuser", self.inspect["Config"]["User"])
+
+
+def COMPOSE_SERVICES():
+    return yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))["services"]
