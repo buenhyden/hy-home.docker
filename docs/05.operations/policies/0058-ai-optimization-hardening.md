@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
 이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI stateful 운영, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
 
 ## Scope
-
-### Policy Scope
 
 - `infra/08-ai/ollama/docker-compose.yml`
 - `infra/08-ai/open-webui/docker-compose.yml`
@@ -31,14 +27,7 @@ created: "2026-05-10"
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
-### Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../guides/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../runbooks/0058-ai-optimization-hardening.md) (`RUN-0058`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - Ollama public route는
@@ -77,12 +66,14 @@ created: "2026-05-10"
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
+## Exceptions
+
+- 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
+- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
+
 ### Verification
 
-- `bash scripts/hardening/check-all-hardening.sh 08-ai`
-- `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
+점검 명령은 [가이드의 Common Checks](../guides/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
@@ -91,12 +82,10 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 - 월 1회 정기 검토
 - AI 이미지/모델 정책/인증 정책 변경 시 수시 검토
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
-- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
+- Declared parent: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](../guides/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../runbooks/0058-ai-optimization-hardening.md) (`RUN-0058`)
 
 ## Related Documents
 

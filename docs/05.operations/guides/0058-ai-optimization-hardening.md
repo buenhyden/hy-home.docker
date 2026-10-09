@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -16,31 +16,17 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
+이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
-이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
+**대상**
 
 - SRE / Platform Operator
 - DevOps Engineer
 - AI Platform Owner
 
-### Purpose
+**목적**
 
 - Ollama/Open WebUI 공개 경로를 gateway+SSO 정책에 정렬한다.
 - Ollama GPU 자원 보호를 위한 concurrency/queue 상한을 적용한다.
@@ -48,13 +34,15 @@ created: "2026-05-17"
 - AI 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 운영 기준으로 반영한다.
 
-### Prerequisites
+## Usage
+
+### 사전 조건
 
 - Docker / Docker Compose 실행 환경
 - `infra/08-ai` 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Step-by-step Instructions
+### 사용 절차
 
 1. 정적 구성 점검
    - `bash scripts/hardening/check-all-hardening.sh 08-ai`
@@ -80,14 +68,6 @@ created: "2026-05-17"
    - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
    - 대화 로그 보존/마스킹 정책을 반영한다.
 
-### Common Pitfalls
-
-- Ollama proxy chain을 Open WebUI native-OIDC route에 복제하거나, 반대로
-  Ollama에서 proxy auth를 누락하는 실수
-- Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
-- Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
-- exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
-
 ### Control evidence boundary
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
@@ -108,6 +88,14 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 - Declared parent: [08-AI Optimization Hardening Operations Policy](../policies/0058-ai-optimization-hardening.md) (`POL-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Policy](../policies/0058-ai-optimization-hardening.md) (`POL-0058`), [Runbook](../runbooks/0058-ai-optimization-hardening.md) (`RUN-0058`)
+
+## Troubleshooting
+
+- Ollama proxy chain을 Open WebUI native-OIDC route에 복제하거나, 반대로
+  Ollama에서 proxy auth를 누락하는 실수
+- Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
+- Open WebUI를 stateless 템플릿으로 운용해 상태 드리프트를 유발하는 실수
+- exporter health 계약 없이 모니터링 신뢰도를 낮추는 실수
 
 ## Related Documents
 

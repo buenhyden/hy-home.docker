@@ -1,10 +1,10 @@
 ---
 title: "Ollama Operations Policy"
-version: "2.0.1"
+version: "2.0.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0056"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 문서는 Ollama 운영 정책을 정의한다. 제한된 GPU 자원에서 안정적으로 추론 서비스를 제공하기 위해 모델 도입 기준, 리소스 사용 한계, 장애 대응 기준을 규정한다.
 
 ## Scope
-
-### Policy Scope
 
 Ollama 추론 엔진 운영 전반:
 
@@ -33,14 +29,7 @@ Ollama 추론 엔진 운영 전반:
 - **Systems**: `ollama`, `ollama-exporter`, `open-webui`
 - **Environments**: 로컬·개발·홈랩과 운영 환경에 준하는 rehearsal
 
-### Traceability
-
-- Declared parent: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../guides/0056-ollama.md) (`GDE-0056`), [Runbook](../runbooks/0056-ollama.md) (`RUN-0056`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - 호스트 직접 API 포트는 loopback에만 바인딩한다. 컨테이너 소비자는 서비스 DNS를, 원격 소비자는 인증된 gateway 경로를 사용한다.
@@ -67,7 +56,12 @@ Ollama 추론 엔진 운영 전반:
 
 ### Model and exporter capacity boundary
 
-`ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.
+용량과 exporter 경계의 설명은 [가이드](../guides/0056-ollama.md#model-and-exporter-capacity-boundary)가 소유한다. 이 정책은 병렬·loaded-model·queue 설정을 context 크기와 공유 GPU 메모리와 함께 평가하고, 한도를 실측 여유로 해석하지 않을 것을 요구한다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../runbooks/0055-gpu-recovery.md) 경계를 따른다.
+
+## Exceptions
+
+- 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
+- 예외 종료 후 기본 정책으로 즉시 복귀하고 기록을 남겨야 한다.
 
 ### Verification
 
@@ -89,12 +83,10 @@ Ollama 추론 엔진 운영 전반:
 - **Quarterly**: 모델 포트폴리오/자원 정책 검토
 - **Per Model Change**: 모델 도입/교체 건별 검토
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 장애 복구 목적의 단기 예외(예: 임시 모델 fallback)는 온콜 승인 하에 허용.
-- 예외 종료 후 기본 정책으로 즉시 복귀하고 기록을 남겨야 한다.
+- Declared parent: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](../guides/0056-ollama.md) (`GDE-0056`), [Runbook](../runbooks/0056-ollama.md) (`RUN-0056`)
 
 ## Related Documents
 

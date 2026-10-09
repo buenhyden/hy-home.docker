@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -16,25 +16,14 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
 ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다.
 
 ## Scope
 
-### Policy Scope
-
 `comfyui`를 `ai`와 `ai-image` 아래에서 항상 켜져 있는 HOME 기능으로 유지한다.
 Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트를 소유한다.
 
-### Traceability
-
-- 상위 아키텍처: [AD-0008](../../02.architecture/descriptions/0008-ai-architecture.md)
-- 대상 동위 문서: [가이드](../guides/0081-comfyui.md), [런북](../runbooks/0081-comfyui.md)
-
 ## Rules
-
-### Controls
 
 - gateway 인증과 loopback 전용 직접 게시를 유지한다. 노출이나 gateway를
   바꾸려면 범위, 만료, 롤백을 담은 승인된 예외가 있어야 한다.
@@ -74,6 +63,10 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 
 재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
 
+## Exceptions
+
+예외에는 소유자, 범위, 위험, 만료, 복구 조건이 있어야 한다.
+
 ### Verification
 
 배포 전에 소스와 메타데이터 점검을 사용한다. 런타임 시작, 모델 다운로드,
@@ -88,11 +81,10 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 매월, 그리고 이미지, 커스텀 노드, 영속 데이터, 노출, 또는 GPU 정책 변경 전에
 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-예외에는 소유자, 범위, 위험, 만료, 복구 조건이 있어야 한다.
+- 상위 아키텍처: [AD-0008](../../02.architecture/descriptions/0008-ai-architecture.md)
+- 대상 동위 문서: [가이드](../guides/0081-comfyui.md), [런북](../runbooks/0081-comfyui.md)
 
 ## Related Documents
 

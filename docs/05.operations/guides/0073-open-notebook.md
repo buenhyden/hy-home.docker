@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -12,6 +12,7 @@ parent_ids:
 implementation_services:
   infra/08-ai/open-notebook/docker-compose.yml:
   - open_notebook
+  - surrealdb
 created: "2026-05-10"
 ---
 
@@ -19,23 +20,17 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### 목적과 분류
-
 Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_notebook` 서비스는
 오직 `notebook`에만 속한다. 소유자 커밋 `d5912ab03`가 이를 포괄 `admin` selector에서
 제거했으며 HOME에서도 제외된다. 이 서비스의 `surrealdb` 의존성은 같은
 [Open Notebook Compose](../../../infra/08-ai/open-notebook/docker-compose.yml)에
 함께 들어 있고 같은 selector를 공유하며 영속 데이터베이스를 제공한다.
+
+## Audience and Goal
+
+Laboratory Operator와 `@buenhyden`이 OPTIONAL 노트북 워크스페이스를 `notebook` selector로 켜고 쓰는 경우를 다룬다. 목표는 승인된 비밀번호와 허용된 모델/provider만으로 노트북을 사용하고, 데이터·키·이미지 한계를 알고 운영하는 것이다.
+
+## Usage
 
 ### 현재 구현과 데이터
 
@@ -60,6 +55,16 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0073-open-notebook.md)의 `승인된 사용과 일관된 복구 세트` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
+### 정상 사용과 이미지 한계
+
+승인된 비밀번호로 노트북·소스를 선택하고 허용된 모델/provider만 사용한다.
+`open_notebook`은 SurrealDB health를 기다리지만 선택적 Ollama URL에 readiness
+의존성은 없다. 앱은 `edge_net`·`ai_net`, DB는 `ai_net`에 연결된다. source의
+secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모든 FILE 옵션 지원·암호화
+동작을 증명하지 않는다. `v1-latest-single`과 DB의 `v2`는 변경 가능한 태그다.
+선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
+자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
+
 ### Common Checks
 
 - `docker compose --profile notebook config --quiet`
@@ -70,16 +75,6 @@ Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_noteb
 
 데이터베이스/키/provider 복구와 업그레이드에는
 [runbook](../runbooks/0073-open-notebook.md)을 사용한다.
-
-### 정상 사용과 이미지 한계
-
-승인된 비밀번호로 노트북·소스를 선택하고 허용된 모델/provider만 사용한다.
-`open_notebook`은 SurrealDB health를 기다리지만 선택적 Ollama URL에 readiness
-의존성은 없다. 앱은 `edge_net`·`ai_net`, DB는 `ai_net`에 연결된다. source의
-secret 파일 선언과 shell의 환경변수 전달은 실제 이미지의 모든 FILE 옵션 지원·암호화
-동작을 증명하지 않는다. `v1-latest-single`과 DB의 `v2`는 변경 가능한 태그다.
-선택한 이미지 식별자·호환성·자격 증명 복호화 결과를 별도 승인된 검증으로 확인한다.
-자원·마운트 설정은 Compose가 소유하며 프로필 분리가 물리적 격리를 뜻하지 않는다.
 
 ### Traceability
 

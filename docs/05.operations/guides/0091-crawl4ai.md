@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -20,24 +20,18 @@ created: "2026-09-21"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 Crawl4AI는 `crawl4ai`로만 선택되는 OPTIONAL 크롤러다. 예정된 소비자는
 Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있어 지금은
 이를 사용하는 서비스가 없다. 선택하지 않으면 실행 자원을 소비하지 않지만 image/source 관리 비용은 남는다. 다음
 검토에도 소비자가 없으면 승인된 제거 절차로 넘긴다.
 
-### Current implementation
+## Audience and Goal
+
+`crawl4ai`를 consumer에 연결하려는 운영자와 `@buenhyden`이 대상이다. 목표는 SSRF 방어와 인증 경계를 이해한 상태에서 승인된 consumer만 연결하는 것이다.
+
+## Usage
+
+### 현재 구현
 
 - [Crawl4AI Compose](../../../infra/08-ai/crawl4ai/docker-compose.yml)는
   2026-10-03 확인한 [공식 보안 릴리스](https://github.com/unclecode/crawl4ai/releases)에 맞춰 이미지를 고정하고 `template-infra-high`를 4 GiB 메모리와 512

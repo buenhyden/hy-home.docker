@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -16,19 +16,17 @@ created: "2026-09-21"
 
 ## Overview
 
+이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 시작 실패, 토큰 노출, 메모리 압박, 컨슈머 연결/해제 시 사용한다.
 
-## Procedure
+### Service lifecycle prerequisites
 
-### Procedure
+`crawl4ai`는 자체 profile만으로 선택하며 token 준비 실패 시 wrapper가 종료한다. 재생성하면 tmpfs cache가 사라지므로 필요한 산출물은 먼저 승인된 위치에 보존한다. 작업을 drain한 뒤 중지하며 token 파일 교체는 기존 컨테이너 restart만으로 새 bind가 반영된다고 가정하지 않는다.
+
+## Procedure
 
 ### Execution Boundary
 
@@ -36,9 +34,7 @@ created: "2026-09-21"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](0021-backup-and-restore.md), [image 변경](0086-dependency-version-management.md), [시크릿](0085-openbao.md), [계정](0014-keycloak.md), [gateway·인증서](0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Service lifecycle prerequisites
-
-`crawl4ai`는 자체 profile만으로 선택하며 token 준비 실패 시 wrapper가 종료한다. 재생성하면 tmpfs cache가 사라지므로 필요한 산출물은 먼저 승인된 위치에 보존한다. 작업을 drain한 뒤 중지하며 token 파일 교체는 기존 컨테이너 restart만으로 새 bind가 반영된다고 가정하지 않는다.
+### 진단과 복구 단계
 
 1. 점검한다.
 
@@ -62,16 +58,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 6. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
 
-### Verification and recovery limits
+## Verification
 
 격리 network의 기존 승인 client에서 health와 protected API의 무자격 거부·승인 credential 성공을 구분해 확인한다. Token을 CLI 인자에 넣거나 crawl 내용을 캡처하지 않는다. UI/static 예외는 API 우회 증거가 아니다. 누락·짧은 secret으로 종료했다면 guard를 완화하지 않는다. 승인된 시작은 root Compose의 해당 service만 대상으로 하고 health·consumer 인증·허용 URL 시험 뒤 트래픽을 허용한다. 예상 밖 LAN/private 접근이나 자원 압박이면 중단한다. Tmpfs output/cache는 재시작으로 사라질 수 있으므로 미완료 요청을 consumer와 조정한다. 자체 영속 복원은 없고 provider credential은 [시크릿 소유자](0085-openbao.md)를 따른다.
 
-## Verification
-
-### Evidence
-
-종료 코드, 이미지, 소스 커밋을 기록한다. 토큰이나 크롤링된 내용은 기록하지
-않는다.
+종료 코드, 이미지, 소스 커밋을 기록한다. 토큰이나 크롤링된 내용은 기록하지 않는다.
 
 ## Rollback and Escalation
 
@@ -84,12 +75,12 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공,
 SSRF 의심 또는 복구 실패이면 중단하고 @buenhyden에게 정제된 증거로 넘긴다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0091-crawl4ai.md) (`GDE-0091`)
 - [Policy](../policies/0091-crawl4ai.md) (`POL-0091`)
 - [Crawl4AI Compose](../../../infra/08-ai/crawl4ai/docker-compose.yml)
-
-## Related Documents
 
 - [Crawl4AI self-hosting](https://docs.crawl4ai.com/core/self-hosting/)
