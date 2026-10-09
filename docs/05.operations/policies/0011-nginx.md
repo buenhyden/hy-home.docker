@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0011"
 parent_ids:
@@ -12,18 +12,13 @@ parent_ids:
 created: "2026-05-17"
 ---
 
-
 # 01-Gateway Nginx Operations Policy
 
 ## Overview
 
-### Overview
-
 이 문서는 `01-gateway`의 Nginx 운영 정책을 정의한다. Nginx는 특수 경로(`/oauth2/`, `/keycloak/`, `/cdn/`) 프록시 역할을 수행하며, `Balanced` 하드닝 기준을 준수한다.
 
 ## Scope
-
-### Policy Scope
 
 - `infra/01-gateway/nginx/docker-compose.yml`
 - `infra/01-gateway/nginx/config/nginx.conf`
@@ -31,16 +26,9 @@ created: "2026-05-17"
 - **Systems**: Nginx gateway proxy
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Traceability
-
-- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../guides/0011-nginx.md) (`GDE-0011`), [Runbook](../runbooks/0011-nginx.md) (`RUN-0011`)
-
 ## Rules
 
-### Controls
-
-- **Required**:
+- **필수**:
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
   - `/ping` 실패, 반복 5xx 증가, 인증 루프 발생 시 즉시 런북 절차를 수행해야 한다.
   - Nginx 서비스는 `template-infra-readonly-low`를 사용해야 한다.
@@ -55,9 +43,9 @@ created: "2026-05-17"
     점유하는 Traefik profile과 함께 선택하지 않는다.
   - Git config와 private certificate backup authority를 구분한다. tmpfs는 복구
     대상이 아니며 private key를 repository/evidence에 복사하지 않는다.
-- **Allowed**:
+- **허용**:
   - 서비스 특성(대용량 업로드/다운로드)에 따른 location 단위 timeout override
-- **Disallowed**:
+- **금지**:
   - `/ping`, `/oauth2/`, `/keycloak/`, `/cdn/` 기본 흐름 훼손
   - readonly 환경에서 영구 쓰기 경로 의존 설정
 
@@ -81,6 +69,10 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
+## Exceptions
+
+- 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
+
 ### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
@@ -99,11 +91,10 @@ image upgrade에는 `nginx -t`, 대표 route의 수용 검증, 같은 config로 
 - 월 1회 정기 점검
 - nginx.conf 변경 시 수시 점검
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 장애 대응 중 임시 timeout 완화 가능. 단, 원복 계획과 변경 로그를 남겨야 한다.
+- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../guides/0011-nginx.md) (`GDE-0011`), [Runbook](../runbooks/0011-nginx.md) (`RUN-0011`)
 
 ## Related Documents
 

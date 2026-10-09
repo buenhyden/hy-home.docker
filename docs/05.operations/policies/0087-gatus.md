@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -16,25 +16,14 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
 Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability monitor다.
 
 ## Scope
 
-### Policy Scope
-
 로컬 Gatus 이미지, native OIDC 설정, read-only config mount, `gatus-data` SQLite
 상태, status UI, metrics 경계, probe를 HOME availability 역량 안에서 유지한다.
 
-### Traceability
-
-- Governing architecture: [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- Subject peers: [Guide](../guides/0087-gatus.md) and [Runbook](../runbooks/0087-gatus.md)
-
 ## Rules
-
-### Controls
 
 - 직접 host 포트는 게시하지 않고, 설정된 non-root identity, read-only root filesystem,
   쓰기 가능한 data mount를 Compose 소스가 선언한 그대로 유지한다.
@@ -64,6 +53,10 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 Build 수용에는 source commit·checksum·local patch·생성 image digest가 필요하며 local tag만으로 패치를 증명하지 않는다. Zero-fuzz, 대소문자를 구분하는 정확한 subject, S256 PKCE, Secure/HttpOnly 임시 cookie, state/nonce 검사와 CA 검증을 유지한다. Public health/bootstrap/metrics와 보호 status API를 구분한다. Source/auth/storage 예외와 종료 시점은 @buenhyden이 승인하며 소스 문서 검사는 runtime 예외를 부여하지 않는다.
 
+## Exceptions
+
+예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
+
 ### Verification
 
 정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
@@ -75,11 +68,10 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
+- Governing architecture: [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
+- Subject peers: [Guide](../guides/0087-gatus.md) and [Runbook](../runbooks/0087-gatus.md)
 
 ## Related Documents
 

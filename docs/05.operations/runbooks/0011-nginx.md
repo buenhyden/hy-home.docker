@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0011"
 parent_ids:
@@ -16,34 +16,20 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 이 런북은 Nginx readonly/tmpfs 전환 이후 발생 가능한 장애, `nginx -t` 실패, `/ping` 헬스체크 실패 상황의 복구 절차를 정의한다.
 
 > Scope: Nginx Special-path Proxy Recovery
 
-### Purpose
+목적은 readonly/tmpfs 운영 안정성 확보, config lint 실패 시 안전 롤백, 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복이다.
 
-- readonly/tmpfs 운영 안정성 확보
-- config lint 실패 시 안전 롤백
-- 특수 경로 프록시(`/oauth2/`, `/keycloak/`, `/cdn/`) 정상성 회복
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - `nginx -t` 실패
 - `/ping` healthcheck 반복 실패
 - readonly 전환 후 캐시/로그/PID 쓰기 오류
 - 백엔드 장애 전환(failover) 동작 이상
-
-## Procedure
-
-### Procedure
 
 ### Target and prerequisites
 
@@ -53,6 +39,8 @@ created: "2026-05-17"
 실제 배포 이미지 identity를 owner가 확인하기 전에는 기동하지 않는다. 현재 mutable
 image와 HTTP health redirect 때문에 isolated runtime 수용 검증은 미완료다.
 전체 `core`/`dev`/`local` 선택으로 의존성을 해결하면 Traefik과 충돌하므로 금지한다.
+
+## Procedure
 
 ### Static checks and diagnosis
 
@@ -93,6 +81,8 @@ inode를 읽는다고 보장할 수 없다. [POL-0006](../policies/0006-infrastr
 reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s reload`로
 수행한다. lint 실패 상태에서는 reload하지 않는다.
 
+## Verification
+
 ### Acceptance and stop conditions
 
 - HTTPS `/ping`은 trusted CA·일치하는 hostname으로 200/pong을 확인한다.
@@ -106,8 +96,6 @@ reload는 `nginx -t` 성공 뒤 승인된 `docker compose exec nginx nginx -s re
   backend proxy는 주석이다. 실제 앱 연결 전에 구현 수정과 독립 인증 검증이 필요하다.
 - timeout·`proxy_next_upstream`·`max_fails/fail_timeout`을 확인하되 단일 upstream을
   다중 노드 failover로 보고하지 않는다. 실패 시 트래픽 전환을 멈춘다.
-
-## Verification
 
 ### Evidence
 

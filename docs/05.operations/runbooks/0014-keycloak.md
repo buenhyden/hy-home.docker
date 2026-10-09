@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -16,25 +16,15 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 이 런북은 Keycloak readiness 실패, DB 연결 오류, issuer/redirect 불일치, proxy header 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다. 값이 필요한 점검은 secret 값을 출력하지 않는 방식으로만 수행한다.
 
 > Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
 
-### Purpose
+목적은 Keycloak 가용성을 빠르게 복구하고, issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁히며, 시크릿/설정 회귀 시 안전하게 롤백하는 것이다.
 
-- Keycloak 가용성을 빠르게 복구한다.
-- issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁힌다.
-- 시크릿/설정 회귀 시 안전하게 롤백한다.
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
@@ -42,10 +32,6 @@ created: "2026-05-17"
 - OAuth2 Proxy 또는 native OIDC client의 `invalid_redirect_uri`, issuer mismatch, JWKS fetch 실패
 - logout 후 즉시 재로그인되는 세션 경계 문제
 - token, session, client secret 노출 후 폐기가 필요할 때
-
-## Procedure
-
-### Procedure
 
 ### Target, approval and safe evidence
 
@@ -57,13 +43,15 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](0099-system-operations.md), cold-start는
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
 
-### Checklist
+## Procedure
+
+### Preflight checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] 승인된 `docker compose ps keycloak mng-pg`에서 `keycloak`, `mng-pg` 상태 확인
 
-### Steps
+### Diagnosis and recovery steps
 
 1. 설정/로그 확인
    - Keycloak의 정제된 DB/OIDC 오류 요약
@@ -185,30 +173,19 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 설치 성공은 관찰하지 않았다. 로그인 성공 외에 Pool/DAG/Asset별 허용·거부를 확인하고
 [Airflow Runbook](0050-airflow.md)으로 후속 앱 검증을 전달한다.
 
-### Verification Steps
+## Verification
+
+### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(기본9000 기준; listener 변경 시 승인된 관리 포트와 함께 조정)
 
-### Observability and Evidence Sources
+### Observability and evidence sources
 
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
   - Keycloak의 정제된 DB/OIDC 오류 요약
   - `check-all-hardening.sh 02-auth` 실행 결과
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 쓰기 중단 시점을 기록하고 Keycloak을 중지한 뒤 database owner가 검증한
-      `mng-pg` Keycloak database 백업을 새 격리 database로 복원한다.
-- [ ] 복구 시점과 일치하는 image/config declaration 및 secret references로
-      격리 Keycloak을 연결한다. 운영 database 위에 import하지 않는다.
-- [ ] realm/client/user 수, 관리자 로그인, issuer/discovery, OAuth2 Proxy,
-      대표 native OIDC client를 확인하고 기존 token/session을 재사용하지 않는다.
-- [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
-      기존 환경을 변경하지 않은 채 database owner에게 인계한다.
-
-## Verification
 
 ### Evidence
 
@@ -218,6 +195,17 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 ## Rollback and Escalation
 
 ### Rollback or Recovery
+
+격리 복구 절차는 다음과 같다.
+
+- [ ] 쓰기 중단 시점을 기록하고 Keycloak을 중지한 뒤 database owner가 검증한
+      `mng-pg` Keycloak database 백업을 새 격리 database로 복원한다.
+- [ ] 복구 시점과 일치하는 image/config declaration 및 secret references로
+      격리 Keycloak을 연결한다. 운영 database 위에 import하지 않는다.
+- [ ] realm/client/user 수, 관리자 로그인, issuer/discovery, OAuth2 Proxy,
+      대표 native OIDC client를 확인하고 기존 token/session을 재사용하지 않는다.
+- [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
+      기존 환경을 변경하지 않은 채 database owner에게 인계한다.
 
 Realm export는 database backup을 대신하지 않는다. 공식 절차는 일관성을 위해
 모든 Keycloak node를 중지한 export를 권장한다. 업그레이드 rollback에는 이전

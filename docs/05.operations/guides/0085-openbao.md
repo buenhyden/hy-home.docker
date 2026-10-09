@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -20,21 +20,15 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+OpenBao는 HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상은 OpenBao를 운영하거나 secret 소비 경로를 연결하는 보안·인프라 운영자다. 구성과 persistent input, 사람 관리자 접근(Keycloak native OIDC), credential 경계를 이해하고, 실행 절차가 필요하면 Runbook으로 넘어가는 것이 목표다.
 
 ## Usage
 
-### Usage
-
-### Implementation Sources
-
-- [infra/03-security/openbao/docker-compose.yml](../../../infra/03-security/openbao/docker-compose.yml)
-
-HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다.
+구현 소스는 [infra/03-security/openbao/docker-compose.yml](../../../infra/03-security/openbao/docker-compose.yml)이다.
 
 Profile: `core / dev / local / security / secrets`. Service: `openbao openbao-agent`. root
 Compose가 포함 여부를 관장한다.

@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0014"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 문서는 `02-auth` Keycloak 운영 정책을 정의한다. DB/관리자 시크릿 처리, readiness 검증, 변경 통제 기준을 명시한다.
 
 ## Scope
-
-### Policy Scope
 
 - `infra/02-auth/keycloak/docker-compose.yml`
 - Keycloak secret injection and healthcheck contract
@@ -31,26 +27,19 @@ created: "2026-05-17"
 - **Systems**: Keycloak (Quarkus)
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Traceability
-
-- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Runbook](../runbooks/0014-keycloak.md) (`RUN-0014`)
-
 ## Rules
 
-### Controls
-
-- **Required**:
+- **필수**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
   - readiness 실패 지속, 로그인 실패 급증, realm 설정 오류 시 런북 절차를 수행해야 한다.
   - Keycloak은 `template-infra-high`를 사용한다.
   - DB/Admin 비밀은 `/run/secrets` 파일에서 읽어 환경 변수로 주입한다.
   - readiness healthcheck(`/health/ready`)를 유지한다.
   - 시크릿 길이/값 등 민감한 디버그 출력은 금지한다.
-- **Allowed**:
+- **허용**:
   - 기동 안정화를 위한 healthcheck 타이밍 조정
   - 운영 승인 하의 realm/client 설정 변경
-- **Disallowed**:
+- **금지**:
   - 시크릿 평문 하드코딩
   - 인증 우회 목적 설정 변경
 
@@ -65,6 +54,10 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 보존할 상태와 private credential은 [POL-0021](0021-backup-and-restore.md)의
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
+
+## Exceptions
+
+- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
 
 ### Verification
 
@@ -88,11 +81,10 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 월 1회 정기 점검
 - Keycloak 버전/realm 정책 변경 시 수시 점검
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 긴급 장애 대응 시 임시 설정 변경은 가능하나, 동일 작업 윈도우 내 원복 계획과 변경 기록을 남겨야 한다.
+- Declared parent: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Runbook](../runbooks/0014-keycloak.md) (`RUN-0014`)
 
 ## Related Documents
 

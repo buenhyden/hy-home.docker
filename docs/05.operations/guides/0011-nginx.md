@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Nginx Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0011"
 parent_ids:
@@ -19,45 +19,25 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. Nginx의 lifecycle class는 **OPTIONAL** alternative gateway다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Implementation Sources
-
-- [infra/01-gateway/nginx/docker-compose.yml](../../../infra/01-gateway/nginx/docker-compose.yml)
-
-### Overview
-
-이 문서는 01-gateway의 Nginx 특수 경로 프록시 구성과 하드닝 포인트를 설명한다. Nginx의 lifecycle class는 **OPTIONAL** alternative gateway다. readonly/tmpfs 운영, timeout/failover, 정적 캐시 정책의 의도를 중심으로 다룬다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- Infra/DevOps Engineers
-- Operators
-- Contributors
-
-### Purpose
+대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 두 가지다.
 
 - Nginx를 `template-infra-readonly-low` 기반으로 안정적으로 운영한다.
 - `/oauth2/`, `/keycloak/`, `/cdn/` 경로 흐름을 유지하면서 하드닝 변경을 적용한다.
 
-### Prerequisites
+사전 조건은 다음과 같다.
 
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/nginx` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - Nginx runtime 검증 시 명시적 root network/dependency context 승인 필요
+
+## Usage
+
+구현 소스는 [infra/01-gateway/nginx/docker-compose.yml](../../../infra/01-gateway/nginx/docker-compose.yml)이다.
 
 ### Source, activation and route limits
 
@@ -105,27 +85,11 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 정상 신호는 lint 성공, TLS 응답, 필요한 경로와 인증의 개별 수용 결과이며,
 운영 절차는 Runbook이 소유한다.
 
-### Step-by-step Instructions
-
-1. Compose 하드닝 확인
-   - `infra/01-gateway/nginx/docker-compose.yml`
-   - readonly 템플릿/필수 tmpfs/`/ping` healthcheck 존재 확인
-2. Nginx config 하드닝 확인
-   - `infra/01-gateway/nginx/config/nginx.conf`
-   - `server_tokens off`, timeout 3종, `proxy_next_upstream`, upstream `max_fails/fail_timeout`, 정적 캐시 location 확인
-3. 설정 검증
-   - 정적 검증: `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-   - runtime lint: approved Nginx runtime context에서 `docker compose exec nginx nginx -t`
-4. 하드닝 검증
-   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-
-### Common Pitfalls
-
-- readonly 전환 후 `/var/cache/nginx`/`/var/log/nginx`/`/var/run` tmpfs 누락
-- `proxy_pass` trailing slash 처리 실수로 경로 재작성 오류
-- timeout 전역값/특정 location override 충돌
-
 ### Common Checks
+
+1. Compose 하드닝: [docker-compose.yml](../../../infra/01-gateway/nginx/docker-compose.yml)에 readonly 템플릿, 필수 tmpfs, `/ping` healthcheck가 있는지 본다.
+2. Nginx config 하드닝: `infra/01-gateway/nginx/config/nginx.conf`에서 `server_tokens off`, timeout 3종, `proxy_next_upstream`, upstream `max_fails/fail_timeout`, 정적 캐시 location을 본다.
+3. 정적 검증과 runtime lint는 아래 명령을 쓴다.
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec nginx nginx -t`는 승인된 Nginx runtime context가 실행 중일 때만 사용한다.
@@ -141,6 +105,12 @@ OOM을 함께 본다. Nginx 로그 경로는 tmpfs `/var/log/nginx`이며 Docker
 - Declared parent: [01-Gateway Nginx Operations Policy](../policies/0011-nginx.md) (`POL-0011`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Policy](../policies/0011-nginx.md) (`POL-0011`), [Runbook](../runbooks/0011-nginx.md) (`RUN-0011`)
+
+## Troubleshooting
+
+- readonly 전환 후 `/var/cache/nginx`, `/var/log/nginx`, `/var/run` tmpfs가 빠졌는지 본다.
+- `proxy_pass`의 끝 슬래시 처리를 잘못하면 경로 재작성 오류가 난다.
+- timeout 전역값과 location별 override가 충돌하는지 본다.
 
 ## Related Documents
 

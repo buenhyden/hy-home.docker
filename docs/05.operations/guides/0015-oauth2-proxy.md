@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -21,43 +21,17 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이고, `oauth2-proxy-valkey`와 `oauth2-proxy-valkey-exporter` helper의 class는 **OPTIONAL**이다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Implementation Sources
-
-- [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../infra/02-auth/oauth2-proxy/docker-compose.yml)
-
-`oauth2-proxy-valkey-exporter`는 OAuth2 session-store metric을 제공하며, 활성화 여부는 작성된 Compose profile을 따른다.
-
-### Overview
-
-이 문서는 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하는 방법을 설명한다. `oauth2-proxy`의 lifecycle class는 **HOME**이고, `oauth2-proxy-valkey`와 `oauth2-proxy-valkey-exporter` helper의 class는 **OPTIONAL**이다. Keycloak OIDC provider, redis/Valkey session storage, cookie와 token의 차이, callback/logout 경계를 함께 다룬다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. OAuth2 Proxy 전체 login/logout acceptance는 별도 런북 증거가 필요하다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- Infra/DevOps Engineers
-- Operators
-- Contributors
-
-### Purpose
+대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 세 가지다.
 
 - 인증 프록시를 표준 하드닝 상태로 유지한다.
 - 신규 서비스의 gateway SSO 연동 시 issuer, callback, cookie, session 회귀를 줄인다.
 - OAuth2 Proxy session logout과 Keycloak SSO logout을 구분한다.
 
-### Prerequisites
+사전 조건은 다음과 같다.
 
 - `infra/02-auth/keycloak` 정상 동작
 - `infra/02-auth/oauth2-proxy` 구성 파일 접근
@@ -67,6 +41,10 @@ created: "2026-05-10"
   공유 경로는 `dev.Dockerfile`/`docker-entrypoint.dev.sh`의 `mng_valkey_password`,
   전용 경로는 `Dockerfile`/`docker-entrypoint.sh`의 `oauth2_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
+
+## Usage
+
+구현 소스는 [infra/02-auth/oauth2-proxy/docker-compose.yml](../../../infra/02-auth/oauth2-proxy/docker-compose.yml)이다. `oauth2-proxy-valkey-exporter`는 OAuth2 session-store metric을 제공하며, 활성화 여부는 작성된 Compose profile을 따른다.
 
 ### Build selection and effective startup
 
@@ -139,7 +117,7 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 
 공식 OAuth2 Proxy endpoint 문서에 따르면 `/oauth2/sign_out`은 OAuth2 Proxy cookie만 삭제한다. 사용자는 여전히 Keycloak에 로그인된 상태일 수 있으며 즉시 다시 로그인될 수도 있다. Keycloak SSO logout에는 허용된 `rd` 목적지와 일치하는 whitelist 설정을 사용하여 provider end-session endpoint로 redirect하는 과정이 필요하다. 현재 추적되는 설정은 `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`을 지정하지만, 모든 서비스의 logout 버튼이 Keycloak end-session redirect를 호출한다는 증거는 아니다. 현재 logout이 Keycloak SSO까지 종료한다고 일괄적으로 주장하지 않는다.
 
-### Step-by-step Instructions
+### Common Checks
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
@@ -157,7 +135,7 @@ The tracked config requests `openid email profile offline_access groups`, uses P
    - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-### Common Pitfalls
+### Pitfalls
 
 - `DEFAULT_URL`, Keycloak realm issuer, OAuth2 Proxy callback 도메인 불일치
 - `ssl_insecure_skip_verify=false` 상태에서 root CA mount가 깨져 discovery/JWKS fetch가 실패하는 경우
@@ -166,14 +144,9 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 - `/oauth2/sign_out`을 Keycloak SSO 종료로 오해하는 경우
 - `trusted_ips` 또는 `trusted_proxy_ips`를 넓게 두고 forwarded header spoofing 위험을 검토하지 않는 경우
 
-전용 Valkey server/exporter와 인증 health probe는 현재 password를 process 인자로
-소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
-`docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
-`.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
-횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
-전달 방식 수정은 별도 구현 변경으로 검토한다.
+프로세스 인자로 전달되는 Valkey credential의 증거 취급 기준은 [Policy](../policies/0015-oauth2-proxy.md#rules)가 소유한다.
 
-### Common Checks
+검증 명령 모음은 다음과 같다.
 
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
