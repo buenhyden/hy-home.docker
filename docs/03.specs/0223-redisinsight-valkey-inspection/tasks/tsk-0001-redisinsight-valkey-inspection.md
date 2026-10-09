@@ -131,8 +131,12 @@ On HOME the network was created, Traefik was attached with
 throwaway `edge_net` container and `dev-valkey` and `mng-valkey` all get a
 refused connection to the UI port while the same probe reaches Traefik on 443;
 unauthenticated requests answer 302 to Keycloak and both connections answer
-200. MNG Valkey still runs the previous healthcheck form until prompt 14
-recreates it for its monitor account; the change does not alter behaviour.
+200. On the owner's request MNG Valkey was then recreated with the new
+healthcheck: healthy in 13 seconds, `REDISCLI_AUTH` in the healthcheck,
+`MNG_VALKEY_PORT` 6379, keys 234 then 233 (one expiring key), and Airflow,
+Flower, n8n, n8n-worker, the four k3d clients, the exporter, Gatus and
+RedisInsight reconnected or stayed healthy; OAuth2 Proxy logged no Valkey
+error and SSO answered 302.
 
 The re-review confirmed every finding resolved and raised two Minor ones, and
 a host probe found that host processes still reached the UI through the
@@ -167,9 +171,8 @@ Rehearsal with a host check: 9 pass.
 Not complete: W6 validation and the merge remain. The owner signed in at
 `https://redisinsight.hy.home.arpa/`, saw only `DEV / dev-valkey` and
 `MNG / mng-valkey`, and confirmed that a non-administrator is refused. The
-owner set the disposal of the owner-only `/data` copy, which holds the former
-plaintext admin passwords, for 2026-10-09; the agent's delete was refused by
-the session's permission settings, so the owner runs it.
+owner-only `/data` copy, which held the former plaintext admin passwords, was
+shredded and deleted on 2026-10-09 at the owner's request.
 
 ## Related Documents
 
