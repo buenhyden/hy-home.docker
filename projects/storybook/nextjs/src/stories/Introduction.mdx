@@ -1,0 +1,47 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="UI/Introduction" />
+
+# Shared UI
+
+`@hy-home/storybook-ui` holds the reviewed components below and the design
+tokens that root `DESIGN.md` defines. Nothing else in this Storybook is a
+shared component.
+
+## Tokens
+
+Components read only semantic tokens (`--hy-color-primary-base`,
+`--hy-color-text-primary`, `--hy-color-state-error`, `--hy-spacing-md`,
+`--hy-rounded-md` and the rest in `styles.css`). A consumer re-themes by
+overriding those custom properties, never by passing colors to a component.
+
+## Components
+
+| Component | Use | States |
+| --- | --- | --- |
+| `Button` | One action. `primary` is the single main action of a view. | default, hover, focus-visible, disabled, loading |
+| `AsyncState` | The non-ready states of one request. | loading, empty, error, forbidden (403), timeout, ready |
+
+`AsyncState` offers a retry only for `error` and `timeout`; a 403 cannot be
+fixed by retrying.
+
+## Accessibility
+
+- Every control is reachable with Tab, shows a 3px focus ring and works with
+  Enter and Space.
+- Failures use `role="alert"`; loading and empty results use `role="status"`.
+- Loading sets `aria-busy` and stops the spinner animation under
+  `prefers-reduced-motion: reduce`.
+- Text colours meet WCAG AA contrast on their surfaces; the a11y addon fails
+  the test run on any violation.
+- Layouts wrap at a 320px width without horizontal overflow.
+
+## Consuming
+
+Install the packed tarball at a reviewed version, import the component and
+the CSS once:
+
+```tsx
+import { Button } from '@hy-home/storybook-ui';
+import '@hy-home/storybook-ui/styles.css';
+```

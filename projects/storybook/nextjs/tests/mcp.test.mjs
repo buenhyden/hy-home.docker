@@ -29,8 +29,10 @@ test('local MCP only exposes docs and resolves built component/docs entries', as
   const list = await rpc(2, 'tools/list');
   assert.deepEqual(list.result.tools.map((tool) => tool.name).sort(), ['docs-list', 'docs-show', 'docs-show-story']);
   const entries = await rpc(3, 'tools/call', { name: 'docs-list', arguments: {} });
-  assert.match(entries.result.content[0].text, /example-button/);
-  const button = await rpc(4, 'tools/call', { name: 'docs-show', arguments: { id: 'example-button' } });
+  assert.match(entries.result.content[0].text, /ui-button/);
+  assert.match(entries.result.content[0].text, /ui-asyncstate/);
+  assert.doesNotMatch(entries.result.content[0].text, /example-(header|page)/);
+  const button = await rpc(4, 'tools/call', { name: 'docs-show', arguments: { id: 'ui-button' } });
   assert.match(button.result.content[0].text, /@hy-home\/storybook-ui/);
   const docs = JSON.parse(await readFile(new URL('../storybook-static/manifests/docs.json', import.meta.url)));
   const docId = Object.keys(docs.docs)[0];

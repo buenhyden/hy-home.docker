@@ -1,30 +1,128 @@
-.storybook-button {
-  display: inline-block;
+/* Design tokens: the values root DESIGN.md defines (SPEC-0219). Components
+   read only the semantic tokens; a consumer re-themes by overriding them. */
+:root {
+  --hy-color-primary-base: #3d43a8;
+  --hy-color-primary-hover: #2f3486;
+  --hy-color-surface-base: #ffffff;
+  --hy-color-surface-muted: #f4f5f7;
+  --hy-color-text-primary: #1f2328;
+  --hy-color-text-secondary: #57606a;
+  --hy-color-text-on-primary: #ffffff;
+  --hy-color-border-subtle: #d0d7de;
+  --hy-color-state-error: #b42318;
+  --hy-color-state-warning: #8a5a00;
+  --hy-color-focus-ring: #1f6feb;
+  --hy-font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --hy-font-size-body-md: 14px;
+  --hy-line-height-body-md: 1.5;
+  --hy-font-size-heading-md: 18px;
+  --hy-line-height-heading-md: 1.3;
+  --hy-rounded-sm: 4px;
+  --hy-rounded-md: 8px;
+  --hy-spacing-xs: 4px;
+  --hy-spacing-sm: 8px;
+  --hy-spacing-md: 16px;
+  --hy-spacing-lg: 24px;
+  --hy-motion-duration: 600ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --hy-motion-duration: 0ms;
+  }
+  .hy-spinner {
+    animation: none;
+  }
+}
+
+.hy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hy-spacing-sm);
   cursor: pointer;
-  border: 0;
-  border-radius: 3em;
+  border: 1px solid transparent;
+  border-radius: var(--hy-rounded-md);
+  font-family: var(--hy-font-family);
   font-weight: 700;
   line-height: 1;
-  font-family: 'Nunito Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
-.storybook-button--primary {
-  background-color: #555ab9;
-  color: white;
+.hy-button:focus-visible {
+  outline: 3px solid var(--hy-color-focus-ring);
+  outline-offset: 2px;
 }
-.storybook-button--secondary {
-  box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px inset;
-  background-color: transparent;
-  color: #333;
+.hy-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
-.storybook-button--small {
-  padding: 10px 16px;
+.hy-button--primary {
+  background-color: var(--hy-color-primary-base);
+  color: var(--hy-color-text-on-primary);
+}
+.hy-button--primary:hover:not(:disabled) {
+  background-color: var(--hy-color-primary-hover);
+}
+.hy-button--secondary {
+  background-color: var(--hy-color-surface-base);
+  border-color: var(--hy-color-border-subtle);
+  color: var(--hy-color-text-primary);
+}
+.hy-button--small {
+  padding: var(--hy-spacing-xs) var(--hy-spacing-sm);
   font-size: 12px;
 }
-.storybook-button--medium {
-  padding: 11px 20px;
-  font-size: 14px;
+.hy-button--medium {
+  padding: var(--hy-spacing-sm) var(--hy-spacing-md);
+  font-size: var(--hy-font-size-body-md);
 }
-.storybook-button--large {
-  padding: 12px 24px;
+.hy-button--large {
+  padding: var(--hy-spacing-md) var(--hy-spacing-lg);
   font-size: 16px;
+}
+
+.hy-spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: hy-spin var(--hy-motion-duration) linear infinite;
+}
+@keyframes hy-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hy-async-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--hy-spacing-sm);
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: var(--hy-spacing-md);
+  border: 1px solid var(--hy-color-border-subtle);
+  border-radius: var(--hy-rounded-md);
+  background-color: var(--hy-color-surface-muted);
+  color: var(--hy-color-text-primary);
+  font-family: var(--hy-font-family);
+  font-size: var(--hy-font-size-body-md);
+  line-height: var(--hy-line-height-body-md);
+  overflow-wrap: anywhere;
+}
+.hy-async-state__title {
+  margin: 0;
+  font-size: var(--hy-font-size-heading-md);
+  line-height: var(--hy-line-height-heading-md);
+}
+.hy-async-state__message {
+  margin: 0;
+  color: var(--hy-color-text-secondary);
+}
+.hy-async-state--error .hy-async-state__title,
+.hy-async-state--forbidden .hy-async-state__title {
+  color: var(--hy-color-state-error);
+}
+.hy-async-state--timeout .hy-async-state__title {
+  color: var(--hy-color-state-warning);
 }

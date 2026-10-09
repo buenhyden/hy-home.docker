@@ -1,10 +1,10 @@
 ---
 title: "Storybook Next.js Workspace"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 created: "2026-02-01"
 ---
 
@@ -20,11 +20,11 @@ created: "2026-02-01"
 
 ## Scope
 
-Storybook story, 검토된 Button 패키지, 정적 빌드와 로컬 문서 MCP를 포함합니다. 신규 업무 앱, 원격 MCP 서비스, 사용자 전역 클라이언트 설정은 포함하지 않습니다.
+Storybook story, 검토된 `Button`·`AsyncState` 패키지와 디자인 토큰, 정적 빌드와 로컬 문서 MCP를 포함합니다. 신규 업무 앱, 원격 MCP 서비스, 사용자 전역 클라이언트 설정은 포함하지 않습니다.
 
 ## Structure
 
-`src/stories/`는 예제와 검증, `packages/ui/`는 코드 소비 계약, `.storybook/`은 manifest 설정, `mcp/`는 로컬 문서 서버와 revision 기록, `Dockerfile`과 `nginx.conf`는 정적 origin을 소유합니다.
+`src/stories/`는 공유 컴포넌트의 상태별 story와 상호작용·접근성 검증, `packages/ui/`는 코드 소비 계약, `.storybook/`은 manifest 설정, `mcp/`는 로컬 문서 서버와 revision 기록, `Dockerfile`과 `nginx.conf`는 정적 origin을 소유합니다.
 
 ## Tech Stack
 
@@ -46,13 +46,16 @@ npm run lint
 npm run typecheck
 npm run build-storybook
 npm run test:artifacts
+npm run coverage
 ```
+
+`npm run coverage`는 Chromium에서 모든 story의 play 함수와 a11y 검사를 실행합니다. a11y 위반은 `error` 모드라 실패로 처리합니다.
 
 정적 origin 브라우저와 MCP 프로토콜 검사는 Docker 격리 사전 점검 후 실행합니다. `revision.json`의 `uncommitted`는 배포 승인이 아닙니다.
 
 ## Usage
 
-Button 구현은 `packages/ui/`에서 변경합니다. Button story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. Header와 Page는 예제로 유지합니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
+컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값의 권위는 루트 [DESIGN.md](../../../DESIGN.md)이며 `packages/ui/src/styles.css`가 같은 값을 CSS 변수로 구현합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
 
 ## Related Documents
 

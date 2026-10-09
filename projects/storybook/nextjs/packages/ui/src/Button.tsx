@@ -1,34 +1,38 @@
-
 export interface ButtonProps {
-  /** Is this the principal call to action on the page? */
-  primary?: boolean;
-  /** What background color to use */
-  backgroundColor?: string;
-  /** How large should the button be? */
-  size?: 'small' | 'medium' | 'large';
-  /** Button contents */
+  /** Button text. */
   label: string;
-  /** Optional click handler */
+  /** `primary` is the single main action of a view; everything else is `secondary`. */
+  variant?: 'primary' | 'secondary';
+  /** Control height and text size. */
+  size?: 'small' | 'medium' | 'large';
+  /** Native button type; forms submit only with `submit`. */
+  type?: 'button' | 'submit';
+  /** Unavailable action. */
+  disabled?: boolean;
+  /** Action in progress; the button is busy and does not repeat the action. */
+  loading?: boolean;
+  /** Click handler. */
   onClick?: () => void;
 }
 
-/** Primary UI component for user interaction */
+/** Action button styled only through the design tokens in styles.css. */
 export const Button = ({
-  primary = false,
-  size = 'medium',
-  backgroundColor,
   label,
-  ...props
-}: ButtonProps) => {
-  const mode = primary ? 'storybook-button--primary' : 'storybook-button--secondary';
-  return (
-    <button
-      type="button"
-      className={['storybook-button', `storybook-button--${size}`, mode].join(' ')}
-      style={{ backgroundColor }}
-      {...props}
-    >
-      {label}
-    </button>
-  );
-};
+  variant = 'secondary',
+  size = 'medium',
+  type = 'button',
+  disabled = false,
+  loading = false,
+  onClick,
+}: ButtonProps) => (
+  <button
+    type={type}
+    className={`hy-button hy-button--${variant} hy-button--${size}`}
+    disabled={disabled || loading}
+    aria-busy={loading || undefined}
+    onClick={onClick}
+  >
+    {loading && <span className="hy-spinner" aria-hidden="true" />}
+    {label}
+  </button>
+);

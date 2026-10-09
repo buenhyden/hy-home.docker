@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import pathlib
 import subprocess
 import unittest
@@ -82,6 +83,34 @@ class RevisionTests(unittest.TestCase):
         self.assertNotIn("STORYBOOK_SOURCE_REVISION=uncommitted", dockerfile)
         self.assertIn("*[!0-9a-f]*) false", dockerfile)
         self.assertIn('[ "${#STORYBOOK_SOURCE_REVISION}" -eq 40 ]', dockerfile)
+
+
+class DesignTokenTests(unittest.TestCase):
+    """Root DESIGN.md and the package CSS name the same token values."""
+
+    def test_design_tokens_match_the_package_css(self):
+        import re
+
+        import yaml
+
+        design = yaml.safe_load(
+            (ROOT / "DESIGN.md").read_text(encoding="utf-8").split("---")[1]
+        )
+        css = (ROOT / storybook_image.SOURCE / "packages/ui/src/styles.css").read_text()
+        declared = dict(re.findall(r"--hy-([a-z0-9-]+):\s*([^;]+);", css))
+        expected = {f"color-{k}": v for k, v in design["colors"].items()}
+        expected |= {f"rounded-{k}": v for k, v in design["rounded"].items()}
+        expected |= {f"spacing-{k}": v for k, v in design["spacing"].items()}
+        for name in ("body-md", "heading-md"):
+            style = design["typography"][name]
+            expected[f"font-size-{name}"] = style["fontSize"]
+            expected[f"line-height-{name}"] = str(style["lineHeight"])
+        expected["font-family"] = design["typography"]["body-md"]["fontFamily"]
+        self.assertEqual(expected, {k: declared.get(k) for k in expected})
+        ui = json.loads(
+            (ROOT / storybook_image.SOURCE / "packages/ui/package.json").read_text()
+        )
+        self.assertEqual(ui["version"], design["version"])
 
 
 if __name__ == "__main__":
