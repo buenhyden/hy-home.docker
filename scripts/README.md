@@ -233,7 +233,7 @@ executor로 전달합니다. 인증된 hosted
 context에서는 거부되며 원격 후보의 content·infra·릴리스 구성 검증을 대체하지
 않습니다. 릴리스 helper mock, 서비스 fixture와 합성 공급망 unit도 이 로컬
 목록이 소유합니다. 실제 구성·corpus·빌드·HTTP·브라우저 통합 검사는 원격에
-남으므로 로컬 unit의 PASS를 원격 수용으로 표시하지 않습니다.
+남으므로 로컬 unit의 PASS를 원격 수용으로 표시하지 않습니다. 로컬 changed 계획은 `origin/main`과의 merge-base 이후 커밋된 branch 작업도 변경으로 보고, `leaf.local-candidate-preflight`가 그 merge-base 기준의 `check-document-metadata.py --mode check-changed`와 tech-stack drift `--check`를 실행합니다. 원격 후보가 다시 실행하는 검사를 미리 확인할 뿐이며 원격 수용을 대신하지 않습니다(SPEC-0221).
 
 Conftest는 같은 `scripts/validation/check-conftest-policy.sh`의 닫힌
 `--mode verify`와 `--mode corpus`를 서로 다른 gate ID로 등록합니다.
