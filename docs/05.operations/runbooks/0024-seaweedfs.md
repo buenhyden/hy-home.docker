@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.4.4"
+version: "1.4.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -60,6 +60,11 @@ backup과 restore를 확인한다.
 - `SeaweedFSS3Down`: `docker compose ps seaweedfs-s3`와 그 로그를 확인한다.
   metrics listener가 S3 프로세스를 공유하므로, target이 다운되었다면
   보통 S3가 다운되었거나 재시작 중이다.
+- `SeaweedFSNodeMetricsDown`: master, volume, filer 중 하나의 metric target이
+  down이다. `docker compose ps seaweedfs-master seaweedfs-volume seaweedfs-filer`와
+  해당 로그를 확인하고, 세 서비스와 Prometheus가 모두 `seaweedfs_metrics_net`에
+  있는지 `docker network inspect`로 확인한다. metric listener는 각 프로세스를
+  공유하므로 서비스가 정상인데 target만 down이면 network 구성원을 먼저 본다.
 - `SeaweedFSDataDiskLow`: data-disk filesystem의 여유 공간이 15% 미만이다.
   20 GiB 미만이 되면 volume server가 write 수락을 멈춘다(`-minFreeSpace`).
   그 전에 공간을 확보하거나 escalation한다. 객체 삭제는 승인된 task가

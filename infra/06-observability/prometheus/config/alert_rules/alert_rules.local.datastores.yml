@@ -291,6 +291,17 @@ groups:
           description: 'SeaweedFS S3 {{ $labels.instance }} 메트릭(9327)이 2분 이상 응답하지 않습니다.'
           runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
 
+      - alert: SeaweedFSNodeMetricsDown
+        expr: up{job=~"seaweedfs-(master|volume|filer)"} == 0
+        for: 5m
+        labels:
+          severity: warning
+          domain: datastore
+        annotations:
+          summary: 'SeaweedFS {{ $labels.job }} 지표 수집 실패'
+          description: '{{ $labels.instance }} 지표를 5분 이상 수집하지 못했습니다. 노드 중단 또는 seaweedfs_metrics_net 연결을 확인합니다.'
+          runbook_url: 'https://github.com/buenhyden/hy-home.docker/blob/main/docs/05.operations/runbooks/0024-seaweedfs.md'
+
       # The volume data lives under ${DEFAULT_DATA_DIR}/seaweedfs/volume, whose
       # filesystem is mounted at /home/hyunyoun/storage on this host. Change the
       # mountpoint if DEFAULT_MOUNT_VOLUME_PATH moves to another filesystem.

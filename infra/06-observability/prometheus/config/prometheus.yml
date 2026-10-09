@@ -228,6 +228,30 @@ scrape_configs:
           namespace: "hy-home"
           domain: "datastores"
 
+  - job_name: "seaweedfs-master"
+    static_configs:
+      - targets: ["seaweedfs-master:9324"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "datastores"
+
+  - job_name: "seaweedfs-volume"
+    static_configs:
+      - targets: ["seaweedfs-volume:9325"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "datastores"
+
+  - job_name: "seaweedfs-filer"
+    static_configs:
+      - targets: ["seaweedfs-filer:9326"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "datastores"
+
   - job_name: "registry"
     static_configs:
       - targets: ["registry:5001"]

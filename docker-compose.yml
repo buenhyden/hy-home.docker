@@ -97,6 +97,17 @@ networks:
       config:
         - subnet: 10.250.18.0/24
           ip_range: 10.250.18.128/25
+  # Prometheus scrapes the SeaweedFS master, volume and filer metrics ports
+  # here; it is the only other member, so no obs_net or edge_net peer reaches
+  # the internal SeaweedFS APIs (SPEC-0225).
+  seaweedfs_metrics_net:
+    name: seaweedfs_metrics_net
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
+    ipam:
+      config:
+        - subnet: 10.250.19.0/24
   # Per-run k6 metrics relays reach only HOME Alloy's authenticated 4319
   # receiver here; internal, so a relay has no other egress (SPEC-0214).
   quality_otlp_net:

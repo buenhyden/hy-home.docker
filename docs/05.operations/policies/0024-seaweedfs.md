@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.5.3"
+version: "1.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -66,19 +66,23 @@ profile)는 `storage`와 함께 동작한다.
 - **내부 전송.** 모든 gRPC port는 SeaweedFS 전용 CA(`bin/gen-grpc-certs.sh`; CA
   key는 발급 후 폐기)로 mutual TLS를 사용한다. S3는 `object_net`에서 SigV4
   서명을 사용한 plain HTTP이며, host client에는 Traefik을 통한 HTTPS를
-  제공한다. Master, volume, filer는 `seaweed_internal`(internal)에만 있으며
-  master의 인증되지 않은 `/dir/assign`은 그곳에서만 접근할 수 있다.
+  제공한다. Master, volume, filer는 `seaweed_internal`(internal)과 지표 수집 전용
+  `seaweedfs_metrics_net`(internal, host 주소 없음)에만 있으며, 후자의 다른 구성원은
+  Prometheus뿐이다. Master의 인증되지 않은 `/dir/assign`과 `/col/delete`에는 이 두
+  network의 구성원만 접근할 수 있으므로 Prometheus도 신뢰 경계 안에 둔다.
 - **최소 노출면.** Lance listener와 내장 IAM API는 꺼져 있다. Iceberg REST
   catalog는 `object_net`에서만 접근 가능해야 하며 route/host port를 두지 않는다. **현재 구현 미준수**: `seaweedfs-s3`의4.47 listener는 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net 모두에서 도달 가능하다. host port와 catalog router는 없고 데이터 관리 route는 인증 middleware를 사용한다. 단순 `expose` 제거로 격리되지 않으며 별도 source 변경과 network별 부정 접근 검증이 필요하다. 예외는 승인되지 않았다. 동일 identity(SigV4)를 사용한다. Table bucket은 `lakehouse`
   하나뿐이며 admin이 소유한다. 해당 policy는 `lakehouse` identity에 catalog와
   table action만 부여한다(policy 변경이나 bucket 삭제는 불가). Run마다
   `seaweedfs-table-bucket`이 이를 재작성하므로 수동 편집한 policy는 유지되지
   않는다.
-- **Metrics.** `seaweedfs-s3`만 `9327`에서 metrics를 제공하며 Prometheus가
+- **Metrics.** `seaweedfs-s3`는 `9327`에서 metrics를 제공하며 Prometheus가
   job `seaweedfs-s3`로 수집한다. Listener는 게시되지 않고 Traefik route도
   없지만, 어떤 `edge_net` 서비스든 접근할 수 있다. Request counter와
   latency만 담고 있어 민감도가 낮으므로 이를 허용한다. Master, volume, filer는
-  scraping에 노출되지 않는다. `SeaweedFSS3Down`과 `SeaweedFSDataDiskLow`는
+  각각 `9324`, `9325`, `9326`에서 metrics를 제공하고 Prometheus가
+  `seaweedfs_metrics_net`으로 job `seaweedfs-master`·`seaweedfs-volume`·
+  `seaweedfs-filer`를 수집한다. `SeaweedFSS3Down`, `SeaweedFSNodeMetricsDown`과 `SeaweedFSDataDiskLow`는
   `alert_rules.local.datastores.yml`에 있다. Disk rule은 data-disk 파일시스템의
   node-exporter mountpoint를 고정하며, `DEFAULT_MOUNT_VOLUME_PATH`가 이동하면
   함께 갱신해야 한다.

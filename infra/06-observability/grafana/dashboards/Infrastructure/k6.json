@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Source: grafana.com dashboard 19665 revision 3 (2024-04-30). Provisioned by hy-home (SPEC-0193); project/run/attempt filters added by SPEC-0203.",
+  "description": "Source: grafana.com dashboard 19665 revision 3 (2024-04-30). Provisioned by hy-home (SPEC-0193); project/run/attempt filters added by SPEC-0203. Data appears only while a k6 quality run remote-writes to Prometheus (SPEC-0225).",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 2,

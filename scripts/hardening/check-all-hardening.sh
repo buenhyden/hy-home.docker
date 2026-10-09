@@ -409,7 +409,7 @@ check_03_security() {
   check_contains "$compose_file" '"storage":{"raft"' "openbao raft storage missing"
   check_contains "$compose_file" '"disable_mlock":true' "openbao mlock runtime contract mismatch"
   check_contains "$compose_file" '"tls_disable":true' "openbao internal HTTP listener mismatch"
-  check_contains "$compose_file" '"prometheus_retention_time":"30s"' "openbao telemetry retention mismatch"
+  check_contains "$compose_file" '"prometheus_retention_time":"24h"' "openbao telemetry retention mismatch"
   check_contains "$agent_hcl" "role_id_file_path" "openbao-agent AppRole role_id path missing"
   check_contains "$agent_hcl" "secret_id_file_path" "openbao-agent AppRole secret_id path missing"
   check_contains "$agent_hcl" 'destination = "/openbao/out' "openbao-agent output destination missing"

@@ -580,7 +580,7 @@
       "pluginVersion": "12.3.0",
       "targets": [
         {
-          "expr": "sum(ollama_running_models{job=\"$job\"})",
+          "expr": "sum(ollama_running_models{job=\"$job\"}) or vector(0)",
           "legendFormat": "running_models",
           "refId": "A"
         }

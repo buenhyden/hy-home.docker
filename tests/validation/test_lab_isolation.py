@@ -183,6 +183,23 @@ class LabInventoryAndSelectionTests(RootClosureTests):
                 self.assertTrue(targets)
                 self.assertEqual(set(), lab_hosts & set(targets))
 
+    def test_home_dashboards_and_alerts_target_no_lab_service(self) -> None:
+        import re
+
+        obs = ROOT / "infra/06-observability"
+        provisioned = {p.name for p in (obs / "grafana/dashboards").rglob("*.json")}
+        moved = {p.name for p in (ROOT / "labs/dashboards").glob("*.json")}
+        self.assertTrue(moved)
+        self.assertEqual(set(), provisioned & moved)
+        lab_metrics = re.compile(r"\b(haproxy|cassandra|mongodb|etcd|patroni)_\w+")
+        sources = [
+            *(obs / "prometheus/config/alert_rules").glob("*.yml"),
+            *(obs / "grafana/dashboards").rglob("*.json"),
+        ]
+        for rules in sources:
+            with self.subTest(source=rules.name):
+                self.assertIsNone(lab_metrics.search(rules.read_text(encoding="utf-8")))
+
     def test_no_document_or_script_starts_the_root_with_every_profile(self) -> None:
         import re
 

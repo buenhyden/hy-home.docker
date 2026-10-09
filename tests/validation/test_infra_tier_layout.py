@@ -47,7 +47,9 @@ class TierLayoutTests(unittest.TestCase):
             for name, service in services.items():
                 seen.add(name)
                 with self.subTest(file=str(path.relative_to(ROOT)), service=name):
-                    self.assertEqual(name, service.get("hostname"))
+                    # The host network namespace forbids a container hostname.
+                    if service.get("network_mode") != "host":
+                        self.assertEqual(name, service.get("hostname"))
                     self.assertEqual(
                         exceptions.get(name, name), service.get("container_name")
                     )

@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS"
-version: "1.2.3"
+version: "1.2.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 created: "2025-12-06"
 ---
 
@@ -41,7 +41,7 @@ filer에는 route가 없습니다.
 | `bin/gen-grpc-certs.sh` | 호스트 스크립트: SeaweedFS 전용 gRPC CA와 인증서를 발급함 |
 
 상태는 `${DEFAULT_DATA_DIR}/seaweedfs/{master,volume,filer}` 아래에 있으며 UID
-1000이 소유합니다. Master, volume, filer는 `seaweed_internal`에만 있습니다.
+1000이 소유합니다. Master, volume, filer는 `seaweed_internal`과 Prometheus만 함께 쓰는 metric 전용 `seaweedfs_metrics_net`(9324-9326)에 있습니다.
 S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다.
 
 ## Usage

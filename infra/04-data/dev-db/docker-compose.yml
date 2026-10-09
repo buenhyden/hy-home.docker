@@ -206,7 +206,9 @@ services:
       DATA_SOURCE_URI: dev-pg:5432/postgres?sslmode=disable
       DATA_SOURCE_USER: dev_pg_monitor
       DATA_SOURCE_PASS_FILE: /run/secrets/dev_pg_monitor_password
-    command: ['--collector.postmaster']
+    # stat_checkpointer carries the checkpoint columns PostgreSQL 17 moved
+    # out of pg_stat_bgwriter.
+    command: ['--collector.postmaster', '--collector.stat_checkpointer']
     expose:
       - '9187'
     secrets:

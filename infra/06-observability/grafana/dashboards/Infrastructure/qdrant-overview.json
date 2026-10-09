@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Source: grafana.com dashboard 24603 revision 1 (2025-12-25). Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: grafana.com dashboard 24603 revision 1 (2025-12-25). Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): the shard-transfer panel needs distributed mode and is removed; HOME runs one node.",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -1136,56 +1136,6 @@
         }
       ],
       "title": "Snapshot activity (running)",
-      "transparent": true,
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
-      "description": "Shard transfers running per collection",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 80
-      },
-      "id": 52,
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "right",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi"
-        }
-      },
-      "pluginVersion": "12.2.1",
-      "targets": [
-        {
-          "editorMode": "code",
-          "expr": "collection_shard_transfer_incoming{job=~\"$job\",instance=~\"$instance\"}",
-          "legendFormat": "incoming {{id}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "editorMode": "code",
-          "expr": "collection_shard_transfer_outgoing{job=~\"$job\",instance=~\"$instance\"}",
-          "legendFormat": "outgoing {{id}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Shard transfers (running)",
       "transparent": true,
       "type": "timeseries"
     },

@@ -37,6 +37,16 @@ endpoints:
     conditions:
       - '[STATUS] == 200'
 
+  # The certificate Traefik serves for every *.${DEFAULT_URL} route; the
+  # dashboard's certificate panels read this endpoint (SPEC-0225).
+  - name: Gateway TLS certificate
+    group: gateway
+    url: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm/.well-known/openid-configuration
+    interval: 10m
+    conditions:
+      - '[STATUS] == 200'
+      - '[CERTIFICATE_EXPIRATION] > 720h'
+
   - name: Keycloak
     group: core
     url: http://keycloak:9000/health/ready

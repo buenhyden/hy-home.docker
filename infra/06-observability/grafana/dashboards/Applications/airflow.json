@@ -2,7 +2,7 @@
   "annotations": {
     "list": []
   },
-  "description": "Source: monitoring-mixins apache-airflow/apache-airflow-overview.json (2026-03-26). Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: monitoring-mixins apache-airflow/apache-airflow-overview.json (2026-03-26). Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): Airflow 3 removed SLA misses, so that panel is removed.",
   "links": [
     {
       "includeVars": true,
@@ -94,67 +94,6 @@
         }
       ],
       "title": "DAG file parsing errors",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${prometheus_datasource}"
-      },
-      "description": "The number of Service Level Agreement misses for any DAG runs in the Apache Airflow system.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "#5794f2",
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "fillOpacity": 30,
-            "gradientMode": "opacity",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "showPoints": "never"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": []
-          },
-          "unit": "short"
-        }
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 1
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list"
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "pluginVersion": "v11.4.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${prometheus_datasource}"
-          },
-          "expr": "increase(airflow_sla_missed{job=~\"$job\",instance=~\"$instance\"}[$__interval:] offset -$__interval)",
-          "format": "time_series",
-          "instant": false,
-          "interval": "2m",
-          "legendFormat": "{{instance}}",
-          "refId": "SLA misses"
-        }
-      ],
-      "title": "SLA misses",
       "type": "timeseries"
     },
     {

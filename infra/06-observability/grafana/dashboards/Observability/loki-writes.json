@@ -1529,8 +1529,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "prod",
-          "value": "prod"
+          "selected": true,
+          "text": "hy-home",
+          "value": "hy-home"
         },
         "datasource": "$datasource",
         "hide": 0,
@@ -1552,8 +1553,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "prod",
-          "value": "prod"
+          "selected": true,
+          "text": "hy-home",
+          "value": "hy-home"
         },
         "datasource": "$datasource",
         "hide": 0,

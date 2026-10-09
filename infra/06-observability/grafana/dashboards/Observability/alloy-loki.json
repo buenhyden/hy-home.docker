@@ -30,135 +30,93 @@
   "panels": [
     {
       "collapsed": false,
-      "datasource": "${datasource}",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "title": "loki.source.file",
-      "type": "row"
-    },
-    {
-      "datasource": "${datasource}",
-      "description": "Active files being tailed.\n",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 20,
-            "gradientMode": "hue",
-            "stacking": {
-              "mode": "normal"
-            }
-          },
-          "unit": "files"
-        }
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 1
-      },
-      "targets": [
-        {
-          "datasource": "${datasource}",
-          "expr": "sum by(${groupby}) (loki_source_file_files_active_total{cluster=~\"$cluster\", namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"})\n",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true
-        }
-      ],
-      "title": "Active files count $cluster",
-      "type": "timeseries"
-    },
-    {
-      "datasource": "${datasource}",
-      "description": "Successful file reads.\n",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 20,
-            "gradientMode": "hue",
-            "stacking": {
-              "mode": "normal"
-            }
-          },
-          "unit": "cps"
-        }
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 1
-      },
-      "targets": [
-        {
-          "datasource": "${datasource}",
-          "expr": "sum by (${groupby}) (rate(loki_source_file_read_lines_total{cluster=~\"$cluster\", namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[$__rate_interval]))\n",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true
-        }
-      ],
-      "title": "Lines read in $cluster",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "datasource": "${datasource}",
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 11
-      },
-      "title": "loki.source.journal",
-      "type": "row"
-    },
-    {
-      "datasource": "${datasource}",
-      "description": "Successful journal reads.\t\n",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "fillOpacity": 20,
-            "gradientMode": "hue",
-            "stacking": {
-              "mode": "normal"
-            }
-          },
-          "unit": "cps"
-        }
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 12
-      },
-      "targets": [
-        {
-          "datasource": "${datasource}",
-          "expr": "sum by (${groupby}) (rate(loki_source_journal_target_lines_total{cluster=~\"$cluster\", namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[$__rate_interval]))\n",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true
-        }
-      ],
-      "title": "Journal lines read in $cluster",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "datasource": "${datasource}",
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 22
+      },
+      "id": 1,
+      "panels": [],
+      "title": "loki.source.docker",
+      "type": "row"
+    },
+    {
+      "datasource": "${datasource}",
+      "description": "Log entries read from Docker containers.\n",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 20,
+            "gradientMode": "hue",
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "unit": "cps"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 23
+      },
+      "targets": [
+        {
+          "datasource": "${datasource}",
+          "expr": "sum by(${groupby}) (rate(loki_source_docker_target_entries_total{cluster=~\"$cluster\", namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[$__rate_interval]))",
+          "instant": false,
+          "legendFormat": "{{instance}}",
+          "range": true
+        }
+      ],
+      "title": "Docker entries read in $cluster",
+      "type": "timeseries",
+      "id": 2
+    },
+    {
+      "datasource": "${datasource}",
+      "description": "Docker log lines that failed to parse.\n",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 20,
+            "gradientMode": "hue",
+            "stacking": {
+              "mode": "normal"
+            }
+          },
+          "unit": "cps"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "targets": [
+        {
+          "datasource": "${datasource}",
+          "expr": "sum by(${groupby}) (rate(loki_source_docker_target_parsing_errors_total{cluster=~\"$cluster\", namespace=~\"$namespace\", job=~\"$job\", instance=~\"$instance\"}[$__rate_interval]))",
+          "instant": false,
+          "legendFormat": "{{instance}}",
+          "range": true
+        }
+      ],
+      "title": "Docker parsing errors in $cluster",
+      "type": "timeseries",
+      "id": 3
+    },
+    {
+      "collapsed": false,
+      "datasource": "${datasource}",
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
       },
       "title": "loki.write",
       "type": "row"
@@ -176,7 +134,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 23
+        "y": 32
       },
       "targets": [
         {
@@ -202,7 +160,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 23
+        "y": 32
       },
       "targets": [
         {
@@ -249,7 +207,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 33
+        "y": 42
       },
       "targets": [
         {
@@ -282,7 +240,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 33
+        "y": 42
       },
       "targets": [
         {
@@ -303,7 +261,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 52
       },
       "maxDataPoints": 30,
       "options": {
@@ -352,7 +310,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 52
       },
       "targets": [
         {
@@ -422,7 +380,16 @@
         },
         "refresh": 2,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        }
       },
       {
         "allowCustomValue": true,
@@ -436,7 +403,16 @@
         },
         "refresh": 2,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        }
       },
       {
         "allValue": ".*",
@@ -540,5 +516,5 @@
   "uid": "hyhome-alloy-loki",
   "id": null,
   "editable": false,
-  "description": "Source: grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-loki.json. Provisioned by hy-home (SPEC-0193)."
+  "description": "Source: grafana/alloy@5f45ab2e5a0a operations/alloy-mixin/rendered/dashboards/alloy-loki.json. Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): HOME collects logs with loki.source.docker only, so the file and journal rows are replaced by a Docker source row."
 }

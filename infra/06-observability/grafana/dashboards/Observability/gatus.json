@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Source: TwiN/gatus .examples/docker-compose-grafana-prometheus gatus.json (2025-10-25). Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: TwiN/gatus .examples/docker-compose-grafana-prometheus gatus.json (2025-10-25). Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): *.home.arpa has no public registration, so domain expiration is removed; certificate expiry comes from the gateway TLS endpoint.",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -87,7 +87,7 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "count(gatus_results_certificate_expiration_seconds < 2592000)",
+          "expr": "count(gatus_results_certificate_expiration_seconds < 2592000) or vector(0)",
           "hide": false,
           "legendFormat": "Expiring < 30 days",
           "refId": "A"
@@ -97,7 +97,7 @@
             "type": "prometheus",
             "uid": "$datasource"
           },
-          "expr": "count(gatus_results_certificate_expiration_seconds < 604800)",
+          "expr": "count(gatus_results_certificate_expiration_seconds < 604800) or vector(0)",
           "legendFormat": "Expiring < 7 days",
           "refId": "B"
         }
@@ -318,136 +318,6 @@
       ],
       "title": "Service Health by Group",
       "type": "piechart"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "$datasource"
-      },
-      "description": "Domain expiration times for all domains",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "align": "auto",
-            "cellOptions": {
-              "type": "auto"
-            },
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "#EAB839",
-                "value": 172800
-              },
-              {
-                "color": "green",
-                "value": 604800
-              }
-            ]
-          },
-          "unit": "dtdurations"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time Until Expiry"
-            },
-            "properties": [
-              {
-                "id": "custom.cellOptions",
-                "value": {
-                  "applyToRow": false,
-                  "type": "color-background"
-                }
-              },
-              {
-                "id": "unit",
-                "value": "s"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 3,
-      "options": {
-        "cellHeight": "sm",
-        "footer": {
-          "countRows": false,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "$datasource"
-          },
-          "editorMode": "code",
-          "expr": "gatus_results_domain_expiration_seconds",
-          "format": "table",
-          "instant": true,
-          "legendFormat": "__auto",
-          "refId": "A"
-        }
-      ],
-      "title": "Domain Expiration",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Time": true,
-              "Value": false,
-              "__name__": true,
-              "app_kubernetes_io_instance": true,
-              "app_kubernetes_io_managed_by": true,
-              "app_kubernetes_io_name": true,
-              "app_kubernetes_io_service": true,
-              "helm_sh_chart": true,
-              "instance": true,
-              "job": true,
-              "key": true,
-              "type": true
-            },
-            "includeByName": {},
-            "indexByName": {
-              "Value": 2,
-              "group": 0,
-              "name": 1
-            },
-            "renameByName": {
-              "Value": "Time Until Expiry",
-              "group": "Group",
-              "name": "Service"
-            }
-          }
-        }
-      ],
-      "type": "table"
     },
     {
       "datasource": {

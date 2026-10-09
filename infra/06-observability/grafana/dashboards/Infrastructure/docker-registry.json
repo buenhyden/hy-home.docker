@@ -180,7 +180,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "registry_storage_cache_total{instance=\"$instance\",type=\"Request\"}",
+          "expr": "registry_storage_cache_requests_total{instance=\"$instance\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ type }}",
@@ -258,7 +258,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "registry_storage_cache_total{instance=\"$instance\",type=\"Hit\"}",
+          "expr": "registry_storage_cache_hits_total{instance=\"$instance\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ type }}",
@@ -336,7 +336,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "registry_storage_cache_total{instance=\"$instance\",type=\"Miss\"}",
+          "expr": "registry_storage_cache_requests_total{instance=\"$instance\"} - registry_storage_cache_hits_total{instance=\"$instance\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{ type }}",
@@ -1064,11 +1064,22 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "ceil(rate(registry_storage_cache_total{instance=\"$instance\"}[5m]))",
+          "expr": "rate(registry_storage_cache_requests_total{instance=\"$instance\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{ type }}",
+          "legendFormat": "requests",
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "rate(registry_storage_cache_hits_total{instance=\"$instance\"}[5m])",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "hits",
+          "refId": "B"
         }
       ],
       "title": "Registry Cache Requests Rate",
@@ -1475,5 +1486,5 @@
   "title": "Docker Registry",
   "uid": "infrastructure-docker-registry",
   "version": 2,
-  "description": "Source: grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry. Provisioned by hy-home (SPEC-0193)."
+  "description": "Source: grafana.com dashboard 9621 revision 2 (2019-01-11); Kubernetes variables replaced by job registry. Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): registry v3 cache metrics (requests and hits counters)."
 }

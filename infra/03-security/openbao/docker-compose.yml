@@ -47,7 +47,7 @@ services:
       BAO_API_ADDR: 'http://openbao:${OPENBAO_PORT:-8200}'
       BAO_CLUSTER_ADDR: 'https://openbao:${OPENBAO_CLUSTER_PORT:-8201}'
       BAO_LOCAL_CONFIG: >-
-        {"ui":true,"disable_mlock":true, "storage":{"raft":{"path":"/openbao/data","node_id":"openbao-node1"}}, "listener":[{"tcp":{"address":"0.0.0.0:${OPENBAO_PORT:-8200}", "cluster_address":"0.0.0.0:${OPENBAO_CLUSTER_PORT:-8201}","tls_disable":true}}], "api_addr":"http://openbao:${OPENBAO_PORT:-8200}", "cluster_addr":"https://openbao:${OPENBAO_CLUSTER_PORT:-8201}", "telemetry":{"disable_hostname":true,"prometheus_retention_time":"30s"}}
+        {"ui":true,"disable_mlock":true, "storage":{"raft":{"path":"/openbao/data","node_id":"openbao-node1"}}, "listener":[{"tcp":{"address":"0.0.0.0:${OPENBAO_PORT:-8200}", "cluster_address":"0.0.0.0:${OPENBAO_CLUSTER_PORT:-8201}","tls_disable":true}}], "api_addr":"http://openbao:${OPENBAO_PORT:-8200}", "cluster_addr":"https://openbao:${OPENBAO_CLUSTER_PORT:-8201}", "telemetry":{"disable_hostname":true,"prometheus_retention_time":"24h"}}
     volumes:
       - openbao-data:/openbao/data:rw
     command:

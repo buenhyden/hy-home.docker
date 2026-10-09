@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.5.4"
+version: "1.5.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -50,15 +50,20 @@ mTLS)을 만들고 S3용 identity 파일은 Docker secret에서 만든다.
 secret이나 certificate가 없으면 시작을 거부한다.
 
 state는 data disk에 있다: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`,
-`/filer`(embedded leveldb2 store). master, volume, filer는 오직
-`seaweed_internal`에만 있다. S3는 여기에 더해 client용 `object_net`과
+`/filer`(embedded leveldb2 store). master, volume, filer는
+`seaweed_internal`과 metric 전용 internal network `seaweedfs_metrics_net`에
+있다. S3는 `seaweed_internal`에 더해 client용 `object_net`과
 `s3.${DEFAULT_URL}` route용 `edge_net`에도 join한다.
 
-S3만 Prometheus metric(`-metricsPort=9327`)을 제공한다. Prometheus는
-`edge_net`을 통해 job `seaweedfs-s3`로 `seaweedfs-s3:9327`을 scrape한다.
-master, volume, filer는 internal network에서 scrape되지 않는다. Alert:
-`SeaweedFSS3Down`(target down 2분)과 `SeaweedFSDataDiskLow`(node-exporter
-기준 data-disk filesystem free 15% 미만 10분).
+S3는 `-metricsPort=9327`로 metric을 제공하고 Prometheus가 `edge_net`을 통해
+job `seaweedfs-s3`로 scrape한다. master, volume, filer는 각각 9324, 9325,
+9326에서 metric을 제공하며 Prometheus가 `seaweedfs_metrics_net`을 통해 job
+`seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`로 scrape한다. 이
+network의 다른 구성원은 Prometheus뿐이며 Prometheus는 SeaweedFS 신뢰 경계
+안에 있다([POL-0024](../policies/0024-seaweedfs.md)). Alert:
+`SeaweedFSS3Down`(target down 2분), `SeaweedFSNodeMetricsDown`(master·volume·filer metric
+target down 5분)과 `SeaweedFSDataDiskLow`(node-exporter 기준 data-disk
+filesystem free 15% 미만 10분).
 
 ### Identity-specific behavior
 

@@ -5,7 +5,9 @@ x-tier-label: &tier-label
 # gRPC mTLS configuration from secrets and certificates (RUN-0024). Master,
 # volume and filer are only on the internal seaweed_internal network: the
 # master hands out write JWTs on /dir/assign and deletes collections on
-# /col/delete to any caller that reaches it. The image
+# /col/delete to any caller that reaches it. Their metrics ports are scraped
+# over seaweedfs_metrics_net, whose only other member is Prometheus; that
+# network still reaches the same APIs, so Prometheus is trusted with them. The image
 # entrypoint is bypassed: it needs root to chown and drop privileges, and it
 # adds -mdir/-dir only for an unflagged first argument.
 x-seaweedfs: &seaweedfs
@@ -65,11 +67,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     expose:
+      - '9324'
       - ${SEAWEEDFS_MASTER_HTTP_PORT:-9333}
       - ${SEAWEEDFS_MASTER_GRPC_PORT:-19333}
     # -ip is the advertised name; listening on every attached network keeps the
     # server reachable whichever network a peer resolves the name on.
-    command: [ 'master', '-mdir=/data', '-ip=seaweedfs-master', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-port.grpc=${SEAWEEDFS_MASTER_GRPC_PORT:-19333}', '-volumeSizeLimitMB=1024', '-defaultReplication=000' ]
+    command: [ 'master', '-mdir=/data', '-ip=seaweedfs-master', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-port.grpc=${SEAWEEDFS_MASTER_GRPC_PORT:-19333}', '-volumeSizeLimitMB=1024', '-defaultReplication=000', '-metricsPort=9324' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
@@ -81,6 +84,7 @@ services:
       - seaweedfs-master-data:/data:rw
     networks:
       seaweed_internal: {}
+      seaweedfs_metrics_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status || exit 1' ]
       interval: 15s
@@ -101,11 +105,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     expose:
+      - '9325'
       - ${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}
       - ${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}
     # -max=0 sizes the volume count from free space; -minFreeSpace stops writes
     # before the shared data disk fills (POL-0035).
-    command: [ 'volume', '-dir=/data', '-max=0', '-minFreeSpace=20GiB', '-mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}', '-port.grpc=${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}', '-ip=seaweedfs-volume', '-ip.bind=0.0.0.0', '-preStopSeconds=1' ]
+    command: [ 'volume', '-dir=/data', '-max=0', '-minFreeSpace=20GiB', '-mserver=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-port=${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}', '-port.grpc=${SEAWEEDFS_VOLUME_GRPC_PORT:-18085}', '-ip=seaweedfs-volume', '-ip.bind=0.0.0.0', '-preStopSeconds=1', '-metricsPort=9325' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
@@ -120,6 +125,7 @@ services:
         condition: service_healthy
     networks:
       seaweed_internal: {}
+      seaweedfs_metrics_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}/status || exit 1' ]
       interval: 15s
@@ -140,11 +146,12 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     expose:
+      - '9326'
       - ${SEAWEEDFS_FILER_HTTP_PORT:-8888}
       - ${SEAWEEDFS_FILER_GRPC_PORT:-18888}
     # Embedded leveldb2 store (image filer.toml: /data/filerldb2). No route:
     # direct filer HTTP needs a filer JWT, so objects are reached only via S3.
-    command: [ 'filer', '-ip=seaweedfs-filer', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-port.grpc=${SEAWEEDFS_FILER_GRPC_PORT:-18888}', '-master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}' ]
+    command: [ 'filer', '-ip=seaweedfs-filer', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-port.grpc=${SEAWEEDFS_FILER_GRPC_PORT:-18888}', '-master=seaweedfs-master:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}', '-metricsPort=9326' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro
       - type: bind
@@ -161,6 +168,7 @@ services:
         condition: service_healthy
     networks:
       seaweed_internal: {}
+      seaweedfs_metrics_net: {}
     healthcheck:
       test: [ 'CMD-SHELL', 'wget -q --spider http://localhost:${SEAWEEDFS_FILER_HTTP_PORT:-8888}/healthz || exit 1' ]
       interval: 15s
@@ -197,8 +205,8 @@ services:
     # The Iceberg REST catalog serves table buckets and signs with the same
     # S3 identities (SigV4); it has no route and stays on object_net. Lance
     # stays off, and the embedded IAM API is off because identities come from
-    # the config file. -metricsPort serves Prometheus metrics on edge_net only;
-    # master/volume/filer stay unscraped on seaweed_internal.
+    # the config file. -metricsPort serves Prometheus metrics on edge_net;
+    # master/volume/filer are scraped over seaweedfs_metrics_net.
     command: [ 's3', '-filer=seaweedfs-filer:${SEAWEEDFS_FILER_HTTP_PORT:-8888}', '-ip.bind=0.0.0.0', '-port=${SEAWEEDFS_S3_HTTP_PORT:-8333}', '-port.iceberg=${SEAWEEDFS_ICEBERG_PORT:-8181}', '-port.lance=0', '-iam=false', '-metricsPort=9327' ]
     volumes:
       - ./config/hyhome-seaweedfs.sh:/opt/hyhome/hyhome-seaweedfs.sh:ro

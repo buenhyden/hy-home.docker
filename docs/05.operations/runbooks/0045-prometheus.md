@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.1.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -64,7 +64,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Host and GPU exporter boundary
 
-`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector(기본 collector에 `processes`, `tcpstat` 추가)를 유지한다. Network·socket collector가 host를 보도록 host network namespace에서 실행하며, listener는 `obs_net`의 host 쪽 주소(기본 gateway `10.250.5.1:9100`)에만 묶는다. 이 주소는 기본적으로 LAN에서 route되지 않지만, LAN host가 직접 route를 추가하면 닿을 수 있고 internal이 아닌 bridge network의 container도 닿는다. Host network의 서비스에는 Compose가 network를 만들지 않으므로, `obs_net`이 없으면 bind가 실패해 재시작을 반복한다. `obs`/`obs-host`/`dev` profile은 Prometheus나 cAdvisor가 `obs_net`을 먼저 만든다. Prometheus는 `extra_hosts`로 이 주소를 `node-exporter` 이름에 연결하므로 scrape target과 `instance` label은 바뀌지 않는다. `obs_net`을 다른 subnet으로 다시 만들면 listen 주소와 Prometheus·Alloy의 `extra_hosts`를 함께 바꾼다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 

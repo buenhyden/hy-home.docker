@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.10"
+version: "1.0.11"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 created: "2025-11-12"
 ---
 
@@ -112,7 +112,7 @@ created: "2025-11-12"
 - **Persistence**: Loki와 Tempo는 SeaweedFS(`04-data`)를 S3 호환 오브젝트 스토어로 사용하고 Prometheus와 Pyroscope는 로컬 바인드 기반 볼륨을 사용합니다.
 - **Auth**: Grafana는 OAuth2 SSO용으로 Keycloak(`02-auth`)과 통합되어 있습니다.
 - **OpenBao metrics**: Prometheus 소스 설정은 전용 `openbao_token` Docker Secret과 OpenBao `prometheus` 정책만 선언합니다. 시크릿 계약은 스테이징 상태로 아직 프로비저닝되지 않았습니다. 과거에 관측된 "Vault 다운/OpenBao 미로드" 상태는 현재 소스 준비 상태와 별개입니다. 추적된 소스 변경만으로는 실행 중인 Prometheus가 해당 잡을 로드했는지, 대상이 정상인지 증명되지 않습니다.
-- **Networking**: 모든 텔레메트리 트래픽은 `obs_net`을 통해 흐릅니다.
+- **Networking**: 텔레메트리 트래픽은 주로 `obs_net`을 통해 흐릅니다. 예외로 SeaweedFS master·volume·filer는 전용 internal `seaweedfs_metrics_net`으로, node-exporter는 host network namespace의 `obs_net` gateway 주소(`10.250.5.1:9100`)로 수집합니다.
 
 ## Testing
 

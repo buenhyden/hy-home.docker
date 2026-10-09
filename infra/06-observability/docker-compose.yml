@@ -116,9 +116,14 @@ services:
       traefik.http.routers.prometheus-api.middlewares: gateway-standard-chain@file,prometheus-api-auth@file
       traefik.http.routers.prometheus-api.service: prometheus
       traefik.http.services.prometheus.loadbalancer.server.port: ${PROMETHEUS_PORT:-9090}
+    # node-exporter runs in the host network namespace on obs_net's gateway;
+    # the name keeps the scrape target and instance label unchanged.
+    extra_hosts:
+      - 'node-exporter:10.250.5.1'
     networks:
       edge_net: {}
       obs_net: {}
+      seaweedfs_metrics_net: {}
 
   loki:
     profiles:
@@ -287,6 +292,9 @@ services:
       traefik.http.routers.alloy.tls: 'true'
       traefik.http.routers.alloy.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
+    # Pyroscope scrapes node-exporter, which listens on obs_net's gateway.
+    extra_hosts:
+      - 'node-exporter:10.250.5.1'
     networks:
       edge_net: {}
       obs_net: {}
@@ -477,14 +485,21 @@ services:
       service: template-infra-readonly-low
     image: quay.io/prometheus/node-exporter:v1.12.1
     container_name: node-exporter
-    hostname: node-exporter
+    # The host network namespace makes the netdev, netstat, sockstat and
+    # tcpstat collectors report the host, not this container. The listener is
+    # bound to the host side of obs_net (its default gateway), which the LAN
+    # does not route to by default; any container on a non-internal bridge
+    # network can reach it. obs_net must exist first (SPEC-0225).
+    network_mode: host
     pid: host
     command:
       - '--path.rootfs=/host/root'
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
-      - '--web.listen-address=:9100'
+      - '--web.listen-address=10.250.5.1:9100'
       - '--no-collector.timex'
+      - '--collector.processes'
+      - '--collector.tcpstat'
       - '--collector.filesystem.mount-points-exclude=^/(dev|proc|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($$|/)'
       - '--collector.textfile.directory=/textfile'
 
@@ -500,18 +515,14 @@ services:
         read_only: true
         bind:
           create_host_path: false
-    expose:
-      - '9100'
     healthcheck:
       test:
         - CMD-SHELL
-        - 'wget -qO- http://127.0.0.1:9100/metrics >/dev/null 2>&1 || exit 1'
+        - 'wget -qO- http://10.250.5.1:9100/metrics >/dev/null 2>&1 || exit 1'
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 10s
-    networks:
-      obs_net: {}
     labels:
       <<: *tier-label
 
