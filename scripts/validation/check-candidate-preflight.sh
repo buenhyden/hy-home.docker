@@ -14,7 +14,7 @@ die() {
 [[ "$#" -eq 0 ]] || die "no arguments are accepted"
 root="$(git rev-parse --show-toplevel)" || die "repository root unavailable"
 cd "$root"
-base="$(git merge-base HEAD origin/main 2>/dev/null)" ||
+base="$(git merge-base HEAD refs/remotes/origin/main 2>/dev/null)" ||
   die "no merge-base with origin/main; fetch it first (this check never passes without a base)"
 
 echo "candidate preflight: base=$base"

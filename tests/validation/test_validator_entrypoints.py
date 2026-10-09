@@ -172,9 +172,11 @@ class ValidatorEntrypointTests(unittest.TestCase):
             missing = run(repo)
             self.assertEqual(2, missing.returncode)
             self.assertIn("no merge-base with origin/main", missing.stderr)
-            self.assertEqual(2, run(repo, "--skip").returncode)
 
             git(repo, "update-ref", "refs/remotes/origin/main", "HEAD")
+            refused = run(repo, "--skip")
+            self.assertEqual(2, refused.returncode)
+            self.assertIn("no arguments are accepted", refused.stderr)
             base = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
                                   capture_output=True, text=True).stdout.strip()  # fmt: skip
             passed = run(repo)

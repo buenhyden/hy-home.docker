@@ -618,13 +618,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
 
         # A representative service change (Compose plus its guide) gets the
         # candidate preflight locally, which hosted runs never execute twice.
+        service_change = (
+            "infra/08-ai/crawl4ai/docker-compose.yml",
+            "docs/05.operations/guides/0091-crawl4ai.md",
+        )
         service_plan = build_public_plan(
-            "changed",
-            runner.ExecutionContext.LOCAL,
-            (
-                "infra/08-ai/crawl4ai/docker-compose.yml",
-                "docs/05.operations/guides/0091-crawl4ai.md",
-            ),
+            "changed", runner.ExecutionContext.LOCAL, service_change
         )
         service_ids = {
             invocation.gate_id
@@ -634,9 +633,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         }
         self.assertIn("leaf.local-candidate-preflight", service_ids)
         hosted = build_public_plan(
-            "changed",
-            runner.ExecutionContext.PULL_REQUEST,
-            ("infra/08-ai/crawl4ai/docker-compose.yml",),
+            "changed", runner.ExecutionContext.PULL_REQUEST, service_change
         )
         hosted_ids = {invocation.gate_id for invocation in hosted}
         self.assertNotIn("leaf.local-candidate-preflight", hosted_ids)
