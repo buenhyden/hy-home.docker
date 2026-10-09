@@ -67,7 +67,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `contract-testing` | capability | Pact Broker 계약 저장·검증 결과와 feature 소유 DB 준비 | `mng-pg`, `mng-pg-init`, `pact-broker-db-provision`, `pact-broker` | No | initialization: pact-broker-db-provision (role·database); pact 게시·검증 결과 쓰기 | current |
 | `core` | baseline | 접근·인증·secret 기반과 관리 DB; HOME 앱 전체는 아님 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-pg`, `mng-pg-init` | No | initialization: mng-pg-init | current |
 | `couchdb` | topology | 독립 LAB CouchDB 복제 구성과 초기화 | `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init` | No | initialization: couchdb-cluster-init | current |
-| `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler; 현재 소비자 없음 | `crawl4ai` | No | normal service startup | current |
+| `crawl4ai` | capability | 격리 network의 token 보호 웹 crawler와 `crawl4ai-egress` 출구 gateway; 현재 소비자 없음 | `crawl4ai`, `crawl4ai-egress` | No | normal service startup | current |
 | `data-science` | capability | JupyterLab 단일 사용자 notebook과 MLflow 추적 | `mng-pg`, `mng-pg-init`, `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets`, `mlflow-db-provision`, `mlflow`, `jupyterlab` | No | initialization: mlflow-db-provision, seaweedfs-buckets | current |
 | `dedicated-valkey` | topology | 앱별 broker 대안; HOST와 SECRET 매핑도 전환해야 함 | `oauth2-proxy-valkey`, `oauth2-proxy-valkey-exporter`, `airflow-valkey`, `airflow-valkey-exporter`, `n8n-valkey`, `n8n-valkey-exporter` | No | normal service startup | current |
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
@@ -186,7 +186,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | mlops / data-science / analytics-engineering / cdc / contract-testing / bi | 도구 metadata는 `mng-pg`·`mng-pg-init`을 사용한다. dbt·CDC 업무 원천은 `dev-pg`·`dev-platform-provision`을 요구한다. 기능 SQL·credential은 각 feature job 소유이며 기본 `mng-pg-init`은 그 secret을 읽지 않는다 |
 | cdc with dev-pg | 새 원천의 publication·slot·offset·snapshot은 이전 mng-pg LSN에서 이어지지 않는다. connector 등록과 writer/reader 전환은 별도 승인 후 시행한다 |
 | obs-gpu | GPU·driver·Container Toolkit 없는 host에서는 기동 실패; 선택해도 수집 성공을 증명하지 않음 |
-| crawl4ai | 다른 repository network에 연결하지 않음; 소비자는 `crawl4ai_net`에 명시적으로 합류 |
+| crawl4ai | internal network만 사용하고 외부로는 `crawl4ai-egress`만 통과; 소비자는 승인된 변경으로 `crawl4ai_net`에 합류 |
 | contract-testing | UI·API는 plain HTTP basic auth이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; heartbeat만 공개 |
 | lakehouse | `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Kafka는 별도 profile로 선택. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
 | bi | native OIDC 서비스이므로 router는 `gateway-standard-chain@file`만 사용하고 host port 없음; 가입 사용자는 `Gamma`(데이터 접근 없음) |

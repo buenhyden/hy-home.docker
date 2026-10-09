@@ -73,11 +73,37 @@ tag (`133e1d92e37885dfccc03ea2e3687d06c98b7ceb`) and the registry:
 The Spec records the contracts, and the Plan compares the three project
 candidates.
 
+### W2 Egress Gateway
+
+`crawl4ai` now joins only `crawl4ai_net` and `crawl4ai_egress_net`, both
+`internal: true`, with `dns` and `CRAWL4AI_UPSTREAM_PROXY` set to
+`10.250.200.2`, and its image is pinned by the 0.9.4 index digest. The new
+`crawl4ai-egress` service runs `infra/08-ai/crawl4ai/egress_gateway.py` on the
+repository's `python:3.13.15-alpine` image as `65534:65534`, read-only, with
+`cap_drop: ALL` and `net.ipv4.ip_unprivileged_port_start=53` instead of a
+capability; it alone joins `crawl4ai_outbound_net`, an ordinary bridge. The
+gateway allows only global unicast IPv4 on ports 80 and 443, refuses every
+IPv6 form, dials the address it checked, sends one request per plain HTTP
+connection, strips proxy headers and logs host and address only. The DNS relay
+answers AAAA with no records and forwards other queries to Docker's resolver.
+
+`tests/validation/test_crawl4ai_egress.py` (11 tests) covers the address rule
+(private, loopback, link-local, metadata, shared, documentation, multicast,
+reserved and every IPv6 form), port and literal refusals, integer and hex
+loopback forms through the real resolver, mixed DNS answers, a rebinding
+answer that changes after the check, CONNECT tunnelling, plain HTTP header
+handling, malformed requests, the AAAA answer and the relay, and the Compose
+contract. The existing runtime test now reads the version before the digest.
+The tech-stack registry, POL-0078, GDE-0091's service binding, the Grafana
+coverage table and the m0021 inventory list `crawl4ai-egress`; the gate
+contract runs the new module in `leaf.compose-baseline-regressions`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | accepted |
+| Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | W2 commit | PASS | W2 Egress Gateway | accepted |
 
 ## Review and Completion
 

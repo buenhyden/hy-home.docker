@@ -172,10 +172,10 @@ class RuntimeCompatibilityTests(unittest.TestCase):
     def test_crawl4ai_security_pin_and_isolated_optional_network(self):
         data = compose("infra/08-ai/crawl4ai/docker-compose.yml")
         crawler = data["services"]["crawl4ai"]
-        version = crawler["image"].rsplit(":", 1)[1].split("@", 1)[0]
+        version = crawler["image"].split("@", 1)[0].rsplit(":", 1)[1]
         self.assertGreaterEqual(tuple(map(int, version.split("."))), (0, 9, 4))
         self.assertEqual(["crawl4ai"], crawler["profiles"])
-        self.assertEqual(["crawl4ai_net"], crawler["networks"])
+        self.assertEqual(["crawl4ai_net", "crawl4ai_egress_net"], crawler["networks"])
         self.assertEqual("false", crawler["labels"]["traefik.enable"])
 
     def test_crawl4ai_launcher_rejects_short_tokens_without_disclosing_them(self):

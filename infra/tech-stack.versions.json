@@ -1760,7 +1760,7 @@
         "unclecode/crawl4ai": "external"
       },
       "images": [
-        "unclecode/crawl4ai:0.9.4"
+        "unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
       ],
       "compose_files": [
         "infra/08-ai/crawl4ai/docker-compose.yml"
@@ -1769,7 +1769,7 @@
         {
           "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
           "images": [
-            "unclecode/crawl4ai:0.9.4"
+            "unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
           ]
         }
       ]
@@ -1807,9 +1807,16 @@
         "python:3.13.15-alpine"
       ],
       "compose_files": [
+        "infra/08-ai/crawl4ai/docker-compose.yml",
         "infra/09-platform-ops/restic/docker-compose.yml"
       ],
       "sources": [
+        {
+          "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "images": [
+            "python:3.13.15-alpine"
+          ]
+        },
         {
           "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
           "images": [

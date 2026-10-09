@@ -88,6 +88,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_lab_isolation",
                 "tests.validation.test_lab_controller",
                 "tests.validation.test_storybook_image",
+                "tests.validation.test_crawl4ai_egress",
             ],
             arguments[1:boundary],
         )

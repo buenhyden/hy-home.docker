@@ -701,6 +701,7 @@
         "tests.validation.test_lab_isolation",
         "tests.validation.test_lab_controller",
         "tests.validation.test_storybook_image",
+        "tests.validation.test_crawl4ai_egress",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",

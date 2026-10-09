@@ -12,6 +12,7 @@ parent_ids:
 implementation_services:
   infra/08-ai/crawl4ai/docker-compose.yml:
   - crawl4ai
+  - crawl4ai-egress
 created: "2026-09-21"
 ---
 
