@@ -15,7 +15,6 @@ implementation_services:
   - 'seaweedfs-filer'
   - 'seaweedfs-master'
   - 'seaweedfs-s3'
-  - 'seaweedfs-table-bucket'
   - 'seaweedfs-volume'
 created: "2026-05-10"
 ---

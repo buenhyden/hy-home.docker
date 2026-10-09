@@ -12,7 +12,6 @@ parent_ids:
 implementation_services:
   infra/08-ai/open-notebook/docker-compose.yml:
   - open_notebook
-  - surrealdb
 created: "2026-05-10"
 ---
 
