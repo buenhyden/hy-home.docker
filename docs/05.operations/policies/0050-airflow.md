@@ -1,10 +1,10 @@
 ---
 title: "Airflow Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0050"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 운영 정책을 정의한다. 현재 구현은 Airflow와 `airflow-apiserver` 기반 Airflow 3 서비스 구성을 기준으로 한다.
 
 ## Scope
-
-### Policy Scope
 
 - Airflow 코어 컴포넌트(`airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`) 관리
 - 메타데이터 DB 및 브로커(Valkey) 연결 정책
@@ -31,14 +27,7 @@ created: "2026-05-17"
 - **Systems**: Apache Airflow, CeleryExecutor
 - **Environments**: 루트가 무조건 include하는 단일 compose 파일, 그 안을 가르는 `workflow`/`dev`/`dedicated-valkey` profile, homelab operations
 
-### Traceability
-
-- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](../guides/0050-airflow.md) (`GDE-0050`), [Runbook](../runbooks/0050-airflow.md) (`RUN-0050`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - 모든 DAG은 `Idempotent`(멱등성)를 유지해야 함.
@@ -66,10 +55,14 @@ created: "2026-05-17"
 - 격리 project/network와 복원 copy로 rehearsal하며 production volume을 덮어쓰지 않는다. Migration level, DAG parse, 값 비노출 복호화, worker/broker health, login과 canary를 검증한다.
 - 자원 변경에는 전후 측정이 필요하다. 한도는 여유 증거가 아니다. 제거에는 export, 복구 집합 보존, client/secret 폐기와 삭제 승인이 필요하다.
 
+## Exceptions
+
+- **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
+
 ### Verification
 
-- **Static Check**: `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
-- **Hardening Check**: `bash scripts/hardening/check-all-hardening.sh 07-workflow`
+점검 명령은 [가이드의 Common Checks](../guides/0050-airflow.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
 - **Runtime Check**: 실행 중인 환경에서 `docker compose exec airflow-apiserver airflow db check`와 `docker compose exec airflow-apiserver airflow dags list` 결과를 확인한다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
@@ -79,11 +72,10 @@ created: "2026-05-17"
 - **Quarterly**: 매 분기별 리소스 사용량 분석 및 쿼터 조정.
 - **Per Release**: 새로운 Airflow 버전 또는 Provider 업데이트 시 정책 재검토.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- **Emergency Hotfix**: 중대한 파이프라인 중단 시, 사후 보고를 조건으로 수동 DB 수정 또는 워커 강제 재시작 가능 (관리자 승인 필요).
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](../guides/0050-airflow.md) (`GDE-0050`), [Runbook](../runbooks/0050-airflow.md) (`RUN-0050`)
 
 ## Related Documents
 

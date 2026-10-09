@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -16,25 +16,15 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 이 런북은 Keycloak readiness 실패, DB 연결 오류, issuer/redirect 불일치, proxy header 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다. 값이 필요한 점검은 secret 값을 출력하지 않는 방식으로만 수행한다.
 
 > Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
 
-### Purpose
+목적은 Keycloak 가용성을 빠르게 복구하고, issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁히며, 시크릿/설정 회귀 시 안전하게 롤백하는 것이다.
 
-- Keycloak 가용성을 빠르게 복구한다.
-- issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁힌다.
-- 시크릿/설정 회귀 시 안전하게 롤백한다.
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - `/health/ready` 실패 지속
 - DB 인증 오류 또는 연결 오류
@@ -42,10 +32,6 @@ created: "2026-05-17"
 - OAuth2 Proxy 또는 native OIDC client의 `invalid_redirect_uri`, issuer mismatch, JWKS fetch 실패
 - logout 후 즉시 재로그인되는 세션 경계 문제
 - token, session, client secret 노출 후 폐기가 필요할 때
-
-## Procedure
-
-### Procedure
 
 ### Target, approval and safe evidence
 
@@ -57,13 +43,15 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](0099-system-operations.md), cold-start는
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
 
-### Checklist
+## Procedure
+
+### Preflight checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] 승인된 `docker compose ps keycloak mng-pg`에서 `keycloak`, `mng-pg` 상태 확인
 
-### Steps
+### Diagnosis and recovery steps
 
 1. 설정/로그 확인
    - Keycloak의 정제된 DB/OIDC 오류 요약
@@ -185,19 +173,30 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 설치 성공은 관찰하지 않았다. 로그인 성공 외에 Pool/DAG/Asset별 허용·거부를 확인하고
 [Airflow Runbook](0050-airflow.md)으로 후속 앱 검증을 전달한다.
 
-### Verification Steps
+## Verification
+
+### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(기본9000 기준; listener 변경 시 승인된 관리 포트와 함께 조정)
 
-### Observability and Evidence Sources
+### Observability and evidence sources
 
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
   - Keycloak의 정제된 DB/OIDC 오류 요약
   - `check-all-hardening.sh 02-auth` 실행 결과
 
-### Safe Rollback or Recovery Procedure
+### 증거 기록
+
+- 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
+- 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
+
+## Rollback and Escalation
+
+### Rollback or Recovery
+
+격리 복구 절차는 다음과 같다.
 
 - [ ] 쓰기 중단 시점을 기록하고 Keycloak을 중지한 뒤 database owner가 검증한
       `mng-pg` Keycloak database 백업을 새 격리 database로 복원한다.
@@ -208,17 +207,6 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 - [ ] 승인 후에만 운영 endpoint를 전환한다. 실패하면 격리 복구본을 보존하고
       기존 환경을 변경하지 않은 채 database owner에게 인계한다.
 
-## Verification
-
-### Evidence
-
-- 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
-- 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
-
-## Rollback and Escalation
-
-### Rollback or Recovery
-
 Realm export는 database backup을 대신하지 않는다. 공식 절차는 일관성을 위해
 모든 Keycloak node를 중지한 export를 권장한다. 업그레이드 rollback에는 이전
 image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구 절차는 계획된
@@ -228,13 +216,13 @@ image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [02-Auth Keycloak Usage Guide](../guides/0014-keycloak.md) (`GDE-0014`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../guides/0014-keycloak.md) (`GDE-0014`), [Policy](../policies/0014-keycloak.md) (`POL-0014`)
-
-## Related Documents
 
 - [Official Keycloak container guide](https://www.keycloak.org/server/containers)
 - [Official Keycloak hostname guide](https://www.keycloak.org/server/hostname)

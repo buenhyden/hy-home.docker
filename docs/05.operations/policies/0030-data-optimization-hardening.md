@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Operations Policy"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0030"
 parent_ids:
@@ -16,28 +16,17 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
 ## Scope
-
-### Policy Scope
 
 모든 data 서비스는 명시적 disposition/profile, 쓰기 가능한 모든 state 경로에
 대한 owner 하나, health check나 문서화된 예외, 공유 리소스 제한, 의도된
 network/노출 경계, credential이 존재하는 경우 secret-file 보관, engine별
 복구 방법을 가져야 한다.
 
-### Traceability
-
-- Artifact: `POL-0030`; parent: `AD-0004`.
-- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
-
 ## Rules
-
-### Controls
 
 - Root Compose project를 통해 검증한다. Root network, secret, `extends` 경로가
   렌더링된 모델을 바꾸기 때문에 서비스 로컬 project 렌더링은 허용하지 않는다.
@@ -72,6 +61,12 @@ subject로 escalate한다. Data 삭제, volume 재사용, 파괴적 restore는 �
 
 적용 identity: GDE-0019/0022/0024/0025/0026/0027/0028/0029/0031/0033/0034의 명명된 data identities. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
+## Exceptions
+
+문서화된 job/health 예외는 소유 profile과 복구 evidence를 요구한다. 예외는
+runtime mutation, plaintext secret, raw active storage 복사, 동일 host
+가용성 주장을 허용하지 않는다.
+
 ### Verification
 
 Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격이나 cutover
@@ -83,13 +78,10 @@ Root 구성과 범위가 지정된 static policy check를 검증한 뒤, 승격�
 Profile, image, volume, credential, consumer, retention 또는 upstream
 lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-문서화된 job/health 예외는 소유 profile과 복구 evidence를 요구한다. 예외는
-runtime mutation, plaintext secret, raw active storage 복사, 동일 host
-가용성 주장을 허용하지 않는다.
+- Artifact: `POL-0030`; parent: `AD-0004`.
+- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
 
 ## Related Documents
 

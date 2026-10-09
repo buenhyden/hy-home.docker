@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -16,27 +16,15 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gateway 접근은 각
 대상 데이터베이스에 대한 최소 권한 부여를 대체하지 않는다.
 
 ## Scope
 
-### Policy Scope
-
 활성화, gateway/CIDR, 저장된 대상 자격 증명/이력, 대상 작업, 텔레메트리/라이선스,
 설정 백업/복구, 업그레이드, 제거.
 
-### Traceability
-
-- [가이드](../guides/0076-redisinsight.md) (`GDE-0076`)
-- [런북](../runbooks/0076-redisinsight.md) (`RUN-0076`)
-- [Laboratory 아키텍처](../../02.architecture/descriptions/0011-laboratory-architecture.md)
-
 ## Rules
-
-### Controls
 
 - `admin`/`admin-data`만 사용하며 상시 기본 profile에 넣지 않는다.
 - ForwardAuth와 관리자 CIDR을 보존한다. listener는 Traefik만 함께 붙는
@@ -54,8 +42,16 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
   엔진 소유자를 따르며 `/data`로 대체할 수 없다.
 - 일관된 설정 사본을 위해 서비스를 중지한다. 프로덕션 대상 네트워크를
   비활성화하고, 구성된 경우 일치하는 암호화 키로 복구한다.
+- 새 망을 붙일 때는 listener가 여전히 `redisinsight_ingress_net` 주소에만 열려
+  있는지 확인한다. CIDR·SSO 성공만으로 안전한 배포나 복구 완료를 선언하지 않으며,
+  노출을 확대하거나 저장된 credential을 진단 출력으로 쓰지 않는다.
 - 업그레이드 전에 릴리스 노트, 텔레메트리 설정, 적용 가능한 SSPL/라이선스
   조건을 검토한다. 제거 전에 저장된 대상 자격 증명을 폐기한다.
+
+## Exceptions
+
+대상 권한 부여를 우회하거나 gateway 로그인을 데이터베이스 권한으로 취급하는
+예외는 없다. `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없다.
 
 ### Verification
 
@@ -68,19 +64,11 @@ gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspect
 
 이미지/라이선스, 인증/CIDR, 암호화 키, 대상, 저장소 변경 시 검토한다.
 
-### 직접 접근 제한
+### Traceability
 
-데이터 망 peer는 UI 포트에 닿지 못한다. 새 망을 붙일 때는 listener가 여전히
-`redisinsight_ingress_net` 주소에만 열려 있는지 확인한다. CIDR·SSO 성공만으로 안전한 배포나
-복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을 진단 출력으로
-사용하지 않는다.
-
-## Exceptions
-
-### Exceptions
-
-대상 권한 부여를 우회하거나 gateway 로그인을 데이터베이스 권한으로 취급하는
-예외는 없다. `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없다.
+- [가이드](../guides/0076-redisinsight.md) (`GDE-0076`)
+- [런북](../runbooks/0076-redisinsight.md) (`RUN-0076`)
+- [Laboratory 아키텍처](../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 ## Related Documents
 

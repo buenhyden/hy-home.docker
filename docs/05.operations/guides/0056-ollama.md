@@ -1,6 +1,6 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.4"
+version: "2.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,38 +20,26 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
-이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, Open WebUI 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
-
-### Usage Type
-
-`system-guide`
-
-### Target Audience
+**대상**
 
 - AI Engineer
 - Developer
 - Operator
 - Agent-tuner
 
-### Purpose
+**목적**
 
 - Ollama 모델 운용 절차를 표준화한다.
 - API/CLI/관측(Exporter) 경로를 일관된 방식으로 점검한다.
 - Open WebUI/RAG 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
 
-### Prerequisites
+## Usage
+
+### 사전 조건
 
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
 - root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai`, `ai-llm` 또는 `ollama` profile을 선택해야 한다.
@@ -61,9 +49,9 @@ created: "2026-05-10"
   - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
   - Exporter: `OLLAMA_EXPORTER_PORT`는 연결한 Compose와 공개 `.env.example`이 소유한다. 내부 지표 listener이며 모델 추론을 중계하지 않는다.
 
-### Step-by-step Instructions
+### 사용 절차
 
-#### 1. Service & GPU Health Check
+#### Service & GPU Health Check
 
 ```bash
 # 호스트 GPU 상태
@@ -76,7 +64,7 @@ curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags
 docker compose exec ollama nvidia-smi
 ```
 
-### 2. Model Lifecycle (CLI)
+#### Model Lifecycle (CLI)
 
 ```bash
 # 모델 목록 확인
@@ -85,7 +73,7 @@ docker compose exec ollama ollama list
 
 모델 변경(`ollama pull` 등)은 [Ollama Operations Policy](../policies/0056-ollama.md)가 요구하는 승인된 local/dev rehearsal 없이 무조건 실행하지 않는다. 절차는 [Ollama runbook](../runbooks/0056-ollama.md)을 따른다.
 
-### 3. Inference API Check
+#### Inference API Check
 
 ```bash
 curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
@@ -94,7 +82,7 @@ curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 }'
 ```
 
-#### 3a. Decision API Smoke
+#### Decision API Smoke
 
 [Ollama release notes](https://github.com/ollama/ollama/releases)의 `/v1/systemone`은 선택 또는 점수형 결정을 지원한다. 아래 요청은 실제 업무 데이터 없이 [tev1:0.8b](https://ollama.com/library/tev1)를 확인하며, `keep_alive: 0`으로 요청 뒤 모델을 내린다.
 
@@ -110,13 +98,13 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 
 [tev1:0.8b](https://ollama.com/library/tev1)가 없으면 승인된 rehearsal에서만 `docker compose exec ollama ollama pull tev1:0.8b`로 가져온 뒤 위 요청을 실행한다.
 
-#### 4. Open WebUI Integration Check
+#### Open WebUI Integration Check
 
 1. Open WebUI 환경변수 `OLLAMA_BASE_URL`가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
 2. Open WebUI UI에서 모델 목록이 정상 조회되는지 확인.
 3. 모델 미노출 시 `ollama` health/log를 먼저 확인.
 
-#### 5. Exporter Observability Check
+#### Exporter Observability Check
 
 ```bash
 # exporter exposes metrics inside `ai_net`; it is not published to host.
@@ -124,13 +112,6 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 ```
 
 - 주요 관측 대상: 모델 로드 수, 메모리 사용량, scrape 상태.
-
-### Common Pitfalls
-
-- **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
-- **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
-- **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
-- **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `ai_net` 내부 scrape 경로를 기준으로 확인한다.
 
 ### Source-backed operating contract
 
@@ -179,6 +160,13 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - Declared parent: [Ollama Operations Policy](../policies/0056-ollama.md) (`POL-0056`)
 - Governing authority: [AI Infrastructure Architecture Description](../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: [Policy](../policies/0056-ollama.md) (`POL-0056`), [Runbook](../runbooks/0056-ollama.md) (`RUN-0056`)
+
+## Troubleshooting
+
+- **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
+- **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
+- **모델 태그 불일치**: Open WebUI 설정 모델명과 Ollama 실제 태그 불일치.
+- **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `ai_net` 내부 scrape 경로를 기준으로 확인한다.
 
 ## Related Documents
 

@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -19,43 +19,25 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
+이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
-이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- SRE / Platform Operator
-- DevOps Engineer
-- Observability Maintainer
-
-### Purpose
+대상 독자: SRE와 플랫폼 운영자, DevOps 엔지니어, 관측성 유지보수자.
 
 - 관측성 관리 경로를 게이트웨이 표준 정책에 정렬한다.
 - 초기 기동 안정성과 회귀 차단 능력을 강화한다.
 - 카탈로그 기반 확장(샘플링/retention/pipeline module) 준비 상태를 확보한다.
 
-### Prerequisites
+## Usage
+
+사용 전에 다음을 확인한다.
 
 - Docker / Docker Compose 실행 환경
 - `infra/06-observability` 및 `scripts/` 수정 권한
 - Traefik `gateway-standard-chain`과 프록시 `sso-*` middleware, Grafana·Gatus의 Keycloak 네이티브 client 준비
 
-### Step-by-step Instructions
+일반 순서는 다음과 같다.
 
 1. 변경 전 정적 상태 점검
    - root context: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
@@ -75,14 +57,6 @@ created: "2026-05-17"
 6. 문서 추적성 동기화
    - PRD~Procedure optimization-hardening 문서 링크를 점검한다.
 
-### Common Pitfalls
-
-- Native and proxy-protected routers에 동일한 auth middleware를 일괄 적용해
-  native OIDC를 중복하거나 proxy protection을 누락하는 실수
-- `service_started` 의존성으로 부팅 race condition을 남기는 실수
-- custom 이미지에 root 실행 경로를 재도입하는 실수
-- 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
-
 ### Source-backed operating contract
 
 - **목적·분류·구현 소유권**: `cadvisor`는 `HOME` container metric exporter이며 `obs`/`obs-host`/`dev`로 선택한다. node-exporter의 소유 문서는 [GDE-0045](0045-prometheus.md#host-and-gpu-exporter-boundary)이며 [Compose](../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
@@ -94,9 +68,15 @@ created: "2026-05-17"
 
 ### cAdvisor and static-check limits
 
-cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는 privileged 관측기다. 공통 template이 capability를 제거한다고 격리를 보장하지 않는다. Disk metric 등 제외 collector, container label/cardinality와 보호 route를 유지한다. Health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 자체 애플리케이션 데이터나 Docker Secret은 없고 복구 대상은 승인된 image/config와 telemetry 기준이다.
+이 항목은 [POL-0044](../policies/0044-observability-optimization-hardening.md#cadvisor-and-static-check-limits)가 소유한다. 요약: cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 쓰는 privileged 관측기이며, health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 관측 hardening 검사는 일부 문자열·파일만 보므로 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
+### 운영 시 주의점
+
+- Native 및 proxy-protected routers에 동일한 auth middleware를 일괄 적용해
+  native OIDC를 중복하거나 proxy protection을 누락하는 실수
+- `service_started` 의존성으로 부팅 race condition을 남기는 실수
+- custom 이미지에 root 실행 경로를 재도입하는 실수
+- 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
 ### Common Checks
 
@@ -117,11 +97,8 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 ## Related Documents
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)
-
 - [Official cAdvisor deployment and host access](https://github.com/google/cadvisor)
-
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
 - [Operations index](../README.md)
 - [Operations policy](../policies/0044-observability-optimization-hardening.md)
 - [Recovery runbook](../runbooks/0044-observability-optimization-hardening.md)

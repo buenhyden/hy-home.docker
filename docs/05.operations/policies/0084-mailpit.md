@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0084"
 parent_ids:
@@ -16,27 +16,14 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
-Mailpit은 개발용 이메일을 캡처한다. 일부러 느슨하게 둔 SMTP 설정은 현재 DEV 분류와
-loopback/internal 네트워크 경계 안에서만 허용된다.
+Mailpit은 개발용 이메일을 캡처한다. 일부러 느슨하게 둔 SMTP 설정은 현재 DEV 분류와 loopback/internal 네트워크 경계 안에서만 허용된다.
 
 ## Scope
-
-### Policy Scope
 
 `mailpit` 서비스의 활성화, SMTP/UI 접근, 캡처된 메시지 데이터, SQLite 보존, 백업,
 업그레이드, 제거를 다룬다.
 
-### Traceability
-
-- [Guide](../guides/0084-mailpit.md) (`GDE-0084`)
-- [Runbook](../runbooks/0084-mailpit.md) (`RUN-0084`)
-- [Communication architecture](../../02.architecture/descriptions/0010-communication-architecture.md)
-
 ## Rules
-
-### Controls
 
 - **Activation:** `mail-dev`, `dev`, `local`을 사용한다. Mailpit을 HOME에 추가하거나
   운영 메일함/전송 서비스로 표시하지 않는다.
@@ -56,15 +43,6 @@ loopback/internal 네트워크 경계 안에서만 허용된다.
 - **Removal:** bind 디렉터리를 삭제하기 전에 export하거나 보존된 메시지의 폐기를 명시적으로
   승인받는다. 컨테이너를 중지/제거해도 데이터는 제거되지 않는다.
 
-### Verification
-
-정적 검사는 메일 캡처나 restore를 증명하지 않는다. 런타임 증거에는 메시지 내용을 남기지 않고
-합성 식별자/개수와 최종 상태만 기록해야 한다.
-
-### Review Cadence
-
-포트, 인증, 보존, 데이터베이스 경로, 프로필, 이미지가 변경될 때 검토한다.
-
 ### 접근 경계의 의미
 
 gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 peer listener에는
@@ -74,10 +52,23 @@ gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 pe
 
 ## Exceptions
 
-### Exceptions
-
 외부 노출, SMTP relay/forwarding, 실제 메일, 완화된 보존 요구는 별도의 보안 및 데이터
 승인이 필요하다. 일상적인 예외로는 승인할 수 없다.
+
+### Verification
+
+정적 검사는 메일 캡처나 restore를 증명하지 않는다. 런타임 증거에는 메시지 내용을 남기지 않고
+합성 식별자/개수와 최종 상태만 기록해야 한다.
+
+### Review Cadence
+
+포트, 인증, 보존, 데이터베이스 경로, 프로필, 이미지가 변경될 때 검토한다.
+
+### Traceability
+
+- [Guide](../guides/0084-mailpit.md) (`GDE-0084`)
+- [Runbook](../runbooks/0084-mailpit.md) (`RUN-0084`)
+- [Communication architecture](../../02.architecture/descriptions/0010-communication-architecture.md)
 
 ## Related Documents
 

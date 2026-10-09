@@ -1,10 +1,10 @@
 ---
 title: "System Operations Diagnostic Runbook"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0099"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-10-01"
 
 ## Overview
 
+이 런북은 여러 앱의 접속·로그인·작업·저장이 함께 실패할 때 공유 의존성 후보를 좁히고 기존 서비스 Runbook으로 전달하는 읽기 전용 진단 절차를 제공한다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 여러 앱의 접속·로그인·작업·저장이 함께 실패하거나, 앱과 관측 화면의 장애가
 같은 원인인지 모를 때 사용한다. 공유 host·gateway·인증·DB·broker·객체 저장소
@@ -38,7 +34,7 @@ unseal, credential 발급, 설정 변경, 복원, cleanup 또는 부하 생성�
 
 ## Procedure
 
-### Procedure
+아래 네 단계를 순서대로 수행한다.
 
 ### 1. Confirm scope before diagnosis
 
@@ -111,8 +107,6 @@ data integrity·복원 가능성은 미검증으로 남긴다.
 
 ## Verification
 
-### Evidence
-
 현재 Task 또는 실제 사건의 [Incident](../incidents/README.md)에 시각·시간대,
 source revision, 대상 context·선택의 확인 여부, 영향·정상 기능, 최소 상태 요약,
 선택한 분기·Runbook, 중단 사유와 다음 책임자를 기록한다. 명령마다 종료 상태와
@@ -137,13 +131,13 @@ Docker 대상 불명, 여러 HOME 기능의 지속 장애, 반복 OOM, 공유 �
 영향받은 기능, 관찰 시각, 마지막 변경, 공통 원인 후보, 해당 Runbook, 미검증
 항목과 필요한 승인만 전달하며 사건 기록은 기존 Incident 구조를 사용한다.
 
+## Related Documents
+
+- [전체 Runbook](README.md), [Operations](../README.md)
+- [기동·재부팅](0098-cold-start-and-reboot.md), [백업·복구](0021-backup-and-restore.md), [network](0077-ip-address-management.md), [버전 변경](0086-dependency-version-management.md)
+
 ### Traceability
 
 - [GDE-0099](../guides/0099-system-operations.md): 사용자·데이터 경로와 공통 의존성.
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md): 호스트 구조와 실패 영역.
 - [POL-0006](../policies/0006-infrastructure-optimization-governance.md), [POL-0078](../policies/0078-compose-profile-vocabulary.md): 공통 통제와 선택.
-
-## Related Documents
-
-- [전체 Runbook](README.md), [Operations](../README.md)
-- [기동·재부팅](0098-cold-start-and-reboot.md), [백업·복구](0021-backup-and-restore.md), [network](0077-ip-address-management.md), [버전 변경](0086-dependency-version-management.md)

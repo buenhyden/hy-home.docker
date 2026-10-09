@@ -1,10 +1,10 @@
 ---
 title: "Operations: Terraform Policy Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0068"
 parent_ids:
@@ -16,15 +16,15 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 가이드는 기존 Terraform 사용자의 OpenTofu 이관 맥락을 보존한다. 현재 저장소의 실행 도구는 OpenTofu이며
+Terraform Compose 서비스는 없다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 기존 Terraform workspace를 OpenTofu 운영으로 옮기는 운영자다. 목표는 이관 전 확인 사항과
+문서 소유 경계를 파악하는 것이다.
 
 ## Usage
-
-### Usage
 
 이 주제는 기존 Terraform 사용자의 OpenTofu 이관 맥락을 보존한다. 현재 저장소의
 실행 도구는 OpenTofu이며 Terraform Compose 서비스는 존재하지 않는다. 새 작업은

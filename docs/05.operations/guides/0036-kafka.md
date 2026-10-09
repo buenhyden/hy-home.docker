@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -26,15 +26,13 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Schema Registry, Connect, REST Proxy, Kafbat UI, exporter, init job을 정의한다. 다중 broker 학습은 독립 LAB으로 분리했다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 Kafka family를 켜거나 변경하는 운영자와 개발자다. 목표는 어떤 서비스가 어느 profile에서 선택되는지, 어디까지 보호되는지, 복구가 무엇을 포함하는지 확인하는 것이다. 실행 절차는 [RUN-0036](../runbooks/0036-kafka.md)이 소유한다.
 
 ## Usage
-
-### Usage
 
 Kafka는 OPTIONAL 이벤트 스트리밍 기능이다. 정상 root에는 단일
 `kafka-1`만 있고, 다중 broker 학습은 독립 LAB 진입점의 `lab-kafka`
@@ -114,13 +112,7 @@ job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선
 
 ### Static preflight and profile choice
 
-```bash
-docker compose --env-file .env.example --profile messaging config --quiet
-docker compose --env-file .env.example --profile messaging config --services
-docker compose --env-file labs/.env.example -f labs/kafka-cluster.yml --profile lab-kafka config --quiet
-```
-
-저장소 루트에서 정적 render만 수행한다. 정상 `kafka-init`은 RF1,
+정적 render 명령은 [RUN-0036 절차](../runbooks/0036-kafka.md#procedure)가 소유한다. 정상 `kafka-init`은 RF1,
 LAB `lab-kafka-init`은 RF3이다. LAB의 `LAB_KAFKA_CLUSTER_ID`는 정상
 `KAFKA_CLUSTER_ID`와 달라야 한다. 서비스 시작과 topic 생성은 별도 runtime
 승인 대상이다.
@@ -159,6 +151,19 @@ Connect는 시작할 때 `debezium_postgres_password` secret에서
 connector 등록·snapshot·offset 재설정은 아직 실행하지 않았다. 기존 HOME
 `mng-pg/app_db` 기술 객체와 이전 topic은 별도 승인 전까지 보존한다.
 
+### License and source boundary
+
+Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. Schema Registry, Connect,
+REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검토가
+필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
+않는다.
+
+### Common Checks
+
+정확한 root profile, service, health/resource 제어, writable-state 소유권,
+secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
+증거일 뿐이며, runtime과 restore는 별개로 남는다.
+
 ### Runbook Handoff
 
 Kafka 복구 범위는 broker 디렉터리보다 넓다. topic 데이터와 config,
@@ -175,33 +180,10 @@ topic을 목록으로 정리한다. 신뢰할 수 있는 producer source에서 r
 Kafbat, 클라이언트, 저장 형식에 대한 공식 호환성 검토와 현재 recovery
 artifact 및 rollback이 필요하다.
 
-### License and source boundary
-
-Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. Schema Registry, Connect,
-REST 이미지는 Confluent가 제공하며 별도의 현재 license/edition 검토가
-필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
-않는다.
-
-### Official references
-
-- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
-- [Kafka KRaft](https://kafka.apache.org/documentation/#kraft)
-- [Kafka license](https://kafka.apache.org/licensing)
-- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
-- [Kafbat configuration](https://ui.docs.kafbat.io/configuration/configuration-file)
-- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
-- [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)
-
-### Common Checks
-
-정확한 root profile, service, health/resource 제어, writable-state 소유권,
-secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
-증거일 뿐이며, runtime과 restore는 별개로 남는다.
-
 ### Traceability
 
-- Artifact: `GDE-0036`; 거버넌스 정책: `POL-0036`.
-- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml` and the
+- Artifact: `GDE-0036`; 상위 정책: `POL-0036`.
+- Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`과
   [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 
 ## Related Documents
@@ -209,3 +191,10 @@ secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass
 - [Operations policy](../policies/0036-kafka.md)
 - [Cluster recovery runbook](../runbooks/0036-kafka.md)
 - [Messaging architecture](../../02.architecture/descriptions/0005-messaging-architecture.md)
+- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Kafka KRaft](https://kafka.apache.org/documentation/#kraft)
+- [Kafka license](https://kafka.apache.org/licensing)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Kafbat configuration](https://ui.docs.kafbat.io/configuration/configuration-file)
+- [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control)
+- [Kafbat license](https://github.com/kafbat/kafka-ui/blob/main/LICENSE)

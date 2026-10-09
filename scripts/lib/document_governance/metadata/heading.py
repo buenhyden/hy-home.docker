@@ -799,6 +799,28 @@ def _registered_section_findings(
                     f"profile {record.artifact_type} repeats heading {count} times: {heading}",
                 )
             )
+    if profile.get("ordered_sections"):
+        declared = [
+            f"## {heading}"
+            for heading in profile.get("required_sections", ())
+            if isinstance(heading, str)
+        ]
+        # A record admitted in a sealed shape keeps that shape's order.
+        if (
+            required == set(declared)
+            and not missing
+            and [heading for heading in h2 if heading in declared] != declared
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-order",
+                    f"profile {record.artifact_type} requires sections in order: "
+                    + ", ".join(heading[3:] for heading in declared),
+                )
+            )
+    if profile.get("nonempty_sections"):
+        findings.extend(_empty_section_findings(record, text))
     # A profile whose documents share no heading vocabulary declares
     # itself free-form rather than registering a union nothing follows.
     # Without this, an unregistered heading is a violation only when a
@@ -814,6 +836,85 @@ def _registered_section_findings(
                 )
             )
     return sorted(set(findings))
+
+
+_HEADING_LINE = re.compile(r"^ {0,3}(#{2,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
+
+
+def _empty_section_findings(record: Record, text: str) -> list[Finding]:
+    """Report sections that hold nothing, or only a copy of their own heading.
+
+    A heading followed directly by a deeper one is a parent, not an empty
+    section, unless that child repeats the parent's title: the child then
+    stands in for the parent and the outer heading says nothing. HTML
+    comments are not content; fenced blocks are.
+    """
+
+    findings: list[Finding] = []
+    sections: list[tuple[int, str, bool]] = []
+
+    def mark_content() -> None:
+        if sections:
+            sections[-1] = (*sections[-1][:2], True)
+
+    # Fences follow `_markdown_unfenced_lines`: a backtick info string with a
+    # backtick is not a fence, and a closing run is at least as long.
+    fence_character: str | None = None
+    fence_length = 0
+    in_comment = False
+    for line in text.splitlines():
+        if fence_character is not None:
+            if re.match(
+                rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
+                line,
+            ):
+                fence_character, fence_length = None, 0
+            continue
+        stripped = line.strip()
+        if in_comment:
+            if "-->" not in stripped:
+                continue
+            in_comment = False
+            stripped = stripped.split("-->", 1)[1].strip()
+            if stripped:
+                mark_content()
+            continue
+        opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        if opening and not (opening.group(1)[0] == "`" and "`" in opening.group(2)):
+            fence_character = opening.group(1)[0]
+            fence_length = len(opening.group(1))
+            mark_content()
+            continue
+        match = _HEADING_LINE.match(line)
+        if match:
+            sections.append((len(match.group(1)), match.group(2).rstrip(), False))
+            continue
+        while stripped.startswith("<!--"):
+            if "-->" not in stripped:
+                in_comment = True
+                stripped = ""
+                break
+            stripped = stripped.split("-->", 1)[1].strip()
+        if stripped:
+            mark_content()
+    for index, (level, title, has_content) in enumerate(sections):
+        child = sections[index + 1] if index + 1 < len(sections) else None
+        if has_content:
+            continue
+        if child is not None and child[0] > level:
+            if child[1].casefold() == title.casefold():
+                findings.append(
+                    _finding(
+                        record,
+                        "body-heading-repeated",
+                        f"{'#' * level} {title} holds only a heading of the same name",
+                    )
+                )
+            continue
+        findings.append(
+            _finding(record, "body-section-empty", f"{'#' * level} {title} is empty")
+        )
+    return findings
 
 
 _RUNTIME_EXCEPTION = re.compile(

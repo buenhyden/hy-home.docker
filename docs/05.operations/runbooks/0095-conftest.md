@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -16,19 +16,13 @@ created: "2026-09-23"
 
 ## Overview
 
+`conftest` 정책 검사 작업이 실패했을 때 원인을 찾고 수정하는 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 `conftest` 작업이 0이 아닌 상태로 종료될 때 사용한다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 승인된 로컬 컨테이너 작업을 실행하고 첫 실패 단계·줄을 읽는다.
    원본 읽기 전용 작업이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
@@ -59,8 +53,6 @@ created: "2026-09-23"
 
 ## Verification
 
-### Evidence
-
 실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
 단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
 
@@ -77,12 +69,12 @@ created: "2026-09-23"
 `secrets/`, `.env` 또는 Docker 소켓을 작업에 마운트하라는 요청, 또는 실패하는
 변경을 통과시키기 위해 `deny`를 `warn`으로 바꾸라는 요청이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0095-conftest.md) (`GDE-0095`)
 - [Policy](../policies/0095-conftest.md) (`POL-0095`)
 - [Conftest Compose](../../../infra/11-quality/conftest/docker-compose.yml)
-
-## Related Documents
 
 - [Conftest 패키지 README](../../../infra/11-quality/conftest/README.md)

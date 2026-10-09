@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-10-03"
 
 ## Overview
 
+`dev-db` source 변경의 정적 사전 검사와 DEV 지표 경보·중지 절차를 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
 현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
@@ -31,8 +27,6 @@ HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실�
 운영 백업 검증·복원은 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
 
 ## Procedure
-
-### Procedure
 
 저장소 root에서 working tree와 intended source를 확인한다. private `.env`, secret value,
 rendered private Compose와 database content는 출력하지 않는다.
@@ -79,13 +73,11 @@ DEV를 일부러 내릴 때:
    장애 경보는 없다.
 3. 다시 올릴 때는 서비스를 올린 뒤 값을 `on`으로 되돌리고 Prometheus를 재생성한다.
 
-`dev_pg_monitor`와 `devmonitor` 비밀번호 회전은 MNG와 같은 순서다. 비밀 파일을
+`dev_pg_monitor`(`dev-pg-exporter`)와 `devmonitor`(`dev-valkey-exporter`) 비밀번호 회전은 MNG와 같은 순서다. 비밀 파일을
 바꾸고 `dev-pg-monitor-provision`을 다시 실행하거나 `dev-valkey`를 재생성한 뒤
 exporter를 재생성한다.
 
 ## Verification
-
-### Evidence
 
 Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
 운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
@@ -107,13 +99,13 @@ collision, insufficient resource evidence, unsupported image/extension/backup co
 grant isolation failure, current management dependency 발견 시 중단하고 @buenhyden에게
 target, source SHA, failure signal, proposed approval boundary를 전달한다.
 
+## Related Documents
+
 ### Traceability
 
 - Artifact: `RUN-0100`; parent guide: `GDE-0100`.
 - Governing source contract: `SPEC-0202`.
 - Static implementation authority: `infra/04-data/dev-db/docker-compose.yml`.
-
-## Related Documents
 
 - [Development database guide](../guides/0100-development-database.md)
 - [Development database policy](../policies/0100-development-database.md)

@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -16,18 +16,16 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
+이 가이드는 Compose 서비스의 Docker network 소속과 고정 주소 사용 기준을 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 개발자, 운영자, AI Agent다. 목표는 실제 호출 흐름에 맞는 network를 고르고
+불필요한 고정 주소를 만들지 않는 것이다.
 
 ## Usage
 
-### Usage
-
-이 가이드는 개발자·운영자·AI Agent가 실제 호출 흐름에 맞는 network를 선택하도록
-돕는다. 구조적 할당은 [AD-0026 Networks](../../02.architecture/descriptions/0026-standardize-infra-net.md#networks-spec-0180-s05),
+구조적 할당은 [AD-0026 Networks](../../02.architecture/descriptions/0026-standardize-infra-net.md#networks-spec-0180-s05),
 선언은 [루트 Compose](../../../docker-compose.yml)와 해당 service fragment가
 소유한다. 서비스가 여러 network를 공유해도 개별 인증·권한 검증을 대신하지 않는다.
 
@@ -55,7 +53,7 @@ leaf 소유 isolated network와 root 생성 network를 구분한다. k3d와 Comp
 Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 [0096](0096-k8s-integration.md)이 소유한다.
 
-### Common pitfalls
+### 흔한 함정
 
 - 다중 network 서버가 자기 DNS 이름의 한 주소에만 bind하면 다른 network의
   client가 닿지 못할 수 있다. 해당 listener는 승인된 container 내부

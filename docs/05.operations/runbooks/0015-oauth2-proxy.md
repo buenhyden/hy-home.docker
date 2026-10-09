@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -16,25 +16,15 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, CA/issuer/callback 불일치, Redis/Valkey session 장애, logout 경계 혼동, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
 > Scope: OAuth2 Proxy ForwardAuth Recovery
 
-### Purpose
+목적은 인증 경로 장애의 신속한 복구, degraded-mode 수행/종료 통제, config lint 실패 시 안전한 롤백이다.
 
-- 인증 경로 장애를 신속히 복구한다.
-- degraded-mode 수행/종료를 통제한다.
-- config lint 실패 시 안전하게 롤백한다.
+## Trigger and Preconditions
 
-### When to Use
+다음 경우에 사용한다.
 
 - 로그인 루프(무한 redirect)
 - OIDC issuer 접근 실패
@@ -44,10 +34,6 @@ created: "2026-05-17"
 - `/ping` healthcheck 실패
 - readonly/tmpfs 관련 쓰기 오류
 - compose/config 변경 후 런타임 부팅 실패
-
-## Procedure
-
-### Procedure
 
 ### Target, approval and safe evidence
 
@@ -59,13 +45,15 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](0099-system-operations.md), cold-start는
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
 
-### Checklist
+## Procedure
+
+### Preflight checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] Proxy의 정제된 인증/backend 오류 요약 오류 패턴 확인
 
-### Steps
+### Diagnosis and recovery steps
 
 1. 기본 진단
    - `/ping` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
@@ -145,7 +133,9 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 삭제는 소비자 전환·재로그인 영향·보존 disposition이 승인되기 전에는 수행하지
 않는다. cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
 
-### Verification Steps
+## Verification
+
+### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
@@ -153,7 +143,7 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 - [ ] `/ready`가 session store 연결까지 성공
 - [ ] `/oauth2/sign_out`과 Keycloak end-session redirect의 효과를 구분해서 기록
 
-### Observability and Evidence Sources
+### Observability and evidence sources
 
 - **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
 - **Evidence to Capture**:
@@ -161,31 +151,11 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
   - Keycloak의 정제된 OIDC 오류 요약
   - check-all-hardening.sh 02-auth 출력
 
-### Safe Rollback or Recovery Procedure
-
-- [ ] 아래 파일을 직전 정상 커밋으로 복원
-  - `infra/02-auth/oauth2-proxy/docker-compose.yml`
-  - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
-  - `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`
-  - `infra/02-auth/oauth2-proxy/Dockerfile`
-  - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
-  - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
-- [ ] 위 Lifecycle의 승인된 대상 재생성과 hash 점검 수행
-- [ ] `/ping` + 로그인 시나리오 재검증
-
-전용 Valkey server/exporter와 인증 health probe는 현재 password를 process 인자로
-소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
-`docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`·`environ`, 원문
-`.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
-횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았으며 credential
-전달 방식 수정은 별도 구현 변경으로 검토한다.
-
-## Verification
-
-### Evidence
+### 증거 기록
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
+- 전용 Valkey credential의 process 인자 노출 경계는 [Policy](../policies/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
 
 ### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
 
@@ -208,6 +178,18 @@ docker compose ps oauth2-proxy-valkey oauth2-proxy-valkey-exporter
 
 ### Rollback or Recovery
 
+설정 파일 복원 절차는 다음과 같다.
+
+- [ ] 아래 파일을 직전 정상 커밋으로 복원
+  - `infra/02-auth/oauth2-proxy/docker-compose.yml`
+  - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
+  - `infra/02-auth/oauth2-proxy/docker-entrypoint.dev.sh`
+  - `infra/02-auth/oauth2-proxy/Dockerfile`
+  - `infra/02-auth/oauth2-proxy/dev.Dockerfile`
+  - `infra/02-auth/oauth2-proxy/config/oauth2-proxy.cfg`
+- [ ] 위 Lifecycle의 승인된 대상 재생성과 hash 점검 수행
+- [ ] `/ping` + 로그인 시나리오 재검증
+
 이미지 upgrade는 [RUN-0086](0086-dependency-version-management.md)을 따라 release와
 설정 변경을 검토한 뒤 격리된 issuer discovery, PKCE callback, ready, ForwardAuth
 identity headers, logout와 session 만료를 확인한다. 이전 image로 돌아갈 때
@@ -225,13 +207,13 @@ rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [02-Auth OAuth2 Proxy Usage Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`)
 - Governing authority: [02-Auth Architecture Description](../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
 - Subject peers: [Guide](../guides/0015-oauth2-proxy.md) (`GDE-0015`), [Policy](../policies/0015-oauth2-proxy.md) (`POL-0015`)
-
-## Related Documents
 
 - [Official OAuth2 Proxy Keycloak OIDC provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)
 - [Official OAuth2 Proxy configuration overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)

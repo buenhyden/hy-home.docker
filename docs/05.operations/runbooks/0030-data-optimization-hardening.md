@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0030"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+data tier(`infra/04-data`)의 정적 hardening 점검 절차와 회귀 대응을 다룬다. 서비스 실행과 데이터 복구는 포함하지 않는다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
@@ -37,15 +33,13 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-### Procedure
-
 1. 영향받은 서비스와 소유 Compose 파일 및 M0021 disposition으로부터 현재 root
    profile을 식별한다.
 2. 저장소 루트에서 관련 명령을 실행한다.
 
    ```bash
    docker compose --env-file .env.example --profile mng config --quiet
-   docker compose --env-file .env.example --profile valkey-cluster config --quiet
+   docker compose --env-file .env.example --profile dev-data config --quiet
    docker compose --env-file .env.example --profile seaweedfs config --quiet
    docker compose --env-file .env.example --profile storage config --quiet
    bash scripts/hardening/check-all-hardening.sh 04-data
@@ -67,19 +61,15 @@ plaintext로 대체하지 않는다. state-path 충돌이 있으면 ownership이
 
 실제 데이터 손실이나 손상이 발생하면 쓰기를 중단하고 엔진별 runbook을 사용한다.
 management PostgreSQL/Valkey [RUN-0028](0028-management-database.md),
-Valkey Cluster [RUN-0022](0022-valkey-cluster.md), 또는 SeaweedFS
+LAB 전용 Valkey Cluster [RUN-0022](0022-valkey-cluster.md), 또는 SeaweedFS
 [RUN-0024](0024-seaweedfs.md). 이 범용 runbook은 restore shortcut을 제공하지
 않는다.
 
 ## Verification
 
-### Evidence
-
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
-
-### Verification Record
 
 ### Acceptance
 
@@ -101,12 +91,12 @@ rollback은 client를 이전에 유효했던 source configuration과 엔진별 r
 범위, identity, checksum, 보안, 호환성, 또는 ownership drift에서 중단하고
 안전한 evidence를 보존한 뒤 서비스/데이터 @buenhyden에게 escalation한다.
 
+## Related Documents
+
 ### Traceability
 
 - Artifact: `RUN-0030`; parent guide: `GDE-0030`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
-
-## Related Documents
 
 - [Policy](../policies/0030-data-optimization-hardening.md)
 - [Guide](../guides/0030-data-optimization-hardening.md)

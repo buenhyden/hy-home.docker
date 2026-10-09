@@ -1,10 +1,10 @@
 ---
 title: "New Service Onboarding Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0008"
 parent_ids:
@@ -17,47 +17,28 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
 이 가이드는 새 컨테이너 서비스를 `hy-home.docker`에 추가할 때 참조한다.
 복사 가능한 시드(`examples/sample-web-service/`)와 bounded-change Spec 템플릿
 (`docs/99.templates/templates/specs/spec.template.md`)을 사용해, 보안 하드닝·이미지 핀·
 healthcheck 표준을 처음부터 갖춘 서비스를 만든다.
 
-### Usage Type
+## Audience and Goal
 
-`onboarding`
-
-### Target Audience
-
-- Operator
-- Developer
-- Contributor
-- AI Agent
-
-### Purpose
+대상 독자는 운영자, 개발자, 기여자, AI Agent다.
 
 독자가 표준 하드닝과 Compose 규약을 누락 없이 적용한 새 서비스를 정의하고,
 구현·운영 계약을 canonical service README와 Stage 05 subject에 연결하며 필요한
 bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 
-### Prerequisites
+## Usage
+
+사전 조건:
 
 - Docker Engine과 Docker Compose v2 사용 가능 환경.
 - `infra/image-tag-policy.exceptions.json`, Compose/Dockerfile runtime pin source,
   `infra/tech-stack.versions.json` derived Compose image projection의 역할 숙지.
 
-### Step-by-step Instructions
+절차:
 
 1. `examples/sample-web-service/`를 새 서비스 디렉터리로 복사하고 구현 Compose/Dockerfile source를 확정한다.
 2. 이름, base image pin 또는 digest, 포트, 네트워크, 볼륨을 서비스에 맞게 수정한다. Compose/Dockerfile 선언이 runtime pin authority이며 derived projection에는 Compose image만 동기화한다.
@@ -78,12 +59,6 @@ bounded change를 유효한 Spec Package로 기록할 수 있게 한다.
 권위를 대신하지 않는다. package 위치는 현재 티어 책임으로 정하고, 디렉터리
 이동이나 profile 추가를 activation 승인으로 해석하지 않는다.
 
-### Common Pitfalls
-
-- Floating tag(`latest`, `stable`) 사용 — 반드시 태그나 digest를 핀한다.
-- root 사용자 실행 또는 불필요한 capability 유지 — 최소 권한 원칙을 지킨다.
-- `docker-compose.yml`에 secret 값을 직접 작성 — 참조 메커니즘만 사용한다.
-
 ### Common Checks
 
 - [RUN-0086](../runbooks/0086-dependency-version-management.md#static-configuration-validation)의 승인된 공개 입력으로 구성 검증을 수행한다. 전체 private 모델을 출력하지 않는다.
@@ -102,10 +77,17 @@ release/tag 준비는 [RUN-0009](../runbooks/0009-release-management.md)를 따�
 - 과거 구현 근거이며 현재 실행 권한이 아님: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`)
 - 같은 번호 `0008`의 Policy/Runbook은 없다.
 
+## Troubleshooting
+
+다음 실수를 피한다.
+
+- Floating tag(`latest`, `stable`) 사용 — 반드시 태그나 digest를 핀한다.
+- root 사용자 실행 또는 불필요한 capability 유지 — 최소 권한 원칙을 지킨다.
+- `docker-compose.yml`에 secret 값을 직접 작성 — 참조 메커니즘만 사용한다.
+
 ## Related Documents
 
 - Compose/Dockerfile 선언이 runtime pin을 소유하고 [파생 이미지 projection](../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
-
 - [Operations index](../README.md)
 - [Spec contract template](../../99.templates/templates/specs/spec.template.md)
 - [Reference service seed](../../../examples/sample-web-service/README.md)

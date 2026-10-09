@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Recovery Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0076"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+RedisInsight의 gateway 접근, 설정 보존, inspector 비밀 회전, 업그레이드와 복구 절차를 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 증명 노출, 설정 복원
 또는 업그레이드에 사용한다.
@@ -37,8 +33,6 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -117,9 +111,16 @@ Redis/Valkey에 접근할 수 없는 격리된 RedisInsight로 복원하고 같�
 사용한다. 업그레이드 전에는 release와 라이선스 약관을
 검토하고 저장된 연결/history를 테스트한다. 여기서는 백업/복원을 실행하지 않았다.
 
-## Verification
+### 직접 접근 제한
 
-### Evidence
+listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이터 망 peer에서
+`nc -z <redisinsight 데이터망 주소> 5540`이, 호스트에서
+`curl --max-time 4 http://10.250.18.3:5540/api/health/`가 실패하는지 확인한다. 열려 있으면
+`RI_APP_HOST`가 빠졌거나 바뀐 것이므로 중단하고 보고한다. CIDR·SSO 성공만으로
+안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을
+진단 출력으로 사용하지 않는다.
+
+## Verification
 
 종료 코드·source 커밋·설정 checksum/개수·gateway/CIDR 판정·자격 증명 회전 근거·
 대상 계정 범위와 최종 상태를 기록한다. password,
@@ -140,21 +141,12 @@ credential exposure, encrypted data의 encryption key 누락, 알 수 없는 tar
 authority, settings corruption, license 모호성, restore rehearsal 중 production
 target reachability가 있으면 중단한다.
 
-### 직접 접근 제한
-
-listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이터 망 peer에서
-`nc -z <redisinsight 데이터망 주소> 5540`이, 호스트에서
-`curl --max-time 4 http://10.250.18.3:5540/api/health/`가 실패하는지 확인한다. 열려 있으면
-`RI_APP_HOST`가 빠졌거나 바뀐 것이므로 중단하고 보고한다. CIDR·SSO 성공만으로
-안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을
-진단 출력으로 사용하지 않는다.
+## Related Documents
 
 ### Traceability
 
 - [Guide](../guides/0076-redisinsight.md) (`GDE-0076`)
 - [Policy](../policies/0076-redisinsight.md) (`POL-0076`)
 - [RedisInsight Compose](../../../infra/04-data/redisinsight/docker-compose.yml)
-
-## Related Documents
 
 - [RedisInsight configuration](https://redis.io/docs/latest/operate/redisinsight/configuration/)

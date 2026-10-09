@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-21"
 
 ## Overview
 
+MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, 업그레이드를 다루는 복구 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 프로비저닝 작업 실패, 서버 시작 또는 헬스 실패, 크리덴셜 교체, 아티팩트 접근
 거부, 트래킹 저장소 복원 또는 업그레이드 시 사용한다.
@@ -37,8 +33,6 @@ created: "2026-09-21"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 검증하고 점검한다.
 
@@ -116,8 +110,6 @@ secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../pol
 
 ## Verification
 
-### Evidence
-
 명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
 비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
 
@@ -137,13 +129,13 @@ secret 파일 교체·서비스 재생성은 [공통 수명주기 정책](../pol
 크리덴셜 부여 요청, 복원 개수 비교 실패, 게이트웨이 SSO 제거 요청이 있으면
 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0088-mlflow.md) (`GDE-0088`)
 - [Policy](../policies/0088-mlflow.md) (`POL-0088`)
 - [MLflow Compose](../../../infra/08-ai/mlflow/docker-compose.yml)
-
-## Related Documents
 
 - [이미지 Dockerfile](../../../infra/08-ai/mlflow/Dockerfile)과
   [파생 버전 프로젝션](../../../infra/tech-stack.versions.json)

@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -19,15 +19,13 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+이 가이드는 DEV 메일 캡처 서비스 Mailpit의 구성, 접근 경계, 일반 사용 방법을 설명한다. Mailpit은 전달용 MTA가 아니며 `dev`, `local`, `mail-dev` profile에서만 선택된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 애플리케이션과 integration test에서 발송 메일을 확인하는 개발자와 운영자다. 목표는 테스트 메일을 안전하게 캡처하고 조회하며, 접근 경계와 데이터 취급 범위를 이해하는 것이다. 복구와 업그레이드 절차는 [RUN-0084](../runbooks/0084-mailpit.md)가 소유한다.
 
 ## Usage
-
-### Usage
 
 ### Purpose and classification
 
@@ -66,9 +64,9 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
    확인한 뒤, retention policy에
    따라 test data를 삭제/만료시킨다.
 
-### Backup and upgrade
+### 접근 경계
 
-실행 순서와 실패·복구 판단은 [런북](../runbooks/0084-mailpit.md)의 `반출 방식과 업그레이드 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+gateway 경로만 SSO를 거치고, 직접 loopback UI와 두 네트워크의 peer listener에는 동등한 네이티브 UI 인증이 없다. 통제는 [POL-0084](../policies/0084-mailpit.md)가 소유한다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터 소유자를 확인한다.
 
 ### Common Checks
 
@@ -79,14 +77,7 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 ### Runbook Handoff
 
 capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
-[runbook](../runbooks/0084-mailpit.md)을 사용한다.
-
-### 접근 경계의 의미
-
-gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 peer listener에는
-동등한 네이티브 UI 인증이 선언되지 않았다. 테스트용 SMTP의 임의 인증 수락을
-실제 인증으로 해석하지 않는다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터
-소유자를 확인해야 하며 신뢰하지 않는 consumer의 연결을 허용해서는 안 된다.
+[runbook](../runbooks/0084-mailpit.md)을 사용한다. 백업과 업그레이드 순서는 런북의 `Consistent export and restore`와 `Upgrade` 절차를 따르며, 데이터와 권한 경계는 [정책](../policies/0084-mailpit.md)을 유지한다.
 
 ### Traceability
 

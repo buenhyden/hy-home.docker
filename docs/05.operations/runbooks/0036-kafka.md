@@ -1,10 +1,10 @@
 ---
 title: "Kafka Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+이 런북은 Kafka family의 정적 진단, CDC connector 수명주기, 계획된 백업·복제 캡처, 격리 복원 절차를 다룬다. 정상 대상은 단일 broker이고, 다중 broker LAB은 별도 실행 계약을 따른다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리된 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
@@ -36,8 +32,6 @@ created: "2026-05-17"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 저장소 루트에서 실행한다.
 
@@ -110,8 +104,6 @@ replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거�
 
 ## Verification
 
-### Evidence
-
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
@@ -132,19 +124,16 @@ schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 수리하라는 압박이 있으면 중단한다. 이 문서 task에서 백업이나 restore는 실행되지
 않았다.
 
+## Related Documents
+
+- [Domain catalog](../README.md)
+- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Policy](../policies/0036-kafka.md)
+
 ### Traceability
 
 - Runtime source: [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
   및 [Connect image Dockerfile](../../../infra/05-messaging/kafka/Dockerfile.connect).
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
-
-### References
-
-- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
-- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
-- [Policy](../policies/0036-kafka.md)
-
-## Related Documents
-
-- [Domain catalog](../README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -30,13 +30,6 @@ QA는 PR의 changed-profile 한 번으로 검증하며 릴리스에서 다시 �
   폐기하며, 소비자는 main의 immutable SHA 또는 SemVer Release를 사용한다.
 
 ## Procedure
-
-### Procedure
-
-### Checklist
-
-- [ ] 관련 policy, guide, runbook handoff를 확인한다.
-- [ ] 현재 상태와 변경 범위를 기록한다.
 
 1. release candidate branch와 비교할 base를 확인하고 정확한 두 commit SHA를 기록한다.
 
@@ -179,31 +172,7 @@ bash scripts/operations/check-compose-core-readiness.sh
     handoff한다. 이 런북은 실행이나 재실행을 승인하지 않는다. 필요하면 owning Spec에
     co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.
 
-### Steps
-
-1. 이 runbook의 trigger와 checklist를 확인한다.
-2. 기존 절차가 문서에 포함되어 있으면 그 순서대로 수행한다.
-3. 실행 중 생성된 명령 출력과 판단 근거를 evidence로 남긴다.
-4. 검증 실패, secret exposure 위험, 파괴적 변경 필요 시 즉시 중단하고 `## Escalation`으로 이동한다.
-
-### Verification Steps
-
-- [ ] 관련 validation script 또는 수동 확인을 실행한다.
-- [ ] 변경 결과가 policy, guide, runbook handoff와 충돌하지 않는지 확인한다.
-
-### Observability and Evidence Sources
-
-- **Signals**: 명령 결과, 검증 로그, service 상태, 문서 diff
-- **Evidence to Capture**: 실행 명령, 결과 요약, 실패 시 원인과 조치
-
-### Safe Rollback or Recovery Procedure
-
-- [ ] 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-- [ ] runtime 변경이 필요한 경우 이 runbook 범위를 벗어난 별도 승인 절차로 분리한다.
-
 ## Verification
-
-### Evidence
 
 - 현재 branch와 clean/예상된 작업 트리 상태.
 - 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
@@ -231,17 +200,12 @@ bash scripts/operations/check-compose-core-readiness.sh
   cardinality, zero volume을 확인한 뒤 그 ID만 직접 제거한다. Standalone
   cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
   call 없이 class `60`으로 중단한다.
+- 실패한 문서 변경은 직전 diff 단위로 되돌린다.
 
 ### Escalation
 
 - tag 생성, release branch push, branch protection/required check 변경, 배포, runtime 변경은 해당 승인을 확인하고 저장소 소유자 또는 담당 operator에게 handoff한다.
 - secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단·에스컬레이션한다.
-
-### Traceability
-
-- 현재 정책: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
-- 과거 구현 증거: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
-- 같은 번호 `0009`의 Guide/Policy는 없다.
 
 ## Related Documents
 
@@ -249,3 +213,9 @@ bash scripts/operations/check-compose-core-readiness.sh
 - [Runbooks index](../README.md)
 - [Co-located Plans and Tasks](../../03.specs/README.md)
 - [Current Spec Package selection](../../03.specs/README.md)
+
+### Traceability
+
+- 현재 정책: [Documentation Protocol](../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
+- 과거 구현 증거: [Workspace Revalidation Outcome](../../98.archive/completed/03.specs/0097-home-docker-revalidation-deferred-follow-up/spec.md) (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
+- 같은 번호 `0009`의 Guide/Policy는 없다.

@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0013"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 문서는 `01-gateway`의 Traefik 운영 정책을 정의한다. 런타임 모델은 `Traefik Primary`이며, 표준 하드닝 강도는 `Balanced`다.
 
 ## Scope
-
-### Policy Scope
 
 - `infra/01-gateway/traefik/docker-compose.yml`
 - `infra/01-gateway/traefik/dynamic/middleware.yml`
@@ -31,16 +27,9 @@ created: "2026-05-17"
 - **Systems**: Traefik v3 (gateway tier)
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Traceability
-
-- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Runbook](../runbooks/0013-traefik.md) (`RUN-0013`)
-
 ## Rules
 
-### Controls
-
-- **Required**:
+- **필수**:
   - `check-all-hardening.sh 01-gateway` 실패 0건을 유지해야 한다.
   - 인증 루프, 대량 429, dashboard 접근 장애 발생 시 즉시 런북 절차를 수행해야 한다.
   - Dashboard 라우터는 `dashboard-auth@file,gateway-standard-chain@file`를 사용해야 한다.
@@ -54,10 +43,10 @@ created: "2026-05-17"
     백업·회전한다. 현재 구성에 없는 ACME state를 있다고 가정하지 않는다.
   - Docker socket은 read-only mount여도 host-control API다. 접근 주체와 노출
     경로를 제한하고 일반 애플리케이션에 전달하지 않는다.
-- **Allowed**:
+- **허용**:
   - 신규 게이트웨이 소유 라우터에 동일 체인 적용
   - 운영 관측 결과 기반의 임계치 미세 조정(승인 후)
-- **Disallowed**:
+- **금지**:
   - 비게이트웨이 소유 라우터에 전역 강제 적용
   - BasicAuth 제거 또는 평문 인증정보 사용
 
@@ -80,6 +69,10 @@ mount 적용은 [POL-0006](0006-infrastructure-optimization-governance.md), prof
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
+## Exceptions
+
+- 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
+
 ### Verification
 
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
@@ -98,11 +91,10 @@ representative routes, metrics, and explicit prior-image rollback을 요구한�
 - 월 1회 정기 점검
 - Traefik 버전 변경/라우터 추가 시 수시 점검
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 비상 복구 시 임시 체인 우회 가능. 단, 사후에 원복 커밋과 변경 기록을 남겨야 한다.
+- Declared parent: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../guides/0013-traefik.md) (`GDE-0013`), [Runbook](../runbooks/0013-traefik.md) (`RUN-0013`)
 
 ## Related Documents
 

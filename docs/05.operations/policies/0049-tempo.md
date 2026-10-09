@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 정책은 Tempo distributed tracing backend의 trace ingestion, SeaweedFS S3
 storage, block retention, metrics generator, secret boundary, protected route를
 정의한다. 사용 흐름은 Tempo guide가, 장애 대응 절차는 Tempo runbook이
@@ -25,22 +23,13 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 ## Scope
 
-### Policy Scope
-
 이 정책은 current `infra/06-observability/tempo` compose와
 `config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
 
 - **Systems**: compose service `tempo`, container `tempo`, image [hy/tempo image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../guides/0049-tempo.md) (`GDE-0049`), [Runbook](../runbooks/0049-tempo.md) (`RUN-0049`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - Tempo service는 `template-stateful-high`, image
@@ -86,9 +75,16 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 ### Approved LAN integration boundary
 
-Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](../policies/0096-k8s-integration.md#controls)의 기존 k3d 예외에 따라 Tempo HTTP `3200`을 `HOST_LAN_BIND_IP`(공개 기본값 `192.168.0.13`)에 gateway 인증·서비스 TLS 없이 게시한다. 완료된 SPEC-0188 Task의 2026-09-29 owner 승인에 따른 것으로 W5가 만든 예외가 아니다. Loki `auth_enabled: false`는 사용자 인증이 아니며 Tempo에도 native 인증 계층이 없다. Gateway middleware는 직접 포트를 보호하지 않는다.
+Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](../policies/0096-k8s-integration.md#rules)의 기존 k3d 예외에 따라 Tempo HTTP `3200`을 `HOST_LAN_BIND_IP`(공개 기본값 `192.168.0.13`)에 gateway 인증·서비스 TLS 없이 게시한다. 완료된 SPEC-0188 Task의 2026-09-29 owner 승인에 따른 것으로 W5가 만든 예외가 아니다. Loki `auth_enabled: false`는 사용자 인증이 아니며 Tempo에도 native 인증 계층이 없다. Gateway middleware는 직접 포트를 보호하지 않는다.
 
 예외는 지정 cluster 통합 목적과 설정된 LAN 인터페이스로 한정한다. 소스에는 k3d만 식별하는 인증이 없으며 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰하지 않았다. 사람은 보호된 hostname을, 기계 검증은 [GDE-0096](../guides/0096-k8s-integration.md)을 따른다. 실제 log/trace payload 대신 상태와 시험 ID만 남긴다. 재바인딩·제거·인증/TLS 추가·노출 확대는 통합 소유자와 조정한 별도 승인 변경이다.
+
+## Exceptions
+
+- Retention, bucket, sampling, remote_write, route, secret reference 예외는
+  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
+  evidence를 기록한다.
 
 ### Verification
 
@@ -109,14 +105,10 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
   remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- Retention, bucket, sampling, remote_write, route, secret reference 예외는
-  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
-  evidence를 기록한다.
+- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../guides/0049-tempo.md) (`GDE-0049`), [Runbook](../runbooks/0049-tempo.md) (`RUN-0049`)
 
 ## Related Documents
 

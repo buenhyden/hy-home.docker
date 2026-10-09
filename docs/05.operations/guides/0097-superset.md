@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -21,21 +21,15 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino를
 통해 레이크하우스 테이블을 탐색하고 차트로 만든다. Grafana는 운영
 관측 도구로 남고, Superset은 데이터 분석용이다.
+
+## Audience and Goal
+
+Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자를 위한 문서다. 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 
@@ -63,7 +57,7 @@ Superset은 `bi`로 선택되는 OPTIONAL BI 웹 애플리케이션이다. Trino
 
 ### Identity-specific behavior
 
-Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn command,init 는 db upgrade/init/Trino URI 등록을실행한다. provision 은 PG18.6 runner 로별도 metadataDB/role 을만든다. sharedPG 의복원은다른 consumer 에도영향을준다. KeycloakOIDC/PKCES256/Gamma 등록은유지하고 Admin identity 매칭은별도검증한다. Secret signing key 는 encrypted metadata 연결복원에도필요하다. Trino URI 의 superset user 는무인증 SQL 의표시값이며 DB 권한경계가아니다. 직접 packagepin 은 transitivelock 이아니며/health 는 OIDC/SQLquery 증거가아니다.
+`superset-init`과 `superset` app은 같은 build와 config를 쓰지만, app은 upstream gunicorn command를 실행하고 init은 db upgrade, init, Trino URI 등록을 실행한다. provision은 PostgreSQL runner로 별도 metadata DB와 role을 만든다. 공유 PostgreSQL을 복원하면 다른 consumer에도 영향이 간다. Keycloak OIDC, PKCE S256, Gamma 등록은 유지하고 Admin identity 매칭은 별도로 검증한다. Secret signing key는 encrypted metadata 연결을 복원할 때도 필요하다. Trino URI의 superset user는 인증 없는 SQL의 표시값이며 DB 권한 경계가 아니다. 직접 package pin은 transitive lock이 아니며 `/health`는 OIDC나 SQL query의 증거가 아니다. 실행 버전은 [Dockerfile](../../../infra/12-analytics/superset/Dockerfile)이 소유한다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -71,7 +65,7 @@ Superset6.1.0 app/init 는동일 build/config 지만 app 은 upstreamgunicorn co
 | `superset-init` | migration/role init/Trino URI 등록 job | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/12-analytics/superset/docker-compose.yml) |
 | `superset` | OIDC BI app; metadata는 공유 PG | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/12-analytics/superset/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Commands and side effects
 

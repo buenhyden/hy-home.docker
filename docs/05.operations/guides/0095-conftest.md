@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -19,21 +19,15 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트다. 실행
 중인 컨테이너가 아니라 인프라 소스에 대해 Open Policy Agent(Rego) 규칙을
 평가하므로, 시작 전에 잘못된 선언을 잡아낸다.
+
+## Audience and Goal
+
+인프라 소스에 정책 검사를 실행하는 개발자와 운영자를 위한 문서다. 검사 범위와 규칙을 이해하고 실패 신호를 해석하는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 

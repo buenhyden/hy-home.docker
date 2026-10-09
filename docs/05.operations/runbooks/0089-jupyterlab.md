@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-21"
 
 ## Overview
 
+JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 시작 실패, 토큰 노출, 멈춘 커널, 작업 파일 손실, 이미지 업그레이드 시
 사용한다.
@@ -37,8 +33,6 @@ created: "2026-09-21"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 점검한다.
 
@@ -78,8 +72,6 @@ client version을 server와 맞춘다.
 
 ## Verification
 
-### Evidence
-
 종료 코드, 이미지 태그, 소스 커밋, 파일 개수를 기록한다. 토큰이나 노트북
 내용은 절대 기록하지 않는다.
 
@@ -112,13 +104,13 @@ client version을 server와 맞춘다.
 알 수 없는 코드 실행의 증거, JupyterHub 없이 다중 사용자 접근 요청, 토큰
 비활성화 요청이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0089-jupyterlab.md) (`GDE-0089`)
 - [Policy](../policies/0089-jupyterlab.md) (`POL-0089`)
 - [JupyterLab Compose](../../../infra/12-analytics/jupyterlab/docker-compose.yml)
-
-## Related Documents
 
 - [이미지 Dockerfile](../../../infra/12-analytics/jupyterlab/Dockerfile)과
   [파생 버전 프로젝션](../../../infra/tech-stack.versions.json)

@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -16,13 +16,10 @@ created: "2026-05-17"
 
 ## Overview
 
+Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
+시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
@@ -31,8 +28,6 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
@@ -94,14 +89,6 @@ python3 examples/operations/locust-telemetry/lifecycle.py \
   --mock-image '<approved-wiremock@sha256:digest>'
 ```
 
-### Verification Steps
-
-- Master UI health가 성공하고 예상 worker count가 등록된다.
-- 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
-- 최종 full run은 명시적으로 승인되었거나 Locust가 중지 상태로 남아 있다.
-- scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
-  관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
-
 ### 시나리오 보존과 업그레이드
 
 Locust에는 application database가 없다. Bind-backed scenario/result directory가
@@ -114,10 +101,16 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 
 ## Verification
 
-### Evidence
-
 명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
 중지/실행 상태를 기록한다.
+
+### 확인 항목
+
+- Master UI health가 성공하고 예상 worker count가 등록된다.
+- 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
+- 최종 full run은 명시적으로 승인되었거나 Locust가 중지 상태로 남아 있다.
+- scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
+  관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
 ## Rollback and Escalation
 
@@ -135,13 +128,13 @@ load 중지 후에도 target health가 회복되지 않거나, worker가 healthy
 않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
 나타날 때 escalation한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0062-locust.md) (`GDE-0062`)
 - [Policy](../policies/0062-locust.md) (`POL-0062`)
 - [Locust LAB Compose](../../../labs/locust.yml)
-
-## Related Documents
 
 - [Locust LAB Compose source](../../../labs/locust.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)

@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -19,115 +19,86 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+Grafana Alloy는 HOME 관측 계층의 telemetry collector다. 서비스 `alloy`는 `obs`, `logs`, `tracing`, `profiling` profile로 선택하며 [Compose](../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
+
+Alloy는 세 가지 신호를 전달한다.
+
+- Docker 로그는 Loki로 보낸다.
+- OTLP trace는 Tempo로 보낸다.
+- pprof profile은 Pyroscope로 보낸다.
+
+Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정 파일 모두 Alloy 안에 자체 remote-write를 두지 않는다. 같은 series가 `integrations/self`로 한 번 더 들어오기 때문이다(SPEC-0193).
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 개발자, 운영자, SRE, AI Agent다. 이 가이드로 다음을 빠르게 파악한다.
+
+- Alloy 서비스 경계, Docker discovery, relabel, OTLP 입력 경계.
+- 로그, trace, profile이 어느 backend로 가는지.
+- 어떤 설정 파일이 어떤 역할을 하는지.
+
+복구, restart, endpoint 장애 대응, 설정 rollback은 [RUN-0040](../runbooks/0040-alloy.md)이 맡는다.
 
 ## Usage
 
-### Usage
+### 설정 파일의 역할
 
-### Overview
+`ALLOY_CONFIG_FILE`이 두 파일 중 하나를 `/etc/alloy/config.alloy`로 mount한다. 값이 없으면 Compose 기본값 `config.alloy`를 쓰고, 공개 `.env.example`은 `config.home.alloy`를 선택한다. 두 파일은 합쳐 읽히지 않으므로 각각 따로 검사한다(`alloy fmt <file>`). 비공개 실행 환경의 선택값은 관찰하지 않았다(미검증).
 
-이 가이드는 `06-observability` 계층의 Grafana Alloy 사용 맥락과 설정 확인 방법을 설명한다. Alloy는 선택된 설정에서 Docker 로그를 Loki로, OTLP trace를 Tempo로, pprof profile을 Pyroscope로 전달한다. Prometheus는 Alloy 자체 지표를 직접 수집하며 현재 두 설정에는 자체 remote-write 경로가 없다. `config.home.alloy`만 품질 OTLP metric 전용 인증 수신기(HTTP 4319, host 비공개, secret `quality_otlp_token`)를 두고 그 결과를 Prometheus로 remote write한다(SPEC-0214).
+| 파일 | 역할 |
+| --- | --- |
+| [`config.alloy`](../../../infra/06-observability/alloy/config/config.alloy) | 기본 파이프라인이다. Docker 로그를 Loki로, OTLP trace를 Tempo로, pprof를 Pyroscope로 보낸다. 품질 metric 수신기는 없다. |
+| [`config.home.alloy`](../../../infra/06-observability/alloy/config/config.home.alloy) | 기본 파이프라인에 품질 OTLP metric 전용 경로를 더한 HOME 설정이다. 인증 수신기(HTTP 4319, host 비공개, secret `quality_otlp_token`)가 받은 metric을 속성 제한, delta-to-cumulative 변환, label 제한을 거쳐 Prometheus로 remote write한다(SPEC-0214). |
 
-### Usage Type
+두 파일이 공유하는 동작은 다음과 같다.
 
-`system-guide`
+- 로그: Compose project가 `hy-home-infra`인 컨테이너만 유지하고 `service_name`, `container_name`, `compose_project`, `env`, `scope`를 다시 표기해 Loki로 보낸다.
+- trace: OTLP gRPC 4317과 HTTP 4318을 받아 Tempo로 전달한다. 이 두 port는 trace만 처리하며 metric은 버려진다.
+- profile: `pyroscope.scrape "go_services"`가 10개 대상을, 별도 `pyroscope.scrape "seaweedfs"`가 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. eBPF는 쓰지 않는다.
 
-### Target Audience
+`config.home.alloy`의 OTLP trace 수신 주석에 따르면 hy-home.k8s의 Istio가 `192.168.0.13:4317`로 보낸다. k3d OTLP 진입은 [POL-0096](../policies/0096-k8s-integration.md)이 관장한다.
 
-- Developer
-- Operator
-- SRE
-- AI Agent
+### 정상 사용
 
-### Purpose
+- 애플리케이션 instrumentation은 가능한 OTLP endpoint를 쓴다. gRPC는 `alloy:4317`, HTTP는 `alloy:4318`이다.
+- Pipeline debugging은 Alloy UI `https://alloy.${DEFAULT_URL}`에서 한다. **Graph View**에서 component 연결과 error state를, **Component Details**에서 target, receiver, exporter 상태를 본다.
+- 설정이나 collector health만으로 전달 성공을 판정하지 않는다. backend에서 실제 수신을 확인한다.
 
-- Alloy compose service, Docker discovery, relabeling, exporter endpoint, and OTLP ingress boundary를 빠르게 파악한다.
-- Logs, metrics, traces, and profiling writer pipeline이 어떤 backend로 향하는지 확인한다.
-- 복구, restart, endpoint 장애 대응, config rollback은 runbook으로 넘긴다.
+### 구현 경계
 
-### Prerequisites
-
-- `config.alloy` HCL 설정 문법과 OTLP 기본 개념.
-- Docker container label and network metadata 확인 권한.
-- Alloy UI `https://alloy.${DEFAULT_URL}` 접근 권한.
-- Docker socket and container log mount는 read-only로 유지한다.
-
-### Step-by-step Instructions
-
-1. Compose service boundary를 확인한다.
-
-   ```bash
-   rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml
-   ```
-
-2. Pipeline component boundary를 확인한다.
-
-   ```bash
-   rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy
-   ```
-
-3. 현재 pipeline 구조를 이해한다. `ALLOY_CONFIG_FILE`이 두 독립 파일 중 하나를
-   `/etc/alloy/config.alloy`로 mount한다. 두 파일은 합쳐 읽히지 않으므로 각각 따로
-   검사한다(`alloy fmt <file>`).
-
-   | 파일 | Source selector | Pipelines |
-   | --- | --- | --- |
-   | `config.home.alloy` | 공개 `.env.example`의 선택값 | Docker 로그·OTLP trace·pprof 수집과 전송 |
-   | `config.alloy` | 미지정 시 Compose 기본 선택 | 현재 pipeline은 같지만 파일 선택은 별개 |
-
-   비공개 실행 환경의 선택값은 관찰하지 않았다. 두 파일 모두 Compose project가 `hy-home-infra`인 컨테이너만 유지하고 service/container/project/env/scope를 재표기해 Loki로 로그를 보낸다. 과거 network-name filter와는 다른 경계다. OTLP gRPC/HTTP는 Tempo로 전달한다. 자체 metric은 Prometheus job `alloy`가 한 번 scrape하며 내부 self remote-write는 없다. `pyroscope.scrape "go_services"`는 10개 대상을, 별도 SeaweedFS source는 지원되지 않는 block/mutex를 제외한 profile을 수집해 Pyroscope로 보낸다. 설정이나 collector health만으로 전달 성공을 판정하지 않는다. k3d OTLP 진입은 [POL-0096](../policies/0096-k8s-integration.md)이 관장한다.
-
-4. 애플리케이션 instrumentation은 가능한 OTLP endpoint를 사용한다.
-
-   - gRPC: `alloy:4317`
-   - HTTP: `alloy:4318`
-
-5. Pipeline debugging은 Alloy UI에서 수행한다.
-
-   - `https://alloy.${DEFAULT_URL}`에 접속한다.
-   - **Graph View**에서 component 연결과 error state를 확인한다.
-   - **Component Details**에서 target, receiver, exporter 상태를 확인한다.
-
-### Common Pitfalls
-
-- **Relabeling regex**: `service_name` 또는 `scope` label이 잘못 지정되면 logs/metrics/profile query가 분산된다.
-- **Discovery filter**: Docker discovery는 Compose project `hy-home-infra`만 유지한다. 이 프로젝트 밖 컨테이너는 network 이름과 관계없이 의도적으로 제외한다.
-- **Exporter assumption**: Downstream backend가 unhealthy이면 Alloy pipeline이 정상이어도 telemetry가 보이지 않을 수 있다.
-- **Profiling assumption**: `pyroscope.write` endpoint가 있다고 해서 profile source가 자동으로 수집되는 것은 아니다. SPEC-0193부터 `go_services`의 10개 대상과 별도 SeaweedFS source가 선언된 11개 pprof 대상을 수집한다. eBPF는 쓰지 않는다.
-- **Config file selection**: `ALLOY_CONFIG_FILE`은 파일 하나를 선택한다. 공개 기본값으로 비공개 runtime 선택을 단정할 수 없다. 지원하는 두 파일을 검토하고 RUN-0040에서 승인한 선택 설정만 적용한다.
-- **Self metrics**: Alloy 자체 metric은 Prometheus job `alloy`가 직접 수집한다. Alloy 안에서 self remote-write를 두면 같은 series가 `integrations/self`로 한 번 더 들어온다.
-- **Docker socket boundary**: Docker socket and container log mounts는 read-only여야 한다.
-
-### Source-backed operating contract
-
-- **목적·분류·구현 소유권**: `alloy`는 `HOME` telemetry collector이며 `obs`, `logs`, `tracing`, `profiling`으로 선택한다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Alloy config](../../../infra/06-observability/alloy/config/config.alloy)가 구현을 소유한다.
-- **흐름·의존성**: 읽기 전용 Docker socket/container log는 Loki로, OTLP 4317/4318 입력은 Tempo로 전달된다. Prometheus는 Alloy 자체 metric을 scrape하며, 선택 가능한 두 config 모두 pprof source와 Pyroscope writer를 선언한다. source 선언만으로 profile 수신이 입증되지는 않는다. backend depends_on 항목은 선택적이므로(`required: false`) 일부 구성만 선택하면 모든 backend 없이도 시작될 수 있다. Docker와 선언된 network는 여전히 전제 조건이다.
-- **상태·보안**: config·host log mount는 읽기 전용이며 Docker socket 접근은 민감하다. `alloy-data:/var/lib/alloy`와 선언된 storage path, UID/GID를 유지한다. State와 전송 중인 telemetry의 복구 가능 범위를 구분하며 유실·중복을 승인 없이 완전 복구로 처리하지 않는다. 현재 변경 절차는 [RUN-0040](../runbooks/0040-alloy.md)을 따른다. 파일 교체로 bind inode가 달라졌거나 port·mount·Compose 설정이 바뀌면 단순 restart로 적용을 보장하지 않으며 승인된 recreate와 state 보존 검토가 필요하다.
+- **흐름·의존성**: 읽기 전용 Docker socket과 container log를 Loki로, OTLP 입력을 Tempo로 보낸다. `depends_on`의 Prometheus, Loki, Tempo는 `required: false`이므로 일부 구성만 선택해도 시작된다. Docker와 선언된 network는 여전히 전제 조건이다.
+- **네트워크**: `edge_net`, `obs_net`, `quality_otlp_net`에 붙는다. OTLP 4317/4318은 `${HOST_LAN_BIND_IP:-192.168.0.13}`에 publish한다. Alloy UI는 Traefik 경로(`gateway-standard-chain@file,sso-errors@file,sso-auth@file`)로 노출한다.
+- **node-exporter 접근**: SPEC-0225 이후 node-exporter는 host network namespace에서 `obs_net` gateway에 bind한다. Alloy는 `extra_hosts`로 `node-exporter:10.250.5.1`을 선언해 pprof 대상 이름을 그대로 유지한다.
+- **상태·보안**: config와 host log mount는 읽기 전용이다. Docker socket 접근은 민감하다. `alloy-data:/var/lib/alloy`와 `--storage.path=/var/lib/alloy/data`, UID/GID `473:473`을 유지한다. 전송 중 telemetry는 복구 자산이 아니다. 파일 inode가 바뀌었거나 port, mount, Compose 설정이 바뀌면 restart만으로 적용을 보장하지 않으며 승인된 recreate와 state 보존 검토가 필요하다.
 
 > Historical evidence (not current authority; source: Git history):
 > Source commit: `22475253cacfa452f92fb7f917585e634ea6253f`; path: `docs/05.operations/guides/0040-alloy.md`.
 >
 > - **State/security**: config and host log mounts are read-only; Docker socket access is security-sensitive. `alloy-data:/var/lib/alloy` is mounted and the command now passes `--storage.path=/var/lib/alloy/data`; the previous command override had dropped the image default, so positions and WAL lived in the container layer and were lost on recreate. The container runs as the image's `alloy` user (UID 473) with the host docker group (`DOCKER_GID`) because root without capabilities cannot write the 473-owned state directory; the first attempt as root crash-looped on `mkdir /var/lib/alloy/data: permission denied` on 2026-09-21 and was rolled back within about three minutes. The first recreate with the fix starts without the old positions, which can re-send or skip recent Docker log lines; Loki may reject out-of-order duplicates. Config edits apply through `POST /-/reload` only when the mounted file inode is unchanged; editors that replace the file need a container restart. Changing ports or mounts needs a recreate. In-flight telemetry can be lost and is not a guaranteed recovery asset.
 
-- **자원·정상 사용**: source의 CPU/memory limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 `docker compose --profile obs config --quiet`로 렌더링하고 Alloy config를 검증한 뒤, downstream 쓰기와 범위를 제한한 retry/WAL 신호를 확인한다.
-- **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인하며, source가 있을 때만 profiling이 이루어진다고 주장한다.
+- **자원·정상 사용**: Compose의 CPU/memory limit은 여유 용량을 뜻하지 않는다. 저장소 root에서 `docker compose --profile obs config --quiet`로 렌더링하고 Alloy config를 검증한 뒤, downstream 쓰기와 retry/WAL 신호를 확인한다.
+- **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
 
 ### Common Checks
 
 - `docker compose --profile obs ps alloy`
 - `docker logs --tail=100 alloy`
-- `rg -n 'discovery.docker|loki.source.docker|pyroscope.scrape|otelcol.receiver.otlp|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
-- `rg -n 'ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+- Compose 경계: `rg -n 'service: template-infra-med|image: grafana/alloy:|container_name: alloy|ALLOY_OTLP_GRPC|ALLOY_OTLP_HTTP|/-/healthy|gateway-standard-chain@file,sso-errors@file,sso-auth@file' infra/06-observability/docker-compose.yml`
+- Pipeline 경계: `rg -n 'discovery.docker|hy-home-infra|loki.source.docker|loki.write|pyroscope.scrape|otelcol.receiver.otlp|otelcol.processor.batch|otelcol.exporter.otlp|pyroscope.write' infra/06-observability/alloy/config/config.alloy`
+- 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
+
+주의할 점은 다음과 같다.
+
+- `service_name` 또는 `scope` relabel regex가 틀리면 log, profile 조회가 갈라진다.
+- Docker discovery는 Compose project `hy-home-infra`만 유지한다. 이 밖의 컨테이너는 network 이름과 관계없이 의도적으로 제외한다.
+- backend가 unhealthy이면 pipeline이 정상이어도 telemetry가 보이지 않을 수 있다.
+- `pyroscope.write` endpoint가 있다고 profile이 자동 수집되지는 않는다. 선언된 pprof 대상(10개 + SeaweedFS 1개)만 수집한다.
+- `ALLOY_CONFIG_FILE` 공개 기본값으로 비공개 runtime 선택을 단정하지 않는다. 지원하는 두 파일을 검토하고 RUN-0040에서 승인한 선택 설정만 적용한다.
 
 ### Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../runbooks/0040-alloy.md)을 따른다.
+반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../runbooks/0040-alloy.md#procedure)를 따른다.
 
 ### Traceability
 

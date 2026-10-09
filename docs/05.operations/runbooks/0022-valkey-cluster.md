@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+LAB 전용 Valkey Cluster(`labs/valkey-cluster.yml`)의 정적 점검, 백업 계획, 격리 복원 절차를 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다. live write, restore, cutover, cleanup, credential 변경은 별도로
@@ -45,8 +41,6 @@ LAB 기동·정지는 `scripts/operations/lab.py`만 사용한다(`up valkey-clu
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 정적 검사는 `labs/.env.example`과 `labs/valkey-cluster.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
@@ -97,8 +91,6 @@ exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르�
 
 ## Verification
 
-### Evidence
-
 source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
@@ -118,18 +110,16 @@ AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 �
 slot, replica drift, persistence를 repair/truncate하라는 요청이 있으면
 중단한다. secret 값 없이 로그를 보존하고 data @buenhyden에게 escalation한다.
 
+## Related Documents
+
 ### Traceability
 
 - Runtime source: [Valkey Cluster Compose](../../../labs/valkey-cluster.yml).
 - Artifact: `RUN-0022`; parent guide: `GDE-0022`.
 - dated verification record가 실행 사실을 명시하지 않는 한, 이 절차는 계획 단계다.
 
-### References
-
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 - [Valkey Cluster tutorial](https://valkey.io/topics/cluster-tutorial/)
 - [Policy](../policies/0022-valkey-cluster.md)
-
-## Related Documents
 
 - [Domain catalog](../README.md)

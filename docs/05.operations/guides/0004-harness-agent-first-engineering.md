@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -16,17 +16,23 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
-
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 AI Agent, 문서 작성자, 인프라 운영자, 저장소 유지보수자다.
+
+목표는 workspace purpose, rules, runtime surface, governance contract, validation gate를 반복 가능한 방식으로 조사하는 것이다. 필요하면 stage 문서와 README를 템플릿에 맞춰 갱신한다. 이 문서는 하네스 구조와 감사 경계를 설명하는 가이드다.
 
 ## Usage
 
-### Usage
+시작하기 전에 다음을 확인한다.
+
+- `AGENTS.md`를 읽는다.
+- architecture/codebase 조사 전에 report 존재와 유효성을 확인하고, 존재하면 `graphify-out/GRAPH_REPORT.md`를 읽는다.
+- `graphify-out/`이 존재하면 `bash scripts/knowledge/report-graphify-health.sh`를 실행한다.
+- `.agents/`에서 활성 role, skill, provider, policy route를 확인한다.
+- secret이나 credential 파일을 검사하지 않는다.
 
 [bootstrap](../../../.agents/governance/bootstrap.md)와 해당 provider adapter가
 읽기 순서를 소유한다. root README와 `docs/`, `infra/`, `scripts/` README는
@@ -77,31 +83,6 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 > 기록되어 있다. 이 문서는 실패한 hosted revision을 local 증거, 향후
 > GitHub Actions 통합 제안과 구분한다.
 
-### Audience and Prerequisites
-
-#### Usage Type
-
-하네스 구조와 감사 경계를 설명하는 가이드.
-
-#### Target Audience
-
-- AI Agents
-- Documentation Writers
-- Infra Operators
-- Repository Maintainers
-
-#### Purpose
-
-반복 가능한 방식으로 workspace purpose, rules, runtime surface, governance contracts, validation gates를 조사하고, 필요한 경우 stage 문서와 README를 템플릿에 맞춰 갱신한다.
-
-#### Prerequisites
-
-- `AGENTS.md`를 읽는다.
-- architecture/codebase 조사 전에 report 존재와 유효성을 확인하고, 존재하면 `graphify-out/GRAPH_REPORT.md`를 읽는다.
-- `graphify-out/`이 존재하면 `bash scripts/knowledge/report-graphify-health.sh`를 실행한다.
-- `.agents/`에서 활성 role, skill, provider, policy route를 확인한다.
-- secret이나 credential 파일을 검사하지 않는다.
-
 ### Evaluation Maintenance
 
 자동 답변 점수 evaluator와 과거 사건을 재증명하는 전용 QA는 폐기됐다.
@@ -111,21 +92,6 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 대표 점수는 모든 Skill의 PASS나 native 실행 증거가 아니다. provider/model의 수동 비교에는 현재 skill과
 날짜가 있는 공식 근거를 사용하며 native 실행이나 모델 품질을 추정하지 않는다.
 구체적인 live 관측과 파생 배포는 별도 Task·승인 범위로 둔다.
-
-### Troubleshooting
-
-- `.codex/agents/*.toml` 또는 `.claude/agents/*.md`를 canonical agent governance catalog에 대한 provider-native adapter가 아니라 canonical role catalog로 취급하는 것.
-- authored `.agents` source를 오래된 generated 파일로 취급하거나, canonical body를 native skill adapter로 복사하거나, static discovery 설정으로부터 live picker/invocation 승인을 추론하는 것.
-- governance hub 대신 root shim을 편집하는 것.
-- 오염된 Graphify output을 authoritative architecture 증거로 취급하는 것.
-- `status=advisory` Graphify health를 실패나 architecture authority로 취급하는 것. advisory health는 격하된 navigation context일 뿐이다.
-- 서로 다른 validator의 선택 범위를 합쳐 전체 서비스 검증으로 주장하는 것.
-- catalog parity check를 모든 agent/skill content에 대한 semantic parity로 취급하는 것.
-- 승인 범위 밖 Compose remediation을 하네스 점검에 끌어들이는 것. 현재 영향받은 선택과 gate 실패는 별도 기록한다.
-- hook quoting, event dispatch, parsing 변경 후 hook event 및 payload 시뮬레이션을 건너뛰는 것.
-- parent README를 갱신하지 않고 stage 문서를 추가하는 것.
-- `graphify` CLI를 사용할 수 없는데 graph refresh를 주장하는 것.
-- repository 안내에도 불구하고 `pre-commit`을 수동으로 실행하는 것.
 
 ### Common Checks
 
@@ -140,6 +106,23 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 
 - 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
 - 같은 주제: [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
+## Troubleshooting
+
+다음 실수를 피한다.
+
+- `.codex/agents/*.toml` 또는 `.claude/agents/*.md`를 canonical agent governance catalog에 대한 provider-native adapter가 아니라 canonical role catalog로 취급하는 것.
+- authored `.agents` source를 오래된 generated 파일로 취급하거나, canonical body를 native skill adapter로 복사하거나, static discovery 설정으로부터 live picker/invocation 승인을 추론하는 것.
+- governance hub 대신 root shim을 편집하는 것.
+- 오염된 Graphify output을 authoritative architecture 증거로 취급하는 것.
+- `status=advisory` Graphify health를 실패나 architecture authority로 취급하는 것. advisory health는 격하된 navigation context일 뿐이다.
+- 서로 다른 validator의 선택 범위를 합쳐 전체 서비스 검증으로 주장하는 것.
+- catalog parity check를 모든 agent/skill content에 대한 semantic parity로 취급하는 것.
+- 승인 범위 밖 Compose remediation을 하네스 점검에 끌어들이는 것. 현재 영향받은 선택과 gate 실패는 별도 기록한다.
+- hook quoting, event dispatch, parsing 변경 후 hook event 및 payload 시뮬레이션을 건너뛰는 것.
+- parent README를 갱신하지 않고 stage 문서를 추가하는 것.
+- `graphify` CLI를 사용할 수 없는데 graph refresh를 주장하는 것.
+- repository 안내에도 불구하고 `pre-commit`을 수동으로 실행하는 것.
 
 ## Related Documents
 

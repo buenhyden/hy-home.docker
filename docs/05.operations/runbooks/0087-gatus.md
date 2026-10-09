@@ -1,10 +1,10 @@
 ---
 title: "Gatus Runbook"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -16,21 +16,19 @@ created: "2026-09-19"
 
 ## Overview
 
+이 런북은 Gatus(`gatus`)의 준비 상태 점검, 승인된 대상 배포, SQLite 백업·복구, native OIDC 운영을 다룬다.
+
+[Compose](../../../infra/06-observability/docker-compose.yml)가 활성화, 마운트,
+라우팅을 소유한다. [Dockerfile](../../../infra/06-observability/gatus/Dockerfile)이
+업스트림 빌드 핀을 소유하며, 로컬 이미지 이름은 업스트림 버전이 아니다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다. 저장소
 루트에서 작업한다. 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
 
 ## Procedure
-
-### Procedure
 
 ### Execution Boundary
 
@@ -109,8 +107,6 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 
 ## Verification
 
-### Evidence
-
 현재 Task에 날짜, 커밋, 서비스 이름, 종료 코드, 정제된 health/프로브 결과를
 기록한다. 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
@@ -132,16 +128,12 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
 대상이 필요하다.
 
-[Compose](../../../infra/06-observability/docker-compose.yml)가 활성화, 마운트,
-라우팅을 소유한다. [Dockerfile](../../../infra/06-observability/gatus/Dockerfile)이
-업스트림 빌드 핀을 소유하며, 로컬 이미지 이름은 업스트림 버전이 아니다.
+## Related Documents
 
 ### Traceability
 
 - [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
 - [Guide](../guides/0087-gatus.md), [Policy](../policies/0087-gatus.md), [Runbook](0087-gatus.md)
-
-## Related Documents
 
 - 런타임 핀은 Compose/Dockerfile 선언이 소유하며,
   [파생 Compose 이미지 프로젝션](../../../infra/tech-stack.versions.json)이

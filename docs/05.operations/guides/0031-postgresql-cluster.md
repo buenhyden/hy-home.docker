@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.1"
+version: "2.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -16,19 +16,15 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 [PostgreSQL cluster Compose 구현](../../../labs/postgresql-ha.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자: 운영자, 개발자, AI Agent.
+
+목적: 관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
 
 ## Usage
-
-### Usage
-
-### Overview
-
-이 문서는 [PostgreSQL cluster Compose 구현](../../../labs/postgresql-ha.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
 
 ### Current implementation
 
@@ -47,7 +43,7 @@ created: "2026-05-10"
 
 ### Identity-specific behavior
 
-etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 identity/data 가 다르다. helper postgres18.6 은 server major 를 뜻하지 않는다. router3.4.4 는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이며 RUN0032 의 synthetic17→18 와 분리한다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
+etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 identity/data가 다르다. helper PostgreSQL image는 server major를 뜻하지 않는다. `pg-router`는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이며 RUN-0032의 synthetic 17→18 rehearsal과 분리한다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -65,21 +61,7 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Usage Type
-
-`system-guide`
-
-### Target Audience
-
-- Operator
-- Developer
-- AI Agent
-
-### Purpose
-
-관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
-
-### Prerequisites
+### Preflight and normal use
 
 이 LAB의 입력은 [예시 환경 파일](../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../secrets/labs`) 아래의 [LAB별 경로](../../../labs/postgresql-ha.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
@@ -87,9 +69,7 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 - `LAB_DATA_DIR`, `LAB_PG_DEFAULT_DB`, `LAB_PG_SUPERUSER_USERNAME`, `LAB_PG_REPLICATION_USERNAME`, `LAB_PG_EXPORTER_USERNAME`, `LAB_PG_FIXTURE_DB`, `LAB_PG_FIXTURE_USERNAME`, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
-### Step-by-step Instructions
-
-정상 운영 중 점검은 선택 클러스터 compose 렌더링, 핵심 서비스 상태, `patronictl list` 기준 Patroni cluster 상태 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [PostgreSQL Cluster runbook](../runbooks/0031-postgresql-cluster.md#steps)을 따른다.
+정상 운영 중 점검은 선택 클러스터 compose 렌더링, 핵심 서비스 상태, `patronictl list` 기준 Patroni cluster 상태 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [PostgreSQL Cluster runbook](../runbooks/0031-postgresql-cluster.md#procedure)을 따른다.
 
 1. 애플리케이션 연결은 `pg-router`를 기준으로 한다.
 
@@ -102,14 +82,6 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 2. `pg-cluster-init`는 `pg-router` write endpoint가 준비된 뒤 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화한다.
 
 3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `lab_pg_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
-
-### Common Pitfalls
-
-- root의 `core` 또는 전체 profile render에는 `labs/postgresql-ha.yml`이 포함되지 않는다.
-- 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
-- Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/lab_pg_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
-- DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
-- logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
 ### Common Checks
 
@@ -127,6 +99,14 @@ etcd3.7.1 의 3member 는 각 ID/URL/data, Spilo17:4.0-p3 의 3member 는 각 id
 - Declared parent: [PostgreSQL Cluster Operations Policy](../policies/0031-postgresql-cluster.md) (`POL-0031`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 - Subject peers: [Policy](../policies/0031-postgresql-cluster.md) (`POL-0031`), [Runbook](../runbooks/0031-postgresql-cluster.md) (`RUN-0031`)
+
+## Troubleshooting
+
+- root의 `core` 또는 전체 profile render에는 `labs/postgresql-ha.yml`이 포함되지 않는다.
+- 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
+- Patroni/Spilo node secrets는 `spilo-entrypoint-with-secrets.sh`가 `/run/secrets/lab_pg_*`에서 읽는다. plain password variables를 전제로 한 예시는 사용하지 않는다.
+- DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
+- logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
 ## Related Documents
 

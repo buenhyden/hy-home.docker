@@ -1,10 +1,10 @@
 ---
 title: "Terraform Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0068"
 parent_ids:
@@ -16,20 +16,14 @@ created: "2026-05-17"
 
 ## Overview
 
+기존 Terraform workspace를 OpenTofu 운영으로 이관하는 절차다. state 보호와 복제 workspace 검증을 다룬다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 기존 Terraform workspace를 현재 OpenTofu 운영으로 이관할 때 사용한다. 저장소에는
 기동할 Terraform 서비스가 없으므로 과거 Compose 명령을 재실행하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. state backend와 lock 소유자, provider lock file, module source를 메타데이터로 식별한다.
 2. 승인된 절차로 암호화된 state 복구본을 확보하고 복제 workspace를 준비한다.
@@ -37,9 +31,11 @@ created: "2026-05-17"
 4. 예상하지 않은 resource replacement, backend 이동 또는 schema 변경이 있으면 멈춘다.
 5. 검토된 plan과 복구 증거를 확인한 뒤 실제 이관 대상을 별도로 승인받는다.
 
-## Verification
+### 실행 도구의 적용 범위
 
-### Evidence
+[Guide](../guides/0068-terraform.md)의 `실행 도구의 적용 범위`를 따른다. Terrakube workspace의 실제 엔진은 이관 대상별로 확인한다.
+
+## Verification
 
 원본 CLI/source commit, provider/module identity, 비교 결과와 복구 시험 상태만 남긴다.
 state, plan 파일 내용, credential과 token은 출력하지 않는다.
@@ -55,20 +51,13 @@ state, plan 파일 내용, credential과 token은 출력하지 않는다.
 
 동시 lock, 미검증 provider 또는 복구본 부재는 @buenhyden에게 보고하고 중단한다.
 
-### 실행 도구의 적용 범위
-
-독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지
-OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을
-참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인한다. 일반 서비스의
-포트·HTTP health·daemon 재시작은 이 이관 주제에 적용되지 않는다.
+## Related Documents
 
 ### Traceability
 
 - 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 유지되는 이관 주제: [Guide](../guides/0068-terraform.md), [Policy](../policies/0068-terraform.md), [Runbook](0068-terraform.md)
 - 현재 구현 소유자: [OpenTofu](../guides/0082-opentofu.md)
-
-## Related Documents
 
 - [Operations index](../README.md)
 - [OpenTofu implementation](../../../infra/09-platform-ops/opentofu/docker-compose.yml)

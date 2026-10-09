@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0096"
 parent_ids:
@@ -16,28 +16,16 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
 hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의
 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를
 오가는 자격 증명의 처리 방식을 고정한다.
 
 ## Scope
 
-### Policy Scope
-
 클러스터가 호출할 수 있는 엔드포인트, OpenBao Kubernetes 인증과 bootstrap
 토큰, Prometheus HTTP API 자격 증명, 저장소 경계를 넘는 값 전달.
 
-### Traceability
-
-- [가이드](../guides/0096-k8s-integration.md) (`GDE-0096`)
-- [런북](../runbooks/0096-k8s-integration.md) (`RUN-0096`)
-- [OpenBao policy](0085-openbao.md)
-
 ## Rules
-
-### Controls
 
 - 클러스터는 승인된 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)를 통해 이 스택에 도달한다. 어떤 Compose
   서비스도 다시 k3d 네트워크에 참여하지 않으며, 클러스터를 위해 고정 주소를
@@ -64,8 +52,7 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
   Prometheus host 포트는 게시하지 않으며 UI는 SSO를 유지한다. Grafana는
   host 포트도 익명 접근도 없다. Kiali는 `secret/platform/grafana-api`의
   Viewer 서비스 계정 `k8s-kiali`(90일) 토큰으로 읽는다.
-- Loki `3100`, Tempo `3200`, `mng-valkey` `26379`, `alloy` `4317`/`4318`,
-  `pg-router` `15432`/`15433`는 gateway 인증 없이 `HOST_LAN_BIND_IP`
+- Loki `3100`, Tempo `3200`, `mng-valkey` `26379`, `alloy` `4317`/`4318`는 gateway 인증 없이 `HOST_LAN_BIND_IP`
   (기본값 `192.168.0.13`) 호스트 LAN 주소에만 게시된 상태를 유지한다
   (Valkey는 비밀번호를 유지한다). 클러스터를 위해 허용한 LAN 노출이며
   범위를 좁히려면 엔드포인트 추가와 같은 수준의 검토가 필요하다. 같은
@@ -80,28 +67,32 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 절차는 `BLOCKED`로 중단한다. 명령 실패만으로 인증 거절·폐기 성공을 판정하지
 않으며 transport/서버 상태/구문 오류는 `INDETERMINATE`로 처리한다.
 
+## Exceptions
+
+없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
+contract 표에 대한 검토된 변경이 필요하다.
+
 ### Verification
 
 - Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
   두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
-- 런북의 확인 항목은 잘못된 Basic401, 유효한 Basic200, header 없는 API/UI의
-  SSO302, role/config, bootstrap의 정확한 정책·orphan·TTL과 허용 읽기 전후의
+- 런북의 확인 항목은 잘못된 Basic 401, 유효한 Basic 200, header 없는 API/UI의
+  SSO 302, role/config, bootstrap의 정확한 정책·orphan·TTL과 허용 읽기 전후의
   금지 읽기403이다. 서버 건강·unsealed와 동일 token으로 확인하며 다른 오류는
   거절 증거가 아니다. root/bootstrap의 로컬 파일 삭제는 서버 token 폐기가 아니다.
 - 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
-  Tempo3200 조회/API와 Alloy4317/4318 trace 수집을 구분한다.
+  Tempo 3200 조회/API와 Alloy 4317/4318 trace 수집을 구분한다.
 
 ### Review Cadence
 
 책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
 시, 자격 증명이 회전할 때마다 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
-contract 표에 대한 검토된 변경이 필요하다.
+- [가이드](../guides/0096-k8s-integration.md) (`GDE-0096`)
+- [런북](../runbooks/0096-k8s-integration.md) (`RUN-0096`)
+- [OpenBao 정책](0085-openbao.md)
 
 ## Related Documents
 

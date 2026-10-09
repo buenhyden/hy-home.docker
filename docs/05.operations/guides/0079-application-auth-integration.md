@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.7.2"
+version: "0.7.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0079"
 parent_ids:
@@ -16,37 +16,20 @@ created: "2026-09-18"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고
 서비스별 authorization model을 유지하는 방법을 설명한다.
 
-### Usage Type
+## Audience and Goal
 
-`system-guide | how-to | integration-reference`
-
-### Target Audience
-
-- Infra/DevOps Engineers
-- Operators
-- Platform Developers
-- AI Agents
-
-### Purpose
+대상 독자는 인프라/DevOps 엔지니어, 운영자, 플랫폼 개발자, AI Agent다.
 
 - ForwardAuth와 Native OIDC의 책임 경계를 명확히 한다.
 - Keycloak application client 설정을 일관되게 유지한다.
 - Kafbat/Airflow RBAC와 OpenBao policy를 gateway auth와 충돌시키지 않는다.
+
+## Usage
+
+이 가이드는 시스템 가이드이자 how-to·통합 참조다. 아래 절에서 인증 패턴, Keycloak client, 서비스별 연동과 검증 방법을 다룬다.
 
 ### 용어와 책임
 
@@ -382,7 +365,7 @@ permission이 필요하다. bootstrap과 provider 경계의 기존 permission �
 #### DB migration
 
 [POL-0050](../policies/0050-airflow.md)에 따라 schema upgrade 전 schedule과 producer를
-pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../runbooks/0050-airflow.md#steps)을 따른다.
+pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../runbooks/0050-airflow.md#procedure)을 따른다.
 
 #### JWT algorithm/format error
 
@@ -511,16 +494,16 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
+### Common Checks
+
+각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
+
 ### Runbook Handoff
 
 - [Keycloak Runbook](../runbooks/0014-keycloak.md)
 - [OAuth2 Proxy Runbook](../runbooks/0015-oauth2-proxy.md)
 - [Kafka/Kafbat Runbook](../runbooks/0036-kafka.md)
 - [Airflow Runbook](../runbooks/0050-airflow.md)
-
-### Common Checks
-
-각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
 
 ### Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -19,39 +19,19 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Implementation Sources
-
-- [infra/02-auth/keycloak/docker-compose.yml](../../../infra/02-auth/keycloak/docker-compose.yml)
-
-### Overview
-
-이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- Infra/DevOps Engineers
-- Operators
-- Contributors
-
-### Purpose
+대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 세 가지다.
 
 - Keycloak의 issuer, redirect URI, proxy header, health 계약을 안정적으로 유지한다.
 - OAuth2 Proxy ForwardAuth와 application native OIDC client를 혼동하지 않는다.
 - 로그인, 로그아웃, token/session 장애의 진단 기준을 공식 Keycloak 동작과 tracked config에 맞춘다.
+
+## Usage
+
+구현 소스는 [infra/02-auth/keycloak/docker-compose.yml](../../../infra/02-auth/keycloak/docker-compose.yml)이다.
 
 ### Tracked Configuration Snapshot
 
@@ -111,7 +91,7 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 확인했다. release pin은 [Compose](../../../infra/02-auth/keycloak/docker-compose.yml)가
 소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
-### Step-by-step Instructions
+### Common Checks
 
 1. Compose 설정 확인
    - `template-infra-high` 적용 여부 확인
@@ -132,7 +112,7 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
    - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-### Common Pitfalls
+### Pitfalls
 
 - `KC_HOSTNAME`, OAuth2 Proxy issuer, Keycloak realm frontend URL이 서로 다른 host/scheme를 가리키는 경우
 - reverse proxy가 `X-Forwarded-*`를 append만 하고 overwrite하지 않아 forged issuer/redirect 문제가 생기는 경우
@@ -141,7 +121,7 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 - CA trust가 깨져 OAuth2 Proxy가 issuer/JWKS를 가져오지 못하는 경우
 - OpenBao native OIDC 검증 성공을 다른 client의 login 검증으로 확대하는 경우
 
-### Common Checks
+검증 명령 모음은 다음과 같다.
 
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`

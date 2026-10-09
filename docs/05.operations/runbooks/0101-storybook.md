@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0101"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-10-03"
 
 ## Overview
 
+공유 Storybook 정적 origin과 문서 MCP의 빌드, 기동, 검증, 복구를 다루는 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
@@ -30,8 +26,6 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
 
 ## Procedure
-
-### Procedure
 
 1. 현재 Git SHA와 승인된 Storybook package/lock, Dockerfile, Compose, profile,
    운영 문서가 같은 작업 revision에 속하는지 확인한다. 실제 `.env`나 secret의 값을
@@ -108,8 +102,6 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 
 ## Verification
 
-### Evidence
-
 운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
 기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
@@ -131,14 +123,13 @@ image/context에 비밀값 유입, port 충돌, read-only runtime 실패 또는 
 revision 불일치가 확인되면 배포를 중단하고 @buenhyden에게 SHA와 대상·증거·복구
 경계를 전달한다.
 
+## Related Documents
+
 ### Traceability
 
 - Artifact: `RUN-0101`; parent guide: `GDE-0101`.
-- Historical source/static completion: `SPEC-0206`; runtime declaration:
+- 역사적 source/static 완료 근거: `SPEC-0206`. 런타임 선언:
   [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
-
-## Related Documents
-
 - [Shared Storybook guide](../guides/0101-storybook.md)
 - [Shared Storybook policy](../policies/0101-storybook.md)
 - [Traefik runbook](0013-traefik.md)

@@ -1,10 +1,10 @@
 ---
 title: "Terraform Operations Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0068"
 parent_ids:
@@ -16,31 +16,28 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 Terraform 운영 주제는 MIGRATE 상태의 사용 맥락이며 현재 실행 소유자는 OpenTofu다.
 
 ## Scope
 
-### Policy Scope
-
 기존 Terraform state와 provider/module 계약을 OpenTofu 운영으로 옮기는 작업.
 
-### Traceability
-
-- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
-- 유지되는 이관 주제: [Guide](../guides/0068-terraform.md), [Policy](0068-terraform.md), [Runbook](../runbooks/0068-terraform.md)
-- 현재 구현 소유자: [OpenTofu](../guides/0082-opentofu.md)
-
 ## Rules
-
-### Controls
 
 - 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다.
 - 복제 workspace에서 provider 및 backend 호환성을 검증한다.
 - CLI 교체와 실제 remote resource 변경을 별도 검토한다.
 - `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
 - 새로운 Terraform 서비스나 병렬 updater를 만들어 소유권을 분산하지 않는다.
+
+### 실행 도구의 적용 범위
+
+[Guide](../guides/0068-terraform.md)의 `실행 도구의 적용 범위`를 따른다. Terrakube workspace의 실제 엔진은 이관 대상별로 확인한다.
+
+## Exceptions
+
+호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과
+검증 계획을 기록한다. 예외는 기존 private state 공개를 허용하지 않는다.
 
 ### Verification
 
@@ -51,19 +48,11 @@ Terraform 운영 주제는 MIGRATE 상태의 사용 맥락이며 현재 실행 �
 
 각 state 이관 및 provider/backend 변경 때 검토한다.
 
-### 실행 도구의 적용 범위
+### Traceability
 
-독립 Terraform Compose 서비스가 없다는 사실은 Terrakube workspace의 엔진까지
-OpenTofu로 고정되었다는 뜻이 아니다. Terrakube executor는 외부 도구·엔진 목록을
-참조하므로 이관 대상별 실제 엔진, provider 및 state 호환성을 확인한다. 일반 서비스의
-포트·HTTP health·daemon 재시작은 이 이관 주제에 적용되지 않는다.
-
-## Exceptions
-
-### Exceptions
-
-호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과
-검증 계획을 기록한다. 예외는 기존 private state 공개를 허용하지 않는다.
+- 설계 근거: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 유지되는 이관 주제: [Guide](../guides/0068-terraform.md), [Policy](0068-terraform.md), [Runbook](../runbooks/0068-terraform.md)
+- 현재 구현 소유자: [OpenTofu](../guides/0082-opentofu.md)
 
 ## Related Documents
 

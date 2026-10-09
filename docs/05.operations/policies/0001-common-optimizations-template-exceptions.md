@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -15,14 +15,10 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
-
 이 문서는 `infra/common-optimizations.yml` 적용 시 허용되는 예외 목록과 승인 기준을 정의한다.
 예외는 임시 편의가 아니라 운영/보안 상의 명시적 승인 항목으로 관리하며, 모든 검증 스크립트와 운영 문서는 동일 레지스트리를 참조해야 한다.
 
 ## Scope
-
-### Policy Scope
 
 - `common-optimizations.yml` 템플릿 계열(`template-*`)의 제어항목 예외 관리
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
@@ -30,13 +26,7 @@ created: "2026-06-04"
 - **Systems**: Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` (root 통합 Compose 해석 기준)
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Traceability
-
-- 같은 번호 `0001`의 Guide/Runbook은 없다.
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)(schema v2) 단일 파일이다.
@@ -65,6 +55,22 @@ created: "2026-06-04"
 - **Log / Trace Retention**: [task checklists](../../../.agents/governance/task-checklists.md)를 따른다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
+## Exceptions
+
+- 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)을 기준으로 한다.
+  schema v1의 `template_exceptions`, `quickwin_baseline`, `security_baseline`은
+  SPEC-0218에서 정확한 서비스 단위 예외로 옮기거나 퇴역했다. `pg-0`~`pg-2`, `etcd-*`처럼
+  LAB 서비스를 root 이름으로만 적던 항목은 `lab:<이름>` scope로 옮기거나 없앴다.
+  모든 서비스에 Docker secret을 요구하던 QW-005와 `check-quickwin-baseline.sh`는
+  퇴역했다. secret을 읽는 서비스의 secret group 검사(SPEC-0218 W2에서 등록)가 그 자리를 맡는다.
+
+> Historical evidence (not current authority; source: Git history):
+> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0001 Exceptions.
+>
+> - 2026-03-28 기준 승인된 서비스 예외:
+>   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
+>   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
+
 ### Verification
 
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -86,26 +92,11 @@ runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량�
 - 월 1회 정기 검토
 - 신규 예외 추가/삭제 시 즉시 검토
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../infra/common-optimizations.exceptions.json)을 기준으로 한다.
-  schema v1의 `template_exceptions`, `quickwin_baseline`, `security_baseline`은
-  SPEC-0218에서 정확한 서비스 단위 예외로 옮기거나 퇴역했다. `pg-0`~`pg-2`, `etcd-*`처럼
-  LAB 서비스를 root 이름으로만 적던 항목은 `lab:<이름>` scope로 옮기거나 없앴다.
-  모든 서비스에 Docker secret을 요구하던 QW-005와 `check-quickwin-baseline.sh`는
-  퇴역했다. secret을 읽는 서비스의 secret group 검사(SPEC-0218 W2에서 등록)가 그 자리를 맡는다.
-
-> Historical evidence (not current authority; source: Git history):
-> Source: `c26bc8026254dffd7d51fc45b4081a1f80f855f2`, POL-0001 Exceptions.
->
-> - 2026-03-28 기준 승인된 서비스 예외:
->   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
->   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
+- 같은 번호 `0001`의 Guide/Runbook은 없다.
 
 ## Related Documents
 
 - Compose/Dockerfile이 runtime pin을 소유한다. [파생 projection](../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
-
 - [Operations index](../README.md)

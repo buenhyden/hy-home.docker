@@ -16,25 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
-> Scope: 정상 단일 OpenSearch의 준비 상태와 별도 standalone LAB의 정적·운영 경계.
-
-정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택합니다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster.yml`의 별도 project입니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록합니다.
-
-### Purpose
+정상 단일 OpenSearch의 준비 상태 점검과 별도 standalone LAB의 정적·운영 경계를 다룬다. 정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택한다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster.yml`의 별도 project이며 HOME 서비스가 아니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록한다.
 
 - HTTPS와 Docker Secret 기반 healthcheck를 사용한다.
 - 정상 root와 별도 LAB project를 혼동하지 않는다.
 - index/shard 작업 전 snapshot이나 escalation evidence를 확보한다.
 
-### When to Use
+## Trigger and Preconditions
 
 - primary `opensearch` healthcheck가 실패할 때
 - Dashboards가 OpenSearch에 연결할 수 없을 때
@@ -50,17 +38,15 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-### Procedure
+Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성은 확인되지 않았으므로 (미검증), 정상과 LAB의 build/start/restore 성공을 가정하지 않는다. LAB 인증서의 node/관리자 DN·SAN·신뢰와 Dashboards 연결도 별도 검증 전이다.
 
-### Checklist
-
-현재 Dockerfile의 OpenSearch 기본 이미지와 exporter plugin의 선언 버전 불일치가 해결되기 전 정상과 LAB의 build/start/restore 성공을 가정하지 않습니다. LAB 인증서의 node/관리자 DN·SAN·신뢰와 Dashboards 연결도 별도 검증 전입니다.
+사전 확인:
 
 - [ ] 정상 root `opensearch`인지 standalone LAB `opensearch-cluster`인지 Compose 파일과 project 이름까지 기록했습니다. 각 project의 Dashboard는 별개입니다.
 - [ ] admin password는 안전하게 읽고 저장하지 않는다.
 - [ ] index나 shard 변경에는 owner 승인이 필요하다.
 
-### Steps
+절차:
 
 1. primary compose file과 repo-local 문서 계약을 확인한다.
 
@@ -95,18 +81,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 현재 healthcheck와 시작 스크립트는 비밀값을 command argv에 싣지 않도록 수정했습니다. 실제 이미지 빌드·인증·health는 격리 실행 전까지 NOT_RUN입니다. source image가 제공하는 client를 쓰며 실제 packaged prompt 동작이 다르면 우회하지 않는다. 예시는 primary만 해당한다. certificate SAN/CA가 위 hostname과 일치하지 않으면 `-k`로 우회하지 않는다. LAB는 승인된 별도 target/CA/project를 지정하며 현재 custom 이미지의 기본 엔진·plugin 빌드 호환성과 인증서 신뢰가 미검증이므로 operational acceptance는 보류합니다.
 
-### Verification Steps
-
-- [ ] health endpoint가 primary stack에 대해 최소 yellow 상태를 반환한다.
-- [ ] Dashboards health endpoint가 compose healthcheck가 허용하는 `200` 또는 `401`을 반환한다.
-- [ ] 최종 evidence에 정상 또는 LAB의 Compose 파일·project·service를 명시합니다. 관측하지 않은 runtime 결과는 `NOT_RUN`으로 기록합니다.
-
-### Observability and Evidence Sources
-
-- **Logs**: OpenSearch와 Dashboards compose log
-- **Metrics**: 별도 exporter가 실행 중이지 않으면 N/A
-- **Evidence**: health 응답, 선택한 compose file, service log 요약, secret boundary 확인
-
 ### Planned isolated snapshot restore
 
 이 절차는 실행 결과가 아닌 계획이며 실제 snapshot·복구 증거는 해당 실행 Task에 기록합니다.
@@ -121,7 +95,17 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Verification
 
-### Evidence
+- [ ] health endpoint가 primary stack에 대해 최소 yellow 상태를 반환한다.
+- [ ] Dashboards health endpoint가 compose healthcheck가 허용하는 `200` 또는 `401`을 반환한다.
+- [ ] 최종 evidence에 정상 또는 LAB의 Compose 파일·project·service를 명시합니다. 관측하지 않은 runtime 결과는 `NOT_RUN`으로 기록합니다.
+
+### Observability and Evidence Sources
+
+- **Logs**: OpenSearch와 Dashboards compose log
+- **Metrics**: 별도 exporter가 실행 중이지 않으면 N/A
+- **Evidence**: health 응답, 선택한 compose file, service log 요약, secret boundary 확인
+
+### 증거 기록
 
 - compose file, service 이름, health 상태, 로그 요약, escalation 결정을 기록한다.
 - password 값은 기록하지 않는다.
@@ -136,13 +120,13 @@ rehearsal의 rollback은 source cluster와 snapshot을 변경하지 않은 채 i
 
 health가 계속 red/unavailable이거나, shard 변경이 필요하거나, secret이나 cert가 없거나, primary와 cluster variant evidence가 충돌할 때 escalation한다.
 
+## Related Documents
+
 ### Traceability
 
 - Declared parent: [OpenSearch Usage Guide](../guides/0019-opensearch.md) (`GDE-0019`)
 - Governing authority: [Analytics Tier Architecture Description](../../02.architecture/descriptions/0012-data-analytics-architecture.md) (`AD-0012`)
 - Subject peers: [Guide](../guides/0019-opensearch.md) (`GDE-0019`), [Policy](../policies/0019-opensearch.md) (`POL-0019`)
-
-## Related Documents
 
 - [Compose implementation: infra/04-data/opensearch/docker-compose.yml](../../../infra/04-data/opensearch/docker-compose.yml)
 - [Standalone LAB Compose](../../../labs/opensearch-cluster.yml) 및 [LAB 설명](../../../labs/opensearch-cluster.md)

@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-19"
 
 ## Overview
 
+이 런북은 소스 이미지, 빌드 의존성, updater 정책, 파생 버전 projection을 바꿀 때 따르는 검증과 적용 절차를 안내한다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 소스 이미지·빌드 의존성·updater 정책·파생 버전 projection 또는 단일 파일 config를
 변경할 때 사용한다. 저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
@@ -30,8 +26,6 @@ created: "2026-09-19"
 입력·Docker 작업이 필요한 단계는 대상 checkout/context와 별도 승인을 확인한다.
 
 ## Procedure
-
-### Procedure
 
 ### Source and updater changes
 
@@ -131,8 +125,6 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 
 ## Verification
 
-### Evidence
-
 명령·종료 코드·source commit·updater/validator 버전·선택과 coverage, 예상 결과와
 실패/중단을 현재 Task에 기록한다. private 값·원문 환경·raw log를 남기지 않는다.
 local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 미실행은 명시한다.
@@ -153,14 +145,14 @@ Git rollback은 database 파일이나 migration을 downgrade하지 않는다. �
 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단하고
 @buenhyden에게 전달한다. gate를 우회하거나 force push하지 않는다.
 
-### Traceability
-
-- [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
-- [Guide](../guides/0086-dependency-version-management.md), [Policy](../policies/0086-dependency-version-management.md)
-- 적용 통제: [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)
-
 ## Related Documents
 
 - [운영 인덱스](../README.md)
 - [파생 이미지 projection](../../../infra/tech-stack.versions.json)
 - [Renovate 정책](../../../renovate.json5), [Dependabot 범위](../../../.github/dependabot.yml)
+
+### Traceability
+
+- [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)
+- [Guide](../guides/0086-dependency-version-management.md), [Policy](../policies/0086-dependency-version-management.md)
+- 적용 통제: [POL-0006](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)

@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -19,44 +19,25 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profile 데이터를 로컬 filesystem backend `/var/lib/pyroscope`에 저장하고, Grafana Pyroscope datasource와 Alloy `pyroscope.write` endpoint를 통해 flamegraph 분석 경로를 제공한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자: 개발자, SRE, 운영자, AI Agent.
+
+- Pyroscope 서비스, 설정, storage, ingestion limit, Grafana/Alloy 연동 경계를 빠르게 파악한다.
+- Grafana에서 flamegraph, diff view, profile label을 확인하는 진입점을 안내한다.
+- 복구, restart, 용량 압박, storage 변경 판단은 [RUN-0047](../runbooks/0047-pyroscope.md)로 넘긴다.
 
 ## Usage
 
-### Usage
-
-### Overview
-
-이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profiling data를 local filesystem backend `/var/lib/pyroscope`에 저장하고, Grafana Pyroscope datasource와 Alloy `pyroscope.write` endpoint를 통해 flamegraph 분석 경로를 제공한다.
-
-### Usage Type
-
-`system-guide`
-
-### Target Audience
-
-- Developer
-- SRE
-- Operator
-- AI Agent
-
-### Purpose
-
-- Pyroscope compose service, config, storage, ingestion limit, and Grafana/Alloy integration boundary를 빠르게 파악한다.
-- Grafana에서 flamegraph, diff view, profile labels를 확인하는 진입점을 제공한다.
-- 복구, restart, capacity pressure, storage mutation 판단은 runbook으로 넘긴다.
-
-### Prerequisites
+사용 전에 다음을 확인한다.
 
 - [Grafana Alloy](0040-alloy.md)에 `pyroscope.write "local_pyroscope"` endpoint `http://pyroscope:4040`이 있어야 한다.
 - [Grafana](0041-grafana.md)에 Pyroscope datasource URL `http://pyroscope:4040`이 provisioning되어 있어야 한다.
-- Profile labels에는 request ID, user ID, token, credential 같은 high-cardinality or secret-bearing 값을 넣지 않는다.
+- Profile labels에는 request ID, user ID, token, credential 같은 high-cardinality 또는 secret-bearing 값을 넣지 않는다.
 
-### Step-by-step Instructions
+일반 순서는 다음과 같다.
 
 1. Compose service boundary를 확인한다.
 
@@ -64,7 +45,7 @@ created: "2026-05-10"
    rg -n 'service: template-infra-med|image: grafana/pyroscope:|container_name: pyroscope|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml
    ```
 
-2. Pyroscope config의 storage, ingestion limit, and privacy boundary를 확인한다.
+2. Pyroscope config의 storage, ingestion limit, privacy boundary를 확인한다.
 
    ```bash
    rg -n 'http_listen_port: 4040|reporting_enabled: false|data_dir: /var/lib/pyroscope/compactor|ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|multitenancy_enabled: false|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml
@@ -80,13 +61,6 @@ created: "2026-05-10"
 
 5. Flamegraph에서 CPU hot path 또는 allocation-heavy path를 확인한다. 성능 저하 전후를 비교해야 하면 Grafana diff view를 사용한다.
 
-### Common Pitfalls
-
-- **Profiling overhead**: 수집 빈도와 profile type은 애플리케이션 성능에 영향을 줄 수 있다. 고빈도 profiling은 policy approval과 rollback note가 필요하다.
-- **Label cardinality**: request ID, user ID, random run ID를 label로 올리면 index와 storage pressure가 커진다.
-- **Storage assumption**: 현재 backend는 local filesystem이다. 오래된 profile data 삭제나 retention 변경은 guide 범위가 아니라 runbook escalation 대상이다.
-- **Language support**: 언어와 runtime에 따라 CPU, memory, goroutine, mutex, block profile 지원 범위가 다르다.
-
 ### Source-backed operating contract
 
 - **목적/분류/출처**: `pyroscope`는 `obs`/`profiling`이 선택하는 `HOME` continuous-profile store다. [Compose](../../../infra/06-observability/docker-compose.yml)와 [Pyroscope config](../../../infra/06-observability/pyroscope/config/pyroscope.yaml)가 authoritative하다.
@@ -98,7 +72,14 @@ created: "2026-05-10"
 
 ### Profile storage and source limits
 
-두 Alloy 설정에는 Go와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. 고정 retention은 없고 기본값·disk pressure 정리가 무기한 보존을 보장하지 않는다. 기간 요구는 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
+이 항목은 [POL-0047](../policies/0047-pyroscope.md#profile-storage-and-source-limits)이 소유한다. 요약: Alloy의 Go/SeaweedFS pprof source는 writer/receiver readiness만으로 수신을 증명하지 않는다. Pyroscope에는 고정 retention이 없고 기본값이나 disk pressure 정리가 무기한 보존을 보장하지 않는다. readiness는 `wget` 대신 선언된 `profilecli ready` probe를 쓴다.
+
+### 운영 시 주의점
+
+- **Profiling overhead**: 수집 빈도와 profile type은 애플리케이션 성능에 영향을 줄 수 있다. 고빈도 profiling은 policy approval과 rollback note가 필요하다.
+- **Label cardinality**: request ID, user ID, random run ID를 label로 올리면 index와 storage pressure가 커진다.
+- **Storage assumption**: 현재 backend는 local filesystem이다. 오래된 profile data 삭제나 retention 변경은 guide 범위가 아니라 runbook escalation 대상이다.
+- **Language support**: 언어와 runtime에 따라 CPU, memory, goroutine, mutex, block profile 지원 범위가 다르다.
 
 ### Common Checks
 
@@ -120,9 +101,7 @@ created: "2026-05-10"
 ## Related Documents
 
 - [Observability Compose](../../../infra/06-observability/docker-compose.yml)
-
-- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
-
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 - [Operations index](../README.md)
 - [Operations policy](../policies/0047-pyroscope.md)
 - [Recovery runbook](../runbooks/0047-pyroscope.md)

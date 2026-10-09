@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -16,17 +16,16 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+Locust는 `labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다.
+HOME root Compose와 `testing` profile에는 포함되지 않는다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 Locust 실습 부하를 승인하고 실행하는 운영자와 target owner다. 이 문서의 목표는
+LAB 선택 방법, 실행 흐름, 종료 결과 해석 기준을 확인하는 것이다. 중지와 복구 절차는
+[Locust Runbook](../runbooks/0062-locust.md)이 맡는다.
 
 ## Usage
-
-### Usage
-
-### Purpose and classification
 
 Locust는 DEV 전용 distributed load generator LAB다. Coordinating master와 하나 이상의
 worker가 필요한 Python-based scenario 실습을 위해 유지된다. 정상 root Compose와
@@ -96,7 +95,7 @@ Locust 결과는 LAB result directory의 CSV로 남는다. 현재 장기 비교�
 consumer가 없어 `perf_db`로 가져오는 adapter는 만들지 않았다. 고정 이미지에 OpenTelemetry
 SDK가 없으므로 `--otel`과 OTLP 전달은 지원하지 않는다.
 
-### Persistence, backup, and upgrade
+### 보존과 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0062-locust.md)의 `시나리오 보존과 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 

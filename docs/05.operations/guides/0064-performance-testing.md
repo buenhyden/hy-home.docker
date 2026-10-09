@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0064"
 parent_ids:
@@ -16,15 +16,16 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+성능 시험은 `k6`(기본 부하 발생기), WireMock(외부 HTTP 의존성 모의 서버), Locust(독립 LAB 선택 도구)로
+수행한다. 이 가이드는 세 도구의 역할과 시험 입력, 결과 판정 기준을 정리한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 성능 시험을 계획하고 판정하는 운영자와 시나리오 소유자다. 목표는 도구를 고르고,
+실행 전 입력을 갖추고, 결과를 올바르게 해석하는 것이다. 중단·복구 절차는
+[성능 시험 런북](../runbooks/0064-performance-testing.md)이 맡는다.
 
 ## Usage
-
-### Usage
 
 `k6`는 기본 부하 발생기, WireMock은 외부 HTTP 의존성의 모의 서버,
 Locust는 독립 LAB에서 사용하는 선택 도구다. 실제 경로는

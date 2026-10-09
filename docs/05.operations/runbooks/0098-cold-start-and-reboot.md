@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0098"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-25"
 
 ## Overview
 
+이 런북은 호스트 재부팅 전후에 HOME Docker Compose 스택과 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 단계 사이의 health gate를 확인하는 절차를 제공한다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
@@ -38,8 +34,6 @@ Unseal 방식은 [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-
 수행한다고 전제한다.
 
 ## Procedure
-
-### Procedure
 
 실행 중인 checkout의 저장소 root에서 명령을 수행한다. secret file, unseal share,
 SecretID, token, 렌더링된 Compose model을 출력하지 않는다. 현재 Task에 host·project·
@@ -216,8 +210,6 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 ## Verification
 
-### Evidence
-
 각 단계의 실행 시각, `docker ps`/`docker inspect`/`bao status`의 상태 문자열,
 grep 결과(개수만)를 현재 Task에 기록한다. 원문 로그, secret 값, unseal share,
 SecretID, token 값은 기록하지 않는다.
@@ -265,6 +257,14 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
 알린다.
 
+## Related Documents
+
+- [Operations index](../README.md)
+- [00 Workspace domain](../README.md)
+- [Implementation: root Compose](../../../docker-compose.yml),
+  [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
+  [common optimizations](../../../infra/common-optimizations.yml)
+
 ### Traceability
 
 - 과거 구현·리허설 근거: [SPEC-0182](../../03.specs/0182-home-residual-backlog/spec.md)
@@ -274,11 +274,3 @@ Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 
 - 관련 runbook: [RUN-0085 OpenBao](0085-openbao.md),
   [RUN-0021 Backup and Restore](0021-backup-and-restore.md),
   [RUN hy-home.k8s Integration](0096-k8s-integration.md)
-
-## Related Documents
-
-- [Operations index](../README.md)
-- [00 Workspace domain](../README.md)
-- [Implementation: root Compose](../../../docker-compose.yml),
-  [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
-  [common optimizations](../../../infra/common-optimizations.yml)

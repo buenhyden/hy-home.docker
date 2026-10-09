@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -19,16 +19,6 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
 ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
 root Compose가 [해당 구현](../../../infra/08-ai/comfyui/docker-compose.yml)을
 포함하며 이 서비스는 Traefik을 거쳐 도달하고 선언된 loopback 호스트 포트도
@@ -41,6 +31,12 @@ root Compose가 [해당 구현](../../../infra/08-ai/comfyui/docker-compose.yml)
 [Dockerfile](../../../infra/08-ai/comfyui/Dockerfile)은 현재 선택되지 않은 별도의
 빌드 권한이다. [파생된 Compose 이미지 프로젝션](../../../infra/tech-stack.versions.json)은
 drift 확인용 뷰일 뿐이다.
+
+## Audience and Goal
+
+AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`이 대상이다. 목표는 승인된 워크플로로 ComfyUI를 쓰고, 모델·custom node·사용자 데이터의 보존 경계를 알고 운영하는 것이다.
+
+## Usage
 
 ### 데이터와 설정 경계
 
@@ -89,9 +85,7 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 
 ### Active-image persistence stop condition
 
-Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build는 주석 처리되어 있다. Image 소유자의 현재 소스는 `/root/ComfyUI`에서 시작하고 `/root` volume을 선언하지만 Compose는 `/opt/comfyui`에 상태를 bind한다. 두 경로를 연결하는 command override는 없다. 실제 image bytes와 실행 경로·mount를 관찰하지 않았으므로 영속성 위험을 기록하되 데이터 유실이나 안전을 단정하지 않는다.
-
-재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
+활성 이미지의 영속성 중단 조건은 [정책의 Active-image persistence stop condition](../policies/0081-comfyui.md#active-image-persistence-stop-condition)이 소유한다. 해소되기 전에는 재생성, 이미지 업그레이드, cache/volume 정리, 완전한 백업 판정을 하지 않는다.
 
 ### Common Checks
 
@@ -110,7 +104,7 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 ### Traceability
 
 - Governing architecture: [AD-0008](../../02.architecture/descriptions/0008-ai-architecture.md)
-- [Policy](../policies/0081-comfyui.md) and [Runbook](../runbooks/0081-comfyui.md)
+- [Policy](../policies/0081-comfyui.md), [Runbook](../runbooks/0081-comfyui.md)
 - [Official custom-node management guidance](https://docs.comfy.org/manager/overview)
 
 ## Related Documents

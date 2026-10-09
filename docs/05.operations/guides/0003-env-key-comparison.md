@@ -1,10 +1,10 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.1.0"
+version: "3.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0003"
 created: "2026-06-04"
@@ -14,15 +14,15 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
+이 가이드는 공개 `.env.example`과 로컬 `.env`의 키 집합을 비교하는 기준과 방법을 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 환경변수를 추가·폐기하거나 키 정합성을 점검하는 운영자와 agent다.
+
+목표는 두 파일의 키 집합을 정확히 일치시키고, 모든 키에 실제 소비자가 있음을 확인하는 것이다.
 
 ## Usage
-
-### Usage
 
 공개 `.env.example`은 현재 환경변수 계약을 소유하고, 로컬 `.env`는 운영자 값을
 보존한다. 키 추가·폐기 시 Compose, Dockerfile, 스크립트의 직접·간접 소비자를

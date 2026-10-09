@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -16,13 +16,10 @@ created: "2026-05-17"
 
 ## Overview
 
+Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된
+garbage collection 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
@@ -37,8 +34,6 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 validate하고 bounded status를 캡처한다.
 
@@ -104,8 +99,6 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 
 ## Verification
 
-### Evidence
-
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
@@ -123,13 +116,13 @@ Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는�
 untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
 filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0065-registry.md) (`GDE-0065`)
 - [Policy](../policies/0065-registry.md) (`POL-0065`)
 - [Registry Compose](../../../infra/09-platform-ops/registry/docker-compose.yml)
-
-## Related Documents
 
 - [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
 - [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)

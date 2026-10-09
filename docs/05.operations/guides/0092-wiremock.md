@@ -1,10 +1,10 @@
 ---
 title: "WireMock Usage Guide"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0092"
 parent_ids:
@@ -19,22 +19,16 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` profile로
 선택되는 OPTIONAL HTTP 스텁 서버다. 개발과 테스트 중 외부 HTTP 의존성을
 대신해 실제 서비스를 호출하지 않고도 소비자를 테스트할 수 있게 한다. 주 데이터를
 보유하지 않고 웹 UI도 없어 라우트나 OIDC 클라이언트는 없고 필요하지도 않다.
+
+## Audience and Goal
+
+외부 HTTP 의존성을 스텁으로 대체해 테스트하는 개발자와 운영자를 위한 문서다. 스텁 추가와 보존 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 

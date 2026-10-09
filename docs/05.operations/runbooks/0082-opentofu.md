@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Runbook"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
@@ -16,21 +16,15 @@ created: "2026-09-19"
 
 ## Overview
 
+OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업그레이드 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 검토된 plan, lock 실패, 보호된 state backup/recovery, 또는 런타임/provider upgrade에
 사용한다. 저장소 루트에서 작업한다. backend/provider에 접근하는 명령은 아래 명시된 승인이
 필요하다.
 
 ## Procedure
-
-### Procedure
 
 1. configuration commit, 정확한 workspace 디렉터리, 선택한 OpenTofu workspace, backend,
    account, 명령 클래스, rollback 담당자를 기록한다. 다른 writer가 활성 상태가 아님을
@@ -49,7 +43,7 @@ created: "2026-09-19"
 4. `apply` 전에 중단한다. 검토자는 저장된 plan digest, account, 예상 변경 사항을 명시적
    apply 승인과 묶어야 한다. 이 경계를 `-auto-approve`로 대체하지 않는다.
 
-### State backup and recovery
+### State 백업과 복구
 
 1. local 또는 remote backend를 판별하고 활성 writer/lock owner가 없음을 증명한다.
 2. local state의 경우 state와 backup 파일을 mode `0600`으로 보호된 디렉터리에 복사한다.
@@ -63,7 +57,7 @@ created: "2026-09-19"
    승인이 정확히 그 손실 수용 사례를 명시하지 않는 한 lineage나 serial 보호를 우회하기 위해
    `-force`를 사용하지 않는다.
 
-### Lock and upgrade recovery
+### Lock과 업그레이드 복구
 
 - lock 오류의 경우 보유자를 확인하고 writer를 기다리거나 중단시킨다. `force-unlock`은 운영자
   본인의 방치된 lock ID에만 사용한다.
@@ -84,8 +78,6 @@ plan, state backup, restore, provider 호출은 실행하지 않았다.
 
 ## Verification
 
-### Evidence
-
 exit, 버전, configuration/plan digest, backend/workspace 식별자, 정제된 action 개수, lock
 owner 결정, 최종 처리 상태를 기록한다. state, plan 본문, credential, 또는 secret을 포함한
 provider 응답은 절대 기록하지 않는다.
@@ -105,13 +97,13 @@ Git이나 이미지를 되돌려도 remote resource는 되돌아가지 않는다
 알 수 없는 backend/workspace, 보호된 backup 부재, 활성 lock owner, lineage/serial 불일치,
 파괴적 plan, 또는 credential/account 모호성이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0082-opentofu.md) (`GDE-0082`)
 - [Policy](../policies/0082-opentofu.md) (`POL-0082`)
 - [OpenTofu Compose](../../../infra/09-platform-ops/opentofu/docker-compose.yml)
-
-## Related Documents
 
 - [OpenTofu state locking](https://opentofu.org/docs/language/state/locking/)
 - [OpenTofu upgrading](https://opentofu.org/docs/intro/upgrading/)

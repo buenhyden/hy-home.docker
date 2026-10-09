@@ -1,10 +1,10 @@
 ---
 title: "Supabase Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0029"
 parent_ids:
@@ -31,19 +31,13 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+`supabase`는 [Compose 구현](../../../infra/04-data/supabase/docker-compose.yml)에 선언된 exact `supabase` profile 기반의 `OPTIONAL` 통합 백엔드 플랫폼이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를 `supabase_net`에서 구성한다. 이 서비스들은 하나의 recovery unit이다. database dump만으로는 Storage objects, mounted functions/config, JWT/provider settings를 복구할 수 없다.
 
 ## Audience and Goal
 
-### Audience and Goal
+Supabase stack을 운영하거나 사용하는 운영자, 개발자, SRE, AI 에이전트를 위한 문서다. 목표는 현재 서비스 구성, 접근 경로, secret 경계, 일반 확인 방법을 이해하는 것이다. Studio에 직접 host port가 있다고 가정하지 않고, compose가 선언한 Kong/API 경로와 운영 runbook을 기준으로 상태를 확인한다.
 
 ## Usage
-
-### Usage
-
-### Overview
-
-`supabase`는 [Compose 구현](../../../infra/04-data/supabase/docker-compose.yml)에 선언된 exact `supabase` profile 기반의 `OPTIONAL` 통합 백엔드 플랫폼이다. 13개 서비스가 PostgreSQL, Kong, Auth, REST, Realtime, Storage, Studio, Functions, analytics/logging과 pooler를 `supabase_net`에서 구성한다. 이 서비스들은 하나의 recovery unit이다. database dump만으로는 Storage objects, mounted functions/config, JWT/provider settings를 복구할 수 없다.
 
 ### Current implementation
 
@@ -82,22 +76,7 @@ created: "2026-05-10"
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Usage Type
-
-`system-guide | operational-reference`
-
-### Target Audience
-
-- Operator
-- Developer
-- SRE
-- AI Agent
-
-### Purpose
-
-이 가이드는 Supabase stack의 현재 서비스 구성, 접근 경로, secret 경계, 일반 확인 방법을 설명한다. 사용자는 직접 Studio host port를 가정하지 않고, compose가 선언한 Kong/API 경로와 운영 runbook을 기준으로 상태를 확인해야 한다.
-
-### Prerequisites
+### 사전 조건과 사용
 
 현재 source의 `_FILE`/DB URL/config loader/start command 수용은 image별로 미완결·미검증이다. named secret 파일이 있다는 이유만으로 정상 구성이라 판단하지 않는다. 별도 source 수정과13개 기능 경로의 격리 검증 전 운영 활성화/복구 승격은 중단한다.
 
@@ -105,8 +84,6 @@ created: "2026-05-10"
 - 로컬 또는 승인된 인프라 host에서 Docker Compose에 접근할 수 있어야 한다.
 - `DEFAULT_DATA_DIR`가 준비된 Supabase config, storage, function, log, database 경로를 가리켜야 한다.
 - stack이 참조하는 Docker Secret 파일이 준비되어 있어야 하며, secret 값을 문서, 로그, 커밋에 복사해서는 안 된다.
-
-### Step-by-step Instructions
 
 1. 현재 compose surface를 확인한다.
 
@@ -118,17 +95,14 @@ created: "2026-05-10"
 
 2. 공개 접근 경로를 확인한다.
 
+   - 아래 host port는 모두 `127.0.0.1`에만 게시된다.
    - Kong HTTP: `${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp`
    - Kong HTTPS: `${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp`
    - Analytics: `${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000`
    - Supavisor session/transaction pooler: `${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432`, `${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543`
    - Studio는 현재 compose 파일에 직접 host port가 없으므로, Kong과 stack 구성이 노출하는 승인된 경로를 사용한다.
 
-3. 서비스 상태를 확인한다.
-
-   ```bash
-   docker compose --profile supabase ps studio kong auth rest realtime storage db analytics supavisor
-   ```
+3. 서비스 상태는 [RUN-0029 절차](../runbooks/0029-supabase.md#procedure)의 `ps` 확인을 따른다.
 
 4. 데이터와 config 경계를 확인한다.
 
@@ -138,7 +112,7 @@ created: "2026-05-10"
 
 5. recovery inventory는 PostgreSQL roles/schema/data, Storage metadata와 object files, mounted Kong/functions/pooler configuration, Auth/JWT/SMTP/provider settings를 별도 protected artifacts로 기록한다. 빈 격리 stack에서 이들을 coherent set으로 복원한 뒤에만 recoverable로 판정한다.
 
-### Common Pitfalls
+### 주의점
 
 - Studio가 직접 local host port로 접근 가능하다고 가정하는 것 — 현재 compose 파일은 그런 포트를 게시하지 않는다.
 - 승인된 구현 변경 없이 공개 API 접근에서 Kong을 우회하는 것.

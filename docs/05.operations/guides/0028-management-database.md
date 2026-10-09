@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -24,17 +24,7 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-management database는 인증, 워크플로, 도구를 위한 6개 서비스로 구성된 HOME
+management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME
 의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
 `postgres`를 저장한다. 기존 `app_db`는 소유자 진술상 자료·앱 소비자가 없는
 기술적 이관 대상으로 보존하며 새 업무 앱의 공용 DB로 사용하지 않는다. `mng-valkey`는
@@ -42,12 +32,28 @@ Airflow/n8n이 공유하는 broker/cache다. Grafana는 현재 Compose에서 man
 PostgreSQL에 연결되지 않는다. 자체 `grafana-data`를 소유하고 기본 데이터베이스
 구성을 그대로 사용한다.
 
+## Audience and Goal
+
+management database를 사용하는 서비스 소유자와 운영자를 위한 문서다. 목표는 서비스
+구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 이해하고
+정적 검사로 구성을 확인하는 것이다.
+
+## Usage
+
 ### Current implementation
 
 [`infra/04-data/mng-db/docker-compose.yml`](../../../infra/04-data/mng-db/docker-compose.yml)은
-`mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를
-정의한다. `mng`, `core`, `dev`, `local` profile은 엔진과 init을 함께 선택하고,
-exporter는 `mng`와 `dev`에서 선택된다.
+`mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`,
+`mng-valkey`, `mng-valkey-exporter`를 정의한다. `mng`, `core`, `dev`, `local`
+profile은 엔진과 init을 함께 선택하고, exporter와 monitor provision job은 `mng`와
+`dev`에서 선택된다.
+
+지표는 관리자 비밀 없이 수집한다. `mng-pg-monitor-provision`이 통계·설정 읽기 권한만
+가진 `mng_pg_monitor` role을 만들고 `mng-pg-exporter`(`9187`)가 이 role로 접속한다.
+`mng-valkey-exporter`(`9121`)는 읽기 전용 `mngmonitor` ACL 사용자로 접속한다. 두
+exporter는 `mng_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. monitor 비밀번호
+회전과 경보 대응은 [RUN-0028](../runbooks/0028-management-database.md#관측-경보와-monitor-계정)이
+소유한다.
 
 PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `mng_postgres_password` secret을 사용한다. 기본 init job은 base 서비스별 데이터베이스
@@ -73,12 +79,13 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 
 ### Identity-specific behavior
 
-mng-pg18.6+pgBackRest2.58 은 physical/WAL backup 을, mng-valkey9.1.2 는 AOF state 와 backup orchestrator 의 RDB export 를 사용한다. mng-pg-init 는 base role/database DDL 이며 optional feature runner/SQL 은 해당 subject 가 소유한다(MLflow,Superset,Pact 등). PG 는 loopback, Valkey 는 HOST_LAN_BIND_IP 에 host port 를 게시한다. 두 exporter 는 각각 PG/Valkey 한 target 이며 health 는 업무 정합성을 확인하지 않는다. feature profile 에는 bi/contract-testing 도 포함한다. 앱 quiescence 와 조정된 logical dump 요구는 여전히 필수이며 현재 daily physical/RDB automation 이 앱별 동시 복구를 보장하지 않는다.
+`mng-pg`는 pgBackRest 기반 physical/WAL 백업을, `mng-valkey`는 AOF state와 백업 orchestrator의 RDB export를 사용한다. `mng-pg-init`은 base role/database DDL이며 선택 기능의 runner/SQL은 해당 subject가 소유한다(MLflow, Superset, Pact 등). PG는 loopback, Valkey는 `HOST_LAN_BIND_IP`에 host port를 게시한다. 두 exporter는 각각 PG/Valkey 한 대상만 보며 health는 업무 정합성을 확인하지 않는다. feature profile에는 `bi`, `contract-testing`도 포함한다. 앱 quiescence와 조정된 logical dump 요구는 여전히 필수이며, 현재 daily physical/RDB automation은 앱별 동시 복구를 보장하지 않는다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
 | `mng-pg` | 공유 PG database/roles + physical backup/WAL; custom entrypoint | PG 연결 수락; SQL 권한/업무 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-pg-exporter` | 공유 PG metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
+| `mng-pg-monitor-provision` | `mng_pg_monitor` role 생성·갱신 job (`mng`, `dev`) | HTTP health 없음; 종료 코드 0과 exporter의 `pg_up` 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-pg-init` | base role/database provisioning job; feature DDL 제외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-valkey` | 공유 workflow/session AOF state; queue replay 별도 승인 | 인증 PING; cluster slot/queue 정합성 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
 | `mng-valkey-exporter` | 공유 Valkey metrics | 선언된 endpoint health; scrape/data 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/04-data/mng-db/docker-compose.yml) |
@@ -101,12 +108,8 @@ init은 PostgreSQL health 이후 role/database를 생성하고 exporter는 엔�
 
 ### Static preflight
 
-```bash
-docker compose --env-file .env.example --profile mng config --quiet
-docker compose --env-file .env.example --profile mng config --services
-```
-
-저장소 루트에서 실행한다. leaf 파일만 단독으로 렌더링하거나 기동하지 않는다.
+정적 점검 명령은 [RUN-0028 절차](../runbooks/0028-management-database.md#procedure)가
+소유한다. 저장소 루트에서 실행하며, leaf 파일만 단독으로 렌더링하거나 기동하지 않는다.
 승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME
 데이터베이스를 조회하거나, broker queue를 변경하지 않는다.
 

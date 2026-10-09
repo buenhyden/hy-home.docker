@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0035"
 created: "2026-06-04"
@@ -14,13 +14,9 @@ created: "2026-06-04"
 
 ## Overview
 
+디스크 여유 공간이 부족할 때 데이터를 삭제하지 않고 원인 owner를 가려 조치를 정하는 triage 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
@@ -42,8 +38,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Procedure
 
-### Procedure
-
 1. 경보가 발생한 filesystem, mount, 영향받은 서비스를 식별한다. root로
    렌더링한 Compose에서 정확한 bind-backed volume을 확인하되 private path
    값은 공개하지 않는다. 일반적인 Docker volume root를 스캔하거나 수정하는
@@ -62,13 +56,9 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Verification
 
-### Evidence
-
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
-
-### Verification Record
 
 ### Validation and closeout
 
@@ -88,7 +78,7 @@ rollback은 client를 확장된 용량 또는 승인된 rollback 이후 이전�
 ### Escalation
 
 - Management PostgreSQL/Valkey: [RUN-0028](0028-management-database.md)
-- Valkey Cluster: [RUN-0022](0022-valkey-cluster.md)
+- LAB 전용 Valkey Cluster: [RUN-0022](0022-valkey-cluster.md)
 - SeaweedFS: [RUN-0024](0024-seaweedfs.md)
 - 모든 HOME state owner와 예외: [POL-0021](../policies/0021-backup-and-restore.md)
 
@@ -96,12 +86,12 @@ filesystem 명령으로 PostgreSQL WAL/data, Valkey AOF/RDB, SeaweedFS volume
 파일, Kafka log, SQLite WAL/journal 파일, OpenBao Raft data, Qdrant snapshot,
 observability WAL을 삭제하지 않는다.
 
+## Related Documents
+
 ### Traceability
 
 - Artifact: `RUN-0035`; parent guide: `GDE-0021`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
-
-## Related Documents
 
 - [Data backup policy](../policies/0021-backup-and-restore.md)
 - [Data hardening policy](../policies/0030-data-optimization-hardening.md)

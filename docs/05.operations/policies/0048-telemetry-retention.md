@@ -1,10 +1,10 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0048"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-03-25"
 
 ## Overview
 
-### Overview
-
 이 정책은 `06-observability` tier의 metrics, logs, traces, profiles 보관
 경계와 performance guardrail을 정의한다. 현재 storage 구현과 요구되는 retention을 구분하며, external long-term archive
 또는 S3 Glacier 같은 미구현 보관 계층은 승인된 config 변경과 task evidence
@@ -25,22 +23,13 @@ created: "2026-03-25"
 
 ## Scope
 
-### Policy Scope
-
 이 정책은 observability stack의 storage, retention, cardinality, resource,
 backup 책임 경계를 다룬다.
 
 - **Systems**: Prometheus local TSDB, Loki SeaweedFS bucket `loki-bucket`, Tempo SeaweedFS bucket `tempo-bucket`, Pyroscope local filesystem backend `/var/lib/pyroscope`, Grafana dashboard JSON assets
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: none — no Guide or Runbook shares number `0048`.
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - Prometheus metrics는 local TSDB와 Prometheus policy의 retention/volume
@@ -56,7 +45,8 @@ backup 책임 경계를 다룬다.
     `pyroscope.yaml`에는 고정 retention period가 선언되어 있지 않으므로
     capacity 추이와 storage usage를 점검한다.
   - Grafana dashboard backup은 `infra/06-observability/grafana/dashboards/`
-    JSON assets를 version-controlled source로 유지한다.
+    JSON assets를 version-controlled source로 유지한다. LAB 서비스 dashboard는
+    SPEC-0225부터 `labs/dashboards/`에서 따로 관리한다.
   - High-cardinality labels(user IDs, IP addresses, request IDs 등)는
     metrics/log labels에 직접 추가하지 않는다.
 - **Allowed**:
@@ -76,38 +66,40 @@ Loki marker는 영속 `/loki` 밖의 `/tmp/loki/compactor`에 있고 object-stor
 
 Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본값을 따른다. 이는 실제 보존 이력을 관찰한 결과가 아니다. Pyroscope는 고정 기간이 없고 기본값·disk pressure 동작이 무기한 보존을 약속하지 않는다. Pushgateway는 process restart 때 metric을 잃는다. 어느 것도 승인된 backup/archive를 대신하지 않는다.
 
-### Verification
-
-- Loki retention config:
-  `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
-- Tempo 필수값 점검(현재 일치하지 않으며 구현 결함으로 기록하고 PASS로 처리하지 않는다):
-  `rg -n 'block_retention: 24h|compacted_block_retention: 1h' infra/06-observability/tempo/config/tempo.yaml`
-- Pyroscope의 고정 retention 미선언 경계:
-  `rg -n 'fixed retention period is not declared|고정 7일 retention 설정이 없다' infra/06-observability/pyroscope/README.md docs/05.operations/guides/0047-pyroscope.md`
-- Documentation contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
-  config가 변경될 때 검토한다.
-- 정기 검토는 quarterly cadence로 수행한다.
-
 ## Exceptions
-
-### Exceptions
 
 - Retention, archive, resource cap 예외는 사용자 승인과 관련 plan/task
   evidence가 있을 때만 허용한다.
 - 긴급 장애 대응으로 임시 보관 또는 삭제 정책을 조정한 경우, 변경 후
   incident 또는 task evidence에 원인, 범위, rollback 상태를 기록한다.
 
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
+### Verification
+
+- Loki retention config:
+  `rg -n 'retention_enabled: true|retention_period: 168h' infra/06-observability/loki/config/loki-config.yaml`
+- Tempo 필수값 점검(현재 일치하지 않으며 구현 결함으로 기록하고 PASS로 처리하지 않는다):
+  `rg -n 'block_retention: 24h|compacted_block_retention: 1h' infra/06-observability/tempo/config/tempo.yaml`
+- Pyroscope의 고정 retention 미선언 경계(출력이 없어야 정상):
+  `rg -n 'retention' infra/06-observability/pyroscope/config/pyroscope.yaml`
+- Documentation contracts:
+  원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+
+### Review Cadence
+
+- 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
+  config가 변경될 때 검토한다.
+- 정기 검토는 분기마다 수행한다.
+
+### Traceability
+
+- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: 없음. 번호 `0048`을 공유하는 Guide나 Runbook은 없다.
+
 ## Related Documents
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
 - [Operations index](../README.md)
 - [Observability policy index](../README.md)
 - [Prometheus policy](0045-prometheus.md)

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.4"
+version: "1.4.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -21,88 +21,28 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 운영자, SRE, 개발자, AI agent다.
+
+대상 독자는 운영자, SRE, 개발자, AI agent다.
+
+- Prometheus compose service, scrape config, alert rule, TSDB 경계를 빠르게 파악한다.
+- 새 scrape target이나 alert rule을 검토할 때 확인할 파일과 검증 명령을 찾는다.
+- 반복 실행, reload, restart, TSDB 증상 분류는 연결된 runbook으로 넘긴다.
 
 ## Usage
 
-### Usage
+Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/prometheus.yml`을 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
 
-`node-exporter`는 Prometheus를 위해 host metrics를 수집한다. Host mount와 namespace grant는 Compose에 정의되어 있고 scope를 바꾸기 전에 검토해야 한다.
+### Normal use
 
-### Overview
-
-이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `infra/06-observability/prometheus/config/prometheus.yml`의 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
-
-### Usage Type
-
-`system-guide`
-
-### Target Audience
-
-- Operator
-- SRE
-- Developer
-- AI Agent
-
-### Purpose
-
-- Prometheus compose service, scrape config, alert rule, and TSDB boundary를 빠르게 파악한다.
-- 새 scrape target 또는 alert rule을 검토할 때 확인해야 할 파일과 검증 명령을 찾는다.
-- 반복 실행, reload, restart, TSDB symptom triage는 연결된 runbook으로 넘긴다.
-
-### Prerequisites
-
-- Repository checkout 접근 권한.
-- `infra/06-observability/docker-compose.yml` and `infra/06-observability/prometheus/config/prometheus.yml` 확인 권한.
-- 필요 시 `obs` Docker Compose profile과 `prometheus` container에 대한 read-only inspection 권한.
-- Docker Secret values는 열람하지 않는다. 문서에는 secret ID와 file reference만 기록한다.
-
-### Step-by-step Instructions
-
-1. Compose service boundary를 확인한다.
-
-   ```bash
-   rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml
-   ```
-
-2. Scrape job과 rule file boundary를 확인한다.
-
-   ```bash
-   rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml
-   rg --files infra/06-observability/prometheus/config/alert_rules
-   ```
-
-   Scrape/rule inventory는 선택된 config와 rule_files가 가리키는 파일에서 확인한다. 아래 SPEC-0193 수치는 해당 시점의 근거이며 현재 목록을 복제하지 않는다.
-
-3. Config or rule 변경 전후로 Prometheus 내장 검증 도구를 사용한다.
-
-   ```bash
-   docker exec prometheus promtool check config /etc/prometheus/prometheus.yml
-   docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'
-   ```
-
-   Rule glob expansion은 container 내부에서 일어나야 한다. `/etc/prometheus` 아래
-   unquoted host-side path는 host에 존재하지 않으며, `promtool check
-   rules`는 literal wildcard를 확장하는 대신 존재하는 file argument만 받는다. Config
-   check은 참조된 credential file도 검증하는데 staged `openbao_token`이
-   unprovisioned 상태면 이 prerequisite에서 멈출 수 있다. 그래서 독립적인 rule syntax
-   evidence를 위해 container-side rule check을 사용한다.
-
-4. Target 상태는 Prometheus UI `Targets` page 또는 Prometheus API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이며, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
-
-5. Reload, restart, scrape 장애 대응, TSDB symptom triage가 필요하면 runbook으로 이동한다.
-
-### Common Pitfalls
-
-- Prometheus restart 명령에서 profile과 compose file을 생략하면 다른 project context에서 실행될 수 있다. 운영 절차는 runbook의 profile 포함 명령을 따른다.
-- 현재 compose command에는 explicit `--storage.tsdb.retention.*` flag가 없다. retention 동작을 문서화할 때는 policy와 compose 근거를 함께 확인한다.
-- High-cardinality label을 추가하면 TSDB memory와 query cost가 커진다. label 추가는 policy의 cardinality review 대상이다.
-- Rule file 변경 후 `promtool`을 실행하지 않으면 reload 시점에 rule evaluation failure로 이어질 수 있다.
-- 복구 절차, WAL/TSDB 조치, rollback 판단을 guide에 직접 넣지 않는다. 해당 내용은 runbook에서 evidence와 escalation 기준으로 처리한다.
+1. Compose service 경계, scrape job, rule file 경계를 [Common Checks](#common-checks)의 명령으로 확인한다. Scrape/rule 목록은 선택된 config와 `rule_files`가 가리키는 파일에서 읽는다. 아래 SPEC-0193 수치는 그 시점의 근거이며 현재 목록을 복제하지 않는다.
+2. Config나 rule을 바꾸기 전후에는 `promtool`로 검증한다. 명령과 rule glob 확장 주의는 [RUN-0045 절차](../runbooks/0045-prometheus.md#procedure)가 소유한다.
+3. Target 상태는 Prometheus UI `Targets` page나 API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이고, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
+4. Reload, restart, scrape 장애 대응, TSDB 증상 분류가 필요하면 runbook으로 이동한다.
 
 ### Architecture
 
@@ -130,7 +70,7 @@ graph TD
 
 ### Key Components
 
-#### 1. Scrape Configurations
+#### Scrape Configurations
 
 `prometheus.yml`과 `prometheus.dev.yml`은 같은 37개 job을 담는다(SPEC-0193, SPEC-0225). Compose는
 `PROMETHEUS_CONFIG_FILE`로 둘 중 하나를 고르며, 계약 테스트가 두 파일의 `scrape_configs`가
@@ -145,6 +85,8 @@ graph TD
 
 규칙:
 
+- Datastore job은 `domain="datastores"` 외에 `db_scope`(`mng`/`dev`), `db_engine`, `expected_state` label을 붙여 MNG와 DEV를 따로 알린다. DEV exporter target(`dev-pg-exporter`, `dev-valkey-exporter`)은 시작 script가 `/etc/prometheus/targets/`에 렌더링하며, `PROMETHEUS_DEV_DATA_EXPECTED`는 `on` 또는 `off`여야 한다(SPEC-0224).
+- SeaweedFS는 S3·master·volume·filer를 job 하나씩 수집한다. Prometheus는 master·volume·filer를 위해 전용 internal `seaweedfs_metrics_net`에 연결된다(SPEC-0225).
 - 소스 하나는 job 하나가 수집한다. 같은 target을 두 job이 긁으면 series가 두 벌 생긴다(이전 `airflow-exporter`, Alloy self remote-write의 `integrations/self`).
 - 모든 target에 `cluster="hy-home"`, `namespace="hy-home"` 라벨을 붙인다. mixin 대시보드가 이 라벨로 변수를 채운다. PostgreSQL HA의 클러스터 이름은 `pg_cluster` 라벨이다.
 - Prometheus는 `--enable-feature=exemplar-storage`로 exemplar를 저장해 Grafana에서 metric → trace 링크가 동작한다.
@@ -169,7 +111,7 @@ DCGM은 data-center GPU를 대상으로 하며 이 consumer card에서는 일부
 `DCGM_FI_DEV_GPU_TEMP`, `DCGM_FI_DEV_FB_USED` series를 예상되는 `gpu`/`modelName`
 label과 함께 보여주기 전까지 collection은 **미검증** 상태다.
 
-#### 2. Alerting Rule System
+#### Alerting Rule System
 
 Rule은 `config/alert_rules/`에 domain별 file로 나뉘어 있다.
 
@@ -194,7 +136,7 @@ SPEC-0193(2026-09-30)의 rule 기준:
 - 모든 rule의 `runbook_url`은 해당 서비스의 runbook 파일을 가리킨다. 계약 테스트가 파일 존재를
   확인한다.
 
-#### 3. Storage (TSDB)
+#### Storage (TSDB)
 
 - Prometheus data는 `prometheus-data` volume에 저장된다.
 - 현재 compose는 explicit retention flag를 선언하지 않는다.
@@ -244,16 +186,21 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 
 ### Host and GPU exporter boundary
 
-`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Network collector가 host를 보도록 host network namespace에서 `obs_net` gateway 주소에만 listen한다([RUN-0045](../runbooks/0045-prometheus.md)). Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile mount는 민감한 host 정보를 노출하므로, Compose에 정의된 읽기 전용 권한과 제한된 collector를 바꾸기 전에 검토한다. Network collector가 host를 보도록 host network namespace에서 실행하며, `obs_net` gateway 주소 `10.250.5.1:9100`에만 listen한다. Prometheus와 Alloy는 `extra_hosts`로 이 주소를 `node-exporter` 이름에 연결하므로 scrape target과 `instance` label은 그대로다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. 자세한 전제와 복구는 [RUN-0045](../runbooks/0045-prometheus.md), 통제는 [POL-0045](../policies/0045-prometheus.md#host-and-gpu-exporter-boundary)를 따른다.
+
+`dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스다. 선언된 GPU를 예약하고 Compose healthcheck는 없다. GPU, DCGM metric, scrape 상태를 구분해서 본다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
 ### Common Checks
 
+- `rg -n 'service: template-stateful-high|image: prom/prometheus:|container_name: prometheus|--web.enable-lifecycle|prometheus-data|prometheus.middlewares' infra/06-observability/docker-compose.yml`
 - `rg -n '^  - job_name:' infra/06-observability/prometheus/config/prometheus.yml`
 - `rg --files infra/06-observability/prometheus/config/alert_rules`
 - `docker exec prometheus promtool check config /etc/prometheus/prometheus.yml`
 - `docker exec prometheus /bin/sh -c 'promtool check rules /etc/prometheus/alert_rules/*.yml'`
+
+Rule glob은 container 안의 shell이 확장해야 한다. Config 검사는 참조된 credential file도 읽으므로 staged `openbao_token`이 준비되지 않으면 멈출 수 있다. 이때 rule 문법 증거는 container 안의 rule 검사로 따로 얻는다.
 
 ### Runbook Handoff
 
@@ -264,6 +211,14 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 - Declared parent: [Prometheus Operations Policy](../policies/0045-prometheus.md) (`POL-0045`)
 - Governing authority: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: [Policy](../policies/0045-prometheus.md) (`POL-0045`), [Runbook](../runbooks/0045-prometheus.md) (`RUN-0045`)
+
+## Troubleshooting
+
+- Prometheus restart 명령에서 profile과 compose file을 생략하면 다른 project context에서 실행될 수 있다. 운영 절차는 runbook의 profile 포함 명령을 따른다.
+- 현재 compose command에는 explicit `--storage.tsdb.retention.*` flag가 없다. retention 동작을 문서화할 때는 policy와 compose 근거를 함께 확인한다.
+- High-cardinality label을 추가하면 TSDB memory와 query cost가 커진다. label 추가는 policy의 cardinality review 대상이다.
+- Rule file 변경 후 `promtool`을 실행하지 않으면 reload 시점에 rule evaluation failure로 이어질 수 있다.
+- 복구 절차, WAL/TSDB 조치, rollback 판단을 guide에 직접 넣지 않는다. 해당 내용은 runbook에서 evidence와 escalation 기준으로 처리한다.
 
 ## Related Documents
 

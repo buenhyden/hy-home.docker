@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -19,45 +19,25 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Implementation Sources
-
-- [infra/01-gateway/traefik/docker-compose.yml](../../../infra/01-gateway/traefik/docker-compose.yml)
-
-### Overview
-
-이 문서는 `Traefik Primary` 모델에서 01-gateway 소유 라우터를 운영하는 방법을 설명한다. Traefik의 lifecycle class는 **HOME**이다. 표준 미들웨어 체인 적용과 검증 흐름을 중심으로 다룬다.
-
-### Usage Type
-
-`system-guide | how-to`
-
-### Target Audience
-
-- Infra/DevOps Engineers
-- Operators
-- Contributors
-
-### Purpose
+대상은 Infra/DevOps 엔지니어, 운영자, 기여자다. 목적은 두 가지다.
 
 - Traefik dashboard 라우터 하드닝 정책을 일관되게 적용한다.
 - `gateway-standard-chain` 구성요소와 적용 범위를 이해한다.
 
-### Prerequisites
+사전 조건은 다음과 같다.
 
 - Docker/Docker Compose 사용 가능
 - `infra/01-gateway/traefik` 구성 파일 접근 가능
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - root `core` profile compose validation 실행 가능
+
+## Usage
+
+구현 소스는 [infra/01-gateway/traefik/docker-compose.yml](../../../infra/01-gateway/traefik/docker-compose.yml)이다.
 
 ### Source, activation and middleware behavior
 
@@ -71,7 +51,7 @@ Compose의 `HTTP_PORT`/`HTTPS_PORT`는 일치해야 한다. OPTIONAL Nginx와 �
 [동적 middleware](../../../infra/01-gateway/traefik/dynamic/middleware.yml)의
 `gateway-standard-chain` 실제 멤버는 `req-retry`, `req-circuit-breaker`다.
 `req-rate-limit` 선언이 있어도 이 chain에는 연결되지 않았다. 세 멤버를 요구하는
-[POL-0013](../policies/0013-traefik.md#controls)의 **구현 미준수**이며 문서 변경으로
+[POL-0013](../policies/0013-traefik.md#rules)의 **구현 미준수**이며 문서 변경으로
 rate limit이 적용된 것은 아니다. route에 chain 이름이 있다는 사실이나 하드닝
 문자열 검사 통과로 준수를 주장하지 않는다. 근거는 소스와
 [선언 릴리스 계열의 Chain 동작](https://doc.traefik.io/traefik/v3.7/reference/routing-configuration/http/middlewares/chain/)이다.
@@ -101,26 +81,11 @@ metrics는 host에 게시하지 않으며, OTLP는 `tempo:4317`로 전달한다.
 backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file watch 대상이고,
 정적 단일 파일 변경은 [POL-0006 적용 통제](../policies/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)를 따른다.
 
-### Step-by-step Instructions
-
-1. 미들웨어 파일 확인
-   - `infra/01-gateway/traefik/dynamic/middleware.yml`
-   - 필수 블록과 실제 chain 멤버십을 별도로 확인: `req-rate-limit`, `req-retry`, `req-circuit-breaker`, `gateway-standard-chain`
-2. 라우터 라벨 확인
-   - `infra/01-gateway/traefik/docker-compose.yml`
-   - dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file` 적용 확인
-3. 설정 정적 검증
-   - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-4. 하드닝 검증
-   - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
-
-### Common Pitfalls
-
-- `gateway-standard-chain` 이름 오타로 middleware resolve 실패
-- dashboard middleware 순서/구분자(`,`) 오류
-- 비게이트웨이 소유 라우터까지 무분별하게 체인 확장 적용
-
 ### Common Checks
+
+1. 미들웨어 파일 `infra/01-gateway/traefik/dynamic/middleware.yml`에서 `req-rate-limit`, `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 블록과 실제 chain 멤버십을 따로 확인한다.
+2. 라우터 라벨(`infra/01-gateway/traefik/docker-compose.yml`)에서 dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file`이 적용됐는지 확인한다.
+3. 정적 검증과 하드닝 검증은 아래 명령을 쓴다.
 
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
@@ -137,6 +102,12 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 - Declared parent: [01-Gateway Traefik Operations Policy](../policies/0013-traefik.md) (`POL-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: [Policy](../policies/0013-traefik.md) (`POL-0013`), [Runbook](../runbooks/0013-traefik.md) (`RUN-0013`)
+
+## Troubleshooting
+
+- `gateway-standard-chain` 이름 오타는 middleware resolve 실패로 이어진다.
+- dashboard middleware의 순서나 구분자(`,`) 오류를 확인한다.
+- 게이트웨이 소유가 아닌 라우터에까지 체인을 무분별하게 확장하지 않는다.
 
 ## Related Documents
 

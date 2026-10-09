@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
@@ -16,16 +16,13 @@ created: "2026-05-17"
 
 ## Overview
 
+이 런북은 OPTIONAL Open Notebook(`open_notebook`, `surrealdb`, profile `notebook`)의 장애 진단, 백업·격리 복원, 업그레이드 절차를 다룬다. 데이터베이스와 앱 데이터, 암호화 키가 하나의 복구 세트다.
+
 ## Trigger and Preconditions
 
-### Overview
+앱 또는 DB readiness 실패, 읽을 수 없는 provider key, 사라진 노트북 콘텐츠, API 노출 우려, 백업·복원, 승인된 업그레이드가 있을 때 사용한다.
 
-### Trigger and Preconditions
-
-### When to Use
-
-app/DB readiness failure, 읽을 수 없는 provider key, missing notebook content,
-API exposure concern, backup/restore, 또는 승인된 upgrade에 사용한다.
+## Procedure
 
 ### 작업 선택과 복구 전제
 
@@ -35,10 +32,6 @@ API exposure concern, backup/restore, 또는 승인된 upgrade에 사용한다.
 [공통 수명주기 정책](../policies/0006-infrastructure-optimization-governance.md)의
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
-
-## Procedure
-
-### Procedure
 
 1. 루트에서 validate하고 점검한다.
 
@@ -94,7 +87,7 @@ credential을 보호된 방식으로 보관한다. provider/network egress를 �
 
 ## Verification
 
-### Evidence
+`docker compose --profile notebook ps surrealdb open_notebook`로 두 서비스 상태를 확인한다. 노트북·소스·설정 개수, 합성 노트북 하나, 자격 증명 복호화 가능 여부(boolean)를 확인한다.
 
 종료 코드·source 커밋·export/app-data checksum·개수·인증/복호화 판정·API 경계와
 최종 상태를 기록한다. content나 secret 값은 절대 기록하지 않는다.
@@ -113,14 +106,14 @@ encryption key 손실은 database restore만으로는 복구되지 않는다.
 encryption key 누락·불일치, DB export 실패, 예기치 않은 API exposure, 민감한
 content 유출, migration error, 알 수 없는 provider 활동이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0073-open-notebook.md) (`GDE-0073`)
 - [Policy](../policies/0073-open-notebook.md) (`POL-0073`)
 - [Open Notebook Compose](../../../infra/08-ai/open-notebook/docker-compose.yml)
 - [SurrealDB Operations](../guides/0080-surrealdb.md) (`GDE-0080`)
-
-## Related Documents
 
 - [SurrealDB export](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/export)
 - [Open Notebook security](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)

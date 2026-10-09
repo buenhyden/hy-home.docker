@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -20,15 +20,13 @@ created: "2026-10-03"
 
 ## Overview
 
-### Overview
+공유 Storybook은 `projects/storybook/nextjs`의 UI story와 문서를 읽기 전용 정적 origin(`storybook`)과 문서 MCP(`storybook-mcp`)로 제공하는 선택형 `experience` 서비스다. HOME 기본 선택에는 포함되지 않는다.
 
 ## Audience and Goal
 
-### Audience and Goal
+공유 Storybook과 문서 MCP를 운영하거나 다른 워크스페이스에서 소비하는 운영자와 개발자를 위한 문서다. 빌드, 접근 경로, 소비 워크스페이스 설정과 점검 방법을 이해하는 것이 목표다.
 
 ## Usage
-
-### Usage
 
 `projects/storybook/nextjs`는 공유 UI 구성요소의 story와 문서를 소유한다.
 `storybook`은 그 빌드 결과를 읽기 전용으로 제공하는 선택형 정적 origin이다.
@@ -79,7 +77,7 @@ MCP는 별도 `storybook-mcp` 서비스이며 아래 절의 Keycloak bearer toke
 접근한다. 비인증 원격 공유나 브라우저 ForwardAuth cookie 재사용은 지원 계약이
 아니다.
 
-UI 패키지 0.2.0의 소비 절차와 호환되지 않는 변경은
+UI 패키지의 소비 절차와 호환되지 않는 변경은
 [UI 패키지 README](../../../projects/storybook/nextjs/packages/ui/README.md)가 소유한다.
 
 ### 다른 워크스페이스에서 쓰는 Storybook과 문서 MCP
@@ -316,7 +314,7 @@ OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청�
 ### Traceability
 
 - Artifact: `GDE-0101`; governing policy: `POL-0101`.
-- Historical source/static completion: `SPEC-0206`; architecture context: `AD-0031` remains draft and is not promoted by this guide.
+- 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태이며 이 가이드가 승격하지 않는다.
 - Runtime declaration: `infra/13-experience/storybook/docker-compose.yml`.
 
 ## Related Documents

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 정책은 scrape target registration, alerting rule management, TSDB
 persistence, lifecycle reload, secret file reference, protected access에
 대한 Prometheus control을 정의한다. 순서가 있는 recovery나 reload
@@ -25,31 +23,26 @@ procedure는 해당 runbook에 있다.
 
 ## Scope
 
-### Policy Scope
-
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
 
 - **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Runbook](../runbooks/0045-prometheus.md) (`RUN-0045`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
-    [Compose image declaration](../../../infra/06-observability/docker-compose.yml), tmpfs `/tmp`와 `/etc/prometheus:size=10M`,
-    read-only config/rules mount, persistent `prometheus-data` volume을
+    [Compose image declaration](../../../infra/06-observability/docker-compose.yml), tmpfs `/tmp`와 `/etc/prometheus:size=10M,uid=65534,gid=65534,mode=0755`,
+    read-only config/rules mount, DEV target을 렌더링하는 `start.sh` entrypoint, persistent `prometheus-data` volume을
     유지한다.
   - Runtime command는 `--config.file=/etc/prometheus/prometheus.yml`,
     `--storage.tsdb.path=/prometheus`, `--web.enable-lifecycle`,
     `--web.enable-remote-write-receiver`를 유지한다.
+  - `PROMETHEUS_DEV_DATA_EXPECTED`는 `on` 또는 `off`여야 한다. 다른 값이면
+    Prometheus가 시작하지 않으며, 이는 오타로 DEV 경보가 꺼지는 것을 막는
+    통제다(SPEC-0224). Datastore job은 `db_scope`, `db_engine`,
+    `expected_state` label을 유지한다.
   - Global cadence는 `scrape_interval: 30s`와 `evaluation_interval: 30s`를
     기준으로 한다. Prometheus의 `15s`, cAdvisor의 `1m`과 같은
     service-specific interval은 의도하고 검토한 값으로 유지해야 한다.
@@ -128,9 +121,25 @@ alert-rule surface에 적용된다.
 
 ### Host and GPU exporter boundary
 
-`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다.
 
-`PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
+- Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출한다. 읽기 전용 권한, timex 비활성화, 제한된 collector를 유지한다.
+- Host network namespace에서 실행하며 `obs_net` gateway 주소 `10.250.5.1:9100`에만 listen한다. Prometheus와 Alloy의 `extra_hosts`는 같은 주소를 `node-exporter` 이름에 연결하며, `obs_net` subnet을 바꾸면 세 곳을 함께 바꾼다.
+- Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비한다. HTTP probe와 Prometheus target은 따로 확인한다.
+- Prometheus는 SeaweedFS master·volume·filer 수집을 위해 전용 internal `seaweedfs_metrics_net`에만 추가로 연결한다.
+
+`dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric, scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 두 exporter 모두 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+
+보존 기간은 [GDE-0045](../guides/0045-prometheus.md#host-and-gpu-exporter-boundary)가 설명하는 기본값을 따르며 무기한 보존을 약속하지 않는다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
+
+## Exceptions
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
+- Scrape interval, retention, secret reference, route, rule-loading
+  예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
+  runbook을 통해 기록해야 한다.
 
 ### Verification
 
@@ -141,22 +150,16 @@ alert-rule surface에 적용된다.
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Review Cadence
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
   secret references, route, retention, mounted paths가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- Scrape interval, retention, secret reference, route, rule-loading
-  예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
-  runbook을 통해 기록해야 한다.
+- Declared parent: [Observability Architecture Description](../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../guides/0045-prometheus.md) (`GDE-0045`), [Runbook](../runbooks/0045-prometheus.md) (`RUN-0045`)
 
 ## Related Documents
 

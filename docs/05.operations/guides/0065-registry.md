@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -19,17 +19,18 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다.
+`registry` 또는 `tooling` profile에서 선택된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 이미지를 push·pull하고 저장소를 유지하는 운영자다. 목표는 현재 구현의 노출·인증 한계를
+이해하고, 일반 사용과 백업·업그레이드 경계를 확인하는 것이다. 실행 절차는
+[Registry Runbook](../runbooks/0065-registry.md)이 맡는다.
 
 ## Usage
 
-### Usage
-
-### 목적과 분류
+### 분류와 저장소 범위
 
 Registry는 `registry`(HOME)와 `tooling`이 선택하는 `HOME` OCI 이미지 저장소이다.
 push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. 로컬에서 빌드한

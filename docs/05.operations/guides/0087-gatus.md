@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -19,15 +19,13 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상은 observability와 availability probe를 운영하는 @buenhyden과 기여자다. Gatus의 구성, 인증 경계, 상태 저장 방식을 이해하고, 승인이 필요한 진단·재시작·복구는 Runbook으로 넘기는 것이 목표다.
 
 ## Usage
-
-### Usage
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability
 monitor이다. root Compose가 포함 여부를 관장하며,

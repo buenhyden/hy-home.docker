@@ -1,6 +1,6 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.5.3"
+version: "1.5.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -16,12 +16,8 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
-
 이 policy는 현재 source configuration을 data protection, security, resource,
 lifecycle, 독립적으로 검증 가능한 operator control에 묶는다.
-
-### Purpose
 
 이 policy는 보존되는 모든 HOME state owner에 recoverability method를 배정한다.
 Compose volume은 backup이 아니고, 단일 host 상의 replication은 host availability가
@@ -33,8 +29,6 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 
 ## Scope
 
-### Policy Scope
-
 이 policy는 현재 source-backed package와 그 보존 state에 적용된다.
 
 ### HOME state-owner matrix
@@ -42,7 +36,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | 소유자와 data 분류 | 현재 상태가 저장되는 곳 | 필수 backup 방식과 저장 대상 | 암호화와 보존 | 계획 목표 | rehearsal·복구 소유자 |
 | --- | --- | --- | --- | --- | --- |
 | Management PostgreSQL: `postgres`, `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`, `${SERVICE_POSTGRES_DB:-app_db}` | `mng-pg-data` → `${DEFAULT_MANAGEMENT_DIR}/pg`; role과 grant는 cluster-wide | server image 내 pgBackRest: 일요일 full backup, 매일 differential, 지속적인 WAL archive(`archive_timeout`)를 system SSD의 `${BACKUP_STATE_REPO_DIR}/pgbackrest`로(예산은 control 2); globals-only export와 pgBackRest repository 자체는 state Restic set에 들어가 R2로 간다(control 1); live `PGDATA` tree는 절대 복사하지 않는다 | BKP-001로 `aes-256-cbc` repository; full backup 두 개와 그 WAL 보존; Restic daily 30 / weekly 13 / monthly 12 | WAL archive 기준 RPO 5분, RTO 4시간은 planning target; 2026-09-25 격리 PITR에서 선택 시점과 약 8분 18초를 관측했으나 지속 보장은 미검증 | Synthetic full/diff/PITR rehearsal(2026-09-22)과 실제 HOME pgBackRest 저장소의 격리 PITR(2026-09-25) 통과. 후자는 선택 backup/WAL과 제한된 MLflow·dbt·heartbeat count만 검증했다([SPEC-0182-TSK-0003](../../03.specs/0182-home-residual-backlog/tasks/tsk-0003-recovery-and-auth-acceptance.md)); 현재 backup, 전체 앱, offsite, 실제 cutover 증거는 아니다. 절차: [RUN-0021](../runbooks/0021-backup-and-restore.md); service recovery: [RUN-0028](../runbooks/0028-management-database.md) |
-| Development PostgreSQL: `dev-pg` and approved external project databases | `dev-pg-data` → `${DEFAULT_DATA_DIR}/dev-pg`; management `app_db` is a legacy empty default and is not a development-project shared database | separate stanza `dev` in `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`: continuous WAL archive (`archive_mode=on`, `archive_timeout=300`, `archive-push-queue-max=2GiB`), the same nightly scheduler as management (Sunday full, other days differential after `check`), globals/schema export and Restic inclusion; live `PGDATA` tree is never copied | `dev_pgbackrest_cipher_pass` is a distinct secret reference; `repo1-retention-full=2`, `repo1-retention-diff=6` with their WAL; Restic retention as the state set | planning target only: WAL archive bounds the loss window to about 5 minutes while archiving succeeds; no RTO is measured | Synthetic offline recovery passed on 2026-10-04. HOME stanza, WAL activation, first full backup and isolated restore canary are recorded in [SPEC-0213-TSK-0002](../../03.specs/0213-dev-data-and-influx-retirement/tasks/tsk-0002-dev-backup-activation-and-monitoring.md); PITR and offsite (R2) restore stay unverified until that Task records them. |
+| Development PostgreSQL: `dev-pg`와 승인된 외부 프로젝트 database | `dev-pg-data` → `${DEFAULT_DATA_DIR}/dev-pg`; management `app_db`는 비어 있는 legacy 기본값이며 개발 프로젝트 공용 database가 아니다 | `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`의 별도 stanza `dev`: 연속 WAL archive(`archive_mode=on`, `archive_timeout=300`, `archive-push-queue-max=2GiB`), management와 같은 야간 scheduler(일요일 full, 그 외 `check` 후 differential), globals/schema export, Restic 포함; live `PGDATA` tree는 절대 복사하지 않는다 | `dev_pgbackrest_cipher_pass`는 별개의 secret reference; `repo1-retention-full=2`, `repo1-retention-diff=6`과 해당 WAL; Restic 보존은 state set과 동일 | 계획 목표일 뿐: archive가 성공하는 동안 WAL archive가 손실 구간을 약 5분으로 제한한다; RTO는 측정되지 않았다 | 합성 offline 복구는 2026-10-04 통과. HOME stanza, WAL 활성화, 첫 full backup, 격리 복원 canary는 [SPEC-0213-TSK-0002](../../03.specs/0213-dev-data-and-influx-retirement/tasks/tsk-0002-dev-backup-activation-and-monitoring.md)에 기록한다; PITR과 offsite(R2) 복구는 해당 Task가 기록하기 전까지 미검증이다. |
 | Management Valkey: OAuth2 Proxy session과 Airflow/n8n broker/cache | `mng-valkey-data` → `${DEFAULT_MANAGEMENT_DIR}/valkey`; AOF 활성화 | Point-in-time RDB stream(`valkey-cli --rdb -`)을 export staging으로, 이후 Restic snapshot; live AOF 디렉터리는 제외; queued work를 replay할지 discard할지 기록 | BKP-002로 Restic encryption; daily 30 / weekly 13 / monthly 12 | RPO 24시간, RTO 4시간; queued-job semantics는 incident 승인 필요 | Synthetic RDB export/reload rehearsal 2026-09-22; HOME-data restore 없음. Recovery: [RUN-0028](../runbooks/0028-management-database.md) |
 | OpenBao secrets와 Raft state | `openbao-data` → `${DEFAULT_SECURITY_DIR}/openbao/data` | 별도 offline custody로 authenticated Raft snapshot; seal/recovery material은 해당 security runbook을 따른다 | Barrier encryption은 encrypted backup custody를 대체하지 않는다; daily 30일, monthly 1년 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. OpenBao security operations가 recovery를 소유한다. `openbao-agent-data`와 `openbao-agent-out`은 생성된 secret material을 담으며 일반 archive 밖에 있다. |
 | OpenBao Agent 생성 auth/render state | `openbao-agent-data` → `${DEFAULT_SECURITY_DIR}/openbao/agent`; `openbao-agent-out` → `${DEFAULT_SECURITY_DIR}/openbao/out` | rendered secret output은 일반적으로 backup하지 않는다. agent를 재인증하고 restore된 OpenBao에서 다시 render해 recovery한다; non-secret template source는 별도로 보존한다 | Output은 secret을 담고 source-at-rest encryption은 미검증; 일반 retention 없음 | derived output에는 data RPO가 적용되지 않는다; recovery target 4시간, 미검증 | No rehearsal. Security operations가 재인증, template 검증, stale output의 안전한 폐기를 소유한다. |
@@ -62,25 +56,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Alertmanager silence/state | `alertmanager-data` → `${DEFAULT_OBSERVABILITY_DIR}/alertmanager` | Stopped 또는 application-consistent snapshot; tracked routing configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Alertmanager operations가 silence와 route validation을 소유한다. |
 | Alloy ingestion cursor/WAL | `alloy-data` → `${DEFAULT_OBSERVABILITY_DIR}/alloy` | 중복 또는 누락된 ingestion이 허용되지 않을 때 stopped snapshot; 그렇지 않으면 loss window를 기록하고 tracked config로부터 rebuild | source-at-rest encryption 미검증; 보존 시 encrypted destination 필수; 7일 | RPO 24시간, RTO 4시간; planning target, 미검증 | No rehearsal. Rebuild는 telemetry gap을 수용할 때만 허용된다. |
 
-### Traceability
-
-- Artifact: `POL-0021`; parent: `AD-0004`.
-- Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
-
-### Official references
-
-- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
-- [SQLite Online Backup API](https://sqlite.org/backup.html) and [backup-copy hazards](https://sqlite.org/howtocorrupt.html)
-- [Valkey persistence](https://valkey.io/topics/persistence/)
-- [Qdrant snapshots](https://qdrant.tech/documentation/concepts/snapshots/)
-- [Grafana backup guidance](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/)
-- [OpenBao Raft operator commands](https://openbao.org/docs/commands/operator/raft/)
-- [pgBackRest user guide](https://pgbackrest.org/user-guide.html) and [command reference](https://pgbackrest.org/command.html)
-- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)
-
 ## Rules
-
-### Controls
 
 전체 export·백업·검증 성공이 유효 복구 세트의 필수 조건이다. 현재 `restic_ok`는 Restic backup/check만 gate하므로 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패에도 partial snapshot/copy가 생길 수 있다. 종료1·성공 timestamp 부재를 실패로 유지하고 snapshot 존재로 승격하지 않는다. 자동 skip 강화는 별도 구현 사항이다. `archive_timeout`의 5분은 segment 전환 설정이며 성공 archive RPO 보장이 아니다.
 
@@ -135,6 +111,14 @@ stanza가 먼저 만들어진 뒤에만 켭니다. stanza가 없거나 `archive_
 공백입니다. 보존 정책 축소, offsite 쓰기, 실제 cutover restore는 별도 구체적
 승인 대상입니다.
 
+### Retired state
+
+보존되던 MinIO data와 보존되던 Vault tree
+(`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`)는 SPEC-0182 W5에 따라
+2026-09-25에 폐기되었고 이로써 SPEC-0180 S07 rollback path가 종료되었다.
+Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
+snapshot은 위의 Restic retention에 따라 age out된다.
+
 ### Restore acceptance
 
 Rehearsal은 isolated target, 호환되는 engine version, disposable credential을
@@ -147,6 +131,12 @@ Rehearsal은 isolated target, 호환되는 engine version, disposable credential
 
 적용 identity: `restic`, `restic-offsite`, `backup-sqlite-export`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
+## Exceptions
+
+HOME state owner; rebuildable exception은 기록된 source evidence가 필요하다.
+Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
+또는 same-host availability 주장을 승인하지 않는다.
+
 ### Verification
 
 root configuration과 scoped static policy check를 검증한 다음, promotion
@@ -158,19 +148,10 @@ restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한�
 profile, image, volume, credential, consumer, retention, 또는 upstream
 lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한다.
 
-보존되던 MinIO data와 보존되던 Vault tree
-(`${DEFAULT_MOUNT_VOLUME_PATH}/security/vault`)는 SPEC-0182 W5에 따라
-2026-09-25에 폐기되었고 이로써 SPEC-0180 S07 rollback path가 종료되었다.
-Restic은 더 이상 `security/vault`를 포함하지 않는다; 이를 담은 기존
-snapshot은 위의 Restic retention에 따라 age out된다.
+### Traceability
 
-## Exceptions
-
-### Exceptions
-
-HOME state owner; rebuildable exception은 기록된 source evidence가 필요하다.
-Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
-또는 same-host availability 주장을 승인하지 않는다.
+- Artifact: `POL-0021`; parent: `AD-0004`.
+- Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
 
 ## Related Documents
 
@@ -179,3 +160,11 @@ Exception은 runtime mutation, plaintext secret, active storage의 raw 복사,
 - [Data Architecture](../../02.architecture/descriptions/0004-data-architecture.md)
 - [Data hardening policy](0030-data-optimization-hardening.md)
 - [Storage exhaustion runbook](../runbooks/0035-storage-exhaustion.md)
+- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
+- [SQLite Online Backup API](https://sqlite.org/backup.html) and [backup-copy hazards](https://sqlite.org/howtocorrupt.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Qdrant snapshots](https://qdrant.tech/documentation/concepts/snapshots/)
+- [Grafana backup guidance](https://grafana.com/docs/grafana/latest/administration/back-up-grafana/)
+- [OpenBao Raft operator commands](https://openbao.org/docs/commands/operator/raft/)
+- [pgBackRest user guide](https://pgbackrest.org/user-guide.html) and [command reference](https://pgbackrest.org/command.html)
+- [Restic repository preparation](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html) and [snapshot removal](https://restic.readthedocs.io/en/stable/060_forget.html)

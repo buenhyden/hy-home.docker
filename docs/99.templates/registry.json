@@ -1076,6 +1076,8 @@
         "Troubleshooting",
         "Runbook Handoff"
       ],
+      "ordered_sections": true,
+      "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1131,6 +1133,8 @@
       "optional_sections": [
         "Definitions"
       ],
+      "ordered_sections": true,
+      "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1194,6 +1198,8 @@
         "Automation Handoff",
         "Verification Record"
       ],
+      "ordered_sections": true,
+      "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
       "traceability": {
         "allowed_parent_profiles": [
@@ -4856,8 +4862,8 @@
     "spec": {
       "prefix": "SPEC-",
       "width": 4,
-      "high_water": 226,
-      "next_number": 227,
+      "high_water": 227,
+      "next_number": 228,
       "child_spaces": {}
     },
     "operations-subject": {

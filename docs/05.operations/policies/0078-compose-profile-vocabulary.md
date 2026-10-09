@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.13.1"
+version: "1.13.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -14,31 +14,16 @@ created: "2026-09-04"
 
 ## Overview
 
-### Overview
-
 추적된 Compose profile의 이름·분류·목적을 소유한다. `include`는 파일을 병합하고
 profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 보안 격리를 제공하지
 않는다. 서비스 수는 구현에서 계산하며 본문에 고정하지 않는다.
 
 ## Scope
 
-### Policy Scope
-
 - **Systems**: 정상 root가 include하는 `infra/**/{compose,docker-compose}*.{yml,yaml}`와 독립 `labs/*.yml` entrypoint.
 - **Environments**: HOME, DEV, OPTIONAL, LAB 및 명시적 migration/maintenance 작업. LAB은 root의 profile 선택 대상이 아니다.
 
-### Traceability
-
-- [Workspace catalog](../README.md)
-- [Independent LAB entrypoints](../../../labs/postgresql-ha.md)
-- [Convergence specification](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
-- [Runtime version projection](../../../infra/tech-stack.versions.json)
-- [Original enablement decision](../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
-- [Sibling resolution](../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
-
-## Rules
-
-### Definitions
+## Definitions
 
 각 이름은 정확히 한 행, 한 category와 비어 있지 않은 purpose를 가진다.
 `baseline`은 공통 출발점, `domain`은 기능 영역, `capability`는 선택 기능,
@@ -123,7 +108,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
 | `workflow-n8n` | capability | n8n 자동화와 worker·task runner | `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` | No | normal service startup | current |
 
-### Controls
+## Rules
 
 `Default? = No`는 직접 service target, CLI profile, `COMPOSE_PROFILES` 활성화가
 없는 기동에서는 자동 선택되지 않는다는 뜻이다. 직접 지정한 service는 profile을
@@ -258,6 +243,13 @@ exporter는 퇴역했다(SPEC-0215).
 이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
 source·문서·secret을 함께 제거한다.
 
+## Exceptions
+
+정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
+노드는 물리
+고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
+않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
+
 ### Verification
 
 ```bash
@@ -289,14 +281,14 @@ category와 필수 dependency 폐포를 검사한다.
 - **Cadence**: profile 또는 서비스 선언을 변경할 때.
 - **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
-노드는 물리
-고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
-않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
+- [Workspace catalog](../README.md)
+- [Independent LAB entrypoints](../../../labs/postgresql-ha.md)
+- [Convergence specification](../../98.archive/completed/03.specs/0180-home-dev-convergence/spec.md)
+- [Runtime version projection](../../../infra/tech-stack.versions.json)
+- [Original enablement decision](../../98.archive/completed/03.specs/0156-compose-enablement-model-convergence/spec.md)
+- [Sibling resolution](../../98.archive/completed/03.specs/0171-compose-sibling-pair-resolution/spec.md)
 
 ## Related Documents
 
