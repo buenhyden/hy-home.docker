@@ -192,7 +192,7 @@ sections; and the Evidence rows below carry the SHAs the HOME steps ran from.
 | Alloy on HOME | 3 | W4 | Name resolution; Pyroscope `service_name` list | `b2745167d` (rebased `789fbd525`) | PASS | W4 HOME Rollout | accepted |
 | Changed gate | 4 | W5 | `run-ci-gate.py --profile changed --local-only`, base `acc191655` | `ad33a5b9f` | PASS | Review and Completion | accepted |
 | Staged style check | 4 | W5 | `run-ci-precommit.sh --mode local-staged` over `acc191655..HEAD`; the first run asked for `ruff format` on two tests, applied in `75f66c8f9` | `75f66c8f9` | PASS | Review and Completion | accepted |
-| OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
+| OpenBao retention on HOME | 3 | W4 | Owner restart and unseal; seal status, running config, Prometheus series | `f75275651` | PASS | Review and Completion | accepted |
 | Remote candidate | 4 | W5 | `candidate-quality` run 37945693271, base `acc191655` | `e26c7d439` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
@@ -210,7 +210,11 @@ the hardening baseline: `check-all-hardening.sh` still required OpenBao's
 that baseline. The check now requires 24 h; `check-all-hardening.sh` passes
 locally (rc 0). Run 37945693271 passed on head `e26c7d439` against base
 `acc191655`, and PR #401 merged as `c3ce31973` (recorded with SPEC-0228).
-Complete except OpenBao's restart, which needs the owner's manual unseal.
+On 2026-10-10 the owner restarted and unsealed OpenBao (recreated 08:34 KST).
+It is unsealed and healthy, its running config holds
+`prometheus_retention_time` 24h, and Prometheus scrapes 621 series including
+the usage gauges that were sparse before (`vault_secret_kv_count`,
+`vault_identity_entity_count`, `vault_core_mount_table_num_entries`). Complete.
 
 ## Related Documents
 
