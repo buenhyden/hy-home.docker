@@ -95,6 +95,17 @@ unchanged copy, and failing on a copy without the bootstrap clause and with
 the retired bullet appended. The repository contract reports
 `failures=0`.
 
+### W5 Validation
+
+In a throwaway worktree with the branch staged on `5710435ef`, the changed gate
+ran the new preflight (`candidate preflight: base=5710435ef...`) and passed on
+`21d8b12a2`. The staged style check then failed once on `ruff format` for
+`scripts/lib/hooks/tool_payload.py`; `179923743` formats it, and the gate and
+the staged style check were rerun on the final head because a staged pass is
+not reused after files change. The independent review found six issues, all
+resolved on re-review, and the further approval text recorded as R12 to R15.
+`candidate-quality` and the merge are recorded in the pull request.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -109,6 +120,7 @@ the retired bullet appended. The repository contract reports
 | Review fixes | 2, 3 | W2 | Preflight pinned to `refs/remotes/origin/main`; argument refusal tested with a base; hosted plan from the same change; 49 tests | `b5aa8571b` | PASS | W2 Local Candidate Parity | accepted |
 | Remaining approval text | 4 | W1 | Contract check; renderer `--check` `drift=0` | `de2db1d72` | PASS | W1 row R12 | accepted |
 | Release and operational wording | 4 | W1 | Contract check | `684e1f01f` | PASS | W1 row R13 | accepted |
+| Local validation | 5 | W5 | Changed gate with preflight; staged style check; independent review and re-review | final branch head | PASS | W5 Validation | accepted |
 
 ## Review and Completion
 
