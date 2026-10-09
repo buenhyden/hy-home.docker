@@ -17,6 +17,7 @@ import ipaddress
 import socket
 import struct
 import sys
+import time
 from collections.abc import Awaitable, Callable
 
 PORTS = frozenset({80, 443})
@@ -26,6 +27,9 @@ DOCKER_DNS = ("127.0.0.11", 53)
 MAX_HEAD = 64 * 1024
 IDLE_SECONDS = 120
 MAX_CONNECTIONS = 128
+MAX_DNS_INFLIGHT = 64
+MAX_BODY = 1024 * 1024
+CONNECTION_SECONDS = 900
 AAAA = 28
 
 Resolver = Callable[[str, int], Awaitable[list[str]]]
@@ -100,7 +104,9 @@ class Proxy:
             return
         async with self.slots:
             try:
-                await self._serve(reader, writer)
+                await asyncio.wait_for(
+                    self._serve(reader, writer), timeout=CONNECTION_SECONDS
+                )
             except Refused as exc:
                 log("refused", exc)
                 await self._reply(writer, b"403 Forbidden")
@@ -130,30 +136,52 @@ class Proxy:
             up_reader, up_writer = await self.dial(ip, port)
             log("allowed", f"CONNECT {host} {ip}:{port}")
             writer.write(b"HTTP/1.1 200 Connection established\r\n\r\n")
-        else:
-            if not target.startswith("http://"):
-                raise Refused("scheme")
-            authority, _, path = target[len("http://") :].partition("/")
-            host, port = split_authority(authority, 80)
-            ip = await pin(host, port, self.resolve)
-            headers = [
-                header
-                for header in rest.split("\r\n")
-                if header
-                and not header.lower().startswith(
-                    ("proxy-", "connection:", "keep-alive:")
-                )
-            ]
-            if not any(header.lower().startswith("host:") for header in headers):
-                headers.append(f"Host: {authority}")
-            up_reader, up_writer = await self.dial(ip, port)
-            log("allowed", f"{method} {host} {ip}:{port}")
-            # One request per connection, so a reused client connection cannot
-            # carry an unchecked second request.
-            request = f"{method} /{path} {version}\r\n"
-            request += "".join(f"{header}\r\n" for header in headers)
-            up_writer.write((request + "Connection: close\r\n\r\n").encode("latin-1"))
-        await asyncio.gather(_pump(reader, up_writer), _pump(up_reader, writer))
+            try:
+                await relay(reader, writer, up_reader, up_writer)
+            finally:
+                up_writer.close()
+            return
+        if not target.startswith("http://"):
+            raise Refused("scheme")
+        authority, _, path = target[len("http://") :].partition("/")
+        host, port = split_authority(authority, 80)
+        ip = await pin(host, port, self.resolve)
+        headers = [
+            header
+            for header in rest.split("\r\n")
+            if header
+            and not header.lower().startswith(("proxy-", "connection:", "keep-alive:"))
+        ]
+        lowered = [header.lower() for header in headers]
+        if any(header.startswith("transfer-encoding:") for header in lowered):
+            raise ValueError("chunked request bodies are not relayed")
+        lengths = [
+            h.split(":", 1)[1].strip()
+            for h in lowered
+            if h.startswith("content-length:")
+        ]
+        if len(lengths) > 1 or (lengths and not lengths[0].isdigit()):
+            raise ValueError("content length")
+        length = int(lengths[0]) if lengths else 0
+        if length > MAX_BODY:
+            raise ValueError("body too large")
+        if not any(header.startswith("host:") for header in lowered):
+            headers.append(f"Host: {authority}")
+        body = await asyncio.wait_for(reader.readexactly(length), timeout=IDLE_SECONDS)
+        up_reader, up_writer = await self.dial(ip, port)
+        log("allowed", f"{method} {host} {ip}:{port}")
+        # Exactly one request per connection: only its declared body goes
+        # upstream, and nothing the client sends afterwards does.
+        request = f"{method} /{path} {version}\r\n"
+        request += "".join(f"{header}\r\n" for header in headers)
+        up_writer.write(
+            (request + "Connection: close\r\n\r\n").encode("latin-1") + body
+        )
+        try:
+            await up_writer.drain()
+            await copy(up_reader, writer, Activity())
+        finally:
+            up_writer.close()
 
     @staticmethod
     async def _reply(writer, status: bytes):
@@ -167,15 +195,43 @@ class Proxy:
             pass
 
 
-async def _pump(reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+class Activity:
+    """The last time either direction moved a byte; one idle timer for both."""
+
+    def __init__(self):
+        self.last = time.monotonic()
+
+    def idle(self) -> bool:
+        return time.monotonic() - self.last >= IDLE_SECONDS
+
+
+async def copy(reader, writer, activity: Activity) -> None:
+    """Copy until EOF or shared idleness, then half-close the writer."""
     try:
-        while chunk := await asyncio.wait_for(reader.read(65536), timeout=IDLE_SECONDS):
+        while True:
+            try:
+                chunk = await asyncio.wait_for(reader.read(65536), timeout=IDLE_SECONDS)
+            except TimeoutError:
+                if activity.idle():
+                    return
+                continue
+            if not chunk:
+                break
+            activity.last = time.monotonic()
             writer.write(chunk)
             await writer.drain()
-    except (TimeoutError, OSError):
+        if writer.can_write_eof():
+            writer.write_eof()
+    except OSError:
         pass
-    finally:
-        writer.close()
+
+
+async def relay(client_reader, client_writer, up_reader, up_writer) -> None:
+    activity = Activity()
+    await asyncio.gather(
+        copy(client_reader, up_writer, activity),
+        copy(up_reader, client_writer, activity),
+    )
 
 
 def question_end(query: bytes) -> int | None:
@@ -201,6 +257,7 @@ def empty_answer(query: bytes, end: int) -> bytes:
 class DnsRelay(asyncio.DatagramProtocol):
     def __init__(self, upstream=DOCKER_DNS):
         self.upstream = upstream
+        self.inflight = 0
 
     def connection_made(self, transport):
         self.transport = transport
@@ -212,20 +269,28 @@ class DnsRelay(asyncio.DatagramProtocol):
         if struct.unpack_from("!H", data, end - 4)[0] == AAAA:
             self.transport.sendto(empty_answer(data, end), addr)
             return
+        if self.inflight >= MAX_DNS_INFLIGHT:
+            return  # dropped; the resolver retries
+        self.inflight += 1
         asyncio.get_running_loop().create_task(self._forward(data, addr))
 
     async def _forward(self, data, addr):
         loop = asyncio.get_running_loop()
-        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as upstream:
-            upstream.setblocking(False)
-            try:
-                await loop.sock_sendto(upstream, data, self.upstream)
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as upstream:
+                upstream.setblocking(False)
+                # Connected: only the resolver's replies are accepted.
+                upstream.connect(self.upstream)
+                await loop.sock_sendall(upstream, data)
                 reply = await asyncio.wait_for(
                     loop.sock_recv(upstream, 4096), timeout=3
                 )
-            except (TimeoutError, OSError):
-                return
-        self.transport.sendto(reply, addr)
+            if reply[:2] == data[:2]:
+                self.transport.sendto(reply, addr)
+        except (TimeoutError, OSError):
+            pass
+        finally:
+            self.inflight -= 1
 
 
 def log(decision: str, detail: object) -> None:
@@ -233,17 +298,18 @@ def log(decision: str, detail: object) -> None:
     print(f"egress {decision} {detail}", file=sys.stdout, flush=True)
 
 
-async def main() -> None:
+async def main(bind: str) -> None:
     loop = asyncio.get_running_loop()
     # ponytail: UDP only; a truncated answer that needs TCP fails closed.
-    await loop.create_datagram_endpoint(DnsRelay, local_addr=("0.0.0.0", DNS_PORT))
+    await loop.create_datagram_endpoint(DnsRelay, local_addr=(bind, DNS_PORT))
     server = await asyncio.start_server(
-        Proxy().handle, "0.0.0.0", PROXY_PORT, limit=MAX_HEAD
+        Proxy().handle, bind, PROXY_PORT, limit=MAX_HEAD
     )
-    log("listening", f"proxy :{PROXY_PORT} dns :{DNS_PORT}/udp")
+    log("listening", f"proxy {bind}:{PROXY_PORT} dns {bind}:{DNS_PORT}/udp")
     async with server:
         await server.serve_forever()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    # The address on the crawler's network, so the outbound bridge gets no listener.
+    asyncio.run(main(sys.argv[1]))

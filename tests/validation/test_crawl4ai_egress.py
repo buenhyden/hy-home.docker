@@ -183,6 +183,65 @@ class ProxyTests(unittest.TestCase):
         self.assertEqual(["allowed.test"], self.resolved)
         self.assertEqual([("93.184.216.34", 443)], self.dialed)
 
+    def test_only_the_declared_body_goes_upstream(self):
+        _, received = asyncio.run(
+            self._exchange(
+                b"POST http://allowed.test/form HTTP/1.1\r\nHost: allowed.test\r\n"
+                b"Content-Length: 4\r\n\r\nbody"
+                b"GET http://evil.test/ HTTP/1.1\r\nHost: evil.test\r\n\r\n",
+                origin_reply=b"HTTP/1.1 200 OK\r\nContent-Length: 0\r\n\r\n",
+            )
+        )
+        self.assertTrue(received.endswith(b"\r\n\r\nbody"), received)
+        self.assertNotIn(b"evil.test", received)
+
+    def test_chunked_and_ambiguous_bodies_are_refused(self):
+        for headers in (
+            b"Transfer-Encoding: chunked\r\n",
+            b"Content-Length: 4\r\nContent-Length: 5\r\n",
+            b"Content-Length: -1\r\n",
+        ):
+            with self.subTest(headers):
+                self.dialed.clear()
+                reply, _ = asyncio.run(
+                    self._exchange(
+                        b"POST http://allowed.test/ HTTP/1.1\r\n" + headers + b"\r\n"
+                    )
+                )
+                self.assertTrue(reply.startswith(b"HTTP/1.1 400"), reply)
+                self.assertEqual([], self.dialed)
+
+    def test_a_half_closed_tunnel_still_gets_its_response(self):
+        async def run():
+            async def origin(reader, writer):
+                await reader.read()  # until the client's half-close arrives
+                writer.write(b"pong")
+                await writer.drain()
+                writer.close()
+
+            origin_server = await asyncio.start_server(origin, "127.0.0.1", 0)
+            port = origin_server.sockets[0].getsockname()[1]
+
+            async def dial(ip, _port):
+                return await asyncio.open_connection("127.0.0.1", port)
+
+            proxy = gateway.Proxy(resolve=self._resolve, dial=dial)
+            server = await asyncio.start_server(proxy.handle, "127.0.0.1", 0)
+            reader, writer = await asyncio.open_connection(
+                "127.0.0.1", server.sockets[0].getsockname()[1]
+            )
+            writer.write(b"CONNECT allowed.test:443 HTTP/1.1\r\n\r\n")
+            await reader.readuntil(b"\r\n\r\n")
+            writer.write(b"ping")
+            writer.write_eof()
+            reply = await asyncio.wait_for(reader.read(), 5)
+            writer.close()
+            server.close()
+            origin_server.close()
+            return reply
+
+        self.assertEqual(b"pong", asyncio.run(run()))
+
 
 class DnsRelayTests(unittest.TestCase):
     def test_aaaa_gets_an_empty_answer(self):
@@ -236,6 +295,38 @@ class DnsRelayTests(unittest.TestCase):
         self.assertEqual(0, struct.unpack_from("!H", replies[0], 6)[0])
         self.assertTrue(replies[1].endswith(b"upstream-reply"))
 
+    def test_a_reply_with_another_query_id_is_dropped(self):
+        async def run():
+            loop = asyncio.get_running_loop()
+
+            class Liar(asyncio.DatagramProtocol):
+                def connection_made(self, transport):
+                    self.transport = transport
+
+                def datagram_received(self, data, addr):
+                    self.transport.sendto(b"\xff\xff" + data[2:], addr)
+
+            up, _ = await loop.create_datagram_endpoint(
+                Liar, local_addr=("127.0.0.1", 0)
+            )
+            relay, _ = await loop.create_datagram_endpoint(
+                lambda: gateway.DnsRelay(up.get_extra_info("sockname")),
+                local_addr=("127.0.0.1", 0),
+            )
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as client:
+                client.setblocking(False)
+                await loop.sock_sendto(
+                    client,
+                    dns_query("example.com", 1),
+                    relay.get_extra_info("sockname"),
+                )
+                with self.assertRaises(TimeoutError):
+                    await asyncio.wait_for(loop.sock_recv(client, 4096), 1)
+            up.close()
+            relay.close()
+
+        asyncio.run(run())
+
 
 class ComposeContractTests(unittest.TestCase):
     def setUp(self):
@@ -267,6 +358,13 @@ class ComposeContractTests(unittest.TestCase):
         self.assertEqual(["crawl4ai"], egress["profiles"])
         self.assertEqual("template-infra-readonly-low", egress["extends"]["service"])
         self.assertEqual("65534:65534", egress["user"])
+        self.assertRegex(
+            egress["image"], r"^python:3\.13\.15-alpine@sha256:[0-9a-f]{64}$"
+        )
+        # Listens on the crawler's network only, never the outbound bridge.
+        self.assertEqual(
+            ["python", "/app/egress_gateway.py", EGRESS_IP], egress["command"]
+        )
         self.assertEqual(
             ["./egress_gateway.py:/app/egress_gateway.py:ro"], egress["volumes"]
         )
@@ -288,10 +386,6 @@ class ComposeContractTests(unittest.TestCase):
         self.assertEqual(["crawl4ai-egress"], outside)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 IMAGE = "unclecode/crawl4ai@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b"
 PYTHON = "python:3.13.15-alpine"
 PUBLIC_IP = "11.200.0.10"  # globally routable form, on an internal network only
@@ -304,6 +398,7 @@ PAGES = {
     "/redirect-meta": (302, {"Location": "http://169.254.169.254/latest/meta-data/"}, b""),
     "/loopback.html": (200, {}, b"<html><head><meta http-equiv='refresh' "
                        b"content='0;url=http://127.0.0.1:11235/health'></head><body>start</body></html>"),
+    "/consumer-img.html": (200, {}, b"<html><body>c<img src='http://consumer.fixture/pixel.png'></body></html>"),
     "/robots.txt": (200, {}, b"User-agent: *\nAllow: /\n"),
     "/secret": (200, {}, b"lan-secret"),
     "/pixel.png": (200, {}, b"lan-pixel"),
@@ -348,6 +443,8 @@ cases = {
     "redirect-lan": crawl("http://public.fixture/redirect-lan"),
     "redirect-meta": crawl("http://public.fixture/redirect-meta"),
     "loopback-refresh": crawl("http://public.fixture/loopback.html"),
+    "consumer": crawl("http://consumer.fixture/secret"),
+    "consumer-img": crawl("http://public.fixture/consumer-img.html"),
     "caller-proxy": crawl("http://public.fixture/ok.html", browser_config={
         "type": "BrowserConfig", "params": {"proxy_config": {"server": "http://lan.fixture:80"}}}),
     "extra-args": crawl("http://public.fixture/ok.html", browser_config={
@@ -380,10 +477,11 @@ print(json.dumps({
 """
 
 
-def docker(*args: str, check: bool = True) -> str:
+def docker(*args: str, check: bool = True, env: dict | None = None) -> str:
     result = subprocess.run(
-        ["docker", *args], capture_output=True, text=True, timeout=300, check=False
-    )
+        ["docker", *args], capture_output=True, text=True, timeout=300, check=False,
+        env={**os.environ, **env} if env else None,
+    )  # fmt: skip
     if check and result.returncode != 0:
         raise AssertionError(f"docker {args[0]} failed: {result.stderr.strip()[:300]}")
     return result.stdout
@@ -419,23 +517,25 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
             for name, network, ip in (
                 ("public", "world", PUBLIC_IP),
                 ("lan", "lan", "10.250.202.10"),
+                ("consumer", "api", None),  # a consumer beside the crawler
             ):
+                cls.names.append(f"{run}-{name}")
                 docker("run", "-d", "--name", f"{run}-{name}", *hardened, "--network", f"{run}-{network}",
-                       "--ip", ip, "--network-alias", f"{name}.fixture",
+                       *(["--ip", ip] if ip else []), "--network-alias", f"{name}.fixture",
                        "--sysctl", "net.ipv4.ip_unprivileged_port_start=80",
                        PYTHON, "python", "-c", FIXTURE)  # fmt: skip
-                cls.names.append(f"{run}-{name}")
             gateway_source = ROOT / "infra/08-ai/crawl4ai/egress_gateway.py"
+            cls.names.append(f"{run}-egress")
             docker("create", "--name", f"{run}-egress", *hardened, "--network", f"{run}-egress",
                    "--ip", "10.250.201.2", "--sysctl", "net.ipv4.ip_unprivileged_port_start=53",
                    "-v", f"{gateway_source}:/app/egress_gateway.py:ro",
-                   PYTHON, "python", "/app/egress_gateway.py")  # fmt: skip
-            cls.names.append(f"{run}-egress")
+                   PYTHON, "python", "/app/egress_gateway.py", "10.250.201.2")  # fmt: skip
             for network in ("world", "lan"):
                 docker("network", "connect", f"{run}-{network}", f"{run}-egress")
             docker("start", f"{run}-egress")
             crawler = COMPOSE_SERVICES()["crawl4ai"]
             tmpfs = [arg for mount in crawler["tmpfs"] for arg in ("--tmpfs", mount)]
+            cls.names.append(f"{run}-crawl4ai")
             docker("create", "--name", f"{run}-crawl4ai", "--network", f"{run}-api",
                    "--network-alias", "crawl4ai", "--user", crawler["user"], "--read-only", *tmpfs,
                    "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
@@ -443,7 +543,6 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
                    "--dns", "10.250.201.2", "-e", "CRAWL4AI_UPSTREAM_PROXY=http://10.250.201.2:3128",
                    "-v", f"{secret}:/run/secrets/crawl4ai_api_token:ro",
                    IMAGE, *(part.replace("$$", "$") for part in crawler["command"]))  # fmt: skip
-            cls.names.append(f"{run}-crawl4ai")
             docker(
                 "network",
                 "connect",
@@ -465,13 +564,14 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
                     ).stderr
                     raise AssertionError(f"crawl4ai did not become healthy:\n{tail}")
                 time.sleep(3)
-            probe = docker("run", "--rm", "--network", f"{run}-api", "-e", f"TOKEN={token}",
-                           *hardened, PYTHON, "python", "-c", PROBE)  # fmt: skip
+            probe = docker("run", "--rm", "--network", f"{run}-api", "-e", "TOKEN",
+                           *hardened, PYTHON, "python", "-c", PROBE, env={"TOKEN": token})  # fmt: skip
             cls.cases = json.loads(probe)
             cls.direct = json.loads(
                 docker("exec", f"{run}-crawl4ai", "python3", "-c", DIRECT)
             )
             cls.lan_hits = docker("logs", f"{run}-lan")
+            cls.consumer_hits = docker("logs", f"{run}-consumer")
             cls.gateway_log = docker("logs", f"{run}-egress")
             cls.inspect = json.loads(docker("inspect", f"{run}-crawl4ai"))[0]
             # A safe summary for the Task: statuses and whether a marker leaked.
@@ -522,6 +622,8 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
             "redirect-lan",
             "redirect-meta",
             "loopback-refresh",
+            "consumer",
+            "consumer-img",
         ):
             with self.subTest(name):
                 _, body = self.result(name)
@@ -529,6 +631,9 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
                 self.assertNotIn('"status":"ok"', body.replace(" ", ""))
         self.assertNotIn("hit /secret", self.lan_hits)
         self.assertNotIn("hit /pixel.png", self.lan_hits)  # the private subresource
+        # A consumer on crawl4ai_net is reachable at the network layer; only
+        # the in-image broker refuses it, directly or as a subresource.
+        self.assertEqual("", self.consumer_hits.strip())
 
     def test_caller_proxy_and_browser_arguments_are_refused(self):
         for name in ("caller-proxy", "extra-args"):
@@ -558,3 +663,7 @@ class Crawl4AIEgressRehearsalTests(unittest.TestCase):
 
 def COMPOSE_SERVICES():
     return yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))["services"]
+
+
+if __name__ == "__main__":
+    unittest.main()

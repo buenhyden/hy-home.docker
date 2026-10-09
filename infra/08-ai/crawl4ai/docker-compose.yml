@@ -90,18 +90,19 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: python:3.13.15-alpine
+    image: python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f
     container_name: crawl4ai-egress
     hostname: crawl4ai-egress
     user: '65534:65534'
-    command: ['python', '/app/egress_gateway.py']
+    # Listens only on the crawler's network, not on crawl4ai_outbound_net.
+    command: ['python', '/app/egress_gateway.py', '10.250.200.2']
     volumes:
       - ./egress_gateway.py:/app/egress_gateway.py:ro
     sysctls:
       # DNS on :53 without a capability.
       net.ipv4.ip_unprivileged_port_start: 53
     healthcheck:
-      test: ['CMD', 'python', '-c', 'import socket; socket.create_connection(("127.0.0.1", 3128), 2).close()']
+      test: ['CMD', 'python', '-c', 'import socket; socket.create_connection(("10.250.200.2", 3128), 2).close()']
       interval: 30s
       timeout: 5s
       retries: 3
