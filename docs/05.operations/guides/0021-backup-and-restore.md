@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -48,7 +48,7 @@ HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackR
 
 - `BACKUP_STATE_REPO_DIR` (system SSD): 관리 pgBackRest repository `pgbackrest/`, 개발 repository `dev-pgbackrest/`,
   data-disk state용 Restic repository `restic/`, export staging `staging/`.
-  `BACKUP_STATE_MAX_GIB`(5)는 pgBackRest/export 후, Restic 전 검사 기준이다. quota나 실행 중 크기 제한이 아니며 이후 Restic 쓰기로 초과할 수 있다.
+  `BACKUP_STATE_MAX_GIB`(8)는 pgBackRest/export 후, Restic 전 검사 기준이다. quota나 실행 중 크기 제한이 아니며 이후 Restic 쓰기로 초과할 수 있다.
 - `BACKUP_HOST_REPO_DIR` (data disk): SSD에 있는 `secrets/`와 `.env`용 Restic
   repository `restic/`.
 

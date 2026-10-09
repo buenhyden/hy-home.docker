@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.11"
+version: "1.4.12"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -125,7 +125,7 @@ Expected: exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, `restic
 check` "no errors were found", 빈 `staging/`. exit 75는 다른 run이 lock을
 쥐고 있다는 뜻이고, exit 64는 디렉터리 누락, 20 GiB 미만의 여유 공간, 또는
 repository가 source와 같은 filesystem 위에 있거나 그 내부에 있다는 뜻이다.
-"over the 5 GiB budget; Restic backup skipped"를 로그에 남기는 run은 exit 1로
+"over the 8 GiB budget; Restic backup skipped"를 로그에 남기는 run은 exit 1로
 끝난다. 이때 pgBackRest는 완료되고 Restic은 건드리지 않는다. 기록된 크기를 검토하고
 승인된 `forget-prune`(step 7) 또는 더 큰 budget을 요청한다. unit은 4시간 후
 정지하는데 그래도 staging은 비워진다. 실행 중인 Restic 프로세스가 없을 때
@@ -216,7 +216,7 @@ Clone은 `--network none`, host port 없음, 원본 PGDATA와 분리된 scratch�
 
 Restic의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된 include만 추출한다. state export는 `/src/state/exports`, host repository의 `.env`·secret은 `/src/host` 아래다. hash·mode·UID와 원래 application recovery point를 확인하고 검토된 파일만 별도 승인으로 복사한다. scratch도 secret artifact이며0600 파일과 제한된 디렉터리 권한을 유지한다.
 
-SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. [RUN-0024](0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
+SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. `loki-bucket`·`tempo-bucket` collection의 volume file은 snapshot에 없으므로(SPEC-0228) 복원 뒤 Loki와 Tempo는 빈 상태에서 다시 수집한다. [RUN-0024](0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
 
 ### 7. Delete old snapshots (approval: irreversible)
 

@@ -1,6 +1,6 @@
 ---
 title: "Retention and Performance Policies"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -63,6 +63,8 @@ backup 책임 경계를 다룬다.
 ### Implementation and recovery gaps
 
 Loki marker는 영속 `/loki` 밖의 `/tmp/loki/compactor`에 있고 object-store prefix도 없다. 재생성 시 marker가 사라질 수 있으며 `loki-data`만 백업하면 보존되지 않는다. 168h 요구와 지속적인 삭제 처리는 유지하되 이 결함은 별도 구현 변경으로 닫아야 한다. 동일 컨테이너 재시작과 재생성의 상태 영향을 구분한다.
+
+Loki와 Tempo의 SeaweedFS collection(`loki-bucket`, `tempo-bucket`)은 Restic state set에서 제외한다(owner 2026-10-10, SPEC-0228). 보존 기간이 짧은 telemetry라 손실 시 복원하지 않고 새로 수집하며, 위 보존 기간은 백업이 아니라 각 서비스 설정으로 지킨다.
 
 Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본값을 따른다. 이는 실제 보존 이력을 관찰한 결과가 아니다. Pyroscope는 고정 기간이 없고 기본값·disk pressure 동작이 무기한 보존을 약속하지 않는다. Pushgateway는 process restart 때 metric을 잃는다. 어느 것도 승인된 backup/archive를 대신하지 않는다.
 
