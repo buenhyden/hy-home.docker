@@ -8,6 +8,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from datetime import datetime, timedelta
 from unittest import mock
 
 from scripts.lib.gate import ci_gate_contract as contract
@@ -19,8 +20,6 @@ class NpmAuditAcceptanceTests(unittest.TestCase):
     def test_single_approved_acceptance_is_immutable_and_exact(self) -> None:
         acceptance = contract.load_npm_audit_acceptance(ROOT)
         self.assertEqual("GHSA-vfj7-8cjw-p6xm", acceptance["id"])
-        self.assertEqual("2026-10-09T07:00:00Z", acceptance["approved_at"])
-        self.assertEqual("2026-11-08T07:00:00Z", acceptance["expires_at"])
         self.assertEqual("braces@3.0.3", acceptance["dependency_chain"][-1])
         with self.assertRaises(TypeError):
             acceptance["owner"] = "another-owner"
@@ -30,10 +29,10 @@ class NpmAuditAcceptanceTests(unittest.TestCase):
         for field, value in (
             ("owner", "someone"),
             ("expires_at", "2099-01-01T00:00:00Z"),
-            ("expires_at", "2026-11-08T07:00:01Z"),
-            ("expires_at", "2026-10-09T07:00:00Z"),
-            ("expires_at", "2026-11-08 07:00:00Z"),
             ("expires_at", "2026-02-30T00:00:00Z"),
+            ("expires_at", "2026-11-08 07:00:00Z"),
+            ("expires_at", "2026-11-08T07:00:00+00:00"),
+            ("expires_at", 1),
             ("approved_at", None),
             ("id", "GHSA-0000-0000-0000"),
             ("extra", True),
@@ -47,6 +46,31 @@ class NpmAuditAcceptanceTests(unittest.TestCase):
                 )
                 with self.assertRaises(contract.GateContractError):
                     contract.parse_gate_registry(amended, "contract")
+
+    def test_window_is_bounded_from_the_recorded_approval(self) -> None:
+        # Built from the live record so an approved extension edits data only.
+        document = contract.load_contract_document(ROOT)
+        live = document["npm_audit_acceptance"]
+        approved = datetime.fromisoformat(live["approved_at"].replace("Z", "+00:00"))
+
+        def window(expires: datetime) -> dict[str, object]:
+            amended = dict(document)
+            amended["npm_audit_acceptance"] = dict(
+                live, expires_at=expires.strftime("%Y-%m-%dT%H:%M:%SZ")
+            )
+            return amended
+
+        contract.parse_gate_registry(window(approved + timedelta(days=30)), "c")
+        for expires in (
+            approved + timedelta(days=30, seconds=1),
+            approved,
+            approved - timedelta(days=1),
+        ):
+            with (
+                self.subTest(expires=expires),
+                self.assertRaises(contract.GateContractError),
+            ):
+                contract.parse_gate_registry(window(expires), "c")
 
     def test_owner_approved_extension_within_30_days_is_accepted(self) -> None:
         document = contract.load_contract_document(ROOT)

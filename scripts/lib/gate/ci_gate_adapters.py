@@ -851,8 +851,12 @@ def _audit_nodes(result: subprocess.CompletedProcess[bytes]) -> dict[str, object
 
 def _run_approved_npm_audit(root: pathlib.Path, environ: Mapping[str, str]) -> int:
     policy = _load_audit_acceptance(root)
-    expiry = datetime.fromisoformat(str(policy["expires_at"]).replace("Z", "+00:00"))
-    if _audit_now() >= expiry:
+    approved, expiry = (
+        datetime.fromisoformat(str(policy[key]).replace("Z", "+00:00"))
+        for key in ("approved_at", "expires_at")
+    )
+    # A window that starts in the future would stretch the 30-day bound.
+    if not approved <= _audit_now() < expiry:
         _audit_failure()
     chain = tuple(item.rsplit("@", 1) for item in policy["dependency_chain"])
     lock = _read_audit_lock(root, str(policy["project"]))
@@ -919,7 +923,7 @@ def _run_approved_npm_audit(root: pathlib.Path, environ: Mapping[str, str]) -> i
     nodes = _audit_nodes(full)
     if _audit_nodes(production):
         _audit_failure()
-    if _audit_now() >= expiry:
+    if not approved <= _audit_now() < expiry:
         _audit_failure()
     if not nodes:
         return 0

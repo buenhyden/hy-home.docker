@@ -1646,6 +1646,7 @@ class ApprovedNpmAuditTests(unittest.TestCase):
         self.policy = dict(
             id="GHSA-vfj7-8cjw-p6xm",
             owner="@buenhyden",
+            approved_at="2026-10-01T00:00:00Z",
             expires_at="2026-10-10T15:00:00Z",
             project="projects/storybook/nextjs",
             dependency_chain=self.chain,
@@ -1813,6 +1814,10 @@ class ApprovedNpmAuditTests(unittest.TestCase):
         with self.assertRaises(adapters.AdapterError):
             self.run_audit()
         self.policy["expires_at"] = "2026-10-10T15:00:00Z"
+        self.policy["approved_at"] = "2026-10-05T00:00:00Z"
+        with self.assertRaises(adapters.AdapterError):
+            self.run_audit()
+        self.policy["approved_at"] = "2026-10-01T00:00:00Z"
         self.advisory["vulnerabilities"][0]["first_patched_version"] = "3.0.4"
         with self.assertRaises(adapters.AdapterError):
             self.run_audit()
