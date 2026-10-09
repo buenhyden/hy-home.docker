@@ -67,6 +67,7 @@ class RedisInsightRehearsalTests(unittest.TestCase):
             "dev_monitor",
             "dev_inspector",
             "mng_default",
+            "mng_monitor",
             "mng_inspector",
             "ri_key",
         ):
@@ -152,6 +153,7 @@ class RedisInsightRehearsalTests(unittest.TestCase):
             "--tmpfs", "/run/valkey:uid=999,gid=999,mode=0700",
             "-v", f"{mng}:/usr/local/libexec/mng-valkey:ro",
             "-v", f"{cls.dir}/mng_default:/run/secrets/mng_valkey_password:ro",
+            "-v", f"{cls.dir}/mng_monitor:/run/secrets/mng_valkey_monitor_password:ro",
             "-v", f"{cls.dir}/mng_inspector:/run/secrets/mng_valkey_inspector_password:ro",
             "--entrypoint", "/bin/sh", VALKEY, "/usr/local/libexec/mng-valkey/start.sh",
         )  # fmt: skip
