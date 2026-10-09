@@ -1,10 +1,10 @@
 ---
 title: "Twenty-Item Reconciliation Task"
-version: "0.1.6"
+version: "0.1.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0002"
 parent_ids:
@@ -45,22 +45,25 @@ parser, not from the Stage 03 README.
 ### Item State
 
 Owner columns are in SPEC-0212 Contract 1. State is what `main` and HOME
-showed on 2026-10-08; it is not an acceptance of the owning prompt.
+showed on 2026-10-08, with items 04, 05, 07, 12 and A1 updated on 2026-10-09;
+it is not an acceptance of the owning prompt. Row 04 earlier held the
+cross-tier integration state of prompt 04, which Contract 1 assigns to item 07;
+that state now sits in row 07, and row 04 holds Crawl4AI.
 
 | Item | Owner Spec | State | Remaining for the owner |
 | --- | --- | --- | --- |
 | 01 | SPEC-0213 | DEV TimescaleDB and MNG PostgreSQL kept; DEV WAL archive, first full backup and restore canary on HOME | HOME PITR and R2 restore |
 | 02 | SPEC-0214 | k6 default, Locust LAB, authenticated OTLP relay merged (#371); SPEC-0214 TSK-0002 adds the relay controller, `quality_otlp_net`, an isolated target-to-dashboard run and the supervised Locust lifecycle (#384); a HOME relay canary reached HOME Prometheus and the live Grafana dashboard | Real-target load; per-project producer credentials and quota |
 | 03 | SPEC-0215 | Root `lab_net` retired, LAB lease controller merged (#376); TSK-0002 adds inventory, cluster-ID and selection tests, cost and retirement columns, and HOME runs where all seven LABs reach readiness and leave nothing behind (#386; OpenSearch LAB fixed after the disk was freed) | Scratch LAB volume records (owner) |
-| 04 | SPEC-0204 TSK-0005 | HOME OIDC, n8n, Airflow, CDC and backup observed; dev-valkey snapshot with isolated replay; per-image `_FILE`/`_CMD` verdicts; Keycloak and SonarQube secret wrappers; Bitnami guard; mail outcome states; OpenBao Raft snapshot; Open WebUI key persisted; CDC and SSO rehearsals; gateway answers machine clients 401 | Supabase and Terrakube secret wiring; OpenBao snapshot token; realm grants and PKCE; n8n paths with an upgrade; Airflow DAG target |
-| 05 | new at execution | Existing Storybook static origin and MCP preserved | All |
+| 04 | SPEC-0220 | Egress gateway, source rights registry, bounded-job reference adapter and isolated rehearsal merged (#395); on HOME `crawl4ai` and `crawl4ai-egress` run healthy, refuse LAN and metadata targets and fetch an allowed page through the gateway | Consumer admission; real collection; host firewall rules |
+| 05 | SPEC-0219 | Commit-pinned image, ingress regression, shared UI and remote docs MCP merged (#393, #394); on HOME the Keycloak client and scope exist, `experience` runs the `9cd150bfc` image and the owner's admin login works | Other-workspace MCP login and tool call; `/design-sync` |
 | 06 | SPEC-0212 | Root inventory equals the rendered set (W7) | Role, cost and duplication review per service key |
-| 07 | new at execution, reusing SPEC-0204 | Not started this round | All |
+| 07 | SPEC-0204 TSK-0005 | HOME OIDC, n8n, Airflow, CDC and backup observed; dev-valkey snapshot with isolated replay; per-image `_FILE`/`_CMD` verdicts; Keycloak and SonarQube secret wrappers; Bitnami guard; mail outcome states; OpenBao Raft snapshot; Open WebUI key persisted; CDC and SSO rehearsals; gateway answers machine clients 401 | Supabase and Terrakube secret wiring; OpenBao snapshot token; realm grants and PKCE; n8n paths with an upgrade; Airflow DAG target |
 | 08 | new at execution | DEV consumers no longer read MNG variables (SPEC-0213); image `_FILE` support recorded per key in SPEC-0204 TSK-0005 | Address and permission review |
 | 09 | new at execution | Not started this round | All |
 | 10 | new at execution | Not started this round | External application vertical slice |
 | 11 | new at execution | Project-Template baseline confirmed | External workspace and API budget |
-| 12 | new at execution | Not started this round | All |
+| 12 | SPEC-0219 | Storybook kept and extended with the shared UI package and remote docs MCP | `DESIGN.md` as separate work; TypeScript 7 waits for `typescript-eslint` support |
 | 13 | new at execution | Not started this round | All |
 | 14 | new at execution | `naming_exceptions` added to the exceptions file (SPEC-0216) | Exact exception scope with parser, generator and Rego |
 | 15 | SPEC-0213 | No active InfluxDB surface; HOME has no InfluxDB container | Data directory disposal by the owner |
@@ -69,6 +72,7 @@ showed on 2026-10-08; it is not an acceptance of the owning prompt.
 | 18 | new at execution | Pins merged (#374); HOME runs `ollama/ollama:0.40.0` and `open-webui:v0.11.4-cuda`, both healthy | Manifest digest, wrapper, OIDC, CUDA/VRAM and rollback evidence |
 | 19 | new at execution | Not started this round | All |
 | 20 | SPEC-0212 | This Task | — |
+| A1 | SPEC-0221 | Request scope, data-is-not-instruction rule, contract check and local candidate preflight merged (#396); the conflict table R1 to R15 is closed | — |
 
 ### W7 Inventory Set Check
 
@@ -94,6 +98,12 @@ the item 03 owner.
 | SPEC-0214 | draft | proceed | Merged source; HOME runs open |
 | SPEC-0215 | draft | proceed | Merged source and HOME runs of all seven LABs |
 | SPEC-0216 | draft | proceed | OpenBao waits for the owner's unseal; then `openbao-agent` |
+| SPEC-0217 | draft | proceed | Merged source (#388); model entitlement and native invocation need revalidation |
+| SPEC-0218 | draft | proceed | Merged source (#392); HOME recreation to apply the definitions is open |
+| SPEC-0219 | draft | proceed | Merged (#393, #394); HOME `experience` runs; other-workspace login open |
+| SPEC-0220 | draft | proceed | Merged (#395); HOME runs; consumer admission open |
+| SPEC-0221 | draft | proceed | Merged (#396); every conflict row closed |
+| SPEC-0222 | draft | proceed | Merged (#397); GHSA-vfj7 acceptance ends `2026-11-08T07:00:00Z` |
 
 No Spec is superseded. Completed SPEC-0208, SPEC-0209 and SPEC-0210 are not
 reopened.

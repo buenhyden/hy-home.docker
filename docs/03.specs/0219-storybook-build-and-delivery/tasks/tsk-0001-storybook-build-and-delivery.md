@@ -182,6 +182,39 @@ test did not list `storybook_image.py` as runtime-mutating (commit
 `6169a8f1f`, and the owner merged PR #393 as `d9ed32b54`. The script manifest
 fix and this record follow in a separate PR.
 
+### W8 HOME Activation
+
+On 2026-10-09 the owner named `experience` on HOME as the target, with the
+Keycloak client it needs. In `hy-home.realm` the client scope `storybook-mcp`
+(audience `https://storybook-mcp.hy.home.arpa/mcp`, `groups` with full path,
+included in the token scope) and the public client `storybook-mcp-client`
+(standard flow only; direct grants, implicit flow and service accounts off;
+PKCE `S256`; the two loopback redirects; `storybook-mcp` optional) were made
+with the admin CLI inside `keycloak`. No client secret exists, and the admin
+password was read from its secret file without being printed. `storybook` and
+`storybook-mcp` started with `--no-deps` from the images of `9cd150bfc`, the
+last commit that changed Storybook source; `storybook_image.py verify
+--registry` passed and the served `revision.json` names that commit. Traefik
+already held `experience_ingress_net`, so it was not recreated.
+
+Without a session, `/` and `/index.json` redirect to the Keycloak login, `/mcp`
+answers 401 with `Bearer scope="storybook-mcp"` and the resource metadata URL,
+the protected resource metadata answers 200 and other paths 404; TLS verifies.
+The owner signed in as an `/admins` user and Storybook loaded. A login from
+another workspace's Codex or Claude Code and a document tool call were not
+run by the agent. The owner's first `codex mcp login` reached Keycloak and was
+refused with `Invalid parameter: redirect_uri`: Codex sends
+`http://127.0.0.1:33419/callback/<random>`, so the Codex redirect URI became
+`http://127.0.0.1:33419/callback/*`. A later attempt from the owner's shell
+failed before reaching the server (`error sending request`); from the HOME
+shell five Codex logins and fifteen requests reached the server, so the cause
+is in that client environment. After the redirect URI change the owner's
+`codex mcp login hyhome_storybook` on the HOME server completed ("Successfully
+logged in"); the browser ran on another device, so the callback reached the
+server by forwarding the redirected URL. GDE-0101 now carries the consumer
+check, the Codex callback, the cross-device callback, and Ubuntu and Windows
+steps for the root CA, `NODE_EXTRA_CA_CERTS` and `CODEX_CA_CERTIFICATE`.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -193,15 +226,17 @@ fix and this record follow in a separate PR.
 | Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | accepted |
 | Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | accepted |
 | Validation | 5 | W7 | Changed gate; CI; npm risk amendment | `6169a8f1f`, `412ec8298` | PASS | W7 Validation | accepted |
+| HOME activation | 2 | W8 | Keycloak client and scope read-back; image verify; no-session probes; owner admin login | `0df98f405` | PASS | W8 HOME Activation | accepted |
+| Codex MCP login on HOME | 2 | W8 | Owner's `codex mcp login` after the redirect URI change | `0df98f405` | PASS | W8 HOME Activation | accepted |
+| Remote-device MCP login and tool call | 2 | W8 | Login from another device; `docs-list` | — | NOT_RUN | W8 HOME Activation | pending |
 
 ## Review and Completion
 
-Not complete. Open for the owner: create the Keycloak client scope and client
-in GDE-0101, start `experience` on HOME, sign other workspaces' Codex and
-Claude Code in, and run `/design-sync` from an exported bundle.
-The GHSA-vfj7 acceptance expires at `2026-10-10T15:00:00Z` and cannot extend
-itself; after it, any Storybook change fails the audit until `braces` is
-patched or the lint chain changes. `DESIGN.md` is separate later work.
+Not complete. Open for the owner: sign in from another device after its DNS
+and root CA are set, call the document tools (GDE-0101), and run `/design-sync` from an
+exported bundle. SPEC-0222 extended the GHSA-vfj7 acceptance to
+`2026-11-08T07:00:00Z` by the owner's approval. `DESIGN.md` is separate later
+work.
 
 ## Related Documents
 

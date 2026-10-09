@@ -124,7 +124,8 @@ resolved on re-review, and the further approval text recorded as R12 to R15.
 
 ## Review and Completion
 
-Not complete: W5 validation and merge remain.
+Complete. `candidate-quality` passed on head `77a80bc14` against base
+`5710435ef`, and PR #396 merged as `40dcfb349`.
 
 ## Related Documents
 

@@ -32,6 +32,7 @@ them in the rehearsal. Each unit is one commit.
 | W5 | 2, 3, 4, 5 | Remote docs MCP, design export and documents | W1, W2, W3 | TSK-0001 | Task evidence |
 | W6 | 1, 2 | Build, push and pin both images; run the rehearsal | W5 | TSK-0001 | Task evidence |
 | W7 | 5 | Changed gate and task evidence | W6 | TSK-0001 | Task evidence |
+| W8 | 2 | HOME activation of the target the owner names | W7 | TSK-0001 | Task evidence |
 
 ## Verification Plan
 

@@ -236,6 +236,22 @@ prompt 12. Run `37886683329` on head `96d076497`, base `5f4832a74`, passed:
 metadata `violations=0`, the tech-stack registry in sync, and the npm audit
 `ACCEPTED_RISK` receipt with its original expiry.
 
+### W8 HOME Activation
+
+On 2026-10-09 the owner named `crawl4ai` and `crawl4ai-egress` on HOME as the
+target. Both images were present at their pinned digests, the token secret
+file existed at the required length (its value was not read outside the
+container), and `crawl4ai` depends only on `crawl4ai-egress`; no host port is
+published. `docker compose --profile crawl4ai up -d --no-build --pull never`
+started both healthy with no restart, read-only roots and their memory limits.
+
+A probe inside the crawler, reading the token from its secret file, saw
+`/health` 200, `/crawl` without a token 401, `https://example.com/` 200 with
+`success` true, and the HOME LAN address and `169.254.169.254` refused as SSRF
+(400). Direct connections from the crawler to a public and a LAN address
+failed with no route. The gateway log showed exactly one allowed `CONNECT` on
+port 443. No consumer is connected and nothing was collected beyond that page.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -247,12 +263,13 @@ metadata `violations=0`, the tech-stack registry in sync, and the npm audit
 | Operations documents | 5 | W5 | Link, metadata and catalog checks | `27895b78b` | PASS | W5 Operations Documents | accepted |
 | Independent review | 1, 2, 3 | W6 | Security and correctness review; fix tests; rehearsal rerun | `42b719d22` | PASS | W6 Independent Review | accepted |
 | Validation | 5 | W7 | Changed gate; staged style check | `ae490cbb4`, `72a37e1e9` | PASS | W7 Validation | accepted |
+| HOME activation | 2, 5 | W8 | Health, token, allowed and refused targets, no direct route, gateway log | `0df98f405` | PASS | W8 HOME Activation | accepted |
 
 ## Review and Completion
 
-Source, static, unit and isolated evidence are complete. Not run, and outside
-this request: starting `crawl4ai` on HOME, admitting a consumer, collecting
-real data and host firewall rules. No consumer is connected.
+Source, static, unit, isolated and HOME evidence are complete. Not run:
+admitting a consumer, collecting real data and host firewall rules. No consumer
+is connected.
 
 ## Related Documents
 

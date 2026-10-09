@@ -1,6 +1,6 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.1.0"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -113,7 +113,7 @@ resource_metadata=".../.well-known/oauth-protected-resource/mcp"`, 그룹이 없
    Membership mapper를 claim `groups`, full path, access token 포함으로 둔다.
 2. Client `storybook-mcp-client`: public client, Standard flow만 사용, Direct access
    grants 끔, PKCE `S256`, Valid redirect URI는 `http://localhost:33418/callback`
-   (Claude Code)과 `http://127.0.0.1:33419/callback`(Codex), optional client scope
+   (Claude Code)과 `http://127.0.0.1:33419/callback/*`(Codex), optional client scope
    `storybook-mcp`. client secret과 Dynamic Client Registration은 쓰지 않는다.
 3. 읽기 권한은 `/admins` 그룹이다. 다른 검토자 그룹은 POL-0101 예외 절차를 따른다.
 
@@ -159,16 +159,102 @@ callback_port = 33419
 그 뒤 `codex mcp login hyhome_storybook`으로 로그인한다. 두 예시는
 [Claude Code MCP](https://code.claude.com/docs/en/mcp)와
 [Codex MCP](https://learn.chatgpt.com/docs/extend/mcp) 문서의 키를 따른 것이며,
-Keycloak client 생성과 HOME 기동 전에는 실제 연결로 확인되지 않았다.
+HOME에는 Keycloak client와 scope가 만들어져 있고 `experience`가 기동돼 있다.
+관리자 브라우저 로그인은 확인했지만, 다른 워크스페이스의 실제 로그인과 tool
+호출은 아직 확인하지 않았다.
+
+#### 소비 워크스페이스 연결 확인
+
+소비 워크스페이스에서 처음 연결할 때 다음 순서로 확인한다. token과 authorization
+code는 출력하거나 기록하지 않는다.
+
+1. 클라이언트 기기에서 `https://storybook-mcp.hy.home.arpa/.well-known/oauth-protected-resource/mcp`가
+   200과 `"resource": "https://storybook-mcp.hy.home.arpa/mcp"`를 돌려주는지 본다.
+   이름 해석이나 인증서 오류가 나면 아래 클라이언트 기기 조건부터 맞춘다.
+2. 위 예시대로 project 설정을 넣는다. Claude Code는 `/mcp`에서
+   `hyhome-storybook`을 골라 로그인하고, Codex는 `codex mcp login hyhome_storybook`을
+   실행한다. 브라우저에서 `/admins` 그룹 계정으로 로그인한다.
+3. 연결 뒤 `docs-list`를 한 번 호출해 문서 목록이 오는지 본다. 이어서
+   `docs-show`로 문서 하나를 연다.
+4. 결과를 이렇게 읽는다.
+   - 401: token이 없거나 audience가 맞지 않는다. `storybook-mcp` scope를 요청했는지
+     확인한다.
+   - 403 `insufficient_scope`: 계정이 `/admins` 그룹에 속하지 않는다.
+   - 로그인 창의 redirect URI 오류: callback 포트가 33418(Claude Code)이나
+     33419(Codex)와 다르거나, Codex redirect URI가 `/callback/*`로 등록되지 않았다.
+   - `OAuth metadata discovery failed ... error sending request`: 요청이 서버에
+     닿지 않았다. 그 기기에서 이름 해석, root CA 신뢰, proxy 환경 변수를 확인한다.
+   - 로그인 뒤 브라우저에 "사이트를 연결할 수 없음": 브라우저와 Codex가 다른 기기에
+     있다. callback은 브라우저 기기의 `127.0.0.1`로 가기 때문이다. 로그인 명령이
+     기다리는 동안 그 주소창의 URL 전체를 Codex 기기에서 `curl '<URL>'`로 보내거나,
+     브라우저 기기에서 `ssh -L 33419:127.0.0.1:33419 <Codex 기기>`를 연 뒤 다시
+     로그인한다. Claude Code는 33418을 같은 방법으로 쓴다.
+5. 확인한 날짜, 워크스페이스, 클라이언트 종류와 결과(성공, 401, 403)만 해당 Spec
+   Task에 남긴다.
 
 #### 클라이언트 기기 조건
 
 - `*.hy.home.arpa`가 HOME 주소(LAN)로 해석되어야 한다. HOME 밖의 클라우드 실행기나
   원격 세션은 이 이름과 주소에 닿지 않는다.
 - HOME 인증서는 mkcert CA가 발급하므로 클라이언트 기기가 그 root CA를 신뢰해야
-  한다. Node 기반 Claude Code는 `NODE_EXTRA_CA_CERTS`로도 지정할 수 있다.
+  한다. Node 기반 Claude Code는 `NODE_EXTRA_CA_CERTS`, Codex는
+  `CODEX_CA_CERTIFICATE`로 root CA 파일을 지정할 수도 있다. 설정 방법은 아래
+  [root CA와 환경 변수 설정](#root-ca와-환경-변수-설정)에 있다.
+- Codex는 callback 경로 뒤에 매번 다른 경로 조각을 붙인다
+  (`/callback/<임의 값>`). 그래서 Codex redirect URI는 `/callback/*`로 등록한다.
+  정확히 `/callback`만 등록하면 Keycloak이 `Invalid parameter: redirect_uri`로
+  거부한다.
 - token 수명은 Keycloak realm 설정을 따르며 client가 refresh로 갱신한다. 폐기는
   RUN-0014의 session·token 절차를 따른다.
+
+#### root CA와 환경 변수 설정
+
+HOME에서 `mkcert -CAROOT`가 가리키는 디렉터리의 `rootCA.pem`만 클라이언트 기기로
+복사한다. 같은 디렉터리의 `rootCA-key.pem`은 CA 개인 키이므로 어떤 기기로도
+복사하지 않는다. 두 환경 변수는 프로그램이 시작될 때 한 번 읽히므로, 설정한 뒤
+새 터미널을 열거나 다시 로그인해야 적용된다.
+
+Ubuntu(Linux):
+
+```bash
+mkdir -p ~/.local/share/hy-home
+cp rootCA.pem ~/.local/share/hy-home/rootCA.pem   # HOME에서 복사해 온 파일
+
+# 시스템 전체 신뢰(curl, 브라우저 일부). 확장자는 .crt여야 한다.
+sudo cp ~/.local/share/hy-home/rootCA.pem /usr/local/share/ca-certificates/hy-home-mkcert.crt
+sudo update-ca-certificates
+
+# 셸 시작 파일(~/.profile, zsh면 ~/.zshrc)에 추가
+export NODE_EXTRA_CA_CERTS="$HOME/.local/share/hy-home/rootCA.pem"
+export CODEX_CA_CERTIFICATE="$HOME/.local/share/hy-home/rootCA.pem"
+```
+
+새 셸에서 `printenv NODE_EXTRA_CA_CERTS CODEX_CA_CERTIFICATE`로 경로가 나오는지
+확인한다.
+
+Windows(PowerShell, 관리자 권한 불필요):
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.hy-home" | Out-Null
+Copy-Item .\rootCA.pem "$env:USERPROFILE\.hy-home\rootCA.pem"   # HOME에서 복사해 온 파일
+
+# 현재 사용자 신뢰 저장소에 추가(브라우저, Windows 앱)
+Import-Certificate -FilePath "$env:USERPROFILE\.hy-home\rootCA.pem" -CertStoreLocation Cert:\CurrentUser\Root
+
+# 사용자 환경 변수로 영구 설정
+[Environment]::SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", "$env:USERPROFILE\.hy-home\rootCA.pem", "User")
+[Environment]::SetEnvironmentVariable("CODEX_CA_CERTIFICATE", "$env:USERPROFILE\.hy-home\rootCA.pem", "User")
+```
+
+새 PowerShell 창에서 `$env:NODE_EXTRA_CA_CERTS`와 `$env:CODEX_CA_CERTIFICATE`로
+경로를 확인한다. `Import-Certificate`를 실행하면 신뢰 확인 창이 뜨므로 지문을
+확인한 뒤 수락한다. WSL 안에서 실행하는 Claude Code·Codex는 Windows가 아니라
+Ubuntu 절차를 따른다.
+
+이름 해석은 기기의 DNS를 HOME의 dnsmasq로 지정하는 방법이 가장 단순하다. 그렇게
+할 수 없으면 hosts 파일에 `192.168.0.13 storybook-mcp.hy.home.arpa keycloak.hy.home.arpa`를
+추가한다. Ubuntu는 `/etc/hosts`, Windows는
+`C:\Windows\System32\drivers\etc\hosts`이며 둘 다 관리자 권한이 필요하다.
 
 로컬 개발용 `npm run mcp:docs`(`127.0.0.1:7613`, 인증 없음, loopback 전용)는 그대로
 남는다. Storybook의 AI·manifest 기능은 [preview](https://storybook.js.org/docs/ai/manifests)이고
