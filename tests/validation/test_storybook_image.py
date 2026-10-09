@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import pathlib
 import subprocess
 import unittest
@@ -97,9 +98,18 @@ class DesignExportTests(unittest.TestCase):
         import tempfile
 
         allowlist = json.loads((ROOT / design_export.ALLOWLIST).read_text())["files"]
+        # Export the index as an unreferenced commit, not HEAD: a gate worktree
+        # stages the candidate on its base commit.
+        identity = {"GIT_AUTHOR_NAME": "test", "GIT_AUTHOR_EMAIL": "test@invalid",
+                    "GIT_COMMITTER_NAME": "test", "GIT_COMMITTER_EMAIL": "test@invalid"}  # fmt: skip
+        tree = subprocess.run(["git", "write-tree"], cwd=ROOT, check=True,
+                              capture_output=True, text=True).stdout.strip()  # fmt: skip
+        revision = subprocess.run(["git", "commit-tree", tree, "-m", "export test"],
+                                  cwd=ROOT, check=True, capture_output=True, text=True,
+                                  env={**os.environ, **identity}).stdout.strip()  # fmt: skip
         with tempfile.TemporaryDirectory() as tmp:
             out = pathlib.Path(tmp) / "bundle"
-            manifest = design_export.export(out, "HEAD")
+            manifest = design_export.export(out, revision)
             exported = {
                 p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()
             }
@@ -108,7 +118,7 @@ class DesignExportTests(unittest.TestCase):
             for target, source in allowlist.items():
                 text = (out / target).read_text()
                 committed = subprocess.run(
-                    ["git", "show", f"HEAD:{source}"],
+                    ["git", "show", f"{revision}:{source}"],
                     cwd=ROOT, check=True, capture_output=True, text=True,
                 ).stdout  # fmt: skip
                 if target.startswith("stories/"):
@@ -116,7 +126,7 @@ class DesignExportTests(unittest.TestCase):
                     committed = committed.replace(design_export.STORY_IMPORT, "../src/")
                 self.assertEqual(committed, text, target)
             with self.assertRaises(SystemExit):
-                design_export.export(out, "HEAD")  # never into a non-empty directory
+                design_export.export(out, revision)  # never into a non-empty directory
 
     def test_unsafe_paths_and_secret_shaped_content_are_refused(self):
         for path in ("../secrets/a", "src/*.ts", "/etc/passwd", ".env",
