@@ -1,6 +1,9 @@
 """Static cross-file boundary for management and development data consumers."""
 
 import json
+import os
+import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -103,11 +106,12 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertNotIn("VALKEY_PORT", command)
         self.assertIn("-config-command=-", command)
         self.assertIn("-set-client-name=false", command)
-        for job in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
-            for config in ("prometheus.yml", "prometheus.dev.yml"):
-                path = ROOT / "infra/06-observability/prometheus/config" / config
-                with self.subTest(config=config, job=job):
-                    self.assertIn(job, path.read_text(encoding="utf-8"))
+        start = (ROOT / "infra/06-observability/prometheus/scripts/start.sh").read_text(
+            encoding="utf-8"
+        )
+        for target in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
+            with self.subTest(target=target):
+                self.assertIn(target, start)
 
     def test_mng_exporters_use_monitor_accounts_not_admin(self):
         services = compose("infra/04-data/mng-db/docker-compose.yml")
@@ -130,6 +134,99 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertNotIn("-redis.password", command)
         self.assertIn("-config-command=-", command)
         self.assertIn("-set-client-name=false", command)
+
+
+DATASTORE_JOBS = (
+    ("manage-postgres", "mng", "postgresql"),
+    ("mng-valkey-exporter", "mng", "valkey"),
+    ("dev-pg-exporter", "dev", "postgresql"),
+    ("dev-valkey-exporter", "dev", "valkey"),
+)
+
+
+class DatastoreScrapeLabelTests(unittest.TestCase):
+    CONFIG = ROOT / "infra/06-observability/prometheus/config"
+    START = ROOT / "infra/06-observability/prometheus/scripts/start.sh"
+
+    def render(self, state):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        env = {
+            **os.environ,
+            "PROMETHEUS_TARGETS_DIR": directory.name,
+            "PROMETHEUS_BIN": "true",
+        }
+        env.pop("PROMETHEUS_DEV_DATA_EXPECTED", None)
+        if state is not None:
+            env["PROMETHEUS_DEV_DATA_EXPECTED"] = state
+        result = subprocess.run(
+            ["sh", str(self.START)],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return result, Path(directory.name)
+
+    def test_both_configs_label_every_datastore_job_by_scope_and_engine(self):
+        for config in ("prometheus.yml", "prometheus.dev.yml"):
+            jobs = {
+                job["job_name"]: job
+                for job in yaml.safe_load(
+                    (self.CONFIG / config).read_text(encoding="utf-8")
+                )["scrape_configs"]
+            }
+            for name, scope, engine in DATASTORE_JOBS:
+                with self.subTest(config=config, job=name):
+                    job = jobs[name]
+                    if scope == "mng":
+                        labels = job["static_configs"][0]["labels"]
+                        self.assertEqual(labels["db_scope"], scope)
+                        self.assertEqual(labels["db_engine"], engine)
+                        self.assertEqual(labels["expected_state"], "on")
+                    else:
+                        self.assertEqual(
+                            job["file_sd_configs"][0]["files"],
+                            [f"/etc/prometheus/targets/{name}.yml"],
+                        )
+
+    def test_start_renders_dev_targets_with_the_declared_state(self):
+        for state in ("on", "off"):
+            result, directory = self.render(state)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(
+                sorted(p.name for p in directory.iterdir()),
+                ["dev-pg-exporter.yml", "dev-valkey-exporter.yml"],
+            )
+            for name, scope, engine in DATASTORE_JOBS:
+                if scope != "dev":
+                    continue
+                with self.subTest(state=state, job=name):
+                    group = yaml.safe_load(
+                        (directory / f"{name}.yml").read_text(encoding="utf-8")
+                    )[0]
+                    self.assertEqual(
+                        group["targets"],
+                        [f"{name}:{9187 if engine == 'postgresql' else 9121}"],
+                    )
+                    self.assertEqual(
+                        group["labels"],
+                        {
+                            "cluster": "hy-home",
+                            "namespace": "hy-home",
+                            "domain": "datastores",
+                            "db_scope": "dev",
+                            "db_engine": engine,
+                            "expected_state": state,
+                        },
+                    )
+
+    def test_start_refuses_a_missing_or_unknown_state(self):
+        for state in (None, "", "ON", "true", "on\n"):
+            with self.subTest(state=state):
+                result, directory = self.render(state)
+                self.assertEqual(result.returncode, 64)
+                self.assertEqual(list(directory.iterdir()), [])
 
 
 if __name__ == "__main__":
