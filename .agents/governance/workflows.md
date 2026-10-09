@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.4.0"
+version: "1.4.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-09"
 ---
 
 # Workflows
@@ -78,8 +78,8 @@ source review. A result update that changes contract meaning, acceptance or
 approval is reviewed for that change. Preserve actual failures and review
 history; do not manufacture a new approval from an existing verdict.
 
-Static validation and independent review precede a separately approved
-operational action. An implementation that fails validation or independent
+Static validation and independent review precede an operational action,
+which waits for its exact target. An implementation that fails validation or independent
 review may receive one narrower retry, for at most two implementation attempts.
 A retry may correct the approved change but may not infer approval, add scope,
 change owners, or weaken a Gate. Stop mutation and reconcile the Task when the
