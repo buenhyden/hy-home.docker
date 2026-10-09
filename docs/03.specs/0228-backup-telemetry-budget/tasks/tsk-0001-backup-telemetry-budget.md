@@ -58,7 +58,11 @@ candidates and merges.
 
 ### W3 HOME
 
-Pending.
+The HOME `.env` value of `BACKUP_STATE_MAX_GIB` became 8 (key set unchanged,
+values not printed) and `docker compose --profile backup config` renders 8.
+The exclusion takes effect once the HOME checkout is on the merge, and the
+next scheduled run (2026-10-11 03:33 KST) is the end-to-end check; it was not
+started by hand.
 
 ## Evidence
 
