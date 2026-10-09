@@ -710,6 +710,12 @@
         "free_form_sections": {
           "type": "boolean"
         },
+        "ordered_sections": {
+          "type": "boolean"
+        },
+        "nonempty_sections": {
+          "type": "boolean"
+        },
         "sealed_section_shapes": {
           "type": "array",
           "items": {

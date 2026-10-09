@@ -799,6 +799,25 @@ def _registered_section_findings(
                     f"profile {record.artifact_type} repeats heading {count} times: {heading}",
                 )
             )
+    if profile.get("ordered_sections"):
+        declared = [
+            f"## {heading}"
+            for heading in profile.get("required_sections", ())
+            if isinstance(heading, str)
+        ]
+        if [
+            heading for heading in h2 if heading in declared
+        ] != declared and not missing:
+            findings.append(
+                _finding(
+                    record,
+                    "body-heading-order",
+                    f"profile {record.artifact_type} requires sections in order: "
+                    + ", ".join(heading[3:] for heading in declared),
+                )
+            )
+    if profile.get("nonempty_sections"):
+        findings.extend(_empty_section_findings(record, text))
     # A profile whose documents share no heading vocabulary declares
     # itself free-form rather than registering a union nothing follows.
     # Without this, an unregistered heading is a violation only when a
@@ -814,6 +833,69 @@ def _registered_section_findings(
                 )
             )
     return sorted(set(findings))
+
+
+_HEADING_LINE = re.compile(r"^ {0,3}(#{2,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
+
+
+def _empty_section_findings(record: Record, text: str) -> list[Finding]:
+    """Report sections that hold nothing, or only a copy of their own heading.
+
+    A heading followed directly by a deeper one is a parent, not an empty
+    section, unless that child repeats the parent's title: the child then
+    stands in for the parent and the outer heading says nothing. HTML
+    comments are not content; fenced blocks are.
+    """
+
+    findings: list[Finding] = []
+    sections: list[tuple[int, str, bool]] = []
+    fence: str | None = None
+    in_comment = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if fence is not None:
+            if re.match(rf"^ {{0,3}}{re.escape(fence)}[ \t]*$", line):
+                fence = None
+            continue
+        opening = re.match(r"^ {0,3}(`{3,}|~{3,})", line)
+        if opening:
+            fence = opening.group(1)
+            if sections:
+                sections[-1] = (*sections[-1][:2], True)
+            continue
+        if in_comment:
+            in_comment = "-->" not in stripped
+            continue
+        match = _HEADING_LINE.match(line)
+        if match:
+            sections.append((len(match.group(1)), match.group(2).rstrip(), False))
+            continue
+        if stripped.startswith("<!--"):
+            in_comment = "-->" not in stripped
+            remainder = stripped.split("-->", 1)[1].strip() if "-->" in stripped else ""
+            if not remainder:
+                continue
+            stripped = remainder
+        if stripped and sections:
+            sections[-1] = (*sections[-1][:2], True)
+    for index, (level, title, has_content) in enumerate(sections):
+        child = sections[index + 1] if index + 1 < len(sections) else None
+        if has_content:
+            continue
+        if child is not None and child[0] > level:
+            if child[1].casefold() == title.casefold():
+                findings.append(
+                    _finding(
+                        record,
+                        "body-heading-repeated",
+                        f"{'#' * level} {title} holds only a heading of the same name",
+                    )
+                )
+            continue
+        findings.append(
+            _finding(record, "body-section-empty", f"{'#' * level} {title} is empty")
+        )
+    return findings
 
 
 _RUNTIME_EXCEPTION = re.compile(

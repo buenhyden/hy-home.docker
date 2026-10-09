@@ -690,6 +690,107 @@ _TOMBSTONE_PROFILE = {
 }
 
 
+_RUNBOOK_PROFILE = {
+    "required_sections": [
+        "Overview",
+        "Trigger and Preconditions",
+        "Procedure",
+        "Verification",
+        "Rollback and Escalation",
+        "Related Documents",
+    ],
+    "optional_sections": [],
+    "ordered_sections": True,
+    "nonempty_sections": True,
+}
+
+
+class SectionStructureTests(unittest.TestCase):
+    """SPEC-0227: Stage 05 sections keep the template order and hold content."""
+
+    def codes(self, body: str, profile: dict = _RUNBOOK_PROFILE) -> list[str]:
+        record = metadata.Record(
+            pathlib.Path("docs/05.operations/runbooks/0001-example.md"),
+            {"artifact_type": "runbook"},
+            "runbook",
+            frontmatter_present=True,
+        )
+        return [
+            finding.code
+            for finding in heading_module._registered_section_findings(
+                record, body, profile, True
+            )
+        ]
+
+    def body(self, *sections: str) -> str:
+        return "# Example\n\n" + "\n\n".join(sections) + "\n"
+
+    def test_template_order_with_content_passes(self) -> None:
+        self.assertEqual(
+            [],
+            self.codes(
+                self.body(
+                    "## Overview\n\n내용.",
+                    "## Trigger and Preconditions\n\n내용.",
+                    "## Procedure\n\n```bash\ndocker compose ps\n```",
+                    "## Verification\n\n내용.",
+                    "## Rollback and Escalation\n\n### Rollback or Recovery\n\n내용.",
+                    "## Related Documents\n\n- [x](x.md)",
+                )
+            ),
+        )
+
+    def test_out_of_order_sections_are_reported(self) -> None:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"]
+        ]
+        sections[1], sections[2] = sections[2], sections[1]
+        self.assertIn("body-heading-order", self.codes(self.body(*sections)))
+
+    def test_a_heading_repeated_by_its_only_child_is_reported(self) -> None:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"]
+        ]
+        sections[0] = "## Overview\n\n### Overview\n\n내용."
+        self.assertEqual(["body-heading-repeated"], self.codes(self.body(*sections)))
+
+    def test_empty_sections_are_reported_but_comments_are_not_content(self) -> None:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"]
+        ]
+        sections[3] = "## Verification\n\n<!-- note -->"
+        self.assertEqual(["body-section-empty"], self.codes(self.body(*sections)))
+
+    def test_a_fenced_heading_is_content_not_a_section(self) -> None:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"]
+        ]
+        sections[2] = "## Procedure\n\n```markdown\n## Not a heading\n```"
+        self.assertEqual([], self.codes(self.body(*sections)))
+
+    def test_profiles_without_the_flags_are_unchanged(self) -> None:
+        profile = {
+            key: value
+            for key, value in _RUNBOOK_PROFILE.items()
+            if key not in ("ordered_sections", "nonempty_sections")
+        }
+        body = self.body("## Procedure", "## Overview\n\n### Overview")
+        self.assertNotIn("body-heading-order", self.codes(body, profile))
+        self.assertNotIn("body-section-empty", self.codes(body, profile))
+        self.assertNotIn("body-heading-repeated", self.codes(body, profile))
+
+    def test_operations_profiles_enable_both_flags(self) -> None:
+        registry = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        flagged = {
+            profile["id"]
+            for profile in registry["profiles"]
+            if profile.get("ordered_sections") and profile.get("nonempty_sections")
+        }
+        self.assertEqual({"guide", "policy", "runbook"}, flagged)
+
+
 class SealedSectionShapeTests(unittest.TestCase):
     """A sealed section shape is admitted for a record present at the base only.
 
