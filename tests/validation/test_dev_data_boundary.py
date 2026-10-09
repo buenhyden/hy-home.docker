@@ -228,6 +228,46 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 64)
                 self.assertEqual(list(directory.iterdir()), [])
 
+    def test_datastore_down_alerts_are_scoped_and_dev_honours_expected_state(self):
+        path = self.CONFIG / "alert_rules/alert_rules.local.datastores.yml"
+        rules = {
+            rule["alert"]: rule
+            for group in yaml.safe_load(path.read_text(encoding="utf-8"))["groups"]
+            for rule in group["rules"]
+        }
+        expected = {
+            "PostgresDown": ('pg_up{db_scope="mng"}', "critical"),
+            "ValkeyDown": ('redis_up{db_scope="mng"}', "critical"),
+            "MngDatastoreExporterDown": ('up{db_scope="mng"}', "critical"),
+            "DevPostgresDown": (
+                'pg_up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+            "DevValkeyDown": (
+                'redis_up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+            "DevDatastoreExporterDown": (
+                'up{db_scope="dev", expected_state="on"}',
+                "warning",
+            ),
+        }
+        for name, (selector, severity) in expected.items():
+            with self.subTest(alert=name):
+                self.assertIn(selector, rules[name]["expr"])
+                self.assertEqual(rules[name]["labels"]["severity"], severity)
+        for name, rule in rules.items():
+            with self.subTest(alert=name):
+                expr = " ".join(rule["expr"].split())
+                if 'db_scope="dev"' in expr and "DeclaredOff" not in name:
+                    self.assertIn('expected_state="on"', expr)
+                # An unscoped comparison would page for DEV stopped on purpose.
+                for metric in ("pg_up", "redis_up"):
+                    self.assertNotIn(f"{metric} ==", expr)
+        absent = rules["DatastoreScrapeTargetMissing"]["expr"]
+        for job, _, _ in DATASTORE_JOBS:
+            self.assertIn(f'absent(up{{job="{job}"}})', absent)
+
 
 if __name__ == "__main__":
     unittest.main()

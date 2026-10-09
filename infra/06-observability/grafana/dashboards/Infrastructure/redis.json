@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Source: oliver006/redis_exporter contrib/grafana_prometheus_redis_dashboard.json (= grafana.com 763 revision 6). Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: oliver006/redis_exporter contrib/grafana_prometheus_redis_dashboard.json (= grafana.com 763 revision 6). Provisioned by hy-home (SPEC-0193). Local changes (SPEC-0224): db_scope replaces the namespace variable; a scope comparison row is added.",
   "editable": false,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -23,6 +23,160 @@
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "id": 21,
+      "type": "row",
+      "title": "Scope comparison (MNG / DEV)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Scrape and server up",
+      "description": "up: Prometheus reached the exporter. redis_up: the exporter reached Valkey. expected_state off means DEV was stopped on purpose.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "max by (db_scope, expected_state) (up{db_engine=\"valkey\"})",
+          "legendFormat": "scrape {{db_scope}} ({{expected_state}})",
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "max by (db_scope) (redis_up)",
+          "legendFormat": "redis_up {{db_scope}}",
+          "refId": "B"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Connected clients",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "sum by (db_scope) (redis_connected_clients{db_scope=~\"$db_scope\"})",
+          "legendFormat": "{{db_scope}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Commands per second",
+      "description": "",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "Prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "Prometheus"
+          },
+          "expr": "sum by (db_scope) (rate(redis_commands_processed_total{db_scope=~\"$db_scope\"}[5m]))",
+          "legendFormat": "{{db_scope}}",
+          "refId": "A"
+        }
+      ]
+    },
     {
       "datasource": {
         "type": "prometheus",
@@ -68,7 +222,7 @@
         "h": 7,
         "w": 3,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 9,
       "links": [],
@@ -96,7 +250,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "max(max_over_time(redis_uptime_in_seconds{namespace=~\"$namespace\", instance=~\"$instance\"}[$__interval]))",
+          "expr": "max(max_over_time(redis_uptime_in_seconds{db_scope=~\"$db_scope\", instance=~\"$instance\"}[$__interval]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -154,7 +308,7 @@
         "h": 7,
         "w": 2,
         "x": 3,
-        "y": 0
+        "y": 8
       },
       "hideTimeOverride": true,
       "id": 12,
@@ -183,7 +337,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "sum(redis_connected_clients{namespace=~\"$namespace\", instance=~\"$instance\"})",
+          "expr": "sum(redis_connected_clients{db_scope=~\"$db_scope\", instance=~\"$instance\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "",
@@ -246,7 +400,7 @@
         "h": 7,
         "w": 3,
         "x": 5,
-        "y": 0
+        "y": 8
       },
       "hideTimeOverride": true,
       "id": 11,
@@ -274,7 +428,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "sum(100 * (redis_memory_used_bytes{namespace=~\"$namespace\", instance=~\"$instance\"}  / redis_memory_max_bytes{namespace=~\"$namespace\", instance=~\"$instance\"}))",
+          "expr": "sum(100 * (redis_memory_used_bytes{db_scope=~\"$db_scope\", instance=~\"$instance\"}  / redis_memory_max_bytes{db_scope=~\"$db_scope\", instance=~\"$instance\"}))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "",
@@ -353,7 +507,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 0
+        "y": 8
       },
       "id": 18,
       "links": [],
@@ -376,7 +530,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "sum(rate(redis_commands_total{namespace=~\"$namespace\", instance=~\"$instance\"} [1m])) by (cmd)",
+          "expr": "sum(rate(redis_commands_total{db_scope=~\"$db_scope\", instance=~\"$instance\"} [1m])) by (cmd)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -456,7 +610,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 0
+        "y": 8
       },
       "id": 1,
       "links": [],
@@ -593,7 +747,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 15
       },
       "id": 7,
       "links": [],
@@ -708,7 +862,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 15
       },
       "id": 10,
       "links": [],
@@ -842,7 +996,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 22
       },
       "id": 5,
       "links": [],
@@ -946,7 +1100,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 22
       },
       "id": 13,
       "links": [],
@@ -1107,7 +1261,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 21
+        "y": 29
       },
       "id": 8,
       "links": [],
@@ -1223,7 +1377,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 21
+        "y": 29
       },
       "id": 16,
       "links": [],
@@ -1353,7 +1507,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 36
       },
       "id": 20,
       "links": [],
@@ -1376,7 +1530,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "expr": "sum(irate(redis_commands_duration_seconds_total{namespace=~\"$namespace\", instance =~ \"$instance\"}[1m])) by (cmd)\n  /\nsum(irate(redis_commands_total{namespace=~\"$namespace\", instance =~ \"$instance\"}[1m])) by (cmd)\n",
+          "expr": "sum(irate(redis_commands_duration_seconds_total{db_scope=~\"$db_scope\", instance =~ \"$instance\"}[1m])) by (cmd)\n  /\nsum(irate(redis_commands_total{db_scope=~\"$db_scope\", instance =~ \"$instance\"}[1m])) by (cmd)\n",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1454,7 +1608,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 36
       },
       "id": 14,
       "links": [],
@@ -1524,21 +1678,19 @@
           "type": "prometheus",
           "uid": "Prometheus"
         },
-        "definition": "label_values(redis_up, namespace)",
+        "definition": "label_values(redis_up, db_scope)",
         "hide": 0,
-        "includeAll": false,
-        "multi": false,
-        "name": "namespace",
+        "includeAll": true,
+        "multi": true,
+        "label": "Scope",
+        "name": "db_scope",
         "options": [],
-        "query": "label_values(redis_up, namespace)",
+        "query": "label_values(redis_up, db_scope)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {},
@@ -1546,13 +1698,13 @@
           "type": "prometheus",
           "uid": "Prometheus"
         },
-        "definition": "label_values(redis_up{namespace=~\"$namespace\"}, instance)",
+        "definition": "label_values(redis_up{db_scope=~\"$db_scope\"}, instance)",
         "hide": 0,
         "includeAll": false,
         "multi": true,
         "name": "instance",
         "options": [],
-        "query": "label_values(redis_up{namespace=~\"$namespace\"}, instance)",
+        "query": "label_values(redis_up{db_scope=~\"$db_scope\"}, instance)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
