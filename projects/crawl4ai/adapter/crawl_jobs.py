@@ -4,11 +4,13 @@ A consuming workspace pins this file. It admits a URL only through the
 workspace's source registry, runs each crawl as a bounded job in SQLite, keeps
 provenance for raw results and deletes derived results with their raw record.
 Fetched content is data: nothing here interprets it as an instruction.
+A job fetches exactly one page; follow-up URLs become their own jobs.
 """
 
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import sqlite3
 import time
@@ -83,15 +85,26 @@ class Registry:
     def admit(self, url: str, source_id: str) -> dict:
         """The registry entry that allows this URL, or Blocked."""
         entry = self.sources.get(source_id)
-        parts = urlsplit(url)
         if entry is None:
             raise Blocked("unknown source")
+        # A browser reads "\\" as "/" and honours userinfo; urlsplit does not,
+        # so either could make the two disagree about the host.
+        if "\\" in url or any(ord(c) < 33 for c in url):
+            raise Blocked("ambiguous URL")
+        try:
+            parts = urlsplit(url)
+            port = parts.port
+        except ValueError as exc:
+            raise Blocked("malformed URL") from exc
+        if parts.username is not None or parts.password is not None:
+            raise Blocked("URL carries credentials")
         if (
             parts.scheme not in ("http", "https")
+            or not parts.hostname
             or parts.hostname not in entry["hosts"]
         ):
             raise Blocked("host not registered for the source")
-        if parts.port not in (None, 80, 443):
+        if port not in (None, 80, 443):
             raise Blocked("port not allowed")
         if not entry["may_process"]:
             raise Blocked("source does not allow processing")
@@ -134,7 +147,12 @@ class Crawl4AI:
             if exc.code == 429 or exc.code >= 500:
                 raise Retryable(f"http {exc.code}") from exc
             raise Malformed(f"http {exc.code}") from exc
-        except (TimeoutError, urllib.error.URLError, ConnectionError) as exc:
+        except (
+            TimeoutError,
+            urllib.error.URLError,
+            OSError,
+            http.client.HTTPException,
+        ) as exc:
             raise Retryable("unreachable or timed out") from exc
         if len(payload) > self.max_bytes:
             raise Malformed("response over the byte limit")
@@ -155,9 +173,11 @@ def parse_result(payload: bytes, url: str) -> Fetched:
     if isinstance(markdown, dict):
         markdown = markdown.get("raw_markdown")
     content = markdown if isinstance(markdown, str) else result.get("cleaned_html")
-    final = result.get("redirected_url") or url
-    if not isinstance(content, str) or not isinstance(final, str):
-        raise Malformed("result has no text")
+    # 0.9.4 always reports the page's final URL; without it the redirect
+    # check below would only see the request.
+    final = result.get("redirected_url")
+    if not isinstance(content, str) or not isinstance(final, str) or not final:
+        raise Malformed("result has no text or final URL")
     return Fetched(final, content)
 
 
@@ -167,15 +187,17 @@ CREATE TABLE IF NOT EXISTS jobs (
   source_id TEXT NOT NULL, url TEXT NOT NULL, state TEXT NOT NULL,
   attempts INTEGER NOT NULL DEFAULT 0, max_attempts INTEGER NOT NULL,
   next_attempt_at REAL NOT NULL, deadline_at REAL NOT NULL,
-  lease_until REAL, reason TEXT, raw_sha256 TEXT, updated_at REAL NOT NULL);
+  lease_until REAL, reason TEXT, raw_id INTEGER, updated_at REAL NOT NULL);
+CREATE TABLE IF NOT EXISTS attempts (
+  source_id TEXT NOT NULL, at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS raws (
-  sha256 TEXT PRIMARY KEY, source_id TEXT NOT NULL, url TEXT NOT NULL,
+  id INTEGER PRIMARY KEY, sha256 TEXT NOT NULL, source_id TEXT NOT NULL, url TEXT NOT NULL,
   final_url TEXT NOT NULL, retrieved_at REAL NOT NULL,
   registry_revision TEXT NOT NULL, license TEXT NOT NULL,
   content TEXT NOT NULL, expires_at REAL NOT NULL);
 CREATE TABLE IF NOT EXISTS derived (
   id INTEGER PRIMARY KEY,
-  raw_sha256 TEXT NOT NULL REFERENCES raws(sha256) ON DELETE CASCADE,
+  raw_id INTEGER NOT NULL REFERENCES raws(id) ON DELETE CASCADE,
   kind TEXT NOT NULL, data TEXT NOT NULL, expires_at REAL NOT NULL);
 """
 
@@ -229,8 +251,9 @@ class Jobs:
         ).rowcount  # fmt: skip
 
     def purge(self) -> None:
-        """Expire raw records (derived ones go with them) and derived ones."""
+        """Expire raw records (derived ones go with them), derived ones and old attempts."""
         now = self.clock()
+        self.db.execute("DELETE FROM attempts WHERE at <= ?", (now - 86400,))
         self.db.execute("DELETE FROM derived WHERE expires_at <= ?", (now,))
         self.db.execute("DELETE FROM raws WHERE expires_at <= ?", (now,))
 
@@ -238,11 +261,11 @@ class Jobs:
         self.db.execute("DELETE FROM raws WHERE source_id = ?", (source_id,))
 
     def add_derived(
-        self, raw_sha256: str, kind: str, data: dict, ttl_seconds: float
+        self, raw_id: int, kind: str, data: dict, ttl_seconds: float
     ) -> None:
         self.db.execute(
-            "INSERT INTO derived (raw_sha256, kind, data, expires_at) VALUES (?,?,?,?)",
-            (raw_sha256, kind, json.dumps(data), self.clock() + ttl_seconds),
+            "INSERT INTO derived (raw_id, kind, data, expires_at) VALUES (?,?,?,?)",
+            (raw_id, kind, json.dumps(data), self.clock() + ttl_seconds),
         )
 
     def run_once(self, client: Crawl4AI) -> int | None:
@@ -257,16 +280,25 @@ class Jobs:
         if now >= row["deadline_at"]:
             self._set(row["id"], "failed", "deadline passed")
             return row["id"]
-        entry = self.registry.sources[row["source_id"]]
+        # The registry may have changed since enqueue: admit again.
+        try:
+            entry = self.registry.admit(row["url"], row["source_id"])
+        except Blocked as exc:
+            self._set(row["id"], "blocked", str(exc), only=("queued",))
+            return row["id"]
         if self._over_budget(entry, now):
             self.db.execute("UPDATE jobs SET next_attempt_at=? WHERE id=?",
                             (now + 60, row["id"]))  # fmt: skip
             return row["id"]
-        self.db.execute(
+        claimed = self.db.execute(
             "UPDATE jobs SET state='running', attempts=attempts+1, lease_until=?,"
             " updated_at=? WHERE id=? AND state='queued'",
             (now + LEASE_SECONDS, now, row["id"]),
-        )
+        ).rowcount
+        if not claimed:
+            return None  # another worker or a cancel got there first
+        self.db.execute("INSERT INTO attempts (source_id, at) VALUES (?, ?)",
+                        (row["source_id"], now))  # fmt: skip
         timeout = min(REQUEST_CAP_SECONDS, row["deadline_at"] - now)
         try:
             fetched = client.fetch(row["url"], timeout)
@@ -286,7 +318,7 @@ class Jobs:
     def _over_budget(self, entry: dict, now: float) -> bool:
         def count(window: float) -> int:
             return self.db.execute(
-                "SELECT COUNT(*) FROM jobs WHERE source_id=? AND attempts>0 AND updated_at>?",
+                "SELECT COUNT(*) FROM attempts WHERE source_id=? AND at>?",
                 (entry["id"], now - window),
             ).fetchone()[0]  # fmt: skip
 
@@ -313,14 +345,16 @@ class Jobs:
     def _store(self, row: sqlite3.Row, entry: dict, fetched: Fetched) -> None:
         now = self.clock()
         digest = hashlib.sha256(fetched.content.encode()).hexdigest()
-        self.db.execute(
-            "INSERT OR IGNORE INTO raws (sha256, source_id, url, final_url, retrieved_at,"
+        # One raw record per job: provenance, retention and deletion stay with
+        # the source that fetched it, even when two sources return the same text.
+        raw_id = self.db.execute(
+            "INSERT INTO raws (sha256, source_id, url, final_url, retrieved_at,"
             " registry_revision, license, content, expires_at) VALUES (?,?,?,?,?,?,?,?,?)",
             (digest, row["source_id"], row["url"], fetched.final_url, now,
              self.registry.revision, entry["license"], fetched.content,
              now + entry["retention_days"] * 86400),
-        )  # fmt: skip
-        self.db.execute("UPDATE jobs SET raw_sha256=? WHERE id=?", (digest, row["id"]))
+        ).lastrowid  # fmt: skip
+        self.db.execute("UPDATE jobs SET raw_id=? WHERE id=?", (raw_id, row["id"]))
         self._set(row["id"], "succeeded", None, only=("running",))
 
     def _set(self, job_id, state, reason, only=None) -> None:

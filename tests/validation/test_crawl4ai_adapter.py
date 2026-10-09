@@ -49,6 +49,7 @@ class FakeCrawl4AI(http.server.BaseHTTPRequestHandler):
         path = url.split("/", 3)[3]
         result = {
             "url": url,
+            "redirected_url": url,  # 0.9.4 always reports the final URL
             "success": True,
             "markdown": {"raw_markdown": f"# Page {path}"},
         }
@@ -69,6 +70,16 @@ class FakeCrawl4AI(http.server.BaseHTTPRequestHandler):
                 return self._send(503, b"{}")
         elif path == "down":
             return self._send(500, b"{}")
+        elif path == "no-final":
+            del result["redirected_url"]
+        elif path == "same-text":
+            result["markdown"]["raw_markdown"] = "# Shared text"
+        elif path == "truncated":
+            self.send_response(200)
+            self.send_header("Content-Length", "100000")
+            self.end_headers()
+            self.wfile.write(b'{"success": tr')
+            return None
         return self._send(
             200, json.dumps({"success": True, "results": [result]}).encode()
         )
@@ -136,7 +147,7 @@ class AdapterTests(unittest.TestCase):
         job = self.run_job("guide")
         self.assertEqual("succeeded", job["state"])
         raw = self.jobs.db.execute(
-            "SELECT * FROM raws WHERE sha256=?", (job["raw_sha256"],)
+            "SELECT * FROM raws WHERE id=?", (job["raw_id"],)
         ).fetchone()
         self.assertEqual("# Page guide", raw["content"])
         self.assertEqual(self.data["revision"], raw["registry_revision"])
@@ -265,23 +276,99 @@ class AdapterTests(unittest.TestCase):
     def test_ttl_and_source_deletion_remove_derived_with_raw(self):
         job = self.run_job("guide")
         self.jobs.add_derived(
-            job["raw_sha256"], "summary", {"title": "Page"}, ttl_seconds=60
+            job["raw_id"], "summary", {"title": "Page"}, ttl_seconds=60
         )
         self.clock.now += 61
         self.jobs.purge()
         self.assertEqual(0, self.count("derived"))
         self.jobs.add_derived(
-            job["raw_sha256"], "summary", {"title": "Page"}, ttl_seconds=3600
+            job["raw_id"], "summary", {"title": "Page"}, ttl_seconds=3600
         )
         self.jobs.delete_source("example-docs")
         self.assertEqual((0, 0), (self.count("raws"), self.count("derived")))
         other = self.run_job("again")
         self.clock.now += self.data["sources"][0]["retention_days"] * 86400
         self.jobs.purge()
-        gone = self.jobs.db.execute(
-            "SELECT 1 FROM raws WHERE sha256=?", (other["raw_sha256"],)
-        )
+        gone = self.jobs.db.execute("SELECT 1 FROM raws WHERE id=?", (other["raw_id"],))
         self.assertIsNone(gone.fetchone())
+
+    def test_a_registry_change_after_enqueue_blocks_the_queued_job(self):
+        disallowed = self.jobs.enqueue(
+            "https://docs.example.org/a", "example-docs", "a"
+        )
+        removed = self.jobs.enqueue("https://docs.example.org/b", "example-docs", "b")
+        changed = copy.deepcopy(self.data)
+        changed["sources"][0]["may_process"] = False
+        self.jobs.registry = crawl_jobs.Registry(changed)
+        self.jobs.run_once(self.client)
+        self.assertEqual("blocked", self.jobs.job(disallowed)["state"])
+        self.jobs.registry = crawl_jobs.Registry({"revision": "empty", "sources": []})
+        self.jobs.run_once(self.client)  # no KeyError for a removed source
+        self.assertEqual("blocked", self.jobs.job(removed)["state"])
+        self.assertEqual([], FakeCrawl4AI.calls)
+
+    def test_identical_text_keeps_each_sources_provenance(self):
+        second = copy.deepcopy(self.data["sources"][0])
+        second.update(id="mirror", hosts=["mirror.example.org"], license="CC0-1.0")
+        self.data["sources"].append(second)
+        self.jobs.registry = crawl_jobs.Registry(self.data)
+        first = self.run_job("same-text")
+        other = self.jobs.job(
+            self.jobs.enqueue("https://mirror.example.org/same-text", "mirror", "m")
+        )
+        self.jobs.run_once(self.client)
+        other = self.jobs.job(other["id"])
+        self.assertNotEqual(first["raw_id"], other["raw_id"])
+        self.jobs.delete_source("example-docs")
+        kept = self.jobs.db.execute(
+            "SELECT license FROM raws WHERE id=?", (other["raw_id"],)
+        ).fetchone()
+        self.assertEqual("CC0-1.0", kept["license"])
+
+    def test_retries_count_against_the_quota(self):
+        self.data["sources"][0]["daily_quota"] = 2
+        self.jobs.registry = crawl_jobs.Registry(self.data)
+        job = self.run_job("down", max_attempts=3)
+        self.clock.now += crawl_jobs.BACKOFF_SECONDS
+        self.jobs.run_once(self.client)
+        self.clock.now += 2 * crawl_jobs.BACKOFF_SECONDS
+        self.jobs.run_once(self.client)  # a third request would exceed the quota
+        job = self.jobs.job(job["id"])
+        self.assertEqual(("queued", 2), (job["state"], job["attempts"]))
+        self.assertEqual(2, len(FakeCrawl4AI.calls))
+
+    def test_ambiguous_urls_are_blocked(self):
+        for url in (
+            "https://evil.example.com\\@docs.example.org/x",
+            "https://user:pw@docs.example.org/x",
+            "https://docs.example.org:99999/x",
+            "https:///x",
+            "https://docs.example.org/a b",
+        ):
+            with self.subTest(url):
+                self.assertEqual(
+                    "blocked",
+                    self.jobs.job(self.jobs.enqueue(url, "example-docs", url))["state"],
+                )
+
+    def test_a_missing_final_url_or_truncated_body_is_not_stored(self):
+        self.assertEqual("failed", self.run_job("no-final")["state"])
+        truncated = self.run_job("truncated", max_attempts=1)
+        self.assertEqual("failed", truncated["state"])
+        self.assertEqual(0, self.count("raws"))
+
+    def test_a_claim_lost_to_a_cancel_does_not_fetch(self):
+        job = self.jobs.enqueue("https://docs.example.org/a", "example-docs", "a")
+        admit = self.jobs.registry.admit
+
+        def cancel_then_admit(url, source_id):
+            self.jobs.cancel(job)
+            return admit(url, source_id)
+
+        self.jobs.registry.admit = cancel_then_admit
+        self.assertIsNone(self.jobs.run_once(self.client))
+        self.assertEqual("cancelled", self.jobs.job(job)["state"])
+        self.assertEqual([], FakeCrawl4AI.calls)
 
 
 class ExtractionTests(unittest.TestCase):
