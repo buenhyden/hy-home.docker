@@ -30,15 +30,18 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     user: '999:999'
+    tmpfs:
+      - /run/valkey:uid=999,gid=999,mode=0700
+    entrypoint: [ '/bin/sh', '/usr/local/libexec/mng-valkey/start.sh' ]
     volumes:
       - mng-valkey-data:/data:rw
+      - ./valkey/scripts:/usr/local/libexec/mng-valkey:ro
     labels:
       <<: *tier-label
       traefik.enable: 'false'
     secrets:
       - mng_valkey_password
-    command: >
-      sh -c ' exec valkey-server --requirepass "$$(cat /run/secrets/mng_valkey_password)" --appendonly yes --port 6379 '
+      - mng_valkey_inspector_password
     ports:
       - ${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}
     expose:
