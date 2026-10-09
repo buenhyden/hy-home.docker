@@ -17,14 +17,19 @@ class PayloadError(ValueError):
     """An edit cannot safely be mapped to repository targets."""
 
 
-def _repository_edit(path: str) -> bool:
-    """A Claude Code session scratchpad is outside repository edit policy."""
+def _memory_file(root: Path, pure: PurePosixPath) -> bool:
+    """One file directly in this project's Claude Code memory directory."""
+    slug = re.sub(r"[^A-Za-z0-9]", "-", root.as_posix())
+    memory = PurePosixPath(Path.home().as_posix(), ".claude", "projects", slug, "memory")
+    return pure.parent == memory and pure.suffix == ".md"
+
+
+def _repository_edit(root: Path, path: str) -> bool:
+    """A session scratchpad or this project's memory file is outside edit policy."""
     pure = PurePosixPath(path)
-    return not (
-        _SESSION_SCRATCHPAD.fullmatch(path)
-        and pure.as_posix() == path
-        and ".." not in pure.parts
-    )
+    if pure.as_posix() != path or ".." in pure.parts:
+        return True
+    return not (_SESSION_SCRATCHPAD.fullmatch(path) or _memory_file(root, pure))
 
 
 def decode_payload(raw: str) -> dict[str, object]:
@@ -221,6 +226,6 @@ def edit_targets(root: Path, data: dict[str, object]) -> tuple[tuple[str, str], 
         dict.fromkeys(
             (_relative_target(root, path), text)
             for path, text in edits
-            if _repository_edit(path)
+            if _repository_edit(root, path)
         )
     )

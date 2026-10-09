@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from scripts.lib.hooks.tool_payload import PayloadError, decode_payload, edit_targets
@@ -70,6 +72,33 @@ class NativeEditPayloadTests(unittest.TestCase):
                 edit_targets(
                     self.root, {"tool_name": "Write", "tool_input": {"file_path": path}}
                 )
+
+    def test_project_memory_file_is_not_a_repository_target(self) -> None:
+        home = "/home/someone"
+        slug = re.sub(r"[^A-Za-z0-9]", "-", self.root.as_posix())
+        memory = f"{home}/.claude/projects/{slug}/memory"
+        with unittest.mock.patch.dict(os.environ, {"HOME": home}):
+            for path in (f"{memory}/MEMORY.md", f"{memory}/gate-base.md"):
+                with self.subTest(path=path):
+                    self.assertEqual(
+                        (),
+                        edit_targets(
+                            self.root,
+                            {"tool_name": "Write", "tool_input": {"file_path": path}},
+                        ),
+                    )
+            for path in (
+                f"{memory}/nested/note.md",
+                f"{memory}/notes.txt",
+                f"{memory}/../settings.json",
+                f"{home}/.claude/projects/-other-repo/memory/note.md",
+                f"{home}/.claude/settings.json",
+            ):
+                with self.subTest(path=path), self.assertRaises(PayloadError):
+                    edit_targets(
+                        self.root,
+                        {"tool_name": "Write", "tool_input": {"file_path": path}},
+                    )
 
     def test_unsafe_paths_fail_before_consumers_can_write(self) -> None:
         outside = self.root.parent / "outside.txt"
