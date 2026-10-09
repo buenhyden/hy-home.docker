@@ -23,7 +23,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-stateful-ai-high
-    image: ollama/ollama:0.40.0
+    image: ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687
     container_name: ollama
     hostname: ollama
     read_only: false
@@ -31,7 +31,12 @@ services:
       - OLLAMA_HOST=0.0.0.0:${OLLAMA_PORT:-11434} # 컨테이너 인터페이스에서 수신
       - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL:-2}
       - OLLAMA_MAX_LOADED_MODELS=${OLLAMA_MAX_LOADED_MODELS:-1}
-      - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-128}
+      - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-16}
+      # Stall limit for a model load. Models load from a busy HDD, where loads
+      # took 12-574 s and two stalled past the 5 m default (SPEC-0226).
+      - OLLAMA_LOAD_TIMEOUT=15m
+      # Keep prompts on this host: no ollama.com cloud models or sign-in.
+      - OLLAMA_NO_CLOUD=1
     volumes:
       - ollama-data:/root/.ollama:rw
     deploy:

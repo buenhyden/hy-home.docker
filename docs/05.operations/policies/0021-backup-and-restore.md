@@ -1,10 +1,10 @@
 ---
 title: "04-Data Backup Policy"
-version: "1.5.2"
+version: "1.5.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0021"
 parent_ids:
@@ -54,7 +54,7 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 | Airflow schedule과 metadata | `airflow-config`, `airflow-dags`, `airflow-logs`, `airflow-plugins`, PostgreSQL database `airflow`, management Valkey | scheduler/worker 일시 중지 이후 조정된 PostgreSQL logical dump와 file snapshot; DAG/plugin/config 보존; log는 operational retention을 따른다 | Encrypted destination 필수; metadata/파일 daily 30일, log 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Airflow operations가 application validation과 Fernet/key custody를 소유한다. |
 | n8n workflow, credential, runner | `n8n-data`, `n8n-task-runner-data`, `n8n-task-runner-worker-data`, `infra/07-workflow/n8n/custom`, PostgreSQL database `n8n`, management Valkey | producer/worker 일시 중지; 조정된 PostgreSQL dump와 file snapshot; encryption key는 별도 보존; Valkey restore 전에 queue replay 여부 결정 | Encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. n8n operations가 workflow, credential, runner validation을 소유한다. |
 | ComfyUI user asset과 workflow | `comfyui-custom-nodes`, `comfyui-input`, `comfyui-output`, `comfyui-user` | custom-node source/revision inventory를 포함한 quiesced file snapshot | source-at-rest encryption 미검증; encrypted destination 필수; input/user는 daily, output/custom node는 weekly, 30/90일 retention | RPO 24시간, RTO 24시간; planning target, 미검증 | No rehearsal. `comfyui-models`, Hugging Face, Torch cache는 model identifier, license, hash가 기록될 때만 rebuild 가능. |
-| Ollama local model store | `ollama-data` → `${DEFAULT_AI_MODEL_DIR}/ollama` | custom Modelfile과 대체 불가능한 input 보존; 검증된 re-pull을 위해 다운로드한 model을 catalog화 | source-at-rest encryption 미검증; custom input weekly 90일 | Rebuild target 24시간; reproducibly sourced된 다운로드 blob은 data-loss RPO가 없다 | No rehearsal. Rebuild 예외는 source, version, license, hash evidence가 필요하다. |
+| Ollama local model store | `ollama-data` → `${DEFAULT_AI_MODEL_DIR}/ollama` | custom Modelfile과 대체 불가능한 input 보존; 검증된 re-pull을 위해 다운로드한 model을 catalog화. `models/manifests`·`manifests-v2`는 state set에 포함하고 blob은 제외 | source-at-rest encryption 미검증; custom input weekly 90일 | Rebuild target 24시간; reproducibly sourced된 다운로드 blob은 data-loss RPO가 없다 | Catalog 격리 복원만 시험(SPEC-0226). Blob re-pull 미시험. Rebuild 예외는 source, version, license, hash evidence가 필요하다. |
 | Qdrant vector collection | `qdrant-data` → `${DEFAULT_DATA_DIR}/qdrant/data` | Qdrant collection/full-storage snapshot을 별도 target으로 복사; live directory 복사를 snapshot으로 취급하지 않는다 | source-at-rest encryption 미검증; encrypted destination 필수; daily 30일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Qdrant operations가 isolated snapshot restore를 소유한다. |
 | Prometheus metrics | `prometheus-data` → `${DEFAULT_OBSERVABILITY_DIR}/prometheus` | 지원되면 engine snapshot, 아니면 stopped filesystem snapshot; tracked scrape/rule configuration은 source에서 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 7일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Prometheus operations가 TSDB validation을 소유한다. |
 | Loki logs | WAL/cache/rule용 `loki-data` → `${DEFAULT_OBSERVABILITY_DIR}/loki`, 그리고 SeaweedFS `loki-bucket` | Loki quiescence, local WAL/rule snapshot, SeaweedFS set(RUN-0024)을 조정; 양쪽을 동일한 recovery point로 restore | source-at-rest encryption 미검증; encrypted destination 필수; daily 14일 | RPO 24시간, RTO 8시간; planning target, 미검증 | No rehearsal. Loki operations와 [RUN-0024](../runbooks/0024-seaweedfs.md)가 validation을 공유한다. |

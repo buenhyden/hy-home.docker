@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.9"
+version: "1.4.10"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -159,8 +159,8 @@ Open WebUI는 세 부분을 함께 복구해야 한다. `webui.db`는 SQLite onl
 export로, `uploads/`와 `.webui_secret_key`는 state 허용 목록으로 백업한다. 이 key가
 없으면 기존 session과 key로 암호화된 값을 쓸 수 없다. 이전에는 key가 container
 layer에 생성돼 재생성마다 바뀌었다. 이제 `WEBUI_SECRET_KEY_FILE`이 data volume을
-가리키므로 이 변경 뒤 첫 재생성에서 한 번 새 key가 생기고(사용자 재로그인 1회),
-그 뒤로는 유지된다.
+가리킨다. SPEC-0226 적용 때 실행 중이던 key를 먼저 volume에 복사했으므로 key는
+바뀌지 않았고 재로그인도 필요 없었다. 그 뒤로도 재생성 때 유지된다.
 
 OpenBao는 Raft snapshot으로 백업한다. 최초 1회 운영자가 unseal된 OpenBao에서
 `infra/03-security/openbao/config/policies/backup-snapshot.hcl`을 `backup-snapshot`
