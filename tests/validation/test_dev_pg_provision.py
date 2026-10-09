@@ -211,18 +211,31 @@ class MonitorProvisionTests(unittest.TestCase):
         self.module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.module)
 
-    def test_monitor_role_is_pg_monitor_only_and_never_rotated(self):
+    def test_monitor_role_has_collector_reads_only_and_follows_its_secret(self):
         sql = self.module.sql()
-        self.assertIn("GRANT pg_monitor TO dev_pg_monitor;", sql)
+        self.assertIn(
+            "GRANT pg_read_all_stats, pg_read_all_settings TO dev_pg_monitor;", sql
+        )
+        self.assertIn(
+            "GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO dev_pg_monitor;",
+            sql,
+        )
+        self.assertIn("'REVOKE pg_monitor FROM dev_pg_monitor'", sql)
+        self.assertNotIn("GRANT pg_monitor", sql)
         self.assertIn("CONNECTION LIMIT 3", sql)
         self.assertIn("NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION", sql)
+        self.assertIn("default_transaction_read_only = on", sql)
         self.assertIn("'dev-pg:development:monitor'", sql)
         self.assertIn("RAISE EXCEPTION 'role ownership mismatch'", sql)
-        # The password is set only while the role cannot log in yet.
-        activate = sql.index("\\if :activate")
-        self.assertLess(activate, sql.index("WITH PASSWORD"))
         self.assertNotIn("GRANT CONNECT", sql)
-        self.assertLess(sql.index("\\getenv"), sql.index("WITH PASSWORD"))
+        # The secret is checked before any role change and applied every run,
+        # so rewriting it and rerunning the job rotates the password.
+        password = sql.index("ALTER ROLE dev_pg_monitor WITH LOGIN")
+        self.assertLess(sql.index("\\getenv"), sql.index("AS secret_ok"))
+        self.assertLess(sql.index("\\if :secret_ok"), sql.index("CREATE ROLE"))
+        self.assertLess(sql.index("ownership mismatch"), password)
+        self.assertNotIn("\\if :activate", sql)
+        self.assertIn("[A-Za-z0-9+/=_-]{16,}", sql)
 
 
 if __name__ == "__main__":

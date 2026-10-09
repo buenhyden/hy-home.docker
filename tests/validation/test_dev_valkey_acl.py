@@ -61,9 +61,8 @@ class DevValkeyAclTests(unittest.TestCase):
         self.assertEqual(
             acl,
             f"user default off\nuser devadmin on #{digest} ~* &* +@all\n"
-            f"user devmonitor on #{monitor} -@all +ping +info +config|get "
-            "+client|list +client|info +client|setname +slowlog|get +slowlog|len "
-            "+latency|latest +latency|histogram +cluster|info\n"
+            f"user devmonitor on #{monitor} -@all +ping +info +command|info "
+            "+slowlog|len +commandlog|len\n"
             f"user devinspector on #{inspector} ~* resetchannels -@all +@read "
             "+@connection -@dangerous +info\n",
         )

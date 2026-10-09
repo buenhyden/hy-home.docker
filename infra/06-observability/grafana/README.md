@@ -127,6 +127,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `mng-pg` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-exporter` | `manage-postgres` | `Infrastructure/postgresql`, `Infrastructure/containers` |  |
 | 04-data | `mng-pg-init` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `mng-pg-monitor-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `mng-valkey` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `mng-valkey-exporter` | `mng-valkey-exporter` | `Infrastructure/redis`, `Infrastructure/containers` |  |
 | 04-data | `neo4j` | none | `Infrastructure/containers` | Community edition has no metrics endpoint |

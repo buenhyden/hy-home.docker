@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Provision the dev-pg metrics role used by dev-pg-exporter.
 
-The role is a marked LOGIN member of pg_monitor only. It never gets CONNECT on
-project databases (they revoke PUBLIC), and a rerun never rotates its password.
+The role is a marked LOGIN role with only the statistics, settings and
+WAL-directory reads the exporter's collectors need (no pg_monitor). It never
+gets CONNECT on project databases (they revoke PUBLIC). Each run sets the
+password from the secret, so a rotation is: rewrite the secret, rerun this
+job, recreate the exporter.
 """
 
 from __future__ import annotations
@@ -27,6 +30,11 @@ def sql():
                 "\\set ON_ERROR_STOP on",
                 "SET log_statement = 'none';",
                 "SET log_min_error_statement = 'panic';",
+                f"\\getenv {PW_VAR} DEV_MONITOR_PASSWORD",
+                # postgres_exporter logs a malformed key/value DSN with the
+                # password in it, so only a base64 alphabet is accepted.
+                f"SELECT :'{PW_VAR}' ~ '^[A-Za-z0-9+/=_-]{{16,}}$' AND length(:'{PW_VAR}') <= 512 AS secret_ok \\gset",
+                "\\if :secret_ok \\else \\echo 'invalid monitor secret' \\\\ SELECT 'invalid monitor secret'::int; \\endif",
                 "SELECT pg_advisory_lock(hashtext('dev-pg:monitor'));",
                 f"SELECT NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '{ROLE}') AS create_role \\gset",
                 "\\if :create_role",
@@ -40,15 +48,13 @@ def sql():
                 "    RAISE EXCEPTION 'role ownership mismatch';",
                 "  END IF;",
                 "END $check$;",
-                f"SELECT NOT rolcanlogin AS activate FROM pg_roles WHERE rolname = '{ROLE}' \\gset",
-                "\\if :activate",
-                f"\\getenv {PW_VAR} DEV_MONITOR_PASSWORD",
-                f"ALTER ROLE {ROLE} WITH PASSWORD :'{PW_VAR}' LOGIN;",
+                f"ALTER ROLE {ROLE} WITH LOGIN CONNECTION LIMIT {CONNECTION_LIMIT} PASSWORD :'{PW_VAR}';",
                 f"\\unset {PW_VAR}",
-                "\\endif",
-                f"GRANT pg_monitor TO {ROLE};",
-                f"ALTER ROLE {ROLE} CONNECTION LIMIT {CONNECTION_LIMIT};",
                 f"ALTER ROLE {ROLE} SET statement_timeout = '10s';",
+                f"ALTER ROLE {ROLE} SET default_transaction_read_only = on;",
+                f"GRANT pg_read_all_stats, pg_read_all_settings TO {ROLE};",
+                f"GRANT EXECUTE ON FUNCTION pg_catalog.pg_ls_waldir() TO {ROLE};",
+                f"SELECT 'REVOKE pg_monitor FROM {ROLE}' WHERE pg_has_role('{ROLE}', 'pg_monitor', 'MEMBER') \\gexec",
             ]
         )
         + "\n"
