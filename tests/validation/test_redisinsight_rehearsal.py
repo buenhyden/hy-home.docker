@@ -21,9 +21,9 @@ ROOT = Path(__file__).resolve().parents[2]
 VALKEY = "valkey/valkey:9.1.2-alpine"
 INSIGHT = "redis/redisinsight:3.8.0"
 PREFIX = "ri-rehearsal"
-EDGE_SUBNET = "172.31.251.0/24"
-EDGE_IP = "172.31.251.3"
-API = f"http://{EDGE_IP}:5540/api"
+INGRESS_SUBNET = "172.31.251.0/24"
+INGRESS_IP = "172.31.251.3"
+API = f"http://{INGRESS_IP}:5540/api"
 
 PROBE = r"""
 const [method, path, body] = process.argv.slice(1);
@@ -95,25 +95,31 @@ class RedisInsightRehearsalTests(unittest.TestCase):
 
     @classmethod
     def cleanup(cls) -> None:
-        for name in ("insight", "dev", "mng", "peer"):
+        for name in ("insight", "dev", "mng", "peer", "mngpeer"):
             docker("rm", "-f", f"{PREFIX}-{name}", check=False)
-        for net in ("edge", "dev", "mng"):
+        for net in ("ingress", "dev", "mng"):
             docker("network", "rm", f"{PREFIX}-{net}", check=False)
 
     @classmethod
     def start(cls) -> None:
         docker(
-            "network", "create", "--internal", "--subnet", EDGE_SUBNET, f"{PREFIX}-edge"
+            "network",
+            "create",
+            "--internal",
+            "--subnet",
+            INGRESS_SUBNET,
+            f"{PREFIX}-ingress",
         )
         docker("network", "create", "--internal", f"{PREFIX}-dev")
         docker("network", "create", "--internal", f"{PREFIX}-mng")
         cls.start_dev()
         cls.start_mng()
         cls.start_insight()
-        docker(
-            "run", "-d", "--name", f"{PREFIX}-peer", "--network", f"{PREFIX}-dev",
-            "--entrypoint", "sleep", VALKEY, "600",
-        )  # fmt: skip
+        for peer, net in (("peer", "dev"), ("mngpeer", "mng")):
+            docker(
+                "run", "-d", "--name", f"{PREFIX}-{peer}", "--network", f"{PREFIX}-{net}",
+                "--entrypoint", "sleep", VALKEY, "600",
+            )  # fmt: skip
         cls.seed()
 
     @classmethod
@@ -150,10 +156,10 @@ class RedisInsightRehearsalTests(unittest.TestCase):
     def start_insight(cls) -> None:
         scripts = ROOT / "infra/04-data/redisinsight/scripts"
         docker(
-            "create", "--name", f"{PREFIX}-insight", "--network", f"{PREFIX}-edge",
-            "--ip", EDGE_IP, "--cap-drop", "ALL",
+            "create", "--name", f"{PREFIX}-insight", "--network", f"{PREFIX}-ingress",
+            "--ip", INGRESS_IP, "--cap-drop", "ALL",
             "--security-opt", "no-new-privileges:true",
-            "-e", f"RI_APP_HOST={EDGE_IP}", "-e", "RI_APP_PORT=5540",
+            "-e", f"RI_APP_HOST={INGRESS_IP}", "-e", "RI_APP_PORT=5540",
             "-e", "RI_ACCEPT_TERMS_AND_CONDITIONS=true",
             "-e", "RI_REDIS_HOST1=dev-valkey", "-e", "RI_REDIS_PORT1=6379",
             "-e", "RI_REDIS_DB1=0", "-e", "RI_REDIS_ALIAS1=DEV / dev-valkey",
@@ -195,6 +201,7 @@ class RedisInsightRehearsalTests(unittest.TestCase):
             for _ in range(8):
                 if cls.api("GET", f"/databases/{database}/info")[0] == 200:
                     break
+                time.sleep(3)
             else:
                 raise AssertionError(f"database {database} never connected")
 
@@ -242,15 +249,27 @@ class RedisInsightRehearsalTests(unittest.TestCase):
         self.assertNotIn("up", loopback)
 
     def test_02_data_network_peer_cannot_bypass_the_gateway(self) -> None:
-        ip = docker(
-            "inspect", "-f", f'{{{{(index .NetworkSettings.Networks "{PREFIX}-dev").IPAddress}}}}',
-            f"{PREFIX}-insight",
-        ).strip()  # fmt: skip
-        out = docker(
-            "exec", f"{PREFIX}-peer", "sh", "-c",
-            f"nc -z -w 3 {ip} 5540 && echo open || echo refused",
-        ).strip()  # fmt: skip
-        self.assertEqual("refused", out)
+        for peer, net, store in (
+            ("peer", "dev", "dev-valkey"),
+            ("mngpeer", "mng", "mng-valkey"),
+        ):
+            ip = docker(
+                "inspect", "-f",
+                f'{{{{(index .NetworkSettings.Networks "{PREFIX}-{net}").IPAddress}}}}',
+                f"{PREFIX}-insight",
+            ).strip()  # fmt: skip
+            self.assertRegex(ip, r"^\d+\.\d+\.\d+\.\d+$")
+
+            def probe(host: str, port: int, peer: str = peer) -> str:
+                return docker(
+                    "exec", f"{PREFIX}-{peer}", "sh", "-c",
+                    f"nc -z -w 3 {host} {port} && echo open || echo refused",
+                ).strip()  # fmt: skip
+
+            with self.subTest(net=net):
+                # Positive control: the same probe reaches the store.
+                self.assertEqual("open", probe(store, 6379))
+                self.assertEqual("refused", probe(ip, 5540))
 
     def test_03_presetup_connections_are_distinct_and_named(self) -> None:
         status, text = self.api("GET", "/databases")
@@ -304,15 +323,32 @@ class RedisInsightRehearsalTests(unittest.TestCase):
                         "NOPERM", self.cli(container, user, password, *command)
                     )
 
+    def test_05b_password_only_auth_still_reaches_the_default_user(self) -> None:
+        # OAuth2 Proxy, n8n, Airflow, backups and the exporter send a password
+        # with no username; MNG must keep answering them as before.
+        out = docker(
+            "exec", "-i", f"{PREFIX}-mng", "sh", "-c",
+            'REDISCLI_AUTH="$(cat)" valkey-cli --no-auth-warning get mng:probe',
+            input_=self.secret["mng_default"],
+        ).strip()  # fmt: skip
+        self.assertEqual("mng-value", out)
+        out = docker(
+            "exec", "-i", f"{PREFIX}-mng", "sh", "-c",
+            'REDISCLI_AUTH="$(cat)" valkey-cli --no-auth-warning ping 2>&1',
+            input_=self.secret["mng_inspector"],
+        ).strip()  # fmt: skip
+        self.assertIn("WRONGPASS", out)
+
     def test_06_stored_passwords_are_encrypted(self) -> None:
         status, text = self.api("GET", "/settings")
         self.assertEqual(200, status, text)
         self.assertTrue(json.loads(text)["agreements"]["encryption"])
-        found = docker(
-            "exec", f"{PREFIX}-insight", "sh", "-c",
-            "grep -rlF \"$0\" /data 2>/dev/null | wc -l", self.secret["dev_inspector"],
-        ).strip()  # fmt: skip
-        self.assertEqual("0", found)
+        for name in ("dev_inspector", "mng_inspector", "ri_key"):
+            found = docker(
+                "exec", f"{PREFIX}-insight", "sh", "-c",
+                "grep -rlF \"$0\" /data 2>/dev/null | wc -l", self.secret[name],
+            ).strip()  # fmt: skip
+            self.assertEqual("0", found, name)
 
     def test_07_dev_outage_is_an_error_and_recovery_reconnects(self) -> None:
         docker("stop", f"{PREFIX}-dev")
