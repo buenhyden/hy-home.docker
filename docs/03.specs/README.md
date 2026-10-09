@@ -62,6 +62,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0224 | [DEV·MNG 저장소 관측 분리](./0224-datastore-observation-split/) | DEV·MNG PostgreSQL·Valkey 전용 관측 계정, `db_scope`·`db_engine` 레이블, 기대 상태 기반 경보와 범위별 대시보드 |
 | SPEC-0225 | [HOME 관측 대상 정리](./0225-observability-home-coverage/) | LAB 전용 대시보드·경보 분리, 비어 있던 대시보드의 수집 보완과 쿼리 정정 |
 | SPEC-0226 | [AI 런타임 고정 검증](./0226-ai-runtime-pin-verification/) | Ollama·Open WebUI digest 고정, 모델 load·대기열 한도, 세션 key·모델 catalog 백업과 격리 복원·기능 검증 |
+| SPEC-0227 | [Stage 05 양식 정비](./0227-stage05-format-refresh/) | 운영 문서 230개의 템플릿 순서·빈 절 검사 도입, 한국어 본문·소유 분리·Compose 사실 정정 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
