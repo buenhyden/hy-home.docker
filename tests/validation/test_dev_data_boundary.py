@@ -101,11 +101,35 @@ class DevDataBoundaryTests(unittest.TestCase):
         self.assertIn("-redis.user=devmonitor", command)
         self.assertIn("redis://dev-valkey:6379", command)
         self.assertNotIn("VALKEY_PORT", command)
+        self.assertIn("-config-command=-", command)
+        self.assertIn("-set-client-name=false", command)
         for job in ("dev-pg-exporter:9187", "dev-valkey-exporter:9121"):
             for config in ("prometheus.yml", "prometheus.dev.yml"):
                 path = ROOT / "infra/06-observability/prometheus/config" / config
                 with self.subTest(config=config, job=job):
                     self.assertIn(job, path.read_text(encoding="utf-8"))
+
+    def test_mng_exporters_use_monitor_accounts_not_admin(self):
+        services = compose("infra/04-data/mng-db/docker-compose.yml")
+        pg = services["mng-pg-exporter"]
+        valkey = services["mng-valkey-exporter"]
+        self.assertEqual(pg["secrets"], ["mng_pg_monitor_password"])
+        self.assertEqual(pg["environment"]["DATA_SOURCE_USER"], "mng_pg_monitor")
+        self.assertEqual(
+            pg["environment"]["DATA_SOURCE_PASS_FILE"],
+            "/run/secrets/mng_pg_monitor_password",
+        )
+        self.assertNotIn("entrypoint", pg)
+        self.assertEqual(
+            pg["depends_on"]["mng-pg-monitor-provision"]["condition"],
+            "service_completed_successfully",
+        )
+        self.assertEqual(valkey["secrets"], ["mng_valkey_monitor_password"])
+        command = "".join(valkey["command"])
+        self.assertIn("-redis.user=mngmonitor", command)
+        self.assertNotIn("-redis.password", command)
+        self.assertIn("-config-command=-", command)
+        self.assertIn("-set-client-name=false", command)
 
 
 if __name__ == "__main__":

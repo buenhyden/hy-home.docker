@@ -190,8 +190,8 @@ services:
     networks:
       dev_data_net: {}
 
-  # Metrics read through the pg_monitor-only dev_pg_monitor role on the fixed
-  # internal port; the admin secret is never mounted here.
+  # Metrics read through dev_pg_monitor (statistics and settings only) on the
+  # fixed internal port; the admin secret is never mounted here.
   dev-pg-exporter:
     profiles: [dev-data]
     extends:
@@ -279,6 +279,8 @@ services:
       traefik.enable: 'false'
 
   # Authenticates as the read-only devmonitor ACL user; `default` is off.
+  # CONFIG, CLIENT SETNAME and the latency histogram are switched off so the
+  # role needs only INFO and log lengths (SPEC-0224).
   dev-valkey-exporter:
     profiles: [dev-data]
     extends:
@@ -295,7 +297,7 @@ services:
     command:
       - |
         export REDIS_PASSWORD="$$(tr -d '\n' < /run/secrets/dev_valkey_monitor_password)"
-        exec /redis_exporter -redis.addr=redis://dev-valkey:6379 -redis.user=devmonitor -web.listen-address=:9121
+        exec /redis_exporter -redis.addr=redis://dev-valkey:6379 -redis.user=devmonitor -web.listen-address=:9121 -config-command=- -set-client-name=false -exclude-latency-histogram-metrics
     secrets:
       - dev_valkey_monitor_password
     depends_on:
