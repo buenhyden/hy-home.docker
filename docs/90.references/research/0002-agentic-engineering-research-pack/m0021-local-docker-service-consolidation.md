@@ -972,9 +972,6 @@ The older 2026-09-19 execution snapshot below remains dated historical evidence.
 | 13-experience | storybook | infra/13-experience/storybook/docker-compose.yml | storybook-mcp | ["experience"] | OPTIONAL | Remote read-only docs MCP for other workspaces' Codex and Claude Code clients; no declared reverse dependency; declared reverse edges=none | none | {"edge_net":{}} | {"exposed":["7613"],"published":[]} | {"mounts":["${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro"],"volume_sources":{}} | ["NODE_EXTRA_CA_CERTS","STORYBOOK_MCP_ISSUER","STORYBOOK_MCP_READER_GROUP","STORYBOOK_MCP_RESOURCE","STORYBOOK_MCP_SCOPE"] | none | {"cpus":"0.50","mem_limit":"256m","pids_limit":256} | leaf={"authentication_env_keys":[],"router_middlewares":{"traefik.http.routers.storybook-mcp.middlewares":"req-rate-limit@file,gateway-standard-chain@file"},"user":"1000:1000"}; inherited-defaults={"cap_drop":["ALL"],"read_only":true,"security_opt":["no-new-privileges:true"]}; extends={"file":"../../common-optimizations.yml","service":"template-infra-readonly-low"}; runtime unverified; [Policy](../../../05.operations/policies/0101-storybook.md) | No persistent service data; image and source reproducibility owned by Storybook package/Dockerfile | [guide](../../../05.operations/guides/0101-storybook.md); [policy](../../../05.operations/policies/0101-storybook.md); [runbook](../../../05.operations/runbooks/0101-storybook.md) | [infra/13-experience/storybook/docker-compose.yml](../../../../infra/13-experience/storybook/docker-compose.yml) | Renovate; [renovate.json5](../../../../renovate.json5); POL-0086 | Retain as the opt-in remote docs MCP behind Keycloak bearer tokens; HOME activation and the Keycloak client require separate approval. |
 <!-- current-service-inventory:end -->
 
-
-
-
 >
 
 ### 2026-09-19 Implementation Findings and Source Checks
