@@ -166,7 +166,11 @@ digests truncated; restore evidence not through restic and re-pull untested)
 plus eight minor ones; `9f1b570f9` resolves them or records them as NOT_RUN.
 The first changed-gate run failed one file-mode test because the worktree was
 checked out with umask 002 (Git records mode 755); with group write removed
-locally the gate passed (rc 0). Not complete: `candidate-quality`, the merge,
+locally the gate passed (rc 0). The first `candidate-quality` run (run
+37964682882, head `7d74231f9`) failed the operations catalog: the generated
+service inventory still listed the old Ollama environment keys. The local
+`--local-only` gate does not run that check; the re-rendered inventory passes
+`check-operations-catalog.py`. Not complete: `candidate-quality`, the merge,
 the owner's sign-in canary, the restic snapshot listing and the image scan
 (needs the Grype network approval) remain.
 
