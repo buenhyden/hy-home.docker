@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.0.3"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -44,16 +44,22 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    ```bash
    docker compose --profile crawl4ai config --quiet
-   docker compose --profile crawl4ai ps -a crawl4ai
-   docker compose --profile crawl4ai logs --tail=100 crawl4ai
+   docker compose --profile crawl4ai ps -a crawl4ai crawl4ai-egress
+   docker compose --profile crawl4ai logs --tail=100 crawl4ai crawl4ai-egress
    ```
 
-2. `64` 종료는 토큰 시크릿이 없거나 16자 미만임을 의미한다.
+2. `64` 종료는 토큰 시크릿이 없거나 16자 미만임을 의미한다. 크롤러가 시작되지 않고 기다리면 `crawl4ai-egress`의 healthcheck를 먼저 본다. 크롤링이 모두 실패하면 gateway log의 `egress refused` 줄에서 거절 사유(port, address, resolve)를 확인하고, 거절된 목적지를 허용하려고 gateway나 internal 네트워크를 완화하지 않는다.
 3. 토큰 노출 시: 서비스를 정지하고, `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를
    승인된 secret 소유자 절차로 교체하고 컨슈머의 토큰을 함께 갱신한다. 단일 파일 secret inode가 바뀌면 소비자 컨테이너 재생성이 필요하다. 새 token의 허용과 기존 token의 거부를 값 비노출로 확인한다.
 4. 반복적인 메모리 부족 재시작 시, `mem_limit`을 올리기 전에 호출자 측에서
    crawl 동시성을 낮춘다.
-5. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
+5. 이미지나 gateway를 바꾼 뒤에는 시작 전에 격리 리허설을 실행한다. 모든 네트워크가 internal이고 대상은 로컬 fixture뿐이며, 끝나면 컨테이너와 네트워크를 지운다.
+
+   ```bash
+   docker pull unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b
+   HYHOME_CRAWL4AI_REHEARSAL=1 python3 -m unittest -v tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests
+   ```
+6. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
 
 ### Verification and recovery limits
 
