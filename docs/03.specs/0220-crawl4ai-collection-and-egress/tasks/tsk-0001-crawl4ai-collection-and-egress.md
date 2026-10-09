@@ -200,6 +200,25 @@ module runs 21 tests (six rehearsal tests skipped without opt-in) and the
 adapter module 21, all passing, and the rehearsal passed six of six again with
 the consumer cases and left nothing behind.
 
+### W7 Validation
+
+Local checks ran in a throwaway worktree with the branch staged on base
+`5f4832a74`:
+
+| Check | Input | Exit | Result |
+| --- | --- | --- | --- |
+| `run-ci-gate.py --profile changed --local-only --explain` | `ae490cbb4` | 0 | Plan printed |
+| `run-ci-gate.py --profile changed --local-only` | `ae490cbb4` | 0 | 13 suites passed (13, 15, 130, 645, 239, 346 with 38 optional skips, 25, 59, 42, 36, 50, 18, 163 tests) |
+| `run-ci-precommit.sh --mode local-staged` | `ae490cbb4` | 2 | `markdownlint` would add a blank line after the RUN-0091 code block |
+| `run-ci-precommit.sh --mode local-staged` | `72a37e1e9` | 0 | 10 hooks passed |
+
+The first changed gate, at `e7ac3c54a`, failed six README links and is
+recorded in W5. `72a37e1e9` changes only that blank line after the gate's
+input, so the gate was not rerun locally; `candidate-quality` runs on the PR
+head. The pinned Crawl4AI image, the rehearsal and the gateway run only in the
+isolated rehearsal: HOME activation, consumer admission and host firewall
+rules were not run.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -210,10 +229,13 @@ the consumer cases and left nothing behind.
 | Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | `f20f626ce` | PASS | W4 Isolated Rehearsal | accepted |
 | Operations documents | 5 | W5 | Link, metadata and catalog checks | `27895b78b` | PASS | W5 Operations Documents | accepted |
 | Independent review | 1, 2, 3 | W6 | Security and correctness review; fix tests; rehearsal rerun | `42b719d22` | PASS | W6 Independent Review | accepted |
+| Validation | 5 | W7 | Changed gate; staged style check | `ae490cbb4`, `72a37e1e9` | PASS | W7 Validation | accepted |
 
 ## Review and Completion
 
-Not complete.
+Source, static, unit and isolated evidence are complete. Not run, and outside
+this request: starting `crawl4ai` on HOME, admitting a consumer, collecting
+real data and host firewall rules. No consumer is connected.
 
 ## Related Documents
 
