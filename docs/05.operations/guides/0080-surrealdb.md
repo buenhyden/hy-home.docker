@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -19,18 +19,6 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Overview
-
 SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트림 호환성을 위해
 운영 계약이 SurrealDB v2로 제한되어 있다.
 [Compose 구현](../../../infra/08-ai/open-notebook/docker-compose.yml)은
@@ -38,6 +26,15 @@ SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트
 `admin`은 더 이상 이를 선택하지 않는다. 커스텀 Dockerfile과 entrypoint가 서버
 프로세스를 소유하고, `surrealdb-data`가 `/mydata`를 영속화하며,
 `surreal_db_password`가 Compose에 리터럴 없이 root 인증을 제공한다.
+
+## Audience and Goal
+
+대상 독자: 운영자, 개발자, AI Agent.
+
+목적: 라이브 복구 테스트를 주장하지 않으면서 현재 profile, 노출, 영속성, 인증,
+namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한다.
+
+## Usage
 
 ### 현재 구현
 
@@ -53,22 +50,16 @@ SurrealDB는 Open Notebook을 위한 `OPTIONAL` 데이터베이스로, 업스트
 | 백업 / 업그레이드 | 새로 호환되는 대상으로의 명시적 namespace/database export/import; 부분 import 대상은 격리 보존하고 재사용하지 않는다; v2 내에서 업스트림 스토리지 형식 순서를 따른다. |
 | 라이선스 / edition | SurrealDB 사용은 현재 공식 라이선스 조건을 준수해야 한다. 이 문서는 프로덕션이나 상업적 권리를 확장하지 않는다. |
 
-### Usage Type
+### 빌드·상태와 버전 한계
 
-`system-guide | operational-reference`
+선택한 Dockerfile은 v2 이미지의 바이너리를 Debian 기반 이미지로 복사한다.
+복사된 entrypoint가 secret을 읽고 `rocksdb:/mydata/db.db`로 시작하므로 README의
+다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. major 태그는 정확한 실행 버전을
+보장하지 않는다. 업그레이드·export/import 전에 resolved 이미지와 엔진 버전 및
+저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
+컨테이너 접근이므로 정적 문서 검증과 구분한다.
 
-### Target Audience
-
-- Operator
-- Developer
-- AI Agent
-
-### Purpose
-
-라이브 복구 테스트를 주장하지 않으면서 현재 profile, 노출, 영속성, 인증,
-namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한다.
-
-### Prerequisites
+### Preflight and normal use
 
 - 저장소 루트에서 작업한다. root Compose가 포함 여부를 소유한다.
 - 값을 출력하거나 복사하지 않고 `surreal_db_password` Docker Secret을 준비한다.
@@ -78,8 +69,6 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
   이 배포는 v2를 유지한다. 선택한 Open Notebook 이미지와의 v3 호환성 근거를
   확보하고 별도로 승인받기 전에는 v3로 변경하지 않는다.
 
-### Step-by-step Instructions
-
 1. 선택된 surface를 렌더링한다: `docker compose --profile surrealdb config --quiet`.
 2. 선언된 서비스를 확인한다: `docker compose --profile surrealdb ps surrealdb`.
 3. credential이나 데이터 없이 준비 상태를 확인한다:
@@ -88,7 +77,25 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 5. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
    스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다.
 
-### Common Pitfalls
+### Common Checks
+
+- `docker compose --profile surrealdb config --quiet`
+- `docker compose --profile surrealdb ps surrealdb`
+- `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
+
+### Runbook Handoff
+
+[Runbook](../runbooks/0080-surrealdb.md)이 health triage와 계획된 격리 export/import
+리허설을 소유한다. [Policy](../policies/0080-surrealdb.md)가 백업, 인증, 보존,
+업그레이드, 제거 통제를 소유한다.
+
+### Traceability
+
+- 선언된 상위 문서: [SurrealDB Policy](../policies/0080-surrealdb.md) (`POL-0080`)
+- 관장 아키텍처: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)
+- 관련 대상 문서: [Policy](../policies/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md)
+
+## Troubleshooting
 
 - 준비 상태는 도달 가능성만 증명한다. 인증, namespace, database, 스키마, 영속성은
   검증하지 않는다.
@@ -103,33 +110,6 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
   새 빈 대상에서 재시도하며 기존 대상 삭제는 별도로 승인한다.
 - 라이브 `/mydata` 디렉터리를 복사하지 않는다. 승인된 export나 별도로 승인된
   정지 상태 스토리지 절차를 사용한다.
-
-### Common Checks
-
-- `docker compose --profile surrealdb config --quiet`
-- `docker compose --profile surrealdb ps surrealdb`
-- `docker compose exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
-
-### Runbook Handoff
-
-[Runbook](../runbooks/0080-surrealdb.md)이 health triage와 계획된 격리 export/import
-리허설을 소유한다. [Policy](../policies/0080-surrealdb.md)가 백업, 인증, 보존,
-업그레이드, 제거 통제를 소유한다.
-
-### 빌드·상태와 버전 한계
-
-선택한 Dockerfile은 v2 이미지의 바이너리를 Debian 기반 이미지로 복사한다.
-복사된 entrypoint가 secret을 읽고 `rocksdb:/mydata/db.db`로 시작하므로 README의
-다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. major 태그는 정확한 실행 버전을
-보장하지 않는다. 업그레이드·export/import 전에 resolved 이미지와 엔진 버전 및
-저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
-컨테이너 접근이므로 정적 문서 검증과 구분한다.
-
-### Traceability
-
-- 선언된 상위 문서: [SurrealDB Policy](../policies/0080-surrealdb.md) (`POL-0080`)
-- 관장 아키텍처: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- 관련 대상 문서: [Policy](../policies/0080-surrealdb.md), [Runbook](../runbooks/0080-surrealdb.md)
 
 ## Related Documents
 

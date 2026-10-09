@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -16,14 +16,10 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
 이 정책은 `08-ai` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL`
 단일 서비스 SurrealDB 배포를 다룬다.
 
 ## Scope
-
-### Policy Scope
 
 - [작성된 Compose 소스](../../../infra/08-ai/open-notebook/docker-compose.yml), Dockerfile, entrypoint
 - 서비스 `surrealdb`. 정확한 프로필은 `surrealdb`, `notebook`
@@ -31,14 +27,7 @@ created: "2026-09-19"
 - `surreal_db_password`와 root/namespace/database 인증 범위
 - 연결된 가이드와 런북
 
-### Traceability
-
-- 상위 아키텍처: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- 대상 동위 문서: [가이드](../guides/0080-surrealdb.md), [런북](../runbooks/0080-surrealdb.md)
-
 ## Rules
-
-### Controls
 
 - **Required**: 현재 호스트 게시 없음과 `ai_net` 애플리케이션 경계를 유지한다.
   새 호스트 게시나 더 넓은 접근은 별도 승인된 네트워크 변경이 필요하다.
@@ -65,6 +54,11 @@ created: "2026-09-19"
   라이브 `/mydata`를 복사하는 것, 부분적으로 import된 대상을 재사용하는 것,
   또는 실행되지 않은 리허설을 테스트된 복구로 제시하는 것.
 
+## Exceptions
+
+소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
+롤백 증거를 기록해야 한다.
+
 ### Verification
 
 - `docker compose --profile surrealdb config --quiet`
@@ -77,12 +71,10 @@ created: "2026-09-19"
 매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
 업그레이드, 제거 변경 전에 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
-롤백 증거를 기록해야 한다.
+- 상위 아키텍처: [AD-0011](../../02.architecture/descriptions/0011-laboratory-architecture.md)
+- 대상 동위 문서: [가이드](../guides/0080-surrealdb.md), [런북](../runbooks/0080-surrealdb.md)
 
 ## Related Documents
 

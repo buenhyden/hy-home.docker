@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.0.0"
+version: "2.0.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-02"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -16,20 +16,15 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+이 가이드는 선택적 six-node Valkey Cluster 실습을 설명한다. 모든 node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로 분류한다. 이 cluster는 HOME workflow broker가 아니며 독립 LAB에서만 실행된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자: 운영자, 개발자, AI Agent.
+
+목적: LAB 전용 six-node Valkey Cluster의 구성, 노출, 영속성, 백업·복원 경계를 현재 Compose와 맞춰 이해한다. HOME의 Airflow와 n8n은 이 cluster가 아니라 `mng-valkey`를 사용한다.
 
 ## Usage
-
-### Usage
-
-이 package는 optional한 six-node Valkey Cluster laboratory를 설명한다. 모든
-node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로
-분류한다. 이는 HOME workflow broker가 아니며, Airflow와 n8n은 기본적으로
-`mng-valkey`를 사용한다.
 
 ### Current implementation
 
@@ -49,7 +44,7 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 
 ### Identity-specific behavior
 
-노드 0/1/2/3/4/5 는 각 PORT·announce address·bind volume·client/bus port 가 다르고 같은 template/security 를 공유한다. init script 는 내부 6379~6384 를 고정 사용한다. `LAB_VALKEY*_HOST_PORT`는 loopback host port만 바꾸며 실제 cluster slot·client 연결은 격리 실행 전까지 미검증이다. 비정상 또는 이미 비어 있지 않은 nodes 상태는 init이 실패하도록 수정했다. init 성공만으로 slot16384/replica 건강을 보장하지 않는다. exporter 는 node0 하나를 target 한다. engine9.1.2 와 exporter1.91.1 release 는 별개이며 AOF/RDB 와 fresh cluster identity 복원 계약은 유지한다.
+노드 0/1/2/3/4/5 는 각 PORT·announce address·bind volume·client/bus port 가 다르고 같은 template/security 를 공유한다. init script 는 내부 6379~6384 를 고정 사용한다. `LAB_VALKEY*_HOST_PORT`는 loopback host port만 바꾸며 실제 cluster slot·client 연결은 격리 실행 전까지 미검증이다. 비정상 또는 이미 비어 있지 않은 nodes 상태는 init이 실패하도록 수정했다. init 성공만으로 slot16384/replica 건강을 보장하지 않는다. exporter 는 node0 하나를 target 한다. engine과 exporter release는 별개이며 정확한 pin은 Compose가 소유한다. AOF/RDB 와 fresh cluster identity 복원 계약은 유지한다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -16,20 +16,18 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성,
 명시적 persistence 소유권, secret, healthcheck, 리소스, 네트워크 경계, 복구
 소유권. service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지
 않는다.
+
+## Audience and Goal
+
+대상 독자: 운영자, 개발자, AI Agent.
+
+목적: data tier의 정적 hardening 확인이 무엇을 증명하고 무엇을 증명하지 않는지 이해하고, root profile 렌더링과 점검 스크립트를 올바르게 사용한다.
+
+## Usage
 
 ### Root validation
 
