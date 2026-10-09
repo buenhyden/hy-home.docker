@@ -21,7 +21,17 @@ def _memory_file(root: Path, pure: PurePosixPath) -> bool:
     """One file directly in this project's Claude Code memory directory."""
     slug = re.sub(r"[^A-Za-z0-9]", "-", root.as_posix())
     memory = PurePosixPath(Path.home().as_posix(), ".claude", "projects", slug, "memory")
-    return pure.parent == memory and pure.suffix == ".md"
+    if pure.parent != memory or pure.suffix != ".md" or memory.is_relative_to(root):
+        return False
+    # A symlinked directory or a linked file could route the write into the
+    # repository, so only a physical directory and a lone regular file pass.
+    if Path(memory).resolve() != Path(memory):
+        return False
+    try:
+        metadata = Path(pure).lstat()
+    except FileNotFoundError:
+        return True
+    return stat.S_ISREG(metadata.st_mode) and metadata.st_nlink == 1
 
 
 def _repository_edit(root: Path, path: str) -> bool:

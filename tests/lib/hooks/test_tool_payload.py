@@ -74,9 +74,16 @@ class NativeEditPayloadTests(unittest.TestCase):
                 )
 
     def test_project_memory_file_is_not_a_repository_target(self) -> None:
-        home = "/home/someone"
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        home = Path(directory.name).resolve().as_posix()
         slug = re.sub(r"[^A-Za-z0-9]", "-", self.root.as_posix())
         memory = f"{home}/.claude/projects/{slug}/memory"
+        Path(memory).mkdir(parents=True)
+        Path(memory, "gate-base.md").write_text("kept")
+        (self.root / "policy.md").write_text("protected")
+        Path(memory, "symlink.md").symlink_to(self.root / "policy.md")
+        os.link(self.root / "policy.md", Path(memory, "hardlink.md"))
         with unittest.mock.patch.dict(os.environ, {"HOME": home}):
             for path in (f"{memory}/MEMORY.md", f"{memory}/gate-base.md"):
                 with self.subTest(path=path):
@@ -93,12 +100,30 @@ class NativeEditPayloadTests(unittest.TestCase):
                 f"{memory}/../settings.json",
                 f"{home}/.claude/projects/-other-repo/memory/note.md",
                 f"{home}/.claude/settings.json",
+                f"{memory}/symlink.md",
+                f"{memory}/hardlink.md",
             ):
                 with self.subTest(path=path), self.assertRaises(PayloadError):
                     edit_targets(
                         self.root,
                         {"tool_name": "Write", "tool_input": {"file_path": path}},
                     )
+
+    def test_symlinked_memory_directory_is_not_exempt(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        home = Path(directory.name).resolve()
+        slug = re.sub(r"[^A-Za-z0-9]", "-", self.root.as_posix())
+        (home / ".claude/projects" / slug).mkdir(parents=True)
+        (home / ".claude/projects" / slug / "memory").symlink_to(
+            self.root, target_is_directory=True
+        )
+        path = f"{home}/.claude/projects/{slug}/memory/note.md"
+        with unittest.mock.patch.dict(os.environ, {"HOME": str(home)}):
+            with self.assertRaises(PayloadError):
+                edit_targets(
+                    self.root, {"tool_name": "Write", "tool_input": {"file_path": path}}
+                )
 
     def test_unsafe_paths_fail_before_consumers_can_write(self) -> None:
         outside = self.root.parent / "outside.txt"
