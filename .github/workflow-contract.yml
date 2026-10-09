@@ -1751,7 +1751,8 @@
   "npm_audit_acceptance": {
     "id": "GHSA-vfj7-8cjw-p6xm",
     "owner": "@buenhyden",
-    "expires_at": "2026-10-10T15:00:00Z",
+    "approved_at": "2026-10-09T07:00:00Z",
+    "expires_at": "2026-11-08T07:00:00Z",
     "project": "projects/storybook/nextjs",
     "dependency_chain": [
       "eslint-config-next@16.4.0",
