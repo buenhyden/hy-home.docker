@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Source: grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao. Provisioned by hy-home (SPEC-0193).",
+  "description": "Source: grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao. Provisioned by hy-home (SPEC-0193). Local changes (SPEC-0225): storage is integrated raft, so storage requests read raft_storage counters; usage gauges need the 24h prometheus_retention_time set in the OpenBao telemetry config.",
   "editable": false,
   "graphTooltip": 1,
   "id": null,
@@ -2057,26 +2057,26 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(irate(${metrics_prefix}_consul_get_count[1m]))",
+          "expr": "avg(irate(${metrics_prefix}_raft_storage_get_count[1m]))",
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "GET",
           "refId": "A"
         },
         {
-          "expr": "avg(irate(${metrics_prefix}_consul_put_count[1m]))",
+          "expr": "avg(irate(${metrics_prefix}_raft_storage_put_count[1m]))",
           "interval": "",
           "legendFormat": "PUT",
           "refId": "B"
         },
         {
-          "expr": "avg(irate(${metrics_prefix}_consul_delete_count[1m]))",
+          "expr": "avg(irate(${metrics_prefix}_raft_storage_delete_count[1m]))",
           "interval": "",
           "legendFormat": "DELETE",
           "refId": "C"
         },
         {
-          "expr": "irate(${metrics_prefix}_consul_list_count{instance=\"$node:$port\"}[1m])",
+          "expr": "irate(${metrics_prefix}_raft_storage_list_count[1m])",
           "interval": "",
           "legendFormat": "LIST",
           "refId": "D"
@@ -2086,7 +2086,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Consul Requests",
+      "title": "Raft Storage Requests",
       "tooltip": {
         "shared": true,
         "sort": 0,

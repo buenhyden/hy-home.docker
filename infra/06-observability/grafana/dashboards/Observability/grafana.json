@@ -81,7 +81,7 @@
           "datasource": {
             "uid": "$datasource"
           },
-          "expr": "grafana_alerting_result_total{job=~\"$job\", instance=~\"$instance\", state=\"alerting\"}",
+          "expr": "grafana_alerting_alerts{job=~\"$job\", instance=~\"$instance\", state=\"alerting\"}",
           "instant": true,
           "interval": "1m",
           "legendFormat": "",
@@ -557,5 +557,5 @@
   "title": "Grafana",
   "uid": "hyhome-grafana",
   "version": 1,
-  "description": "Source: grafana/grafana grafana-mixin/dashboards/grafana-overview.json (2025-08-25). Provisioned by hy-home (SPEC-0193)."
+  "description": "Source: grafana/grafana grafana-mixin/dashboards/grafana-overview.json (2025-08-25). Provisioned by hy-home (SPEC-0193). Local change (SPEC-0225): firing alerts read grafana_alerting_alerts; grafana_alerting_result_total belonged to legacy alerting."
 }

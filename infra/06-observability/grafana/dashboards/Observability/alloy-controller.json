@@ -505,7 +505,16 @@
         },
         "refresh": 2,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        }
       },
       {
         "allowCustomValue": true,
@@ -519,7 +528,16 @@
         },
         "refresh": 2,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        }
       },
       {
         "allValue": ".*",

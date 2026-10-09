@@ -12,7 +12,7 @@
       }
     ]
   },
-  "description": "Source: grafana.com dashboard 9628 revision 8 (2024-12-06). Provisioned by hy-home (SPEC-0193). Local changes (SPEC-0224): db_scope replaces the Kubernetes namespace/release variables; a scope comparison row is added.",
+  "description": "Source: grafana.com dashboard 9628 revision 8 (2024-12-06). Provisioned by hy-home (SPEC-0193). Local changes (SPEC-0224): db_scope replaces the Kubernetes namespace/release variables; a scope comparison row is added. Local changes (SPEC-0225): checkpoint columns come from pg_stat_checkpointer (PostgreSQL 17+); backend buffer columns no longer exist.",
   "editable": false,
   "graphTooltip": 0,
   "id": null,
@@ -2706,13 +2706,6 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(pg_stat_bgwriter_buffers_backend_total{instance=\"$instance\"}[5m])",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "buffers_backend",
-          "refId": "A"
-        },
-        {
           "expr": "irate(pg_stat_bgwriter_buffers_alloc_total{instance=\"$instance\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2720,14 +2713,7 @@
           "refId": "B"
         },
         {
-          "expr": "irate(pg_stat_bgwriter_buffers_backend_fsync_total{instance=\"$instance\"}[5m])",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "backend_fsync",
-          "refId": "C"
-        },
-        {
-          "expr": "irate(pg_stat_bgwriter_buffers_checkpoint_total{instance=\"$instance\"}[5m])",
+          "expr": "irate(pg_stat_checkpointer_buffers_written_total{instance=\"$instance\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "buffers_checkpoint",
@@ -3003,14 +2989,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "irate(pg_stat_bgwriter_checkpoint_write_time_total{instance=\"$instance\"}[5m])",
+          "expr": "irate(pg_stat_checkpointer_write_time_total{instance=\"$instance\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "write_time - Total amount of time that has been spent in the portion of checkpoint processing where files are written to disk.",
           "refId": "B"
         },
         {
-          "expr": "irate(pg_stat_bgwriter_checkpoint_sync_time_total{instance=\"$instance\"}[5m])",
+          "expr": "irate(pg_stat_checkpointer_sync_time_total{instance=\"$instance\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "sync_time - Total amount of time that has been spent in the portion of checkpoint processing where files are synchronized to disk.",

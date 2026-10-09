@@ -113,7 +113,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(kafka_controller_kafkacontroller_globaltopiccount{job=\"kafka-controller\",env=~\"$env\"})",
+          "expr": "avg(kafka_controller_kafkacontroller_globaltopiccount{job=\"kafka-broker\",env=~\"$env\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -380,7 +380,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(kafka_controller_kafkacontroller_globalpartitioncount{job=\"kafka-controller\",env=~\"$env\"})",
+          "expr": "avg(kafka_controller_kafkacontroller_globalpartitioncount{job=\"kafka-broker\",env=~\"$env\"})",
           "instant": true,
           "interval": "",
           "legendFormat": "",
@@ -1207,123 +1207,6 @@
       "type": "table"
     },
     {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 45
-      },
-      "id": 22,
-      "panels": [],
-      "title": "Tiered Storage",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "Prometheus"
-      },
-      "description": "Total tier size",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 9,
-        "x": 0,
-        "y": 46
-      },
-      "id": 23,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "8.1.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "Prometheus"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "topk(10, sum(kafka_log_log_tiersize{job=\"kafka-broker\",env=\"$env\",topic=~\"$topic\"}) by (topic))",
-          "interval": "",
-          "legendFormat": "{{topic}}",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Tiered size",
-      "type": "timeseries"
-    },
-    {
       "datasource": {
         "type": "prometheus",
         "uid": "Prometheus"
@@ -1509,5 +1392,5 @@
   "uid": "hyhome-kafka-topics",
   "version": 2,
   "weekStart": "",
-  "description": "Source: confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-topics-kraft.json. Provisioned by hy-home (SPEC-0193)."
+  "description": "Source: confluentinc/jmx-monitoring-stacks@f376263fc6d7 jmxexporter-prometheus-grafana/assets/grafana/provisioning/dashboards/kafka-topics-kraft.json. Provisioned by hy-home (SPEC-0193). Local changes (SPEC-0225): controller metrics use job kafka-broker; the Confluent Server tiered-storage row is removed."
 }
