@@ -1,10 +1,10 @@
 ---
 title: "Renovate Runbook"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0083"
 parent_ids:
@@ -16,20 +16,14 @@ created: "2026-09-19"
 
 ## Overview
 
+Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, systemd timer 운영 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 정적 readiness 점검, 구체적으로 승인된 live job, 또는 잘못된 Renovate 변경의 복구에
 사용한다. 저장소 루트에서 작업한다.
 
 ## Procedure
-
-### Procedure
 
 1. remote 저장소에 접근하지 않고 검증한다.
 
@@ -114,10 +108,14 @@ Compose project/service 및 one-off label로 해당 실행을 식별하고
 
 ## Verification
 
-### Evidence
-
 승인 여부, config commit, 이미지 선언, 대상 저장소, exit status, 정제된 job 요약, 생성된
 모든 branch/PR을 기록한다. token, 원본 환경 값, 저장소 credential은 기록하지 않는다.
+
+### 복구 완료 기준
+
+Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 사항이 파악되고, token
+처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 때 문서로만
+남겼고 실행하지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
 
 ## Rollback and Escalation
 
@@ -132,12 +130,6 @@ Compose project/service 및 one-off label로 해당 실행을 식별하고
 5. 캐시 손상은 job이 실행 중이지 않을 때 폐기 가능한 캐시를 재생성하여 복구한다. remote
    저장소 상태는 절대 그 캐시에서 복원하지 않는다.
 
-### Verification and Status
-
-Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 사항이 파악되고, token
-처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 2026-09-20 수정 때 문서로만
-남겼고 실행하지 않았다. remote 저장소 변경이나 token validation은 주장하지 않는다.
-
 ### Escalation
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
@@ -145,12 +137,12 @@ Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 �
 알 수 없는 remote write, 과도한 token 권한, token 노출 의심, 인식되지 않는 허용 명령, 또는
 한 번에 하나씩 안전하게 조정할 수 없는 remote 상태는 에스컬레이션한다.
 
+## Related Documents
+
 ### Traceability
 
 - 관장 architecture: [AD-0009](../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 대상 peer 문서: [Guide](../guides/0083-renovate.md), [Policy](../policies/0083-renovate.md)
-
-## Related Documents
 
 - [Renovate Compose source](../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)

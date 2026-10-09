@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -19,15 +19,15 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다.
+`dependency-update` profile에서만 선택된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 의존성 갱신 PR을 승인하고 운영하는 담당자다. 목표는 job의 경계, 정적 검증 방법,
+systemd timer 동작을 확인하는 것이다. live run과 복구 절차는 [Renovate Runbook](../runbooks/0083-renovate.md)이 맡는다.
 
 ## Usage
-
-### Usage
 
 Renovate는 `dependency-update`에서만 선택하는 **DEV** one-shot repository
 유지보수 작업이다. HOME과 일반 `tooling` 시작에서는 제외된다. root Compose
@@ -35,27 +35,25 @@ project는 `renovate.json5`, self-host 설정, `renovate_token` Docker Secret,
 cache volume을 제공한다. live run은 원격 repository를 읽고 branch와 pull
 request를 생성하거나 갱신할 수 있다.
 
-### Implementation Sources
+### 구현 원본
 
 - [Renovate Compose](../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Self-host configuration](../../../infra/09-platform-ops/renovate/config/config.js)
 - [Repository configuration](../../../renovate.json5)
 - [Dependency-version policy](../policies/0086-dependency-version-management.md) (`POL-0086`)
 
+`renovate.json5`의 `docker-compose` manager는 `labs/*.yml`, `infra/07-workflow/n8n`, `infra/08-ai/crawl4ai`,
+`infra/08-ai/ollama`, `infra/08-ai/open-webui`의 Compose 파일을 추적한다. 추적 목록은 [renovate.json5](../../../renovate.json5)가 소유한다.
+
 `POL-0086`은 manager, release age, security update, automerge, updater
 overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScripts: false`와
 좁은 global command allowlist가 실행을 제한한다. cache는 다시 만들 수 있으며 Git
 policy, 원격 repository 상태, token owner가 authoritative하다.
 
-### Normal Use
+### 일반적인 사용
 
 1. token이나 원격 변경 없이 repository와 global 설정을 확인한다.
-
-   ```bash
-   renovate-config-validator --strict --no-global renovate.json5
-   renovate-config-validator --strict infra/09-platform-ops/renovate/config/config.js
-   bash scripts/operations/sync-tech-stack-versions.sh --check
-   ```
+   명령은 [Renovate Runbook 절차](../runbooks/0083-renovate.md#procedure)의 1단계를 따른다.
 
 2. token repository scope, branch protection, dry-run 출력, 대상 repository를
    검토한다. validation은 token 권한을 증명하지 않는다.
@@ -63,11 +61,11 @@ policy, 원격 repository 상태, token owner가 authoritative하다.
    [Renovate runbook](../runbooks/0083-renovate.md#procedure)에 있는 승인된
    절차로만 실행한다.
 
-### Recovery and Upgrade
+### 복구와 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0083-renovate.md)의 `캐시·원격 변경 복구와 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Scheduled Operation via systemd
+### systemd 예약 실행
 
 repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개를
 제공한다.
@@ -77,7 +75,7 @@ repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개�
 | [`hyhome-renovate.service`](../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.service) | oneshot service — Renovate Compose job을 실행 |
 | [`hyhome-renovate.timer`](../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer) | weekly timer — service unit을 트리거 |
 
-#### How the timer works
+#### Timer 동작
 
 - **Schedule**: 월요일 00:00 KST에 최대 60분의 random jitter
   (`RandomizedDelaySec=3600`)를 둔다. 이 값은 `renovate.json5`의 schedule window
@@ -93,7 +91,7 @@ repository는 `infra/09-platform-ops/renovate/`에 systemd unit 파일 두 개�
 - **Timezone**: `OnCalendar`는 `Asia/Seoul`을 지정한다. 설치된 systemd 버전과
   timer 해석은 승인된 호스트 점검에서 확인하며 과거 관측을 현재 상태로 인용하지 않는다.
 
-#### Service flow
+#### Service 흐름
 
 ```text
 Timer fires
@@ -109,7 +107,7 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 중단된다. service는 자동 재시작하지 않으며(`Restart=no`), 실패한 run은 다음
 시도 전에 사람이 log를 검토해야 한다.
 
-#### Installation
+#### 설치
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../runbooks/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 

@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-17"
 
 ## Overview
 
+SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 health·DB 연결 실패, 백그라운드 작업 지연, 검색 인덱스 실패, 토큰·인증 사고,
 DB 복원 또는 승인된 업그레이드에 사용한다.
@@ -37,8 +33,6 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
@@ -94,9 +88,14 @@ DB secret 보관, 여기 표현되지 않은 외부 설치 plugin/config도 보�
 이미지 롤백만으로는 스키마 마이그레이션을 되돌릴 수 없다. 여기서는 백업/복원/
 업그레이드를 실행하지 않았다.
 
-## Verification
+### 버전 적용 한계
 
-### Evidence
+아래의 Server 9.8/9.9 링크는 과거 참고 자료이며 현재 Compose가 선택하는 Community
+Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 release·DB·plugin 지원
+근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
+현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
+
+## Verification
 
 command exit, image/source commit, DB backup/checksum/schema, project와 task
 count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
@@ -117,20 +116,13 @@ DB backup이 없거나 미검증이거나, migration이 모호하거나, DB가 c
 plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, authorization bypass가
 있으면 중단한다.
 
-### 버전 적용 한계
-
-아래의 Server 9.8/9.9 링크는 과거 참고 자료이며 현재 Compose가 선택하는 Community
-Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 release·DB·plugin 지원
-근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
-현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
+## Related Documents
 
 ### Traceability
 
 - [Guide](../guides/0066-sonarqube.md) (`GDE-0066`)
 - [Policy](../policies/0066-sonarqube.md) (`POL-0066`)
 - [SonarQube Compose](../../../infra/11-quality/sonarqube/docker-compose.yml)
-
-## Related Documents
 
 - [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
 - [SonarQube upgrade](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)

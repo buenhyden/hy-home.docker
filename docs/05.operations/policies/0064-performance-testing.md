@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 문서는 로드 테스팅 및 벤치마킹 작업 시 시스템의 가용성과 안정성을 유지하기 위한 운영 정책을 정의합니다. 특히, 부하 테스트가 실제 운영 중인 다른 서비스에 미치는 영향을 최소화하고 지표의 무결성을 보장하는 방법을 다룹니다.
 
 ### Policy Goals
@@ -28,28 +26,15 @@ created: "2026-05-17"
 
 ## Scope
 
-### Policy Scope
-
 - `infra/11-quality/k6/`와 실행별 원본·판정·적재 계약
 - `infra/11-quality/wiremock/`의 기능/부하 모의 모드
 - `labs/locust.yml`의 독립 실습 실행
 - 개발 `perf_db`의 프로젝트별 조회·적재·판정 권한
 - 승인된 local·development·homelab 성능 테스트 시간대
 
-### Target Audience
-
-- Operator
-- Performance Engineer
-- Infrastructure Admin
-
-### Traceability
-
-- 상위 문서: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
+적용 대상 역할은 Operator, Performance Engineer, Infrastructure Admin이다.
 
 ## Rules
-
-### Controls
 
 - **Required**: 연결된 가이드와 구현 원본의 운영 계약을 유지한다.
 - **Allowed**: 링크와 검증 근거를 갱신하는 문서 수정을 허용한다.
@@ -81,6 +66,10 @@ created: "2026-05-17"
 
 이 정책은 플랫폼의 전체 성능 가용성 기준을 따르며, 모든 테스트 수행 이력은 감사(Audit) 대상이 될 수 있습니다.
 
+## Exceptions
+
+현재 승인된 예외는 없다. 예외가 필요하면 대상, 위험, 만료 조건, 소유자를 기록하고 target owner와 `@buenhyden`의 승인을 받는다.
+
 ### Verification
 
 - 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
@@ -91,11 +80,10 @@ created: "2026-05-17"
 
 - 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-N/A — 현재 승인된 예외 없음.
+- 상위 문서: [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- 동일 주제 문서: [Guide](../guides/0064-performance-testing.md) (`GDE-0064`), [Runbook](../runbooks/0064-performance-testing.md) (`RUN-0064`)
 
 ## Related Documents
 

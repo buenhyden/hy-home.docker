@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -19,17 +19,18 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+SonarQube Community Build는 `infra/11-quality/sonarqube/`의 `sonarqube` service로 운영하는 코드 품질·SAST 도구다.
+`tooling`과 `sast` profile에서만 선택되며 HOME에서는 제외된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 코드 분석을 실행하는 개발자와 서비스를 운영하는 담당자다. 목표는 현재 구현의 인증 경계와
+데이터 위치를 이해하고, 분석 토큰으로 스캐너를 안전하게 실행하는 것이다. DB 복구와 업그레이드는
+[SonarQube Runbook](../runbooks/0066-sonarqube.md)이 맡는다.
 
 ## Usage
 
-### Usage
-
-### 목적과 분류
+### 분류와 범위
 
 SonarQube Community Build는 `tooling`과 `sast` 하위의 온디맨드 **OPTIONAL**
 코드 품질/SAST 서비스이며 HOME에서 제외된다. 이 저장소는 이 서비스 가이드에서
@@ -92,10 +93,7 @@ Sonar 토큰만으로 cookie 기반 ForwardAuth를 통과할 수 있는 것은 �
 
 ### 버전 적용 한계
 
-아래의 Server 9.8/9.9 링크는 과거 참고 자료이며 현재 Compose가 선택하는 Community
-Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 release·DB·plugin 지원
-근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
-현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
+과거 Server 9.8/9.9 참고 링크는 현재 Community Build의 실행 절차를 보증하지 않는다. 업그레이드와 재인덱싱 복구 전 확인 사항은 [런북](../runbooks/0066-sonarqube.md)의 `버전 적용 한계`를 따른다.
 
 ### Traceability
 

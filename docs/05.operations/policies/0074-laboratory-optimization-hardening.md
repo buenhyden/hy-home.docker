@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Hardening Operations Policy"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
 이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
 
 ## Scope
-
-### Policy Scope
 
 - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`, `infra/12-analytics/jupyterlab/`
 - `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
@@ -31,14 +27,7 @@ created: "2026-05-10"
 - **Systems**: dozzle, redisinsight, open-notebook, surrealdb
 - **Environments**: local·DEV·stage 및 production-like 관리 환경
 
-### Traceability
-
-- 상위 문서: [Administration and Experimentation Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- 동일 주제 문서: [Guide](../guides/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - 라우터는 해당 서비스 정책의 gateway·IP allowlist·인증 통제를 적용한다. Dozzle의 native OIDC와 Open Notebook의 공유 SSO 제외 예외를 유지한다.
@@ -71,6 +60,11 @@ created: "2026-05-10"
   - notebook data retention/expiration 기준 문서화
   - API/SurrealDB host-bound port 노출 필요성, 방화벽, 접근 경계 evidence 기록
 
+## Exceptions
+
+- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
+- 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
+
 ### Verification
 
 - `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`
@@ -83,12 +77,10 @@ created: "2026-05-10"
 - 월 1회 정기 검토
 - allowlist/권한/노출 정책 변경 시 수시 검토
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
-- 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
+- 상위 문서: [Administration and Experimentation Architecture Description](../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+- 동일 주제 문서: [Guide](../guides/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../runbooks/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 ## Related Documents
 

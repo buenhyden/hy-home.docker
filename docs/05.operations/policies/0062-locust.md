@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 절대 포함되지 않는다. 이 정책은 test target을 보호하고 검토되지
 않은 load, credential capture, 오해를 부르는 performance evidence를
@@ -25,21 +23,11 @@ Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 
 ## Scope
 
-### Policy Scope
-
 `labs/locust.yml`의 `lab-locust-master`와 `lab-locust-worker` service,
 bind-backed scenario/result 디렉터리, target authorization, result handling,
 scaling, image upgrade.
 
-### Traceability
-
-- [Guide](../guides/0062-locust.md) (`GDE-0062`)
-- [Runbook](../runbooks/0062-locust.md) (`RUN-0062`)
-- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-
 ## Rules
-
-### Controls
 
 - **Activation:** `labs/locust.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
@@ -70,6 +58,17 @@ scaling, image upgrade.
   해결된 후에만 service를 제거한다. host 디렉터리 삭제는 별도의
   destructive action이다.
 
+### 현재 구현 제한
+
+현재 master와 worker는 독립 LAB entrypoint에 있으며 정상 root service가 아니다. 승인 없는
+부하 재생 금지 기준은 유지한다. 운영자는 종료 상태와 result path를 확인해야 한다. 책임자는 `@buenhyden`이다.
+
+## Exceptions
+
+모든 편차는 target, blast radius, expiry, stop condition, recovery
+owner를 명시해야 한다. exception은 target authorization이나 secret
+handling을 면제할 수 없다.
+
 ### Verification
 
 Static Compose와 hardening check는 configuration만 증명한다. Runtime
@@ -80,18 +79,11 @@ stopped state를 포함해야 한다.
 
 프로필·Dockerfile 의존성·시나리오 저장소·대상 네트워크·확장 동작이 바뀔 때 검토한다.
 
-### 현재 구현 제한
+### Traceability
 
-현재 master와 worker는 독립 LAB entrypoint에 있으며 정상 root service가 아니다. 승인 없는
-부하 재생 금지 기준은 유지한다. 운영자는 종료 상태와 result path를 확인해야 한다. 책임자는 `@buenhyden`이다.
-
-## Exceptions
-
-### Exceptions
-
-모든 편차는 target, blast radius, expiry, stop condition, recovery
-owner를 명시해야 한다. exception은 target authorization이나 secret
-handling을 면제할 수 없다.
+- [Guide](../guides/0062-locust.md) (`GDE-0062`)
+- [Runbook](../runbooks/0062-locust.md) (`RUN-0062`)
+- [Platform Operations·Quality 아키텍처](../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 
 ## Related Documents
 

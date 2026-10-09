@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-05-10"
 
 ## Overview
 
+Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/IP 충돌을 진단하는 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 신규 서비스의 peer 연결, 기존 membership·고정 주소 변경 또는 DNS/IP 충돌을
 검토할 때 사용한다. 저장소 루트에서 정확한 Compose service·fragment·network·peer,
@@ -31,9 +27,7 @@ created: "2026-05-10"
 
 ## Procedure
 
-### Procedure
-
-### 1. Confirm declaration and target
+### 선언과 대상 확인
 
 [Guide](../guides/0077-ip-address-management.md)의 flow와
 [Policy](../policies/0077-ip-address-management.md)의 static-address 제한을 대조한다.
@@ -47,7 +41,7 @@ rg -n "ipv4_address:" infra docker-compose.yml
 trusted-proxy/announce 주소 소비자를 함께 확인한다. target·peer·alias가 불명확하면
 수정하지 않고 @buenhyden에게 전달한다.
 
-### 2. Change and validate the scoped source
+### 범위를 정한 source 변경과 검증
 
 승인된 fragment의 dictionary membership만 수정하고 root include와 profile을
 확인한다. 다른 service의 주소나 외부 network를 함께 바꾸지 않는다.
@@ -65,7 +59,7 @@ python3 -m unittest tests.validation.test_compose_baseline_gates.NetworkSegmenta
 실제 검사 범위를 기록한다. 실패하면 적용을 중단한다. 이 결과는 static-IP 전체
 충돌 검사나 live reachability가 아니며 수정만으로 기존 컨테이너 network가 바뀌지 않는다.
 
-### 3. Observe an approved running target
+### 승인된 실행 대상 관찰
 
 현재 context가 승인된 대상인지 확인한 뒤 실제 이름으로 대체한다. 아래 placeholder는
 운영자가 확인한 값이며 전체 inspect나 Config.Env를 출력하지 않는다.
@@ -85,8 +79,6 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 
 ## Verification
 
-### Evidence
-
 시각·context·service/profile·source commit·변경 hunk·network별 주소 대조와 검사
 종료 상태를 기록한다. runtime 미실행은 명시한다. 원문 환경, 전체 inspect, secret,
 개인 path나 payload를 기록하지 않는다.
@@ -105,13 +97,13 @@ network 재생성이 필요하면 incident와 별도 복구 승인을 요구한�
 검증 실패, 잘못된 context, 알 수 없는 peer·주소 충돌, secret 노출 위험 또는 파괴적
 복구가 필요하면 멈추고 @buenhyden에게 대상·값 없는 증거·시도 단계·복구 상태를 전달한다.
 
+## Related Documents
+
 ### Traceability
 
 - 상위 Guide: [GDE-0077](../guides/0077-ip-address-management.md)
 - 구조: [AD-0026](../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - 통제: [POL-0077](../policies/0077-ip-address-management.md)
-
-## Related Documents
 
 - [Operations index](../README.md)
 - [시스템 진단](0099-system-operations.md)

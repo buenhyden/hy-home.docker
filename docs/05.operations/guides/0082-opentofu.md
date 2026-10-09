@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0082"
 parent_ids:
@@ -19,17 +19,17 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+OpenTofu는 `infra/09-platform-ops/opentofu/`의 `opentofu` service로 요청 시 실행하는 DEV IaC CLI 작업이다.
+`iac` profile에서만 선택된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 IaC plan과 apply를 승인하고 실행하는 운영자다. 목표는 실행 경계, state와 명령의 의미,
+일반 사용 순서를 확인하는 것이다. state 복구와 lock 진단은 [OpenTofu Runbook](../runbooks/0082-opentofu.md)이 맡는다.
 
 ## Usage
 
-### Usage
-
-### Purpose and runtime boundary
+### 실행 경계
 
 OpenTofu는 요청 시 실행하는 DEV IaC CLI 작업이다. `iac` profile에만 속하며
 HOME과 일반 `tooling`에서는 제외된다. root project는 inline Dockerfile로 로컬
@@ -41,7 +41,7 @@ credential 마운트라도 원격 API 권한을 부여한다.
 resource/security 기준선을 정의한다. 선언된 기본 네트워크의 도달 가능성을 별도로 확인한다. private `object_net`의
 tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가는 별도 검토가 필요하다. 이 leaf에는 Docker secret이나 공개된 port가 없다.
 
-### State and command semantics
+### State와 명령 의미
 
 - 선택된 workspace 설정이 state를 `/workspace`의 로컬 파일로 둘지 원격
   backend로 둘지 결정한다. Compose 파일은 backend를 선택하지 않는다.
@@ -53,7 +53,7 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
   비활성화하지 않는다. `force-unlock`은 writer가 남아 있지 않다고 증명한
   후, 운영자 자신이 남긴 lock에만 사용한다.
 
-### Normal use
+### 일반적인 사용
 
 1. repository root에서 작업하며 `infra/09-platform-ops/opentofu/workspace` 아래의
    정확한 디렉터리, backend, workspace 이름, account, 예상 리소스를 식별한다.
@@ -69,7 +69,7 @@ tfstate endpoint에는 자동으로 연결되지 않으며 네트워크 추가�
 5. 저장된 plan을 적용할지는 따로 결정한다. plan digest, 리소스 수,
    승인, exit status, apply 후 점검을 secret 없이 기록한다.
 
-### Backup and upgrade
+### 백업과 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../runbooks/0082-opentofu.md)의 `상태 보존과 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 

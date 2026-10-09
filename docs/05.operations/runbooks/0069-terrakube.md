@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -16,13 +16,10 @@ created: "2026-05-17"
 
 ## Overview
 
+Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원,
+업그레이드 절차다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 승인된 backup/restore/upgrade에 사용한다. 저장소 루트에서 작업한다.
@@ -37,8 +34,6 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 새 Terrakube run을 동결한다. workspace/run ID, VCS ref, state key, component
    status, apply 진행 여부를 기록한다. remote effect와 recovery owner를 파악하기
@@ -100,9 +95,11 @@ API/executor를 정지한다. provider와 webhook egress를 비활성화한 격�
 마이그레이션 이후 데이터베이스/state 롤백 없이 이미지만 롤백하는 것은 안전하지
 않다. 이 문서 작업에서는 백업/복원과 업그레이드 리허설을 실행하지 않았다.
 
-## Verification
+### 현재 실행 경로의 제한
 
-### Evidence
+인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다. 제한의 배경은 [Guide](../guides/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
+
+## Verification
 
 정제된 컴포넌트 health·run/workspace 개수·백업 ID/checksum·state-key 개수·
 release/source 커밋·비적용 plan 결과와 최종 상태를 기록한다.
@@ -121,21 +118,13 @@ component restart나 단일 store snapshot으로 recovery했다고 주장하지 
 active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access, auth
 모호성, backup 불가, destructive migration이 있으면 중단한다.
 
-### 현재 실행 경로의 제한
-
-추적되는 Compose와 README는 cookie 기반 ForwardAuth가 Terraform CLI/API 토큰
-요청 및 공개 API URL을 사용하는 executor 요청을 막는 상태임을 명시한다. 전용
-`home-terrakube` client/audience와 RBAC 활성화는 별도 승인된 구현 변경이 필요하다.
-현재 gateway 통제는 유지하며 로그인·health 성공을 실행 가능 증거로 기록하지 않는다.
-인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다.
+## Related Documents
 
 ### Traceability
 
 - [Guide](../guides/0069-terrakube.md) (`GDE-0069`)
 - [Policy](../policies/0069-terrakube.md) (`POL-0069`)
 - [Terrakube Compose](../../../infra/09-platform-ops/terrakube/docker-compose.yml)
-
-## Related Documents
 
 - [Terrakube documentation](https://docs.terrakube.io/)
 - [Operations index](../README.md)

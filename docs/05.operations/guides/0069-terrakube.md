@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -21,17 +21,17 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
+Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한
+온디맨드 DEV IaC 자동화·제어 플레인이다. 세 service는 `iac` profile에서만 선택된다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 IaC 실행을 승인하고 운영하는 담당자다. 목표는 구성 요소 간 흐름, 현재 인증 경로의 제한,
+일반 사용 순서를 확인하는 것이다. 장애 진단과 백업·복원은 [Terrakube Runbook](../runbooks/0069-terrakube.md)이 맡는다.
 
 ## Usage
 
-### Usage
-
-### 목적과 분류
+### 분류와 토폴로지
 
 Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, executor는
 `iac`에만 속한다. 광범위한 `tooling`과 HOME은 이를 시작하지 않는다. 검토된 협업
