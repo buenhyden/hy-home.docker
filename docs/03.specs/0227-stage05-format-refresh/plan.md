@@ -24,7 +24,7 @@ one writer per file, repair links and bindings, then verify the full list.
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
 | W1 | 1 | Profile flags, schema, validator and unit tests | None | TSK-0001 | Task evidence |
-| W2 | 2, 3 | Nine subject batches, one commit each | W1 | TSK-0001 | Task evidence |
+| W2 | 2, 3 | Nine subject batches, one commit each (ten with the returned files) | W1 | TSK-0001 | Task evidence |
 | W3 | 4 | Inbound anchors and Guide service bindings | W2 | TSK-0001 | Task evidence |
 | W4 | 2, 3 | Full-list section, lint, metadata, language and content-loss audit | W3 | TSK-0001 | Task evidence |
 | W5 | 5 | Review, changed gate, staged style check, candidate quality, merge | W4 | TSK-0001 | Task evidence |

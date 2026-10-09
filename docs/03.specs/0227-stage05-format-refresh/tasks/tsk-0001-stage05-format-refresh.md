@@ -185,12 +185,34 @@ in the runbook), the removed Usage Type values, headings referred to by their
 old names, the LAB-only PostgreSQL ports, the never-matching `rg`, and the
 duplicate text the unclosed fence had swallowed.
 
+### Review
+
+An independent review found no critical or important issue and nineteen
+minor ones; every fact correction it checked against `infra/` and `labs/`
+held. Resolved in `b91bcd7f7` (validator) and the following documentation
+commit: the empty-section scan now follows the same CommonMark fence rules
+as heading extraction, keeps text after a closing comment and skips the
+order check for sealed shapes, with five more tests (twelve in all); four
+runbooks pointed "위 격리…" at a plan that is now below; five filler lead-in
+sentences were removed; six runbooks had Traceability under Rollback and
+Escalation; eight kept an old Evidence heading (renamed `증거 기록`, or dropped
+where it was the only one); a dropped evidence bullet was restored in
+RUN-0056 and RUN-0057; English prose in POL-0029 and RUN-0056/0057 was
+translated; and POL-0045 now links the retention default instead of
+repeating it. Left as they are, with reasons: the runbook profile's
+optional old-template H2s are unused but still referenced by the
+operations catalog code, so removing them is a separate change; spacing
+and mixed endings in RUN-0021 and RUN-0053, and the command-less Common
+Checks in GDE-0028, predate this change; the English history blockquote in
+GDE-0040 is quoted evidence. The batch count is ten commits, not nine: the
+four returned files have their own commit.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Validator | 1 | W1 | Seven unit tests; governance suite (775); rule over `origin/main` | `c012032e9` | PASS | W1 Validator | accepted |
-| Batches | 2, 3 | W2 | Section rule, markdownlint, loss comparison per batch | `511c454e7`..`d8920a7fa` | PASS | W2 Batches | accepted |
+| Batches | 2, 3 | W2 | Section rule, markdownlint, loss comparison per batch | `c012032e9..d8920a7fa` (ten batch commits and `c87867aec`) | PASS | W2 Batches | accepted |
 | Links and bindings | 4 | W3 | `check-document-links.py --mode all`; `check-operations-catalog.py` | `567eafecc` | PASS | W3 Links and Bindings | accepted |
 | Full list | 2, 3 | W4 | Rule over 230 files; metadata `check-changed` (230 selected, 0 violations); loss audit | `567eafecc` | PASS | W4 Full List | accepted |
 | Validation | 5 | W5 | Review, changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
