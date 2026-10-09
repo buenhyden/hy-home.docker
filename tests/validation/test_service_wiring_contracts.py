@@ -73,26 +73,31 @@ class AiRuntimeContractTests(unittest.TestCase):
             pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.11\.4-cuda"),
         )
 
-    def test_webui_waits_longer_than_an_ollama_cold_load(self) -> None:
+    def test_slow_loads_are_not_cut_off(self) -> None:
+        # Ollama's limit is for a stalled load; Open WebUI keeps its default of
+        # no total request timeout, so a long streamed answer is not cut off.
         self.assertEqual("15m", self.ollama_env["OLLAMA_LOAD_TIMEOUT"])
-        self.assertGreater(
-            int(self.webui["environment"]["AIOHTTP_CLIENT_TIMEOUT"]), 15 * 60
-        )
+        self.assertNotIn("AIOHTTP_CLIENT_TIMEOUT", self.webui["environment"])
 
     def test_queue_is_bounded_and_cloud_is_off(self) -> None:
         self.assertEqual("${OLLAMA_MAX_QUEUE:-16}", self.ollama_env["OLLAMA_MAX_QUEUE"])
         self.assertEqual("1", self.ollama_env["OLLAMA_NO_CLOUD"])
 
     def test_webui_has_no_gpu_docker_socket_or_host_shell(self) -> None:
-        self.assertNotIn("deploy", self.webui)
-        for volume in self.webui["volumes"]:
-            self.assertNotIn("docker.sock", volume)
+        for key in ("deploy", "gpus", "runtime", "devices", "privileged"):
+            self.assertNotIn(key, self.webui)
+        self.assertNotIn("docker.sock", str(self.webui["volumes"]))
         self.assertNotIn("TERMINAL_SERVER_CONNECTIONS", self.webui["environment"])
         self.assertTrue(
             self.webui["environment"]["WEBUI_SECRET_KEY_FILE"].startswith(
                 "/app/backend/data/"
             )
         )
+
+    def test_renovate_tracks_both_compose_files(self) -> None:
+        renovate = (ROOT / "renovate.json5").read_text(encoding="utf-8")
+        for name in ("ollama", "open-webui"):
+            self.assertIn(f"infra\\\\/08-ai\\\\/{name}\\\\/docker-compose", renovate)
 
 
 class ComposeCoreReadinessExampleTests(unittest.TestCase):

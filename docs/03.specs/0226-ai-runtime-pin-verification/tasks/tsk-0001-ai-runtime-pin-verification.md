@@ -34,9 +34,9 @@ run them for 27 hours. HOME steps recreate only `ollama` and `open-webui`.
 | Item | Ollama | Open WebUI |
 | --- | --- | --- |
 | Release | v0.40.0, 2026-09-25 (v0.40.2 is newer; not taken, the tag is the owner's) | v0.11.4, 2026-09-21, latest |
-| Registry index digest | `sha256:1bef6397…e1687`, linux/amd64 and arm64 | `sha256:61fabfa0…747b1`, linux/amd64 and arm64 |
+| Registry index digest | `sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687`, linux/amd64 and arm64 | `sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1`, linux/amd64 and arm64 |
 | HOME image ID | Same digest | Same digest |
-| Previous tag (rollback reference) | 0.35.0 `sha256:2a6e883b…25d01` | v0.11.3-cuda `sha256:f27666b8…bae6` |
+| Previous tag (rollback reference) | 0.35.0 `sha256:2a6e883b917fc543389599dae79918f5cac9e1438890506982f44aa4f5625d01` | v0.11.3-cuda `sha256:f27666b889001e1d2c639ca4af527aad6e466bd1a1ac70cae5ce13dfe35ebae6` |
 | Licence | MIT | Open WebUI licence (repository reports NOASSERTION) |
 | Upstream advisories affecting the pin | 0 of 16 (GitHub advisory database) | 0 of 194 (repository and pip advisories); four medium-to-high ones are fixed in 0.11.4 |
 | CUDA | GTX 1060, compute 6.1: `cuda_v13` skips it, `cuda_v12` runs it; driver 580.178.04, CUDA 13.0 | No GPU device; `torch.cuda.is_available()` is `False` |
@@ -63,21 +63,30 @@ The model store is on the HDD `sdb`, measured at 99 % utilisation with
 Ollama reading about 3 MB/s; a 12 GiB container limit did not help (HTTP 500
 at 303 s) and a single parallel slot left `qwen3:8b` partly on the CPU
 (4.68 of 5.56 GiB, 574 s load, 13.8 tokens/s). Ollama therefore gets
-`OLLAMA_LOAD_TIMEOUT=15m`, a queue of 16 and `OLLAMA_NO_CLOUD=1`, keeps two
-parallel slots and one loaded model, and Open WebUI waits 960 s.
+`OLLAMA_LOAD_TIMEOUT=15m` (its stall limit for a load, per the v0.40.0
+source), a queue of 16 and `OLLAMA_NO_CLOUD=1`, and keeps two parallel slots
+and one loaded model. Open WebUI 0.11.4 applies no total aiohttp timeout when
+`AIOHTTP_CLIENT_TIMEOUT` is unset (`None`; 300 only for an invalid value), so
+the review's finding led to removing the 960 s value, which would have cut
+off long streamed answers.
 
 ### W3 Backup and Restore
 
 `ai/ollama/models/manifests` and `manifests-v2` join the restic state set; the
-blobs stay out and are re-pulled by digest. The running Open WebUI kept its
+blobs stay out. `ollama pull` fetches by name and tag, so after a loss each
+model is pulled again by name and its digest is compared with the restored
+manifest; a tag that has moved upstream shows up as a mismatch rather than
+being accepted silently. The re-pull itself was not rehearsed. The running Open WebUI kept its
 session key only in the container layer (`/app/backend/.webui_secret_key`),
 because the key-file fix of `06d2a8953` merged after the container was created
 on 2026-10-08, so the state set's key entry found no file.
 
 The isolated rehearsal copied an online SQLite backup, the uploads and the
-live key into a new volume without writing them to the host, started the
-pinned image there with no network and a dummy OIDC secret, and restored the
-Ollama manifests into another volume:
+live key straight from the running container into a new volume without
+writing them to the host, started the pinned image there with no network and a
+dummy OIDC secret, and copied the Ollama manifest trees from the model
+directory into another volume. It proves the restored data starts; it did not
+go through a restic snapshot:
 
 | Check | HOME | Restored |
 | --- | --- | --- |
@@ -138,8 +147,10 @@ the owner's browser session and were not run.
 | Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | accepted |
 | Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | accepted |
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | accepted |
+| Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | pending |
 | HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | accepted |
 | Owner sign-in canary | 5 | W5 | Keycloak sign-in, sign-out, refresh | — | NOT_RUN | W5 HOME Rollout | pending |
+| Validation | 6 | W6 | Changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 

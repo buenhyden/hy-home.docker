@@ -45,9 +45,9 @@ settings and the OIDC client in Keycloak.
    digest; the declared reference, the running image and the binary or
    package version agree. The previous tags' digests are kept as rollback
    references.
-2. Load limits. Ollama allows a 15 minute model load, queues at most 16
-   requests and has ollama.com cloud models off; Open WebUI waits longer than
-   one cold load. `OLLAMA_NUM_PARALLEL` 2 and `OLLAMA_MAX_LOADED_MODELS` 1
+2. Load limits. Ollama treats a model load as stalled only after 15 minutes,
+   queues at most 16 requests and has ollama.com cloud models off; Open WebUI
+   keeps its default of no total request timeout. `OLLAMA_NUM_PARALLEL` 2 and `OLLAMA_MAX_LOADED_MODELS` 1
    stay, because one slot did not make the largest model fit in VRAM.
 3. Open WebUI state. The session key lives in the data volume and is backed
    up; Compose environment values are not silently overridden by empty rows
@@ -56,8 +56,8 @@ settings and the OIDC client in Keycloak.
    unused.
 4. Recovery. The SQLite database (online backup), uploads and key restore into
    a separate volume and start on the pinned image; the Ollama manifest
-   catalog restores with identical model digests, and blobs are re-pulled by
-   digest. Image rollback and data restore are separate steps.
+   catalog restores with identical model digests; blobs are pulled again by
+   name and checked against the restored digests. Image rollback and data restore are separate steps.
 
 ## Acceptance Criteria
 
@@ -65,7 +65,8 @@ settings and the OIDC client in Keycloak.
    advisories and CUDA prerequisites are recorded, with any check that could
    not run and its reason.
 2. Compose, the version projection and Renovate carry the digest pins and the
-   load, queue and cloud limits, and contract tests cover them.
+   load, queue and cloud limits, and contract tests cover the pins, limits and
+   Renovate entries.
 3. An isolated restore of Open WebUI and of the Ollama catalog matches HOME,
    and the backup set includes the key and the catalog.
 4. An isolated Open WebUI on the pinned image passes model list, streaming

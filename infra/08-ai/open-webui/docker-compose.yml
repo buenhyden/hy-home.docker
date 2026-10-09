@@ -29,8 +29,6 @@ services:
     environment:
       OLLAMA_BASE_URL: http://ollama:${OLLAMA_PORT:-11434}
       RAG_EMBEDDING_ENGINE: ollama
-      # Longer than Ollama's 15 m load timeout, so a cold load is not cut off.
-      AIOHTTP_CLIENT_TIMEOUT: '960'
       # The image leaves WEBUI_SECRET_KEY empty, so start.sh keeps a generated key
       # in this file; in the volume it survives recreation and is backed up.
       WEBUI_SECRET_KEY_FILE: /app/backend/data/.webui_secret_key

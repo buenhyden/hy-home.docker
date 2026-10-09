@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -176,7 +176,7 @@ curl -f http://127.0.0.1:${OLLAMA_HOST_PORT:-11434}/api/tags
 상태: **계획됨·미실행**. 이 문서에는 Ollama 모델 저장소의 복원 성공 증거가 없다.
 
 1. 이미지 digest, 드라이버·runtime 버전, 모델 목록, manifest·blob checksum, 모델 출처·라이선스, Compose profile, 대표 추론 요청과 기대 불변 조건을 기록한다. 모델 받기와 활성 추론을 중지한 뒤 `ollama-data`의 일관된 중지 상태 복사본이나 승인된 스토리지 snapshot을 만든다.
-2. 공개 경로가 없는 별도 프로젝트와 격리 모델 경로에 복원한다. 재구축을 선택하면 승인된 출처에서 기록한 digest·버전만 받고 라이선스·checksum을 확인한다.
+2. 공개 경로가 없는 별도 프로젝트와 격리 모델 경로에 복원한다. 모델 catalog(`models/manifests`, `manifests-v2`)는 restic state snapshot에서 복원한다. 재구축을 선택하면 모델을 이름으로 다시 받고, 받은 digest가 복원한 manifest와 같은지 확인한다. 다르면 upstream tag가 바뀐 것이므로 받지 않은 것으로 보고 승인을 받는다. 라이선스·checksum도 확인한다.
 3. 호환되는 GPU·runtime 설정으로 Ollama를 기동하고 `/api/tags`, 모델 digest, GPU 인식, 대표 추론 한 건, exporter 수집을 확인한다. Open WebUI는 격리 endpoint에 대해서만 시험한다.
 4. 불일치하면 격리 서비스를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 백업·원본 manifest로 돌아간다. 운영 volume이나 경로 교체에는 별도 변경 승인이 필요하다.
 

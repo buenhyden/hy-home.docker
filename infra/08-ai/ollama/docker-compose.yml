@@ -32,8 +32,8 @@ services:
       - OLLAMA_NUM_PARALLEL=${OLLAMA_NUM_PARALLEL:-2}
       - OLLAMA_MAX_LOADED_MODELS=${OLLAMA_MAX_LOADED_MODELS:-1}
       - OLLAMA_MAX_QUEUE=${OLLAMA_MAX_QUEUE:-16}
-      # Models load from a busy HDD; measured loads took 155-574 s and failed at
-      # the 5 m default (SPEC-0226).
+      # Stall limit for a model load. Models load from a busy HDD, where loads
+      # took 12-574 s and two stalled past the 5 m default (SPEC-0226).
       - OLLAMA_LOAD_TIMEOUT=15m
       # Keep prompts on this host: no ollama.com cloud models or sign-in.
       - OLLAMA_NO_CLOUD=1

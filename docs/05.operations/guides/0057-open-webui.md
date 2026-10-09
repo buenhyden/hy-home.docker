@@ -125,9 +125,9 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 ### Pinned image and persisted settings
 
-이미지는 [Compose](../../../infra/08-ai/open-webui/docker-compose.yml)의 CUDA tag에 registry index digest를 붙여 고정한다. 현재 고정 버전은 직전 patch에 있던 공개 advisory 4건을 고쳤다. 두 버전의 migration head(`d4c1a8e37b62`)가 같아서 이미지만 직전 patch로 되돌릴 때는 데이터 복원이 필요 없다. 다만 그 4건은 다시 열린다. 직전 digest는 [SPEC-0226 Task](../../03.specs/0226-ai-runtime-pin-verification/tasks/tsk-0001-ai-runtime-pin-verification.md)에 있다.
+이미지는 [Compose](../../../infra/08-ai/open-webui/docker-compose.yml)의 CUDA tag에 registry index digest를 붙여 고정한다. 이미지만 이전 버전으로 되돌리기 전에 두 버전의 migration head를 비교한다. 같으면 데이터 복원 없이 되돌릴 수 있고, 다르면 백업 복원이 필요하다. 되돌릴 버전에 열려 있는 공개 advisory도 확인한다. 직전 digest와 비교 결과는 [SPEC-0226 Task](../../03.specs/0226-ai-runtime-pin-verification/tasks/tsk-0001-ai-runtime-pin-verification.md)에 있다.
 
-CUDA 이미지를 쓰지만 GPU 예약이 없어 `torch.cuda.is_available()`은 `False`다. embedding은 원격 Ollama가 처리하고 로컬 GPU 기능은 쓰지 않는다. GPU는 Ollama와 ComfyUI가 이미 나누어 쓰므로 장치를 추가하지 않는다. `AIOHTTP_CLIENT_TIMEOUT=960`은 Ollama의 15분 load timeout보다 길어서 느린 첫 load가 WebUI 쪽에서 먼저 끊기지 않는다.
+CUDA 이미지를 쓰지만 GPU 예약이 없어 `torch.cuda.is_available()`은 `False`다. embedding은 원격 Ollama가 처리하고 로컬 GPU 기능은 쓰지 않는다. GPU는 Ollama와 ComfyUI가 이미 나누어 쓰므로 장치를 추가하지 않는다. `AIOHTTP_CLIENT_TIMEOUT`은 설정하지 않는다. 비워 두면 전체 요청 시간 제한이 없어서 느린 첫 load나 긴 streaming 답변이 WebUI 쪽에서 끊기지 않는다.
 
 `ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가리고 있어서 그 행만 지웠다. 재시작할 때 WebUI가 Compose 값으로 행을 다시 저장했다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
 
