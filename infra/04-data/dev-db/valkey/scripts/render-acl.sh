@@ -35,7 +35,8 @@ hash_secret() {
 [ -d "${acl_file%/*}" ] || fail
 umask 077
 tmp_file=$(mktemp "${acl_file}.XXXXXXXX") || fail
-trap 'rm -f "$tmp_file"' 0 1 2 3 15
+trap 'rm -f "$tmp_file"' 0
+trap 'rm -f "$tmp_file"; exit 1' 1 2 3 15
 
 # Service roles are fixed here, one row each and one secret each; projects
 # come from projects.tsv. No two roles or projects may share a secret.
