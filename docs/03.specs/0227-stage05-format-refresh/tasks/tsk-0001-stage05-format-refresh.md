@@ -215,11 +215,16 @@ four returned files have their own commit.
 | Batches | 2, 3 | W2 | Section rule, markdownlint, loss comparison per batch | `c012032e9..d8920a7fa` (ten batch commits and `c87867aec`) | PASS | W2 Batches | accepted |
 | Links and bindings | 4 | W3 | `check-document-links.py --mode all`; `check-operations-catalog.py` | `567eafecc` | PASS | W3 Links and Bindings | accepted |
 | Full list | 2, 3 | W4 | Rule over 230 files; metadata `check-changed` (230 selected, 0 violations); loss audit | `567eafecc` | PASS | W4 Full List | accepted |
-| Validation | 5 | W5 | Review, changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Review | 5 | W5 | Independent review; fixes | `deaf151f3` | PASS | Review | accepted |
+| Changed gate | 5 | W5 | `run-ci-gate.py --profile changed --local-only`, base `1f552ac78`; hardening; operations catalog | `deaf151f3` | PASS | Review and Completion | accepted |
+| Staged style check | 5 | W5 | `run-ci-precommit.sh --mode local-staged` over `1f552ac78..HEAD` | `deaf151f3` | PASS | Review and Completion | accepted |
+| Remote candidate | 5 | W5 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-Not complete: the independent review, the gate and the merge remain.
+The changed gate, the hardening baseline, the operations catalog and the
+staged style check passed on `deaf151f3`. Not complete: `candidate-quality`
+and the merge remain.
 
 ## Related Documents
 
