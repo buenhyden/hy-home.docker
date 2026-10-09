@@ -118,14 +118,17 @@ servers:
 | Isolated rehearsal | 2 | W4 | Eight rehearsal tests | `5a9562395` | PASS | W4 Isolated Rehearsal | accepted |
 | HOME rollout | 3 | W5 | Probes, outage, rotation, store scan | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 | Consumer review | 4 | W5 | Compose references; client inventory | `5a9562395` | PASS | W5 HOME Rollout and Consumer Review | accepted |
-| Admin browser login | 3 | W5 | Owner signs in and sees both connections | — | NOT_RUN | W5 HOME Rollout and Consumer Review | pending |
-| Non-admin refusal | 3 | W5 | A non-`/admins` account is refused | — | NOT_RUN | W5 HOME Rollout and Consumer Review | pending |
+| Admin browser login | 3 | W5 | Owner signed in and saw only the two pre-set connections | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
+| Non-admin refusal | 3 | W5 | Owner confirmed a non-`/admins` account is refused | `a34c96796` | PASS | W5 HOME Rollout and Consumer Review | accepted |
 
 ## Review and Completion
 
-Not complete: the owner's browser checks, W6 validation and the merge remain.
-The owner-only `/data` copy holds the former plaintext admin passwords and
-needs a disposal date.
+Not complete: W6 validation and the merge remain. The owner signed in at
+`https://redisinsight.hy.home.arpa/`, saw only `DEV / dev-valkey` and
+`MNG / mng-valkey`, and confirmed that a non-administrator is refused. The
+owner set the disposal of the owner-only `/data` copy, which holds the former
+plaintext admin passwords, for 2026-10-09; the agent's delete was refused by
+the session's permission settings, so the owner runs it.
 
 ## Related Documents
 
