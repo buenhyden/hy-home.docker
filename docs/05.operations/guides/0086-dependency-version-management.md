@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -16,15 +16,15 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
+이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 인프라 운영자, 저장소 유지보수자, 의존성 업데이트를 검토하는 agent다.
+
+목표는 버전을 바꾸기 전에 원본 선언과 updater 소유자를 식별하고, 변경 후 필요한 검사를 빠뜨리지 않는 것이다.
 
 ## Usage
-
-### Usage
 
 운영자는 버전 변경 전에 해당 선언의 소유자를 찾는다. Compose `image`와
 Dockerfile의 선택된 context·target·`FROM`/`ARG`, 설치 package·복사한 requirements/설정과 entrypoint가 빌드 원본이며 `infra/tech-stack.versions.json`은

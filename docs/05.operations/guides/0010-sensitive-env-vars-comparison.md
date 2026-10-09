@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.3.0"
+version: "3.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0010"
 created: "2026-06-04"
@@ -14,15 +14,15 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
+이 가이드는 공개 secret registry 예제와 로컬 registry의 메타데이터를 비교하는 기준과 방법을 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+대상 독자는 secret registry를 정리하거나 점검하는 운영자와 agent다.
+
+목표는 값을 노출하지 않고 공개/개인 registry의 ID와 env-key 집합을 정확히 일치시키는 것이다.
 
 ## Usage
-
-### Usage
 
 `secrets/SENSITIVE_ENV_VARS.md.example`은 공개 ID·env key·파일 경로·용도 계약을
 소유한다. 실제 값은 Git에서 제외된 로컬 registry와 secret 파일에 보관한다.

@@ -1,10 +1,10 @@
 ---
 title: "Developer Environment Operations"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0002"
 created: "2026-06-04"
@@ -14,20 +14,18 @@ created: "2026-06-04"
 
 ## Overview
 
-### Overview
+이 가이드는 로컬 개발 환경의 도구, 환경 파일, 인증서 설정과 검증 범위를 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-이 가이드는 개발자·운영자·AI Agent가 로컬 작업 환경과 검증 범위를 구분하도록
+대상 독자는 개발자, 운영자, AI Agent다. 이 가이드는 로컬 작업 환경과 검증 범위를 구분하도록
 돕는다. 저장소 checkout이 있다고 HOME 서비스 운영이나 credential 접근 권한이
 생기는 것은 아니다. [bootstrap](../../../.agents/governance/bootstrap.md), 해당
 provider adapter와 현재 Task에서 승인 범위를 먼저 확인한다.
+
+## Usage
+
+아래 절에서 로컬 도구와 설정, 환경 파일과 인증서, 공통 점검을 차례로 다룬다.
 
 ### Local tools and configuration
 

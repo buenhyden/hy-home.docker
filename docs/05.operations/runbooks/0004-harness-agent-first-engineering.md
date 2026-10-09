@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -15,17 +15,11 @@ created: "2026-06-04"
 
 ## Overview
 
-## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### Overview
-
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
 
-### When to Use
+## Trigger and Preconditions
+
+다음 경우에 실행한다.
 
 - Root instruction 파일이 변경될 때
 - `.claude` 또는 `.codex` 파일이 변경될 때
@@ -35,9 +29,7 @@ created: "2026-06-04"
 
 ## Procedure
 
-### Procedure
-
-### Checklist
+시작 전 확인:
 
 - [ ] `git status --short --branch`를 확인한다.
 - [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
@@ -46,8 +38,6 @@ created: "2026-06-04"
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
 - [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
-
-### Procedure
 
 1. workspace 상태를 확인한다. Graphify report와 health는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다.
 
@@ -149,7 +139,7 @@ QA가 아니다. 현재 [품질 정책](../../../.agents/governance/quality-stan
 입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립적인 안전 작업을
 계속한다. static PASS를 HOME capacity·복구·배포 성공으로 확대하지 않는다.
 
-### Verification Steps
+## Verification
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
@@ -157,7 +147,7 @@ QA가 아니다. 현재 [품질 정책](../../../.agents/governance/quality-stan
 
 이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
 
-### Observability and Evidence Sources
+증거 출처:
 
 - validation script의 command 출력.
 - `git diff --stat`.
@@ -165,24 +155,6 @@ QA가 아니다. 현재 [품질 정책](../../../.agents/governance/quality-stan
 - `scripts/validation/run-ci-gate.py`의 runtime agent/function catalog 섹션.
 - hook payload simulation 출력.
 - 새 구현 변경이 진행 중일 때의 현재 co-located Task.
-
-### Safe Rollback or Recovery Procedure
-
-- 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
-- runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
-- Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
-- 영향받은 infra 실패가 승인된 범위 밖이면 별도 remediation으로 전달하며 실패/미실행 상태를 성공으로 바꾸지 않는다.
-
-### Related Operational Documents
-
-- [Operations Policy](../policies/0004-harness-agent-first-engineering.md)
-- [Usage Guide](../guides/0004-harness-agent-first-engineering.md)
-- 현재 승인된 Spec Package의 Plan과 Task evidence
-- [Agent Governance Hub](../../../.agents/README.md)
-
-## Verification
-
-### Evidence
 
 - 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
@@ -193,15 +165,14 @@ QA가 아니다. 현재 [품질 정책](../../../.agents/governance/quality-stan
 
 - 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
 - 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 `## Escalation`에 따라 escalation한다.
+- 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
+- runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
+- Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
+- 영향받은 infra 실패가 승인된 범위 밖이면 별도 remediation으로 전달하며 실패/미실행 상태를 성공으로 바꾸지 않는다.
 
 ### Escalation
 
 verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
-
-### Traceability
-
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
-- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`)
 
 ## Related Documents
 
@@ -211,3 +182,9 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 - [Operations policy](../policies/0004-harness-agent-first-engineering.md)
 - [Agent Governance Hub](../../../.agents/README.md)
 - [Subagent Protocol](../../../.agents/governance/agentic.md)
+- 현재 승인된 Spec Package의 Plan과 Task evidence
+
+### Traceability
+
+- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../policies/0004-harness-agent-first-engineering.md) (`POL-0004`)

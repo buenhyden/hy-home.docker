@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -16,20 +16,11 @@ created: "2026-10-01"
 
 ## Overview
 
-### Overview
+이 가이드는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영할 때 필요한 요청 경로, 공통 의존성, 장애 영향과 다음 절차를 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Reader purpose and boundaries
-
-이 문서는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영하는 사람이
-요청 경로, 공통 의존성, 장애 영향과 다음 절차를 이해하기 위한 설명이다.
+대상 독자는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영하는 사람이다.
 목표는 필요한 선택과 점검을 찾는 것이며, 서비스 기동이나 복구 성공을 선언하는
 것이 아니다. 구조와 단일 호스트 한계는 [AD-0031](../../02.architecture/descriptions/0031-home-development-host.md)이
 소유한다. 실행 전에는 해당 서비스 Guide의 구현 경로와 Policy, Runbook을 확인한다.
@@ -39,6 +30,10 @@ created: "2026-10-01"
 서비스 소유권을 다시 등록하지 않는다. [역할 인덱스](README.md)에서 티어를
 고른 뒤 subject 행의 세 역할을 따라간다. 서비스가 여러 개 묶인 subject의
 초기화·exporter·worker도 같은 소유 문서에서 확인한다.
+
+## Usage
+
+아래 절은 서비스 선택과 준비 확인, 요청·인증 경로, 데이터 경로, 티어별 영향을 차례로 다룬다.
 
 ### Selection and readiness
 

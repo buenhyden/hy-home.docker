@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.2.0"
+version: "0.2.1"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -16,26 +16,15 @@ created: "2026-09-19"
 
 ## Overview
 
-### Overview
-
 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전
 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다.
 
 ## Scope
 
-### Policy Scope
-
 Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, Dependabot, 현재
 구현/운영 문서의 런타임 버전 참조.
 
-### Traceability
-
-- [Home/Dev architecture](../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
-- [Guide](../guides/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md)
-
 ## Rules
-
-### Controls
 
 | Surface | Update owner | Authority and review |
 | --- | --- | --- |
@@ -66,6 +55,13 @@ infra automerge를 활성화하거나 self-host allowedCommands를 넓히지 않
 아키텍처와 이미지 소스를 확인하지 않은 채 digest를 임의로 만들거나 다른 registry의
 digest로 대체하지 않는다.
 
+## Exceptions
+
+변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
+`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
+검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
+GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
+
 ### Verification
 
 기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
@@ -78,14 +74,10 @@ digest로 대체하지 않는다.
 매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
-`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
-검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
-GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
+- [Home/Dev architecture](../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
+- [Guide](../guides/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../runbooks/0086-dependency-version-management.md)
 
 ## Related Documents
 

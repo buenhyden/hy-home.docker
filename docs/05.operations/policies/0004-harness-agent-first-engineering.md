@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -15,8 +15,6 @@ created: "2026-06-04"
 # Harness / Agent-first Engineering Operations Policy
 
 ## Overview
-
-### Overview
 
 이 운영 정책은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약을 유지하기 위한 통제 기준을 정의한다.
 
@@ -30,7 +28,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 ## Scope
 
-### Policy Scope
+이 정책은 다음 대상에 적용한다.
 
 - Agent entry shim.
 - Governance policy, role, skill, provider registry.
@@ -49,14 +47,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 - `docs/05.operations/runbooks/[0-9][0-9][0-9][0-9]-*.md`
 - `scripts/validation/check-*.sh`, `scripts/hardening/check-all-hardening.sh`, `scripts/validation/validate-docker-compose.sh`
 
-### Traceability
-
-- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
-- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
-
 ## Rules
-
-### Controls
 
 | Control | Requirement |
 | --- | --- |
@@ -79,6 +70,14 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 정적 source나 수동 비교를 native 호출·복구 성공으로 기록하지 않는다.
 Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 미실행은 성공이 아니다.
 
+## Exceptions
+
+- 과거 Stage 90 또는 Stage 98 evidence는 명확히 non-authoritative일 때 이전 source label을 언급할 수 있다.
+- `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
+- CLI를 사용할 수 없을 때 `graphify` refresh를 건너뛸 수 있지만 건너뛴 사실은 보고해야 한다.
+- `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
+- 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
+
 ### Verification
 
 변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
@@ -92,15 +91,10 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 - `.claude`, `.codex`, 또는 canonical agent governance role/skill catalog가 바뀌면 이 policy를 검토한다.
 - scope 밖 infra profile 실패는 HAFE acceptance criteria를 조용히 확장하는 대신 별도로 기록한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-- 과거 Stage 90 또는 Stage 98 evidence는 명확히 non-authoritative일 때 이전 source label을 언급할 수 있다.
-- `bash scripts/knowledge/report-graphify-health.sh`는 `status=advisory`를 보고할 수 있다; 이는 repository validation 실패가 아니라 신뢰도 하향 evidence다.
-- CLI를 사용할 수 없을 때 `graphify` refresh를 건너뛸 수 있지만 건너뛴 사실은 보고해야 한다.
-- `rtk`는 active shell에서 사용할 수 없을 때 우회할 수 있다.
-- 승인되지 않은 Compose/include/IP remediation은 이 하네스 점검의 실행 범위가 아니다.
+- 과거 구현 출처: [Harness and Agent-first Engineering Outcome](../../98.archive/completed/03.specs/0094-harness-agent-first-engineering/spec.md) (`SPEC-0094`)
+- 같은 주제: [Guide](../guides/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../runbooks/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 ## Related Documents
 
