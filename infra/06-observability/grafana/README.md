@@ -198,6 +198,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 07-workflow | `n8n-worker` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `crawl4ai-egress` | none | `Infrastructure/containers` | container metrics and logs only; egress decisions in its log |
 | 08-ai | `ollama` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `ollama-exporter` | `ollama-exporter` | `Applications/ollama`, `Infrastructure/containers` |  |
 | 08-ai | `open-webui` | none | `Infrastructure/containers` | container metrics and logs only |

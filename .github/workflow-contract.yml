@@ -701,6 +701,8 @@
         "tests.validation.test_lab_isolation",
         "tests.validation.test_lab_controller",
         "tests.validation.test_storybook_image",
+        "tests.validation.test_crawl4ai_egress",
+        "tests.validation.test_crawl4ai_adapter",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -708,6 +710,7 @@
         "tests.validation.test_compose_baseline_gates.StalwartRehearsalTests",
         "tests.validation.test_compose_baseline_gates.SsoRehearsalTests",
         "tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests",
+        "tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests",
         "tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests",
         "tests.validation.test_mng_pg_init_sql.MngPgInitSqlTests",
         "-v"

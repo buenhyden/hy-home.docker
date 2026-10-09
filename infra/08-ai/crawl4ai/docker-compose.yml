@@ -1,14 +1,26 @@
 x-tier-label: &tier-label
   hy-home.tier: ai
 
-# Crawl4AI fetches arbitrary URLs, so it is an SSRF-capable service. It runs on
-# a dedicated bridge and never joins another repository network. This limits
-# Compose DNS discovery but does not block host/LAN/private-IP egress. A consumer
-# that needs it (for example Open Notebook's CRAWL4AI_API_URL) must join
-# crawl4ai_net explicitly in the same reviewed change.
+# Crawl4AI fetches arbitrary URLs, so it is an SSRF-capable service
+# (SPEC-0220). It joins internal networks only: consumers reach its API on
+# crawl4ai_net, and its only way out is crawl4ai-egress, which resolves names,
+# refuses every non-global or IPv6 address and every port but 80/443, and
+# dials the address it checked. A consumer joins crawl4ai_net only through a
+# reviewed admission change (POL-0091).
 networks:
   crawl4ai_net:
     name: crawl4ai_net
+    driver: bridge
+    internal: true
+  crawl4ai_egress_net:
+    name: crawl4ai_egress_net
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 10.250.200.0/29
+  crawl4ai_outbound_net:
+    name: crawl4ai_outbound_net
     driver: bridge
 
 services:
@@ -18,7 +30,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-high
-    image: unclecode/crawl4ai:0.9.4
+    image: unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b
     container_name: crawl4ai
     hostname: crawl4ai
     group_add:
@@ -48,6 +60,15 @@ services:
         [ "$${#CRAWL4AI_API_TOKEN}" -ge 16 ] || { echo 'crawl4ai: crawl4ai_api_token must be at least 16 characters' >&2; exit 64; }
         export CRAWL4AI_API_TOKEN
         exec bash entrypoint.sh
+    environment:
+      # The in-image broker pins and checks each target, then CONNECTs the
+      # pinned address through the gateway.
+      CRAWL4AI_UPSTREAM_PROXY: http://10.250.200.2:3128
+    dns:
+      - 10.250.200.2
+    depends_on:
+      crawl4ai-egress:
+        condition: service_healthy
     expose:
       - '11235'
     healthcheck:
@@ -58,6 +79,38 @@ services:
       start_period: 40s
     networks:
       - crawl4ai_net
+      - crawl4ai_egress_net
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'
+
+  crawl4ai-egress:
+    profiles:
+      - crawl4ai
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: python:3.13.15-alpine@sha256:79e7a9b9ff1cbceff819f856fb374477792a5967759d94df266de7b7b4120e6f
+    container_name: crawl4ai-egress
+    hostname: crawl4ai-egress
+    user: '65534:65534'
+    # Listens only on the crawler's network, not on crawl4ai_outbound_net.
+    command: ['python', '/app/egress_gateway.py', '10.250.200.2']
+    volumes:
+      - ./egress_gateway.py:/app/egress_gateway.py:ro
+    sysctls:
+      # DNS on :53 without a capability.
+      net.ipv4.ip_unprivileged_port_start: 53
+    healthcheck:
+      test: ['CMD', 'python', '-c', 'import socket; socket.create_connection(("10.250.200.2", 3128), 2).close()']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    networks:
+      crawl4ai_egress_net:
+        ipv4_address: 10.250.200.2
+      crawl4ai_outbound_net: {}
     labels:
       <<: *tier-label
       traefik.enable: 'false'

@@ -88,10 +88,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_lab_isolation",
                 "tests.validation.test_lab_controller",
                 "tests.validation.test_storybook_image",
+                "tests.validation.test_crawl4ai_egress",
+                "tests.validation.test_crawl4ai_adapter",
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(8, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(9, len(arguments[boundary + 1 : -1]))
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
