@@ -1,5 +1,9 @@
 # Inner paths never copied even inside an allowlisted tree.
 /src/state/volumes/ai/comfyui/models
 /src/state/volumes/ai/comfyui/cache
+# Loki logs and Tempo traces are short-lived telemetry (POL-0048) that no restore
+# brings back; their SeaweedFS collections are rewritten daily (SPEC-0228).
+/src/state/volumes/data/seaweedfs/volume/loki-bucket_*
+/src/state/volumes/data/seaweedfs/volume/tempo-bucket_*
 # pgBackRest writes a temporary file and renames it when complete.
 *.pgbackrest.tmp
