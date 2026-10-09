@@ -68,8 +68,8 @@ old pin the rehearsal fails with the build command, as intended. Commit
 
 ### W3 Shared UI
 
-Root `DESIGN.md` uses the Project-Template token vocabulary, and a test keeps
-it equal to `styles.css`. Button 0.2.0 takes `variant`, `disabled` and
+`styles.css` holds the `--hy-*` tokens; `DESIGN.md` is left to separate
+later work. Button 0.2.0 takes `variant`, `disabled` and
 `loading`; `AsyncState` covers loading, empty, error, 403 (no retry), timeout
 and ready. Fourteen story tests cover keyboard, focus ring, retry and 320px
 wrapping with the a11y addon in `error` mode; lowering one text colour failed
@@ -100,11 +100,58 @@ target. Compose adds `storybook-mcp` on `edge_net` with the root CA and a route
 limited to `/mcp` and the metadata path, without `sso-auth`. The rehearsal
 gained an HTTPS issuer (throwaway CA) and remote MCP checks. The design export
 script and allowlist, the operations catalog bindings and POL/GDE/RUN-0101
-follow. Commit pending.
+follow. Before commit: lint, typecheck, Storybook build with 9 artifact and
+MCP tests, 14 story tests, the bundle and 148 Python tests (2 contract tests
+then registered the MCP route as `oauth-bearer` and its Grafana coverage row).
+A live run of the local server answered `initialize`, listed exactly the three
+tools, returned `ui-*` entries, refused an out-of-scope tool, a forged Origin
+and a non-loopback Host. Codex loaded a project-scoped definition and Claude
+Code reported it pending approval; those definitions were removed because the
+consumers are other workspaces. Commit `f9977d135`.
 
 ### W6 Images and Rehearsal
 
-Pending.
+`storybook_image.py build --push` built both images from `f9977d135`, the
+last commit that changed the Storybook source, and `verify --registry` passed:
+
+| Image | Digest (local and registry) | Attestation manifests | SBOM packages |
+| --- | --- | --- | --- |
+| `hy-home/storybook` | `sha256:74ba9c7febb7ce1501f11b855825ad38d986b9ce74a8bb2f01893b50fdca6917` | 1 | 71 |
+| `hy-home/storybook-mcp` | `sha256:2e4bae4a4e648cb6e94ef168610f1af05e9be30391d95e5092e96f00d283508f` | 1 | 166 |
+
+Both serve `components.json` `ea453f81…` and `docs.json` `11d40fe0…`, record
+lockfile `2b91d0ba…` and UI package 0.2.0, and carry the provenance build
+argument with the commit; `registry:3` kept the attestations. Compose and the
+tech-stack registry now pin both to the commit (commit `1554622b9`).
+
+The Storybook rehearsal then ran 4 tests: anonymous and `bob` got 302 to the
+HTTPS Keycloak or 401 on every path with no content or login page; `alice`
+got the index, iframe, a script, a stylesheet, both manifests and
+`revision.json` (commit `f9977d135`) with `no-store` and `frame-ancestors`,
+and 404 for an unknown page; the MCP gave 401 anonymous, 200 with three tools
+and `ui-button` for a scoped reader, 401 for a token without its audience,
+403 `insufficient_scope` for `bob`, 200 metadata and 404 outside its route.
+Its first run failed in the test client, which cut JSON bodies at 300
+characters; `revision.json` is now returned whole. The SSO rehearsal passed 3
+of 3 on the refactored stack. No rehearsal container or network remained.
+
+The design export at `1554622b9` wrote the 10 allowlisted files and its
+manifest; no story kept a `packages/ui` import.
+
+`DESIGN.md` then left this Spec for separate work (commit `9cd150bfc`), which
+changed the Storybook source, so both images were rebuilt from `9cd150bfc` and
+`verify --registry` passed again:
+
+| Image | Digest (local and registry) | Attestation manifests | SBOM packages |
+| --- | --- | --- | --- |
+| `hy-home/storybook` | `sha256:46710e1934a22909ae6a20e6ee404a7a79184a2936cfbdbad35055904ae8f31c` | 1 | 71 |
+| `hy-home/storybook-mcp` | `sha256:df54b9fd2ec3c7fbdbc3cc589291ebf307e35cf6db2524d15f49e8448d654897` | 1 | 166 |
+
+Both serve `components.json` `a9cebb3d…` and `docs.json` `a8a5f84e…` with the
+same lockfile and UI package 0.2.0. Compose and the tech-stack registry pin
+`9cd150bfc` (commit `300b12a86`). The Storybook rehearsal passed 4 of 4 again
+with `revision.json` naming `9cd150bfc`; no rehearsal container or network
+remained. The export now holds the 9 allowlisted files.
 
 ### W7 Validation
 
@@ -116,10 +163,10 @@ Pending.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | accepted |
 | Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | accepted |
-| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test; tarball consumer | `73beaa382` | PASS | W3 Shared UI | accepted |
+| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | accepted |
 | Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | accepted |
-| Remote MCP and export | 2, 4 | W5 | Node and unit tests | Pending | NOT_RUN | W5 Remote MCP, Design Export and Documents | pending |
-| Images and rehearsal | 1, 2 | W6 | Build, push, verify, rehearsal | Pending | NOT_RUN | W6 Images and Rehearsal | pending |
+| Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | accepted |
+| Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9`, `300b12a86` | PASS | W6 Images and Rehearsal | accepted |
 | Validation | 5 | W7 | Changed gate | Pending | NOT_RUN | W7 Validation | pending |
 
 ## Review and Completion

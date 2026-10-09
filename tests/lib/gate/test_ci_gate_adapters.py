@@ -1633,8 +1633,8 @@ class CiGateAdapterTests(unittest.TestCase):
 
 class ApprovedNpmAuditTests(unittest.TestCase):
     chain = (
-        "eslint-config-next@16.3.8",
-        "@next/eslint-plugin-next@16.3.8",
+        "eslint-config-next@16.4.0",
+        "@next/eslint-plugin-next@16.4.0",
         "fast-glob@3.3.1",
         "micromatch@4.0.8",
         "braces@3.0.3",

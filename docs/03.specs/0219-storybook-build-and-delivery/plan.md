@@ -35,7 +35,7 @@ them in the rehearsal. Each unit is one commit.
 
 ## Verification Plan
 
-Unit tests for the image script, design export and token parity; Node tests
+Unit tests for the image script, and design export; Node tests
 for the artifacts and the MCP authorization; Storybook story tests in
 Chromium; lint, type and build checks; a real build pushed to the local
 registry with attestation checks; the Storybook ingress rehearsal with real

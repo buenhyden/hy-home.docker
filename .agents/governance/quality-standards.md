@@ -58,7 +58,9 @@ Quality dimensions:
 An owner-approved risk acceptance is not a vulnerability fix or a branch
 protection bypass. SPEC-0205 records the 2026-10-04 approval for exactly
 GHSA-vfj7-8cjw-p6xm, the verified Next lint development chain, and expiry
-2026-10-10T15:00:00Z. `.github/workflow-contract.yml` owns the typed metadata;
+2026-10-10T15:00:00Z. SPEC-0219 records the owner's 2026-10-09 amendment of
+that chain from `eslint-config-next` 16.3.8 to 16.4.0, with the same advisory
+and expiry. `.github/workflow-contract.yml` owns the typed metadata;
 the existing CI adapter executes and checks it. Keep Next lint coverage.
 
 The full npm audit retains its raw FAIL receipt. A separate ACCEPTED_RISK

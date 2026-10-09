@@ -63,7 +63,7 @@ TypeScript는 6.0.3에 고정합니다. 2026-10-09 기준 7.0.2와 7.1 nightly�
 
 ## Usage
 
-컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값의 권위는 루트 [DESIGN.md](../../../DESIGN.md)이며 `packages/ui/src/styles.css`가 같은 값을 CSS 변수로 구현합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
+컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값은 `packages/ui/src/styles.css`의 CSS 변수가 정의합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
 
 ## Related Documents
 

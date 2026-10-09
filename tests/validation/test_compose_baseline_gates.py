@@ -2347,7 +2347,7 @@ def fetch(url, accept):
             "cache": resp.headers.get("Cache-Control"),
             "csp": resp.headers.get("Content-Security-Policy"),
             "login_page": "kc-form-login" in body or "Sign in with" in body,
-            "body": body[:300] if url.endswith(".json") else ""}
+            "body": body if url.endswith("/revision.json") else ""}
 mode = sys.argv[1]
 out = {}
 if mode.startswith("storybook"):
