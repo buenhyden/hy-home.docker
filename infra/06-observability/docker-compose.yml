@@ -292,6 +292,9 @@ services:
       traefik.http.routers.alloy.tls: 'true'
       traefik.http.routers.alloy.middlewares: gateway-standard-chain@file,sso-errors@file,sso-auth@file
       traefik.http.services.alloy.loadbalancer.server.port: ${ALLOY_PORT:-12345}
+    # Pyroscope scrapes node-exporter, which listens on obs_net's gateway.
+    extra_hosts:
+      - 'node-exporter:10.250.5.1'
     networks:
       edge_net: {}
       obs_net: {}
@@ -484,8 +487,9 @@ services:
     container_name: node-exporter
     # The host network namespace makes the netdev, netstat, sockstat and
     # tcpstat collectors report the host, not this container. The listener is
-    # bound to the host side of obs_net (its default gateway), so the LAN never
-    # reaches it; any container on a non-internal bridge network can (SPEC-0225).
+    # bound to the host side of obs_net (its default gateway), which the LAN
+    # does not route to by default; any container on a non-internal bridge
+    # network can reach it. obs_net must exist first (SPEC-0225).
     network_mode: host
     pid: host
     command:

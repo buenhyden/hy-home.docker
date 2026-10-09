@@ -1809,7 +1809,16 @@
         "query": "label_values(opensearch_os_cpu_percent{job=~\"$job\"}, cluster)",
         "refresh": 2,
         "sort": 1,
-        "type": "query"
+        "type": "query",
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        }
       },
       {
         "allValue": ".+",

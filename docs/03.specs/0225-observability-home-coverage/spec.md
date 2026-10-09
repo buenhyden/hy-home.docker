@@ -18,7 +18,7 @@ created: "2026-10-09"
 ## Overview
 
 Run against HOME Prometheus and Loki, the 50 provisioned Grafana dashboards
-returned no data for 526 of their 1,269 panels and an error for one. Five
+returned no data for 520 of their 1,269 panels and an error for one. Five
 dashboards and four alert rules target services that now exist only in the
 independent LAB, which HOME never scrapes. Most other empty panels came from
 mixins and community dashboards written for Kubernetes or for features HOME
@@ -51,7 +51,7 @@ only because the activity they measure has not happened yet.
    internal SeaweedFS APIs and is inside that trust boundary.
 4. Host metrics. node-exporter runs in the host network namespace with its
    listener bound to the `obs_net` gateway address, so its network collectors
-   report the host and the LAN cannot reach it; any container on a
+   report the host and the LAN does not route to it by default; any container on a
    non-internal bridge can. Prometheus keeps the `node-exporter` name through
    `extra_hosts`. The `processes` and `tcpstat` collectors are on; timex,
    interrupts and systemd stay off.

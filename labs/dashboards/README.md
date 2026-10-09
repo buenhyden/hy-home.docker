@@ -1,3 +1,13 @@
+---
+title: "LAB Dashboards"
+version: "0.1.0"
+type: "common/readme"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-10-09"
+created: "2026-10-09"
+---
+
 # LAB Dashboards
 
 ## Overview

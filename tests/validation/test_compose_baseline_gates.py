@@ -9,6 +9,7 @@ repository plus a `docker` shim on `PATH` that prints a crafted document.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
 import re
@@ -4614,6 +4615,34 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         self.assertEqual(
             {"prometheus", "seaweedfs-master", "seaweedfs-volume", "seaweedfs-filer"},
             members,
+        )
+        import yaml
+
+        root = yaml.load(
+            (ROOT / "docker-compose.yml").read_text(encoding="utf-8"),
+            Loader=_ComposeLoader,
+        )["networks"]
+        metrics = root["seaweedfs_metrics_net"]
+        self.assertTrue(metrics["internal"])
+        self.assertEqual(
+            "isolated",
+            metrics["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
+        )
+        # node-exporter listens on obs_net's default gateway (first host).
+        gateway = str(
+            next(ipaddress.ip_network(root["obs_net"]["ipam"]["config"][0]["subnet"]).hosts())
+        )
+        self.assertIn(
+            f"--web.listen-address={gateway}:9100", services["node-exporter"]["command"]
+        )
+        for consumer in ("prometheus", "alloy"):
+            with self.subTest(consumer=consumer):
+                self.assertIn(
+                    f"node-exporter:{gateway}", services[consumer]["extra_hosts"]
+                )
+        self.assertEqual(
+            {"node-exporter"},
+            {n for n, s in services.items() if s.get("network_mode") == "host"},
         )
 
     def test_traefik_edge_address_is_the_trusted_proxy(self) -> None:

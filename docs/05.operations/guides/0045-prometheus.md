@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.4.3"
+version: "1.4.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "GDE-0045"
 parent_ids:
@@ -141,7 +141,7 @@ graph TD
 - **Gateway, auth, security**: Traefik, Keycloak, OAuth2 Proxy(`:44180`), OpenBao.
 - **Datastores and tooling**: `mng-pg`와 `mng-valkey` exporter, Qdrant, SeaweedFS S3, registry(debug listener `:5001`).
 - **Workflow and AI**: Airflow statsd exporter(`airflow-monitor`), Flower, n8n, Ollama exporter.
-- **On-demand**: Kafka broker·Connect·Schema Registry(JMX agent), Kafka exporter, 보조 Valkey exporter, Valkey cluster, PostgreSQL HA와 HAProxy, etcd, OpenSearch, MongoDB·Cassandra exporter. 이 서비스가 멈춰 있으면 target이 down인 것이 정상이며, `up`을 보는 alert는 이 job을 감시하지 않는다.
+- **On-demand**: Kafka broker·Connect·Schema Registry(JMX agent), Kafka exporter, 보조 Valkey exporter, OpenSearch. Valkey cluster, PostgreSQL HA/HAProxy, etcd, MongoDB, Cassandra는 독립 LAB(`labs/`)으로 옮겨져 HOME이 수집하지 않는다. 이 서비스가 멈춰 있으면 target이 down인 것이 정상이며, `up`을 보는 alert는 이 job을 감시하지 않는다.
 
 규칙:
 
@@ -244,7 +244,7 @@ Prometheus는 현재 config에서 `domain: "auth"` label로 `keycloak:9000`을 s
 
 ### Host and GPU exporter boundary
 
-`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
+`node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다. Host PID와 읽기 전용 root/proc/sys/textfile은 민감한 host 정보를 노출하므로 읽기 전용 권한, timex 비활성화와 제한된 collector를 유지한다. Network collector가 host를 보도록 host network namespace에서 `obs_net` gateway 주소에만 listen한다([RUN-0045](../runbooks/0045-prometheus.md)). Backup textfile 경로는 `create_host_path: false`여서 소유자가 미리 준비해야 한다. HTTP probe와 Prometheus target은 별도로 확인한다. `dcgm-exporter`는 POL-0078에 따라 HOME에 포함되는 `obs-gpu` 전용 서비스이고 선언 GPU를 예약하나 Compose healthcheck는 없다. GPU, DCGM metric과 scrape 상태를 구분하며 SYS_ADMIN을 추가하거나 image/HTTP 응답만으로 driver 호환성을 추정하지 않는다. 둘 다 애플리케이션 상태나 Docker Secret이 없으며 복구 자산은 image/config와 metric 기준이다. GPU 유지보수는 [RUN-0055](../runbooks/0055-gpu-recovery.md)가 맡는다.
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../runbooks/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 

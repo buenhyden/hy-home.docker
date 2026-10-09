@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.1.4"
+version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 created: "2026-01-12"
 ---
 

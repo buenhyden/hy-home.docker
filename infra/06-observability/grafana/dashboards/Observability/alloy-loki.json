@@ -43,7 +43,7 @@
     },
     {
       "datasource": "${datasource}",
-      "description": "Successful file reads.\n",
+      "description": "Log entries read from Docker containers.\n",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -77,7 +77,7 @@
     },
     {
       "datasource": "${datasource}",
-      "description": "Successful file reads.\n",
+      "description": "Docker log lines that failed to parse.\n",
       "fieldConfig": {
         "defaults": {
           "custom": {

@@ -37,8 +37,10 @@ and is rebased onto `main` after SPEC-0224 merges.
 
 A script ran every target of every provisioned dashboard against HOME
 Prometheus (PromQL) or Loki (LogQL, last 6 h). Custom, constant and interval
-variables took their dashboard defaults; query variables were widened to match
-everything, so "empty" means no series exists for the panel at all. Three
+variables took their dashboard defaults; query variables, in double or single
+quotes, were widened to match everything, so "empty" means no series exists
+for the panel at all. The first runs widened only double-quoted matchers; the
+figures below come from the corrected run, both sides on the same data. Three
 read-only analyses then classified each empty panel as idle, renamed,
 not scraped, not emitted in this deployment, a wrong selector, or LAB.
 
@@ -72,7 +74,7 @@ README listing their sources, and the Grafana README now points there.
 - node-exporter moved to the host network namespace with
   `--web.listen-address=10.250.5.1:9100` (the `obs_net` gateway); a probe from
   `obs_net` and from `edge_net` both reached that address, so the listener is
-  closed to the LAN but open to non-internal bridges. Prometheus maps the name
+  not routed from the LAN by default but open to non-internal bridges. Prometheus maps the name
   through `extra_hosts`. `processes` and `tcpstat` were enabled.
 - OpenBao `prometheus_retention_time` 30 s → 24 h: its usage gauges are emitted
   every ten minutes and were visible about half of the time.
@@ -125,8 +127,8 @@ Audit on the same HOME data, `main` dashboards against this branch:
 
 | Dashboards | Panels with data | Empty | Errors |
 | --- | --- | --- | --- |
-| `main`, 50 | 742 | 526 | 1 |
-| This branch, 45 | 770 | 209 | 0 |
+| `main`, 50 | 748 | 520 | 1 |
+| This branch, 45 | 772 | 207 | 0 |
 
 Remaining empty panels and why:
 
@@ -136,19 +138,37 @@ Remaining empty panels and why:
 | Kafka Connect | 38 | No connector registered; per-connector and per-task series appear with one |
 | SeaweedFS | 27 | Vacuum, scrub, replication, EC, filer HTTP, S3 handler and lifecycle series appear when those operations run |
 | k6 | 12 | Data exists only during quality runs (remote write) |
-| OpenBao | 12 | Usage gauges wait for the 24 h retention restart; route counters need requests |
+| OpenBao | 13 | Usage gauges wait for the 24 h retention restart; route counters need requests |
 | Qdrant | 10 | No collection, snapshot or API traffic yet |
 | Airflow, Flower | 11 | No DAG or Celery task has run since the exporters started |
-| Keycloak (2) | 10 | Event counters restarted with Keycloak; they appear with sign-ins |
+| Keycloak (2) | 7 | Event and error-ratio series restarted with Keycloak; they fill with sign-ins |
 | Tempo (2) | 8 | Trace-by-ID queries, failed pushes, discarded spans not yet seen |
-| Traefik | 5 | Rates at the shortest interval with no 5xx or slow requests |
-| Others (7) | 7 | Idle or zero-filtered: OffsetCommit, consumer lag, active sessions, TCP transient states, slow Alloy evaluations, OTLP metric points, Loki read success |
+| Traefik | 5 | No 5xx, other codes or SLO-failing services; response-size histogram not emitted at rest |
+| Alloy OpenTelemetry | 4 | No OTLP metric points, no failed spans, OTLP over HTTP unused |
+| Others (7) | 9 | Idle or zero-filtered: Ollama loaded-model memory, OffsetCommit, consumer lag and consumption (no consumer group commits), TCP `syn_sent`, active PostgreSQL sessions, slow Alloy evaluations, Loki ingester read success and append failures |
 
 ### W5 Documents
 
 POL-0024 (SeaweedFS metrics and trust boundary), RUN-0045 (node-exporter host
 namespace and exposure), the Grafana and LAB dashboard READMEs and the service
 inventory describe the changes.
+
+### Review
+
+An independent review of `1f47db7bd..13f629690` found four important and six
+minor issues:
+
+| Finding | Resolution |
+| --- | --- |
+| Alloy's Pyroscope source still scraped `node-exporter:9100`, which no longer resolves on `obs_net` | Alloy maps the name through `extra_hosts` like Prometheus; a test ties both to the `obs_net` gateway |
+| GDE-0024 and the SeaweedFS README said only S3 serves metrics; RUN-0024 had no `SeaweedFSNodeMetricsDown` entry | Both describe the metrics network; RUN-0024 adds the alert procedure |
+| `labs/dashboards/README.md` had no front matter | Added as draft |
+| The remaining-empty table summed to 203, not 209 | The audit also missed single-quoted variables; both sides were re-run and the table now sums to 207 |
+| "The LAN cannot reach" node-exporter was too strong | Reworded to not routed by default; RUN-0045 notes the `obs_net` precondition |
+| The listener was coupled to the gateway without a test; no test bounded host networking or LAB rules and dashboards | Tests derive the gateway from the `obs_net` subnet, limit `network_mode: host` to node-exporter, check `seaweedfs_metrics_net` is internal and isolated, and keep LAB dashboards and LAB exporter metrics out of HOME |
+| GDE-0045, GDE-0044, GDE-0041 and the tier README kept LAB or pre-host-network text | Updated |
+| Prometheus overview, SeaweedFS and OpenSearch cluster variables defaulted to all | Default `hy-home` |
+| Alloy Docker panel descriptions and a Keycloak percent threshold of 80 | Corrected |
 
 ## Evidence
 
@@ -162,7 +182,7 @@ inventory describe the changes.
 
 ## Review and Completion
 
-Not complete: independent review, W5 validation and the merge remain;
+Not complete: W5 validation and the merge remain;
 OpenBao's restart is the owner's.
 
 ## Related Documents

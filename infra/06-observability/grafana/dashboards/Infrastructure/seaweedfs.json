@@ -9004,7 +9004,15 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "selected": true,
+          "text": [
+            "hy-home"
+          ],
+          "value": [
+            "hy-home"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "Prometheus"

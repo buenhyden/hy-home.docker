@@ -751,12 +751,12 @@
       {
         "allValue": ".+",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "$__all"
+            "hy-home"
           ],
           "value": [
-            "$__all"
+            "hy-home"
           ]
         },
         "datasource": {
