@@ -20,7 +20,9 @@ class PayloadError(ValueError):
 def _memory_file(root: Path, pure: PurePosixPath) -> bool:
     """One file directly in this project's Claude Code memory directory."""
     slug = re.sub(r"[^A-Za-z0-9]", "-", root.as_posix())
-    memory = PurePosixPath(Path.home().as_posix(), ".claude", "projects", slug, "memory")
+    memory = PurePosixPath(
+        Path.home().as_posix(), ".claude", "projects", slug, "memory"
+    )
     if pure.parent != memory or pure.suffix != ".md" or memory.is_relative_to(root):
         return False
     # A symlinked directory or a linked file could route the write into the
