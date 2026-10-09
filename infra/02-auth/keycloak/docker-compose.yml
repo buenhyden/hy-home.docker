@@ -66,6 +66,9 @@ services:
       # Series the Keycloak troubleshooting and capacity dashboards and the
       # Keycloak alert rules read (SPEC-0193).
       KC_HTTP_METRICS_HISTOGRAMS_ENABLED: 'true'
+      # Adds an exact 250 ms bucket for the troubleshooting dashboard's SLO
+      # panels; the default buckets jump from 0.246 s to 0.268 s.
+      KC_HTTP_METRICS_SLOS: '250'
       KC_CACHE_METRICS_HISTOGRAMS_ENABLED: 'true'
       KC_EVENT_METRICS_USER_ENABLED: 'true'
       # OTLP traces to Alloy at a 10% sample (SPEC-0193).

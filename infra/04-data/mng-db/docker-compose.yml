@@ -317,7 +317,9 @@ services:
       DATA_SOURCE_URI: mng-pg:${POSTGRES_PORT:-5432}/${POSTGRES_DEFAULT_DB}?sslmode=disable
       DATA_SOURCE_USER: mng_pg_monitor
       DATA_SOURCE_PASS_FILE: /run/secrets/mng_pg_monitor_password
-    command: ['--collector.postmaster']
+    # stat_checkpointer carries the checkpoint columns PostgreSQL 17 moved
+    # out of pg_stat_bgwriter.
+    command: ['--collector.postmaster', '--collector.stat_checkpointer']
     expose:
       - '${POSTGRES_EXPORTER_PORT:-9187}'
     depends_on:

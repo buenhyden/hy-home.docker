@@ -137,11 +137,11 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 04-data | `realtime` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `rest` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `seaweedfs-buckets` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `seaweedfs-filer` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `seaweedfs-master` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-filer` | `seaweedfs-filer` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
+| 04-data | `seaweedfs-master` | `seaweedfs-master` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 04-data | `seaweedfs-s3` | `seaweedfs-s3` | `Infrastructure/seaweedfs`, `Infrastructure/containers` |  |
 | 04-data | `seaweedfs-table-bucket` | none | `Infrastructure/containers` | container metrics and logs only |
-| 04-data | `seaweedfs-volume` | none | `Infrastructure/containers` | container metrics and logs only |
+| 04-data | `seaweedfs-volume` | `seaweedfs-volume` | `Infrastructure/seaweedfs`, `Infrastructure/containers` | scraped over `seaweedfs_metrics_net` |
 | 12-analytics | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
 | 13-experience | `storybook` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
@@ -176,7 +176,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 06-observability | `grafana` | `grafana` | `Observability/grafana`, `Infrastructure/containers` |  |
 | 06-observability | `grafana-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 06-observability | `loki` | `loki` | `Observability/loki-operational`, `Observability/loki-reads`, `Observability/loki-writes`, `Observability/loki-chunks`, `Infrastructure/containers` |  |
-| 06-observability | `node-exporter` | `node-exporter` | `Infrastructure/node-exporter`, `Infrastructure/containers` |  |
+| 06-observability | `node-exporter` | `node-exporter` | `Infrastructure/node-exporter`, `Infrastructure/containers` | host network namespace, listener on the `obs_net` gateway |
 | 06-observability | `prometheus` | `prometheus` | `Observability/prometheus-overview`, `Infrastructure/containers` |  |
 | 06-observability | `pushgateway` | none | `Infrastructure/containers` | container metrics and logs only |
 | 06-observability | `pyroscope` | `pyroscope` | `Observability/pyroscope`, `Infrastructure/containers` |  |
