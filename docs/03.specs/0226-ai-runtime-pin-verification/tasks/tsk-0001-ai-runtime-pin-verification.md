@@ -112,7 +112,22 @@ the login form, signup, Ollama URL and embedding engine and model;
 
 ### W5 HOME Rollout
 
-Pending.
+Run from `15ccd7d35` on 2026-10-10 (KST), recreating only `ollama` and
+`open-webui`:
+
+| Step | Result |
+| --- | --- |
+| Rollback data | Online SQLite backup and the running key in the Docker volume `owui-prerollout-226`; previous checkout `b2745167d` |
+| Key | Running key copied into the data volume (mode 600); byte-identical to the backup after recreation; log reads it from `/app/backend/data/.webui_secret_key` |
+| `.env` | `OLLAMA_MAX_QUEUE` value 128 → 16; key set unchanged |
+| Persisted setting | With Open WebUI stopped, the empty `webui.url` row was removed; on start Open WebUI stored the Compose `WEBUI_URL` there |
+| Recreation | Both healthy; image IDs equal the pinned digests; `ollama --version` 0.40.0, `/api/version` 0.11.4 |
+| Ollama settings | Load timeout 15 m, queue 16, cloud off, 2 slots, 1 loaded model; CUDA compute 6.1 on `cuda_v12` |
+| Open WebUI state | Login form and signup off, Ollama URL and embedding model unchanged, 1 user, 352 config rows, no error lines |
+| Canary | Open WebUI to Ollama 200; gateway health 200; WebSocket 101; OIDC redirect to the registered callback with S256; `tev1` inference 200 in 3.5 s on the GPU; exporter up |
+
+The sign-in, sign-out and token refresh of a real user through Keycloak need
+the owner's browser session and were not run.
 
 ## Evidence
 
@@ -123,11 +138,13 @@ Pending.
 | Pins and limits | 2 | W2 | Contract tests; Compose rendering; version sync | `41a711771` | PASS | W2 Pins and Limits | accepted |
 | Restore | 3 | W3 | Isolated SQLite, upload, key and catalog restore | `2ac1db09c` | PASS | W3 Backup and Restore | accepted |
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | accepted |
+| HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | accepted |
+| Owner sign-in canary | 5 | W5 | Keycloak sign-in, sign-out, refresh | — | NOT_RUN | W5 HOME Rollout | pending |
 
 ## Review and Completion
 
-Not complete: the HOME rollout, the owner's sign-in canary and validation
-remain.
+Not complete: the owner's sign-in canary, the image scan (needs the Grype
+network approval) and validation remain.
 
 ## Related Documents
 

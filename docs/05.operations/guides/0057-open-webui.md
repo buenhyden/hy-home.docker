@@ -129,7 +129,7 @@ docker compose exec open-webui curl -f http://ollama:${OLLAMA_PORT:-11434}/api/t
 
 CUDA 이미지를 쓰지만 GPU 예약이 없어 `torch.cuda.is_available()`은 `False`다. embedding은 원격 Ollama가 처리하고 로컬 GPU 기능은 쓰지 않는다. GPU는 Ollama와 ComfyUI가 이미 나누어 쓰므로 장치를 추가하지 않는다. `AIOHTTP_CLIENT_TIMEOUT=960`은 Ollama의 15분 load timeout보다 길어서 느린 첫 load가 WebUI 쪽에서 먼저 끊기지 않는다.
 
-`ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가렸으므로 그 행만 지웠다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
+`ENABLE_PERSISTENT_CONFIG`가 기본값(켜짐)이면 DB `config` 행이 Compose 환경 변수보다 우선한다. migration이 남긴 빈 `webui.url` 행이 `WEBUI_URL`을 가리고 있어서 그 행만 지웠다. 재시작할 때 WebUI가 Compose 값으로 행을 다시 저장했다. 관리자가 직접 바꾼 설정은 건드리지 않는다. 세션 key는 `WEBUI_SECRET_KEY_FILE`로 data volume의 `.webui_secret_key`에 두고 restic state set으로 백업한다. 재생성 전에 실행 중인 key를 volume에 복사해야 사용자 세션이 유지된다.
 
 ### Common Checks
 
