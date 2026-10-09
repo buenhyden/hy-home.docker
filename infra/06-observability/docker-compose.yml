@@ -70,7 +70,8 @@ services:
       - '${SECRETS_GID:-1000}'
     tmpfs:
       - /tmp
-      - /etc/prometheus:size=10M
+      # Owned by the image's nobody user so start.sh can render the DEV targets.
+      - /etc/prometheus:size=10M,uid=65534,gid=65534,mode=0755
     entrypoint: ['/bin/sh', '/usr/local/libexec/prometheus/start.sh']
     command:
       - --config.file=/etc/prometheus/prometheus.yml

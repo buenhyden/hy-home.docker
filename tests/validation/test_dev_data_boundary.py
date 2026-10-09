@@ -221,6 +221,19 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
                         },
                     )
 
+    def test_prometheus_can_write_the_rendered_targets(self):
+        services = compose("infra/06-observability/docker-compose.yml")
+        prometheus = services["prometheus"]
+        self.assertEqual(
+            prometheus["entrypoint"],
+            ["/bin/sh", "/usr/local/libexec/prometheus/start.sh"],
+        )
+        # The image runs as nobody (65534); a root-owned tmpfs stops start.sh.
+        self.assertIn(
+            "/etc/prometheus:size=10M,uid=65534,gid=65534,mode=0755",
+            prometheus["tmpfs"],
+        )
+
     def test_start_refuses_a_missing_or_unknown_state(self):
         for state in (None, "", "ON", "true", "on\n"):
             with self.subTest(state=state):
