@@ -41,15 +41,26 @@ URL pinned and accepts `approved_at` and `expires_at` as UTC timestamps with
 The window is counted from the approval, so it ends on 2026-11-08 rather than
 30 days after the old expiry. Contract and adapter tests: 68 pass.
 
+### W2 Quality Standard Rule
+
+The bounded acceptance section no longer restates SPEC-0205 and SPEC-0219
+dates. It names the record fields the workflow contract owns, keeps the
+identity pinned, and lets the owner extend by up to 30 days from approval while
+the advisory lists no patch, with no governance amendment. The owner applied
+the copy prepared under the ignored `_workspace/ghsa/` after the auto-mode
+safety check refused it to the agent (`170b1095d`); the agent-governance contract
+and markdownlint pass.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Contract window | 1 | W1 | Contract and adapter tests | `ebffea9bb` | PASS | W1 Contract Window | accepted |
+| Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `170b1095d` | PASS | W2 Quality Standard Rule | accepted |
 
 ## Review and Completion
 
-Not complete: W2 and W3 remain.
+Not complete: W3 remains.
 
 ## Related Documents
 
