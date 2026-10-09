@@ -153,7 +153,7 @@ the owner's browser session and were not run.
 | Features | 4 | W4 | Isolated feature rehearsal; GPU measurement; gateway checks | `2ac1db09c` | PASS | W4 Features | accepted |
 | Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | pending |
 | HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | accepted |
-| Owner sign-in canary | 5 | W5 | Keycloak sign-in, sign-out, refresh | — | NOT_RUN | W5 HOME Rollout | pending |
+| Owner sign-in canary | 5 | W5 | Owner-attested report; Traefik and Keycloak logs | `f75275651` | PASS | Review and Completion | accepted |
 | Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | accepted |
 | Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | accepted |
 | Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | accepted |
@@ -174,8 +174,15 @@ service inventory still listed the old Ollama environment keys. The local
 and PR #402 merged as `1f552ac78` (recorded with SPEC-0228). The nightly
 backup of 2026-10-10 skipped Restic because the state repository exceeded
 its budget (SPEC-0228), so no snapshot yet holds the key and catalog.
-Not complete: the owner's sign-in canary, the restic snapshot listing and the
-image scan (needs the Grype network approval) remain.
+On 2026-10-10 the owner reported the Keycloak sign-in check complete. The logs
+cannot corroborate a fresh OIDC flow: Traefik, which logs every request, shows
+no `/oauth/oidc/login` or callback for Open WebUI after the rollout other than
+the two redirect checks of W4 and W5; Open WebUI writes no access log; and
+Keycloak logs only error events. The check therefore rests on the owner's
+report, which is consistent with an existing session (four-week JWT) still
+being accepted after recreation. Not complete: the restic snapshot listing
+(first possible on the 2026-10-11 run) and the image scan (needs the Grype
+network approval) remain.
 
 ## Related Documents
 
