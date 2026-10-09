@@ -149,7 +149,15 @@ keys stay disjoint from root keys. The LAB files now use `LAB_SECRETS_GID`
 a clean worktree at `3aed94faa`, soft-reset to `abfe94cca`, exited 0: 13 test
 runs passed (1,726 tests); 28 tests skipped as the gate contract's declared
 Docker rehearsals (backup, CDC, integration, mail, PostgreSQL, SeaweedFS,
-SSO), which this run did not execute. The SPEC-0212 ledger is unchanged; no
+SSO), which this run did not execute. The first `candidate-quality` run on
+PR #392 failed `operations-catalog` with 121 stale Resources and Security
+cells in the m0021 service inventory, which the local changed profile did not
+select; the registered renderer refreshed the 119 rows and the check passes. The
+refreshed n8n rows exposed the env key name `N8N_VALKEY_SECRET` to gitleaks,
+which reads it as a key assignment; the inventory allowlist in
+`.gitleaks.toml` now names it exactly, so a real value there is still
+reported.
+The SPEC-0212 ledger is unchanged; no
 ledger item maps to this package alone.
 
 ## Evidence
