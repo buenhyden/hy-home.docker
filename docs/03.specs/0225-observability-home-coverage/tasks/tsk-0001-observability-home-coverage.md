@@ -190,6 +190,8 @@ sections; and the Evidence rows below carry the SHAs the HOME steps ran from.
 | HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` (rebased `12e187934`) | PASS | W4 HOME Rollout | accepted |
 | Review fixes | 3 | W4 | Network, host-network, gateway and LAB tests; dashboard tests; audit recount | `789fbd525` | PASS | Review | accepted |
 | Alloy on HOME | 3 | W4 | Name resolution; Pyroscope `service_name` list | `b2745167d` (rebased `789fbd525`) | PASS | W4 HOME Rollout | accepted |
+| Changed gate | 4 | W5 | `run-ci-gate.py --profile changed --local-only`, base `acc191655` | `ad33a5b9f` | PASS | Review and Completion | accepted |
+| Staged style check | 4 | W5 | `run-ci-precommit.sh --mode local-staged` over `acc191655..HEAD`; the first run asked for `ruff format` on two tests, applied in `75f66c8f9` | `75f66c8f9` | PASS | Review and Completion | accepted |
 | OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
 
 ## Review and Completion
@@ -198,8 +200,9 @@ SPEC-0224 merged as `acc191655`; this branch was rebased onto it without
 conflicts or content changes: `ff9f2f48c`→`21562bcd0`,
 `a4a3a7dad`→`225894242`, `4420a0514`→`12e187934`,
 `13f629690`→`d347e6e44`, `b2745167d`→`789fbd525` (the Alloy rollout ran
-from `b2745167d`). Not complete: W5 validation and the merge remain;
-OpenBao's restart is the owner's.
+from `b2745167d`). The changed gate passed on `ad33a5b9f` (rc 0) and the staged
+style check on `75f66c8f9` (rc 0). Not complete: `candidate-quality` and the
+merge remain; OpenBao's restart is the owner's.
 
 ## Related Documents
 
