@@ -15,7 +15,8 @@
     "build-storybook": "npm run build:ui && storybook build && node --experimental-strip-types mcp/stamp.ts && npm run test:artifacts",
     "build:ui": "npm run build --workspace @hy-home/storybook-ui",
     "test:artifacts": "node --experimental-strip-types --test tests/artifacts.test.mjs tests/mcp.test.mjs",
-    "mcp:docs": "node --experimental-strip-types mcp/server.ts"
+    "mcp:docs": "node --experimental-strip-types mcp/server.ts",
+    "build:mcp": "esbuild mcp/server.ts --bundle --platform=node --format=esm --target=node24 --outfile=mcp-dist/server.mjs"
   },
   "dependencies": {
     "@hy-home/storybook-ui": "file:packages/ui",
@@ -39,6 +40,7 @@
     "@vitest/browser": "^5.0.3",
     "@vitest/browser-playwright": "^5.0.3",
     "@vitest/coverage-v8": "^5.0.3",
+    "esbuild": "0.28.2",
     "eslint": "^10.12.0",
     "eslint-config-next": "16.4.0",
     "eslint-plugin-storybook": "10.6.1",

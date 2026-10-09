@@ -33,3 +33,49 @@ services:
       traefik.http.routers.storybook.tls: 'true'
       traefik.http.routers.storybook.middlewares: req-rate-limit@file,gateway-standard-chain@file,sso-auth@file
       traefik.http.services.storybook.loadbalancer.server.port: '8080'
+
+  # Remote docs MCP for other workspaces (SPEC-0219): read-only docs tools
+  # over the manifests of the same build. Traefik terminates TLS; the server
+  # accepts only Keycloak bearer tokens for its own URL from the reader group,
+  # so the route carries no cookie-based sso-auth.
+  storybook-mcp:
+    profiles:
+      - experience
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-low
+    image: hy-home/storybook-mcp:e811e159afa2dc7245bb2d6b562a91cf931283fe
+    container_name: storybook-mcp
+    hostname: storybook-mcp
+    pull_policy: never
+    user: '1000:1000'
+    group_add: !override [] # Reads no Docker secrets.
+    expose:
+      - '7613'
+    environment:
+      STORYBOOK_MCP_RESOURCE: https://storybook-mcp.${DEFAULT_URL}/mcp
+      STORYBOOK_MCP_ISSUER: https://keycloak.${DEFAULT_URL}/realms/hy-home.realm
+      STORYBOOK_MCP_SCOPE: storybook-mcp
+      STORYBOOK_MCP_READER_GROUP: /admins
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/hy-home-rootCA.pem
+    volumes:
+      - ${DEFAULT_CERT_DIR}/rootCA.pem:/etc/ssl/certs/hy-home-rootCA.pem:ro
+    networks:
+      edge_net: {}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "wget -q -O /dev/null --header 'Host: storybook-mcp.${DEFAULT_URL}' http://127.0.0.1:7613/.well-known/oauth-protected-resource/mcp || exit 1"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    labels:
+      <<: *tier-label
+      traefik.enable: 'true'
+      traefik.docker.network: edge_net
+      traefik.http.routers.storybook-mcp.rule: Host(`storybook-mcp.${DEFAULT_URL}`) && (Path(`/mcp`) || PathPrefix(`/.well-known/oauth-protected-resource`))
+      traefik.http.routers.storybook-mcp.entrypoints: websecure
+      traefik.http.routers.storybook-mcp.tls: 'true'
+      traefik.http.routers.storybook-mcp.middlewares: req-rate-limit@file,gateway-standard-chain@file
+      traefik.http.services.storybook-mcp.loadbalancer.server.port: '7613'

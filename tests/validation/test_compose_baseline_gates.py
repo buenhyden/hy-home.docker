@@ -2386,6 +2386,9 @@ class SsoStack:
 
     ROUTERS = SSO_ROUTERS
     EXTRA_DYNAMIC: ClassVar[dict[str, str]] = {}
+    # True serves Keycloak as https://keycloak.hy.test through Traefik with a
+    # throwaway CA, as HOME does, so a client can check an https issuer.
+    TLS_ISSUER = False
 
     @classmethod
     def setUpClass(cls):
@@ -2403,6 +2406,14 @@ class SsoStack:
         for name, text in cls.EXTRA_DYNAMIC.items():
             (cls.tmp / "dynamic" / name).write_text(text)
         (cls.tmp / "import").mkdir()
+        (cls.tmp / "tls").mkdir()
+        if cls.TLS_ISSUER:
+            cls.make_tls()
+        cls.issuer = (
+            "https://keycloak.hy.test/realms/r"
+            if cls.TLS_ISSUER
+            else "http://keycloak:8080/realms/r"
+        )
         # Random, synthetic and removed with the temporary directory; the
         # containers read them as mounted files, as on HOME.
         client_value = os.urandom(16).hex()
@@ -2425,7 +2436,8 @@ class SsoStack:
         _sso_docker("run", "-d", "--name", f"{cls.tag}-traefik", *net, "--ip", SSO_TRAEFIK_IP,
                "--network-alias", "app.hy.test", "--network-alias", "auth.hy.test",
                "--network-alias", "storybook.hy.test",
-               "-v", f"{cls.tmp}/dynamic:/dynamic:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
+               "--network-alias", "storybook-mcp.hy.test", "--network-alias", "keycloak.hy.test",
+               "-v", f"{cls.tmp}/dynamic:/dynamic:ro", "-v", f"{cls.tmp}/tls:/tls:ro", _sso_image("infra/01-gateway/traefik/docker-compose.yml", "traefik"),
                "--entrypoints.websecure.address=:443", "--providers.file.directory=/dynamic",
                "--log.level=ERROR")  # fmt: skip
         _sso_docker("run", "-d", "--name", f"{cls.tag}-keycloak", *net, "--network-alias", "keycloak",
@@ -2434,7 +2446,8 @@ class SsoStack:
                "-v", f"{cls.tmp}/import:/opt/keycloak/data/import:ro",
                _sso_image("infra/02-auth/keycloak/docker-compose.yml", "keycloak"),
                "start-dev", "--import-realm", "--http-port=8080",
-               "--hostname=http://keycloak:8080")  # fmt: skip
+               *(["--hostname=https://keycloak.hy.test", "--proxy-headers=xforwarded"]
+                 if cls.TLS_ISSUER else ["--hostname=http://keycloak:8080"]))  # fmt: skip
         _sso_docker("run", "-d", "--name", f"{cls.tag}-upstream", *net, "--network-alias", "upstream",
                "python:3.13.15-alpine", "python", "-c", SSO_UPSTREAM)  # fmt: skip
         _sso_docker("run", "-d", "--name", f"{cls.tag}-client", *net,
@@ -2444,7 +2457,7 @@ class SsoStack:
         # The tracked config; only deployment-specific values are replaced.
         env = {
             "OAUTH2_PROXY_CLIENT_ID": "proxy",
-            "OAUTH2_PROXY_OIDC_ISSUER_URL": "http://keycloak:8080/realms/r",
+            "OAUTH2_PROXY_OIDC_ISSUER_URL": cls.issuer,
             "OAUTH2_PROXY_REDIRECT_URL": "https://auth.hy.test/oauth2/callback",
             "OAUTH2_PROXY_COOKIE_DOMAINS": ".hy.test",
             "OAUTH2_PROXY_WHITELIST_DOMAINS": ".hy.test",
@@ -2452,14 +2465,32 @@ class SsoStack:
             "OAUTH2_PROXY_SESSION_STORE_TYPE": "cookie",
             "OAUTH2_PROXY_SCOPE": "openid email profile",
         }
+        if cls.TLS_ISSUER:
+            env["SSL_CERT_FILE"] = "/tls/ca.pem"
         args = [x for key, value in env.items() for x in ("-e", f"{key}={value}")]
         _sso_docker("run", "-d", "--name", f"{cls.tag}-proxy", *net, "--network-alias", "oauth2-proxy",
                *args, "-v", f"{SSO_PROXY_CFG}:/etc/oauth2-proxy.cfg:ro",
                "-v", f"{cls.tmp}/secrets/client:/run/secrets/oauth2_proxy_client_secret:ro",
                "-v", f"{cls.tmp}/secrets/cookie:/run/secrets/oauth2_proxy_cookie_secret:ro",
-               cls.proxy_image)  # fmt: skip
+               "-v", f"{cls.tmp}/tls:/tls:ro", cls.proxy_image)  # fmt: skip
         cls.wait(
             cls.fetch_ok("http://oauth2-proxy:4180/ping"), "oauth2-proxy", tries=60
+        )
+
+    @classmethod
+    def make_tls(cls):
+        """A throwaway CA and *.hy.test certificate, removed with the temp dir."""
+        tls = cls.tmp / "tls"
+        ssl = ["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1"]
+        subprocess.run([*ssl, "-keyout", tls / "ca.key", "-out", tls / "ca.pem",
+                        "-subj", "/CN=hy rehearsal CA"], check=True, capture_output=True)  # fmt: skip
+        subprocess.run([*ssl, "-keyout", tls / "tls.key", "-out", tls / "tls.pem",
+                        "-subj", "/CN=*.hy.test", "-CA", tls / "ca.pem", "-CAkey", tls / "ca.key",
+                        "-addext", "subjectAltName=DNS:*.hy.test"],
+                       check=True, capture_output=True)  # fmt: skip
+        (cls.tmp / "dynamic/tls.yml").write_text(
+            "tls:\n  stores:\n    default:\n      defaultCertificate:\n"
+            "        certFile: /tls/tls.pem\n        keyFile: /tls/tls.key\n"
         )
 
     @classmethod
@@ -2541,6 +2572,44 @@ class SsoRehearsalTests(SsoStack, unittest.TestCase):
         self.assertNotEqual(200, out["app"]["status"])
 
 
+# Runs inside the client container: password-grant tokens from a rehearsal-only
+# client, then MCP calls through Traefik. Prints statuses and headers only.
+STORYBOOK_MCP_CLIENT = r"""
+import json, ssl, sys, urllib.parse, urllib.request
+ctx = ssl.create_default_context(); ctx.check_hostname = False; ctx.verify_mode = ssl.CERT_NONE
+issuer, resource = sys.argv[1], sys.argv[2]
+def token(user, scope):
+    data = urllib.parse.urlencode({"grant_type": "password", "client_id": "mcp-test", "username": user,
+                                   "password": user + "-synthetic", "scope": scope}).encode()
+    reply = urllib.request.urlopen(urllib.request.Request(issuer + "/protocol/openid-connect/token", data),
+                                   context=ctx, timeout=20)
+    return json.load(reply)["access_token"]
+def call(url, authorization=None, body=None):
+    headers = {"content-type": "application/json", "accept": "application/json, text/event-stream"}
+    if authorization:
+        headers["authorization"] = "Bearer " + authorization
+    request = urllib.request.Request(url, data=body and json.dumps(body).encode(), headers=headers)
+    try:
+        resp = urllib.request.urlopen(request, context=ctx, timeout=20)
+    except urllib.error.HTTPError as e:
+        resp = e
+    text = resp.read().decode("utf-8", "replace")
+    data = next((line[6:] for line in text.splitlines() if line.startswith("data: ")), None)
+    return {"status": resp.status, "challenge": resp.headers.get("WWW-Authenticate"),
+            "result": json.loads(data).get("result") if data else (json.loads(text) if text.startswith("{") else None)}
+listing = {"jsonrpc": "2.0", "id": 1, "method": "tools/list"}
+docs = {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "docs-list", "arguments": {}}}
+out = {"anonymous": call(resource, None, listing),
+       "reader": call(resource, token("alice", "openid storybook-mcp"), listing),
+       "reader_docs": call(resource, token("alice", "openid storybook-mcp"), docs),
+       "no_audience": call(resource, token("alice", "openid"), listing),
+       "non_reader": call(resource, token("bob", "openid storybook-mcp"), listing),
+       "metadata": call(resource.rsplit("/", 1)[0] + "/.well-known/oauth-protected-resource/mcp"),
+       "outside_route": call(resource.rsplit("/", 1)[0] + "/manifests/components.json")}
+print(json.dumps(out))
+"""
+
+
 @unittest.skipUnless(
     os.environ.get("HYHOME_STORYBOOK_REHEARSAL") == "1",
     "set HYHOME_STORYBOOK_REHEARSAL=1 to run the disposable Storybook ingress rehearsal (needs Docker and the pinned image)",
@@ -2550,32 +2619,50 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
     on the SSO stack: anonymous, admin and non-admin results (SPEC-0219)."""
 
     COMPOSE = "infra/13-experience/storybook/docker-compose.yml"
+    TLS_ISSUER = True
+
+    @staticmethod
+    def router(labels, name, backend):
+        import yaml
+
+        prefix = f"traefik.http.routers.{name}."
+        port = labels[f"traefik.http.services.{name}.loadbalancer.server.port"]
+        return yaml.safe_dump({"http": {
+            "routers": {name: {
+                "rule": labels[prefix + "rule"].replace("${DEFAULT_URL}", "hy.test"),
+                "entryPoints": [labels[prefix + "entrypoints"]],
+                "tls": {} if labels[prefix + "tls"] == "true" else None,
+                "middlewares": labels[prefix + "middlewares"].split(","),
+                "service": f"{name}-svc",
+            }},
+            "services": {f"{name}-svc": {"loadBalancer": {
+                "servers": [{"url": f"http://{backend}:{port}"}]}}},
+        }})  # fmt: skip
 
     @classmethod
     def setUpClass(cls):
-        import yaml
-
         service = _compose_service(cls.COMPOSE, "storybook")
-        cls.image = service["image"]
-        if _sso_docker("image", "inspect", cls.image, check=False).returncode != 0:
-            raise AssertionError(
-                f"{cls.image} is not loaded; build it with "
-                "python3 scripts/operations/storybook_image.py build"
-            )
-        labels = service["labels"]
-        router = "traefik.http.routers.storybook."
-        port = labels["traefik.http.services.storybook.loadbalancer.server.port"]
-        cls.EXTRA_DYNAMIC = {"storybook.yml": yaml.safe_dump({"http": {
-            "routers": {"storybook": {
-                "rule": labels[router + "rule"].replace("${DEFAULT_URL}", "hy.test"),
-                "entryPoints": [labels[router + "entrypoints"]],
-                "tls": {} if labels[router + "tls"] == "true" else None,
-                "middlewares": labels[router + "middlewares"].split(","),
-                "service": "storybook-svc",
-            }},
-            "services": {"storybook-svc": {"loadBalancer": {
-                "servers": [{"url": f"http://storybook:{port}"}]}}},
-        }})}  # fmt: skip
+        mcp = _compose_service(cls.COMPOSE, "storybook-mcp")
+        cls.image, cls.mcp_image = service["image"], mcp["image"]
+        for image in (cls.image, cls.mcp_image):
+            if _sso_docker("image", "inspect", image, check=False).returncode != 0:
+                raise AssertionError(
+                    f"{image} is not loaded; build it with "
+                    "python3 scripts/operations/storybook_image.py build"
+                )
+        cls.EXTRA_DYNAMIC = {
+            "storybook.yml": cls.router(service["labels"], "storybook", "storybook"),
+            "storybook-mcp.yml": cls.router(
+                mcp["labels"], "storybook-mcp", "storybook-mcp"
+            ),
+            # Keycloak behind Traefik, as keycloak.${DEFAULT_URL} on HOME.
+            "keycloak.yml": (
+                "http:\n  routers:\n    keycloak:\n      rule: Host(`keycloak.hy.test`)\n"
+                "      entryPoints: [websecure]\n      tls: {}\n      service: keycloak-svc\n"
+                "  services:\n    keycloak-svc:\n      loadBalancer:\n"
+                "        servers:\n          - url: http://keycloak:8080\n"
+            ),
+        }
         super().setUpClass()
         # The Compose runtime controls: unprivileged, read-only, tmpfs only.
         _sso_docker("run", "-d", "--name", f"{cls.tag}-storybook", "--network", cls.tag,
@@ -2588,9 +2675,87 @@ class StorybookIngressRehearsalTests(SsoStack, unittest.TestCase):
                              "/usr/share/nginx/html/assets").stdout.split()  # fmt: skip
         cls.js = next(name for name in assets if name.endswith(".js"))
         cls.css = next(name for name in assets if name.endswith(".css"))
+        cls.start_mcp(mcp)
         cls.paths = ["/", "/iframe.html", f"/assets/{cls.js}", f"/assets/{cls.css}",
                      "/manifests/components.json", "/manifests/docs.json",
                      "/revision.json"]  # fmt: skip
+
+    @classmethod
+    def start_mcp(cls, mcp):
+        environment = mcp["environment"]
+        cls.resource = environment["STORYBOOK_MCP_RESOURCE"].replace(
+            "${DEFAULT_URL}", "hy.test"
+        )
+        scope, group = (
+            environment["STORYBOOK_MCP_SCOPE"],
+            environment["STORYBOOK_MCP_READER_GROUP"],
+        )
+        # The optional scope puts this resource in aud and group paths in the token.
+        script = (
+            "cd /tmp && export HOME=/tmp && K=/opt/keycloak/bin/kcadm.sh && "
+            "$K config credentials --server http://localhost:8080 --realm master "
+            "--user admin --password synthetic-admin >/dev/null && "
+            f"S=$($K create client-scopes -r r -s name={scope} -s protocol=openid-connect -i) && "
+            "$K create client-scopes/$S/protocol-mappers/models -r r -s name=aud -s protocol=openid-connect "
+            "-s protocolMapper=oidc-audience-mapper "
+            f"-s 'config.\"included.custom.audience\"={cls.resource}' "
+            "-s 'config.\"access.token.claim\"=true' >/dev/null && "
+            "$K create client-scopes/$S/protocol-mappers/models -r r -s name=groups -s protocol=openid-connect "
+            "-s protocolMapper=oidc-group-membership-mapper -s 'config.\"full.path\"=true' "
+            "-s 'config.\"access.token.claim\"=true' -s 'config.\"claim.name\"=groups' >/dev/null && "
+            "C=$($K create clients -r r -s clientId=mcp-test -s publicClient=true "
+            "-s directAccessGrantsEnabled=true -s standardFlowEnabled=false -i) && "
+            "$K update clients/$C/optional-client-scopes/$S -r r"
+        )
+        _sso_docker("exec", f"{cls.tag}-keycloak", "bash", "-c", script)
+        _sso_docker("run", "-d", "--name", f"{cls.tag}-storybook-mcp", "--network", cls.tag,
+                    "--network-alias", "storybook-mcp", "--pull=never", "--read-only",
+                    "--tmpfs", "/tmp", "--user", mcp["user"], "--cap-drop", "ALL",
+                    "--security-opt", "no-new-privileges:true",
+                    "-e", f"STORYBOOK_MCP_RESOURCE={cls.resource}",
+                    "-e", f"STORYBOOK_MCP_ISSUER={cls.issuer}",
+                    "-e", f"STORYBOOK_MCP_SCOPE={scope}",
+                    "-e", f"STORYBOOK_MCP_READER_GROUP={group}",
+                    "-e", "NODE_EXTRA_CA_CERTS=/tls/ca.pem",
+                    "-v", f"{cls.tmp}/tls/ca.pem:/tls/ca.pem:ro", cls.mcp_image)  # fmt: skip
+        cls.addClassCleanup(
+            _sso_docker, "rm", "-f", f"{cls.tag}-storybook-mcp", check=False
+        )
+        cls.wait(lambda: "listening" in _sso_docker(
+            "logs", f"{cls.tag}-storybook-mcp", check=False).stdout, "storybook-mcp", tries=30)  # fmt: skip
+
+    def test_remote_mcp_serves_readers_with_a_token_for_its_url_only(self):
+        out = _sso_docker("exec", f"{self.tag}-client", "python", "-c", STORYBOOK_MCP_CLIENT,
+                          self.issuer, self.resource, check=False, timeout=120)  # fmt: skip
+        self.assertEqual(0, out.returncode, out.stderr[-2000:])
+        result = json.loads(out.stdout)
+        print("storybook-mcp", json.dumps({k: v["status"] for k, v in result.items()}))
+        metadata_url = (
+            "https://storybook-mcp.hy.test/.well-known/oauth-protected-resource/mcp"
+        )
+        self.assertEqual(401, result["anonymous"]["status"])
+        self.assertIn(
+            f'resource_metadata="{metadata_url}"', result["anonymous"]["challenge"]
+        )
+        self.assertEqual(
+            ["docs-list", "docs-show", "docs-show-story"],
+            sorted(tool["name"] for tool in result["reader"]["result"]["tools"]),
+        )
+        self.assertIn(
+            "ui-button", result["reader_docs"]["result"]["content"][0]["text"]
+        )
+        # A token without this resource in aud is refused even for a reader.
+        self.assertEqual(401, result["no_audience"]["status"])
+        self.assertEqual(403, result["non_reader"]["status"])
+        self.assertIn("insufficient_scope", result["non_reader"]["challenge"])
+        self.assertEqual(200, result["metadata"]["status"])
+        self.assertEqual(
+            {"resource": self.resource, "authorization_servers": [self.issuer],
+             "scopes_supported": ["storybook-mcp"], "bearer_methods_supported": ["header"]},
+            result["metadata"]["result"],
+        )  # fmt: skip
+        # The route carries only /mcp and the metadata; nothing else reaches the server.
+        self.assertEqual(404, result["outside_route"]["status"])
 
     def assert_refused(self, out):
         for key, result in out.items():
@@ -4323,6 +4488,43 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         for absent in ("secrets", "volumes", "ports", "environment"):
             self.assertNotIn(absent, storybook)
 
+    def test_remote_storybook_mcp_takes_only_keycloak_tokens_for_its_url(self) -> None:
+        services = self._services()
+        mcp, storybook = services["storybook-mcp"], services["storybook"]
+        # Built from the same commit as the static origin, never pulled.
+        self.assertRegex(mcp["image"], r"^hy-home/storybook-mcp:[0-9a-f]{40}$")
+        self.assertEqual(
+            storybook["image"].rsplit(":", 1)[1], mcp["image"].rsplit(":", 1)[1]
+        )
+        self.assertEqual("never", mcp["pull_policy"])
+        self.assertEqual(["experience"], mcp["profiles"])
+        self.assertEqual({"edge_net"}, set(mcp["networks"]))
+        env = mcp["environment"]
+        self.assertEqual(
+            "https://storybook-mcp.${DEFAULT_URL}/mcp", env["STORYBOOK_MCP_RESOURCE"]
+        )
+        self.assertEqual(
+            "https://keycloak.${DEFAULT_URL}/realms/hy-home.realm",
+            env["STORYBOOK_MCP_ISSUER"],
+        )
+        self.assertEqual("/admins", env["STORYBOOK_MCP_READER_GROUP"])
+        labels = mcp["labels"]
+        router = "traefik.http.routers.storybook-mcp."
+        self.assertEqual(
+            "Host(`storybook-mcp.${DEFAULT_URL}`) && (Path(`/mcp`) || "
+            "PathPrefix(`/.well-known/oauth-protected-resource`))",
+            labels[router + "rule"],
+        )
+        self.assertEqual("websecure", labels[router + "entrypoints"])
+        self.assertEqual("true", labels[router + "tls"])
+        # The server checks bearer tokens; a browser cookie never authorizes it.
+        self.assertEqual(
+            "req-rate-limit@file,gateway-standard-chain@file",
+            labels[router + "middlewares"],
+        )
+        for absent in ("secrets", "ports"):
+            self.assertNotIn(absent, mcp)
+
     def test_prometheus_scrape_targets_are_services_on_obs_net(self) -> None:
         services = self._services()
         config = ROOT / "infra/06-observability/prometheus/config"
@@ -4770,6 +4972,8 @@ ROUTES_WITHOUT_SSO = {
     "prometheus-api": "gateway-basic-auth",
     # Signed machine API
     "s3": "sigv4",
+    # MCP resource server: Keycloak bearer tokens for its own URL (SPEC-0219)
+    "storybook-mcp": "oauth-bearer",
     # Two static files (favicon, robots.txt)
     "grafana-static": "static-only",
 }

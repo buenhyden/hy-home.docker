@@ -144,6 +144,7 @@ Grafana 이미지와 데이터 소스 선언은 [Compose](docker-compose.yml)와
 | 12-analytics | `spark` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `storage` | none | `Infrastructure/containers` | container metrics and logs only |
 | 13-experience | `storybook` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
+| 13-experience | `storybook-mcp` | none | `Infrastructure/containers` | 소스 선언만; 지표 scrape 미정의 |
 | 04-data | `studio` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `supavisor` | none | `Infrastructure/containers` | container metrics and logs only |
 | 12-analytics | `superset` | none | `Infrastructure/containers` | container metrics and logs only |

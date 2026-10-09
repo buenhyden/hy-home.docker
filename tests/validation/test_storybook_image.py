@@ -1,4 +1,4 @@
-"""Storybook image revision contract (SPEC-0219)."""
+"""Storybook image, design token, design export and MCP client contracts (SPEC-0219)."""
 
 from __future__ import annotations
 
@@ -14,6 +14,11 @@ SPEC = importlib.util.spec_from_file_location(
 )
 storybook_image = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(storybook_image)
+EXPORT_SPEC = importlib.util.spec_from_file_location(
+    "storybook_design_export", ROOT / "scripts/operations/storybook_design_export.py"
+)
+design_export = importlib.util.module_from_spec(EXPORT_SPEC)
+EXPORT_SPEC.loader.exec_module(design_export)
 
 REVISION = "a" * 40
 EXPECTED = {
@@ -111,6 +116,50 @@ class DesignTokenTests(unittest.TestCase):
             (ROOT / storybook_image.SOURCE / "packages/ui/package.json").read_text()
         )
         self.assertEqual(ui["version"], design["version"])
+
+
+class DesignExportTests(unittest.TestCase):
+    """Only allowlisted, committed files leave for Claude Design."""
+
+    def test_bundle_holds_exactly_the_allowlist(self):
+        import tempfile
+
+        allowlist = json.loads((ROOT / design_export.ALLOWLIST).read_text())["files"]
+        with tempfile.TemporaryDirectory() as tmp:
+            out = pathlib.Path(tmp) / "bundle"
+            manifest = design_export.export(out, "HEAD")
+            exported = {
+                p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()
+            }
+            self.assertEqual(set(allowlist) | {"export-manifest.json"}, exported)
+            self.assertEqual(set(allowlist), set(manifest["files"]))
+            for target, source in allowlist.items():
+                text = (out / target).read_text()
+                committed = subprocess.run(
+                    ["git", "show", f"HEAD:{source}"],
+                    cwd=ROOT, check=True, capture_output=True, text=True,
+                ).stdout  # fmt: skip
+                if target.startswith("stories/"):
+                    self.assertNotIn("packages/ui", text)
+                    committed = committed.replace(design_export.STORY_IMPORT, "../src/")
+                self.assertEqual(committed, text, target)
+            with self.assertRaises(SystemExit):
+                design_export.export(out, "HEAD")  # never into a non-empty directory
+
+    def test_unsafe_paths_and_secret_shaped_content_are_refused(self):
+        for path in ("../secrets/a", "src/*.ts", "/etc/passwd", ".env",
+                     "x/.env.local", "secrets/key", "certs/tls.pem"):  # fmt: skip
+            with self.subTest(path):
+                self.assertTrue(design_export.check_allowlist({"a": path}))
+        self.assertEqual([], design_export.check_allowlist({"src/a.ts": "src/a.ts"}))
+        for text in ("-----BEGIN RSA PRIVATE KEY-----", "password: 'longenough1'",
+                     "Authorization: Bearer abcdefghijklmnopqrstuvwxyz",
+                     "Cookie: __Secure-sso-cookie=abc"):  # fmt: skip
+            with self.subTest(text):
+                self.assertTrue(design_export.scan("f", text))
+        self.assertEqual(
+            [], design_export.scan("f", "label: 'Save', retryLabel = 'Try'")
+        )
 
 
 if __name__ == "__main__":

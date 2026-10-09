@@ -15,7 +15,20 @@ RUN case "$STORYBOOK_SOURCE_REVISION" in *[!0-9a-f]*) false ;; esac \
   && [ "${#STORYBOOK_SOURCE_REVISION}" -eq 40 ] \
   || { echo 'STORYBOOK_SOURCE_REVISION must be a full commit SHA' >&2; exit 1; }
 ENV STORYBOOK_SOURCE_REVISION=${STORYBOOK_SOURCE_REVISION}
-RUN npm run build-storybook
+RUN npm run build-storybook && npm run build:mcp
+
+# Remote docs MCP (--target mcp): the bundled server and the manifests of the
+# same build, nothing else; Traefik terminates TLS and the server checks tokens.
+FROM ${NODE_IMAGE} AS mcp
+ARG STORYBOOK_SOURCE_REVISION
+LABEL org.opencontainers.image.revision=${STORYBOOK_SOURCE_REVISION}
+WORKDIR /app
+COPY --from=build /work/mcp-dist/server.mjs mcp/server.mjs
+COPY --from=build /work/storybook-static/manifests/ storybook-static/manifests/
+COPY --from=build /work/storybook-static/revision.json storybook-static/revision.json
+USER 1000:1000
+EXPOSE 7613
+ENTRYPOINT ["node", "/app/mcp/server.mjs"]
 
 FROM ${NGINX_IMAGE}
 ARG STORYBOOK_SOURCE_REVISION

@@ -1,0 +1,15 @@
+{
+  "description": "The only files exported for Claude Design /design-sync (SPEC-0219). Bundle path -> repository path; no globs.",
+  "files": {
+    "DESIGN.md": "DESIGN.md",
+    "package.json": "projects/storybook/nextjs/packages/ui/package.json",
+    "src/AsyncState.tsx": "projects/storybook/nextjs/packages/ui/src/AsyncState.tsx",
+    "src/Button.tsx": "projects/storybook/nextjs/packages/ui/src/Button.tsx",
+    "src/index.ts": "projects/storybook/nextjs/packages/ui/src/index.ts",
+    "src/styles.css": "projects/storybook/nextjs/packages/ui/src/styles.css",
+    "stories/AsyncState.stories.tsx": "projects/storybook/nextjs/src/stories/AsyncState.stories.tsx",
+    "stories/Button.stories.ts": "projects/storybook/nextjs/src/stories/Button.stories.ts",
+    "stories/Introduction.mdx": "projects/storybook/nextjs/src/stories/Introduction.mdx",
+    "tsconfig.json": "projects/storybook/nextjs/packages/ui/tsconfig.json"
+  }
+}

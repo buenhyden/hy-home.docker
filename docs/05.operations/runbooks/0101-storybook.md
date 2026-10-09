@@ -76,13 +76,35 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
    `pull_policy: never`로 고정하므로 image가 없으면 기동이 실패한다.
    provenance `mode=max`는 build argument를 기록하므로 secret은 build
    argument로 전달하지 않는다. 이 빌드에는 secret 입력이 없다.
-5. 격리 컨테이너 검사는 Docker context, project, port, network, volume, resource,
-   UID/GID와 정확한 정리 대상을 먼저 기록한 뒤 합성 자산으로 수행한다. image의
-   index, iframe, JS/CSS, manifest, deep link, 404, cache, CSP/frame과 health를
-   검사한다. task 소유 컨테이너만 정리하며 `down -v` 또는 volume prune은 사용하지 않는다.
-6. HOME 활성화 승인이 별도로 주어지면 해당 승인 범위에서만 DNS, TLS, 관리자 로그인,
-   비인증 거절, 만료 후 asset 접근과 이전 image로의 source rollback을 시험한다.
-   MCP는 별도 로컬 절차이며 HOME Compose에 올리지 않는다.
+5. 격리 검사는 고정된 두 image로 실제 Traefik·OAuth2 Proxy·Keycloak을 임시 내부망에
+   올리는 rehearsal로 수행한다. 모든 container, network, 임시 CA와 realm은 합성이며
+   시험이 끝나면 그 이름으로만 정리한다. `down -v`나 volume prune은 쓰지 않는다.
+
+   ```bash
+   HYHOME_STORYBOOK_REHEARSAL=1 python3 -m unittest \
+     tests.validation.test_compose_baseline_gates.StorybookIngressRehearsalTests -v
+   ```
+
+   Compose label로 만든 router에서 비인증·비관리자 요청이 index, iframe, asset,
+   manifest의 내용이나 로그인 HTML을 200으로 받지 않는지, 관리자는 각 경로를
+   `no-store`와 `frame-ancestors 'self'`로 받는지, 404와 `revision.json`의 커밋을
+   확인한다. 원격 MCP는 HTTPS issuer와 `storybook-mcp` scope의 Audience mapper로
+   발급한 token으로 401(token 없음, audience 없음), 403(`/admins` 아님), 200(문서
+   tool 세 개), 보호 자원 metadata와 route 밖 경로 404를 확인한다. image가 없으면
+   rehearsal은 빌드 명령을 알려 주며 실패한다.
+6. HOME 활성화 승인이 별도로 주어지면 GDE-0101의 Keycloak client와 scope를 만든 뒤
+   해당 승인 범위에서만 `experience` 기동, DNS, TLS, 관리자 로그인, 비인증 거절,
+   다른 워크스페이스의 Codex·Claude Code 로그인과 문서 tool 호출, 이전 image로의
+   rollback을 시험한다.
+7. Claude Design 전달은 검토·병합된 커밋에서 bundle을 만든 뒤 그 안에서만
+   `/design-sync`를 실행한다.
+
+   ```bash
+   python3 scripts/operations/storybook_design_export.py <빈 디렉터리>
+   ```
+
+   bundle은 `projects/storybook/nextjs/design-export.allowlist.json`의 파일과
+   `export-manifest.json`만 담는다. 계정 로그인과 업로드는 담당자가 수행한다.
 
 ## Verification
 

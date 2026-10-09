@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.12.1"
+version: "1.13.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -73,7 +73,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `dependency-update` | automation | Renovate 갱신 제안 작업; 명시적 실행만 허용 | `renovate` | No | remote dependency proposals when configured | current |
 | `dev` | baseline | 개발 접근·관측·메일 캡처; HOME 최소 선택과 다름 | `traefik`, `keycloak`, `oauth2-proxy`, `openbao`, `openbao-agent`, `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-exporter`, `prometheus`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `mailpit` | No | initialization: mng-pg-init, grafana-db-provision | current |
 | `dev-data` | capability | 단일 개발 PG·Valkey와 그 지표 exporter를 명시적으로 선택 | `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-valkey`, `dev-valkey-exporter` | No | 새 개발 저장소 기동; 관리 DB·Valkey와 상태 분리; initialization: dev-pg-monitor-provision | current |
-| `experience` | capability | 관리자 전용 공유 Storybook 정적 UI 검토 | `storybook` | No | 정적 origin startup; `unless-stopped` 재시작 정책은 명시적 중지 전 reboot에도 유지 | current |
+| `experience` | capability | 관리자 전용 공유 Storybook 정적 UI 검토와 원격 문서 MCP | `storybook`, `storybook-mcp` | No | 정적 origin startup; `unless-stopped` 재시작 정책은 명시적 중지 전 reboot에도 유지 | current |
 | `graph` | role | 그래프 데이터 저장 | `neo4j` | No | normal service startup | current |
 | `iac` | automation | OpenTofu와 Terrakube IaC 작업; apply는 별도 승인; Terrakube state는 `storage`와 함께 선택 | `opentofu`, `terrakube-api`, `terrakube-ui`, `terrakube-executor` | No | operator IaC execution | current |
 | `lab-kafka` | topology | 독립 LAB Kafka 3-broker KRaft 구성·exporter·초기화 | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init` | No | initialization: lab-kafka-init | current |
@@ -191,7 +191,7 @@ DB 초기화, 실제 자원 측정 및 backup/restore는 별도 준비 조건이
 | lakehouse | `spark`는 one-shot 작업이며 `up`은 namespace 조회만 수행; 테이블 쓰기·`rewrite_data_files`·`expire_snapshots`는 `run --rm spark`로 대상 table을 명시. `trino`는 인증 없는 HTTP API이므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음. `flink-*`도 같으며 REST JAR 업로드는 끔(`web.submit.enable=false`); Kafka는 별도 profile로 선택. `great-expectations`는 one-shot이며 기본 명령은 suite 목록만 출력 |
 | bi | native OIDC 서비스이므로 router는 `gateway-standard-chain@file`만 사용하고 host port 없음; 가입 사용자는 `Gamma`(데이터 접근 없음) |
 | api-mock | 인증 없는 admin API가 있으므로 host port는 `127.0.0.1`에만 게시하고 route를 추가하지 않음; 컨테이너 소비자는 project default network에서 `wiremock:8080` 사용 |
-| experience | Storybook은 `internal: true`인 `experience_ingress_net`에만 연결; Traefik만 이 망과 `edge_net`을 함께 사용. HOME 기본 선택과 원격 MCP는 포함하지 않음. 브라우저는 기존 `/admins` 인증을 먼저 수행 |
+| experience | Storybook은 `internal: true`인 `experience_ingress_net`에만 연결; Traefik만 이 망과 `edge_net`을 함께 사용. 원격 문서 MCP `storybook-mcp`는 `edge_net`에서 Keycloak issuer를 읽고 Traefik TLS 뒤에서 자기 URL을 audience로 가진 `/admins` bearer token만 받음. HOME 기본 선택에는 포함하지 않음. 브라우저는 기존 `/admins` 인증을 먼저 수행 |
 | api-mock load mode | root Compose와 `infra/11-quality/wiremock/wiremock.load.yml`을 같은 model로 결합해 같은 `api-mock` profile의 `wiremock` 설정을 대체; host port와 request journal이 없으며 mock performance만 판정 |
 
 ### LAB lifecycle and budget
