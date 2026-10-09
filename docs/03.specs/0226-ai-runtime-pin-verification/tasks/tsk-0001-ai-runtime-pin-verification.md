@@ -135,6 +135,10 @@ Run from `15ccd7d35` on 2026-10-10 (KST), recreating only `ollama` and
 | Open WebUI state | Login form and signup off, Ollama URL and embedding model unchanged, 1 user, 352 config rows, no error lines |
 | Canary | Open WebUI to Ollama 200; gateway health 200; WebSocket 101; OIDC redirect to the registered callback with S256; `tev1` inference 200 in 3.5 s on the GPU; exporter up |
 
+After the review, Open WebUI alone was recreated again from `9f1b570f9` to drop
+`AIOHTTP_CLIENT_TIMEOUT`: healthy on the same digest, the variable absent, the
+key read from the volume and byte-identical to the backup, gateway health 200.
+
 The sign-in, sign-out and token refresh of a real user through Keycloak need
 the owner's browser session and were not run.
 
