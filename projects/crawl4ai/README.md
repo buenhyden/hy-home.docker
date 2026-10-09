@@ -20,7 +20,7 @@ Crawl4AI 소비를 계획하는 외부 워크스페이스 소유자와, 소비�
 
 ## Scope
 
-출처 registry 검증과 URL 승인, job 상태(`queued`, `running`, `succeeded`, `failed`, `cancelled`, `blocked`), idempotency key, 재시도와 backoff, deadline, 출처별 rate와 일일 quota, 응답 byte 상한, lease 기반 중단 복구, TTL 만료와 출처 단위 삭제, 추출 결과의 schema·인용 검사와 golden set 평가를 다룹니다. 네트워크 접근 권한, 토큰 발급, 소비자 승인은 다루지 않습니다.
+출처 registry 검증과 URL 승인, job 상태(`queued`, `running`, `succeeded`, `failed`, `cancelled`, `blocked`), idempotency key, 재시도와 backoff, deadline, 한 job당 한 페이지, 모든 시도를 세는 출처별 rate와 일일 quota, job을 꺼낼 때의 registry 재확인, 응답 byte 상한, lease 기반 중단 복구, TTL 만료와 출처 단위 삭제, 추출 결과의 schema·인용 검사와 golden set 평가를 다룹니다. 네트워크 접근 권한, 토큰 발급, 소비자 승인은 다루지 않습니다.
 
 ## Structure
 

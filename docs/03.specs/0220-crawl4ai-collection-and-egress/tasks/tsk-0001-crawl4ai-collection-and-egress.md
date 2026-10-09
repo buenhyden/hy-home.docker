@@ -161,6 +161,45 @@ the name. No rehearsal container or network remained after the passing run.
 Host firewall rules were not part of this rehearsal; the enforcement shown is
 the network topology plus the gateway.
 
+### W5 Operations Documents
+
+POL, GDE and RUN-0091 (Korean) and both READMEs describe the internal
+networks and gateway, consumer admission, the source rights registry, the
+remaining risks and the rehearsal step. The first changed gate failed six
+links: READMEs outside `docs/` may link only to `docs/README.md`, so they now
+cite stage documents by path (`27895b78b`).
+
+### W6 Independent Review
+
+A security audit and a correctness review read `5f4832a74..27895b78b`
+independently and ran nothing. Neither found a high or critical issue; the
+gateway's address and port rules held against bracketed, mapped, integer,
+octal, short and trailing-dot forms, userinfo, mixed answers and rebinding.
+Every finding was fixed or recorded:
+
+| Finding | Resolution |
+| --- | --- |
+| Plain HTTP passed later client bytes to the origin, so "one request per connection" did not hold | Only the declared `Content-Length` body is forwarded; `Transfer-Encoding`, duplicate or invalid lengths and bodies over 1 MiB get 400 (`af59f6daf`) |
+| Per-direction idle timeouts cut long responses; a client half-close dropped the response | One idle timer for both directions, `write_eof` on half-close, a 15-minute connection limit (`af59f6daf`) |
+| DNS relay: unbounded tasks; any sender's datagram accepted | 64 queries in flight; a connected upstream socket and a matching query id (`af59f6daf`) |
+| Listeners on `0.0.0.0` also served `crawl4ai_outbound_net` | The gateway binds to `10.250.200.2` only, and its healthcheck uses that address (`af59f6daf`) |
+| Gateway image pinned by tag | Pinned by the `python:3.13.15-alpine` index digest (`af59f6daf`) |
+| No evidence for the crawler reaching a consumer on `crawl4ai_net` | The rehearsal adds a consumer fixture beside the crawler; a direct crawl got 400 and an embedded image reached nothing (`af59f6daf`); the residual risk stays in the Spec |
+| Rehearsal token on the `docker` command line; a failed fixture start could leave a container | The token goes through the process environment; names are recorded before create (`af59f6daf`) |
+| Adapter: `\`, userinfo or an invalid port could make the adapter and the browser disagree, and an empty `redirected_url` fell back to the request URL | Such URLs are blocked and a missing final URL is malformed (`42b719d22`) |
+| Adapter: queued jobs were not re-admitted, and a removed source raised `KeyError` | The registry is checked again at claim time; the job is blocked (`42b719d22`) |
+| Adapter: raw records deduplicated by hash shared provenance, retention and deletion across sources | One raw record per job; derived rows reference its id (`42b719d22`) |
+| Adapter: rate and quota counted jobs, not requests | An `attempts` row per claim is counted, and purged after a day (`42b719d22`) |
+| Adapter: an unchecked claim could fetch twice; `http.client` errors escaped | A lost claim returns without fetching; those errors are retryable (`42b719d22`) |
+| `__main__` before the rehearsal class; Task placeholders | Moved to the end of the file; placeholders replaced |
+| The host's own public or NAT-loopback address passes the global rule | Recorded in the Plan's risks |
+
+Every new test failed against the code before its fix: four gateway tests
+(six failures with subtests) and six adapter tests. After the fixes the gateway
+module runs 21 tests (six rehearsal tests skipped without opt-in) and the
+adapter module 21, all passing, and the rehearsal passed six of six again with
+the consumer cases and left nothing behind.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -168,7 +207,9 @@ the network topology plus the gateway.
 | Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | accepted |
 | Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | `8cd81db4b` | PASS | W2 Egress Gateway | accepted |
 | Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | `b72476aed` | PASS | W3 Reference Adapter | accepted |
-| Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | W4 commit | PASS | W4 Isolated Rehearsal | accepted |
+| Isolated rehearsal | 2 | W4 | Real image behind the gateway, six tests | `f20f626ce` | PASS | W4 Isolated Rehearsal | accepted |
+| Operations documents | 5 | W5 | Link, metadata and catalog checks | `27895b78b` | PASS | W5 Operations Documents | accepted |
+| Independent review | 1, 2, 3 | W6 | Security and correctness review; fix tests; rehearsal rerun | `42b719d22` | PASS | W6 Independent Review | accepted |
 
 ## Review and Completion
 

@@ -29,7 +29,9 @@ documents. Each unit is one commit.
 | W2 | 1 | Egress gateway, internal networks, digest pin, unit tests | W1 | TSK-0001 | Task evidence |
 | W3 | 3 | Reference adapter: source registry, bounded jobs, provenance, extraction checks | W1 | TSK-0001 | Task evidence |
 | W4 | 2 | Isolated rehearsal of the real image with synthetic fixtures | W2 | TSK-0001 | Task evidence |
-| W5 | 5 | Operations documents, catalog, changed gate | W2, W3, W4 | TSK-0001 | Task evidence |
+| W5 | 5 | Operations documents and catalog | W2, W3, W4 | TSK-0001 | Task evidence |
+| W6 | 1, 2, 3 | Independent security and correctness review and its fixes | W5 | TSK-0001 | Task evidence |
+| W7 | 5 | Changed gate, staged style check, candidate quality, merge | W6 | TSK-0001 | Task evidence |
 
 ## Project Candidates
 
@@ -68,8 +70,11 @@ changed gate.
   admission contract makes consumers authenticate their own services.
 - DNS lookups leave through the forwarder, so DNS remains a narrow exfiltration
   channel; the proxy still refuses every connection that is not allowed.
-- A host whose public address loops back to the LAN through router NAT is not
-  detectable from addresses alone; only registered hosts are crawled.
+- A host whose public address loops back to the LAN through router NAT, or
+  the host's own public address, passes the global-address rule, and a client
+  chooses the Host header or SNI. Only registered hosts are crawled, and no
+  service here trusts a source-address allowlist; adding one needs this risk
+  reviewed first.
 - Rollback: revert the Compose change to the earlier bridge; the adapter and
   documents have no runtime state on HOME.
 

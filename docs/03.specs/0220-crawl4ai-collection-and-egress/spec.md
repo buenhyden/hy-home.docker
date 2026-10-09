@@ -83,11 +83,12 @@ changes, and any application, learning database, GPU, ASR or TTS service in
    need. A robots allowance is never a copyright license.
 6. Bounded jobs. The adapter runs a job through `queued`, `running`,
    `succeeded`, `failed`, `cancelled` or `blocked` with an idempotency key,
-   bounded retries with backoff, a deadline, and per-job limits on pages and
-   bytes. A job interrupted while running returns to `queued` with its attempt
-   counted. Raw results keep the source, final URL, SHA-256, `retrieved_at`,
-   registry revision and license; derived results reference their raw hash,
-   expire with a TTL and are deleted with it.
+   bounded retries with backoff, a deadline, one page per job, a response
+   byte limit, and a per-source rate and daily quota that count every attempt.
+   The registry is checked again when a job is claimed. A job interrupted while running returns to `queued` with its attempt
+   counted. Each job's raw result keeps its own source, final URL, SHA-256,
+   `retrieved_at`, registry revision, license and expiry; derived results
+   reference that record, expire with a TTL and are deleted with it.
 7. Untrusted content. Fetched HTML, documents and search text are data. They
    never authorize secret access, tool execution or policy change. Extracted
    or generated fields pass a schema check and cite spans that exist in the
