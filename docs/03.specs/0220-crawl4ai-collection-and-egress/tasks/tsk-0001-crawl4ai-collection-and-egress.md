@@ -98,12 +98,41 @@ The tech-stack registry, POL-0078, GDE-0091's service binding, the Grafana
 coverage table and the m0021 inventory list `crawl4ai-egress`; the gate
 contract runs the new module in `leaf.compose-baseline-regressions`.
 
+### W3 Reference Adapter
+
+`projects/crawl4ai/adapter/crawl_jobs.py` is a standard-library module that a
+consuming workspace pins. Its registry check refuses a source without
+provider, access mode, exact hosts, terms, license, robots observation, rate,
+daily quota, the three rights flags, retention, deletion owner and consumer,
+and a `web-fallback` without its reason; admission refuses unknown sources,
+unregistered hosts, other ports, sources that forbid processing and sources
+whose robots file disallows. Jobs move through the six states in SQLite with
+a unique idempotency key, exponential backoff from 30 s capped at 15 min, a
+deadline, a 5-minute lease that `recover()` returns to the queue with the
+attempt counted, a per-source rate and daily quota that defer without
+spending attempts, a response byte limit and a request time capped by the
+deadline. Raw records keep source, URL, final URL, SHA-256, `retrieved_at`,
+registry revision, license and a retention expiry; derived records reference
+their raw hash with `ON DELETE CASCADE` and their own TTL. A redirect off the
+registry keeps nothing. Extractions must use declared, typed fields that
+quote the raw text, and `evaluate()` scores a golden set.
+
+`tests/validation/test_crawl4ai_adapter.py` (15 tests) runs against a local
+synthetic Crawl4AI endpoint: provenance on success, blocked admission without
+any call, a redirect off the registry, oversize, malformed and mismatched
+results, a bad token, 5xx retry to success and to exhaustion, a timeout, a
+deadline, idempotency, cancel before and during a run, lease recovery, rate
+deferral, TTL and source deletion, and the extraction checks, including a
+golden case whose text tries to inject an instruction. The example registry
+uses the reserved `example.org` domain. The gate contract runs the module.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline and contracts | 4, 5 | W1 | Advisory and tag reads; DNS probe | `5f4832a74` | PASS | W1 Baseline and Contracts | accepted |
-| Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | W2 commit | PASS | W2 Egress Gateway | accepted |
+| Egress gateway | 1 | W2 | Gateway, relay and Compose unit tests; catalog checks | `8cd81db4b` | PASS | W2 Egress Gateway | accepted |
+| Reference adapter | 3 | W3 | Adapter tests against a synthetic endpoint | W3 commit | PASS | W3 Reference Adapter | accepted |
 
 ## Review and Completion
 

@@ -1,0 +1,26 @@
+{
+  "revision": "example-2026-10-09",
+  "sources": [
+    {
+      "id": "example-docs",
+      "provider": "Example documentation (synthetic; reserved example.org domain)",
+      "consumer": "example-workspace",
+      "access": "api",
+      "hosts": ["docs.example.org"],
+      "terms_url": "https://docs.example.org/terms",
+      "license": "CC-BY-4.0",
+      "robots": {
+        "url": "https://docs.example.org/robots.txt",
+        "checked_at": "2026-10-09",
+        "allows": true
+      },
+      "rate_per_minute": 6,
+      "daily_quota": 200,
+      "may_process": true,
+      "may_redistribute": false,
+      "may_train": false,
+      "retention_days": 30,
+      "deletion_owner": "example-workspace owner"
+    }
+  ]
+}
