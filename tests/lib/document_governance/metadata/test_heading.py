@@ -768,6 +768,54 @@ class SectionStructureTests(unittest.TestCase):
         sections[2] = "## Procedure\n\n```markdown\n## Not a heading\n```"
         self.assertEqual([], self.codes(self.body(*sections)))
 
+    def sections_with(self, index: int, text: str) -> str:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"]
+        ]
+        sections[index] = text
+        return self.body(*sections)
+
+    def test_order_is_not_reported_when_a_required_heading_is_missing(self) -> None:
+        sections = [
+            f"## {name}\n\n내용." for name in _RUNBOOK_PROFILE["required_sections"][1:]
+        ]
+        codes = self.codes(self.body(*reversed(sections)))
+        self.assertIn("body-heading-missing", codes)
+        self.assertNotIn("body-heading-order", codes)
+
+    def test_a_sealed_shape_is_not_held_to_the_required_order(self) -> None:
+        profile = {
+            **_RUNBOOK_PROFILE,
+            "sealed_section_shapes": [["Procedure", "Overview", "Related Documents"]],
+        }
+        body = self.body(
+            "## Procedure\n\n내용.",
+            "## Overview\n\n내용.",
+            "## Related Documents\n\n내용.",
+        )
+        self.assertNotIn("body-heading-order", self.codes(body, profile))
+
+    def test_multi_line_comments_hide_text_until_they_close(self) -> None:
+        empty = self.sections_with(3, "## Verification\n\n<!--\nnot content\n-->")
+        self.assertEqual(["body-section-empty"], self.codes(empty))
+        trailing = self.sections_with(3, "## Verification\n\n<!--\nnote\n--> 확인한다.")
+        self.assertEqual([], self.codes(trailing))
+        inline = self.sections_with(3, "## Verification\n\n<!-- note --> 확인한다.")
+        self.assertEqual([], self.codes(inline))
+
+    def test_tilde_and_longer_closing_fences(self) -> None:
+        tilde = self.sections_with(2, "## Procedure\n\n~~~\n## Not a heading\n~~~")
+        self.assertEqual([], self.codes(tilde))
+        longer = self.sections_with(
+            2,
+            "## Procedure\n\n```\nfirst\n````\n\n```text\n## a\n## b\n```",
+        )
+        self.assertEqual([], self.codes(longer))
+
+    def test_a_backtick_info_string_with_a_backtick_is_not_a_fence(self) -> None:
+        body = self.sections_with(2, "## Procedure\n\n```inline ` code```")
+        self.assertEqual([], self.codes(body))
+
     def test_profiles_without_the_flags_are_unchanged(self) -> None:
         profile = {
             key: value
