@@ -110,7 +110,7 @@ JGroups panels.
 
 ### W4 HOME Rollout
 
-From the detached checkout `a4a3a7dad`, and `4420a0514` for the dashboards:
+From the detached checkout `a4a3a7dad`, and `4420a0514` for the dashboards (pre-rebase SHAs; see the mapping in Review and Completion):
 
 | Step | Result |
 | --- | --- |
@@ -175,15 +175,19 @@ minor issues:
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `ff9f2f48c` | PASS | W1 LAB Separation | accepted |
-| Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `a4a3a7dad` | PASS | W2 Collection | accepted |
-| Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `4420a0514` | PASS | W3 Dashboards | accepted |
-| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` | PASS | W4 HOME Rollout | accepted |
+| LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `21562bcd0` | PASS | W1 LAB Separation | accepted |
+| Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `225894242` | PASS | W2 Collection | accepted |
+| Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `12e187934` | PASS | W3 Dashboards | accepted |
+| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `12e187934` | PASS | W4 HOME Rollout | accepted |
 | OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
 
 ## Review and Completion
 
-Not complete: W5 validation and the merge remain;
+SPEC-0224 merged as `acc191655`; this branch was rebased onto it without
+conflicts or content changes: `ff9f2f48c`→`21562bcd0`,
+`a4a3a7dad`→`225894242`, `4420a0514`→`12e187934`,
+`13f629690`→`d347e6e44`, `b2745167d`→`789fbd525` (the Alloy rollout ran
+from `b2745167d`). Not complete: W5 validation and the merge remain;
 OpenBao's restart is the owner's.
 
 ## Related Documents

@@ -208,11 +208,18 @@ monitor role `pg_monitor`-only.
 | HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
 | Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | accepted |
 | Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | accepted |
+| Remote candidate | 3 | W7 | `candidate-quality` and CodeQL | `c9606ecf8` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 
-Not complete: W7 validation and the merge remain. SPEC-0223 merged as
-`cee6419d5`, and this branch was rebased onto it with unchanged content.
+Complete. SPEC-0223 merged as `cee6419d5`, and this branch was rebased onto
+it with unchanged content. The changed gate on the final tree passed except
+`test_registry_high_water_is_not_below_repository_history`, which scans
+`git log --all` and saw the unpushed SPEC-0225 branch; the same module passed
+in a single-branch clone of the head. The staged style check passed.
+`candidate-quality` first failed on `1f47db7bd` (Remote Candidate above); it
+passed on head `c9606ecf8` against base `cee6419d5` with CodeQL clean, and
+PR #400 merged as `acc191655`.
 
 ## Related Documents
 
