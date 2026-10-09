@@ -183,6 +183,17 @@ nine minor issues; each is resolved or recorded:
 | `CONNECTION LIMIT 3` under overlapping scrapes | Measured on HOME: one session at rest; five concurrent `/metrics` calls all returned `pg_up 1` with no failed collector |
 | MNG Valkey now needs its monitor secret to start | Added to the Plan risks |
 
+### Remote Candidate
+
+The first `candidate-quality` run on `1f47db7bd` failed the operations
+catalog: `mng-pg-monitor-provision` had no Guide binding. GDE-0028 now binds
+it and the service inventory row links the triplet. CodeQL flagged the
+rehearsal for writing the saved `good` monitor secret back through
+`write_secret`; the test now restores the file's original bytes. Both
+rehearsal tests touching that path passed in isolation (2 tests, 153 s), and
+`check-operations-catalog.py` passes. GDE-0100 no longer calls the DEV
+monitor role `pg_monitor`-only.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |

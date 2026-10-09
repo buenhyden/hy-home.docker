@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -43,7 +43,7 @@ created: "2026-10-03"
 [`infra/04-data/dev-db/docker-compose.yml`](../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
 `dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
-`dev-valkey`를 소유한다. 지표는 `dev-pg-monitor-provision`이 만든 `pg_monitor` 전용 `dev_pg_monitor` role의 `dev-pg-exporter`와 읽기 전용 `devmonitor` ACL 사용자의 `dev-valkey-exporter`가 Prometheus에 제공하며, 두 exporter는 관리자 비밀을 받지 않는다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`dev-valkey`를 소유한다. 지표는 `dev-pg-monitor-provision`이 만든 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role의 `dev-pg-exporter`와 읽기 전용 `devmonitor` ACL 사용자의 `dev-valkey-exporter`가 Prometheus에 제공하며, 두 exporter는 관리자 비밀을 받지 않는다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 

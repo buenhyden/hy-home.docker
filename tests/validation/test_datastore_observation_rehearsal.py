@@ -597,16 +597,18 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
         )
 
     def test_non_base64_monitor_secret_is_refused_before_any_change(self) -> None:
-        good = self.secret["mng_pg_monitor_password"]
+        name = "mng_pg_monitor_password"
+        good, original = self.secret[name], (self.dir / name).read_bytes()
         bad = "quote'and\\backslash\"" + secrets.token_hex(8)
-        self.write_secret("mng_pg_monitor_password", bad)
+        self.write_secret(name, bad)
         try:
             with self.assertRaises(AssertionError):
                 self.provision("mng")
             refused = self.psql_result("mng", "mng_pg_monitor", bad, "SELECT 1")
             self.assertIn("password authentication failed", refused.stderr)
         finally:
-            self.write_secret("mng_pg_monitor_password", good)
+            (self.dir / name).write_bytes(original)
+            self.secret[name] = good
         self.assertNotIn(bad, docker("logs", f"{PREFIX}-mng-pg", check=False))
 
     def test_prometheus_labels_targets_by_scope_engine_and_expected_state(

@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -14,6 +14,7 @@ implementation_services:
   - 'mng-pg'
   - 'mng-pg-exporter'
   - 'mng-pg-init'
+  - 'mng-pg-monitor-provision'
   - 'mng-valkey'
   - 'mng-valkey-exporter'
 created: "2026-05-10"
@@ -33,7 +34,7 @@ created: "2026-05-10"
 
 ### Usage
 
-management database는 인증, 워크플로, 도구를 위한 5개 서비스로 구성된 HOME
+management database는 인증, 워크플로, 도구를 위한 6개 서비스로 구성된 HOME
 의존성이다. `mng-pg`는 `n8n`, `keycloak`, `airflow`, `terrakube`, `sonarqube`,
 `postgres`를 저장한다. 기존 `app_db`는 소유자 진술상 자료·앱 소비자가 없는
 기술적 이관 대상으로 보존하며 새 업무 앱의 공용 DB로 사용하지 않는다. `mng-valkey`는
