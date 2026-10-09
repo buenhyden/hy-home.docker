@@ -42,9 +42,10 @@ style check, and the remote candidate.
 
 - The preflight needs a fetched `origin/main`; without it it fails rather than
   passing, and the changed-path view falls back to the working tree.
-- The role and governance restatements that this session could not edit
-  still mention separate approval; the bootstrap ranks Approval Boundaries
-  above them until the owner applies them.
+- The auto-mode safety check refuses agent edits to role and governance
+  rule text; the owner applies those edits from prepared copies.
+- The memory-file exemption trusts `HOME`; it admits only one `.md` level
+  in this repository's directory, so a wrong `HOME` widens nothing else.
 - Rollback: revert the logical commits; no runtime or data state changes.
 
 ## Related Documents

@@ -33,10 +33,10 @@ by an actual permission.
 
 In scope: the bootstrap precedence text, Approval Boundaries, the
 agent-governance contract check, the local gate's changed-path collection and
-plan, a local candidate preflight leaf and its script, their tests, and the
-scripts README. Out of scope: user-global settings and hooks, other
-repositories, hosted workflow behavior, and rule changes that this session was
-not permitted to make (TSK-0001 records them).
+plan, a local candidate preflight leaf and its script, the role and checklist
+restatements of the approval rules, the repository Stop gate and edit-path
+guard, their tests, and the scripts README. Out of scope: user-global settings
+and hooks, other repositories, and hosted workflow behavior.
 
 ## Contracts
 
