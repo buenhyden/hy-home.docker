@@ -3811,7 +3811,12 @@ Narrative after the registered table.
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/design.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/tests.md")))
         self.assertFalse(tuple((ROOT / "docs/03.specs").glob("*/task.md")))
-        self.assertFalse((ROOT / "DESIGN.md").exists())
+        # Root DESIGN.md may exist as UI/design-system authority, never as a stage document.
+        design = ROOT / "DESIGN.md"
+        if design.exists():
+            self.assertNotRegex(
+                design.read_text(encoding="utf-8"), r'(?m)^type: "sdlc/'
+            )
         lifecycle = spec_packages.validate_repository_spec_package_lifecycle_details(
             ROOT,
             packages,
