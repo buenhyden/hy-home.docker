@@ -57,4 +57,4 @@ LAB 관측을 연결하는 별도 계약이 승인되면, 그 LAB의 Prometheus�
 ## Related Documents
 
 - [Grafana README](../../infra/06-observability/grafana/README.md)
-- [Compose profile vocabulary](../../docs/05.operations/policies/0078-compose-profile-vocabulary.md)
+- [Operations index](../../docs/05.operations/README.md)
