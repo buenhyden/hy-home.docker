@@ -60,6 +60,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0222 | [npm 위험 수용 연장](./0222-npm-risk-acceptance-extension/) | 패치 없는 GHSA-vfj7 수용을 소유자 승인으로 최대 30일씩 연장하는 계약 창과 품질 기준 규칙 |
 | SPEC-0223 | [RedisInsight Valkey 조회](./0223-redisinsight-valkey-inspection/) | DEV·MNG Valkey 읽기 전용 inspector, SSO 우회 차단, 사전 등록 연결·암호화와 공유 소비자 영향 점검 |
 | SPEC-0224 | [DEV·MNG 저장소 관측 분리](./0224-datastore-observation-split/) | DEV·MNG PostgreSQL·Valkey 전용 관측 계정, `db_scope`·`db_engine` 레이블, 기대 상태 기반 경보와 범위별 대시보드 |
+| SPEC-0225 | [HOME 관측 대상 정리](./0225-observability-home-coverage/) | LAB 전용 대시보드·경보 분리, 비어 있던 대시보드의 수집 보완과 쿼리 정정 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면

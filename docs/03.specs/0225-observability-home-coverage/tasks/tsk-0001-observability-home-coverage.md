@@ -1,0 +1,171 @@
+---
+title: "Observability HOME Coverage Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "draft"
+owner: "@buenhyden"
+updated: "2026-10-09"
+layer: "specs"
+artifact_id: "SPEC-0225-TSK-0001"
+parent_ids:
+- "SPEC-0225-PLAN-0001"
+created: "2026-10-09"
+---
+
+# Observability HOME Coverage Task
+
+## Objective
+
+Keep LAB-only observability out of HOME and make every provisioned dashboard
+show the data its purpose needs on HOME.
+
+## Inputs and Authorization
+
+On 2026-10-09 the owner asked to inspect the Grafana dashboards, stop showing
+the items that moved to LAB, analyse the panels that collect or show nothing
+and collect and visualise data that fits each dashboard's purpose, then
+extended the request to everything in `infra/06-observability` that targets
+LAB. For the three changes that move a network or host boundary the owner
+chose: a SeaweedFS scrape-only network, node-exporter in the host network
+namespace, and only the `processes` and `tcpstat` collectors. The branch builds
+on the SPEC-0224 branch because both edit the same dashboards and alert files,
+and is rebased onto `main` after SPEC-0224 merges.
+
+## Work Log
+
+### Audit Method
+
+A script ran every target of every provisioned dashboard against HOME
+Prometheus (PromQL) or Loki (LogQL, last 6 h). Custom, constant and interval
+variables took their dashboard defaults; query variables were widened to match
+everything, so "empty" means no series exists for the panel at all. Three
+read-only analyses then classified each empty panel as idle, renamed,
+not scraped, not emitted in this deployment, a wrong selector, or LAB.
+
+### LAB Inventory
+
+| Surface | LAB-only reference | Result |
+| --- | --- | --- |
+| Prometheus jobs | None | No change |
+| Alert rules | Four HAProxy rules; a commented job list naming `postgres-cluster`, `valkey-cluster`, `haproxy`, `opensearch-exporter` | Removed |
+| Grafana | Cassandra, etcd, HAProxy, MongoDB, Valkey Cluster dashboards | Moved to `labs/dashboards/` with their sources |
+| Gatus, Alloy, Loki, Tempo, Alertmanager | None | No change |
+
+The `k3d-hyhome` series in HOME Prometheus and Loki belong to the integrated
+hy-home.k8s cluster (RUN-0096), not LAB; cluster variables now default to
+`hy-home` so they do not mix into HOME views. The single-node OpenSearch is a
+root service behind its own profile and keeps its dashboards.
+
+### W1 LAB Separation
+
+The five dashboards moved to `labs/dashboards/` (outside provisioning) with a
+README listing their sources, and the Grafana README now points there.
+
+### W2 Collection
+
+- SeaweedFS master, volume and filer serve metrics on 9324-9326 over
+  `seaweedfs_metrics_net` (10.250.19.0/24, internal, isolated gateway), whose
+  only other member is Prometheus; three jobs and `SeaweedFSNodeMetricsDown`
+  were added. Binding the data APIs to one network would need fixed addresses
+  on `seaweed_internal`, a network recreation and new health checks, so
+  Prometheus is placed inside the SeaweedFS trust boundary instead.
+- node-exporter moved to the host network namespace with
+  `--web.listen-address=10.250.5.1:9100` (the `obs_net` gateway); a probe from
+  `obs_net` and from `edge_net` both reached that address, so the listener is
+  closed to the LAN but open to non-internal bridges. Prometheus maps the name
+  through `extra_hosts`. `processes` and `tcpstat` were enabled.
+- OpenBao `prometheus_retention_time` 30 s → 24 h: its usage gauges are emitted
+  every ten minutes and were visible about half of the time.
+- Keycloak `KC_HTTP_METRICS_SLOS: '250'` (an option of the pinned image's
+  `kc.sh start`), since the default buckets skip 0.25 s.
+- Both PostgreSQL exporters enable `stat_checkpointer`; an isolated run with
+  the monitor role exposed nine `pg_stat_checkpointer_*` series.
+- Gatus checks the gateway certificate through the Keycloak discovery URL with
+  `[CERTIFICATE_EXPIRATION] > 720h`.
+
+### W3 Dashboards
+
+Corrections: Kafka controller panels read `job="kafka-broker"`; consumer-lag
+variables read `kafka_topic_partition_current_offset`; Traefik keeps full
+service names (the shortening merged `@docker` and `@file` routers and caused
+the one query error) and averages slow services per service; registry v3
+cache counters; Grafana `grafana_alerting_alerts`; Alloy OTel semantic
+convention seconds histograms and a Docker log-source row; PostgreSQL
+checkpointer columns; Loki and Tempo single-binary selectors (`job`, cAdvisor
+`name`, `container_name` log stream, ring members, distributor push
+latency, v3 worker and live-store series, classic latency default);
+Keycloak CPU against the container limit; OpenBao raft storage; Gatus
+certificate warnings default to 0; Ollama running models default to 0.
+
+Removals (features HOME does not run): Confluent Server stray-partition and
+tiered-storage panels, SeaweedFS filer.sync, admin, worker and Lance panels,
+Qdrant shard transfers, Airflow SLA misses, the tensor-core panel,
+node-exporter timex, IRQ, power-supply, fan and systemd panels, Gatus domain
+expiry, Alloy OTLP log and metric-exporter panels, Loki memcached, Consul, GCS
+and Azure rows and per-component duplicates, Tempo gateway, Envoy, Kafka,
+memcached, external-endpoint, vulture and memberlist panels, and Keycloak
+JGroups panels.
+
+### W4 HOME Rollout
+
+From the detached checkout `a4a3a7dad`, and `4420a0514` for the dashboards:
+
+| Step | Result |
+| --- | --- |
+| Config hash check | Each recreated service also received the merged SPEC-0218 PID limit (none set before); current PIDs were 10 to 58 against limits of 256 to 1024; no other hardening field differed |
+| SeaweedFS master, volume, filer | Healthy; `seaweedfs_metrics_net` internal without a gateway address, three members; S3, Loki and Tempo stayed healthy |
+| node-exporter, Prometheus | Healthy; listener only on `10.250.5.1:9100`; 160 host network-device series instead of the container's two |
+| PostgreSQL exporters, Gatus | Healthy; checkpointer and certificate-expiry series present |
+| Keycloak | Recreated at 12:14:37, healthy at 12:15:20; the 0.25 s bucket present; discovery 200 and Grafana redirect 302 through the gateway; scrape back at 12:15:45 |
+| Prometheus rules | Reloaded: 95 rules, `SeaweedFSNodeMetricsDown` present, no HAProxy rule |
+| Grafana | 45 dashboards loaded; none of the five LAB dashboards |
+| OpenBao | Not recreated: restart needs the owner's manual unseal (Shamir 2 of 3); the retention change waits for that restart |
+
+Audit on the same HOME data, `main` dashboards against this branch:
+
+| Dashboards | Panels with data | Empty | Errors |
+| --- | --- | --- | --- |
+| `main`, 50 | 742 | 526 | 1 |
+| This branch, 45 | 770 | 209 | 0 |
+
+Remaining empty panels and why:
+
+| Dashboard | Empty | Reason |
+| --- | --- | --- |
+| OpenSearch (3) | 63 | The single-node service is stopped (`opensearch` profile) |
+| Kafka Connect | 38 | No connector registered; per-connector and per-task series appear with one |
+| SeaweedFS | 27 | Vacuum, scrub, replication, EC, filer HTTP, S3 handler and lifecycle series appear when those operations run |
+| k6 | 12 | Data exists only during quality runs (remote write) |
+| OpenBao | 12 | Usage gauges wait for the 24 h retention restart; route counters need requests |
+| Qdrant | 10 | No collection, snapshot or API traffic yet |
+| Airflow, Flower | 11 | No DAG or Celery task has run since the exporters started |
+| Keycloak (2) | 10 | Event counters restarted with Keycloak; they appear with sign-ins |
+| Tempo (2) | 8 | Trace-by-ID queries, failed pushes, discarded spans not yet seen |
+| Traefik | 5 | Rates at the shortest interval with no 5xx or slow requests |
+| Others (7) | 7 | Idle or zero-filtered: OffsetCommit, consumer lag, active sessions, TCP transient states, slow Alloy evaluations, OTLP metric points, Loki read success |
+
+### W5 Documents
+
+POL-0024 (SeaweedFS metrics and trust boundary), RUN-0045 (node-exporter host
+namespace and exposure), the Grafana and LAB dashboard READMEs and the service
+inventory describe the changes.
+
+## Evidence
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `ff9f2f48c` | PASS | W1 LAB Separation | accepted |
+| Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `a4a3a7dad` | PASS | W2 Collection | accepted |
+| Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `4420a0514` | PASS | W3 Dashboards | accepted |
+| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` | PASS | W4 HOME Rollout | accepted |
+| OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
+
+## Review and Completion
+
+Not complete: independent review, W5 validation and the merge remain;
+OpenBao's restart is the owner's.
+
+## Related Documents
+
+- [Spec](../spec.md)
+- [Plan](../plan.md)
