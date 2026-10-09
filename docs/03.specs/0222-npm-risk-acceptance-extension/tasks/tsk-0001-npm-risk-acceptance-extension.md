@@ -48,7 +48,7 @@ dates. It names the record fields the workflow contract owns, keeps the
 identity pinned, and lets the owner extend by up to 30 days from approval while
 the advisory lists no patch, with no governance amendment. The owner applied
 the copy prepared under the ignored `_workspace/ghsa/` after the auto-mode
-safety check refused it to the agent (`170b1095d`); the agent-governance contract
+safety check refused it to the agent (`ad12a1a6d`); the agent-governance contract
 and markdownlint pass.
 
 ### Review
@@ -56,24 +56,33 @@ and markdownlint pass.
 The independent review found that a future `approved_at` passed the 30-day
 bound while the audit accepted the risk from the current time, and that the
 contract tests named the current dates, so an extension would also have needed
-a test edit. `fcc3245e3` makes the audit require `approved_at <= now < expires_at`
+a test edit. `921d2f6a8` makes the audit require `approved_at <= now < expires_at`
 at both expiry checks, adds a future-approval adapter case, and derives the
 30-day, over-limit, equal and reversed cases from the live record; offset,
 non-string and impossible timestamps are covered. The quality standard lists
 the pinned identity without `advisory_url`; kept, because the code is the
 stricter side. Contract and adapter tests: 69 pass.
 
+### W3 Validation
+
+SPEC-0221 merged as PR #396 (`40dcfb349`) and this branch was rebased onto it.
+In a throwaway worktree with the branch staged on `40dcfb349`, the changed
+gate, which includes the candidate preflight, and the staged style check ran on
+the final head. `candidate-quality` and the merge are recorded in the pull
+request.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Contract window | 1 | W1 | Contract and adapter tests | `ebffea9bb` | PASS | W1 Contract Window | accepted |
-| Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `170b1095d` | PASS | W2 Quality Standard Rule | accepted |
-| Review fixes | 1 | W1 | Contract and adapter tests | `fcc3245e3` | PASS | Review | accepted |
+| Contract window | 1 | W1 | Contract and adapter tests | `7258d2bfb` | PASS | W1 Contract Window | accepted |
+| Extension rule | 2 | W2 | Agent-governance contract; markdownlint | `ad12a1a6d` | PASS | W2 Quality Standard Rule | accepted |
+| Review fixes | 1 | W1 | Contract and adapter tests | `921d2f6a8` | PASS | Review | accepted |
+| Local validation | 3 | W3 | Changed gate with preflight; staged style check | final branch head | PASS | W3 Validation | accepted |
 
 ## Review and Completion
 
-Not complete: W3 remains.
+Not complete: `candidate-quality` and the merge remain.
 
 ## Related Documents
 
