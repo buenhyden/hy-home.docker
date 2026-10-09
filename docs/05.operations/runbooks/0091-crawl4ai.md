@@ -59,6 +59,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    docker pull unclecode/crawl4ai:0.9.4@sha256:9021b3cb5c6f12570bbcd5395638495e0a06969b3148e377b953d174af2ebc9b
    HYHOME_CRAWL4AI_REHEARSAL=1 python3 -m unittest -v tests.validation.test_crawl4ai_egress.Crawl4AIEgressRehearsalTests
    ```
+
 6. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
 
 ### Verification and recovery limits
