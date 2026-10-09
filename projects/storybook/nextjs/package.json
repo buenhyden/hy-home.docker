@@ -18,10 +18,10 @@
     "mcp:docs": "node --experimental-strip-types mcp/server.ts"
   },
   "dependencies": {
-    "next": "16.3.8",
+    "@hy-home/storybook-ui": "file:packages/ui",
+    "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "@hy-home/storybook-ui": "file:packages/ui"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.4.0",
@@ -30,6 +30,7 @@
     "@storybook/addon-docs": "10.6.1",
     "@storybook/addon-onboarding": "10.6.1",
     "@storybook/addon-vitest": "10.6.1",
+    "@storybook/mcp": "10.6.1",
     "@storybook/nextjs-vite": "10.6.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.6.4",
@@ -39,15 +40,14 @@
     "@vitest/browser-playwright": "^5.0.3",
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.0",
     "eslint-plugin-storybook": "10.6.1",
-    "playwright": "^1.63.0",
+    "playwright": "^1.64.0",
     "storybook": "10.6.1",
     "tailwindcss": "^4.3.3",
     "typescript": "6.0.3",
-    "vite": "^8.3.2",
-    "vitest": "^5.0.3",
-    "@storybook/mcp": "10.6.1"
+    "vite": "^8.3.4",
+    "vitest": "^5.0.3"
   },
   "overrides": {
     "postcss": "^8.5.10",
