@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.2.0"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -39,17 +39,18 @@ history, 로그를 영속화한다.
 ### 현재 구현과 격차
 
 - [RedisInsight Compose](../../../infra/04-data/redisinsight/docker-compose.yml)가
-  profile, 볼륨, 라우트, CIDR, middleware, healthcheck를 정의한다.
+  profile, 볼륨, 라우트, CIDR, middleware, healthcheck, 사전 등록 연결을 정의한다.
 - gateway 경로에는 admin CIDR와 OAuth2 Proxy ForwardAuth가 적용되며 호스트
-  포트는 없다. 그러나 `edge_net`, `mng_data_net`, `dev_data_net`,
-  `n8n_net`, `airflow_net` peer는 직접 listener에 연결할 수 있다. 네이티브 UI 인증 선언이
-  없어 gateway만이 유일한 접근 경로라고 볼 수 없다.
-- 현재 소스는 `RI_ENCRYPTION_KEY`를 선언하지 않는다. 업스트림은 이 키가 로컬에
-  저장된 데이터베이스 비밀번호/workbench history를 암호화한다고 명시한다.
-  키를 구성하고 마이그레이션하기 전까지 `/data`와 그 백업은 민감한 평문 저장 위험으로
-  취급한다.
-- 디렉터리 health는 `/data` 가용성만 증명할 뿐 게이트웨이 인증, 대상 credential,
-  대상 데이터베이스 인가는 증명하지 않는다.
+  포트는 없다. RedisInsight에는 자체 로그인이 없으므로 listener를 `edge_net`의 고정
+  주소(`10.250.1.3`)에만 연다. `mng_data_net`, `dev_data_net` peer가 UI 포트에 직접
+  붙으면 연결이 거부된다. Traefik은 `traefik.docker.network: edge_net`으로 이 주소를 쓴다.
+- 선택형 n8n·Airflow 전용 Valkey(`dedicated-valkey`)는 운영자가 실제로 조회할 때만
+  해당 망을 붙인다. 기본 선언에는 `n8n_net`, `airflow_net`이 없다.
+- `RI_ENCRYPTION_KEY`(`secrets/data/redisinsight/encryption_key.txt`)로 저장된 연결
+  비밀번호를 암호화한다. 이 키는 설정의 `encryption` 동의가 켜져 있을 때만 쓰인다.
+  새 `/data`에서는 자동으로 켜지고, 기존 `/data`는 런북 절차로 한 번 켠다.
+- healthcheck는 `/api/health/`의 `{"status":"up"}`만 본다. UI가 살아 있다는 뜻이며
+  대상 DB 접속 성공은 아래 연결 확인으로 따로 본다.
 - 업스트림은 RedisInsight를 SSPL 라이선스로 명시하며 해당 약관 동의를 요구한다.
   이 저장소는 다른 edition/라이선스를 주장하지 않는다.
 
@@ -61,6 +62,8 @@ history, 로그를 영속화한다.
 
 - `docker compose --profile admin-data config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 04-data`
+- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
+  (격리 망에서 접속·거부·중단·회전을 시험한다)
 
 ### Runbook Handoff
 
@@ -69,47 +72,36 @@ history, 로그를 영속화한다.
 
 ### 정상 사용과 운영 한계
 
-승인된 최소 권한 연결만 선택하고 Workbench 변경은 대상 소유자의 승인을 받는다.
-별도 Compose readiness 의존성은 없으므로 대상 Redis/Valkey와 gateway 준비를 각각
-확인한다. 디렉터리 health와 UI 로그인은 대상 권한·모든 Valkey 기능 호환성을
-보증하지 않는다. 메모리·연결 수·설정 저장소 사용량은 Compose 자원 제한과 함께
-검토한다. 현재 이미지의 실제 저장 형식을 조사하지 않았으므로 암호화 키 미선언만으로
-모든 저장값이 평문이라고 단정하지 않지만, 암호화 보장도 주장하지 않는다.
+일상 조회는 읽기 전용 inspector 계정의 사전 등록 연결만 쓴다. 쓰기나 삭제가
+필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한 뒤 진행하며, inspector에
+쓰기 권한을 더하지 않는다. 별도 Compose readiness 의존성은 없으므로 대상
+Valkey와 gateway 준비를 각각 확인한다. 기동 직후 첫 DB 요청은 시작 시 외부 조회가
+끝나기 전까지 25초 요청 제한을 넘을 수 있으므로, 한 번 실패하면 다시 시도한다.
 
-### dev-valkey 연결
+### 사전 등록 연결
 
-RedisInsight는 `dev_data_net`으로 `dev-valkey`에 닿는다. 연결을 추가할 때는
-다음 값을 쓴다.
+RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목록에서 빠진 사전 등록
+연결은 자동으로 지워지므로 UI에서 고친 값은 다음 시작에 되돌아간다.
 
-| 항목 | 값 |
-| --- | --- |
-| Host | `dev-valkey` |
-| Port | `6379` |
-| Username | `devadmin` |
-| Password | `secrets/db/dev-valkey/admin_password.txt`의 내용 |
+| 이름 | Host | Port | DB | Username | 비밀번호 secret |
+| --- | --- | --- | --- | --- | --- |
+| `DEV / dev-valkey` | `dev-valkey` | `6379` | `0` | `devinspector` | `secrets/db/dev-valkey/inspector_password.txt` |
+| `MNG / mng-valkey` | `mng-valkey` | `6379` | `0` | `mnginspector` | `secrets/db/mng-valkey/inspector_password.txt` |
 
-- Username을 비워 두면 RedisInsight는 `default` 사용자로 인증한다. `dev-valkey`의
-  ACL은 `user default off`로 시작하므로 이 경우 `Authentication failed`가 난다.
-- 비밀번호는 secret 파일에서 직접 붙여 넣는다. 문서, 채팅, 로그, 스크린샷에
-  남기지 않는다.
-- `devmonitor`는 지표 수집 전용 계정이라 키를 읽지 못한다. RedisInsight 연결에
-  쓰지 않는다.
-- 프로젝트 사용자(`projects.tsv`)는 자기 키 prefix만 다룬다. 특정 프로젝트 범위로만
-  보려면 그 사용자와 해당 secret으로 연결한다.
-- `devadmin`은 모든 키와 명령을 다룰 수 있다. Workbench에서 쓰기나 삭제를 하기
-  전에 대상 프로젝트 소유자의 승인을 받는다.
-- admin 비밀번호를 바꾸면 RedisInsight에 저장한 연결의 비밀번호도 함께 고친다.
-  ACL은 `dev-valkey`를 다시 시작할 때 secret에서 새로 만들어진다.
+- 두 inspector는 같은 규칙(`~* resetchannels -@all +@read +@connection -@dangerous +info`)을
+  쓴다. 키 브라우저, 키 정보, 값 조회, overview는 되고 `SET`·`DEL`·`KEYS`·`CONFIG`·
+  `ACL`·`FLUSHALL`·`EVAL`·`PUBLISH`는 거부된다.
+- 관리자(`devadmin`, MNG `default`)와 지표 수집(`devmonitor`) 비밀번호는 RedisInsight에
+  넣지 않는다. renderer는 두 역할이 같은 비밀을 쓰면 시작을 거부한다.
+- 키 브라우저는 `SCAN`으로 해당 DB의 모든 키 이름을 보여 준다. DEV에서는 다른
+  프로젝트의 키 이름도 보이므로, `MATCH`나 prefix 필터를 프로젝트 격리로 여기지
+  않는다. RedisInsight 접근 자체가 관리자 신뢰 경계다. 앱 계정의 `SCAN` 금지는
+  그대로 둔다.
+- 비밀번호는 secret 파일에서 `start.sh`가 읽어 환경으로만 넘기며 문서, 채팅, 로그,
+  스크린샷에 남기지 않는다.
 
-연결이 실패하면 `dev-valkey` 컨테이너 안에서 secret 파일로 `devadmin` 인증이
-`PONG`을 돌려주는지 먼저 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로
-시도했는지 본다.
-
-### 소스 검토의 한계
-
-여기서 설명한 네트워크는 선언상 연결 가능한 경로다. 실제 peer 연결·인터넷 공개·
-사용자 인증·복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을
-해소하는 구현 변경은 별도 승인·보안 검토·검증이 필요하다.
+연결이 실패하면 대상 Valkey 컨테이너 안에서 inspector secret으로 `PING`이 `PONG`을
+돌려주는지 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로 시도했는지 본다.
 
 ### Traceability
 

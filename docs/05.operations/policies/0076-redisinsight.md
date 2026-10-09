@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Operations Policy"
-version: "1.1.1"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "POL-0076"
 parent_ids:
@@ -39,10 +39,16 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 ### Controls
 
 - `admin`/`admin-data`만 사용한다. HOME 밖에 유지한다.
-- ForwardAuth와 관리자 CIDR을 보존한다. 고유한 최소 권한 대상 계정을
-  사용한다. 파괴적인 Workbench 명령은 대상 소유자의 승인이 필요하다.
-- `/data`와 백업을 민감 정보로 취급한다. 현재 소스에는 `RI_ENCRYPTION_KEY`가
-  없다. 이를 보안 공백으로 기록하고 보장으로 취급하지 않는다.
+- ForwardAuth와 관리자 CIDR을 보존한다. listener는 `edge_net` 고정 주소에만
+  열고, 데이터 망에서 UI로 가는 직접 경로를 두지 않는다.
+- 대상 연결은 사전 등록된 읽기 전용 inspector(`devinspector`, `mnginspector`)만
+  쓴다. 관리자·지표 수집·앱 계정과 그 비밀은 RedisInsight에 넣지 않는다. 쓰기가
+  필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한다.
+- 키 브라우저의 `SCAN`은 DB 전체 키 이름을 보여 주므로 RedisInsight 접근은
+  관리자 신뢰 경계다. `MATCH`나 prefix로 프로젝트 격리를 주장하지 않는다.
+- `/data`와 백업을 민감 정보로 취급한다. 저장된 연결 비밀번호는
+  `RI_ENCRYPTION_KEY`로 암호화하며, 키와 `encryption` 동의가 함께 있어야 한다.
+  `/data`는 소유자만 읽는다(디렉터리 `700`, DB 파일 `600`).
 - RedisInsight 백업은 클라이언트 설정만 다룬다. 대상 Redis/Valkey 백업은 각
   엔진 소유자를 따르며 `/data`로 대체할 수 없다.
 - 일관된 설정 사본을 위해 서비스를 중지한다. 프로덕션 대상 네트워크를
@@ -52,8 +58,10 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 
 ### Verification
 
-gateway/CIDR 허용/거부, 대상 계정 범위, 설정 지속성을 검증하고, 복구 테스트가
-프로덕션 대상에 도달할 수 없음을 검증한다.
+gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspector의 읽기
+허용과 쓰기·금지 명령 거부, UI health와 별개인 DB 접속, 저장 비밀번호의 평문
+부재, 설정 지속성을 검증하고, 복구 테스트가 프로덕션 대상에 도달할 수 없음을
+검증한다.
 
 ### Review Cadence
 
@@ -61,17 +69,17 @@ gateway/CIDR 허용/거부, 대상 계정 범위, 설정 지속성을 검증하�
 
 ### 직접 접근 제한
 
-현재 다섯 네트워크의 peer 접근에는 gateway 인증이 자동 적용되지 않는다.
-접근 제한 통제는 유지하며 이 구현 격차를 `@buenhyden`에게 보고한다. CIDR·SSO
-성공만으로 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된
-credential을 진단 출력으로 사용하지 않는다.
+데이터 망 peer는 UI 포트에 닿지 못한다. 새 망을 붙일 때는 listener가 여전히
+`edge_net` 주소에만 열려 있는지 확인한다. CIDR·SSO 성공만으로 안전한 배포나
+복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을 진단 출력으로
+사용하지 않는다.
 
 ## Exceptions
 
 ### Exceptions
 
 대상 권한 부여를 우회하거나 gateway 로그인을 데이터베이스 권한으로 취급하는
-예외는 없다. 암호화되지 않은 자격 증명 저장소는 안전하다고 할 수 없다.
+예외는 없다. `encryption` 동의가 꺼진 저장소는 안전하다고 할 수 없다.
 
 ## Related Documents
 
