@@ -1,10 +1,10 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -17,30 +17,19 @@ created: "2026-10-03"
 
 ## Overview
 
-### Overview
-
-현재 source 인계 소유자는 [SPEC-0204](../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 보관된 역사적 근거입니다.
+현재 source 인계 소유자는 [SPEC-0204](../../03.specs/0204-service-integration-security-and-operations/spec.md)이며, SPEC-0202의 합성 검증은 보관된 역사적 근거이다.
 
 이 정책은 source-only `dev-pg`와 `dev-valkey`의 관리 데이터 분리, 최소 권한
 provision, 그리고 승인 전 실행 금지 경계를 정한다.
 
 ## Scope
 
-### Policy Scope
-
-적용 대상은 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-valkey`와 그 선언된 state,
+적용 대상은 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-valkey`, 지표용 `dev-pg-monitor-provision`·`dev-pg-exporter`·`dev-valkey-exporter`와 그 선언된 state,
 network, secret reference다. `mng-pg`와 `mng-valkey`의 metadata, session, management
 queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다. LAB entrypoint와
 외부 업무 앱도 범위 밖이다.
 
-### Traceability
-
-- Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0204`.
-- Runtime declaration: `infra/04-data/dev-db/docker-compose.yml`.
-
 ## Rules
-
-### Controls
 
 - `dev-data`와 목적별 `analytics-engineering`/`cdc`/`quality-results` profile만 새 개발 엔진을 선택한다.
   HOME root profile 또는 기존 `dev` selector를 확대하지 않는다.
@@ -56,8 +45,15 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
   cache LRU를 같은 instance에 혼합하는 변경은 별도 sizing decision을 요구한다.
 - pgBackRest source declaration은 backup/PITR 보장이 아니다. archive activation, retention
   변경, restore, storage 삭제와 기존 `app_db` migration은 별도 승인과 격리 검증이 필요하다.
+- 지표 수집은 `dev_pg_monitor`(통계·설정 읽기 전용 role)와 `devmonitor`(읽기 전용 ACL 사용자)만 쓴다. DEV exporter에 관리자 비밀을 주지 않는다.
 - secret은 Docker secret reference로만 소비한다. 값, rendered private configuration, raw
   database payload를 source evidence나 문서에 기록하지 않는다.
+
+## Exceptions
+
+내부 `platform_dev` fixture는 dbt/CDC contract 확인에 한정된다. 외부 project DB·schema·계정
+생성 또는 writer 전환의 근거가 되지 않는다. 예외는 @buenhyden의 승인, 대상 manifest,
+rollback 보존 기간과 검증 결과를 기록할 때만 종료한다.
 
 ### Verification
 
@@ -73,13 +69,10 @@ Compose image/profile/network/mount/secret reference, project provision schema, 
 backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime acceptance 전에는
 각 실행 요청에서 Docker context, resource, port, network, volume과 cleanup 범위를 재확인한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-내부 `platform_dev` fixture는 dbt/CDC contract 확인에 한정된다. 외부 project DB·schema·계정
-생성 또는 writer 전환의 근거가 되지 않는다. 예외는 @buenhyden의 승인, 대상 manifest,
-rollback 보존 기간과 검증 결과를 기록할 때만 종료한다.
+- Artifact: `POL-0100`; parents: `AD-0031`, `SPEC-0204`.
+- Runtime declaration: `infra/04-data/dev-db/docker-compose.yml`.
 
 ## Related Documents
 

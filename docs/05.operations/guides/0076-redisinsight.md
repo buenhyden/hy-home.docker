@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -19,22 +19,17 @@ created: "2026-05-10"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### 목적과 분류
-
 RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. Redis/Valkey
 서버가 아니며 대상 데이터베이스를 백업하지 않는다. `/data`에 마운트된
 `${DEFAULT_MANAGEMENT_DIR}/redisinsight` 아래에 연결 정의, credential, workbench
 history, 로그를 영속화한다.
+
+## Audience and Goal
+
+DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를 위한 문서다. 목표는
+사전 등록된 inspector 연결로 안전하게 조회하고, 설정과 암호화 경계를 이해하는 것이다.
+
+## Usage
 
 ### 현재 구현과 격차
 

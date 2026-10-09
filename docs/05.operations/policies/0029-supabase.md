@@ -1,10 +1,10 @@
 ---
 title: "Supabase Operations Policy"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0029"
 parent_ids:
@@ -16,27 +16,16 @@ created: "2026-05-17"
 
 ## Overview
 
-### Overview
-
 이 정책은 `infra/04-data/supabase`의 exact `supabase` profile stack 운영 기준을 정의한다. 핵심 통제는 Kong 중심 공개 접근, Docker Secrets, `${DEFAULT_DATA_DIR}/supabase/...` runtime mounts와 database/storage/config를 하나의 recovery unit으로 관리하는 것이다.
 
 ## Scope
-
-### Policy Scope
 
 - **Systems**: `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta`, `functions`, `analytics`, `db`, `vector`, `supavisor`
 - **Configs**: `infra/04-data/supabase/docker-compose.yml`, `${DEFAULT_DATA_DIR}/supabase/api/kong.yml`, storage, functions, logs, database init SQL, pooler config
 - **Networks**: `supabase_net`
 - **Ports**: Kong `8000`/`8443`, analytics `4000`, Supavisor session `5432`, transaction `6543`, all published on `127.0.0.1` only through compose host-port variables
 
-### Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../guides/0029-supabase.md) (`GDE-0029`), [Runbook](../runbooks/0029-supabase.md) (`RUN-0029`)
-
 ## Rules
-
-### Controls
 
 - **Required**:
   - Supabase secret은 `/run/secrets/`의 Docker Secrets로 공급하고 실제 image가 secret을 소비하는 안전한 방법을 검증해야 한다. 현재 `_FILE` 선언만 있고 generic 변환 wrapper가 없어 전체 수용은 미검증이다. process health나 file mount만으로 통제 충족을 인정하지 않는다.
@@ -78,6 +67,12 @@ created: "2026-05-17"
 
 적용 identity: `analytics`, `auth`, `db`, `functions`, `imgproxy`, `kong`, `meta`, `realtime`, `rest`, `storage`, `studio`, `supavisor`, `vector`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
+## Exceptions
+
+예외는 명시적인 owner나 user 승인을 요구하며, scope, command, 영향받는
+서비스, secret-safety 고려사항, 검증 output, rollback/escalation state를
+관련 task나 incident evidence에 기록해야 한다.
+
 ### Verification
 
 - Compose 관련 문서를 변경한 뒤 `docker compose --profile supabase config --quiet`를 실행한다.
@@ -91,15 +86,10 @@ Supabase compose 서비스, port, profile, network, secret 참조, runtime mount
 Kong routing, 연결된 운영 문서에 대한 모든 변경 시 검토한다. 그 외에는 정기
 Stage 05 운영 audit 동안 검토한다.
 
----
+### Traceability
 
-## Exceptions
-
-### Exceptions
-
-예외는 명시적인 owner나 user 승인을 요구하며, scope, command, 영향받는
-서비스, secret-safety 고려사항, 검증 output, rollback/escalation state를
-관련 task나 incident evidence에 기록해야 한다.
+- Declared parent: [Data Tier (04-data) Architecture Description](../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](../guides/0029-supabase.md) (`GDE-0029`), [Runbook](../runbooks/0029-supabase.md) (`RUN-0029`)
 
 ## Related Documents
 

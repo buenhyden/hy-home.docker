@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -25,25 +25,23 @@ created: "2026-10-03"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
 `dev-db`는 미래 외부 프로젝트의 업무 데이터를 위한 선택형 개발 엔진이다.
 관리 서비스 metadata·세션·관리 queue는 `mng-db`에 계속 남는다. `app_db`는 신규
 프로젝트의 공용 DB가 아니며, 현재 source integration은 그 DB의 삭제·이관·전환을
 승인하지 않는다.
 
+## Audience and Goal
+
+미래 외부 프로젝트의 개발 DB를 준비하는 운영자와 프로젝트 소유자를 위한 문서다. 목표는
+`dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법과 HOME 실행 전에 필요한 승인
+범위를 이해하는 것이다.
+
+## Usage
+
 [`infra/04-data/dev-db/docker-compose.yml`](../../../infra/04-data/dev-db/docker-compose.yml)은
 TimescaleDB Community 기반 `dev-pg`, 승인된 내부 fixture의 계정·DB를 만드는
 `dev-platform-provision`, 공용 시험 결과의 `dev-perf-provision`, project ACL을 적용하는
-`dev-valkey`를 소유한다. 지표는 `dev-pg-monitor-provision`이 만든 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role의 `dev-pg-exporter`와 읽기 전용 `devmonitor` ACL 사용자의 `dev-valkey-exporter`가 Prometheus에 제공하며, 두 exporter는 관리자 비밀을 받지 않는다. 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
+`dev-valkey`를 소유한다. 지표는 `dev-data` profile의 exporter 둘이 Prometheus에 제공한다. `dev-pg-monitor-provision`이 통계·설정 읽기 권한만 가진 `dev_pg_monitor` role을 만들고, `dev-pg-exporter`(`9187`)가 이 role로 접속한다. `dev-valkey-exporter`(`9121`)는 읽기 전용 `devmonitor` ACL 사용자로 접속한다. 두 exporter는 관리자 비밀을 받지 않고 각자의 monitor secret(`dev_pg_monitor_password`, `dev_valkey_monitor_password`)만 쓴다. 두 exporter는 `dev_data_net`과 `obs_net`에 붙고 호스트 포트는 없다. DB 서비스는 `dev_data_net`과 독립 bind-backed state를 사용한다. `dev-pg`와 `dev-valkey`의 실제
 image, profile, host exposure, resource limit, mount 및 secret reference는 Compose와
 각 엔진 README가 권위다.
 
@@ -78,13 +76,9 @@ WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시
 
 ### Common Checks
 
-저장소 root에서 정적 Compose와 permission contract만 확인한다. 이 명령은 컨테이너를
-시작하거나 private environment를 출력하지 않는다.
-
-```bash
-docker compose --env-file .env.example --profile dev-data config --quiet
-python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test_dev_valkey_acl tests.validation.test_dev_data_boundary
-```
+저장소 root에서 정적 Compose와 permission contract만 확인한다. 명령은
+[RUN-0100 절차](../runbooks/0100-development-database.md#procedure)가 소유한다. 이 검사는
+컨테이너를 시작하거나 private environment를 출력하지 않는다.
 
 `dev-data`는 HOME의 기존 `dev` profile과 별도다. 현재 root candidate 선택에 새 엔진을
 포함하거나 profile을 변경하지 않는다. `dev-pg` readiness는 연결 수락만 확인하며 extension,

@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-04"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -21,15 +21,13 @@ created: "2026-09-22"
 
 ## Overview
 
-### Overview
+HOME의 백업은 도구마다 소유 범위가 다르다. 이 문서는 pgBackRest, Restic, R2 오프사이트 사본, SQLite export, host orchestrator가 각각 무엇을 보호하고 무엇을 보호하지 않는지 설명한다.
 
 ## Audience and Goal
 
-### Audience and Goal
+백업을 운영하거나 복구 가능성을 판단하는 운영자와 검토자를 위한 문서다. 목표는 도구별 소유 범위, 저장 위치, 일정과 부하, 용량 증가, 키 보관 규칙을 이해하고 정상 상태를 확인하는 것이다.
 
 ## Usage
-
-### Usage
 
 ### What owns which copy
 
@@ -88,7 +86,7 @@ log(175 MB, 약 64 MB/day)와 cache는 의도적으로 allowlist에서 제외한
 ### Development database handoff
 
 개발 repository는 별도 stanza `dev`와 `dev_pgbackrest_cipher_pass`를 사용하며
-관리 repository·PGDATA와 공유하지 않습니다. Restic은 이 경로를 읽기 전용으로
+관리 repository·PGDATA와 공유하지 않는다. Restic은 이 경로를 읽기 전용으로
 state set에 포함하여 기존 offsite copy와 전체 state 예산에 함께 계산합니다.
 배포 전 두 repository 디렉터리와 용량·키 보관·일정 승인이 필요합니다.
 개발 stanza `check`(300초), physical backup(1800초), globals/schema export(각

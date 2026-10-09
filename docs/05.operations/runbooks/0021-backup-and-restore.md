@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.10"
+version: "1.4.11"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -16,13 +16,9 @@ created: "2026-09-22"
 
 ## Overview
 
+pgBackRest, Restic, SQLite export, R2 오프사이트 사본의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../policies/0021-backup-and-restore.md), 설명은 [GDE-0021](../guides/0021-backup-and-restore.md)이 소유한다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
@@ -39,8 +35,6 @@ R2 오프사이트 사본을 설정하거나 그 사본에서 복원할 때 사�
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
 rendered Compose model을 절대 출력하지 않는다.
@@ -203,7 +197,7 @@ timestamp was not written"을 남기고 exit 1로 끝난다.
 
 1. data disk의 승인된 `SCRATCH_ROOT`에서 `mktemp -d -p`로 새 target을 만들고 소유 UID/mode/device/inode를 보존한다. 기존 경로·container·network 이름 충돌은 중단한다. recovery copy에는 UID70만 쓰게 하고 원본 repository는 read-only로 연결한다.
 2. 첫 pgBackRest restore container는 `--network none`으로 실행한다. custom image의 기본 secret-aware entrypoint를 유지하고 **command**로 `sh -ec`를 전달한다. `--entrypoint sh`로 우회하거나 cipher include를 직접 생성하지 않는다. `/run/secrets/pgbackrest_cipher_pass`를 read-only로 연결하면 wrapper가 `/tmp/pgbackrest/conf.d`의0600 include를 준비한다.
-3. `gosu postgres pgbackrest`의 `--stanza=mng`, 검토된 `--set=<backup-label>`, `--type=time`, `--target=<approved-time>`, `--target-action=promote`, `--archive-mode=off`를 사용한다. 정확한2.58 옵션과 repository/WAL 가용성을 먼저 검토한다. command 실패·chain 누락·version 불일치면 재시도/승격하지 않는다.
+3. `gosu postgres pgbackrest`의 `--stanza=mng`, 검토된 `--set=<backup-label>`, `--type=time`, `--target=<approved-time>`, `--target-action=promote`, `--archive-mode=off`를 사용한다. 정확한 pgBackRest 옵션과 repository/WAL 가용성을 먼저 검토한다. command 실패·chain 누락·version 불일치면 재시도/승격하지 않는다.
 4. 복원본 server 검증에만 새 이름의 `--internal` network를 사용한다. 원본 네트워크/host port와 연결하지 않는다. 같은 보존 image/entrypoint/cipher와 read-only repository, `PGDATA=/var/lib/postgresql/data/pgdata`를 사용하고 `postgres -c archive_mode=off`로 archive 재유입을 막는다.
 5. 로그의 target 도달/timeline, recovery 완료, role/extension/schema/sequence와 승인된 application invariants를 비교한다. 단순 시작이나 `selected new timeline`만으로 시점 정합성을 인정하지 않는다. dump·row·credential은 evidence에 출력하지 않는다.
 6. 실패 시 target을 중지하고 scratch/evidence를 보존한다. cleanup은 기록한 identity와 label을 재검증한 **정확한 소유 artifact만** 별도 승인 후 삭제한다. source·backup은 보존한다. live cutover는 별도 승인된 절차다.
@@ -220,7 +214,7 @@ Clone은 `--network none`, host port 없음, 원본 PGDATA와 분리된 scratch�
 
 승인 전 정확한 Restic snapshot ID, host/tag/time/source revision, 암호 키 custody, include 경로와 대상 owner를 선택한다. `latest`를 자동 선택하지 않는다. state와 host는 같은 성공 실행에 속하는 snapshot pair인지 확인한다. 일반 restore container는 data-disk의 새 소유 scratch, local repository read-only, `--network none`을 사용한다. hardened backup job은 ownership 재적용 권한이 없으므로 restore 도구와 UID/mode 복원 계약을 별도로 검토한다.
 
-Restic0.19.1의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된 include만 추출한다. state export는 `/src/state/exports`, host repository의 `.env`·secret은 `/src/host` 아래다. hash·mode·UID와 원래 application recovery point를 확인하고 검토된 파일만 별도 승인으로 복사한다. scratch도 secret artifact이며0600 파일과 제한된 디렉터리 권한을 유지한다.
+Restic의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된 include만 추출한다. state export는 `/src/state/exports`, host repository의 `.env`·secret은 `/src/host` 아래다. hash·mode·UID와 원래 application recovery point를 확인하고 검토된 파일만 별도 승인으로 복사한다. scratch도 secret artifact이며0600 파일과 제한된 디렉터리 권한을 유지한다.
 
 SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. [RUN-0024](0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
 
@@ -427,9 +421,16 @@ full backup하고 현재 Restic state chain으로 snapshot/복원한 repository�
 reader 읽기 허용/쓰기·DDL 거절이 통과했으며 missing source exit3·unknown label
 exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO가 아닙니다.
 
-## Verification
+### 설치된 unit 갱신
 
-### Evidence
+소스 경로를 `09-platform-ops`로 이전해도 호스트에 복사해 설치한
+`hyhome-backup.service`는 예전 ExecStart 경로를 유지할 수 있습니다. 운영 배포 시
+다음 예약 백업에 의존하기 전에 소유자가 기존 설치 절차에 따라 정확한 unit을
+갱신하고 daemon-reload 적용을 확인해야 합니다. timer 이름·일정과 사용자·그룹은
+그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
+이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
+
+## Verification
 
 command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
@@ -453,6 +454,8 @@ configuration은 절대 기록하지 않는다.
 restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
 잃어버렸을 때 @buenhyden에게 escalation한다.
 
+## Related Documents
+
 ### Traceability
 
 - Guide: [GDE-0021](../guides/0021-backup-and-restore.md); Policy: [POL-0021](../policies/0021-backup-and-restore.md)
@@ -460,15 +463,6 @@ restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나,
 - Runtime pins: [Restic Compose](../../../infra/09-platform-ops/restic/docker-compose.yml)
   and the [`mng-pg` image](../../../infra/04-data/mng-db/pg/backup/Dockerfile)
 - Rehearsal: `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`
-
-소스 경로를 `09-platform-ops`로 이전해도 호스트에 복사해 설치한
-`hyhome-backup.service`는 예전 ExecStart 경로를 유지할 수 있습니다. 운영 배포 시
-다음 예약 백업에 의존하기 전에 소유자가 기존 설치 절차에 따라 정확한 unit을
-갱신하고 daemon-reload 적용을 확인해야 합니다. timer 이름·일정과 사용자·그룹은
-그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
-이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
-
-## Related Documents
 
 - [pgBackRest user guide](https://pgbackrest.org/user-guide.html)
 - [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
