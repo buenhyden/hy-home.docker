@@ -194,8 +194,12 @@ class LabInventoryAndSelectionTests(RootClosureTests):
         self.assertTrue(moved)
         self.assertEqual(set(), provisioned & moved)
         lab_metrics = re.compile(r"\b(haproxy|cassandra|mongodb|etcd|patroni)_\w+")
-        for rules in (obs / "prometheus/config/alert_rules").glob("*.yml"):
-            with self.subTest(rules=rules.name):
+        sources = [
+            *(obs / "prometheus/config/alert_rules").glob("*.yml"),
+            *(obs / "grafana/dashboards").rglob("*.json"),
+        ]
+        for rules in sources:
+            with self.subTest(source=rules.name):
                 self.assertIsNone(lab_metrics.search(rules.read_text(encoding="utf-8")))
 
     def test_no_document_or_script_starts_the_root_with_every_profile(self) -> None:

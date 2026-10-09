@@ -4603,10 +4603,6 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         ]
         self.assertEqual([], missing)
         self.assertEqual("host", services["node-exporter"]["network_mode"])
-        self.assertIn("node-exporter:10.250.5.1", services["prometheus"]["extra_hosts"])
-        self.assertIn(
-            "--web.listen-address=10.250.5.1:9100", services["node-exporter"]["command"]
-        )
         members = {
             name
             for name, service in services.items()

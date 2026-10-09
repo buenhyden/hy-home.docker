@@ -573,7 +573,7 @@
             "type": "prometheus",
             "uid": "Prometheus"
           },
-          "description": "This is available only in Kubernetes and only if your pods have cpu limits set",
+          "description": "Keycloak container CPU (cAdvisor) as a share of its Compose CPU limit",
           "fieldConfig": {
             "defaults": {
               "color": {

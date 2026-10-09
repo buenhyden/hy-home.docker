@@ -17,7 +17,29 @@ Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하므로
 파일들은 HOME에 표시되지 않습니다. HOME Prometheus는 LAB 서비스를 수집하지 않아 HOME에서는
 빈 대시보드였습니다.
 
-## Dashboards
+## Scope
+
+### In Scope
+
+- LAB 전용 서비스(Cassandra, etcd, HAProxy, MongoDB, Valkey Cluster)의 Grafana
+  대시보드 JSON과 그 출처 기록
+
+### Out of Scope
+
+- HOME Grafana provisioning, HOME Prometheus scrape와 alert rule
+- LAB 관측 stack의 기동·연결
+
+## Structure
+
+```text
+labs/dashboards/
+├── README.md
+├── cassandra.json
+├── etcd-cluster.json
+├── haproxy-overview.json
+├── mongodb.json
+└── valkey-cluster.json
+```
 
 | Dashboard | UID | Source |
 | --- | --- | --- |

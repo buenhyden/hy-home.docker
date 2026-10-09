@@ -52,8 +52,8 @@ only because the activity they measure has not happened yet.
 4. Host metrics. node-exporter runs in the host network namespace with its
    listener bound to the `obs_net` gateway address, so its network collectors
    report the host and the LAN does not route to it by default; any container on a
-   non-internal bridge can. Prometheus keeps the `node-exporter` name through
-   `extra_hosts`. The `processes` and `tcpstat` collectors are on; timex,
+   non-internal bridge can. Prometheus and Alloy (Pyroscope) keep the
+   `node-exporter` name through `extra_hosts`. The `processes` and `tcpstat` collectors are on; timex,
    interrupts and systemd stay off.
 5. Retention and buckets. OpenBao keeps Prometheus metrics for 24 h so its
    ten-minute usage gauges stay visible; Keycloak adds a 250 ms HTTP bucket;

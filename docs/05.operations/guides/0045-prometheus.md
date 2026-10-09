@@ -132,14 +132,14 @@ graph TD
 
 #### 1. Scrape Configurations
 
-`prometheus.yml`과 `prometheus.dev.yml`은 같은 38개 job을 담는다(SPEC-0193). Compose는
+`prometheus.yml`과 `prometheus.dev.yml`은 같은 37개 job을 담는다(SPEC-0193, SPEC-0225). Compose는
 `PROMETHEUS_CONFIG_FILE`로 둘 중 하나를 고르며, 계약 테스트가 두 파일의 `scrape_configs`가
 같은지 확인한다.
 
 - **Host and containers**: node-exporter, cAdvisor, DCGM exporter.
 - **Observability**: Prometheus, Alertmanager, Alloy, Loki, Tempo, Pyroscope, Grafana, Gatus.
 - **Gateway, auth, security**: Traefik, Keycloak, OAuth2 Proxy(`:44180`), OpenBao.
-- **Datastores and tooling**: `mng-pg`와 `mng-valkey` exporter, Qdrant, SeaweedFS S3, registry(debug listener `:5001`).
+- **Datastores and tooling**: `mng-pg`와 `mng-valkey` exporter, Qdrant, SeaweedFS S3·master·volume·filer, registry(debug listener `:5001`).
 - **Workflow and AI**: Airflow statsd exporter(`airflow-monitor`), Flower, n8n, Ollama exporter.
 - **On-demand**: Kafka broker·Connect·Schema Registry(JMX agent), Kafka exporter, 보조 Valkey exporter, OpenSearch. Valkey cluster, PostgreSQL HA/HAProxy, etcd, MongoDB, Cassandra는 독립 LAB(`labs/`)으로 옮겨져 HOME이 수집하지 않는다. 이 서비스가 멈춰 있으면 target이 down인 것이 정상이며, `up`을 보는 alert는 이 job을 감시하지 않는다.
 

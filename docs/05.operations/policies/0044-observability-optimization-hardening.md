@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-09"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -87,7 +87,7 @@ created: "2026-05-10"
 ### Lifecycle and data controls
 
 - 두 exporter의 HOME 분류를 유지하고 host PID·privileged·device/host mount 확대에는 보안 검토를 요구한다.
-- node-exporter는 내부 전용, cAdvisor는 보호 route를 유지하며 무관한 secret이나 writable host mount를 추가하지 않는다.
+- node-exporter는 route나 LAN 공개 포트 없이 `obs_net` gateway 주소에만 listen하고(internal이 아닌 bridge의 container는 접근 가능), cAdvisor는 보호 route를 유지하며 무관한 secret이나 writable host mount를 추가하지 않는다.
 - 별도 영속 exporter backup은 없다. 추적 Compose로 복구한 뒤 target과 series 연속성을 검증한다.
 - 자원/cardinality 변경에는 scrape/host 영향 측정이 필요하다. 제거에는 rule/dashboard 의존성 검토와 관측 공백 승인이 필요하다.
 

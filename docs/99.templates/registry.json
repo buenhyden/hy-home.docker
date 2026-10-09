@@ -1991,6 +1991,7 @@
         "examples/sample-web-service/README.md",
         "labs/cassandra.md",
         "labs/couchdb.md",
+        "labs/dashboards/README.md",
         "labs/kafka-cluster.md",
         "labs/mongodb.md",
         "labs/opensearch-cluster.md",

@@ -45,7 +45,7 @@ remote candidate.
 - OpenBao's retention change needs a restart, which needs the owner's manual
   unseal; until then its usage gauges stay sparse.
 - If `obs_net` is ever recreated on another subnet, node-exporter's listener
-  and Prometheus' `extra_hosts` must move with it.
+  and the Prometheus and Alloy `extra_hosts` must move with it.
 - Rollback: revert the commits and recreate the same services; Grafana reloads
   the dashboards from files, and `labs/dashboards/` can move back.
 

@@ -86,7 +86,7 @@ created: "2026-05-17"
 ### Source-backed operating contract
 
 - **목적·분류·구현 소유권**: `cadvisor`는 `HOME` container metric exporter이며 `obs`/`obs-host`/`dev`로 선택한다. node-exporter의 소유 문서는 [GDE-0045](0045-prometheus.md#host-and-gpu-exporter-boundary)이며 [Compose](../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
-- **흐름·보안**: Prometheus는 선언된 network를 통해 두 exporter를 scrape한다. node-exporter는 host PID, host network namespace와 읽기 전용 root/proc/sys mount를 사용하며 `obs_net` gateway 주소에만 listen한다. cAdvisor는 privileged로 실행되며 `/dev/kmsg`를 포함한 host filesystem/device를 mount한다. 이 권한이 보안 경계이며 이를 non-root 격리로 일반화해서는 안 된다. cAdvisor route는 계속 보호되며 node-exporter는 내부에서만 접근한다.
+- **흐름·보안**: Prometheus는 선언된 network를 통해 두 exporter를 scrape한다. node-exporter는 host PID, host network namespace와 읽기 전용 root/proc/sys mount를 사용하며 `obs_net` gateway 주소에만 listen한다. cAdvisor는 privileged로 실행되며 `/dev/kmsg`를 포함한 host filesystem/device를 mount한다. 이 권한이 보안 경계이며 이를 non-root 격리로 일반화해서는 안 된다. cAdvisor route는 계속 보호된다. node-exporter는 Traefik route나 LAN 공개 포트가 없지만, internal이 아닌 bridge network의 container는 `obs_net` gateway 주소로 접근할 수 있다.
 - **상태·secret·자원**: 두 exporter 모두 영속 application data나 Docker Secret을 소유하지 않는다. host metric은 관찰 결과이며 backup 내용이 아니다. CPU/memory 선언은 source limit이며 측정된 여유 용량이 아니다.
 - **정상 사용·수명 주기**: 저장소 root에서 렌더링하고 내부 metric endpoint를 검증한 뒤 Prometheus target/label을 확인한다. collector를 변경하기 전에 cardinality/scrape 비용을 비교한다. image를 한 번에 하나씩 upgrade하고 host/container series의 연속성을 검증한다.
 - **백업·복구**: 추적 중인 Compose로 다시 구성하며 service state 복구는 필요하지 않다. dashboard/rule은 해당 exporter 밖에서 보존하고 변경 전 target/series 기준값을 기록한다.

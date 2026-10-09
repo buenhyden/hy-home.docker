@@ -208,7 +208,7 @@ monitor role `pg_monitor`-only.
 | HOME rollout | 3 | W5 | Probes, queries, ACL log, client inventory, exporter stop, declared-off stop, dashboard queries | `cdbca234c` | PASS | W5 Rehearsal, Consumers and HOME | accepted |
 | Documents | 3 | W6 | Metadata check-changed | branch head | PASS | W6 Documents | accepted |
 | Review fixes | 1 | W4 | Unit tests; promtool scenarios; isolated membership checks | branch head | PASS | Review | accepted |
-| Remote candidate | 3 | W7 | `candidate-quality` and CodeQL | `c9606ecf8` | PASS | Review and Completion | accepted |
+| Remote candidate | 4 | W7 | `candidate-quality` and CodeQL | `c9606ecf8` | PASS | Review and Completion | accepted |
 
 ## Review and Completion
 

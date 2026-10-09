@@ -171,6 +171,15 @@ minor issues:
 | Prometheus overview, SeaweedFS and OpenSearch cluster variables defaulted to all | Default `hy-home` |
 | Alloy Docker panel descriptions and a Keycloak percent threshold of 80 | Corrected |
 
+A re-review of the fix range found no critical or important issue and eight
+minor ones, all resolved: GDE-0045 job count (37) and SeaweedFS node jobs;
+Alloy named beside Prometheus wherever `extra_hosts` must move; GDE-0044 and
+POL-0044 no longer call node-exporter internal-only; the Keycloak CPU panel
+description; the literal gateway assertions replaced by the derived ones; the
+LAB metric pattern now also covers provisioned dashboards; the LAB dashboard
+README is registered with the package README profile and has its required
+sections; and the Evidence rows below carry the SHAs the HOME steps ran from.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -178,7 +187,9 @@ minor issues:
 | LAB separation | 1 | W1 | LAB isolation and dashboard contract tests; promtool | `21562bcd0` | PASS | W1 LAB Separation | accepted |
 | Collection | 2 | W2 | Compose, network, SeaweedFS, tier layout and Gatus tests; Compose rendering | `225894242` | PASS | W2 Collection | accepted |
 | Dashboards | 3 | W3 | Dashboard contract tests; HOME query audit | `12e187934` | PASS | W3 Dashboards | accepted |
-| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `12e187934` | PASS | W4 HOME Rollout | accepted |
+| HOME rollout | 3 | W4 | Health, listener, target, rule and Grafana checks | `4420a0514` (rebased `12e187934`) | PASS | W4 HOME Rollout | accepted |
+| Review fixes | 3 | W4 | Network, host-network, gateway and LAB tests; dashboard tests; audit recount | `789fbd525` | PASS | Review | accepted |
+| Alloy on HOME | 3 | W4 | Name resolution; Pyroscope `service_name` list | `b2745167d` (rebased `789fbd525`) | PASS | W4 HOME Rollout | accepted |
 | OpenBao retention on HOME | 3 | W4 | Restart with owner unseal | — | NOT_RUN | W4 HOME Rollout | pending |
 
 ## Review and Completion
