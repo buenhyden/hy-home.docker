@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.4.1"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -56,12 +56,18 @@ Quality dimensions:
 #### Bounded npm risk acceptance
 
 An owner-approved risk acceptance is not a vulnerability fix or a branch
-protection bypass. SPEC-0205 records the 2026-10-04 approval for exactly
-GHSA-vfj7-8cjw-p6xm, the verified Next lint development chain, and expiry
-2026-10-10T15:00:00Z. SPEC-0219 records the owner's 2026-10-09 amendment of
-that chain from `eslint-config-next` 16.3.8 to 16.4.0, with the same advisory
-and expiry. `.github/workflow-contract.yml` owns the typed metadata;
-the existing CI adapter executes and checks it. Keep Next lint coverage.
+protection bypass. `.github/workflow-contract.yml` owns its typed record: the
+advisory, owner, project, locked dependency chain, `approved_at` and
+`expires_at`. The CI contract pins the advisory, owner, project and chain; a new
+advisory or chain needs a reviewed policy amendment with negative fixtures. The
+Spec Task that changes the record holds the owner's approval. Keep Next lint
+coverage.
+
+The owner may extend an acceptance while the official advisory still lists no
+patched version. The approval names the advisory and the new expiry; the change
+sets `approved_at` to the approval time and `expires_at` no more than 30 days
+after it, and changes no other field. No governance amendment is needed for
+an extension, and an extension never widens the advisory or chain.
 
 The full npm audit retains its raw FAIL receipt. A separate ACCEPTED_RISK
 receipt may satisfy this leaf only for that exact advisory and locked chain,
@@ -69,7 +75,7 @@ with a clean production audit and an official advisory still lacking a patch.
 Unknown or malformed inputs, command/network/lookup errors, path/version drift,
 other high/critical or production findings, expiry and patch availability fail
 closed. Never use a skipped audit, lower threshold, continue-on-error, blanket
-package exception or omitted development audit. Expiry cannot auto-extend.
+package exception or omitted development audit. Expiry never extends without that approval.
 Revert the bounded policy/adapter to strict failure when removing acceptance;
 Remote PR candidate validation and independent review own candidate acceptance, while
 main-push security remains a post-merge observation.
