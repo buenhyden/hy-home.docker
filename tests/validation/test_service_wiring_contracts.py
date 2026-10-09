@@ -55,6 +55,46 @@ class OpenWebUiVectorStoreTests(unittest.TestCase):
             self.assertIn("VECTOR_DB", env)
 
 
+class AiRuntimeContractTests(unittest.TestCase):
+    """SPEC-0226: exact AI image pins and the load, queue and egress limits."""
+
+    def setUp(self) -> None:
+        self.ollama = _service("infra/08-ai/ollama/docker-compose.yml", "ollama")
+        self.webui = _service("infra/08-ai/open-webui/docker-compose.yml", "open-webui")
+        self.ollama_env = dict(e.split("=", 1) for e in self.ollama["environment"])
+
+    def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
+        pattern = r"^{}@sha256:[0-9a-f]{{64}}$"
+        self.assertRegex(
+            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.0")
+        )
+        self.assertRegex(
+            self.webui["image"],
+            pattern.format(r"ghcr\.io/open-webui/open-webui:v0\.11\.4-cuda"),
+        )
+
+    def test_webui_waits_longer_than_an_ollama_cold_load(self) -> None:
+        self.assertEqual("15m", self.ollama_env["OLLAMA_LOAD_TIMEOUT"])
+        self.assertGreater(
+            int(self.webui["environment"]["AIOHTTP_CLIENT_TIMEOUT"]), 15 * 60
+        )
+
+    def test_queue_is_bounded_and_cloud_is_off(self) -> None:
+        self.assertEqual("${OLLAMA_MAX_QUEUE:-16}", self.ollama_env["OLLAMA_MAX_QUEUE"])
+        self.assertEqual("1", self.ollama_env["OLLAMA_NO_CLOUD"])
+
+    def test_webui_has_no_gpu_docker_socket_or_host_shell(self) -> None:
+        self.assertNotIn("deploy", self.webui)
+        for volume in self.webui["volumes"]:
+            self.assertNotIn("docker.sock", volume)
+        self.assertNotIn("TERMINAL_SERVER_CONNECTIONS", self.webui["environment"])
+        self.assertTrue(
+            self.webui["environment"]["WEBUI_SECRET_KEY_FILE"].startswith(
+                "/app/backend/data/"
+            )
+        )
+
+
 class ComposeCoreReadinessExampleTests(unittest.TestCase):
     def test_example_holds_only_what_the_harness_reads(self) -> None:
         example = ROOT / "examples/operations/compose-core-readiness"

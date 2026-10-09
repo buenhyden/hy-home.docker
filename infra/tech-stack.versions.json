@@ -421,7 +421,7 @@
         "ollama/ollama": "external"
       },
       "images": [
-        "ollama/ollama:0.40.0"
+        "ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -430,7 +430,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "ollama/ollama:0.40.0"
+            "ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687"
           ]
         }
       ]
@@ -443,7 +443,7 @@
         "ghcr.io/open-webui/open-webui": "external"
       },
       "images": [
-        "ghcr.io/open-webui/open-webui:v0.11.4-cuda"
+        "ghcr.io/open-webui/open-webui:v0.11.4-cuda@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
       ],
       "compose_files": [
         "infra/08-ai/open-webui/docker-compose.yml"
@@ -452,7 +452,7 @@
         {
           "compose_file": "infra/08-ai/open-webui/docker-compose.yml",
           "images": [
-            "ghcr.io/open-webui/open-webui:v0.11.4-cuda"
+            "ghcr.io/open-webui/open-webui:v0.11.4-cuda@sha256:61fabfa095801b4f0cf4de7320edc1e2ac9a011b41ddadbba20fe3542e7747b1"
           ]
         }
       ]
