@@ -55,6 +55,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0217 | [하위 에이전트 모델·위임 설명](./0217-subagent-model-and-routing-text/) | 하위 에이전트 모델을 Opus 5.5·Sonnet 5.5로 갱신, 역할 Overview·Use When에서 위임 설명 생성 |
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
 | SPEC-0219 | [Storybook 빌드·전달](./0219-storybook-build-and-delivery/) | 커밋 고정 image 빌드·registry 증명, 인증 회귀, 토큰 기반 공유 UI, 다른 워크스페이스용 원격 문서 MCP와 Claude Design export 경계 |
+| SPEC-0220 | [Crawl4AI 수집·egress](./0220-crawl4ai-collection-and-egress/) | 컨테이너 밖 egress 강제, 출처 권리 registry와 consumer 승인 계약, bounded job 참조 adapter, 실이미지 격리 리허설 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
