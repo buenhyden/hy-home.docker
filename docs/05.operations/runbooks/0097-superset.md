@@ -1,10 +1,10 @@
 ---
 title: "Superset Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0097"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-23"
 
 ## Overview
 
+Superset의 최초 설정, 로그인 실패, 웹 서버 비정상, 업그레이드를 다루는 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 최초 설정, 로그인 실패, 웹 서버가 healthy 상태가 되지 않을 때, 또는 업그레이드할 때 사용한다.
 
@@ -35,8 +31,6 @@ created: "2026-09-23"
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 최초 설정(각 단계는 승인을 받으며, 값은 로그나 문서에 절대 남기지 않는다):
    1. Keycloak realm `hy-home.realm`: standard flow만 사용하고 PKCE `S256`,
@@ -66,8 +60,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Verification
 
-### Evidence
-
 client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋을
 기록한다. secret, token, session cookie는 절대 기록하지 않는다.
 
@@ -82,13 +74,13 @@ client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스
 폼 로그인 활성화, 등록 시 `Admin` 부여, 호스트 포트 게시, 또는 환경 변수에
 credential을 넣으라는 요청이 있으면 중단하고 @buenhyden에게 전달한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0097-superset.md) (`GDE-0097`)
 - [Policy](../policies/0097-superset.md) (`POL-0097`)
 - [Keycloak runbook](0014-keycloak.md)
-
-## Related Documents
 
 - [Superset package README](../../../infra/12-analytics/superset/README.md)
 - [Superset Compose source](../../../infra/12-analytics/superset/docker-compose.yml) and [derived version projection](../../../infra/tech-stack.versions.json)

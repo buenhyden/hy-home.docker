@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -19,21 +19,15 @@ created: "2026-09-21"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 JupyterLab은 `data-science`만 선택하는 OPTIONAL single-user notebook
 server이며, 이 profile은 MLflow도 함께 선택한다. HOME에도, 현재 8개
 profile 운용 명령에도 들어 있지 않다.
+
+## Audience and Goal
+
+data-science profile의 JupyterLab을 쓰는 노트북 사용자와 운영자를 위한 문서다. 접근 경로, 작업 파일 보존, MLflow 연동을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 

@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Usage Guide"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0093"
 parent_ids:
@@ -20,22 +20,16 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소다.
 소비자 테스트가 pact를 여기에 게시하고, 프로바이더 빌드가 이를 가져와
 검증하며, `can-i-deploy`는 기록된 검증 결과로 답한다. 브로커는 실제
 프로바이더와 스텁을 비교 검증하지 않는 WireMock을 보완한다.
+
+## Audience and Goal
+
+계약 테스트를 게시하고 검증하는 개발자와 운영자를 위한 문서다. pact 게시·검증 흐름과 준비 상태 확인 방법을 이해하는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 

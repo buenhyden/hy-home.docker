@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -20,21 +20,15 @@ created: "2026-09-21"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking
 server이다. HOME에도, 현재 8개 profile 운용 명령에도 들어 있지 않다.
 추가하려면 별도로 활성화를 결정해야 한다.
+
+## Audience and Goal
+
+MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문서다. 선택 방법, 인증 경계, artifact 처리 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 

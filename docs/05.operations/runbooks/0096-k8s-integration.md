@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-03"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -16,15 +16,11 @@ created: "2026-09-23"
 
 ## Overview
 
+hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 증명 회전, 문제 해결을 다루는 런북이다. 계약은 가이드가 설명한다.
+
 ## Trigger and Preconditions
 
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
-
-| Situation | Phases |
+| 상황 | 단계 |
 | --- | --- |
 | 통합 최초 설정 | 1 → 8, 순서대로 |
 | hy-home.k8s 클러스터 재구축(새 API 서버 CA) | 1, 5 (5.1–5.3, **5.5**, 5.6–5.7), 6, 7, 8; 새 CA 기록 이후 ESO 인증 확인 |
@@ -46,8 +42,6 @@ created: "2026-09-23"
   않는다.
 
 ## Procedure
-
-### Procedure
 
 ### Shared prerequisites and result handling
 
@@ -123,7 +117,7 @@ bash scripts/operations/gen-secrets.sh --sync-metadata
 `METADATA rejected: unsafe, ambiguous, changed or unreadable input`은 여러
 입력 거절 원인을 포함한다. 지원하지 않는 행 형식·여러 줄 값, unsafe path/symlink,
 중복 ID, 읽기 실패, 검사 중 동시 변경이 가능하다. 읽을 수 있는 안전한 일반 파일의
-mode만 `0600`과 다른 경우는 거부가 아니라 drift(check 종료1)이며, 승인된
+mode만 `0600`과 다른 경우는 거부가 아니라 drift(check 종료 1)이며, 승인된
 sync 쓰기는 내용을 보존하면서 `0600`으로 정렬한다. 이 진단만으로 원인을 확정하거나 입력을 고치지 않는다. 쓰기 전에
 중단하고 기존 파일과 Value를 보존한 상태에서 값이 노출되지 않는 경로·권한·ID·
 변경 여부를 확인한다. 확인한 원인의 좁은 수정만 별도 승인 후 수행한다.
@@ -173,7 +167,7 @@ curl -s -o /dev/null -w '%{http_code}\n' --resolve prometheus.hy.home.arpa:443:1
 예상 결과: 위 순서대로 `302`, `200`, `302`이다. `/api/v1/`에 Basic header가
 없으면 현재 SSO 경로가 선택된다. 별도로 비밀이 아닌 의도적 invalid credential
 (`invalid:invalid`)을 curl stdin config로 전달한 API 요청은401이어야 한다.
-redirect를 따라가지 않고 상태를 확인하며000,5xx,예상 외 redirect는 중단한다.
+redirect를 따라가지 않고 상태를 확인하며 000, 5xx, 예상 외 redirect는 중단한다.
 Basic header가 있는 API와 UI의 SSO 경로를 혼동하지 않는다.
 
 ### Phase 4. Host endpoints
@@ -195,9 +189,8 @@ done
 예상 결과: 기존 클러스터에는 `k3d-hyhome-*` 노드만 있고 선택한 consumer의
 포트 연결이 성립한다. 네트워크가 없는 오류는 정상 membership 증거가 아니다.
 예상 외 member는 이름·owner·선택 상태를 확인하고 중단한다. 자동으로
-`docker network disconnect`하지 않는다. Tempo3200은 조회/API이고 trace 수집은
-Alloy4317/4318이다. PostgreSQL 앱이 선택되면15432/15433도 해당 contract로
-확인한다. TCP 성공만으로 인증이나 데이터 수집 성공을 선언하지 않는다.
+`docker network disconnect`하지 않는다. Tempo 3200은 조회/API이고 trace 수집은
+Alloy 4317/4318이다. PostgreSQL HA는 LAB 전용이므로 HOME 포트 확인 대상이 아니다. TCP 성공만으로 인증이나 데이터 수집 성공을 선언하지 않는다.
 
 ### Phase 5. OpenBao Kubernetes auth
 
@@ -353,9 +346,9 @@ bao status -format=json > /tmp/c/server-status.json
 bao operator generate-root -status
 ```
 
-명령마다 결과를 확인한다. role 상한은7200이고 폐기 전 동일 token lookup은
+명령마다 결과를 확인한다. role 상한은 7200이고 폐기 전 동일 token lookup은
 성공해야 한다. revoke 요청 성공 뒤 서버가 도달 가능하고 unsealed인 상태에서
-**같은 token**의 lookup이 서버의403 invalid-token/permission-denied로 거절된
+**같은 token**의 lookup이 서버의 403 invalid-token/permission-denied로 거절된
 경우만 폐기 확인으로 기록한다. lookup이 성공하면 `ROOT STILL VALID`로 중단한다.
 DNS/TLS/timeout/sealed/CLI/JSON 오류는 `INDETERMINATE`이며 client와 보호된
 증거를 유지하여 소유자에게 에스컬레이션한다. `Started false`는 발급 ceremony가
@@ -398,7 +391,7 @@ unset T
 각 요청 직후 exit와 서버 응답을 확인하고 중단 조건을 적용한다. lookup의 구조화된
 필드에서 policy는 정확히 `default`, `k8s-bootstrap`, orphan은true,
 `0 < ttl <= 7200`, `explicit_max_ttl=7200`이어야 한다. 허용 읽기는 금지 읽기
-전후 모두 성공해야 한다. 그 사이 금지 경로의 서버403 permission denied만
+전후 모두 성공해야 한다. 그 사이 금지 경로의 서버 403 permission denied만
 의도한 거절 증거다.404, token 만료, DNS/TLS/timeout/sealed/CLI/파싱 오류는
 `INDETERMINATE`로 중단한다. 금지 읽기가 성공하면 `LEAK`이며 token을 즉시
 self-revoke하고 에스컬레이션한다. raw KV 응답은 private 임시 파일에서만 처리하고
@@ -421,7 +414,7 @@ boolean만 기록한다. client 종료 전 임시 응답 파일의 custody를 �
 - ESO service account에 대한 `system:auth-delegator` 바인딩
 - `openbao.hy.home.arpa`, `prometheus.hy.home.arpa`, `grafana.hy.home.arpa`의 DNS → `192.168.0.13`
 - CA 신뢰
-- 선택한 consumer에 필요한443,3100,26379 egress; Tempo 조회/API3200, Alloy trace 수집4317 또는4318, 선택 PostgreSQL15432/15433은 각각 별도로 확인
+- 선택한 consumer에 필요한 443, 3100, 26379 egress; Tempo 조회/API 3200, Alloy trace 수집 4317 또는 4318은 각각 별도로 확인
 - Basic Auth credential과 `cluster` external label을 사용하는 Alloy remote write 및 Kiali
 - bearer 토큰을 사용하는 Kiali의 Grafana 연결
 
@@ -458,7 +451,7 @@ install -d -m 700 secrets/backup/openbao
 mv "$K8S_WORK/pre-change.snap" secrets/backup/openbao/
 ```
 
-snapshot 존재·크기·권한0600과 offline 인계를 확인한다. 임시 token, 발급 응답JSON,
+snapshot 존재·크기·권한 0600과 offline 인계를 확인한다. 임시 token, 발급 응답 JSON,
 허용 읽기 응답, root/OTP custody 등은 해당 세션에서 만든 정확한 파일만 확인 후
 삭제한다. 광범위한 glob 삭제나 작업 디렉터리 전체 삭제를 실행하지 않는다.
 
@@ -494,7 +487,7 @@ consumer 재생성이나 KV 쓰기 전에 별도 승인된 source 수정 또는 
 방법이 필요하다. 승인된 방법은 registry·password file·파생 htpasswd를 일관되게
 갱신하고 old/new 차이는 boolean으로 증명해야 한다. 그 뒤의 필수 순서는 보호된
 backup/custody → 새 값과 hash 일치 검증 → 승인된 Traefik apply 및 mount 확인 →
-새 Basic200/이전 Basic401/invalid Basic401 → operator의
+새 Basic 200/이전 Basic 401/invalid Basic 401 → operator의
 `secret/platform/prometheus-api` 갱신 → KV version과 새 ESO refresh → 실제
 remote write/query 검증 → rollback 보존 승인 뒤 이전 자료 정리다. 본 문서는
 새 generator 기능이나 임의 credential 값을 만드는 명령을 추가하지 않는다.
@@ -569,18 +562,18 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
 ### Troubleshooting
 
-| Symptom | Cause | Fix |
+| 증상 | 원인 | 조치 |
 | --- | --- | --- |
 | 2.2에서 `METADATA rejected` | 행 형식·여러 줄 값, unsafe path/symlink, 중복 ID, 읽기 실패 또는 동시 변경 등 여러 원인 가능 | 쓰기를 중단하고 입력과 Value를 보존한다. 2.2의 값 없는 진단으로 정확한 원인을 확인한 뒤 승인된 좁은 수정만 수행한다. 예시 행 일괄 교체는 하지 않으며 기본 sync의 unknown 행 보존·별도 prune 승인 경계를 유지한다 |
 | 2.3 이후 secret 파일이 0바이트 | 해당 ID가 private registry에 없음 | 먼저 2.2를 완료한 다음 2.3을 다시 실행 |
-| `curl`이 `000`을 출력 | HTTP 응답을 얻지 못함; DNS, TLS/CA, 연결 실패, timeout 등 transport 원인 가능 | 상태 코드와 curl 실패 종류를 값 노출 없이 구분하고 승인된 endpoint·이름 해석·CA·연결을 확인한다. 검증된 DNS 원인에만 `--resolve`를 사용하며 원인 불명은 중단한다. 000만으로 재생성·credential 회전을 실행하지 않는다 |
+| `curl`이 `000`을 출력 | HTTP 응답을 얻지 못함; DNS, TLS/CA, 연결 실패, timeout 등 transport 원인 가능 | 상태 코드와 curl 실패 종류를 값 노출 없이 구분하고 승인된 endpoint·이름 해석·CA·연결을 확인한다. 검증된 DNS 원인에만 `--resolve`를 사용하며 원인 불명은 중단한다. `000`만으로 재생성·credential 회전을 실행하지 않는다 |
 | credential과 함께 `401` | 잘못되거나 이전인 credential, 인증·route 불일치, 기존 `usersFile` inode 등 여러 원인 가능 | 값을 출력하지 않고 선택 route·credential 일치 boolean·usersFile 상태를 확인한다. stale inode가 근거로 확인되고 정확한 project/service 변경이 승인된 경우에만 3.1 재생성 분기를 수행한다. 불명확하면 중단하며 401 자체는 재생성·회전 권한이 아니다 |
 | `/s/k8s/...`에서 `permission denied` | client가 자체 사용자로 실행됨 | `--user "$(id -u):$(id -g)"`로 재시작(5.2) |
 | `key is required` | share 프롬프트에 빈 입력 | 같은 `-nonce` 명령을 다시 실행하고 share를 붙여넣기 |
 | `bound_service_account_namespaces can not be empty` | 줄 연속으로 인자가 누락됨 | role write를 한 줄로 다시 실행 |
 | `Must supply data or use -force` | 파라미터 없이 token create 실행 | `ttl=2h explicit_max_ttl=2h`를 포함(5.6) |
 | `bao token lookup <token>`에서 `403` | operator는 다른 토큰을 조회할 수 없음 | 토큰 자신으로 조회(5.7) |
-| bootstrap 토큰 TTL이 약 32일 | token role이 `token_ttl`/`token_max_ttl`을 무시하여 role에 상한이 없었음 | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`를 실행하여 폐기를 검증한다. 승인된 root 세션에서 role에 `token_explicit_max_ttl=2h`를 설정하고7200을 확인한 뒤에만5.6으로 재발급 |
+| bootstrap 토큰 TTL이 약 32일 | token role이 `token_ttl`/`token_max_ttl`을 무시하여 role에 상한이 없었음 | `BAO_TOKEN="$(cat /s/k8s/k8s-bootstrap.token)" bao token revoke -self`를 실행하여 폐기를 검증한다. 승인된 root 세션에서 role에 `token_explicit_max_ttl=2h`를 설정하고7200을 확인한 뒤에만 5.6으로 재발급 |
 | `ROOT STILL VALID` | 폐기 실패 | 중단하고 에스컬레이션, 세션은 열어 둠 |
 | credential 변경 이후 클러스터 remote write가 `401` | gateway와 OpenBao/ESO 값 불일치 가능 | 자동 회전하지 않고 BLOCKED 조건과 승인된 rollback을 확인; 원인 확인 후 owner 승인 범위에서 복구 |
 | Kiali가 Grafana에 연결할 수 없거나 `401`을 표시 | `secret/platform/grafana-api`가 없거나, 만료되었거나, 토큰이 삭제됨 | 토큰 재발급, 그다음 ESO refresh |
@@ -588,9 +581,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
 ## Verification
 
-### Evidence
-
-Phase 8에 나열된 단계 출력, 소스 커밋, "When to Use"에서 적용된 상황을
+Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Preconditions에서 적용된 상황을
 기록한다.
 
 ## Rollback and Escalation
@@ -612,13 +603,13 @@ Phase 8에 나열된 단계 출력, 소스 커밋, "When to Use"에서 적용된
 OpenBao 앞에 SSO나 허용목록을 두라는 요청, 또는 인증 없이 Prometheus나
 Grafana를 게시하라는 요청이 있으면 중단하고 @buenhyden에게 연락한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0096-k8s-integration.md) (`GDE-0096`)
 - [Policy](../policies/0096-k8s-integration.md) (`POL-0096`)
 - [OpenBao runbook](0085-openbao.md)
-
-## Related Documents
 
 - [Prometheus guide](../guides/0045-prometheus.md)
 - [Secrets README](../../../secrets/README.md)

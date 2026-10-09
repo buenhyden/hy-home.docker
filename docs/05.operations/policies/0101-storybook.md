@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
@@ -16,8 +16,6 @@ created: "2026-10-03"
 
 ## Overview
 
-### Overview
-
 공유 Storybook은 검토된 UI 구성요소의 정적 문서 origin이고, `storybook-mcp`는
 같은 빌드의 manifest를 다른 워크스페이스의 Codex·Claude Code에 제공하는 원격 문서
 MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코드 재사용은 별도 패키지
@@ -25,20 +23,11 @@ MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코�
 
 ## Scope
 
-### Policy Scope
-
 `infra/13-experience/storybook/docker-compose.yml`의 선택형 `storybook`과
 `storybook-mcp` 서비스, Traefik 경로, 정적 자산, image revision, 디자인 도구 전달과
 운영 검증에 적용한다. 프로젝트 업무 앱은 포함하지 않는다. SPEC-0206은 source/static completion의 역사적 근거이며, 운영 승인과 반복 절차는 이 Stage 05 subject가 소유한다.
 
-### Traceability
-
-- Artifact: `POL-0101`; historical source/static completion: `SPEC-0206`; architecture context `AD-0031` remains draft.
-- Runtime declaration: [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
-
 ## Rules
-
-### Controls
 
 - `experience` profile을 명시적으로 선택할 때만 서비스 후보가 된다. HOME 선택에는
   포함하지 않으며, 이 문서와 profile 선택은 기동 승인이 아니다.
@@ -81,6 +70,14 @@ MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코�
   실행하고 저장소에서 직접 실행하지 않는다. 외부 저장소 전체, 내부 URL, 환경 파일,
   cookie, 사용자 데이터는 전송 대상이 아니다.
 
+## Exceptions
+
+현재 `/admins` 외 검토자 그룹은 없다. Keycloak의 `storybook-mcp-client`와
+`storybook-mcp` scope 생성, HOME에서의 `experience` 기동, DNS/TLS 관찰, reviewer
+group 추가와 외부 design account 사용은 담당자 @buenhyden의 별도 운영 승인 뒤에
+수행하는 follow-up trigger다. 정적 origin의 관리자 제한을
+완화하는 예외는 이 정책에 포함되지 않는다.
+
 ### Verification
 
 `experience`와 HOME profile을 각각 정적 render하여 서비스 선택, router,
@@ -95,15 +92,10 @@ middleware, network, port, health, resource와 read-only 계약을 비교한다.
 Storybook image, Compose route/profile, OAuth2 Proxy 허용 그룹, manifest, package export,
 MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
 
-## Exceptions
+### Traceability
 
-### Exceptions
-
-현재 `/admins` 외 검토자 그룹은 없다. Keycloak의 `storybook-mcp-client`와
-`storybook-mcp` scope 생성, HOME에서의 `experience` 기동, DNS/TLS 관찰, reviewer
-group 추가와 외부 design account 사용은 담당자 @buenhyden의 별도 운영 승인 뒤에
-수행하는 follow-up trigger다. 정적 origin의 관리자 제한을
-완화하는 예외는 이 정책에 포함되지 않는다.
+- Artifact: `POL-0101`. 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태다.
+- Runtime declaration: [Storybook Compose](../../../infra/13-experience/storybook/docker-compose.yml).
 
 ## Related Documents
 

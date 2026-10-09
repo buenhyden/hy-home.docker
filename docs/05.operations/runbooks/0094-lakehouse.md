@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0094"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-23"
 
 ## Overview
 
+레이크하우스의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패하거나,
 카탈로그가 오류를 반환하거나, 접근이 거부되거나, 잘못된 쓰기 이후 테이블
@@ -37,8 +33,6 @@ Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패�
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 저장소 루트에서 승인된 대상만 점검한다. `--no-deps` 예시는 SeaweedFS/table-bucket와 Trino가 이미 준비된 경우만 해당한다. 준비되지 않았으면 멈추며 진단을 위해 provisioning을 암묵 실행하지 않는다.
 
@@ -89,8 +83,6 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ## Verification
 
-### Evidence
-
 네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋을
 기록한다. 데이터 값이나 시크릿은 절대 기록하지 않는다.
 
@@ -108,13 +100,13 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 노출하거나, 명시된 사유 없이 테이블의 스냅샷을 만료시키라는 요청이 있으면
 중단하고 @buenhyden에게 target·영향·검증되지 않은 항목을 전달한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0094-lakehouse.md) (`GDE-0094`)
 - [Policy](../policies/0094-lakehouse.md) (`POL-0094`)
 - [SeaweedFS runbook](0024-seaweedfs.md)
-
-## Related Documents
 
 - [Spark 패키지 README](../../../infra/12-analytics/spark/README.md)
 - [Trino 패키지 README](../../../infra/12-analytics/trino/README.md)

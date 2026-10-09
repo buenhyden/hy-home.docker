@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -28,24 +28,18 @@ created: "2026-09-23"
 
 ## Overview
 
-### Overview
-
-## Audience and Goal
-
-### Audience and Goal
-
-## Usage
-
-### Usage
-
-### Purpose and classification
-
 레이크하우스는 OPTIONAL이며 `lakehouse`로 선택된다. 테이블은 SeaweedFS
 `lakehouse` 테이블 버킷 안의 Apache Iceberg이며 SeaweedFS 내장 Iceberg
 REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔진, Trino는
 대화형 SQL 엔진, Flink는 스트리밍 엔진으로 모두 같은 카탈로그를
 사용하고 Great Expectations는 Trino를 통해 테이블을 검사한다. Iceberg는
 서비스가 아니라 테이블 포맷이다.
+
+## Audience and Goal
+
+레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자를 위한 문서다. 각 엔진의 역할과 명령의 부작용을 이해하고 안전하게 사용·점검하는 것이 목표다.
+
+## Usage
 
 ### Current implementation
 
@@ -102,7 +96,7 @@ REST 카탈로그가 관리한다. Spark는 배치와 테이블 유지보수 엔
 
 ### Identity-specific behavior
 
-table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table delete 권한도 scoped identity 에부여한다. Flink JM/TM 은같은 fiveJAR build 지만 command/heap/slot/health 가다르며 TM 에는 healthcheck 가없다;JM overview 와 TM registration/jobcheckpoint 를따로확인한다. Spark 는 localone-shot 이며 Trino 는 single-node/noauthSQL 이다. GX 는 ephemeralcontext/list 기본값,0pass/1expectationfail/2unable 이며 Trino username 은권한제한이아니다. build 의 7JAR 만 checksum 고정이고 Hadoop3.5 와 Iceberg1.11baseline 차이는미검증이다. Flink checkpoint 와 catalog/object 를재생가능증거없이삭제하지않는다.
+`seaweedfs-table-bucket`은 admin 권한으로 policy를 매번 다시 쓰고, namespace/table delete 권한도 scoped identity에 부여한다. Flink JobManager와 TaskManager는 같은 build를 쓰지만 command, heap, slot, health가 다르다. TaskManager에는 healthcheck가 없으므로 JobManager overview와 TaskManager 등록, job checkpoint를 따로 확인한다. Spark는 local one-shot이고 Trino는 인증 없는 single-node SQL이다. Great Expectations는 임시 context로 suite 목록을 표시하는 것이 기본이며 종료 코드 `0`은 통과, `1`은 expectation 실패, `2`는 검사 불가다. Trino username은 권한 제한이 아니다. build의 JAR 중 일부만 checksum으로 고정되며 Hadoop과 Iceberg 기준선 차이는 (미검증)이다. 재생 가능한 증거 없이 Flink checkpoint와 catalog/object를 삭제하지 않는다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
@@ -113,7 +107,7 @@ table-bucket 은 admin 으로 policy 를매번재작성하고 namespace/table de
 | `spark` | one-shot local SQL; table mutation은 명시 command | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../infra/12-analytics/spark/docker-compose.yml) |
 | `trino` | single-node SQL; username은 인증/권한 경계 아님 | 선언된 역할별 health; 사용자 기능 별도 | [선택·의존·접속·입력·mount](../../../infra/12-analytics/trino/docker-compose.yml) |
 
-선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
+선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 [W4 Task](../../98.archive/completed/03.specs/0198-operations-documentation-system/tasks/tsk-0004-data-messaging-analytics.md)에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
 ### Commands and side effects
 

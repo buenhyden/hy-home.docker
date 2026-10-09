@@ -1,10 +1,10 @@
 ---
 title: "WireMock Recovery Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0092"
 parent_ids:
@@ -16,20 +16,14 @@ created: "2026-09-23"
 
 ## Overview
 
+WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 기능 또는 load 모드가 비정상이거나, 스텁이 예상된 위치에서 요청이 404를 반환하거나,
 매핑 파일이 로드에 실패하거나, 컨테이너가 메모리 제한에 도달했을 때 사용한다.
 
 ## Procedure
-
-### Procedure
 
 1. 먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
    override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
@@ -92,8 +86,6 @@ reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 
 
 ## Verification
 
-### Evidence
-
 기능 모드는 health 응답, `__admin/mappings`의 매핑 개수, journal reset 종료 코드와
 소스 커밋을 기록한다. load 모드는 mode, no-journal/HTTP admin 거부 command, host port 없음, 공개 stub health와
 소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
@@ -113,13 +105,13 @@ reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 
 admin API를 loopback 밖으로 공개하거나, 실제 업스트림에 대한 녹화를
 활성화하거나, 캡처된 프로덕션 응답을 커밋하라는 요청이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0092-wiremock.md) (`GDE-0092`)
 - [Policy](../policies/0092-wiremock.md) (`POL-0092`)
 - [WireMock Compose](../../../infra/11-quality/wiremock/docker-compose.yml)
-
-## Related Documents
 
 - [WireMock 패키지 README](../../../infra/11-quality/wiremock/README.md)
 - [WireMock admin API](https://wiremock.org/docs/standalone/admin-api-reference/)

@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Recovery Runbook"
-version: "1.0.1"
+version: "1.0.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-01"
+updated: "2026-10-10"
 layer: "operations"
 artifact_id: "RUN-0093"
 parent_ids:
@@ -16,13 +16,9 @@ created: "2026-09-23"
 
 ## Overview
 
+Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터베이스 손실, 크리덴셜 교체를 다루는 복구 런북이다.
+
 ## Trigger and Preconditions
-
-### Overview
-
-### Trigger and Preconditions
-
-### When to Use
 
 프로비저닝 실패, 비정상 broker, 인가되어야 할 클라이언트에 대한 401 오류,
 데이터베이스 손실, 크리덴셜 교체 시 사용한다.
@@ -37,8 +33,6 @@ created: "2026-09-23"
 폐기 검증을 대신하지 않는다.
 
 ## Procedure
-
-### Procedure
 
 1. 점검한다.
 
@@ -82,8 +76,6 @@ broker 선언 버전의 release/schema 근거 및 이전 이미지·DB 복구점
 
 ## Verification
 
-### Evidence
-
 종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
 크리덴셜이나 pact 본문은 절대 기록하지 않는다.
 
@@ -104,13 +96,13 @@ broker 데이터베이스가 유일한 상태다. 이 데이터베이스는 `mng
 basic auth 비활성화, 공개 읽기 허용, loopback 밖으로 포트 노출, 역할에
 자신의 데이터베이스 이상의 권한 부여 요청이 있으면 중단한다.
 
+## Related Documents
+
 ### Traceability
 
 - [Guide](../guides/0093-pact-broker.md) (`GDE-0093`)
 - [Policy](../policies/0093-pact-broker.md) (`POL-0093`)
 - [Pact Broker Compose](../../../infra/11-quality/pact-broker/docker-compose.yml)
-
-## Related Documents
 
 - [관리 데이터베이스 런북](0028-management-database.md)
 - [백업 및 복원 런북](0021-backup-and-restore.md) (`RUN-0021`)
