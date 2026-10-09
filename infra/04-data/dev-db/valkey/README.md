@@ -52,7 +52,7 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
   정기 RDB snapshot.
 - `config/projects.tsv`: 명시적 프로젝트 ACL metadata; 기본은 빈 목록.
 - `config/empty-project-secrets/`: 미등록 상태에서 사용하는 빈 bind 소스.
-- `scripts/render-acl.sh`: 서비스 역할 표에서 관리자 `devadmin`, 지표 수집용 `devmonitor`(key·channel 패턴 없이 `PING`·`INFO`·`CONFIG GET`·`SLOWLOG`·`LATENCY`·`CLIENT LIST|INFO|SETNAME`만 허용), RedisInsight 조회용 `devinspector`(`~* resetchannels -@all +@read +@connection -@dangerous +info`)를, `projects.tsv`에서 프로젝트 사용자를 만듭니다. 역할과 프로젝트가 같은 비밀을 쓰면 시작을 거부합니다. inspector의 `SCAN`은 모든 프로젝트의 키 이름을 보여 주므로 RedisInsight 접근은 관리자 신뢰 경계이며, 앱 계정의 `SCAN` 금지는 유지합니다.
+- `scripts/render-acl.sh`: 서비스 역할 표에서 관리자 `devadmin`, 지표 수집용 `devmonitor`(key·channel 패턴 없이 `PING`·`INFO`·`COMMAND INFO`·`SLOWLOG LEN`·`COMMANDLOG LEN`만 허용; 명령 인자를 돌려주는 `SLOWLOG GET`과 `CONFIG`는 거부), RedisInsight 조회용 `devinspector`(`~* resetchannels -@all +@read +@connection -@dangerous +info`)를, `projects.tsv`에서 프로젝트 사용자를 만듭니다. 역할과 프로젝트가 같은 비밀을 쓰면 시작을 거부합니다. inspector의 `SCAN`은 모든 프로젝트의 키 이름을 보여 주므로 RedisInsight 접근은 관리자 신뢰 경계이며, 앱 계정의 `SCAN` 금지는 유지합니다.
 - `scripts/render-acl.sh`: 비밀 파일을 읽어 해시 기반 ACL을 `/run/valkey`
   tmpfs에 원자적으로 생성합니다. 영속 `/data`에는 ACL 파일을 두지 않습니다.
 - `scripts/start.sh`: ACL 생성이 성공한 뒤 Valkey를 시작합니다.
