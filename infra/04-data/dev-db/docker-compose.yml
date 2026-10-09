@@ -263,6 +263,7 @@ services:
     secrets:
       - dev_valkey_admin_password
       - dev_valkey_monitor_password
+      - dev_valkey_inspector_password
     expose:
       - '6379'
     healthcheck:

@@ -24,6 +24,7 @@ class DevValkeyAclTests(unittest.TestCase):
         self.secret_dir.mkdir()
         (self.root / "admin").write_text("synthetic-admin\n", encoding="utf-8")
         (self.root / "monitor").write_text("synthetic-monitor\n", encoding="utf-8")
+        (self.root / "inspector").write_text("synthetic-inspector\n", encoding="utf-8")
         (self.root / "projects.tsv").write_text("# empty\n", encoding="utf-8")
 
     def render(self) -> subprocess.CompletedProcess[str]:
@@ -31,6 +32,7 @@ class DevValkeyAclTests(unittest.TestCase):
             **os.environ,
             "DEV_VALKEY_ADMIN_SECRET_FILE": str(self.root / "admin"),
             "DEV_VALKEY_MONITOR_SECRET_FILE": str(self.root / "monitor"),
+            "DEV_VALKEY_INSPECTOR_SECRET_FILE": str(self.root / "inspector"),
             "DEV_VALKEY_PROJECTS_FILE": str(self.root / "projects.tsv"),
             "DEV_VALKEY_PROJECT_SECRETS_DIR": str(self.secret_dir),
             "DEV_VALKEY_ACL_FILE": str(self.root / "users.acl"),
@@ -47,7 +49,7 @@ class DevValkeyAclTests(unittest.TestCase):
         self.assertIn("dev_data_net: {}", compose)
         self.assertIn("user default off", SCRIPT.read_text(encoding="utf-8"))
 
-    def test_empty_metadata_creates_admin_and_monitor_only_without_plaintext(
+    def test_empty_metadata_creates_service_roles_only_without_plaintext(
         self,
     ) -> None:
         result = self.render()
@@ -55,15 +57,19 @@ class DevValkeyAclTests(unittest.TestCase):
         acl = (self.root / "users.acl").read_text(encoding="utf-8")
         digest = hashlib.sha256(b"synthetic-admin").hexdigest()
         monitor = hashlib.sha256(b"synthetic-monitor").hexdigest()
+        inspector = hashlib.sha256(b"synthetic-inspector").hexdigest()
         self.assertEqual(
             acl,
             f"user default off\nuser devadmin on #{digest} ~* &* +@all\n"
             f"user devmonitor on #{monitor} -@all +ping +info +config|get "
             "+client|list +client|info +client|setname +slowlog|get +slowlog|len "
-            "+latency|latest +latency|histogram +cluster|info\n",
+            "+latency|latest +latency|histogram +cluster|info\n"
+            f"user devinspector on #{inspector} ~* resetchannels -@all +@read "
+            "+@connection -@dangerous +info\n",
         )
         self.assertNotIn("synthetic-admin", acl)
         self.assertNotIn("synthetic-monitor", acl)
+        self.assertNotIn("synthetic-inspector", acl)
         # No key or channel pattern: the monitor cannot read application data.
         self.assertNotIn("~", acl.splitlines()[2])
         self.assertNotIn("&", acl.splitlines()[2])
@@ -74,6 +80,51 @@ class DevValkeyAclTests(unittest.TestCase):
         result = self.render()
         self.assertNotEqual(result.returncode, 0)
         self.assertFalse((self.root / "users.acl").exists())
+
+    def test_no_two_roles_or_projects_share_a_secret(self) -> None:
+        for name, value in (
+            ("inspector", "synthetic-admin"),
+            ("inspector", "synthetic-monitor"),
+        ):
+            with self.subTest(name=name, value=value):
+                (self.root / name).write_text(value + "\n", encoding="utf-8")
+                result = self.render()
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse((self.root / "users.acl").exists())
+        (self.root / "inspector").write_text("synthetic-inspector\n", encoding="utf-8")
+        (self.root / "projects.tsv").write_text(
+            "project_a|project_a_runtime|project_a|project_a_password\n",
+            encoding="utf-8",
+        )
+        (self.secret_dir / "project_a_password").write_text(
+            "synthetic-inspector\n", encoding="utf-8"
+        )
+        result = self.render()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((self.root / "users.acl").exists())
+
+    def test_inspector_reads_but_cannot_write_or_administer(self) -> None:
+        result = self.render()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        line = (self.root / "users.acl").read_text(encoding="utf-8").splitlines()[3]
+        self.assertTrue(line.startswith("user devinspector on #"))
+        rules = line.split()[4:]
+        # Order matters: -@dangerous after +@read removes KEYS, and +info
+        # after it restores only INFO, which the overview needs.
+        self.assertEqual(
+            rules,
+            [
+                "~*",
+                "resetchannels",
+                "-@all",
+                "+@read",
+                "+@connection",
+                "-@dangerous",
+                "+info",
+            ],
+        )
+        self.assertNotIn("+@write", line)
+        self.assertNotIn("&", line)
 
     def test_project_user_is_limited_to_declared_prefix(self) -> None:
         (self.root / "projects.tsv").write_text(

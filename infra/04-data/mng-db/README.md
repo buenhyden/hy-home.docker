@@ -4,7 +4,7 @@ version: "1.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 created: "2025-12-03"
 ---
 
@@ -50,7 +50,11 @@ n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 dat
 연결되어 있지 않습니다.
 
 PostgreSQL은 `mng_postgres_password`와 `pgbackrest_cipher_pass`를 읽습니다.
-init은 서비스 database password secret을 읽습니다. Valkey/exporter는
+init은 서비스 database password secret을 읽습니다. Valkey는 시작할 때
+`valkey/scripts/render-acl.sh`로 `/run/valkey` tmpfs에 ACL을 만듭니다. `default`
+사용자는 `mng_valkey_password`를 그대로 쓰므로 OAuth2 Proxy·n8n·Airflow·exporter와
+LAN 포트의 외부 클라이언트는 이전과 같이 인증하고(Gatus는 인증 없는 TCP 검사), RedisInsight 조회용
+`mnginspector`는 `mng_valkey_inspector_password`로 읽기만 합니다. exporter는 아직
 `mng_valkey_password`를 읽습니다. 두 엔진 모두 `mng_data_net`을 사용합니다.
 PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포트를
 게시하고, Valkey는 루트 `VALKEY_MNG_HOST_PORT` 키로

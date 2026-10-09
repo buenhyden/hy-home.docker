@@ -20,17 +20,44 @@ services:
     image: redis/redisinsight:3.8.0
     container_name: redisinsight
     hostname: redisinsight
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    entrypoint: [ '/bin/sh', '/usr/local/libexec/redisinsight/start.sh' ]
+    environment:
+      # Listen on the ingress address only, which Traefik alone shares, so
+      # no data-network or edge_net peer reaches the UI around SSO.
+      RI_APP_HOST: 10.250.18.3
+      RI_APP_PORT: ${REDIS_INSIGHT_PORT:-5540}
+      RI_ACCEPT_TERMS_AND_CONDITIONS: 'true'
+      # Pre-setup connection, recreated on every start. The password and the
+      # stored-connection encryption key come from secrets in start.sh.
+      RI_REDIS_HOST1: dev-valkey
+      RI_REDIS_PORT1: '6379'
+      RI_REDIS_DB1: '0'
+      RI_REDIS_ALIAS1: DEV / dev-valkey
+      RI_REDIS_USERNAME1: devinspector
+      RI_REDIS_HOST2: mng-valkey
+      RI_REDIS_PORT2: '6379'
+      RI_REDIS_DB2: '0'
+      RI_REDIS_ALIAS2: MNG / mng-valkey
+      RI_REDIS_USERNAME2: mnginspector
+    secrets:
+      - dev_valkey_inspector_password
+      - mng_valkey_inspector_password
+      - redisinsight_encryption_key
     volumes:
       - redisinsight-data:/data:rw
+      - ./scripts:/usr/local/libexec/redisinsight:ro
     healthcheck:
-      test: [ 'CMD-SHELL', 'test -d /data' ]
+      test: [ 'CMD-SHELL', 'wget -qO- http://10.250.18.3:${REDIS_INSIGHT_PORT:-5540}/api/health/ | grep -q ''"status":"up"''' ]
       interval: 30s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 30s
     labels:
       <<: *tier-label
       traefik.enable: 'true'
+      traefik.docker.network: redisinsight_ingress_net
       # 1) 정적/부가 요청 전용 라우터
       traefik.http.routers.redisinsight-static.rule: Host(`redisinsight.${DEFAULT_URL}`) && (Path(`/favicon.ico`) || Path(`/robots.txt`) || PathPrefix(`/assets/`))
       traefik.http.routers.redisinsight-static.entrypoints: websecure
@@ -49,10 +76,11 @@ services:
       # 3) 공통 서비스 포트
       traefik.http.services.redisinsight-svc.loadbalancer.server.port: ${REDIS_INSIGHT_PORT:-5540}
     networks:
-      edge_net: {}
-      # One client for every HOME Valkey it inspects: management and the
-      # application-private stores. LABs run in their own projects (SPEC-0215).
+      redisinsight_ingress_net:
+        # Fixed; RI_APP_HOST and the healthcheck use it.
+        ipv4_address: 10.250.18.3
+      # Data networks of the Valkey stores it inspects: MNG and DEV. The
+      # optional n8n and Airflow stores (dedicated-valkey) get a network only
+      # when an operator inspects them. LABs run in their own projects.
       mng_data_net: {}
       dev_data_net: {}
-      n8n_net: {}
-      airflow_net: {}

@@ -4,7 +4,7 @@ version: "1.0.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-09"
 created: "2026-03-26"
 ---
 
@@ -32,6 +32,7 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 ```text
 .
 ├── docker-compose.yml       # Service definition
+├── scripts/start.sh         # Loads inspector passwords and RI_ENCRYPTION_KEY from secrets
 └── README.md                # Entry point
 ```
 
@@ -40,15 +41,15 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 | Field | Evidence |
 | --- | --- |
 | Purpose | `04-data`의 RedisInsight 서비스 leaf; 서비스: `redisinsight`; [root docker-compose.yml](../../../docker-compose.yml) -> `infra/04-data/redisinsight/docker-compose.yml` 경로로 루트 include가 활성화됨 |
-| Config files | `docker-compose.yml` |
+| Config files | `docker-compose.yml`, `scripts/start.sh` |
 | Config values | 프로필: `admin`, `admin-data` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/04-data/redisinsight/docker-compose.yml` 경로로 루트 include가 활성화됨 |
-| Networks | `edge_net`, `mng_data_net`, `dev_data_net`, `n8n_net`, `airflow_net` |
+| Networks | `redisinsight_ingress_net`(Traefik 전용, 고정 `10.250.18.3`), `mng_data_net`, `dev_data_net` |
 | Volumes | `redisinsight-data:/data:rw`, `redisinsight-data` |
 | Ports | 선언되지 않음 |
 | Labels | `hy-home.tier`, `traefik.enable`, `traefik.http.routers.redisinsight-static.rule`, `traefik.http.routers.redisinsight-static.entrypoints`, `traefik.http.routers.redisinsight-static.tls`, `traefik.http.routers.redisinsight-static.priority`, `traefik.http.routers.redisinsight-static.service`, `traefik.http.routers.redisinsight.rule`, 외 7개 |
-| Secret refs | 선언되지 않음 |
-| Healthcheck | `redisinsight`에 Compose 헬스체크가 선언되어 있음 |
+| Secret refs | `dev_valkey_inspector_password`, `mng_valkey_inspector_password`, `redisinsight_encryption_key` |
+| Healthcheck | `/api/health/`의 `{"status":"up"}`(UI 상태만, DB 접속은 별도 확인) |
 | Operations | Guide (`docs/05.operations/guides/0076-redisinsight.md`), Policy (`docs/05.operations/policies/0076-redisinsight.md`), Runbook (`docs/05.operations/runbooks/0076-redisinsight.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh) `04-data` tier; [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh) 루트 `admin` 프로필; [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 하드닝 점검부터 시작한 뒤 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
@@ -59,11 +60,11 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 
 1. `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 admin 프로필을 검증합니다.
 2. 승인된 실행 환경에서만 `https://redisinsight.${DEFAULT_URL}`에 접속합니다.
-3. EULA에 동의하고 Redis/Valkey 인스턴스에 대한 초기 연결을 설정합니다.
+3. 사전 등록된 `DEV / dev-valkey`와 `MNG / mng-valkey`만 보이는지 확인합니다. 연결은 수동으로 추가하지 않습니다.
 
 ### 2. Basic Usage
 
-- 호스트명(예: 로컬 컨테이너의 경우 `redis`)과 포트(6379)를 입력해 새 데이터베이스를 추가합니다.
+- 사전 등록 연결을 골라 읽기 전용으로 조회합니다. 쓰기는 거부됩니다.
 - 'Browser' 탭을 사용해 키와 값을 탐색합니다.
 - 'Memory Analysis'를 사용해 메모리를 많이 사용하는 키를 찾습니다.
 
@@ -79,11 +80,12 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 
 ### Traefik Integration
 
-게이트웨이 SSO·CIDR 제한은 해당 라우트에 적용된다. 동일 네트워크 peer의 직접
-접속까지 통제하지 않으며, Compose에 native UI 인증이나 `RI_ENCRYPTION_KEY`는
-선언되어 있지 않다. 이 소스만으로 저장 자격 증명의 암호화 여부를 단정하지 않고,
-민감한 연결 설정을 보호해야 한다. `/data` 백업은 연결 대상 Redis/Valkey의 데이터
-복구를 대신하지 않는다. 접근 제한 보완은 별도 구현 검토 대상이다.
+게이트웨이 SSO·CIDR 제한은 해당 라우트에 적용된다. RedisInsight에는 자체
+로그인이 없으므로 `RI_APP_HOST`로 listener를 Traefik만 함께 붙는
+`redisinsight_ingress_net` 주소에만 열어 edge·데이터 망 peer의 직접 접속을 막는다. 사전 등록 연결 `DEV / dev-valkey`와 `MNG / mng-valkey`는
+읽기 전용 inspector 계정을 쓰며, `scripts/start.sh`가 inspector 비밀번호와
+`RI_ENCRYPTION_KEY`를 secret에서 읽어 저장 비밀번호를 암호화한다. `/data` 백업은
+연결 대상 Redis/Valkey의 데이터 복구를 대신하지 않는다.
 
 ```yaml
 labels:

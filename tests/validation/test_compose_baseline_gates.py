@@ -4435,7 +4435,7 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             name
             for name, service in self._services().items()
             if "traefik.enable=true" in _labels(service)
-            and name != "storybook"
+            and name not in {"storybook", "redisinsight"}
             and "edge_net" not in (service.get("networks") or {})
         ]
         self.assertEqual([], missing)
@@ -4469,6 +4469,50 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             "req-rate-limit@file,gateway-standard-chain@file,sso-auth@file",
             storybook["labels"]["traefik.http.routers.storybook.middlewares"],
         )
+
+    def test_redisinsight_listens_only_on_its_traefik_ingress(self) -> None:
+        import yaml
+
+        services = self._services()
+        insight = services["redisinsight"]
+        # No login of its own: only Traefik may reach the UI (SPEC-0223).
+        self.assertEqual(
+            {"redisinsight_ingress_net", "mng_data_net", "dev_data_net"},
+            set(insight["networks"]),
+        )
+        self.assertEqual(
+            {"redisinsight", "traefik"},
+            {
+                name
+                for name, service in services.items()
+                if "redisinsight_ingress_net" in (service.get("networks") or {})
+            },
+        )
+        address = insight["networks"]["redisinsight_ingress_net"]["ipv4_address"]
+        self.assertEqual(address, insight["environment"]["RI_APP_HOST"])
+        self.assertIn(f"http://{address}:", " ".join(insight["healthcheck"]["test"]))
+        self.assertIn("/api/health/", " ".join(insight["healthcheck"]["test"]))
+        root = yaml.load(
+            (ROOT / "docker-compose.yml").read_text(encoding="utf-8"),
+            Loader=_ComposeLoader,
+        )
+        ingress = root["networks"]["redisinsight_ingress_net"]
+        self.assertTrue(ingress["internal"])
+        self.assertEqual(
+            "isolated",
+            ingress["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
+        )
+        self.assertEqual("10.250.18.128/25", ingress["ipam"]["config"][0]["ip_range"])
+        self.assertFalse(insight.get("ports"))
+        self.assertEqual(
+            "redisinsight_ingress_net", insight["labels"]["traefik.docker.network"]
+        )
+        self.assertEqual(
+            {"devinspector", "mnginspector"},
+            {insight["environment"][f"RI_REDIS_USERNAME{n}"] for n in (1, 2)},
+        )
+        self.assertNotIn("RI_REDIS_PASSWORD1", insight["environment"])
+        self.assertNotIn("RI_ENCRYPTION_KEY", insight["environment"])
 
     def test_storybook_is_optional_pinned_and_never_pulled(self) -> None:
         storybook = self._services()["storybook"]
