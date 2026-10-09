@@ -80,8 +80,12 @@ The literal-secret rule read only secret-named keys and accepted any value
 containing `://`. A URL with a literal userinfo password or a secret-named
 query parameter is now denied under every key; interpolated passwords, plain
 endpoints and secret paths pass. Two new policy tests (one fails against the
-previous policy), and the corpus now includes `labs/*.yml`: 18 policy tests
-and 308 corpus checks pass. Commits `558f1fcee`, `7356509d4`.
+previous policy), and the corpus now includes `labs/*.yml`. 18 policy tests
+pass. The 308 corpus checks first recorded here covered `infra/` only: the
+job mounted only `infra/`, and the pipeline hid `find`'s failure on `labs`.
+The job now mounts `labs/` read-only, a missing `labs/` fails the run, and 364
+corpus checks pass, 56 of them from the eight LAB entrypoints (W8). Commits
+`558f1fcee`, `7356509d4`.
 
 ### W5 Capabilities and Data Group
 
@@ -156,7 +160,9 @@ select; the registered renderer refreshed the 119 rows and the check passes. The
 refreshed n8n rows exposed the env key name `N8N_VALKEY_SECRET` to gitleaks,
 which reads it as a key assignment; the inventory allowlist in
 `.gitleaks.toml` now names it exactly, so a real value there is still
-reported.
+reported. The same CI log showed `find: labs: No such file or directory` in
+the Conftest job and three commit subjects over the 75-character limit; the
+mount fix is described in W4, and the subjects were reworded before merge.
 The SPEC-0212 ledger is unchanged; no
 ledger item maps to this package alone.
 

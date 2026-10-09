@@ -100,7 +100,7 @@ conftest/
 | Config values | 프로필: `policy-check` |
 | Compose linkage | [root docker-compose.yml](../../../docker-compose.yml) -> `infra/11-quality/conftest/docker-compose.yml` 경로로 무조건 루트 include되며 프로필로 선택됨 |
 | Networks | 없음 (`network_mode: none`) |
-| Volumes | `../..:/project/infra:ro` |
+| Volumes | `../..:/project/infra:ro`, `../../../labs:/project/labs:ro` |
 | Ports | 게시되지 않음 |
 | Labels | `hy-home.tier` |
 | Secret refs | 선언되지 않음 |

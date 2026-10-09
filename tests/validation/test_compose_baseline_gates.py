@@ -4258,11 +4258,14 @@ class ConftestPolicyGateTests(unittest.TestCase):
 
     COMPOSE = "infra/11-quality/conftest/docker-compose.yml"
 
-    def test_job_reads_infra_only_without_network_or_root(self) -> None:
+    def test_job_reads_infra_and_labs_only_without_network_or_root(self) -> None:
         service = _compose_service(self.COMPOSE, "conftest")
         self.assertEqual("none", service["network_mode"])
         self.assertEqual("1000:1000", service["user"])
-        self.assertEqual(["../..:/project/infra:ro"], service["volumes"])
+        self.assertEqual(
+            ["../..:/project/infra:ro", "../../../labs:/project/labs:ro"],
+            service["volumes"],
+        )
         self.assertNotIn("secrets", service)
         self.assertEqual(["policy-check"], service["profiles"])
 
