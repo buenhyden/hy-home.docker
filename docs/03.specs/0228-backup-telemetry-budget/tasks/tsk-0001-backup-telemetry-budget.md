@@ -71,11 +71,14 @@ started by hand.
 | Dry run and tests | 1, 2 | W1 | Restic dry run; restic tests | `80f882f1e` | PASS | W1 Exclusion and Budget | accepted |
 | Documents | 2 | W2 | markdownlint; metadata; links | `0e1701950` | PASS | W2 Documents | accepted |
 | HOME | 3 | W3 | `.env` value; next scheduled run | — | NOT_RUN | W3 HOME | pending |
-| Validation | 4 | W4 | Changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `39126d5bf`; operations catalog | `60917e9e7` | PASS | Review and Completion | accepted |
+| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `60917e9e7` | PASS | Review and Completion | accepted |
+| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-Not complete: HOME, validation and the merge remain.
+The local checks passed on `60917e9e7`. Not complete: `candidate-quality`, the
+merge and the next scheduled run remain.
 
 ## Related Documents
 
