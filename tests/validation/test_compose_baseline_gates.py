@@ -4496,7 +4496,13 @@ class NetworkSegmentationContractTests(unittest.TestCase):
             (ROOT / "docker-compose.yml").read_text(encoding="utf-8"),
             Loader=_ComposeLoader,
         )
-        self.assertTrue(root["networks"]["redisinsight_ingress_net"]["internal"])
+        ingress = root["networks"]["redisinsight_ingress_net"]
+        self.assertTrue(ingress["internal"])
+        self.assertEqual(
+            "isolated",
+            ingress["driver_opts"]["com.docker.network.bridge.gateway_mode_ipv4"],
+        )
+        self.assertEqual("10.250.18.128/25", ingress["ipam"]["config"][0]["ip_range"])
         self.assertFalse(insight.get("ports"))
         self.assertEqual(
             "redisinsight_ingress_net", insight["labels"]["traefik.docker.network"]

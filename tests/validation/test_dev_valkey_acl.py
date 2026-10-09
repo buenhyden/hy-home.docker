@@ -113,7 +113,15 @@ class DevValkeyAclTests(unittest.TestCase):
         # after it restores only INFO, which the overview needs.
         self.assertEqual(
             rules,
-            ["~*", "resetchannels", "-@all", "+@read", "+@connection", "-@dangerous", "+info"],
+            [
+                "~*",
+                "resetchannels",
+                "-@all",
+                "+@read",
+                "+@connection",
+                "-@dangerous",
+                "+info",
+            ],
         )
         self.assertNotIn("+@write", line)
         self.assertNotIn("&", line)

@@ -108,6 +108,10 @@ class RedisInsightRehearsalTests(unittest.TestCase):
             "--internal",
             "--subnet",
             INGRESS_SUBNET,
+            "--ip-range",
+            "172.31.251.128/25",
+            "-o",
+            "com.docker.network.bridge.gateway_mode_ipv4=isolated",
             f"{PREFIX}-ingress",
         )
         docker("network", "create", "--internal", f"{PREFIX}-dev")
@@ -247,6 +251,14 @@ class RedisInsightRehearsalTests(unittest.TestCase):
             check=False,
         )  # fmt: skip
         self.assertNotIn("up", loopback)
+        # Isolated gateway mode: no host address on the bridge, so host
+        # processes cannot reach the UI either.
+        host = subprocess.run(
+            ["curl", "-s", "--max-time", "4", "-o", "/dev/null", "-w", "%{http_code}",
+             f"http://{INGRESS_IP}:5540/api/health/"],
+            capture_output=True, text=True, check=False, timeout=30,
+        )  # fmt: skip
+        self.assertEqual("000", host.stdout)
 
     def test_02_data_network_peer_cannot_bypass_the_gateway(self) -> None:
         for peer, net, store in (
@@ -346,7 +358,7 @@ class RedisInsightRehearsalTests(unittest.TestCase):
         for name in ("dev_inspector", "mng_inspector", "ri_key"):
             found = docker(
                 "exec", f"{PREFIX}-insight", "sh", "-c",
-                "grep -rlF \"$0\" /data 2>/dev/null | wc -l", self.secret[name],
+                "grep -rlF -e \"$0\" /data 2>/dev/null | wc -l", self.secret[name],
             ).strip()  # fmt: skip
             self.assertEqual("0", found, name)
 

@@ -85,12 +85,18 @@ networks:
         - subnet: 10.250.16.0/24
   # RedisInsight has no login of its own; only Traefik shares this network
   # with it, so every request passes the admin CIDR and SSO (SPEC-0223).
+  # Isolated gateway mode gives the bridge no host address, so host processes
+  # cannot reach it either. Dynamic addresses stay above .127, keeping the
+  # fixed RedisInsight .3 free while it is stopped.
   redisinsight_ingress_net:
     name: redisinsight_ingress_net
     internal: true
+    driver_opts:
+      com.docker.network.bridge.gateway_mode_ipv4: isolated
     ipam:
       config:
         - subnet: 10.250.18.0/24
+          ip_range: 10.250.18.128/25
   # Per-run k6 metrics relays reach only HOME Alloy's authenticated 4319
   # receiver here; internal, so a relay has no other egress (SPEC-0214).
   quality_otlp_net:
