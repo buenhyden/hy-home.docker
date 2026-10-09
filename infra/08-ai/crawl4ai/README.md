@@ -15,7 +15,7 @@ created: "2026-09-21"
 ## Overview
 
 Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 위조(SSRF)에
-악용될 수 있습니다. 그래서 `crawl4ai`는 `internal: true` 네트워크에만 참여하고, 밖으로 나가는 유일한 길은 `crawl4ai-egress` gateway입니다. gateway는 DNS를 중계하면서 AAAA 질의에는 빈 응답을 주고, 전역 라우팅되는 IPv4의 80·443 포트만 허용하며, 확인한 주소로만 연결합니다. 이미지 안의 egress broker가 먼저 대상을 확인하고 고정한 뒤 `CRAWL4AI_UPSTREAM_PROXY`로 gateway에 연결합니다. 의도된 소비자는 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다. 정확한 이미지로 격리 리허설을 실행해 허용 목적지 수집과 private·metadata·redirect·subresource·호출자 proxy 거절, 직접 경로 없음을 확인했습니다([SPEC-0220](../../../docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md)). HOME 시작과 host 방화벽 적용은 하지 않았습니다.
+악용될 수 있습니다. 그래서 `crawl4ai`는 `internal: true` 네트워크에만 참여하고, 밖으로 나가는 유일한 길은 `crawl4ai-egress` gateway입니다. gateway는 DNS를 중계하면서 AAAA 질의에는 빈 응답을 주고, 전역 라우팅되는 IPv4의 80·443 포트만 허용하며, 확인한 주소로만 연결합니다. 이미지 안의 egress broker가 먼저 대상을 확인하고 고정한 뒤 `CRAWL4AI_UPSTREAM_PROXY`로 gateway에 연결합니다. 의도된 소비자는 Open Notebook의 원격 크롤러 설정이지만 현재는 주석 처리되어 있어 이를 사용하는 서비스가 없습니다. Lifecycle: **OPTIONAL**, `crawl4ai`에서만 선택됩니다. 정확한 이미지로 격리 리허설을 실행해 허용 목적지 수집과 private·metadata·redirect·subresource·호출자 proxy 거절, 직접 경로 없음을 확인했습니다(SPEC-0220(`docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md`)). HOME 시작과 host 방화벽 적용은 하지 않았습니다.
 
 ## Audience
 
@@ -72,7 +72,7 @@ Apache 2.0 본문과 별도의 공개 사용·배포 출처 표시 조건을 포
 
 1. 등록된 시크릿 워크플로우를 통해 `secrets/tools/crawl4ai/crawl4ai_api_token.txt`를 생성합니다.
 2. 승인된 대상으로만 시작합니다: `docker compose --profile crawl4ai up -d crawl4ai` (gateway가 healthy가 된 뒤 크롤러가 시작됩니다).
-3. 소비자는 [Crawl4AI 정책](../../../docs/05.operations/policies/0091-crawl4ai.md)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
+3. 소비자는 Crawl4AI 정책(`docs/05.operations/policies/0091-crawl4ai.md`)의 승인 변경으로만 `crawl4ai_net`에 추가합니다. 크롤러를 다른 저장소 네트워크에 추가하지 않습니다.
 
 ## Related Documents
 

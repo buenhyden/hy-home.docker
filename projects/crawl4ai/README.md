@@ -33,7 +33,7 @@ Python 3.12 이상 표준 라이브러리(`sqlite3`, `urllib`, `hashlib`)와 Cra
 
 ## Configuration
 
-registry의 각 출처는 제공자, 접근 방식(`api` 또는 `web-fallback`), 정확한 host 목록, 이용약관과 license, robots 확인 결과, 분당 rate와 일일 quota, 가공·재배포·모델 학습 허용 여부, 보존 일수, 삭제 책임자, 소비자를 적습니다. `web-fallback`은 API가 없는 이유(`fallback_reason`)가 있어야 합니다. robots 허용은 수집 예의일 뿐 저작권 허가가 아니므로, license와 약관 항목이 따로 필요합니다. registry 등록은 네트워크 접근 권한이 아니며, `crawl4ai_net` 합류는 [Crawl4AI 정책](../../docs/05.operations/policies/0091-crawl4ai.md)의 승인 변경으로만 합니다.
+registry의 각 출처는 제공자, 접근 방식(`api` 또는 `web-fallback`), 정확한 host 목록, 이용약관과 license, robots 확인 결과, 분당 rate와 일일 quota, 가공·재배포·모델 학습 허용 여부, 보존 일수, 삭제 책임자, 소비자를 적습니다. `web-fallback`은 API가 없는 이유(`fallback_reason`)가 있어야 합니다. robots 허용은 수집 예의일 뿐 저작권 허가가 아니므로, license와 약관 항목이 따로 필요합니다. registry 등록은 네트워크 접근 권한이 아니며, `crawl4ai_net` 합류는 Crawl4AI 정책(`docs/05.operations/policies/0091-crawl4ai.md`)의 승인 변경으로만 합니다.
 
 ## Validation
 
@@ -53,6 +53,7 @@ jobs.run_once(Crawl4AI("http://crawl4ai:11235", token))
 
 ## Related Documents
 
-- [SPEC-0220](../../docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md)
-- [Crawl4AI 정책](../../docs/05.operations/policies/0091-crawl4ai.md)
-- [Crawl4AI 가이드](../../docs/05.operations/guides/0091-crawl4ai.md)
+- SPEC-0220(`docs/03.specs/0220-crawl4ai-collection-and-egress/spec.md`)
+- Crawl4AI 정책(`docs/05.operations/policies/0091-crawl4ai.md`)
+- Crawl4AI 가이드(`docs/05.operations/guides/0091-crawl4ai.md`)
+- [문서 인덱스](../../docs/README.md)
