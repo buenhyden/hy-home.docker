@@ -58,6 +58,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0220 | [Crawl4AI 수집·egress](./0220-crawl4ai-collection-and-egress/) | 컨테이너 밖 egress 강제, 출처 권리 registry와 consumer 승인 계약, bounded job 참조 adapter, 실이미지 격리 리허설 |
 | SPEC-0221 | [요청 우선 정책·집행기 정합](./0221-request-precedence-and-enforcers/) | 현재 요청 범위의 승인, 수집 텍스트의 지시 배제, 로컬 gate의 원격 후보 검사 사전 실행과 그 집행 검사 |
 | SPEC-0222 | [npm 위험 수용 연장](./0222-npm-risk-acceptance-extension/) | 패치 없는 GHSA-vfj7 수용을 소유자 승인으로 최대 30일씩 연장하는 계약 창과 품질 기준 규칙 |
+| SPEC-0223 | [RedisInsight Valkey 조회](./0223-redisinsight-valkey-inspection/) | DEV·MNG Valkey 읽기 전용 inspector, SSO 우회 차단, 사전 등록 연결·암호화와 공유 소비자 영향 점검 |
 
 처분된 package는 [Stage 98 README](../98.archive/README.md)에서 찾습니다.
 Spec·Plan이 completed이고 모든 Task가 completed 또는 유효한 cancelled이면
