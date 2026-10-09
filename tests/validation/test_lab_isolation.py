@@ -187,9 +187,7 @@ class LabInventoryAndSelectionTests(RootClosureTests):
         import re
 
         obs = ROOT / "infra/06-observability"
-        provisioned = {
-            p.name for p in (obs / "grafana/dashboards").rglob("*.json")
-        }
+        provisioned = {p.name for p in (obs / "grafana/dashboards").rglob("*.json")}
         moved = {p.name for p in (ROOT / "labs/dashboards").glob("*.json")}
         self.assertTrue(moved)
         self.assertEqual(set(), provisioned & moved)

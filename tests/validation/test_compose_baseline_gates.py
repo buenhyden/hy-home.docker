@@ -4626,7 +4626,11 @@ class NetworkSegmentationContractTests(unittest.TestCase):
         )
         # node-exporter listens on obs_net's default gateway (first host).
         gateway = str(
-            next(ipaddress.ip_network(root["obs_net"]["ipam"]["config"][0]["subnet"]).hosts())
+            next(
+                ipaddress.ip_network(
+                    root["obs_net"]["ipam"]["config"][0]["subnet"]
+                ).hosts()
+            )
         )
         self.assertIn(
             f"--web.listen-address={gateway}:9100", services["node-exporter"]["command"]
