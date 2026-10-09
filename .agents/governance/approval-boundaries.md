@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-09"
 ---
 
 # Approval Boundaries
@@ -59,8 +59,16 @@ redaction boundary are defined by
   concrete target, operation, redaction boundary, validation, and recovery.
   Do not read auth files, raw logs, or shell history without the same concrete
   authorization; their presence in a document, fixture, or task is not one.
-- Runtime restart, rollout, deployment, remote mutation, credential change, and
-  destructive recovery require separate explicit approval.
+- A current explicit request authorizes the work it names through its
+  purpose, target, impact, and recovery: source, tests, documents, governance
+  and enforcer changes, logical commits, the branch push, its pull request,
+  and the merge it asks for after the required checks pass. Do not ask again
+  for approval already given inside that scope.
+- An operation whose exact target the request does not name waits for that
+  target, not for a second approval: runtime restart, rollout, or deployment;
+  a remote mutation outside the request's branch and pull request; issuing,
+  rotating, or revoking a credential; deleting data or volumes; opening a
+  public endpoint; and anything billed. Once the user names the target, run it.
 - Role permissions come from canonical role frontmatter; provider/model and
   permission translations come from `.agents/governance/providers/registry.yaml`; lifecycle,
   retry, and stop behavior comes from [workflows.md](workflows.md). Provider
