@@ -1935,7 +1935,10 @@ class BackupContractTests(unittest.TestCase):
         # The live filer store is never copied.
         seaweedfs = {"data/seaweedfs/volume", "data/seaweedfs/master"}
         self.assertLessEqual(seaweedfs, set(allowed))
-        for rel in set(allowed) - seaweedfs:
+        # Only Ollama's manifest catalog is copied; model blobs are re-pulled.
+        ollama_catalog = {"ai/ollama/models/manifests", "ai/ollama/models/manifests-v2"}
+        self.assertLessEqual(ollama_catalog, set(allowed))
+        for rel in set(allowed) - seaweedfs - ollama_catalog:
             self.assertFalse(
                 any(rel == x.rstrip("/") or rel.startswith(x) for x in live), rel
             )

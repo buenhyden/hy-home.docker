@@ -9,6 +9,10 @@ ai/comfyui/user
 ai/open-webui/uploads
 # Open WebUI's session/encryption key; webui.db comes from the SQLite export.
 ai/open-webui/.webui_secret_key
+# Ollama model catalog (name -> digest manifests, POL-0021); the blobs are
+# re-pulled by digest and stay out.
+ai/ollama/models/manifests
+ai/ollama/models/manifests-v2
 auth/keycloak
 management/jupyterlab
 # Airflow logs follow their own retention and airflow-valkey is a live broker.
