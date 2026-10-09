@@ -154,12 +154,21 @@ the owner's browser session and were not run.
 | Restic snapshot contents | 3 | W3 | State-set backup, then listing the key and catalog paths | — | NOT_RUN | W3 Backup and Restore | pending |
 | HOME rollout | 5 | W5 | Key, setting, version, health and gateway checks | `15ccd7d35` | PASS | W5 HOME Rollout | accepted |
 | Owner sign-in canary | 5 | W5 | Keycloak sign-in, sign-out, refresh | — | NOT_RUN | W5 HOME Rollout | pending |
-| Validation | 6 | W6 | Changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Hardening baseline | 6 | W6 | `check-all-hardening.sh` | `16c4794a8` | PASS | Review and Completion | accepted |
+| Changed gate | 6 | W6 | `run-ci-gate.py --profile changed --local-only`, base `c3ce31973` | `16c4794a8` | PASS | Review and Completion | accepted |
+| Staged style check | 6 | W6 | `run-ci-precommit.sh --mode local-staged` over `c3ce31973..HEAD` | `16c4794a8` | PASS | Review and Completion | accepted |
+| Remote candidate | 6 | W6 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-Not complete: the owner's sign-in canary, the image scan (needs the Grype
-network approval) and validation remain.
+An independent review found no critical issue and two important ones (rollback
+digests truncated; restore evidence not through restic and re-pull untested)
+plus eight minor ones; `9f1b570f9` resolves them or records them as NOT_RUN.
+The first changed-gate run failed one file-mode test because the worktree was
+checked out with umask 002 (Git records mode 755); with group write removed
+locally the gate passed (rc 0). Not complete: `candidate-quality`, the merge,
+the owner's sign-in canary, the restic snapshot listing and the image scan
+(needs the Grype network approval) remain.
 
 ## Related Documents
 
