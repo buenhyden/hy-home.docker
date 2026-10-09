@@ -68,8 +68,8 @@ old pin the rehearsal fails with the build command, as intended. Commit
 
 ### W3 Shared UI
 
-Root `DESIGN.md` uses the Project-Template token vocabulary, and a test keeps
-it equal to `styles.css`. Button 0.2.0 takes `variant`, `disabled` and
+`styles.css` holds the `--hy-*` tokens; `DESIGN.md` is left to separate
+later work. Button 0.2.0 takes `variant`, `disabled` and
 `loading`; `AsyncState` covers loading, empty, error, 403 (no retry), timeout
 and ready. Fourteen story tests cover keyboard, focus ring, retry and 320px
 wrapping with the a11y addon in `error` mode; lowering one text colour failed
@@ -148,7 +148,7 @@ Pending.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Build contract | 1 | W1 | Unit tests; Alpine SHA check; trial build and verify | `cdbf5768a` | PASS | W1 Build Contract | accepted |
 | Ingress checks | 2 | W2 | Static tests; missing-image failure | `f1ae14eb0` | PASS | W2 Ingress Regression | accepted |
-| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test; tarball consumer | `73beaa382` | PASS | W3 Shared UI | accepted |
+| Shared UI | 3 | W3 | Story tests RED and GREEN; parity test (removed with `DESIGN.md`); tarball consumer | `73beaa382` | PASS | W3 Shared UI | accepted |
 | Dependencies | 3 | W4 | Full checks on TypeScript 6.0.3; TypeScript 7 trials | `943108232` | PASS | W4 Dependencies | accepted |
 | Remote MCP and export | 2, 4 | W5 | Node and unit tests; live local server | `f9977d135` | PASS | W5 Remote MCP, Design Export and Documents | accepted |
 | Images and rehearsal | 1, 2 | W6 | Build, push, verify; Storybook and SSO rehearsals; export | `1554622b9` | PASS | W6 Images and Rehearsal | accepted |

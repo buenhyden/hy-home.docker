@@ -20,7 +20,7 @@ created: "2026-10-03"
 
 ## Scope
 
-`Button`, `AsyncState`, TypeScript 선언, 토큰을 포함한 CSS만 내보냅니다. 토큰 값의 권위는 루트 `DESIGN.md`입니다. 이 패키지는 `private: true`, `UNLICENSED`이며 외부 또는 공개 npm 배포를 허용하지 않습니다.
+`Button`, `AsyncState`, TypeScript 선언, 토큰을 포함한 CSS만 내보냅니다. 토큰 값의 권위는 `src/styles.css`의 `--hy-*` 변수입니다. 이 패키지는 `private: true`, `UNLICENSED`이며 외부 또는 공개 npm 배포를 허용하지 않습니다.
 
 ## Structure
 
@@ -47,7 +47,7 @@ import '@hy-home/storybook-ui/styles.css';
 
 ## Usage
 
-컴포넌트 API, 토큰 이름 또는 CSS를 변경하면 버전, `DESIGN.md`, 상태별 story를 함께 검토합니다. 별도 배포 승인이 없으므로 공개 레지스트리 업로드는 하지 않습니다.
+컴포넌트 API, 토큰 이름 또는 CSS를 변경하면 버전과 상태별 story를 함께 검토합니다. 별도 배포 승인이 없으므로 공개 레지스트리 업로드는 하지 않습니다.
 
 0.2.0은 Button의 `primary`, `backgroundColor`를 `variant`, `disabled`, `loading`으로 대체한 호환되지 않는 변경입니다. 색은 prop이 아니라 토큰 재정의로 바꿉니다. 조사 기준 Project-Template(`6b1c739`)에는 이 패키지의 소비자가 없으므로 영향받는 소비자는 없습니다.
 

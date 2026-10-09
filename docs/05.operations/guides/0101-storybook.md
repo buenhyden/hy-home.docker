@@ -189,7 +189,7 @@ cd <빈 디렉터리> && claude   # /design-login 후 /design-sync "hy-home shar
 ```
 
 bundle은 `projects/storybook/nextjs/design-export.allowlist.json`이 이름 붙인
-커밋된 파일(`DESIGN.md`, UI 패키지 소스·CSS 토큰, 상태별 story, 소개 문서)과
+커밋된 파일(UI 패키지 소스·CSS 토큰, 상태별 story, 소개 문서)과
 그 SHA-256 `export-manifest.json`만 담는다. glob, 상위 경로, `.env`·secret·key
 파일, secret 형태의 내용이 있으면 내보내지 않는다. 내부 URL, cookie, 사용자
 자료, 저장소 전체는 대상이 아니다.
@@ -197,7 +197,7 @@ bundle은 `projects/storybook/nextjs/design-export.allowlist.json`이 이름 붙
 작업 순서는 다음과 같다.
 
 1. Claude Design에서 동기화된 토큰과 컴포넌트로 화면을 설계한다.
-2. 결과를 Claude Code로 hand off하고 `packages/ui`와 `DESIGN.md`를 함께 바꾼다.
+2. 결과를 Claude Code로 hand off하고 `packages/ui`를 바꾼다.
 3. 상태별 story와 play 함수로 동작을 고정하고 `npm run coverage`로 상호작용·
    a11y 시험을 통과시킨다.
 4. PR 검토와 병합 후 image를 그 커밋으로 다시 빌드하고 bundle을 다시 내보낸다.

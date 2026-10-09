@@ -32,11 +32,12 @@ MCP remotely to authenticated clients, and bounds the design export.
 
 In scope: the Storybook workspace and its UI package, the Dockerfile, the
 image build and verification script, the Compose services and routes, the
-remote docs MCP and its token checks, the design export, root `DESIGN.md`,
+remote docs MCP and its token checks, the design export,
 the rehearsal and unit tests, and the operations documents. Out of scope:
 creating the Keycloak client on HOME, starting the `experience` profile on
 HOME, signing into Claude Design, changing other workspaces' files, and the
-TypeScript 7 upgrade, which waits for `typescript-eslint` support.
+TypeScript 7 upgrade, which waits for `typescript-eslint` support, and a
+`DESIGN.md`, which is separate later work.
 
 ## Contracts
 
@@ -58,8 +59,7 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support.
    iframe, assets and manifests get a 302 to Keycloak or a 401, never content
    or a login page with 200; administrators get them with `no-store` and
    `frame-ancestors 'self'`.
-4. Shared UI. Root `DESIGN.md` defines the tokens; the package CSS implements
-   the same values. `Button` and `AsyncState` cover default, focus, disabled,
+4. Shared UI. The package CSS defines the `--hy-*` tokens. `Button` and `AsyncState` cover default, focus, disabled,
    loading, empty, error, 403, timeout and retry states, keyboard use, reduced
    motion and a 320px width, each proven by a story test with the
    accessibility addon failing on violations. Only these components reach the
@@ -96,4 +96,3 @@ TypeScript 7 upgrade, which waits for `typescript-eslint` support.
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-storybook-build-and-delivery.md)
 - [Storybook policy](../../05.operations/policies/0101-storybook.md)
-- [Design system](../../../DESIGN.md)

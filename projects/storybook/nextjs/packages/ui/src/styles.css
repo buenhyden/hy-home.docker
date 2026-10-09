@@ -1,4 +1,4 @@
-/* Design tokens: the values root DESIGN.md defines (SPEC-0219). Components
+/* Design tokens (SPEC-0219). Components
    read only the semantic tokens; a consumer re-themes by overriding them. */
 :root {
   --hy-color-primary-base: #3d43a8;
