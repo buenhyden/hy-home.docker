@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Collection and Egress Plan"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/plan"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-10-10"
 layer: "specs"
 artifact_id: "SPEC-0220-PLAN-0001"
 parent_ids:
@@ -21,24 +21,25 @@ out of the container, then build and test the adapter's job model, then prove
 the whole path against the real image in isolation and update the operations
 documents. Each unit is one commit.
 
-The three project candidates below are compared for the first consumer. None of these is connected; each needs its own workspace, registry entries
-and an admission change before any collection.
+The current SPEC-0212 P00 exclusion removes learning applications, including
+planning, from consumer discovery. Earlier comparisons remain in Git history
+and the existing Task; they are not current project plans. The two remaining
+non-learning candidates are unconnected and require their own real workspace,
+registry entries and admission change before collection.
 
-| | A. Public API documentation change watch | B. Permitted notice and statute notes | C. License-checked study material |
-| --- | --- | --- | --- |
-| Consumer | A developer workspace that calls public APIs | A study or compliance notebook owner | A planned study app (discovery only) |
-| Data source | Published API reference pages and changelogs | Notices and statutes from official sites or their APIs | Openly licensed course text and question sets |
-| Complete function | Weekly fetch, diff against the last raw hash, open a review item | Fetch on request, keep the cited span, attach to a note | Fetch an approved item once, extract, review, index |
-| Existing infrastructure | Crawl4AI, egress gateway, a scheduler such as n8n or Airflow | Crawl4AI, Open Notebook, Qdrant | Crawl4AI, Qdrant, Ollama |
-| Needed additions | Registry entries, diff store, notification route | Registry entries, an API client where the provider offers one | Per-item license records, review queue, learning store in the app workspace |
-| Failure recovery | Retry next cycle; a raw hash gap shows the miss | Re-fetch on demand; a missing span blocks the note | Re-fetch the approved item; projections rebuild from raw |
-| Rights | Reading and diffing public documentation; no redistribution | Statutes are often public domain, notices vary; cite and link | Only items whose license allows processing, retention and training |
-| Cost | Few pages per week, one browser page at a time | On demand, low | Batch at onboarding, then rare; the highest storage and review cost |
+| | A. Public API documentation change watch | B. Permitted notice and statute notes |
+| --- | --- | --- |
+| Consumer | A developer workspace that calls public APIs | A compliance notebook owner |
+| Data source | Published API reference pages and changelogs | Notices and statutes from official sites or their APIs |
+| Complete function | Weekly fetch, diff against the last raw hash, open a review item | Fetch on request, keep the cited span, attach to a note |
+| Existing infrastructure | Crawl4AI, egress gateway, a scheduler such as n8n or Airflow | Crawl4AI, Open Notebook, Qdrant |
+| Needed additions | Registry entries, diff store, notification route | Registry entries, an API client where the provider offers one |
+| Failure recovery | Retry next cycle; a raw hash gap shows the miss | Re-fetch on demand; a missing span blocks the note |
+| Rights | Reading and diffing public documentation; no redistribution | Check the source's applicable rights; cite and link |
+| Cost | Few pages per week, one browser page at a time | On demand, low |
 
-Candidate A has the smallest rights and resource surface and exercises the
-whole path (registry, bounded job, raw hash, review), so it is the
-recommended first consumer when the owner admits one. Candidate C waits for
-the study app's own planning.
+Candidate A remains a prospective first consumer when its owner admits it.
+No learning-app planning, code or resources are added by this Plan.
 
 ## Work Breakdown
 
@@ -80,4 +81,5 @@ changed gate.
 ## Related Documents
 
 - [Spec](spec.md)
+- [Current exclusions](../0212-request-baseline-and-reconciliation/spec.md)
 - [Task](tasks/tsk-0001-crawl4ai-collection-and-egress.md)

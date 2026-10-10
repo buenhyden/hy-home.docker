@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.2.0"
+version: "1.3.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-08"
+updated: "2026-10-10"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -18,9 +18,10 @@ created: "2026-10-03"
 
 ### Objective
 
-Implement Prompt 04 in reversible, reviewable Tasks. The user approved the
-listed source scopes on 2026-10-03. The package established file ownership
-and acceptance gates before any service declaration was changed.
+Continue this package's residual integration acceptance in reversible Tasks.
+The 2026-10-03 source slice and old prompt labels below are historical work
+provenance. Current execution follows SPEC-0212's 2026-10-10 P00 routing,
+exclusions and shared-writer order; completed Task bodies are preserved.
 
 ### Dependencies
 
@@ -36,9 +37,33 @@ and acceptance gates before any service declaration was changed.
 - Official n8n, Crawl4AI, Cassandra, backup and security references rechecked
   at implementation; image architecture/digest and secret consumer behavior
   remain runtime-unverified until bounded acceptance.
-- No current external project registration, real traffic target or product
-  scope for Prompts 07/08. Runtime, secret issuance, data, remote and network
-  operations need their own exact approvals.
+- A real consumer, native workflow target, credential subject and recovery
+  boundary must be named before their dependent runtime lane. Learning-app
+  planning and all actual LAB work are excluded. Source and this request's
+  branch/PR/merge are authorized without repeated approval.
+
+### Current execution routing — 2026-10-10
+
+SPEC-0212-TSK-0003 owns the P00 baseline and documentation amendment; existing
+SPEC-0204 Tasks retain their historical evidence. P03 owns port/endpoints,
+P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
+secret classification/mapping/consumption under this package's acceptance.
+SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
+no old prompt label creates duplicate work. LAB and learning apps, including
+planning, are out-of-scope. P09's external Wiki needs its actual derived
+workspace and P10 its real input-to-recovery target.
+
+Historical W7 CI retirement does not govern this pass: current quality policy
+and workflow-contract route hosted PR candidate QA and independent review.
+Historical source-only restrictions bind the old slice, not all future units.
+Only a missing real target/tool permission stops its dependent action. Follow
+current approval-boundaries and SPEC-0221; no policy/hook/validator rewrite is
+needed when the current enforcer already meets the request.
+
+Shared root, gateway, Alloy, environment and backup files have one writer at a
+time. Complete feature edits before the P08 document move writer starts, then
+update references/checks and hand the destination SHA back. P08 gives LAB only
+a prospective separate_target classification; no LAB documents are moved.
 
 ## Work Breakdown
 
@@ -154,11 +179,10 @@ and acceptance gates before any service declaration was changed.
 
 SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
 bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
-closure branch before the backup source change. Prompt 05 owns Storybook;
-Prompt 06 owns the external application's consumed manifest and deployment.
-Cassandra's current official-image LAB move is already implemented; no
-Bitnami-wide replacement is planned. Crawl4AI has no confirmed consumer and
-gets a security fix, not automatic HOME activation.
+closure branch before the backup source change. SPEC-0219 owns Storybook; P09's external workspace owns its application
+manifest/deployment. Existing LAB evidence is excluded from new execution.
+SPEC-0220 already owns Crawl4AI security/egress and HOME receipts; its consumer
+admission remains consumer-dependent rather than a repeat security fix.
 
 ### Historical closure-branch completion recheck — 2026-10-04
 
@@ -224,6 +248,7 @@ Restic restore passed in TSK-0003 and is not HOME recovery evidence.
 ## Related Documents
 
 - [Specification](spec.md)
+- [Current routing](../0212-request-baseline-and-reconciliation/plan.md)
 - [Task 0001](tasks/tsk-0001-runtime-compatibility-and-security.md)
 - [Task 0002](tasks/tsk-0002-external-project-integration.md)
 - [Task 0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
