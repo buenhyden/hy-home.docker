@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Implementation"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-11"
 ---
 
 # OpenTofu
@@ -60,3 +60,21 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
+
+## SEC01 1.13.1 후보와 상태 호환성
+
+실제 빌드 소스인 Compose 인라인 `FROM`은 `1.13.1-minimal`과 OCI index digest
+`sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6`로 고정한다.
+로컬 태그도 `hy-home/opentofu:1.13.1-local`로 맞춘다. 자격 증명 마운트·workspace·
+entrypoint·프로필과 원격 변경 권한은 기존 계약을 따른다.
+
+[공식 1.13 릴리스](https://github.com/opentofu/opentofu/releases/tag/v1.13.0)는
+WinRM provisioner 제거와 `base64gzip`의 바이트 결과 변경을 명시한다.
+[1.13.1 수정](https://github.com/opentofu/opentofu/releases/tag/v1.13.1)은 ephemeral
+resource plan JSON과 apply 시 output 재평가를 포함한다. 실제 workspace의 소비 여부는
+확인하지 않았으며 원격 plan/apply·state 변환·credential 읽기는 `NOT_RUN`이다.
+
+운영 반영 전 지정된 빈 합성 workspace에서 provider 다운로드·원격 backend 없이
+CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버전 백업과 기존
+1.12.6에서의 읽기/복원 조건을 SPEC-0204-TSK-0009에 기록한다. 새 버전 apply 이후
+이미지만 되돌리면 복구된다고 간주하지 않는다.
