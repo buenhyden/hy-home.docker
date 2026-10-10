@@ -325,7 +325,7 @@
         "hy/tempo": "local-custom"
       },
       "images": [
-        "hy/tempo:3.0.3-seaweedfs"
+        "hy/tempo:3.1.0-seaweedfs"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -334,7 +334,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "hy/tempo:3.0.3-seaweedfs"
+            "hy/tempo:3.1.0-seaweedfs"
           ]
         }
       ]
@@ -597,7 +597,7 @@
         "hy-home/opentofu": "local-custom"
       },
       "images": [
-        "hy-home/opentofu:1.12.6-local"
+        "hy-home/opentofu:1.13.1-local"
       ],
       "compose_files": [
         "infra/09-platform-ops/opentofu/docker-compose.yml"
@@ -606,7 +606,7 @@
         {
           "compose_file": "infra/09-platform-ops/opentofu/docker-compose.yml",
           "images": [
-            "hy-home/opentofu:1.12.6-local"
+            "hy-home/opentofu:1.13.1-local"
           ]
         }
       ]
@@ -751,7 +751,8 @@
         "oliver006/redis_exporter": "external"
       },
       "images": [
-        "oliver006/redis_exporter:v1.91.1-alpine"
+        "oliver006/redis_exporter:v1.91.1-alpine",
+        "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
       ],
       "compose_files": [
         "infra/02-auth/oauth2-proxy/docker-compose.yml",
@@ -765,31 +766,31 @@
         {
           "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.91.1-alpine"
+            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]
         },
         {
           "compose_file": "infra/04-data/dev-db/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.91.1-alpine"
+            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]
         },
         {
           "compose_file": "infra/04-data/mng-db/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.91.1-alpine"
+            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]
         },
         {
           "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.91.1-alpine"
+            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]
         },
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "oliver006/redis_exporter:v1.91.1-alpine"
+            "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70"
           ]
         },
         {
@@ -1988,7 +1989,7 @@
         "hy-home/great-expectations": "local-custom"
       },
       "images": [
-        "hy-home/great-expectations:1.23.1-local"
+        "hy-home/great-expectations:1.24.0-local"
       ],
       "compose_files": [
         "infra/12-analytics/great-expectations/docker-compose.yml"
@@ -1997,7 +1998,7 @@
         {
           "compose_file": "infra/12-analytics/great-expectations/docker-compose.yml",
           "images": [
-            "hy-home/great-expectations:1.23.1-local"
+            "hy-home/great-expectations:1.24.0-local"
           ]
         }
       ]

@@ -1014,21 +1014,21 @@
       "service": "airflow-valkey-exporter",
       "scope": "root",
       "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.91.1-alpine",
+      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
       "profiles_declared": [
         "dedicated-valkey"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "latest_version": "1.93.0",
+      "target_version": "1.93.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T05:13:49Z",
       "advisory_urls": [],
@@ -1046,7 +1046,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oliver006/redis_exporter",
       "current_repo_digests": [],
@@ -1054,10 +1054,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "d593c5df25235db81192f6f8abf4ab86a7cf8da7fe90afe29e3340bf72aba8ae",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied."
     },
     {
       "service": "airflow-worker",
@@ -2518,7 +2522,7 @@
       "service": "dev-valkey-exporter",
       "scope": "root",
       "compose_file": "infra/04-data/dev-db/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.91.1-alpine",
+      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
       "profiles_declared": [
         "dev-data"
       ],
@@ -2539,14 +2543,14 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "latest_version": "1.93.0",
+      "target_version": "1.93.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T05:13:49Z",
       "advisory_urls": [],
@@ -2564,7 +2568,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oliver006/redis_exporter",
       "current_repo_digests": [
@@ -2576,10 +2580,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "01c45f339cf57b7a40917462a4dcac20f74e095768d9bac961e8c2776148fb24",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "4098a59404206d97b4566d5ea3014cc807f92ecc917be14c45b01cfe41a0f506",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied."
     },
     {
       "service": "dozzle",
@@ -3161,7 +3169,7 @@
       "service": "great-expectations",
       "scope": "root",
       "compose_file": "infra/12-analytics/great-expectations/docker-compose.yml",
-      "current_declared": "hy-home/great-expectations:1.23.1-local",
+      "current_declared": "hy-home/great-expectations:1.24.0-local",
       "profiles_declared": [
         "lakehouse"
       ],
@@ -3171,16 +3179,16 @@
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
+      "latest_version": "1.24.0",
+      "target_version": "1.24.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
+      "release_url": "https://github.com/fivetran/great_expectations/releases/tag/1.24.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-10-07T13:35:26Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -3196,25 +3204,30 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "fivetran/great_expectations",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": [
         "docker",
-        "buildx",
-        "imagetools",
+        "image",
         "inspect",
-        "hy-home/great-expectations:1.23.1-local",
+        "--platform",
+        "linux/amd64",
+        "hy-home/great-expectations:1.24.0-local",
         "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        "{{.Id}} {{.Architecture}}"
       ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6d11f67675e1d65f88e8ce5451e22ead103737f5457be9e86fc5e41bef651f0d",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "hy-home/great-expectations:1.24.0-local",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
+      "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
     },
     {
       "service": "imgproxy",
@@ -3335,16 +3348,16 @@
       "build_source": ".",
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
+      "latest_version": "2.3.0",
+      "target_version": "2.3.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
+      "release_url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-09-21T15:17:03Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -3360,21 +3373,25 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "grafana/k6",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": [
         "git",
         "show",
-        "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b:infra/11-quality/k6/docker-compose.yml"
+        "8802bd09649717a48df33dd85751442c04b9c007:infra/11-quality/k6/Dockerfile"
       ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
       "source_input_sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "UNKNOWN",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
+      "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
     },
     {
       "service": "kafbat-ui",
@@ -4658,7 +4675,7 @@
       "service": "mng-valkey-exporter",
       "scope": "root",
       "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.91.1-alpine",
+      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
       "profiles_declared": [
         "mng",
         "dev"
@@ -4680,14 +4697,14 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "latest_version": "1.93.0",
+      "target_version": "1.93.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T05:13:49Z",
       "advisory_urls": [],
@@ -4705,7 +4722,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oliver006/redis_exporter",
       "current_repo_digests": [
@@ -4717,10 +4734,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "261fb6f3ea97598556839b47d095434e67d696b70f0e0e0b34f3dffe326057b0",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "f509a6feb2f574dfc3cf79a69d98508d7478c48102e7e3d91df374d0e4e46f6d",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied."
     },
     {
       "service": "n8n",
@@ -5030,21 +5051,21 @@
       "service": "n8n-valkey-exporter",
       "scope": "root",
       "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.91.1-alpine",
+      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
       "profiles_declared": [
         "dedicated-valkey"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "latest_version": "1.93.0",
+      "target_version": "1.93.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T05:13:49Z",
       "advisory_urls": [],
@@ -5062,7 +5083,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oliver006/redis_exporter",
       "current_repo_digests": [],
@@ -5070,10 +5091,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "9709ad7f17d10912c0d10fa8ffd2da63b2c536d6b2f20ac99a3c6fac1e62f023",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "2cd210e4e35671fedc1cfd497d23bdf627def6cf35cf852fbba74ca24b958721",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied."
     },
     {
       "service": "n8n-worker",
@@ -5398,10 +5423,10 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:14.544554+00:00",
+      "latest_version": "7.15.5",
+      "target_version": "7.15.5",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -5423,7 +5448,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oauth2-proxy/oauth2-proxy",
       "current_repo_digests": [
@@ -5435,10 +5460,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v7.15.5",
       "next_fact_command": "gh release view --repo oauth2-proxy/oauth2-proxy --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6f5b1cb368d86a977c0b8fbba5bfda6bf10b6fa8c6c8de11b305415d7caa5c63",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "UNKNOWN",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
+      "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
     },
     {
       "service": "oauth2-proxy-valkey",
@@ -5493,21 +5522,21 @@
       "service": "oauth2-proxy-valkey-exporter",
       "scope": "root",
       "compose_file": "infra/02-auth/oauth2-proxy/docker-compose.yml",
-      "current_declared": "oliver006/redis_exporter:v1.91.1-alpine",
+      "current_declared": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
       "profiles_declared": [
         "dedicated-valkey"
       ],
       "build_source": null,
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "latest_version": "1.93.0",
+      "target_version": "1.93.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
-      "target_index_digest": "UNKNOWN",
-      "target_manifest_digest": "UNKNOWN",
-      "target_config_digest": "UNKNOWN",
+      "target_index_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_manifest_digest": "sha256:5eac4c834271954fa3e7c7411a35cb4165c9b52d72ba82cccfa51b2537c243a8",
+      "target_config_digest": "sha256:8d3399392c1ec9fb492f79d2bc4182e19ef83e77966f5b90f885a0573443a4bf",
       "platform": "linux/amd64",
       "source_release_date": "2026-10-01T05:13:49Z",
       "advisory_urls": [],
@@ -5525,7 +5554,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "oliver006/redis_exporter",
       "current_repo_digests": [],
@@ -5533,10 +5562,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v1.93.0",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "6f5b1cb368d86a977c0b8fbba5bfda6bf10b6fa8c6c8de11b305415d7caa5c63",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70",
+      "target_digest_evidence": "Coordinator official public tag index/platform/config metadata; no publisher signature or CVE acceptance implied."
     },
     {
       "service": "ollama",
@@ -6281,26 +6314,26 @@
       "service": "opentofu",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/opentofu/docker-compose.yml",
-      "current_declared": "hy-home/opentofu:1.12.6-local",
+      "current_declared": "hy-home/opentofu:1.13.1-local",
       "profiles_declared": [
         "iac"
       ],
       "build_source": {
         "context": ".",
-        "dockerfile_inline": "FROM ghcr.io/opentofu/opentofu:1.12.6-minimal AS tofu\nFROM alpine:3.24\nRUN apk add --no-cache \\\n    bash \\\n    ca-certificates \\\n    curl \\\n    git \\\n    openssh-client\nCOPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu\nENTRYPOINT [\"tofu\"]\n"
+        "dockerfile_inline": "FROM ghcr.io/opentofu/opentofu:1.13.1-minimal@sha256:dfbc3f0a8bed0adfa2cf49ff418f158afe24080eea6d6e748db8799fc4553db6 AS tofu\nFROM alpine:3.24\nRUN apk add --no-cache \\\n    bash \\\n    ca-certificates \\\n    curl \\\n    git \\\n    openssh-client\nCOPY --from=tofu /usr/local/bin/tofu /usr/local/bin/tofu\nENTRYPOINT [\"tofu\"]\n"
       },
       "current_running": [],
       "runtime_presence": "NOT_OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": null,
-      "release_url": null,
+      "latest_version": "1.13.1",
+      "target_version": "1.13.1",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
+      "release_url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
       "target_config_digest": "UNKNOWN",
       "platform": "linux/amd64",
-      "source_release_date": null,
+      "source_release_date": "2026-10-01T17:15:15Z",
       "advisory_urls": [],
       "applicability": "UNKNOWN",
       "support_end": "UNKNOWN",
@@ -6316,25 +6349,30 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Exact supplier stable channel/ownership is unresolved from current source and allowlisted OCI metadata; resolve public supplier docs and selected build inputs first."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
-      "source_owner_repository": "UNKNOWN",
+      "source_owner_repository": "opentofu/opentofu",
       "current_repo_digests": [],
       "current_image_ids": [],
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": [
         "docker",
-        "buildx",
-        "imagetools",
+        "image",
         "inspect",
-        "hy-home/opentofu:1.12.6-local",
+        "--platform",
+        "linux/amd64",
+        "hy-home/opentofu:1.13.1-local",
         "--format",
-        "{{json (index .Image \"linux/amd64\").Config.Labels}}"
+        "{{.Id}} {{.Architecture}}"
       ],
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "2e72f697b21b45e175639049d8ad680be2c99f5be403743753d7bab76ef88e79",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "hy-home/opentofu:1.13.1-local",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
+      "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
     },
     {
       "service": "pact-broker",
@@ -8396,7 +8434,7 @@
       "service": "tempo",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "hy/tempo:3.0.3-seaweedfs",
+      "current_declared": "hy/tempo:3.1.0-seaweedfs",
       "profiles_declared": [
         "obs",
         "tracing"
@@ -8421,10 +8459,10 @@
         }
       ],
       "runtime_presence": "OBSERVED",
-      "latest_version": "UNKNOWN",
-      "target_version": "UNKNOWN",
-      "channel": "UNKNOWN",
-      "checked_at": "2026-10-10T10:24:13.983129+00:00",
+      "latest_version": "3.1.0",
+      "target_version": "3.1.0",
+      "channel": "stable",
+      "checked_at": "2026-10-10T19:14:00.945688+00:00",
       "release_url": "https://github.com/grafana/tempo/releases/tag/v3.1.0",
       "target_index_digest": "UNKNOWN",
       "target_manifest_digest": "UNKNOWN",
@@ -8446,7 +8484,7 @@
         "owner": "SEC01",
         "discovered_at": "2026-10-10T10:23:40.053333+00:00",
         "next_validation_due": "2026-10-17T10:23:40.053333+00:00",
-        "reason": "Supplier release queried; stable-channel, exact platform digest, advisory applicability and migration/recovery proof still required."
+        "reason": "Current stable SOURCE inputs integrated locally. Full authenticated service SBOM/CVE, signature applicability, native compatibility, HOME rollout and stateful recovery remain required; source tests do not close these lanes."
       },
       "source_owner_repository": "grafana/tempo",
       "current_repo_digests": [
@@ -8458,10 +8496,14 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
-      "source_refreshed_at": "2026-10-10T11:40:42.564403+00:00",
-      "source_input_sha256": "ac397fcf5b9ed6aa8c6f2af89346f4a2cb3e9087ff37e55d17af56fdddbbd774",
+      "source_refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "source_input_sha256": "18bea09d82d71b9b6d6cccaee3ded38b09ae0fc4e0e61e2597ce4caf97daaa95",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
-      "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted"
+      "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
+      "target_source_image": "hy/tempo:3.1.0-seaweedfs",
+      "candidate_evidence_scope": "Reviewed service source and offline regressions only; registry digest integrity separately verified; signatures, service scans, native acceptance, recovery and HOME remain pending.",
+      "target_declared_digest": "UNKNOWN: final custom build requires a separate build receipt",
+      "target_digest_evidence": "Upstream materials are publicly bound; final local candidate image digest remains unverified."
     },
     {
       "service": "terrakube-api",
@@ -12012,6 +12054,104 @@
       "input_manifest_sha256": "8478088fb4fcca17a0376156d60896341bbb21c3314478635c2a8da43742308a",
       "meaning": "Accepted SEC01 service-local working-tree source projection on the stated base revision. Exact source pins only; signature, scan, native runtime, stateful recovery and HOME deployment remain NOT_RUN.",
       "final_candidate_source_freeze": false
+    },
+    {
+      "source_revision": "8802bd09649717a48df33dd85751442c04b9c007",
+      "refreshed_at": "2026-10-10T19:14:00.945688+00:00",
+      "input_files": [
+        {
+          "path": "infra/02-auth/oauth2-proxy/Dockerfile",
+          "sha256": "31fd2a905a79d42d3b9734d78e79f1cf8d3648fcf6b812ed32f3ed575046c85a"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/README.md",
+          "sha256": "6079383ce17322730915bd8f4637ce888c2e8f0aa015aa46c529b558a3869fc6"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/dev.Dockerfile",
+          "sha256": "4ee6c6bd419c90911012a8b883770543675455988cc88a86c6b8442589d041b5"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "8feac1e5ec998abe8b269098b21bbad2bb3ccdf558570f555f7d3705300e5e52"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "4098a59404206d97b4566d5ea3014cc807f92ecc917be14c45b01cfe41a0f506"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "f509a6feb2f574dfc3cf79a69d98508d7478c48102e7e3d91df374d0e4e46f6d"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "18bea09d82d71b9b6d6cccaee3ded38b09ae0fc4e0e61e2597ce4caf97daaa95"
+        },
+        {
+          "path": "infra/06-observability/tempo/Dockerfile",
+          "sha256": "0c407a091a3155d82c5ba42a5fed96c9f82e105c3bb3a2e928e0fc8729418532"
+        },
+        {
+          "path": "infra/06-observability/tempo/README.md",
+          "sha256": "20588d55bfa360a9b3ccfb23b428e1410ea3dd1d9267f8e5bc778183a8661774"
+        },
+        {
+          "path": "infra/06-observability/tempo/config/tempo.yaml",
+          "sha256": "5b97d0caccf2cefe6a0f427f0bfe26f56fc24e8dd2c5e05f68c2382506742f9d"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "9358f1c648314d147f0f3b532b240e378e1c80bbd68dd003a40babd68f268997"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "2cd210e4e35671fedc1cfd497d23bdf627def6cf35cf852fbba74ca24b958721"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/README.md",
+          "sha256": "2e86461d589d3cc8aa4ed4f616d325d8d5dcca33449601ce9440c0345c529bcf"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/11-quality/k6/Dockerfile",
+          "sha256": "9ce867dd9674494172f31e90ccf7719fda9393e2125f6f7b7e0a24ac48fd5476"
+        },
+        {
+          "path": "infra/11-quality/k6/README.md",
+          "sha256": "ca1a9ff1737a5277626a9d6f047f003a1d5396d7dd997861cf1cb16954e924b9"
+        },
+        {
+          "path": "infra/12-analytics/great-expectations/README.md",
+          "sha256": "c5b3ac17f54f95b60b8b33a6efe090f0cc1bccea33321474d9424ead29289b8c"
+        },
+        {
+          "path": "infra/12-analytics/great-expectations/docker-compose.yml",
+          "sha256": "57895faf9051375ae61956ce9be3ed294b436556bbeb5badf8bf69e77a7b70d5"
+        },
+        {
+          "path": "infra/12-analytics/great-expectations/requirements.txt",
+          "sha256": "a465ff5c52737c32cd9c62d3fc8239775bdea47e9851f23cb6e98e9beabb058b"
+        }
+      ],
+      "input_manifest_sha256": "50e68e0d3b8466b1eda4c311cae1a6487a4fcbbd2e37ee748ca5656ce1de988d",
+      "meaning": "Current local reviewed stable service/CLI SOURCE only; historical running/native observations preserved. No whole-stack latest/security/HOME completion.",
+      "final_candidate_source_freeze": false,
+      "updated_services": [
+        "airflow-valkey-exporter",
+        "dev-valkey-exporter",
+        "great-expectations",
+        "k6",
+        "mng-valkey-exporter",
+        "n8n-valkey-exporter",
+        "oauth2-proxy",
+        "oauth2-proxy-valkey-exporter",
+        "opentofu",
+        "tempo"
+      ],
+      "public_metadata_receipt_sha256": "484012e9855c5e3e95c105d79eac0d80048801a19e2d5d6b14988faefa428382"
     }
   ],
   "delivery_preconditions": {

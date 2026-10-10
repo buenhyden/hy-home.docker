@@ -1808,5 +1808,91 @@
         }
       }
     }
-  ]
+  ],
+  "coordinator_current_public_refresh": {
+    "source_revision": "8802bd09649717a48df33dd85751442c04b9c007",
+    "observed_at": "2026-10-10T19:14:00.945688+00:00",
+    "receipt_sha256": "484012e9855c5e3e95c105d79eac0d80048801a19e2d5d6b14988faefa428382",
+    "trust": "official public release metadata and registry digest integrity; signatures not verified",
+    "records": [
+      {
+        "repository": "oliver006/redis_exporter",
+        "tag": "v1.93.0",
+        "published_at": "2026-10-01T05:13:49Z",
+        "url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0",
+        "response_sha256": "c16624624fac37fb063fbef604cc65c0d89187869dffcc9420f256dd9eb4eede",
+        "tag_object": {
+          "sha": "589a1cd930d62ba449a5207179ab44252e359c66",
+          "type": "commit",
+          "url": "https://api.github.com/repos/oliver006/redis_exporter/git/commits/589a1cd930d62ba449a5207179ab44252e359c66"
+        },
+        "tag_response_sha256": "d6cd80dea637700a8eba3455504141253c99428610b7340c6cc5cecf395ec284"
+      },
+      {
+        "repository": "oauth2-proxy/oauth2-proxy",
+        "tag": "v7.15.5",
+        "published_at": "2026-10-01T09:05:48Z",
+        "url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5",
+        "response_sha256": "f597184d08ce8fa20b3b57f4ea80efa58ef45c31c2f724349819f46f453bd381",
+        "tag_object": {
+          "sha": "6e4bd00eea928c0268871954000f1f4fa8c91d30",
+          "type": "tag",
+          "url": "https://api.github.com/repos/oauth2-proxy/oauth2-proxy/git/tags/6e4bd00eea928c0268871954000f1f4fa8c91d30"
+        },
+        "tag_response_sha256": "11b08c1bdaed65ee767831302d86480b0a54845db88c4cf09afc4430c322e43c"
+      },
+      {
+        "repository": "grafana/tempo",
+        "tag": "v3.1.0",
+        "published_at": "2026-09-29T17:06:39Z",
+        "url": "https://github.com/grafana/tempo/releases/tag/v3.1.0",
+        "response_sha256": "4541fb0979dc39e4f0f0fee4729c30a409e3e3ffda28140befe147a94957a3d5",
+        "tag_object": {
+          "sha": "43dbdcdafcbcfa5239a07311c2f63836c0a8b7b5",
+          "type": "tag",
+          "url": "https://api.github.com/repos/grafana/tempo/git/tags/43dbdcdafcbcfa5239a07311c2f63836c0a8b7b5"
+        },
+        "tag_response_sha256": "aa131f2f196e070a7700987161ee89c2cb63113cd91f77542ba14258eb69281e"
+      },
+      {
+        "repository": "opentofu/opentofu",
+        "tag": "v1.13.1",
+        "published_at": "2026-10-01T17:15:15Z",
+        "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1",
+        "response_sha256": "32444ddc9d402bf6a12306119f283ea0975cfd87d54a69a5b2fe0af09d47e1f8",
+        "tag_object": {
+          "sha": "c512d0956f274dfbe02de09ccb7b534f16caf13e",
+          "type": "tag",
+          "url": "https://api.github.com/repos/opentofu/opentofu/git/tags/c512d0956f274dfbe02de09ccb7b534f16caf13e"
+        },
+        "tag_response_sha256": "047dfb1c5d592759a15ac66b1e324ee84fb30d5d15294dd5da00376c7a62e8a2"
+      },
+      {
+        "repository": "grafana/k6",
+        "tag": "v2.3.0",
+        "published_at": "2026-09-21T15:17:03Z",
+        "url": "https://github.com/grafana/k6/releases/tag/v2.3.0",
+        "response_sha256": "19897a7154dc21bc8a2b5ddf19ac940a3e114bec53ba9a36ab1c3d7a7948f873",
+        "tag_object": {
+          "sha": "7e344d151245836888b70a3e4e9e6605d7963ab5",
+          "type": "tag",
+          "url": "https://api.github.com/repos/grafana/k6/git/tags/7e344d151245836888b70a3e4e9e6605d7963ab5"
+        },
+        "tag_response_sha256": "855a144ab3a8c06d7b181699cfd3e76d5f480c68005b4e4203ff3e81ad0c5686"
+      },
+      {
+        "repository": "fivetran/great_expectations",
+        "tag": "1.24.0",
+        "published_at": "2026-10-07T13:35:26Z",
+        "url": "https://github.com/fivetran/great_expectations/releases/tag/1.24.0",
+        "response_sha256": "e30e3eadec02602cb9c1bde46d3e393b0ccc2ac800e5192ae9b1f62f8589a5bd",
+        "tag_object": {
+          "sha": "21323e5ce2907593619e033ab728a1dc9390c412",
+          "type": "tag",
+          "url": "https://api.github.com/repos/fivetran/great_expectations/git/tags/21323e5ce2907593619e033ab728a1dc9390c412"
+        },
+        "tag_response_sha256": "5efe9ccb34886c6ad4f1e8f236729a59af52e2ae8cb7c385acd91ad059ccaca7"
+      }
+    ]
+  }
 }

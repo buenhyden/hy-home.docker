@@ -31,6 +31,115 @@ def gx_wrapper():
 
 
 class NextToolCandidates(unittest.TestCase):
+    def test_current_public_refresh_keeps_followups_and_pending_evidence_exact(self):
+        updates = json.loads(
+            (
+                ROOT / "infra/09-platform-ops/security-updates/update-ledger.json"
+            ).read_text()
+        )
+        releases = json.loads(
+            (
+                ROOT / "infra/09-platform-ops/security-updates/release-lookups.json"
+            ).read_text()
+        )["coordinator_current_public_refresh"]
+        images = json.loads(
+            (
+                ROOT
+                / "infra/09-platform-ops/security-updates/image-source-lookups.json"
+            ).read_text()
+        )["coordinator_current_public_refresh"]
+        receipt = releases["receipt_sha256"]
+        refresh = updates["source_refreshes"][-1]
+        self.assertEqual(refresh["public_metadata_receipt_sha256"], receipt)
+        self.assertEqual(images["receipt_sha256"], receipt)
+        self.assertEqual(images["source_revision"], refresh["source_revision"])
+        self.assertEqual(releases["source_revision"], refresh["source_revision"])
+        self.assertIn("signatures not verified", images["trust"])
+
+        selected = set(refresh["updated_services"])
+        selected_rows = [
+            row for row in updates["entries"] if row["service"] in selected
+        ]
+        self.assertEqual(len(selected_rows), len(selected))
+        rows = {row["service"]: row for row in selected_rows}
+        self.assertEqual(set(rows), selected)
+        for service, row in rows.items():
+            with self.subTest(service=service, field="pending_evidence"):
+                self.assertEqual(row["source_refreshed_at"], refresh["refreshed_at"])
+                self.assertEqual(row["signature"], "NOT_RUN")
+                self.assertEqual(row["sbom_scan"], "NOT_RUN")
+                self.assertEqual(row["deployment"], "NOT_RUN")
+                self.assertIn("does not prove HOME rollout", row["runtime_refresh"])
+        self.assertEqual(updates["delivery_preconditions"]["home_rollout"], "NOT_RUN")
+
+        custom_services = {
+            "great-expectations",
+            "k6",
+            "oauth2-proxy",
+            "opentofu",
+            "tempo",
+        }
+        self.assertLessEqual(custom_services, selected)
+        for service in custom_services:
+            with self.subTest(service=service, field="custom_digest"):
+                row = rows[service]
+                self.assertEqual(row["target_index_digest"], "UNKNOWN")
+                self.assertEqual(row["target_manifest_digest"], "UNKNOWN")
+                self.assertEqual(row["target_config_digest"], "UNKNOWN")
+                self.assertTrue(row["target_declared_digest"].startswith("UNKNOWN:"))
+
+        exporters = [
+            record
+            for record in images["records"]
+            if record["repository"] == "oliver006/redis_exporter"
+        ]
+        self.assertEqual(len(exporters), 1)
+        exporter = exporters[0]
+        for service in selected - custom_services:
+            with self.subTest(service=service, field="exporter_digests"):
+                row = rows[service]
+                self.assertEqual(row["target_index_digest"], exporter["index_digest"])
+                self.assertEqual(
+                    row["target_manifest_digest"],
+                    exporter["platform_manifest_digest"],
+                )
+                self.assertEqual(row["target_config_digest"], exporter["config_digest"])
+                self.assertEqual(
+                    len(
+                        {
+                            row["target_index_digest"],
+                            row["target_manifest_digest"],
+                            row["target_config_digest"],
+                        }
+                    ),
+                    3,
+                )
+
+        for service in ("great-expectations", "opentofu"):
+            with self.subTest(service=service, field="followup_image"):
+                row = rows[service]
+                self.assertEqual(
+                    row["next_fact_command"],
+                    [
+                        "docker",
+                        "image",
+                        "inspect",
+                        "--platform",
+                        "linux/amd64",
+                        row["target_source_image"],
+                        "--format",
+                        "{{.Id}} {{.Architecture}}",
+                    ],
+                )
+        self.assertEqual(
+            rows["k6"]["next_fact_command"],
+            [
+                "git",
+                "show",
+                refresh["source_revision"] + ":infra/11-quality/k6/Dockerfile",
+            ],
+        )
+
     def test_tofu_effective_inline_build_and_local_tag_agree(self):
         service = services("infra/09-platform-ops/opentofu/docker-compose.yml")[
             "opentofu"
