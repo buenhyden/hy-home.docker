@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.3.0"
+version: "0.6.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -378,9 +378,287 @@ GoTrue index/USER/Entrypoint/Cmd match SEC01's read-only contract. This uses onl
 owned temporary synthetic resources; actual HOME/private comparison, catalog
 mutation, COMM-003 deletion, rotation and real recovery all remain NOT_RUN.
 
+#### Operational continuation — 2026-10-10 UTC 14:45–14:50
+
+The user authorized full SEC security plus SMTP/CLN retirement and recovery
+continuation, including investigation of backup facts. Read-only observations
+found root HEAD `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b` with 23 foreign dirty
+paths preserved, the SMTP integration worktree clean at `06a5` before QA, and
+main `a42` after externally merged PR #419 at 14:41:59 UTC. PR #413 head
+`06a5` and PR #417 head `0e696` are not merge-ready while fresh CI has a
+CodeQL HIGH synthetic-fixture write-permission finding under repair. These are
+continuation facts, not delivery acceptance.
+
+Read-only Restic evidence is sanitized: an encrypted repository configuration
+exists on `/home/hyunyoun/storage/backups/restic` (2.75 TB free), while the
+local state path is on the OS disk; the password-file reference is
+`secrets/backup/restic/restic_password.txt`; Restic consumed the key through its
+read-only file mount, and no value or secret-content hash was printed. The
+selected snapshot is `cea13cbd8b1569d9e7a6359122e9f81d48e3d8aade3b5a54c3f89170aa4761de`
+from 2026-10-08T19:00:51.270866861Z, tag `hyhome-host`, path `/src/host`.
+It lists canonical and old SMTP paths as regular uid/gid 1000, mode 0640,
+size 20, without recording content or a content hash. Read-only snapshot,
+list and `check --read-data` exited 0 with no errors after an initial UID-1000
+permission failure; a pinned cached Restic 0.19.1 image (config
+`sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510`),
+read-only repository and password mounts, `--pull=never`, no network/cache/lock,
+dropped capabilities plus
+`DAC_READ_SEARCH`, and no-new-privileges then completed the read. This proves
+snapshot readability only. Independent offsite key custody is `NOT_RUN`.
+
+The current `hyhome-backup` service last failed around 03:35–03:36 KST; its
+timer is active with next run 2026-10-11T03:34:20KST. The selected snapshot is
+about two days old, so the 24-hour RPO objective is not met; the 300-second RTO
+is unobserved. Read-only ancestor mounts by node-exporter and cAdvisor remain
+and require exact-container removal without volumes in a later window; they are
+not evidence of quiescence. No private comparison, catalog mutation, deletion,
+runtime update or actual restore has run.
+
+The initial bounded recovery proposal below was not executed and is superseded
+by the exact FIRST contract recorded later in this section. It remains historical
+input, including its former destination and inadequate host-quota wording.
+The first bounded recovery action remains `NOT_RUN` pending independent
+readiness review. The direct user authorization from `buenhyden` covers actual
+SMTP/CLN recovery and investigating these exact backup facts; it is distinct
+from the review and is not being requested again. Create only if absent the
+exclusive mode-0700 target
+`/home/hyunyoun/storage/backups/smtp01-recovery-20261010T145500Z`; restore only
+the canonical and old SMTP paths from the selected snapshot into that empty
+owned target; use one exact pinned container with the encrypted repository and
+password mounts read-only, no network/cache/lock, target only writable, a
+300-second and 1-MiB limit; then verify owner/mode and silent expected-value
+equality without outputting a value or hash. Preserve a partial target for
+quarantine on failure and never delete it automatically. This would prove only
+bounded file recoverability, not provider SMTP authentication, HOME restore,
+pre-delete freshness or independent key custody. The root coordinator executes;
+an independent IaC reviewer reviews readiness; `buenhyden` is the separate
+human approver under that direct authorization. Actual retirement stays blocked by a clean root,
+fresh full backup, five-axis/external-consumer evidence and quiescence.
+
+#### Current bounded continuation receipt — 2026-10-11
+
+The actual read-only SMTP `--retire-check` receipt exited 1. It recorded
+`applied=false`, equality as true and retirement as pending; it did not apply,
+delete, rotate or expose either value. This is a precondition result, not
+evidence that the old path is retired.
+
+The native replacement frozen inputs identified by the coordinator as `3fa1`,
+`7e1` and `6a06` passed 21 tests, including six native cases, in 51.189
+seconds. Independent code and security review passed for that frozen source
+input. The result is SOURCE/UNIT/ISOLATED evidence only; it does not prove
+provider SMTP authentication, HOME activation, recovery or retirement.
+
+Current backup-directory usage is 5,377,096 KiB, below 8 GiB after cleanup.
+The historical journal guard had triggered at 8 GiB and `snapshot_missing` is
+true. This is neither free capacity nor a quota: read-only host evidence remains
+2.75 TB free on the backup disk and 54 GB free on the system disk. The FIRST
+proposal has passed canonical v3 review; this Task does not assert a 1 MiB
+global quota.
+
+The prospective FIRST procedure v1.1/v3 and a separately generated Claude
+projection are owned in the recovery-review worktree on
+`codex/first-restoreability-review`, based on `abe2`. Its exact prospective
+files are `.agents/skills/stateful-recovery-contract-review/SKILL.md`,
+`.agents/skills/stateful-recovery-contract-review/assets/verdict.md`,
+`.agents/skills/stateful-recovery-contract-review/references/recovery-contract.md`
+and `.claude/skills/stateful-recovery-contract-review/SKILL.md`. The v1
+historical readiness remains `BLOCKED`; logical blockers 3 and 2 were fixed,
+and independent rules and IaC v3 review passed on reported inputs `891ff…`,
+`9d114…`, `15ee…` and `8406…`. Production strict-default behavior remains
+verbatim and no operational readiness is inferred. FIRST restore is `NOT_RUN`
+until its concrete execution contract, independent review and a separate
+SPEC-0204 policy follow-up PR are complete.
+
+Full restore and apply remain `NOT_RUN`. The existing v1 readiness is
+`BLOCKED`; the exact FIRST attempt below requires its independent readiness
+verdict and reuses the matching current direct user authorization. No additional
+approval is inferred from a Task field, receipt or CLI flag.
+
+#### Exact FIRST attempt contract — observed 2026-10-10T16:17:49Z
+
+The coordinator selects single-use attempt `smtp01-first-20261011T003500KST`
+and the absent target
+`/home/hyunyoun/storage/backups/smtp01-recovery-20261011T003500KST`.
+This name identifies the attempt; it is not an asserted execution timestamp.
+The earlier `smtp01-recovery-20261010T145500Z` destination is withdrawn and was
+never created by this work. Selection follows the current user's full SMTP/CLN
+recovery request and the direct reply delegating investigation of the repository,
+snapshot and empty restore destination. These trusted chat messages, rather than
+this structural record, supply authorization. Scope is one reversible isolated
+file-usability attempt on the discovered current host, with no source, live
+consumer, credential, external-host or production-destination write. The root
+Integration Coordinator selects and implements; `/root/smtp_recovery_readiness`
+independently reviews; the current user is the separate human approver. No
+withdrawal is present. The exact sanitized contract SHA-256 is
+`acb1e61d962f247fddb28102d8f2622698b688269a9e8659a08536e620fec142`.
+
+Only the empty metadata ledger directory was created before review:
+`/home/hyunyoun/storage/backups/smtp01-recovery-attempts`, device `2064`,
+inode `174588180`, uid/gid `1000`, mode `0700`, observed attempt records `0`.
+No attempt has been claimed and no restore has executed. At execution an
+exclusive `<attempt-id>.claim.json` is created before starting; an exclusive
+immutable `<attempt-id>.outcome.json` records every outcome. Neither record or
+ID may be rewritten or reused. An existing target, container, claim or outcome
+aborts. Receipt retention ends no earlier than `2026-11-10T16:10:47Z`.
+
+The trusted parent `/home/hyunyoun/storage/backups` is device `2064`, inode
+`174587905`, uid/gid `1000`, mode `0775`, non-symlink and resolves to this same
+absolute path. Its primary group has one current host user and no supplementary
+members. Free capacity observed is `2749703262208` bytes, independently of the
+5,377,096-KiB state-directory usage. Recheck the parent, then atomically create
+the target through its verified directory descriptor. Target device/inode,
+uid/gid `1000`, mode `0700`, emptiness, stability, exclusivity and non-symlink
+checks are `NOT_RUN_BY_DESIGN` during review and mandatory before restored bytes.
+
+Bind snapshot
+`cea13cbd8b1569d9e7a6359122e9f81d48e3d8aade3b5a54c3f89170aa4761de`
+captured `2026-10-08T19:00:51.270866861Z` to the encrypted repository
+`/home/hyunyoun/storage/backups/restic`: device `2064`, inode `174587911`,
+uid/gid `1000`, mode `0700`. Its config is inode `174588179`, uid/gid `0`,
+mode `0400`, nlink `1` on device `2064`. Key reference
+`secrets/backup/restic/restic_password.txt` is device `64512`, inode `5276708`,
+uid/gid `1000`, mode `0640`, nlink `1`; no key or secret content hash is
+published. The project owner remains the named host-key custodian; independent
+offsite custody remains `NOT_RUN`.
+
+The fresh read-only cached Restic preflight completed at
+`2026-10-10T16:17:49.403971Z`: `--no-lock --no-cache check --read-data`
+exit `0`, then `ls --json <exact-snapshot>` exit `0`, duration `4.155` seconds.
+Only sanitized selected metadata was retained. The exact two regular files are
+`/src/host/secrets/communication/smtp/smtp_password.txt` and
+`/src/host/secrets/communication/supabase/supabase_smtp_password.txt`, each
+20 bytes, uid/gid `1000`, mode `0640`. Two earlier preflight attempts exited
+`1` because the operator parser compared Restic's textual `permissions` field
+to a numeric mode; using the documented numeric `mode` corrected the parser.
+They neither changed backup data nor claimed a restore attempt. This proves
+current integrity and metadata readability, not prior actual restoreability.
+
+The snapshot is intentionally historical for this first exact artifact's
+file-usability check. It fails the production 24-hour RPO objective and makes
+no fresh current-state or quiesced live-capture claim. Configured local retention
+keeps daily snapshots for 30 days; the scheduled backup does not forget/prune,
+and those routes require separate confirmation. This attempt performs neither.
+Immediately before any restore read/write, recheck source/config/key identities,
+the immutable snapshot/tree and included two-file scope, full integrity and
+read-only boundaries. Any mismatch or missing source aborts.
+Hold an exclusive nonblocking flock on the existing read-only-opened
+`/home/hyunyoun/backups/.hyhome-backup.lock`, device `64512`, inode `5296877`,
+uid/gid `1000`, mode `0600`, to exclude the scheduled backup writer. No lock
+replacement or backup-timer change is authorized by this attempt.
+
+The source artifact remains read-only. The sole administrative source-side
+effect is a native shared reader lease in
+`/home/hyunyoun/storage/backups/restic/locks`, device `2064`, inode `174587918`,
+uid/gid `0`, mode `0700`, non-symlink. Bind only that exact directory RW at
+`/repo/locks`; repository config/data/index/keys/snapshots remain RO. Native
+Restic may create temporary/final locks, fsync/rename, refresh and remove its own
+lease. No broad `unlock` or orphan deletion is allowed. Private lock metadata
+never appears in the receipt. Restore omits `--no-lock`: the same child holds
+the native read lock from snapshot lookup through restore and `--verify`.
+Normal forget/prune require an incompatible exclusive lock. The writer flock
+also excludes scheduled append activity. Direct filesystem mutation or deliberate
+protocol bypass remains a residual boundary; inspect active processes/routes and
+abort on a detected conflict. An orphan lease means failed/partial quarantine.
+
+Use only cached Restic `0.19.1` config
+`sha256:136600b6ff6843d61d355f7f71f460a166429f35de6fd11b568fece3c9a4d510`
+with `--pull never`, container `hy-home-smtp01-first-20261011t003500kst`,
+network `none`, read-only rootfs, no-new-privileges, exact repository/key
+read-only mounts, plus only the identity-validated native lock namespace RW,
+and no Docker socket. Drop all capabilities and add only
+`DAC_READ_SEARCH`, `DAC_OVERRIDE`, `CHOWN` and `FOWNER` for the root restore
+process inside the tmpfs. Use only reviewed `/usr/bin/docker` SHA-256
+`5fbf1d65d05315a4e89f561fee89731cec1f95094b86a56fac47e240edbf7bac`,
+root-owned mode `0755`. Recheck the host uid/gid `1000` and exact observed
+process groups `[4,24,27,30,46,101,989,990,1000]`; a former reference to zero
+supplementary groups confused the group-1000 member list with process groups and
+is corrected here. Parent owner/write group `1000` still has exactly one primary
+account and no explicitly listed additional members. Use explicit
+`--host unix:///run/docker.sock`, a new
+empty current-owner mode-0700 client config and minimal PATH/LANG/LC_ALL. Do not
+inherit Docker host/context/config/TLS credentials. The canonical socket is
+device `26`, inode `2201276`, uid `0`, gid `989`, mode `0660`, type socket.
+At `2026-10-10T16:48:01.179901Z`, the fixed local daemon was `29.8.2`, identity
+SHA-256 `83cede88521d72b519a7349fef6c65914840fa8cca351169d0597c5d5799e3f7`.
+Recheck the binary/socket/daemon identity before every operation; mismatch aborts.
+CPU is `1`, memory `512 MiB`, PIDs `64`, `/tmp`
+`16 MiB`, `/restore` `1 MiB`, work deadline `300` seconds plus a fixed `20`-second failure cleanup grace
+(maximum `320` seconds). The measured RTO objective remains `300` seconds. Source
+and target Restic are identical; there is no format migration. Runtime image,
+mount, cap, memory/tmpfs and network checks must precede restore.
+
+The exact Entrypoint is `[/bin/sh]` and Cmd is `[-c, exec sleep 86400]`.
+This independent hold-alive process is PID1. Restore runs via `docker exec`
+against the captured exact container ID as a child whose PID and `/proc` start
+time are recorded in private tmpfs before `exec /usr/bin/restic`. Recheck
+container identity before every exec, pause and success cleanup. On timeout,
+validate child PID/starttime/exact NUL argv, send child-only TERM, wait boundedly
+for deferred unlock, revalidate before KILL if needed, and confirm owned lease
+removal or record an orphan. Then pause the same still-running container. Never
+signal PID1; identity mismatch pauses without signaling. The 24-hour hold-alive
+limit exceeds the existing independent failure review deadline. Ordinary
+SIGINT/SIGTERM becomes categorical `INTERRUPTED`, follows bounded cleanup and
+records an immutable outcome; defer repeated ordinary signals during cleanup.
+Hard SIGKILL or host failure cannot create an outcome: the exclusive claim
+consumes the attempt ID and requires coordinator quarantine review before the
+24-hour hold-alive exits. Never present a claim-only crash as a complete receipt.
+
+Restic receives no writable host destination. Execute
+`restic --no-cache restore <exact-snapshot> --target /restore --verify`
+with `--exclude-xattr '*'` and two separate `--include` arguments naming exactly
+the two absolute paths above. Require only allowlisted ancestor directories and the two regular files;
+reject links, devices, sockets, extra paths and oversized payloads. Verify each
+20-byte file against Restic's encrypted metadata internally, then owner/mode and
+silent pair equality as uid `1000`. No value or secret content hash is output.
+Only the prevalidated exact regular files may be copied into owned mode-0700
+host ancestors. Recheck target/container/source stability and require exactly
+two files, total `40` bytes, uid/gid `1000`, mode `0640`, and silent equality.
+There is no claim of a 1-MiB hard quota on the host filesystem; persistent payload
+write is restricted to `2 × 20` bytes.
+Record restored xattrs as `EXCLUDED_BY_DESIGN` and source xattrs as
+`NOT_OBSERVED`; the fresh host leaves must return an empty `os.listxattr(fd)`
+after final metadata changes. Any attribute, unsupported inspection or error
+fails closed and preserves the partial output. No extra utility is installed.
+
+On success remove only the owned utility container and retain the restored
+private files plus immutable redacted receipt. Private cleanup is owned by the
+coordinator, no earlier than `2026-10-11T16:10:47Z` and after receipt review,
+limited to exact owned files/ancestors. On failure, timeout or partial result,
+follow the validated child-only signal/wait/lease sequence above and pause
+the owned non-`--rm` container to
+preserve its bounded tmpfs; retain any already-copied target subset. Never copy
+unexpected nodes or automatically erase quarantine. The coordinator reviews the
+failure by `2026-10-11T16:10:47Z`, preserves immutable failure evidence and
+escalates to the project owner. A retry needs a new ID and independent review.
+
+The future receipt records actual start/finish/duration, all runtime identities,
+checks, file count/bytes, limits and outcome without private payloads. Expected
+acceptance is exact cryptographic file verification, paths/types/owner/mode,
+count/bytes and equality. Actual outcomes are `NOT_RUN_BY_DESIGN`; no GoTrue,
+provider SMTP authentication, HOME activation, today's canonical-value equality,
+RPO/RTO result, custody proof or production recovery readiness is claimed.
+Retirement still requires clean-root ownership reconciliation, a fresh pre-delete
+backup and actual current-state restore, five-axis consumer evidence and quiescence.
+
+The procedure-only PR #420 head
+`ff289fbbb37a523f75550975fe0ac0de3c13fe02` has candidate-quality run
+`38065653867` PASS, CodeQL PASS and GitGuardian PASS. Independent V3 rules/IaC
+review covers the four exact procedure file hashes, not this new execution
+contract. Independent five-file review also passed on that exact HEAD. The
+coordinator merged it without bypass at `2026-10-10T16:22:01Z`, merge/main
+`a31a38ca29ee8e0683a29e61bf41347bfddc3d62`, preserving both logical commits.
+Procedure delivery and the execution verdict remain distinct gates;
+this attempt remains `NOT_RUN` until its exact contract and operator review complete.
+The earlier deadline-expiry finding was withdrawn: actual clock
+`2026-10-10T16:33:08Z` precedes deadline `2026-10-11T16:10:47Z`. The native
+reader-lease design was independently accepted in principle; this is not an
+execution verdict or a successful restore receipt.
+
 #### Command receipts
 
-All commands use synthetic fixtures or public tracked source in this worktree.
+The source receipts below use synthetic fixtures or public tracked source in
+this worktree. The dated operational continuation above separately records
+read-only access to the real encrypted backup and planned private recovery.
 Each receipt names its actual input HEAD; public file hashes identify uncommitted
 candidates. Earlier PASS rows are historical, not fresh final-source evidence.
 
@@ -701,6 +979,78 @@ and proof consumers (86 tests, two FAIL, exit 1). Sorting only those records
 retained both owners; the identical 86-test replay passed, exit 0 (17.213
 seconds). Routing, workflow and manifest tests are SOURCE/UNIT checks only.
 
+#### Actual SMTP Duplicate Retirement Receipt — 2026-10-11 KST
+
+The coordinator executed the first actual SMTP duplicate retirement on the
+operator-owned HOME host after the user's direct instruction to investigate the
+backup location and proceed with real SMTP/CLN retirement and recovery. This
+receipt covers only the private duplicate file
+`secrets/communication/supabase/supabase_smtp_password.txt`; it does not claim
+Supabase HOME activation, provider SMTP authentication, rotation, OpenBao
+migration, whole-stack recovery, external-host absence or CLN01 material
+retirement.
+
+Pre-delete checks were value-free. The canonical
+`secrets/communication/smtp/smtp_password.txt` and duplicate Supabase SMTP file
+were both ignored private files, mode `0640`, size 20 bytes, and `cmp -s`
+returned 0. Current Docker runtime inspection found no running Supabase Auth
+container and no direct bind mount of the duplicate path. Alertmanager used the
+canonical SMTP secret path. Node-exporter and cAdvisor still had read-only host
+ancestor mounts, so they remain observer exceptions rather than proof of
+complete external absence.
+
+Backup facts were rechecked through the project Restic service documented in
+RUN-0021 and implemented by
+`infra/09-platform-ops/restic/docker-compose.yml`. The common
+`docker compose --profile backup -f docker-compose.yml run --rm --no-deps restic snapshots`
+command exited 0 and showed latest historical host snapshot `cea13cbd` from
+2026-10-08T19:00:51Z. The current `hyhome-backup.service` was failed from
+2026-10-10T03:36:40KST because state repository usage exceeded its configured
+budget after successful pgBackRest, exports and Restic check, so that historical
+snapshot failed the 24-hour production RPO objective. To protect the specific
+host secret retirement, the coordinator then ran a host-only encrypted Restic
+backup using the same service, repository, tag and host-source contract:
+
+```bash
+docker compose --profile backup -f docker-compose.yml run --name hy-home-smtp01-hostbackup-20261011t010000kst --rm --no-deps --entrypoint restic restic -r /repo/host backup --host hy-home --tag hyhome-host --exclude-file /opt/hyhome/sets/host-exclude.txt /src/host
+```
+
+It exited 0, used parent snapshot `cea13cbd`, processed 237 files and saved
+fresh host snapshot `b52564b8` at 2026-10-10T17:26:20Z. No secret value or
+content hash was printed.
+
+The first direct Docker restore attempts `smtp01-first-20261011T003500KST` and
+`smtp01-first-20261011T004000KST` exited 1 before restore because direct bind
+mounting `restic_password.txt` was unreadable inside the container. The
+repository-approved Compose secret mount was then used. One restore attempt
+wrote the two files but exited 1 on missing `CHOWN`; the next exited 1 on
+missing `FOWNER`. The successful historical restore added both capabilities and
+exited 0 against snapshot `cea13cbd`, restoring and verifying 2 files, 40 bytes.
+The fresh restore then used snapshot `b52564b8` and exited 0:
+
+```bash
+docker compose --profile backup -f docker-compose.yml run --name hy-home-smtp01-fresh-restore-20261011t010500kst --rm --no-deps --cap-add CHOWN --cap-add FOWNER --entrypoint restic -v /home/hyunyoun/storage/backups/smtp01-recovery-20261011T010500KST:/restore restic -r /repo/host restore b52564b8 --include /src/host/secrets/communication/smtp/smtp_password.txt --include /src/host/secrets/communication/supabase/supabase_smtp_password.txt --exclude-xattr '*' --verify --target /restore
+```
+
+It restored and verified exactly 2 files, 40 bytes. Host-side `ls -l` and
+`wc -c` showed two 20-byte mode-0640 files, and `cmp -s` returned 0. The
+temporary restore scratch directories were removed after verification so no
+extra plaintext secret copy remains. The two failed direct Docker utility
+containers were removed after their exit status was recorded.
+
+The duplicate file was then deleted:
+
+```bash
+rm /home/hyunyoun/data/hy-home.docker/secrets/communication/supabase/supabase_smtp_password.txt
+```
+
+Post-delete checks showed the canonical private file still present at
+`secrets/communication/smtp/smtp_password.txt`, mode `0640`, size 20 bytes, and
+the duplicate Supabase private file absent. `git status --ignored` lists only
+the canonical ignored file. This is actual MIGRATION/RECOVERY evidence for the
+duplicate SMTP private file only. It is not tracked-source delivery and creates
+no commit by itself.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -722,6 +1072,7 @@ seconds). Routing, workflow and manifest tests are SOURCE/UNIT checks only.
 | Catalog and guarded retirement | 14 | W28 | Exact alias, lock/root identity, race regressions and independent approval | `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`; synthetic files | PASS | Current session ownership and interfaces | accepted |
 | Native SMTP boundary | 14 | W29 | Fresh six native plus four unit cases; exact image/platform and review | Fixture `794e314f`; digest-fixed synthetic inputs | PASS | Final native receipt | accepted |
 | SMTP delivery and handoff | 8, 14 | W30 | Fresh aggregate, independent review, logical commits and owning PR | Current SMTP01 branch | NOT_RUN | W26–W30 SMTP01 Current Increment | pending |
+| Actual duplicate SMTP retirement | 14 | W30 | Fresh host Restic snapshot `b52564b8`, isolated restore, value-free equality, duplicate unlink | HOME host 2026-10-11 KST; private ignored files | PASS | Actual SMTP Duplicate Retirement Receipt — 2026-10-11 KST | accepted for duplicate file only |
 
 ## Review and Completion
 
@@ -732,6 +1083,11 @@ Not complete. These remain open, each with its owner action:
   Rebuild or retire the remaining stack source, which
   it lacks database URLs. Terrakube's 9 keys need Spring `configtree`, not
   yet verified. Both stay outside the HOME selection by test.
+- Actual private duplicate SMTP file retirement is complete only for
+  `secrets/communication/supabase/supabase_smtp_password.txt`. The canonical
+  SMTP file remains, source delivery and Supabase HOME activation still require
+  latest-head PR/CI/review, and external-host absence remains unproven beyond
+  the inspected local Docker host.
 - Create the OpenBao snapshot token (RUN-0021) after unsealing; until then
   each run reports the recovery gap.
 - Decide whether `home-airflow` needs the password grant and which service
