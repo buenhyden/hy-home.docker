@@ -116,7 +116,14 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             )
             (tools / "openssl").chmod(0o700)
             result = subprocess.run(
-                ["sh", str(script), str(fixture), "openbao/openbao:2.6.2"],
+                [
+                    "sh",
+                    str(script),
+                    str(fixture),
+                    compose("infra/03-security/openbao/docker-compose.yml")["services"][
+                        "openbao"
+                    ]["image"],
+                ],
                 env={**os.environ, "PATH": f"{tools}:{os.environ['PATH']}"},
                 capture_output=True,
                 check=False,
@@ -127,9 +134,15 @@ class RuntimeCompatibilityTests(unittest.TestCase):
 
     def test_documented_renderer_delivery_names_exact_stopped_agent(self):
         runbook = (ROOT / "docs/05.operations/runbooks/0085-openbao.md").read_text()
+        image = compose("infra/03-security/openbao/docker-compose.yml")["services"][
+            "openbao"
+        ]["image"]
         self.assertIn(
-            "openbao hy-home-infra_openbao-agent-data openbao/openbao:2.6.2 openbao-agent",
-            runbook,
+            image + ' openbao-agent "$issuance_journal" "$issuer_commit"', runbook
+        )
+        self.assertIn('openbao "$agent_volume"', runbook)
+        self.assertIn(
+            '"$operator_tools/$issuer_commit/issue-renderer-secret-id.sh"', runbook
         )
 
     def test_openbao_exception_names_key_and_audit_without_home_claim(self):
@@ -244,7 +257,10 @@ class RuntimeCompatibilityTests(unittest.TestCase):
             for name in ("n8n", "n8n-worker")
         }
         versions.update(
-            services[name]["image"].split(":", 1)[1].removesuffix("-local")
+            services[name]["image"]
+            .split("@", 1)[0]
+            .rsplit(":", 1)[1]
+            .removesuffix("-local")
             for name in (
                 "n8n",
                 "n8n-worker",

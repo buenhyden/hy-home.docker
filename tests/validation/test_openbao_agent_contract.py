@@ -1,5 +1,6 @@
 """Renderer readiness and wrapped reissue contracts using private safe stubs."""
 
+import hashlib
 import json
 import os
 import secrets
@@ -10,6 +11,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "infra/03-security/openbao/scripts"
+IMAGE = "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
+MANIFEST = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
 
 
 class AgentContractTests(unittest.TestCase):
@@ -24,6 +27,9 @@ class AgentContractTests(unittest.TestCase):
         self.out = self.root / "openbao/out"
         for directory in ("auth", "observability"):
             (self.out / directory).mkdir(parents=True)
+        self.journal = self.root / "journal"
+        self.journal.mkdir(mode=0o700)
+        self.cleanup_token = secrets.token_hex(24)
         self.token = secrets.token_hex(24)
         self.values = [secrets.token_hex(24), secrets.token_hex(24)]
         (self.agent / "token").write_text(self.token)
@@ -51,6 +57,8 @@ class AgentContractTests(unittest.TestCase):
             "BAO_CACERT": str(self.ca),
             "STUB_ROOT": str(self.root),
             "STUB_TOKEN": self.token,
+            "STUB_CLEANUP_TOKEN": self.cleanup_token,
+            "STUB_MANIFEST": MANIFEST,
             "STUB_VALUE_1": self.values[0],
             "STUB_VALUE_2": self.values[1],
         }
@@ -72,14 +80,40 @@ mode = os.environ.get("STUB_FAILURE", "")
 if args[0] == "agent":
     sys.stderr.write("agent: authentication pending\\n")
     sys.exit(0 if not (root / "openbao/agent/token").exists() else 1)
-if os.environ.get("BAO_TOKEN") != os.environ["STUB_TOKEN"]:
+if os.environ.get("BAO_TOKEN") not in (os.environ["STUB_TOKEN"], os.environ["STUB_CLEANUP_TOKEN"]):
     sys.exit(1)
+if args[:2] == ["read", "-format=json"]:
+    role = "renderer-issuer" if os.environ["BAO_TOKEN"] == os.environ["STUB_TOKEN"] else "renderer-cleanup"
+    print(json.dumps({"data":{"policies":[role],"renewable":False,"ttl":299,
+                             "explicit_max_ttl":300,"type":"service",
+                             "path":"auth/token/create/"+role}}))
+    sys.exit(0)
+if args[0] == "list":
+    data = json.loads((root / "accessors.json").read_text()) if (root / "accessors.json").exists() else {}
+    print(json.dumps({"data":{"keys":list(data)}}))
+    sys.exit(0)
 if args[0] == "status":
     sys.exit(2 if mode == "sealed" else 0)
 if args[:2] == ["token", "lookup"]:
     sys.exit(1 if mode in ("expired", "forbidden") else 0)
 if args[0] == "write":
-    sys.stdout.write(os.environ["STUB_VALUE_1"])
+    from datetime import datetime,timezone
+    payload = json.load(sys.stdin)
+    state = root / "accessors.json"
+    data = json.loads(state.read_text()) if state.exists() else {}
+    if "secret-id-accessor/lookup" in args[-2]:
+        print(json.dumps({"data":data[payload["secret_id_accessor"]]}))
+    elif "secret-id-accessor/destroy" in args[-2]:
+        data.pop(payload["secret_id_accessor"])
+        state.write_text(json.dumps(data))
+    else:
+        data["synthetic-accessor"] = {"metadata":json.loads(payload["metadata"]),
+                                      "creation_time":datetime.now(timezone.utc).isoformat()}
+        state.write_text(json.dumps(data))
+        if mode == "issue":
+            sys.stderr.write(os.environ["STUB_VALUE_1"])
+            sys.exit(1)
+        print(json.dumps({"wrap_info":{"token":os.environ["STUB_VALUE_1"]}}))
     sys.exit(0)
 if args[:2] == ["kv", "get"]:
     output = os.readlink("/proc/self/fd/1")
@@ -114,41 +148,47 @@ args = sys.argv[1:]
 root = pathlib.Path(os.environ["STUB_ROOT"])
 with (root / "arguments.jsonl").open("a") as log:
     log.write(json.dumps(args) + "\\n")
-if args[:2] == ["volume", "inspect"]:
-    sys.exit(1 if os.environ.get("STUB_FAILURE") == "volume" else 0)
-image_id = "sha256:" + "a" * 64
+image_id = os.environ["STUB_MANIFEST"]
 mode = os.environ.get("STUB_FAILURE", "")
+if args[:2] == ["volume", "inspect"]:
+    if mode == "volume":sys.exit(1)
+    sys.stdout.write(str(root / "openbao/agent"))
+    sys.exit(0)
 if args[:2] == ["image", "inspect"]:
     sys.stdout.write(image_id)
     sys.exit(0)
 if args[0] == "inspect":
-    includes_image = ".Image" in args[args.index("--format") + 1]
+    query = args[args.index("--format") + 1]
     if args[-1] == "openbao":
-        if mode == "server-image":
-            image_id = "sha256:" + "b" * 64
+        if mode == "server-image":image_id = "sha256:" + "b" * 64
         sys.stdout.write(image_id + (" false" if mode == "server-stopped" else " true"))
-        sys.exit(0)
-    result = {
-        "agent-running": "true volume p01-agent",
-        "agent-volume": "false volume different-volume",
-        "agent-bind": "false bind p01-agent",
-        "agent-mount": "false ",
-    }.get(mode, "false volume p01-agent")
-    if includes_image:
-        if mode == "agent-image":
-            image_id = "sha256:" + "b" * 64
-        result = image_id + " " + result
-    sys.stdout.write(result)
+    elif query == "{{.State.StartedAt}}":
+        sys.stdout.write("2026-10-10T07:00:01Z")
+    elif query == "{{.State.Running}}":
+        sys.stdout.write("true" if mode == "agent-running" or (root / "started").exists() else "false")
+    elif query.startswith('{"entrypoint":'):
+        sys.stdout.write(json.dumps({"entrypoint":["/bin/sh",str(root / "openbao/scripts/start-agent.sh")],"cmd":None}))
+    else:
+        if mode == "agent-image":image_id = "sha256:" + "b" * 64
+        mount = {"agent-volume":"volume different-volume","agent-bind":"bind p01-agent",
+                 "agent-mount":""}.get(mode,"volume p01-agent")
+        sys.stdout.write(image_id + " " + mount)
+    sys.exit(0)
+if args[0] == "start":
+    (root / "started").touch()
+    (root / "accessors.json").write_text("{}")
+    (root / "openbao/agent/token").write_text(os.environ["STUB_TOKEN"])
+    (root / "openbao/agent/token").chmod(0o600)
     sys.exit(0)
 payload = sys.stdin.read()
 if args[0] == "exec":
-    if os.environ.get("STUB_FAILURE") == "issue":
-        sys.stderr.write(payload)
-        sys.exit(1)
-    if payload.rstrip("\\n") != os.environ["STUB_TOKEN"]:
+    if args[-1].endswith("health-agent.sh"):
+        result = subprocess.run(["sh", args[-1]], check=False)
+        sys.exit(result.returncode)
+    if payload.split("\\n",1)[0] not in (os.environ["STUB_TOKEN"],os.environ["STUB_CLEANUP_TOKEN"]):
         sys.exit(1)
 elif args[0] == "run":
-    if os.environ.get("STUB_FAILURE") == "deliver":
+    if mode == "deliver":
         sys.stderr.write(payload)
         sys.exit(1)
     if payload.rstrip("\\n") != os.environ["STUB_VALUE_1"]:
@@ -166,12 +206,47 @@ sys.exit(result.returncode)
         path.chmod(0o700)
 
     def run_script(self, name, *args, stdin=None):
+        if name == "issue-renderer-secret-id.sh":
+            helper = self.root / "renderer-issuance.py"
+            helper.write_text(
+                (SCRIPTS / "renderer-issuance.py")
+                .read_text()
+                .replace("/openbao/", str(self.root / "openbao") + "/")
+            )
+            helper.chmod(0o600)
+            health = self.root / "openbao/scripts/health-agent.sh"
+            health.parent.mkdir(exist_ok=True)
+            health.write_text(
+                (SCRIPTS / "health-agent.sh")
+                .read_text()
+                .replace("/openbao/", str(self.root / "openbao") + "/")
+            )
+            if len(args) == 4:
+                args = (*args, str(self.journal), "a" * 40)
+            stdin = self.token + "\n" + self.cleanup_token + "\n"
         source = SCRIPTS / name
         self.assertTrue(source.is_file(), f"Missing contract script: {name}")
         fixture = self.root / name
         fixture.write_text(
             source.read_text().replace("/openbao/", str(self.root / "openbao") + "/")
         )
+        fixture.chmod(0o600)
+        if name == "issue-renderer-secret-id.sh":
+            receipt = self.root / "source-receipt.json"
+            if receipt.exists():
+                receipt.chmod(0o600)
+            receipt.write_text(
+                json.dumps(
+                    {
+                        "source_revision": "a" * 40,
+                        "sha256": {
+                            p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                            for p in (fixture, self.root / "renderer-issuance.py")
+                        },
+                    }
+                )
+            )
+            receipt.chmod(0o400)
         result = subprocess.run(
             ["sh", str(fixture), *args],
             env=self.env,
@@ -192,7 +267,10 @@ sys.exit(result.returncode)
         if self.log.exists():
             public = self.log.read_text()
             self.assertTrue(
-                all(value not in public for value in [self.token, *self.values]),
+                all(
+                    value not in public
+                    for value in [self.token, self.cleanup_token, *self.values]
+                ),
                 "Secret-bearing argv",
             )
         return result
@@ -322,7 +400,7 @@ sys.exit(result.returncode)
             "issue-renderer-secret-id.sh",
             "openbao",
             "p01-agent",
-            "openbao/openbao:2.6.2",
+            IMAGE,
             "openbao-agent",
             stdin=self.token + "\n",
         )
@@ -333,20 +411,33 @@ sys.exit(result.returncode)
         )
         self.assertEqual(target.stat().st_mode & 0o777, 0o600)
         calls = [json.loads(line) for line in self.log.read_text().splitlines()]
-        self.assertIn("--network=none", calls[-1])
-        self.assertIn("--pull=never", calls[-1])
-        self.assertIn("--user=100:1000", calls[-1])
+        delivery = next(call for call in calls if call[0] == "run")
+        self.assertIn("--network=none", delivery)
+        self.assertIn("--pull=never", delivery)
+        self.assertIn("--user=100:1000", delivery)
+        self.assertIn("--cap-drop=ALL", delivery)
+        self.assertIn("--read-only", delivery)
         self.assertEqual(
             calls[0],
-            ["image", "inspect", "--format", "{{.Id}}", "openbao/openbao:2.6.2"],
+            [
+                "image",
+                "inspect",
+                "--platform=linux/amd64",
+                "--format",
+                "{{.Id}}",
+                IMAGE,
+            ],
         )
-        self.assertEqual(calls[1], ["volume", "inspect", "p01-agent"])
-        self.assertTrue(
-            "auth/approle/role/hy-home-renderer/secret-id" in " ".join(calls[4])
+        self.assertTrue(any(call[:2] == ["volume", "inspect"] for call in calls))
+        issue = next(call for call in calls if "-wrap-ttl=60s" in " ".join(call))
+        self.assertIn("auth/approle/role/hy-home-renderer/secret-id", " ".join(issue))
+        self.assertEqual(calls[1][-1], "openbao")
+        self.assertEqual(calls[2][-1], "openbao-agent")
+        self.assertFalse((self.journal / "issuance.json").exists())
+        self.assertEqual(
+            "complete",
+            json.loads((self.journal / "issuance.anchor").read_text())["state"],
         )
-        self.assertTrue("-wrap-ttl=60s" in " ".join(calls[4]))
-        self.assertEqual(calls[2][-1], "openbao")
-        self.assertEqual(calls[3][-1], "openbao-agent")
 
     def test_issue_and_delivery_failures_are_redacted(self):
         for failure in ("issue", "deliver", "volume"):
@@ -355,7 +446,7 @@ sys.exit(result.returncode)
                 "issue-renderer-secret-id.sh",
                 "openbao",
                 "p01-agent",
-                "openbao/openbao:2.6.2",
+                IMAGE,
                 "openbao-agent",
                 stdin=self.token + "\n",
             )
@@ -373,7 +464,7 @@ sys.exit(result.returncode)
             "issue-renderer-secret-id.sh",
             "openbao",
             "p01-agent",
-            "openbao/openbao:2.6.2",
+            IMAGE,
             "openbao-agent",
             stdin=self.token + "\n",
         )
@@ -389,7 +480,7 @@ sys.exit(result.returncode)
             "issue-renderer-secret-id.sh",
             "openbao",
             "p01-agent",
-            "openbao/openbao:2.6.2",
+            IMAGE,
             "openbao-agent",
             stdin=self.token + "\n",
         )
@@ -399,8 +490,8 @@ sys.exit(result.returncode)
 
     def test_unsafe_target_or_other_image_rejected(self):
         for args in (
-            ("--privileged", "p01-agent", "openbao/openbao:2.6.2"),
-            ("openbao", "../data", "openbao/openbao:2.6.2"),
+            ("--privileged", "p01-agent", IMAGE),
+            ("openbao", "../data", IMAGE),
             ("openbao", "p01-agent", "other:latest"),
         ):
             self.assertNotEqual(
@@ -424,12 +515,13 @@ sys.exit(result.returncode)
 
     def test_issuer_requires_stopped_agent_and_exact_volume_binding(self):
         for failure in ("agent-running", "agent-volume", "agent-bind", "agent-mount"):
+            self.log.unlink(missing_ok=True)
             self.env["STUB_FAILURE"] = failure
             result = self.run_script(
                 "issue-renderer-secret-id.sh",
                 "openbao",
                 "p01-agent",
-                "openbao/openbao:2.6.2",
+                IMAGE,
                 "openbao-agent",
                 stdin=self.token + "\n",
             )

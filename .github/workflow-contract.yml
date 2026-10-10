@@ -708,6 +708,11 @@
         "tests.validation.test_mng_valkey_acl",
         "tests.validation.test_redisinsight_rehearsal",
         "tests.validation.test_datastore_observation_rehearsal",
+        "tests.lib.ops.test_openbao_issuance",
+        "tests.lib.ops.test_openbao_issuance_trust",
+        "tests.validation.test_openbao_candidate.ExpiryRegression",
+        "tests.validation.test_sec01_version_contract",
+        "tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests",
         "--optional-runtime-skips",
         "tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests",
         "tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests",
@@ -756,9 +761,12 @@
         "tests.validation.test_tech_stack_version_contract",
         "tests.validation.test_validator_entrypoints",
         "tests.validation.test_secret_metadata_sync",
+        "tests.lib.ops.test_retirement",
+        "tests.validation.test_retirement_cli",
         "tests.validation.test_project_registration",
         "tests.lib.ops.test_wiki_preparation",
         "tests.validation.test_wiki_preparation_contracts",
+        "tests.validation.test_sec01_ci_routing",
         "-v"
       ],
       "cwd": ".",
@@ -868,6 +876,7 @@
         "tests.validation.test_supply_chain_wrapper",
         "tests.validation.test_supply_chain_secure_output",
         "tests.validation.test_sample_service_delivery_rehearsal",
+        "tests.lib.supply_chain.test_update_gates",
         "-v"
       ],
       "cwd": ".",
@@ -1485,6 +1494,20 @@
         "suites": [
           "repository-integrity"
         ]
+      },
+      {
+        "prefixes": [
+          "tests/lib/ops/test_openbao_issuance.py",
+          "tests/lib/ops/test_openbao_issuance_trust.py",
+          "tests/validation/test_openbao_candidate.py",
+          "tests/validation/test_sec01_version_contract.py",
+          "tests/validation/test_workflow_version_bundle.py",
+          "tests/validation/test_sec01_ci_routing.py"
+        ],
+        "suites": [
+          "operations",
+          "repository-integrity"
+        ]
       }
     ],
     "changed_root_rules": [
@@ -1693,6 +1716,14 @@
       {
         "prefixes": [
           "tests/lib/test_surface_ownership.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "tests/validation/test_sec01_ci_routing.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"

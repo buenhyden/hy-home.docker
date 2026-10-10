@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/spec"
 status: "completed"
 owner: "@buenhyden"
@@ -21,31 +21,26 @@ created: "2026-10-07"
 
 ## Overview
 
-P00 reconciles requirements 11–26 supplied by the user on 2026-10-10 against
-`d19fbfde605e257299aa2b39e25f2d7413a78221`. This package owns the baseline,
-requirement routing and exclusions. Feature acceptance stays in its existing
-owning Spec; P00 does not duplicate implementation. TSK-0001 and TSK-0002
-preserve the earlier fifteen/twenty-item observations and prompt numbering.
-Their historical learning-app routes grant no current planning or execution.
+The current 11–30 request replaces P00's active routing while preserving issued
+IDs, created dates and completed Task bodies. SEC01 delivery is prerequisite to
+the SMTP source transition, which precedes CLN01 old-file deletion. Historical
+Tasks grant no current learning-app planning or execution.
 
 ## Scope
 
-Included: inspect root includes and service keys against the existing bounded
-current inventory; parse actual open Spec/Plan/Task frontmatter; separate
-source, evidence, merge and operation states; refresh this package and
-SPEC-0204's active routing; assign serial shared writers and downstream order.
-
-Excluded: all LAB code, configuration, data, secrets, execution, deletion and
-document moves; civil-service exam, English and Japanese learning applications,
-including planning; unrelated agent model updates. LAB may receive only a
-separate document classification and prospective `separate_target` route in
-P08. Influx retirement, n8n version alignment, DEV/MNG exporters, RedisInsight,
-common controls v2 and the complete Stage 05 body refresh are `NO_CHANGE`
-when existing evidence proves they are applied.
+LLM Wiki work is preparation only: documentation, schema, connection contract,
+synthetic fixtures and future acceptance criteria are allowed. Wiki Core/API/UI,
+search, embeddings, collectors, application databases, production clients,
+n8n Wiki reservations, blog-data writes and external workspace creation are
+excluded. Requirements 16 and 17 are independent `opsflow_dev` manifest
+validation, publication and notification jobs, not a Wiki engine or database.
+LAB runtime is excluded; P08 may make actual typed `labs/` document moves with
+required READMEs, links, Registry and path checks. Learning applications remain
+excluded, including planning.
 
 ## Contracts
 
-### Requirements 11–26
+### Current request scope (items 11–30)
 
 Each row has one primary execution owner and one disposition. Supporting
 stages do not own the same acceptance criterion. The Task records evidence,
@@ -56,12 +51,12 @@ its remaining work; applied sub-items are separately excluded in the Task.
 | Requirement | Request | Primary | Disposition | Acceptance owner and supporting stages |
 | --- | --- | --- | --- | --- |
 | 11 | Service duplication and gaps | P07 | consumer-dependent | SPEC-0218 owns consumer-backed root leaf/control review; P00 reuses the supplied SERVICE_MATRIX and m0021 for SPEC-0212 source-set reconciliation, with no duplicate inventory |
-| 12 | Service integration | P03 | consumer-dependent | SPEC-0204 owns integration; P04 Airflow, P05 n8n and P09 external Wiki provide consumed interfaces |
+| 12 | Service integration | P03 | consumer-dependent | SPEC-0204 owns integration; P04/P05 own independent `opsflow_dev` jobs; Wiki preparation has no external workspace, native/app assignment or production consumer |
 | 13 | Files, configuration and environment | P02 | confirmed-gap | SPEC-0204 owns secret/layout parity; P03 endpoint contracts and P06 actual consumption use the same owner |
 | 14 | Additional configuration | P03 | consumer-dependent | SPEC-0204 owns named-consumer integration; P01 secret prerequisites and P07 resource prerequisites support it |
-| 15 | User function from input through recovery | P10 | consumer-dependent | SPEC-0204 owns infrastructure recovery boundaries; P04, P05 and P09 own their native/app evidence, with the vertical slice assigned only after its real consumer is named |
-| 16 | Airflow DEV/S3/DAG implementation | P04 | confirmed-gap | SPEC-0204 owns native Airflow acceptance for reference/dags, workflow_lib, sql and provision |
-| 17 | n8n use and implementation | P05 | confirmed-gap | SPEC-0204 owns native import/execution for reference/n8n JSON and builder; existing version work is excluded |
+| 15 | User function from input through recovery | P10 | consumer-dependent | SPEC-0204 owns infrastructure recovery boundaries; a future canonical SMTP interface may supply a named consumer, but no Wiki native/app assignment exists here |
+| 16 | Airflow DEV/S3/DAG implementation | P04 | confirmed-gap | SPEC-0204 owns an independent `opsflow_dev` manifest validation, publication and notification job; it is not Wiki implementation |
+| 17 | n8n use and implementation | P05 | confirmed-gap | SPEC-0204 owns an independent `opsflow_dev` manifest validation, publication and notification job; it is not Wiki implementation |
 | 18 | Resources and permissions | P07 | confirmed-gap | SPEC-0218 owns common controls; incremental root leaf work requires observed demand and no guessed limits or LAB edits |
 | 19 | Both common controls files | P07 | applied-excluded | SPEC-0218 owns existing v2 and any proven root-leaf/exception increment; preserve both common files |
 | 20 | Template format | P08 | applied-excluded | SPEC-0227 owns completed full Stage 05 body refresh; only changed-document/path checks remain |
@@ -69,8 +64,14 @@ its remaining work; applied sub-items are separately excluded in the Task.
 | 22 | OpenBao migration and maintenance | P01 | consumer-dependent | SPEC-0204 owns per-consumer secret acceptance; P02 mapping and P06 consumption distinguish eligible, conditional, independent custody, unnecessary, candidate and excluded |
 | 23 | Port distinctions | P03 | confirmed-gap | SPEC-0204 owns PORT_CONTRACT and port_inventory.py reconciliation; actual endpoint selection precedes runtime use |
 | 24 | Active contract refresh | P00 | confirmed-gap | SPEC-0212 owns current routing; SPEC-0204 owns its amended integration contract; other changed Specs amend their own acceptance |
-| 25 | Separate common, domain and LAB documents | P08 | confirmed-gap | SPEC-0212 owns the writer handoff; P08 selects exact Registry-compliant moves in its owning package; LAB is separate_target only |
+| 25 | Separate common, domain and LAB documents | P08 | confirmed-gap | P08 moves LAB documents to typed `labs/` destinations with required READMEs and updated links/checks; LAB runtime remains excluded |
 | 26 | Exclude learning applications | P00 | out-of-scope | SPEC-0212 owns the global exclusion; every stage excludes planning, new files and resources for those applications |
+
+Items 27–30 are execution constraints, not new numbered acceptance rows: use
+the latest stable provider release, including compatible major/minor migrations
+with recovery planning; delete legacy material only after source, runtime, jobs,
+backup/restore and external consumers are confirmed absent. Disabled profiles
+or absent traffic are not proof of no consumer.
 
 ### Evidence and authority
 
@@ -106,6 +107,9 @@ its remaining work; applied sub-items are separately excluded in the Task.
    unit, create one PR per owning Spec and merge only after actual required
    checks and independent review. Shared writers and P08 moves are serialized
    as specified in the Plan; permission already supplied is not requested again.
+9. Preserve OpenBao TLS, wrapped reauthentication, functional readiness, audit
+   and snapshot work delivered by PRs #409/#410; residual HOME and migration/
+   recovery verification remains separate work.
 
 ## Acceptance Criteria
 
@@ -127,11 +131,15 @@ its remaining work; applied sub-items are separately excluded in the Task.
 7. The earlier twenty-item and open-Spec disposition remains identifiable in
    TSK-0002. Its older request/prompt routes are superseded by this contract;
    preserved learning-app mentions grant no current planning authority.
+8. The active routing records Wiki preparation, independent `opsflow_dev` jobs,
+   P08 LAB document moves, latest-stable planning, consumer-confirmed deletion,
+   and the SEC01 → SMTP source transition → CLN01 sequence.
 
 ## Related Documents
 
 - [Plan](plan.md)
-- [Current P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
+- [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
+- [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
 - [Integration owner](../0204-service-integration-security-and-operations/spec.md)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import unittest
@@ -66,7 +67,7 @@ class AiRuntimeContractTests(unittest.TestCase):
     def test_images_are_the_requested_tags_pinned_by_digest(self) -> None:
         pattern = r"^{}@sha256:[0-9a-f]{{64}}$"
         self.assertRegex(
-            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.0")
+            self.ollama["image"], pattern.format(r"ollama/ollama:0\.40\.2")
         )
         self.assertRegex(
             self.webui["image"],
@@ -95,9 +96,12 @@ class AiRuntimeContractTests(unittest.TestCase):
         )
 
     def test_renovate_tracks_both_compose_files(self) -> None:
-        renovate = (ROOT / "renovate.json5").read_text(encoding="utf-8")
+        renovate = json.loads((ROOT / "renovate.json5").read_text(encoding="utf-8"))
+        patterns = renovate["docker-compose"]["managerFilePatterns"]
         for name in ("ollama", "open-webui"):
-            self.assertIn(f"infra\\\\/08-ai\\\\/{name}\\\\/docker-compose", renovate)
+            path = f"infra/08-ai/{name}/docker-compose.yml"
+            self.assertTrue(any(re.search(pattern[1:-1], path) for pattern in patterns))
+        self.assertIn("labs/**", renovate["ignorePaths"])
 
 
 class ComposeCoreReadinessExampleTests(unittest.TestCase):

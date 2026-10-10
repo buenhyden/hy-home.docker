@@ -281,7 +281,7 @@
         "grafana/grafana": "external"
       },
       "images": [
-        "grafana/grafana:13.2.2"
+        "grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
       ],
       "compose_files": [
         "infra/06-observability/docker-compose.yml"
@@ -290,7 +290,7 @@
         {
           "compose_file": "infra/06-observability/docker-compose.yml",
           "images": [
-            "grafana/grafana:13.2.2"
+            "grafana/grafana:13.2.3@sha256:b28bae15e219c998fb0e0424ed724930cc61b1f61fb404d47c862f9a23f9e572"
           ]
         }
       ]
@@ -369,7 +369,7 @@
         "hy-home/airflow": "local-custom"
       },
       "images": [
-        "hy-home/airflow:3.3.1-keycloak"
+        "hy-home/airflow:3.3.2-keycloak"
       ],
       "compose_files": [
         "infra/07-workflow/airflow/docker-compose.yml"
@@ -378,7 +378,7 @@
         {
           "compose_file": "infra/07-workflow/airflow/docker-compose.yml",
           "images": [
-            "hy-home/airflow:3.3.1-keycloak"
+            "hy-home/airflow:3.3.2-keycloak"
           ]
         }
       ]
@@ -392,8 +392,8 @@
         "n8nio/runners": "external"
       },
       "images": [
-        "hyhome/n8n:2.41.6-local",
-        "n8nio/runners:2.41.6"
+        "hyhome/n8n:2.42.6-local",
+        "n8nio/runners:2.42.6@sha256:b78816286beb0a14e874abfda31eb4621d47f5ebb38f194271df7e39b7bd63a7"
       ],
       "compose_files": [
         "infra/07-workflow/n8n/docker-compose.yml"
@@ -402,13 +402,13 @@
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "hyhome/n8n:2.41.6-local"
+            "hyhome/n8n:2.42.6-local"
           ]
         },
         {
           "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
           "images": [
-            "n8nio/runners:2.41.6"
+            "n8nio/runners:2.42.6@sha256:b78816286beb0a14e874abfda31eb4621d47f5ebb38f194271df7e39b7bd63a7"
           ]
         }
       ]
@@ -421,7 +421,7 @@
         "ollama/ollama": "external"
       },
       "images": [
-        "ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687"
+        "ollama/ollama:0.40.2@sha256:b86366bb528bbf7f1424435d165028497a5b69bf6ddb4fa5a87102e2b79f44fb"
       ],
       "compose_files": [
         "infra/08-ai/ollama/docker-compose.yml"
@@ -430,7 +430,7 @@
         {
           "compose_file": "infra/08-ai/ollama/docker-compose.yml",
           "images": [
-            "ollama/ollama:0.40.0@sha256:1bef639749741b375e9a1eb2c1346fb57ce52f5432de1f74846e44ccc18e1687"
+            "ollama/ollama:0.40.2@sha256:b86366bb528bbf7f1424435d165028497a5b69bf6ddb4fa5a87102e2b79f44fb"
           ]
         }
       ]
@@ -531,7 +531,7 @@
         "openbao/openbao": "external"
       },
       "images": [
-        "openbao/openbao:2.6.2"
+        "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
       ],
       "compose_files": [
         "infra/03-security/openbao/docker-compose.yml"
@@ -540,7 +540,7 @@
         {
           "compose_file": "infra/03-security/openbao/docker-compose.yml",
           "images": [
-            "openbao/openbao:2.6.2"
+            "openbao/openbao:2.7.1@sha256:6d2b93856e3fcf7b18ad855a0b51eaba474dc8b79cf554379ea32034797d2acf"
           ]
         }
       ]

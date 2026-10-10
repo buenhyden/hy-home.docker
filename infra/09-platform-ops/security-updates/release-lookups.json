@@ -1,0 +1,996 @@
+{
+  "schema_version": 1,
+  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "lookups": [
+    {
+      "repository": "Comfy-Org/ComfyUI",
+      "command": "gh release view --repo Comfy-Org/ComfyUI --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.367275+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T22:49:43Z",
+        "tagName": "v0.39.0",
+        "url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.39.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "Kong/kong",
+      "command": "gh release view --repo Kong/kong --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.417097+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-06-17T06:02:19Z",
+        "tagName": "3.9.3",
+        "url": "https://github.com/Kong/kong/releases/tag/3.9.3"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://docs.konghq.com/gateway/changelog/"
+    },
+    {
+      "repository": "NVIDIA/dcgm-exporter",
+      "command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.367489+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-18T20:35:04Z",
+        "tagName": "4.8.4",
+        "url": "https://github.com/NVIDIA/dcgm-exporter/releases/tag/4.8.4"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "PostgREST/postgrest",
+      "command": "gh release view --repo PostgREST/postgrest --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.247997+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-24T05:31:39Z",
+        "tagName": "v16.4",
+        "url": "https://github.com/PostgREST/postgrest/releases/tag/v16.4"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "RedisInsight/RedisInsight",
+      "command": "gh release view --repo RedisInsight/RedisInsight --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.367756+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-07-21T07:51:57Z",
+        "tagName": "3.8.0",
+        "url": "https://github.com/redis/RedisInsight/releases/tag/3.8.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "SonarSource/docker-sonarqube",
+      "command": "gh release view --repo SonarSource/docker-sonarqube --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.368012+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-25T17:56:45Z",
+        "tagName": "2026.5.0",
+        "url": "https://github.com/SonarSource/docker-sonarqube/releases/tag/2026.5.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "TwiN/gatus",
+      "command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.980772+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-24T00:00:21Z",
+        "tagName": "v5.37.0",
+        "url": "https://github.com/TwiN/gatus/releases/tag/v5.37.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "amir20/dozzle",
+      "command": "gh release view --repo amir20/dozzle --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.368215+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T16:55:39Z",
+        "tagName": "v11.3.0",
+        "url": "https://github.com/amir20/dozzle/releases/tag/v11.3.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "anchore/grype",
+      "command": "gh release view --repo anchore/grype --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.093454+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T20:46:45Z",
+        "tagName": "v0.120.1",
+        "url": "https://github.com/anchore/grype/releases/tag/v0.120.1"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://anchore.com/opensource/"
+    },
+    {
+      "repository": "anchore/syft",
+      "command": "gh release view --repo anchore/syft --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.089641+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T15:35:10Z",
+        "tagName": "v1.54.1",
+        "url": "https://github.com/anchore/syft/releases/tag/v1.54.1"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://anchore.com/opensource/"
+    },
+    {
+      "repository": "apache/airflow",
+      "command": "gh release view --repo apache/airflow --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.981137+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-17T11:10:15Z",
+        "tagName": "3.3.2",
+        "url": "https://github.com/apache/airflow/releases/tag/3.3.2"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "apache/superset",
+      "command": "gh release view --repo apache/superset --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.084834+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-05-13T18:32:25Z",
+        "tagName": "6.1.0",
+        "url": "https://github.com/apache/superset/releases/tag/6.1.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://superset.apache.org/developer-docs/contributing/release-process/"
+    },
+    {
+      "repository": "axllent/mailpit",
+      "command": "gh release view --repo axllent/mailpit --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.368545+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-03T04:36:58Z",
+        "tagName": "v1.31.4",
+        "url": "https://github.com/axllent/mailpit/releases/tag/v1.31.4"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "comfyanonymous/ComfyUI",
+      "command": "gh release view --repo comfyanonymous/ComfyUI --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.981644+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T22:49:43Z",
+        "tagName": "v0.39.0",
+        "url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.39.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "dbt-labs/dbt",
+      "command": "gh release view --repo dbt-labs/dbt --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.308965+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-18T15:47:44Z",
+        "tagName": "v2.0.5",
+        "url": "https://github.com/dbt-labs/dbt/releases/tag/v2.0.5"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://docs.getdbt.com/docs/dbt-versions/release-notes?name=Core&version=1.12"
+    },
+    {
+      "repository": "grafana/alloy",
+      "command": "gh release view --repo grafana/alloy --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.369421+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T17:54:43Z",
+        "tagName": "v1.20.1",
+        "url": "https://github.com/grafana/alloy/releases/tag/v1.20.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "grafana/grafana",
+      "command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.982210+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-29T09:02:18Z",
+        "tagName": "v13.2.3",
+        "url": "https://github.com/grafana/grafana/releases/tag/v13.2.3"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "grafana/loki",
+      "command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.982677+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-17T15:51:10Z",
+        "tagName": "v3.7.8",
+        "url": "https://github.com/grafana/loki/releases/tag/v3.7.8"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "grafana/pyroscope",
+      "command": "gh release view --repo grafana/pyroscope --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.369832+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T19:46:50Z",
+        "tagName": "v2.4.0",
+        "url": "https://github.com/grafana/pyroscope/releases/tag/v2.4.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "grafana/tempo",
+      "command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:13.983129+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-29T17:06:39Z",
+        "tagName": "v3.1.0",
+        "url": "https://github.com/grafana/tempo/releases/tag/v3.1.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "imgproxy/imgproxy",
+      "command": "gh release view --repo imgproxy/imgproxy --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.856450+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-30T16:10:58Z",
+        "tagName": "v4.0.17",
+        "url": "https://github.com/imgproxy/imgproxy/releases/tag/v4.0.17"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "jupyter/docker-stacks",
+      "command": "gh release view --repo jupyter/docker-stacks --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.088230+00:00",
+      "exit_code": 1,
+      "release": null,
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://jupyter-docker-stacks.readthedocs.io/en/latest/using/selecting.html"
+    },
+    {
+      "repository": "keycloak-rel/keycloak-rel",
+      "command": "gh release view --repo keycloak-rel/keycloak-rel --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.863705+00:00",
+      "exit_code": 1,
+      "release": null,
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "keycloak/keycloak",
+      "command": "gh release view --repo keycloak/keycloak --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.493237+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T05:57:20Z",
+        "tagName": "26.8.0",
+        "url": "https://github.com/keycloak/keycloak/releases/tag/26.8.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "lfnovo/open-notebook",
+      "command": "gh release view --repo lfnovo/open-notebook --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.494731+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-04T23:45:47Z",
+        "tagName": "v1.15.0",
+        "url": "https://github.com/lfnovo/open-notebook/releases/tag/v1.15.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "logflare/logflare",
+      "command": "gh release view --repo logflare/logflare --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.688379+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T21:40:40Z",
+        "tagName": "v1.53.0",
+        "url": "https://github.com/Logflare/logflare/releases/tag/v1.53.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "mlflow/mlflow",
+      "command": "gh release view --repo mlflow/mlflow --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.313345+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-07T08:24:24Z",
+        "tagName": "v3.17.0",
+        "url": "https://github.com/mlflow/mlflow/releases/tag/v3.17.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://mlflow.org/releases"
+    },
+    {
+      "repository": "n8n-io/n8n",
+      "command": "gh release view --repo n8n-io/n8n --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.512769+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T07:25:32Z",
+        "tagName": "n8n@2.42.6",
+        "url": "https://github.com/n8n-io/n8n/releases/tag/n8n%402.42.6"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "nginx/docker-nginx-unprivileged",
+      "command": "gh release view --repo nginx/docker-nginx-unprivileged --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.876835+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-02-06T13:32:47Z",
+        "tagName": "1.29.4",
+        "url": "https://github.com/nginx/docker-nginx-unprivileged/releases/tag/1.29.4"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "nginx/nginx",
+      "command": "gh release view --repo nginx/nginx --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.701323+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-15T15:34:19Z",
+        "tagName": "release-1.31.6",
+        "url": "https://github.com/nginx/nginx/releases/tag/release-1.31.6"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://nginx.org/en/download.html"
+    },
+    {
+      "repository": "oauth2-proxy/oauth2-proxy",
+      "command": "gh release view --repo oauth2-proxy/oauth2-proxy --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.544554+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T09:05:48Z",
+        "tagName": "v7.15.5",
+        "url": "https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.5"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "oliver006/redis_exporter",
+      "command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.909859+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T05:13:49Z",
+        "tagName": "v1.93.0",
+        "url": "https://github.com/oliver006/redis_exporter/releases/tag/v1.93.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "ollama/ollama",
+      "command": "gh release view --repo ollama/ollama --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.622431+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T16:53:47Z",
+        "tagName": "v0.40.2",
+        "url": "https://github.com/ollama/ollama/releases/tag/v0.40.2"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "open-policy-agent/conftest",
+      "command": "gh release view --repo open-policy-agent/conftest --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.263276+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T04:53:53Z",
+        "tagName": "v0.71.1",
+        "url": "https://github.com/open-policy-agent/conftest/releases/tag/v0.71.1"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://www.conftest.dev/install/"
+    },
+    {
+      "repository": "open-webui/open-webui",
+      "command": "gh release view --repo open-webui/open-webui --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.792147+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-21T19:25:21Z",
+        "tagName": "v0.11.4",
+        "url": "https://github.com/open-webui/open-webui/releases/tag/v0.11.4"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "openbao/openbao",
+      "command": "gh release view --repo openbao/openbao --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:14.947234+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T14:03:19Z",
+        "tagName": "v2.7.1",
+        "url": "https://github.com/openbao/openbao/releases/tag/v2.7.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "opensearch-project/OpenSearch",
+      "command": "gh release view --repo opensearch-project/OpenSearch --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.328473+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-29T21:54:18Z",
+        "tagName": "3.9.0",
+        "url": "https://github.com/opensearch-project/OpenSearch/releases/tag/3.9.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://opensearch.org/downloads/"
+    },
+    {
+      "repository": "opensearch-project/OpenSearch-Dashboards",
+      "command": "gh release view --repo opensearch-project/OpenSearch-Dashboards --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.331554+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-01T03:02:50Z",
+        "tagName": "3.8.0",
+        "url": "https://github.com/opensearch-project/OpenSearch-Dashboards/releases/tag/3.8.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://opensearch.org/downloads/"
+    },
+    {
+      "repository": "opensearch-project/opensearch-prometheus-exporter",
+      "command": "gh release view --repo opensearch-project/opensearch-prometheus-exporter --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.910049+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T18:20:23Z",
+        "tagName": "3.9.0.0",
+        "url": "https://github.com/opensearch-project/opensearch-prometheus-exporter/releases/tag/3.9.0.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "opentofu/opentofu",
+      "command": "gh release view --repo opentofu/opentofu --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.940309+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T17:15:15Z",
+        "tagName": "v1.13.1",
+        "url": "https://github.com/opentofu/opentofu/releases/tag/v1.13.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "ossf/scorecard",
+      "command": "gh release view --repo ossf/scorecard --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.095740+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-04-23T21:41:36Z",
+        "tagName": "v5.5.0",
+        "url": "https://github.com/ossf/scorecard/releases/tag/v5.5.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://scorecard.dev/"
+    },
+    {
+      "repository": "paketo-buildpacks/jammy-base-stack",
+      "command": "gh release view --repo paketo-buildpacks/jammy-base-stack --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:22.969443+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T04:14:34Z",
+        "tagName": "v0.1.282",
+        "url": "https://github.com/paketo-buildpacks/jammy-base-stack/releases/tag/v0.1.282"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "paketo-buildpacks/jammy-tiny-stack",
+      "command": "gh release view --repo paketo-buildpacks/jammy-tiny-stack --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.246071+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T04:29:32Z",
+        "tagName": "v0.2.183",
+        "url": "https://github.com/paketo-buildpacks/jammy-tiny-stack/releases/tag/v0.2.183"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "prometheus/alertmanager",
+      "command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.373874+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-17T08:12:07Z",
+        "tagName": "v0.34.1",
+        "url": "https://github.com/prometheus/alertmanager/releases/tag/v0.34.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "prometheus/node_exporter",
+      "command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.385065+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-07-14T12:34:45Z",
+        "tagName": "v1.12.1",
+        "url": "https://github.com/prometheus/node_exporter/releases/tag/v1.12.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "prometheus/prometheus",
+      "command": "gh release view --repo prometheus/prometheus --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.395678+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-25T08:56:22Z",
+        "tagName": "v3.15.0",
+        "url": "https://github.com/prometheus/prometheus/releases/tag/v3.15.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "qdrant/qdrant",
+      "command": "gh release view --repo qdrant/qdrant --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:15.017351+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T14:16:50Z",
+        "tagName": "v1.19.2",
+        "url": "https://github.com/qdrant/qdrant/releases/tag/v1.19.2"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "renovatebot/renovate",
+      "command": "gh release view --repo renovatebot/renovate --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.401699+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-10T01:48:43Z",
+        "tagName": "44.149.1",
+        "url": "https://github.com/renovatebot/renovate/releases/tag/44.149.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "restic/restic",
+      "command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.481520+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-07-05T08:13:33Z",
+        "tagName": "v0.19.1",
+        "url": "https://github.com/restic/restic/releases/tag/v0.19.1"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "seaweedfs/seaweedfs",
+      "command": "gh release view --repo seaweedfs/seaweedfs --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:15.018167+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T15:53:48Z",
+        "tagName": "4.48",
+        "url": "https://github.com/seaweedfs/seaweedfs/releases/tag/4.48"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "sigstore/cosign",
+      "command": "gh release view --repo sigstore/cosign --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.094228+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-08-06T01:09:23Z",
+        "tagName": "v3.1.3",
+        "url": "https://github.com/sigstore/cosign/releases/tag/v3.1.3"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://docs.sigstore.dev/cosign/system_config/installation/"
+    },
+    {
+      "repository": "stalwartlabs/cli",
+      "command": "gh release view --repo stalwartlabs/cli --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.521809+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T09:21:38Z",
+        "tagName": "v1.0.13",
+        "url": "https://github.com/stalwartlabs/cli/releases/tag/v1.0.13"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "stalwartlabs/mail-server",
+      "command": "gh release view --repo stalwartlabs/mail-server --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.089089+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-05T06:57:15Z",
+        "tagName": "v0.16.25",
+        "url": "https://github.com/stalwartlabs/stalwart/releases/tag/v0.16.25"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://stalw.art/assets/files/ros-report-6f65b214991111473e74e78d62114b1d.pdf"
+    },
+    {
+      "repository": "supabase/auth",
+      "command": "gh release view --repo supabase/auth --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:15.077397+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-09T15:27:11Z",
+        "tagName": "v2.197.0",
+        "url": "https://github.com/supabase/auth/releases/tag/v2.197.0"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "supabase/edge-runtime",
+      "command": "gh release view --repo supabase/edge-runtime --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.687816+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T05:23:12Z",
+        "tagName": "v1.77.4",
+        "url": "https://github.com/supabase/edge-runtime/releases/tag/v1.77.4"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/postgres",
+      "command": "gh release view --repo supabase/postgres --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.690808+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-08T01:42:01Z",
+        "tagName": "15.19.0.005-test-2",
+        "url": "https://github.com/supabase/postgres/releases/tag/15.19.0.005-test-2"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/postgres-meta",
+      "command": "gh release view --repo supabase/postgres-meta --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.691408+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T12:00:16Z",
+        "tagName": "v0.100.0",
+        "url": "https://github.com/supabase/postgres-meta/releases/tag/v0.100.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/realtime",
+      "command": "gh release view --repo supabase/realtime --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.655645+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T05:19:06Z",
+        "tagName": "v2.143.3",
+        "url": "https://github.com/supabase/realtime/releases/tag/v2.143.3"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/storage",
+      "command": "gh release view --repo supabase/storage --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.660794+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-09T10:50:37Z",
+        "tagName": "v1.81.0",
+        "url": "https://github.com/supabase/storage/releases/tag/v1.81.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/supabase",
+      "command": "gh release view --repo supabase/supabase --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.654822+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-08-07T13:57:57Z",
+        "tagName": "v1.26.08",
+        "url": "https://github.com/supabase/supabase/releases/tag/v1.26.08"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/supabase/supabase/blob/master/docker/CONFIG.md"
+    },
+    {
+      "repository": "supabase/supavisor",
+      "command": "gh release view --repo supabase/supavisor --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:27.652701+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-10T14:15:47Z",
+        "tagName": "v2.9.13",
+        "url": "https://github.com/supabase/supavisor/releases/tag/v2.9.13"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://supabase.github.io/supavisor/"
+    },
+    {
+      "repository": "surrealdb/surrealdb",
+      "command": "gh release view --repo surrealdb/surrealdb --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.086779+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-28T11:40:24Z",
+        "tagName": "v3.3.0",
+        "url": "https://github.com/surrealdb/surrealdb/releases/tag/v3.3.0"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://surrealdb.com/blog/surrealdb-3-1-stability-diskann-and-a-new-release-process"
+    },
+    {
+      "repository": "terrakube-io/terrakube",
+      "command": "gh release view --repo terrakube-io/terrakube --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.562105+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-14T22:35:30Z",
+        "tagName": "2.33.2",
+        "url": "https://github.com/terrakube-io/terrakube/releases/tag/2.33.2"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "timescale/timescaledb",
+      "command": "gh release view --repo timescale/timescaledb --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:35:04.627178+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-29T15:20:31Z",
+        "tagName": "2.30.2",
+        "url": "https://github.com/timescale/timescaledb/releases/tag/2.30.2"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://www.tigerdata.com/docs/get-started/news/new"
+    },
+    {
+      "repository": "traefik/traefik",
+      "command": "gh release view --repo traefik/traefik --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:15.118304+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T07:49:56Z",
+        "tagName": "v3.7.14",
+        "url": "https://github.com/traefik/traefik/releases/tag/v3.7.14"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "trinodb/trino",
+      "command": "gh release view --repo trinodb/trino --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.858775+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-07-18T01:28:57Z",
+        "tagName": "483",
+        "url": "https://github.com/trinodb/trino/releases/tag/483"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://trino.io/docs/current/installation/plugins.html"
+    },
+    {
+      "repository": "unclecode/crawl4ai",
+      "command": "gh release view --repo unclecode/crawl4ai --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:28:23.781176+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-23T12:14:55Z",
+        "tagName": "v0.9.4",
+        "url": "https://github.com/unclecode/crawl4ai/releases/tag/v0.9.4"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "ownership_evidence": "Exact current-image OCI source label or checked-in supplier link; signature not verified."
+    },
+    {
+      "repository": "valkey-io/valkey",
+      "command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:24:15.466594+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-09-01T00:01:31Z",
+        "tagName": "9.1.2",
+        "url": "https://github.com/valkey-io/valkey/releases/tag/9.1.2"
+      },
+      "stable_channel": "UNVERIFIED: prerelease=false alone does not prove vendor channel",
+      "scope": "source ownership reference only; custom base/provider dependencies require separate evidence"
+    },
+    {
+      "repository": "wiremock/wiremock",
+      "command": "gh release view --repo wiremock/wiremock --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T10:31:28.259496+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2025-11-14T14:39:57Z",
+        "tagName": "3.13.2",
+        "url": "https://github.com/wiremock/wiremock/releases/tag/3.13.2"
+      },
+      "stable_channel": "UNVERIFIED: API prerelease flag alone is insufficient",
+      "ownership_reference": "https://github.com/wiremock/wiremock"
+    },
+    {
+      "repository": "traefik/traefik",
+      "command": "gh release view --repo traefik/traefik --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T11:09:21.111703+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-06T07:49:56Z",
+        "tagName": "v3.7.14",
+        "url": "https://github.com/traefik/traefik/releases/tag/v3.7.14"
+      },
+      "stable_channel": "Resolved using current official vendor channel/policy documents; not inferred from prerelease flag alone",
+      "ownership_evidence": [
+        "https://doc.traefik.io/traefik/getting-started/",
+        "https://doc.traefik.io/traefik/deprecation/releases/",
+        "https://hub.docker.com/_/traefik"
+      ]
+    },
+    {
+      "repository": "keycloak/keycloak",
+      "command": "gh release view --repo keycloak/keycloak --json tagName,publishedAt,isPrerelease,url",
+      "checked_at": "2026-10-10T11:09:21.111703+00:00",
+      "exit_code": 0,
+      "release": {
+        "isPrerelease": false,
+        "publishedAt": "2026-10-01T05:57:20Z",
+        "tagName": "26.8.0",
+        "url": "https://github.com/keycloak/keycloak/releases/tag/26.8.0"
+      },
+      "stable_channel": "Resolved using current official vendor channel/policy documents; not inferred from prerelease flag alone",
+      "ownership_evidence": [
+        "https://www.keycloak.org/downloads"
+      ]
+    }
+  ]
+}
