@@ -270,7 +270,7 @@ is used. Source delivery is distinct from runtime acceptance.
 | HOME | NOT_RUN; target/material/custody and runtime residuals unresolved |
 | MIGRATION | NOT_RUN; P06 held, no real secret or consumer cutover |
 | RECOVERY | ISOLATED synthetic proof PASS; actual HOME/offsite recovery NOT_RUN |
-| DELIVERY | PR #409 OPEN; first hosted quality FAIL on inventory drift, correction PASS locally; fresh hosted checks and merge pending |
+| DELIVERY | PR #409 externally merged at its first head despite inventory FAIL; reviewed correction follow-up pending actual checks/merge |
 
 The logical source unit owns executable/client/policy/test/gate changes and the
 existing root exception row; the documentation unit owns Spec/Plan/this Task,
@@ -304,8 +304,16 @@ or native input changes. The corrected delivery manifest has 42 public paths
 (excluding this Task), SHA256
 0ad4409e92671a8a0e5c346cdb3488c3c7e702c4c4ded233b25069494f7d0ac5.
 The prior 41-path digest is retained as pre-inventory evidence. This documentation
-unit uses the same pre-HOME reviewed-revert rollback boundary. Fresh hosted
-checks and merge follow on the corrected head.
+unit uses the same pre-HOME reviewed-revert rollback boundary. Before the correction push, PR #409 was externally merged by buenhyden at
+2026-10-10T08:00:35Z, merge e31ba58c5849f7d2d39558ca074d40834f4b7f21,
+head 1510c3a6ab01dcb12b2c81dc5d1df4cacceda5de. Its failed quality result
+is preserved and not described as a checked merge. Fetch confirmed current
+origin/main equals that merge. The correction commit bb63f27ed62ccf860aa8af2b8e5603dce481b12e
+was retained on the original branch and cherry-picked into the clean new
+codex/p01-inventory-receipt branch from actual origin/main as 633d285eb.
+No reset/stash/clean or user work rewrite was used. A same-package follow-up
+PR owns the nine-cell correction and delivery receipt; its fresh actual checks
+must pass before the agent merges it. No second acceptance owner is created.
 
 ### W23 HOME Boundary and P06 Hold
 
