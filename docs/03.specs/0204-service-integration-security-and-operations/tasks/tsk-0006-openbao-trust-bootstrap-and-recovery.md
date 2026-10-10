@@ -270,7 +270,7 @@ is used. Source delivery is distinct from runtime acceptance.
 | HOME | NOT_RUN; target/material/custody and runtime residuals unresolved |
 | MIGRATION | NOT_RUN; P06 held, no real secret or consumer cutover |
 | RECOVERY | ISOLATED synthetic proof PASS; actual HOME/offsite recovery NOT_RUN |
-| DELIVERY | Source PR #409 externally merged; correction and actual hosted check/merge receipts owned by linked PR #410; HOME delivery NOT_RUN |
+| DELIVERY | PRs #409 and #410 externally merged with their actual results preserved; final regression unit and fresh delivery receipt remain W22; HOME delivery NOT_RUN |
 
 The logical source unit owns executable/client/policy/test/gate changes and the
 existing root exception row; the documentation unit owns Spec/Plan/this Task,
@@ -333,6 +333,64 @@ in 388.481s; remaining selected leaves are not predeclared PASS. Final results
 are recorded on the linked delivery PR before agent merge. W23 and full P01
 acceptance stay blocked regardless of source delivery.
 
+### W22 Regression Contract Follow-up
+
+PR #410 final head 14368bbee8885fe7dbaeceb7ed17db91414117a9 freshly
+completed hosted checks: seven PASS, main-security SKIP; candidate-quality
+run 38037242917 PASS in 3m7s. It was externally merged by buenhyden at
+2026-10-10T08:28:06Z, merge 860ac1c3633eac9ad416fb1abd8a61a6e617ebd8.
+The final test/receipt branch codex/p01-regression-receipt starts from that
+actual origin/main. No reset/stash/clean or existing work removal was used.
+
+The earlier 17-leaf local aggregate exited 1: its Compose leaf ran 421 tests
+in 120.248s with one failure, two errors and 59 explicit optional skips.
+Old assertions expected an Agent command, only short-form mounts and the
+previous Prometheus generated-file list. An ordinary workflow contract run
+also failed its old exact module roster. These failures remain evidence.
+Direct adapter calls outside their registered runner were denied by their
+environment contract (exit 2); they are not gate successes or bypassed.
+
+The root writer owns exactly three existing regression files: Compose
+baseline, DEV data boundary and GitHub workflow contract. The correction
+asserts the wrapper entrypoint and absence of a Compose command override,
+validates actual read-only wrapper/config mounts in both mount forms and
+retains exact persistent destination bounds. DEV fixtures require the new
+OpenBao discovery target while retaining DEV-state rejection checks. The
+workflow roster includes both OpenBao modules; Agent and cleanup tests remain
+mandatory, and only the native rehearsal class is optional. Production,
+workflow configuration, native fixtures, LAB and consumer code are unchanged.
+Independent delta code review reports PASS with no findings.
+
+RED test SHA256 values (Compose / DEV / workflow):
+32269bd0d3fbbf62f6c43b7eb18c396475ad104b84a7f869dc4bdd3924a934a7 /
+84739c327fd415cfda2445f3ea5fb5b0f919dea361a5d2c714ed3942c01505fb /
+7de06c661804f8b2c5e8eb75884a5d51144499eb095cb54851ec62f6e72b5ed2.
+Final reviewed SHA256 values in the same order:
+362acdc1791a79dfd68428d1903d86d3a8b3e058172800e807a9dfe65e56a3a7 /
+1176c5e1a0a8042c54491508c366eef9d536a7b6f1c0768615c40e064a7fb69c /
+5595fc193c4932b02b12b3f5fcbabf24f92253625cf156c9f0c75f22e3360a81.
+The current public manifest has 45 paths excluding this self-referential
+Task; SHA256 ef22f5f377a13185fb396e3b65e33debedf67108257dd3098a579c0292b1c35a,
+base 1ee5d6707e3b75b61222baad0c51050c64e1b10d. The native input remains
+unchanged at e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee.
+
+Fresh corrected five-leaf registered local aggregate exited 0: preflight,
+links, supply fixture (239 tests), conftest (18) and Compose baseline (421 in
+119.188s, 59 optional skips). This selection preceded the workflow-test delta;
+it is not represented as the earlier 17-leaf aggregate passing. Ordinary
+module checks additionally passed CI contract 27, runner 60, adapter 42,
+workflow 36, release checks and repository integrity 164 tests in 52.765s.
+Independent focused delta verification passed eight tests; full workflow
+verification passed all 36. Ruff formatting/checks passed all three files.
+The frozen final branch receives a fresh registered changed-profile aggregate
+and draft follow-up PR; their final head/results/merge receipt are recorded
+on that actual PR before delivery. No future result is declared here.
+
+This logical unit uses the same reviewed pre-HOME revert boundary. Remaining
+HOME target/custody, native-version security and restricted failed-delivery
+cleanup residuals stay in W23. No new acceptance owner or runtime success is
+created by correcting regression expectations.
+
 ### W23 HOME Boundary and P06 Hold
 
 HOME target/connection, CA/server material location and separate unseal/offsite
@@ -354,7 +412,7 @@ names/paths and leaves HOME, LAB and user work untouched.
 | Baseline | 1, 11 | W19 | status, refs, fetch, scoped baseline diff | 1ee5d6707e3b75b61222baad0c51050c64e1b10d | PASS | W19 Baseline and Boundaries | accepted |
 | Renderer trust | 11 | W20 | Negative token/CA/modes, native clients and Agent restart | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W20 and W22 | pending |
 | Audit and recovery | 11 | W21 | Native audit-full denial, snapshot save/empty restore/unseal | e4bde131a34928e19266ddc6dbe86ecc78ccc4ef895d44f39666f60e2e2a9fee | PASS | W21 and W22 | pending |
-| Public source review | 11 | W22 | Independent security and IaC; code review delta | 0ad4409e92671a8a0e5c346cdb3488c3c7e702c4c4ded233b25069494f7d0ac5 | PASS | W22 | pending |
+| Public source review | 11 | W22 | Independent security and IaC; code review delta | ef22f5f377a13185fb396e3b65e33debedf67108257dd3098a579c0292b1c35a | PASS | W22 and W22 Regression Contract Follow-up | pending |
 | HOME preconditions | 11 | W23 | Named host, CA and independent custody | User P01 and `ok` | NOT_RUN | W23 HOME Boundary and P06 Hold | pending |
 
 ## Review and Completion

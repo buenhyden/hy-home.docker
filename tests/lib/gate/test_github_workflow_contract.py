@@ -78,6 +78,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "tests.validation.test_config_mount_hashes",
                 "tests.validation.test_service_wiring_contracts",
                 "tests.validation.test_service_runtime_compatibility",
+                "tests.validation.test_openbao_agent_contract",
+                "tests.validation.test_openbao_rehearsal",
                 "tests.validation.test_perf_db_contract",
                 "tests.validation.test_k6_results",
                 "tests.validation.test_quality_mock_lab",
@@ -96,12 +98,20 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ],
             arguments[1:boundary],
         )
-        self.assertEqual(11, len(arguments[boundary + 1 : -1]))
+        self.assertEqual(12, len(arguments[boundary + 1 : -1]))
         self.assertTrue(
             all(
                 scope.rsplit(".", 1)[0] in arguments[1:boundary]
                 for scope in arguments[boundary + 1 : -1]
             )
+        )
+        self.assertIn(
+            "tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests",
+            arguments[boundary + 1 : -1],
+        )
+        self.assertNotIn(
+            "tests.validation.test_openbao_rehearsal.OpenBaoCleanupTests",
+            arguments[boundary + 1 : -1],
         )
         self.assertEqual([], gate["allowed_env_keys"])
 

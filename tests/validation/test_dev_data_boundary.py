@@ -208,6 +208,7 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
             **os.environ,
             "PROMETHEUS_TARGETS_DIR": directory.name,
             "PROMETHEUS_BIN": "true",
+            "OPENBAO_PORT": "8200",
         }
         env.pop("PROMETHEUS_DEV_DATA_EXPECTED", None)
         if state is not None:
@@ -249,8 +250,10 @@ class DatastoreScrapeLabelTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(
                 sorted(p.name for p in directory.iterdir()),
-                ["dev-pg-exporter.yml", "dev-valkey-exporter.yml"],
+                ["dev-pg-exporter.yml", "dev-valkey-exporter.yml", "openbao.yml"],
             )
+            openbao = yaml.safe_load((directory / "openbao.yml").read_text())[0]
+            self.assertEqual(["openbao:8200"], openbao["targets"])
             for name, scope, engine in DATASTORE_JOBS:
                 if scope != "dev":
                     continue
