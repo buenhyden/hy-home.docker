@@ -67,11 +67,14 @@ was not run.
 | Grype | 2 | W2 | Seed tests; offline scans | `32fb2e69d` | PASS | W2 Grype | accepted |
 | Snapshot token | 3 | W3 | `bash -n` of the RUN-0021 block | `32fb2e69d` | PASS | W3 OpenBao Snapshot Token | accepted |
 | Owner token run | 3 | W3 | Owner runs the RUN-0021 commands; next backup takes a snapshot | — | NOT_RUN | W3 OpenBao Snapshot Token | pending |
-| Validation | 4 | W4 | Changed gate, staged style check, `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
+| Changed gate | 4 | W4 | Hardening; `run-ci-gate.py --profile changed --local-only`, base `8594cf406`; operations catalog | `a827e2873` | PASS | Review and Completion | accepted |
+| Staged style check | 4 | W4 | `run-ci-precommit.sh --mode local-staged` | `a827e2873` | PASS | Review and Completion | accepted |
+| Remote candidate | 4 | W4 | `candidate-quality` | — | NOT_RUN | Review and Completion | pending |
 
 ## Review and Completion
 
-Not complete: validation, the merge and the owner's token run remain.
+The local checks passed on `a827e2873`. Not complete: `candidate-quality`, the
+merge and the owner's token run remain.
 
 ## Related Documents
 
