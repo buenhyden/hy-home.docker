@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Policy"
-version: "0.5.2"
+version: "0.5.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
@@ -76,7 +76,7 @@ service-account/namespace/audience 바인딩을 유지한다. 실제 설치된 �
 Root 토큰은 bootstrap과 break-glass 용도로만 사용한다. 다음 사항이 모두 동일한 유지보수
 기록 안에서 검증되기 전에는 마지막으로 사용 가능한 root 토큰을 폐기하지 않는다: human
 OIDC 로그인이 성공한다, 결과로 나온 OpenBao 토큰이 기대한 non-root policy를 가진다,
-AppRole renderer 접근이 여전히 선언된 두 KV 경로만 읽는다, 배포된 OpenBao 버전의 root
+AppRole renderer 접근이 여전히 선언된 두 KV data와 해당 metadata 경로만 읽는다, 배포된 OpenBao 버전의 root
 recovery 방법이 문서화되어 있다. 그 뒤 root를 폐기하고 거부 결과를 같은 기록에 남긴다.
 
 Traceability에 문서화된 upstream OpenBao 릴리스 라인은 `operator generate-root`에
@@ -134,6 +134,20 @@ share를 재발급해 이 문서 불일치를 자동 해결하지 않는다.
 Compose/profile 검증과 [runbook](../runbooks/0085-openbao.md)이 별도의 정적/런타임 증거를
 제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
 
+### P01 Native Trust and Audit Gate
+
+정상 경로는 내부 native TLS와 검증된 CA/SAN이다. bootstrap key/CA trust는 해당
+OpenBao에만 의존하지 않는다. wrapping SecretID의 creation path·짧은 TTL·1회 사용과
+제한 role fetch/render version을 검증하며 sink 존재는 readiness가 아니다. Agent에
+Docker socket을 주거나 무제한 restart로 인증 실패를 숨기지 않는다.
+
+config-owned HMAC file audit를 유지하며 모든 필수 backend 실패 시 업무 요청의
+실패/지연을 수용한다. health 응답은 audit 증거가 아니며 audit 비활성화로 성공시키지
+않는다. 실제 filesystem 용량, rotation owner/schedule/보존, 실패 알림을 HOME에서
+검증해야 한다. 기존 single-file custody 예외는 미해결 상태로 보존한다. P01 격리 시험은
+그 예외를 종료하거나 HOME 복구 자료를 만들어내지 않는다. P06 확대는 실제 cold boot·
+독립 unseal/offsite custody·선정 snapshot 복구 수용 이후만 허용한다.
+
 ### Review Cadence
 
 매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
@@ -153,3 +167,7 @@ Compose/profile 검증과 [runbook](../runbooks/0085-openbao.md)이 별도의 �
 - [Operations index](../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
 - [OpenBao unauthenticated generate-root deprecation](https://openbao.org/community/deprecation/unauthed-generate-root/)
+
+고정 runtime의 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph)은 TTL·wrapping·1회 사용 선언으로
+해결됐다고 간주하지 않는다. 수정 버전 검증과 HOME gate 전에는 배포·P06 확대를 보류하며,
+미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0085의 Known Runtime Residual을 따른다.

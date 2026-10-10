@@ -1,6 +1,6 @@
 ---
 title: "OpenBao Guide"
-version: "0.5.1"
+version: "0.5.2"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
@@ -46,24 +46,23 @@ Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind vol
 `openbao`와 `openbao-agent`는 모두 HOME이며 `core`/`dev`/`local`/`security`/
 `secrets`에서 선택된다. 두 서비스는 Compose image를 직접 사용하며 build는 없다.
 server command는 `server`, Agent는 `agent -config=/openbao/config/agent.hcl`이다.
-server의 `BAO_LOCAL_CONFIG`가 단일 노드 Raft와 내부 HTTP listener를 정의한다.
+server의 `BAO_LOCAL_CONFIG`가 단일 노드 Raft와 내부 native TLS listener를 정의한다.
 `OPENBAO_PORT`/`OPENBAO_CLUSTER_PORT`, `DEFAULT_SECURITY_DIR`, public route의
-`DEFAULT_URL`이 입력이다. host port는 없고 TLS는 Traefik에서 종료한다.
+`DEFAULT_URL`이 입력이다. host port는 없으며 외부 TLS와 검증된 내부 TLS를 모두 사용한다.
 서버는 `edge_net`/`secrets_net`/`obs_net`, Agent는 `secrets_net`만 사용한다.
 Agent에는 HTTP listener나 자체 metrics endpoint가 선언되어 있지 않다.
 
 | 서비스 | mount·인증·정상 신호와 한계 |
 | --- | --- |
 | `openbao` | `openbao-data`는 host의 `${DEFAULT_SECURITY_DIR}/openbao/data`를 Raft 상태로 사용한다. OIDC·AppRole·Kubernetes auth/policy는 승인된 bootstrap으로 설치하며 Compose가 자동 생성하지 않는다. `/sys/metrics`는 전용 token을 요구한다. |
-| `openbao-agent` | `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 두 출력 파일을0600으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
+| `openbao-agent` | `agent.hcl`과 templates는 읽기 전용, `openbao-agent-data`와 `openbao-agent-out`은 각각 host의 agent/out 경로다. AppRole RoleID/SecretID로 로그인하고 token sink와 두 출력 및 version 파일을0600으로 쓴다. secret rotation이나 소비자 mount 전환을 자동 수행하지 않는다. |
 
 실제로 선택된 template은 `keycloak_admin_password.ctmpl`,
-`grafana_admin_password.ctmpl` 두 개뿐이다. 같은 디렉터리의 나머지 template는
+`grafana_admin_password.ctmpl`과 두 `*_admin_password_version.ctmpl`이다. 같은 디렉터리의 나머지 template는
 mount되어 있어도 `agent.hcl`에서 선택하지 않으며 renderer ACL을 확장하지 않는다.
 서버 health는 `bao status`의 0(unsealed)만 허용한다. sealed(2) 상태에서는
-새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent 자체 health는 옛 token
-파일이 남아 있어도 통과한다. 실제 unsealed·인증 성공·갱신·읽기/거부·출력 갱신을
-따로 검증한다. 근거는 [선언 릴리스 계열 status](https://openbao.org/docs/2.6.x/commands/status/)와
+새 Compose 기동에서 `openbao-agent`의 `service_healthy` 의존성이 대기한다. Docker daemon의 기존 컨테이너 자동 재시작은 이를 재평가하지 않는다. Agent는 새 프로세스에서 옛 sink를 제거하고 token validity·두 제한 fetch·정확한
+render 일치를 요구한다. KV/render version과 실제 consumer 적용은 따로 검증한다. 근거는 [선언 릴리스 계열 status](https://openbao.org/docs/2.6.x/commands/status/)와
 [Agent AppRole](https://openbao.org/docs/2.6.x/agent-and-proxy/autoauth/methods/approle/)이다.
 
 두 서비스 모두 `template-stateful-med`의 CPU1/512 MiB를 상속한다. Raft 디스크
@@ -178,6 +177,22 @@ restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남�
 - Official OpenBao seal/unseal model: <https://openbao.org/docs/concepts/seal/>
 - Official OpenBao AppRole auth method: <https://openbao.org/docs/auth/approle/>
 - Official Keycloak reverse proxy guidance: <https://www.keycloak.org/server/reverseproxy>
+
+### P01 Trust and Bootstrap States
+
+현재 source는 native HTTPS와 외부 CA 검증을 요구한다. Agent의 HCL address hardcoding은
+없으며 `OPENBAO_PORT`의 Compose endpoint를 사용한다. source 등록은 HOME 적용 증거가
+아니다. 새 프로세스는 이전 sink를 제거하고 60초 response-wrapped SecretID를 요구한다.
+server unsealed, 제한 role fetch/KV version, rendered version, 실제 consumer 적용을
+나누어 확인한다. 최초 TLS key/CA와 unseal/offsite 복구 자료는 그 OpenBao와 독립적으로
+보관해야 한다. 기존 Keycloak/DB Docker Secret bootstrap은 P01에서 바꾸지 않아 OIDC와
+render 사이의 순환을 피한다. 실제 consumer 전환은 P06 gate 이후의 별도 작업이다.
+
+한 config-owned file audit의 용량/권한 장애는 audited 요청을 막을 수 있으며 system
+health가 성공해도 audit 성공을 뜻하지 않는다. 값·raw audit/auth 로그 대신 status와
+KV version/결과만 전달한다. 정확한 실행·복구는 [Runbook](../runbooks/0085-openbao.md)의
+Native TLS, Audit and Recovery Gate를 따른다. HOME custody·cold boot·실제 복구는
+현재 미검증이며 격리 synthetic PASS를 복사하지 않는다.
 
 ## Related Documents
 

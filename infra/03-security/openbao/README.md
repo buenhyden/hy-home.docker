@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.3"
+version: "0.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-10"
 ---
 
 # OpenBao
@@ -27,7 +27,7 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 
 - `config/`: [Agent 설정](config/agent.hcl)과 template 소스를 담은 디렉터리입니다.
 - `config/policies/`: 추적되는 ACL 정책입니다. 운영자가 적용하며 컨테이너에 mount하지 않습니다.
-  - [renderer](config/policies/renderer.hcl): Agent AppRole이며 렌더링되는 KV 경로 두 곳을 읽습니다.
+  - [renderer](config/policies/renderer.hcl): Agent AppRole이며 렌더링되는 두 KV data와 해당 metadata 경로를 읽습니다.
   - [operator](config/policies/operator.hcl): `hy-home-operator`, OIDC 사용자용 정책입니다. Prometheus API credential 교체와 Kiali Grafana token 재발급을 포함합니다.
   - [prometheus](config/policies/prometheus.hcl): SEC-002 scrape token이며 `sys/metrics`만 읽습니다.
   - [eso-read-platform](config/policies/eso-read-platform.hcl): hy-home.k8s External Secrets용이며 `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`를 읽습니다.
@@ -48,10 +48,26 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 Persistence:
 
 - `openbao-data`: `${DEFAULT_SECURITY_DIR}/openbao/data`
+- `openbao-audit`: `${DEFAULT_SECURITY_DIR}/openbao/audit`
 - `openbao-agent-data`: `${DEFAULT_SECURITY_DIR}/openbao/agent`
 - `openbao-agent-out`: `${DEFAULT_SECURITY_DIR}/openbao/out`
 
 환경 키 이름과 기본값은 Compose와 [공개 환경 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 healthcheck 명령은 구현을 설명할 뿐이며 설정 검사 통과가 runtime 준비 완료를 증명하지는 않습니다. 비공개 환경 값, credential 파일, 원본 렌더링된 설정은 출력하지 마십시오.
+
+### P01 native trust and bootstrap
+
+내부 endpoint는 `https://openbao:${OPENBAO_PORT:-8200}`이며 Agent·metrics·Gatus·Traefik이
+같은 port와 검증된 CA를 사용합니다. 외부 custody의 `ca.pem`, `server.pem`,
+`server-key.pem`을 `${DEFAULT_SECURITY_DIR}/openbao/tls`에 먼저 준비하며 SAN `DNS:openbao`와 `IP:127.0.0.1`을
+요구합니다. 이 source 경로는 실제 인증서 발급/존재를 뜻하지 않습니다.
+[start-server](./scripts/start-server.sh), [start-agent](./scripts/start-agent.sh),
+[health-agent](./scripts/health-agent.sh), [wrapped reissue](./scripts/issue-renderer-secret-id.sh)가
+port/trust·새 인증·제한 fetch/render 경계를 구현합니다. 실제 consumer 적용은 별도입니다.
+
+config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 실패하면 audited
+요청이 차단될 수 있어 외부 rotation/용량/알림이 필요합니다. HOME custody·cold boot·
+실제 복구는 운영 Runbook `RUN-0085`([운영 문서 인덱스](../../../docs/05.operations/README.md))을 따르며
+P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가 아닙니다.
 
 ## Validation
 

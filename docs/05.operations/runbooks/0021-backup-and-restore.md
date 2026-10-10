@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.4.13"
+version: "1.4.14"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
@@ -447,6 +447,16 @@ exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO
 갱신하고 daemon-reload 적용을 확인해야 합니다. timer 이름·일정과 사용자·그룹은
 그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
 이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
+
+### P01 OpenBao failure and trust increment
+
+OpenBao snapshot은 native TLS·검증된 CA를 쓰는 container CLI를 재사용한다. token은
+stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한다. token이 없을 때도
+이제 backup unit과 전체 run은 실패한다. 단순히 다른 engine backup이 성공했다고
+OpenBao 복구 지점이 있다고 표시하지 않는다. 실제 token 발급/첫 snapshot은 별도
+실행 증거다. 빈 대상 restore/unseal은 원본 share와 독립 offsite key, 선정 snapshot의
+identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
+restore는 HOME/offsite custody를 대신하지 않는다.
 
 ## Verification
 

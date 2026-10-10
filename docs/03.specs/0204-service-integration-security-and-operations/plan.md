@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.3.0"
+version: "1.4.0"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -87,6 +87,43 @@ a prospective separate_target classification; no LAB documents are moved.
 | W16 | 4 | Gateway answers machine clients 401; SSO rehearsal | W12 | TSK-0005 | Task evidence |
 | W17 | 4, 9 | SonarQube JDBC password from its secret | W12 | TSK-0005 | Task evidence |
 | W18 | 8, 9 | Third-round validation | W13, W14, W15, W16, W17 | TSK-0005 | Task evidence |
+| W19 | 1, 11 | Baseline, existing source exclusions, exact endpoint and recovery boundary | None | TSK-0006 | Tracked source/official tagged 2.6.2 docs; independent IaC design review |
+| W20 | 4, 11 | TLS listener/Agent/metrics/Traefik and wrapped reissue/readiness | W19 | TSK-0006 | RED/GREEN failure, argv/redaction and endpoint tests |
+| W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, reuse snapshot flow | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases |
+| W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
+| W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
+
+### P01 exact scope and sequence
+
+Current input is main/origin/main `1ee5d6707e3b75b61222baad0c51050c64e1b10d`,
+clean at start. Compared with d19fbfde6, only P00 documentation changed;
+OpenBao executable source is unchanged. This request authorizes source,
+synthetic isolated 2.6.2 tests, documentation, commits and checked PR delivery.
+The user's `ok` accepts isolation first and supplies no HOME host/CA/custody
+facts. No HOME rollout, real credential use/rotation, host reboot, raw auth/log
+inspection or real recovery is inferred. No LAB paths are inspected or changed.
+
+The root implementer owns OpenBao Compose/HCL/TLS/audit source, both Prometheus
+scrape configs and its start script/Compose mounts, Traefik backend transport,
+OpenBao alert rules and only its existing root secrets-group exception row, this package's Spec/Plan/new Task and Korean OpenBao
+README/GDE/POL/RUN plus only changed RUN-0021/RUN-0098 passages. A bounded
+worker owns only the three new OpenBao Agent/reissue shell scripts and their
+unit test; another bounded worker may own only the isolated rehearsal test and its two _openbao_rehearsal helper modules.
+Root serially integrates workflow test registration/script manifest if needed.
+No completed Task body, common-v2 implementation, LAB exception, Registry allocation, image
+pin, data/secret file, external application or LAB document is changed.
+Shared gateway/Prometheus/backup files have one writer; P08 moves wait for this
+feature input and remain a separate stage. Existing snapshot policy and backup
+implementation are reused. Before HOME activation source rollback is a protected logical revert;
+HOME rollback/recovery is a separate gate and is never inferred from Git.
+
+The root writer also owns `scripts/hardening/check-all-hardening.sh` (retire
+its internal-HTTP requirement), `infra/06-observability/gatus` endpoint/CA
+entrypoint changes, the existing backup missing-token failure branch,
+`tests/validation/test_service_runtime_compatibility.py`, affected Gatus unit
+fixtures, `infra/03-security/openbao/scripts/start-server.sh`, renderer role
+metadata/version templates, exact metadata reads, issuer policy and TLS material preflight. These are the same atomic TLS/
+bootstrap change, not extra engines or downstream consumer migration.
 
 ### Work Details
 
