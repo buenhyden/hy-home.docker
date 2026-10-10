@@ -1,5 +1,5 @@
 {
-  "source_revision": "a03c8930a5a15a82f4176bbcfe457bc2ce09db4b",
+  "source_revision": "abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9",
   "collected_at": "2026-10-10T10:27:43.184845+00:00",
   "inputs": [
     {
@@ -1077,16 +1077,16 @@
     {
       "service": "stalwart-config",
       "build_input": "infra/10-communication/stalwart/config/Dockerfile",
-      "input_sha256": "0ea70f4f69b24c5af78e6480699e8a6e7f1e2adbc1d866428364ce9085b0445d",
+      "input_sha256": "85e31f204b5c525b47ccd5277ced2441b86158530651d5e61abeb0bdedab42ce",
       "compose_build_args": {},
       "declarations": [
         {
           "line": 4,
-          "declaration": "FROM ghcr.io/stalwartlabs/cli:1.0.12 AS cli"
+          "declaration": "FROM ghcr.io/stalwartlabs/cli:1.0.13@sha256:9a1e07307d6f890a193322c4b737fc0868405f0f8486a19922cbf362f43884fd AS cli"
         },
         {
           "line": 5,
-          "declaration": "FROM stalwartlabs/stalwart:v0.16.22"
+          "declaration": "FROM stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3"
         },
         {
           "line": 6,
@@ -1095,7 +1095,7 @@
       ],
       "package_inputs": [],
       "installed_sbom": "NOT_RUN",
-      "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
+      "source_refreshed_at": "2026-10-10T16:12:44Z"
     },
     {
       "service": "superset",
@@ -1320,7 +1320,7 @@
       "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00"
     }
   ],
-  "meaning": "Current selected public build declarations/input hashes; initial snapshot preserved. Worker-reported bounded native candidate results are separate from installed SBOM/full service acceptance/HOME.",
+  "meaning": "Current selected public build declarations and per-input hashes on the stated base revision; initial snapshot preserved. No registered generator or reproducible aggregate-hash algorithm exists, so input_manifest_sha256 remains UNKNOWN rather than reusing a stale or invented digest. Installed SBOM, native build/runtime, full service acceptance and HOME remain NOT_RUN.",
   "unresolved_local_image_sources": [
     {
       "service": "storybook-mcp",
@@ -2261,16 +2261,16 @@
       }
     ]
   },
-  "source_refreshed_at": "2026-10-10T11:20:08.192963+00:00",
-  "input_manifest_sha256": "519a429c5cff6d607344a963cdf3003a2e4414f6c88f1ed7e0f25a426cb2dea2",
+  "source_refreshed_at": "2026-10-10T16:12:44Z",
+  "input_manifest_sha256": "UNKNOWN",
   "final_candidate_source_freeze": {
-    "valid": true,
+    "valid": false,
     "frozen_at": "2026-10-10T11:44:22.903026+00:00",
     "source_revision": "8fa3d4375430f5e23f1bd2668e4f71173e0ed3f1",
     "source_manifest_sha256": "3bb30de47143739442207653cb011f7ebdca39b1bfd48efae0371e604819683b",
     "workflow_source_binding_sha256": "26e926e1bb82fd085ef1a6844b7d967315f5e76206cd36c79d8fca22556a73cf",
     "openbao_source_binding_sha256": "f2f2bdf541b35382b46b6335872c9ce9da507269db5c08634708e4bf8e5c444c",
     "owned_openbao_source_fingerprint": "62d281cefb0cc0efeb98a009068b49b3649f258bcb9308f492e7236da7e2e4d1",
-    "meaning": "Final public candidate source hashes only; installed SBOM/full service/HOME acceptance remain separate."
+    "meaning": "Prior public candidate freeze retained as history and invalidated by the current Stalwart build-input refresh. A canonical aggregate manifest has not been regenerated; installed SBOM, native build/runtime, full service and HOME acceptance remain NOT_RUN."
   }
 }

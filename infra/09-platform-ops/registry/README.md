@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-11"
 created: "2026-03-19"
 ---
 
@@ -53,7 +53,7 @@ registry/
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
-| **Service** | Distribution (`registry:3`) | Registry HTTP API v2를 통한 이미지 배포; 정확한 실행 버전은 별도 확인 |
+| **Service** | Distribution ([current exact pin](./docker-compose.yml)) | Registry HTTP API v2를 통한 이미지 배포; 정확한 tag와 digest는 Compose가 소유하며 후속 업데이트 전에 현재 digest를 rollback identity로 보존 |
 | **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback 전용 호스트 게시 |
 | **Storage** | Bind Mount | `${DEFAULT_REGISTRY_DIR}` |
 

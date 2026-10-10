@@ -63,7 +63,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-stateful-high
-    image: prom/prometheus:v3.14.0
+    image: prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e
     container_name: prometheus
     hostname: prometheus
     group_add:
@@ -238,7 +238,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/alloy:v1.19.2
+    image: grafana/alloy:v1.20.1@sha256:2aa2099af76c0098d4af7a4d6e48f86cb66dc1a000222ad927a1c67c6542d13f
     container_name: alloy
     hostname: alloy
     # The image runs as root, but its state directory (and the bind-backed
@@ -542,7 +542,7 @@ services:
       service: template-host-observer-med
     cpus: ${CADVISOR_CPUS:-1.50}
     mem_limit: ${CADVISOR_MEM_LIMIT:-1g}
-    image: gcr.io/cadvisor/cadvisor:v0.55.1
+    image: ghcr.io/google/cadvisor:v0.60.6@sha256:b8e7d1093144fd088f425ff003d75a4aa405de075db78dae3bc563730b1bd07a
     container_name: cadvisor
     hostname: cadvisor
     privileged: true
@@ -653,7 +653,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-med
-    image: grafana/pyroscope:2.3.1
+    image: grafana/pyroscope:2.4.0@sha256:b7e62699a27463aa3533efe3f88c320da594da495731fd6eabca6f44f92cdd7b
     container_name: pyroscope
     hostname: pyroscope
     # Writes a data directory owned by the host group (common-optimizations.exceptions.json).
@@ -741,7 +741,7 @@ services:
     extends:
       file: ../common-optimizations.yml
       service: template-infra-readonly-low
-    image: prom/pushgateway:v1.11.3
+    image: prom/pushgateway:v1.11.4@sha256:91a56b89b97dd8a5e1e4fa8b5bbbd86dd57a87a2a3cee3a3ce3368b40ef158ef
     container_name: pushgateway
     hostname: pushgateway
     expose:

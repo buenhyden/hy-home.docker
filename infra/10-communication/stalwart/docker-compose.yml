@@ -22,7 +22,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-med
-    image: stalwartlabs/stalwart:v0.16.22
+    image: stalwartlabs/stalwart:v0.16.25@sha256:74e5a7d55303ba525d939c6bf97ed4e010df7521f52d80afc22a815b66bd53f3
     container_name: stalwart
     hostname: stalwart
     group_add:
@@ -73,7 +73,7 @@ services:
     build:
       context: ./config
       dockerfile: Dockerfile
-    image: hy-home/stalwart-config:0.16.22-cli1.0.12-local
+    image: hy-home/stalwart-config:0.16.25-cli1.0.13-local
     container_name: stalwart-config
     hostname: stalwart-config
     group_add:

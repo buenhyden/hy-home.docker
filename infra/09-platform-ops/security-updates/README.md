@@ -1,10 +1,10 @@
 ---
 title: "Security update evidence"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 ---
 
 # 보안 업데이트 조사 증거
@@ -45,6 +45,35 @@ LAB runtime, 학습 앱, 실제 HOME 변경·비밀값 변경·자료 삭제는 
 
 ## Usage
 
+### 현재 후보 release-channel provenance
+
+이번 service-local 후보를 구성하는 공급자 identity의 exact tag/ref object, annotated-tag
+dereference, full commit, 요청별 종료 코드와 관찰 시각은
+[`release-lookups.json`](./release-lookups.json)에 구조화했습니다. 아래 표는 공급자
+channel과 resolved source revision의 사람이 읽는 색인입니다. runtime pin은 각 서비스
+Compose/Dockerfile과 [`infra/tech-stack.versions.json`](../../tech-stack.versions.json)이
+소유합니다. 이 근거는 image 서명·SBOM·CVE scan·native 호환·stateful 복원·HOME
+배포를 증명하지 않으며 해당 항목은 계속 `NOT_RUN`입니다.
+
+| 공급자 identity | 공식 channel 근거 | resolved full commit | latest/ref 관찰 시각 (UTC) |
+| --- | --- | --- | --- |
+| Prometheus | [Prometheus download](https://prometheus.io/download/) | [`5241a27fe3c6983549fccc32f6e65917408c63cd`](https://github.com/prometheus/prometheus/commit/5241a27fe3c6983549fccc32f6e65917408c63cd) | `2026-10-10T16:43:49.415475+00:00` / `2026-10-10T16:43:49.898722+00:00` |
+| Grafana Alloy | [Alloy release channel](https://grafana.com/docs/alloy/latest/) | [`95e12cf8961fabc9db6858f7e79bde5c814a07a0`](https://github.com/grafana/alloy/commit/95e12cf8961fabc9db6858f7e79bde5c814a07a0) | `2026-10-10T16:43:50.787604+00:00` / `2026-10-10T16:43:51.303195+00:00` |
+| cAdvisor | [cAdvisor publisher latest](https://github.com/google/cadvisor/releases/latest) | [`5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7`](https://github.com/google/cadvisor/commit/5bf5d43ac6f60d7ee36a13b4d5b4a78ad2d0abc7) | `2026-10-10T16:43:51.758805+00:00` / `2026-10-10T16:43:52.259505+00:00` |
+| Grafana Pyroscope | [Pyroscope support/release channel](https://grafana.com/docs/pyroscope/latest/release-notes/) | [`1c9109674636cfd5c5e61ee3b01ed93c06bff8be`](https://github.com/grafana/pyroscope/commit/1c9109674636cfd5c5e61ee3b01ed93c06bff8be) | `2026-10-10T16:43:52.674952+00:00` / `2026-10-10T16:43:53.220849+00:00` |
+| Pushgateway | [Prometheus download](https://prometheus.io/download/) | [`3e29338978f3046ba1a602d6cca520121ab91112`](https://github.com/prometheus/pushgateway/commit/3e29338978f3046ba1a602d6cca520121ab91112) | `2026-10-10T16:43:54.115027+00:00` / `2026-10-10T16:43:54.625186+00:00` |
+| Dozzle | [Dozzle install channel](https://dozzle.dev/guide/getting-started) | [`309a3a6edae7f7b8e0443105b674b57985e04848`](https://github.com/amir20/dozzle/commit/309a3a6edae7f7b8e0443105b674b57985e04848) | `2026-10-10T16:43:55.656643+00:00` / `2026-10-10T16:43:56.088389+00:00` |
+| Conftest | [Conftest installer channel](https://www.conftest.dev/install/) | [`8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5`](https://github.com/open-policy-agent/conftest/commit/8f7ac015cb51d81992f2ffbe2b0c1451fd05d1c5) | `2026-10-10T16:43:56.880818+00:00` / `2026-10-10T16:43:57.341048+00:00` |
+| Mailpit | [Mailpit stable tag contract](https://mailpit.axllent.org/docs/install/docker/) | [`ccb524a62b3a14b6a3fd55c1275a16945d10e36b`](https://github.com/axllent/mailpit/commit/ccb524a62b3a14b6a3fd55c1275a16945d10e36b) | `2026-10-10T16:43:57.773291+00:00` / `2026-10-10T16:43:58.236070+00:00` |
+| Qdrant | [Qdrant release channel](https://qdrant.tech/documentation/installation/) | [`016542aa5deb6c66380bb137badf73d54f742bde`](https://github.com/qdrant/qdrant/commit/016542aa5deb6c66380bb137badf73d54f742bde) | `2026-10-10T16:43:59.059872+00:00` / `2026-10-10T16:43:59.508184+00:00` |
+| Renovate | [Renovate image flavors](https://docs.renovatebot.com/getting-started/running/) | [`182de2759f0bb31ee6216f4076875948d39c4c1b`](https://github.com/renovatebot/renovate/commit/182de2759f0bb31ee6216f4076875948d39c4c1b) | `2026-10-10T16:44:00.383717+00:00` / `2026-10-10T16:44:00.894131+00:00` |
+| SeaweedFS | [SeaweedFS release-image contract](https://github.com/seaweedfs/seaweedfs/blob/master/docker/README.md) | [`530be3e37337488ecc34d58441e0bc476e121c93`](https://github.com/seaweedfs/seaweedfs/commit/530be3e37337488ecc34d58441e0bc476e121c93) | `2026-10-10T16:44:01.350015+00:00` / `2026-10-10T16:44:01.901164+00:00` |
+| AWS CLI | [AWS official image contract](https://hub.docker.com/r/amazon/aws-cli/) | [`9469a4d8191c8139b54dd119526648d29a4b5f72`](https://github.com/aws/aws-cli/commit/9469a4d8191c8139b54dd119526648d29a4b5f72) | `2026-10-10T16:44:07.222358+00:00` / `2026-10-10T16:44:06.407222+00:00` |
+| Stalwart Server | [Stalwart stable/newest contract](https://www.stalw.art/docs/install/platform/docker/) | [`3f657330c0f49a015a3a372fb59669b5cccbca6d`](https://github.com/stalwartlabs/stalwart/commit/3f657330c0f49a015a3a372fb59669b5cccbca6d) | `2026-10-10T16:44:02.302946+00:00` / `2026-10-10T16:44:02.834291+00:00` |
+| Stalwart CLI | [Stalwart CLI installer channel](https://stalw.art/docs/management/cli/) | [`e78e596eca9a352b8b3db3379001f9384dd15c17`](https://github.com/stalwartlabs/cli/commit/e78e596eca9a352b8b3db3379001f9384dd15c17) | `2026-10-10T16:44:03.240338+00:00` / `2026-10-10T16:44:03.732929+00:00` |
+| Open Notebook | [Open Notebook latest-only support](https://github.com/lfnovo/open-notebook/security) | [`315d5255af2a5132aada41c94d5c3c5dc8e837aa`](https://github.com/lfnovo/open-notebook/commit/315d5255af2a5132aada41c94d5c3c5dc8e837aa) | `2026-10-10T16:44:04.157274+00:00` / `2026-10-10T16:44:04.655896+00:00` |
+| CNCF Distribution | [Distribution stable release](https://github.com/distribution/distribution/releases/latest) | [`3220848f15d9279c66a41aa0a257469e6aede1e9`](https://github.com/distribution/distribution/commit/3220848f15d9279c66a41aa0a257469e6aede1e9) | `2026-10-10T16:44:05.085071+00:00` / `2026-10-10T16:44:05.552356+00:00` |
+
 `python3 -m scripts.lib.supply_chain.latest_version_gate --input infra/09-platform-ops/security-updates/update-ledger.json`
 은 공급자 최신판·channel 미확인 항목을 `ready=false`, 종료 코드 2로 남깁니다.
 CLI는 장부의 `expected_services`를 신뢰하지 않고 기존 operations catalog의
@@ -57,9 +86,11 @@ Compose 입력별 SHA와 입력 집합 SHA를 남깁니다. 장부의 항목과 
 현재 총괄 입력은 여전히 DEFER 영수증이다. latest gate는 `ready=false`,
 `deployed=false`, `externalfacts=false`, exit 2와 missing/unexpected 서비스 없음을
 반환한다. security gate는 `ledger_complete=false`, `coverage_checked=true`, exit 2와
-관측된 124개 `blocked-evidence` 항목을 반환한다. 두 gate는 root input manifest SHA-256
-`3a2e7451e6211b43b9d8f9c9760fed0fcf5cdac381e45e1b2323628b60756f66`.
-에 연결된다. 이 수는 서비스 수 계약이 아닌 관측 증거다.
+관측된 124개 `blocked-evidence` 항목을 반환한다. latest gate의 전체 후보 중
+61개는 여전히 미완결이며, 이번 20개 service-local 후보는 channel/source 기준만
+충족한다. 두 gate는 root input manifest SHA-256
+`26c4328eac56770d91f39f7a56ba2d5ed99311d05b5d149724824bd9d66d4555`에
+연결된다. 이 수는 서비스 수 계약이 아닌 관측 증거다.
 
 `python3 -m scripts.lib.supply_chain.security_update_gate --input <reviewed-security-ledger.json>`
 은 같은 독립 root source 집합과 별도 담당자가 검토한 보안 장부의 필드 완전성을 검사합니다.

@@ -19,7 +19,7 @@ services:
       file: ../../common-optimizations.yml
       service: template-stateful-med
     user: '1000:1000'
-    image: qdrant/qdrant:v1.19.1-unprivileged
+    image: qdrant/qdrant:v1.19.2-unprivileged@sha256:efb96a9425a90d2d5a1a0a474156280df1892dcdf1af3e8515bd2589b1bfd88b
     container_name: qdrant
     hostname: qdrant
     group_add:
