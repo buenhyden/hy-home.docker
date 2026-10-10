@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/plan"
 status: "blocked"
 owner: "@buenhyden"
@@ -105,7 +105,8 @@ inspection or real recovery is inferred. No LAB paths are inspected or changed.
 
 The root implementer owns OpenBao Compose/HCL/TLS/audit source, both Prometheus
 scrape configs and its start script/Compose mounts, Traefik backend transport,
-OpenBao alert rules and only its existing root secrets-group exception row, this package's Spec/Plan/new Task and Korean OpenBao
+OpenBao alert rules and only its existing root secrets-group exception row, the current service inventory fields for
+only these five changed services, this package's Spec/Plan/new Task and Korean OpenBao
 README/GDE/POL/RUN plus only changed RUN-0021/RUN-0098 passages. A bounded
 worker owns only the three new OpenBao Agent/reissue shell scripts and their
 unit test; another bounded worker may own only the isolated rehearsal test and its two _openbao_rehearsal helper modules.
