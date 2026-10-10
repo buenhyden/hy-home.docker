@@ -1,8 +1,8 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -31,7 +31,18 @@ are in scope. HOME data changes, realm changes, credential issuance and
 image pulls onto a 90%-full disk are not. Baseline `main` `f88eb6601`; the
 branch was rebased onto `670b39e53` after PR #386 (SPEC-0215) merged.
 
+The direct 2026-10-10 SMTP01 integration request authorizes W26–W30 source,
+synthetic isolation, logical commits and owning-Spec delivery. Private retirement
+requires separately established exact operator facts and remains NOT_RUN.
+
 ## Work Log
+
+### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0005 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0005 | ready | in-progress | #coordinator-required-regression-registration |
 
 ### W8 Baseline, Owner Map and HOME Observations
 
@@ -266,7 +277,7 @@ comparison/metadata rewriting/unlink, rotation and real restore are NOT_RUN.
 | MIGRATION | VERIFY_RUNTIME | NOT_RUN; no actual file comparison/private catalog changes; CLN01 verifies source/runtime/job/backup/external facts |
 | ROTATION | NO_CHANGE | NOT_RUN; no password or account change |
 | RECOVERY | VERIFY_RUNTIME | NOT_RUN for real Restic recovery; canonical-only source/consumer rollback is documented |
-| DELIVERY | IMPLEMENT | Logical commits pushed; draft owning PRs #412/#413; latest-main hosted acceptance and integration NOT_RUN |
+| DELIVERY | IMPLEMENT | PR #412 merged; PR #413 open on main; latest-head implementation delivery remains pending |
 | Wiki and batches | OUT_OF_SCOPE | Wiki preparation and independent opsflow_dev batch are later owning work; no engine/app created |
 | LAB runtime and learning apps | OUT_OF_SCOPE | No service/data/image/credential change or learning-app investigation |
 
@@ -382,7 +393,7 @@ candidates. Earlier PASS rows are historical, not fresh final-source evidence.
 | `python3 -m unittest tests.validation.test_secret_metadata_sync -q` | 0 | 46 scanner/catalog tests |
 | `python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -q` | 0 | Final fixture: 4 unit PASS, 6 native SKIP by default; opt-in receipt below |
 
-#### Current-source verification and delivery receipt
+#### Historical Worker Source and Delivery Receipt
 
 The three initial independent regressions and later fixture failures were genuine
 FAIL results. Service-less includes and duplicate definitions now fail closed;
@@ -429,9 +440,9 @@ Logical delivery so far: contract `d90d9f12440322aed602749d74392fc8d6c01be0`,
 helper/catalog `3d0a8a1b07c1f2df29c0f04f88ba8fa815fbd1bf`, consumer
 `3181921be795c5439e5ac77e462f62e47db6fa5d`. SPEC-0212 draft
 [PR #412](https://github.com/buenhyden/hy-home.docker/pull/412) has head `d90d9f1`
-and 8 hosted checks PASS. It remains OPEN/DRAFT and unmerged. Remote main was
+and 8 hosted checks PASS at that historical capture. It was OPEN/DRAFT and unmerged. Remote main was
 reconfirmed as `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. SPEC-0204 draft
-[PR #413](https://github.com/buenhyden/hy-home.docker/pull/413) is OPEN/DRAFT,
+[PR #413](https://github.com/buenhyden/hy-home.docker/pull/413) was OPEN/DRAFT,
 stacked on `codex/smtp01-contract`. Integration and SEC01 final-image retest
 remain distinct prerequisites. Current native and gate receipts follow.
 
@@ -439,7 +450,7 @@ A later remote-main check returned
 `cac9e10fa584754706598d624654e07e8d6531f4`: P09 issuance PR #414 is merged.
 Its shared SPEC-0204 Spec/Plan changes must be reconciled with #413 by the
 coordinator while preserving P09 criterion 13/W25 and CLN01 criterion 12/W24.
-This branch has not been automatically merged or rebased onto that main.
+At that capture, the worker branch had not been merged or rebased onto that main.
 Earlier test receipts do not establish compatibility with its newer tree.
 
 #### Final native receipt
@@ -564,12 +575,12 @@ SEC01 owns image/version/projection changes; CLN01 owns final retirement facts
 and actual deletion. SMTP01 alone owns generator/helper. Preserve their diffs,
 reconcile criterion gaps under the coordinator, and never use force push/reset.
 
-#### Delivery checkpoint
+#### Historical Worker Delivery Checkpoint
 
 Logical commits are contract `d90d9f1`, helper/catalog `3d0a8a1`, consumer
 `3181921`, protected static repair `1f32477`, native fixture `63ac2cf`, and
 operations evidence `7bb0d85`, and manifest regression fix `b37c1151a`. Their ordinary commit hooks and staged style
-checks passed without bypass. Both owning draft PRs are pushed and unmerged.
+checks passed without bypass. Both owning draft PRs were pushed and unmerged at that capture.
 The file manifest above contains 32 tracked changed/created files and no deletion.
 
 The registered aggregate command was
@@ -624,11 +635,11 @@ isolated checkout. A local next-line exception preserves the coordinator's
 criterion IDs without changing global lint policy; the exact staged rerun passes.
 No repository user edits were reset, stashed or discarded.
 
-The SPEC-0204 draft is stacked on `codex/smtp01-contract` so its diff contains
+At that capture, the SPEC-0204 draft was stacked on `codex/smtp01-contract` so its diff contains
 only its owning implementation/docs. Hosted candidate-quality triggers only
 PRs targeting main: this stacked PR's required candidate result is NOT_RUN
 until the coordinator merges the owning contract, rebases/retargets to latest
-main and runs the actual latest-head required checks. Neither draft is merged.
+main and runs the actual latest-head required checks. Neither draft was merged at that capture.
 SEC01 final image-contract proof and coordinator common-file integration remain
 prerequisites. SMTP01 is source/isolated ready; actual private retirement,
 HOME recovery and end-to-end delivery remain NOT_RUN.
@@ -664,6 +675,31 @@ The next ISOLATED command after SEC01's final contract is
 with the fixture pins/assertions reviewed against SEC01's final tag, platform,
 digest, USER, Entrypoint and Cmd first. That final-contract run is NOT_RUN.
 No Wiki engine/app/workspace, learning-app work or LAB runtime action occurred.
+
+### Coordinator Required Regression Registration
+
+Current read-only GitHub reconciliation: PR #412 is merged at
+`55c92bc5916260929b76cc0b219efeae6e3cfc3e`; PR #413 is open, non-draft
+on main at head `e7bff9149f29a4bbb23d977dadf01f5988ee12fc` with only the
+previous GitGuardian receipt. Coordinator merge `8fc5f8089` preserves that
+worker source while integrating SEC01/CLN01 main `e93e0c822`. Later merge
+`794bd7241` integrates reviewed SEC common repairs. The historical worker
+observations below do not describe current PR state; PR #413 final delivery
+and private operations remain pending. Task5 is actively in progress.
+
+The new routing regression first failed two assertions because the proof unit
+and routing unit were absent from the required repository-integrity leaf. The
+coordinator registered both modules, direct proof-test consumption in the existing
+script manifest, and precise changed-path/root selection. Native SMTP remains
+opt-in; captured-output and cleanup regressions remain required. No private
+operation was executed. The preceding integration merge was committed before
+examining a staged-controller exit 2 caused by formatting one Plan blank line;
+that failure is retained here and fresh staged verification is required before
+the next delivery commit. The merge does not constitute a gate PASS.
+The first combined replay then exposed unsorted merged CLN/SMTP manifest rows
+and proof consumers (86 tests, two FAIL, exit 1). Sorting only those records
+retained both owners; the identical 86-test replay passed, exit 0 (17.213
+seconds). Routing, workflow and manifest tests are SOURCE/UNIT checks only.
 
 ## Evidence
 
