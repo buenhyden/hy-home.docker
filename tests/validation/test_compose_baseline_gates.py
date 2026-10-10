@@ -36,6 +36,10 @@ class ComposeSelectionValidationTests(unittest.TestCase):
         self,
         services: dict[str, dict[str, object]],
         volumes: dict[str, object] | None = None,
+        *,
+        render_calls: list[list[str]] | None = None,
+        render_behavior: str = "",
+        selection: str = "",
     ) -> subprocess.CompletedProcess[str]:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -46,6 +50,9 @@ class ComposeSelectionValidationTests(unittest.TestCase):
                 capture_output=True,
             )
             (root / ".env.example").write_text("EXAMPLE=1\n", encoding="utf-8")
+            existing_secret = root / "secrets/existing.txt"
+            existing_secret.parent.mkdir()
+            existing_secret.write_text("existing-synthetic\n", encoding="utf-8")
             policy = (
                 root / "docs/05.operations/policies/0078-compose-profile-vocabulary.md"
             )
@@ -67,6 +74,8 @@ import os
 import sys
 
 args = sys.argv[1:]
+with open(os.environ["FAKE_COMPOSE_CALLS"], "a", encoding="utf-8") as stream:
+    stream.write(json.dumps(args) + "\\n")
 if "--profiles" in args:
     print("alpha")
     print("beta")
@@ -78,7 +87,23 @@ profiles = [
 ]
 all_services = json.loads(os.environ["FAKE_COMPOSE_SERVICES"])
 services = {profile: all_services[profile] for profile in profiles}
+if profiles == ["alpha"] and "--format" in args:
+    behavior = os.environ["FAKE_COMPOSE_RENDER_BEHAVIOR"]
+    if behavior == "nonzero":
+        print(json.dumps({"services": services}))
+        raise SystemExit(7)
+    if behavior == "malformed":
+        print("not-json")
+        raise SystemExit(0)
+    if behavior == "empty":
+        services = {}
 volumes = json.loads(os.environ["FAKE_COMPOSE_VOLUMES"])
+if "--format" not in args and "--services" not in args:
+    print("file: ./secrets/existing.txt")
+    print("file: ./secrets/generated.txt")
+    raise SystemExit(0)
+if not os.path.isfile("secrets/generated.txt"):
+    raise SystemExit(6)
 if "--services" in args:
     print("\\n".join(services))
 else:
@@ -87,7 +112,8 @@ else:
                 encoding="utf-8",
             )
             docker.chmod(0o755)
-            return subprocess.run(
+            calls = root / "compose-calls.jsonl"
+            result = subprocess.run(
                 ["bash", os.fspath(VALIDATE_COMPOSE)],
                 cwd=root,
                 capture_output=True,
@@ -97,9 +123,63 @@ else:
                     "PATH": os.fspath(fakebin) + os.pathsep + os.environ["PATH"],
                     "FAKE_COMPOSE_SERVICES": json.dumps(services),
                     "FAKE_COMPOSE_VOLUMES": json.dumps(volumes or {}),
+                    "FAKE_COMPOSE_CALLS": os.fspath(calls),
+                    "FAKE_COMPOSE_RENDER_BEHAVIOR": render_behavior,
+                    "HYHOME_COMPOSE_PROFILES": selection,
                 },
                 check=False,
             )
+            if render_calls is not None:
+                render_calls.extend(
+                    json.loads(line) for line in calls.read_text().splitlines()
+                )
+            self.assertFalse((root / ".env").exists())
+            self.assertFalse((root / "secrets/generated.txt").exists())
+            self.assertEqual("existing-synthetic\n", existing_secret.read_text())
+            return result
+
+    def test_each_declared_selection_and_home_reuses_one_json_render(self) -> None:
+        calls: list[list[str]] = []
+        result = self._run_port_matrix({"alpha": {}, "beta": {}}, render_calls=calls)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        rendered = [call for call in calls if "--profiles" not in call]
+        # One combined secret-discovery render, then one JSON render for each
+        # independently checked profile and the POL-0078 HOME union.
+        self.assertEqual(1, sum("--format" not in call for call in rendered), calls)
+        selections = [
+            tuple(
+                call[index + 1] for index, arg in enumerate(call) if arg == "--profile"
+            )
+            for call in rendered
+            if "--format" in call
+        ]
+        self.assertCountEqual([("alpha",), ("beta",), ("alpha", "beta")], selections)
+        self.assertEqual(4, len(rendered), calls)
+
+    def test_named_selection_reuses_one_render_without_expanding_scope(self) -> None:
+        calls: list[list[str]] = []
+        result = self._run_port_matrix(
+            {"alpha": {}, "beta": {}}, render_calls=calls, selection="beta"
+        )
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertEqual(
+            [
+                ["compose", "--profile", "beta", "config"],
+                ["compose", "--profile", "beta", "config", "--format", "json"],
+            ],
+            calls,
+        )
+
+    def test_failed_invalid_and_empty_json_render_are_not_accepted(self) -> None:
+        for behavior in ("nonzero", "malformed", "empty"):
+            with self.subTest(behavior=behavior):
+                result = self._run_port_matrix(
+                    {"alpha": {}, "beta": {}},
+                    render_behavior=behavior,
+                    selection="alpha",
+                )
+                self.assertEqual(1, result.returncode, result.stdout + result.stderr)
+                self.assertNotIn("Docker Compose validation passed", result.stdout)
 
     def test_preflight_reads_data_roots_from_compose_not_shell(self) -> None:
         # An unquoted value with spaces is valid for Compose but not for `. .env`.

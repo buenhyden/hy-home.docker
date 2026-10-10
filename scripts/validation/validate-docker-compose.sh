@@ -185,8 +185,7 @@ PY
 # Every service a single profile selects must publish a distinct host port.
 # Compose only reports a collision at `up`, so the check is static here.
 report_port_collisions() {
-  docker compose "${PROFILE_ARGS[@]}" config --format json |
-    python3 -c '
+  python3 -c '
 import collections, ipaddress, json, sys
 
 model = json.load(sys.stdin)
@@ -247,8 +246,7 @@ sys.exit(1 if invalid or collisions else 0)
 # initialize or overwrite another's data, and Compose only notices at `up`.
 # Preflight passes "realpath" so symlink aliases resolve to the real target.
 report_storage_overlaps() {
-  docker compose "${PROFILE_ARGS[@]}" config --format json |
-    STORAGE_RESOLVE="${1:-}" python3 -c '
+  STORAGE_RESOLVE="${1:-}" python3 -c '
 import json, os, sys
 
 model = json.load(sys.stdin)
@@ -329,7 +327,7 @@ run_preflight() {
   local overlaps
   if ! docker compose "${PROFILE_ARGS[@]}" config --quiet; then
     fail "Compose configuration did not render; named volume paths not checked"
-  elif overlaps="$(report_storage_overlaps realpath)"; then
+  elif overlaps="$(docker compose "${PROFILE_ARGS[@]}" config --format json | report_storage_overlaps realpath)"; then
     ok "named volume host paths are distinct and not nested"
   else
     fail "named volume host paths overlap"
@@ -407,18 +405,22 @@ for selection in "${VALIDATE_SELECTIONS[@]}"; do
     selection_label="HOME"
   fi
 
-  if ! docker compose "${PROFILE_ARGS[@]}" config >/dev/null; then
+  # Bind all checks to one successful render, avoiding repeated expansion of
+  # the same include tree and a changing model between checks.
+  if ! selection_model="$(docker compose "${PROFILE_ARGS[@]}" config --format json)"; then
     echo "FAIL: $selection_label: Compose configuration did not render."
     VALIDATION_FAILED=1
     continue
   fi
 
-  selection_count="$(
-    docker compose "${PROFILE_ARGS[@]}" config --services |
-      sed '/^[[:space:]]*$/d' |
-      wc -l |
-      tr -d ' '
-  )"
+  if ! selection_count="$(printf '%s\n' "$selection_model" | python3 -c '
+import json, sys
+print(len(json.load(sys.stdin).get("services") or {}))
+')"; then
+    echo "FAIL: $selection_label: Compose JSON model is invalid."
+    VALIDATION_FAILED=1
+    continue
+  fi
 
   if [ "$selection_count" -eq 0 ]; then
     echo "FAIL: $selection_label: resolved service count is 0."
@@ -426,14 +428,14 @@ for selection in "${VALIDATE_SELECTIONS[@]}"; do
     continue
   fi
 
-  if ! collisions="$(report_port_collisions)"; then
+  if ! collisions="$(printf '%s\n' "$selection_model" | report_port_collisions)"; then
     echo "FAIL: $selection_label: two selected services publish the same host port."
     printf '  %s\n' "$collisions"
     VALIDATION_FAILED=1
     continue
   fi
 
-  if ! overlaps="$(report_storage_overlaps)"; then
+  if ! overlaps="$(printf '%s\n' "$selection_model" | report_storage_overlaps)"; then
     echo "FAIL: $selection_label: named volume host paths overlap."
     printf '  %s\n' "$overlaps"
     VALIDATION_FAILED=1
