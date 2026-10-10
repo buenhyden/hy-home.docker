@@ -45,16 +45,16 @@ BUILD_MATERIAL_TARGET_DESCRIPTOR_DIGEST = (
 )
 OBSERVED_TOOL_IDENTITIES = {
     "syft": (
-        "sha256:b4f1df79f97b817682d8b5ff941eb6bfe74f6172553a5e312c75bbc2eabc405c",
-        "sha256:3567af297260e786440f30d149c2846302fd1df0823ee769d8b167d068f7d181",
+        "sha256:3eb5379ba7b409c3f4069b686110527af0c47df993fa5c10d13e7cf34f49b1aa",
+        "sha256:dbff4983a6eda5a3d3db7d941fffdb39e214134ef3c20f8e76abbfda2f3d86e7",
     ),
     "grype": (
-        "sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821",
-        "sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0",
+        "sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe",
+        "sha256:77f06435c39c38bd1b136b170283af17a6cfbdfd641b4412e6612d8b64c597da",
     ),
     "cosign": (
-        "sha256:de9c65609e6bde17e6b48de485ee788407c9502fa08b8f4459f595b21f56cd00",
-        "sha256:4221e0d9d429afa26a9f1b8bc8f0ba2c9af470f7b495d845c31ac982a5d1182b",
+        "sha256:9e5c2f2edc34351160407ca3416c61855bdf9403c3c5936e0f0be7fc261611b8",
+        "sha256:192a38e9dabb6b28359fc4706992d91ad325f366630a68dd7c3d50bcef059db8",
     ),
     "scorecard": (
         "sha256:3f24714e9366917adb7a05635382c97dfecb14b21eaef3dfa2ea48c8e23e0795",

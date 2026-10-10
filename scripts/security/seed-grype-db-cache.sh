@@ -19,10 +19,10 @@ OUTPUT_RELATIVE="_workspace/repo-support/task-2026-07-23-security-supply-chain-r
 MODE="${1:-}"
 
 readonly EXIT_USAGE=2 EXIT_POLICY=10 EXIT_NETWORK=20 EXIT_PUBLICATION=30
-readonly GRYPE_REF="anchore/grype:v0.116.0@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
-readonly GRYPE_REPO_DIGEST="anchore/grype@sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
-readonly GRYPE_TARGET_DESCRIPTOR_DIGEST="sha256:fd4ab4d1042b522c896e73bdf09ab8bf384fa417df99d6dd0d6e1008c7e7c821"
-readonly GRYPE_CONFIG_ID="sha256:4d4127e08c9eaafe6fa1eb2fcc05c83b2608562541949ffb33ef32eb4b1b25c0"
+readonly GRYPE_REF="anchore/grype:v0.120.1@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
+readonly GRYPE_REPO_DIGEST="anchore/grype@sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
+readonly GRYPE_TARGET_DESCRIPTOR_DIGEST="sha256:e4a44ef45d285b829ce6efe2642980329661bd2d18eab5fc539138d4adaebbbe"
+readonly GRYPE_CONFIG_ID="sha256:77f06435c39c38bd1b136b170283af17a6cfbdfd641b4412e6612d8b64c597da"
 
 runtime_dir=""
 tool_tmp_dir=""
