@@ -79,9 +79,9 @@ rules:
     type: UNTYPED
 
   # https://github.com/debezium/debezium-examples/blob/main/monitoring/debezium-jmx-exporter/config.yml
-  - pattern : "kafka.connect<type=connect-worker-metrics>([^:]+):"
+  - pattern: "kafka.connect<type=connect-worker-metrics>([^:]+):"
     name: "kafka_connect_worker_metrics_$1"
-  - pattern : "kafka.connect<type=connect-metrics, client-id=([^:]+)><>([^:]+)"
+  - pattern: "kafka.connect<type=connect-metrics, client-id=([^:]+)><>([^:]+)"
     name: "kafka_connect_metrics_$2"
     labels:
       client: "$1"

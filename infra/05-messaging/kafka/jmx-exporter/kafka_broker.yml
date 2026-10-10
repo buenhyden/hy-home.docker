@@ -33,7 +33,7 @@ rules:
     type: COUNTER
     cache: true
     labels:
-      api_name:  "$1"
+      api_name: "$1"
       api_version: "$2"
       client_software_name: "$3"
       client_software_version: "$4"
@@ -43,7 +43,7 @@ rules:
     type: GAUGE
     cache: true
     labels:
-      api_name:  "$1"
+      api_name: "$1"
       api_version: "$2"
       client_software_name: "$3"
       client_software_version: "$4"
@@ -281,7 +281,7 @@ rules:
       "$3": "$4"
       attribute_name: "$5"
   # Quotas
-  - pattern : 'kafka.server<type=(Produce|Fetch|Request), user=(.+), client-id=(.+)><>(.+):'
+  - pattern: 'kafka.server<type=(Produce|Fetch|Request), user=(.+), client-id=(.+)><>(.+):'
     name: kafka_server_$1_$4
     type: GAUGE
     cache: true
@@ -289,14 +289,14 @@ rules:
       user: "$2"
       client-id: "$3"
 
-  - pattern : 'kafka.server<type=(Produce|Fetch|Request), user=(.+)><>(.+):'
+  - pattern: 'kafka.server<type=(Produce|Fetch|Request), user=(.+)><>(.+):'
     name: kafka_server_$1_$3
     type: GAUGE
     cache: true
     labels:
       user: "$2"
 
-  - pattern : 'kafka.server<type=(Produce|Fetch|Request), client-id=(.+)><>(.+):'
+  - pattern: 'kafka.server<type=(Produce|Fetch|Request), client-id=(.+)><>(.+):'
     name: kafka_server_$1_$3
     type: GAUGE
     cache: true
@@ -304,19 +304,19 @@ rules:
       client-id: "$2"
 
 # Broker  Metrics
-  - pattern : 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInPerSec|BytesInPerSec|BytesOutPerSec|TotalProduceRequestsPerSec|TotalFetchRequestsPerSec), topic=(.+)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInPerSec|BytesInPerSec|BytesOutPerSec|TotalProduceRequestsPerSec|TotalFetchRequestsPerSec), topic=(.+)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
     name: kafka_server_brokertopicmetrics_$1_$3
     type: GAUGE
     cache: true
     labels:
       topic: "$2"
 
-  - pattern : 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInPerSec|BytesInPerSec|BytesOutPerSec)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(MessagesInPerSec|BytesInPerSec|BytesOutPerSec)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
     name: kafka_server_brokertopicmetrics_$1_$2_alltopics
     type: GAUGE
 
 # Network Request  Metrics
-  - pattern : 'kafka.network<type=RequestMetrics, name=RequestsPerSec, request=(.+), version=([0-9]+)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
+  - pattern: 'kafka.network<type=RequestMetrics, name=RequestsPerSec, request=(.+), version=([0-9]+)><>(Count|OneMinuteRate|FiveMinuteRate|FifteenMinuteRate)'
     name: kafka_network_requestmetrics_requestspersec_$3
     type: GAUGE
     cache: true

@@ -1216,7 +1216,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             result = self._run(repo, tools)
             self.assertEqual(2, result.returncode, result.stdout)
             self.assertIn(
-                "input-graph BLOCKED category=unsafe-input-graph", result.stdout
+                "input-graph BLOCKED category=unsafe-index-race", result.stdout
             )
             self.assertFalse((tools / "docker.trace").exists())
         with tempfile.TemporaryDirectory() as directory:
@@ -1277,7 +1277,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
                 "yaml-lint PASS category=validated child_exit=0", result.stdout
             )
             self.assertEqual(
-                ["--rcfile=.shellcheckrc", "--severity=warning", "infra/check.sh"],
+                ["--severity=warning", "infra/check.sh"],
                 (tools / "shell.args").read_text(encoding="utf-8").splitlines(),
             )
             self.assertEqual(
@@ -1304,10 +1304,30 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
                 "shell-lint BLOCKED category=missing-tool child_exit=127", result.stdout
             )
 
+    def test_static_checks_use_shellcheck_default_project_rcfile(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory))
+            self._track(repo, "infra/check.sh", "#!/bin/sh\necho ok\n", executable=True)
+            self._write_executable(
+                tools / "shellcheck",
+                'case "$1" in --rcfile=*) exit 3 ;; esac\n'
+                "[ -f .shellcheckrc ] || exit 4\n"
+                "exit 0\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn(
+                "shell-lint PASS category=validated child_exit=0", result.stdout
+            )
+
     def test_static_checks_block_unsafe_graph_before_docker(self) -> None:
         cases = (
             (
                 "services:\n  app:\n    image: busybox\n    volumes: ['/outside:/inside']\n",
+                "external-absolute-path",
+            ),
+            (
+                "services:\n  app:\n    image: busybox\n    volumes: ['/var/run/docker.sock:/inside']\n",
                 "external-absolute-path",
             ),
             (
@@ -1346,7 +1366,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             ),
             (
                 "services: {app: {image: busybox, extends: {file: base.yml, service: base}}}\n",
-                "unsupported-input-graph",
+                "missing-graph-input",
             ),
         )
         for compose, category in cases:
@@ -1415,6 +1435,173 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             result = self._run(repo, tools)
             self.assertEqual(0, result.returncode, result.stdout)
             self.assertIn("input-graph PASS category=verified", result.stdout)
+
+    def test_static_checks_validate_declared_root_resources(self) -> None:
+        compose = (
+            "networks:\n"
+            "  app-net:\n"
+            "    driver: bridge\n"
+            "    internal: true\n"
+            "    ipam:\n"
+            "      config: [{subnet: 10.251.0.0/24}]\n"
+            "volumes:\n"
+            "  app-data:\n"
+            "    driver: local\n"
+            "    driver_opts:\n"
+            "      type: none\n"
+            "      o: bind\n"
+            "      device: ${APP_PORT}/app\n"
+            "services:\n"
+            "  app:\n"
+            "    image: busybox\n"
+            "    networks: [app-net]\n"
+            "    volumes: [app-data:/data]\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+        unsafe_resources = (
+            "networks: {bad: {unknown_file: ./host}}\nservices: {}\n",
+            "volumes: {bad: {driver: local, driver_opts: {type: none, o: bind, device: /host}}}\nservices: {}\n",
+            "volumes: {bad: {driver: local, driver_opts: {type: none, o: bind, device: ${MISSING}}}}\nservices: {}\n",
+        )
+        for compose in unsafe_resources:
+            with (
+                self.subTest(compose=compose),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                repo, tools = self._repo(pathlib.Path(directory), compose)
+                result = self._run(repo, tools)
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertIn("input-graph BLOCKED", result.stdout)
+                self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_validate_reviewed_compose_service_fields(self) -> None:
+        compose = (
+            "services:\n"
+            "  app:\n"
+            "    extends: {file: base.yml, service: base}\n"
+            "    image: busybox\n"
+            "    group_add: ['1000']\n"
+            "    labels: {owner: fixture}\n"
+            "    cpus: '0.10'\n"
+            "    mem_limit: 64m\n"
+            "    pids_limit: 64\n"
+            "    shm_size: 8m\n"
+            "    devices: [/dev/kmsg]\n"
+            "    dns: [127.0.0.1]\n"
+            "    gpus: all\n"
+            "    blkio_config: {weight: 100}\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            self._track(repo, "base.yml", "services: {base: {image: busybox}}\n")
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+        unsafe_devices = (
+            "services: {app: {image: busybox, devices: [/etc/shadow]}}\n",
+            "services: {app: {image: busybox, devices: [/dev/null]}}\n",
+            "services: {app: {image: busybox, devices: [relative-device]}}\n",
+        )
+        for compose in unsafe_devices:
+            with (
+                self.subTest(compose=compose),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                repo, tools = self._repo(pathlib.Path(directory), compose)
+                result = self._run(repo, tools)
+                self.assertEqual(2, result.returncode, result.stdout)
+                self.assertIn(
+                    "input-graph BLOCKED category=unsupported-input-graph",
+                    result.stdout,
+                )
+                self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_use_virtual_synthetic_host_paths(self) -> None:
+        compose = (
+            "services:\n"
+            "  app:\n"
+            "    image: busybox\n"
+            "    volumes: ['${DEFAULT_CERT_DIR}/rootCA.pem:/cert.pem:ro']\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            self._track(repo, ".env.example", "DEFAULT_CERT_DIR=/real/certs\n")
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+            self.assertFalse((repo / ".infra-static-leak").exists())
+
+    def test_static_checks_virtualize_tracked_bind_directories(self) -> None:
+        compose = (
+            "services:\n"
+            "  app:\n"
+            "    image: busybox\n"
+            "    volumes: ['./infra/config/templates:/templates:ro']\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            self._track(
+                repo,
+                "infra/config/templates/.env.example",
+                "SYNTHETIC_SENTINEL=not-read\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+    def test_static_checks_accept_only_compose_override_tags(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(
+                pathlib.Path(directory),
+                "services: {app: {image: busybox, ports: !override []}}\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(
+                pathlib.Path(directory),
+                "services: {app: {image: busybox, ports: !include []}}\n",
+            )
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn(
+                "input-graph BLOCKED category=unsupported-yaml-tag", result.stdout
+            )
+            self.assertFalse((tools / "docker.trace").exists())
+
+    def test_static_checks_accept_yaml_merges_and_reject_duplicate_keys(self) -> None:
+        compose = (
+            "x-service: &service\n"
+            "  image: busybox\n"
+            "  restart: no\n"
+            "services:\n"
+            "  app:\n"
+            "    <<: *service\n"
+            "    restart: unless-stopped\n"
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), compose)
+            result = self._run(repo, tools)
+            self.assertEqual(0, result.returncode, result.stdout)
+            self.assertIn("input-graph PASS category=verified", result.stdout)
+
+        duplicate = "services:\n  app:\n    image: one\n    image: two\n"
+        with tempfile.TemporaryDirectory() as directory:
+            repo, tools = self._repo(pathlib.Path(directory), duplicate)
+            result = self._run(repo, tools)
+            self.assertEqual(2, result.returncode, result.stdout)
+            self.assertIn(
+                "input-graph BLOCKED category=unsupported-input-graph", result.stdout
+            )
+            self.assertFalse((tools / "docker.trace").exists())
 
     def test_static_checks_reject_symlink_and_sensitive_graph_inputs(self) -> None:
         cases = ("infra/.env.local", "infra/secrets/value.txt")
@@ -1490,7 +1677,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
             result = self._run(repo, tools)
             self.assertEqual(2, result.returncode, result.stdout)
             self.assertIn(
-                "input-graph BLOCKED category=unsafe-input-graph", result.stdout
+                "input-graph BLOCKED category=unsafe-generated-collision", result.stdout
             )
             self.assertFalse((tools / "docker.trace").exists())
 
@@ -1560,7 +1747,7 @@ class InfraAndStyleSkillHelperTests(unittest.TestCase):
                 self.assertFalse(marker.exists(), "sensitive path reached safe_read")
                 self.assertEqual(2, result.returncode, result.stdout)
                 self.assertIn(
-                    "input-graph BLOCKED category=unsafe-input-graph", result.stdout
+                    "input-graph BLOCKED category=unsafe-sensitive-input", result.stdout
                 )
                 self.assertFalse((tools / "docker.trace").exists())
                 self.assertNotIn(

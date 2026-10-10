@@ -215,6 +215,42 @@ def safe_read(relative: str) -> tuple[bytes, tuple[int, ...]]:
                 os.close(directory_fd)
     finally:
         os.close(root_fd)
+def safe_directory(relative: str) -> None:
+    parts = pathlib.PurePosixPath(relative).parts
+    if not parts or any(part in ("", ".", "..") for part in parts):
+        raise ValueError("unsafe-tracked-file")
+    root_before = os.lstat(root)
+    root_fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        root_after = os.fstat(root_fd)
+        if (not stat.S_ISDIR(root_before.st_mode)
+                or (root_before.st_dev, root_before.st_ino)
+                != (root_after.st_dev, root_after.st_ino)):
+            raise ValueError("unsafe-source-race")
+        directory_fd = root_fd
+        owned_fd = False
+        try:
+            for part in parts:
+                before = os.stat(part, dir_fd=directory_fd, follow_symlinks=False)
+                if stat.S_ISLNK(before.st_mode):
+                    raise ValueError("unsafe-symlink-input")
+                next_fd = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                  dir_fd=directory_fd)
+                after = os.fstat(next_fd)
+                if (not stat.S_ISDIR(before.st_mode)
+                        or (before.st_dev, before.st_ino, before.st_mode)
+                        != (after.st_dev, after.st_ino, after.st_mode)):
+                    os.close(next_fd)
+                    raise ValueError("unsafe-source-race")
+                if owned_fd:
+                    os.close(directory_fd)
+                directory_fd = next_fd
+                owned_fd = True
+        finally:
+            if owned_fd:
+                os.close(directory_fd)
+    finally:
+        os.close(root_fd)
 def safe_write(relative: str, data: bytes, *, executable: bool = False) -> pathlib.Path:
     if fixture is None:
         raise ValueError("unsafe-fixture")
@@ -290,14 +326,58 @@ atexit.register(emergency_cleanup)
 class UniqueLoader(yaml.SafeLoader):
     pass
 def unique_mapping(loader: UniqueLoader, node: yaml.Node, deep: bool = False) -> dict:
+    explicit: set[str] = set()
+    for key_node, value_node in node.value:
+        if key_node.tag == "tag:yaml.org,2002:merge":
+            continue
+        key = loader.construct_object(key_node, deep=deep)
+        if not isinstance(key, str) or key in explicit:
+            raise ValueError("unsupported-input-graph")
+        explicit.add(key)
+    loader.flatten_mapping(node)
     mapping: dict = {}
     for key_node, value_node in node.value:
         key = loader.construct_object(key_node, deep=deep)
-        if not isinstance(key, str) or key in mapping:
+        if not isinstance(key, str):
             raise ValueError("unsupported-input-graph")
         mapping[key] = loader.construct_object(value_node, deep=deep)
     return mapping
 UniqueLoader.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, unique_mapping)
+def compose_override(loader: UniqueLoader, node: yaml.Node) -> object:
+    if isinstance(node, yaml.SequenceNode):
+        return loader.construct_sequence(node, deep=True)
+    if isinstance(node, yaml.MappingNode):
+        return unique_mapping(loader, node, deep=True)
+    if isinstance(node, yaml.ScalarNode):
+        return loader.construct_scalar(node)
+    raise ValueError("unsupported-input-graph")
+UniqueLoader.add_constructor("!override", compose_override)
+UniqueLoader.add_constructor("!reset", compose_override)
+def graph_error_category(error: Exception) -> str:
+    if isinstance(error, yaml.constructor.ConstructorError):
+        return "unsupported-yaml-tag"
+    if isinstance(error, (FileExistsError, NotADirectoryError)):
+        return "generated-path-collision"
+    category = str(error)
+    safe_categories = {
+        "external-absolute-path", "missing-graph-input",
+        "unresolved-path-interpolation", "unsupported-input-graph",
+        "unsafe-generated-collision", "unsafe-index-race", "unsafe-input-graph",
+        "unsafe-sensitive-env", "unsafe-sensitive-input",
+        "unsafe-sensitive-secret-path", "unsafe-source-race", "unsafe-symlink-input",
+        "unsafe-tracked-file",
+    }
+    if category in safe_categories:
+        return category
+    if isinstance(error, UnicodeError):
+        return "invalid-graph-encoding"
+    if isinstance(error, TypeError):
+        return "invalid-graph-type"
+    if isinstance(error, ValueError):
+        return "invalid-graph-value"
+    if isinstance(error, OSError):
+        return "graph-filesystem-error"
+    return "unsafe-input-graph"
 def main() -> None:
     global fixture, fixture_identity, source_root_identity
     add("bash-runtime", "PASS", "available")
@@ -374,6 +454,7 @@ def main() -> None:
                         fixture_stat.st_ino, fixture_stat.st_mode)
     copied: set[str] = set()
     generated: set[str] = set()
+    virtual: set[str] = set()
     identities: dict[str, tuple[int, ...]] = {}
     def copy_one(relative: str, *, content: bytes | None = None) -> None:
         if relative in copied:
@@ -445,19 +526,27 @@ def main() -> None:
         copy_one(relative)
     add("tracked-snapshot", "PASS", "verified")
     def materialize(relative: str) -> bool:
-        if sensitive_source(relative):
-            raise ValueError("unsafe-input-graph")
-        candidates = (
-            [relative]
-            if relative in tracked_set
-            else [item for item in tracked if item.startswith(relative.rstrip("/") + "/")]
-        )
-        if not candidates:
+        if relative in tracked_set:
+            if sensitive_source(relative):
+                lowered = tuple(
+                    part.lower() for part in pathlib.PurePosixPath(relative).parts
+                )
+                if lowered and lowered[-1].startswith(".env"):
+                    raise ValueError("unsafe-sensitive-env")
+                if "secrets" in lowered:
+                    raise ValueError("unsafe-sensitive-secret-path")
+                raise ValueError("unsafe-sensitive-input")
+            copy_one(relative)
+            return True
+        prefix = relative.rstrip("/") + "/"
+        if not any(item.startswith(prefix) for item in tracked):
             return False
-        for item in candidates:
-            copy_one(item)
+        safe_directory(relative)
+        virtual.add(relative)
         return True
-    variable = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?:(:-|-)([^}]*))?\}")
+    variable = re.compile(
+        r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?:(:-|-|:\?|\?)([^}]*))?\}"
+    )
     def interpolate(raw: str) -> str:
         if not isinstance(raw, str):
             raise ValueError("unsupported-input-graph")
@@ -471,7 +560,7 @@ def main() -> None:
             raise ValueError("unresolved-path-interpolation")
         return value
     def accepted(relative: str, target: pathlib.Path) -> bool:
-        if relative in copied or relative in generated:
+        if relative in copied or relative in generated or relative in virtual:
             return True
         prefix = relative.rstrip("/") + "/"
         if target.is_dir() and any(item.startswith(prefix) for item in copied | generated):
@@ -493,21 +582,29 @@ def main() -> None:
             raise ValueError("external-absolute-path")
         relative = target.relative_to(fixture).as_posix()
         if generate:
-            if target.exists() or relative in copied or relative in generated:
-                raise ValueError("unsafe-input-graph")
+            if target.exists() or relative in copied or relative in generated or relative in virtual:
+                raise ValueError("unsafe-generated-collision")
             safe_write(relative, b"fixture\n")
             generated.add(relative)
         elif not accepted(relative, target):
+            if ".synthetic" in candidate.parts:
+                virtual.add(relative)
+                return target
             if not materialize(relative) or not accepted(relative, target):
                 raise ValueError("missing-graph-input")
+        if relative in virtual:
+            return target
         observed = target.lstat()
         if stat.S_ISLNK(observed.st_mode):
-            raise ValueError("unsafe-input-graph")
+            raise ValueError("unsafe-symlink-input")
         return target
     def graph_paths(document: object, compose: pathlib.Path) -> list[pathlib.Path]:
         if not isinstance(document, dict):
             raise ValueError("unsupported-input-graph")
-        top_keys = {"name", "version", "services", "configs", "secrets", "include"}
+        top_keys = {
+            "name", "version", "services", "configs", "secrets", "include",
+            "networks", "volumes",
+        }
         if any(key not in top_keys and not key.startswith("x-") for key in document):
             raise ValueError("unsupported-input-graph")
         dependencies: list[pathlib.Path] = []
@@ -531,8 +628,32 @@ def main() -> None:
                             "extra_hosts", "init", "ipc", "pid", "platform", "privileged",
                             "pull_policy", "stdin_open", "tty", "ulimits", "userns_mode",
                             "network_mode", "configs", "secrets", "env_file", "build", "volumes"}
+            service_keys.update({
+                "blkio_config", "cpus", "devices", "dns", "extends", "gpus",
+                "group_add", "labels", "mem_limit", "pids_limit", "shm_size",
+            })
             if any(key not in service_keys and not key.startswith("x-") for key in service):
                 raise ValueError("unsupported-input-graph")
+            extends = service.get("extends")
+            if extends is not None:
+                if (
+                    not isinstance(extends, dict)
+                    or set(extends) != {"file", "service"}
+                    or not isinstance(extends.get("file"), str)
+                    or not isinstance(extends.get("service"), str)
+                    or not extends["service"]
+                ):
+                    raise ValueError("unsupported-input-graph")
+                dependencies.append(local(extends["file"], compose.parent))
+            devices = service.get("devices", [])
+            if not isinstance(devices, list):
+                raise ValueError("unsupported-input-graph")
+            for device in devices:
+                if not isinstance(device, str):
+                    raise ValueError("unsupported-input-graph")
+                source = device.split(":", 1)[0]
+                if source != "/dev/kmsg":
+                    raise ValueError("unsupported-input-graph")
             env_files = service.get("env_file", [])
             if isinstance(env_files, (str, dict)):
                 env_files = [env_files]
@@ -600,6 +721,54 @@ def main() -> None:
                         raise ValueError("unsupported-input-graph")
                 else:
                     raise ValueError("unsupported-input-graph")
+        networks = document.get("networks") or {}
+        if not isinstance(networks, dict):
+            raise ValueError("unsupported-input-graph")
+        network_keys = {
+            "name", "driver", "driver_opts", "attachable", "enable_ipv4",
+            "enable_ipv6", "external", "internal", "ipam", "labels",
+        }
+        for name, definition in networks.items():
+            if definition is None:
+                definition = {}
+            if (
+                not isinstance(name, str)
+                or not isinstance(definition, dict)
+                or set(definition) - network_keys
+            ):
+                raise ValueError("unsupported-input-graph")
+            driver_opts = definition.get("driver_opts", {})
+            if not isinstance(driver_opts, dict) or not all(
+                isinstance(key, str) and isinstance(value, str)
+                for key, value in driver_opts.items()
+            ):
+                raise ValueError("unsupported-input-graph")
+        volumes = document.get("volumes") or {}
+        if not isinstance(volumes, dict):
+            raise ValueError("unsupported-input-graph")
+        volume_keys = {"name", "driver", "driver_opts", "external", "labels"}
+        for name, definition in volumes.items():
+            if definition is None:
+                definition = {}
+            if (
+                not isinstance(name, str)
+                or not isinstance(definition, dict)
+                or set(definition) - volume_keys
+            ):
+                raise ValueError("unsupported-input-graph")
+            driver_opts = definition.get("driver_opts")
+            if driver_opts is None:
+                continue
+            if (
+                definition.get("driver") != "local"
+                or not isinstance(driver_opts, dict)
+                or set(driver_opts) != {"device", "o", "type"}
+                or driver_opts.get("type") != "none"
+                or "bind" not in str(driver_opts.get("o", "")).split(",")
+                or not isinstance(driver_opts.get("device"), str)
+            ):
+                raise ValueError("unsupported-input-graph")
+            local(driver_opts["device"], compose.parent, generate=True)
         for group in ("configs", "secrets"):
             definitions = document.get(group) or {}
             if not isinstance(definitions, dict):
@@ -650,22 +819,16 @@ def main() -> None:
         code, final_listing, problem = child(
             [str(tools["git"]), "ls-files", "-z"], root, base_env, capture=True)
         if code or problem or final_listing != listing:
-            raise ValueError("unsafe-input-graph")
+            raise ValueError("unsafe-index-race")
         for relative, expected in identities.items():
             _, observed = safe_read(relative)
             if observed != expected:
-                raise ValueError("unsafe-input-graph")
+                raise ValueError("unsafe-source-race")
     try:
         validate_graph()
         add("input-graph", "PASS", "verified")
     except (OSError, UnicodeError, ValueError, TypeError, yaml.YAMLError) as error:
-        category = str(error)
-        safe_categories = {"external-absolute-path", "missing-graph-input",
-                           "unresolved-path-interpolation", "unsupported-input-graph",
-                           "unsafe-input-graph", "unsafe-tracked-file"}
-        if category not in safe_categories:
-            category = "unsafe-input-graph"
-        add("input-graph", "BLOCKED", category)
+        add("input-graph", "BLOCKED", graph_error_category(error))
     bin_dir = fixture / ".bin"
     bin_dir.mkdir(mode=0o700)
     for name, target in tools.items():
@@ -709,8 +872,10 @@ def main() -> None:
         add("shell-lint", "BLOCKED", "missing-tool", 127)
     else:
         code, _, problem = child(
-            [str(tools["shellcheck"]), "--rcfile=.shellcheckrc",
-             "--severity=warning", *shell_inputs], fixture, child_env)
+            [str(tools["shellcheck"]), "--severity=warning", *shell_inputs],
+            fixture,
+            child_env,
+        )
         record_child("shell-lint", code, problem)
     prerequisites = (
         results.get("input-graph", ("BLOCKED", "", None))[0] == "PASS"
@@ -757,16 +922,7 @@ def main() -> None:
 try:
     main()
 except (OSError, UnicodeError, ValueError, TypeError, yaml.YAMLError) as error:
-    safe_category = str(error)
-    if safe_category not in {
-        "external-absolute-path",
-        "missing-graph-input",
-        "unresolved-path-interpolation",
-        "unsupported-input-graph",
-        "unsafe-input-graph",
-        "unsafe-tracked-file",
-    }:
-        safe_category = "unsafe-input-graph"
+    safe_category = graph_error_category(error)
     if "input-graph" not in results and "tracked-snapshot" in results:
         add("input-graph", "BLOCKED", safe_category)
     elif "tracked-snapshot" not in results:
