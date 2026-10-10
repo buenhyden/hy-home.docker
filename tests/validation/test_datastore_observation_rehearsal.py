@@ -1,13 +1,5 @@
-"""Opt-in isolated rehearsal of the DEV and MNG datastore exporters.
-
-Runs the pinned database, exporter and Prometheus images on internal Docker
-networks with the repository's monitor-role SQL, ACL renderers, rendered
-Compose exporter definitions, Prometheus configuration, start script and
-alert rules, using synthetic secrets and keys. Password checks use a separate
-client container over the network (scram-sha-256), never a loopback trust
-login. Everything it creates is named ``obs-rehearsal-*`` and removed by that
-name. Enable with HYHOME_DATASTORE_OBSERVATION_REHEARSAL=1.
-"""
+"""Opt-in synthetic DEV/MNG datastore rehearsal with exact-owned-ID cleanup.
+Enable with ``HYHOME_DATASTORE_OBSERVATION_REHEARSAL=1``."""
 
 from __future__ import annotations
 
@@ -16,18 +8,35 @@ import json
 import os
 import re
 import secrets
+import socket
+import stat
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest import mock
+
+from tests.validation.test_datastore_rehearsal_boundary import (
+    CLEANUP_CALL_SECONDS,
+    AttemptResources,
+    CleanupFailure,
+    DockerClientBoundary,
+    OwnedContainer,
+    OwnedNetwork,
+    new_attempt_prefix,
+    write_private_fixture,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 PG = "postgres:18.6-alpine"
 VALKEY = "valkey/valkey:9.1.2-alpine"
 PROMETHEUS = "prom/prometheus:v3.15.0@sha256:efd719c99d83b060d9daefdcf00360461adf279f45ef5391f8d111892118753e"
-PREFIX = "obs-rehearsal"
+PREFIX = ""
+DOCKER_BINARY = Path("/usr/bin/docker")
+DOCKER_SOCKET = Path("/run/docker.sock")
+ATTEMPT_SECONDS = 15 * 60
 EXPORTERS = (
     ("mng-pg-exporter", "mng", 9187),
     ("mng-valkey-exporter", "mng", 9121),
@@ -36,6 +45,41 @@ EXPORTERS = (
 )
 SEEDED_KEY = "rehearsal:customer:4711"
 SEEDED_VALUE = "rehearsal-private-value"
+CONTAINER_IMAGES = frozenset((PG, VALKEY, PROMETHEUS))
+COMPOSE_RENDER_ARGS = ("compose", "--env-file", str(ROOT / ".env.example"), "--profile", "mng", "--profile", "dev-data", "--profile", "obs", "config", "--format", "json")  # fmt: skip
+
+
+def replace_private_fixture(directory: Path, name: str, content: str) -> Path:
+    """Atomically replace one runner-owned synthetic fixture."""
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", name):
+        raise ValueError("synthetic fixture file name must be a safe basename")
+    target = directory / name
+    if not target.exists():
+        return write_private_fixture(directory, name, content)
+    current = target.stat(follow_symlinks=False)
+    if (
+        not stat.S_ISREG(current.st_mode)
+        or current.st_uid != os.geteuid()
+        or current.st_gid != os.getegid()
+        or current.st_nlink != 1
+        or stat.S_IMODE(current.st_mode) != 0o640
+    ):
+        raise PermissionError("existing synthetic fixture metadata is invalid")
+    temporary = f"{name}.tmp-{secrets.token_hex(12)}"
+    staged = write_private_fixture(directory, temporary, content)
+    directory_fd = os.open(
+        directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC
+    )
+    try:
+        os.replace(temporary, name, src_dir_fd=directory_fd, dst_dir_fd=directory_fd)
+        os.fsync(directory_fd)
+    except BaseException:
+        staged.unlink(missing_ok=True)
+        raise
+    finally:
+        os.close(directory_fd)
+    return target
+
 
 ALERT_TESTS = """
 rule_files: [alert_rules.local.datastores.yml]
@@ -43,44 +87,28 @@ evaluation_interval: 30s
 tests:
   - interval: 30s
     input_series:
-      - series: 'up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="off"}'
-        values: '0x40'
-      - series: 'pg_up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="off"}'
-        values: '0x40'
-      - series: 'up{job="manage-postgres",instance="m",db_scope="mng",db_engine="postgresql",expected_state="on"}'
-        values: '1x40'
-      - series: 'up{job="mng-valkey-exporter",instance="v",db_scope="mng",db_engine="valkey",expected_state="on"}'
-        values: '1x40'
-      - series: 'up{job="dev-valkey-exporter",instance="w",db_scope="dev",db_engine="valkey",expected_state="off"}'
-        values: '0x40'
+      - {series: 'up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="off"}', values: '0x40'}
+      - {series: 'pg_up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="off"}', values: '0x40'}
+      - {series: 'up{job="manage-postgres",instance="m",db_scope="mng",db_engine="postgresql",expected_state="on"}', values: '1x40'}
+      - {series: 'up{job="mng-valkey-exporter",instance="v",db_scope="mng",db_engine="valkey",expected_state="on"}', values: '1x40'}
+      - {series: 'up{job="dev-valkey-exporter",instance="w",db_scope="dev",db_engine="valkey",expected_state="off"}', values: '0x40'}
     alert_rule_test:
       - {eval_time: 15m, alertname: DevDatastoreExporterDown, exp_alerts: []}
       - {eval_time: 15m, alertname: DevPostgresDown, exp_alerts: []}
       - {eval_time: 15m, alertname: DatastoreScrapeTargetMissing, exp_alerts: []}
   - interval: 30s
     input_series:
-      - series: 'up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="on"}'
-        values: '0x40'
-      - series: 'pg_up{job="dev-pg-exporter",instance="e",db_scope="dev",db_engine="postgresql",expected_state="on"}'
-        values: '0x40'
-      - series: 'up{job="mng-valkey-exporter",instance="v",db_scope="mng",db_engine="valkey",expected_state="on"}'
-        values: '0x40'
-      - series: 'redis_up{job="mng-valkey-exporter",instance="r",db_scope="mng",db_engine="valkey",expected_state="on"}'
-        values: '0x40'
-      - series: 'pg_scrape_collector_success{job="manage-postgres",instance="m",collector="wal",db_scope="mng",db_engine="postgresql",expected_state="on"}'
-        values: '0x40'
-      - series: 'scrape_duration_seconds{job="manage-postgres",instance="m",db_scope="mng",db_engine="postgresql",expected_state="on"}'
-        values: '7x40'
-      - series: 'pg_up{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}'
-        values: '0x40'
-      - series: 'pg_exporter_last_scrape_error{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}'
-        values: '1x40'
-      - series: 'redis_up{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}'
-        values: '0x40'
-      - series: 'redis_rejected_connections_total{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}'
-        values: '0+1x40'
-      - series: 'up{job="dev-valkey-exporter",instance="dw",db_scope="dev",db_engine="valkey",expected_state="off"}'
-        values: '1x200'
+      - {series: 'up{job="dev-pg-exporter",instance="d",db_scope="dev",db_engine="postgresql",expected_state="on"}', values: '0x40'}
+      - {series: 'pg_up{job="dev-pg-exporter",instance="e",db_scope="dev",db_engine="postgresql",expected_state="on"}', values: '0x40'}
+      - {series: 'up{job="mng-valkey-exporter",instance="v",db_scope="mng",db_engine="valkey",expected_state="on"}', values: '0x40'}
+      - {series: 'redis_up{job="mng-valkey-exporter",instance="r",db_scope="mng",db_engine="valkey",expected_state="on"}', values: '0x40'}
+      - {series: 'pg_scrape_collector_success{job="manage-postgres",instance="m",collector="wal",db_scope="mng",db_engine="postgresql",expected_state="on"}', values: '0x40'}
+      - {series: 'scrape_duration_seconds{job="manage-postgres",instance="m",db_scope="mng",db_engine="postgresql",expected_state="on"}', values: '7x40'}
+      - {series: 'pg_up{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}', values: '0x40'}
+      - {series: 'pg_exporter_last_scrape_error{job="manage-postgres",instance="p",db_scope="mng",db_engine="postgresql",expected_state="on"}', values: '1x40'}
+      - {series: 'redis_up{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}', values: '0x40'}
+      - {series: 'redis_rejected_connections_total{job="dev-valkey-exporter",instance="dv",db_scope="dev",db_engine="valkey",expected_state="on"}', values: '0+1x40'}
+      - {series: 'up{job="dev-valkey-exporter",instance="dw",db_scope="dev",db_engine="valkey",expected_state="off"}', values: '1x200'}
     promql_expr_test:
       - expr: sort(count by (alertname, severity) (ALERTS{alertstate="firing"}))
         eval_time: 15m
@@ -105,29 +133,422 @@ tests:
 """
 
 
+_DOCKER_CLIENT: DockerClientBoundary | None = None
+_RESOURCES: AttemptResources | None = None
+
+
 def docker(*args: str, check: bool = True, input_: str | None = None) -> str:
-    result = subprocess.run(
-        ["docker", *args],
-        capture_output=True,
-        text=True,
-        check=False,
-        input=input_,
-        timeout=240,
-    )
-    if check and result.returncode != 0:
-        raise AssertionError(f"docker {args[0]} failed: {result.stderr[-400:]}")
-    return result.stdout
+    if _DOCKER_CLIENT is None or _RESOURCES is None:
+        raise AssertionError("Docker rehearsal boundary is not initialized")
+    if args and args[0] == "run":
+        return _RESOURCES.run_container(*args[1:], check=check, input_=input_)
+    if args == COMPOSE_RENDER_ARGS:
+        return _DOCKER_CLIENT.run(*args, check=check, input_=input_)
+    if input_ is not None:
+        raise AssertionError("input is restricted to tracked container runs")
+    return _RESOURCES.run_owned(*args, check=check)
+
+
+def docker_result(*args: str, input_: str | None = None) -> subprocess.CompletedProcess[str]:  # fmt: skip
+    if _RESOURCES is None or not args or args[0] != "run":
+        raise AssertionError("result capture is restricted to tracked containers")
+    return _RESOURCES.run_container_result(*args[1:], input_=input_)
+
+
+class DatastoreBoundaryAdditionalTests(unittest.TestCase):
+    IMAGE_ID = "sha256:" + "1" * 64
+    REPO_DIGEST = "postgres@sha256:" + "2" * 64
+
+    @staticmethod
+    def result(returncode: int, stdout: str = "", stderr: str = ""):
+        return subprocess.CompletedProcess([], returncode, stdout, stderr)
+
+    @classmethod
+    def container_payload(cls, record: OwnedContainer) -> str:
+        labels = {"hyhome.rehearsal.attempt": "attempt", "hyhome.rehearsal.invocation": record.invocation, "hyhome.rehearsal.image": record.image, "hyhome.rehearsal.image-id": record.image_id}  # fmt: skip
+        payload = {"Id": record.container_id, "Name": f"/{record.name}", "Image": record.image_id, "Config": {"Image": record.image_id, "Labels": labels}}  # fmt: skip
+        return json.dumps(payload)
+
+    @staticmethod
+    def network_payload(record: OwnedNetwork) -> str:
+        return json.dumps(
+            {
+                "Id": record.network_id,
+                "Name": record.name,
+                "Internal": True,
+                "Labels": {"hyhome.rehearsal.attempt": "attempt"},
+            }
+        )
+
+    def bound_resources(self, directory: Path | None = None):
+        client = mock.Mock()
+        client.run_result.return_value = self.result(
+            0,
+            json.dumps({"Id": self.IMAGE_ID, "RepoDigests": [self.REPO_DIGEST]}),
+        )
+        resources = AttemptResources("attempt", client, directory)
+        resources.register_images({PG}, require_repo_digests={PG})
+        client.reset_mock()
+        return resources, client
+
+    @staticmethod
+    def track_network(resources: AttemptResources, network: OwnedNetwork) -> None:
+        resources.network_ids.add(network.network_id)
+        resources.network_names[network.name] = network.network_id
+        resources.network_records[network.network_id] = network
+
+    def test_private_docker_config_is_required(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            binary = root / "docker"
+            binary.write_bytes(b"fixture")
+            binary.chmod(0o755)
+            endpoint = root / "docker.sock"
+            listener = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            listener.bind(str(endpoint))
+            config = root / "config"
+            config.mkdir(mode=0o755)
+            try:
+                with self.assertRaisesRegex(PermissionError, "new, empty and private"):
+                    DockerClientBoundary(
+                        binary=binary,
+                        socket_path=endpoint,
+                        config_dir=config,
+                        deadline_seconds=30,
+                    )
+            finally:
+                listener.close()
+
+    def test_container_boundary_rejects_unowned_runtime_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            resources, _ = self.bound_resources(directory)
+            cases = (
+                ("--publish=5432:5432", PG),
+                ("--net", "host", PG),
+                ("-P", PG),
+                ("--volumes-from", "foreign", PG),
+                ("--env-file", "/tmp/foreign", PG),
+                ("foreign:latest", PG, "true"),
+                ("--network", "foreign", PG),
+                ("--mount", "type=bind,src=/,dst=/host", PG),
+            )
+            for case in cases:
+                with self.subTest(case=case), self.assertRaises(AssertionError):
+                    resources.run_container(*case)
+
+    def test_invalid_environment_assignments_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            resources = AttemptResources("attempt", mock.Mock(), directory)
+            for case in (("-e",), ("-e", "MISSING"), ("-e", "BAD-NAME=x")):
+                with self.subTest(case=case), self.assertRaises(AssertionError):
+                    resources._private_environment_args(case, 1)
+
+    def test_boundary_metadata_is_typed_and_image_allowlisted(self) -> None:
+        resources, _ = self.bound_resources()
+        self.assertEqual(resources._object('[{"x":1}]'), {"x": 1})
+        for payload in ("[]", "null"):
+            with self.subTest(payload=payload), self.assertRaises(AssertionError):
+                resources._object(payload)
+        with self.assertRaises(ValueError):
+            resources.register_images(set())
+
+    def test_completed_auto_remove_container_is_retired_after_exact_absence(self) -> None:  # fmt: skip
+        container_id = "a" * 64
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            write_private_fixture(directory, "replace", "old\n")
+            self.assertEqual(replace_private_fixture(directory, "replace", "new\n").read_text(), "new\n")  # fmt: skip
+            resources, client = self.bound_resources(directory)
+
+            def run(*args, **_kwargs):
+                if args[0] == "ps":
+                    return ""
+                cidfile = Path(args[args.index("--cidfile") + 1])
+                cidfile.write_text(container_id + "\n", encoding="ascii")
+                self.assertIn(self.IMAGE_ID, args)
+                return "done\n"
+
+            client.run.side_effect = run
+            client.run_result.side_effect = [self.result(1, stderr=f"Error response from daemon: No such container: {container_id}\n")]  # fmt: skip
+            resources.run_container("--rm", PG, "true")
+        self.assertEqual(resources.container_ids, set())
+        self.assertEqual(resources.container_records, {})
+
+    def test_malformed_cidfile_recovers_owned_persistent_container(self) -> None:
+        container_id = "0" * 64
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            directory.chmod(0o700)
+            resources, client = self.bound_resources(directory)
+            network = OwnedNetwork("7" * 64, "attempt-net")
+            self.track_network(resources, network)
+            created: dict[str, OwnedContainer] = {}
+
+            def run(*args, **_kwargs):
+                if args[0] == "ps":
+                    return container_id + "\n"
+                if args[0] == "inspect":
+                    return self.container_payload(created["record"])
+                Path(args[args.index("--cidfile") + 1]).write_text("partial\n")
+                labels = [
+                    args[i + 1]
+                    for i, value in enumerate(args[:-1])
+                    if value == "--label"
+                ]
+                invocation = next(
+                    value.split("=", 1)[1] for value in labels if "invocation=" in value
+                )
+                created["record"] = OwnedContainer(
+                    container_id,
+                    "attempt-pg",
+                    invocation,
+                    PG,
+                    self.IMAGE_ID,
+                    False,
+                )
+                return container_id + "\n"
+
+            def inspect(*args, **_kwargs):
+                if args[:2] == ("network", "inspect"):
+                    return self.result(0, self.network_payload(network))
+                return self.result(0, self.container_payload(created["record"]))
+
+            client.run.side_effect = run
+            client.run_result.side_effect = inspect
+            mounted = write_private_fixture(directory, "mounted", "synthetic\n")
+            resources.run_container(
+                "-d",
+                "--name",
+                "attempt-pg",
+                "--network",
+                network.name,
+                "-e",
+                "PASSWORD=synthetic",
+                "-v",
+                f"{mounted}:/fixture:ro",
+                PG,
+            )
+        command = next(call.args for call in client.run.call_args_list if call.args[0] == "run")  # fmt: skip
+        self.assertIn(self.IMAGE_ID, command)
+        self.assertIn(network.network_id, command)
+        self.assertNotIn(network.name, command)
+        self.assertNotIn("PASSWORD=synthetic", command)
+        self.assertTrue(
+            {"--pull", "--cpus", "--memory", "--pids-limit"}.issubset(command)
+        )
+        self.assertEqual(resources.container_ids, {container_id})
+
+    def test_network_create_recovers_lost_output_and_revalidates_exact_id(self) -> None:
+        network_id = "a" * 64
+        resources, client = self.bound_resources()
+        network = OwnedNetwork(network_id, "attempt-obs")
+        client.run.side_effect = [
+            "lost\n",
+            network_id + "\n",
+            self.network_payload(network),
+        ]
+        client.run_result.return_value = self.result(0, self.network_payload(network))
+        self.assertEqual(resources.create_network("obs"), network.name)
+        self.assertEqual(resources.network_ids, {network_id})
+
+    def test_remove_container_requires_post_remove_exact_absence(self) -> None:
+        resources, client = self.bound_resources()
+        record = OwnedContainer("9" * 64, "attempt-job", "i9", PG, self.IMAGE_ID, False)
+        resources._track_container(record)
+        missing = f"Error response from daemon: No such container: {record.container_id}\n"  # fmt: skip
+        client.run_result.side_effect = [
+            self.result(0, self.container_payload(record)),
+            self.result(0),
+            self.result(1, stderr=missing),
+        ]
+        resources.remove_container(record.name)
+        self.assertEqual(resources.container_ids, set())
+
+    def test_owned_operations_replace_reusable_names_with_validated_ids(self) -> None:
+        resources, client = self.bound_resources()
+        record = OwnedContainer("b" * 64, "attempt-pg", "i1", PG, self.IMAGE_ID, False)
+        resources._track_container(record)
+        client.run_result.return_value = self.result(0, self.container_payload(record))
+        client.run.return_value = "ok"
+        self.assertEqual(resources.run_owned("restart", record.name), "ok")
+        self.assertEqual(client.run.call_args.args, ("restart", record.container_id))
+        client.reset_mock()
+        client.run_result.side_effect = [self.result(1), self.result(0)]
+        with self.assertRaisesRegex(AssertionError, "absence check failed closed"):
+            resources.run_owned("stop", record.name)
+        client.run.assert_not_called()
+
+    def test_network_connect_uses_validated_exact_ids(self) -> None:
+        resources, client = self.bound_resources()
+        container = OwnedContainer(
+            "c" * 64, "attempt-exporter", "i2", PG, self.IMAGE_ID, False
+        )
+        network = OwnedNetwork("d" * 64, "attempt-obs")
+        resources._track_container(container)
+        self.track_network(resources, network)
+        client.run_result.side_effect = [
+            self.result(0, self.network_payload(network)),
+            self.result(0, self.container_payload(container)),
+        ]
+        client.run.return_value = "connected"
+        self.assertEqual(
+            resources.run_owned(
+                "network",
+                "connect",
+                "--alias",
+                "exporter",
+                network.name,
+                container.name,
+            ),
+            "connected",
+        )
+        self.assertEqual(
+            client.run.call_args.args,
+            (
+                "network",
+                "connect",
+                "--alias",
+                "exporter",
+                network.network_id,
+                container.container_id,
+            ),
+        )
+
+    def test_failed_remove_and_post_present_preserve_owned_references(self) -> None:
+        resources, client = self.bound_resources()
+        container = OwnedContainer(
+            "e" * 64, "attempt-pg", "i3", PG, self.IMAGE_ID, False
+        )
+        network = OwnedNetwork("f" * 64, "attempt-net")
+        resources._track_container(container)
+        self.track_network(resources, network)
+        client.run_result.side_effect = [
+            self.result(0, self.container_payload(container)),
+            self.result(7),
+            self.result(0, self.container_payload(container)),
+            self.result(0, self.network_payload(network)),
+            self.result(8),
+            self.result(0, self.network_payload(network)),
+        ]
+        with self.assertRaises(CleanupFailure) as caught:
+            resources.cleanup()
+        self.assertEqual(resources.container_ids, {container.container_id})
+        self.assertEqual(resources.network_ids, {network.network_id})
+        self.assertEqual(
+            {issue.category for issue in caught.exception.issues},
+            {"rm_failed", "post_remove_present"},
+        )
+
+    def test_cleanup_budget_attempts_all_nine_containers_and_three_networks(self) -> None:  # fmt: skip
+        resources, client = self.bound_resources()
+        containers = [
+            OwnedContainer(
+                str(index) * 64,
+                f"attempt-c{index}",
+                f"i{index}",
+                PG,
+                self.IMAGE_ID,
+                False,
+            )
+            for index in range(1, 10)
+        ]
+        networks = [OwnedNetwork(letter * 64, f"attempt-n{letter}") for letter in "abc"]
+        for record in containers:
+            resources._track_container(record)
+        for record in networks:
+            self.track_network(resources, record)
+        removed: set[str] = set()
+
+        def result(*args, **_kwargs):
+            network = args[0] == "network"
+            action = args[1] if network else args[0]
+            if action in ("ls", "ps"):
+                return self.result(0)
+            resource_id = args[2] if network or action == "rm" else args[1]
+            if action == "rm":
+                removed.add(resource_id)
+                return self.result(0)
+            records = (
+                resources.network_records if network else resources.container_records
+            )
+            record = records[resource_id]
+            payload = (
+                self.network_payload(record)
+                if network
+                else self.container_payload(record)
+            )
+            if resource_id in removed and not network:
+                return self.result(1, stderr=f"Error response from daemon: No such container: {resource_id}\n")  # fmt: skip
+            return self.result(1) if resource_id in removed else self.result(0, payload)
+
+        client.run_result.side_effect = result
+        resources.cleanup()
+        calls = client.run_result.call_args_list
+        self.assertEqual(
+            removed,
+            {r.container_id for r in containers} | {r.network_id for r in networks},
+        )
+        self.assertLessEqual(len(calls) * CLEANUP_CALL_SECONDS, 120)
+        first_network = next(
+            i for i, call in enumerate(calls) if call.args[0] == "network"
+        )
+        self.assertTrue(
+            all(call.args[0] != "network" for call in calls[:first_network])
+        )
+
+    def test_invalid_bindings_owned_shapes_and_absence_fail_closed(self) -> None:
+        resources, client = self.bound_resources()
+        for payload in (
+            self.result(4),
+            self.result(0, '{"Id":"bad","RepoDigests":[]}'),
+            self.result(0, json.dumps({"Id": self.IMAGE_ID, "RepoDigests": ["bad"]})),
+        ):
+            client.run_result.return_value = payload
+            with self.assertRaises(AssertionError):
+                resources.register_images({"other:image"})
+        with self.assertRaises(ValueError):
+            resources.register_images({PG}, require_repo_digests={"other:image"})
+        for args in (
+            (),
+            ("logs", "a", "b"),
+            ("exec", "a"),
+            ("network", "connect", "a"),
+            ("rm", "foreign"),
+        ):
+            with self.subTest(args=args), self.assertRaises(AssertionError):
+                resources.run_owned(*args)
+        record = OwnedContainer("8" * 64, "attempt-x", "i8", PG, self.IMAGE_ID, False)
+        resources._track_container(record)
+        client.reset_mock()
+        messages = (f"Error: No such object: {record.container_id}", f"Error response from daemon: No such container: {record.container_id}")  # fmt: skip
+        for message in messages:
+            client.run_result.return_value = self.result(1, stderr=message)
+            self.assertFalse(resources._container_present(record))
+            self.assertEqual(client.run_result.mock_calls, [mock.call("inspect", record.container_id)])  # fmt: skip
+            client.reset_mock()
+        rejected = (self.result(2, stderr=messages[0]), self.result(1, "unexpected", messages[0]), self.result(1, stderr="Error: No such object: " + "7" * 64), self.result(1, stderr="prefix " + messages[0]), self.result(1, stderr=messages[0] + " suffix"))  # fmt: skip
+        for response in rejected:
+            client.run_result.return_value = response
+            with self.subTest(response=response), self.assertRaises(AssertionError):
+                resources._container_present(record)
+            client.reset_mock()
+        client.run_result.side_effect = subprocess.TimeoutExpired([], 1)
+        with self.assertRaises(CleanupFailure) as timeout:
+            resources.cleanup()
+        self.assertEqual(timeout.exception.container_ids, (record.container_id,))
+        orphan = AttemptResources("attempt", mock.Mock())
+        orphan.container_ids.add("orphan")
+        with self.assertRaisesRegex(CleanupFailure, "record_missing"):
+            orphan.cleanup()
 
 
 def rendered_services() -> dict[str, dict]:
-    out = subprocess.run(
-        [
-            "docker", "compose", "--env-file", str(ROOT / ".env.example"),
-            "--profile", "mng", "--profile", "dev-data", "--profile", "obs",
-            "config", "--format", "json",
-        ],
-        cwd=ROOT, capture_output=True, text=True, check=True, timeout=120,
-    ).stdout  # fmt: skip
+    out = docker(*COMPOSE_RENDER_ARGS)
     services = json.loads(out)["services"]
     return {
         name: services[name] for name in [n for n, _, _ in EXPORTERS] + ["prometheus"]
@@ -155,9 +576,25 @@ def dev_monitor_sql() -> str:
 class DatastoreObservationRehearsalTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.scratch = tempfile.TemporaryDirectory()
+        global PREFIX, _DOCKER_CLIENT, _RESOURCES
+
+        PREFIX = new_attempt_prefix()
+        cls.scratch = tempfile.TemporaryDirectory(prefix=f"{PREFIX}-")
         cls.dir = Path(cls.scratch.name)
-        cls.dir.chmod(0o755)
+        cls.dir.chmod(0o700)
+        cls.docker_config = cls.dir / "docker-client"
+        cls.docker_config.mkdir(mode=0o700)
+        _DOCKER_CLIENT = DockerClientBoundary(
+            binary=DOCKER_BINARY,
+            socket_path=DOCKER_SOCKET,
+            config_dir=cls.docker_config,
+            deadline_seconds=ATTEMPT_SECONDS,
+        )
+        _RESOURCES = AttemptResources(
+            PREFIX,
+            _DOCKER_CLIENT,
+            cls.dir,
+        )
         cls.secret: dict[str, str] = {}
         for name in (
             "mng_postgres_password", "mng_pg_monitor_password",
@@ -174,48 +611,59 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
             "opensearch_exporter_password",
         ):
             cls.write_secret(name, "synthetic-unused")
-        (cls.dir / "projects.tsv").write_text("# none\n", encoding="utf-8")
-        (cls.dir / "project-secrets").mkdir()
+        write_private_fixture(cls.dir, "projects.tsv", "# none\n")
+        (cls.dir / "project-secrets").mkdir(mode=0o750)
         cls.services = rendered_services()
+        _RESOURCES.register_images(
+            set(CONTAINER_IMAGES)
+            | {service["image"] for service in cls.services.values()},
+            require_repo_digests={PG, VALKEY},
+        )
         cls.prometheus_tmpfs = next(
             t
             for t in cls.services["prometheus"]["tmpfs"]
             if t.startswith("/etc/prometheus")
         )
-        cls.cleanup()
         try:
             cls.start()
         except BaseException:
-            cls.cleanup()
-            cls.scratch.cleanup()
+            try:
+                cls.cleanup()
+            finally:
+                _RESOURCES = None
+                _DOCKER_CLIENT = None
+                cls.scratch.cleanup()
             raise
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.cleanup()
-        cls.scratch.cleanup()
+        global _DOCKER_CLIENT, _RESOURCES
+
+        try:
+            cls.cleanup()
+        finally:
+            _RESOURCES = None
+            _DOCKER_CLIENT = None
+            cls.scratch.cleanup()
 
     @classmethod
     def write_secret(cls, name: str, value: str) -> None:
+        replace_private_fixture(cls.dir, name, value + "\n")
         cls.secret[name] = value
-        path = cls.dir / name
-        path.write_text(value + "\n", encoding="utf-8")
-        path.chmod(0o644)
 
     @classmethod
     def cleanup(cls) -> None:
-        names = docker("ps", "-aq", "--filter", f"name=^{PREFIX}-", check=False).split()
-        if names:
-            docker("rm", "-f", *names, check=False)
-        for net in ("mng", "dev", "obs"):
-            docker("network", "rm", f"{PREFIX}-{net}", check=False)
+        if _RESOURCES is not None:
+            _RESOURCES.cleanup()
 
     # -- startup -----------------------------------------------------------
 
     @classmethod
     def start(cls) -> None:
         for net in ("mng", "dev", "obs"):
-            docker("network", "create", "--internal", f"{PREFIX}-{net}")
+            if _RESOURCES is None:
+                raise AssertionError("attempt resources are not initialized")
+            _RESOURCES.create_network(net)
         for scope in ("mng", "dev"):
             docker(
                 "run", "-d", "--name", f"{PREFIX}-{scope}-pg",
@@ -271,9 +719,7 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
         cls.wait(lambda: cls.valkey_admin(scope, "PING", check=False).strip() == "PONG")
 
     @classmethod
-    def start_exporter(
-        cls, name: str, secret_file: Path | None = None, suffix: str = ""
-    ) -> str:
+    def start_exporter(cls, name: str, secret_file: Path | None = None, suffix: str = "") -> str:  # fmt: skip
         """Run the exporter exactly as Compose renders it, with a synthetic secret."""
         service = cls.services[name]
         scope = name.split("-")[0]
@@ -361,9 +807,7 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
         raise AssertionError("condition not reached")
 
     @classmethod
-    def psql_admin(
-        cls, scope: str, sql: str, db: str = "postgres", check: bool = True
-    ) -> str:
+    def psql_admin(cls, scope: str, sql: str, db: str = "postgres", check: bool = True) -> str:  # fmt: skip
         password = cls.secret[f"{scope}_postgres_password"]
         return docker(
             "run", "--rm", "--network", f"{PREFIX}-{scope}",
@@ -374,13 +818,10 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
     @classmethod
     def psql_result(cls, scope, user, password, sql, db="postgres"):
         """A login from a separate client container over the network."""
-        return subprocess.run(
-            [
-                "docker", "run", "--rm", "--network", f"{PREFIX}-{scope}",
-                "-e", f"PGPASSWORD={password}", PG, "psql", "-X", "-At",
-                "-h", f"{scope}-pg", "-U", user, "-d", db, "-c", sql,
-            ],
-            capture_output=True, text=True, check=False, timeout=120,
+        return docker_result(
+            "run", "--rm", "--network", f"{PREFIX}-{scope}",
+            "-e", f"PGPASSWORD={password}", PG, "psql", "-X", "-At",
+            "-h", f"{scope}-pg", "-U", user, "-d", db, "-c", sql,
         )  # fmt: skip
 
     @classmethod
@@ -465,9 +906,7 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
                 self.assertNotIn(SEEDED_KEY, body)
                 self.assertNotIn(SEEDED_VALUE, body)
 
-    def test_pg_monitor_roles_authenticate_over_the_network_and_cannot_write(
-        self,
-    ) -> None:
+    def test_pg_monitor_roles_authenticate_over_the_network_and_cannot_write(self) -> None:  # fmt: skip
         for scope in ("mng", "dev"):
             role = f"{scope}_pg_monitor"
             password = self.secret[f"{scope}_pg_monitor_password"]
@@ -528,13 +967,10 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
                 wrong = self.valkey(scope, user, password + "x", "PING", check=False)
                 self.assertNotIn("PONG", wrong)
 
-    def test_wrong_password_keeps_the_exporter_up_and_reports_the_database_down(
-        self,
-    ) -> None:
+    def test_wrong_password_keeps_the_exporter_up_and_reports_the_database_down(self) -> None:  # fmt: skip
         wrong = self.dir / "wrong"
         wrong_value = secrets.token_urlsafe(24)
-        wrong.write_text(wrong_value + "\n", encoding="utf-8")
-        wrong.chmod(0o644)
+        write_private_fixture(self.dir, wrong.name, wrong_value + "\n")
         for name in ("mng-pg-exporter", "mng-valkey-exporter"):
             metric = "pg_up" if "pg" in name else "redis_up"
             container = self.start_exporter(name, wrong, suffix="-wrongpw")
@@ -547,7 +983,9 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
                 logs = docker("logs", container, check=False)
                 self.assertNotIn(wrong_value, logs + self.metrics(name, container))
             finally:
-                docker("rm", "-f", container, check=False)
+                if _RESOURCES is None:
+                    raise AssertionError("attempt resources are not initialized")
+                _RESOURCES.remove_container(container)
 
     def test_lost_collector_grant_is_reported_and_restored_by_the_job(self) -> None:
         self.psql_admin(
@@ -607,13 +1045,11 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
             refused = self.psql_result("mng", "mng_pg_monitor", bad, "SELECT 1")
             self.assertIn("password authentication failed", refused.stderr)
         finally:
-            (self.dir / name).write_bytes(original)
+            replace_private_fixture(self.dir, name, original.decode("utf-8"))
             self.secret[name] = good
         self.assertNotIn(bad, docker("logs", f"{PREFIX}-mng-pg", check=False))
 
-    def test_prometheus_labels_targets_by_scope_engine_and_expected_state(
-        self,
-    ) -> None:
+    def test_prometheus_labels_targets_by_scope_engine_and_expected_state(self) -> None:  # fmt: skip
         self.wait(
             lambda: (
                 len(self.scrape_states()) == 4
@@ -648,8 +1084,7 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
     def test_promtool_accepts_the_config_and_the_alert_scenarios(self) -> None:
         rules = ROOT / "infra/06-observability/prometheus/config/alert_rules"
         scenarios = self.dir / "alerts.test.yml"
-        scenarios.write_text(ALERT_TESTS, encoding="utf-8")
-        scenarios.chmod(0o644)
+        write_private_fixture(self.dir, scenarios.name, ALERT_TESTS)
         out = docker(
             "run", "--rm", "--entrypoint", "/bin/promtool",
             "-v", f"{rules}/alert_rules.local.datastores.yml:"
@@ -663,7 +1098,3 @@ class DatastoreObservationRehearsalTests(unittest.TestCase):
             "/etc/prometheus/prometheus.yml",
         )  # fmt: skip
         self.assertIn("SUCCESS", check)
-
-
-if __name__ == "__main__":
-    unittest.main()
