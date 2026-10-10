@@ -677,14 +677,28 @@ class ServiceConfigurationPathTests(unittest.TestCase):
 
         path = ROOT / "infra/03-security/openbao/docker-compose.yml"
         agent = yaml.safe_load(path.read_text())["services"]["openbao-agent"]
-        configs = [
-            arg.removeprefix("-config=")
-            for arg in agent["command"]
-            if arg.startswith("-config=")
-        ]
-        targets = {mount.split(":")[1] for mount in agent["volumes"]}
-        self.assertEqual(1, len(configs))
-        self.assertIn(configs[0], targets)
+        self.assertEqual(
+            ["/bin/sh", "/openbao/scripts/start-agent.sh"], agent["entrypoint"]
+        )
+        self.assertNotIn("command", agent)
+        wrapper = (path.parent / "scripts/start-agent.sh").read_text()
+        self.assertIn("exec bao agent -config=/openbao/config/agent.hcl", wrapper)
+        mounts = {
+            target: mount
+            if isinstance(mount, dict)
+            else {"source": mount.split(":")[0], "read_only": mount.endswith(":ro")}
+            for mount in agent["volumes"]
+            for target in [
+                mount["target"] if isinstance(mount, dict) else mount.split(":")[1]
+            ]
+        }
+        for target, source in (
+            ("/openbao/scripts", "./scripts"),
+            ("/openbao/config/agent.hcl", "./config/agent.hcl"),
+        ):
+            self.assertIn(target, mounts)
+            self.assertEqual(source, mounts[target]["source"])
+            self.assertTrue(mounts[target]["read_only"])
 
     def test_openbao_rendered_credentials_are_on_persistent_mount(self) -> None:
         import yaml
@@ -692,8 +706,20 @@ class ServiceConfigurationPathTests(unittest.TestCase):
         path = ROOT / "infra/03-security/openbao/docker-compose.yml"
         agent = yaml.safe_load(path.read_text())["services"]["openbao-agent"]
         targets = [
-            mount.split(":")[1] for mount in agent["volumes"] if mount.endswith(":rw")
+            mount["target"] if isinstance(mount, dict) else mount.split(":")[1]
+            for mount in agent["volumes"]
+            if (
+                not mount.get("read_only", False)
+                if isinstance(mount, dict)
+                else not mount.endswith(":ro")
+            )
+            and (
+                mount.get("type") == "volume"
+                if isinstance(mount, dict)
+                else mount.split(":")[0] in {"openbao-agent-data", "openbao-agent-out"}
+            )
         ]
+        self.assertEqual({"/openbao/agent", "/openbao/out"}, set(targets))
         destinations = re.findall(
             r'destination\s*=\s*"([^\"]+)"',
             (path.parent / "config/agent.hcl").read_text(),
