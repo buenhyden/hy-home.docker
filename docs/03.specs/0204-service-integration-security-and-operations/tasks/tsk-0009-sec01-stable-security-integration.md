@@ -1,6 +1,6 @@
 ---
 title: "SEC01 Stable Security Integration Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -138,6 +138,37 @@ test hash is `ff6629f6e8a80987c74da9572107c3054c95965f5ae4721ba44c4a64f77cc76b`.
 These are offline/source checks. Hosted CI at the new committed head remains
 required; run `38056697221` remains a FAIL receipt, not accepted delivery. No
 image deployment or HOME verification occurred.
+
+### Delivered Common Repair and Module Registration Follow-up
+
+GitHub confirmed PR #418 merged by the repository owner at
+`80c31405df7983dc4b7d8ad8823f73323247d264` on 2026-10-10 14:17:16 UTC.
+Its head `d0d15c0662139cb34bbeb7ad1a65e2dc52b719d9` passed hosted
+candidate-quality run `38058055919`, CodeQL and GitGuardian. This records
+external delivery of the bounded common repair, not SEC01 global completion.
+
+A separate full-profile ownership replay ran seven tests with one FAIL: the
+new required class selectors appeared as classes rather than reachable modules.
+The coordinator replaces those selectors with their complete containing modules,
+each once, and allows skips only for `CandidateNative` and
+`WorkflowCandidateRehearsalTests`. Existing expiry and workflow-source tests
+remain required; native flags remain explicit opt-ins. The ownership validator
+is unchanged. Tests-only RED failed five assertions; the corrected ownership
+suite passed seven tests and workflow/routing passed 40 in that initial freeze.
+Those receipts were superseded when independent code review reproduced duplicate
+native skip receipts: the candidate module exposed an imported foreign TestCase.
+The canonical adapter rejected them with `ci-gate-adapter-tests-skipped`, exit 2
+(outer regression exit 1; 13 tests, six skips).
+
+The candidate now imports the rehearsal module rather than exposing its TestCase;
+two existing references preserve native behavior. The bounded 60-second canonical
+adapter regression passed after this correction. Replacement workflow/routing
+passed 41 tests; offline modules passed 12 with five expected native skips,
+without duplicate receipts. The routing module passed five tests again after
+the timeout was added. These are source/unit results, not native verification.
+The intermediate duplicate class/module registration failed ownership and was
+removed, rather than weakening the invariant. Hosted CI on the follow-up head
+remains required. No HOME, deployment or private resource action occurred.
 
 ## Evidence
 

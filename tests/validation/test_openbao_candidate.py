@@ -6,8 +6,8 @@ import time
 import unittest
 from unittest.mock import patch
 
+from . import test_openbao_rehearsal as openbao_rehearsal
 from ._openbao_rehearsal_fixture import SOURCE, Client, OwnedFixture, RehearsalFailure
-from .test_openbao_rehearsal import OpenBaoRehearsalTests
 
 MANIFEST = "sha256:a36ea8c27f0dcff5757664ad080425f96d3b6b2f33db3e76c4e2d3112fb17005"
 INVALID_CREDENTIAL = "invalid-synthetic-token"
@@ -32,7 +32,7 @@ class ExpiryRegression(unittest.TestCase):
                 return 204, {}
 
         with patch("tests.validation.test_openbao_rehearsal.time.sleep"):
-            OpenBaoRehearsalTests().expired_secret_id(DenyingClient())
+            openbao_rehearsal.OpenBaoRehearsalTests().expired_secret_id(DenyingClient())
 
 
 @unittest.skipUnless(
@@ -48,7 +48,7 @@ class CandidateNative(unittest.TestCase):
             fixture.prepare()
             server, client = fixture.server("candidate", active=True)
             shares = client.initialize()
-            case = OpenBaoRehearsalTests()
+            case = openbao_rehearsal.OpenBaoRehearsalTests()
             case.configure(client)
             case.expired_secret_id(client)
             self.verify_short_roles(case, client)
