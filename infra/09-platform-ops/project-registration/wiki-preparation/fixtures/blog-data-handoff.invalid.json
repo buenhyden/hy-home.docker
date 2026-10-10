@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "project_id": "other-project",
+  "mode": "preparation-only",
+  "repository": "buenhyden/blog-data",
+  "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "selected": [
+    "unselected-candidate"
+  ],
+  "candidates": [
+    {
+      "id": "example-candidate",
+      "path": "Literature/synthetic.md",
+      "sha256": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a",
+      "kind": "literature-candidate"
+    }
+  ],
+  "allowed_paths": [
+    "Literature/synthetic.md"
+  ],
+  "write_set": [
+    {
+      "candidate_id": "example-candidate",
+      "path": "Literature/synthetic.md",
+      "sha256": "ec32b2d2486e1016b4ffca72a25f7c1e5540894ed5f1d3fadaa0b46ec04cc26a"
+    }
+  ],
+  "approval": {
+    "selected": [
+      "example-candidate"
+    ],
+    "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "status": "synthetic-approved"
+  },
+  "conflict": "reject-stale-base",
+  "receipt": {
+    "idempotency_key": "2d4983e79a482c981c0eb3713898a06b14124f96a51d014c7bddb7fdd0531b31",
+    "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "write_set_sha256": "e2233f68dee9dca1140193368412cdaa95a2358edde7a1ba22c84e895687c4fb",
+    "state": "proposed"
+  }
+}

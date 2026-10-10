@@ -1,6 +1,6 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -34,6 +34,8 @@ include하지 않습니다. 실제 프로젝트 ID와 자원 범위가 승인되
   schema와 프로젝트 경계, 승인된 secret 참조 이름을 검사하는 명시적 검증기.
 - [`test_project_registration.py`](../../../tests/validation/test_project_registration.py):
   비밀값 없는 합성 입력의 허용·거절 검사.
+- [`wiki-preparation/`](wiki-preparation/README.md): 실제 앱·자원 생성 없이
+  미래 LLM Wiki의 합성 계약, fixture와 수용 기준을 준비하는 패키지.
 
 ## Tech Stack
 

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "project_id": "other-project",
+  "mode": "preparation-only",
+  "registration": {
+    "schema_version": 1,
+    "interface_version": "1.0",
+    "project_id": "example-project",
+    "environment": "development",
+    "infra_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "template_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "project_ref": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "endpoints": {
+      "same_daemon": {
+        "db": {
+          "scheme": "postgresql",
+          "host": "dev-pg",
+          "port": 5432,
+          "path": "/example_project_db"
+        }
+      }
+    },
+    "allowed_networks": [
+      "example-project-net"
+    ],
+    "db": {
+      "name": "example_project_db",
+      "schema": "example_project_app",
+      "owner_role": "example_project_owner",
+      "migrator_role": "example_project_migrator",
+      "runtime_role": "example_project_runtime",
+      "reader_role": "example_project_reader"
+    },
+    "valkey": {
+      "acl_user": "example-project-user",
+      "acl_prefix": "example-project"
+    },
+    "s3": {
+      "bucket": "example-project",
+      "prefix": "example-project/objects/"
+    },
+    "oidc": {
+      "client_id": "example-project"
+    },
+    "search": {
+      "collection": "example-project",
+      "authorization_path": "/projects/example-project"
+    },
+    "telemetry": {
+      "service.name": "example-project"
+    },
+    "backup_restore": {
+      "backup_owner": "infra",
+      "restore_owner": "infra"
+    },
+    "secret_refs": [
+      "example_project_db_password"
+    ],
+    "quota": {
+      "cpu_milli": 500,
+      "memory_mib": 512,
+      "storage_gib": 2,
+      "requests_per_minute": 60
+    },
+    "approval": {
+      "state": "draft",
+      "task_ref": "SPEC-0204-TSK-0002"
+    },
+    "verification": {
+      "state": "not_run"
+    }
+  },
+  "sources": [
+    {
+      "repository": "buenhyden/blog-data",
+      "ref": "dev",
+      "revision": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "paths": [
+        "Literature/synthetic.md"
+      ]
+    }
+  ],
+  "classification": "internal",
+  "identity": {
+    "issuer": "https://identity.example.test/realms/dev",
+    "audience": "example-project"
+  },
+  "namespace": "example-project",
+  "permissions": [
+    "read"
+  ],
+  "valkey_commands": [
+    "GET",
+    "SET"
+  ],
+  "qdrant_rbac": {
+    "collection": "example-project",
+    "roles": [
+      "project-reader"
+    ]
+  },
+  "egress": [],
+  "metric_labels": [
+    "operation",
+    "result"
+  ],
+  "max_metric_series": 20,
+  "retention_days": 30,
+  "backup": {
+    "owner": "project",
+    "rpo_seconds": 3600,
+    "rto_seconds": 7200,
+    "restore_drill": "NOT_RUN"
+  },
+  "disabled_by_design": [
+    "wiki-runtime",
+    "workspace-create",
+    "secret-issue",
+    "blog-write",
+    "wiki-schedule",
+    "resource-provision"
+  ]
+}

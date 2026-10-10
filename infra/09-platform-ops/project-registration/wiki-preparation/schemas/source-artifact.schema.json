@@ -1,0 +1,339 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-z][a-z0-9-]{1,62}$"
+    },
+    "mode": {
+      "const": "preparation-only"
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "enum": [
+            "buenhyden/blog-data",
+            "buenhyden/Project-Template",
+            "buenhyden/hy-home.docker",
+            "buenhyden/hy-home.k8s"
+          ]
+        },
+        "ref": {
+          "enum": [
+            "dev",
+            "main"
+          ]
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "repository",
+        "ref",
+        "revision",
+        "paths"
+      ],
+      "additionalProperties": false
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9_-][A-Za-z0-9_.-]*(?:/[A-Za-z0-9_-][A-Za-z0-9_.-]*)*$"
+    },
+    "revision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "sha256": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "retrieved_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "format": "date-time"
+    },
+    "effective_at": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "format": "date-time"
+    },
+    "rights": {
+      "type": "object",
+      "properties": {
+        "license": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "basis": {
+          "enum": [
+            "synthetic-fixture",
+            "pending-verification"
+          ]
+        },
+        "verified": {
+          "const": false
+        }
+      },
+      "required": [
+        "license",
+        "basis",
+        "verified"
+      ],
+      "additionalProperties": false
+    },
+    "acl": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-z][a-z0-9-]{1,62}$"
+        },
+        "readers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-z][a-z0-9-]{1,62}$"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "project_id",
+        "readers"
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "source_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "artifact_sha256": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "synthetic": {
+          "const": true
+        }
+      },
+      "required": [
+        "source_revision",
+        "artifact_sha256",
+        "synthetic"
+      ],
+      "additionalProperties": false
+    },
+    "versions": {
+      "type": "object",
+      "properties": {
+        "parser": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "chunker": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "embedding": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "parser",
+        "chunker",
+        "embedding"
+      ],
+      "additionalProperties": false
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256,
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256,
+            "pattern": "^[a-z][a-z0-9-]{1,62}$"
+          },
+          "kind": {
+            "enum": [
+              "delete",
+              "revoke"
+            ]
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "generation": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "sequence",
+          "generation"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "enforcement": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "search",
+          "point-query",
+          "citation",
+          "download",
+          "cache",
+          "old-generation"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "access_state": {
+      "enum": [
+        "allowed",
+        "deleted",
+        "revoked"
+      ]
+    },
+    "evaluated_sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "surface_watermarks": {
+      "type": "object",
+      "properties": {
+        "search": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "point-query": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "citation": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "download": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cache": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "old-generation": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "search",
+        "point-query",
+        "citation",
+        "download",
+        "cache",
+        "old-generation"
+      ],
+      "additionalProperties": false
+    },
+    "tombstone": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "project_id",
+    "mode",
+    "source",
+    "path",
+    "revision",
+    "sha256",
+    "retrieved_at",
+    "effective_at",
+    "rights",
+    "acl",
+    "provenance",
+    "versions",
+    "generation",
+    "idempotency_key",
+    "events",
+    "enforcement",
+    "access_state",
+    "evaluated_sequence",
+    "surface_watermarks",
+    "tombstone"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hyhome:wiki-preparation:source-artifact:v1",
+  "title": "source-artifact"
+}

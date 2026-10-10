@@ -98,6 +98,22 @@ services:
     group_add:
       - '${SECRETS_GID:-1000}'
     image: supabase/gotrue:v2.197.0
+    # GoTrue reads GOTRUE_SMTP_PASS; this wrapper owns the _FILE interface.
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        fail() { echo 'SMTP secret input rejected' >&2; exit 1; }
+        [ "$${GOTRUE_SMTP_PASS+x}" != x ] || fail
+        [ -n "$${GOTRUE_SMTP_PASS_FILE:-}" ] || fail
+        [ -f "$$GOTRUE_SMTP_PASS_FILE" ] && [ -r "$$GOTRUE_SMTP_PASS_FILE" ] && [ -s "$$GOTRUE_SMTP_PASS_FILE" ] || fail
+        GOTRUE_SMTP_PASS="$$(cat "$$GOTRUE_SMTP_PASS_FILE" 2>/dev/null)" || fail
+        [ -n "$$GOTRUE_SMTP_PASS" ] || fail
+        export GOTRUE_SMTP_PASS
+        [ "$$#" -gt 0 ] || fail
+        exec "$$@"
+      - --
+    command: [ 'auth' ]
     tmpfs:
       - /tmp
     restart: unless-stopped
@@ -109,7 +125,8 @@ services:
     secrets:
       - supabase_db_password
       - supabase_jwt_secret
-      - supabase_smtp_password
+      - source: smtp_password
+        target: supabase_smtp_password
     environment:
       GOTRUE_DB_PASSWORD_FILE: /run/secrets/supabase_db_password
       GOTRUE_JWT_SECRET_FILE: /run/secrets/supabase_jwt_secret

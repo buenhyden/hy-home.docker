@@ -1,10 +1,10 @@
 ---
 title: "Supabase Stack"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-10-10"
 created: "2025-11-12"
 ---
 
@@ -59,7 +59,7 @@ supabase/
 | Volumes | `${DEFAULT_DATA_DIR}/supabase/api/kong.yml:/home/kong/temp.yml:ro`, `${DEFAULT_DATA_DIR}/supabase/storage:/var/lib/storage`, `${DEFAULT_DATA_DIR}/supabase/functions:/home/deno/functions`, `${DEFAULT_DATA_DIR}/supabase/db/realtime.sql:/docker-entrypoint-initdb.d/migrations/99-realtime.sql`, `${DEFAULT_DATA_DIR}/supabase/db/webhooks.sql:/docker-entrypoint-initdb.d/init-scripts/98-webhooks.sql`, `${DEFAULT_DATA_DIR}/supabase/db/roles.sql:/docker-entrypoint-initdb.d/init-scripts/99-roles.sql`, `${DEFAULT_DATA_DIR}/supabase/db/jwt.sql:/docker-entrypoint-initdb.d/init-scripts/99-jwt.sql`, `${DEFAULT_DATA_DIR}/supabase/db/data:/var/lib/postgresql/data` 등 8개 더 |
 | Ports | `${SUPABASE_KONG_HTTP_HOST_PORT:-8000}:8000/tcp`, `${SUPABASE_KONG_HTTPS_HOST_PORT:-8443}:8443/tcp`, `${SUPABASE_ANALYTICS_HOST_PORT:-4000}:4000`, `${SUPABASE_POSTGRES_HOST_PORT:-5432}:5432`, `${SUPABASE_POOLER_PROXY_PORT_TRANSACTION_HOST_PORT:-6543}:6543` |
 | Labels | `hy-home.tier` |
-| Secret refs | names: `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, `supabase_service_key`, `supabase_dashboard_password`, `supabase_secret_key_base`, `supabase_vault_enc_key`, `supabase_pg_meta_crypto_key`, `supabase_openai_api_key`, `supabase_logflare_private_token`, `supabase_smtp_password`; mounts under `/run/secrets/` |
+| Secret refs | names: `supabase_db_password`, `supabase_jwt_secret`, `supabase_anon_key`, `supabase_service_key`, `supabase_dashboard_password`, `supabase_secret_key_base`, `supabase_vault_enc_key`, `supabase_pg_meta_crypto_key`, `supabase_openai_api_key`, `supabase_logflare_private_token`, `smtp_password` (auth target: `supabase_smtp_password`); mounts under `/run/secrets/` |
 | Healthcheck | `studio`, `kong`, `auth`, `rest`, `realtime`, `storage`, `imgproxy`, `meta` 등 5개 더에 Compose healthcheck 선언됨 |
 | Operations | Guide (`docs/05.operations/guides/0029-supabase.md`), Policy (`docs/05.operations/policies/0029-supabase.md`), Runbook (`docs/05.operations/runbooks/0029-supabase.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
@@ -93,6 +93,26 @@ supabase/
 | `JWT_SECRET` | Yes | `supabase_jwt_secret`을 통한 Docker Secret 파일 |
 | `POSTGRES_PASSWORD` | Yes | `supabase_db_password`를 통한 Docker Secret 파일 |
 | `SUPABASE_PUBLIC_URL` | Leaf template only | upstream leaf 예시 값이며 root `.env` 입력으로 전달되지 않음 |
+
+### SMTP 단일 원본
+
+공용 SMTP와 Auth는 COMM-002의 `secrets/communication/smtp/smtp_password.txt`를
+함께 사용합니다. Auth는 `source: smtp_password`, `target: supabase_smtp_password`
+별칭으로 기존 container 경로를 유지합니다. COMM-003은 값 없는 퇴역 alias입니다.
+SMTP username, host, account와 Alertmanager 소비는 그대로 유지합니다.
+
+GoTrue의 `_FILE` 입력은 native 기능이 아니라 Auth의 좁은 wrapper가 처리합니다.
+wrapper는 빈/누락/읽기 실패 파일과 직접 `GOTRUE_SMTP_PASS`의 동시 입력을 거부하고,
+원래 이미지 user로 값을 읽어 실행 프로세스에 전달한 뒤 원래 `auth` 명령을 exec합니다.
+Compose/이미지 inspect에 실제 비밀번호를 넣지 않지만 실행 프로세스 환경에는 남으므로
+호스트·Docker 관리자와 프로세스 환경 접근 권한은 계속 보호해야 합니다.
+DB URL 및 DB/JWT 입력 결함은 별도이며 SMTP alias나 격리 시험은 전체 stack readiness가 아닙니다.
+
+중복 호스트 파일의 실제 삭제는 SMTP01 참조 전환 완료 후 CLN01과 총괄 통합 순서를
+따릅니다. source/runtime/job/backup-restore/external 의존 및 제한된 boolean 비교를
+통과해야 하며, 불명확한 소비자는 삭제를 중단합니다. 실제 HOME activation은 별도
+운영 증거가 필요합니다. 절차와 복구 문서는
+[운영 런북 목록](../../../docs/05.operations/runbooks/README.md)에서 `RUN-0029`를 확인합니다.
 
 ## Validation
 

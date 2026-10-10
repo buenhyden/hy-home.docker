@@ -1,0 +1,12 @@
+{
+  "cases": [
+    {"fixture": "consumer-manifest.valid.json", "schema": "valid", "semantic": "valid"},
+    {"fixture": "consumer-manifest.invalid.json", "schema": "valid", "semantic": "invalid"},
+    {"fixture": "source-artifact.valid.json", "schema": "valid", "semantic": "valid"},
+    {"fixture": "source-artifact.invalid.json", "schema": "valid", "semantic": "invalid"},
+    {"fixture": "job-outbox-handoff.valid.json", "schema": "valid", "semantic": "valid"},
+    {"fixture": "job-outbox-handoff.invalid.json", "schema": "valid", "semantic": "invalid"},
+    {"fixture": "blog-data-handoff.valid.json", "schema": "valid", "semantic": "valid"},
+    {"fixture": "blog-data-handoff.invalid.json", "schema": "valid", "semantic": "invalid"}
+  ]
+}
