@@ -42,7 +42,7 @@ created: "2026-02-23"
 | `tools/` | 선택형 도구 인증 |
 | `.backup-<date>/`, `.retired/<date>/` | Git과 Compose에서 제외된 보호 백업·퇴역 보관 |
 
-값 파일은 `영역/서비스/파일`로 배치한다. `auth/`는 Traefik·Keycloak·OAuth2 Proxy와 각 OIDC 소비자, `automation/`은 Airflow·n8n, `data/`는 OpenSearch·Qdrant·Supabase, `storage/`는 SeaweedFS, `tools/`는 도구별 디렉터리로 나눈다. `communication/`은 공용 SMTP·Slack·Stalwart·Supabase 전달 자격 증명을 구분한다. 기존 `common/`과 `communication/`, `db/surreal_db/`와 `db/surrealdb/`의 동일 파일은 각각 새 서비스별 경로와 `db/surrealdb/`의 단일 원본으로 통합한다.
+값 파일은 `영역/서비스/파일`로 배치한다. `auth/`는 Traefik·Keycloak·OAuth2 Proxy와 각 OIDC 소비자, `automation/`은 Airflow·n8n, `data/`는 OpenSearch·Qdrant·Supabase, `storage/`는 SeaweedFS, `tools/`는 도구별 디렉터리로 나눈다. `communication/`은 공용 SMTP·Slack·Stalwart 전달 자격 증명을 구분하며, Supabase도 `communication/smtp/smtp_password.txt`를 단일 SMTP 원본으로 소비한다. 기존 `common/`과 `communication/`, `db/surreal_db/`와 `db/surrealdb/`의 동일 파일은 각각 새 서비스별 경로와 `db/surrealdb/`의 단일 원본으로 통합한다.
 
 `db/mng-pg/`는 관리 metadata와 Grafana 관리 reader, `db/dev-pg/`는 개발 관리자·fixture 역할·dbt·Debezium을 소유한다. `db/legacy-app/`는 사용하지 않는 기존 app_db의 전환·롤백 보관이며 신규 프로젝트에 재사용하지 않는다. Valkey는 `db/mng-valkey/`, `db/dev-valkey/`, 선택형 n8n 전용 `db/n8n-valkey/`로 분리한다. `backup/mng-pg/`와 `backup/dev-pg/`는 각 pgBackRest 키, `backup/restic/`는 로컬·원격 저장소 자격 증명, `backup/openbao/`는 스냅샷을 소유한다.
 

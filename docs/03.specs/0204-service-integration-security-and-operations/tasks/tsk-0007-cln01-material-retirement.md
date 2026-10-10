@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-10-11"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -685,6 +685,40 @@ rtk proxy ruff format --check scripts/lib/ops/retire_materials.py scripts/operat
 rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/python -m coverage run --branch --source=scripts.lib.ops.retire_materials -m unittest tests.lib.ops.test_retirement tests.validation.test_retirement_cli -q
 rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/python -m coverage report --show-missing --fail-under=80
 ```
+
+### Current Coordinator Local Dev Reconciliation
+
+The latest direct instruction authorizes local `dev` integration and branch/
+worktree cleanup without PRs. Prior PR observations above are historical.
+The logical CLN source commits are already ancestors of the coordinator's
+current input `2d1e4176074a68c6143b201471a20dcd1a6c2427`; no helper reimplementation
+is needed. The existing private apply protections remain in force.
+
+Current tracked root/auth source uses canonical `smtp_password` while the
+Supabase target alias remains `supabase_smtp_password`. The generator skips
+the old value row. SMTP01's immutable audit receipt
+`7d056ccd4d8b102ff5cf81126f54b969959c30169bdecc5116e318a5ed141009`
+verifies the selected encrypted snapshot, two-file metadata and full repository
+integrity, and observes stable canonical presence/duplicate-parent absence.
+This is not a CLN unlink, restored-byte comparison, SMTP runtime cutover or
+external-consumer absence receipt.
+
+One actual public-source DELETE is the tracked empty
+`secrets/communication/supabase/.gitkeep` (empty Git blob
+`e69de29bb2d1d6434b8b29ae775ad8c2e48c5391`). It has no active value-row or
+required marker consumer and only retained an obsolete duplicate directory.
+Remove this marker and correct the existing secrets README to document the
+shared canonical SMTP source. No private value is inspected or deleted by this
+unit. This deletes public source material, not operational secrets or data.
+
+Positive current source/manual/recovery consumers require RETAIN for Supabase
+initialization/configuration, Nginx/CDN/SSO config and certificates, and
+Open Notebook/SurrealDB data and credentials. PG-020 remains protected for
+rollback; historical nlink-two observations do not close current ownership.
+Jobs, external consumers, full private recovery and selected runtime cutovers
+remain unresolved, so there is still no independently proven UNUSED_DELETE
+private target. Unknowns are not converted to consumer absence. LAB runtime
+and learning/Wiki implementation remain excluded.
 
 ## Evidence
 
