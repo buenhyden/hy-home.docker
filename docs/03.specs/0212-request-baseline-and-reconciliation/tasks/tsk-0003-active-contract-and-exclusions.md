@@ -1,8 +1,8 @@
 ---
 title: "Active Contract and Exclusions Task"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-10-10"
 layer: "specs"
@@ -57,6 +57,13 @@ Registry spec high-water remains 229 and next_number 230. No number is reserved.
 | SPEC-0212 | approved | in-progress | #w11-active-contract-amendment-and-input-identity |
 | SPEC-0212-PLAN-0001 | approved | in-progress | #w11-active-contract-amendment-and-input-identity |
 | SPEC-0212-TSK-0003 | ready | in-progress | #w11-active-contract-amendment-and-input-identity |
+| SPEC-0212-TSK-0001 | draft | ready | #historical-receipt-closure |
+| SPEC-0212-TSK-0001 | ready | completed | #historical-receipt-closure |
+| SPEC-0212-TSK-0002 | draft | ready | #historical-receipt-closure |
+| SPEC-0212-TSK-0002 | ready | completed | #historical-receipt-closure |
+| SPEC-0212-TSK-0003 | in-progress | completed | #delivery-receipt |
+| SPEC-0212-PLAN-0001 | in-progress | completed | #delivery-receipt |
+| SPEC-0212 | in-progress | completed | #delivery-receipt |
 
 ### W9 Baseline and source inventory
 
@@ -119,7 +126,7 @@ criterion/lifecycle closure; completed Tasks were not rewritten.
 | 0204 | blocked / 0001 blocked, 0002–0004 completed, 0005 draft | Second/third rounds merged #387/#390 | confirmed-gap + consumer-dependent: exact secret consumers, native Airflow/n8n and endpoint targets; current Spec/Plan routing amended only |
 | 0207 | in-progress / all three Tasks completed | Authority reconciliation delivered #364 (`92e2a702f`) | applied-excluded: lifecycle/evidence reconciliation only; no policy reimplementation |
 | 0211 | in-progress / Task in-progress | QA rationalization merged #368 (`23b0e6959`) | confirmed-gap record debt: old failed candidates remain historical; owner reconciles final criterion evidence, without rerunning old QA or copying PASS |
-| 0212 | baseline draft, now in-progress / 0001/0002 draft; new 0003 in-progress | Earlier baselines #369/#380 | confirmed-gap: this P00 contract/evidence unit; old observations preserved |
+| 0212 | baseline draft; P00 receipt completed / historical 0001/0002 metadata completed, new 0003 completed | Earlier baselines #369/#380 | confirmed-gap: this P00 contract/evidence unit; old observations preserved |
 | 0213 | draft / both Tasks draft | DEV separation/Influx retirement and backup activation #370/#372/#373 | applied-excluded source/exporters; runtime-unverified DEV HOME PITR/R2; no Influx rework or data deletion |
 | 0214 | draft / both Tasks draft | Relay source/isolated/HOME canary #371/#384/#385 | consumer-dependent: real application load, producer credentials/quota. Locust/LAB source and runs out-of-scope |
 | 0215 | draft / Tasks draft | Metadata classification only | out-of-scope: LAB; no source/Task/body inspection, lifecycle change or execution |
@@ -205,8 +212,8 @@ edges: Spec/Plan draft to approved to in-progress, and this Task draft to ready
 to in-progress. This preserves draft issuance while recording actual execution;
 it grants no permission and does not rewrite preserved Tasks. ISOLATED, HOME, MIGRATION and RECOVERY
 execution are NOT_RUN: no target was supplied for P00 and the current unit
-requires no live effects. DELIVERY will be recorded after actual PR checks and
-independent review. Existing operations guides/runbooks were referenced for
+requires no live effects. DELIVERY passed after actual PR checks, independent review and merge; its
+exact receipt follows below. Existing operations guides/runbooks were referenced for
 residual targets but intentionally not rewritten or moved by P00.
 
 The final five-contract-file manifest digest is
@@ -223,6 +230,63 @@ sources), not a P00 link failure. Changed Task link destinations were also
 checked after the final source edits. No dependency/executable changes were
 made, so package audit/coverage/native test suites are not new P00 evidence.
 
+### Historical Receipt Closure
+
+TSK-0001's original accepted PASS rows cover its Plan W1–W5 criterion pairs,
+including the later recorded candidate rerun; TSK-0002's original accepted
+PASS rows cover W6–W8. Their scope was baseline/disposition, not implementing
+the downstream owners. The current request authorizes stale lifecycle
+reconciliation; this metadata closure uses those original dated inputs/results,
+not newly executed LAB/private/runtime checks. Original FAIL/NOT_RUN and
+learning-app mentions stay in the bodies as historical evidence, superseded
+for current execution by this Spec. Their IDs and created dates remain;
+only status/version/updated frontmatter changes. Historical body SHA256:
+TSK-0001 `f853fb8fca7c313c6b122771549dcaee0883ea51d0419748e368621e6c7c61aa`;
+TSK-0002 `634de9021604781ae215a5a24d128eb43d9409b50e6cf0eabc78a1a4077730f4`.
+Both hash the exact bytes after the closing frontmatter delimiter line
+including its LF (split on the second --- followed by LF); those bytes equal
+receipt baseline 95e27ef. No trimming or newline normalization is applied. Current P00 checks separately cover W9–W12. No other Spec is completed by this unit.
+
+### Delivery Receipt
+
+First delivery unit: local authoring/staged checks and independent reviews
+passed, logical commit `1b2347f60ba0bbb4194212633ab03ab83ca41c2c` was pushed
+to codex/p00-active-contract. PR #407 candidate-quality run `38030139469`
+passed at that exact head against base
+`d19fbfde605e257299aa2b39e25f2d7413a78221`; eight non-skipped checks passed,
+zero failed. CodeQL analyses and GitGuardian passed; PR main-security and
+issue-greeting were skipped by their event conditions, not recorded as PASS.
+No human/GitHub approval was claimed: actual enforced review count was zero,
+while independent code/security review was recorded above. Normal merge with
+match-head guard delivered `95e27ef290e4e040a3ce7401adfd5e0994743a5b`
+on 2026-10-10 at 15:17:53 KST. No admin bypass, branch deletion or ruleset
+change occurred.
+
+Receipt unit baseline: clean worktree; origin/main and remote merge receipt
+`95e27ef290e4e040a3ce7401adfd5e0994743a5b`; its source tree equals the
+reviewed 1b2347f head. Only this package's Spec/Plan/Task metadata/results change
+in codex/p00-delivery-receipt. Verify the two historical body hashes against
+that baseline and run the affected document/lifecycle/staged checks plus
+independent receipt review. Fresh receipt checks: metadata check-active selected
+478 documents with zero violations; corpus lifecycle/archive recovery zero
+violations; links mode all checked 1169 documents / 11440 links with zero
+failures and one preserved historical-capture warning. The same contract
+probe and git diff --check passed on this receipt input. Both reviewers
+verified body preservation; two receipt accuracy findings (hash boundary and
+a premature delivery sentence) were corrected before commit. These results
+belong to this receipt unit, not a copied run from the original main input.
+Recover by reverting the receipt commit through
+its protected PR; withdraw the original contract with a separate protected
+revert of 1b2347f. No operational state changed.
+
+The shell's `cz` resolves to Node Commitizen and cannot perform Python
+`cz check`; the failed option calls produced no commit. The already installed
+pre-commit Python Commitizen cache reports 4.15.1, matching the repo pin;
+its `check --message-length-limit 75 --commit-msg-file` passed without a new
+installation. The registered local-staged controller passed Markdown and
+secret detection. These are explicit local invocations; no automatic native
+pre-commit hook delivery is asserted.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
@@ -234,18 +298,23 @@ made, so package audit/coverage/native test suites are not new P00 evidence.
 | Contract GREEN | 2, 4 | W11 | Same requirement/exclusion probe | Amended public documents; same probe SHA | PASS | W11 Active-contract amendment and input identity | accepted |
 | Final static checks | 4, 5 | W12 | check-document-metadata.py --mode check-active; check-document-links.py --mode all; check-document-corpus-lifecycle.py; check-agent-governance-contract.py; git diff --check | Final contract manifest SHA256 a2705b8f2a10a9902e2296aa0b4081449433ee025707148c1f0e62d1d262b4cc; lifecycle final4; result-only Task additions follow | PASS | W12 Verification, authority, recovery and delivery | accepted |
 | Independent review | 5 | W12 | p00_review exact contract/diff; p00_security original and attachment delta | Final contract manifest SHA256 a2705b8f2a10a9902e2296aa0b4081449433ee025707148c1f0e62d1d262b4cc | PASS | W12 Verification, authority, recovery and delivery | accepted |
-| Delivery | 5 | W12 | Staged check, branch/PR, hosted checks and merge readback | P00 branch | NOT_RUN | W12 Verification, authority, recovery and delivery | pending |
+| Delivery | 5 | W12 | Commitizen/staged controller, PR #407 candidate-quality run 38030139469, eight passing checks and merge readback | Head 1b2347f60ba0bbb4194212633ab03ab83ca41c2c; base d19fbfde605e257299aa2b39e25f2d7413a78221 | PASS | Delivery receipt | accepted |
 
 ## Review and Completion
 
-P00 baseline, ownership, exclusions and residual targets pass the scoped
-source checks and independent reviews. Logical commits, staged checks and
-actual remote delivery remain pending; this Task is in-progress under its
-recorded lifecycle edges. Downstream feature/native/secret/
-recovery work remains with its existing owner and is not claimed complete.
+P00 is complete: baseline, ownership, exclusions, active-contract edits,
+scoped checks, independent reviews and actual PR delivery are recorded.
+The package's baseline Tasks close from their existing accepted evidence,
+with bodies preserved; no old success/failure becomes a fresh test result.
+The receipt amendment records local independent review; the remote candidate
+and merge evidence above belong to the original P00 delivery unit. Downstream
+feature/native/secret/recovery work remains with its existing owner and is not
+claimed complete.
 
 ## Related Documents
 
+- [P00 delivery PR](https://github.com/buenhyden/hy-home.docker/pull/407)
+- [P00 candidate run](https://github.com/buenhyden/hy-home.docker/actions/runs/38030139469)
 - [Spec](../spec.md)
 - [Plan](../plan.md)
 - [Integration spec](../../0204-service-integration-security-and-operations/spec.md)

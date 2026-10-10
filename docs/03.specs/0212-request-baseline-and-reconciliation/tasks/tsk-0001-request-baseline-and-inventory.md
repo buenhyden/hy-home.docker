@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Inventory Task"
-version: "0.1.0"
+version: "1.0.0"
 type: "sdlc/task"
-status: "draft"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-10-07"
+updated: "2026-10-10"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0001"
 parent_ids:
