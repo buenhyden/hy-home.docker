@@ -341,7 +341,7 @@ findings on the frozen input below. Earlier unit/coverage results remain bounded
 to their older inputs.
 
 The frozen helper input `956536c08ff0f6a8986cccae03f72d0e6dd61a3a46d4fc68acfbceb83289a337`
-passed 50 focused tests (exit 0), fresh branch coverage 98% (exit 0, 328
+passed 50 focused tests (exit 0), fresh combined coverage with branch measurement 98% (exit 0, 328
 statements and 114 branches), Ruff check and format-check (exit 0), and independent
 code/security re-review PASS. The library/CLI plus Manifest/surface ownership
 suites passed 105 tests (exit 0). These are SOURCE/UNIT/ISOLATED results, not
@@ -662,8 +662,13 @@ The current helper SHA-256 is
 prior `956536...` receipts above retain their historical input identity.
 Input HEAD is `a0ac37a` plus this public docstring change.
 Ruff check and format-check passed (exit 0). Fresh helper/CLI tests passed
-50 cases in 1.120 seconds (exit 0); branch coverage passed the 80% threshold
+50 cases in 1.120 seconds (exit 0); coverage with branch measurement passed the 80% threshold
 at 98% (328 statements, 4 missed, 114 branches, 3 partial; exit 0).
+Coverage JSON makes the denominators explicit: statements 324/328 (98.78%),
+branches 111/114 (97.37%), combined 98.42% (displayed 98%). Both statement
+and branch coverage exceed 80%; 98% is not the branch-only percentage.
+`coverage json -o /tmp/cln01-latest-coverage.json` passed (exit 0), followed
+by a public totals-only JSON read (exit 0).
 Coverage data lives outside Git at `/tmp/cln01-latest.coverage`.
 Independent final code/security re-reviews confirmed that exact current SHA,
 unchanged behavior and protection boundaries; both passed with no additional
@@ -686,7 +691,7 @@ rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/pyth
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | SMTP01 dependency | 12 | W24 | merged delivery plus source and operational cutover evidence | SMTP01 source PR #413 draft; merged delivery and cutover pending | NOT_RUN | SMTP01 owner evidence | pending |
-| Helper source acceptance | 12 | W24 | 50 focused tests, 98% branch coverage, Ruff and independent code/security review | current helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch | pending |
+| Helper source acceptance | 12 | W24 | 50 focused tests, 98% combined coverage with branch measurement, Ruff and independent code/security review | current helper input `e5dc248629728531857442c15b8ec99277b28051a5134b19191ff473e888b284` | PASS | CLN01 implementation patch | pending |
 | Candidate classification | 12 | W24 | partial five-axis assessment; BLOCKED_FACTS until missing ownership/recovery facts close | current source and read-only observations on named host | DEFER | #read-only-host-observations | pending |
 | Private deletion acceptance | 12 | W24 | manifest preflight and idempotent reinspection | operator manifest under `/tmp/cln01-<run>/` | NOT_RUN | operator host | pending |
 
