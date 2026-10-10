@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/plan"
 status: "completed"
 owner: "@buenhyden"
@@ -16,10 +16,8 @@ created: "2026-10-07"
 
 ## Overview
 
-Execute the 2026-10-10 P00 contract in SPEC-0212-TSK-0003. The earlier W1–W8
-baseline and twenty-item work remain preserved in TSK-0001/TSK-0002 and Git
-history. This Plan supersedes their prompt order and LAB/application discovery
-routes for current execution, without changing their recorded results.
+The current 11–30 request preserves completed P00 Tasks. SEC01 delivers first,
+SMTP01 owns the source transition second, and CLN01 deletes the old file third.
 
 ## Work Breakdown
 
@@ -37,6 +35,7 @@ routes for current execution, without changing their recorded results.
 | W10 | 2, 3, 6, 7 | Read open Spec/Plan/Task frontmatter, latest tracked source and PR state; classify residuals and exclusions | W9 | TSK-0003 | Requirement table and owning evidence paths |
 | W11 | 2, 4 | Observe contract RED; update SPEC-0212 Spec/Plan and SPEC-0204 Spec/Plan current routing | W10 | TSK-0003 | Contract GREEN; current authority checker |
 | W12 | 4, 5 | Record writers/order/rollback, validate final documents, independent review, logical commits and protected PR delivery | W11 | TSK-0003 | Document checks; staged checks; actual hosted observations |
+| W13 | 8 | Record current routing and SEC01 → SMTP01 → CLN01 ordering | W12 | TSK-0005 | Value-free contract probe; Stage 99 checks |
 
 ### Exact writer map
 
@@ -56,9 +55,12 @@ before touching a shared path. P01 owns secret classification/prerequisites;
 P02 owns metadata/path mappings; P03 owns root gateway, endpoint and port
 contracts; P04 owns Airflow source/native integration; P05 owns n8n source/native
 integration; P06 owns per-image consumption; P07 owns root-leaf controls and
-exact exceptions. P09 owns the external Wiki in a Project-Template-derived
-workspace; P10 owns a named input-to-recovery consumer. These stage labels do
-not allocate new Spec IDs or authorize unnamed live targets.
+exact exceptions. SEC01 owns P09 preparation documents, schemas, synthetic
+fixtures and future acceptance contracts. It creates no external workspace,
+Wiki engine, native application or production consumer. SMTP01 provides only
+the canonical secret/consumer/catalog interface and reviews related P09
+contracts; it does not duplicate P09 files. P10 owns a named input-to-recovery
+consumer. These stage labels allocate no new Spec IDs or unnamed live targets.
 
 Only one writer at a time may own `docker-compose.yml`, public environment
 contracts, `.github/workflow-contract.yml`, `scripts/manifest.yaml`, the
@@ -72,18 +74,20 @@ P07 reuses SPEC-0218 v2; no full common-file rewrite follows from this Plan.
 1. P00 fixes baseline, ownership and exclusions first. Applied work stays
    NO_CHANGE and genuine gaps keep their existing acceptance owner.
 2. P01 classification precedes P02 mappings and P06 actual secret consumption.
-   P03 endpoint/port contracts precede their P04/P05/P09 consumers. P07 uses
+   P03 endpoint/port contracts precede their P04/P05 consumers; P09 references
+   these contracts only for preparation. P07 uses
    observed demand and consumer prerequisites, with no invented optimal limits.
 3. P04 and P05 native runs require actual connection/secret/recovery targets.
-   P09 requires its external workspace; P10 consumes verified interfaces and
-   its named recovery fixture. Missing targets defer only their dependent lane.
+   Wiki preparation has no external workspace, native/app or production-consumer
+   assignment. A future canonical SMTP interface may later name a consumer; P10
+   consumes only verified interfaces and its named recovery fixture.
 4. P08 selects exact current common/domain document destinations through the
    Registry. Finish a feature writer's edits and evidence before moving those
    paths; then one P08 writer moves documents and updates all references,
    indexes and applicable checks. Re-read SHA and hand the new paths back to
    the feature owner before any further edit. Do not edit old/new paths in
-   parallel. LAB receives only `separate_target` classification and prospective
-   path metadata; its actual documents, code, config and secrets are not moved.
+   parallel. P08 may move LAB documents to typed `labs/` destinations; LAB code,
+   config, secrets and runtime are not moved.
 5. Each feature owner completes its Task, independent review and per-Spec PR.
    P00's inventory or merge receipt cannot complete a downstream native run.
 
@@ -110,7 +114,7 @@ conditions are satisfied. Record hosted results separately from local results.
 
 ## Risks and Rollback
 
-Revert only the logical P00 documentation commits through a protected PR to
+Revert only the logical W13 documentation commit through a protected PR to
 restore the prior active contract; preserve historical Tasks and issued IDs.
 No service, credential, data, volume or host state changes, so no runtime/data
 rollback is claimed. Equal baseline, merged draft and historical runtime PASS
@@ -120,7 +124,8 @@ change invalidates affected inputs and requires a fresh scoped check.
 ## Related Documents
 
 - [Spec](spec.md)
-- [Current P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
+- [SMTP01 request contract Task](tasks/tsk-0005-smtp01-request-contract.md)
+- [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
 - [Integration plan](../0204-service-integration-security-and-operations/plan.md)
