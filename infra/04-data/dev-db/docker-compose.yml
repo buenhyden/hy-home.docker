@@ -288,7 +288,7 @@ services:
     extends:
       file: ../../common-optimizations.yml
       service: template-infra-readonly-low
-    image: oliver006/redis_exporter:v1.91.1-alpine
+    image: oliver006/redis_exporter:v1.93.0-alpine@sha256:93831cd4d5d67687de67c9d5221b14312fea580af8d157583ed9d4459bf2dd70
     container_name: dev-valkey-exporter
     hostname: dev-valkey-exporter
     group_add:
